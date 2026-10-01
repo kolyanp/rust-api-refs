@@ -122,6 +122,8 @@ public class WaterOverlay : MonoBehaviour, IClientComponent
 
 	public Volume postProcessVolume_RRP;
 
+	public Volume postProcessVolume2_RRP;
+
 	public PostProcessVolume blurPostProcessVolume;
 
 	public EffectParams defaultParams = EffectParams.Default;

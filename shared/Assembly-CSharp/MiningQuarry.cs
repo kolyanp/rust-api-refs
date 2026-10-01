@@ -125,7 +125,7 @@ public class MiningQuarry : BaseResourceExtractor
 		{
 			flagsUpdateScope.Set(Flags.On, HasFlag(Flags.On));
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			ItemContainer inventory = ((Component)fuelStoragePrefab.instance).GetComponent<StorageContainer>().inventory;
 			inventory.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(inventory.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));

@@ -6,11 +6,11 @@ using UnityEngine;
 public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 {
 	[Header("Base")]
-	public float sleepDelaySeconds;
+	public float sleepDelaySeconds = 30f;
 
 	public bool isBox;
 
-	public Vector3 size;
+	public Vector3 size = Vector3.one * 30f;
 
 	public List<AIInformationZone> zones;
 
@@ -75,11 +75,11 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 			aiz.wakeZones.Add(this);
 		}
 		SetZonesSleeping(flag: true);
-		Vector3 val2 = default(Vector3);
-		Quaternion val3 = default(Quaternion);
+		Vector3 val2 = default;
+		Quaternion val3 = default;
 		((Component)this).transform.GetPositionAndRotation(ref val2, ref val3);
 		spherePos = val2;
-		radius = (isBox ? (((Vector3)(ref size)).magnitude * 0.5f) : size.x);
+		radius = (isBox ? (size.magnitude * 0.5f) : size.x);
 		obb = new OBB(val2, val3, new Bounds(Vector3.zero, size));
 		r2 = radius * radius;
 		BaseEntity.Query.Server.SubscribePlayerChanges(spherePos, radius, Dirty);
@@ -114,17 +114,17 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		PooledList<BasePlayer> val = Pool.Get<PooledList<BasePlayer>>();
 		BaseEntity.Query.Server.GetPlayersInSphere(((Component)this).transform.position, radius, (List<BasePlayer>)(object)val);
-		Vector3 val2 = default(Vector3);
-		Quaternion val3 = default(Quaternion);
+		Vector3 val2 = default;
+		Quaternion val3 = default;
 		((Component)this).transform.GetPositionAndRotation(ref val2, ref val3);
-		OBB val4 = default(OBB);
-		((OBB)(ref val4))._002Ector(val2, val3, new Bounds(Vector3.zero, size));
+		OBB val4 = new OBB(val2, val3, new Bounds(Vector3.zero, size));
 		foreach (BasePlayer item in (List<BasePlayer>)(object)val)
 		{
-			if (Object.op_Implicit((Object)(object)item) && (!isBox || ((OBB)(ref val4)).Contains(item.TriggerPoint())))
+			if (Object.op_Implicit((Object)(object)item) && (!isBox || val4.Contains(item.TriggerPoint())))
 			{
 				((List<BasePlayer>)(object)val).Add(item);
 			}
@@ -135,7 +135,7 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 	private bool BoxCheck(BasePlayer p)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		if (!((OBB)(ref obb)).Contains(p.TriggerPoint()))
+		if (!obb.Contains(p.TriggerPoint()))
 		{
 			return false;
 		}
@@ -267,8 +267,5 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		sleepDelaySeconds = 30f;
-		size = Vector3.one * 30f;
-		base._002Ector();
 	}
 }

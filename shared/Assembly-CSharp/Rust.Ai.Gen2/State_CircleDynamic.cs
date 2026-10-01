@@ -11,22 +11,22 @@ public class State_CircleDynamic : FSMStateBase
 	private RustNavMeshAgent.Speeds minSpeed;
 
 	[SerializeField]
-	private RustNavMeshAgent.Speeds maxSpeed;
+	private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Sprint;
 
 	[SerializeField]
-	protected Vector2 distanceSpeedRange;
+	protected Vector2 distanceSpeedRange = new Vector2(10f, 50f);
 
 	[SerializeField]
-	private Vector2 angleRange;
+	private Vector2 angleRange = Vector2.op_Implicit(new Vector3(20f, 80f));
 
 	[SerializeField]
-	private Vector2 angleDurationRange;
+	private Vector2 angleDurationRange = new Vector2(1f, 3f);
 
 	[SerializeField]
-	private Vector2 burstDurationRange;
+	private Vector2 burstDurationRange = new Vector2(1f, 3f);
 
 	[SerializeField]
-	private Vector2 burstCooldownRange;
+	private Vector2 burstCooldownRange = new Vector2(1f, 10f);
 
 	private Action _updateBurstAction;
 
@@ -34,7 +34,7 @@ public class State_CircleDynamic : FSMStateBase
 
 	private Action _updateAngleAction;
 
-	private bool clockWise;
+	private bool clockWise = true;
 
 	private int burstSpeedIndexOffset;
 
@@ -50,7 +50,7 @@ public class State_CircleDynamic : FSMStateBase
 	{
 		if ((Object)(object)payload.entity != (Object)null)
 		{
-			base.Senses.TrySetTarget(payload.entity);
+			Senses.TrySetTarget(payload.entity);
 		}
 		clockWise = Random.value > 0.5f;
 		EndBurst();
@@ -60,7 +60,7 @@ public class State_CircleDynamic : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.Agent.ResetPath();
+		Agent.ResetPath();
 		Owner.CancelInvoke(UpdateBurstAction);
 		Owner.CancelInvoke(EndBurstAction);
 		Owner.CancelInvoke(UpdateAngleAction);
@@ -97,7 +97,7 @@ public class State_CircleDynamic : FSMStateBase
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target))
+		if (!Senses.FindTarget(out var target))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -107,8 +107,8 @@ public class State_CircleDynamic : FSMStateBase
 		SetSpeed(target, num, normalizedDist);
 		float value = Mathx.RemapValClamped(num, distanceSpeedRange.x, distanceSpeedRange.y, randomAngle, 0f);
 		Vector3 positionWS = position;
-		RustNavMeshAgent agent = base.Agent;
-		NavVector3 targetPositionNS = base.Agent.WorldToNavSpace(positionWS);
+		RustNavMeshAgent agent = Agent;
+		NavVector3 targetPositionNS = Agent.WorldToNavSpace(positionWS);
 		float? deviation = value;
 		if (!agent.SetDestinationWithParams(targetPositionNS, autoBraking: true, null, null, null, deviation))
 		{
@@ -119,7 +119,7 @@ public class State_CircleDynamic : FSMStateBase
 
 	protected virtual void SetSpeed(BaseEntity target, float distToTarget, float normalizedDist)
 	{
-		base.Agent.SetSpeedRatio(normalizedDist, minSpeed, maxSpeed, burstSpeedIndexOffset);
+		Agent.SetSpeedRatio(normalizedDist, minSpeed, maxSpeed, burstSpeedIndexOffset);
 	}
 
 	public State_CircleDynamic()
@@ -135,13 +135,5 @@ public class State_CircleDynamic : FSMStateBase
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		maxSpeed = RustNavMeshAgent.Speeds.Sprint;
-		distanceSpeedRange = new Vector2(10f, 50f);
-		angleRange = Vector2.op_Implicit(new Vector3(20f, 80f));
-		angleDurationRange = new Vector2(1f, 3f);
-		burstDurationRange = new Vector2(1f, 3f);
-		burstCooldownRange = new Vector2(1f, 10f);
-		clockWise = true;
-		base._002Ector();
 	}
 }

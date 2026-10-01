@@ -85,15 +85,15 @@ public class HookCallerInternal : HookCallerCommon
 			hookable.BuildHookCache(flags);
 		}
 		BaseHookable.CachedHookInstance value = null;
-		if (hookable.HookPool != null && !hookable.HookPool.TryGetValue(hookId, out value))
+		if (hookable.HookPool == null || !hookable.HookPool.TryGetValue(hookId, out value))
 		{
 			return null;
 		}
 		object result = null;
 		List<Conflict> conflicts = null;
-		bool hasRescaledBuffer = false;
 		if (hookable.InternalCallHookOverriden)
 		{
+			bool hasRescaledBuffer = false;
 			BaseHookable.CachedHook cachedHook = null;
 			if (value != null && value.IsValid())
 			{
@@ -169,10 +169,10 @@ public class HookCallerInternal : HookCallerCommon
 					{
 						if (cachedHook2.IsAsync)
 						{
-							DoCall(hookable, hookId, cachedHook2, args, ref hasRescaledBuffer);
+							DoCall(hookable, hookId, cachedHook2, args);
 							continue;
 						}
-						object obj2 = DoCall(hookable, hookId, cachedHook2, args, ref hasRescaledBuffer);
+						object obj2 = DoCall(hookable, hookId, cachedHook2, args);
 						if (obj2 != null)
 						{
 							if (conflicts == null)
@@ -195,15 +195,16 @@ public class HookCallerInternal : HookCallerCommon
 			FrameDispose(hasRescaledBuffer: false, args, ref conflicts);
 		}
 		return result;
-		static object DoCall(T val, uint name, BaseHookable.CachedHook hook, object[] array, ref bool reference)
+		static object DoCall(T val, uint name, BaseHookable.CachedHook hook, object[] array)
 		{
+			bool flag2 = false;
 			if (array != null)
 			{
 				int num5 = hook.Parameters.Length;
 				if (num5 != array.Length)
 				{
 					array = HookCaller.Caller.RescaleBuffer(array, num5, hook);
-					reference = true;
+					flag2 = true;
 				}
 				else
 				{
@@ -212,6 +213,10 @@ public class HookCallerInternal : HookCallerCommon
 			}
 			if (array != null && !SequenceEqual(hook.Parameters, array))
 			{
+				if (flag2)
+				{
+					HookCaller.Caller.ReturnBuffer(array);
+				}
 				return null;
 			}
 			object result2 = null;
@@ -243,14 +248,14 @@ public class HookCallerInternal : HookCallerCommon
 					totalMilliseconds2,
 					val.HasGCCollected ? " [GC]" : string.Empty
 				}));
-				bool flag2 = totalMilliseconds2 >= (double)Community.Runtime.Config.Debugging.HookLagSpikeThreshold;
-				if (flag2)
+				bool flag3 = totalMilliseconds2 >= (double)Community.Runtime.Config.Debugging.HookLagSpikeThreshold;
+				if (flag3)
 				{
 					hook.OnLagSpike(val);
 				}
-				Analytics.plugin_time_warn(orAdd4, plugin2, totalMilliseconds2, num6, flag2, hook, val);
+				Analytics.plugin_time_warn(orAdd4, plugin2, totalMilliseconds2, num6, flag3, hook, val);
 			}
-			if (reference)
+			if (flag2)
 			{
 				HookCaller.Caller.ReturnBuffer(array);
 			}

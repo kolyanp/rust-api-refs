@@ -37,11 +37,11 @@ public class HarborCraneContainerPickup : HarborCrane
 
 	public Transform ServerTowerGrab;
 
-	public float LockTime;
+	public float LockTime = 5f;
 
-	public float MaxMoveDistance;
+	public float MaxMoveDistance = 32f;
 
-	public float PickedUpObjectRotationSpeed;
+	public float PickedUpObjectRotationSpeed = 30f;
 
 	private List<ContainerStack> Stacks;
 
@@ -49,19 +49,19 @@ public class HarborCraneContainerPickup : HarborCrane
 
 	private const float ContainerSize = 3f;
 
-	public int MaxContainerStackSize;
+	public int MaxContainerStackSize = 3;
 
 	public bool DebugContainerSpawns;
 
 	public bool DebugContainerDestinations;
 
-	private Vector3 grabOffset;
+	private Vector3 grabOffset = new Vector3(0f, 19f, 0f);
 
 	public static ListHashSet<HarborCraneContainerPickup> AllCranes = new ListHashSet<HarborCraneContainerPickup>();
 
 	private Vector3 startForward;
 
-	private List<QueuedMove> movesToMake;
+	private List<QueuedMove> movesToMake = new List<QueuedMove>();
 
 	private QueuedMove? moveInProcess;
 
@@ -179,19 +179,19 @@ public class HarborCraneContainerPickup : HarborCrane
 			position.y += (float)stack.CurrentStackSize * 3f;
 			List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
 			Vis.Entities(new OBB(position, stack.RootPoint.rotation, new Bounds(new Vector3(0f, 1.5f, 0f), new Vector3(4.5f, 1.5f, 1.5f) * 0.8f)), list, 1218685185, (QueryTriggerInteraction)2);
-			bool num3 = list.Count == 0;
-			if (!num3 && CargoShip.docking_debug)
+			bool flag = list.Count == 0;
+			if (!flag && CargoShip.docking_debug)
 			{
 				Debug.Log((object)("Container spawn blocked by " + ((Object)((Component)list[0]).gameObject).name), (Object)(object)list[0]);
 			}
 			Pool.FreeUnmanaged<BaseEntity>(ref list);
-			if (!num3)
+			if (!flag)
 			{
 				return false;
 			}
 			CargoShipContainer cargoShipContainer = GameManager.server.CreateEntity(ContainerPrefab.resourcePath, position, stack.RootPoint.rotation) as CargoShipContainer;
 			cargoShipContainer.Spawn();
-			QueuedMove item = default(QueuedMove);
+			QueuedMove item = default;
 			item.TargetEntity.Set(cargoShipContainer);
 			item.HasTarget = false;
 			movesToMake.Add(item);
@@ -380,6 +380,7 @@ public class HarborCraneContainerPickup : HarborCrane
 		//IL_045f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0464: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_047b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0480: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0482: Unknown result type (might be due to invalid IL or missing references)
 		//IL_048f: Unknown result type (might be due to invalid IL or missing references)
@@ -410,6 +411,7 @@ public class HarborCraneContainerPickup : HarborCrane
 		//IL_05d5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_05db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_05e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0600: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0605: Unknown result type (might be due to invalid IL or missing references)
 		//IL_060a: Unknown result type (might be due to invalid IL or missing references)
@@ -432,7 +434,7 @@ public class HarborCraneContainerPickup : HarborCrane
 		float num2 = num;
 		Vector3 val = ((Component)cargoShipContainer).transform.position;
 		Vector3 val2 = Vector3Ex.WithY(val, position.y) - position;
-		float num3 = Vector3.Angle(((Component)this).transform.forward, ((Vector3)(ref val2)).normalized);
+		float num3 = Vector3.Angle(((Component)this).transform.forward, val2.normalized);
 		Vector3 localPosition = ServerTowerGrab.localPosition;
 		bool flag = false;
 		float num4 = 0f;
@@ -444,7 +446,7 @@ public class HarborCraneContainerPickup : HarborCrane
 			{
 				break;
 			}
-			num2 = ((Component)this).transform.InverseTransformPoint(new Vector3(0f, ((Component)cargoShipContainer).transform.position.y + ((Bounds)(ref cargoShipContainer.bounds)).max.y, 0f)).y;
+			num2 = ((Component)this).transform.InverseTransformPoint(new Vector3(0f, ((Component)cargoShipContainer).transform.position.y + cargoShipContainer.bounds.max.y, 0f)).y;
 			if (Mathf.Abs(num2 - localPosition.y) < 0.1f)
 			{
 				lockOnTime += Time.deltaTime;
@@ -466,7 +468,7 @@ public class HarborCraneContainerPickup : HarborCrane
 			flag = true;
 			val = value.TargetWorldPosition;
 			val2 = Vector3Ex.WithY(val, position.y) - position;
-			num3 = Vector3.Angle(((Component)this).transform.forward, ((Vector3)(ref val2)).normalized);
+			num3 = Vector3.Angle(((Component)this).transform.forward, val2.normalized);
 			((Component)cargoShipContainer).transform.rotation = Quaternion.RotateTowards(((Component)cargoShipContainer).transform.rotation, value.TargetWorldRotation, PickedUpObjectRotationSpeed * Time.deltaTime);
 			if (num3 < 0.1f)
 			{
@@ -477,7 +479,7 @@ public class HarborCraneContainerPickup : HarborCrane
 			flag = true;
 			val = value.TargetWorldPosition;
 			val2 = Vector3Ex.WithY(val, position.y) - position;
-			num2 = ((Component)this).transform.InverseTransformPoint(value.TargetWorldPosition).y + ((Bounds)(ref cargoShipContainer.bounds)).size.y;
+			num2 = ((Component)this).transform.InverseTransformPoint(value.TargetWorldPosition).y + cargoShipContainer.bounds.size.y;
 			((Component)cargoShipContainer).transform.rotation = Quaternion.RotateTowards(((Component)cargoShipContainer).transform.rotation, value.TargetWorldRotation, PickedUpObjectRotationSpeed * Time.deltaTime);
 			if (Mathf.Abs(num2 - localPosition.y) < 0.1f)
 			{
@@ -496,7 +498,7 @@ public class HarborCraneContainerPickup : HarborCrane
 			num2 = num;
 			val = ((Component)this).transform.position + startForward * 26f;
 			val2 = Vector3Ex.WithY(val, position.y) - position;
-			num3 = Vector3.Angle(((Component)this).transform.forward, ((Vector3)(ref val2)).normalized);
+			num3 = Vector3.Angle(((Component)this).transform.forward, val2.normalized);
 			if (!(num3 < 0.1f))
 			{
 				break;
@@ -515,17 +517,16 @@ public class HarborCraneContainerPickup : HarborCrane
 			break;
 		}
 		cargoShipContainer.ToggleHurtCollider(currentPickupState == PickupState.Drop);
-		Quaternion val3 = Quaternion.LookRotation(((Vector3)(ref val2)).normalized, Vector3.up);
+		Quaternion val3 = Quaternion.LookRotation(val2.normalized, Vector3.up);
 		((Component)this).transform.rotation = Quaternion.RotateTowards(((Component)this).transform.rotation, val3, 5f * Time.deltaTime);
 		float num5 = ((num4 > 0f) ? num4 : Vector3.Distance(Vector3Ex.WithY(val, position.y), position));
-		Vector3 val4 = default(Vector3);
-		((Vector3)(ref val4))._002Ector(0f, num2, num5);
+		Vector3 val4 = new Vector3(0f, num2, num5);
 		localPosition = Vector3.MoveTowards(localPosition, val4, Time.deltaTime * 2f);
 		ServerTowerGrab.localPosition = localPosition;
 		CraneGrab.position = ServerTowerGrab.position + grabOffset;
 		if (flag)
 		{
-			((Component)cargoShipContainer).transform.position = ServerTowerGrab.position - Vector3.up * ((Bounds)(ref cargoShipContainer.bounds)).size.y;
+			((Component)cargoShipContainer).transform.position = ServerTowerGrab.position - Vector3.up * cargoShipContainer.bounds.size.y;
 		}
 		UpdateArm();
 		SendNetworkUpdate();
@@ -546,8 +547,8 @@ public class HarborCraneContainerPickup : HarborCrane
 		val2 = Vector3Ex.WithY(val, position.y) - position;
 		num2 = num;
 		num5 = Vector3.Distance(Vector3Ex.WithY(val, position.y), position);
-		((Vector3)(ref val4))._002Ector(0f, num2, num5);
-		((Component)this).transform.rotation = Quaternion.LookRotation(((Vector3)(ref val2)).normalized, Vector3.up);
+		val4 = new Vector3(0f, num2, num5);
+		((Component)this).transform.rotation = Quaternion.LookRotation(val2.normalized, Vector3.up);
 		ServerTowerGrab.localPosition = val4;
 		CraneGrab.position = ServerTowerGrab.position + grabOffset;
 		UpdateArm();
@@ -625,7 +626,7 @@ public class HarborCraneContainerPickup : HarborCrane
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -688,12 +689,5 @@ public class HarborCraneContainerPickup : HarborCrane
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		LockTime = 5f;
-		MaxMoveDistance = 32f;
-		PickedUpObjectRotationSpeed = 30f;
-		MaxContainerStackSize = 3;
-		grabOffset = new Vector3(0f, 19f, 0f);
-		movesToMake = new List<QueuedMove>();
-		base._002Ector();
 	}
 }

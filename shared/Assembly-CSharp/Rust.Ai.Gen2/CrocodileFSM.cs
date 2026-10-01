@@ -44,8 +44,8 @@ public class CrocodileFSM : FSMComponent
 	public override void InitShared()
 	{
 		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010c: Expected O, but got Unknown
-		if (base.baseEntity.isServer)
+		//IL_010c: Expected Obj, but got Unknown
+		if (baseEntity.isServer)
 		{
 			State_Nothing state_Nothing = new State_Nothing
 			{
@@ -71,55 +71,55 @@ public class CrocodileFSM : FSMComponent
 			DeathTrans = new Trans_Triggerable_HitInfo();
 			HurtTrans = new Trans_Triggerable_HitInfo();
 			Trans_Triggerable EncounterEndTrans = new Trans_Triggerable();
-			((Component)base.baseEntity).GetComponent<NPCEncounterTimer>().onShouldGiveUp.AddListener((UnityAction)delegate
+			((Component)baseEntity).GetComponent<NPCEncounterTimer>().onShouldGiveUp.AddListener((UnityAction)(() =>
 			{
 				EncounterEndTrans.Trigger();
-			});
+			}));
 			Trans_IsSwimming trans_IsSwimming = new Trans_IsSwimming();
 			FSMTransitionBase fSMTransitionBase = ~new Trans_IsSwimming();
 			FSMTransitionBase dstState2Trans = ~(new Trans_TargetInRange
 			{
 				Range = 30f
 			} | trans_IsSwimming | new Trans_IsTargetInWater());
-			Rust.Ai.Gen2.Trans_CrocHasStraightPathToTarget trans_CrocHasStraightPathToTarget = new Rust.Ai.Gen2.Trans_CrocHasStraightPathToTarget();
-			State_Nothing obj = new State_Nothing
+			Trans_CrocHasStraightPathToTarget trans_CrocHasStraightPathToTarget = new Trans_CrocHasStraightPathToTarget();
+			State_Nothing state_Nothing2 = new State_Nothing
 			{
 				Name = "Root"
 			};
-			State_Nothing state_Nothing2 = new State_Nothing
+			State_Nothing state_Nothing3 = new State_Nothing
 			{
 				Name = "Alive"
 			};
-			State_Nothing state_Nothing3 = new State_Nothing
+			State_Nothing state_Nothing4 = new State_Nothing
 			{
 				Name = "Reachable"
 			};
-			State_Nothing state_Nothing4 = new State_Nothing
+			State_Nothing state_Nothing5 = new State_Nothing
 			{
 				Name = "OnNavmesh"
 			};
 			new State_Nothing().Name = "Food";
-			State_Nothing state_Nothing5 = new State_Nothing
+			State_Nothing state_Nothing6 = new State_Nothing
 			{
 				Name = "Roaming"
 			};
-			State_Nothing state_Nothing6 = new State_Nothing
+			State_Nothing state_Nothing7 = new State_Nothing
 			{
 				Name = "Has target"
 			};
-			State_Nothing state_Nothing7 = new State_Nothing
+			State_Nothing state_Nothing8 = new State_Nothing
 			{
 				Name = "Random post idle wait"
 			};
-			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(roam, new Trans_IsNavmeshReady()) + state_Nothing4.AddTickTransition(state_Nothing, ~new Trans_IsNavmeshReady()) + (state_Nothing5.AddTickBranchingTrans(charge, new Trans_HasTarget(), flee, dstState2Trans).AddTickTransition(approachFood, new Trans_SeesFood()) + roam.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(randomIdle, fSMTransitionBase).AddEndTransition(state_Nothing7) + randomIdle.AddEndTransition(state_Nothing7) + state_Nothing7.AddTickTransition(roam, new Trans_ElapsedTimeRandomized
+			_ = state_Nothing2 + (state_Nothing3.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(roam, new Trans_IsNavmeshReady()) + (state_Nothing5.AddTickTransition(state_Nothing, ~new Trans_IsNavmeshReady()) + (state_Nothing6.AddTickBranchingTrans(charge, new Trans_HasTarget(), flee, dstState2Trans).AddTickTransition(approachFood, new Trans_SeesFood()) + roam.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(randomIdle, fSMTransitionBase).AddEndTransition(state_Nothing8) + randomIdle.AddEndTransition(state_Nothing8) + state_Nothing8.AddTickTransition(roam, new Trans_ElapsedTimeRandomized
 			{
 				MinDuration = 7.0,
 				MaxDuration = 14.0
-			})) + (state_Nothing6.AddTickTransition(roam, ~new Trans_HasTarget()).AddTickTransition(flee, EncounterEndTrans).AddTickTransition(flee, new Trans_TargetIsInSafeZone())
-				.AddTickTransition(flee, new Rust.Ai.Gen2.Trans_IsTargetProtectedByMount()) + (state_Nothing3.AddTickTransition(flee, new Trans_Cooldown
+			})) + (state_Nothing7.AddTickTransition(roam, ~new Trans_HasTarget()).AddTickTransition(flee, EncounterEndTrans).AddTickTransition(flee, new Trans_TargetIsInSafeZone())
+				.AddTickTransition(flee, new Trans_IsTargetProtectedByMount()) + (state_Nothing4.AddTickTransition(flee, new Trans_Cooldown
 			{
 				cooldown = 30f
-			} & new Rust.Ai.Gen2.Trans_IsTargetTooFarFromWater()) + charge.AddTickTransition(flee, fSMTransitionBase & new Trans_ElapsedTime
+			} & new Trans_IsTargetTooFarFromWater()) + charge.AddTickTransition(flee, fSMTransitionBase & new Trans_ElapsedTime
 			{
 				Duration = 15.0
 			} & ~new Trans_TargetInRange
@@ -198,14 +198,15 @@ public class CrocodileFSM : FSMComponent
 			{
 				Range = 8f
 			}).AddTickTransition(diveRoam, trans_IsSwimming).AddFailureTransition(dead, new Trans_Dead())
-				.AddEndTransition(diveRoam, ~new Rust.Ai.Gen2.Trans_TooFarFromWater())
-				.AddEndTransition(roam) + diveRoam.AddTickTransition(charge, ~new Rust.Ai.Gen2.Trans_IsTargetProtectedByMount() & (new Trans_IsTargetInWater() | (new Trans_TargetInRange
+				.AddEndTransition(diveRoam, ~new Trans_TooFarFromWater())
+				.AddEndTransition(roam) + diveRoam.AddTickTransition(charge, ~new Trans_IsTargetProtectedByMount() & (new Trans_IsTargetInWater() | (new Trans_TargetInRange
 			{
 				Range = 8f
-			} & new Rust.Ai.Gen2.Trans_IsTargetOnNavmesh_Slow()))).AddTickTransition(roam, ~new Trans_TargetInRange
+			} & new Trans_IsTargetOnNavmesh_Slow()))).AddTickTransition(roam, ~new Trans_TargetInRange
 			{
 				Range = 50f
-			}).AddFailureTransition(dead, new Trans_Dead()) + dead);
+			}).AddFailureTransition(dead, new Trans_Dead()))) + dead;
+			RegisterDebugMoveTo(state_Nothing3);
 			SetState(state_Nothing);
 			SetFsmActive(newActive: true);
 		}
@@ -217,7 +218,7 @@ public class CrocodileFSM : FSMComponent
 		{
 			((Component)this).GetComponent<RootMotionPlayer>().PlayServerAdditive(hurt.WeakHitAdditive);
 			HurtTrans.Trigger(hitInfo);
-			if (base.CurrentState == approach || base.CurrentState == approachFood || base.CurrentState == bringFoodBackToWater || base.CurrentState == intimidate)
+			if (CurrentState == approach || CurrentState == approachFood || CurrentState == bringFoodBackToWater || CurrentState == intimidate)
 			{
 				ForceTickOnTheNextUpdate();
 			}

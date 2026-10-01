@@ -7,16 +7,16 @@ using UnityEngine;
 
 public class LegacyShelter : DecayEntity
 {
-	public static readonly int FpShelterDefault;
+	public static readonly int FpShelterDefault = 1;
 
 	[ReplicatedVar]
-	public static int max_shelters;
+	public static int max_shelters = 1;
 
-	private static Dictionary<ulong, List<LegacyShelter>> sheltersPerPlayer;
+	private static Dictionary<ulong, List<LegacyShelter>> sheltersPerPlayer = new Dictionary<ulong, List<LegacyShelter>>();
 
-	public static Phrase shelterLimitPhrase;
+	public static Phrase shelterLimitPhrase = new Phrase("shelter_limit_update", "You are now at {0}/{1} shelters");
 
-	public static Phrase shelterLimitReachedPhrase;
+	public static Phrase shelterLimitReachedPhrase = new Phrase("shelter_limit_reached", "You have reached your shelter limit!");
 
 	[Header("Shelter References")]
 	public GameObjectRef smallPrivilegePrefab;
@@ -43,8 +43,8 @@ public class LegacyShelter : DecayEntity
 
 	public static Planner.CanBuildResult? CanBuildShelter(BasePlayer player, Construction construction)
 	{
-		GameObject obj = GameManager.server.FindPrefab(construction.prefabID);
-		if (((obj != null) ? obj.GetComponent<BaseEntity>() : null) is LegacyShelter)
+		GameObject val = GameManager.server.FindPrefab(construction.prefabID);
+		if (((val != null) ? val.GetComponent<BaseEntity>() : null) is LegacyShelter)
 		{
 			int num = 1;
 			if (sheltersPerPlayer.TryGetValue(player.userID, out var value))
@@ -145,7 +145,7 @@ public class LegacyShelter : DecayEntity
 
 	public EntityPrivilege GetEntityPrivilege()
 	{
-		EntityPrivilege entityPrivilege = this.entityPrivilege.Get(base.isServer);
+		EntityPrivilege entityPrivilege = this.entityPrivilege.Get(isServer);
 		if (entityPrivilege.IsValid())
 		{
 			return entityPrivilege;
@@ -156,7 +156,7 @@ public class LegacyShelter : DecayEntity
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && child.prefabID == includedDoorPrefab.GetEntity().prefabID && !Application.isLoadingSave)
+		if (isServer && child.prefabID == includedDoorPrefab.GetEntity().prefabID && !Application.isLoadingSave)
 		{
 			Setup(child);
 		}
@@ -171,7 +171,7 @@ public class LegacyShelter : DecayEntity
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (info.msg.legacyShelter == null || !base.isServer)
+		if (info.msg.legacyShelter == null || !isServer)
 		{
 			return;
 		}
@@ -228,7 +228,7 @@ public class LegacyShelter : DecayEntity
 
 	public LegacyShelterDoor GetChildDoor()
 	{
-		LegacyShelterDoor legacyShelterDoor = childDoorInstance.Get(base.isServer);
+		LegacyShelterDoor legacyShelterDoor = childDoorInstance.Get(isServer);
 		if (legacyShelterDoor.IsValid())
 		{
 			return legacyShelterDoor;
@@ -344,20 +344,15 @@ public class LegacyShelter : DecayEntity
 		LegacyShelterDoor childDoor = GetChildDoor();
 		if ((Object)(object)childDoor != (Object)null)
 		{
-			childDoor.SetHealth(base.health);
+			childDoor.SetHealth(health);
 		}
 	}
 
 	static LegacyShelter()
 	{
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Expected O, but got Unknown
+		//IL_002a: Expected Obj, but got Unknown
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Expected O, but got Unknown
-		FpShelterDefault = 1;
-		max_shelters = 1;
-		sheltersPerPlayer = new Dictionary<ulong, List<LegacyShelter>>();
-		shelterLimitPhrase = new Phrase("shelter_limit_update", "You are now at {0}/{1} shelters");
-		shelterLimitReachedPhrase = new Phrase("shelter_limit_reached", "You have reached your shelter limit!");
+		//IL_003e: Expected Obj, but got Unknown
 	}
 }

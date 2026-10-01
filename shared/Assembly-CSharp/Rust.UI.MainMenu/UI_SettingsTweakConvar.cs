@@ -6,16 +6,13 @@ public class UI_SettingsTweakConvar : UI_SettingsTweakBase
 {
 	public string convarName;
 
-	public bool ApplyImmediatelyOnChange;
+	public bool ApplyImmediatelyOnChange = true;
 
-	public UnityEvent onValueChanged;
+	public UnityEvent onValueChanged = new UnityEvent();
 
 	public UI_SettingsTweakConvar()
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Expected O, but got Unknown
-		ApplyImmediatelyOnChange = true;
-		onValueChanged = new UnityEvent();
-		base._002Ector();
+		//IL_0012: Expected Obj, but got Unknown
 	}
 }

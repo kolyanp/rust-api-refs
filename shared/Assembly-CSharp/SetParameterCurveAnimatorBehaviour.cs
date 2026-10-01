@@ -10,6 +10,6 @@ public class SetParameterCurveAnimatorBehaviour : StateMachineBehaviour
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		((StateMachineBehaviour)this).OnStateUpdate(animator, stateInfo, layerIndex);
-		animator.SetFloat(FloatParameterName, ParameterCurve.Evaluate(((AnimatorStateInfo)(ref stateInfo)).normalizedTime));
+		animator.SetFloat(FloatParameterName, ParameterCurve.Evaluate(stateInfo.normalizedTime));
 	}
 }

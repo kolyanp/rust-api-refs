@@ -8,9 +8,11 @@ using UnityEngine.Assertions;
 
 public class Mortar : Cannon
 {
-	[Header("Mortar")]
+	public const string PlayerKillAchievement = "MORTAR_PLAYER_KILL";
+
 	[SerializeField]
-	private Vector2 minMaxDistance;
+	[Header("Mortar")]
+	private Vector2 minMaxDistance = new Vector2(0f, 200f);
 
 	[SerializeField]
 	private AnimationCurve distanceRandomnessCurve;
@@ -22,7 +24,7 @@ public class Mortar : Cannon
 	private AnimationCurve distanceRandomnessZCurve;
 
 	[SerializeField]
-	private Vector2 shotPitchRecoilMinMax;
+	private Vector2 shotPitchRecoilMinMax = new Vector2(0f, 2.5f);
 
 	[Header("Mortar Animation")]
 	public ChildAnimatorSubSystem mortarAnim;
@@ -43,8 +45,8 @@ public class Mortar : Cannon
 	[Header("Condition")]
 	private float conditionLossPerShot;
 
-	[SerializeField]
 	[Header("Recoil")]
+	[SerializeField]
 	private AnimationClip recoilLowAnimation;
 
 	[SerializeField]
@@ -66,8 +68,8 @@ public class Mortar : Cannon
 	[SerializeField]
 	private AnimationCurve handleMinMaxRotation;
 
-	[SerializeField]
 	[Header("Display")]
+	[SerializeField]
 	private MortarDisplay mortarDisplayPrefab;
 
 	[ClientVar(ClientAdmin = true)]
@@ -79,7 +81,7 @@ public class Mortar : Cannon
 		{
 			if (runInLateUpdate)
 			{
-				return base.isClient;
+				return isClient;
 			}
 			return false;
 		}
@@ -164,7 +166,7 @@ public class Mortar : Cannon
 			return 0f;
 		}
 		Quaternion val = Quaternion.LookRotation(aimDir, ((Component)this).transform.up);
-		return ((Quaternion)(ref val)).eulerAngles.x;
+		return val.eulerAngles.x;
 	}
 
 	protected override bool TryGetPitchOverride(float basePitch, out float overridePitch, out float overrideWeight)
@@ -219,7 +221,7 @@ public class Mortar : Cannon
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 randomFireOffset = GetRandomFireOffset();
 		float requiredVelocity = GetRequiredVelocity(randomFireOffset.y);
-		ItemModProjectile itemModProjectile = default(ItemModProjectile);
+		ItemModProjectile itemModProjectile = default;
 		if (((Component)magazine.ammoType).TryGetComponent<ItemModProjectile>(ref itemModProjectile) && FireProjectile(itemModProjectile.GetOverrideProjectile(this), FirePoint.position, FirePoint.forward, firingPlayer, 0.25f, requiredVelocity, out var projectile))
 		{
 			SERVER_OnProjectileFired(firingPlayer.Connection, firingPlayer);
@@ -267,7 +269,7 @@ public class Mortar : Cannon
 		}
 		Vector3 forward = FirePoint.forward;
 		Vector2 val = new Vector2(forward.x, forward.z);
-		float magnitude = ((Vector2)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		float num = forwardSpeed * magnitude;
 		if (!(num <= Mathf.Epsilon))
 		{
@@ -275,7 +277,7 @@ public class Mortar : Cannon
 			if (!(num2 <= Mathf.Epsilon))
 			{
 				Vector3 val2 = new Vector3(forward.x, 0f, forward.z);
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
+				Vector3 normalized = val2.normalized;
 				Vector3 val3 = Vector3.Cross(Vector3.up, normalized);
 				float num3 = 2f * lateralOffset / (num2 * num2);
 				projectile.StartLateralCurve(val3 * num3, num2);
@@ -298,8 +300,8 @@ public class Mortar : Cannon
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		GameObject obj = AmmoPrefab.Get();
-		ServerProjectile serverProjectile = ((obj != null) ? obj.GetComponent<ServerProjectile>() : null);
+		GameObject val = AmmoPrefab.Get();
+		ServerProjectile serverProjectile = ((val != null) ? val.GetComponent<ServerProjectile>() : null);
 		Vector3 initialVelocity = (((Object)(object)serverProjectile != (Object)null) ? serverProjectile.initialVelocity : Vector3.zero);
 		float gravityModifier = (((Object)(object)serverProjectile != (Object)null) ? serverProjectile.gravityModifier : 1f);
 		float num = (((Object)(object)serverProjectile != (Object)null) ? (serverProjectile.speed + Vector3.Dot(serverProjectile.initialVelocity, FirePoint.forward)) : 0f);
@@ -338,7 +340,7 @@ public class Mortar : Cannon
 		if (!(num <= Mathf.Epsilon))
 		{
 			Quaternion val = Quaternion.LookRotation(aimDir, ((Component)this).transform.up);
-			Vector3 eulerAngles = ((Quaternion)(ref val)).eulerAngles;
+			Vector3 eulerAngles = val.eulerAngles;
 			float num2 = Mathf.Clamp(Mathf.DeltaAngle(0f, eulerAngles.x) - num, pitchClamp.x, pitchClamp.y);
 			if (num2 < 0f)
 			{
@@ -386,13 +388,13 @@ public class Mortar : Cannon
 		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-		aimDir = ((Vector3)(ref aimDir)).normalized;
+		aimDir = aimDir.normalized;
 		Vector3 val = targetPos - throwPos;
 		Vector2 val2 = new Vector2(val.x, val.z);
-		float magnitude = ((Vector2)(ref val2)).magnitude;
+		float magnitude = val2.magnitude;
 		float y = val.y;
 		val2 = new Vector2(aimDir.x, aimDir.z);
-		float magnitude2 = ((Vector2)(ref val2)).magnitude;
+		float magnitude2 = val2.magnitude;
 		if (magnitude <= Mathf.Epsilon || magnitude2 <= Mathf.Epsilon)
 		{
 			return 0f;
@@ -451,8 +453,5 @@ public class Mortar : Cannon
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		minMaxDistance = new Vector2(0f, 200f);
-		shotPitchRecoilMinMax = new Vector2(0f, 2.5f);
-		base._002Ector();
 	}
 }

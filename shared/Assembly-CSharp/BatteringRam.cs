@@ -89,8 +89,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private Transform steeringWheel;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 steerAngle;
 
 	public VehicleModuleEngine.Engine engine;
@@ -109,8 +109,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[ServerVar(ClientAdmin = true, Default = "2", Help = "(Generated) Maximum building block upgrade grade (0=twig,1=wood,2=stone,3=metal,4=top tier) that the battering ram can damage; default 2 (stone)")]
 	public static int maxBuildingBlockGrade = 2;
 
-	[Header("Door")]
 	[SerializeField]
+	[Header("Door")]
 	private Transform doorTransform;
 
 	[SerializeField]
@@ -133,8 +133,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public GameObjectRef closeEndEffect;
 
-	[Tooltip("Effect played at local 0,0,0 in addition to the impact effects")]
 	[Header("Effects")]
+	[Tooltip("Effect played at local 0,0,0 in addition to the impact effects")]
 	public GameObjectRef hitEffect;
 
 	public VehicleLight[] vehicleLights;
@@ -169,7 +169,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	private BatteringRamHead _head;
 
-	private bool EngineIsOn => base.CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.On;
+	private bool EngineIsOn => CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.On;
 
 	private BatteringRamHead Head
 	{
@@ -196,7 +196,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.DriveWheelVelocity;
 			}
@@ -208,7 +208,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.SteerAngle;
 			}
@@ -220,7 +220,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carSettings.maxSteerAngle;
 			}
@@ -236,12 +236,12 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-			if (base.isServer)
+			if (isServer)
 			{
 				if (BaseNetworkable.UseParallelSaves)
 				{
 					Quaternion localRotMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in doorPhysHingeHandle);
-					return ((Quaternion)(ref localRotMT)).eulerAngles.x;
+					return localRotMT.eulerAngles.x;
 				}
 				return doorPhysicsHinge.localEulerAngles.x;
 			}
@@ -440,8 +440,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	protected void RPC_OpenDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanOpenDoor() && Interface.CallHook("OnSiegeWeaponDoorOpen", this, rpc.player) == null)
@@ -450,9 +450,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	protected void RPC_CloseDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanCloseDoor() && Interface.CallHook("OnSiegeWeaponDoorClose", this, rpc.player) == null)
@@ -524,10 +524,10 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = doorRigidBody.angularVelocity;
-		if (!(Mathf.Abs(((Vector3)(ref val)).magnitude) > 1f))
+		if (!(Mathf.Abs(val.magnitude) > 1f))
 		{
 			val = doorRigidBody.linearVelocity;
-			if (!(Mathf.Abs(((Vector3)(ref val)).magnitude) > 1f))
+			if (!(Mathf.Abs(val.magnitude) > 1f))
 			{
 				goto IL_004e;
 			}
@@ -551,7 +551,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 			return;
 		}
 		Quaternion localRotation = doorPhysicsHinge.localRotation;
-		if (Mathf.Abs(((Quaternion)(ref localRotation)).eulerAngles.x - 90f) <= 1f)
+		if (Mathf.Abs(localRotation.eulerAngles.x - 90f) <= 1f)
 		{
 			OnDoorClosed();
 			flagsUpdateScope.Set(Flags.Reserved14, b: false);
@@ -704,9 +704,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	protected override void ServerFlagsChanged(Flags old, Flags next)
 	{
 		base.ServerFlagsChanged(old, next);
-		if (base.isServer)
+		if (isServer)
 		{
-			if (base.CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.Off)
+			if (CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.Off)
 			{
 				RefreshLastUseTime();
 			}
@@ -730,7 +730,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	private void UpdateDamageFlags()
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		float num = base.healthFraction;
+		float num = healthFraction;
 		flagsUpdateScope.Set(Flags.Reserved6, b: false);
 		flagsUpdateScope.Set(Flags.Reserved10, b: false);
 		flagsUpdateScope.Set(Flags.Reserved8, b: false);
@@ -759,7 +759,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 			return;
 		}
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_Attack"));
-		Invoke(delegate
+		Invoke(() =>
 		{
 			ScanEntities(driver);
 		}, 2f);
@@ -767,7 +767,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		{
 			flagsUpdateScope.Set(Flags.Busy, b: true);
 		}
-		Invoke(delegate
+		Invoke(() =>
 		{
 			using FlagsUpdateScope flagsUpdateScope2 = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope2.Set(Flags.Busy, b: false);
@@ -805,7 +805,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 		bool arg = flag && Head.health - (float)headDamagePerHit <= Head.brokenHealthThreshold;
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_AttackResult"), flag, arg);
-		Invoke(delegate
+		Invoke(() =>
 		{
 			OnRamImpact(driver, entities);
 		}, 0.5f);
@@ -901,7 +901,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 			Vector3 val = baseEntity.ClosestPoint(hitPos);
 			hitInfo.HitPositionWorld = baseEntity.ClosestPoint(hitPos);
 			Vector3 val2 = hitPos - val;
-			hitInfo.HitNormalWorld = ((Vector3)(ref val2)).normalized;
+			hitInfo.HitNormalWorld = val2.normalized;
 			hitInfo.PointEnd = hitInfo.HitPositionWorld;
 			baseEntity.OnAttacked(hitInfo);
 			BaseVehicle baseVehicle = baseEntity as BaseVehicle;
@@ -964,7 +964,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 				rigidBody.WakeUp();
 			}
 			Vector3 val = Vector3.ProjectOnPlane(((Component)this).transform.forward, ((Component)this).transform.up);
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			rigidBody.AddForce(normalized * rigidBody.mass * 1f, (ForceMode)1);
 			rigidBody.AddForceAtPosition(Vector3.up * rigidBody.mass * 2.3f, centreOfMassTransform.position + ((Component)this).transform.forward * 1f, (ForceMode)1);
 		}
@@ -1031,7 +1031,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 				}
 			}
 		}
-		if (base.IsMovingOrOn && base.CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.On)
+		if (IsMovingOrOn && CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.On)
 		{
 			float fuelPerSecond = Mathf.Lerp(engine.idleFuelPerSec, engine.maxFuelPerSec, Mathf.Abs(GetThrottleInput()));
 			engineController.TickFuel(fuelPerSecond);
@@ -1067,16 +1067,16 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	private void UpdateClients()
 	{
-		byte num = (byte)((GetThrottleInput() + 1f) * 7f);
-		byte b = (byte)(GetBrakeInput() * 15f);
-		byte arg = (byte)(num + (b << 4));
+		byte b = (byte)((GetThrottleInput() + 1f) * 7f);
+		byte b2 = (byte)(GetBrakeInput() * 15f);
+		byte arg = (byte)(b + (b2 << 4));
 		byte arg2 = (byte)(GetFuelFraction() * 255f);
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_BatteringRamUpdate"), GetNetworkTime(), GetSteerInput(), arg, DriveWheelVelocity, arg2, DoorAngle);
 	}
 
 	protected override void ProcessCollision(Collision collision, Rigidbody ourRigidbody)
 	{
-		if (!base.isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)((ContactPoint)(ref collision.contacts[0])).thisCollider == (Object)(object)Head.serverCollider))
+		if (!isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.contacts[0].thisCollider == (Object)(object)Head.serverCollider))
 		{
 			base.ProcessCollision(collision, ourRigidbody);
 		}
@@ -1107,7 +1107,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public BatteringRamHead GetHead()
 	{
-		BatteringRamHead batteringRamHead = headRef.Get(base.isServer);
+		BatteringRamHead batteringRamHead = headRef.Get(isServer);
 		if (batteringRamHead.IsValid())
 		{
 			return batteringRamHead;
@@ -1154,7 +1154,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public float GetFuelFraction()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if (engineController == null)
 			{
@@ -1172,7 +1172,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public override float GetThrottleInput()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return Mathf.Clamp(throttleInput, -1f, 1f);
 		}
@@ -1181,7 +1181,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public override float GetBrakeInput()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return brakeInput;
 		}
@@ -1190,7 +1190,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public override float GetSteerInput()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return Mathf.Clamp(steerInput, -1f, 1f);
 		}
@@ -1235,7 +1235,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	public override bool IsWaterlogged()
 	{
 		bool result = false;
-		if (base.isServer)
+		if (isServer)
 		{
 			result = engineController.IsWaterlogged();
 		}

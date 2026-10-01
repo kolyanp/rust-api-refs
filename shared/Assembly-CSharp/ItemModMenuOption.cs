@@ -1,3 +1,4 @@
+using Facepunch.Rust;
 using UnityEngine;
 
 public class ItemModMenuOption : ItemMod
@@ -17,6 +18,9 @@ public class ItemModMenuOption : ItemMod
 	[Tooltip("If true, this is the command that will run when an item is 'selected' on the toolbar")]
 	public bool isPrimaryOption = true;
 
+	[Tooltip("If true, taking this option is reported to analytics. Off by default: most item actions are not worth a row each")]
+	public bool logAnalytics;
+
 	[Space(10f)]
 	[Header("Still shows when disabled")]
 	public bool showDisabled = true;
@@ -28,6 +32,10 @@ public class ItemModMenuOption : ItemMod
 		if (!(command != commandName) && actionTarget.CanDoAction(item, player))
 		{
 			actionTarget.DoAction(item, player);
+			if (logAnalytics && item.info.shortname == "milk")
+			{
+				Analytics.Azure.OnItemModMenuAction(player, commandName, item);
+			}
 		}
 	}
 

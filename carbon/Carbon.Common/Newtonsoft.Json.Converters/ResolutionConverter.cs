@@ -13,11 +13,11 @@ public class ResolutionConverter : JsonConverter
 		Resolution val = (Resolution)value;
 		writer.WriteStartObject();
 		writer.WritePropertyName("height");
-		writer.WriteValue(((Resolution)(ref val)).height);
+		writer.WriteValue(val.height);
 		writer.WritePropertyName("width");
-		writer.WriteValue(((Resolution)(ref val)).width);
+		writer.WriteValue(val.width);
 		writer.WritePropertyName("refreshRate");
-		writer.WriteValue(((Resolution)(ref val)).refreshRate);
+		writer.WriteValue(val.refreshRate);
 		writer.WriteEndObject();
 	}
 
@@ -31,10 +31,10 @@ public class ResolutionConverter : JsonConverter
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		JObject val = JObject.Load(reader);
-		Resolution val2 = default(Resolution);
-		((Resolution)(ref val2)).height = (int)val["height"];
-		((Resolution)(ref val2)).width = (int)val["width"];
-		((Resolution)(ref val2)).refreshRate = (int)val["refreshRate"];
+		Resolution val2 = default;
+		val2.height = (int)val["height"];
+		val2.width = (int)val["width"];
+		val2.refreshRate = (int)val["refreshRate"];
 		return val2;
 	}
 }

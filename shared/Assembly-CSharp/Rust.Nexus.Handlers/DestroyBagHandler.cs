@@ -7,6 +7,6 @@ public class DestroyBagHandler : BaseNexusRequestHandler<SleepingBagDestroyReque
 	protected override void Handle()
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		SleepingBag.DestroyBag(base.Request.userId, base.Request.sleepingBagId);
+		SleepingBag.DestroyBag(Request.userId, Request.sleepingBagId);
 	}
 }

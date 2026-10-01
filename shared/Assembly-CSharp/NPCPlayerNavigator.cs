@@ -35,7 +35,7 @@ public class NPCPlayerNavigator : BaseNavigator
 		{
 			return false;
 		}
-		if (base.CurrentNavigationType == NavigationType.NavMesh && (NPCPlayerEntity.IsDormant || !NPCPlayerEntity.syncPosition) && ((Behaviour)base.Agent).enabled)
+		if (CurrentNavigationType == NavigationType.NavMesh && (NPCPlayerEntity.IsDormant || !NPCPlayerEntity.syncPosition) && ((Behaviour)Agent).enabled)
 		{
 			SetDestination(NPCPlayerEntity.ServerPosition);
 			return false;
@@ -55,13 +55,13 @@ public class NPCPlayerNavigator : BaseNavigator
 		base.UpdatePositionAndRotation(moveToPosition, delta);
 		if (overrideFacingDirectionMode == OverrideFacingDirectionMode.None)
 		{
-			if (base.CurrentNavigationType == NavigationType.NavMesh)
+			if (CurrentNavigationType == NavigationType.NavMesh)
 			{
 				NPCPlayer nPCPlayerEntity = NPCPlayerEntity;
-				Vector3 desiredVelocityWS = base.Agent.desiredVelocityWS;
-				nPCPlayerEntity.SetAimDirection(((Vector3)(ref desiredVelocityWS)).normalized);
+				Vector3 desiredVelocityWS = Agent.desiredVelocityWS;
+				nPCPlayerEntity.SetAimDirection(desiredVelocityWS.normalized);
 			}
-			else if (base.CurrentNavigationType == NavigationType.AStar || base.CurrentNavigationType == NavigationType.Base)
+			else if (CurrentNavigationType == NavigationType.AStar || CurrentNavigationType == NavigationType.Base)
 			{
 				NPCPlayerEntity.SetAimDirection(Vector3Ex.Direction2D(moveToPosition, ((Component)this).transform.position));
 			}
@@ -121,7 +121,7 @@ public class NPCPlayerNavigator : BaseNavigator
 			return Vector3Ex.Direction2D(((Component)target).transform.position, ((Component)aimingPlayer).transform.position);
 		}
 		Vector3 val = TargetAimPositionOffset(target) - (((Object)(object)aimingPlayer.eyes != (Object)null) ? aimingPlayer.eyes.position : ((Component)aimingPlayer).transform.position);
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	private static Vector3 TargetAimPositionOffset(BaseEntity target)

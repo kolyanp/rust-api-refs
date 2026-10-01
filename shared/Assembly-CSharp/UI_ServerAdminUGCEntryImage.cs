@@ -10,8 +10,8 @@ public class UI_ServerAdminUGCEntryImage : UI_ServerAdminUGCEntry
 	[SerializeField]
 	private Vector2 originalImageSize;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject multiImageRoot;
 
 	[SerializeField]

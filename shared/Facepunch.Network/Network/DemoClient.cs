@@ -21,10 +21,10 @@ public class DemoClient : Client, IDisposable
 
 	public virtual void Dispose()
 	{
-		Reader obj = demoFile;
-		if (obj != null)
+		Reader val = demoFile;
+		if (val != null)
 		{
-			obj.Stop();
+			val.Stop();
 		}
 		demoFile = null;
 	}
@@ -52,7 +52,7 @@ public class DemoClient : Client, IDisposable
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		Packet val = demoFile.ReadPacket();
-		if (!((Packet)(ref val)).isValid)
+		if (!val.isValid)
 		{
 			return false;
 		}

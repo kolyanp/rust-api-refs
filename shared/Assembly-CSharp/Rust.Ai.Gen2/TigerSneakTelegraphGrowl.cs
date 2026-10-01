@@ -37,7 +37,7 @@ public class TigerSneakTelegraphGrowl : EntityComponent<BaseEntity>
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
 			InvokeRepeating(Tick, 0f, 0.5f);
 		}
@@ -46,7 +46,7 @@ public class TigerSneakTelegraphGrowl : EntityComponent<BaseEntity>
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
 			CancelInvoke(Tick);
 			UpdateTarget(null);
@@ -64,7 +64,7 @@ public class TigerSneakTelegraphGrowl : EntityComponent<BaseEntity>
 			float num = growlDistances[numGrowlsForCurrentPlayer];
 			if (!(Vector3.Distance(((Component)target).transform.position, ((Component)this).transform.position) > num) && !(status.timeNotWatched <= 0f) && !Trans_IsInTargetViewCone.IsInTargetViewCone(Senses, minAngle))
 			{
-				base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayTigerSneakTelegraphGrowl"));
+				baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayTigerSneakTelegraphGrowl"));
 				lastGrowlTime = Time.timeAsDouble;
 				numGrowlsForCurrentPlayer++;
 			}

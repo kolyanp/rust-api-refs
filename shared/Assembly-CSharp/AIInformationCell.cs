@@ -5,11 +5,11 @@ public class AIInformationCell
 {
 	public Bounds BoundingBox;
 
-	public List<AIInformationCell> NeighbourCells;
+	public List<AIInformationCell> NeighbourCells = new List<AIInformationCell>();
 
-	public AIInformationCellContents<AIMovePoint> MovePoints;
+	public AIInformationCellContents<AIMovePoint> MovePoints = new AIInformationCellContents<AIMovePoint>();
 
-	public AIInformationCellContents<AICoverPoint> CoverPoints;
+	public AIInformationCellContents<AICoverPoint> CoverPoints = new AIInformationCellContents<AICoverPoint>();
 
 	public int X { get; }
 
@@ -21,10 +21,6 @@ public class AIInformationCell
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		NeighbourCells = new List<AIInformationCell>();
-		MovePoints = new AIInformationCellContents<AIMovePoint>();
-		CoverPoints = new AIInformationCellContents<AICoverPoint>();
-		base._002Ector();
 		BoundingBox = bounds;
 		X = x;
 		Z = z;
@@ -45,7 +41,7 @@ public class AIInformationCell
 		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
 		Color color2 = Gizmos.color;
 		Gizmos.color = color;
-		Gizmos.DrawWireCube(((Bounds)(ref BoundingBox)).center, ((Bounds)(ref BoundingBox)).size * scale);
+		Gizmos.DrawWireCube(BoundingBox.center, BoundingBox.size * scale);
 		Gizmos.color = color2;
 		if (!points)
 		{
@@ -53,11 +49,11 @@ public class AIInformationCell
 		}
 		foreach (AIMovePoint item in MovePoints.Items)
 		{
-			Gizmos.DrawLine(((Bounds)(ref BoundingBox)).center, ((Component)item).transform.position);
+			Gizmos.DrawLine(BoundingBox.center, ((Component)item).transform.position);
 		}
 		foreach (AICoverPoint item2 in CoverPoints.Items)
 		{
-			Gizmos.DrawLine(((Bounds)(ref BoundingBox)).center, ((Component)item2).transform.position);
+			Gizmos.DrawLine(BoundingBox.center, ((Component)item2).transform.position);
 		}
 	}
 }

@@ -20,7 +20,7 @@ public class GenerateRiverLayout : ProceduralComponent
 
 	public const float TerrainOffset = -1.5f;
 
-	private static Quaternion rot90;
+	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
 
 	public override void Process(uint seed)
 	{
@@ -41,6 +41,7 @@ public class GenerateRiverLayout : ProceduralComponent
 		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
@@ -82,6 +83,7 @@ public class GenerateRiverLayout : ProceduralComponent
 		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02cc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02ea: Unknown result type (might be due to invalid IL or missing references)
@@ -92,6 +94,7 @@ public class GenerateRiverLayout : ProceduralComponent
 		//IL_0369: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03e2: Unknown result type (might be due to invalid IL or missing references)
@@ -168,16 +171,13 @@ public class GenerateRiverLayout : ProceduralComponent
 			{
 				num = 2;
 			}
-			Vector3[] array = (Vector3[])(object)new Vector3[4]
+			Vector3[] array = new Vector3[4]
 			{
 				new Vector3(-1f, 0f, -1f),
 				new Vector3(-1f, 0f, 1f),
 				new Vector3(1f, 0f, -1f),
 				new Vector3(1f, 0f, 1f)
 			};
-			Vector3 val2 = default(Vector3);
-			Line val6 = default(Line);
-			Vector3 val8 = default(Vector3);
 			for (float num2 = TerrainMeta.Center.z + 250f; num2 < TerrainMeta.Max.z - 750f; num2 += 5f)
 			{
 				for (float num3 = TerrainMeta.Center.x + 250f; num3 < TerrainMeta.Max.x - 750f; num3 += 5f)
@@ -185,7 +185,7 @@ public class GenerateRiverLayout : ProceduralComponent
 					Vector3[] array2 = array;
 					foreach (Vector3 val in array2)
 					{
-						((Vector3)(ref val2))._002Ector(val.x * num3, 0f, val.z * num2);
+						Vector3 val2 = new Vector3(val.x * num3, 0f, val.z * num2);
 						float num4 = (val2.y = heightMap.GetHeight(val2));
 						if (val2.y <= 15f)
 						{
@@ -218,7 +218,7 @@ public class GenerateRiverLayout : ProceduralComponent
 							continue;
 						}
 						Vector2 val4 = Vector3Ex.XZ2D(normal);
-						Vector2 normalized = ((Vector2)(ref val4)).normalized;
+						Vector2 normalized = val4.normalized;
 						float num5 = Vector3.Angle(Vector3.up, normal);
 						list2.Add(val2);
 						float baseRadius = 4f;
@@ -232,8 +232,8 @@ public class GenerateRiverLayout : ProceduralComponent
 							bool flag2 = false;
 							for (int l = 0; l < list2.Count - 10; l++)
 							{
-								((Line)(ref val6))._002Ector(list2[l], list2[l + 1]);
-								Vector3 val7 = ((Line)(ref val6)).ClosestPoint(val2);
+								Line val6 = new Line(list2[l], list2[l + 1]);
+								Vector3 val7 = val6.ClosestPoint(val2);
 								if (Vector3Ex.SqrMagnitude2D(val2 - val7) < 16900f)
 								{
 									flag2 = true;
@@ -255,7 +255,7 @@ public class GenerateRiverLayout : ProceduralComponent
 							float radius = PathList.GetRadius(num7, 0f, baseRadius, 0.75f, scaleWidthWithLength: true);
 							float radius2 = PathList.GetRadius(num7, num7, baseRadius, 0.75f, scaleWidthWithLength: true);
 							int num10 = Mathf.RoundToInt(radius2 / 4f);
-							((Vector3)(ref val8))._002Ector(val5.x, 0f, val5.y);
+							Vector3 val8 = new Vector3(val5.x, 0f, val5.y);
 							Vector3 val9 = val8 * (radius * 1.5f);
 							Vector3 val10 = val8 * (radius2 + 1f + 64f);
 							Vector3 val11 = rot90 * val8;
@@ -313,8 +313,8 @@ public class GenerateRiverLayout : ProceduralComponent
 							num5 = Vector3.Angle(Vector3.up, normal);
 							Vector2 val14 = normalized;
 							val4 = Vector3Ex.XZ2D(normal);
-							val4 = Vector2.Lerp(val14, ((Vector2)(ref val4)).normalized, 0.025f);
-							normalized = ((Vector2)(ref val4)).normalized;
+							val4 = Vector2.Lerp(val14, val4.normalized, 0.025f);
+							normalized = val4.normalized;
 							num4 = num8;
 						}
 						list2.Clear();
@@ -345,7 +345,7 @@ public class GenerateRiverLayout : ProceduralComponent
 						foreach (Vector3 val16 in points)
 						{
 							Vector3 val17 = val15 - val16;
-							if (((Vector3)(ref val17)).sqrMagnitude < 270400f)
+							if (val17.sqrMagnitude < 270400f)
 							{
 								list.RemoveAt(num17--);
 								flag4 = true;
@@ -428,6 +428,5 @@ public class GenerateRiverLayout : ProceduralComponent
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		rot90 = Quaternion.Euler(0f, 90f, 0f);
 	}
 }

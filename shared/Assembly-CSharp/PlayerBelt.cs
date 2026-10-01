@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class PlayerBelt
 {
-	public static int ClientAutoSelectSlot;
+	public static int ClientAutoSelectSlot = -1;
 
-	public static ItemId ClientAutoSelectItemId;
+	public static ItemId ClientAutoSelectItemId = default;
 
-	public static EncryptedValue<int> SelectedSlot;
+	public static EncryptedValue<int> SelectedSlot = -1;
 
 	protected BasePlayer player;
 
@@ -26,12 +26,12 @@ public class PlayerBelt
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		if (player.TryGetActiveShield(out var foundShield))
 		{
 			if (Interface.CallHook("OnPlayerActiveShieldDrop", player, foundShield) != null)
@@ -59,7 +59,7 @@ public class PlayerBelt
 			{
 				activeItem.SetParent(null);
 			}
-			player.svActiveItemID = default(ItemId);
+			player.svActiveItemID = default;
 			player.SendNetworkUpdate();
 			return;
 		}
@@ -73,7 +73,7 @@ public class PlayerBelt
 				droppedItem2.DroppedTime = DateTime.UtcNow;
 				Facepunch.Rust.Analytics.Azure.OnItemDropped(player, droppedItem2, DroppedItem.DropReasonEnum.Death);
 			}
-			player.svActiveItemID = default(ItemId);
+			player.svActiveItemID = default;
 			player.SendNetworkUpdate();
 		}
 	}
@@ -147,8 +147,5 @@ public class PlayerBelt
 	static PlayerBelt()
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		ClientAutoSelectSlot = -1;
-		ClientAutoSelectItemId = default(ItemId);
-		SelectedSlot = -1;
 	}
 }

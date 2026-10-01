@@ -158,7 +158,7 @@ public class F15 : BaseCombatEntity
 		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0255: Unknown result type (might be due to invalid IL or missing references)
 		//IL_025a: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -175,10 +175,10 @@ public class F15 : BaseCombatEntity
 				blockTurningFor = 6f;
 			}
 			blockTurningFor -= Time.fixedDeltaTime;
-			bool num = blockTurningFor > 0f;
+			bool flag = blockTurningFor > 0f;
 			movePosition.y = altitude;
 			Vector3 val = Vector3Ex.Direction(movePosition, ((Component)this).transform.position);
-			if (num)
+			if (flag)
 			{
 				Vector3 position = ((Component)this).transform.position;
 				position.y = altitude;
@@ -187,14 +187,14 @@ public class F15 : BaseCombatEntity
 			}
 			Vector3 forward = Vector3.Lerp(((Component)this).transform.forward, val, Time.fixedDeltaTime * turnRate);
 			((Component)this).transform.forward = forward;
-			bool flag = Vector3.Dot(((Component)this).transform.right, val) > 0.55f;
-			bool flag2 = Vector3.Dot(-((Component)this).transform.right, val) > 0.55f;
+			bool flag2 = Vector3.Dot(((Component)this).transform.right, val) > 0.55f;
+			bool flag3 = Vector3.Dot(-((Component)this).transform.right, val) > 0.55f;
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
-				flagsUpdateScope.Set(Flags.Reserved1, flag);
-				flagsUpdateScope.Set(Flags.Reserved2, flag2);
+				flagsUpdateScope.Set(Flags.Reserved1, flag2);
+				flagsUpdateScope.Set(Flags.Reserved2, flag3);
 			}
-			if (flag2 | flag)
+			if (flag3 | flag2)
 			{
 				turnSeconds += Time.fixedDeltaTime;
 			}

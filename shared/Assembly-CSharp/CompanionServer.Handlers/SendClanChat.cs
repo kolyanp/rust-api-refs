@@ -16,15 +16,15 @@ public class SendClanChat : BaseClanHandler<AppSendMessage>
 			((BaseHandler<AppSendMessage>)this).SendError("no_clan");
 			return;
 		}
-		string text = base.Proto.message?.Trim();
+		string text = Proto.message?.Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			SendSuccess();
 			return;
 		}
 		text = StringExtensions.Truncate(text, 256, "…");
-		string username = base.Player?.displayName ?? SingletonComponent<ServerMgr>.Instance.persistance.GetPlayerName(base.UserId) ?? "[unknown]";
-		if (await Chat.sayAs(Chat.ChatChannel.Clan, base.UserId, username, text, base.Player))
+		string username = Player?.displayName ?? SingletonComponent<ServerMgr>.Instance.persistance.GetPlayerName(UserId) ?? "[unknown]";
+		if (await Chat.sayAs(Chat.ChatChannel.Clan, UserId, username, text, Player))
 		{
 			SendSuccess();
 		}

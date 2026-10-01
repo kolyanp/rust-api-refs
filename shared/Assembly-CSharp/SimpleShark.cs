@@ -173,12 +173,12 @@ public class SimpleShark : BaseCombatEntity
 				entity.Startle();
 			}
 			float num = Vector3.Distance(entity.GetTarget().eyes.position, ((Component)entity).transform.position);
-			bool num2 = num < 4f;
+			bool flag = num < 4f;
 			if (entity.CanAttack() && num <= 2f)
 			{
 				entity.DoAttack();
 			}
-			if (!num2)
+			if (!flag)
 			{
 				Vector3 val = Vector3Ex.Direction(entity.GetTarget().eyes.position, ((Component)entity).transform.position);
 				Vector3 point = target.eyes.position + val * 10f;
@@ -312,14 +312,14 @@ public class SimpleShark : BaseCombatEntity
 		(float, float) waterAndTerrainSurface = WaterLevel.GetWaterAndTerrainSurface(center, waves: false, volumes: false);
 		float item = waterAndTerrainSurface.Item1;
 		float item2 = waterAndTerrainSurface.Item2;
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		for (int i = 0; i < num2; i++)
 		{
 			num += 360f / (float)num2;
 			float radius2 = 1f;
 			Vector3 pointOnCircle = BasePathFinder.GetPointOnCircle(center, radius2, num);
 			Vector3 val = Vector3Ex.Direction(pointOnCircle, center);
-			pointOnCircle = ((!Physics.SphereCast(center, obstacleDetectionRadius, val, ref val2, radius + staggerOffset, num3)) ? (center + val * radius) : (center + val * (((RaycastHit)(ref val2)).distance - 6f)));
+			pointOnCircle = ((!Physics.SphereCast(center, obstacleDetectionRadius, val, ref val2, radius + staggerOffset, num3)) ? (center + val * radius) : (center + val * (val2.distance - 6f)));
 			if (staggerOffset != 0f)
 			{
 				pointOnCircle += val * Random.Range(0f - staggerOffset, staggerOffset);
@@ -366,14 +366,14 @@ public class SimpleShark : BaseCombatEntity
 		(float, float) waterAndTerrainSurface = WaterLevel.GetWaterAndTerrainSurface(center, waves: false, volumes: false);
 		float item = waterAndTerrainSurface.Item1;
 		float item2 = waterAndTerrainSurface.Item2;
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		for (int i = 0; i < num2; i++)
 		{
 			num += 360f / (float)num2;
 			float radius2 = radius * 2f;
 			Vector3 pointOnCircle = BasePathFinder.GetPointOnCircle(center, radius2, num);
 			Vector3 val = Vector3Ex.Direction(center, pointOnCircle);
-			pointOnCircle = ((!Physics.SphereCast(pointOnCircle, obstacleDetectionRadius, val, ref val2, radius + staggerOffset, num3)) ? (pointOnCircle + val * radius) : (((RaycastHit)(ref val2)).point - val * 6f));
+			pointOnCircle = ((!Physics.SphereCast(pointOnCircle, obstacleDetectionRadius, val, ref val2, radius + staggerOffset, num3)) ? (pointOnCircle + val * radius) : (val2.point - val * 6f));
 			if (staggerOffset != 0f)
 			{
 				pointOnCircle += val * Random.Range(0f - staggerOffset, staggerOffset);
@@ -391,7 +391,7 @@ public class SimpleShark : BaseCombatEntity
 		base.ServerInit();
 		if (disable)
 		{
-			Invoke(base.KillMessage, 0.01f);
+			Invoke(KillMessage, 0.01f);
 			return;
 		}
 		((Component)this).transform.position = WaterClamp(((Component)this).transform.position);
@@ -425,9 +425,9 @@ public class SimpleShark : BaseCombatEntity
 		}
 		if (disable)
 		{
-			if (!IsInvoking(base.KillMessage))
+			if (!IsInvoking(KillMessage))
 			{
-				Invoke(base.KillMessage, 0.01f);
+				Invoke(KillMessage, 0.01f);
 			}
 		}
 		else
@@ -536,9 +536,9 @@ public class SimpleShark : BaseCombatEntity
 
 	public override void OnDied(HitInfo hitInfo = null)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
-			if (Rust.GameInfo.HasAchievements && hitInfo != null && (Object)(object)hitInfo.InitiatorPlayer != (Object)null && !hitInfo.InitiatorPlayer.IsNpc && (Object)(object)hitInfo.Weapon != (Object)null && hitInfo.Weapon.ShortPrefabName.Contains("speargun"))
+			if (GameInfo.HasAchievements && hitInfo != null && (Object)(object)hitInfo.InitiatorPlayer != (Object)null && !hitInfo.InitiatorPlayer.IsNpc && (Object)(object)hitInfo.Weapon != (Object)null && hitInfo.Weapon.ShortPrefabName.Contains("speargun"))
 			{
 				hitInfo.InitiatorPlayer.stats.Add("shark_speargun_kills", 1, Stats.All);
 				hitInfo.InitiatorPlayer.stats.Save(forceSteamSave: true);
@@ -549,7 +549,7 @@ public class SimpleShark : BaseCombatEntity
 				baseCorpse.Spawn();
 				baseCorpse.TakeChildren(this);
 			}
-			Invoke(base.KillMessage, 0.5f);
+			Invoke(KillMessage, 0.5f);
 		}
 		base.OnDied(hitInfo);
 	}
@@ -731,6 +731,7 @@ public class SimpleShark : BaseCombatEntity
 		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
@@ -744,35 +745,34 @@ public class SimpleShark : BaseCombatEntity
 		Vector3 forward = ((Component)this).transform.forward;
 		Vector3 position = ((Component)this).transform.position;
 		int num = 1503764737;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.SphereCast(position, obstacleDetectionRadius, forward, ref val, obstacleDetectionRange, num))
 		{
-			Vector3 point = ((RaycastHit)(ref val)).point;
+			Vector3 point = val.point;
 			Vector3 val2 = Vector3.zero;
 			Vector3 val3 = Vector3.zero;
-			RaycastHit val4 = default(RaycastHit);
+			RaycastHit val4 = default;
 			if (Physics.SphereCast(position + Vector3.down * 0.25f + ((Component)this).transform.right * 0.25f, obstacleDetectionRadius, forward, ref val4, obstacleDetectionRange, num))
 			{
-				val2 = ((RaycastHit)(ref val4)).point;
+				val2 = val4.point;
 			}
-			RaycastHit val5 = default(RaycastHit);
+			RaycastHit val5 = default;
 			if (Physics.SphereCast(position + Vector3.down * 0.25f - ((Component)this).transform.right * 0.25f, obstacleDetectionRadius, forward, ref val5, obstacleDetectionRange, num))
 			{
-				val3 = ((RaycastHit)(ref val5)).point;
+				val3 = val5.point;
 			}
 			if (val2 != Vector3.zero && val3 != Vector3.zero)
 			{
-				Plane val6 = default(Plane);
-				((Plane)(ref val6))._002Ector(point, val2, val3);
-				Vector3 normal = ((Plane)(ref val6)).normal;
+				Plane val6 = new Plane(point, val2, val3);
+				Vector3 normal = val6.normal;
 				if (normal != Vector3.zero)
 				{
-					((RaycastHit)(ref val)).normal = normal;
+					val.normal = normal;
 				}
 			}
-			cachedObstacleNormal = ((RaycastHit)(ref val)).normal;
-			cachedObstacleDistance = ((RaycastHit)(ref val)).distance;
-			obstacleAvoidanceScale = 1f - Mathf.InverseLerp(2f, obstacleDetectionRange * 0.75f, ((RaycastHit)(ref val)).distance);
+			cachedObstacleNormal = val.normal;
+			cachedObstacleDistance = val.distance;
+			obstacleAvoidanceScale = 1f - Mathf.InverseLerp(2f, obstacleDetectionRange * 0.75f, val.distance);
 		}
 		else
 		{
@@ -840,7 +840,7 @@ public class SimpleShark : BaseCombatEntity
 				val3 = ((Component)this).transform.right;
 			}
 			val = val3 * obstacleAvoidanceScale;
-			((Vector3)(ref val)).Normalize();
+			val.Normalize();
 		}
 		if (val != Vector3.zero)
 		{
@@ -876,7 +876,7 @@ public class SimpleShark : BaseCombatEntity
 
 	public void Update()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			Think(Time.deltaTime);
 		}

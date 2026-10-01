@@ -22,10 +22,10 @@
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="System.Data">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Data.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Data.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Console" />
     <Reference Include="Facepunch.Network" />
@@ -43,12 +43,12 @@
     </Reference>
     <Reference Include="Mono.Cecil" />
     <Reference Include="System.Collections.Immutable">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Collections.Immutable.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Sqlite" />
     <Reference Include="Facepunch.Unity" />
     <Reference Include="System.IO.Compression">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.IO.Compression.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Compression.dll</HintPath>
     </Reference>
     <Reference Include="Rust.Localization" />
     <Reference Include="UnityEngine.PhysicsModule" />
@@ -63,7 +63,7 @@
     <Reference Include="Assembly-CSharp-firstpass" />
     <Reference Include="ICSharpCode.Decompiler" />
     <Reference Include="System.Reflection.Metadata">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Reflection.Metadata.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Crypto" />
     <Reference Include="ZString" />

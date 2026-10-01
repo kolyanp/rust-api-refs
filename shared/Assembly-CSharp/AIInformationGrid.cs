@@ -49,6 +49,7 @@ public class AIInformationGrid : MonoBehaviour
 		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
 		AIInformationZone component = ((Component)this).GetComponent<AIInformationZone>();
@@ -58,31 +59,30 @@ public class AIInformationGrid : MonoBehaviour
 			return;
 		}
 		BoundingBox = component.bounds;
-		((Bounds)(ref BoundingBox)).center = ((Component)this).transform.position + ((Bounds)(ref component.bounds)).center + new Vector3(0f, ((Bounds)(ref BoundingBox)).extents.y, 0f);
+		BoundingBox.center = ((Component)this).transform.position + component.bounds.center + new Vector3(0f, BoundingBox.extents.y, 0f);
 		AIPoint[] componentsInChildren = ((Component)this).GetComponentsInChildren<AIPoint>(true);
 		foreach (AIPoint aIPoint in componentsInChildren)
 		{
-			((Bounds)(ref BoundingBox)).Encapsulate(((Component)aIPoint).transform.position);
+			BoundingBox.Encapsulate(((Component)aIPoint).transform.position);
 		}
-		float num = ((Bounds)(ref BoundingBox)).extents.x * 2f;
-		float num2 = ((Bounds)(ref BoundingBox)).extents.z * 2f;
+		float num = BoundingBox.extents.x * 2f;
+		float num2 = BoundingBox.extents.z * 2f;
 		xCellCount = (int)Mathf.Ceil(num / (float)CellSize);
 		zCellCount = (int)Mathf.Ceil(num2 / (float)CellSize);
 		Cells = new AIInformationCell[xCellCount * zCellCount];
-		Vector3 val = (origin = ((Bounds)(ref BoundingBox)).min);
-		val.x = ((Bounds)(ref BoundingBox)).min.x + (float)CellSize / 2f;
-		val.z = ((Bounds)(ref BoundingBox)).min.z + (float)CellSize / 2f;
-		Bounds bounds = default(Bounds);
+		Vector3 val = (origin = BoundingBox.min);
+		val.x = BoundingBox.min.x + (float)CellSize / 2f;
+		val.z = BoundingBox.min.z + (float)CellSize / 2f;
 		for (int j = 0; j < zCellCount; j++)
 		{
 			for (int k = 0; k < xCellCount; k++)
 			{
 				Vector3 val2 = val;
-				((Bounds)(ref bounds))._002Ector(val2, new Vector3((float)CellSize, ((Bounds)(ref BoundingBox)).extents.y * 2f, (float)CellSize));
+				Bounds bounds = new Bounds(val2, new Vector3((float)CellSize, BoundingBox.extents.y * 2f, (float)CellSize));
 				Cells[GetIndex(k, j)] = new AIInformationCell(bounds, ((Component)this).gameObject, k, j);
 				val.x += CellSize;
 			}
-			val.x = ((Bounds)(ref BoundingBox)).min.x + (float)CellSize / 2f;
+			val.x = BoundingBox.min.x + (float)CellSize / 2f;
 			val.z += CellSize;
 		}
 	}

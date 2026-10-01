@@ -9,6 +9,12 @@ public class HorseCorpse : LootableCorpse
 
 	public override string playerName => lootPanelTitle.translated;
 
+	public override bool FillHeadData(HeadEntity head)
+	{
+		head.AssignHorseBreed(breedIndex);
+		return true;
+	}
+
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);

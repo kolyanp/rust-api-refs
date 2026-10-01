@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using ConVar;
 using Rust.Ai.Gen2;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai;
 
@@ -41,7 +40,7 @@ public class AiLocationManager : FacepunchBehaviour, IServerComponent
 	private void Awake()
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		Managers.Add(this);
 		if (!SnapCoverPointsToGround)
 		{
@@ -52,7 +51,7 @@ public class AiLocationManager : FacepunchBehaviour, IServerComponent
 		{
 			if (RustNavMeshHelpers.SamplePosition(((Component)aICoverPoint).transform.position, out var hitWS, 4f, -1))
 			{
-				((Component)aICoverPoint).transform.position = ((NavMeshHit)(ref hitWS)).position;
+				((Component)aICoverPoint).transform.position = hitWS.position;
 			}
 		}
 	}
@@ -85,7 +84,7 @@ public class AiLocationManager : FacepunchBehaviour, IServerComponent
 		foreach (PathInterestNode patrolPoint in patrolPoints)
 		{
 			Vector3 val = ((Component)patrolPoint).transform.position - from;
-			float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+			float sqrMagnitude = val.sqrMagnitude;
 			if (sqrMagnitude >= num && sqrMagnitude <= num2)
 			{
 				return patrolPoint;
@@ -126,7 +125,7 @@ public class AiLocationManager : FacepunchBehaviour, IServerComponent
 				continue;
 			}
 			Vector3 val = ((Component)pathInterestNode).transform.position - from;
-			float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+			float sqrMagnitude = val.sqrMagnitude;
 			if (sqrMagnitude >= num && sqrMagnitude <= num2)
 			{
 				pathInterestNode.NextVisitTime = Time.time + AI.npc_patrol_point_cooldown;

@@ -4,9 +4,9 @@ namespace FIMSpace.FProceduralAnimation;
 
 public class LAM_StabilizePoseOnIdle : LegsAnimatorControlModuleBase
 {
-	private Vector3 currentHeightAdjust;
+	private Vector3 currentHeightAdjust = Vector3.zero;
 
-	private Vector3 sd_currentHeightAdjust;
+	private Vector3 sd_currentHeightAdjust = Vector3.zero;
 
 	private LegsAnimator.Variable _blendV;
 
@@ -80,19 +80,19 @@ public class LAM_StabilizePoseOnIdle : LegsAnimatorControlModuleBase
 		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
-		if (base.LA.Legs.Count < 2)
+		if (LA.Legs.Count < 2)
 		{
 			return;
 		}
 		bool flag = false;
-		if (!base.LA.IsMoving)
+		if (!LA.IsMoving)
 		{
 			flag = true;
-			if (base.LA.UseGluing)
+			if (LA.UseGluing)
 			{
-				for (int i = 0; i < base.LA.Legs.Count; i++)
+				for (int i = 0; i < LA.Legs.Count; i++)
 				{
-					if (!base.LA.Legs[i].G_Attached)
+					if (!LA.Legs[i].G_Attached)
 					{
 						flag = false;
 						break;
@@ -102,30 +102,30 @@ public class LAM_StabilizePoseOnIdle : LegsAnimatorControlModuleBase
 		}
 		if (flag)
 		{
-			LegsAnimator.Leg leg = base.LA.Legs[0];
+			LegsAnimator.Leg leg = LA.Legs[0];
 			Vector3 val = leg._PreviousFinalIKPos + leg.AnkleH.Bone.TransformVector(leg.AnkleToFeetEnd * 0.6f);
-			for (int j = 1; j < base.LA.Legs.Count; j++)
+			for (int j = 1; j < LA.Legs.Count; j++)
 			{
-				leg = base.LA.Legs[j];
+				leg = LA.Legs[j];
 				Vector3 val2 = leg._PreviousFinalIKPos + leg.AnkleH.Bone.TransformVector(leg.AnkleToFeetEnd * 0.6f);
 				val = Vector3.LerpUnclamped(val, val2, 0.5f);
 			}
-			val = base.LA.ToRootLocalSpace(val);
+			val = LA.ToRootLocalSpace(val);
 			val.y = 0f;
-			Vector3 val3 = base.LA.ToRootLocalSpace(base.LA._LastAppliedHipsFinalPosition);
+			Vector3 val3 = LA.ToRootLocalSpace(LA._LastAppliedHipsFinalPosition);
 			val3.y = 0f;
 			val -= val3;
-			val = base.LA.RootToWorldSpaceVec(val);
-			currentHeightAdjust = Vector3.SmoothDamp(currentHeightAdjust, val, ref sd_currentHeightAdjust, 0.05f + _adjSpeed.GetFloat() * 0.3f, 1000000f, base.LA.DeltaTime);
+			val = LA.RootToWorldSpaceVec(val);
+			currentHeightAdjust = Vector3.SmoothDamp(currentHeightAdjust, val, ref sd_currentHeightAdjust, 0.05f + _adjSpeed.GetFloat() * 0.3f, 1000000f, LA.DeltaTime);
 		}
 		else
 		{
-			currentHeightAdjust = Vector3.SmoothDamp(currentHeightAdjust, Vector3.zero, ref sd_currentHeightAdjust, 0.05f + _adjSpeed.GetFloat() * 0.3f, 1000000f, base.LA.DeltaTime);
+			currentHeightAdjust = Vector3.SmoothDamp(currentHeightAdjust, Vector3.zero, ref sd_currentHeightAdjust, 0.05f + _adjSpeed.GetFloat() * 0.3f, 1000000f, LA.DeltaTime);
 		}
-		Transform hips = base.LA.Hips;
-		hips.position += currentHeightAdjust * base.EffectBlend * _blendV.GetFloat() * base.LA._MainBlend;
-		Vector3 val4 = base.LA.BaseTransform.position + currentHeightAdjust + Vector3.up * 2.4f;
-		val4.y = base.LA._LastAppliedHipsFinalPosition.y + 2f;
+		Transform hips = LA.Hips;
+		hips.position += currentHeightAdjust * EffectBlend * _blendV.GetFloat() * LA._MainBlend;
+		Vector3 val4 = LA.BaseTransform.position + currentHeightAdjust + Vector3.up * 2.4f;
+		val4.y = LA._LastAppliedHipsFinalPosition.y + 2f;
 	}
 
 	public LAM_StabilizePoseOnIdle()
@@ -134,8 +134,5 @@ public class LAM_StabilizePoseOnIdle : LegsAnimatorControlModuleBase
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		currentHeightAdjust = Vector3.zero;
-		sd_currentHeightAdjust = Vector3.zero;
-		base._002Ector();
 	}
 }

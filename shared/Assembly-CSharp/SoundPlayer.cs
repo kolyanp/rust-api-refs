@@ -4,7 +4,7 @@ public class SoundPlayer : BaseMonoBehaviour, IClientComponent
 {
 	public SoundDefinition soundDefinition;
 
-	public bool playImmediately;
+	public bool playImmediately = true;
 
 	public float minStartDelay;
 
@@ -14,14 +14,11 @@ public class SoundPlayer : BaseMonoBehaviour, IClientComponent
 
 	public bool pending;
 
-	public Vector3 soundOffset;
+	public Vector3 soundOffset = Vector3.zero;
 
 	public SoundPlayer()
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		playImmediately = true;
-		soundOffset = Vector3.zero;
-		base._002Ector();
 	}
 }

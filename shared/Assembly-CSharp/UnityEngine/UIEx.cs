@@ -17,12 +17,12 @@ public static class UIEx
 		float num = x;
 		float x2 = rect.pivot.x;
 		Rect rect2 = rect.rect;
-		x = num + x2 * ((Rect)(ref rect2)).width;
+		x = num + x2 * rect2.width;
 		ref float y = ref localPos.y;
 		float num2 = y;
 		float y2 = rect.pivot.y;
 		rect2 = rect.rect;
-		y = num2 + y2 * ((Rect)(ref rect2)).height;
+		y = num2 + y2 * rect2.height;
 		return localPos;
 	}
 
@@ -30,6 +30,7 @@ public static class UIEx
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
@@ -42,6 +43,7 @@ public static class UIEx
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
@@ -54,19 +56,17 @@ public static class UIEx
 		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
 		Transform transform = ((Component)scrollrect).transform;
 		RectTransform val = (RectTransform)(object)((transform is RectTransform) ? transform : null);
-		Vector2 val2 = default(Vector2);
-		((Vector2)(ref val2))._002Ector(((Transform)scrollrect.content).localScale.x, ((Transform)scrollrect.content).localScale.y);
+		Vector2 val2 = new Vector2(((Transform)scrollrect.content).localScale.x, ((Transform)scrollrect.content).localScale.y);
 		pos.x *= val2.x;
 		pos.y *= val2.y;
 		Rect rect = scrollrect.content.rect;
-		float num = ((Rect)(ref rect)).width * val2.x;
+		float num = rect.width * val2.x;
 		rect = val.rect;
-		float num2 = num - ((Rect)(ref rect)).width;
+		float num2 = num - rect.width;
 		rect = scrollrect.content.rect;
-		float num3 = ((Rect)(ref rect)).height * val2.y;
+		float num3 = rect.height * val2.y;
 		rect = val.rect;
-		Vector2 val3 = default(Vector2);
-		((Vector2)(ref val3))._002Ector(num2, num3 - ((Rect)(ref rect)).height);
+		Vector2 val3 = new Vector2(num2, num3 - rect.height);
 		pos.x = pos.x / val3.x + scrollrect.content.pivot.x;
 		pos.y = pos.y / val3.y + scrollrect.content.pivot.y;
 		if ((int)scrollrect.movementType != 0)

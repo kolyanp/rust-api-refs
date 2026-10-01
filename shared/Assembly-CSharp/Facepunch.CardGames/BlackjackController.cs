@@ -78,7 +78,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 	{
 		get
 		{
-			if (!base.HasRoundInProgressOrEnding)
+			if (!HasRoundInProgressOrEnding)
 			{
 				return false;
 			}
@@ -121,7 +121,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		{
 			return false;
 		}
-		if (base.State == CardGameState.InGameRound && !pData.HasAvailableInputs)
+		if (State == CardGameState.InGameRound && !pData.HasAvailableInputs)
 		{
 			foreach (CardPlayerData item in PlayersInRound())
 			{
@@ -268,11 +268,11 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 
 	protected override CardPlayerData GetNewCardPlayerData(int mountIndex)
 	{
-		if (base.IsServer)
+		if (IsServer)
 		{
-			return new CardPlayerDataBlackjack(base.ScrapItemID, base.Owner.GetPlayerStorage, mountIndex, base.IsServer);
+			return new CardPlayerDataBlackjack(ScrapItemID, Owner.GetPlayerStorage, mountIndex, IsServer);
 		}
-		return new CardPlayerDataBlackjack(mountIndex, base.IsServer);
+		return new CardPlayerDataBlackjack(mountIndex, IsServer);
 	}
 
 	public bool TryGetCardPlayerDataBlackjack(int index, out CardPlayerDataBlackjack cpBlackjack)
@@ -304,7 +304,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		for (int i = 0; i < dealerCards.Count; i++)
 		{
 			PlayingCard playingCard = dealerCards[i];
-			if (base.HasActiveRound && i == 0)
+			if (HasActiveRound && i == 0)
 			{
 				syncData.blackjack.dealerCards.Add(-1);
 			}
@@ -368,7 +368,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		{
 			return (int)blackjackInputOption;
 		}
-		if (!base.HasActiveRound)
+		if (!HasActiveRound)
 		{
 			return (int)blackjackInputOption;
 		}
@@ -412,10 +412,10 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		{
 			dealerCardsVal = 0;
 		}
-		base.resultInfo.winningScore = dealerCardsVal;
+		resultInfo.winningScore = dealerCardsVal;
 		if (NumPlayersInCurrentRound() == 0)
 		{
-			base.Owner.ClientRPC(RpcTarget.NetworkGroup("OnResultsDeclared"), base.resultInfo);
+			Owner.ClientRPC(RpcTarget.NetworkGroup("OnResultsDeclared"), resultInfo);
 			return;
 		}
 		bool dealerHasBlackjack = HasBlackjack(dealerCards);
@@ -439,7 +439,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 			PayOut(item, num);
 		}
 		ClearPot();
-		base.Owner.ClientRPC(RpcTarget.NetworkGroup("OnResultsDeclared"), base.resultInfo);
+		Owner.ClientRPC(RpcTarget.NetworkGroup("OnResultsDeclared"), resultInfo);
 		BlackjackRoundResult CheckResult(List<PlayingCard> cards, int betAmount, out int reference)
 		{
 			if (cards.Count == 0)
@@ -453,9 +453,9 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 				reference = 0;
 				return BlackjackRoundResult.Bust;
 			}
-			if (optimalCardsValue > base.resultInfo.winningScore)
+			if (optimalCardsValue > resultInfo.winningScore)
 			{
-				base.resultInfo.winningScore = optimalCardsValue;
+				resultInfo.winningScore = optimalCardsValue;
 			}
 			BlackjackRoundResult blackjackRoundResult = BlackjackRoundResult.Loss;
 			bool flag = HasBlackjack(cards);
@@ -504,7 +504,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		{
 			return 0;
 		}
-		storage.inventory.AddItem(base.Owner.scrapItemDef, winnings, 0uL, ItemContainer.LimitStack.None);
+		storage.inventory.AddItem(ItemManager.Items.Scrap, winnings, 0uL, ItemContainer.LimitStack.None);
 		return winnings;
 	}
 
@@ -524,7 +524,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		}
 		BlackjackInputOption selectedMove = (BlackjackInputOption)input;
 		CardPlayerDataBlackjack pdBlackjack = (CardPlayerDataBlackjack)pData;
-		if (!base.HasActiveRound)
+		if (!HasActiveRound)
 		{
 			LastActionTarget = pData.UserID;
 			LastAction = selectedMove;
@@ -554,7 +554,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		{
 			StartTurnTimer(pData, MaxTurnTime);
 		}
-		base.Owner.SendNetworkUpdate();
+		Owner.SendNetworkUpdate();
 	}
 
 	private bool DoInRoundPlayerInput(CardPlayerDataBlackjack pdBlackjack, ref BlackjackInputOption selectedMove, ref int selectedMoveValue)
@@ -580,7 +580,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		case BlackjackInputOption.Split:
 		{
 			PlayingCard playingCard = pdBlackjack.Cards[1];
-			bool num = playingCard.Rank == Rank.Ace;
+			bool flag = playingCard.Rank == Rank.Ace;
 			pdBlackjack.SplitCards.Add(playingCard);
 			pdBlackjack.Cards.Remove(playingCard);
 			cardStack.TryTakeCard(out var card2);
@@ -588,7 +588,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 			cardStack.TryTakeCard(out card2);
 			pdBlackjack.SplitCards.Add(card2);
 			selectedMoveValue = TryMakeBet(pdBlackjack, pdBlackjack.betThisRound, BetType.Split);
-			if (num)
+			if (flag)
 			{
 				pdBlackjack.SetHasCompletedTurn(hasActed: true);
 			}
@@ -731,15 +731,15 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		blackjackInputOption = BlackjackInputOption.Abandon;
 		ReceivedInputFromPlayer(pData, (int)blackjackInputOption, countAsAction: true, 0, playerInitiated: false);
 		pData.ClearAllData();
-		if (base.HasActiveRound && NumPlayersInCurrentRound() < MinPlayers)
+		if (HasActiveRound && NumPlayersInCurrentRound() < MinPlayers)
 		{
 			BeginRoundEnd();
 		}
 		if (pData.HasUserInGame)
 		{
-			base.Owner.ClientRPC(RpcTarget.NetworkGroup("ClientOnPlayerLeft"), pData.UserID);
+			Owner.ClientRPC(RpcTarget.NetworkGroup("ClientOnPlayerLeft"), pData.UserID);
 		}
-		base.Owner.SendNetworkUpdate();
+		Owner.SendNetworkUpdate();
 	}
 
 	protected override void StartNextCycle()
@@ -755,7 +755,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 			StartTurnTimer(item, MaxTurnTime);
 		}
 		UpdateAllAvailableInputs();
-		base.Owner.SendNetworkUpdate();
+		Owner.SendNetworkUpdate();
 	}
 
 	protected override bool ShouldEndCycle()
@@ -772,7 +772,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 
 	protected override void EndCycle()
 	{
-		CardPlayerData[] playerData = base.PlayerData;
+		CardPlayerData[] playerData = PlayerData;
 		foreach (CardPlayerData obj in playerData)
 		{
 			obj.CancelTurnTimer();
@@ -816,7 +816,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		ServerPlaySound(CardGameSounds.SoundType.Draw);
 		if (NumPlayersInCurrentRound() > 0 && !flag && !flag2)
 		{
-			base.Owner.Invoke(DealerPlayInvoke, 1f);
+			Owner.Invoke(DealerPlayInvoke, 1f);
 			BeginRoundEnd();
 		}
 		else
@@ -833,8 +833,8 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 			cardStack.TryTakeCard(out var card);
 			dealerCards.Add(card);
 			ServerPlaySound(CardGameSounds.SoundType.Draw);
-			base.Owner.Invoke(DealerPlayInvoke, 1f);
-			base.Owner.SendNetworkUpdate();
+			Owner.Invoke(DealerPlayInvoke, 1f);
+			Owner.SendNetworkUpdate();
 		}
 		else
 		{
@@ -844,7 +844,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 
 	private void DealInitialCards()
 	{
-		if (!base.HasActiveRound)
+		if (!HasActiveRound)
 		{
 			return;
 		}

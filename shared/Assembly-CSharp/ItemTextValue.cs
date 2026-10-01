@@ -38,13 +38,13 @@ public class ItemTextValue : MonoBehaviour
 		}
 		if (asPercentage)
 		{
-			Text obj = text;
-			obj.text += " %";
+			Text val2 = text;
+			val2.text += " %";
 		}
 		if (suffix != "" && !float.IsPositiveInfinity(val))
 		{
-			Text obj2 = text;
-			obj2.text += suffix;
+			Text val3 = text;
+			val3.text += suffix;
 		}
 		bool flag = val > 0f;
 		if (negativestat)

@@ -30,7 +30,7 @@ public class IronsightAimPoint : MonoBehaviour
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		Gizmos.color = Color.cyan;
 		Vector3 val = targetPoint.position - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Gizmos.color = Color.red;
 		DrawArrow(((Component)this).transform.position, ((Component)this).transform.position + normalized * 0.1f, 0.1f);
 		Gizmos.color = Color.cyan;
@@ -82,7 +82,7 @@ public class IronsightAimPoint : MonoBehaviour
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = end - start;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 up = ((Component)Camera.current).transform.up;
 		Gizmos.DrawLine(start, end);
 		Gizmos.DrawLine(end, end + up * arrowLength - normalized * arrowLength);

@@ -4,9 +4,9 @@ namespace FIMSpace.Basics;
 
 public class FBasic_Rotator : MonoBehaviour
 {
-	public Vector3 RotationAxis;
+	public Vector3 RotationAxis = new Vector3(0f, 1f, 0f);
 
-	public float RotationSpeed;
+	public float RotationSpeed = 100f;
 
 	public bool UnscaledDeltaTime;
 
@@ -25,8 +25,5 @@ public class FBasic_Rotator : MonoBehaviour
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		RotationAxis = new Vector3(0f, 1f, 0f);
-		RotationSpeed = 100f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

@@ -20,7 +20,7 @@ public class State_PatrolIdle : FSMStateBase
 		ClientAnim.IsRelaxed = true;
 		ClientAnim.IsAiming = false;
 		Shooting.AllowShooting = false;
-		base.Agent.overrideDirectionWS = ((Component)Owner).transform.forward;
+		Agent.overrideDirectionWS = ((Component)Owner).transform.forward;
 		return base.OnStateEnter(payload);
 	}
 
@@ -29,7 +29,7 @@ public class State_PatrolIdle : FSMStateBase
 		ClientAnim.IsRelaxed = false;
 		ClientAnim.IsAiming = true;
 		Shooting.AllowShooting = true;
-		base.Agent.overrideDirectionWS = null;
+		Agent.overrideDirectionWS = null;
 		base.OnStateExit();
 	}
 }

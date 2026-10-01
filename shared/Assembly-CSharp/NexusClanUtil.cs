@@ -22,7 +22,12 @@ public static class NexusClanUtil
 
 	public const string PlayerNoteVariable = "notes";
 
-	public static readonly List<VariableUpdate> DefaultLeaderVariables;
+	public static readonly List<VariableUpdate> DefaultLeaderVariables = new List<VariableUpdate>
+	{
+		new VariableUpdate("can_set_logo", bool.TrueString, (bool?)null, (bool?)null),
+		new VariableUpdate("can_set_motd", bool.TrueString, (bool?)null, (bool?)null),
+		new VariableUpdate("can_set_player_notes", bool.TrueString, (bool?)null, (bool?)null)
+	};
 
 	public static void GetMotd(this NexusClan clan, out string motd, out long motdTimestamp, out ulong motdAuthor)
 	{
@@ -30,8 +35,8 @@ public static class NexusClanUtil
 		//IL_0025: Invalid comparison between Unknown and I4
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Invalid comparison between Unknown and I4
-		Variable val = default(Variable);
-		Variable val2 = default(Variable);
+		Variable val = default;
+		Variable val2 = default;
 		if (!clan.TryGetVariable("motd", ref val) || !clan.TryGetVariable("motd_author", ref val2) || (int)val.Type != 1 || (int)val2.Type != 1)
 		{
 			motd = null;
@@ -55,9 +60,9 @@ public static class NexusClanUtil
 		//IL_0039: Invalid comparison between Unknown and I4
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		Variable val = default(Variable);
+		Variable val = default;
 		logo = ((clan.TryGetVariable("logo", ref val) && (int)val.Type == 0) ? val.GetAsBinary() : null);
-		Variable val2 = default(Variable);
+		Variable val2 = default;
 		color = ((clan.TryGetVariable("color", ref val2) && (int)val2.Type == 1) ? ColorEx.FromInt32(int.Parse(val2.GetAsString())) : Color32.op_Implicit(Color.white));
 	}
 
@@ -66,9 +71,9 @@ public static class NexusClanUtil
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = role.Rank == 1;
-		Variable variable = default(Variable);
-		Variable variable2 = default(Variable);
-		Variable variable3 = default(Variable);
+		Variable variable = default;
+		Variable variable2 = default;
+		Variable variable3 = default;
 		return new ClanRole
 		{
 			RoleId = role.RoleId,
@@ -90,7 +95,7 @@ public static class NexusClanUtil
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		Variable val = default(Variable);
+		Variable val = default;
 		member.TryGetVariable("notes", ref val);
 		return new ClanMember
 		{
@@ -109,9 +114,9 @@ public static class NexusClanUtil
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		return new ClanInvite
 		{
-			SteamId = ((ClanInvite)(ref invite)).PlayerId,
-			Recruiter = ((ClanInvite)(ref invite)).RecruiterPlayerId,
-			Timestamp = ((ClanInvite)(ref invite)).Created * 1000
+			SteamId = invite.PlayerId,
+			Recruiter = invite.RecruiterPlayerId,
+			Timestamp = invite.Created * 1000
 		};
 	}
 
@@ -120,22 +125,22 @@ public static class NexusClanUtil
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Expected I4, but got Unknown
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		return (ClanResult)((int)result switch
+		return (int)result switch
 		{
-			0 => 0, 
-			1 => 1, 
-			2 => 3, 
-			3 => 4, 
-			4 => 5, 
-			5 => 13, 
-			6 => 14, 
-			7 => 15, 
-			8 => 16, 
-			9 => 17, 
-			10 => 18, 
-			11 => 19, 
+			0 => (ClanResult)0, 
+			1 => (ClanResult)1, 
+			2 => (ClanResult)3, 
+			3 => (ClanResult)4, 
+			4 => (ClanResult)5, 
+			5 => (ClanResult)13, 
+			6 => (ClanResult)14, 
+			7 => (ClanResult)15, 
+			8 => (ClanResult)16, 
+			9 => (ClanResult)17, 
+			10 => (ClanResult)18, 
+			11 => (ClanResult)19, 
 			_ => throw new NotSupportedException($"Cannot map NexusClanResultCode {result} to ClanResult"), 
-		});
+		};
 	}
 
 	public static ClanRoleParameters ToRoleParameters(this ClanRole role)
@@ -155,15 +160,15 @@ public static class NexusClanUtil
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		ClanRoleParameters result = default(ClanRoleParameters);
-		((ClanRoleParameters)(ref result)).Name = role.Name;
-		((ClanRoleParameters)(ref result)).CanInvite = role.CanInvite;
-		((ClanRoleParameters)(ref result)).CanKick = role.CanKick;
-		((ClanRoleParameters)(ref result)).CanPromote = role.CanPromote;
-		((ClanRoleParameters)(ref result)).CanDemote = role.CanDemote;
-		((ClanRoleParameters)(ref result)).CanAccessLogs = role.CanAccessLogs;
-		((ClanRoleParameters)(ref result)).CanAccessScoreEvents = role.CanAccessScoreEvents;
-		((ClanRoleParameters)(ref result)).Variables = new List<VariableUpdate>(3)
+		ClanRoleParameters result = default;
+		result.Name = role.Name;
+		result.CanInvite = role.CanInvite;
+		result.CanKick = role.CanKick;
+		result.CanPromote = role.CanPromote;
+		result.CanDemote = role.CanDemote;
+		result.CanAccessLogs = role.CanAccessLogs;
+		result.CanAccessScoreEvents = role.CanAccessScoreEvents;
+		result.Variables = new List<VariableUpdate>(3)
 		{
 			FlagVariable("can_set_logo", role.CanSetLogo),
 			FlagVariable("can_set_motd", role.CanSetMotd),
@@ -194,11 +199,5 @@ public static class NexusClanUtil
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		DefaultLeaderVariables = new List<VariableUpdate>
-		{
-			new VariableUpdate("can_set_logo", bool.TrueString, (bool?)null, (bool?)null),
-			new VariableUpdate("can_set_motd", bool.TrueString, (bool?)null, (bool?)null),
-			new VariableUpdate("can_set_player_notes", bool.TrueString, (bool?)null, (bool?)null)
-		};
 	}
 }

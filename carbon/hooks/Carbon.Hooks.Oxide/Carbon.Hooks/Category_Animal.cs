@@ -13,14 +13,14 @@ public class Category_Animal
 	public class Animal_RidableHorse
 	{
 		[Patch("OnHorseLead", "OnHorseLead [RidableHorse]", "RidableHorse", "SERVER_Lead", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d3e4a4f5b1ec4c828079fc9fd642aa52")]
+		[Identifier("54074a3035734eba9d7e859e502cf316")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RidableHorse", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Animal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Animal_RidableHorse_d3e4a4f5b1ec4c828079fc9fd642aa52 : Patch
+		public class Animal_RidableHorse_54074a3035734eba9d7e859e502cf316 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -52,7 +52,7 @@ public class Category_Animal
 		}
 
 		[Patch("OnRidableAnimalClaim", "OnRidableAnimalClaim [RidableHorse]", "RidableHorse", "SERVER_Claim", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("361ddf7d972a487eada1bbd6f8f3ba94")]
+		[Identifier("5c6d76e6723b432b95e14af516cf75b8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RidableHorse", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -60,7 +60,7 @@ public class Category_Animal
 		[Return(typeof(void))]
 		[Category("Animal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Animal_RidableHorse_361ddf7d972a487eada1bbd6f8f3ba94 : Patch
+		public class Animal_RidableHorse_5c6d76e6723b432b95e14af516cf75b8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -96,7 +96,7 @@ public class Category_Animal
 		}
 
 		[Patch("OnRidableAnimalClaimed", "OnRidableAnimalClaimed [RidableHorse]", "RidableHorse", "SERVER_Claim", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("dc20aeec17d549c5a2963f97fc20193d")]
+		[Identifier("7bcfcf119205470b9158d51a650e819b")]
 		[Dependencies(new string[] { "OnRidableAnimalClaim [RidableHorse]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RidableHorse", false)]
@@ -104,7 +104,7 @@ public class Category_Animal
 		[Return(typeof(void), Discarded = true)]
 		[Category("Animal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Animal_RidableHorse_dc20aeec17d549c5a2963f97fc20193d : Patch
+		public class Animal_RidableHorse_7bcfcf119205470b9158d51a650e819b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -132,13 +132,13 @@ public class Category_Animal
 		}
 
 		[Patch("OnAnimalDungProduce", "OnAnimalDungProduce [RidableHorse]", "RidableHorse", "DoDung", new string[] { })]
-		[Identifier("cd94b647cdfd4b9e9ccd756c20e1d505")]
+		[Identifier("bf20a30a7c6e466b9b80606f0db1897d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RidableHorse", false)]
 		[Return(typeof(void))]
 		[Category("Animal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Animal_RidableHorse_cd94b647cdfd4b9e9ccd756c20e1d505 : Patch
+		public class Animal_RidableHorse_bf20a30a7c6e466b9b80606f0db1897d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -168,14 +168,14 @@ public class Category_Animal
 		}
 
 		[Patch("OnAnimalDungProduced", "OnAnimalDungProduced [RidableHorse]", "RidableHorse", "DoDung", new string[] { })]
-		[Identifier("2ea0880943b74ac5bf36ca734da9f3ab")]
+		[Identifier("6d6272ba4df94009b45b678ece478d19")]
 		[Dependencies(new string[] { "OnAnimalDungProduced [RidableHorse] [Variable]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RidableHorse", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Animal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Animal_RidableHorse_2ea0880943b74ac5bf36ca734da9f3ab : Patch
+		public class Animal_RidableHorse_6d6272ba4df94009b45b678ece478d19 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -203,12 +203,12 @@ public class Category_Animal
 		}
 
 		[Patch("OnAnimalDungProduced", "OnAnimalDungProduced [RidableHorse] [Variable]", "RidableHorse", "DoDung", new string[] { })]
-		[Identifier("60283b0bd8874b448dc2ef5bd1c1ba7b")]
+		[Identifier("011a0ab1a73748b7af1464d7c8ce477d")]
 		[Dependencies(new string[] { "OnAnimalDungProduce [RidableHorse]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Animal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Animal_RidableHorse_60283b0bd8874b448dc2ef5bd1c1ba7b : Patch
+		public class Animal_RidableHorse_011a0ab1a73748b7af1464d7c8ce477d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -229,12 +229,12 @@ public class Category_Animal
 	public class Animal_HitchTrough
 	{
 		[Patch("OnHorseHitch", "OnHorseHitch", "HitchTrough", "AttemptToHitch", new string[] { "HitchTrough/IHitchable", "HitchTrough/HitchSpot" })]
-		[Identifier("88920cb7b29d49f980a8044c5082a6d8")]
+		[Identifier("eb34548ffb5b4d72a821eb01cec98c91")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(bool))]
 		[Category("Animal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Animal_HitchTrough_88920cb7b29d49f980a8044c5082a6d8 : Patch
+		public class Animal_HitchTrough_eb34548ffb5b4d72a821eb01cec98c91 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -272,14 +272,14 @@ public class Category_Animal
 		}
 
 		[Patch("OnHorseUnhitch", "OnHorseUnhitch", "HitchTrough", "UnHitch", new string[] { "HitchTrough/IHitchable" })]
-		[Identifier("cb18ce1ab54640b4b2bf07d310887fb0")]
+		[Identifier("99109690f7694ce6bf78dc250489da9e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("hitchable", "HitchTrough+IHitchable", false)]
 		[Parameter("local2", "HitchTrough+HitchSpot", false)]
 		[Return(typeof(void))]
 		[Category("Animal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Animal_HitchTrough_cb18ce1ab54640b4b2bf07d310887fb0 : Patch
+		public class Animal_HitchTrough_99109690f7694ce6bf78dc250489da9e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

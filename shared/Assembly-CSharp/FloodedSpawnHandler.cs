@@ -41,17 +41,17 @@ public static class FloodedSpawnHandler
 		float placementCheckHeight = instance.PlacementCheckHeight;
 		LayerMask radiusCheckMask = instance.RadiusCheckMask;
 		float radiusCheckDistance = instance.RadiusCheckDistance;
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		for (int i = 0; i < 10; i++)
 		{
 			Vector3 val = FindSpawnPoint(searchHeight);
 			if (LayerMask.op_Implicit(placementCheckMask) != 0 && Physics.Raycast(val + Vector3.up * placementCheckHeight, Vector3.down, ref val2, placementCheckHeight, LayerMask.op_Implicit(placementCheckMask)))
 			{
-				if (((1 << ((Component)((RaycastHit)(ref val2)).transform).gameObject.layer) & LayerMask.op_Implicit(placementMask)) == 0)
+				if (((1 << ((Component)val2.transform).gameObject.layer) & LayerMask.op_Implicit(placementMask)) == 0)
 				{
 					continue;
 				}
-				val.y = ((RaycastHit)(ref val2)).point.y;
+				val.y = val2.point.y;
 			}
 			if (LayerMask.op_Implicit(radiusCheckMask) == 0 || !Physics.CheckSphere(val, radiusCheckDistance, LayerMask.op_Implicit(radiusCheckMask)))
 			{
@@ -89,7 +89,7 @@ public static class FloodedSpawnHandler
 		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3Ex.WithY(TerrainMeta.Size / 2f, 0f);
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		float distance = magnitude / 50f;
 		float num = RandomAngle();
 		float num2 = num + MathF.PI;

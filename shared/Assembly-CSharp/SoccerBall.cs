@@ -38,14 +38,14 @@ public class SoccerBall : BaseCombatEntity
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient)
+		if (!isClient)
 		{
 			Vector3 impulse = collision.impulse;
-			if (((Vector3)(ref impulse)).magnitude > 0f && (Object)(object)collision.collider.attachedRigidbody != (Object)null && !ComponentEx.HasComponent<SoccerBall>((Component)(object)collision.collider.attachedRigidbody))
+			if (impulse.magnitude > 0f && (Object)(object)collision.collider.attachedRigidbody != (Object)null && !ComponentEx.HasComponent<SoccerBall>((Component)(object)collision.collider.attachedRigidbody))
 			{
 				Vector3 val = rigidBody.position - collision.collider.attachedRigidbody.position;
 				impulse = collision.impulse;
-				float magnitude = ((Vector3)(ref impulse)).magnitude;
+				float magnitude = impulse.magnitude;
 				rigidBody.AddForce(val * magnitude * additionalForceMultiplier + Vector3.up * magnitude * upForceMultiplier, (ForceMode)1);
 			}
 		}
@@ -58,7 +58,7 @@ public class SoccerBall : BaseCombatEntity
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}

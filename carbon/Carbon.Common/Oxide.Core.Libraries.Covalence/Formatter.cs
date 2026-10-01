@@ -133,7 +133,7 @@ public class Formatter
 		private State EndTag(TokenType t)
 		{
 			Next();
-			return delegate
+			return () =>
 			{
 				if (Current() == ']')
 				{
@@ -152,7 +152,7 @@ public class Formatter
 			Next();
 			StartNewToken();
 			State s = null;
-			s = delegate
+			s = () =>
 			{
 				if (Current() != ']')
 				{
@@ -279,7 +279,7 @@ public class Formatter
 		while (num < tokens.Count)
 		{
 			Token t = tokens[num++];
-			Action<Element> action = delegate(Element el)
+			Action<Element> action = (Element el) =>
 			{
 				s.Push(new Entry(t.Pattern, el));
 			};

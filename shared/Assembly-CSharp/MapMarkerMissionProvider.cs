@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -74,9 +73,9 @@ public class MapMarkerMissionProvider : MapMarker
 			}
 		}
 		missionProviderNetId = info.msg.missionMapMarker.missionProviderNetId;
-		if (base.isServer && (!BaseNetworkable.serverEntities.TryGetEntity(missionProviderNetId, out var entity) || !(entity is IMissionProvider)))
+		if (isServer && (!BaseNetworkable.serverEntities.TryGetEntity(missionProviderNetId, out var entity) || !(entity is IMissionProvider)))
 		{
-			Debug.LogError((object)("Failed to find a mission provider entity from net ID (" + ((object)Unsafe.As<NetworkableId, NetworkableId>(ref missionProviderNetId)/*cast due to constrained. prefix*/).ToString() + ")"));
+			Debug.LogError((object)("Failed to find a mission provider entity from net ID (" + ((object)missionProviderNetId/*cast due to constrained. prefix*/).ToString() + ")"));
 		}
 		nameToken = info.msg.missionMapMarker.nameToken;
 	}

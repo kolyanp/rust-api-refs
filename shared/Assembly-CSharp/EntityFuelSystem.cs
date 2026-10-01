@@ -95,7 +95,7 @@ public class EntityFuelSystem : IFuelSystem
 		return false;
 	}
 
-	private void OnFuelAddedRemoved(Item arg1, bool arg2)
+	private void OnFuelAddedRemoved(Item arg1, bool arg2, BasePlayer sourcePlayer)
 	{
 		nextFuelCheckTime = 0f;
 		fuelAddedRemovedCallback?.Invoke(arg2);

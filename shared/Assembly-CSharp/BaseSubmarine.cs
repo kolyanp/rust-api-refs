@@ -37,8 +37,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	private bool wasOnSurface;
 
-	[Header("Submarine Main")]
 	[SerializeField]
+	[Header("Submarine Main")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -90,23 +90,23 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	public float maxFuelPerSec = 0.15f;
 
-	[FormerlySerializedAs("internalAccessFuelTank")]
 	[SerializeField]
+	[FormerlySerializedAs("internalAccessFuelTank")]
 	private bool internalAccessStorage;
 
-	[SerializeField]
 	[Header("Submarine Weaponry")]
+	[SerializeField]
 	public GameObjectRef torpedoStoragePrefab;
 
 	[SerializeField]
 	public Transform torpedoFiringPoint;
 
-	[SerializeField]
 	[FormerlySerializedAs("maxFireRate")]
+	[SerializeField]
 	public float reloadTime = 1.5f;
 
-	[SerializeField]
 	[Header("Submarine Audio & FX")]
+	[SerializeField]
 	protected SubmarineAudio submarineAudio;
 
 	[SerializeField]
@@ -196,9 +196,6 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[ServerVar(Help = "How long a submarine can stay underwater until players start taking damage from low oxygen")]
 	public static float oxygenminutes = 10f;
 
-	[CompilerGenerated]
-	private Vector3 _003CVelocity_003Ek__BackingField;
-
 	public const Flags Flag_Ammo = Flags.Reserved6;
 
 	private float _throttle;
@@ -235,14 +232,14 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CVelocity_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CVelocity_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -282,7 +279,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return GetUpDownInput(Time.time);
 			}
@@ -455,7 +452,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (isSpawned)
 			{
@@ -487,7 +484,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	{
 		if (vehicle.vehiclesdroploot)
 		{
-			StorageContainer storageContainer = itemStorageInstance.Get(base.isServer);
+			StorageContainer storageContainer = itemStorageInstance.Get(isServer);
 			if ((Object)(object)storageContainer != (Object)null && storageContainer.IsValid())
 			{
 				storageContainer.DropItems();
@@ -498,7 +495,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	protected void OnCollisionEnter(Collision collision)
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			ProcessCollision(collision);
 		}
@@ -620,7 +617,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		using (TimeWarning.New("BaseSubmarine.VehicleFixedUpdate"))
 		{
 			base.VehicleFixedUpdate();
-			if (!base.IsMovingOrOn)
+			if (!IsMovingOrOn)
 			{
 				Velocity = Vector3.zero;
 				targetClimbSpeed = 0f;
@@ -668,7 +665,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 				float num7 = buoyancy.buoyancyScale - num6 * 50f * Time.fixedDeltaTime;
 				buoyancy.buoyancyScale = Mathf.Clamp(num7, 0.01f, 1f);
 				Vector3 angularVelocity = rigidBody.angularVelocity;
-				Vector3 val = Vector3.Cross(Quaternion.AngleAxis(((Vector3)(ref angularVelocity)).magnitude * 57.29578f * 10f / 200f, rigidBody.angularVelocity) * ((Component)this).transform.up, Vector3.up) * 200f * 200f;
+				Vector3 val = Vector3.Cross(Quaternion.AngleAxis(angularVelocity.magnitude * 57.29578f * 10f / 200f, rigidBody.angularVelocity) * ((Component)this).transform.up, Vector3.up) * 200f * 200f;
 				rigidBody.AddTorque(val);
 				float num8 = 0.1f;
 				rigidBody.AddForce(Vector3.up * (0f - num6) * num8, (ForceMode)2);
@@ -838,7 +835,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	public StorageContainer GetTorpedoContainer()
 	{
-		BaseEntity baseEntity = torpedoStorageInstance.Get(base.isServer);
+		BaseEntity baseEntity = torpedoStorageInstance.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsValid())
 		{
 			return baseEntity as StorageContainer;
@@ -848,7 +845,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	public StorageContainer GetItemContainer()
 	{
-		BaseEntity baseEntity = itemStorageInstance.Get(base.isServer);
+		BaseEntity baseEntity = itemStorageInstance.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsValid())
 		{
 			return baseEntity as StorageContainer;
@@ -860,10 +857,10 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null))
+		if (!isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null))
 		{
 			Vector3 impulse = collision.impulse;
-			float num = ((Vector3)(ref impulse)).magnitude / Time.fixedDeltaTime;
+			float num = impulse.magnitude / Time.fixedDeltaTime;
 			float num2 = Mathf.InverseLerp(100000f, 2500000f, num);
 			if (num2 > 0f)
 			{
@@ -890,9 +887,9 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	{
 		if (HasDriver())
 		{
-			byte num = (byte)((ThrottleInput + 1f) * 7f);
-			byte b = (byte)((UpDownInput + 1f) * 7f);
-			byte arg = (byte)(num + (b << 4));
+			byte b = (byte)((ThrottleInput + 1f) * 7f);
+			byte b2 = (byte)((UpDownInput + 1f) * 7f);
+			byte arg = (byte)(b + (b2 << 4));
 			int arg2 = Mathf.CeilToInt(GetFuelAmount());
 			ClientRPC(RpcTarget.NetworkGroup("SubmarineUpdate"), RudderInput, arg, arg2, Oxygen);
 		}
@@ -929,8 +926,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -946,7 +943,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	public void OnSurfacedInMoonpool()
 	{
-		if (wasOnSurface && Rust.GameInfo.HasAchievements)
+		if (wasOnSurface && GameInfo.HasAchievements)
 		{
 			wasOnSurface = false;
 			BasePlayer driver = GetDriver();
@@ -959,7 +956,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	public float GetUpDownInput(float ts)
 	{
-		if (((TimeSince)(ref timeSinceLastUsed)).PassedSince(ts) >= timeUntilAutoSurface)
+		if (timeSinceLastUsed.PassedSince(ts) >= timeUntilAutoSurface)
 		{
 			return 0.15f;
 		}
@@ -979,8 +976,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	{
 		base.InitShared();
 		waterLayerMask = LayerMask.GetMask(new string[1] { "Water" });
-		IFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
-		engineController = new VehicleEngineController<BaseSubmarine>(this, fuelSystem, base.isServer, engineStartupTime);
+		IFuelSystem fuelSystem = new EntityFuelSystem(isServer, fuelStoragePrefab, children);
+		engineController = new VehicleEngineController<BaseSubmarine>(this, fuelSystem, isServer, engineStartupTime);
 	}
 
 	public override void Load(LoadInfo info)
@@ -1006,7 +1003,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (old != next && base.isServer)
+		if (old != next && isServer)
 		{
 			ServerFlagsChanged(old, next);
 		}
@@ -1014,7 +1011,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	public override float WaterFactorForPlayer(BasePlayer player, out WaterLevel.WaterInfo info)
 	{
-		info = default(WaterLevel.WaterInfo);
+		info = default;
 		return 0f;
 	}
 
@@ -1030,7 +1027,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	public float GetFuelAmount()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return engineController.FuelSystem.GetFuelAmount();
 		}
@@ -1098,9 +1095,9 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		float num = (0f - turnInput) * maxRudderAngle;
-		float num2 = ((!base.IsMovingOrOn) ? num : Mathf.MoveTowards(PhysicalRudderAngle, num, 200f * deltaTime));
+		float num2 = ((!IsMovingOrOn) ? num : Mathf.MoveTowards(PhysicalRudderAngle, num, 200f * deltaTime));
 		Quaternion localRotation = Quaternion.Euler(0f, num2, 0f);
-		if (base.isClient)
+		if (isClient)
 		{
 			rudderVisualTransform.localRotation = localRotation;
 		}
@@ -1129,10 +1126,10 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(((Component)this).transform.position - Vector3.up * 1.5f, Vector3.up, ref val, 5f, waterLayerMask, (QueryTriggerInteraction)2))
 		{
-			return ((RaycastHit)(ref val)).point.y;
+			return val.point.y;
 		}
 		WaterLevel.WaterInfo waterInfo = WaterLevel.GetWaterInfo(((Component)this).transform.position, waves: true, volumes: true, this);
 		if (!waterInfo.isValid)

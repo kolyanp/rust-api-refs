@@ -59,7 +59,7 @@ public class NPCNavigator : BaseNavigator
 		{
 			return false;
 		}
-		if ((Object)(object)NPC != (Object)null && (NPC.IsDormant || !NPC.syncPosition) && ((Behaviour)base.Agent).enabled)
+		if ((Object)(object)NPC != (Object)null && (NPC.IsDormant || !NPC.syncPosition) && ((Behaviour)Agent).enabled)
 		{
 			SetDestination(NPC.ServerPosition);
 			return false;
@@ -101,23 +101,23 @@ public class NPCNavigator : BaseNavigator
 		}
 		if (traversingNavMeshLink)
 		{
-			Vector3 val = base.Agent.destinationWS - base.BaseEntity.ServerPosition;
-			if (((Vector3)(ref val)).sqrMagnitude > 1f)
+			Vector3 val = Agent.destinationWS - BaseEntity.ServerPosition;
+			if (val.sqrMagnitude > 1f)
 			{
-				val = currentNavMeshLinkEndPos - base.BaseEntity.ServerPosition;
+				val = currentNavMeshLinkEndPos - BaseEntity.ServerPosition;
 			}
-			_ = ((Vector3)(ref val)).sqrMagnitude;
+			_ = val.sqrMagnitude;
 			_ = 0.001f;
 			return;
 		}
-		Vector3 val2 = base.Agent.destinationWS - base.BaseEntity.ServerPosition;
-		if (((Vector3)(ref val2)).sqrMagnitude > 1f)
+		Vector3 val2 = Agent.destinationWS - BaseEntity.ServerPosition;
+		if (val2.sqrMagnitude > 1f)
 		{
-			val2 = base.Agent.desiredVelocityWS;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
-			if (((Vector3)(ref normalized)).sqrMagnitude > 0.001f)
+			val2 = Agent.desiredVelocityWS;
+			Vector3 normalized = val2.normalized;
+			if (normalized.sqrMagnitude > 0.001f)
 			{
-				base.BaseEntity.ServerRotation = Quaternion.LookRotation(normalized);
+				BaseEntity.ServerRotation = Quaternion.LookRotation(normalized);
 			}
 		}
 	}
@@ -127,7 +127,7 @@ public class NPCNavigator : BaseNavigator
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		base.ApplyFacingDirectionOverride();
-		base.BaseEntity.ServerRotation = Quaternion.LookRotation(base.FacingDirectionOverride);
+		BaseEntity.ServerRotation = Quaternion.LookRotation(FacingDirectionOverride);
 	}
 
 	public override bool IsSwimming()

@@ -28,17 +28,17 @@ public struct NavHit
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		NavHit result = default(NavHit);
+		NavHit result = default;
 		NavMeshHit val = unityHitNS;
-		result.position = new NavVector3(((NavMeshHit)(ref val)).position);
+		result.position = new NavVector3(val.position);
 		val = unityHitNS;
-		result.normal = new NavVector3(((NavMeshHit)(ref val)).normal);
+		result.normal = new NavVector3(val.normal);
 		val = unityHitNS;
-		result.distance = ((NavMeshHit)(ref val)).distance;
+		result.distance = val.distance;
 		val = unityHitNS;
-		result.mask = ((NavMeshHit)(ref val)).mask;
+		result.mask = val.mask;
 		val = unityHitNS;
-		result.hit = ((NavMeshHit)(ref val)).hit;
+		result.hit = val.hit;
 		return result;
 	}
 
@@ -48,12 +48,12 @@ public struct NavHit
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		NavMeshHit result = default(NavMeshHit);
-		((NavMeshHit)(ref result)).position = position.Value;
-		((NavMeshHit)(ref result)).normal = normal.Value;
-		((NavMeshHit)(ref result)).distance = distance;
-		((NavMeshHit)(ref result)).mask = mask;
-		((NavMeshHit)(ref result)).hit = hit;
+		NavMeshHit result = default;
+		result.position = position.Value;
+		result.normal = normal.Value;
+		result.distance = distance;
+		result.mask = mask;
+		result.hit = hit;
 		return result;
 	}
 }

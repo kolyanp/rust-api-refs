@@ -243,7 +243,7 @@ public static class relay
 	}
 
 	[ServerVar(Help = "Adds an RPC Message to the RPC Whitelist")]
-	public unsafe static void rpc_whitelist_add(ConsoleSystem.Arg arg)
+	public static void rpc_whitelist_add(ConsoleSystem.Arg arg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
@@ -251,13 +251,13 @@ public static class relay
 		for (int i = 0; i < args.Length; i++)
 		{
 			StringView val = args[i];
-			RustRelay.Config.RPCWhitelist.Add(((object)(*(StringView*)(&val))/*cast due to constrained. prefix*/).ToString());
+			RustRelay.Config.RPCWhitelist.Add(((object)val/*cast due to constrained. prefix*/).ToString());
 		}
 		rpc_whitelist_rebuild();
 	}
 
 	[ServerVar(Help = "Removes an RPC Message from the RPC Whitelist")]
-	public unsafe static void rpc_whitelist_remove(ConsoleSystem.Arg arg)
+	public static void rpc_whitelist_remove(ConsoleSystem.Arg arg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
@@ -265,7 +265,7 @@ public static class relay
 		for (int i = 0; i < args.Length; i++)
 		{
 			StringView val = args[i];
-			RustRelay.Config.RPCWhitelist.Remove(((object)(*(StringView*)(&val))/*cast due to constrained. prefix*/).ToString());
+			RustRelay.Config.RPCWhitelist.Remove(((object)val/*cast due to constrained. prefix*/).ToString());
 		}
 		rpc_whitelist_rebuild();
 	}

@@ -19,17 +19,17 @@ public class SantaSleigh : BaseEntity
 
 	public SoundPlayer hohoho;
 
-	public float hohohospacing;
+	public float hohohospacing = 4f;
 
-	public float hohoho_additional_spacing;
+	public float hohoho_additional_spacing = 2f;
 
 	public Vector3 swimScale;
 
 	public Vector3 swimSpeed;
 
-	public float appliedSwimScale;
+	public float appliedSwimScale = 1f;
 
-	public float appliedSwimRotation;
+	public float appliedSwimRotation = 20f;
 
 	private Vector3 startPos;
 
@@ -41,7 +41,7 @@ public class SantaSleigh : BaseEntity
 
 	private bool dropped;
 
-	public Vector3 dropPosition;
+	public Vector3 dropPosition = Vector3.zero;
 
 	private float swimRandom;
 
@@ -143,7 +143,7 @@ public class SantaSleigh : BaseEntity
 		float y = altitudeAboveTerrain;
 		startPos = Vector3Ex.Range(-1f, 1f);
 		startPos.y = 0f;
-		((Vector3)(ref startPos)).Normalize();
+		startPos.Normalize();
 		startPos *= x * 1.25f;
 		startPos.y = y;
 		endPos = startPos * -1f;
@@ -194,6 +194,7 @@ public class SantaSleigh : BaseEntity
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0299: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
@@ -202,7 +203,7 @@ public class SantaSleigh : BaseEntity
 		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -222,8 +223,8 @@ public class SantaSleigh : BaseEntity
 		}
 		position = Vector3.Lerp(startPos, endPos, num);
 		Vector3 val = endPos - startPos;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
-		Vector3 val2 = Vector3.zero;
+		Vector3 normalized = val.normalized;
+		Vector3 zero = Vector3.zero;
 		if (swimScale != Vector3.zero)
 		{
 			if (swimRandom == 0f)
@@ -231,18 +232,18 @@ public class SantaSleigh : BaseEntity
 				swimRandom = Random.Range(0f, 20f);
 			}
 			float num2 = Time.time + swimRandom;
-			((Vector3)(ref val2))._002Ector(Mathf.Sin(num2 * swimSpeed.x) * swimScale.x, Mathf.Cos(num2 * swimSpeed.y) * swimScale.y, Mathf.Sin(num2 * swimSpeed.z) * swimScale.z);
-			val2 = ((Component)this).transform.InverseTransformDirection(val2);
-			position += val2 * appliedSwimScale;
+			zero = new Vector3(Mathf.Sin(num2 * swimSpeed.x) * swimScale.x, Mathf.Cos(num2 * swimSpeed.y) * swimScale.y, Mathf.Sin(num2 * swimSpeed.z) * swimScale.z);
+			zero = ((Component)this).transform.InverseTransformDirection(zero);
+			position += zero * appliedSwimScale;
 		}
 		rotation = Quaternion.LookRotation(normalized) * Quaternion.Euler(Mathf.Cos(Time.time * swimSpeed.y) * appliedSwimRotation, 0f, Mathf.Sin(Time.time * swimSpeed.x) * appliedSwimRotation);
-		Vector3 val3 = position;
-		float height = TerrainMeta.HeightMap.GetHeight(val3 + ((Component)this).transform.forward * 30f);
-		float height2 = TerrainMeta.HeightMap.GetHeight(val3);
+		Vector3 val2 = position;
+		float height = TerrainMeta.HeightMap.GetHeight(val2 + ((Component)this).transform.forward * 30f);
+		float height2 = TerrainMeta.HeightMap.GetHeight(val2);
 		float num3 = Mathf.Max(height, height2);
 		float num4 = Mathf.Max(desiredAltitude, num3 + altitudeAboveTerrain);
-		val3.y = Mathf.Lerp(((Component)this).transform.position.y, num4, Time.fixedDeltaTime * 0.5f);
-		position = val3;
+		val2.y = Mathf.Lerp(((Component)this).transform.position.y, num4, Time.fixedDeltaTime * 0.5f);
+		position = val2;
 		((Component)this).transform.hasChanged = true;
 		if (num >= 1f)
 		{
@@ -278,11 +279,5 @@ public class SantaSleigh : BaseEntity
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		hohohospacing = 4f;
-		hohoho_additional_spacing = 2f;
-		appliedSwimScale = 1f;
-		appliedSwimRotation = 20f;
-		dropPosition = Vector3.zero;
-		base._002Ector();
 	}
 }

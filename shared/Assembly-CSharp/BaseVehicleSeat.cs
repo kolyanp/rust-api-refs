@@ -11,6 +11,8 @@ public class BaseVehicleSeat : BaseVehicleMountPoint
 
 	public bool canTeamInteract = true;
 
+	public bool offsetInsideTerrainCheck;
+
 	public override void ScaleDamageForPlayer(BasePlayer player, HitInfo info)
 	{
 		BaseVehicle baseVehicle = VehicleParent();

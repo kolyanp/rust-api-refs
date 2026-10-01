@@ -65,8 +65,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 	public GameObjectRef crashEffect;
 
 	[Range(0.1f, 0.95f)]
-	[SerializeField]
 	[Tooltip("Lower values mean more lift is produced at high angles.")]
+	[SerializeField]
 	public float liftDotMax = 0.75f;
 
 	[SerializeField]
@@ -362,7 +362,7 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		float num6 = 1f - Mathf.InverseLerp(altForceDotMin, 1f, num2);
 		Vector3 val = Vector3.up * engineThrustMax * liftFraction * currentThrottle * num3;
 		Vector3 val2 = ((Component)this).transform.up - Vector3.up;
-		Vector3 val3 = ((Vector3)(ref val2)).normalized * engineThrustMax * currentThrottle * num6;
+		Vector3 val3 = val2.normalized * engineThrustMax * currentThrottle * num6;
 		float num7 = rigidBody.mass * (0f - Physics.gravity.y);
 		rigidBody.AddForce(((Component)this).transform.up * num7 * num3 * hoverForceScale, (ForceMode)0);
 		rigidBody.AddForce(val, (ForceMode)0);
@@ -402,12 +402,12 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient || !CollisionDamageEnabled() || Time.time < nextDamageTime)
+		if (isClient || !CollisionDamageEnabled() || Time.time < nextDamageTime)
 		{
 			return;
 		}
 		Vector3 relativeVelocity = collision.relativeVelocity;
-		float magnitude = ((Vector3)(ref relativeVelocity)).magnitude;
+		float magnitude = relativeVelocity.magnitude;
 		if (Object.op_Implicit((Object)(object)collision.gameObject))
 		{
 			if (((1 << ((Component)collision.collider).gameObject.layer) & 0x48A18101) <= 0)
@@ -436,15 +436,15 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 			if (crashEffect.isValid)
 			{
 				ContactPoint contact = collision.GetContact(0);
-				Vector3 point = ((ContactPoint)(ref contact)).point;
+				Vector3 point = contact.point;
 				TryShowCollisionFX(point);
 			}
 		}
-		Rigidbody obj = rigidBody;
+		Rigidbody val = rigidBody;
 		ContactPoint contact2 = collision.GetContact(0);
-		Vector3 val = ((ContactPoint)(ref contact2)).normal * (1f + 3f * num) * rigidBody.mass;
+		Vector3 val2 = contact2.normal * (1f + 3f * num) * rigidBody.mass;
 		contact2 = collision.GetContact(0);
-		obj.AddForceAtPosition(val, ((ContactPoint)(ref contact2)).point, (ForceMode)1);
+		val.AddForceAtPosition(val2, contact2.point, (ForceMode)1);
 		nextDamageTime = Time.time + 0.333f;
 		Invoke(DelayedImpactDamage, 0.015f);
 	}
@@ -493,7 +493,7 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			base.OnDied(info);
 			return;
@@ -512,7 +512,7 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		Vector3 val2 = CenterPoint();
 		if (fireBall.isValid && !InSafeZone())
 		{
-			RaycastHit val3 = default(RaycastHit);
+			RaycastHit val3 = default;
 			for (int i = 0; i < 12; i++)
 			{
 				BaseEntity baseEntity = GameManager.server.CreateEntity(fireBall.resourcePath, val2, ((Component)this).transform.rotation);
@@ -523,11 +523,11 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 				float num = 3f;
 				float num2 = 10f;
 				Vector3 onUnitSphere = Random.onUnitSphere;
-				((Vector3)(ref onUnitSphere)).Normalize();
+				onUnitSphere.Normalize();
 				float num3 = Random.Range(0.5f, 4f);
-				bool num4 = Physics.Raycast(val2, onUnitSphere, ref val3, num3, 1218652417);
-				Vector3 val4 = ((RaycastHit)(ref val3)).point;
-				if (!num4)
+				bool flag = Physics.Raycast(val2, onUnitSphere, ref val3, num3, 1218652417);
+				Vector3 val4 = val3.point;
+				if (!flag)
 				{
 					val4 = val2 + onUnitSphere * num3;
 				}

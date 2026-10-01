@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class ItemModWorkbenchPrototype : ItemModWorkbenchUpgrade
 {
-	[Tooltip("Multiplier applied to scrap cost when bypassing the tech tree path (2 = double).")]
 	[Header("Prototype")]
+	[Tooltip("Multiplier applied to scrap cost when bypassing the tech tree path (2 = double).")]
 	public float costMultiplier = 2f;
 
 	[Range(0f, 1f)]

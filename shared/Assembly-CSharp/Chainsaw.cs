@@ -25,9 +25,9 @@ public class Chainsaw : BaseMelee
 
 	public ChainsawAudioAdvanced chainsawAudioAdvanced;
 
-	public static readonly Phrase UnloadAmmoTitle;
+	public static readonly Phrase UnloadAmmoTitle = new Phrase("unload_ammo", "Unload Ammo");
 
-	public static readonly Phrase UnloadAmmoDesc;
+	public static readonly Phrase UnloadAmmoDesc = new Phrase("unload_ammo_desc", "Unload the ammunition in this weapon and place it in your inventory.");
 
 	[Header("Chainsaw")]
 	public float fuelPerSec = 1f;
@@ -256,7 +256,7 @@ public class Chainsaw : BaseMelee
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		base.OnReceivedSignalServer(signal, arg);
-		if (signal == Signal.Reload && base.isServer)
+		if (signal == Signal.Reload && isServer)
 		{
 			lastReloadSignalFromClient = TimeSince.op_Implicit(0f);
 		}
@@ -269,7 +269,7 @@ public class Chainsaw : BaseMelee
 			BasePlayer ownerPlayer = GetOwnerPlayer();
 			if ((Object)(object)ownerPlayer != (Object)null && ownerPlayer.IsNpc)
 			{
-				DoReload(default(RPCMessage));
+				DoReload(default);
 				SetEngineStatus(status: true, FlagsUpdateMode.SendNetworkUpdate_Flags);
 			}
 		}
@@ -442,12 +442,12 @@ public class Chainsaw : BaseMelee
 		if (ammo > 0 && !EngineOn())
 		{
 			ReduceAmmo(0.25f);
-			bool num = Random.Range(0f, 1f) <= engineStartChance;
-			if (!num)
+			bool flag = Random.Range(0f, 1f) <= engineStartChance;
+			if (!flag)
 			{
 				failedAttempts++;
 			}
-			if (num || failedAttempts >= 3)
+			if (flag || failedAttempts >= 3)
 			{
 				failedAttempts = 0;
 				SetEngineStatus(status: true, FlagsUpdateMode.SendNetworkUpdate_Flags);
@@ -455,8 +455,8 @@ public class Chainsaw : BaseMelee
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void Server_StopEngine(RPCMessage msg)
 	{
 		SetEngineStatus(status: false, FlagsUpdateMode.SendNetworkUpdate_Flags);
@@ -531,7 +531,7 @@ public class Chainsaw : BaseMelee
 	public override void DoAttackShared(HitInfo info)
 	{
 		base.DoAttackShared(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			EnableHitEffect(info.HitMaterial);
 		}
@@ -569,10 +569,8 @@ public class Chainsaw : BaseMelee
 	static Chainsaw()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		UnloadAmmoTitle = new Phrase("unload_ammo", "Unload Ammo");
-		UnloadAmmoDesc = new Phrase("unload_ammo_desc", "Unload the ammunition in this weapon and place it in your inventory.");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

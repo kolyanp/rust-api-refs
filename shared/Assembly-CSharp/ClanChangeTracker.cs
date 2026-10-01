@@ -119,7 +119,7 @@ public class ClanChangeTracker : IClanChangeSink
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Invalid comparison between Unknown and I4
-		IClan clan = default(IClan);
+		IClan clan = default;
 		if (_clanManager.Backend.TryGet(data.ClanId, ref clan))
 		{
 			_clanManager.OnClanChanged(clan);
@@ -165,7 +165,7 @@ public class ClanChangeTracker : IClanChangeSink
 			{
 				_clanManager.ClientRPC(RpcTarget.Player("Client_CurrentClanChanged", basePlayer));
 			}
-			IClan val = default(IClan);
+			IClan val = default;
 			if (_clanManager.Backend.TryGet(basePlayer.clanId, ref val))
 			{
 				basePlayer.serverClan = val;
@@ -174,9 +174,9 @@ public class ClanChangeTracker : IClanChangeSink
 			{
 				basePlayer.LoadClanInfo();
 			}
-			if (data.ClanId != 0L)
+			if (data.ClanId != 0L && !basePlayer.IsNpc && !basePlayer.IsBot && basePlayer.IsConnected)
 			{
-				basePlayer.GiveClanJoinedAchievement();
+				basePlayer.GiveAchievement("CLAN_JOIN");
 				basePlayer.CheckClanProgressiveAchievements(val);
 			}
 		}

@@ -16,7 +16,7 @@ public struct WaterVolumeBurstData : IEquatable<WaterVolumeBurstData>, IDisposab
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		if (((OBB)(ref bounds)).Equals(other.bounds) && cutOffPlaneMatrices.Equals(other.cutOffPlaneMatrices))
+		if (bounds.Equals(other.bounds) && cutOffPlaneMatrices.Equals(other.cutOffPlaneMatrices))
 		{
 			return naturalSource == other.naturalSource;
 		}

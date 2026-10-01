@@ -110,7 +110,7 @@ public class OxideTypeRef : BaseOxidePatch
 	public static void ProcessTypeRef(TypeReference type, ReferenceImporter importer)
 	{
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Expected O, but got Unknown
+		//IL_00c0: Expected Obj, but got Unknown
 		if (type == null)
 		{
 			return;

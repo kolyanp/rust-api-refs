@@ -23,5 +23,7 @@ public class ConsumableInformationPanel : ItemInformationPanel
 
 	public GameObject refrigeratedIcon;
 
+	public ItemTextValue skimTime;
+
 	public GameObject chickenFood;
 }

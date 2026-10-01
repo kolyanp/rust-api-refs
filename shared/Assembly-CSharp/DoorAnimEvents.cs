@@ -41,14 +41,14 @@ public class DoorAnimEvents : MonoBehaviour, IClientComponent
 			return;
 		}
 		AnimatorStateInfo currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-		if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime > 0.5f)
+		if (currentAnimatorStateInfo.normalizedTime > 0.5f)
 		{
 			return;
 		}
 		if (checkAnimSpeed)
 		{
 			currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-			if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).speed < 0f)
+			if (currentAnimatorStateInfo.speed < 0f)
 			{
 				return;
 			}
@@ -68,14 +68,14 @@ public class DoorAnimEvents : MonoBehaviour, IClientComponent
 			return;
 		}
 		AnimatorStateInfo currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-		if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime < 0.5f)
+		if (currentAnimatorStateInfo.normalizedTime < 0.5f)
 		{
 			return;
 		}
 		if (checkAnimSpeed)
 		{
 			currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-			if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).speed < 0f)
+			if (currentAnimatorStateInfo.speed < 0f)
 			{
 				return;
 			}
@@ -95,14 +95,14 @@ public class DoorAnimEvents : MonoBehaviour, IClientComponent
 			return;
 		}
 		AnimatorStateInfo currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-		if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime > 0.5f)
+		if (currentAnimatorStateInfo.normalizedTime > 0.5f)
 		{
 			return;
 		}
 		if (checkAnimSpeed)
 		{
 			currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-			if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).speed > 0f)
+			if (currentAnimatorStateInfo.speed > 0f)
 			{
 				return;
 			}
@@ -122,14 +122,14 @@ public class DoorAnimEvents : MonoBehaviour, IClientComponent
 			return;
 		}
 		AnimatorStateInfo currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-		if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime < 0.5f)
+		if (currentAnimatorStateInfo.normalizedTime < 0.5f)
 		{
 			return;
 		}
 		if (checkAnimSpeed)
 		{
 			currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-			if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).speed > 0f)
+			if (currentAnimatorStateInfo.speed > 0f)
 			{
 				return;
 			}

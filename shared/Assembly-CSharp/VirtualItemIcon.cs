@@ -40,17 +40,15 @@ public class VirtualItemIcon : MonoBehaviour
 
 	public Image[] slotImages;
 
-	public static Phrase attachmentsPhrase;
+	public static Phrase attachmentsPhrase = new Phrase("vendor_attachments", "Attachments");
 
-	public static Phrase ammoPhrase;
+	public static Phrase ammoPhrase = new Phrase("vendor_ammo", "Ammo");
 
 	static VirtualItemIcon()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		attachmentsPhrase = new Phrase("vendor_attachments", "Attachments");
-		ammoPhrase = new Phrase("vendor_ammo", "Ammo");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

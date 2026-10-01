@@ -10,6 +10,8 @@ public class Tile
 
 	public bool wasBuiltOnce;
 
+	public bool dirtySinceSave;
+
 	public Tile(int tx, int ty)
 	{
 		this.tx = tx;

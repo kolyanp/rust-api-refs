@@ -10,7 +10,7 @@ public class Trans_SeesFood : FSMTransitionBase
 		using (TimeWarning.New("Trans_SeesFood"))
 		{
 			BaseEntity food;
-			return base.Senses.FindFood(out food);
+			return Senses.FindFood(out food);
 		}
 	}
 }

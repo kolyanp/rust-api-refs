@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class SocketMod_WaterDepth : SocketMod
 {
-	public float MinimumWaterDepth;
+	public float MinimumWaterDepth = 2f;
 
-	public float MaximumWaterDepth;
+	public float MaximumWaterDepth = 4f;
 
 	public bool BlockArtificialWaterVolumes;
 
-	private Phrase lastError;
+	private Phrase lastError = new Phrase("", "");
 
 	private float lastDepth;
 
@@ -46,10 +46,6 @@ public class SocketMod_WaterDepth : SocketMod
 	public SocketMod_WaterDepth()
 	{
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Expected O, but got Unknown
-		MinimumWaterDepth = 2f;
-		MaximumWaterDepth = 4f;
-		lastError = new Phrase("", "");
-		base._002Ector();
+		//IL_002b: Expected Obj, but got Unknown
 	}
 }

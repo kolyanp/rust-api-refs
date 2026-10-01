@@ -8,4 +8,13 @@ public static class CameraModeEx
 		}
 		return true;
 	}
+
+	public static bool IsHeadMounted(this BasePlayer.CameraMode cameraMode)
+	{
+		if (!cameraMode.IsFirstPerson())
+		{
+			return cameraMode == BasePlayer.CameraMode.Eyes;
+		}
+		return true;
+	}
 }

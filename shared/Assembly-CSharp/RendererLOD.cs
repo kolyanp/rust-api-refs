@@ -21,6 +21,9 @@ public class RendererLOD : InstancedLODComponent, IPrefabPreProcess, ICustomMate
 		[NonSerialized]
 		public bool isImpostor;
 
+		[NonSerialized]
+		public bool hasDecal;
+
 		[ReadOnly]
 		public bool hasCached;
 
@@ -61,7 +64,7 @@ public class RendererLOD : InstancedLODComponent, IPrefabPreProcess, ICustomMate
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		localToWorldMatrix = ((Component)this).transform.localToWorldMatrix;
-		MeshFilter val2 = default(MeshFilter);
+		MeshFilter val2 = default;
 		for (int num = States.Length - 1; num >= 0; num--)
 		{
 			Mesh val = null;

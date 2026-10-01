@@ -47,6 +47,7 @@ public struct RaycastRaySetupJob : IJobParallelFor
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
@@ -67,8 +68,7 @@ public struct RaycastRaySetupJob : IJobParallelFor
 		{
 		}
 		float2 val = (float2.op_Implicit(samplePositions[num]) - halfRes) / res;
-		float3 val2 = default(float3);
-		((float3)(ref val2))._002Ector(val.x * worldHeight * aspectRatio, val.y * worldHeight, 1f);
+		float3 val2 = new float3(val.x * worldHeight * aspectRatio, val.y * worldHeight, 1f);
 		float3 val3 = math.mul(cameraRot, val2);
 		float3 val4 = cameraPos + val3 * nearPlane;
 		raycastCommands[index] = new RaycastCommand(float3.op_Implicit(val4), float3.op_Implicit(math.normalize(val3)), farPlane, layerMask, 1);

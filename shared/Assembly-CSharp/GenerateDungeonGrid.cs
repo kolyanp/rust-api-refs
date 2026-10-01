@@ -135,6 +135,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 		//IL_0347: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1116: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1118: Unknown result type (might be due to invalid IL or missing references)
+		//IL_10b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_10b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_10bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_10c0: Unknown result type (might be due to invalid IL or missing references)
@@ -201,6 +202,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 		//IL_1f7b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1f82: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1f89: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2298: Unknown result type (might be due to invalid IL or missing references)
 		//IL_229f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_22a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_22a6: Unknown result type (might be due to invalid IL or missing references)
@@ -223,6 +225,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 		//IL_187f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1881: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1886: Unknown result type (might be due to invalid IL or missing references)
+		//IL_201f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_2026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_2028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_202d: Unknown result type (might be due to invalid IL or missing references)
@@ -410,6 +413,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 		//IL_1a2f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1a34: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1a39: Unknown result type (might be due to invalid IL or missing references)
+		//IL_23df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_23e6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_23e8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_23fe: Unknown result type (might be due to invalid IL or missing references)
@@ -455,6 +459,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 		//IL_1b15: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1a45: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1a47: Unknown result type (might be due to invalid IL or missing references)
+		//IL_24f7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_24fe: Unknown result type (might be due to invalid IL or missing references)
 		//IL_2500: Unknown result type (might be due to invalid IL or missing references)
 		//IL_2516: Unknown result type (might be due to invalid IL or missing references)
@@ -661,7 +666,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 						DungeonVolume componentInChildren2 = ((Component)entrance).GetComponentInChildren<DungeonVolume>();
 						OBB bounds = componentInChildren.GetBounds(val.GridToWorldCoords(val2), Quaternion.identity);
 						OBB bounds2 = componentInChildren2.GetBounds(((Component)entrance).transform.position, Quaternion.identity);
-						if (!((OBB)(ref bounds)).Intersects2D(bounds2))
+						if (!bounds.Intersects2D(bounds2))
 						{
 							DungeonGridLink componentInChildren3 = prefab5.Object.GetComponentInChildren<DungeonGridLink>();
 							Vector3 val3 = val.GridToWorldCoords(new Vector2i(val2.x, val2.y)) + componentInChildren3.UpSocket.localPosition;
@@ -701,7 +706,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 						DungeonGridLink componentInChildren4 = ((Component)entrance).gameObject.GetComponentInChildren<DungeonGridLink>();
 						Vector3 position = ((Component)entrance).transform.position;
 						Quaternion rotation = ((Component)entrance).transform.rotation;
-						Vector3 eulerAngles = ((Quaternion)(ref rotation)).eulerAngles;
+						Vector3 eulerAngles = rotation.eulerAngles;
 						DungeonGridLink componentInChildren5 = prefab4.Object.GetComponentInChildren<DungeonGridLink>();
 						Vector3 position2 = val.GridToWorldCoords(new Vector2i(val2.x, val2.y));
 						Vector3 zero = Vector3.zero;
@@ -878,27 +883,36 @@ public class GenerateDungeonGrid : ProceduralComponent
 					foreach (Prefab<DungeonGridCell> prefab6 in array7)
 					{
 						Prefab<DungeonGridCell> prefab7 = ((num9 > num) ? val[num9 - 1, num10] : null);
-						if (((prefab7 != null) ? ((prefab6.Component.West == prefab7.Component.East) ? 1 : 0) : (dungeonGridConnectionHash3.West ? ((int)prefab6.Component.West) : ((prefab6.Component.West == DungeonGridConnectionType.None) ? 1 : 0))) == 0)
+						if (!((prefab7 != null) ? (prefab6.Component.West == prefab7.Component.East) : (dungeonGridConnectionHash3.West ? (prefab6.Component.West != DungeonGridConnectionType.None) : (prefab6.Component.West == DungeonGridConnectionType.None))))
 						{
 							continue;
 						}
 						Prefab<DungeonGridCell> prefab8 = ((num9 < num2) ? val[num9 + 1, num10] : null);
-						if (((prefab8 != null) ? ((prefab6.Component.East == prefab8.Component.West) ? 1 : 0) : (dungeonGridConnectionHash3.East ? ((int)prefab6.Component.East) : ((prefab6.Component.East == DungeonGridConnectionType.None) ? 1 : 0))) == 0)
+						if (!((prefab8 != null) ? (prefab6.Component.East == prefab8.Component.West) : (dungeonGridConnectionHash3.East ? (prefab6.Component.East != DungeonGridConnectionType.None) : (prefab6.Component.East == DungeonGridConnectionType.None))))
 						{
 							continue;
 						}
 						Prefab<DungeonGridCell> prefab9 = ((num10 > num) ? val[num9, num10 - 1] : null);
-						if (((prefab9 != null) ? ((prefab6.Component.South == prefab9.Component.North) ? 1 : 0) : (dungeonGridConnectionHash3.South ? ((int)prefab6.Component.South) : ((prefab6.Component.South == DungeonGridConnectionType.None) ? 1 : 0))) == 0)
+						if (!((prefab9 != null) ? (prefab6.Component.South == prefab9.Component.North) : (dungeonGridConnectionHash3.South ? (prefab6.Component.South != DungeonGridConnectionType.None) : (prefab6.Component.South == DungeonGridConnectionType.None))))
 						{
 							continue;
 						}
 						Prefab<DungeonGridCell> prefab10 = ((num10 < num2) ? val[num9, num10 + 1] : null);
-						if (((prefab10 != null) ? (prefab6.Component.North == prefab10.Component.South) : (dungeonGridConnectionHash3.North ? ((byte)prefab6.Component.North != 0) : (prefab6.Component.North == DungeonGridConnectionType.None))) && (prefab6.Component.West == DungeonGridConnectionType.None || prefab7 == null || !prefab6.Component.ShouldAvoid(prefab7.ID)) && (prefab6.Component.East == DungeonGridConnectionType.None || prefab8 == null || !prefab6.Component.ShouldAvoid(prefab8.ID)) && (prefab6.Component.South == DungeonGridConnectionType.None || prefab9 == null || !prefab6.Component.ShouldAvoid(prefab9.ID)) && (prefab6.Component.North == DungeonGridConnectionType.None || prefab10 == null || !prefab6.Component.ShouldAvoid(prefab10.ID)))
+						bool flag5;
+						if (prefab10 != null)
+						{
+							flag5 = prefab6.Component.North == prefab10.Component.South;
+						}
+						else
+						{
+							flag5 = (dungeonGridConnectionHash3.North ? (prefab6.Component.North != DungeonGridConnectionType.None) : (prefab6.Component.North == DungeonGridConnectionType.None));
+						}
+						if (flag5 && (prefab6.Component.West == DungeonGridConnectionType.None || prefab7 == null || !prefab6.Component.ShouldAvoid(prefab7.ID)) && (prefab6.Component.East == DungeonGridConnectionType.None || prefab8 == null || !prefab6.Component.ShouldAvoid(prefab8.ID)) && (prefab6.Component.South == DungeonGridConnectionType.None || prefab9 == null || !prefab6.Component.ShouldAvoid(prefab9.ID)) && (prefab6.Component.North == DungeonGridConnectionType.None || prefab10 == null || !prefab6.Component.ShouldAvoid(prefab10.ID)))
 						{
 							val[num9, num10] = prefab6;
 							bool num11 = prefab7 == null || prefab6.Component.WestVariant == prefab7.Component.EastVariant;
-							bool flag5 = prefab9 == null || prefab6.Component.SouthVariant == prefab9.Component.NorthVariant;
-							if (num11 & flag5)
+							bool flag6 = prefab9 == null || prefab6.Component.SouthVariant == prefab9.Component.NorthVariant;
+							if (num11 & flag6)
 							{
 								break;
 							}
@@ -908,7 +922,6 @@ public class GenerateDungeonGrid : ProceduralComponent
 			}
 			Vector3 zero2 = Vector3.zero;
 			Vector3 zero3 = Vector3.zero;
-			Vector2i val5 = default(Vector2i);
 			do
 			{
 				zero3 = zero2;
@@ -919,7 +932,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 						Prefab<DungeonGridCell> prefab11 = val[num12, num13];
 						if (prefab11 != null)
 						{
-							((Vector2i)(ref val5))._002Ector(num12, num13);
+							Vector2i val5 = new Vector2i(num12, num13);
 							Vector3 val6 = val.GridToWorldCoords(val5);
 							while (!IsValidPrefabPlacement(prefab11, zero2 + val6, Quaternion.identity, Vector3.one, EnvironmentType.Underground | EnvironmentType.Building))
 							{
@@ -939,7 +952,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 			{
 				Vector3 val7 = item5.upwards.origin.position + item5.upwards.origin.rotation * Vector3.Scale(item5.upwards.origin.upSocket.localPosition, item5.upwards.origin.scale);
 				Vector3 val8 = item5.downwards.origin.position + item5.downwards.origin.rotation * Vector3.Scale(item5.downwards.origin.downSocket.localPosition, item5.downwards.origin.scale) - val7;
-				Vector3[] array8 = (Vector3[])(object)new Vector3[2]
+				Vector3[] array8 = new Vector3[2]
 				{
 					new Vector3(0f, 1f, 0f),
 					new Vector3(1f, 1f, 1f)
@@ -948,10 +961,10 @@ public class GenerateDungeonGrid : ProceduralComponent
 				{
 					int num14 = 0;
 					int num15 = 0;
-					while (((Vector3)(ref val8)).magnitude > 1f && (num14 < 8 || num15 < 8))
+					while (val8.magnitude > 1f && (num14 < 8 || num15 < 8))
 					{
-						bool flag6 = num14 > 2 && num15 > 2;
-						bool flag7 = num14 > 4 && num15 > 4;
+						bool flag7 = num14 > 2 && num15 > 2;
+						bool flag8 = num14 > 4 && num15 > 4;
 						Prefab<DungeonGridLink> prefab12 = null;
 						Vector3 val10 = Vector3.zero;
 						int num16 = int.MinValue;
@@ -972,7 +985,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 							switch (component.DownType)
 							{
 							case DungeonGridLinkType.Elevator:
-								if (flag6 || val9.x != 0f || val9.z != 0f)
+								if (flag7 || val9.x != 0f || val9.z != 0f)
 								{
 									continue;
 								}
@@ -984,7 +997,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 								}
 								break;
 							}
-							int num18 = ((!flag6) ? component.Priority : 0);
+							int num18 = ((!flag7) ? component.Priority : 0);
 							if (num16 > num18)
 							{
 								continue;
@@ -1007,12 +1020,12 @@ public class GenerateDungeonGrid : ProceduralComponent
 							Vector3 val18 = val13 * (component.DownSocket.localPosition - component.UpSocket.localPosition);
 							Vector3 val19 = val8 + val10;
 							Vector3 val20 = val8 + val18;
-							float magnitude = ((Vector3)(ref val19)).magnitude;
-							float magnitude2 = ((Vector3)(ref val20)).magnitude;
+							float magnitude = val19.magnitude;
+							float magnitude2 = val20.magnitude;
 							Vector3 val21 = Vector3.Scale(val19, val9);
 							Vector3 val22 = Vector3.Scale(val20, val9);
-							float magnitude3 = ((Vector3)(ref val21)).magnitude;
-							float magnitude4 = ((Vector3)(ref val22)).magnitude;
+							float magnitude3 = val21.magnitude;
+							float magnitude4 = val22.magnitude;
 							if (val10 != Vector3.zero)
 							{
 								if (magnitude3 < magnitude4 || (magnitude3 == magnitude4 && magnitude < magnitude2) || (magnitude3 == magnitude4 && magnitude == magnitude2 && num17 < 0.5f))
@@ -1024,23 +1037,23 @@ public class GenerateDungeonGrid : ProceduralComponent
 							{
 								continue;
 							}
-							if (Mathf.Abs(val22.x) - Mathf.Abs(val21.x) > 0.01f || (Mathf.Abs(val22.x) > 0.01f && val19.x * val20.x < 0f) || Mathf.Abs(val22.y) - Mathf.Abs(val21.y) > 0.01f || (Mathf.Abs(val22.y) > 0.01f && val19.y * val20.y < 0f) || Mathf.Abs(val22.z) - Mathf.Abs(val21.z) > 0.01f || (Mathf.Abs(val22.z) > 0.01f && val19.z * val20.z < 0f) || (flag6 && val9.x == 0f && val9.z == 0f && component.DownType == DungeonGridLinkType.Default && ((Mathf.Abs(val20.x) > 0.01f && Mathf.Abs(val20.x) < LinkRadius * 2f - 0.1f) || (Mathf.Abs(val20.z) > 0.01f && Mathf.Abs(val20.z) < LinkRadius * 2f - 0.1f))))
+							if (Mathf.Abs(val22.x) - Mathf.Abs(val21.x) > 0.01f || (Mathf.Abs(val22.x) > 0.01f && val19.x * val20.x < 0f) || Mathf.Abs(val22.y) - Mathf.Abs(val21.y) > 0.01f || (Mathf.Abs(val22.y) > 0.01f && val19.y * val20.y < 0f) || Mathf.Abs(val22.z) - Mathf.Abs(val21.z) > 0.01f || (Mathf.Abs(val22.z) > 0.01f && val19.z * val20.z < 0f) || (flag7 && val9.x == 0f && val9.z == 0f && component.DownType == DungeonGridLinkType.Default && ((Mathf.Abs(val20.x) > 0.01f && Mathf.Abs(val20.x) < LinkRadius * 2f - 0.1f) || (Mathf.Abs(val20.z) > 0.01f && Mathf.Abs(val20.z) < LinkRadius * 2f - 0.1f))))
 							{
 								continue;
 							}
 							num16 = num18;
 							if (val9.x == 0f && val9.z == 0f)
 							{
-								if (!flag6 && Mathf.Abs(val20.y) < LinkTransition - 0.1f)
+								if (!flag7 && Mathf.Abs(val20.y) < LinkTransition - 0.1f)
 								{
 									continue;
 								}
 							}
-							else if ((!flag6 && magnitude4 > 0.01f && (Mathf.Abs(val20.x) < LinkRadius * 2f - 0.1f || Mathf.Abs(val20.z) < LinkRadius * 2f - 0.1f)) || (!flag7 && magnitude4 > 0.01f && (Mathf.Abs(val20.x) < LinkRadius * 1f - 0.1f || Mathf.Abs(val20.z) < LinkRadius * 1f - 0.1f)))
+							else if ((!flag7 && magnitude4 > 0.01f && (Mathf.Abs(val20.x) < LinkRadius * 2f - 0.1f || Mathf.Abs(val20.z) < LinkRadius * 2f - 0.1f)) || (!flag8 && magnitude4 > 0.01f && (Mathf.Abs(val20.x) < LinkRadius * 1f - 0.1f || Mathf.Abs(val20.z) < LinkRadius * 1f - 0.1f)))
 							{
 								continue;
 							}
-							if (!flag6 || !(magnitude4 < 0.01f) || !(magnitude2 < 0.01f) || !(Quaternion.Angle(val15, val14) > 10f))
+							if (!flag7 || !(magnitude4 < 0.01f) || !(magnitude2 < 0.01f) || !(Quaternion.Angle(val15, val14) > 10f))
 							{
 								prefab12 = prefab13;
 								val10 = val18;
@@ -1086,7 +1099,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 								switch (component2.DownType)
 								{
 								case DungeonGridLinkType.Elevator:
-									if (flag6 || val9.x != 0f || val9.z != 0f)
+									if (flag7 || val9.x != 0f || val9.z != 0f)
 									{
 										continue;
 									}
@@ -1098,7 +1111,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 									}
 									break;
 								}
-								int num21 = ((!flag6) ? component2.Priority : 0);
+								int num21 = ((!flag7) ? component2.Priority : 0);
 								if (num19 > num21)
 								{
 									continue;
@@ -1121,12 +1134,12 @@ public class GenerateDungeonGrid : ProceduralComponent
 								Vector3 val31 = val26 * (component2.UpSocket.localPosition - component2.DownSocket.localPosition);
 								Vector3 val32 = val8 - val23;
 								Vector3 val33 = val8 - val31;
-								float magnitude5 = ((Vector3)(ref val32)).magnitude;
-								float magnitude6 = ((Vector3)(ref val33)).magnitude;
+								float magnitude5 = val32.magnitude;
+								float magnitude6 = val33.magnitude;
 								Vector3 val34 = Vector3.Scale(val32, val9);
 								Vector3 val35 = Vector3.Scale(val33, val9);
-								float magnitude7 = ((Vector3)(ref val34)).magnitude;
-								float magnitude8 = ((Vector3)(ref val35)).magnitude;
+								float magnitude7 = val34.magnitude;
+								float magnitude8 = val35.magnitude;
 								if (val23 != Vector3.zero)
 								{
 									if (magnitude7 < magnitude8 || (magnitude7 == magnitude8 && magnitude5 < magnitude6) || (magnitude7 == magnitude8 && magnitude5 == magnitude6 && num20 < 0.5f))
@@ -1138,23 +1151,23 @@ public class GenerateDungeonGrid : ProceduralComponent
 								{
 									continue;
 								}
-								if (Mathf.Abs(val35.x) - Mathf.Abs(val34.x) > 0.01f || (Mathf.Abs(val35.x) > 0.01f && val32.x * val33.x < 0f) || Mathf.Abs(val35.y) - Mathf.Abs(val34.y) > 0.01f || (Mathf.Abs(val35.y) > 0.01f && val32.y * val33.y < 0f) || Mathf.Abs(val35.z) - Mathf.Abs(val34.z) > 0.01f || (Mathf.Abs(val35.z) > 0.01f && val32.z * val33.z < 0f) || (flag6 && val9.x == 0f && val9.z == 0f && component2.UpType == DungeonGridLinkType.Default && ((Mathf.Abs(val33.x) > 0.01f && Mathf.Abs(val33.x) < LinkRadius * 2f - 0.1f) || (Mathf.Abs(val33.z) > 0.01f && Mathf.Abs(val33.z) < LinkRadius * 2f - 0.1f))))
+								if (Mathf.Abs(val35.x) - Mathf.Abs(val34.x) > 0.01f || (Mathf.Abs(val35.x) > 0.01f && val32.x * val33.x < 0f) || Mathf.Abs(val35.y) - Mathf.Abs(val34.y) > 0.01f || (Mathf.Abs(val35.y) > 0.01f && val32.y * val33.y < 0f) || Mathf.Abs(val35.z) - Mathf.Abs(val34.z) > 0.01f || (Mathf.Abs(val35.z) > 0.01f && val32.z * val33.z < 0f) || (flag7 && val9.x == 0f && val9.z == 0f && component2.UpType == DungeonGridLinkType.Default && ((Mathf.Abs(val33.x) > 0.01f && Mathf.Abs(val33.x) < LinkRadius * 2f - 0.1f) || (Mathf.Abs(val33.z) > 0.01f && Mathf.Abs(val33.z) < LinkRadius * 2f - 0.1f))))
 								{
 									continue;
 								}
 								num19 = num21;
 								if (val9.x == 0f && val9.z == 0f)
 								{
-									if (!flag6 && Mathf.Abs(val33.y) < LinkTransition - 0.1f)
+									if (!flag7 && Mathf.Abs(val33.y) < LinkTransition - 0.1f)
 									{
 										continue;
 									}
 								}
-								else if ((!flag6 && magnitude8 > 0.01f && (Mathf.Abs(val33.x) < LinkRadius * 2f - 0.1f || Mathf.Abs(val33.z) < LinkRadius * 2f - 0.1f)) || (!flag7 && magnitude8 > 0.01f && (Mathf.Abs(val33.x) < LinkRadius * 1f - 0.1f || Mathf.Abs(val33.z) < LinkRadius * 1f - 0.1f)))
+								else if ((!flag7 && magnitude8 > 0.01f && (Mathf.Abs(val33.x) < LinkRadius * 2f - 0.1f || Mathf.Abs(val33.z) < LinkRadius * 2f - 0.1f)) || (!flag8 && magnitude8 > 0.01f && (Mathf.Abs(val33.x) < LinkRadius * 1f - 0.1f || Mathf.Abs(val33.z) < LinkRadius * 1f - 0.1f)))
 								{
 									continue;
 								}
-								if (!flag6 || !(magnitude8 < 0.01f) || !(magnitude6 < 0.01f) || !(Quaternion.Angle(val28, val27) > 10f))
+								if (!flag7 || !(magnitude8 < 0.01f) || !(magnitude6 < 0.01f) || !(Quaternion.Angle(val28, val27) > 10f))
 								{
 									prefab14 = prefab15;
 									val23 = val31;
@@ -1200,7 +1213,6 @@ public class GenerateDungeonGrid : ProceduralComponent
 			if (TerrainMeta.Path.Rails.Count > 0)
 			{
 				List<PrefabReplacement> list8 = new List<PrefabReplacement>();
-				Vector2i val36 = default(Vector2i);
 				for (int num22 = 0; num22 < val.CellCount; num22++)
 				{
 					for (int num23 = 0; num23 < val.CellCount; num23++)
@@ -1210,7 +1222,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 						{
 							continue;
 						}
-						((Vector2i)(ref val36))._002Ector(num22, num23);
+						Vector2i val36 = new Vector2i(num22, num23);
 						Vector3 val37 = val.GridToWorldCoords(val36) + zero2;
 						Prefab<DungeonGridCell>[] array7 = array3;
 						foreach (Prefab<DungeonGridCell> prefab17 in array7)
@@ -1250,18 +1262,17 @@ public class GenerateDungeonGrid : ProceduralComponent
 					num24--;
 					PrefabReplacement replacement = list8[0];
 					val[replacement.gridPosition.x, replacement.gridPosition.y] = replacement.prefab;
-					list8.RemoveAll(delegate(PrefabReplacement a)
+					list8.RemoveAll((PrefabReplacement a) =>
 					{
 						//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 						//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 						//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 						//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 						Vector3 val45 = a.worldPosition - replacement.worldPosition;
-						return ((Vector3)(ref val45)).magnitude < 1500f;
+						return val45.magnitude < 1500f;
 					});
 				}
 			}
-			Vector2i val39 = default(Vector2i);
 			for (int num25 = 0; num25 < val.CellCount; num25++)
 			{
 				for (int num26 = 0; num26 < val.CellCount; num26++)
@@ -1269,14 +1280,12 @@ public class GenerateDungeonGrid : ProceduralComponent
 					Prefab<DungeonGridCell> prefab18 = val[num25, num26];
 					if (prefab18 != null)
 					{
-						((Vector2i)(ref val39))._002Ector(num25, num26);
+						Vector2i val39 = new Vector2i(num25, num26);
 						Vector3 val40 = val.GridToWorldCoords(val39);
 						World.AddPrefab("Dungeon", prefab18, zero2 + val40, Quaternion.identity, Vector3.one);
 					}
 				}
 			}
-			Vector2i val41 = default(Vector2i);
-			Vector2i val43 = default(Vector2i);
 			for (int num27 = 0; num27 < val.CellCount - 1; num27++)
 			{
 				for (int num28 = 0; num28 < val.CellCount - 1; num28++)
@@ -1293,7 +1302,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 						{
 							if (prefab22.Component.West == prefab19.Component.East && prefab22.Component.East == prefab20.Component.West && prefab22.Component.WestVariant == prefab19.Component.EastVariant && prefab22.Component.EastVariant == prefab20.Component.WestVariant)
 							{
-								((Vector2i)(ref val41))._002Ector(num27, num28);
+								Vector2i val41 = new Vector2i(num27, num28);
 								Vector3 val42 = val.GridToWorldCoords(val41) + new Vector3(val.CellSizeHalf, 0f, 0f);
 								World.AddPrefab("Dungeon", prefab22, zero2 + val42, Quaternion.identity, Vector3.one);
 								break;
@@ -1310,7 +1319,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 					{
 						if (prefab23.Component.South == prefab19.Component.North && prefab23.Component.North == prefab21.Component.South && prefab23.Component.SouthVariant == prefab19.Component.NorthVariant && prefab23.Component.NorthVariant == prefab21.Component.SouthVariant)
 						{
-							((Vector2i)(ref val43))._002Ector(num27, num28);
+							Vector2i val43 = new Vector2i(num27, num28);
 							Vector3 val44 = val.GridToWorldCoords(val43) + new Vector3(0f, 0f, val.CellSizeHalf);
 							World.AddPrefab("Dungeon", prefab23, zero2 + val44, Quaternion.identity, Vector3.one);
 							break;

@@ -11,7 +11,7 @@ public class EnvironmentManager : SingletonComponent<EnvironmentManager>
 {
 	private static ListHashSet<EnvironmentVolume> dynamicVolumes = new ListHashSet<EnvironmentVolume>();
 
-	private static Collider[] check_colliderBuffer = (Collider[])(object)new Collider[32768];
+	private static Collider[] check_colliderBuffer = new Collider[32768];
 
 	private void Update()
 	{
@@ -88,7 +88,7 @@ public class EnvironmentManager : SingletonComponent<EnvironmentManager>
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		int num = GamePhysics.HandleIgnoreCollision(obb.position, 262144);
 		int num2 = Physics.OverlapBoxNonAlloc(obb.position, obb.extents, check_colliderBuffer, obb.rotation, num, (QueryTriggerInteraction)2);
-		EnvironmentVolume environmentVolume = default(EnvironmentVolume);
+		EnvironmentVolume environmentVolume = default;
 		for (int i = 0; i < num2; i++)
 		{
 			if (((Component)check_colliderBuffer[i]).TryGetComponent<EnvironmentVolume>(ref environmentVolume) && (environmentVolume.Type & type) != 0)
@@ -105,7 +105,7 @@ public class EnvironmentManager : SingletonComponent<EnvironmentManager>
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		int num = GamePhysics.HandleIgnoreCollision(pos, 262144);
 		int num2 = Physics.OverlapSphereNonAlloc(pos, radius, check_colliderBuffer, num, (QueryTriggerInteraction)2);
-		EnvironmentVolume environmentVolume = default(EnvironmentVolume);
+		EnvironmentVolume environmentVolume = default;
 		for (int i = 0; i < num2; i++)
 		{
 			if (((Component)check_colliderBuffer[i]).TryGetComponent<EnvironmentVolume>(ref environmentVolume) && (environmentVolume.Type & type) != 0)
@@ -133,10 +133,10 @@ public class EnvironmentManager : SingletonComponent<EnvironmentManager>
 		{
 			NativeArray<ColliderHit> hits = new NativeArray<ColliderHit>(positions.Length * maxResPerCast, (Allocator)3, (NativeArrayOptions)0);
 			JobHandle val = GamePhysics.OverlapSpheres(positions, radii, layerMasks, hits, maxResPerCast, triggerInteraction, validate);
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			using (TimeWarning.New("FindComponent"))
 			{
-				EnvironmentVolume environmentVolume = default(EnvironmentVolume);
+				EnvironmentVolume environmentVolume = default;
 				for (int i = 0; i < positions.Length; i++)
 				{
 					results[i] = (EnvironmentType)0;
@@ -144,11 +144,11 @@ public class EnvironmentManager : SingletonComponent<EnvironmentManager>
 					for (int j = 0; j < maxResPerCast; j++)
 					{
 						ColliderHit val2 = hits[num + j];
-						if (((ColliderHit)(ref val2)).instanceID == 0)
+						if (val2.instanceID == 0)
 						{
 							break;
 						}
-						if (((Component)((ColliderHit)(ref val2)).collider).TryGetComponent<EnvironmentVolume>(ref environmentVolume))
+						if (((Component)val2.collider).TryGetComponent<EnvironmentVolume>(ref environmentVolume))
 						{
 							int num2 = i;
 							results[num2] |= environmentVolume.Type;

@@ -6,7 +6,7 @@ public class LTRect
 {
 	public Rect _rect;
 
-	public float alpha;
+	public float alpha = 1f;
 
 	public float rotation;
 
@@ -14,7 +14,7 @@ public class LTRect
 
 	public Vector2 margin;
 
-	public Rect relativeRect;
+	public Rect relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
 
 	public bool rotateEnabled;
 
@@ -31,7 +31,7 @@ public class LTRect
 
 	public bool useColor;
 
-	public Color color;
+	public Color color = Color.white;
 
 	public bool fontScaleToFit;
 
@@ -41,7 +41,7 @@ public class LTRect
 
 	public Texture texture;
 
-	private int _id;
+	private int _id = -1;
 
 	[HideInInspector]
 	public int counter;
@@ -56,11 +56,11 @@ public class LTRect
 	{
 		get
 		{
-			return ((Rect)(ref _rect)).x;
+			return _rect.x;
 		}
 		set
 		{
-			((Rect)(ref _rect)).x = value;
+			_rect.x = value;
 		}
 	}
 
@@ -68,11 +68,11 @@ public class LTRect
 	{
 		get
 		{
-			return ((Rect)(ref _rect)).y;
+			return _rect.y;
 		}
 		set
 		{
-			((Rect)(ref _rect)).y = value;
+			_rect.y = value;
 		}
 	}
 
@@ -80,11 +80,11 @@ public class LTRect
 	{
 		get
 		{
-			return ((Rect)(ref _rect)).width;
+			return _rect.width;
 		}
 		set
 		{
-			((Rect)(ref _rect)).width = value;
+			_rect.width = value;
 		}
 	}
 
@@ -92,11 +92,11 @@ public class LTRect
 	{
 		get
 		{
-			return ((Rect)(ref _rect)).height;
+			return _rect.height;
 		}
 		set
 		{
-			((Rect)(ref _rect)).height = value;
+			_rect.height = value;
 		}
 	}
 
@@ -143,11 +143,11 @@ public class LTRect
 			{
 				if (useSimpleScale)
 				{
-					style.fontSize = (int)(((Rect)(ref _rect)).height * ((Rect)(ref relativeRect)).height);
+					style.fontSize = (int)(_rect.height * relativeRect.height);
 				}
 				else
 				{
-					style.fontSize = (int)((Rect)(ref _rect)).height;
+					style.fontSize = (int)_rect.height;
 				}
 			}
 			return _rect;
@@ -168,11 +168,6 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		alpha = 1f;
-		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
-		color = Color.white;
-		_id = -1;
-		base._002Ector();
 		reset();
 		rotateEnabled = (alphaEnabled = true);
 		_rect = new Rect(0f, 0f, 1f, 1f);
@@ -186,11 +181,6 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		alpha = 1f;
-		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
-		color = Color.white;
-		_id = -1;
-		base._002Ector();
 		_rect = rect;
 		reset();
 	}
@@ -203,11 +193,6 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		alpha = 1f;
-		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
-		color = Color.white;
-		_id = -1;
-		base._002Ector();
 		_rect = new Rect(x, y, width, height);
 		alpha = 1f;
 		rotation = 0f;
@@ -222,11 +207,6 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		this.alpha = 1f;
-		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
-		color = Color.white;
-		_id = -1;
-		base._002Ector();
 		_rect = new Rect(x, y, width, height);
 		this.alpha = alpha;
 		rotation = 0f;
@@ -241,11 +221,6 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		this.alpha = 1f;
-		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
-		color = Color.white;
-		_id = -1;
-		base._002Ector();
 		_rect = new Rect(x, y, width, height);
 		this.alpha = alpha;
 		this.rotation = rotation;
@@ -283,6 +258,7 @@ public class LTRect
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
@@ -294,20 +270,19 @@ public class LTRect
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		Matrix4x4 matrix = GUI.matrix;
-		float num = ((Matrix4x4)(ref matrix))[0, 0];
+		float num = matrix[0, 0];
 		matrix = GUI.matrix;
-		float num2 = ((Matrix4x4)(ref matrix))[1, 1];
+		float num2 = matrix[1, 1];
 		matrix = GUI.matrix;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(num, num2, ((Matrix4x4)(ref matrix))[2, 2]);
+		Vector3 val = new Vector3(num, num2, matrix[2, 2]);
 		if (pivot == Vector2.zero)
 		{
-			float num3 = (((Rect)(ref _rect)).x + ((Rect)(ref _rect)).width * 0.5f) * val.x;
+			float num3 = (_rect.x + _rect.width * 0.5f) * val.x;
 			matrix = GUI.matrix;
-			float num4 = num3 + ((Matrix4x4)(ref matrix))[0, 3];
-			float num5 = (((Rect)(ref _rect)).y + ((Rect)(ref _rect)).height * 0.5f) * val.y;
+			float num4 = num3 + matrix[0, 3];
+			float num5 = (_rect.y + _rect.height * 0.5f) * val.y;
 			matrix = GUI.matrix;
-			pivot = new Vector2(num4, num5 + ((Matrix4x4)(ref matrix))[1, 3]);
+			pivot = new Vector2(num4, num5 + matrix[1, 3]);
 		}
 	}
 
@@ -370,6 +345,6 @@ public class LTRect
 
 	public override string ToString()
 	{
-		return "x:" + ((Rect)(ref _rect)).x + " y:" + ((Rect)(ref _rect)).y + " width:" + ((Rect)(ref _rect)).width + " height:" + ((Rect)(ref _rect)).height;
+		return "x:" + _rect.x + " y:" + _rect.y + " width:" + _rect.width + " height:" + _rect.height;
 	}
 }

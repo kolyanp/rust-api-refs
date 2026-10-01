@@ -27,13 +27,13 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 	public const Flags AngryBees = Flags.Reserved14;
 
 	[ServerVar(Help = "How long before a Beehive will update")]
-	public static float updateHiveInterval;
+	public static float updateHiveInterval = 120f;
 
 	[ServerVar(Help = "How long before the Beehive will perform temperature and inside checks")]
-	public static float updateHiveStatsInterval;
+	public static float updateHiveStatsInterval = 120f;
 
 	[ServerVar(Help = "How much the Nucleus's XP should be increased per honeycomb generated")]
-	public static int xpIncreasePerHoneycomb;
+	public static int xpIncreasePerHoneycomb = 2;
 
 	private static Vector3[] outsideLookupDirs;
 
@@ -80,7 +80,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.fromDisk && info.msg.beehive != null)
+		if (isServer && info.fromDisk && info.msg.beehive != null)
 		{
 			createNewCombAccumulator = info.msg.beehive.currentProgress;
 		}
@@ -99,32 +99,32 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		}
 	}
 
-	public override void OnItemRemovedFromStack(Item item, int amount)
+	public override void OnItemRemovedFromStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
-		base.OnItemRemovedFromStack(item, amount);
-		OnItemAddedOrRemoved(item, added: false);
+		base.OnItemRemovedFromStack(item, amount, sourcePlayer);
+		OnItemAddedOrRemoved(item, added: false, sourcePlayer);
 	}
 
-	public override void OnItemAddedToStack(Item item, int amount)
+	public override void OnItemAddedToStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedToStack(item, amount);
-		OnItemAddedOrRemoved(item, added: true);
+		base.OnItemAddedToStack(item, amount, sourcePlayer);
+		OnItemAddedOrRemoved(item, added: true, sourcePlayer);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		base.OnItemAddedOrRemoved(item, added);
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		CheckNucleus();
 		Flags flags = base.flags;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
 		{
-			float num = base.inventory.GetAmount(HoneyCombDefinition.itemid);
+			float num = inventory.GetAmount(HoneyCombDefinition.itemid);
 			flagsUpdateScope.Set(Flags.Reserved13, num > 0f && hasNucleus);
 			if (!added && (Object)(object)item.info == (Object)(object)HoneyCombDefinition)
 			{
-				BasePlayer basePlayer = BasePlayer.FindByID(base.LastLootedBy);
+				BasePlayer basePlayer = BasePlayer.FindByID(LastLootedBy);
 				if ((Object)(object)basePlayer != (Object)null && basePlayer.IsAlive() && !basePlayer.IsNpc && basePlayer.isServer)
 				{
 					timeSinceAngryBees = TimeSince.op_Implicit(0f);
@@ -132,7 +132,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 				}
 			}
 		}
-		if (base.inventory.IsFull(checkForPartialStacks: true))
+		if (inventory.IsFull(checkForPartialStacks: true))
 		{
 			StopHive();
 		}
@@ -154,7 +154,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);
-		if (!base.isClient)
+		if (!isClient)
 		{
 			CheckNucleus();
 			Sprinkler.SplashableGrid.RegisterEntity(this);
@@ -211,7 +211,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		float num = base.inventory.GetAmount(HoneyCombDefinition.itemid);
+		float num = inventory.GetAmount(HoneyCombDefinition.itemid);
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Reserved13, num > 0f && hasNucleus);
@@ -224,7 +224,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		createNewCombAccumulator = 0f;
 		if (hasNucleus)
 		{
-			Item slot = base.inventory.GetSlot(0);
+			Item slot = inventory.GetSlot(0);
 			if (slot != null)
 			{
 				int dataInt = slot.instanceData.dataInt;
@@ -236,10 +236,10 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 			}
 		}
 		Item item = ItemManager.Create(HoneyCombDefinition, 1, 0uL, isServerSide: true, 0uL);
-		if (!item.MoveToContainer(base.inventory))
+		if (!item.MoveToContainer(inventory))
 		{
 			StopHive();
-			item.Drop(base.inventory.dropPosition, base.inventory.dropVelocity);
+			item.Drop(inventory.dropPosition, inventory.dropVelocity);
 		}
 	}
 
@@ -265,13 +265,13 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 	{
 		if ((Object)(object)splashType == (Object)(object)WaterTypes.RadioactiveWaterItemDef)
 		{
-			Item slot = base.inventory.GetSlot(0);
+			Item slot = inventory.GetSlot(0);
 			if (slot != null)
 			{
 				hasNucleus = (Object)(object)((Component)slot.info).GetComponent<ItemModBeehiveNucleus>() != (Object)null;
 				if (hasNucleus)
 				{
-					base.inventory.Remove(slot);
+					inventory.Remove(slot);
 					slot.Remove();
 				}
 			}
@@ -285,7 +285,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Expected O, but got Unknown
+		//IL_001d: Expected Obj, but got Unknown
 		if (targetItem != null)
 		{
 			targetItem.instanceData = new InstanceData
@@ -298,11 +298,11 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 
 	private void CheckNucleus()
 	{
-		if (base.inventory == null)
+		if (inventory == null)
 		{
 			return;
 		}
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot != null)
 		{
 			hasNucleus = (Object)(object)((Component)slot.info).GetComponent<ItemModBeehiveNucleus>() != (Object)null;
@@ -451,9 +451,24 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		{
 			CalculateQualifiers();
 			float num = serverTemperature;
-			float num2 = ((num < 28f) ? ((num < 10f) ? 0.010000001f : ((!(num < 16f)) ? 0.1f : 0.05f)) : ((!(num < 40f)) ? 0.010000001f : 0.05f));
+			float num2;
+			if (num < 28f)
+			{
+				if (num < 10f)
+				{
+					num2 = 0.010000001f;
+				}
+				else
+				{
+					num2 = ((!(num < 16f)) ? 0.1f : 0.05f);
+				}
+			}
+			else
+			{
+				num2 = ((!(num < 40f)) ? 0.010000001f : 0.05f);
+			}
 			growthRate = num2;
-			Item slot = base.inventory.GetSlot(0);
+			Item slot = inventory.GetSlot(0);
 			if (slot != null)
 			{
 				switch (NucleusGrading.XpToGrade(slot.instanceData.dataInt))
@@ -480,22 +495,22 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 
 	public override void DropItems(BaseEntity initiator = null)
 	{
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = false;
 		int index = -1;
-		for (int i = 0; i < base.inventory.itemList.Count; i++)
+		for (int i = 0; i < inventory.itemList.Count; i++)
 		{
-			if ((Object)(object)base.inventory.itemList[i].info == (Object)(object)BeeNucleusDefinition)
+			if ((Object)(object)inventory.itemList[i].info == (Object)(object)BeeNucleusDefinition)
 			{
 				flag = true;
 				index = i;
 			}
 		}
-		if (flag && base.inventory.Remove(base.inventory.itemList[index]))
+		if (flag && inventory.Remove(inventory.itemList[index]))
 		{
 			BaseEntity baseEntity = GameManager.server.CreateEntity(masterSwarm.resourcePath, ((Component)this).transform.position + Vector3.up * 1.5f, Quaternion.identity);
 			if (creatorEntity is BasePlayer basePlayer)
@@ -530,20 +545,17 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		updateHiveInterval = 120f;
-		updateHiveStatsInterval = 120f;
-		xpIncreasePerHoneycomb = 2;
 		Vector3[] array = new Vector3[5];
 		Vector3 val = new Vector3(0f, 1f, 0f);
-		array[0] = ((Vector3)(ref val)).normalized;
+		array[0] = val.normalized;
 		val = new Vector3(1f, 0f, 0f);
-		array[1] = ((Vector3)(ref val)).normalized;
+		array[1] = val.normalized;
 		val = new Vector3(0f, 0f, 1f);
-		array[2] = ((Vector3)(ref val)).normalized;
+		array[2] = val.normalized;
 		val = new Vector3(-1f, 0f, 0f);
-		array[3] = ((Vector3)(ref val)).normalized;
+		array[3] = val.normalized;
 		val = new Vector3(0f, 0f, -1f);
-		array[4] = ((Vector3)(ref val)).normalized;
-		outsideLookupDirs = (Vector3[])(object)array;
+		array[4] = val.normalized;
+		outsideLookupDirs = array;
 	}
 }

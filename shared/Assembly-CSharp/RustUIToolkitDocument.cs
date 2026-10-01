@@ -32,7 +32,7 @@ public sealed class RustUIToolkitDocument : IDisposable
 	public static RustUIToolkitDocument Create(Transform parent, string name, float sortingOrder, bool withCursor = false)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
+		//IL_0011: Expected Obj, but got Unknown
 		RustUIToolkitDocument rustUIToolkitDocument = new RustUIToolkitDocument
 		{
 			GameObject = new GameObject(name)
@@ -116,13 +116,13 @@ public sealed class RustUIToolkitDocument : IDisposable
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		PanelSettings panelSettings = RustUIHost.PanelSettings;
-		PanelSettings obj = ScriptableObject.CreateInstance<PanelSettings>();
-		((Object)obj).name = name + " PanelSettings";
-		obj.themeStyleSheet = panelSettings.themeStyleSheet;
-		obj.scaleMode = panelSettings.scaleMode;
-		obj.referenceResolution = panelSettings.referenceResolution;
-		obj.match = panelSettings.match;
-		obj.sortingOrder = sortingOrder;
-		return obj;
+		PanelSettings val = ScriptableObject.CreateInstance<PanelSettings>();
+		((Object)val).name = name + " PanelSettings";
+		val.themeStyleSheet = panelSettings.themeStyleSheet;
+		val.scaleMode = panelSettings.scaleMode;
+		val.referenceResolution = panelSettings.referenceResolution;
+		val.match = panelSettings.match;
+		val.sortingOrder = sortingOrder;
+		return val;
 	}
 }

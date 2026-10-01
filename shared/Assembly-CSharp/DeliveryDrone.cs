@@ -85,7 +85,7 @@ public class DeliveryDrone : Drone
 			_mapMarkerInstance.Kill();
 		}
 		BaseEntity baseEntity = GameManager.server.CreateEntity(mapMarkerPrefab?.resourcePath, Vector3.zero, Quaternion.identity);
-		baseEntity.OwnerID = base.OwnerID;
+		baseEntity.OwnerID = OwnerID;
 		baseEntity.Spawn();
 		baseEntity.SetParent(this);
 		_mapMarkerInstance = baseEntity;
@@ -291,27 +291,28 @@ public class DeliveryDrone : Drone
 			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_019b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_019d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-			Vector3 val2 = default(Vector3);
-			float num4 = default(float);
+			Vector3 val2 = default;
+			float num4 = default;
 			Vector3Ex.ToDirectionAndMagnitude(Vector3Ex.WithY(body.linearVelocity, 0f), ref val2, ref num4);
 			if (num4 < 0.5f)
 			{
 				float num5 = GetMinimumHeight(Vector3.zero) + preferredCruiseHeight;
 				Vector3 val3 = Vector3Ex.WithY(currentPosition, num5 + 1000f);
 				Vector3Ex.WithY(currentPosition, num5);
-				RaycastHit val4 = default(RaycastHit);
+				RaycastHit val4 = default;
 				reference = Physics.Raycast(val3, Vector3.down, ref val4, 1000f, LayerMask.op_Implicit(config.layerMask));
 				if (!reference)
 				{
 					return num5;
 				}
-				return num5 + (1000f - ((RaycastHit)(ref val4)).distance) + preferredHeightAboveObstacle;
+				return num5 + (1000f - val4.distance) + preferredHeightAboveObstacle;
 			}
 			float num6 = num4 * 2f;
 			float num7 = GetMinimumHeight(Vector3.zero);
@@ -321,14 +322,13 @@ public class DeliveryDrone : Drone
 			Quaternion val5 = Quaternion.FromToRotation(Vector3.forward, val2);
 			Vector3 val6 = Vector3Ex.WithZ(config.halfExtents, num6 / 2f);
 			Vector3 val7 = Vector3Ex.WithY(Vector3Ex.WithY(currentPosition, num10) + val5 * new Vector3(0f, 0f, val6.z / 2f), num10 + 1000f);
-			RaycastHit val8 = default(RaycastHit);
+			RaycastHit val8 = default;
 			reference = Physics.BoxCast(val7, val6, Vector3.down, ref val8, val5, 1000f, LayerMask.op_Implicit(config.layerMask));
 			if (reference)
 			{
-				Ray ray = default(Ray);
-				((Ray)(ref ray))._002Ector(val7, Vector3.down);
-				Vector3 val9 = RayEx.ClosestPoint(ray, ((RaycastHit)(ref val8)).point);
-				float num11 = Vector3.Distance(((Ray)(ref ray)).origin, val9);
+				Ray ray = new Ray(val7, Vector3.down);
+				Vector3 val9 = RayEx.ClosestPoint(ray, val8.point);
+				float num11 = Vector3.Distance(ray.origin, val9);
 				return num10 + (1000f - num11) + preferredHeightAboveObstacle;
 			}
 			return num10;

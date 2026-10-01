@@ -56,7 +56,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00d5;
 				}
@@ -64,7 +64,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0177;
 				}
@@ -79,7 +79,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_AcceptInvitation_003Ed__14>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_AcceptInvitation_003Ed__14>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_00d5;
@@ -111,7 +111,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_AcceptInvitation_003Ed__14>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_AcceptInvitation_003Ed__14>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0177;
@@ -122,12 +122,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__3 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__3 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -139,7 +139,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -183,7 +183,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00d5;
 				}
@@ -191,7 +191,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0184;
 				}
@@ -206,7 +206,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CancelInvitation_003Ed__15>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CancelInvitation_003Ed__15>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_00d5;
@@ -237,7 +237,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CancelInvitation_003Ed__15>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CancelInvitation_003Ed__15>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0184;
@@ -247,11 +247,11 @@ public class ClanManager : BaseEntity
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -263,7 +263,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -311,7 +311,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00e9;
 				}
@@ -319,7 +319,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0191;
 				}
@@ -334,7 +334,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CancelInvite_003Ed__13>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CancelInvite_003Ed__13>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_00e9;
@@ -365,7 +365,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CancelInvite_003Ed__13>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CancelInvite_003Ed__13>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0191;
@@ -376,12 +376,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -393,7 +393,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -417,13 +417,15 @@ public class ClanManager : BaseEntity
 
 		private int _003CrequestId_003E5__2;
 
+		private BasePlayer _003Cplayer_003E5__3;
+
 		private ValueTaskAwaiter<ClanValueResult<IClan>> _003C_003Eu__1;
 
 		private void MoveNext()
 		{
-			//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+			//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_014b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
@@ -436,27 +438,28 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
-					goto IL_012a;
+					goto IL_0136;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					ClanValidatorResult val = ClanValidator.ValidateClanName(msg.read.String());
-					if (((ClanValidatorResult)(ref val)).Success)
+					if (val.Success)
 					{
-						valueTaskAwaiter = clanManager.Backend.Create((ulong)msg.player.userID, ((ClanValidatorResult)(ref val)).Value).GetAwaiter();
+						_003Cplayer_003E5__3 = msg.player;
+						valueTaskAwaiter = clanManager.Backend.Create((ulong)_003Cplayer_003E5__3.userID, val.Value).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CreateClan_003Ed__1>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CreateClan_003Ed__1>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_012a;
+						goto IL_0136;
 					}
-					ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error));
+					ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(val.Error));
 					try
 					{
 						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
@@ -470,16 +473,16 @@ public class ClanManager : BaseEntity
 					}
 				}
 				goto end_IL_000e;
-				IL_012a:
+				IL_0136:
 				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
-				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out var clan))
+				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, _003Cplayer_003E5__3, result, out var clan))
 				{
 					ClanActionResult val3 = BuildActionResult(_003CrequestId_003E5__2, (ClanResult)1, clan);
 					try
 					{
 						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val3);
-						msg.player.GiveClanJoinedAchievement();
-						Analytics.Azure.OnClanCreated(msg.player.userID, clan);
+						_003Cplayer_003E5__3.GiveAchievement("CLAN_JOIN");
+						Analytics.Azure.OnClanCreated(_003Cplayer_003E5__3.userID, clan);
 					}
 					finally
 					{
@@ -494,11 +497,13 @@ public class ClanManager : BaseEntity
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003Cplayer_003E5__3 = null;
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003Cplayer_003E5__3 = null;
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -510,7 +515,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -568,7 +573,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0163;
 				}
@@ -576,7 +581,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_020d;
 				}
@@ -587,23 +592,23 @@ public class ClanManager : BaseEntity
 					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						ClanValidatorResult val = ClanValidator.ValidateRoleName(text);
-						if (((ClanValidatorResult)(ref val)).Success)
+						if (val.Success)
 						{
 							_003Crole_003E5__3 = new ClanRole
 							{
-								Name = ((ClanValidatorResult)(ref val)).Value
+								Name = val.Value
 							};
 							valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 							if (!valueTaskAwaiter.IsCompleted)
 							{
 								num = (_003C_003E1__state = 0);
 								_003C_003Eu__1 = valueTaskAwaiter;
-								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CreateRole_003Ed__19>(ref valueTaskAwaiter, ref this);
+								_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CreateRole_003Ed__19>(ref valueTaskAwaiter, ref this);
 								return;
 							}
 							goto IL_0163;
 						}
-						ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error));
+						ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(val.Error));
 						try
 						{
 							clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
@@ -627,7 +632,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CreateRole_003Ed__19>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CreateRole_003Ed__19>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_020d;
@@ -652,15 +657,15 @@ public class ClanManager : BaseEntity
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				_003Crole_003E5__3 = default(ClanRole);
+				_003Crole_003E5__3 = default;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			_003Crole_003E5__3 = default(ClanRole);
+			_003Crole_003E5__3 = default;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -672,7 +677,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -720,7 +725,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00e9;
 				}
@@ -728,7 +733,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0191;
 				}
@@ -743,7 +748,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_DeleteRole_003Ed__21>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_DeleteRole_003Ed__21>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_00e9;
@@ -774,7 +779,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_DeleteRole_003Ed__21>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_DeleteRole_003Ed__21>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0191;
@@ -785,12 +790,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -802,7 +807,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -845,7 +850,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00b5;
 				}
@@ -853,7 +858,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0142;
 				}
@@ -865,7 +870,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 0);
 						_003C_003Eu__1 = valueTaskAwaiter;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_GetClan_003Ed__2>(ref valueTaskAwaiter, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_GetClan_003Ed__2>(ref valueTaskAwaiter, ref this);
 						return;
 					}
 					goto IL_00b5;
@@ -880,7 +885,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter, _003CServer_GetClan_003Ed__2>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter, _003CServer_GetClan_003Ed__2>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0142;
@@ -907,12 +912,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__3 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__3 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -924,7 +929,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -964,7 +969,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<List<ClanInvitation>>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00b3;
 				}
@@ -976,7 +981,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 0);
 						_003C_003Eu__1 = valueTaskAwaiter;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<List<ClanInvitation>>>, _003CServer_GetInvitations_003Ed__5>(ref valueTaskAwaiter, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<List<ClanInvitation>>>, _003CServer_GetInvitations_003Ed__5>(ref valueTaskAwaiter, ref this);
 						return;
 					}
 					goto IL_00b3;
@@ -1016,11 +1021,11 @@ public class ClanManager : BaseEntity
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -1032,7 +1037,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -1075,7 +1080,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<List<ClanLeaderboardEntry>>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00bd;
 				}
@@ -1089,7 +1094,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<List<ClanLeaderboardEntry>>>, _003CServer_GetLeaderboard_003Ed__8>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<List<ClanLeaderboardEntry>>>, _003CServer_GetLeaderboard_003Ed__8>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_00bd;
@@ -1143,11 +1148,11 @@ public class ClanManager : BaseEntity
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -1159,7 +1164,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -1207,7 +1212,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00b5;
 				}
@@ -1215,7 +1220,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanValueResult<ClanLogs>>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0159;
 				}
@@ -1227,7 +1232,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 0);
 						_003C_003Eu__1 = valueTaskAwaiter;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_GetLogs_003Ed__3>(ref valueTaskAwaiter, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_GetLogs_003Ed__3>(ref valueTaskAwaiter, ref this);
 						return;
 					}
 					goto IL_00b5;
@@ -1242,7 +1247,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<ClanLogs>>, _003CServer_GetLogs_003Ed__3>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<ClanLogs>>, _003CServer_GetLogs_003Ed__3>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0159;
@@ -1283,12 +1288,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__3 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__3 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -1300,7 +1305,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -1348,7 +1353,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00b5;
 				}
@@ -1356,7 +1361,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanValueResult<ClanScoreEvents>>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0159;
 				}
@@ -1368,7 +1373,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 0);
 						_003C_003Eu__1 = valueTaskAwaiter;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_GetScoreEvents_003Ed__4>(ref valueTaskAwaiter, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_GetScoreEvents_003Ed__4>(ref valueTaskAwaiter, ref this);
 						return;
 					}
 					goto IL_00b5;
@@ -1383,7 +1388,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<ClanScoreEvents>>, _003CServer_GetScoreEvents_003Ed__4>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<ClanScoreEvents>>, _003CServer_GetScoreEvents_003Ed__4>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0159;
@@ -1424,12 +1429,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__3 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__3 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -1441,7 +1446,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -1489,7 +1494,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00e9;
 				}
@@ -1497,7 +1502,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0191;
 				}
@@ -1512,7 +1517,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_Invite_003Ed__12>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_Invite_003Ed__12>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_00e9;
@@ -1543,7 +1548,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_Invite_003Ed__12>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_Invite_003Ed__12>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0191;
@@ -1554,12 +1559,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -1571,7 +1576,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -1619,7 +1624,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_013b;
 				}
@@ -1627,7 +1632,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_01e3;
 				}
@@ -1642,7 +1647,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_Kick_003Ed__16>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_Kick_003Ed__16>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_013b;
@@ -1686,7 +1691,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_Kick_003Ed__16>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_Kick_003Ed__16>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_01e3;
@@ -1697,12 +1702,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -1714,7 +1719,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -1765,7 +1770,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_013c;
 				}
@@ -1773,7 +1778,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_01e4;
 				}
@@ -1790,7 +1795,7 @@ public class ClanManager : BaseEntity
 							{
 								num = (_003C_003E1__state = 0);
 								_003C_003Eu__1 = valueTaskAwaiter;
-								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetColor_003Ed__10>(ref valueTaskAwaiter, ref this);
+								_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetColor_003Ed__10>(ref valueTaskAwaiter, ref this);
 								return;
 							}
 							goto IL_013c;
@@ -1819,7 +1824,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetColor_003Ed__10>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetColor_003Ed__10>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_01e4;
@@ -1845,12 +1850,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -1862,7 +1867,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -1910,7 +1915,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0147;
 				}
@@ -1918,7 +1923,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_01ef;
 				}
@@ -1935,7 +1940,7 @@ public class ClanManager : BaseEntity
 							{
 								num = (_003C_003E1__state = 0);
 								_003C_003Eu__1 = valueTaskAwaiter;
-								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetLogo_003Ed__9>(ref valueTaskAwaiter, ref this);
+								_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetLogo_003Ed__9>(ref valueTaskAwaiter, ref this);
 								return;
 							}
 							goto IL_0147;
@@ -1964,7 +1969,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetLogo_003Ed__9>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetLogo_003Ed__9>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_01ef;
@@ -1991,13 +1996,13 @@ public class ClanManager : BaseEntity
 				_003C_003E1__state = -2;
 				_003CnewLogo_003E5__3 = null;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003CnewLogo_003E5__3 = null;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -2009,7 +2014,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -2067,7 +2072,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0152;
 				}
@@ -2075,7 +2080,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0210;
 				}
@@ -2086,19 +2091,19 @@ public class ClanManager : BaseEntity
 					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						_003CvalidatedMotd_003E5__3 = ClanValidator.ValidateMotd(text);
-						if (((ClanValidatorResult)(ref _003CvalidatedMotd_003E5__3)).Success)
+						if (_003CvalidatedMotd_003E5__3.Success)
 						{
 							valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 							if (!valueTaskAwaiter.IsCompleted)
 							{
 								num = (_003C_003E1__state = 0);
 								_003C_003Eu__1 = valueTaskAwaiter;
-								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetMotd_003Ed__11>(ref valueTaskAwaiter, ref this);
+								_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetMotd_003Ed__11>(ref valueTaskAwaiter, ref this);
 								return;
 							}
 							goto IL_0152;
 						}
-						ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref _003CvalidatedMotd_003E5__3)).Error));
+						ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(_003CvalidatedMotd_003E5__3.Error));
 						try
 						{
 							clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
@@ -2118,12 +2123,12 @@ public class ClanManager : BaseEntity
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out _003Cclan_003E5__4))
 				{
 					_003CpreviousTimestamp_003E5__5 = _003Cclan_003E5__4.MotdTimestamp;
-					valueTaskAwaiter2 = _003Cclan_003E5__4.SetMotd(((ClanValidatorResult)(ref _003CvalidatedMotd_003E5__3)).Value, (ulong)msg.player.userID).GetAwaiter();
+					valueTaskAwaiter2 = _003Cclan_003E5__4.SetMotd(_003CvalidatedMotd_003E5__3.Value, (ulong)msg.player.userID).GetAwaiter();
 					if (!valueTaskAwaiter2.IsCompleted)
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetMotd_003Ed__11>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetMotd_003Ed__11>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_0210;
@@ -2152,15 +2157,15 @@ public class ClanManager : BaseEntity
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				_003CvalidatedMotd_003E5__3 = default(ClanValidatorResult);
+				_003CvalidatedMotd_003E5__3 = default;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			_003CvalidatedMotd_003E5__3 = default(ClanValidatorResult);
+			_003CvalidatedMotd_003E5__3 = default;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -2172,7 +2177,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -2228,7 +2233,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_0168;
 				}
@@ -2236,7 +2241,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_021b;
 				}
@@ -2248,19 +2253,19 @@ public class ClanManager : BaseEntity
 					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						_003CvalidatedNotes_003E5__4 = ClanValidator.ValidatePlayerNote(text);
-						if (((ClanValidatorResult)(ref _003CvalidatedNotes_003E5__4)).Success)
+						if (_003CvalidatedNotes_003E5__4.Success)
 						{
 							valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 							if (!valueTaskAwaiter.IsCompleted)
 							{
 								num = (_003C_003E1__state = 0);
 								_003C_003Eu__1 = valueTaskAwaiter;
-								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetPlayerNotes_003Ed__18>(ref valueTaskAwaiter, ref this);
+								_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetPlayerNotes_003Ed__18>(ref valueTaskAwaiter, ref this);
 								return;
 							}
 							goto IL_0168;
 						}
-						ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref _003CvalidatedNotes_003E5__4)).Error));
+						ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(_003CvalidatedNotes_003E5__4.Error));
 						try
 						{
 							clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
@@ -2279,12 +2284,12 @@ public class ClanManager : BaseEntity
 				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out _003Cclan_003E5__5))
 				{
-					valueTaskAwaiter2 = _003Cclan_003E5__5.SetPlayerNotes(_003CsteamId_003E5__3, ((ClanValidatorResult)(ref _003CvalidatedNotes_003E5__4)).Value, (ulong)msg.player.userID).GetAwaiter();
+					valueTaskAwaiter2 = _003Cclan_003E5__5.SetPlayerNotes(_003CsteamId_003E5__3, _003CvalidatedNotes_003E5__4.Value, (ulong)msg.player.userID).GetAwaiter();
 					if (!valueTaskAwaiter2.IsCompleted)
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetPlayerNotes_003Ed__18>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetPlayerNotes_003Ed__18>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_021b;
@@ -2309,15 +2314,15 @@ public class ClanManager : BaseEntity
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				_003CvalidatedNotes_003E5__4 = default(ClanValidatorResult);
+				_003CvalidatedNotes_003E5__4 = default;
 				_003Cclan_003E5__5 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			_003CvalidatedNotes_003E5__4 = default(ClanValidatorResult);
+			_003CvalidatedNotes_003E5__4 = default;
 			_003Cclan_003E5__5 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -2329,7 +2334,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -2379,7 +2384,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00ff;
 				}
@@ -2387,7 +2392,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_01ad;
 				}
@@ -2403,7 +2408,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetPlayerRole_003Ed__17>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetPlayerRole_003Ed__17>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_00ff;
@@ -2434,7 +2439,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetPlayerRole_003Ed__17>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetPlayerRole_003Ed__17>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_01ad;
@@ -2445,12 +2450,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__5 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__5 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -2462,7 +2467,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -2512,7 +2517,7 @@ public class ClanManager : BaseEntity
 				if (num == 0)
 				{
 					valueTaskAwaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_00ff;
 				}
@@ -2520,7 +2525,7 @@ public class ClanManager : BaseEntity
 				if (num == 1)
 				{
 					valueTaskAwaiter2 = _003C_003Eu__2;
-					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+					_003C_003Eu__2 = default;
 					num = (_003C_003E1__state = -1);
 					goto IL_01ad;
 				}
@@ -2536,7 +2541,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SwapRoles_003Ed__22>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SwapRoles_003Ed__22>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_00ff;
@@ -2567,7 +2572,7 @@ public class ClanManager : BaseEntity
 					{
 						num = (_003C_003E1__state = 1);
 						_003C_003Eu__2 = valueTaskAwaiter2;
-						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SwapRoles_003Ed__22>(ref valueTaskAwaiter2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SwapRoles_003Ed__22>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
 					goto IL_01ad;
@@ -2578,12 +2583,12 @@ public class ClanManager : BaseEntity
 			{
 				_003C_003E1__state = -2;
 				_003Cclan_003E5__5 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Cclan_003E5__5 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -2595,7 +2600,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -2665,7 +2670,7 @@ public class ClanManager : BaseEntity
 					if (num == 0)
 					{
 						valueTaskAwaiter = _003C_003Eu__1;
-						_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
+						_003C_003Eu__1 = default;
 						num = (_003C_003E1__state = -1);
 						goto IL_0166;
 					}
@@ -2673,25 +2678,25 @@ public class ClanManager : BaseEntity
 					if (num == 1)
 					{
 						valueTaskAwaiter2 = _003C_003Eu__2;
-						_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
+						_003C_003Eu__2 = default;
 						num = (_003C_003E1__state = -1);
 						goto IL_0213;
 					}
 					ClanValidatorResult val = ClanValidator.ValidateRoleName(_003Crole_003E5__3.name);
-					if (((ClanValidatorResult)(ref val)).Success)
+					if (val.Success)
 					{
-						_003Crole_003E5__3.name = ((ClanValidatorResult)(ref val)).Value;
+						_003Crole_003E5__3.name = val.Value;
 						valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
 						{
 							num = (_003C_003E1__state = 0);
 							_003C_003Eu__1 = valueTaskAwaiter;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_UpdateRole_003Ed__20>(ref valueTaskAwaiter, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_UpdateRole_003Ed__20>(ref valueTaskAwaiter, ref this);
 							return;
 						}
 						goto IL_0166;
 					}
-					ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error));
+					ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(val.Error));
 					try
 					{
 						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
@@ -2728,7 +2733,7 @@ public class ClanManager : BaseEntity
 						{
 							num = (_003C_003E1__state = 1);
 							_003C_003Eu__2 = valueTaskAwaiter2;
-							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_UpdateRole_003Ed__20>(ref valueTaskAwaiter2, ref this);
+							_003C_003Et__builder.AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_UpdateRole_003Ed__20>(ref valueTaskAwaiter2, ref this);
 							return;
 						}
 						goto IL_0213;
@@ -2749,13 +2754,13 @@ public class ClanManager : BaseEntity
 				_003C_003E1__state = -2;
 				_003Crole_003E5__3 = null;
 				_003Cclan_003E5__4 = null;
-				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
 			_003Crole_003E5__3 = null;
 			_003Cclan_003E5__4 = null;
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -2767,7 +2772,7 @@ public class ClanManager : BaseEntity
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -3607,37 +3612,37 @@ public class ClanManager : BaseEntity
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_CreateClan_003Ed__1))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public UniTaskVoid Server_CreateClan(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_CreateClan_003Ed__1 obj = default(_003CServer_CreateClan_003Ed__1);
+		_003CServer_CreateClan_003Ed__1 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_CreateClan_003Ed__1>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_CreateClan_003Ed__1>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_GetClan_003Ed__2))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_GetClan_003Ed__2))]
 	public UniTaskVoid Server_GetClan(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetClan_003Ed__2 obj = default(_003CServer_GetClan_003Ed__2);
+		_003CServer_GetClan_003Ed__2 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetClan_003Ed__2>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_GetClan_003Ed__2>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_GetLogs_003Ed__3))]
@@ -3648,30 +3653,30 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetLogs_003Ed__3 obj = default(_003CServer_GetLogs_003Ed__3);
+		_003CServer_GetLogs_003Ed__3 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetLogs_003Ed__3>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_GetLogs_003Ed__3>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_GetScoreEvents_003Ed__4))]
-	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_GetScoreEvents(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetScoreEvents_003Ed__4 obj = default(_003CServer_GetScoreEvents_003Ed__4);
+		_003CServer_GetScoreEvents_003Ed__4 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetScoreEvents_003Ed__4>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_GetScoreEvents_003Ed__4>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_GetInvitations_003Ed__5))]
@@ -3682,30 +3687,30 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetInvitations_003Ed__5 obj = default(_003CServer_GetInvitations_003Ed__5);
+		_003CServer_GetInvitations_003Ed__5 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetInvitations_003Ed__5>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_GetInvitations_003Ed__5>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_GetLeaderboard_003Ed__8))]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_GetLeaderboard(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetLeaderboard_003Ed__8 obj = default(_003CServer_GetLeaderboard_003Ed__8);
+		_003CServer_GetLeaderboard_003Ed__8 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetLeaderboard_003Ed__8>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_GetLeaderboard_003Ed__8>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_SetLogo_003Ed__9))]
@@ -3716,13 +3721,13 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetLogo_003Ed__9 obj = default(_003CServer_SetLogo_003Ed__9);
+		_003CServer_SetLogo_003Ed__9 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetLogo_003Ed__9>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_SetLogo_003Ed__9>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_SetColor_003Ed__10))]
@@ -3733,81 +3738,81 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetColor_003Ed__10 obj = default(_003CServer_SetColor_003Ed__10);
+		_003CServer_SetColor_003Ed__10 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetColor_003Ed__10>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_SetColor_003Ed__10>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_SetMotd_003Ed__11))]
 	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_SetMotd_003Ed__11))]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SetMotd(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetMotd_003Ed__11 obj = default(_003CServer_SetMotd_003Ed__11);
+		_003CServer_SetMotd_003Ed__11 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetMotd_003Ed__11>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_SetMotd_003Ed__11>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_Invite_003Ed__12))]
 	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_Invite_003Ed__12))]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_Invite(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_Invite_003Ed__12 obj = default(_003CServer_Invite_003Ed__12);
+		_003CServer_Invite_003Ed__12 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_Invite_003Ed__12>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_Invite_003Ed__12>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_CancelInvite_003Ed__13))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_CancelInvite_003Ed__13))]
 	public UniTaskVoid Server_CancelInvite(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_CancelInvite_003Ed__13 obj = default(_003CServer_CancelInvite_003Ed__13);
+		_003CServer_CancelInvite_003Ed__13 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_CancelInvite_003Ed__13>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_CancelInvite_003Ed__13>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_AcceptInvitation_003Ed__14))]
+	[RPC_Server]
 	public UniTaskVoid Server_AcceptInvitation(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_AcceptInvitation_003Ed__14 obj = default(_003CServer_AcceptInvitation_003Ed__14);
+		_003CServer_AcceptInvitation_003Ed__14 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_AcceptInvitation_003Ed__14>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_AcceptInvitation_003Ed__14>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_CancelInvitation_003Ed__15))]
@@ -3818,13 +3823,13 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_CancelInvitation_003Ed__15 obj = default(_003CServer_CancelInvitation_003Ed__15);
+		_003CServer_CancelInvitation_003Ed__15 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_CancelInvitation_003Ed__15>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_CancelInvitation_003Ed__15>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_Kick_003Ed__16))]
@@ -3835,13 +3840,13 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_Kick_003Ed__16 obj = default(_003CServer_Kick_003Ed__16);
+		_003CServer_Kick_003Ed__16 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_Kick_003Ed__16>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_Kick_003Ed__16>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_SetPlayerRole_003Ed__17))]
@@ -3852,13 +3857,13 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetPlayerRole_003Ed__17 obj = default(_003CServer_SetPlayerRole_003Ed__17);
+		_003CServer_SetPlayerRole_003Ed__17 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetPlayerRole_003Ed__17>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_SetPlayerRole_003Ed__17>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_SetPlayerNotes_003Ed__18))]
@@ -3869,47 +3874,47 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetPlayerNotes_003Ed__18 obj = default(_003CServer_SetPlayerNotes_003Ed__18);
+		_003CServer_SetPlayerNotes_003Ed__18 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetPlayerNotes_003Ed__18>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_SetPlayerNotes_003Ed__18>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[AsyncStateMachine(typeof(_003CServer_CreateRole_003Ed__19))]
 	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_CreateRole_003Ed__19))]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_CreateRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_CreateRole_003Ed__19 obj = default(_003CServer_CreateRole_003Ed__19);
+		_003CServer_CreateRole_003Ed__19 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_CreateRole_003Ed__19>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_CreateRole_003Ed__19>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_UpdateRole_003Ed__20))]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[AsyncStateMachine(typeof(_003CServer_UpdateRole_003Ed__20))]
 	[RPC_Server]
 	public UniTaskVoid Server_UpdateRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_UpdateRole_003Ed__20 obj = default(_003CServer_UpdateRole_003Ed__20);
+		_003CServer_UpdateRole_003Ed__20 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_UpdateRole_003Ed__20>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_UpdateRole_003Ed__20>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_DeleteRole_003Ed__21))]
@@ -3920,13 +3925,13 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_DeleteRole_003Ed__21 obj = default(_003CServer_DeleteRole_003Ed__21);
+		_003CServer_DeleteRole_003Ed__21 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_DeleteRole_003Ed__21>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_DeleteRole_003Ed__21>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_SwapRoles_003Ed__22))]
@@ -3937,13 +3942,13 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SwapRoles_003Ed__22 obj = default(_003CServer_SwapRoles_003Ed__22);
+		_003CServer_SwapRoles_003Ed__22 obj = default;
 		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
 		obj._003C_003E4__this = this;
 		obj.msg = msg;
 		obj._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SwapRoles_003Ed__22>(ref obj);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		obj._003C_003Et__builder.Start<_003CServer_SwapRoles_003Ed__22>(ref obj);
+		return obj._003C_003Et__builder.Task;
 	}
 
 	private bool CheckClanResult(int requestId, BasePlayer player, ClanValueResult<IClan> result, out IClan clan)
@@ -3973,12 +3978,12 @@ public class ClanManager : BaseEntity
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Expected I4, but got Unknown
-		ClanActionResult obj = Pool.Get<ClanActionResult>();
-		obj.requestId = requestId;
-		obj.result = (int)result;
-		obj.hasClanInfo = false;
-		obj.clanInfo = null;
-		return obj;
+		ClanActionResult val = Pool.Get<ClanActionResult>();
+		val.requestId = requestId;
+		val.result = (int)result;
+		val.hasClanInfo = false;
+		val.clanInfo = null;
+		return val;
 	}
 
 	[PoolAnalyzerGetWrapper]
@@ -4115,7 +4120,7 @@ public class ClanManager : BaseEntity
 		{
 			return true;
 		}
-		IClan val = default(IClan);
+		IClan val = default;
 		if (!Backend.TryGet(clanId, ref val))
 		{
 			return false;
@@ -4204,7 +4209,7 @@ public class ClanManager : BaseEntity
 				else
 				{
 					Debug.LogError((object)$"Failed to find clan for {player.userID.Get()}: {val.Result}");
-					Invoke(delegate
+					Invoke(() =>
 					{
 						player.LoadClanInfo();
 					}, 45 + Random.Range(0, 30));
@@ -4238,7 +4243,7 @@ public class ClanManager : BaseEntity
 			_changeTracker = new ClanChangeTracker(this);
 			await backend.Initialize((IClanChangeSink)(object)_changeTracker);
 			Backend = backend;
-			InvokeRandomized(delegate
+			InvokeRandomized(() =>
 			{
 				_changeTracker.HandleEvents();
 			}, 1f, 0.25f, 0.1f);
@@ -4269,7 +4274,7 @@ public class ClanManager : BaseEntity
 	public override void Spawn()
 	{
 		base.Spawn();
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -4278,7 +4283,7 @@ public class ClanManager : BaseEntity
 			if (!Clan.enabled)
 			{
 				Debug.LogWarning((object)"Clan manager was loaded from a save, but the server has the clan system disabled - destroying clan manager!");
-				Invoke(delegate
+				Invoke(() =>
 				{
 					Kill();
 				}, 0.1f);
@@ -4336,13 +4341,13 @@ public class ClanManager : BaseEntity
 			}
 			throw new NotSupportedException("Clan backend '" + type + "' is not supported");
 		}
-		return (IClanBackend)(object)new LocalClanBackend(ConVar.Server.rootFolder, 288, Clan.maxMemberCount);
+		return (IClanBackend)(object)new LocalClanBackend(ConVar.Server.rootFolder, 289, Clan.maxMemberCount);
 	}
 
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			if ((Object)(object)ServerInstance != (Object)null)
 			{
@@ -4358,7 +4363,7 @@ public class ClanManager : BaseEntity
 
 	public void OnDestroy()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if ((Object)(object)ServerInstance == (Object)(object)this)
 			{

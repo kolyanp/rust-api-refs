@@ -6,15 +6,15 @@ namespace Rust.Ai;
 public class ScientistSpawner : SpawnGroup
 {
 	[Header("Scientist Spawner")]
-	public bool Mobile;
+	public bool Mobile = true;
 
 	public bool NeverMove;
 
 	public bool SpawnHostile;
 
-	public bool OnlyAggroMarkedTargets;
+	public bool OnlyAggroMarkedTargets = true;
 
-	public bool IsPeacekeeper;
+	public bool IsPeacekeeper = true;
 
 	public bool IsBandit;
 
@@ -24,14 +24,14 @@ public class ScientistSpawner : SpawnGroup
 
 	public Transform[] LookAtInterestPointsStationary;
 
-	public Vector2 RadioEffectRepeatRange;
+	public Vector2 RadioEffectRepeatRange = new Vector2(10f, 15f);
 
 	public Model Model;
 
 	[SerializeField]
 	private AiLocationManager _mgr;
 
-	private float _nextForcedRespawn;
+	private float _nextForcedRespawn = float.PositiveInfinity;
 
 	private bool _lastSpawnCallHadAliveMembers;
 
@@ -43,7 +43,7 @@ public class ScientistSpawner : SpawnGroup
 		{
 			return;
 		}
-		if (base.currentPopulation == maxPopulation)
+		if (currentPopulation == maxPopulation)
 		{
 			_lastSpawnCallHadMaxAliveMembers = true;
 			_lastSpawnCallHadAliveMembers = true;
@@ -55,21 +55,21 @@ public class ScientistSpawner : SpawnGroup
 		}
 		if (Time.time < _nextForcedRespawn)
 		{
-			if (base.currentPopulation == 0 && _lastSpawnCallHadAliveMembers)
+			if (currentPopulation == 0 && _lastSpawnCallHadAliveMembers)
 			{
 				_lastSpawnCallHadMaxAliveMembers = false;
 				_lastSpawnCallHadAliveMembers = false;
 				return;
 			}
-			if (base.currentPopulation > 0)
+			if (currentPopulation > 0)
 			{
 				_lastSpawnCallHadMaxAliveMembers = false;
-				_lastSpawnCallHadAliveMembers = base.currentPopulation > 0;
+				_lastSpawnCallHadAliveMembers = currentPopulation > 0;
 				return;
 			}
 		}
 		_lastSpawnCallHadMaxAliveMembers = false;
-		_lastSpawnCallHadAliveMembers = base.currentPopulation > 0;
+		_lastSpawnCallHadAliveMembers = currentPopulation > 0;
 		base.Spawn(numToSpawn);
 	}
 
@@ -106,11 +106,5 @@ public class ScientistSpawner : SpawnGroup
 	{
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		Mobile = true;
-		OnlyAggroMarkedTargets = true;
-		IsPeacekeeper = true;
-		RadioEffectRepeatRange = new Vector2(10f, 15f);
-		_nextForcedRespawn = float.PositiveInfinity;
-		base._002Ector();
 	}
 }

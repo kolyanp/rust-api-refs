@@ -53,8 +53,8 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 
 	public bool ShowDebugData;
 
-	[ReadOnly]
 	[Tooltip("Automatically filled in by prefab preprocess")]
+	[ReadOnly]
 	public EntityNameToItemDefinition[] EntityNameToItemDefinitions;
 
 	bool IPrefabPreProcess.CanRunDuringBundling => true;
@@ -71,9 +71,9 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 	{
 		List<ItemDefinition> list = GetItemList();
 		Dictionary<string, ItemDefinition> dictionary = new Dictionary<string, ItemDefinition>(StringComparer.OrdinalIgnoreCase);
-		ItemModEntity itemModEntity = default(ItemModEntity);
-		ThrownWeapon thrownWeapon = default(ThrownWeapon);
-		ItemModDeployable itemModDeployable = default(ItemModDeployable);
+		ItemModEntity itemModEntity = default;
+		ThrownWeapon thrownWeapon = default;
+		ItemModDeployable itemModDeployable = default;
 		foreach (ItemDefinition item in list)
 		{
 			dictionary.TryAdd(item.shortname, item);
@@ -124,7 +124,7 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 		{
 			Name = kvp.Key,
 			ItemDefinition = kvp.Value
-		}).OrderBy<EntityNameToItemDefinition, string>((EntityNameToItemDefinition x) => x.Name, StringComparer.OrdinalIgnoreCase).ToArray();
+		}).OrderBy((EntityNameToItemDefinition x) => x.Name, StringComparer.OrdinalIgnoreCase).ToArray();
 		static List<ItemDefinition> GetItemList()
 		{
 			return ItemManager.itemList;

@@ -28,7 +28,7 @@ public class NavGeneratedCoverGroup : CoverGroup
 			item.position = transform.TransformPoint(cachedCover.position);
 			float yaw = cachedCover.yaw;
 			Quaternion rotation = transform.rotation;
-			item.yaw = yaw + ((Quaternion)(ref rotation)).eulerAngles.y;
+			item.yaw = yaw + rotation.eulerAngles.y;
 			covers.Add(item);
 		}
 		return true;

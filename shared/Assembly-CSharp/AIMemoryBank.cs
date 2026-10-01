@@ -36,7 +36,7 @@ public class AIMemoryBank<T>
 	{
 		if (index < 0 || index >= slotCount)
 		{
-			return default(T);
+			return default;
 		}
 		return slots[index];
 	}
@@ -54,7 +54,7 @@ public class AIMemoryBank<T>
 	{
 		if (index >= 0 && index < slotCount)
 		{
-			slots[index] = default(T);
+			slots[index] = default;
 		}
 	}
 

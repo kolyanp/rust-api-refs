@@ -79,11 +79,11 @@ public struct GridDefinition
 		int num2 = Math.DivRem(y, 8, out var result2);
 		int num3 = Math.DivRem(z, 8, out var result3);
 		int gridIndex = GetGridIndex(num, num2, num3);
-		NativeBitArray val = (NativeBitArray)(IsValidGrid(math.int3(num, num2, num3)) ? OcclusionSubGridBlocked[gridIndex] : default(NativeBitArray));
+		NativeBitArray val = (IsValidGrid(math.int3(num, num2, num3)) ? OcclusionSubGridBlocked[gridIndex] : default(NativeBitArray));
 		int num4 = result3 * 8 * 8 + result2 * 8 + result;
-		if (((NativeBitArray)(ref val)).IsCreated)
+		if (val.IsCreated)
 		{
-			return ((NativeBitArray)(ref val)).IsSet(num4);
+			return val.IsSet(num4);
 		}
 		return false;
 	}

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -27,6 +29,21 @@ public class LiquidContainer : ContainerIOEntity
 
 	public ItemDefinition[] ValidItems;
 
+	[Tooltip("Replicate how full this container is. Turn it on for containers that show a water level mesh, and leave it off everywhere else: water moves through a barrel every tick and the updates are only worth paying for when something is showing the level.")]
+	[Header("Water Level Mesh")]
+	public bool replicateWaterLevel;
+
+	[Tooltip("Mesh shown while there is liquid in here, posed between the empty and full values below to match how full the container is.")]
+	public Transform waterLevelMesh;
+
+	public Vector3 waterLevelMeshEmptyPosition;
+
+	public Vector3 waterLevelMeshFullPosition;
+
+	public Vector3 waterLevelMeshEmptyScale = Vector3.one;
+
+	public Vector3 waterLevelMeshFullScale = Vector3.one;
+
 	private int currentDrainAmount;
 
 	protected HashSet<IOEntity> connectedList = new HashSet<IOEntity>();
@@ -51,7 +68,31 @@ public class LiquidContainer : ContainerIOEntity
 
 	private static HashSet<IOEntity> pushLiquidCheckEntityHash = new HashSet<IOEntity>();
 
+	private byte __sync_WaterLevel;
+
 	public override bool IsGravitySource => true;
+
+	[Sync(Autosave = true)]
+	public byte WaterLevel
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_WaterLevel;
+		}
+		[CompilerGenerated]
+		set
+		{
+			if (!IsSyncVarEqual(__sync_WaterLevel, value))
+			{
+				__sync_WaterLevel = value;
+				byte nameID = __GetWeaverID("WaterLevel");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
+
+	public float WaterLevelFraction => (float)(int)WaterLevel / 255f;
 
 	protected override bool DisregardGravityRestrictionsOnLiquid
 	{
@@ -114,7 +155,7 @@ public class LiquidContainer : ContainerIOEntity
 
 	public override bool AllowWireConnections()
 	{
-		if (HasParent() && (Object)(object)parentEntity.Get(base.isServer) != (Object)null && parentEntity.Get(base.isServer) is VehicleModuleStorage)
+		if (HasParent() && (Object)(object)parentEntity.Get(isServer) != (Object)null && parentEntity.Get(isServer) is VehicleModuleStorage)
 		{
 			return true;
 		}
@@ -152,14 +193,30 @@ public class LiquidContainer : ContainerIOEntity
 		base.ServerInit();
 		if (startingAmount > 0)
 		{
-			base.inventory.AddItem(defaultLiquid, startingAmount, 0uL);
+			inventory.AddItem(defaultLiquid, startingAmount, 0uL);
 		}
 		if (autofillOutputs && HasLiquidItem())
 		{
 			UpdatePushLiquidTargets();
 		}
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
+		RefreshWaterLevel();
+	}
+
+	protected override void OnInventoryDirty()
+	{
+		base.OnInventoryDirty();
+		RefreshWaterLevel();
+	}
+
+	private void RefreshWaterLevel()
+	{
+		if (replicateWaterLevel && maxStackSize > 0)
+		{
+			int liquidCount = GetLiquidCount();
+			WaterLevel = (byte)((liquidCount > 0) ? ((byte)Mathf.Clamp(Mathf.CeilToInt((float)liquidCount / (float)maxStackSize * 255f), 1, 255)) : 0);
+		}
 	}
 
 	public override void OnCircuitChanged(bool forceUpdate)
@@ -184,11 +241,11 @@ public class LiquidContainer : ContainerIOEntity
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		base.OnItemAddedOrRemoved(item, added);
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		UpdateOnFlag();
 		MarkDirtyForceUpdateOutputs();
 		Invoke(updateDrainAmountAction, 0.1f);
@@ -330,7 +387,7 @@ public class LiquidContainer : ContainerIOEntity
 	protected void UpdateOnFlag()
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.On, base.inventory.itemList.Count > 0 && base.inventory.itemList[0].amount > 0);
+		flagsUpdateScope.Set(Flags.On, inventory.itemList.Count > 0 && inventory.itemList[0].amount > 0);
 	}
 
 	public virtual void OpenTap(float duration)
@@ -356,11 +413,11 @@ public class LiquidContainer : ContainerIOEntity
 
 	public Item GetLiquidItem()
 	{
-		if (base.inventory == null || base.inventory.itemList.Count == 0)
+		if (inventory == null || inventory.itemList.Count == 0)
 		{
 			return null;
 		}
-		return base.inventory.itemList[0];
+		return inventory.itemList[0];
 	}
 
 	public int GetLiquidCount()
@@ -372,15 +429,15 @@ public class LiquidContainer : ContainerIOEntity
 		return GetLiquidItem().amount;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SVDrink(RPCMessage rpc)
 	{
 		if (!rpc.player.metabolism.CanConsume() || Interface.CallHook("OnPlayerDrink", rpc.player, this) != null)
 		{
 			return;
 		}
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			ItemModConsume component = ((Component)item.info).GetComponent<ItemModConsume>();
 			if (!((Object)(object)component == (Object)null) && component.CanDoAction(item, rpc.player))
@@ -547,5 +604,133 @@ public class LiquidContainer : ContainerIOEntity
 	protected override bool ConsiderConnectedTo(IOEntity entity)
 	{
 		return (Object)(object)entity == (Object)(object)considerConnectedTo;
+	}
+
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		if (id == 0)
+		{
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: WaterLevel for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_WaterLevel);
+			return true;
+		}
+		return base.WriteSyncVar(id, writer);
+	}
+
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
+	{
+		if (id == 0)
+		{
+			try
+			{
+				_ = __sync_WaterLevel;
+				byte _sync_WaterLevel = reader.UInt8();
+				__sync_WaterLevel = _sync_WaterLevel;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		}
+		return base.OnSyncVar(id, reader, fromAutoSave);
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (propertyName == "WaterLevel")
+		{
+			return 0;
+		}
+		return byte.MaxValue;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
+		{
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
+		}
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_WaterLevel = 0;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		if (id == 0)
+		{
+			return true;
+		}
+		return base.ShouldInvalidateCache(id);
+	}
+
+	public LiquidContainer()
+	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 	}
 }

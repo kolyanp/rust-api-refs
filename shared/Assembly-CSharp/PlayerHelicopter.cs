@@ -17,13 +17,13 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 
 		public Transform visualBone;
 
-		public Flags groundedFlag;
+		public Flags groundedFlag = Flags.Reserved1;
 
 		[NonSerialized]
 		public float wheelVel;
 
 		[NonSerialized]
-		public Vector3 wheelRot;
+		public Vector3 wheelRot = Vector3.zero;
 
 		public bool steering;
 
@@ -40,9 +40,6 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-			groundedFlag = Flags.Reserved1;
-			wheelRot = Vector3.zero;
-			base._002Ector();
 		}
 	}
 
@@ -124,8 +121,8 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	[SerializeField]
 	public float maxYawAnim = 1f;
 
-	[Header("Fuel")]
 	[SerializeField]
+	[Header("Fuel")]
 	public GameObjectRef fuelStoragePrefab;
 
 	[SerializeField]
@@ -135,10 +132,10 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	public float fuelGaugeMax = 100f;
 
 	[ServerVar(Help = "How long before a player helicopter loses all its health while outside")]
-	public static float outsidedecayminutes;
+	public static float outsidedecayminutes = 480f;
 
 	[ServerVar(Help = "How long before a player helicopter loses all its health while indoors")]
-	public static float insidedecayminutes;
+	public static float insidedecayminutes = 2880f;
 
 	public VehicleEngineController<PlayerHelicopter> engineController;
 
@@ -168,7 +165,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 
 	public float lastEngineOnTime;
 
-	private static readonly Phrase CantRepairWithEngineOn;
+	private static readonly Phrase CantRepairWithEngineOn = new Phrase("error_cannot_repair_with_engine_on", "Cannot repair while the engine is running.");
 
 	public VehicleEngineController<PlayerHelicopter>.EngineState CurEngineState
 	{
@@ -262,8 +259,8 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	public override void InitShared()
 	{
 		base.InitShared();
-		IFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
-		engineController = new VehicleEngineController<PlayerHelicopter>(this, fuelSystem, base.isServer, 5f, waterSample, Flags.Reserved4);
+		IFuelSystem fuelSystem = new EntityFuelSystem(isServer, fuelStoragePrefab, children);
+		engineController = new VehicleEngineController<PlayerHelicopter>(this, fuelSystem, isServer, 5f, waterSample, Flags.Reserved4);
 	}
 
 	public float GetFuelFraction(bool force = false)
@@ -271,7 +268,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer && ((TimeSince.op_Implicit(timeSinceCachedFuelFraction) > 1f) | force))
+		if (isServer && ((TimeSince.op_Implicit(timeSinceCachedFuelFraction) > 1f) | force))
 		{
 			cachedFuelFraction = CalculateFuelFraction();
 			timeSinceCachedFuelFraction = TimeSince.op_Implicit(0f);
@@ -320,7 +317,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (CurEngineState == VehicleEngineController<PlayerHelicopter>.EngineState.Off)
 			{
@@ -336,7 +333,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && isSpawned)
+		if (isServer && isSpawned)
 		{
 			GetFuelSystem().CheckNewChild(child);
 		}
@@ -577,7 +574,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 
 	public void DecayTick()
 	{
-		if (base.healthFraction != 0f && !IsOn() && !(Time.time < lastEngineOnTime + 600f))
+		if (healthFraction != 0f && !IsOn() && !(Time.time < lastEngineOnTime + 600f))
 		{
 			float num = 1f / (IsOutside() ? outsidedecayminutes : insidedecayminutes);
 			Hurt(MaxHealth() * num, DamageType.Decay, this, useProtection: false);
@@ -596,7 +593,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 
 	public bool MeetsEngineRequirements()
 	{
-		if (base.autoHover)
+		if (autoHover)
 		{
 			return true;
 		}
@@ -769,8 +766,8 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		return IsOn();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(6f)]
+	[RPC_Server]
 	public void RPC_OpenFuel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -852,7 +849,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		basePlayer.SendNetworkUpdateImmediate();
 		BasePlayer FindActivePassenger()
 		{
-			foreach (MountPointInfo allMountPoint in base.allMountPoints)
+			foreach (MountPointInfo allMountPoint in allMountPoints)
 			{
 				if (!allMountPoint.isDriver && !((Object)(object)allMountPoint.mountable == (Object)null))
 				{
@@ -900,7 +897,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		float[] array2 = recentVelocities;
 		int num = recentVelIndex;
 		Vector3 linearVelocity = rigidBody.linearVelocity;
-		array2[num] = ((Vector3)(ref linearVelocity)).sqrMagnitude;
+		array2[num] = linearVelocity.sqrMagnitude;
 		recentVelIndex = ++recentVelIndex % recentVelocities.Length;
 		bool flag = true;
 		float[] array3 = recentVelocities;
@@ -952,10 +949,10 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		WheelFrictionCurve val = wheel.forwardFriction;
-		((WheelFrictionCurve)(ref val)).stiffness = multiplier;
+		val.stiffness = multiplier;
 		wheel.forwardFriction = val;
 		val = wheel.sidewaysFriction;
-		((WheelFrictionCurve)(ref val)).stiffness = multiplier;
+		val.stiffness = multiplier;
 		wheel.sidewaysFriction = val;
 	}
 
@@ -974,10 +971,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	static PlayerHelicopter()
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		outsidedecayminutes = 480f;
-		insidedecayminutes = 2880f;
-		CantRepairWithEngineOn = new Phrase("error_cannot_repair_with_engine_on", "Cannot repair while the engine is running.");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 
 	void IEngineControllerUser.Invoke(Action action, float time)

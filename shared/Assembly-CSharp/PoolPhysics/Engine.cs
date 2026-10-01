@@ -173,12 +173,12 @@ public class Engine : IPooled
 	{
 		if (!hasInitialised)
 		{
-			return default(Data.Ball);
+			return default;
 		}
 		if (!ballIndexLookup.TryGetValue(id, out var value))
 		{
 			Log("Can't get ball with id " + id + " - not found");
-			return default(Data.Ball);
+			return default;
 		}
 		return balls[value];
 	}
@@ -251,7 +251,7 @@ public class Engine : IPooled
 			while (enumerator.MoveNext())
 			{
 				Data.Ball current = enumerator.Current;
-				if (!current.IsKinematic && ((Vector2)(ref current.Velocity)).sqrMagnitude > 0.005f)
+				if (!current.IsKinematic && current.Velocity.sqrMagnitude > 0.005f)
 				{
 					return true;
 				}
@@ -295,7 +295,7 @@ public class Engine : IPooled
 		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		hit = default(RaycastHit);
+		hit = default;
 		if (!hasInitialised)
 		{
 			return false;
@@ -304,11 +304,11 @@ public class Engine : IPooled
 		{
 			return false;
 		}
-		if (((Vector2)(ref direction)).sqrMagnitude <= Mathf.Epsilon)
+		if (direction.sqrMagnitude <= Mathf.Epsilon)
 		{
 			return false;
 		}
-		((Vector2)(ref direction)).Normalize();
+		direction.Normalize();
 		bool result = false;
 		float num = maxDistance;
 		if (includeWalls)
@@ -336,7 +336,7 @@ public class Engine : IPooled
 				{
 					Vector2 val = origin + direction * distance2;
 					Vector2 val2 = val - ball.Position;
-					Vector2 normalized = ((Vector2)(ref val2)).normalized;
+					Vector2 normalized = val2.normalized;
 					num = distance2;
 					result = true;
 					hit.Point = val;
@@ -382,7 +382,7 @@ public class Engine : IPooled
 				if (!balls[i].IsKinematic)
 				{
 					Data.Ball ball = balls[i];
-					float sqrMagnitude = ((Vector2)(ref ball.Velocity)).sqrMagnitude;
+					float sqrMagnitude = ball.Velocity.sqrMagnitude;
 					if (sqrMagnitude > num)
 					{
 						num = sqrMagnitude;
@@ -475,7 +475,7 @@ public class Engine : IPooled
 					Data.Wall wall = walls[j];
 					Vector2 val = ClosestPointOnSegment(Balls[i].Position, Walls[j].A, Walls[j].B);
 					Vector2 val2 = Balls[i].Position - val;
-					if (((Vector2)(ref val2)).magnitude < ball.Radius)
+					if (val2.magnitude < ball.Radius)
 					{
 						float num = Vector2.Dot(ball.Position - val, wall.Normal);
 						ref Vector2 position = ref ball.Position;
@@ -520,7 +520,7 @@ public class Engine : IPooled
 					if (!current.IsKinematic)
 					{
 						Vector2 val = current.Velocity * num;
-						SetBallVelocity(current.Id, (((Vector2)(ref val)).sqrMagnitude > 0.005f) ? val : Vector2.zero);
+						SetBallVelocity(current.Id, (val.sqrMagnitude > 0.005f) ? val : Vector2.zero);
 					}
 				}
 			}
@@ -601,12 +601,12 @@ public class Engine : IPooled
 						continue;
 					}
 					Vector3 val = Vector2.op_Implicit(ball2.Position - ball.Position);
-					float magnitude = ((Vector3)(ref val)).magnitude;
+					float magnitude = val.magnitude;
 					float num = ball.Radius + ball2.Radius;
 					if (num > magnitude)
 					{
 						float num2 = num - magnitude;
-						Vector2 val2 = Vector2.op_Implicit(((Vector3)(ref val)).normalized);
+						Vector2 val2 = Vector2.op_Implicit(val.normalized);
 						Vector2 val3 = val2 * num2 / 2f;
 						ref Vector2 position = ref ball.Position;
 						position -= val3;
@@ -650,7 +650,7 @@ public class Engine : IPooled
 					{
 						Data.Pocket pocket = pockets[i];
 						Vector2 val = ball.Position - pocket.Position;
-						if (((Vector2)(ref val)).sqrMagnitude < pocket.Radius * pocket.Radius)
+						if (val.sqrMagnitude < pocket.Radius * pocket.Radius)
 						{
 							OnBallPocketed?.Invoke(ball.Id);
 						}
@@ -689,7 +689,7 @@ public class Engine : IPooled
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 val = b - a;
-		float num = Vector2.Dot(p - a, val) / ((Vector2)(ref val)).sqrMagnitude;
+		float num = Vector2.Dot(p - a, val) / val.sqrMagnitude;
 		num = Mathf.Clamp01(num);
 		return a + val * num;
 	}
@@ -743,7 +743,7 @@ public class Engine : IPooled
 		distance = 0f;
 		Vector2 val = origin - center;
 		float num = Vector2.Dot(val, direction);
-		float num2 = ((Vector2)(ref val)).sqrMagnitude - radius * radius;
+		float num2 = val.sqrMagnitude - radius * radius;
 		if (num2 > 0f && num > 0f)
 		{
 			return false;

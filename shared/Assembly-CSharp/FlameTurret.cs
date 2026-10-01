@@ -92,7 +92,7 @@ public class FlameTurret : StorageContainer
 			turnDir *= -1;
 			aimDir.y = Mathf.Clamp(aimDir.y, 0f - arc, arc);
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			((ObjectWorkQueue<FlameTurret>)updateFlameTurretQueueServer).Add(this);
 		}
@@ -133,9 +133,9 @@ public class FlameTurret : StorageContainer
 	{
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient)
+		if (!isClient)
 		{
-			bool num = IsTriggered();
+			bool flag = IsTriggered();
 			float delta = Time.realtimeSinceStartup - lastServerThink;
 			lastServerThink = Time.realtimeSinceStartup;
 			if (IsTriggered() && (Time.realtimeSinceStartup - triggeredTime > triggeredDuration || !HasFuel()))
@@ -147,7 +147,7 @@ public class FlameTurret : StorageContainer
 				SetTriggered(triggered: true);
 				Effect.server.Run(triggeredEffect.resourcePath, ((Component)this).transform.position, Vector3.up);
 			}
-			if (num != IsTriggered())
+			if (flag != IsTriggered())
 			{
 				SendNetworkUpdateImmediate();
 			}
@@ -170,7 +170,7 @@ public class FlameTurret : StorageContainer
 
 	public override void OnAttacked(HitInfo info)
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			if (info.damageTypes.IsMeleeType())
 			{
@@ -243,7 +243,7 @@ public class FlameTurret : StorageContainer
 				}
 				Vector3 position = basePlayer.eyes.position;
 				Vector3 val = GetEyePosition() - basePlayer.eyes.position;
-				GamePhysics.TraceAll(new Ray(position, ((Vector3)(ref val)).normalized), 0f, list, 9f, 1218519297, (QueryTriggerInteraction)0);
+				GamePhysics.TraceAll(new Ray(position, val.normalized), 0f, list, 9f, 1218519297, (QueryTriggerInteraction)0);
 				for (int i = 0; i < list.Count; i++)
 				{
 					BaseEntity entity = RaycastHitEx.GetEntity(list[i]);
@@ -327,7 +327,7 @@ public class FlameTurret : StorageContainer
 
 	public int GetFuelAmount()
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || slot.amount < 1)
 		{
 			return 0;
@@ -342,7 +342,7 @@ public class FlameTurret : StorageContainer
 
 	public bool UseFuel(float seconds)
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || slot.amount < 1)
 		{
 			return false;
@@ -366,6 +366,7 @@ public class FlameTurret : StorageContainer
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
@@ -397,25 +398,24 @@ public class FlameTurret : StorageContainer
 		{
 			return;
 		}
-		Ray val = default(Ray);
-		((Ray)(ref val))._002Ector(GetEyePosition(), ((Component)this).transform.TransformDirection(Quaternion.Euler(aimDir) * Vector3.forward));
-		Vector3 origin = ((Ray)(ref val)).origin;
-		RaycastHit val2 = default(RaycastHit);
+		Ray val = new Ray(GetEyePosition(), ((Component)this).transform.TransformDirection(Quaternion.Euler(aimDir) * Vector3.forward));
+		Vector3 origin = val.origin;
+		RaycastHit val2 = default;
 		bool flag = Physics.SphereCast(val, 0.4f, ref val2, flameRange, 1218652417);
 		if (!flag)
 		{
-			((RaycastHit)(ref val2)).point = origin + ((Ray)(ref val)).direction * flameRange;
+			val2.point = origin + val.direction * flameRange;
 		}
 		float amount = damagePerSec[0].amount;
 		damagePerSec[0].amount = amount * delta;
-		DamageUtil.RadiusDamage(this, LookupPrefab(), ((RaycastHit)(ref val2)).point - ((Ray)(ref val)).direction * 0.1f, flameRadius * 0.5f, flameRadius, damagePerSec, 2230272, useLineOfSight: true);
+		DamageUtil.RadiusDamage(this, LookupPrefab(), val2.point - val.direction * 0.1f, flameRadius * 0.5f, flameRadius, damagePerSec, 2230272, useLineOfSight: true);
 		DamageUtil.RadiusDamage(this, LookupPrefab(), ((Component)this).transform.position + new Vector3(0f, 1.25f, 0f), 0.25f, 0.25f, damagePerSec, 133120, useLineOfSight: false);
 		damagePerSec[0].amount = amount;
 		if (Time.realtimeSinceStartup >= nextFireballTime)
 		{
 			nextFireballTime = Time.realtimeSinceStartup + Random.Range(1f, 2f);
-			Vector3 val3 = (((Random.Range(0, 10) <= 7) & flag) ? ((RaycastHit)(ref val2)).point : (((Ray)(ref val)).origin + ((Ray)(ref val)).direction * (flag ? ((RaycastHit)(ref val2)).distance : flameRange) * Random.Range(0.4f, 1f)));
-			BaseEntity baseEntity = GameManager.server.CreateEntity(fireballPrefab.resourcePath, val3 - ((Ray)(ref val)).direction * 0.25f);
+			Vector3 val3 = (((Random.Range(0, 10) <= 7) & flag) ? val2.point : (val.origin + val.direction * (flag ? val2.distance : flameRange) * Random.Range(0.4f, 1f)));
+			BaseEntity baseEntity = GameManager.server.CreateEntity(fireballPrefab.resourcePath, val3 - val.direction * 0.25f);
 			if (Object.op_Implicit((Object)(object)baseEntity))
 			{
 				baseEntity.creatorEntity = this;

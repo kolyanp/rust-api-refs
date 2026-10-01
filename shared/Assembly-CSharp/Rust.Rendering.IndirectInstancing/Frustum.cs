@@ -45,11 +45,11 @@ internal struct Frustum
 
 	static Frustum()
 	{
-		reusable_plane_array = (Plane[])(object)new Plane[6];
+		reusable_plane_array = new Plane[6];
 	}
 
-	public static implicit operator Rust.Rendering.IndirectInstancing.Frustum(Camera camera)
+	public static implicit operator Frustum(Camera camera)
 	{
-		return new Rust.Rendering.IndirectInstancing.Frustum(camera);
+		return new Frustum(camera);
 	}
 }

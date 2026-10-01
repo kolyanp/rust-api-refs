@@ -5,11 +5,11 @@ using UnityEngine;
 [Serializable]
 public class TokenisedPhrase : Phrase
 {
-	public static readonly Phrase LeftMouse;
+	public static readonly Phrase LeftMouse = new Phrase("button.mouse.left", "Left Mouse");
 
-	public static readonly Phrase RightMouse;
+	public static readonly Phrase RightMouse = new Phrase("button.mouse.right", "Right Mouse");
 
-	public static readonly Phrase MiddleMouse;
+	public static readonly Phrase MiddleMouse = new Phrase("button.mouse.middle", "Middle Mouse");
 
 	public override string translated => ReplaceTokens(((Phrase)this).translated);
 
@@ -109,13 +109,10 @@ public class TokenisedPhrase : Phrase
 	static TokenisedPhrase()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
-		LeftMouse = new Phrase("button.mouse.left", "Left Mouse");
-		RightMouse = new Phrase("button.mouse.right", "Right Mouse");
-		MiddleMouse = new Phrase("button.mouse.middle", "Middle Mouse");
+		//IL_003c: Expected Obj, but got Unknown
 	}
 }

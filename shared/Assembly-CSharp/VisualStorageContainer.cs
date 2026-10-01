@@ -27,9 +27,9 @@ public class VisualStorageContainer : LootContainer
 		base.ServerInit();
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 	}
 
 	public override void PopulateLoot()
@@ -42,7 +42,7 @@ public class VisualStorageContainer : LootContainer
 		base.PopulateLoot();
 		for (int i = 0; i < inventorySlots; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot == null)
 			{
 				continue;
@@ -136,12 +136,12 @@ public class VisualStorageContainer : LootContainer
 			if (Object.op_Implicit((Object)(object)val))
 			{
 				val.transform.SetPositionAndRotation(((Component)displayNodes[content.slot]).transform.position + new Vector3(0f, 0.25f, 0f), ((Component)displayNodes[content.slot]).transform.rotation);
-				Rigidbody obj = val.AddComponent<Rigidbody>();
-				obj.mass = 1f;
-				obj.linearDamping = 0.1f;
-				obj.angularDamping = 0.1f;
-				obj.interpolation = (RigidbodyInterpolation)1;
-				obj.constraints = (RigidbodyConstraints)10;
+				Rigidbody val2 = val.AddComponent<Rigidbody>();
+				val2.mass = 1f;
+				val2.linearDamping = 0.1f;
+				val2.angularDamping = 0.1f;
+				val2.interpolation = (RigidbodyInterpolation)1;
+				val2.constraints = (RigidbodyConstraints)10;
 				displayModels[content.slot].displayModel = val;
 				displayModels[content.slot].slot = content.slot;
 				displayModels[content.slot].def = itemDefinition;

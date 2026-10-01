@@ -6,17 +6,17 @@ public class CookingWorkbenchBbq : BaseOven
 	{
 		get
 		{
-			if (!parentEntity.IsValid(base.isServer))
+			if (!parentEntity.IsValid(isServer))
 			{
 				return null;
 			}
-			return parentEntity.Get(base.isServer) as CookingWorkbench;
+			return parentEntity.Get(isServer) as CookingWorkbench;
 		}
 	}
 
 	public override void OnAttacked(HitInfo info)
 	{
-		if ((Object)(object)ParentBench != (Object)null && base.isServer)
+		if ((Object)(object)ParentBench != (Object)null && isServer)
 		{
 			ParentBench.Hurt(info);
 		}
@@ -25,7 +25,7 @@ public class CookingWorkbenchBbq : BaseOven
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (!base.isServer || (next & Flags.On) == Flags.On == ((old & Flags.On) == Flags.On))
+		if (!isServer || (next & Flags.On) == Flags.On == ((old & Flags.On) == Flags.On))
 		{
 			return;
 		}

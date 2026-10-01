@@ -15,9 +15,9 @@ public class UI_ServerBrowser_RefreshButton : RustButton
 	[SerializeField]
 	private RustText text;
 
-	private Phrase _refreshPhrase;
+	private Phrase _refreshPhrase = new Phrase("serverbrowser.refresh", "Refresh");
 
-	private Phrase _cancelPhrase;
+	private Phrase _cancelPhrase = new Phrase("serverbrowser.cancel", "Cancel");
 
 	public void SetRefreshState(bool state)
 	{
@@ -42,11 +42,8 @@ public class UI_ServerBrowser_RefreshButton : RustButton
 	public UI_ServerBrowser_RefreshButton()
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Expected O, but got Unknown
+		//IL_0015: Expected Obj, but got Unknown
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Expected O, but got Unknown
-		_refreshPhrase = new Phrase("serverbrowser.refresh", "Refresh");
-		_cancelPhrase = new Phrase("serverbrowser.cancel", "Cancel");
-		((RustButton)this)._002Ector();
+		//IL_002a: Expected Obj, but got Unknown
 	}
 }

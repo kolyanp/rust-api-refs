@@ -21,7 +21,7 @@ public class ZiplineTarget : MonoBehaviour
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = position - Vector3Ex.WithY(Target.position, position.y);
-		float num = Vector3.Dot(((Vector3)(ref val)).normalized, Target.forward);
+		float num = Vector3.Dot(val.normalized, Target.forward);
 		if (num >= MonumentConnectionDotMin)
 		{
 			return num <= MonumentConnectionDotMax;
@@ -48,9 +48,9 @@ public class ZiplineTarget : MonoBehaviour
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = from - Vector3Ex.WithY(Target.position, from.y);
-		float num = Vector3.Dot(((Vector3)(ref val)).normalized, Target.forward);
+		float num = Vector3.Dot(val.normalized, Target.forward);
 		val = to - Vector3Ex.WithY(Target.position, from.y);
-		float num2 = Vector3.Dot(((Vector3)(ref val)).normalized, Target.forward);
+		float num2 = Vector3.Dot(val.normalized, Target.forward);
 		if ((num > 0f && num2 > 0f) || (num < 0f && num2 < 0f))
 		{
 			return false;

@@ -23,29 +23,29 @@ public static class MapImageRenderer
 		}
 	}
 
-	private static readonly Vector4 StartColor;
+	private static readonly Vector4 StartColor = new Vector4(73f / 255f, 69f / 255f, 0.24705884f, 1f);
 
-	private static readonly Vector4 WaterColor;
+	private static readonly Vector4 WaterColor = new Vector4(0.16941601f, 0.31755757f, 0.36200002f, 1f);
 
-	private static readonly Vector4 GravelColor;
+	private static readonly Vector4 GravelColor = new Vector4(0.25f, 37f / 152f, 0.22039475f, 1f);
 
-	private static readonly Vector4 DirtColor;
+	private static readonly Vector4 DirtColor = new Vector4(0.6f, 0.47959462f, 0.33f, 1f);
 
-	private static readonly Vector4 SandColor;
+	private static readonly Vector4 SandColor = new Vector4(0.7f, 0.65968585f, 0.5277487f, 1f);
 
-	private static readonly Vector4 GrassColor;
+	private static readonly Vector4 GrassColor = new Vector4(0.35486364f, 0.37f, 0.2035f, 1f);
 
-	private static readonly Vector4 ForestColor;
+	private static readonly Vector4 ForestColor = new Vector4(0.24843751f, 0.3f, 9f / 128f, 1f);
 
-	private static readonly Vector4 RockColor;
+	private static readonly Vector4 RockColor = new Vector4(0.4f, 0.39379844f, 0.37519377f, 1f);
 
-	private static readonly Vector4 SnowColor;
+	private static readonly Vector4 SnowColor = new Vector4(0.86274517f, 0.9294118f, 0.94117653f, 1f);
 
-	private static readonly Vector4 PebbleColor;
+	private static readonly Vector4 PebbleColor = new Vector4(35f / 255f, 71f / 255f, 0.2761563f, 1f);
 
-	private static readonly Vector4 OffShoreColor;
+	private static readonly Vector4 OffShoreColor = new Vector4(0.04090196f, 0.22060032f, 70f / 255f, 1f);
 
-	private static readonly Vector3 SunDirection;
+	private static readonly Vector3 SunDirection = Vector3.Normalize(new Vector3(0.95f, 2.87f, 2.37f));
 
 	private const float SunPower = 0.65f;
 
@@ -55,7 +55,7 @@ public static class MapImageRenderer
 
 	private const float OceanWaterLevel = 0f;
 
-	private static readonly Vector4 Half;
+	private static readonly Vector4 Half = new Vector4(0.5f, 0.5f, 0.5f, 0.5f);
 
 	public static byte[] Render(out int imageWidth, out int imageHeight, out Color background, float scale = 0.5f, bool lossy = true, bool transparent = false, int oceanMargin = 500)
 	{
@@ -98,12 +98,12 @@ public static class MapImageRenderer
 		}
 		imageWidth = mapRes + oceanMargin * 2;
 		imageHeight = mapRes + oceanMargin * 2;
-		Color[] array = (Color[])(object)new Color[imageWidth * imageHeight];
+		Color[] array = new Color[imageWidth * imageHeight];
 		Array2D<Color> output = new Array2D<Color>(array, imageWidth, imageHeight);
 		float maxDepth = (transparent ? Mathf.Max(Mathf.Abs(GetHeight(0f, 0f)), 5f) : 50f);
 		Vector4 offShoreColor = (transparent ? Vector4.zero : OffShoreColor);
 		Vector4 waterColor = (Vector4)(transparent ? new Vector4(WaterColor.x, WaterColor.y, WaterColor.z, 0.5f) : WaterColor);
-		Parallel.For(0, imageHeight, delegate(int y)
+		Parallel.For(0, imageHeight, (int y) =>
 		{
 			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003e: Unknown result type (might be due to invalid IL or missing references)
@@ -245,7 +245,7 @@ public static class MapImageRenderer
 	private static byte[] EncodeToFile(int width, int height, Color[] pixels, bool lossy)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Expected O, but got Unknown
+		//IL_000c: Expected Obj, but got Unknown
 		Texture2D val = null;
 		try
 		{
@@ -271,6 +271,7 @@ public static class MapImageRenderer
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -280,8 +281,7 @@ public static class MapImageRenderer
 			x = value.x * 2f - 1f,
 			y = value.y * 2f - 1f
 		};
-		Vector2 val2 = default(Vector2);
-		((Vector2)(ref val2))._002Ector(val.x, val.y);
+		Vector2 val2 = new Vector2(val.x, val.y);
 		val.z = Mathf.Sqrt(1f - Mathf.Clamp(Vector2.Dot(val2, val2), 0f, 1f));
 		return val;
 	}
@@ -315,18 +315,5 @@ public static class MapImageRenderer
 		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
-		StartColor = new Vector4(0.28627452f, 23f / 85f, 0.24705884f, 1f);
-		WaterColor = new Vector4(0.16941601f, 0.31755757f, 0.36200002f, 1f);
-		GravelColor = new Vector4(0.25f, 37f / 152f, 0.22039475f, 1f);
-		DirtColor = new Vector4(0.6f, 0.47959462f, 0.33f, 1f);
-		SandColor = new Vector4(0.7f, 0.65968585f, 0.5277487f, 1f);
-		GrassColor = new Vector4(0.35486364f, 0.37f, 0.2035f, 1f);
-		ForestColor = new Vector4(0.24843751f, 0.3f, 9f / 128f, 1f);
-		RockColor = new Vector4(0.4f, 0.39379844f, 0.37519377f, 1f);
-		SnowColor = new Vector4(0.86274517f, 0.9294118f, 0.94117653f, 1f);
-		PebbleColor = new Vector4(7f / 51f, 0.2784314f, 0.2761563f, 1f);
-		OffShoreColor = new Vector4(0.04090196f, 0.22060032f, 14f / 51f, 1f);
-		SunDirection = Vector3.Normalize(new Vector3(0.95f, 2.87f, 2.37f));
-		Half = new Vector4(0.5f, 0.5f, 0.5f, 0.5f);
 	}
 }

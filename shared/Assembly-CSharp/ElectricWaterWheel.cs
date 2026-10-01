@@ -135,7 +135,7 @@ public class ElectricWaterWheel : IOEntity
 		{
 			if ((Object)(object)wwm == (Object)null)
 			{
-				wwm = waterWheelMountableRef.Get(base.isServer);
+				wwm = waterWheelMountableRef.Get(isServer);
 			}
 			return wwm;
 		}
@@ -260,7 +260,7 @@ public class ElectricWaterWheel : IOEntity
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		float num = 10f;
-		Vector3 position = waterSamplePoint.position - ((Vector3)(ref waterFlowDirection)).normalized * num;
+		Vector3 position = waterSamplePoint.position - waterFlowDirection.normalized * num;
 		if (!IsVisible(position, num + 1f))
 		{
 			return false;
@@ -347,9 +347,9 @@ public class ElectricWaterWheel : IOEntity
 		{
 			num = Mathf.FloorToInt(Mathf.Lerp((float)currentEnergy, 0f, Time.deltaTime * 5f));
 		}
-		bool num4 = currentEnergy != num;
+		bool flag3 = currentEnergy != num;
 		currentEnergy = num;
-		if (num4)
+		if (flag3)
 		{
 			MarkDirty();
 			SendNetworkUpdate();

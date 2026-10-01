@@ -156,7 +156,7 @@ public class HableCurve
 
 	public void Init(float toeStrength, float toeLength, float shoulderStrength, float shoulderLength, float shoulderAngle, float gamma)
 	{
-		DirectParams srcParams = default(DirectParams);
+		DirectParams srcParams = default;
 		toeLength = Mathf.Pow(Mathf.Clamp01(toeLength), 2.2f);
 		toeStrength = Mathf.Clamp01(toeStrength);
 		shoulderAngle = Mathf.Clamp01(shoulderAngle);

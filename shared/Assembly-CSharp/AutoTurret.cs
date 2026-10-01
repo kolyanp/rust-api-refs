@@ -9,6 +9,7 @@ using Network.Visibility;
 using Oxide.Core;
 using ProtoBuf;
 using Rust;
+using Rust.Ai.Gen2;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -94,11 +95,11 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public GameObjectRef bulletEffect;
 
-	public float bulletSpeed;
+	public float bulletSpeed = 200f;
 
 	public AmbienceEmitter ambienceEmitter;
 
-	public bool playAmbientSounds;
+	public bool playAmbientSounds = true;
 
 	public GameObject assignDialog;
 
@@ -109,9 +110,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	[NonSerialized]
 	public int PowerOrder;
 
-	public HashSet<AutoTurret> nearbyTurrets;
+	public HashSet<AutoTurret> nearbyTurrets = new HashSet<AutoTurret>();
 
-	private HashSet<AutoTurret> interferringTurrets;
+	private HashSet<AutoTurret> interferringTurrets = new HashSet<AutoTurret>();
 
 	[ServerVar(Help = "How many milliseconds to spend on target scanning per frame")]
 	public static float scan_budget_ms = 0.5f;
@@ -129,7 +130,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	public static UpdateAutoTurretTick updateTurretTick = new UpdateAutoTurretTick();
 
 	[Header("RC")]
-	public float rcTurnSensitivity;
+	public float rcTurnSensitivity = 4f;
 
 	public Transform RCEyes;
 
@@ -137,15 +138,15 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public RemoteControllableControls rcControls;
 
-	public string rcIdentifier;
+	public string rcIdentifier = "";
 
 	public TargetTrigger targetTrigger;
 
 	public TriggerBase interferenceTrigger;
 
-	public float maxInterference;
+	public float maxInterference = -1f;
 
-	public float attachedWeaponZOffsetScale;
+	public float attachedWeaponZOffsetScale = -0.5f;
 
 	public Transform socketTransform;
 
@@ -157,17 +158,17 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public double lastTargetSeenTime;
 
-	private Vector3 lastTargetAimOffset;
+	private Vector3 lastTargetAimOffset = Vector3.zero;
 
 	private double lastDamageEventTime;
 
 	private double lastScanTime;
 
-	public bool targetVisible;
+	public bool targetVisible = true;
 
 	public bool booting;
 
-	public Vector3 targetAimDir;
+	public Vector3 targetAimDir = Vector3.forward;
 
 	private int currentBurstShotsFired;
 
@@ -211,7 +212,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	private Action _actionUpdateAttachedWeapon;
 
-	public Vector3 lastSentAimDir;
+	public Vector3 lastSentAimDir = Vector3.forward;
 
 	public static float[] visibilityOffsets = new float[3] { 0f, 0.15f, -0.15f };
 
@@ -227,7 +228,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public double nextAmmoCheckTime;
 
-	public bool totalAmmoDirty;
+	public bool totalAmmoDirty = true;
 
 	public float currentAmmoGravity;
 
@@ -251,7 +252,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public Transform gun_pitch;
 
-	public float sightRange;
+	public float sightRange = 30f;
 
 	public SoundDefinition turnLoopDef;
 
@@ -261,9 +262,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public SoundDefinition focusCameraDef;
 
-	public float focusSoundFreqMin;
+	public float focusSoundFreqMin = 2.5f;
 
-	public float focusSoundFreqMax;
+	public float focusSoundFreqMax = 7f;
 
 	public GameObjectRef peacekeeperToggleSound;
 
@@ -288,10 +289,10 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	public const Flags Flag_ShowAlphaCover = Flags.Reserved5;
 
 	[NonSerialized]
-	public HashSet<ulong> authorizedPlayers;
+	public HashSet<ulong> authorizedPlayers = new HashSet<ulong>();
 
 	[NonSerialized]
-	public int consumptionAmount;
+	public int consumptionAmount = 10;
 
 	public bool CanPing => false;
 
@@ -341,9 +342,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	public bool IsServer => base.isServer;
+	public bool IsServer => isServer;
 
-	public bool IsClient => base.isClient;
+	public bool IsClient => isClient;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -1040,14 +1041,14 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			{
 				return;
 			}
-			bool num = inputState.IsDown(BUTTON.FIRE_PRIMARY);
-			bool flag = TryGetAttachedWeapon(out var baseProjectile);
-			bool flag2 = flag && IsUsingBurstFireWeapon(baseProjectile);
-			int num2 = (flag2 ? baseProjectile.GetBurstModeCount() : 0);
-			bool flag3 = flag2 && IsBursting(baseProjectile);
-			if (num | flag3)
+			bool flag = inputState.IsDown(BUTTON.FIRE_PRIMARY);
+			bool flag2 = TryGetAttachedWeapon(out var baseProjectile);
+			bool flag3 = flag2 && IsUsingBurstFireWeapon(baseProjectile);
+			int num = (flag3 ? baseProjectile.GetBurstModeCount() : 0);
+			bool flag4 = flag3 && IsBursting(baseProjectile);
+			if (flag | flag4)
 			{
-				if (flag)
+				if (flag2)
 				{
 					if (baseProjectile is ITurretNotify turretNotify)
 					{
@@ -1066,37 +1067,37 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 					}
 					if (baseProjectile.primaryMagazine.contents > 0)
 					{
-						if (!flag2 || currentBurstShotsFired < num2)
+						if (!flag3 || currentBurstShotsFired < num)
 						{
 							FireAttachedGun(Vector3.zero, aimCone, null, damageModifier, speedModifier);
 						}
-						float num3;
-						if (flag2)
+						float num2;
+						if (flag3)
 						{
 							currentBurstShotsFired++;
-							if (currentBurstShotsFired < num2 && baseProjectile.primaryMagazine.contents > 0)
+							if (currentBurstShotsFired < num && baseProjectile.primaryMagazine.contents > 0)
 							{
-								num3 = Mathf.Max(baseProjectile.ScaleRepeatDelay(baseProjectile.repeatDelay), baseProjectile.NextAttackTime - (float)timeAsDouble);
+								num2 = Mathf.Max(baseProjectile.ScaleRepeatDelay(baseProjectile.repeatDelay), baseProjectile.NextAttackTime - (float)timeAsDouble);
 							}
 							else
 							{
 								ResetBurstFireState();
-								num3 = Mathf.Max(baseProjectile.TimeBetweenBursts(), Player.clientTickInterval.Get() * 2f);
+								num2 = Mathf.Max(baseProjectile.TimeBetweenBursts(), Player.clientTickInterval.Get() * 2f);
 							}
 						}
 						else
 						{
 							ResetBurstFireState();
-							num3 = (baseProjectile.isSemiAuto ? (baseProjectile.repeatDelay * 1.5f) : baseProjectile.repeatDelay);
-							num3 = baseProjectile.ScaleRepeatDelay(num3);
+							num2 = (baseProjectile.isSemiAuto ? (baseProjectile.repeatDelay * 1.5f) : baseProjectile.repeatDelay);
+							num2 = baseProjectile.ScaleRepeatDelay(num2);
 						}
-						nextShotTime = timeAsDouble + (double)num3;
+						nextShotTime = timeAsDouble + (double)num2;
 						if ((float)nextShotTime < baseProjectile.NextAttackTime && !Mathf.Approximately((float)nextShotTime, baseProjectile.NextAttackTime))
 						{
 							Debug.LogWarning((object)string.Format("Turret {0} next shot scheduled in {1}s will be skipped due to it being less than attached {2} attack cooldown ({3}s).", new object[4]
 							{
 								((Object)this).name,
-								num3,
+								num2,
 								((Object)baseProjectile).name,
 								baseProjectile.NextAttackTime - (float)timeAsDouble
 							}), (Object)(object)this);
@@ -1154,7 +1155,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		float num = (0f - inputState.current.mouseDelta.y) * rcTurnSensitivity;
 		float num2 = inputState.current.mouseDelta.x * rcTurnSensitivity;
 		Quaternion val = Quaternion.LookRotation(aimDir, ((Component)this).transform.up);
-		Vector3 val2 = ((Quaternion)(ref val)).eulerAngles + new Vector3(num, num2, 0f);
+		Vector3 val2 = val.eulerAngles + new Vector3(num, num2, 0f);
 		if (val2.x >= 0f && val2.x <= 135f)
 		{
 			val2.x = Mathf.Clamp(val2.x, 0f, 45f);
@@ -1183,7 +1184,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public void RCSetup()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			RemoteControlEntity.InstallControllable(this);
 		}
@@ -1191,14 +1192,14 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public void RCShutdown()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			RemoteControlEntity.RemoveControllable(this);
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void Server_SetID(RPCMessage msg)
 	{
 		string oldID = msg.read.String();
@@ -1227,10 +1228,10 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1243,7 +1244,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	public void UpdateIdentifier(string newID, bool clientSend = false)
 	{
 		_ = rcIdentifier;
-		if (base.isServer)
+		if (isServer)
 		{
 			if (!RemoteControlEntity.IDInUse(newID))
 			{
@@ -1425,7 +1426,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (IsValidWeapon(item) && targetSlot == 0)
 		{
 			return true;
@@ -1484,8 +1485,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void AddSelfAuthorize(RPCMessage rpc)
 	{
 		AddSelfAuthorize(rpc.player);
@@ -1502,8 +1503,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (!booting && !IsOnline() && IsAuthed(rpc.player) && Interface.CallHook("OnTurretDeauthorize", this, rpc.player) == null)
@@ -1516,8 +1517,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ClearList(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -1549,8 +1550,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void SERVER_Peacekeeper(RPCMessage rpc)
 	{
 		if (IsAuthed(rpc.player) && Interface.CallHook("OnTurretModeToggle", this, rpc.player) == null)
@@ -1603,13 +1604,13 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
-		if ((Object)(object)targetTrigger != (Object)null)
+		if ((Object)(object)this.targetTrigger != (Object)null)
 		{
-			TargetTrigger obj = targetTrigger;
-			obj.OnEntityEnterTrigger = (Action<BaseNetworkable>)Delegate.Combine(obj.OnEntityEnterTrigger, new Action<BaseNetworkable>(OnEntityEnterTrigger));
-			((Component)targetTrigger).GetComponent<SphereCollider>().radius = sightRange;
+			TargetTrigger targetTrigger = this.targetTrigger;
+			targetTrigger.OnEntityEnterTrigger = (Action<BaseNetworkable>)Delegate.Combine(targetTrigger.OnEntityEnterTrigger, new Action<BaseNetworkable>(OnEntityEnterTrigger));
+			((Component)this.targetTrigger).GetComponent<SphereCollider>().radius = sightRange;
 		}
 		InvokeRepeating(actionServerThink, Random.Range(0f, 1f), 0.2f);
 		InvokeRandomized(actionServerDo, Random.Range(0f, 1f), 0.03f, 0.05f);
@@ -1624,14 +1625,14 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		if (rotateMode == YawPitchMode.Merged)
 		{
 			toPitchFromRootOrYaw = cachedTransf.worldToLocalMatrix * gun_pitch.localToWorldMatrix;
-			gunAimInitialPitchOrTotalRot = ((Matrix4x4)(ref toPitchFromRootOrYaw)).rotation;
+			gunAimInitialPitchOrTotalRot = toPitchFromRootOrYaw.rotation;
 		}
 		else
 		{
 			toYawFromRoot = ((Component)this).transform.root.worldToLocalMatrix * gun_yaw.localToWorldMatrix;
-			gunAimInitialYawRot = ((Matrix4x4)(ref toYawFromRoot)).rotation;
+			gunAimInitialYawRot = toYawFromRoot.rotation;
 			toPitchFromRootOrYaw = gun_yaw.worldToLocalMatrix * gun_pitch.localToWorldMatrix;
-			gunAimInitialPitchOrTotalRot = ((Matrix4x4)(ref toPitchFromRootOrYaw)).rotation;
+			gunAimInitialPitchOrTotalRot = toPitchFromRootOrYaw.rotation;
 			gunAimTotalRotWS = gun_pitch.rotation;
 		}
 		if (Object.op_Implicit((Object)(object)RCEyes))
@@ -1768,7 +1769,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		Vector3 val = AimOffset(obj);
 		float num = Vector3.Distance(val, position);
 		Vector3 val2 = val - position;
-		Vector3 val3 = Vector3.Cross(((Vector3)(ref val2)).normalized, Vector3.up);
+		Vector3 val3 = Vector3.Cross(val2.normalized, Vector3.up);
 		if (num > sightRange)
 		{
 			return false;
@@ -1778,7 +1779,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		for (int i = 0; i < num2; i++)
 		{
 			val2 = val + val3 * visibilityOffsets[i] - position;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			list.Clear();
 			GamePhysics.TraceAll(new Ray(position, normalized), 0f, list, num * 1.1f, 1218652417, (QueryTriggerInteraction)0);
 			for (int j = 0; j < list.Count; j++)
@@ -1876,8 +1877,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			muzzleToUse = muzzlePos;
 		}
 		Matrix4x4 centerMuzzle = GetCenterMuzzle();
-		Vector3 val = ((Matrix4x4)(ref centerMuzzle)).MultiplyVector(Vector3.forward);
-		Vector3 val2 = ((Matrix4x4)(ref centerMuzzle)).GetPosition() - val * 0.25f;
+		Vector3 val = centerMuzzle.MultiplyVector(Vector3.forward);
+		Vector3 val2 = centerMuzzle.GetPosition() - val * 0.25f;
 		Vector3 val3 = val;
 		Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(aimCone, val3);
 		targetPos = val2 + modifiedAimConeDirection * 300f;
@@ -1895,7 +1896,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			BaseCombatEntity baseCombatEntity = entity as BaseCombatEntity;
 			if ((Object)(object)baseCombatEntity != (Object)null)
 			{
-				ApplyDamage(baseCombatEntity, ((RaycastHit)(ref hit)).point, modifiedAimConeDirection);
+				ApplyDamage(baseCombatEntity, hit.point, modifiedAimConeDirection);
 				if (baseCombatEntity.EqualNetID((BaseNetworkable)target))
 				{
 					flag = true;
@@ -1903,9 +1904,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			}
 			if (!((Object)(object)entity != (Object)null) || entity.ShouldBlockProjectiles())
 			{
-				targetPos = ((RaycastHit)(ref hit)).point;
+				targetPos = hit.point;
 				Vector3 val4 = targetPos - val2;
-				val3 = ((Vector3)(ref val4)).normalized;
+				val3 = val4.normalized;
 				break;
 			}
 		}
@@ -2021,7 +2022,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			return num;
 		}
 		List<Item> ammos = Pool.Get<List<Item>>();
-		base.inventory.FindAmmo(ammos, attachedWeapon.primaryMagazine.definition.ammoTypes);
+		inventory.FindAmmo(ammos, attachedWeapon.primaryMagazine.definition.ammoTypes);
 		if (!attachedWeapon.primaryMagazine.allowAmmoSwitching)
 		{
 			BaseProjectile.StripAmmoToType(ref ammos, attachedWeapon.primaryMagazine.ammoType);
@@ -2074,14 +2075,14 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		if (baseProjectile.primaryMagazine.contents > 0)
 		{
 			bool flag = false;
-			if (base.inventory.capacity > base.inventory.itemList.Count)
+			if (inventory.capacity > inventory.itemList.Count)
 			{
 				flag = true;
 			}
 			else
 			{
 				int num = 0;
-				foreach (Item item in base.inventory.itemList)
+				foreach (Item item in inventory.itemList)
 				{
 					if ((Object)(object)item.info == (Object)(object)baseProjectile.primaryMagazine.ammoType)
 					{
@@ -2094,11 +2095,11 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			{
 				return;
 			}
-			base.inventory.AddItem(baseProjectile.primaryMagazine.ammoType, baseProjectile.primaryMagazine.contents, 0uL);
+			inventory.AddItem(baseProjectile.primaryMagazine.ammoType, baseProjectile.primaryMagazine.contents, 0uL);
 			baseProjectile.SetAmmoCount(0);
 		}
 		List<Item> ammos = Pool.Get<List<Item>>();
-		base.inventory.FindAmmo(ammos, ammoTypes);
+		inventory.FindAmmo(ammos, ammoTypes);
 		if (!baseProjectile.primaryMagazine.allowAmmoSwitching)
 		{
 			BaseProjectile.StripAmmoToType(ref ammos, baseProjectile.primaryMagazine.ammoType);
@@ -2169,9 +2170,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (Object.op_Implicit((Object)(object)((Component)item.info).GetComponent<ItemModEntity>()))
 		{
 			if (IsInvoking(actionUpdateAttachedWeapon))
@@ -2230,7 +2231,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		ResetBurstFireState();
-		HeldEntity heldEntity = TryAddWeaponToTurret(base.inventory.GetSlot(0), socketTransform, this, attachedWeaponZOffsetScale);
+		HeldEntity heldEntity = TryAddWeaponToTurret(inventory.GetSlot(0), socketTransform, this, attachedWeaponZOffsetScale);
 		bool flag = (Object)(object)heldEntity != (Object)null;
 		flagsUpdateScope.Set(Flags.Reserved3, flag);
 		if (flag)
@@ -2456,7 +2457,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 					if (!target.IsRealNull() && target.GetParentEntity() is TrainCar trainCar)
 					{
 						Vector3 worldVelocity = trainCar.GetWorldVelocity();
-						float magnitude = ((Vector3)(ref worldVelocity)).magnitude;
+						float magnitude = worldVelocity.magnitude;
 						float num = Mathf.Pow(1f - TrainCar.TrainTurretInaccuratePerVelocity, magnitude);
 						if (Random.Range(0f, 1f) > num)
 						{
@@ -2580,6 +2581,10 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		{
 			return false;
 		}
+		if (targ is LivestockAnimal)
+		{
+			return false;
+		}
 		if (targ is Drone drone)
 		{
 			if (!drone.IsBeingControlled)
@@ -2680,7 +2685,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public void ServerDo()
 	{
-		if (!base.isClient && !base.IsDestroyed)
+		if (!isClient && !IsDestroyed)
 		{
 			float dt = (float)(double)timeSinceLastServerTick;
 			timeSinceLastServerTick = 0.0;
@@ -2690,7 +2695,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public void ServerThink()
 	{
-		if (!base.isClient && !base.IsDestroyed)
+		if (!isClient && !IsDestroyed)
 		{
 			((ObjectWorkQueue<AutoTurret>)updateTurretTick).Add(this);
 			if (totalAmmoDirty && Time.timeAsDouble > nextAmmoCheckTime)
@@ -2811,11 +2816,11 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 					Vector3 val2 = position;
 					Vector3.Distance(val, val2);
 					val3 = val - val2;
-					Vector3 val4 = Vector3.Cross(((Vector3)(ref val3)).normalized, Vector3.up);
+					Vector3 val4 = Vector3.Cross(val3.normalized, Vector3.up);
 					val += val4 * visibilityOffsets[peekIndex];
 				}
 				val3 = val - position;
-				Vector3 val5 = ((Vector3)(ref val3)).normalized;
+				Vector3 val5 = val3.normalized;
 				if (currentAmmoGravity != 0f)
 				{
 					float num = 0.2f;
@@ -2830,7 +2835,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 					val = ((Component)target).transform.position + Vector3.up * num;
 					float angle = GetAngle(position, val, currentAmmoVelocity, currentAmmoGravity);
 					Vector3 val6 = Vector3Ex.XZ3D(val) - Vector3Ex.XZ3D(position);
-					val6 = ((Vector3)(ref val6)).normalized;
+					val6 = val6.normalized;
 					val5 = Quaternion.LookRotation(val6) * Quaternion.Euler(angle, 0f, 0f) * Vector3.forward;
 				}
 				aimDir = val5;
@@ -2880,22 +2885,22 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		return default(ItemContainerId);
+		return default;
 	}
 
 	public override int GetIdealSlot(BasePlayer player, ItemContainer container, Item item)
 	{
-		bool num = item.info.category == ItemCategory.Weapon;
-		bool flag = item.info.category == ItemCategory.Ammunition;
-		if (num)
+		bool flag = item.info.category == ItemCategory.Weapon;
+		bool flag2 = item.info.category == ItemCategory.Ammunition;
+		if (flag)
 		{
 			return 0;
 		}
-		if (flag)
+		if (flag2)
 		{
-			for (int i = 1; i < base.inventory.capacity; i++)
+			for (int i = 1; i < inventory.capacity; i++)
 			{
-				if (!base.inventory.SlotTaken(item, i))
+				if (!inventory.SlotTaken(item, i))
 				{
 					return i;
 				}
@@ -2937,7 +2942,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		{
 			if (IsValidWeapon(item))
 			{
-				item.MoveToContainer(base.inventory);
+				item.MoveToContainer(inventory);
 				AttachedWeapon = item.GetHeldEntity() as HeldEntity;
 				break;
 			}
@@ -2946,7 +2951,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		{
 			if (item2.info.category == ItemCategory.Ammunition)
 			{
-				item2.MoveToContainer(base.inventory);
+				item2.MoveToContainer(inventory);
 			}
 		}
 		containerPreserve.storageDict[key].Clear();
@@ -3004,7 +3009,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			Matrix4x4 localToWorldMatrix = cachedTransf.localToWorldMatrix;
 			if (rotateMode == YawPitchMode.Separate)
@@ -3045,7 +3050,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		use2D = true;
 		Matrix4x4 centerMuzzle = GetCenterMuzzle();
-		Vector3 position = ((Matrix4x4)(ref centerMuzzle)).GetPosition();
+		Vector3 position = centerMuzzle.GetPosition();
 		Vector3 zero = Vector3.zero;
 		Vector3 val;
 		if (use2D)
@@ -3055,9 +3060,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		else
 		{
 			val = targetPos - position;
-			zero = ((Vector3)(ref val)).normalized;
+			zero = val.normalized;
 		}
-		Vector3 val2 = ((Matrix4x4)(ref centerMuzzle)).MultiplyVector(Vector3.forward);
+		Vector3 val2 = centerMuzzle.MultiplyVector(Vector3.forward);
 		Vector3 val3;
 		if (!use2D)
 		{
@@ -3066,7 +3071,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		else
 		{
 			val = Vector3Ex.XZ3D(val2);
-			val3 = ((Vector3)(ref val)).normalized;
+			val3 = val.normalized;
 		}
 		return Vector3.Angle(val3, zero);
 	}
@@ -3154,7 +3159,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			}
 			info.msg.autoturret.users = null;
 			aimDir = info.msg.autoturret.aimDir;
-			if (base.isServer && ShouldApplyInterference())
+			if (isServer && ShouldApplyInterference())
 			{
 				Load_Interference(info.msg.autoturret);
 			}
@@ -3265,12 +3270,12 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			return;
 		}
 		float num = 5f;
-		if (base.isServer && !IsBeingControlled)
+		if (isServer && !IsBeingControlled)
 		{
 			num = ((!HasTarget()) ? 15f : 35f);
 		}
 		Quaternion val = Quaternion.LookRotation(aimDir);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -3287,7 +3292,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		{
 			gunAimTotalRotWS = Mathx.Lerp(gunAimTotalRotWS, val, num, dt);
 			Quaternion val3 = Quaternion.Inverse(rotation * gunAimInitialYawRot) * gunAimTotalRotWS;
-			Vector3 eulerAngles = ((Quaternion)(ref val3)).eulerAngles;
+			Vector3 eulerAngles = val3.eulerAngles;
 			gunAimYawRotLS = Quaternion.Euler(0f, eulerAngles.y, 0f);
 			gunAimPitchOrTotalRotLS = Quaternion.Euler(eulerAngles.x, 0f, 0f);
 		}
@@ -3352,24 +3357,5 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		consumptionAmount = 10;
-		bulletSpeed = 200f;
-		playAmbientSounds = true;
-		nearbyTurrets = new HashSet<AutoTurret>();
-		interferringTurrets = new HashSet<AutoTurret>();
-		rcTurnSensitivity = 4f;
-		rcIdentifier = "";
-		maxInterference = -1f;
-		attachedWeaponZOffsetScale = -0.5f;
-		lastTargetAimOffset = Vector3.zero;
-		targetVisible = true;
-		targetAimDir = Vector3.forward;
-		lastSentAimDir = Vector3.forward;
-		totalAmmoDirty = true;
-		sightRange = 30f;
-		focusSoundFreqMin = 2.5f;
-		focusSoundFreqMax = 7f;
-		authorizedPlayers = new HashSet<ulong>();
-		base._002Ector();
 	}
 }

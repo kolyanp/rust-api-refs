@@ -12,20 +12,11 @@ namespace Facepunch.MarchingCubes;
 
 public class MarchingCubesGenerator : IDisposable
 {
-	[CompilerGenerated]
-	private float3 _003COffset_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private TimeSince _003CSinceLastUse_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Bounds _003CMeshSpaceBounds_003Ek__BackingField;
-
 	public const int MaxMipLevel = 2;
 
 	private readonly NativeMeshSimplifier _simplifier;
 
-	private readonly QuantizedFloatData3DArray[] mips;
+	private readonly QuantizedFloatData3DArray[] mips = new QuantizedFloatData3DArray[2];
 
 	private int3 mipSourceBounds;
 
@@ -41,14 +32,14 @@ public class MarchingCubesGenerator : IDisposable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003COffset_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003COffset_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -60,14 +51,14 @@ public class MarchingCubesGenerator : IDisposable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CSinceLastUse_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CSinceLastUse_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -83,14 +74,14 @@ public class MarchingCubesGenerator : IDisposable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CMeshSpaceBounds_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CMeshSpaceBounds_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -102,8 +93,6 @@ public class MarchingCubesGenerator : IDisposable
 	public MarchingCubesGenerator(Mesh meshToUpdate, Mesh meshForCollision, MeshCollider meshCollider, float3 vertexOffset, float vertexScale)
 	{
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		mips = new QuantizedFloatData3DArray[2];
-		base._002Ector();
 		Mesh = meshToUpdate;
 		MeshForCollision = meshForCollision;
 		MeshCollider = meshCollider;
@@ -137,9 +126,9 @@ public class MarchingCubesGenerator : IDisposable
 		for (int i = 0; i < mips.Length; i++)
 		{
 			mips[i].Dispose();
-			mips[i] = default(QuantizedFloatData3DArray);
+			mips[i] = default;
 		}
-		mipSourceBounds = default(int3);
+		mipSourceBounds = default;
 	}
 
 	private void MarkUsed()
@@ -212,7 +201,7 @@ public class MarchingCubesGenerator : IDisposable
 		QuantizedFloatData3DArray source = (censored ? set.CensorChunks[0].DataArray : dataArray);
 		JobHandle val = inputDeps;
 		int length = results.Length;
-		MeshDataArray val2 = default(MeshDataArray);
+		MeshDataArray val2 = default;
 		results.Add(ref val2);
 		bool flag = !censored && colliderMipLevel < renderMeshCount;
 		if (!flag)
@@ -230,7 +219,7 @@ public class MarchingCubesGenerator : IDisposable
 			return val;
 		}
 		val = ScheduleMipPyramid(source, renderMeshCount - 1, val);
-		JobHandle val3 = default(JobHandle);
+		JobHandle val3 = default;
 		for (int i = 0; i < renderMeshCount; i++)
 		{
 			JobHandle inputDeps2 = ScheduleLevelMarch(source, set.iso, i, out var vertices2, out var indices2, val);
@@ -312,7 +301,7 @@ public class MarchingCubesGenerator : IDisposable
 			QuantizedFloatData3DArray src = ((i == 1) ? source : mips[i - 2]);
 			int numCells = quantizedFloatData3DArray.NumCells;
 			int num = math.max(1, numCells / JobsUtility.JobWorkerCount);
-			val = IJobParallelForBatchExtensions.Schedule<Facepunch.MarchingCubes.DownsampleJob>(new Facepunch.MarchingCubes.DownsampleJob
+			val = IJobParallelForBatchExtensions.Schedule<DownsampleJob>(new DownsampleJob
 			{
 				src = src,
 				dst = quantizedFloatData3DArray
@@ -367,6 +356,7 @@ public class MarchingCubesGenerator : IDisposable
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
@@ -404,12 +394,11 @@ public class MarchingCubesGenerator : IDisposable
 		int num2 = data3DArray.WidthHeight * data3DArray.Depth;
 		int num3 = math.max(1, num2 / JobsUtility.JobWorkerCount);
 		int num4 = (num2 + num3 - 1) / num3;
-		NativeStream val5 = default(NativeStream);
-		((NativeStream)(ref val5))._002Ector(num4, AllocatorHandle.op_Implicit((Allocator)3));
-		val4 = IJobParallelForBatchExtensions.Schedule<Facepunch.MarchingCubes.MarchFloatGenerateTrianglesJob>(new Facepunch.MarchingCubes.MarchFloatGenerateTrianglesJob
+		NativeStream val5 = new NativeStream(num4, AllocatorHandle.op_Implicit((Allocator)3));
+		val4 = IJobParallelForBatchExtensions.Schedule<MarchFloatGenerateTrianglesJob>(new MarchFloatGenerateTrianglesJob
 		{
 			sampler = data3DArray,
-			edgeStream = ((NativeStream)(ref val5)).AsWriter(),
+			edgeStream = val5.AsWriter(),
 			iso = iso,
 			vertexOffset = vertexOffset,
 			scale = scale,
@@ -417,14 +406,14 @@ public class MarchingCubesGenerator : IDisposable
 		}, num2, num3, val4);
 		vertices = new NativeList<float3>(AllocatorHandle.op_Implicit((Allocator)3));
 		indices = new NativeList<int>(AllocatorHandle.op_Implicit((Allocator)3));
-		val4 = IJobExtensions.Schedule<Facepunch.MarchingCubes.ProcessTrianglesJob>(new Facepunch.MarchingCubes.ProcessTrianglesJob
+		val4 = IJobExtensions.Schedule<ProcessTrianglesJob>(new ProcessTrianglesJob
 		{
-			edgeStream = ((NativeStream)(ref val5)).AsReader(),
+			edgeStream = val5.AsReader(),
 			vertices = vertices,
 			indices = indices,
 			edgeArraySize = data3DArray.NumCells * 3
 		}, val4);
-		((NativeStream)(ref val5)).Dispose(val4);
+		val5.Dispose(val4);
 		return val4;
 	}
 
@@ -460,11 +449,11 @@ public class MarchingCubesGenerator : IDisposable
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		meshData = Mesh.AllocateWritableMeshData(1);
-		return IJobExtensions.Schedule<Facepunch.MarchingCubes.WriteMeshDataJob>(new Facepunch.MarchingCubes.WriteMeshDataJob
+		return IJobExtensions.Schedule<WriteMeshDataJob>(new WriteMeshDataJob
 		{
 			vertices = vertices.AsDeferredJobArray(),
 			indices = indices.AsDeferredJobArray(),
-			meshData = ((MeshDataArray)(ref meshData))[0],
+			meshData = meshData[0],
 			withNormals = withNormals
 		}, inputDeps);
 	}
@@ -477,7 +466,7 @@ public class MarchingCubesGenerator : IDisposable
 		{
 			if ((Object)(object)toMesh == (Object)null)
 			{
-				((MeshDataArray)(ref meshData)).Dispose();
+				meshData.Dispose();
 				return;
 			}
 			Mesh.ApplyAndDisposeWritableMeshData(meshData, toMesh, (MeshUpdateFlags)9);

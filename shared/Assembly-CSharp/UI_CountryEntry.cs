@@ -6,4 +6,6 @@ public class UI_CountryEntry : MonoBehaviour
 	public RustButton button;
 
 	public RustText nameText;
+
+	public RustText codeText;
 }

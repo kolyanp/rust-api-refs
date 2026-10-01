@@ -103,7 +103,7 @@ public class WaterBody : MonoBehaviour
 			{
 				float num2 = num;
 				Bounds bounds = val.bounds;
-				num = Mathf.Min(num2, ((Bounds)(ref bounds)).max.y);
+				num = Mathf.Min(num2, bounds.max.y);
 			}
 		}
 		return num;
@@ -137,13 +137,13 @@ public class WaterBody : MonoBehaviour
 				{
 					float num2 = num;
 					val3 = val.ClosestPoint(point) - point;
-					num = Mathf.Min(num2, ((Vector3)(ref val3)).sqrMagnitude);
+					num = Mathf.Min(num2, val3.sqrMagnitude);
 				}
 				else
 				{
 					float num3 = num;
 					val3 = val.ClosestPointOnBounds(point) - point;
-					num = Mathf.Min(num3, ((Vector3)(ref val3)).sqrMagnitude);
+					num = Mathf.Min(num3, val3.sqrMagnitude);
 				}
 			}
 		}

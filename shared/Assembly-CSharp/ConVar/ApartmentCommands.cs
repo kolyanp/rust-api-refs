@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 
@@ -45,7 +44,7 @@ public class ApartmentCommands : ConsoleSystem
 	public static void PrintItemTax(Arg arg)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0006: Expected O, but got Unknown
+		//IL_0006: Expected Obj, but got Unknown
 		TextTable val = new TextTable();
 		val.AddColumns(new string[3] { "Item", "Tax Per Stack", "Stacksize" });
 		foreach (ItemDefinition item in from x in ItemManager.itemList
@@ -258,11 +257,30 @@ public class ApartmentCommands : ConsoleSystem
 		}
 	}
 
+	[ServerVar(Help = "Admin test tool: injects a stale combat-zone trigger (TriggerSafeZoneOverride) into your trigger list without physically entering it, reproducing the reconnect/wake desync so you can verify safezone damage protection. Run it near a loaded apartment, then walk out into the world.")]
+	public static void givestalecombattrigger(Arg arg)
+	{
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("Must be run from a client");
+			return;
+		}
+		TriggerSafeZoneOverride triggerSafeZoneOverride = TriggerSafeZoneOverride.allHostileZones.FirstOrDefault((TriggerSafeZoneOverride t) => (Object)(object)t != (Object)null && t.IsCombatActive);
+		if ((Object)(object)triggerSafeZoneOverride == (Object)null)
+		{
+			arg.ReplyWith("No active combat zone found - load/spawn an apartment (with a TriggerSafeZoneOverride) first");
+			return;
+		}
+		basePlayer.EnterTrigger(triggerSafeZoneOverride);
+		arg.ReplyWith($"Injected stale combat trigger '{((Object)triggerSafeZoneOverride).name}'. InSafeCombatZone() = {basePlayer.InSafeCombatZone()}. Now leave the safezone and confirm whether you still take damage.");
+	}
+
 	[ServerVar(Help = "Print list of furniture inside your room")]
 	public static void printapartmentfurniture(Arg arg)
 	{
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Expected O, but got Unknown
+		//IL_00a6: Expected Obj, but got Unknown
 		ApartmentBuilding apartmentBuilding = GetApartmentBuilding();
 		if ((Object)(object)apartmentBuilding == (Object)null)
 		{
@@ -301,7 +319,7 @@ public class ApartmentCommands : ConsoleSystem
 			val.AddRow(new string[3]
 			{
 				item.ShortPrefabName,
-				((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
+				((object)item.net.ID/*cast due to constrained. prefix*/).ToString(),
 				text2
 			});
 		}

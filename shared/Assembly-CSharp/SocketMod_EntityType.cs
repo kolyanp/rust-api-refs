@@ -32,7 +32,7 @@ public class SocketMod_EntityType : SocketMod
 		bool result = !wantsCollide;
 		Vector3 position = place.position + place.rotation * worldPosition;
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
-		Vis.Entities(position, sphereRadius, list, ((LayerMask)(ref layerMask)).value, queryTriggers);
+		Vis.Entities(position, sphereRadius, list, layerMask.value, queryTriggers);
 		foreach (BaseEntity item in list)
 		{
 			if (!place.ShouldIgnoreEntity(item))

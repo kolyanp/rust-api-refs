@@ -43,7 +43,7 @@ public class AssemblyCSharp : Patch
 			MethodDefinition val2 = ((IEnumerable<MethodDefinition>)val.Methods).Single((MethodDefinition x) => ((MemberReference)x).Name == "Initialize") ?? throw new Exception("Unable to get a method definition for 'Tier0'");
 			TypeDefinition val3 = assembly.MainModule.GetType("Bootstrap") ?? throw new Exception("Unable to get a type for 'Bootstrap'");
 			MethodDefinition val4 = ((IEnumerable<MethodDefinition>)val3.Methods).Single((MethodDefinition x) => ((MemberReference)x).Name == "Init_Tier0") ?? throw new Exception("Unable to get a method definition for 'Init_Tier0'");
-			if (!((IEnumerable<Instruction>)val4.Body.Instructions).Any(delegate(Instruction x)
+			if (!((IEnumerable<Instruction>)val4.Body.Instructions).Any((Instruction x) =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -62,7 +62,7 @@ public class AssemblyCSharp : Patch
 	private void InjectIPlayer()
 	{
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Expected O, but got Unknown
+		//IL_00bd: Expected Obj, but got Unknown
 		FieldDefinition val = ((IEnumerable<FieldDefinition>)assembly.MainModule.GetType("BasePlayer").Fields).FirstOrDefault((FieldDefinition x) => ((MemberReference)x).Name == "IPlayer");
 		if (val != null)
 		{

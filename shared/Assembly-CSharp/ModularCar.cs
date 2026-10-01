@@ -54,7 +54,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public static HashSet<ModularCar> allCarsList = new HashSet<ModularCar>();
 
-	public readonly ListDictionary<BaseMountable, DriverSeatInputs> driverSeatInputs;
+	public readonly ListDictionary<BaseMountable, DriverSeatInputs> driverSeatInputs = new ListDictionary<BaseMountable, DriverSeatInputs>();
 
 	public CarPhysics<ModularCar> carPhysics;
 
@@ -90,9 +90,9 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	private const float IMMUNE_TIME = 1f;
 
-	public readonly Vector3 groundedCOMMultiplier;
+	public readonly Vector3 groundedCOMMultiplier = new Vector3(0.25f, 0.3f, 0.25f);
 
-	public readonly Vector3 airbourneCOMMultiplier;
+	public readonly Vector3 airbourneCOMMultiplier = new Vector3(0.25f, 0.75f, 0.25f);
 
 	public Vector3 prevCOMMultiplier;
 
@@ -111,7 +111,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	public CarSettings carSettings;
 
 	[SerializeField]
-	public float hurtTriggerMinSpeed;
+	public float hurtTriggerMinSpeed = 1f;
 
 	[SerializeField]
 	public TriggerHurtNotChild hurtTriggerFront;
@@ -176,11 +176,13 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 	}
 
+	public override bool AllowDuckToggle => false;
+
 	public override float DriveWheelVelocity
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.DriveWheelVelocity;
 			}
@@ -192,7 +194,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.DriveWheelSlip;
 			}
@@ -204,7 +206,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.SteerAngle;
 			}
@@ -553,9 +555,9 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 			driverSeatInputs.throttleInput = num;
 			driverSeatInputs.brakeInput = 0f;
 		}
-		for (int i = 0; i < base.NumAttachedModules; i++)
+		for (int i = 0; i < NumAttachedModules; i++)
 		{
-			base.AttachedModuleEntities[i].PlayerServerInput(inputState, player);
+			AttachedModuleEntities[i].PlayerServerInput(inputState, player);
 		}
 		if (engineController.IsOff && ((inputState.IsDown(BUTTON.FORWARD) && !inputState.WasDown(BUTTON.FORWARD)) || (inputState.IsDown(BUTTON.BACKWARD) && !inputState.WasDown(BUTTON.BACKWARD))))
 		{
@@ -566,12 +568,12 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	public override void PlayerDismounted(BasePlayer player, BaseMountable seat)
 	{
 		base.PlayerDismounted(player, seat);
-		DriverSeatInputs driverSeatInputs = default(DriverSeatInputs);
+		DriverSeatInputs driverSeatInputs = default;
 		if (this.driverSeatInputs.TryGetValue(seat, ref driverSeatInputs))
 		{
 			this.driverSeatInputs.Remove(seat);
 		}
-		foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 		{
 			if ((Object)(object)attachedModuleEntity != (Object)null)
 			{
@@ -600,7 +602,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	{
 		if (!IsDead() && !IsTransferProtected() && info.damageTypes.Get(DamageType.Decay) == 0f)
 		{
-			PropagateDamageToModules(info, 0.5f / (float)base.NumAttachedModules, 0.9f / (float)base.NumAttachedModules, null);
+			PropagateDamageToModules(info, 0.5f / (float)NumAttachedModules, 0.9f / (float)NumAttachedModules, null);
 		}
 		base.Hurt(info);
 	}
@@ -635,14 +637,14 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public void DoDecayDamage(float damage)
 	{
-		foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 		{
 			if (!attachedModuleEntity.IsDestroyed)
 			{
 				attachedModuleEntity.Hurt(damage, DamageType.Decay);
 			}
 		}
-		if (!base.HasAnyModules)
+		if (!HasAnyModules)
 		{
 			Hurt(damage, DamageType.Decay);
 		}
@@ -651,18 +653,18 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	public float GetAdjustedDriveForce(float absSpeed, float topSpeed)
 	{
 		float num = 0f;
-		for (int i = 0; i < base.AttachedModuleEntities.Count; i++)
+		for (int i = 0; i < AttachedModuleEntities.Count; i++)
 		{
-			num += base.AttachedModuleEntities[i].GetAdjustedDriveForce(absSpeed, topSpeed);
+			num += AttachedModuleEntities[i].GetAdjustedDriveForce(absSpeed, topSpeed);
 		}
 		return RollOffDriveForce(num);
 	}
 
 	public bool HasAnyEngines()
 	{
-		for (int i = 0; i < base.AttachedModuleEntities.Count; i++)
+		for (int i = 0; i < AttachedModuleEntities.Count; i++)
 		{
-			if (base.AttachedModuleEntities[i].HasAnEngine)
+			if (AttachedModuleEntities[i].HasAnEngine)
 			{
 				return true;
 			}
@@ -712,7 +714,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		{
 			return false;
 		}
-		foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 		{
 			attachedModuleEntity.AdminFixUp(tier);
 		}
@@ -733,7 +735,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 					deathDamageCounter += info.damageTypes.types[i];
 				}
 			}
-			if (deathDamageCounter > 600f && !base.IsDestroyed)
+			if (deathDamageCounter > 600f && !IsDestroyed)
 			{
 				Kill(DestroyMode.Gib);
 			}
@@ -746,7 +748,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public void PropagateDamageToModules(HitInfo info, float minPropagationPercent, float maxPropagationPercent, BaseVehicleModule ignoreModule)
 	{
-		foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 		{
 			if ((Object)(object)attachedModuleEntity == (Object)(object)ignoreModule || attachedModuleEntity.Health() <= 0f)
 			{
@@ -779,7 +781,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 			return;
 		}
 		bool flag = true;
-		foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 		{
 			if (attachedModuleEntity.health > 0f)
 			{
@@ -798,7 +800,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		DismountAllPlayers();
-		foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 		{
 			attachedModuleEntity.repair.enabled = false;
 		}
@@ -809,7 +811,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		timeSinceDeath = TimeSince.op_Implicit(0f);
 		if (vehicle.carwrecks)
 		{
-			if (!base.HasAnyModules)
+			if (!HasAnyModules)
 			{
 				Kill(DestroyMode.Gib);
 			}
@@ -836,7 +838,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 linearVelocity = rigidBody.linearVelocity;
-		if (((Vector3)(ref linearVelocity)).sqrMagnitude < ((Vector3)(ref vel)).sqrMagnitude)
+		if (linearVelocity.sqrMagnitude < vel.sqrMagnitude)
 		{
 			vel.y = rigidBody.linearVelocity.y;
 			rigidBody.linearVelocity = vel;
@@ -858,9 +860,9 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	{
 		if (HasDriver())
 		{
-			byte num = (byte)((GetThrottleInput() + 1f) * 7f);
-			byte b = (byte)(GetBrakeInput() * 15f);
-			byte arg = (byte)(num + (b << 4));
+			byte b = (byte)((GetThrottleInput() + 1f) * 7f);
+			byte b2 = (byte)(GetBrakeInput() * 15f);
+			byte arg = (byte)(b + (b2 << 4));
 			byte arg2 = (byte)(GetFuelFraction() * 255f);
 			ClientRPC(RpcTarget.NetworkGroup("ModularCarUpdate"), SteerAngle, arg, DriveWheelVelocity, arg2, GetHandbrakeInput());
 		}
@@ -868,14 +870,14 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public void DecayTick()
 	{
-		if (base.IsDestroyed || IsOn() || immuneToDecay || Time.time < lastEngineOnTime + 600f)
+		if (IsDestroyed || IsOn() || immuneToDecay || Time.time < lastEngineOnTime + 600f)
 		{
 			return;
 		}
 		float num = 1f;
 		if (IsDead())
 		{
-			int num2 = Mathf.Max(1, base.AttachedModuleEntities.Count);
+			int num2 = Mathf.Max(1, AttachedModuleEntities.Count);
 			num /= 5f * (float)num2;
 			DoDecayDamage(600f * num);
 			return;
@@ -885,7 +887,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		{
 			num *= 0.1f;
 		}
-		float num3 = (base.HasAnyModules ? base.AttachedModuleEntities.Max((BaseVehicleModule module) => module.MaxHealth()) : MaxHealth());
+		float num3 = (HasAnyModules ? AttachedModuleEntities.Max((BaseVehicleModule module) => module.MaxHealth()) : MaxHealth());
 		DoDecayDamage(num3 * num);
 	}
 
@@ -905,11 +907,11 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 			{
 				return;
 			}
-			if (base.HasAnyModules)
+			if (HasAnyModules)
 			{
-				float amount = damage / (float)base.NumAttachedModules;
+				float amount = damage / (float)NumAttachedModules;
 				{
-					foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+					foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 					{
 						attachedModuleEntity.AcceptPropagatedDamage(amount, DamageType.Collision, this, useProtection: false);
 					}
@@ -934,7 +936,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		for (int i = 0; i < modularCarPresetConfig.socketItemDefs.Length; i++)
 		{
 			ItemModVehicleModule itemModVehicleModule = modularCarPresetConfig.socketItemDefs[i];
-			if ((Object)(object)itemModVehicleModule != (Object)null && base.Inventory.SocketsAreFree(i, itemModVehicleModule.socketsTaken))
+			if ((Object)(object)itemModVehicleModule != (Object)null && Inventory.SocketsAreFree(i, itemModVehicleModule.socketsTaken))
 			{
 				Item item = ItemManager.Create(((Component)itemModVehicleModule).GetComponent<ItemDefinition>(), 1, 0uL, isServerSide: true, 0uL);
 				float num = Random.Range(spawnSettings.minStartHealthPercent, spawnSettings.maxStartHealthPercent);
@@ -997,8 +999,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_TryMountWithKeycode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1019,7 +1021,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	public override void ScaleDamageForPlayer(BasePlayer player, HitInfo info)
 	{
 		base.ScaleDamageForPlayer(player, info);
-		foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 		{
 			if (attachedModuleEntity.HasSeating && attachedModuleEntity is VehicleModuleSeating vehicleModuleSeating && vehicleModuleSeating.IsOnThisModule(player))
 			{
@@ -1039,7 +1041,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		base.InitShared();
 		if (CarLock == null)
 		{
-			CarLock = new ModularCarCodeLock(this, base.isServer);
+			CarLock = new ModularCarCodeLock(this, isServer);
 		}
 	}
 
@@ -1060,9 +1062,9 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	public float TotalHealth()
 	{
 		float num = 0f;
-		for (int i = 0; i < base.AttachedModuleEntities.Count; i++)
+		for (int i = 0; i < AttachedModuleEntities.Count; i++)
 		{
-			num += base.AttachedModuleEntities[i].Health();
+			num += AttachedModuleEntities[i].Health();
 		}
 		return num;
 	}
@@ -1070,16 +1072,16 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	public float TotalMaxHealth()
 	{
 		float num = 0f;
-		for (int i = 0; i < base.AttachedModuleEntities.Count; i++)
+		for (int i = 0; i < AttachedModuleEntities.Count; i++)
 		{
-			num += base.AttachedModuleEntities[i].MaxHealth();
+			num += AttachedModuleEntities[i].MaxHealth();
 		}
 		return num;
 	}
 
 	public override float GetMaxForwardSpeed()
 	{
-		float num = GetMaxDriveForce() / base.TotalMass * 30f;
+		float num = GetMaxDriveForce() / TotalMass * 30f;
 		return Mathf.Pow(0.9945f, num) * num;
 	}
 
@@ -1097,9 +1099,9 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		CarLock.Load(info);
 		if (CarLock.HasALock != hasALock)
 		{
-			for (int i = 0; i < base.AttachedModuleEntities.Count; i++)
+			for (int i = 0; i < AttachedModuleEntities.Count; i++)
 			{
-				base.AttachedModuleEntities[i].RefreshConditionals(canGib: true);
+				AttachedModuleEntities[i].RefreshConditionals(canGib: true);
 			}
 		}
 	}
@@ -1115,7 +1117,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public override float GetThrottleInput()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			float num = 0f;
 			BufferList<DriverSeatInputs> values = driverSeatInputs.Values;
@@ -1130,7 +1132,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public override float GetBrakeInput()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			float num = 0f;
 			BufferList<DriverSeatInputs> values = driverSeatInputs.Values;
@@ -1146,16 +1148,16 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	public float GetMaxDriveForce()
 	{
 		float num = 0f;
-		for (int i = 0; i < base.AttachedModuleEntities.Count; i++)
+		for (int i = 0; i < AttachedModuleEntities.Count; i++)
 		{
-			num += base.AttachedModuleEntities[i].GetMaxDriveForce();
+			num += AttachedModuleEntities[i].GetMaxDriveForce();
 		}
 		return RollOffDriveForce(num);
 	}
 
 	public float GetFuelFraction()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return engineController.FuelSystem.GetFuelFraction();
 		}
@@ -1223,21 +1225,21 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public bool RefreshEngineState()
 	{
-		if (lastSetEngineState == base.CurEngineState)
+		if (lastSetEngineState == CurEngineState)
 		{
 			return false;
 		}
-		if (base.isServer && base.CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.Off)
+		if (isServer && CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.Off)
 		{
 			lastEngineOnTime = Time.time;
 		}
-		foreach (BaseVehicleModule attachedModuleEntity in base.AttachedModuleEntities)
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
 		{
-			attachedModuleEntity.OnEngineStateChanged(lastSetEngineState, base.CurEngineState);
+			attachedModuleEntity.OnEngineStateChanged(lastSetEngineState, CurEngineState);
 		}
-		if (base.isServer && Rust.GameInfo.HasAchievements && NumMounted() >= 5)
+		if (isServer && GameInfo.HasAchievements && NumMounted() >= 5)
 		{
-			foreach (MountPointInfo allMountPoint in base.allMountPoints)
+			foreach (MountPointInfo allMountPoint in allMountPoints)
 			{
 				if ((Object)(object)allMountPoint.mountable != (Object)null && (Object)(object)allMountPoint.mountable.GetMounted() != (Object)null)
 				{
@@ -1245,7 +1247,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 				}
 			}
 		}
-		lastSetEngineState = base.CurEngineState;
+		lastSetEngineState = CurEngineState;
 		return true;
 	}
 
@@ -1256,10 +1258,10 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public void RefreshChassisProtectionState()
 	{
-		if (base.HasAnyModules)
+		if (HasAnyModules)
 		{
 			baseProtection = immortalProtection;
-			if (base.isServer)
+			if (isServer)
 			{
 				SetHealth(MaxHealth());
 			}
@@ -1288,10 +1290,5 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		driverSeatInputs = new ListDictionary<BaseMountable, DriverSeatInputs>();
-		groundedCOMMultiplier = new Vector3(0.25f, 0.3f, 0.25f);
-		airbourneCOMMultiplier = new Vector3(0.25f, 0.75f, 0.25f);
-		hurtTriggerMinSpeed = 1f;
-		base._002Ector();
 	}
 }

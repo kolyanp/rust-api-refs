@@ -14,7 +14,7 @@ public class ApartmentMailbox : Mailbox, LootPanel.IHasLootPanel
 	[NonSerialized]
 	public ApartmentRoom Room;
 
-	private static Phrase mailboxPanelTitlePhrase;
+	private static Phrase mailboxPanelTitlePhrase = new Phrase("apartment.mailbox.lootpanel.title", "Mailbox of room {0}");
 
 	Phrase LootPanel.IHasLootPanel.LootPanelTitle => Phrase.op_Implicit(string.Format(mailboxPanelTitlePhrase.translated, RoomNumber));
 
@@ -36,7 +36,7 @@ public class ApartmentMailbox : Mailbox, LootPanel.IHasLootPanel
 		base.Save(info);
 		info.msg.apartmentMailbox = Pool.Get<ApartmentMailbox>();
 		info.msg.apartmentMailbox.roomNumber = RoomNumber;
-		info.msg.apartmentMailbox.roomId = (NetworkableId)(((Object)(object)Room != (Object)null) ? Room.net.ID : default(NetworkableId));
+		info.msg.apartmentMailbox.roomId = (((Object)(object)Room != (Object)null) ? Room.net.ID : default(NetworkableId));
 	}
 
 	public override void Load(LoadInfo info)
@@ -51,7 +51,6 @@ public class ApartmentMailbox : Mailbox, LootPanel.IHasLootPanel
 	static ApartmentMailbox()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		mailboxPanelTitlePhrase = new Phrase("apartment.mailbox.lootpanel.title", "Mailbox of room {0}");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

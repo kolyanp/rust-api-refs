@@ -80,12 +80,12 @@ public class TerrainRenderer
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		return (ReflectionProbeUsage)(rendererBackend switch
+		return rendererBackend switch
 		{
 			TerrainRendererBackend.Unity => terrain.reflectionProbeUsage, 
 			TerrainRendererBackend.GeoClipmapping => geoClipTerrain.reflectionProbeUsage, 
-			_ => 0, 
-		});
+			_ => (ReflectionProbeUsage)0, 
+		};
 	}
 
 	public void SetReflectionProbeUsage(ReflectionProbeUsage value)

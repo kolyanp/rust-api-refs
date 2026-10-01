@@ -121,9 +121,9 @@ public class Locker : StorageContainer
 		{
 			return false;
 		}
-		bool num = item.IsBackpack();
-		bool flag = IsBackpackSlot(targetSlot);
-		if (num != flag)
+		bool flag = item.IsBackpack();
+		bool flag2 = IsBackpackSlot(targetSlot);
+		if (flag != flag2)
 		{
 			return false;
 		}
@@ -143,8 +143,8 @@ public class Locker : StorageContainer
 		return (slot - 7) % 14 == 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Equip(RPCMessage msg)
 	{
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
@@ -168,7 +168,7 @@ public class Locker : StorageContainer
 			return;
 		}
 		int startSlot = num * 14;
-		if (SwapPlayerInventoryWithContainer(player, base.inventory, startSlot, GetDropPosition(), GetDropVelocity(), doBelt: true))
+		if (SwapPlayerInventoryWithContainer(player, inventory, startSlot, GetDropPosition(), GetDropVelocity(), doBelt: true))
 		{
 			Effect.server.Run(equipSound.resourcePath, player, StringPool.Get("spine3"), Vector3.zero, Vector3.zero);
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
@@ -181,22 +181,22 @@ public class Locker : StorageContainer
 
 	public static bool SwapPlayerInventoryWithContainer(BasePlayer player, ItemContainer inventory, int startSlot, Vector3 dropPosition, Vector3 dropVelocity, bool doBelt, Func<Item, bool> filterItems = null)
 	{
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
 		bool result = false;
 		for (int i = 0; i < clothingBuffer.Length; i++)
 		{
@@ -276,7 +276,7 @@ public class Locker : StorageContainer
 			{
 				continue;
 			}
-			if (!base.inventory.SlotTaken(item, i) && (rowType != RowType.Clothing || !DoesWearableConflictWithRow(item, i)))
+			if (!inventory.SlotTaken(item, i) && (rowType != RowType.Clothing || !DoesWearableConflictWithRow(item, i)))
 			{
 				return i;
 			}
@@ -292,15 +292,15 @@ public class Locker : StorageContainer
 		{
 			return false;
 		}
-		bool num2 = item.IsBackpack();
-		bool flag = IsBackpackSlot(pos);
-		if (num2 != flag)
+		bool flag = item.IsBackpack();
+		bool flag2 = IsBackpackSlot(pos);
+		if (flag != flag2)
 		{
 			return true;
 		}
 		for (int i = num; i < num + 8; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot != null)
 			{
 				ItemModWearable itemModWearable2 = slot.info.ItemModWearable;

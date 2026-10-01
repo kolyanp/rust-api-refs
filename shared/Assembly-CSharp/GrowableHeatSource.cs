@@ -15,11 +15,11 @@ public class GrowableHeatSource : EntityComponent<BaseEntity>, IServerComponent
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)base.baseEntity == (Object)null)
+		if ((Object)(object)baseEntity == (Object)null)
 		{
 			return 0f;
 		}
-		if (base.baseEntity.IsOn() || (base.baseEntity is IOEntity iOEntity && iOEntity.IsPowered()))
+		if (baseEntity.IsOn() || (baseEntity is IOEntity iOEntity && iOEntity.IsPowered()))
 		{
 			float num = Vector3.Distance(forPosition, ((Component)this).transform.position);
 			float num2 = HeatFalloff.Evaluate(num / Server.artificialTemperatureGrowableRange);
@@ -59,16 +59,16 @@ public class GrowableHeatSource : EntityComponent<BaseEntity>, IServerComponent
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
-			FarmHeatSourceGrid.RegisterEntity(this, base.baseEntity);
+			FarmHeatSourceGrid.RegisterEntity(this, baseEntity);
 		}
 	}
 
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
 			FarmHeatSourceGrid.DeregisterEntity(this);
 		}

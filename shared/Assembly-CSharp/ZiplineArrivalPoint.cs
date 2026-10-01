@@ -32,7 +32,7 @@ public class ZiplineArrivalPoint : BaseEntity
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		linePositions = (Vector3[])(object)new Vector3[points.Count];
+		linePositions = new Vector3[points.Count];
 		for (int i = 0; i < points.Count; i++)
 		{
 			linePositions[i] = points[i];
@@ -47,7 +47,7 @@ public class ZiplineArrivalPoint : BaseEntity
 		base.Load(info);
 		if (info.msg.ZiplineArrival != null && linePositions == null)
 		{
-			linePositions = (Vector3[])(object)new Vector3[info.msg.ZiplineArrival.linePoints.Count];
+			linePositions = new Vector3[info.msg.ZiplineArrival.linePoints.Count];
 			for (int i = 0; i < info.msg.ZiplineArrival.linePoints.Count; i++)
 			{
 				linePositions[i] = VectorData.op_Implicit(info.msg.ZiplineArrival.linePoints[i]);

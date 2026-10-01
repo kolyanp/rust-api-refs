@@ -222,7 +222,7 @@ public class Sled : BaseVehicle, INotifyTrigger
 		if (initialForceScale >= InitialForceCutoff)
 		{
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			if (((Vector3)(ref linearVelocity)).magnitude > 1f || !terrainHandler.IsOnSnowOrIce)
+			if (linearVelocity.magnitude > 1f || !terrainHandler.IsOnSnowOrIce)
 			{
 				CancelInvoke(ApplyInitialForce);
 			}
@@ -269,7 +269,7 @@ public class Sled : BaseVehicle, INotifyTrigger
 		if (inputState.IsDown(BUTTON.FORWARD) && TimeSince.op_Implicit(lastNudge) > NudgeCooldown)
 		{
 			linearVelocity = rigidBody.linearVelocity;
-			if (((Vector3)(ref linearVelocity)).magnitude < MaxNudgeVelocity)
+			if (linearVelocity.magnitude < MaxNudgeVelocity)
 			{
 				rigidBody.WakeUp();
 				rigidBody.AddForce(((Component)this).transform.forward * NudgeForce, (ForceMode)1);
@@ -281,14 +281,14 @@ public class Sled : BaseVehicle, INotifyTrigger
 		Vector3 linearVelocity2 = rigidBody.linearVelocity;
 		if (num != 0f)
 		{
-			((Component)this).transform.Rotate(Vector3.up * num * Time.deltaTime * ((Vector3)(ref linearVelocity2)).magnitude, (Space)1);
+			((Component)this).transform.Rotate(Vector3.up * num * Time.deltaTime * linearVelocity2.magnitude, (Space)1);
 		}
 		if (terrainHandler.IsGrounded)
 		{
 			linearVelocity = rigidBody.linearVelocity;
-			if (Vector3.Dot(((Vector3)(ref linearVelocity)).normalized, ((Component)this).transform.forward) >= 0.5f)
+			if (Vector3.Dot(linearVelocity.normalized, ((Component)this).transform.forward) >= 0.5f)
 			{
-				rigidBody.linearVelocity = Vector3.Lerp(rigidBody.linearVelocity, ((Component)this).transform.forward * ((Vector3)(ref linearVelocity2)).magnitude, Time.deltaTime * DirectionMatchForce);
+				rigidBody.linearVelocity = Vector3.Lerp(rigidBody.linearVelocity, ((Component)this).transform.forward * linearVelocity2.magnitude, Time.deltaTime * DirectionMatchForce);
 			}
 		}
 	}

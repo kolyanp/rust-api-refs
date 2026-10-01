@@ -66,10 +66,32 @@ public class NPCAnimController : EntityComponent<BaseEntity>, IClientComponent
 	public bool canSwim;
 
 	[SerializeField]
+	public bool forceDisableGroundSnap;
+
+	[Tooltip("Animator state holding the settled sleeping pose, for an animal already asleep the first time we see it. Without it a newborn calf stands up and plays its own lie down.")]
+	[SerializeField]
+	private string sleepingPoseState = "sleeping";
+
+	[Tooltip("Animator state holding the settled lying pose, for an animal already resting.")]
+	[SerializeField]
+	private string restingPoseState = "cow_lay_idle";
+
+	[SerializeField]
+	[Tooltip("Animator state holding the settled lying pose of a pregnant animal.")]
+	private string pregnantPoseState = "cow_lay_idle_moo";
+
+	[SerializeField]
 	private AnimationClip[] animationsWithLookAt;
 
 	[SerializeField]
 	private AnimationClip[] animationsWithSpineDeform;
+
+	[SerializeField]
+	private float walkSpeedMultiplier = 1f;
+
+	public string AnimationsPrefix => animationsPrefix;
+
+	public string[] AnimationBlacklist => animationBlacklist;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{

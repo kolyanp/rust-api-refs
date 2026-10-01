@@ -15,25 +15,24 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 	public FImp_ColliderData_Mesh(MeshCollider collider)
 	{
 		Is2D = false;
-		base.Transform = ((Component)collider).transform;
-		base.Collider = (Collider)(object)collider;
+		Transform = ((Component)collider).transform;
+		Collider = (Collider)(object)collider;
 		Mesh = collider;
-		base.ColliderType = EFColliderType.Mesh;
+		ColliderType = EFColliderType.Mesh;
 	}
 
 	public FImp_ColliderData_Mesh(PolygonCollider2D collider)
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		Is2D = true;
-		base.Transform = ((Component)collider).transform;
+		Transform = ((Component)collider).transform;
 		Poly2D = collider;
-		base.Collider2D = (Collider2D)(object)collider;
-		base.ColliderType = EFColliderType.Mesh;
-		filter = default(ContactFilter2D);
+		Collider2D = (Collider2D)(object)collider;
+		ColliderType = EFColliderType.Mesh;
+		filter = default;
 		filter.useTriggers = false;
 		filter.useDepth = false;
-		r = (RaycastHit2D[])(object)new RaycastHit2D[1];
+		r = new RaycastHit2D[1];
 	}
 
 	public override bool PushIfInside(ref Vector3 segmentPosition, float segmentRadius, Vector3 segmentOffset)
@@ -65,6 +64,7 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 		//IL_0346: Unknown result type (might be due to invalid IL or missing references)
 		//IL_034b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0350: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0352: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0364: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0369: Unknown result type (might be due to invalid IL or missing references)
 		//IL_036d: Unknown result type (might be due to invalid IL or missing references)
@@ -141,6 +141,7 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
@@ -199,7 +200,7 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 				Vector3 val = segmentPosition + segmentOffset;
 				Vector3 val2 = ((Collider)Mesh).ClosestPointOnBounds(val);
 				val3 = val2 - ((Component)Mesh).transform.position;
-				num = ((Vector3)(ref val3)).magnitude;
+				num = val3.magnitude;
 				bool flag = false;
 				float num2 = 1f;
 				if (val2 == val)
@@ -209,33 +210,32 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 					val2 = ((Component)Mesh).transform.position;
 				}
 				Vector3 val4 = val2 - val;
-				Vector3 normalized = ((Vector3)(ref val4)).normalized;
+				Vector3 normalized = val4.normalized;
 				float num3 = segmentRadius * 2f;
 				bounds = ((Collider)Mesh).bounds;
-				val3 = ((Bounds)(ref bounds)).extents;
-				Vector3 val5 = val - normalized * (num3 + ((Vector3)(ref val3)).magnitude);
-				float num4 = ((Vector3)(ref val4)).magnitude + segmentRadius * 2f + num;
+				val3 = bounds.extents;
+				Vector3 val5 = val - normalized * (num3 + val3.magnitude);
+				float num4 = val4.magnitude + segmentRadius * 2f + num;
 				bounds = ((Collider)Mesh).bounds;
-				val3 = ((Bounds)(ref bounds)).extents;
-				float num5 = num4 + ((Vector3)(ref val3)).magnitude;
+				val3 = bounds.extents;
+				float num5 = num4 + val3.magnitude;
 				val3 = val - val2;
-				if (((Vector3)(ref val3)).magnitude < segmentRadius * num2)
+				if (val3.magnitude < segmentRadius * num2)
 				{
-					Ray val6 = default(Ray);
-					((Ray)(ref val6))._002Ector(val5, normalized);
-					RaycastHit val7 = default(RaycastHit);
+					Ray val6 = new Ray(val5, normalized);
+					RaycastHit val7 = default;
 					if (((Collider)Mesh).Raycast(val6, ref val7, num5))
 					{
-						val3 = val - ((RaycastHit)(ref val7)).point;
-						if (((Vector3)(ref val3)).magnitude < segmentRadius * num2)
+						val3 = val - val7.point;
+						if (val3.magnitude < segmentRadius * num2)
 						{
-							Vector3 val8 = ((RaycastHit)(ref val7)).point - val;
-							Vector3 val9 = ((!flag) ? (val8 - ((Vector3)(ref val8)).normalized * segmentRadius) : (val8 + ((Vector3)(ref val8)).normalized * segmentRadius));
-							val3 = ((RaycastHit)(ref val7)).point - val;
-							float num6 = Vector3.Dot(((Vector3)(ref val3)).normalized, normalized);
+							Vector3 val8 = val7.point - val;
+							Vector3 val9 = ((!flag) ? (val8 - val8.normalized * segmentRadius) : (val8 + val8.normalized * segmentRadius));
+							val3 = val7.point - val;
+							float num6 = Vector3.Dot(val3.normalized, normalized);
 							if (flag && num6 > 0f)
 							{
-								val9 = val8 - ((Vector3)(ref val8)).normalized * segmentRadius;
+								val9 = val8 - val8.normalized * segmentRadius;
 							}
 							segmentPosition += val9;
 							return true;
@@ -256,11 +256,11 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 			{
 				return false;
 			}
-			RaycastHit val13 = default(RaycastHit);
-			((Collider)Mesh).Raycast(new Ray(val10, ((Vector3)(ref val12)).normalized), ref val13, segmentRadius * num7);
-			if (Object.op_Implicit((Object)(object)((RaycastHit)(ref val13)).transform))
+			RaycastHit val13 = default;
+			((Collider)Mesh).Raycast(new Ray(val10, val12.normalized), ref val13, segmentRadius * num7);
+			if (Object.op_Implicit((Object)(object)val13.transform))
 			{
-				segmentPosition = ((RaycastHit)(ref val13)).point + ((RaycastHit)(ref val13)).normal * segmentRadius;
+				segmentPosition = val13.point + val13.normal * segmentRadius;
 				return true;
 			}
 		}
@@ -271,29 +271,28 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 			if (((Collider2D)Poly2D).OverlapPoint(val14))
 			{
 				bounds = ((Collider2D)Poly2D).bounds;
-				Vector3 val15 = ((Bounds)(ref bounds)).center - Vector2.op_Implicit(val14);
+				Vector3 val15 = bounds.center - Vector2.op_Implicit(val14);
 				val15.z = 0f;
 				bounds = ((Collider2D)Poly2D).bounds;
-				Vector3 center = ((Bounds)(ref bounds)).center;
+				Vector3 center = bounds.center;
 				Vector3 val16 = val15;
 				bounds = ((Collider2D)Poly2D).bounds;
-				val3 = ((Bounds)(ref bounds)).max;
-				Ray val17 = default(Ray);
-				((Ray)(ref val17))._002Ector(center - val16 * ((Vector3)(ref val3)).magnitude, val15);
+				val3 = bounds.max;
+				Ray val17 = new Ray(center - val16 * val3.magnitude, val15);
 				float num8 = 0f;
 				bounds = ((Collider2D)Poly2D).bounds;
-				((Bounds)(ref bounds)).IntersectRay(val17, ref num8);
-				val18 = ((!(num8 > 0f)) ? ((Collider2D)Poly2D).ClosestPoint(val14) : ((Collider2D)Poly2D).ClosestPoint(Vector2.op_Implicit(((Ray)(ref val17)).GetPoint(num8))));
+				bounds.IntersectRay(val17, ref num8);
+				val18 = ((!(num8 > 0f)) ? ((Collider2D)Poly2D).ClosestPoint(val14) : ((Collider2D)Poly2D).ClosestPoint(Vector2.op_Implicit(val17.GetPoint(num8))));
 			}
 			else
 			{
 				val18 = ((Collider2D)Poly2D).ClosestPoint(val14);
 			}
 			Vector2 val19 = val18 - val14;
-			Vector2 normalized2 = ((Vector2)(ref val19)).normalized;
-			if (Physics2D.Raycast(val14, normalized2, filter, r, segmentRadius) > 0 && (Object)(object)((RaycastHit2D)(ref r[0])).transform == (Object)(object)base.Transform)
+			Vector2 normalized2 = val19.normalized;
+			if (Physics2D.Raycast(val14, normalized2, filter, r, segmentRadius) > 0 && (Object)(object)r[0].transform == (Object)(object)Transform)
 			{
-				segmentPosition = Vector2.op_Implicit(val18 + ((RaycastHit2D)(ref r[0])).normal * segmentRadius);
+				segmentPosition = Vector2.op_Implicit(val18 + r[0].normal * segmentRadius);
 				return true;
 			}
 		}
@@ -334,22 +333,22 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 point = ((ContactPoint)(ref collision.contacts[0])).point;
-		Vector3 val = ((ContactPoint)(ref collision.contacts[0])).normal;
-		RaycastHit val2 = default(RaycastHit);
+		Vector3 point = collision.contacts[0].point;
+		Vector3 val = collision.contacts[0].normal;
+		RaycastHit val2 = default;
 		if (((Collider)mesh).Raycast(new Ray(pos + val * segmentColliderRadius * 2f, -val), ref val2, segmentColliderRadius * 5f))
 		{
-			val = ((RaycastHit)(ref val2)).point - pos;
-			float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+			val = val2.point - pos;
+			float sqrMagnitude = val.sqrMagnitude;
 			if (sqrMagnitude > 0f && sqrMagnitude < segmentColliderRadius * segmentColliderRadius)
 			{
-				pos = ((RaycastHit)(ref val2)).point - val * (segmentColliderRadius / Mathf.Sqrt(sqrMagnitude)) * 0.9f;
+				pos = val2.point - val * (segmentColliderRadius / Mathf.Sqrt(sqrMagnitude)) * 0.9f;
 			}
 		}
 		else
 		{
 			val = point - pos;
-			float sqrMagnitude2 = ((Vector3)(ref val)).sqrMagnitude;
+			float sqrMagnitude2 = val.sqrMagnitude;
 			if (sqrMagnitude2 > 0f && sqrMagnitude2 < segmentColliderRadius * segmentColliderRadius)
 			{
 				pos = point - val * (segmentColliderRadius / Mathf.Sqrt(sqrMagnitude2)) * 0.9f;
@@ -395,6 +394,7 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
@@ -438,7 +438,7 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 		float num = 0f;
 		Vector3 val = ((Collider)mesh).ClosestPointOnBounds(point);
 		Vector3 val2 = val - ((Component)mesh).transform.position;
-		num = ((Vector3)(ref val2)).magnitude;
+		num = val2.magnitude;
 		bool flag = false;
 		float num2 = 1f;
 		if (val == point)
@@ -448,43 +448,42 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 			val = ((Component)mesh).transform.position;
 		}
 		Vector3 val3 = val - point;
-		Vector3 normalized = ((Vector3)(ref val3)).normalized;
+		Vector3 normalized = val3.normalized;
 		Vector3 val4 = point;
 		float num3 = pointRadius * 2f;
 		Bounds bounds = ((Collider)mesh).bounds;
-		val2 = ((Bounds)(ref bounds)).extents;
-		Vector3 val5 = val4 - normalized * (num3 + ((Vector3)(ref val2)).magnitude);
-		float num4 = ((Vector3)(ref val3)).magnitude + pointRadius * 2f + num;
+		val2 = bounds.extents;
+		Vector3 val5 = val4 - normalized * (num3 + val2.magnitude);
+		float num4 = val3.magnitude + pointRadius * 2f + num;
 		bounds = ((Collider)mesh).bounds;
-		val2 = ((Bounds)(ref bounds)).extents;
-		float num5 = num4 + ((Vector3)(ref val2)).magnitude;
+		val2 = bounds.extents;
+		float num5 = num4 + val2.magnitude;
 		val2 = point - val;
-		if (!(((Vector3)(ref val2)).magnitude < pointRadius * num2))
+		if (!(val2.magnitude < pointRadius * num2))
 		{
 			return;
 		}
 		Vector3 val6;
 		if (!flag)
 		{
-			val6 = ((ContactPoint)(ref collision.contacts[0])).point;
+			val6 = collision.contacts[0].point;
 		}
 		else
 		{
-			Ray val7 = default(Ray);
-			((Ray)(ref val7))._002Ector(val5, normalized);
-			RaycastHit val8 = default(RaycastHit);
-			val6 = ((!((Collider)mesh).Raycast(val7, ref val8, num5)) ? ((ContactPoint)(ref collision.contacts[0])).point : ((RaycastHit)(ref val8)).point);
+			Ray val7 = new Ray(val5, normalized);
+			RaycastHit val8 = default;
+			val6 = ((!((Collider)mesh).Raycast(val7, ref val8, num5)) ? collision.contacts[0].point : val8.point);
 		}
 		val2 = point - val6;
-		if (((Vector3)(ref val2)).magnitude < pointRadius * num2)
+		if (val2.magnitude < pointRadius * num2)
 		{
 			Vector3 val9 = val6 - point;
-			Vector3 val10 = ((!flag) ? (val9 - ((Vector3)(ref val9)).normalized * pointRadius) : (val9 + ((Vector3)(ref val9)).normalized * pointRadius));
+			Vector3 val10 = ((!flag) ? (val9 - val9.normalized * pointRadius) : (val9 + val9.normalized * pointRadius));
 			val2 = val6 - point;
-			float num6 = Vector3.Dot(((Vector3)(ref val2)).normalized, normalized);
+			float num6 = Vector3.Dot(val2.normalized, normalized);
 			if (flag && num6 > 0f)
 			{
-				val10 = val9 - ((Vector3)(ref val9)).normalized * pointRadius;
+				val10 = val9 - val9.normalized * pointRadius;
 			}
 			point += val10;
 		}

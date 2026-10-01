@@ -142,16 +142,16 @@ public class FreeableLootContainer : LootContainer
 
 	public override void OnAttacked(HitInfo info)
 	{
-		if (base.isServer && (Object)(object)info.Weapon != (Object)null)
+		if (isServer && (Object)(object)info.Weapon != (Object)null)
 		{
 			BaseMelee component = ((Component)info.Weapon).GetComponent<BaseMelee>();
 			if (Object.op_Implicit((Object)(object)component) && component.canUntieCrates && IsTiedDown())
 			{
-				base.health--;
+				health--;
 				info.DidGather = true;
-				if (base.health <= 0f)
+				if (health <= 0f)
 				{
-					base.health = MaxHealth();
+					health = MaxHealth();
 					Release(info.InitiatorPlayer);
 				}
 			}
@@ -198,8 +198,8 @@ public class FreeableLootContainer : LootContainer
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_FreeCrateTimer(RPCMessage msg)
 	{
 		if (IsTiedDown())

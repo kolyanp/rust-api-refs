@@ -11,7 +11,7 @@ public class MenuTip : MonoBehaviour
 
 	public UI_LoadingScreen screen;
 
-	public static Phrase[] MenuTips = (Phrase[])(object)new Phrase[34]
+	public static Phrase[] MenuTips = new Phrase[34]
 	{
 		new TokenisedPhrase("menutip_bag", "Don't forget to create a sleeping bag! You can pick which one to respawn at on the death screen."),
 		new TokenisedPhrase("menutip_baggive", "You can give a sleeping bag to a Steam friend."),

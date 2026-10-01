@@ -27,6 +27,7 @@ public struct SliceMeshJob : IJobParallelForBatch
 	public void Execute(int startIndex, int count)
 	{
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
@@ -42,6 +43,7 @@ public struct SliceMeshJob : IJobParallelForBatch
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
@@ -62,9 +64,7 @@ public struct SliceMeshJob : IJobParallelForBatch
 		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
-		NativeList<float4> val = default(NativeList<float4>);
-		val._002Ector(count, AllocatorHandle.op_Implicit((Allocator)2));
-		float3 val5 = default(float3);
+		NativeList<float4> val = new NativeList<float4>(count, AllocatorHandle.op_Implicit((Allocator)2));
 		for (int i = startIndex; i < startIndex + count; i++)
 		{
 			int num = i * 3;
@@ -74,11 +74,11 @@ public struct SliceMeshJob : IJobParallelForBatch
 			float num2 = val2.y - PlaneY;
 			float num3 = val3.y - PlaneY;
 			float num4 = val4.y - PlaneY;
-			((float3)(ref val5))._002Ector(num2, num3, num4);
+			float3 val5 = new float3(num2, num3, num4);
 			if (!math.all(val5 > 0.0001f) && !math.all(val5 < -0.0001f) && !math.all(math.abs(val5) <= 0.0001f))
 			{
-				float2 p = default(float2);
-				float2 p2 = default(float2);
+				float2 p = default;
+				float2 p2 = default;
 				int n = 0;
 				AddCrossing(val2, val3, num2, num3, ref p, ref p2, ref n);
 				AddCrossing(val3, val4, num3, num4, ref p, ref p2, ref n);
@@ -103,12 +103,12 @@ public struct SliceMeshJob : IJobParallelForBatch
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		if (math.abs(da) <= 0.0001f)
 		{
-			AddPoint(((float3)(ref a)).xz, ref p0, ref p1, ref n);
+			AddPoint(a.xz, ref p0, ref p1, ref n);
 		}
 		else if (da > 0f != db > 0f && math.abs(db) > 0.0001f)
 		{
 			float3 val = math.lerp(a, b, math.saturate(da / (da - db)));
-			AddPoint(((float3)(ref val)).xz, ref p0, ref p1, ref n);
+			AddPoint(val.xz, ref p0, ref p1, ref n);
 		}
 	}
 

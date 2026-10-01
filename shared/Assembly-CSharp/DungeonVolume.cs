@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DungeonVolume : MonoBehaviour
 {
-	public Bounds bounds;
+	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
 
 	public OBB GetBounds(Vector3 position, Quaternion rotation)
 	{
@@ -22,8 +22,8 @@ public class DungeonVolume : MonoBehaviour
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		position += rotation * (((Component)this).transform.localRotation * ((Bounds)(ref bounds)).center + ((Component)this).transform.localPosition);
-		return new OBB(position, ((Bounds)(ref bounds)).size, rotation * ((Component)this).transform.localRotation);
+		position += rotation * (((Component)this).transform.localRotation * bounds.center + ((Component)this).transform.localPosition);
+		return new OBB(position, bounds.size, rotation * ((Component)this).transform.localRotation);
 	}
 
 	public OBB GetBounds(Vector3 position, Quaternion rotation, Vector3 extrude)
@@ -46,8 +46,8 @@ public class DungeonVolume : MonoBehaviour
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		position += rotation * (((Component)this).transform.localRotation * ((Bounds)(ref bounds)).center + ((Component)this).transform.localPosition);
-		return new OBB(position, ((Bounds)(ref bounds)).size + extrude, rotation * ((Component)this).transform.localRotation);
+		position += rotation * (((Component)this).transform.localRotation * bounds.center + ((Component)this).transform.localPosition);
+		return new OBB(position, bounds.size + extrude, rotation * ((Component)this).transform.localRotation);
 	}
 
 	public DungeonVolume()
@@ -56,7 +56,5 @@ public class DungeonVolume : MonoBehaviour
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		bounds = new Bounds(Vector3.zero, Vector3.one);
-		((MonoBehaviour)this)._002Ector();
 	}
 }

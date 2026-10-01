@@ -17,39 +17,47 @@ public class State_Attack : State_PlayAnimationRM
 	[SerializeField]
 	public DamageType DamageType = DamageType.Bite;
 
+	[SerializeField]
+	[Tooltip("Line the attack up on the target as it starts. Turn off for an attack that deliberately does not face what it hits, such as a backwards kick.")]
+	public bool AlignToTarget = true;
+
 	private Action _doDamageAction;
 
 	protected Action DoDamageAction => _doDamageAction ?? (_doDamageAction = DoDamage);
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
-		Assert.IsTrue(Delay < Animation.inPlaceAnimation.length);
-		if (!base.Senses.FindTargetPosition(out var targetPosition))
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		if (!HasAnimation)
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!FaceTarget)
+		Assert.IsTrue(Delay < Animation.inPlaceAnimation.length);
+		if (!Senses.FindTargetPosition(out var targetPosition))
+		{
+			return EFSMStateStatus.Failure;
+		}
+		if (!FaceTarget && AlignToTarget)
 		{
 			Vector3 val = Vector3Ex.NormalizeXZ(((Component)Owner).transform.position - targetPosition);
 			Vector3 val2 = Vector3.Cross(Vector3.up, val);
@@ -69,7 +77,7 @@ public class State_Attack : State_PlayAnimationRM
 
 	protected virtual void DoDamage()
 	{
-		if (base.Senses.FindTarget(out var target) && target is BaseCombatEntity baseCombatEntity)
+		if (Senses.FindTarget(out var target) && target is BaseCombatEntity baseCombatEntity)
 		{
 			baseCombatEntity.OnAttacked(Damage, DamageType, Owner, ignoreShield: false);
 		}

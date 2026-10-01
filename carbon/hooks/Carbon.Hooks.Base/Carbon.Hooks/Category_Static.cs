@@ -71,13 +71,13 @@ public class Category_Static
 					userid,
 					"<color=" + color + ">" + text + "</color> " + message
 				});
-				ChatEntry val = default(ChatEntry);
-				((ChatEntry)(ref val)).Channel = (ChatChannel)2;
-				((ChatEntry)(ref val)).Message = message;
-				((ChatEntry)(ref val)).UserId = userid.ToString();
-				((ChatEntry)(ref val)).Username = username;
-				((ChatEntry)(ref val)).Color = color;
-				((ChatEntry)(ref val)).Time = Epoch.Current;
+				ChatEntry val = default;
+				val.Channel = (ChatChannel)2;
+				val.Message = message;
+				val.UserId = userid.ToString();
+				val.Username = username;
+				val.Color = color;
+				val.Time = Epoch.Current;
 				Chat.Record(val);
 				return false;
 			}
@@ -181,7 +181,7 @@ public class Category_Static
 				//IL_023b: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0153: Unknown result type (might be due to invalid IL or missing references)
 				//IL_015d: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0164: Expected O, but got Unknown
+				//IL_0164: Expected Obj, but got Unknown
 				//IL_018e: Unknown result type (might be due to invalid IL or missing references)
 				//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 				//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
@@ -193,8 +193,8 @@ public class Category_Static
 				}
 				try
 				{
-					string text = default(string);
-					object[] array = default(object[]);
+					string text = default;
+					object[] array = default;
 					if (!ConsoleArgEx.TryParseCommand(strCommand, args, ref text, ref array))
 					{
 						__result = new CommandResult((CommandResultType)3, (string)null, (Command)null);
@@ -204,7 +204,7 @@ public class Category_Static
 					{
 						return true;
 					}
-					Connection connection = ((Option)(ref options)).Connection;
+					Connection connection = options.Connection;
 					MonoBehaviour obj = connection?.player;
 					BasePlayer val = (BasePlayer)(object)((obj is BasePlayer) ? obj : null);
 					bool flag = connection == null;
@@ -214,7 +214,7 @@ public class Category_Static
 						text = value;
 						strCommand = ((array.Length == 0) ? value : (value + " " + string.Join(Space, array)));
 					}
-					Command val2 = default(Command);
+					Command val2 = default;
 					if (Community.Runtime.CommandManager.Contains((IList<Command>)list, text, ref val2))
 					{
 						if (!flag && (Object)(object)val == (Object)null)
@@ -243,7 +243,7 @@ public class Category_Static
 						((Args)val4).Arguments = array;
 						val4.Player = val;
 						((Args)val4).IsServer = flag;
-						((Args)val4).PrintOutput = ((Option)(ref options)).PrintOutput || (Object)(object)val != (Object)null;
+						((Args)val4).PrintOutput = options.PrintOutput || (Object)(object)val != (Object)null;
 						Command.FromRcon = false;
 						Community.Runtime.CommandManager.Execute(val2, (Args)(object)val4);
 						__result = new CommandResult((CommandResultType)1, val3.Reply, val3.cmd);
@@ -285,7 +285,7 @@ public class Category_Static
 		{
 			internal static string Space = " ";
 
-			private static readonly Action _resetFromRconAction = delegate
+			private static readonly Action _resetFromRconAction = () =>
 			{
 				Command.FromRcon = (Command.FromRcon = false);
 			};
@@ -305,7 +305,7 @@ public class Category_Static
 				//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
 				//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 				//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00c4: Expected O, but got Unknown
+				//IL_00c4: Expected Obj, but got Unknown
 				//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0178: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0136: Unknown result type (might be due to invalid IL or missing references)
@@ -319,8 +319,8 @@ public class Category_Static
 				RCon.isInput = false;
 				try
 				{
-					string text = default(string);
-					object[] array = default(object[]);
+					string text = default;
+					object[] array = default;
 					ConsoleArgEx.TryParseCommand(cmd.Message, ref text, ref array);
 					object[] array2 = array as string[];
 					object[] array3 = array2 ?? array.ToArray();
@@ -330,19 +330,19 @@ public class Category_Static
 						cmd.Message = ((array3.Length == 0) ? value : (value + " " + string.Join(Space, array3)));
 					}
 					Option val = Option.Server;
-					val = ((Option)(ref val)).Quiet();
-					Arg val2 = new Arg(((Option)(ref val)).FromRconConnection(cmd.ConnectionId, cmd.Ip.ToString(), cmd.Name), cmd.Message);
+					val = val.Quiet();
+					Arg val2 = new Arg(val.FromRconConnection(cmd.ConnectionId, cmd.Ip.ToString(), cmd.Name), cmd.Message);
 					if (HookCaller.CallStaticHook(3740958730u, (object)cmd.Ip, (object)text, (object)array3) != null)
 					{
 						return false;
 					}
 					try
 					{
-						Command val3 = default(Command);
+						Command val3 = default;
 						if (Community.Runtime.CommandManager.Contains((IList<Command>)Community.Runtime.CommandManager.RCon, text, ref val3))
 						{
 							Command.FromRcon = (Command.FromRcon = true);
-							StringView[] array4 = (StringView[])(object)new StringView[array3.Length];
+							StringView[] array4 = new StringView[array3.Length];
 							for (int i = 0; i < array3.Length; i++)
 							{
 								array4[i] = StringView.op_Implicit(array3[i]?.ToString());
@@ -355,7 +355,7 @@ public class Category_Static
 							val4.Arguments = array3;
 							val4.IsRCon = true;
 							val4.IsServer = true;
-							val4.PrintOutput = ((Option)(ref val2.Option)).PrintOutput;
+							val4.PrintOutput = val2.Option.PrintOutput;
 							Community.Runtime.CommandManager.Execute(val3, val4);
 							Pool.Free<Args>(ref val4);
 							((Plugin)Community.Runtime.Core).NextFrame(_resetFromRconAction);
@@ -424,7 +424,7 @@ public class Category_Static
 						await HandleHookable(module);
 					}
 				}
-				foreach (RustPlugin item in ((IEnumerable<Package>)ModLoader.Packages).SelectMany(delegate(Package package)
+				foreach (RustPlugin item in ((IEnumerable<Package>)ModLoader.Packages).SelectMany((Package package) =>
 				{
 					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 					return package.Plugins;
@@ -458,7 +458,7 @@ public class Category_Static
 				{
 					if (!CarbonAuto.Singleton.IsForceModded())
 					{
-						return Community.Runtime.ModuleProcessor.Modules.Any(delegate(BaseHookable x)
+						return Community.Runtime.ModuleProcessor.Modules.Any((BaseHookable x) =>
 						{
 							BaseModule val = (BaseModule)(object)((x is BaseModule) ? x : null);
 							return val != null && val.IsEnabled() && val.ForceModded;
@@ -506,13 +506,13 @@ public class Category_Static
 			private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 			{
 				//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0065: Expected O, but got Unknown
+				//IL_0065: Expected Obj, but got Unknown
 				//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0076: Expected O, but got Unknown
+				//IL_0076: Expected Obj, but got Unknown
 				//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0087: Expected O, but got Unknown
+				//IL_0087: Expected Obj, but got Unknown
 				//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-				//IL_009c: Expected O, but got Unknown
+				//IL_009c: Expected Obj, but got Unknown
 				List<CodeInstruction> list = new List<CodeInstruction>(instructions);
 				int num = -1;
 				CodeInstruction val = null;

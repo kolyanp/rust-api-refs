@@ -15,7 +15,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	private readonly string _chroot;
 
-	public JsonSerializerSettings Settings { get; set; }
+	public JsonSerializerSettings Settings { get; set; } = new JsonSerializerSettings();
 
 	public object this[string key]
 	{
@@ -58,13 +58,12 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 	}
 
 	public DynamicConfigFile(string filename)
+		: base(filename)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		Settings = new JsonSerializerSettings();
-		base._002Ector(filename);
+		//IL_0028: Expected Obj, but got Unknown
 		_keyvalues = new Dictionary<string, object>();
 		_settings = new JsonSerializerSettings();
 		_settings.Converters.Add((JsonConverter)(object)new KeyValuesConverter());
@@ -73,14 +72,14 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public override void Load(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		string text = File.ReadAllText(filename);
 		_keyvalues = JsonConvert.DeserializeObject<Dictionary<string, object>>(text, _settings);
 	}
 
 	public T ReadObject<T>(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		T val;
 		if (Exists(filename))
 		{
@@ -96,7 +95,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public override void Save(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		string directoryName = Utility.GetDirectoryName(filename);
 		if (directoryName != null && !Directory.Exists(directoryName))
 		{
@@ -111,7 +110,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 		{
 			config = Activator.CreateInstance<T>();
 		}
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		string directoryName = Utility.GetDirectoryName(filename);
 		if (directoryName != null && !Directory.Exists(directoryName))
 		{
@@ -127,7 +126,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public bool Exists(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		string directoryName = Utility.GetDirectoryName(filename);
 		if (directoryName == null || Directory.Exists(directoryName))
 		{
@@ -138,7 +137,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public void Delete(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		if (Exists(filename))
 		{
 			File.Delete(filename);

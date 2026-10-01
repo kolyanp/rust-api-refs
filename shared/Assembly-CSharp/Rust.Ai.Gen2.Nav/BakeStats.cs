@@ -15,6 +15,9 @@ public static class BakeStats
 		CollectBounds,
 		CollectOverlap,
 		CollectColliders,
+		CollectDoors,
+		CollectDoorsQuery,
+		CollectDoorsVolumes,
 		WorkerTotal,
 		WorkerTerrain,
 		WorkerSources,
@@ -67,17 +70,17 @@ public static class BakeStats
 		public TileTiming timing;
 	}
 
-	private static readonly string[] StageNames = new string[15]
+	private static readonly string[] StageNames = new string[18]
 	{
-		"collect total (main)", "  bounds", "  physics overlap", "  collider processing", "worker total", "  terrain extract", "  source copy+transform", "  y extent", "  heightfield (native)", "  compact+erode+regions (native)",
-		"  polymesh (native)", "  detail mesh (native)", "  navdata (native)", "add tile (main)", "worker idle (blocked on queue)"
+		"collect total (main)", "  bounds", "  physics overlap", "  collider processing", "  door volumes", "    door registry query", "    door hull copy", "worker total", "  terrain extract", "  source copy+transform",
+		"  y extent", "  heightfield (native)", "  compact+erode+regions (native)", "  polymesh (native)", "  detail mesh (native)", "  navdata (native)", "add tile (main)", "worker idle (blocked on queue)"
 	};
 
 	private const int SlowTileCap = 16;
 
-	private static readonly long[] stageTicks = new long[15];
+	private static readonly long[] stageTicks = new long[18];
 
-	private static readonly long[] stageCounts = new long[15];
+	private static readonly long[] stageCounts = new long[18];
 
 	private static readonly long[] resultCounts = new long[16];
 
@@ -113,7 +116,7 @@ public static class BakeStats
 
 	private static bool Enabled => RustNav.bakeStatsEnabled;
 
-	private static double TicksToMs(long ticks)
+	public static double TicksToMs(long ticks)
 	{
 		return (double)ticks * 1000.0 / (double)Stopwatch.Frequency;
 	}
@@ -150,6 +153,16 @@ public static class BakeStats
 		resetRealtime = Time.realtimeSinceStartupAsDouble;
 		Interlocked.Exchange(ref resetTimestamp, Timestamp());
 		workerCount = Mathf.Clamp(RustNav.numThreads, 1, SystemInfo.processorCount - 1);
+	}
+
+	public static double StageMs(Stage stage)
+	{
+		return TicksToMs(Interlocked.Read(in stageTicks[(int)stage]));
+	}
+
+	public static long StageCount(Stage stage)
+	{
+		return Interlocked.Read(in stageCounts[(int)stage]);
 	}
 
 	public static void AddStage(Stage stage, long ticks)
@@ -293,12 +306,12 @@ public static class BakeStats
 		{
 			tilesQueued,
 			stageCounts[0],
-			stageCounts[13],
+			stageCounts[16],
 			supersededResults
 		}));
 		stringBuilder.AppendLine($"hi-res {hiResTiles} / lo-res {loResTiles}");
 		stringBuilder.AppendLine("--- stages (total across tiles; worker stages overlap in wall time across threads) ---");
-		for (int i = 0; i < 15; i++)
+		for (int i = 0; i < 18; i++)
 		{
 			long num2 = stageCounts[i];
 			if (num2 != 0L || stageTicks[i] != 0L)

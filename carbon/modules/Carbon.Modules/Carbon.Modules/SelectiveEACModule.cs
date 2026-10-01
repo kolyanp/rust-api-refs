@@ -49,7 +49,7 @@ public class SelectiveEACModule : CarbonModule<SelectiveEACConfig, EmptyModuleDa
 		private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> op)
 		{
 			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a3: Expected O, but got Unknown
+			//IL_00a3: Expected Obj, but got Unknown
 			List<CodeInstruction> list = new List<CodeInstruction>(op);
 			for (int i = 0; i < list.Count; i++)
 			{

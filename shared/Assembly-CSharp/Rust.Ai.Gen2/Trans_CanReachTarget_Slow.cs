@@ -11,12 +11,12 @@ public class Trans_CanReachTarget_Slow : FSMSlowTransitionBase
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Trans_CanReachTarget_Slow"))
 		{
-			if (!base.Senses.FindTargetPosition(out var targetPosition))
+			if (!Senses.FindTargetPosition(out var targetPosition))
 			{
 				return false;
 			}
-			NavVector3 locationNS = base.Agent.WorldToNavSpace(targetPosition);
-			return base.Agent.CanReach(locationNS);
+			NavVector3 locationNS = Agent.WorldToNavSpace(targetPosition);
+			return Agent.CanReach(locationNS);
 		}
 	}
 }

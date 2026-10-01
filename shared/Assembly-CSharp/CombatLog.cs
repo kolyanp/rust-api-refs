@@ -100,7 +100,7 @@ public class CombatLog
 		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		Event val = default(Event);
+		Event val = default;
 		float distance = 0f;
 		if (hitInfo != null)
 		{
@@ -112,12 +112,21 @@ public class CombatLog
 		}
 		float health_new = (((Object)(object)hitEntity != (Object)null) ? hitEntity.Health() : 0f);
 		val.time = Time.realtimeSinceStartup;
-		val.attacker_id = ((NetworkableId)(((Object)(object)attacker != (Object)null && attacker.net != null) ? attacker.net.ID : default(NetworkableId))).Value;
-		val.target_id = ((NetworkableId)(((Object)(object)hitEntity != (Object)null && hitEntity.net != null) ? hitEntity.net.ID : default(NetworkableId))).Value;
+		val.attacker_id = (((Object)(object)attacker != (Object)null && attacker.net != null) ? attacker.net.ID : default(NetworkableId)).Value;
+		val.target_id = (((Object)(object)hitEntity != (Object)null && hitEntity.net != null) ? hitEntity.net.ID : default(NetworkableId)).Value;
 		val.attacker = (((Object)(object)player == (Object)(object)attacker) ? "you" : (attacker?.ShortPrefabName ?? "N/A"));
 		val.target = (((Object)(object)player == (Object)(object)hitEntity) ? "you" : (hitEntity?.ShortPrefabName ?? "N/A"));
 		val.weapon = (((Object)(object)weapon != (Object)null) ? ((Object)weapon).name : "N/A");
-		val.ammo = ((!((Object)(object)projectilePrefab != (Object)null)) ? "N/A" : ((projectilePrefab != null) ? ((Object)projectilePrefab).name : null));
+		string ammo;
+		if ((Object)(object)projectilePrefab != (Object)null)
+		{
+			ammo = ((projectilePrefab != null) ? ((Object)projectilePrefab).name : null);
+		}
+		else
+		{
+			ammo = "N/A";
+		}
+		val.ammo = ammo;
 		val.bone = hitInfo?.boneName ?? "N/A";
 		val.area = hitInfo?.boneArea ?? ((HitArea)0);
 		val.distance = distance;
@@ -200,7 +209,7 @@ public class CombatLog
 				}
 				else
 				{
-					if ((((NetworkableId)(ref filterByAttacker)).IsValid && item.attacker_id != filterByAttacker.Value) || ((Object)(object)activeGameMode != (Object)null && !activeGameMode.returnValidCombatlog && !isAdmin && item.proj_hits > 0))
+					if ((filterByAttacker.IsValid && item.attacker_id != filterByAttacker.Value) || ((Object)(object)activeGameMode != (Object)null && !activeGameMode.returnValidCombatlog && !isAdmin && item.proj_hits > 0))
 					{
 						continue;
 					}

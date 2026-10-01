@@ -14,8 +14,8 @@ public class SiegeTower : BaseSiegeWeapon
 
 	private float raiseTimer;
 
-	[SerializeField]
 	[Header("Siege Tower")]
+	[SerializeField]
 	private SiegeTowerDoor drawBridgePrefab;
 
 	[SerializeField]
@@ -90,23 +90,23 @@ public class SiegeTower : BaseSiegeWeapon
 	{
 		base.ServerInit();
 		DisablePhysics();
-		Invoke(base.EnablePhysics, 1f);
+		Invoke(EnablePhysics, 1f);
 		InvokeRepeating(CheckIfTipped, 0f, 2f);
 	}
 
 	public void GetDoors(List<SiegeTowerDoor> doors)
 	{
-		SiegeTowerDoor siegeTowerDoor = drawBridgeRef.Get(base.isServer);
+		SiegeTowerDoor siegeTowerDoor = drawBridgeRef.Get(isServer);
 		if (siegeTowerDoor.IsValid())
 		{
 			doors.Add(siegeTowerDoor);
 		}
-		siegeTowerDoor = drawBridge2Ref.Get(base.isServer);
+		siegeTowerDoor = drawBridge2Ref.Get(isServer);
 		if (siegeTowerDoor.IsValid())
 		{
 			doors.Add(siegeTowerDoor);
 		}
-		siegeTowerDoor = drawBridge3Ref.Get(base.isServer);
+		siegeTowerDoor = drawBridge3Ref.Get(isServer);
 		if (siegeTowerDoor.IsValid())
 		{
 			doors.Add(siegeTowerDoor);
@@ -162,7 +162,7 @@ public class SiegeTower : BaseSiegeWeapon
 		foreach (SiegeTowerDoor item in list)
 		{
 			item.SetMaxHealth(MaxHealth());
-			item.SetHealth(base.health);
+			item.SetHealth(health);
 		}
 		Pool.FreeUnmanaged<SiegeTowerDoor>(ref list);
 	}
@@ -197,7 +197,7 @@ public class SiegeTower : BaseSiegeWeapon
 		door.SetupDoor(this);
 		door.SetMaxHealth(MaxHealth());
 		door.SetHealth(MaxHealth());
-		door.OwnerID = base.OwnerID;
+		door.OwnerID = OwnerID;
 		door.startHealth = MaxHealth();
 	}
 
@@ -232,7 +232,7 @@ public class SiegeTower : BaseSiegeWeapon
 
 	private void FixedUpdate()
 	{
-		if (!base.isClient && !rigidBody.isKinematic)
+		if (!isClient && !rigidBody.isKinematic)
 		{
 			UprightIfRaise();
 		}
@@ -273,10 +273,10 @@ public class SiegeTower : BaseSiegeWeapon
 				rigidBody.angularDamping = 0.05f;
 			}
 			Vector3 angularVelocity = rigidBody.angularVelocity;
-			Vector3 val = Quaternion.AngleAxis(((Vector3)(ref angularVelocity)).magnitude * 57.29578f * 100f / 350f, rigidBody.angularVelocity) * ((Component)this).transform.up;
+			Vector3 val = Quaternion.AngleAxis(angularVelocity.magnitude * 57.29578f * 100f / 350f, rigidBody.angularVelocity) * ((Component)this).transform.up;
 			Vector3 up = Vector3.up;
 			Vector3 val2 = Vector3.Cross(val, up);
-			float num = Vector3.Dot(((Vector3)(ref val)).normalized, up);
+			float num = Vector3.Dot(val.normalized, up);
 			num = Mathf.Clamp01((num + 1f) / 2f);
 			Vector3 val3 = val2 * (1f - num) * 350f * 350f;
 			rigidBody.AddTorque(val3);
@@ -309,8 +309,8 @@ public class SiegeTower : BaseSiegeWeapon
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SV_RequestRaise(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved16) && !IsInvoking(AlignRotationToZero))
@@ -330,7 +330,7 @@ public class SiegeTower : BaseSiegeWeapon
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (info.msg.siegeTower != null && base.isServer)
+		if (info.msg.siegeTower != null && isServer)
 		{
 			drawBridgeRef.uid = info.msg.siegeTower.drawBridgeID;
 			drawBridge2Ref.uid = info.msg.siegeTower.drawBridge2ID;
@@ -356,7 +356,7 @@ public class SiegeTower : BaseSiegeWeapon
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && !Application.isLoadingSave)
+		if (isServer && !Application.isLoadingSave)
 		{
 			if (child.prefabID == drawBridgePrefab.GetEntity().prefabID)
 			{
@@ -386,7 +386,7 @@ public class SiegeTower : BaseSiegeWeapon
 		{
 			return false;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			BaseEntity baseEntity = pusher.parentEntity.Get(serverside: true);
 			if (baseEntity.IsValid())

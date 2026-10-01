@@ -21,6 +21,7 @@ public struct GetHeightsJob : IJobParallelFor
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
@@ -39,10 +40,9 @@ public struct GetHeightsJob : IJobParallelFor
 		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 min = ((Bounds)(ref HeightMapData.DeepSeaBounds)).min;
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(1f / ((Bounds)(ref HeightMapData.DeepSeaBounds)).size.x, 1f / ((Bounds)(ref HeightMapData.DeepSeaBounds)).size.z);
-		bool flag = ((Bounds)(ref HeightMapData.DeepSeaBounds)).Contains(Pos[index]);
+		Vector3 min = HeightMapData.DeepSeaBounds.min;
+		Vector2 val = new Vector2(1f / HeightMapData.DeepSeaBounds.size.x, 1f / HeightMapData.DeepSeaBounds.size.z);
+		bool flag = HeightMapData.DeepSeaBounds.Contains(Pos[index]);
 		Vector3 val2 = (flag ? min : HeightMapData.TerrainPos);
 		Vector2 val3 = (flag ? val : HeightMapData.TerrainOneOverSize);
 		float num = (Pos[index].x - val2.x) * val3.x;

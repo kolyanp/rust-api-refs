@@ -29,7 +29,7 @@ public class SelfUpdate
 		if (apiClient == null)
 		{
 			apiClient = new WebClient();
-			apiClient.DownloadStringCompleted += delegate(object sender, DownloadStringCompletedEventArgs args)
+			apiClient.DownloadStringCompleted += (object sender, DownloadStringCompletedEventArgs args) =>
 			{
 				if (args.Error != null)
 				{
@@ -52,7 +52,7 @@ public class SelfUpdate
 			return;
 		}
 		updateClient = new WebClient();
-		updateClient.DownloadDataCompleted += delegate(object sender, DownloadDataCompletedEventArgs args)
+		updateClient.DownloadDataCompleted += (object sender, DownloadDataCompletedEventArgs args) =>
 		{
 			if (args.Error == null)
 			{

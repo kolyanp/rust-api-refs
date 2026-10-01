@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 namespace UnityEngine.Rendering.PostProcessing;
 
 [Serializable]
-[PostProcess(typeof(UnityEngine.Rendering.PostProcessing.ChromaticAberrationRenderer), "Unity/Chromatic Aberration", true)]
+[PostProcess(typeof(ChromaticAberrationRenderer), "Unity/Chromatic Aberration", true)]
 public sealed class ChromaticAberration : PostProcessEffectSettings
 {
 	[Tooltip("Shifts the hue of chromatic aberrations.")]
@@ -13,8 +13,8 @@ public sealed class ChromaticAberration : PostProcessEffectSettings
 		value = null
 	};
 
-	[Range(0f, 1f)]
 	[Tooltip("Amount of tangential distortion.")]
+	[Range(0f, 1f)]
 	public FloatParameter intensity = new FloatParameter
 	{
 		value = 0f

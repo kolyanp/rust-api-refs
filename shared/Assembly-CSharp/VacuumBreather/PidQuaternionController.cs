@@ -93,6 +93,7 @@ public class PidQuaternionController
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
@@ -102,8 +103,7 @@ public class PidQuaternionController
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		Vector4 val = default(Vector4);
-		((Vector4)(ref val))._002Ector(quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+		Vector4 val = new Vector4(quaternion.w, quaternion.x, quaternion.y, quaternion.z);
 		Vector4 val2 = matrix * val;
 		return new Quaternion(val2.y, val2.z, val2.w, val2.x);
 	}

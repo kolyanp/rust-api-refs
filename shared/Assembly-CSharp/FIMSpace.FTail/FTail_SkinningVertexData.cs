@@ -25,7 +25,6 @@ public class FTail_SkinningVertexData
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		position = pos;
 	}
 
@@ -60,7 +59,7 @@ public class FTail_SkinningVertexData
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = pos - lineStart;
 		Vector3 val2 = lineEnd - lineStart;
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		float num = Vector3.Distance(lineStart, lineEnd);
 		float num2 = Vector3.Dot(normalized, val);
 		if (num2 <= 0f)
@@ -111,7 +110,7 @@ public class FTail_SkinningVertexData
 			float num = DistanceToLine(position, bonesPos[i], val);
 			list.Add(new Vector2((float)i, num));
 		}
-		list.Sort(delegate(Vector2 a, Vector2 b)
+		list.Sort((Vector2 a, Vector2 b) =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			return a.y.CompareTo(b.y);
@@ -155,7 +154,7 @@ public class FTail_SkinningVertexData
 		float[] array = new float[num];
 		for (int i = 0; i < array.Length; i++)
 		{
-			array[i] = ((Vector3)(ref boneAreas[i])).magnitude;
+			array[i] = boneAreas[i].magnitude;
 		}
 		float[] array2 = new float[num];
 		for (int j = 0; j < weightForBone.Length; j++)

@@ -104,7 +104,7 @@ public class ApartmentLock : BaseLock
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (base.isServer && info.msg.apartmentLock != null)
+		if (isServer && info.msg.apartmentLock != null)
 		{
 			NetworkableId apartmentId = info.msg.apartmentLock.apartmentId;
 			Room = BaseNetworkable.serverEntities.Find(apartmentId) as ApartmentRoom;

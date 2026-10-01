@@ -71,9 +71,9 @@ public static class ColorEx
 
 	public static float GetHDRIntensity(this Color color)
 	{
-		float maxColorComponent = ((Color)(ref color)).maxColorComponent;
+		float maxColorComponent = color.maxColorComponent;
 		float num = 191f / maxColorComponent;
-		if (maxColorComponent != 0f && (!(maxColorComponent <= 1f) || !(maxColorComponent >= 0.003921569f)))
+		if (maxColorComponent != 0f && (!(maxColorComponent <= 1f) || !(maxColorComponent >= 1f / 255f)))
 		{
 			return Mathf.Log(255f / num) / Mathf.Log(2f);
 		}
@@ -86,7 +86,7 @@ public static class ColorEx
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		float num = 0.7490196f * Mathf.Pow(2f, hdrIntensity);
+		float num = 191f / 255f * Mathf.Pow(2f, hdrIntensity);
 		return new Color(color.r * num, color.g * num, color.b * num);
 	}
 }

@@ -10,7 +10,7 @@ public class DDrawCommand
 		return ConsoleSystem.BuildCommand("ddraw.sphere", duration, color, position, radius, distanceFade, zTest, entityId, id);
 	}
 
-	public unsafe static string Box(Vector3 position, float duration, Color color, Vector3 size, Quaternion rotation = default(Quaternion), bool distanceFade = true, bool zTest = true, NetworkableId entityId = default(NetworkableId), string id = null)
+	public static string Box(Vector3 position, float duration, Color color, Vector3 size, Quaternion rotation = default(Quaternion), bool distanceFade = true, bool zTest = true, NetworkableId entityId = default(NetworkableId), string id = null)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
@@ -22,26 +22,26 @@ public class DDrawCommand
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		object[] obj = new object[9]
+		object[] array = new object[9]
 		{
 			duration,
 			color,
 			position,
-			((object)(*(Vector3*)(&size))/*cast due to constrained. prefix*/).ToString(),
+			((object)size/*cast due to constrained. prefix*/).ToString(),
 			null,
 			null,
 			null,
 			null,
 			null
 		};
-		Quaternion val = default(Quaternion);
+		Quaternion val = default;
 		val = ((rotation != val) ? rotation : Quaternion.identity);
-		obj[4] = ((Quaternion)(ref val)).eulerAngles;
-		obj[5] = distanceFade;
-		obj[6] = zTest;
-		obj[7] = entityId;
-		obj[8] = id;
-		return ConsoleSystem.BuildCommand("ddraw.box", obj);
+		array[4] = val.eulerAngles;
+		array[5] = distanceFade;
+		array[6] = zTest;
+		array[7] = entityId;
+		array[8] = id;
+		return ConsoleSystem.BuildCommand("ddraw.box", array);
 	}
 
 	public static string Text(Vector3 position, float duration, Color color, string text, float scale = 2f, bool distanceFade = true, bool zTest = false, NetworkableId entityId = default(NetworkableId), string id = null)
@@ -68,6 +68,6 @@ public class DDrawCommand
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		return Box(((Bounds)(ref bounds)).center, duration, color, ((Bounds)(ref bounds)).size, Quaternion.identity, distanceFade, zTest, entityId, id);
+		return Box(bounds.center, duration, color, bounds.size, Quaternion.identity, distanceFade, zTest, entityId, id);
 	}
 }

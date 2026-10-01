@@ -24,7 +24,7 @@ public class SM_SwitchLookAnimator : StateMachineBehaviour
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		((StateMachineBehaviour)this).OnStateUpdate(animator, stateInfo, layerIndex);
-		if (!animator.IsInTransition(layerIndex) && ((AnimatorStateInfo)(ref stateInfo)).normalizedTime > EnableBackAfter && !enableBackTriggered)
+		if (!animator.IsInTransition(layerIndex) && stateInfo.normalizedTime > EnableBackAfter && !enableBackTriggered)
 		{
 			SwitchLook(animator, enable: true);
 			enableBackTriggered = true;

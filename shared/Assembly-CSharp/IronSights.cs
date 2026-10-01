@@ -5,18 +5,18 @@ public class IronSights : MonoBehaviour
 	[Header("View Setup")]
 	public IronsightAimPoint aimPoint;
 
-	public float fieldOfViewOffset;
+	public float fieldOfViewOffset = -20f;
 
-	public float zoomFactor;
+	public float zoomFactor = 1f;
 
 	[Header("Animation")]
-	public float introSpeed;
+	public float introSpeed = 1f;
 
-	public AnimationCurve introCurve;
+	public AnimationCurve introCurve = new AnimationCurve();
 
-	public float outroSpeed;
+	public float outroSpeed = 1f;
 
-	public AnimationCurve outroCurve;
+	public AnimationCurve outroCurve = new AnimationCurve();
 
 	[Tooltip("Force the ironsight rotation every frame, don't lerp to the rotation. Can be useful if the ADS is animated and this component is conflicting")]
 	public bool disableLerps;
@@ -34,15 +34,8 @@ public class IronSights : MonoBehaviour
 	public IronSights()
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
+		//IL_002c: Expected Obj, but got Unknown
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Expected O, but got Unknown
-		fieldOfViewOffset = -20f;
-		zoomFactor = 1f;
-		introSpeed = 1f;
-		introCurve = new AnimationCurve();
-		outroSpeed = 1f;
-		outroCurve = new AnimationCurve();
-		((MonoBehaviour)this)._002Ector();
+		//IL_0042: Expected Obj, but got Unknown
 	}
 }

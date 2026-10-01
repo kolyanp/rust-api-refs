@@ -113,7 +113,7 @@ public class AiLocationSpawner : SpawnGroup
 		{
 			return;
 		}
-		numToSpawn = Mathf.Min(numToSpawn, maxPopulation - base.currentPopulation);
+		numToSpawn = Mathf.Min(numToSpawn, maxPopulation - currentPopulation);
 		for (int i = 0; i < numToSpawn; i++)
 		{
 			GameObjectRef prefab = GetPrefab();

@@ -73,7 +73,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 
 	private bool _generatedTopologyTexture;
 
-	private ThreadLocal<NativeReference<int>> topoNative = new ThreadLocal<NativeReference<int>>(delegate
+	private ThreadLocal<NativeReference<int>> topoNative = new ThreadLocal<NativeReference<int>>(() =>
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -120,14 +120,14 @@ public class TerrainTopologyMap : TerrainMap<int>
 	public void GenerateTextures()
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Expected O, but got Unknown
+		//IL_0027: Expected Obj, but got Unknown
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		TopologyTexture = new Texture2D(res, res, (TextureFormat)4, false, true);
 		((Object)TopologyTexture).name = "TopologyTexture";
 		((Texture)TopologyTexture).wrapMode = (TextureWrapMode)1;
 		NativeArray<Color32> col = TopologyTexture.GetPixelData<Color32>(0);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 			for (int i = 0; i < res; i++)
@@ -311,7 +311,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		TerrainTopologyMapJobs.GetTopologyRadiusJobIndirect jobData = new TerrainTopologyMapJobs.GetTopologyRadiusJobIndirect
+		GetTopologyRadiusJobIndirect jobData = new GetTopologyRadiusJobIndirect
 		{
 			WorldX = TerrainMeta.Position.x,
 			WorldZ = TerrainMeta.Position.z,
@@ -323,7 +323,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 			Radii = radii,
 			Topologies = results
 		};
-		return ParallelJobEx.ScheduleParallelByRef<TerrainTopologyMapJobs.GetTopologyRadiusJobIndirect>(ref jobData, worldPositions.Length, inputDeps);
+		return ParallelJobEx.ScheduleParallelByRef<GetTopologyRadiusJobIndirect>(ref jobData, worldPositions.Length, inputDeps);
 	}
 
 	public void GetTopologiesIndirect(ReadOnly<Vector2> normalizedCoords, ReadOnly<float> radii, NativeArray<int> results)
@@ -341,7 +341,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		TerrainTopologyMapJobs.GetTopologyRadiusNormalizedJobIndirect jobData = new TerrainTopologyMapJobs.GetTopologyRadiusNormalizedJobIndirect
+		GetTopologyRadiusNormalizedJobIndirect jobData = new GetTopologyRadiusNormalizedJobIndirect
 		{
 			OneOverSizeX = TerrainMeta.OneOverSize.x,
 			Src = src.AsReadOnly(),
@@ -351,9 +351,9 @@ public class TerrainTopologyMap : TerrainMap<int>
 			Topologies = results
 		};
 		int length = normalizedCoords.Length;
-		JobHandle dependsOn = default(JobHandle);
-		dependsOn = ParallelJobEx.ScheduleParallelByRef<TerrainTopologyMapJobs.GetTopologyRadiusNormalizedJobIndirect>(ref jobData, length, dependsOn);
-		((JobHandle)(ref dependsOn)).Complete();
+		JobHandle dependsOn = default;
+		dependsOn = ParallelJobEx.ScheduleParallelByRef<GetTopologyRadiusNormalizedJobIndirect>(ref jobData, length, dependsOn);
+		dependsOn.Complete();
 	}
 
 	public void SetTopology(Vector3 worldPos, int mask)
@@ -458,7 +458,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 		int z_min = Index(normZ - num);
 		int z_max = Index(normZ + num);
 		NativeReference<int> value = topoNative.Value;
-		TerrainTopologyMapJobs.GetTopologyRadiusJob getTopologyRadiusJob = new TerrainTopologyMapJobs.GetTopologyRadiusJob
+		GetTopologyRadiusJob getTopologyRadiusJob = new GetTopologyRadiusJob
 		{
 			Res = res,
 			Src = src.AsReadOnly(),
@@ -471,7 +471,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 			z_min = z_min,
 			z_max = z_max
 		};
-		IJobExtensions.RunByRef<TerrainTopologyMapJobs.GetTopologyRadiusJob>(ref getTopologyRadiusJob);
+		IJobExtensions.RunByRef<GetTopologyRadiusJob>(ref getTopologyRadiusJob);
 		return value.Value;
 	}
 
@@ -491,7 +491,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 
 	public void SetTopology(float normX, float normZ, int mask, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if ((double)lerp > 0.5)
 			{
@@ -512,7 +512,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 
 	public void AddTopology(float normX, float normZ, int mask, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if ((double)lerp > 0.5)
 			{

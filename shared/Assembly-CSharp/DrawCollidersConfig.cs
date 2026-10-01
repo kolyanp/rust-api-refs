@@ -47,7 +47,7 @@ public class DrawCollidersConfig : BaseScriptableObject
 		{
 			return triggerMaterial;
 		}
-		return (Material)(((Component)col).gameObject.layer switch
+		return ((Component)col).gameObject.layer switch
 		{
 			16 => worldMaterial, 
 			8 => deployedMaterial, 
@@ -62,6 +62,6 @@ public class DrawCollidersConfig : BaseScriptableObject
 			29 => preventBuildingMaterial, 
 			11 => aiMaterial, 
 			_ => defaultMaterial, 
-		});
+		};
 	}
 }

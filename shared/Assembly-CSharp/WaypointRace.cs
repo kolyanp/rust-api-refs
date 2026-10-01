@@ -86,16 +86,16 @@ public class WaypointRace : BaseEntity
 
 	private int currentWaypoint;
 
-	public static Phrase stageNotifyPhrase;
+	public static Phrase stageNotifyPhrase = new Phrase("race_notify", "Reached checkpoint {0}/{1} : {2}s");
 
-	public static Phrase raceCompletePhrase;
+	public static Phrase raceCompletePhrase = new Phrase("race_complete", "Finished race {0}/{1} in {2}s");
 
 	private PendingRaceResults raceResults;
 
 	private TimeSince startTime;
 
 	[ServerVar(Saved = true, Help = "How long a race can go until it times out (in seconds)")]
-	public static float raceTimeout;
+	public static float raceTimeout = 900f;
 
 	[ServerVar]
 	public static void startRace(ConsoleSystem.Arg arg)
@@ -220,11 +220,11 @@ public class WaypointRace : BaseEntity
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
-		BaseVehicle baseVehicle = racingVehicle.Get(base.isServer);
+		BaseVehicle baseVehicle = racingVehicle.Get(isServer);
 		if ((Object)(object)baseVehicle == (Object)null || baseVehicle.IsDestroyed || baseVehicle.IsDead() || TimeSince.op_Implicit(startTime) > raceTimeout)
 		{
 			raceResults.RegisterCompletion(new List<BasePlayer>(), TimeSince.op_Implicit(startTime), valid: false);
@@ -238,7 +238,7 @@ public class WaypointRace : BaseEntity
 		}
 		Vector3 val = racePoints[currentWaypoint + 1];
 		Vector3 val2 = ((Component)baseVehicle).transform.position - val;
-		if (!(((Vector3)(ref val2)).sqrMagnitude <= WaypointRadius * WaypointRadius))
+		if (!(val2.sqrMagnitude <= WaypointRadius * WaypointRadius))
 		{
 			return;
 		}
@@ -268,11 +268,8 @@ public class WaypointRace : BaseEntity
 	static WaypointRace()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		stageNotifyPhrase = new Phrase("race_notify", "Reached checkpoint {0}/{1} : {2}s");
-		raceCompletePhrase = new Phrase("race_complete", "Finished race {0}/{1} in {2}s");
-		raceTimeout = 900f;
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

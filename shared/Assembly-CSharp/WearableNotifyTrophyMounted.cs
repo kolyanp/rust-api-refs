@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 public class WearableNotifyTrophyMounted : WearableNotify
 {
-	public UnityEvent OnMounted;
+	public UnityEvent OnMounted = new UnityEvent();
 
 	public Renderer[] EmissionToggles;
 
@@ -13,8 +13,6 @@ public class WearableNotifyTrophyMounted : WearableNotify
 	public WearableNotifyTrophyMounted()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
-		OnMounted = new UnityEvent();
-		base._002Ector();
+		//IL_000b: Expected Obj, but got Unknown
 	}
 }

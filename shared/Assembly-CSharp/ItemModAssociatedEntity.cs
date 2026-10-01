@@ -28,7 +28,7 @@ public abstract class ItemModAssociatedEntity<T> : ItemMod where T : BaseEntity
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Expected O, but got Unknown
+		//IL_0056: Expected Obj, but got Unknown
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		if (item.instanceData != null)

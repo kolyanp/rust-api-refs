@@ -62,17 +62,18 @@ public class Monument : TerrainPlacement
 			Radius = extents.x;
 		}
 		bool useBlendMap = blendmap.isValid;
-		Vector3 position = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(Vector3.zero);
+		Vector3 position = localToWorld.MultiplyPoint3x4(Vector3.zero);
 		TextureData heightdata = new TextureData(heightmap.Get());
 		TextureData blenddata = new TextureData(useBlendMap ? blendmap.Get() : null);
 		float num = (useBlendMap ? extents.x : Radius);
 		float num2 = (useBlendMap ? extents.z : Radius);
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - num, 0f, 0f - num2));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(num, 0f, 0f - num2));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - num, 0f, num2));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(num, 0f, num2));
-		TerrainMeta.HeightMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - num, 0f, 0f - num2));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(num, 0f, 0f - num2));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - num, 0f, num2));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(num, 0f, num2));
+		TerrainMeta.HeightMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
@@ -86,9 +87,8 @@ public class Monument : TerrainPlacement
 			//IL_019e: Unknown result type (might be due to invalid IL or missing references)
 			float normZ = TerrainMeta.HeightMap.Coordinate(z);
 			float normX = TerrainMeta.HeightMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
 			float num3 = 1f;
 			num3 = ((!useBlendMap) ? Mathf.InverseLerp(Radius, Radius - Fade, Vector3Ex.Magnitude2D(val2)) : blenddata.GetInterpolatedVector((val2.x + extents.x) / size.x, (val2.z + extents.z) / size.z).w);
 			if (num3 != 0f)
@@ -154,12 +154,13 @@ public class Monument : TerrainPlacement
 		}
 		TextureData splat0data = new TextureData(splatmap0.Get());
 		TextureData splat1data = new TextureData(splatmap1.Get());
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
-		TerrainMeta.SplatMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
+		TerrainMeta.SplatMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
@@ -182,9 +183,8 @@ public class Monument : TerrainPlacement
 			}
 			float normZ = TerrainMeta.SplatMap.Coordinate(z);
 			float normX = TerrainMeta.SplatMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
 			float num = Mathf.InverseLerp(Radius, Radius - Fade, Vector3Ex.Magnitude2D(val2));
 			if (num != 0f)
 			{
@@ -260,12 +260,13 @@ public class Monument : TerrainPlacement
 			Radius = extents.x;
 		}
 		TextureData alphadata = new TextureData(alphamap.Get());
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
-		TerrainMeta.AlphaMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
+		TerrainMeta.AlphaMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
@@ -277,9 +278,8 @@ public class Monument : TerrainPlacement
 			//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 			float normZ = TerrainMeta.AlphaMap.Coordinate(z);
 			float normX = TerrainMeta.AlphaMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
 			float num = Mathf.InverseLerp(Radius, Radius - Fade, Vector3Ex.Magnitude2D(val2));
 			if (num != 0f)
 			{
@@ -331,12 +331,13 @@ public class Monument : TerrainPlacement
 			return;
 		}
 		TextureData biomedata = new TextureData(biomemap.Get());
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
-		TerrainMeta.BiomeMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
+		TerrainMeta.BiomeMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
@@ -351,9 +352,8 @@ public class Monument : TerrainPlacement
 			//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
 			float normZ = TerrainMeta.BiomeMap.Coordinate(z);
 			float normX = TerrainMeta.BiomeMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
 			float num = Mathf.InverseLerp(Radius, Radius - Fade, Vector3Ex.Magnitude2D(val2));
 			if (num != 0f)
 			{
@@ -421,42 +421,59 @@ public class Monument : TerrainPlacement
 			Radius = extents.x;
 		}
 		TextureData topologydata = new TextureData(topologymap.Get());
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
-		TerrainMeta.TopologyMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
+		TerrainMeta.TopologyMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-			//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00de: Expected I4, but got Unknown
-			//IL_0103: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-			//IL_010e: Expected I4, but got Unknown
+			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0147: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0151: Expected I4, but got Unknown
+			//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+			//IL_017b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0181: Expected I4, but got Unknown
 			float normZ = TerrainMeta.TopologyMap.Coordinate(z);
 			float normX = TerrainMeta.TopologyMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
-			int interpolatedInt = topologydata.GetInterpolatedInt((val2.x + extents.x) / size.x, (val2.z + extents.z) / size.z);
-			bool num = ShouldTopology(interpolatedInt);
-			if (num && RemoveExistingTopology)
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
+			bool num = val2.x >= 0f - extents.x && val2.x <= extents.x && val2.z >= 0f - extents.z && val2.z <= extents.z;
+			int num2 = 0;
+			if (num)
 			{
-				TerrainMeta.TopologyMap.RemoveTopology(x, z, (int)TopologyMask);
+				num2 = topologydata.GetInterpolatedInt((val2.x + extents.x) / size.x, (val2.z + extents.z) / size.z);
+			}
+			int num3;
+			if (num)
+			{
+				num3 = (ShouldTopology(num2) ? 1 : 0);
+				if (num3 != 0 && RemoveExistingTopology)
+				{
+					TerrainMeta.TopologyMap.RemoveTopology(x, z, (int)TopologyMask);
+				}
+			}
+			else
+			{
+				num3 = 0;
 			}
 			if (AutoCliffTopology)
 			{
 				GenerateCliffTopology.Process(x, z);
 			}
-			if (num)
+			if (num3 != 0)
 			{
-				TerrainMeta.TopologyMap.AddTopology(x, z, interpolatedInt & TopologyMask);
+				TerrainMeta.TopologyMap.AddTopology(x, z, num2 & TopologyMask);
 			}
 		});
 	}

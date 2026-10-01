@@ -17,17 +17,15 @@ public class LootPanelMixingTable : LootPanel, IInventoryChanged
 
 	public ScrollRect ScrollView;
 
-	public static readonly Phrase MixingPhrase;
+	public static readonly Phrase MixingPhrase = new Phrase("mixingtable.mixing", "Mixing... {0} seconds remaining");
 
-	public static readonly Phrase CookingPhrase;
+	public static readonly Phrase CookingPhrase = new Phrase("cookingworkbench.cooking", "Cooking... {0} seconds remaining");
 
 	static LootPanelMixingTable()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		MixingPhrase = new Phrase("mixingtable.mixing", "Mixing... {0} seconds remaining");
-		CookingPhrase = new Phrase("cookingworkbench.cooking", "Cooking... {0} seconds remaining");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

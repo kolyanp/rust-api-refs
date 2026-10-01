@@ -53,7 +53,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		NPCShopKeeper nPCShopKeeper = cachedShopKeeper.Get(base.isServer);
+		NPCShopKeeper nPCShopKeeper = cachedShopKeeper.Get(isServer);
 		if (!((Object)(object)nPCShopKeeper == (Object)null))
 		{
 			nPCShopKeeper.SetAimDirection(Vector3Ex.Direction2D(pos, ((Component)nPCShopKeeper).transform.position));
@@ -78,7 +78,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
 		Effect.server.Run(buyEffect.resourcePath, ((Component)this).transform.position, Vector3.up);
-		if (cachedShopKeeper.TryGet(base.isServer, out var entity))
+		if (cachedShopKeeper.TryGet(isServer, out var entity))
 		{
 			entity.Server_StartGesture("victory", BasePlayer.GestureStartSource.ServerAction);
 			if ((Object)(object)vend_Player != (Object)null)
@@ -93,9 +93,9 @@ public class InvisibleVendingMachine : NPCVendingMachine
 
 	private void NotifyShopkeeper(NPCShopKeeper.ShopkeeperEvent eventType)
 	{
-		if ((Object)(object)cachedShopKeeper.Get(base.isServer) != (Object)null)
+		if ((Object)(object)cachedShopKeeper.Get(isServer) != (Object)null)
 		{
-			cachedShopKeeper.Get(base.isServer).NotifyEvent(eventType);
+			cachedShopKeeper.Get(isServer).NotifyEvent(eventType);
 		}
 	}
 
@@ -105,7 +105,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 		KeeperLookAt(((Component)player).transform.position);
 		NotifyShopkeeper(NPCShopKeeper.ShopkeeperEvent.Talk);
 		hasCurrentPlayerPurchasedSomething = false;
-		return base.PlayerOpenLoot(player, panelToOpen, true);
+		return base.PlayerOpenLoot(player, panelToOpen);
 	}
 
 	public override void PlayerStoppedLooting(BasePlayer player)
@@ -125,7 +125,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 		}
 		info.msg.npcVendingMachine = Pool.Get<NPCVendingMachine>();
 		info.msg.npcVendingMachine.attachedNpc = cachedShopKeeper.uid;
-		info.msg.npcVendingMachine.nextRefresh = ((TimeUntil)(ref nextOrderRefresh)).LeftFrom(info.cachedTime.Time);
+		info.msg.npcVendingMachine.nextRefresh = nextOrderRefresh.LeftFrom(info.cachedTime.Time);
 	}
 
 	public override void ServerInit()
@@ -175,7 +175,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 
 	public override bool CanBeLooted(BasePlayer player)
 	{
-		if ((Object)(object)cachedShopKeeper.Get(base.isServer) == (Object)null)
+		if ((Object)(object)cachedShopKeeper.Get(isServer) == (Object)null)
 		{
 			return false;
 		}
@@ -186,7 +186,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 	{
 		if (base.CanShop(bp))
 		{
-			return (Object)(object)cachedShopKeeper.Get(base.isServer) != (Object)null;
+			return (Object)(object)cachedShopKeeper.Get(isServer) != (Object)null;
 		}
 		return false;
 	}
@@ -205,7 +205,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 		if (info.msg.npcVendingMachine != null)
 		{
 			cachedShopKeeper.uid = info.msg.npcVendingMachine.attachedNpc;
-			if (base.isServer)
+			if (isServer)
 			{
 				nextOrderRefresh = TimeUntil.op_Implicit(info.msg.npcVendingMachine.nextRefresh);
 			}

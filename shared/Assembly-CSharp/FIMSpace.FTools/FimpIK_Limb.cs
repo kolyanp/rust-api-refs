@@ -15,35 +15,20 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		[SerializeField]
 		private Vector3 defaultLocalPoleNormal;
 
-		[CompilerGenerated]
-		private Vector3 _003Cright_003Ek__BackingField;
-
-		[CompilerGenerated]
-		private Vector3 _003Cup_003Ek__BackingField;
-
-		[CompilerGenerated]
-		private Vector3 _003Cforward_003Ek__BackingField;
-
-		[CompilerGenerated]
-		private Vector3 _003CsrcPosition_003Ek__BackingField;
-
-		[CompilerGenerated]
-		private Quaternion _003CsrcRotation_003Ek__BackingField;
-
 		public Vector3 right
 		{
 			[CompilerGenerated]
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003Cright_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003Cright_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -53,14 +38,14 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003Cup_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003Cup_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -70,14 +55,14 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003Cforward_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003Cforward_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -87,14 +72,14 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003CsrcPosition_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003CsrcPosition_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -104,14 +89,14 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003CsrcRotation_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003CsrcRotation_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -137,12 +122,12 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 			RefreshOrientations(childPosition, orientationNormal);
-			Vector3 val = childPosition - base.transform.position;
-			sqrMagn = ((Vector3)(ref val)).sqrMagnitude;
-			LastKeyLocalRotation = base.transform.localRotation;
-			right = base.transform.InverseTransformDirection(root.right);
-			up = base.transform.InverseTransformDirection(root.up);
-			forward = base.transform.InverseTransformDirection(root.forward);
+			Vector3 val = childPosition - transform.position;
+			sqrMagn = val.sqrMagnitude;
+			LastKeyLocalRotation = transform.localRotation;
+			right = transform.InverseTransformDirection(root.right);
+			up = transform.InverseTransformDirection(root.up);
+			forward = transform.InverseTransformDirection(root.forward);
 			CaptureSourceAnimation();
 		}
 
@@ -171,13 +156,13 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 			if (!(orientationNormal == Vector3.zero))
 			{
-				Vector3 val = childPosition - base.transform.position;
-				((Vector3)(ref val)).Normalize();
+				Vector3 val = childPosition - transform.position;
+				val.Normalize();
 				if (!(val == Vector3.zero))
 				{
 					Quaternion rotation = Quaternion.LookRotation(val, orientationNormal);
-					targetToLocalSpace = RotationToLocal(base.transform.rotation, rotation);
-					defaultLocalPoleNormal = Quaternion.Inverse(base.transform.rotation) * orientationNormal;
+					targetToLocalSpace = RotationToLocal(transform.rotation, rotation);
+					defaultLocalPoleNormal = Quaternion.Inverse(transform.rotation) * orientationNormal;
 				}
 			}
 		}
@@ -186,8 +171,8 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-			srcPosition = base.transform.position;
-			srcRotation = base.transform.rotation;
+			srcPosition = transform.position;
+			srcRotation = transform.rotation;
 		}
 
 		public static Quaternion RotationToLocal(Quaternion parent, Quaternion rotation)
@@ -215,7 +200,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-			return base.transform.rotation * defaultLocalPoleNormal;
+			return transform.rotation * defaultLocalPoleNormal;
 		}
 	}
 
@@ -230,20 +215,17 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		UnityHumanoidIK
 	}
 
-	[CompilerGenerated]
-	private Quaternion _003CEndBoneMapping_003Ek__BackingField;
+	[NonSerialized]
+	public float FeetStretchWeight = 1f;
 
 	[NonSerialized]
-	public float FeetStretchWeight;
+	public float FeetStretchSensitivity = 1f;
 
 	[NonSerialized]
-	public float FeetStretchSensitivity;
+	public float FeetStretchLimit = 1f;
 
 	[NonSerialized]
-	public float FeetStretchLimit;
-
-	[NonSerialized]
-	public float FeetFadeQuicker;
+	public float FeetFadeQuicker = 1f;
 
 	[NonSerialized]
 	public bool disableFeet;
@@ -260,47 +242,47 @@ public class FimpIK_Limb : FIK_ProcessorBase
 	[NonSerialized]
 	public bool IsRight;
 
-	private bool everyIsChild;
+	private bool everyIsChild = true;
 
 	private bool hasFeet;
 
 	private bool hasRoot;
 
-	[HideInInspector]
 	[Range(0f, 1f)]
+	[HideInInspector]
 	public float ManualHintPositionWeight;
 
 	[HideInInspector]
-	public Vector3 IKManualHintPosition;
+	public Vector3 IKManualHintPosition = Vector3.zero;
 
 	[NonSerialized]
-	public bool UseEndBoneMapping;
+	public bool UseEndBoneMapping = true;
 
-	private float internalRotationWeightMul;
+	private float internalRotationWeightMul = 1f;
 
 	[NonSerialized]
 	[Tooltip("3-Bones limb array")]
 	private IKBone[] IKBones;
 
+	[Tooltip("Blend value for goal position")]
 	[Space(4f)]
 	[Range(0f, 1f)]
-	[Tooltip("Blend value for goal position")]
-	public float IKPositionWeight;
+	public float IKPositionWeight = 1f;
 
-	[Tooltip("Blend value for end bone rotation")]
 	[Range(0f, 1f)]
-	public float FootRotationWeight;
+	[Tooltip("Blend value for end bone rotation")]
+	public float FootRotationWeight = 1f;
 
 	[Tooltip("Flex style algorithm for different limbs")]
-	public FIK_HintMode AutoHintMode;
+	public FIK_HintMode AutoHintMode = FIK_HintMode.MiddleForward;
 
-	protected Vector3 targetElbowNormal;
+	protected Vector3 targetElbowNormal = Vector3.right;
 
 	protected Quaternion lateEndBoneRotation;
 
 	protected Quaternion postIKAnimatorEndBoneRot;
 
-	public Vector3 ExtraHintAdjustementOffset;
+	public Vector3 ExtraHintAdjustementOffset = Vector3.zero;
 
 	public bool InverseHint;
 
@@ -310,14 +292,14 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CEndBoneMapping_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CEndBoneMapping_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -363,7 +345,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = StartIKBone.transform.position - MiddleIKBone.transform.position;
-		ScaleReference = ((Vector3)(ref val)).magnitude;
+		ScaleReference = val.magnitude;
 	}
 
 	public void RefreshScaleReference()
@@ -373,7 +355,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = StartIKBone.transform.position - MiddleIKBone.transform.position;
-		ScaleReference = ((Vector3)(ref val)).magnitude;
+		ScaleReference = val.magnitude;
 	}
 
 	private float GetCurrentLegToAnkleLength()
@@ -388,9 +370,9 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		float epsilon = Mathf.Epsilon;
 		Vector3 val = StartIKBone.transform.position - MiddleIKBone.transform.position;
-		float num = epsilon + ((Vector3)(ref val)).magnitude;
+		float num = epsilon + val.magnitude;
 		val = MiddleIKBone.transform.position - EndIKBone.transform.position;
-		return num + ((Vector3)(ref val)).magnitude;
+		return num + val.magnitude;
 	}
 
 	public float GetStretchValue(Vector3 targetPos)
@@ -400,7 +382,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = StartIKBone.transform.position - targetPos;
-		return ((Vector3)(ref val)).magnitude / GetCurrentLegToAnkleLength();
+		return val.magnitude / GetCurrentLegToAnkleLength();
 	}
 
 	public Vector3 GetNotStretchedPositionTowards(Vector3 targetPos, float maxStretch)
@@ -414,7 +396,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = targetPos - StartIKBone.transform.position;
-		return StartIKBone.transform.position + ((Vector3)(ref val)).normalized * (GetCurrentLegToAnkleLength() * maxStretch);
+		return StartIKBone.transform.position + val.normalized * (GetCurrentLegToAnkleLength() * maxStretch);
 	}
 
 	public void ApplyMaxStretchingPreprocessing(float maxStretch, float allowIKRotationFadeout = 2f)
@@ -464,7 +446,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			return;
 		}
 		Vector3 val = StartIKBone.transform.position - IKTargetPosition;
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		float currentLegToAnkleLength = GetCurrentLegToAnkleLength();
 		float num = magnitude / currentLegToAnkleLength;
 		if (num > maxStretch)
@@ -474,13 +456,13 @@ public class FimpIK_Limb : FIK_ProcessorBase
 				if (maxFeetAngle > 0f)
 				{
 					Vector3 val2 = IKTargetPosition - StartIKBone.transform.position;
-					((Vector3)(ref val2)).Normalize();
+					val2.Normalize();
 					Vector3 val3 = FeetIKBone.transform.position - EndIKBone.transform.position;
-					((Vector3)(ref val3)).Normalize();
+					val3.Normalize();
 					float num2 = Vector3.Dot(val2, val3);
 					num2 = Mathf.Clamp01(num2);
 					val = FeetIKBone.transform.position - EndIKBone.transform.position;
-					float magnitude2 = ((Vector3)(ref val)).magnitude;
+					float magnitude2 = val.magnitude;
 					float num3 = magnitude - currentLegToAnkleLength * Mathf.Min(maxStretch, 1f);
 					num3 /= magnitude2 * FeetFadeQuicker;
 					float num4 = num3;
@@ -513,7 +495,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 						OffsetHeel(num5, num4);
 					}
 					val = StartIKBone.transform.position - IKTargetPosition;
-					magnitude = ((Vector3)(ref val)).magnitude;
+					magnitude = val.magnitude;
 					num = magnitude / currentLegToAnkleLength;
 				}
 				if (num > maxStretch)
@@ -521,7 +503,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 					float num6 = maxStretch * currentLegToAnkleLength;
 					Vector3 position = StartIKBone.transform.position;
 					val = IKTargetPosition - StartIKBone.transform.position;
-					IKTargetPosition = position + ((Vector3)(ref val)).normalized * num6;
+					IKTargetPosition = position + val.normalized * num6;
 				}
 			}
 			else
@@ -529,7 +511,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 				float num7 = maxStretch * currentLegToAnkleLength;
 				Vector3 position2 = StartIKBone.transform.position;
 				val = IKTargetPosition - StartIKBone.transform.position;
-				IKTargetPosition = position2 + ((Vector3)(ref val)).normalized * num7;
+				IKTargetPosition = position2 + val.normalized * num7;
 			}
 			if (allowIKRotationFadeout > 0f)
 			{
@@ -557,9 +539,9 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = EndIKBone.transform.position - MiddleIKBone.transform.position;
-		((Vector3)(ref val)).Normalize();
+		val.Normalize();
 		ankleToFeet = FeetIKBone.transform.position - EndIKBone.transform.position;
-		((Vector3)(ref ankleToFeet)).Normalize();
+		ankleToFeet.Normalize();
 		maxFeetAngle = Vector3.Angle(ankleToFeet, val);
 		maxFeetAngleFactor = 90f / maxFeetAngle;
 	}
@@ -667,18 +649,18 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Initialized)
+		if (!Initialized)
 		{
 			Vector3 val = Vector3.Cross(MiddleIKBone.transform.position - StartIKBone.transform.position, EndIKBone.transform.position - MiddleIKBone.transform.position);
 			if (val != Vector3.zero)
 			{
 				targetElbowNormal = val;
 			}
-			base.fullLength = 0f;
+			fullLength = 0f;
 			StartIKBone.Init(root, MiddleIKBone.transform.position, targetElbowNormal);
 			MiddleIKBone.Init(root, EndIKBone.transform.position, targetElbowNormal);
 			EndIKBone.Init(root, EndIKBone.transform.position + (EndIKBone.transform.position - MiddleIKBone.transform.position), targetElbowNormal);
-			base.fullLength = base.Bones[0].BoneLength + base.Bones[1].BoneLength;
+			fullLength = Bones[0].BoneLength + Bones[1].BoneLength;
 			RefreshDefaultFlexNormal();
 			if ((Object)(object)EndIKBone.transform.parent != (Object)(object)MiddleIKBone.transform)
 			{
@@ -695,7 +677,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			SetRootReference(root);
 			if (Application.isPlaying)
 			{
-				base.Initialized = true;
+				Initialized = true;
 			}
 			if (hasFeet)
 			{
@@ -722,7 +704,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		IKBones[0] = new IKBone(startBone);
 		IKBones[1] = new IKBone(midBone);
 		IKBones[2] = new IKBone(endBone);
-		base.Bones = new FIK_IKBoneBase[3]
+		Bones = new FIK_IKBoneBase[3]
 		{
 			IKBones[0],
 			IKBones[1],
@@ -745,7 +727,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		IKBones[1] = new IKBone(midBone);
 		IKBones[2] = new IKBone(endBone);
 		IKBones[3] = new IKBone(feet);
-		base.Bones = new FIK_IKBoneBase[4]
+		Bones = new FIK_IKBoneBase[4]
 		{
 			IKBones[0],
 			IKBones[1],
@@ -853,7 +835,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 				return CalculateElbowNormalToPosition(IKManualHintPosition);
 			}
 			Vector3 automaticFlexNormal = GetAutomaticFlexNormal();
-			return Vector3.LerpUnclamped(((Vector3)(ref automaticFlexNormal)).normalized, CalculateElbowNormalToPosition(IKManualHintPosition), ManualHintPositionWeight);
+			return Vector3.LerpUnclamped(automaticFlexNormal.normalized, CalculateElbowNormalToPosition(IKManualHintPosition), ManualHintPositionWeight);
 		}
 		return GetAutomaticFlexNormal();
 	}
@@ -915,7 +897,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		{
 			return Vector3.zero;
 		}
-		float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+		float sqrMagnitude = val.sqrMagnitude;
 		float num = Mathf.Sqrt(sqrMagnitude);
 		float num2 = (sqrMagnitude + StartIKBone.sqrMagn - MiddleIKBone.sqrMagn) / 2f / num;
 		float num3 = Mathf.Sqrt(Mathf.Clamp(StartIKBone.sqrMagn - num2 * num2, 0f, float.PositiveInfinity));
@@ -984,7 +966,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Initialized)
+		if (!Initialized)
 		{
 			return;
 		}
@@ -992,15 +974,15 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		float num = IKPositionWeight * IKWeight;
 		IKBone startIKBone = StartIKBone;
 		Vector3 val = MiddleIKBone.transform.position - StartIKBone.transform.position;
-		startIKBone.sqrMagn = ((Vector3)(ref val)).sqrMagnitude;
+		startIKBone.sqrMagn = val.sqrMagnitude;
 		IKBone middleIKBone = MiddleIKBone;
 		val = EndIKBone.transform.position - MiddleIKBone.transform.position;
-		middleIKBone.sqrMagn = ((Vector3)(ref val)).sqrMagnitude;
+		middleIKBone.sqrMagn = val.sqrMagnitude;
 		targetElbowNormal = GetDefaultFlexNormal();
 		if (ExtraHintAdjustementOffset != Vector3.zero)
 		{
-			val = Vector3.Lerp(targetElbowNormal, CalculateElbowNormalToPosition(EndIKBone.transform.position + EndIKBone.transform.rotation * ExtraHintAdjustementOffset), ((Vector3)(ref ExtraHintAdjustementOffset)).magnitude);
-			targetElbowNormal = ((Vector3)(ref val)).normalized;
+			val = Vector3.Lerp(targetElbowNormal, CalculateElbowNormalToPosition(EndIKBone.transform.position + EndIKBone.transform.rotation * ExtraHintAdjustementOffset), ExtraHintAdjustementOffset.magnitude);
+			targetElbowNormal = val.normalized;
 		}
 		Vector3 val2 = GetOrientationDirection(IKTargetPosition, InverseHint ? (-targetElbowNormal) : targetElbowNormal);
 		if (val2 == Vector3.zero)
@@ -1009,7 +991,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		}
 		if (num > 0f)
 		{
-			Quaternion val3 = StartIKBone.GetRotation(val2, targetElbowNormal) * base.StartBoneRotationOffset;
+			Quaternion val3 = StartIKBone.GetRotation(val2, targetElbowNormal) * StartBoneRotationOffset;
 			if (num < 1f)
 			{
 				val3 = Quaternion.LerpUnclamped(StartIKBone.srcRotation, val3, num);
@@ -1111,10 +1093,10 @@ public class FimpIK_Limb : FIK_ProcessorBase
 			}
 			float num = Vector3.Distance(MiddleIKBone.transform.position, EndIKBone.transform.position) * 0.1f;
 			Vector3 val4 = CalculateElbowNormalToPosition(MiddleIKBone.srcPosition + val2 * num);
-			return Vector3.LerpUnclamped(((Vector3)(ref currentOrientationNormal)).normalized, val4, 0.85f);
+			return Vector3.LerpUnclamped(currentOrientationNormal.normalized, val4, 0.85f);
 		}
 		case FIK_HintMode.MiddleForward:
-			return Vector3.LerpUnclamped(((Vector3)(ref currentOrientationNormal)).normalized, MiddleIKBone.srcRotation * MiddleIKBone.right, 0.5f);
+			return Vector3.LerpUnclamped(currentOrientationNormal.normalized, MiddleIKBone.srcRotation * MiddleIKBone.right, 0.5f);
 		case FIK_HintMode.MiddleBack:
 			return MiddleIKBone.srcRotation * -MiddleIKBone.right;
 		case FIK_HintMode.EndForward:
@@ -1141,7 +1123,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 
 	public void OnDrawGizmos()
 	{
-		_ = base.Initialized;
+		_ = Initialized;
 	}
 
 	public FimpIK_Limb()
@@ -1152,19 +1134,5 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		FeetStretchWeight = 1f;
-		FeetStretchSensitivity = 1f;
-		FeetStretchLimit = 1f;
-		FeetFadeQuicker = 1f;
-		everyIsChild = true;
-		IKManualHintPosition = Vector3.zero;
-		UseEndBoneMapping = true;
-		internalRotationWeightMul = 1f;
-		IKPositionWeight = 1f;
-		FootRotationWeight = 1f;
-		AutoHintMode = FIK_HintMode.MiddleForward;
-		targetElbowNormal = Vector3.right;
-		ExtraHintAdjustementOffset = Vector3.zero;
-		base._002Ector();
 	}
 }

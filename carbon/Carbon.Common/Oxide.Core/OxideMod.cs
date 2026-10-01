@@ -80,12 +80,12 @@ public class OxideMod
 		{
 			RootDirectory = AppDomain.CurrentDomain.BaseDirectory;
 		}
-		JsonConvert.DefaultSettings = delegate
+		JsonConvert.DefaultSettings = () =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0018: Expected O, but got Unknown
+			//IL_0018: Expected Obj, but got Unknown
 			return new JsonSerializerSettings
 			{
 				Culture = CultureInfo.InvariantCulture,

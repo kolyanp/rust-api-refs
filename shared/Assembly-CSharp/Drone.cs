@@ -289,7 +289,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		{
 			return false;
 		}
-		if (!base.IsBeingControlled || isGrounded)
+		if (!IsBeingControlled || isGrounded)
 		{
 			return false;
 		}
@@ -302,7 +302,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 
 	public override void StopControl(CameraViewerId viewerID)
 	{
-		CameraViewerId? controllingViewerId = base.ControllingViewerId;
+		CameraViewerId? controllingViewerId = ControllingViewerId;
 		if (viewerID == controllingViewerId)
 		{
 			SetFlagLocal(Flags.Reserved1, b: false);
@@ -319,7 +319,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		CameraViewerId? controllingViewerId = base.ControllingViewerId;
+		CameraViewerId? controllingViewerId = ControllingViewerId;
 		if (!(viewerID != controllingViewerId))
 		{
 			currentInput.Reset();
@@ -327,7 +327,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 			int num2 = (inputState.IsDown(BUTTON.RIGHT) ? 1 : 0) + (inputState.IsDown(BUTTON.LEFT) ? (-1) : 0);
 			ref DroneInputState reference = ref currentInput;
 			Vector3 val = new Vector3((float)num2, 0f, (float)num);
-			reference.movement = ((Vector3)(ref val)).normalized;
+			reference.movement = val.normalized;
 			currentInput.throttle = (inputState.IsDown(BUTTON.SPRINT) ? 1 : 0) + (inputState.IsDown(BUTTON.DUCK) ? (-1) : 0);
 			currentInput.yaw = inputState.current.mouseDelta.x;
 			currentInput.pitch = inputState.current.mouseDelta.y;
@@ -402,7 +402,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
 		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer || IsDead())
+		if (!isServer || IsDead())
 		{
 			return;
 		}
@@ -414,12 +414,12 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 				flagsUpdateScope.Set(Flags.Reserved3, !droneStorage.inventory.IsEmpty());
 				droneStorage.UpdateFlags();
 			}
-			if (base.IsBeingControlled)
+			if (IsBeingControlled)
 			{
 				flagsUpdateScope.Set(Flags.Reserved4, IsHostile());
 			}
 		}
-		if (base.IsBeingControlled || !targetPosition.HasValue)
+		if (IsBeingControlled || !targetPosition.HasValue)
 		{
 			return;
 		}
@@ -432,8 +432,8 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		}
 		Vector2 val2 = Vector3Ex.XZ2D(val);
 		Vector2 val3 = Vector3Ex.XZ2D(position);
-		Vector3 val4 = default(Vector3);
-		float num = default(float);
+		Vector3 val4 = default;
+		float num = default;
 		Vector3Ex.ToDirectionAndMagnitude(Vector3Ex.XZ3D(val2 - val3), ref val4, ref num);
 		currentInput.Reset();
 		lastInputTime = Time.time;
@@ -444,9 +444,9 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 			if (num > 0.5f)
 			{
 				Quaternion val5 = ((Component)this).transform.rotation;
-				float y = ((Quaternion)(ref val5)).eulerAngles.y;
+				float y = val5.eulerAngles.y;
 				val5 = Quaternion.FromToRotation(Vector3.forward, val4);
-				float y2 = ((Quaternion)(ref val5)).eulerAngles.y;
+				float y2 = val5.eulerAngles.y;
 				currentInput.yaw = Mathf.Clamp(Mathf.LerpAngle(y, y2, Time.deltaTime) - y, -2f, 2f);
 			}
 		}
@@ -528,7 +528,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		//IL_042a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_043e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0442: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer || IsDead())
+		if (!isServer || IsDead())
 		{
 			return;
 		}
@@ -550,7 +550,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 				return;
 			}
 		}
-		if ((!base.IsBeingControlled && !targetPosition.HasValue) || (isGrounded && currentInput.throttle <= 0f))
+		if ((!IsBeingControlled && !targetPosition.HasValue) || (isGrounded && currentInput.throttle <= 0f))
 		{
 			if (HasFlag(Flags.Reserved2))
 			{
@@ -560,8 +560,8 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 			if (!body.isKinematic && body.IsSleeping() && TimeSince.op_Implicit(lastGroundCheck) >= groundCheckInterval * 8f)
 			{
 				lastGroundCheck = TimeSince.op_Implicit(0f);
-				RaycastHit val = default(RaycastHit);
-				if (body.SweepTest(Vector3.down, ref val, groundTraceDist, (QueryTriggerInteraction)1) && !Object.op_Implicit((Object)(object)((RaycastHit)(ref val)).rigidbody))
+				RaycastHit val = default;
+				if (body.SweepTest(Vector3.down, ref val, groundTraceDist, (QueryTriggerInteraction)1) && !Object.op_Implicit((Object)(object)val.rigidbody))
 				{
 					body.isKinematic = true;
 				}
@@ -586,7 +586,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 			if (TimeSince.op_Implicit(lastGroundCheck) >= groundCheckInterval)
 			{
 				lastGroundCheck = TimeSince.op_Implicit(0f);
-				RaycastHit val2 = default(RaycastHit);
+				RaycastHit val2 = default;
 				bool flag = body.SweepTest(Vector3.down, ref val2, groundTraceDist, (QueryTriggerInteraction)1);
 				if (!flag && isGrounded)
 				{
@@ -604,13 +604,13 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 			isGrounded = false;
 		}
 		Vector3 val3 = ((Component)this).transform.TransformDirection(currentInput.movement);
-		Vector3 val4 = default(Vector3);
-		float num3 = default(float);
+		Vector3 val4 = default;
+		float num3 = default;
 		Vector3Ex.ToDirectionAndMagnitude(Vector3Ex.WithY(body.linearVelocity, 0f), ref val4, ref num3);
 		float num4 = Mathf.Clamp01(num3 / leanMaxVelocity);
-		Vector3 val5 = (Mathf.Approximately(((Vector3)(ref val3)).sqrMagnitude, 0f) ? ((0f - num4) * val4) : val3);
+		Vector3 val5 = (Mathf.Approximately(val3.sqrMagnitude, 0f) ? ((0f - num4) * val4) : val3);
 		Vector3 val6 = Vector3.up + val5 * leanWeight * num4;
-		Vector3 normalized = ((Vector3)(ref val6)).normalized;
+		Vector3 normalized = val6.normalized;
 		Vector3 up = ((Component)this).transform.up;
 		float num5 = Mathf.Max(Vector3.Dot(normalized, up), 0f);
 		if (!num2 || isGrounded)
@@ -660,11 +660,11 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			lastCollision = TimeEx.currentTimestamp;
 			Vector3 relativeVelocity = collision.relativeVelocity;
-			float magnitude = ((Vector3)(ref relativeVelocity)).magnitude;
+			float magnitude = relativeVelocity.magnitude;
 			if (magnitude > hurtVelocityThreshold)
 			{
 				Hurt(Mathf.Pow(magnitude, hurtDamagePower), DamageType.Fall, null, useProtection: false);
@@ -674,7 +674,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 
 	public void OnCollisionStay()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			lastCollision = TimeEx.currentTimestamp;
 		}
@@ -684,12 +684,12 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 	{
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer && ((Component)other).CompareTag("MLRSRocketTrigger"))
+		if (isServer && ((Component)other).CompareTag("MLRSRocketTrigger"))
 		{
 			TimedExplosive componentInParent = ((Component)other).GetComponentInParent<TimedExplosive>();
 			if (!((Object)(object)componentInParent == (Object)null) && !(Vector3.Distance(((Component)componentInParent).transform.position, CenterPoint()) > samProximityFuseRadius))
 			{
-				Hurt(base.health * 2f, DamageType.Explosion, componentInParent.creatorEntity, useProtection: false);
+				Hurt(health * 2f, DamageType.Explosion, componentInParent.creatorEntity, useProtection: false);
 				componentInParent.Explode();
 			}
 		}
@@ -698,7 +698,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 	public override void Hurt(HitInfo info)
 	{
 		base.Hurt(info);
-		if (base.isServer && disableWhenHurt && info.damageTypes.GetMajorityDamageType() != DamageType.Fall && Random.value < disableWhenHurtChance)
+		if (isServer && disableWhenHurt && info.damageTypes.GetMajorityDamageType() != DamageType.Fall && Random.value < disableWhenHurtChance)
 		{
 			lastCollision = TimeEx.currentTimestamp;
 		}
@@ -749,8 +749,8 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SV_OpenStorage(RPCMessage msg)
 	{
 		if (CanBeLooted(msg.player))
@@ -766,7 +766,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 	public override bool CanBeLooted(BasePlayer player)
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer && TriggerSafeZone.IsBoundsInsideSafeZone(WorldSpaceBounds(), checkCombatZones: false))
+		if (isServer && TriggerSafeZone.IsBoundsInsideSafeZone(WorldSpaceBounds(), checkCombatZones: false))
 		{
 			return false;
 		}
@@ -795,7 +795,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		if (HasFlag(Flags.Reserved2))
 		{
 			Quaternion localRotation = viewEyes.localRotation;
-			Vector3 eulerAngles = ((Quaternion)(ref localRotation)).eulerAngles;
+			Vector3 eulerAngles = localRotation.eulerAngles;
 			eulerAngles.x = Mathf.LerpAngle(eulerAngles.x, pitch, 0.1f);
 			viewEyes.localRotation = Quaternion.Euler(eulerAngles);
 		}
@@ -803,7 +803,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 
 	public override bool CanChangeID(BasePlayer player)
 	{
-		if ((Object)(object)player != (Object)null && base.OwnerID == (ulong)player.userID)
+		if ((Object)(object)player != (Object)null && OwnerID == (ulong)player.userID)
 		{
 			return !HasFlag(Flags.Reserved2);
 		}
@@ -821,15 +821,15 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 
 	public override BasePlayer ToPlayer()
 	{
-		if (!base.IsBeingControlled)
+		if (!IsBeingControlled)
 		{
 			return null;
 		}
-		if (!base.ControllingViewerId.HasValue)
+		if (!ControllingViewerId.HasValue)
 		{
 			return null;
 		}
-		ulong steamId = base.ControllingViewerId.Value.SteamId;
+		ulong steamId = ControllingViewerId.Value.SteamId;
 		if ((Object)(object)cachedController == (Object)null || cachedController.OwnerID != steamId)
 		{
 			cachedController = BasePlayer.FindByID(steamId) ?? BasePlayer.FindSleeping(steamId);
@@ -840,7 +840,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 	public override void OnPickedUpPreItemMove(Item createdItem, BasePlayer player)
 	{
 		base.OnPickedUpPreItemMove(createdItem, player);
-		if ((Object)(object)player != (Object)null && (ulong)player.userID == base.OwnerID)
+		if ((Object)(object)player != (Object)null && (ulong)player.userID == OwnerID)
 		{
 			createdItem.text = GetIdentifier();
 		}
@@ -896,6 +896,6 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 linearVelocity = body.linearVelocity;
-		return ((Vector3)(ref linearVelocity)).magnitude + 1f;
+		return linearVelocity.magnitude + 1f;
 	}
 }

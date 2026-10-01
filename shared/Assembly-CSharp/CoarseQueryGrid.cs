@@ -107,7 +107,7 @@ public struct CoarseQueryGrid : IDisposable
 	private bool TouchesUpperSpatial(Bounds bounds)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		return ((Bounds)(ref bounds)).max.y >= _yCutoff;
+		return bounds.max.y >= _yCutoff;
 	}
 
 	private bool TouchesUpperSpatial(Vector3 pos, float r)
@@ -119,7 +119,7 @@ public struct CoarseQueryGrid : IDisposable
 	private bool TouchesLowerSpatial(Bounds bounds)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		return ((Bounds)(ref bounds)).min.y <= _yCutoff;
+		return bounds.min.y <= _yCutoff;
 	}
 
 	private bool TouchesLowerSpatial(Vector3 pos, float r)
@@ -173,9 +173,9 @@ public struct CoarseQueryGrid : IDisposable
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		if (!CheckStateAdd())
 		{
-			((Bounds)(ref bounds)).Expand(0.1f);
-			Vector2i min = WorldPosToStaticGrid(((Bounds)(ref bounds)).min);
-			Vector2i max = WorldPosToStaticGrid(((Bounds)(ref bounds)).max);
+			bounds.Expand(0.1f);
+			Vector2i min = WorldPosToStaticGrid(bounds.min);
+			Vector2i max = WorldPosToStaticGrid(bounds.max);
 			if (TouchesUpperSpatial(bounds))
 			{
 				AddStatic(min, max, _upperStaticSpatialArray);
@@ -220,9 +220,9 @@ public struct CoarseQueryGrid : IDisposable
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		if (!_hasDisposed)
 		{
-			((Bounds)(ref bounds)).Expand(0.1f);
-			Vector2i min = WorldPosToStaticGrid(((Bounds)(ref bounds)).min);
-			Vector2i max = WorldPosToStaticGrid(((Bounds)(ref bounds)).max);
+			bounds.Expand(0.1f);
+			Vector2i min = WorldPosToStaticGrid(bounds.min);
+			Vector2i max = WorldPosToStaticGrid(bounds.max);
 			if (TouchesUpperSpatial(bounds))
 			{
 				RemoveStatic(min, max, _upperStaticSpatialArray);
@@ -294,8 +294,8 @@ public struct CoarseQueryGrid : IDisposable
 		{
 			return true;
 		}
-		Vector2i min = WorldPosToStaticGrid(((Bounds)(ref checkBounds)).min);
-		Vector2i max = WorldPosToStaticGrid(((Bounds)(ref checkBounds)).max);
+		Vector2i min = WorldPosToStaticGrid(checkBounds.min);
+		Vector2i max = WorldPosToStaticGrid(checkBounds.max);
 		if (TouchesUpperSpatial(checkBounds) && Check(min, max, _upperStaticSpatialArray))
 		{
 			return true;
@@ -310,7 +310,7 @@ public struct CoarseQueryGrid : IDisposable
 			while (enumerator.MoveNext())
 			{
 				Bounds current = enumerator.Current;
-				if (((Bounds)(ref current)).Intersects(checkBounds))
+				if (current.Intersects(checkBounds))
 				{
 					return true;
 				}
@@ -467,7 +467,7 @@ public struct CoarseQueryGrid : IDisposable
 			while (enumerator.MoveNext())
 			{
 				Bounds current = enumerator.Current;
-				if (Vector3.SqrMagnitude(((Bounds)(ref current)).ClosestPoint(worldPosition) - worldPosition) <= num)
+				if (Vector3.SqrMagnitude(current.ClosestPoint(worldPosition) - worldPosition) <= num)
 				{
 					return true;
 				}
@@ -504,6 +504,7 @@ public struct CoarseQueryGrid : IDisposable
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		if (_hasDisposed)
 		{
@@ -512,8 +513,7 @@ public struct CoarseQueryGrid : IDisposable
 		Vector3 val = Vector3.one * radius;
 		Vector3 val2 = Vector3.Min(start, end) - val;
 		Vector3 val3 = Vector3.Max(start, end) + val;
-		Bounds checkBounds = default(Bounds);
-		((Bounds)(ref checkBounds))._002Ector((val3 + val2) * 0.5f, val3 - val2);
+		Bounds checkBounds = new Bounds((val3 + val2) * 0.5f, val3 - val2);
 		return CheckJob(checkBounds);
 	}
 
@@ -572,6 +572,7 @@ public struct CoarseQueryGrid : IDisposable
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		if (_hasDisposed)
 		{
@@ -580,8 +581,7 @@ public struct CoarseQueryGrid : IDisposable
 		Vector3 val = Vector3.one * radius;
 		Vector3 val2 = Vector3.Min(start, end) - val;
 		Vector3 val3 = Vector3.Max(start, end) + val;
-		Bounds checkBounds = default(Bounds);
-		((Bounds)(ref checkBounds))._002Ector((val3 + val2) * 0.5f, val3 - val2);
+		Bounds checkBounds = new Bounds((val3 + val2) * 0.5f, val3 - val2);
 		return Check(checkBounds);
 	}
 

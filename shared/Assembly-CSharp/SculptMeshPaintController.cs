@@ -46,7 +46,7 @@ public class SculptMeshPaintController : MonoBehaviour, IClientComponent
 
 		public GameObject GetGuide(SculptingToolData.CarvingMode mode, SculptingToolData.CarvingShapeType shape, bool invert)
 		{
-			return (GameObject)(mode switch
+			return mode switch
 			{
 				SculptingToolData.CarvingMode.Carve => shape switch
 				{
@@ -73,7 +73,7 @@ public class SculptMeshPaintController : MonoBehaviour, IClientComponent
 				SculptingToolData.CarvingMode.ClipCurve => CarveBox, 
 				SculptingToolData.CarvingMode.Smooth => AdditiveSphere, 
 				_ => CarveSphere, 
-			});
+			};
 		}
 	}
 

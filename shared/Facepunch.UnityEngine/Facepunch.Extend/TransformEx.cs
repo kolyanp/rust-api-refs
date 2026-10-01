@@ -17,7 +17,7 @@ public static class TransformEx
 		private unsafe static TransformAccess* ExtractTransformAccess(TransformHandle handle)
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			if (((TransformHandle)(ref handle)).Equals(TransformHandle.None))
+			if (handle.Equals(TransformHandle.None))
 			{
 				throw new ArgumentNullException("handle", "A None/default handle has been passed in, it can't be used for transform access!");
 			}
@@ -145,16 +145,16 @@ public static class TransformEx
 	{
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Expected O, but got Unknown
+		//IL_0085: Expected Obj, but got Unknown
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
-		if (mouseButton.HasValue && mouseButton.Value switch
+		if (mouseButton.HasValue && !(mouseButton.Value switch
 		{
-			0 => Mouse.current.leftButton.isPressed ? 1 : 0, 
-			1 => Mouse.current.rightButton.isPressed ? 1 : 0, 
-			2 => Mouse.current.middleButton.isPressed ? 1 : 0, 
-			_ => 0, 
-		} == 0)
+			0 => Mouse.current.leftButton.isPressed, 
+			1 => Mouse.current.rightButton.isPressed, 
+			2 => Mouse.current.middleButton.isPressed, 
+			_ => false, 
+		}))
 		{
 			return false;
 		}
@@ -173,7 +173,7 @@ public static class TransformEx
 		foreach (RaycastResult item in list)
 		{
 			RaycastResult current2 = item;
-			if (((RaycastResult)(ref current2)).gameObject.transform.IsChildOf(t))
+			if (current2.gameObject.transform.IsChildOf(t))
 			{
 				Pool.FreeUnmanaged<RaycastResult>(ref list);
 				return true;

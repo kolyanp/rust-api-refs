@@ -53,8 +53,8 @@ public class ItemModProjectileSpawn : ItemModProjectile
 			}
 			Vector3 hitPositionWorld = info.HitPositionWorld;
 			Vector3 pointStart = info.PointStart;
-			Vector3 normalized = ((Vector3)(ref info.ProjectileVelocity)).normalized;
-			Vector3 normalized2 = ((Vector3)(ref info.HitNormalWorld)).normalized;
+			Vector3 normalized = info.ProjectileVelocity.normalized;
+			Vector3 normalized2 = info.HitNormalWorld.normalized;
 			Vector3 val = hitPositionWorld - normalized * 0.1f;
 			Quaternion rotation = Quaternion.LookRotation(-normalized);
 			int num = 1075904512;

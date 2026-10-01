@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class BoundsEx
 {
-	private static Vector3[] pts = (Vector3[])(object)new Vector3[8];
+	private static Vector3[] pts = new Vector3[8];
 
 	public static Bounds XZ3D(this Bounds bounds)
 	{
@@ -12,7 +12,7 @@ public static class BoundsEx
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		return new Bounds(Vector3Ex.XZ3D(((Bounds)(ref bounds)).center), Vector3Ex.XZ3D(((Bounds)(ref bounds)).size));
+		return new Bounds(Vector3Ex.XZ3D(bounds.center), Vector3Ex.XZ3D(bounds.size));
 	}
 
 	public static Bounds Transform(this Bounds bounds, Matrix4x4 matrix)
@@ -47,17 +47,17 @@ public static class BoundsEx
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 center = ((Matrix4x4)(ref matrix)).MultiplyPoint3x4(((Bounds)(ref bounds)).center);
-		Vector3 extents = ((Bounds)(ref bounds)).extents;
-		Vector3 val = ((Matrix4x4)(ref matrix)).MultiplyVector(new Vector3(extents.x, 0f, 0f));
-		Vector3 val2 = ((Matrix4x4)(ref matrix)).MultiplyVector(new Vector3(0f, extents.y, 0f));
-		Vector3 val3 = ((Matrix4x4)(ref matrix)).MultiplyVector(new Vector3(0f, 0f, extents.z));
+		Vector3 center = matrix.MultiplyPoint3x4(bounds.center);
+		Vector3 extents = bounds.extents;
+		Vector3 val = matrix.MultiplyVector(new Vector3(extents.x, 0f, 0f));
+		Vector3 val2 = matrix.MultiplyVector(new Vector3(0f, extents.y, 0f));
+		Vector3 val3 = matrix.MultiplyVector(new Vector3(0f, 0f, extents.z));
 		extents.x = Mathf.Abs(val.x) + Mathf.Abs(val2.x) + Mathf.Abs(val3.x);
 		extents.y = Mathf.Abs(val.y) + Mathf.Abs(val2.y) + Mathf.Abs(val3.y);
 		extents.z = Mathf.Abs(val.z) + Mathf.Abs(val2.z) + Mathf.Abs(val3.z);
-		Bounds result = default(Bounds);
-		((Bounds)(ref result)).center = center;
-		((Bounds)(ref result)).extents = extents;
+		Bounds result = default;
+		result.center = center;
+		result.extents = extents;
 		return result;
 	}
 
@@ -156,14 +156,14 @@ public static class BoundsEx
 		//IL_038d: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Bounds.ToScreenRect"))
 		{
-			pts[0] = cam.WorldToScreenPoint(new Vector3(((Bounds)(ref b)).center.x + ((Bounds)(ref b)).extents.x, ((Bounds)(ref b)).center.y + ((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).center.z + ((Bounds)(ref b)).extents.z));
-			pts[1] = cam.WorldToScreenPoint(new Vector3(((Bounds)(ref b)).center.x + ((Bounds)(ref b)).extents.x, ((Bounds)(ref b)).center.y + ((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).center.z - ((Bounds)(ref b)).extents.z));
-			pts[2] = cam.WorldToScreenPoint(new Vector3(((Bounds)(ref b)).center.x + ((Bounds)(ref b)).extents.x, ((Bounds)(ref b)).center.y - ((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).center.z + ((Bounds)(ref b)).extents.z));
-			pts[3] = cam.WorldToScreenPoint(new Vector3(((Bounds)(ref b)).center.x + ((Bounds)(ref b)).extents.x, ((Bounds)(ref b)).center.y - ((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).center.z - ((Bounds)(ref b)).extents.z));
-			pts[4] = cam.WorldToScreenPoint(new Vector3(((Bounds)(ref b)).center.x - ((Bounds)(ref b)).extents.x, ((Bounds)(ref b)).center.y + ((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).center.z + ((Bounds)(ref b)).extents.z));
-			pts[5] = cam.WorldToScreenPoint(new Vector3(((Bounds)(ref b)).center.x - ((Bounds)(ref b)).extents.x, ((Bounds)(ref b)).center.y + ((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).center.z - ((Bounds)(ref b)).extents.z));
-			pts[6] = cam.WorldToScreenPoint(new Vector3(((Bounds)(ref b)).center.x - ((Bounds)(ref b)).extents.x, ((Bounds)(ref b)).center.y - ((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).center.z + ((Bounds)(ref b)).extents.z));
-			pts[7] = cam.WorldToScreenPoint(new Vector3(((Bounds)(ref b)).center.x - ((Bounds)(ref b)).extents.x, ((Bounds)(ref b)).center.y - ((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).center.z - ((Bounds)(ref b)).extents.z));
+			pts[0] = cam.WorldToScreenPoint(new Vector3(b.center.x + b.extents.x, b.center.y + b.extents.y, b.center.z + b.extents.z));
+			pts[1] = cam.WorldToScreenPoint(new Vector3(b.center.x + b.extents.x, b.center.y + b.extents.y, b.center.z - b.extents.z));
+			pts[2] = cam.WorldToScreenPoint(new Vector3(b.center.x + b.extents.x, b.center.y - b.extents.y, b.center.z + b.extents.z));
+			pts[3] = cam.WorldToScreenPoint(new Vector3(b.center.x + b.extents.x, b.center.y - b.extents.y, b.center.z - b.extents.z));
+			pts[4] = cam.WorldToScreenPoint(new Vector3(b.center.x - b.extents.x, b.center.y + b.extents.y, b.center.z + b.extents.z));
+			pts[5] = cam.WorldToScreenPoint(new Vector3(b.center.x - b.extents.x, b.center.y + b.extents.y, b.center.z - b.extents.z));
+			pts[6] = cam.WorldToScreenPoint(new Vector3(b.center.x - b.extents.x, b.center.y - b.extents.y, b.center.z + b.extents.z));
+			pts[7] = cam.WorldToScreenPoint(new Vector3(b.center.x - b.extents.x, b.center.y - b.extents.y, b.center.z - b.extents.z));
 			Vector3 val = pts[0];
 			Vector3 val2 = pts[0];
 			for (int i = 1; i < pts.Length; i++)
@@ -186,8 +186,8 @@ public static class BoundsEx
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		Rect result = ToScreenRect(b, cam);
-		((Rect)(ref result)).min = Vector2Ex.ToCanvas(((Rect)(ref result)).min, target, (Camera)null);
-		((Rect)(ref result)).max = Vector2Ex.ToCanvas(((Rect)(ref result)).max, target, (Camera)null);
+		result.min = Vector2Ex.ToCanvas(result.min, target, (Camera)null);
+		result.max = Vector2Ex.ToCanvas(result.max, target, (Camera)null);
 		return result;
 	}
 
@@ -201,10 +201,10 @@ public static class BoundsEx
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		float num = Mathf.Abs(point.x - ((Bounds)(ref b)).min.x);
-		float num2 = Mathf.Abs(point.x - ((Bounds)(ref b)).max.x);
-		float num3 = Mathf.Abs(point.z - ((Bounds)(ref b)).min.z);
-		float num4 = Mathf.Abs(point.z - ((Bounds)(ref b)).max.z);
+		float num = Mathf.Abs(point.x - b.min.x);
+		float num2 = Mathf.Abs(point.x - b.max.x);
+		float num3 = Mathf.Abs(point.z - b.min.z);
+		float num4 = Mathf.Abs(point.z - b.max.z);
 		return Mathf.Min(num, Mathf.Min(num2, Mathf.Min(num3, num4)));
 	}
 
@@ -220,6 +220,7 @@ public static class BoundsEx
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
@@ -229,62 +230,66 @@ public static class BoundsEx
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Bounds)(ref b)).Contains(point))
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		if (!b.Contains(point))
 		{
-			return ((Bounds)(ref b)).ClosestPoint(point);
+			return b.ClosestPoint(point);
 		}
-		Vector3 min = ((Bounds)(ref b)).min;
-		Vector3 max = ((Bounds)(ref b)).max;
+		Vector3 min = b.min;
+		Vector3 max = b.max;
 		float num = point.x - min.x;
-		Vector3 result = default(Vector3);
-		((Vector3)(ref result))._002Ector(min.x, point.y, point.z);
+		Vector3 result = new Vector3(min.x, point.y, point.z);
 		float num2 = max.x - point.x;
 		if (num2 < num)
 		{
 			num = num2;
-			((Vector3)(ref result))._002Ector(max.x, point.y, point.z);
+			result = new Vector3(max.x, point.y, point.z);
 		}
 		num2 = point.y - min.y;
 		if (num2 < num)
 		{
 			num = num2;
-			((Vector3)(ref result))._002Ector(point.x, min.y, point.z);
+			result = new Vector3(point.x, min.y, point.z);
 		}
 		num2 = max.y - point.y;
 		if (num2 < num)
 		{
 			num = num2;
-			((Vector3)(ref result))._002Ector(point.x, max.y, point.z);
+			result = new Vector3(point.x, max.y, point.z);
 		}
 		num2 = point.z - min.z;
 		if (num2 < num)
 		{
 			num = num2;
-			((Vector3)(ref result))._002Ector(point.x, point.y, min.z);
+			result = new Vector3(point.x, point.y, min.z);
 		}
 		num2 = max.z - point.z;
 		if (num2 < num)
 		{
-			((Vector3)(ref result))._002Ector(point.x, point.y, max.z);
+			result = new Vector3(point.x, point.y, max.z);
 		}
 		return result;
 	}
@@ -294,7 +299,7 @@ public static class BoundsEx
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		return Mathf.Max(((Bounds)(ref b)).extents.x, Mathf.Max(((Bounds)(ref b)).extents.y, ((Bounds)(ref b)).extents.z));
+		return Mathf.Max(b.extents.x, Mathf.Max(b.extents.y, b.extents.z));
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -305,7 +310,7 @@ public static class BoundsEx
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		return ((Bounds)(ref b)).center + Vector3.up * ((Bounds)(ref b)).extents.y;
+		return b.center + Vector3.up * b.extents.y;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -313,6 +318,6 @@ public static class BoundsEx
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		return ((Bounds)(ref b)).extents != Vector3.zero;
+		return b.extents != Vector3.zero;
 	}
 }

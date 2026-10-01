@@ -45,7 +45,7 @@ public class FPNativeList<T> : IPooled where T : struct
 	public void RemoveLast()
 	{
 		_length--;
-		_array[_length] = default(T);
+		_array[_length] = default;
 	}
 
 	public void SetLength(int newLength)
@@ -64,7 +64,7 @@ public class FPNativeList<T> : IPooled where T : struct
 	{
 		for (int i = 0; i < _array.Length; i++)
 		{
-			_array[i] = default(T);
+			_array[i] = default;
 		}
 		_length = 0;
 	}
@@ -83,14 +83,14 @@ public class FPNativeList<T> : IPooled where T : struct
 
 	public void EnsureCapacity(int requiredCapacity)
 	{
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		if (!_array.IsCreated || _array.Length < requiredCapacity)
 		{
 			_capacity = Mathf.Max(_array.Length * 2, requiredCapacity);
-			NativeArray<T> array = default(NativeArray<T>);
-			array._002Ector(_capacity, (Allocator)4, (NativeArrayOptions)1);
+			NativeArray<T> array = new NativeArray<T>(_capacity, (Allocator)4, (NativeArrayOptions)1);
 			if (_array.IsCreated)
 			{
 				_array.CopyTo(array.GetSubArray(0, _array.Length));
@@ -107,7 +107,7 @@ public class FPNativeList<T> : IPooled where T : struct
 		{
 			_array.Dispose();
 		}
-		_array = default(NativeArray<T>);
+		_array = default;
 		_length = 0;
 		_capacity = 0;
 	}

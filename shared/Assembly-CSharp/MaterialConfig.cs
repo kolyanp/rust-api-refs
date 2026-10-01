@@ -113,7 +113,7 @@ public class MaterialConfig : ScriptableObject
 	public MaterialPropertyBlock GetMaterialPropertyBlock(Material mat, Vector3 pos, Vector3 scale)
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Expected O, but got Unknown
+		//IL_0013: Expected Obj, but got Unknown
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
@@ -133,6 +133,7 @@ public class MaterialConfig : ScriptableObject
 		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
 		if (properties == null)
 		{
@@ -190,7 +191,7 @@ public class MaterialConfig : ScriptableObject
 		for (int n = 0; n < ScaleUV.Length; n++)
 		{
 			Vector4 vector = mat.GetVector(ScaleUV[n]);
-			((Vector4)(ref vector))._002Ector(vector.x * scale.y, vector.y * scale.y, vector.z, vector.w);
+			vector = new Vector4(vector.x * scale.y, vector.y * scale.y, vector.z, vector.w);
 			properties.SetVector(ScaleUV[n], vector);
 		}
 		return properties;

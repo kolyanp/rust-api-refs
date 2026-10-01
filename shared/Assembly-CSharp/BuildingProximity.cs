@@ -29,6 +29,7 @@ public class BuildingProximity : PrefabAttribute
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
@@ -59,9 +60,8 @@ public class BuildingProximity : PrefabAttribute
 		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(position, rotation, construction.bounds);
-		float radius = ((Vector3)(ref val.extents)).magnitude + 2f;
+		OBB val = new OBB(position, rotation, construction.bounds);
+		float radius = val.extents.magnitude + 2f;
 		List<BuildingBlock> list = Pool.Get<List<BuildingBlock>>();
 		Vis.Entities(val.position, radius, list, 2097152, (QueryTriggerInteraction)2);
 		uint num = 0u;
@@ -160,6 +160,7 @@ public class BuildingProximity : PrefabAttribute
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
@@ -172,7 +173,7 @@ public class BuildingProximity : PrefabAttribute
 		{
 			hit = false,
 			connection = false,
-			line = default(Line),
+			line = default,
 			sqrDist = float.MaxValue
 		};
 		for (int i = 0; i < construction1.allSockets.Length; i++)
@@ -214,7 +215,6 @@ public class BuildingProximity : PrefabAttribute
 		}
 		if (!result.connection && construction1.allProximities.Length != 0)
 		{
-			Line val = default(Line);
 			for (int m = 0; m < construction1.allSockets.Length; m++)
 			{
 				ConstructionSocket constructionSocket2 = construction1.allSockets[m] as ConstructionSocket;
@@ -226,9 +226,9 @@ public class BuildingProximity : PrefabAttribute
 				for (int n = 0; n < construction2.allProximities.Length; n++)
 				{
 					Vector3 selectPivot2 = construction2.allProximities[n].GetSelectPivot(position2, rotation2);
-					((Line)(ref val))._002Ector(selectPivot, selectPivot2);
+					Line val = new Line(selectPivot, selectPivot2);
 					Vector3 val2 = val.point1 - val.point0;
-					float sqrMagnitude = ((Vector3)(ref val2)).sqrMagnitude;
+					float sqrMagnitude = val2.sqrMagnitude;
 					if (sqrMagnitude < result.sqrDist)
 					{
 						result.hit = true;

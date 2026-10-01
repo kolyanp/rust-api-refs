@@ -5,13 +5,13 @@ public class UIParticle : BaseMonoBehaviour
 {
 	public Vector2 LifeTime;
 
-	public Vector2 Gravity;
+	public Vector2 Gravity = new Vector2(1000f, 1000f);
 
 	public Vector2 InitialX;
 
 	public Vector2 InitialY;
 
-	public Vector2 InitialScale;
+	public Vector2 InitialScale = Vector2.one;
 
 	public Vector2 InitialDelay;
 
@@ -42,20 +42,20 @@ public class UIParticle : BaseMonoBehaviour
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		GameObject obj = Object.Instantiate<GameObject>(((Component)particleSource).gameObject);
-		obj.transform.SetParent((Transform)(object)spawnPosition, false);
-		Transform transform = obj.transform;
+		GameObject val = Object.Instantiate<GameObject>(((Component)particleSource).gameObject);
+		val.transform.SetParent((Transform)(object)spawnPosition, false);
+		Transform transform = val.transform;
 		Rect rect = spawnPosition.rect;
-		float num = Random.Range(0f, ((Rect)(ref rect)).width);
+		float num = Random.Range(0f, rect.width);
 		rect = spawnPosition.rect;
-		float num2 = num - ((Rect)(ref rect)).width * spawnPosition.pivot.x;
+		float num2 = num - rect.width * spawnPosition.pivot.x;
 		rect = spawnPosition.rect;
-		float num3 = Random.Range(0f, ((Rect)(ref rect)).height);
+		float num3 = Random.Range(0f, rect.height);
 		rect = spawnPosition.rect;
-		transform.localPosition = new Vector3(num2, num3 - ((Rect)(ref rect)).height * spawnPosition.pivot.y, 0f);
-		obj.transform.SetParent((Transform)(object)particleCanvas, true);
-		obj.transform.localScale = Vector3.one;
-		obj.transform.localRotation = Quaternion.identity;
+		transform.localPosition = new Vector3(num2, num3 - rect.height * spawnPosition.pivot.y, 0f);
+		val.transform.SetParent((Transform)(object)particleCanvas, true);
+		val.transform.localScale = Vector3.one;
+		val.transform.localRotation = Quaternion.identity;
 	}
 
 	private void Start()
@@ -137,8 +137,5 @@ public class UIParticle : BaseMonoBehaviour
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		Gravity = new Vector2(1000f, 1000f);
-		InitialScale = Vector2.one;
-		base._002Ector();
 	}
 }

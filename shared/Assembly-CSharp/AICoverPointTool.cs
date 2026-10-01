@@ -24,13 +24,13 @@ public class AICoverPointTool : MonoBehaviour
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		foreach (Transform item in ((Component)this).transform)
 		{
 			Object.DestroyImmediate((Object)(object)((Component)item).gameObject);
 		}
-		Vector3 pos = default(Vector3);
-		((Vector3)(ref pos))._002Ector(((Component)this).transform.position.x - 50f, ((Component)this).transform.position.y, ((Component)this).transform.position.z - 50f);
+		Vector3 pos = new Vector3(((Component)this).transform.position.x - 50f, ((Component)this).transform.position.y, ((Component)this).transform.position.z - 50f);
 		for (int i = 0; i < 50; i++)
 		{
 			for (int j = 0; j < 50; j++)
@@ -137,15 +137,15 @@ public class AICoverPointTool : MonoBehaviour
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		if (Vector3Ex.IsNaNOrInfinity(((Ray)(ref ray)).origin))
+		if (Vector3Ex.IsNaNOrInfinity(ray.origin))
 		{
 			return false;
 		}
-		if (Vector3Ex.IsNaNOrInfinity(((Ray)(ref ray)).direction))
+		if (Vector3Ex.IsNaNOrInfinity(ray.direction))
 		{
 			return false;
 		}
-		if (((Ray)(ref ray)).direction == Vector3.zero)
+		if (ray.direction == Vector3.zero)
 		{
 			return false;
 		}

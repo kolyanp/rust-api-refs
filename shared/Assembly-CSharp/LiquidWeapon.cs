@@ -219,7 +219,7 @@ public class LiquidWeapon : BaseLiquidVessel
 				flagsUpdateScope.Set(Flags.On, b: true);
 			}
 			StartCooldown(FireRate);
-			if (base.isServer)
+			if (isServer)
 			{
 				SendNetworkUpdateImmediate();
 			}
@@ -227,8 +227,8 @@ public class LiquidWeapon : BaseLiquidVessel
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void StopFiring()
 	{
 		CancelInvoke(FireTick);
@@ -240,7 +240,7 @@ public class LiquidWeapon : BaseLiquidVessel
 		{
 			flagsUpdateScope.Set(Flags.On, b: false);
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			SendNetworkUpdateImmediate();
 		}
@@ -286,8 +286,8 @@ public class LiquidWeapon : BaseLiquidVessel
 		return true;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void PumpWater(RPCMessage msg)
 	{
 		PumpWater();
@@ -331,10 +331,10 @@ public class LiquidWeapon : BaseLiquidVessel
 			StopFiring();
 		}
 		Ray val = ownerPlayer.eyes.BodyRay();
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (Physics.Raycast(val, ref val2, currentRange, 1218652417))
 		{
-			DoSplash(ownerPlayer, ((RaycastHit)(ref val2)).point, ((Ray)(ref val)).direction, num);
+			DoSplash(ownerPlayer, val2.point, val.direction, num);
 		}
 		LoseWater(num);
 		SendNetworkUpdate();

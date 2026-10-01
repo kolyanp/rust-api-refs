@@ -10,15 +10,15 @@ public static class RoundedRect
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		float num = Mathf.Min(((Rect)(ref rect)).width, ((Rect)(ref rect)).height) * 0.5f;
+		float num = Mathf.Min(rect.width, rect.height) * 0.5f;
 		float num2 = Mathf.Clamp(topLeft, 0f, num);
 		float num3 = Mathf.Clamp(topRight, 0f, num);
 		float num4 = Mathf.Clamp(bottomRight, 0f, num);
 		float num5 = Mathf.Clamp(bottomLeft, 0f, num);
-		AppendArc(points, new Vector2(((Rect)(ref rect)).xMax - num4, ((Rect)(ref rect)).yMin + num4), num4, 270f, segmentsPerCorner);
-		AppendArc(points, new Vector2(((Rect)(ref rect)).xMax - num3, ((Rect)(ref rect)).yMax - num3), num3, 0f, segmentsPerCorner);
-		AppendArc(points, new Vector2(((Rect)(ref rect)).xMin + num2, ((Rect)(ref rect)).yMax - num2), num2, 90f, segmentsPerCorner);
-		AppendArc(points, new Vector2(((Rect)(ref rect)).xMin + num5, ((Rect)(ref rect)).yMin + num5), num5, 180f, segmentsPerCorner);
+		AppendArc(points, new Vector2(rect.xMax - num4, rect.yMin + num4), num4, 270f, segmentsPerCorner);
+		AppendArc(points, new Vector2(rect.xMax - num3, rect.yMax - num3), num3, 0f, segmentsPerCorner);
+		AppendArc(points, new Vector2(rect.xMin + num2, rect.yMax - num2), num2, 90f, segmentsPerCorner);
+		AppendArc(points, new Vector2(rect.xMin + num5, rect.yMin + num5), num5, 180f, segmentsPerCorner);
 	}
 
 	private static void AppendArc(List<Vector2> points, Vector2 center, float radius, float startAngleDeg, int segments)

@@ -31,8 +31,8 @@ public class DiverPropulsionVehicleAudio : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve propellerGainCurve;
 
-	[Header("Water")]
 	[SerializeField]
+	[Header("Water")]
 	private SoundDefinition waterMovementLoopDef;
 
 	[SerializeField]

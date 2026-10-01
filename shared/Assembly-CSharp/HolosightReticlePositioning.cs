@@ -42,12 +42,12 @@ public class HolosightReticlePositioning : MonoBehaviour
 		float num = x;
 		Transform parent2 = ((Transform)rectTransform).parent;
 		Rect rect = ((RectTransform)((parent2 is RectTransform) ? parent2 : null)).rect;
-		x = num / (((Rect)(ref rect)).width * 0.5f);
+		x = num / (rect.width * 0.5f);
 		ref float y = ref val.y;
 		float num2 = y;
 		Transform parent3 = ((Transform)rectTransform).parent;
 		rect = ((RectTransform)((parent3 is RectTransform) ? parent3 : null)).rect;
-		y = num2 / (((Rect)(ref rect)).height * 0.5f);
+		y = num2 / (rect.height * 0.5f);
 		rectTransform.anchoredPosition = val;
 	}
 }

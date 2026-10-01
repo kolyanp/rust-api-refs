@@ -153,7 +153,7 @@ public class VirtualScroll : MonoBehaviour
 		}
 		float num = SetCanvasSize(itemCount);
 		Rect rect = ScrollRect.viewport.rect;
-		int num2 = Mathf.Max(2, Mathf.CeilToInt(((Rect)(ref rect)).height / (float)BlockHeight));
+		int num2 = Mathf.Max(2, Mathf.CeilToInt(rect.height / (float)BlockHeight));
 		int num3 = Mathf.FloorToInt((num - (float)Padding.top) / (float)BlockHeight);
 		int num4 = num3 + num2;
 		RecycleOutOfRange(num3, num4);

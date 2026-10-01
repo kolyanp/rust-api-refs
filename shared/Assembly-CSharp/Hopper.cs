@@ -64,7 +64,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 			{
 				ref NativeArray<RaycastCommand> reference = ref commands;
 				Vector3 val2 = originPoint - val;
-				reference[index] = new RaycastCommand(val, ((Vector3)(ref val2)).normalized, Vector3.Distance(val, originPoint), layerMask, 1);
+				reference[index] = new RaycastCommand(val, val2.normalized, Vector3.Distance(val, originPoint), layerMask, 1);
 			}
 		}
 	}
@@ -209,6 +209,9 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
@@ -245,12 +248,9 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 		{
 			Vector3 position = RaycastOriginPoint.position;
 			int num = 128;
-			NativeArray<RaycastCommand> val = default(NativeArray<RaycastCommand>);
-			val._002Ector(num, (Allocator)3, (NativeArrayOptions)1);
-			NativeArray<RaycastHit> val2 = default(NativeArray<RaycastHit>);
-			val2._002Ector(num, (Allocator)3, (NativeArrayOptions)1);
-			NativeArray<Vector3> points = default(NativeArray<Vector3>);
-			points._002Ector(num, (Allocator)3, (NativeArrayOptions)1);
+			NativeArray<RaycastCommand> val = new NativeArray<RaycastCommand>(num, (Allocator)3, (NativeArrayOptions)1);
+			NativeArray<RaycastHit> val2 = new NativeArray<RaycastHit>(num, (Allocator)3, (NativeArrayOptions)1);
+			NativeArray<Vector3> points = new NativeArray<Vector3>(num, (Allocator)3, (NativeArrayOptions)1);
 			List<IHopperTarget> list = Pool.Get<List<IHopperTarget>>();
 			int num2 = 0;
 			int count = movingItems.Count;
@@ -264,7 +264,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 						if ((Object)(object)droppedItem.childCollider != (Object)null)
 						{
 							Bounds val4 = droppedItem.childCollider.bounds;
-							val3 = ((Bounds)(ref val4)).center;
+							val3 = val4.center;
 						}
 						points[num2++] = val3;
 						list.Add(hopperTarget);
@@ -289,12 +289,12 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 				layerMask = 2097152
 			}, num2, 6, default(JobHandle));
 			val5 = RaycastCommand.ScheduleBatch(val, val2, 1, 1, val5);
-			((JobHandle)(ref val5)).Complete();
+			val5.Complete();
 			for (int i = 0; i < num2; i++)
 			{
 				RaycastHit val6 = val2[i];
 				IHopperTarget hopperTarget2 = list[i];
-				if ((Object)(object)((RaycastHit)(ref val6)).collider == (Object)null && movingItems.Add(new HopperMove
+				if ((Object)(object)val6.collider == (Object)null && movingItems.Add(new HopperMove
 				{
 					Target = hopperTarget2,
 					Duration = TimeSince.op_Implicit(0f)
@@ -326,7 +326,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer)
+		if (isServer)
 		{
 			bool flag = (next & Flags.Reserved8) == Flags.Reserved8 || DebugMode;
 			if (!IsInvoking(queueScanAction) & flag)
@@ -381,7 +381,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 	{
 		((PersistentObjectWorkQueue<Hopper>)WorkQueue).Remove(this);
 		SetFlagLocal(Flags.Reserved1, b: false);
-		Rigidbody val = default(Rigidbody);
+		Rigidbody val = default;
 		foreach (HopperMove movingItem in movingItems)
 		{
 			if (movingItem.Target != null && (Object)(object)movingItem.Target.ToEntity != (Object)null)
@@ -504,7 +504,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 					}
 					float num5 = 0.015f * movingItem.Target.EndPositionToleranceMultiplier;
 					Vector3 val4 = val2 - position;
-					if (((Vector3)(ref val4)).sqrMagnitude < num5 * num5)
+					if (val4.sqrMagnitude < num5 * num5)
 					{
 						((List<IHopperTarget>)(object)val).Add(movingItem.Target);
 					}

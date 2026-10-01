@@ -18,8 +18,8 @@ public class TriggerParentDelayedExit : TriggerParent
 
 	internal override void OnEntityEnter(BaseEntity ent)
 	{
-		ListDictionary<BaseEntity, TrackedEntityData> obj = entityContentsWaitingForLeave;
-		if (obj != null && obj.Contains(ent))
+		ListDictionary<BaseEntity, TrackedEntityData> val = entityContentsWaitingForLeave;
+		if (val != null && val.Contains(ent))
 		{
 			entityContentsWaitingForLeave.Remove(ent);
 		}
@@ -78,7 +78,7 @@ public class TriggerParentDelayedExit : TriggerParent
 	internal override void OnEmpty()
 	{
 		base.OnEmpty();
-		if (!base.IsBeingDisabled || entityContentsWaitingForLeave == null)
+		if (!IsBeingDisabled || entityContentsWaitingForLeave == null)
 		{
 			return;
 		}

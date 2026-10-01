@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DeployVolumeEntityBounds : DeployVolume
 {
-	public Bounds bounds;
+	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
 
 	protected override bool Check(Vector3 position, Quaternion rotation, int mask = -1)
 	{
@@ -19,8 +19,8 @@ public class DeployVolumeEntityBounds : DeployVolume
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		position += rotation * ((Bounds)(ref bounds)).center;
-		if (DeployVolume.CheckOBB(new OBB(position, ((Bounds)(ref bounds)).size, rotation), LayerMask.op_Implicit(layers) & mask, this))
+		position += rotation * bounds.center;
+		if (DeployVolume.CheckOBB(new OBB(position, bounds.size, rotation), LayerMask.op_Implicit(layers) & mask, this))
 		{
 			return true;
 		}
@@ -52,7 +52,5 @@ public class DeployVolumeEntityBounds : DeployVolume
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		bounds = new Bounds(Vector3.zero, Vector3.one);
-		base._002Ector();
 	}
 }

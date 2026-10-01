@@ -20,41 +20,41 @@ public class Physics : ConsoleSystem
 	}
 
 	[ServerVar(Help = "The collision detection mode that dropped items and corpses should use")]
-	public static int droppedmode;
+	public static int droppedmode = 2;
 
 	[ServerVar(Help = "Send effects to clients when physics objects collide")]
-	public static bool sendeffects;
+	public static bool sendeffects = true;
 
 	[ServerVar(Help = "(Generated) When enabled, logs ground-watch trigger events to the console, showing when players are detected as off the ground or falling through the world")]
-	public static bool groundwatchdebug;
+	public static bool groundwatchdebug = false;
 
 	[ServerVar(Help = "(Generated) Number of consecutive ground-watch failures allowed before corrective action is taken on a player who appears to be falling through geometry")]
-	public static int groundwatchfails;
+	public static int groundwatchfails = 1;
 
 	[ServerVar(Help = "(Generated) Seconds between ground-watch checks on a player; lower values detect world-fall issues faster but increase CPU overhead")]
-	public static float groundwatchdelay;
+	public static float groundwatchdelay = 0.1f;
 
 	[ServerVar(Help = "The collision detection mode that server-side ragdolls should use")]
-	public static int serverragdollmode;
+	public static int serverragdollmode = 3;
 
 	private const float baseGravity = -9.81f;
 
-	private static bool _serversideragdolls;
+	private static bool _serversideragdolls = false;
 
 	[ServerVar(Help = "(Generated) Maximum linear acceleration (m/s^2) that a vehicle towing joint can apply before the joint breaks; prevents unrealistic joint forces during towing")]
-	public static float towingmaxlinearaccelfromjoint;
+	public static float towingmaxlinearaccelfromjoint = 40f;
 
 	[ServerVar(Help = "(Generated) When enabled, players can be temporarily ragdolled by large physics impacts (e.g. explosions) before recovering; disabling keeps players standing")]
-	public static bool allowplayertempragdoll;
+	public static bool allowplayertempragdoll = true;
 
 	[ServerVar(Help = "(Generated) When enabled, horses can be temporarily ragdolled by large physics impacts; disabling keeps horses upright during collisions")]
-	public static bool allowhorsetempragdoll;
+	public static bool allowhorsetempragdoll = true;
 
-	[ClientVar(Help = "(Generated) When enabled, physics transform syncs are batched per frame for efficiency; disable to force immediate per-object sync")]
 	[ServerVar(Help = "(Generated) When enabled, physics transform syncs are batched per frame for efficiency; disable to force immediate per-object sync")]
-	public static bool batchsynctransforms;
+	[ClientVar(Help = "(Generated) When enabled, physics transform syncs are batched per frame for efficiency; disable to force immediate per-object sync")]
+	public static bool batchsynctransforms = true;
 
-	private static bool _treecollision;
+	private static bool _treecollision = true;
 
 	private static Bounds _currentBounds;
 
@@ -195,7 +195,7 @@ public class Physics : ConsoleSystem
 		int num = collidersPerBroadphaseCell.Sum((PhysxCell x) => x.Colliders.Count);
 		StringBuilder stringBuilder = new StringBuilder();
 		PhysxCell[] array = collidersPerBroadphaseCell.OrderByDescending((PhysxCell x) => x.Colliders.Count).ToArray();
-		stringBuilder.AppendLine($"Found {num} in {array.Length} cells, cell size {((Bounds)(ref array[0].Bounds)).size}");
+		stringBuilder.AppendLine($"Found {num} in {array.Length} cells, cell size {array[0].Bounds.size}");
 		PhysxCell[] array2 = array;
 		foreach (PhysxCell physxCell in array2)
 		{
@@ -205,7 +205,7 @@ public class Physics : ConsoleSystem
 				{
 					physxCell.Id,
 					physxCell.GridPosition,
-					((Bounds)(ref physxCell.Bounds)).center,
+					physxCell.Bounds.center,
 					physxCell.Colliders.Count
 				}));
 			}
@@ -280,7 +280,7 @@ public class Physics : ConsoleSystem
 		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
 		ICollection<Collider> allColliders = GetAllColliders();
 		int subdivisions = 16;
-		Vector3 cellSize = new Vector3(((Bounds)(ref _currentBounds)).size.x / (float)subdivisions, ((Bounds)(ref _currentBounds)).size.y, ((Bounds)(ref _currentBounds)).size.z / (float)subdivisions);
+		Vector3 cellSize = new Vector3(_currentBounds.size.x / (float)subdivisions, _currentBounds.size.y, _currentBounds.size.z / (float)subdivisions);
 		int num = 0;
 		Dictionary<Vector2i, List<Collider>> dictionary = new Dictionary<Vector2i, List<Collider>>();
 		foreach (Collider item in allColliders)
@@ -302,7 +302,7 @@ public class Physics : ConsoleSystem
 			}
 			value.Add(item);
 		}
-		return dictionary.Select(delegate(KeyValuePair<Vector2i, List<Collider>> x)
+		return dictionary.Select((KeyValuePair<Vector2i, List<Collider>> x) =>
 		{
 			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -320,7 +320,7 @@ public class Physics : ConsoleSystem
 			return new PhysxCell
 			{
 				GridPosition = x.Key,
-				Bounds = new Bounds(((Bounds)(ref _currentBounds)).min + new Vector3((float)x.Key.x * cellSize.x, ((Bounds)(ref _currentBounds)).size.y / 2f, (float)x.Key.y * cellSize.z), cellSize),
+				Bounds = new Bounds(_currentBounds.min + new Vector3((float)x.Key.x * cellSize.x, _currentBounds.size.y / 2f, (float)x.Key.y * cellSize.z), cellSize),
 				Id = x.Key.x + x.Key.y * subdivisions,
 				Colliders = x.Value
 			};
@@ -336,8 +336,8 @@ public class Physics : ConsoleSystem
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		int num = Mathf.FloorToInt((position.x - ((Bounds)(ref _currentBounds)).min.x) / cellSize.x);
-		int num2 = Mathf.FloorToInt((position.z - ((Bounds)(ref _currentBounds)).min.z) / cellSize.z);
+		int num = Mathf.FloorToInt((position.x - _currentBounds.min.x) / cellSize.x);
+		int num2 = Mathf.FloorToInt((position.z - _currentBounds.min.z) / cellSize.z);
 		return new Vector2i(num, num2);
 	}
 
@@ -357,9 +357,9 @@ public class Physics : ConsoleSystem
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 vector = arg.GetVector3(0);
 		Vector3 vector2 = arg.GetVector3(1);
-		Bounds val = default(Bounds);
-		((Bounds)(ref val)).center = vector;
-		((Bounds)(ref val)).extents = vector2;
+		Bounds val = default;
+		val.center = vector;
+		val.extents = vector2;
 		Debug.LogWarning((object)"Setting physics bounds disabled temporarily due to issues with Unity 6.3.X - will be re-enabled in a future update when we can verify the fix");
 		arg.ReplyWith("Setting physics bounds disabled temporarily due to issues with Unity 6.3.X - will be re-enabled in a future update when we can verify the fix");
 	}
@@ -372,7 +372,7 @@ public class Physics : ConsoleSystem
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		Bounds bounds = GetBounds();
-		arg.ReplyWith($"Physics bounds (center={((Bounds)(ref bounds)).center}, extents={((Bounds)(ref bounds)).extents})");
+		arg.ReplyWith($"Physics bounds (center={bounds.center}, extents={bounds.extents})");
 	}
 
 	public static Bounds GetBounds()
@@ -410,29 +410,17 @@ public class Physics : ConsoleSystem
 		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		droppedmode = 2;
-		sendeffects = true;
-		groundwatchdebug = false;
-		groundwatchfails = 1;
-		groundwatchdelay = 0.1f;
-		serverragdollmode = 3;
-		_serversideragdolls = false;
-		towingmaxlinearaccelfromjoint = 40f;
-		allowplayertempragdoll = true;
-		allowhorsetempragdoll = true;
-		batchsynctransforms = true;
-		_treecollision = true;
-		Bounds val = default(Bounds);
-		((Bounds)(ref val)).center = new Vector3(-1500f, 0f, 0f);
-		((Bounds)(ref val)).extents = new Vector3(6500f, 4000f, 5000f);
+		Bounds val = default;
+		val.center = new Vector3(-1500f, 0f, 0f);
+		val.extents = new Vector3(6500f, 4000f, 5000f);
 		_currentBounds = val;
-		val = default(Bounds);
-		((Bounds)(ref val)).center = new Vector3(0f, 0f, 0f);
-		((Bounds)(ref val)).extents = new Vector3(5000f, 4000f, 5000f);
+		val = default;
+		val.center = new Vector3(0f, 0f, 0f);
+		val.extents = new Vector3(5000f, 4000f, 5000f);
 		DeepSeaDisabledBounds = val;
-		val = default(Bounds);
-		((Bounds)(ref val)).center = new Vector3(-1500f, 0f, 0f);
-		((Bounds)(ref val)).extents = new Vector3(6500f, 4000f, 5000f);
+		val = default;
+		val.center = new Vector3(-1500f, 0f, 0f);
+		val.extents = new Vector3(6500f, 4000f, 5000f);
 		DeepSeaEnabledBounds = val;
 	}
 }

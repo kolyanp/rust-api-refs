@@ -79,49 +79,49 @@ public class AxisLockableIK : FimpIK_Limb
 		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Initialized)
+		if (!Initialized)
 		{
 			return;
 		}
 		Refresh();
 		float num = IKPositionWeight * IKWeight;
-		IKBone startIKBone = base.StartIKBone;
-		Vector3 val = base.MiddleIKBone.transform.position - base.StartIKBone.transform.position;
-		startIKBone.sqrMagn = ((Vector3)(ref val)).sqrMagnitude;
-		IKBone middleIKBone = base.MiddleIKBone;
-		val = base.EndIKBone.transform.position - base.MiddleIKBone.transform.position;
-		middleIKBone.sqrMagn = ((Vector3)(ref val)).sqrMagnitude;
+		IKBone startIKBone = StartIKBone;
+		Vector3 val = MiddleIKBone.transform.position - StartIKBone.transform.position;
+		startIKBone.sqrMagn = val.sqrMagnitude;
+		IKBone middleIKBone = MiddleIKBone;
+		val = EndIKBone.transform.position - MiddleIKBone.transform.position;
+		middleIKBone.sqrMagn = val.sqrMagnitude;
 		targetElbowNormal = GetDefaultFlexNormal();
 		if (ExtraHintAdjustementOffset != Vector3.zero)
 		{
-			val = Vector3.Lerp(targetElbowNormal, CalculateElbowNormalToPosition(base.EndIKBone.transform.position + base.EndIKBone.transform.rotation * ExtraHintAdjustementOffset), ((Vector3)(ref ExtraHintAdjustementOffset)).magnitude);
-			targetElbowNormal = ((Vector3)(ref val)).normalized;
+			val = Vector3.Lerp(targetElbowNormal, CalculateElbowNormalToPosition(EndIKBone.transform.position + EndIKBone.transform.rotation * ExtraHintAdjustementOffset), ExtraHintAdjustementOffset.magnitude);
+			targetElbowNormal = val.normalized;
 		}
 		Vector3 val2 = GetOrientationDirection(IKTargetPosition, InverseHint ? (-targetElbowNormal) : targetElbowNormal);
 		if (val2 == Vector3.zero)
 		{
-			val2 = base.MiddleIKBone.transform.position - base.StartIKBone.transform.position;
+			val2 = MiddleIKBone.transform.position - StartIKBone.transform.position;
 		}
 		if (num > 0f)
 		{
-			Quaternion targetRotation = base.StartIKBone.GetRotation(val2, targetElbowNormal) * base.StartBoneRotationOffset;
+			Quaternion targetRotation = StartIKBone.GetRotation(val2, targetElbowNormal) * StartBoneRotationOffset;
 			if (num < 1f)
 			{
-				targetRotation = Quaternion.LerpUnclamped(base.StartIKBone.srcRotation, targetRotation, num);
+				targetRotation = Quaternion.LerpUnclamped(StartIKBone.srcRotation, targetRotation, num);
 			}
 			if (FirstBoneAxisLock != EIKAxisLock.None)
 			{
-				ApplyAxisLock(FirstBoneAxisLock, base.StartIKBone, ref targetRotation);
+				ApplyAxisLock(FirstBoneAxisLock, StartIKBone, ref targetRotation);
 			}
-			base.StartIKBone.transform.rotation = targetRotation;
-			Quaternion val3 = base.MiddleIKBone.GetRotation(IKTargetPosition - base.MiddleIKBone.transform.position, base.MiddleIKBone.GetCurrentOrientationNormal());
+			StartIKBone.transform.rotation = targetRotation;
+			Quaternion val3 = MiddleIKBone.GetRotation(IKTargetPosition - MiddleIKBone.transform.position, MiddleIKBone.GetCurrentOrientationNormal());
 			if (num < 1f)
 			{
-				val3 = Quaternion.LerpUnclamped(base.MiddleIKBone.srcRotation, val3, num);
+				val3 = Quaternion.LerpUnclamped(MiddleIKBone.srcRotation, val3, num);
 			}
-			base.MiddleIKBone.transform.rotation = val3;
+			MiddleIKBone.transform.rotation = val3;
 		}
-		postIKAnimatorEndBoneRot = base.EndIKBone.transform.rotation;
+		postIKAnimatorEndBoneRot = EndIKBone.transform.rotation;
 		EndBoneRotation();
 	}
 
@@ -144,18 +144,18 @@ public class AxisLockableIK : FimpIK_Limb
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		Quaternion val = FEngineering.QToLocal(ikBone.transform.parent.rotation, targetRotation);
-		Vector3 eulerAngles = ((Quaternion)(ref val)).eulerAngles;
-		if ((axisLock & EIKAxisLock.X) != EIKAxisLock.None)
+		Vector3 eulerAngles = val.eulerAngles;
+		if ((axisLock & EIKAxisLock.X) != 0)
 		{
-			eulerAngles.x = ((Quaternion)(ref ikBone.LastKeyLocalRotation)).eulerAngles.x;
+			eulerAngles.x = ikBone.LastKeyLocalRotation.eulerAngles.x;
 		}
-		if ((axisLock & EIKAxisLock.Y) != EIKAxisLock.None)
+		if ((axisLock & EIKAxisLock.Y) != 0)
 		{
-			eulerAngles.y = ((Quaternion)(ref ikBone.LastKeyLocalRotation)).eulerAngles.y;
+			eulerAngles.y = ikBone.LastKeyLocalRotation.eulerAngles.y;
 		}
-		if ((axisLock & EIKAxisLock.Z) != EIKAxisLock.None)
+		if ((axisLock & EIKAxisLock.Z) != 0)
 		{
-			eulerAngles.z = ((Quaternion)(ref ikBone.LastKeyLocalRotation)).eulerAngles.z;
+			eulerAngles.z = ikBone.LastKeyLocalRotation.eulerAngles.z;
 		}
 		targetRotation = FEngineering.QToWorld(ikBone.transform.parent.rotation, AnimationGenerateUtils.EnsureQuaternionContinuity(targetRotation, Quaternion.Euler(eulerAngles)));
 	}

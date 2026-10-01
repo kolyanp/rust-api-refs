@@ -19,7 +19,7 @@ internal sealed class LogHistogram
 		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Expected O, but got Unknown
+		//IL_0019: Expected Obj, but got Unknown
 		if (data == null)
 		{
 			data = new ComputeBuffer(128, 4);
@@ -30,9 +30,9 @@ internal sealed class LogHistogram
 		command.BeginSample("LogHistogram");
 		int num = exposureHistogram.FindKernel("KEyeHistogramClear");
 		command.SetComputeBufferParam(exposureHistogram, num, "_HistogramBuffer", data);
-		uint num2 = default(uint);
-		uint num3 = default(uint);
-		uint num4 = default(uint);
+		uint num2 = default;
+		uint num3 = default;
+		uint num4 = default;
 		exposureHistogram.GetKernelThreadGroupSizes(num, ref num2, ref num3, ref num4);
 		command.DispatchCompute(exposureHistogram, num, Mathf.CeilToInt(128f / (float)num2), 1, 1);
 		num = exposureHistogram.FindKernel("KEyeHistogram");

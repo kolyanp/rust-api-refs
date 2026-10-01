@@ -90,7 +90,7 @@ public class State_ThrowGrenade : FSMStateBase
 		Vector3 val = Vector3Ex.NormalizeXZ(lkp - eyePosition);
 		landingPoint = lkp + val * 1f;
 		Vector3 val2 = Vector3.Cross(Vector3.up, val);
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		Vector3 val3 = val + Quaternion.AngleAxis(10f, normalized) * Vector3.up;
 		float throwVelocity2 = ThrownWeapon.GetThrowVelocity(eyePosition, landingPoint, val3);
 		if (float.IsNaN(throwVelocity2))
@@ -122,6 +122,7 @@ public class State_ThrowGrenade : FSMStateBase
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
@@ -152,15 +153,15 @@ public class State_ThrowGrenade : FSMStateBase
 		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-		hitInfo = default(RaycastHit);
+		hitInfo = default;
 		Vector3 val = Vector3Ex.WithY(initialVelocity, 0f);
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		if (magnitude < 0.001f)
 		{
 			return false;
 		}
 		val = Vector3Ex.WithY(destination - origin, 0f);
-		float num = ((Vector3)(ref val)).magnitude / magnitude + 0.01f;
+		float num = val.magnitude / magnitude + 0.01f;
 		Vector3 val2 = origin;
 		Vector3 val3 = initialVelocity;
 		float num2 = Mathf.Abs(Physics.gravity.y);
@@ -168,7 +169,6 @@ public class State_ThrowGrenade : FSMStateBase
 		int num4 = Mathf.CeilToInt(num / num3);
 		num3 = num / (float)num4;
 		float num5 = 0f;
-		Vector3 val4 = default(Vector3);
 		for (int i = 0; i < num4; i++)
 		{
 			if (!(num5 < num))
@@ -176,18 +176,18 @@ public class State_ThrowGrenade : FSMStateBase
 				break;
 			}
 			float num6 = Mathf.Min(num3, num - num5);
-			((Vector3)(ref val4))._002Ector(0f, 0f - num2, 0f);
+			Vector3 val4 = new Vector3(0f, 0f - num2, 0f);
 			Vector3 val5 = val2 + val3 * num6 + 0.5f * val4 * num6 * num6;
 			Vector3 val6 = val3 + val4 * num6;
 			Vector3 val7 = val5 - val2;
-			float magnitude2 = ((Vector3)(ref val7)).magnitude;
-			if (magnitude2 > 0.001f && GamePhysics.Trace(new Ray(val2, ((Vector3)(ref val7)).normalized), 0.2f, out hitInfo, magnitude2, 1218519297, (QueryTriggerInteraction)0, querier))
+			float magnitude2 = val7.magnitude;
+			if (magnitude2 > 0.001f && GamePhysics.Trace(new Ray(val2, val7.normalized), 0.2f, out hitInfo, magnitude2, 1218519297, (QueryTriggerInteraction)0, querier))
 			{
-				if (Vector3.Distance(((RaycastHit)(ref hitInfo)).point, origin) <= 6f)
+				if (Vector3.Distance(hitInfo.point, origin) <= 6f)
 				{
 					return false;
 				}
-				if (Vector3.Distance(((RaycastHit)(ref hitInfo)).point, destination) > 6f)
+				if (Vector3.Distance(hitInfo.point, destination) > 6f)
 				{
 					return false;
 				}
@@ -214,7 +214,7 @@ public class State_ThrowGrenade : FSMStateBase
 			}
 			return EFSMStateStatus.Failure;
 		}
-		BaseEntity baseEntity = GameManager.server.CreateEntity(deployedGrenadePrefab.resourcePath, base.Senses.EyePosition, Quaternion.LookRotation(payload.velocity.Value));
+		BaseEntity baseEntity = GameManager.server.CreateEntity(deployedGrenadePrefab.resourcePath, Senses.EyePosition, Quaternion.LookRotation(payload.velocity.Value));
 		if ((Object)(object)baseEntity == (Object)null)
 		{
 			return EFSMStateStatus.Failure;
@@ -224,11 +224,11 @@ public class State_ThrowGrenade : FSMStateBase
 		baseEntity.Spawn();
 		remainingDuration = 1f;
 		Shooting.AllowShooting = false;
-		base.Blackboard.Add("ThrownGrenadeRecently", cooldown);
+		Blackboard.Add("ThrownGrenadeRecently", cooldown);
 		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
 		try
 		{
-			base.Senses.GetPerceivedAllies((List<BaseEntity>)(object)val);
+			Senses.GetPerceivedAllies((List<BaseEntity>)(object)val);
 			foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 			{
 				((Component)item).GetComponent<BlackboardComponent>().Add("ThrownGrenadeRecently", cooldown);

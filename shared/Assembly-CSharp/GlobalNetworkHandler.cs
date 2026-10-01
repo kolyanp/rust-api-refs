@@ -96,7 +96,7 @@ public class GlobalNetworkHandler : PointEntity
 			val.uid = entity.net.ID;
 			val.pos = ((Component)entity).transform.position;
 			Quaternion rotation = ((Component)entity).transform.rotation;
-			val.rot = ((Quaternion)(ref rotation)).eulerAngles;
+			val.rot = rotation.eulerAngles;
 			if (entity is BuildingBlock buildingBlock)
 			{
 				val.grade = (int)buildingBlock.grade;

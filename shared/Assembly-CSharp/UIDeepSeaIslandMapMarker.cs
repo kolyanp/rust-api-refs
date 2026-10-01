@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -41,7 +42,7 @@ public class UIDeepSeaIslandMapMarker : MapMarker
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -50,7 +51,7 @@ public class UIDeepSeaIslandMapMarker : MapMarker
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: _islandType for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: _islandType for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync__islandType);
 			return true;
@@ -102,18 +103,34 @@ public class UIDeepSeaIslandMapMarker : MapMarker
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}

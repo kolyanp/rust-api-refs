@@ -53,7 +53,7 @@ public abstract class BaseModule : BaseHookable
 				return (T)(object)((module is T) ? module : null);
 			}
 		}
-		return default(T);
+		return default;
 	}
 
 	public static BaseModule FindModule(string name)

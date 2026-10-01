@@ -7,7 +7,7 @@ public class DoorOneWayHandOpen : Door
 		base.OnPlayerOpenedDoor(p);
 		if (AutoCloseTime > 0f)
 		{
-			Invoke(base.CloseRequest, AutoCloseTime);
+			Invoke(CloseRequest, AutoCloseTime);
 		}
 	}
 }

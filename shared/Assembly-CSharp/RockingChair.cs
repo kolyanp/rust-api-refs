@@ -88,7 +88,7 @@ public class RockingChair : BaseChair
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		Quaternion localRotation = ((Component)this).transform.localRotation;
-		initLocalRot = ((Quaternion)(ref localRotation)).eulerAngles;
+		initLocalRot = localRotation.eulerAngles;
 		initLocalY = ((Component)this).transform.localPosition.y;
 		max = Quaternion.Euler(initLocalRot) * Quaternion.AngleAxis(MaxRockingAngle, Vector3.right);
 		min = Quaternion.Euler(initLocalRot) * Quaternion.AngleAxis(0f - MaxRockingAngle, Vector3.right);
@@ -112,7 +112,7 @@ public class RockingChair : BaseChair
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (info.msg.rockingChair != null && base.isServer)
+		if (info.msg.rockingChair != null && isServer)
 		{
 			initLocalRot = info.msg.rockingChair.initEuler;
 			((Component)this).transform.localRotation = Quaternion.Euler(initLocalRot);

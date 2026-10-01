@@ -5,6 +5,7 @@ using Facepunch;
 using Network;
 using ProtoBuf;
 using Rust;
+using Rust.Ai.Gen2;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -73,7 +74,7 @@ public class TinCanAlarm : StorageContainer, IDetector
 	{
 		get
 		{
-			_ = base.isServer;
+			_ = isServer;
 			return wireOrigin;
 		}
 	}
@@ -334,7 +335,7 @@ public class TinCanAlarm : StorageContainer, IDetector
 				baseEntity = baseEntity2;
 			}
 		}
-		if ((!(Time.realtimeSinceStartup - lastTriggerTime < 1f) || !((Object)(object)baseEntity == (Object)(object)lastTriggerEntity)) && (baseEntity is BasePlayer || baseEntity is Door || baseEntity is BaseNpc || baseEntity is BaseVehicle || baseEntity is Elevator || baseEntity is Lift))
+		if ((!(Time.realtimeSinceStartup - lastTriggerTime < 1f) || !((Object)(object)baseEntity == (Object)(object)lastTriggerEntity)) && (baseEntity is BasePlayer || baseEntity is Door || baseEntity is BaseNpc || baseEntity is BaseNPC2 || baseEntity is BaseVehicle || baseEntity is Elevator || baseEntity is Lift))
 		{
 			lastTriggerTime = Time.realtimeSinceStartup;
 			lastTriggerEntity = baseEntity;
@@ -363,7 +364,7 @@ public class TinCanAlarm : StorageContainer, IDetector
 			ThrownWeapon thrownWeapon = TryGetHeldEntity(loadedAmmoItem);
 			if (!((Object)(object)thrownWeapon == (Object)null) && loadedAmmoItem.amount > 0 && !thrownWeapon.HasAttackCooldown())
 			{
-				BasePlayer owningPlayer = BasePlayer.FindByID(base.OwnerID);
+				BasePlayer owningPlayer = BasePlayer.FindByID(OwnerID);
 				thrownWeapon.DoThrowImpl(throwPoint.position, throwPoint.forward, owningPlayer, out var _, 1f, throwPoint.forward * 1f, loadedAmmoItem);
 				loadedAmmoItem.UseItem();
 				loadedAmmoItem = null;
@@ -401,9 +402,9 @@ public class TinCanAlarm : StorageContainer, IDetector
 		return base.ItemFilter(player, item, targetSlot);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		loadedAmmoItem = (added ? item : null);
 		loadedAmmoDef = (added ? item.info : null);
 		SendNetworkUpdateImmediate();
@@ -417,8 +418,8 @@ public class TinCanAlarm : StorageContainer, IDetector
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_StartArming(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -481,7 +482,7 @@ public class TinCanAlarm : StorageContainer, IDetector
 	private void UpdateWireTip()
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			if (!IsArmed())
 			{
@@ -495,7 +496,7 @@ public class TinCanAlarm : StorageContainer, IDetector
 
 	private void OnGroundMissing()
 	{
-		if (!base.IsDestroyed && !base.isClient)
+		if (!IsDestroyed && !isClient)
 		{
 			if (!groundWatch.OnGround())
 			{
@@ -511,7 +512,7 @@ public class TinCanAlarm : StorageContainer, IDetector
 	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);
-		if (base.isServer)
+		if (isServer)
 		{
 			PlayerStartsArming(deployedBy);
 		}
@@ -564,7 +565,7 @@ public class TinCanAlarm : StorageContainer, IDetector
 		Vector3 val = endPoint;
 		Vector3 position2 = (position + val) / 2f;
 		Vector3 val2 = val - position;
-		float magnitude = ((Vector3)(ref val2)).magnitude;
+		float magnitude = val2.magnitude;
 		((Component)trigger).transform.position = position2;
 		Vector3 localScale = ((Component)trigger).transform.localScale;
 		localScale.z = magnitude;

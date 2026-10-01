@@ -25,8 +25,8 @@ public class SurvivalFishTrap : WildlifeTrap
 
 	public override bool HasBait()
 	{
-		ItemModCompostable itemModCompostable = default(ItemModCompostable);
-		foreach (Item item in base.inventory.itemList)
+		ItemModCompostable itemModCompostable = default;
+		foreach (Item item in inventory.itemList)
 		{
 			if (item != null && ((Component)item.info).TryGetComponent<ItemModCompostable>(ref itemModCompostable) && itemModCompostable.BaitValue > 0f)
 			{
@@ -45,12 +45,12 @@ public class SurvivalFishTrap : WildlifeTrap
 		ItemDefinition itemDefinition = null;
 		Item item = null;
 		int usedLureAmount = 0;
-		using (List<Item>.Enumerator enumerator = base.inventory.itemList.GetEnumerator())
+		using (List<Item>.Enumerator enumerator = inventory.itemList.GetEnumerator())
 		{
 			if (enumerator.MoveNext())
 			{
 				Item current = enumerator.Current;
-				ItemModCompostable itemModCompostable = default(ItemModCompostable);
+				ItemModCompostable itemModCompostable = default;
 				if ((((Component)current.info).TryGetComponent<ItemModCompostable>(ref itemModCompostable) ? itemModCompostable.BaitValue : 0f) > 0f)
 				{
 					item = current;
@@ -69,11 +69,11 @@ public class SurvivalFishTrap : WildlifeTrap
 			if (Interface.CallHook("OnWildlifeTrap", this, itemDefinition) == null)
 			{
 				Item item2 = ItemManager.Create(itemDefinition, 1, 0uL, isServerSide: true, 0uL);
-				if ((Object)(object)base.LastLootedByPlayer != (Object)null)
+				if ((Object)(object)LastLootedByPlayer != (Object)null)
 				{
-					item2.SetItemOwnership(base.LastLootedByPlayer, ItemOwnershipPhrases.SurvivalTrap);
+					item2.SetItemOwnership(LastLootedByPlayer, ItemOwnershipPhrases.SurvivalTrap);
 				}
-				if (!item2.MoveToContainer(base.inventory))
+				if (!item2.MoveToContainer(inventory))
 				{
 					item2.Drop(((Component)this).transform.position, Vector3.zero, Quaternion.identity);
 				}

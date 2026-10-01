@@ -70,7 +70,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public SkinnedMeshRenderer[] hairRenderers;
 
-	private int currentBreedIndex;
+	private int currentBreedIndex = -1;
 
 	public HorseBreed currentBreed;
 
@@ -81,22 +81,22 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[Header("Container")]
 	public ItemDefinition onlyAllowedItem;
 
-	public ItemContainer.ContentsType allowedContents;
+	public ItemContainer.ContentsType allowedContents = ItemContainer.ContentsType.Generic;
 
 	[Space]
 	public int maxStackSize;
 
 	public int numStorageSlots;
 
-	public int equipmentSlots;
+	public int equipmentSlots = 4;
 
-	public string lootPanelName;
+	public string lootPanelName = "animal";
 
-	public string storagePanelName;
+	public string storagePanelName = "animal-storage";
 
 	public bool needsBuildingPrivilegeToUse;
 
-	public bool isLootable;
+	public bool isLootable = true;
 
 	public ItemContainer storageInventory;
 
@@ -115,20 +115,20 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public Transform dungSpawnPoint;
 
-	public float caloriesToDigestPerHour;
+	public float caloriesToDigestPerHour = 10f;
 
-	public float dungProducedPerCalorie;
+	public float dungProducedPerCalorie = 0.2f;
 
 	[NonSerialized]
 	public HorseModifiers modifiers;
 
-	[ServerVar]
 	[Help("Scale all rideable animal dung production rates by this value. 0 will disable dung production.")]
-	public static float dungTimeScale;
+	[ServerVar]
+	public static float dungTimeScale = 1f;
 
 	private float nextEatTime;
 
-	private float lastEatTime;
+	private float lastEatTime = float.NegativeInfinity;
 
 	private float pendingDungCalories;
 
@@ -138,7 +138,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private VehicleTerrainHandler terrainHandler;
 
-	private readonly Dictionary<BaseEntity, float> damageSinceLastTick;
+	private readonly Dictionary<BaseEntity, float> damageSinceLastTick = new Dictionary<BaseEntity, float>();
 
 	private float nextCollisionDamageTime;
 
@@ -154,9 +154,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private bool duckInputDown;
 
-	private float doubleTapTime;
+	private float doubleTapTime = 0.25f;
 
-	private float lastDuckTapTime;
+	private float lastDuckTapTime = -1f;
 
 	private bool duckDoubleTapped;
 
@@ -164,9 +164,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private bool sprintInputJustPressed;
 
-	private Vector3 targetUp;
+	private Vector3 targetUp = Vector3.up;
 
-	private Vector3 averagedUp;
+	private Vector3 averagedUp = Vector3.up;
 
 	private float groundAngle;
 
@@ -216,12 +216,12 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private bool isSubmerged;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private float baseDrag;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private float baseAngularDrag;
 
 	private HorseAvoidanceState currentAvoidanceState;
@@ -276,30 +276,30 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public GaitType currentGait;
 
-	public float gaitProgressionInterval;
+	public float gaitProgressionInterval = 1f;
 
-	public float gravity;
+	public float gravity = 10f;
 
-	public float waterGravity;
+	public float waterGravity = 1f;
 
-	public float groundAlignmentSpeed;
+	public float groundAlignmentSpeed = 50f;
 
-	public float roadSpeedBonus;
-
-	[Space]
-	public float reverseSpeedFactor;
-
-	public float reverseAccelerationForce;
+	public float roadSpeedBonus = 1f;
 
 	[Space]
-	public float rotationResponsiveness;
+	public float reverseSpeedFactor = 0.5f;
+
+	public float reverseAccelerationForce = 4000f;
+
+	[Space]
+	public float rotationResponsiveness = 1f;
 
 	[Tooltip("The factor applied to rotationResponsiveness, based on the current speed ratio (0 = stopped, 1 = full speed)")]
 	public AnimationCurve rotationResponsivenessCurve;
 
 	public Transform[] groundSampleOffsets;
 
-	public Vector2 minMaxSlopeAngle;
+	public Vector2 minMaxSlopeAngle = new Vector2(10f, 60f);
 
 	public AnimationCurve slopeAngleSpeedFactor;
 
@@ -310,24 +310,24 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	[Tooltip("Ignore low magnitude so e.g. Players running into stationary vehicles doesn't trigger damage or FX")]
 	[SerializeField]
-	private float minCollisionDamageForce;
+	private float minCollisionDamageForce = 20000f;
 
-	[Tooltip("Cap max magnitude so unusual events can't cause mega damage")]
 	[SerializeField]
-	private float maxCollisionDamageForce;
+	[Tooltip("Cap max magnitude so unusual events can't cause mega damage")]
+	private float maxCollisionDamageForce = 2500000f;
 
 	[Tooltip("Adjust this away from 1.0 if collision damage to this vehicle seems too high or low")]
 	[SerializeField]
-	private float collisionDamageMultiplier;
+	private float collisionDamageMultiplier = 1f;
 
 	[SerializeField]
-	private float playerDamageThreshold;
+	private float playerDamageThreshold = 40f;
 
 	[SerializeField]
-	private float playerRagdollThreshold;
+	private float playerRagdollThreshold = 75f;
 
 	[SerializeField]
-	private float maxAirTimeBeforeRagdoll;
+	private float maxAirTimeBeforeRagdoll = 1.5f;
 
 	[Header("Towing")]
 	public TriggerTowing towingTrigger;
@@ -343,30 +343,30 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	public GameObjectRef towingDetachEffect;
 
 	[SerializeField]
-	private float towingAccelerationBoost;
+	private float towingAccelerationBoost = 2f;
 
 	[SerializeField]
-	private float towingMaxSpeedBoost;
+	private float towingMaxSpeedBoost = 1f;
 
 	[SerializeField]
-	private GaitType maxTowingGait;
+	private GaitType maxTowingGait = GaitType.Trot;
 
 	[Header("Stamina")]
-	public float currentStamina;
+	public float currentStamina = 10f;
 
-	public float currentMaxStamina;
+	public float currentMaxStamina = 10f;
 
-	public float maxStamina;
+	public float maxStamina = 20f;
 
-	public float staminaCoreLossRatio;
+	public float staminaCoreLossRatio = 0.1f;
 
-	public float staminaCoreSpeedBonus;
+	public float staminaCoreSpeedBonus = 3f;
 
-	public float calorieToStaminaRatio;
+	public float calorieToStaminaRatio = 0.1f;
 
-	public float hydrationToStaminaRatio;
+	public float hydrationToStaminaRatio = 0.5f;
 
-	public float maxStaminaCoreFromWater;
+	public float maxStaminaCoreFromWater = 0.5f;
 
 	[Header("Purchase")]
 	public List<PurchaseOption> PurchaseOptions;
@@ -384,8 +384,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public Sprite SwapToDoubleIcon;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected bool[] hasItemTokenCache;
 
 	[Space]
@@ -404,33 +404,33 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	private List<ModifierDefintion> pullingPlayerModifiers;
 
 	[Header("Avoidance")]
-	public float avoidanceSphereRadius;
+	public float avoidanceSphereRadius = 0.5f;
 
-	public Vector2 avoidanceDetectionDistance;
+	public Vector2 avoidanceDetectionDistance = new Vector2(3f, 8f);
 
 	public LayerMask avoidanceObstacleMask;
 
 	[Header("Sliding")]
-	public float groundAngleSlideThresholdForced;
+	public float groundAngleSlideThresholdForced = 50f;
 
-	public float groundAngleSlideThreshold;
+	public float groundAngleSlideThreshold = 37f;
 
-	public float groundAngleToRecoverFromSlide;
+	public float groundAngleToRecoverFromSlide = 24f;
 
-	public float normalVariationSlideThreshold;
+	public float normalVariationSlideThreshold = 2.5f;
 
 	[HideInInspector]
 	public float normalVariation;
 
+	[Min(0f)]
 	[Header("Healing")]
-	[Min(0f)]
-	public float healingMultiplier;
+	public float healingMultiplier = 4f;
 
+	[Min(0f)]
 	[Tooltip("How much stamina to replenish when healing. Value is not final - scaled further if we have a high stamina core.")]
-	[Min(0f)]
-	public float staminaReplenishAmount;
+	public float staminaReplenishAmount = 1f;
 
-	public ItemDefinition[] prohibitedMedicalItems;
+	public ItemDefinition[] prohibitedMedicalItems = Array.Empty<ItemDefinition>();
 
 	public const Flags Flag_ForSale = Flags.Reserved2;
 
@@ -458,27 +458,27 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public const Flags Flag_IsInWater = Flags.Reserved19;
 
-	private static readonly Phrase TowAngleErrorPhrase;
+	private static readonly Phrase TowAngleErrorPhrase = new Phrase("horse_tow_error", "Straighten up to tow");
 
 	private NetworkableId playerLeadingId;
 
 	[ServerVar(Saved = true, ClientAdmin = true, Help = "(Generated) When enabled, draws debug visualisations for this system (seismic sensor range sphere, escape capture state, etc.); editor/admin-only")]
-	public static bool debug;
+	public static bool debug = false;
 
 	[ServerVar(Saved = true, ClientAdmin = true, Help = "(Generated) When enabled, horses use automatic avoidance steering to navigate around obstacles; saved between sessions; admin configurable")]
-	public static bool autoAvoidance;
+	public static bool autoAvoidance = true;
 
 	[ServerVar(Saved = true, ClientAdmin = true, Default = "1", Help = "(Generated) When enabled, ground angle updates for horse body tilt are throttled to groundAngleUpdateRate seconds; improves performance")]
-	public static bool throttledGroundAngleUpdate;
+	public static bool throttledGroundAngleUpdate = true;
 
 	[ServerVar(Saved = true, ClientAdmin = true, Default = "0.05", Help = "(Generated) Interval in seconds between ground angle recalculation updates for horse body tilting; default 0.05s")]
-	public static float groundAngleUpdateRate;
+	public static float groundAngleUpdateRate = 0.05f;
 
 	[ServerVar(Help = "How long before a horse dies unattended")]
-	public static float decayMinutes;
+	public static float decayMinutes = 180f;
 
 	[ServerVar(Help = "Population active on the server, per square km", ShowInAdminUI = true)]
-	public static float Population;
+	public static float Population = 2f;
 
 	[Header("Bones")]
 	public Transform rootBone;
@@ -818,10 +818,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	protected void ApplyBreedInternal(HorseBreed breed)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			SetMaxHealth(StartHealth() * breed.maxHealth);
-			base.health = MaxHealth();
+			health = MaxHealth();
 		}
 	}
 
@@ -905,7 +905,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	{
 		ItemContainer itemContainer = Pool.Get<ItemContainer>();
 		itemContainer.entityOwner = this;
-		itemContainer.allowedContents = ((allowedContents == (ItemContainer.ContentsType)0) ? ItemContainer.ContentsType.Generic : allowedContents);
+		itemContainer.allowedContents = ((allowedContents == 0) ? ItemContainer.ContentsType.Generic : allowedContents);
 		itemContainer.SetOnlyAllowedItem(onlyAllowedItem);
 		itemContainer.maxStackSize = maxStackSize;
 		itemContainer.ServerInitialize(null, slots);
@@ -962,7 +962,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		EquipmentUpdate();
 	}
 
-	private void OnItemAddedOrRemoved(Item arg1, bool arg2)
+	private void OnItemAddedOrRemoved(Item arg1, bool arg2, BasePlayer sourcePlayer)
 	{
 	}
 
@@ -974,15 +974,15 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public void EquipmentUpdate()
 	{
-		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
 		{
 			flagsUpdateScope.Set(Flags.Reserved4, b: false);
@@ -1207,7 +1207,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public void OnObjectAdded(GameObject obj, Collider col)
 	{
-		if (ShouldTrigger() && !base.isClient)
+		if (ShouldTrigger() && !isClient)
 		{
 			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(obj);
 			if (!((Object)(object)baseEntity == (Object)null) && !baseEntity.isClient && baseEntity is DroppedItem { item: not null } droppedItem && droppedItem.item.info.category == ItemCategory.Food)
@@ -1223,7 +1223,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private void OnFoodDetected(DroppedItem droppedItem)
 	{
-		Invoke(delegate
+		Invoke(() =>
 		{
 			EatDroppedFood(droppedItem);
 		}, Random.Range(1f, 2f));
@@ -1231,13 +1231,13 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private void EatDroppedFood(DroppedItem droppedItem)
 	{
-		if ((Object)(object)droppedItem == (Object)null || !foodTrigger.HasAnyEntityContents || (GetMaxStaminaFraction() >= 1f && base.healthFraction >= 1f))
+		if ((Object)(object)droppedItem == (Object)null || !foodTrigger.HasAnyEntityContents || (GetMaxStaminaFraction() >= 1f && healthFraction >= 1f))
 		{
 			return;
 		}
 		if (Time.time < nextEatTime)
 		{
-			Invoke(delegate
+			Invoke(() =>
 			{
 				OnFoodDetected(droppedItem);
 			}, nextEatTime - Time.time);
@@ -1260,7 +1260,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			}
 			else
 			{
-				Invoke(delegate
+				Invoke(() =>
 				{
 					EatDroppedFood(droppedItem);
 				}, nextEatTime - Time.time);
@@ -1297,8 +1297,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		deltaTime *= num;
 		if (!(deltaTime < 0.01f))
 		{
-			float num2 = Mathf.Min(pendingDungCalories * deltaTime, caloriesToDigestPerHour / 3600f * deltaTime) * dungProducedPerCalorie;
-			dungProduction += num2;
+			float num2 = Mathf.Min(pendingDungCalories, caloriesToDigestPerHour / 3600f * deltaTime);
+			float num3 = num2 * dungProducedPerCalorie;
+			dungProduction += num3;
 			pendingDungCalories -= num2;
 			if (dungProduction >= 1f)
 			{
@@ -1316,6 +1317,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	{
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
@@ -1326,8 +1328,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		if (Interface.CallHook("OnAnimalDungProduce", this) == null)
 		{
 			Quaternion rotation = Quaternion.Euler(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f));
-			Vector3 vVelocity = default(Vector3);
-			((Vector3)(ref vVelocity))._002Ector(Random.Range(-0.5f, 0.5f), Random.Range(-1f, -3f), Random.Range(-0.5f, 0.5f));
+			Vector3 vVelocity = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-1f, -3f), Random.Range(-0.5f, 0.5f));
 			Item item = ItemManager.Create(dungItem, 1, 0uL, isServerSide: true, 0uL);
 			item.SetItemOwnership(currentBreed.breedName.english, ItemOwnershipPhrases.Pooped);
 			item.Drop(dungSpawnPoint.position + Random.insideUnitSphere * 0.1f, vVelocity, rotation);
@@ -1384,7 +1385,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 		else
 		{
-			if (Time.time < nextEatTime || (GetMaxStaminaFraction() >= 1f && base.healthFraction >= 1f))
+			if (Time.time < nextEatTime || (GetMaxStaminaFraction() >= 1f && healthFraction >= 1f))
 			{
 				return;
 			}
@@ -1421,7 +1422,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3.zero;
-		if (base.isServer)
+		if (isServer)
 		{
 			val = rigidBody.linearVelocity;
 		}
@@ -1432,10 +1433,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			return ((Vector3)(ref linearVelocity)).magnitude;
+			return linearVelocity.magnitude;
 		}
 		return 0f;
 	}
@@ -1705,7 +1706,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			if (!wasSleeping && !(GetCurrentSpeed() > 0.5f))
 			{
 				Vector3 angularVelocity = rigidBody.angularVelocity;
-				if (!(Mathf.Abs(((Vector3)(ref angularVelocity)).magnitude) > 0.5f))
+				if (!(Mathf.Abs(angularVelocity.magnitude) > 0.5f))
 				{
 					goto IL_02a2;
 				}
@@ -1894,9 +1895,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			if (TimeSince.op_Implicit(timeSinceWaterCheck) > (isSwimming ? 0.05f : 0.25f))
 			{
 				OBB val = WorldSpaceBounds();
-				Bounds val2 = ((OBB)(ref val)).ToBounds();
+				Bounds val2 = val.ToBounds();
 				lastWaterInfo = WaterLevel.GetWaterInfo(val2, waves: true, volumes: true, this);
-				currentWaterFactor = (lastWaterInfo.isValid ? Mathf.InverseLerp(((Bounds)(ref val2)).min.y, ((Bounds)(ref val2)).max.y, lastWaterInfo.surfaceLevel) : 0f);
+				currentWaterFactor = (lastWaterInfo.isValid ? Mathf.InverseLerp(val2.min.y, val2.max.y, lastWaterInfo.surfaceLevel) : 0f);
 				isSubmerged = currentWaterFactor > 0.65f;
 				bool flag = (currentWaterFactor > 0.5f && !isGrounded) || isSubmerged;
 				if (isSwimming != flag)
@@ -1945,11 +1946,11 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			airTime = 0f;
 			flag3 = IsStopped();
 			force = rigidBody.linearVelocity;
-			if (((Vector3)(ref force)).magnitude > 0.5f && !isSwimming)
+			if (force.magnitude > 0.5f && !isSwimming)
 			{
 				Vector3 val3 = -((Component)this).transform.up;
 				force = rigidBody.linearVelocity;
-				Vector3 val4 = val3 * ((Vector3)(ref force)).magnitude * 20f;
+				Vector3 val4 = val3 * force.magnitude * 20f;
 				rigidBody.AddForce(val4, (ForceMode)0);
 			}
 			AlignWithNormal(averagedUp);
@@ -1975,7 +1976,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				{
 					if (groundAngle > groundAngleToRecoverFromSlide + 5f)
 					{
-						force = default(Vector3);
+						force = default;
 						RagdollAllRiders(force);
 					}
 					RagdollHorse();
@@ -1983,7 +1984,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			}
 			Vector3 val5 = Vector3.Project(linearVelocity, forward);
 			Vector3 val6 = linearVelocity - val5;
-			if (((Vector3)(ref val6)).magnitude > 1f)
+			if (val6.magnitude > 1f)
 			{
 				Vector3 val7 = -val6 * (isSkidding ? 1f : 3f);
 				rigidBody.AddForce(val7 * rigidBody.mass, (ForceMode)0);
@@ -1999,7 +2000,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			{
 				SetWheelStiffness(0f, 0f);
 				Brake(1.25f);
-				if (num2 <= 0.01f || Vector3.Dot(forward, ((Vector3)(ref linearVelocity)).normalized) < 0.2f)
+				if (num2 <= 0.01f || Vector3.Dot(forward, linearVelocity.normalized) < 0.2f)
 				{
 					isSkidding = false;
 				}
@@ -2040,7 +2041,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 					{
 						float currentMaxSpeed = GetCurrentMaxSpeed();
 						float currentAcceleration = GetCurrentAcceleration();
-						if (((Vector3)(ref linearVelocity)).magnitude < currentMaxSpeed)
+						if (linearVelocity.magnitude < currentMaxSpeed)
 						{
 							Vector3 val9 = forward * currentAcceleration;
 							if (currentGait != GaitType.Walk || IsTowing)
@@ -2057,7 +2058,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 						else
 						{
 							Vector3 val10 = forward * currentMaxSpeed - linearVelocity;
-							Vector3 val11 = ((Vector3)(ref val10)).normalized * (currentAcceleration * 0.2f);
+							Vector3 val11 = val10.normalized * (currentAcceleration * 0.2f);
 							rigidBody.AddForce(val11, (ForceMode)0);
 						}
 					}
@@ -2066,13 +2067,13 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				{
 					float num6 = 0.1f;
 					force = rigidBody.linearVelocity;
-					if (((Vector3)(ref force)).sqrMagnitude < num6 * num6)
+					if (force.sqrMagnitude < num6 * num6)
 					{
 						rigidBody.linearVelocity = Vector3.zero;
 					}
 					else
 					{
-						Vector3 val12 = -((Vector3)(ref linearVelocity)).normalized * (rigidBody.mass * (AnyMounted() ? 1.1f : 3f));
+						Vector3 val12 = -linearVelocity.normalized * (rigidBody.mass * (AnyMounted() ? 1.1f : 3f));
 						rigidBody.AddForce(val12, (ForceMode)0);
 					}
 				}
@@ -2090,7 +2091,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			if (Mathf.Abs(throttleInput) <= 0f)
 			{
 				force = rigidBody.linearVelocity;
-				if (((Vector3)(ref force)).magnitude < 2.5f && groundAngle < minMaxSlopeAngle.y && !isSwimming && !IsSliding)
+				if (force.magnitude < 2.5f && groundAngle < minMaxSlopeAngle.y && !isSwimming && !IsSliding)
 				{
 					goto IL_08b4;
 				}
@@ -2105,7 +2106,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		airTime += Time.fixedDeltaTime;
 		if (airTime > maxAirTimeBeforeRagdoll)
 		{
-			force = default(Vector3);
+			force = default;
 			RagdollAllRiders(force);
 			RagdollHorse();
 		}
@@ -2124,8 +2125,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				Vector3 val15 = ((Component)leadingPlayer).transform.position - lastPullerPosition;
 				lastPullerPosition = ((Component)leadingPlayer).transform.position;
 				force = position - ((Component)this).transform.position;
-				Vector3 normalized = ((Vector3)(ref force)).normalized;
-				Vector3 normalized2 = ((Vector3)(ref val15)).normalized;
+				Vector3 normalized = force.normalized;
+				Vector3 normalized2 = val15.normalized;
 				if (Vector3.Dot(normalized, normalized2) > 0.5f)
 				{
 					float value = Mathf.Lerp(0f, -0.9f, Mathf.Clamp01(Mathf.InverseLerp(3.5f, 7f, num10)));
@@ -2133,7 +2134,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 					if (num10 > 5f)
 					{
 						force = position - val14;
-						Vector3 normalized3 = ((Vector3)(ref force)).normalized;
+						Vector3 normalized3 = force.normalized;
 						rigidBody.AddForceAtPosition(normalized3 * 5000f, val14, (ForceMode)0);
 					}
 				}
@@ -2174,11 +2175,11 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 		float num11 = 10000f;
 		force = rigidBody.linearVelocity;
-		if (((Vector3)(ref force)).magnitude > num11)
+		if (force.magnitude > num11)
 		{
-			Rigidbody obj = rigidBody;
+			Rigidbody val16 = rigidBody;
 			force = rigidBody.linearVelocity;
-			obj.linearVelocity = ((Vector3)(ref force)).normalized * num11;
+			val16.linearVelocity = force.normalized * num11;
 		}
 		float num12 = -1.3f;
 		float num13 = Vector3.Dot(rigidBody.linearVelocity, ((Component)this).transform.forward);
@@ -2191,7 +2192,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		if (Mathf.Abs(steerInput) == 0f && !rigidBody.isKinematic)
 		{
 			force = rigidBody.angularVelocity;
-			if (((Vector3)(ref force)).magnitude < 0.2f)
+			if (force.magnitude < 0.2f)
 			{
 				rigidBody.angularVelocity = Vector3.zero;
 			}
@@ -2211,7 +2212,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3.zero - rigidBody.linearVelocity;
-		Vector3 val2 = ((Vector3)(ref val)).normalized * GetCurrentGait().brakingForce * multiplier;
+		Vector3 val2 = val.normalized * GetCurrentGait().brakingForce * multiplier;
 		rigidBody.AddForce(val2, (ForceMode)0);
 	}
 
@@ -2357,9 +2358,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normalized = ((Vector3)(ref normal)).normalized;
+		Vector3 normalized = normal.normalized;
 		Vector3 val = Vector3.ProjectOnPlane(((Component)this).transform.forward, normalized);
-		Vector3 val2 = ((Vector3)(ref val)).normalized;
+		Vector3 val2 = val.normalized;
 		if (val2 == Vector3.zero)
 		{
 			val2 = ((Component)this).transform.forward;
@@ -2438,7 +2439,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				Vector3 val3 = groundSampleOffsets[i].position + Vector3.up;
 				if (GamePhysics.Trace(new Ray(val3, Vector3.down), 0f, out var hitInfo, 1.2f, 1503731969, (QueryTriggerInteraction)1, this))
 				{
-					Vector3 normal = ((RaycastHit)(ref hitInfo)).normal;
+					Vector3 normal = hitInfo.normal;
 					num++;
 					if (i == groundSampleOffsets.Length - 1)
 					{
@@ -2461,7 +2462,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				throttleInput = 1f;
 			}
 			Vector3 val4 = val / (float)list.Count;
-			Vector3 normalized = ((Vector3)(ref val4)).normalized;
+			Vector3 normalized = val4.normalized;
 			float num2 = 0f;
 			for (int j = 0; j < list.Count; j++)
 			{
@@ -2475,7 +2476,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			}
 			val2 += Vector3.up;
 			val2 /= (float)(groundSampleOffsets.Length + 1);
-			((Vector3)(ref val2)).Normalize();
+			val2.Normalize();
 			if (normalVariation < 10f || Vector3.Dot(targetUp, val2) < 0.99f)
 			{
 				targetUp = val2;
@@ -2496,8 +2497,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		WheelFrictionCurve forwardFriction = wheelCollider.forwardFriction;
 		WheelFrictionCurve sidewaysFriction = wheelCollider.sidewaysFriction;
-		((WheelFrictionCurve)(ref forwardFriction)).stiffness = forward;
-		((WheelFrictionCurve)(ref sidewaysFriction)).stiffness = sideways;
+		forwardFriction.stiffness = forward;
+		sidewaysFriction.stiffness = sideways;
 		wheelCollider.forwardFriction = forwardFriction;
 		wheelCollider.sidewaysFriction = sidewaysFriction;
 	}
@@ -2536,20 +2537,20 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		float num = Mathf.Lerp(avoidanceDetectionDistance.x, avoidanceDetectionDistance.y, GetSpeedFraction());
 		Vector3 val = rigidBody.linearVelocity;
 		Vector3 val2;
-		if (!(((Vector3)(ref val)).sqrMagnitude > 0.01f))
+		if (!(val.sqrMagnitude > 0.01f))
 		{
 			val2 = ((Component)this).transform.forward;
 		}
 		else
 		{
 			val = rigidBody.linearVelocity;
-			val2 = ((Vector3)(ref val)).normalized;
+			val2 = val.normalized;
 		}
 		Vector3 val3 = ((Component)this).transform.right * steerInput * 0.4f;
 		val = val2 + val3 * 0.4f;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		val = Vector3.Lerp(avoidanceScanDirection, normalized, Time.deltaTime * 5f);
-		avoidanceScanDirection = ((Vector3)(ref val)).normalized;
+		avoidanceScanDirection = val.normalized;
 		if (currentAvoidanceState == HorseAvoidanceState.Normal && Time.time < nextAutoAvoidanceCheckTime)
 		{
 			return;
@@ -2599,10 +2600,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		avoidedEnt = null;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.SphereCast(((Component)this).transform.position + ((Component)this).transform.forward + Vector3.up * 1f, avoidanceSphereRadius, direction, ref val, distance, LayerMask.op_Implicit(avoidanceObstacleMask)))
 		{
-			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((RaycastHit)(ref val)).collider);
+			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(val.collider);
 			if (baseEntity is TreeEntity)
 			{
 				avoidedEnt = baseEntity;
@@ -2610,7 +2611,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			}
 			if (baseEntity is ResourceEntity)
 			{
-				Physics.IgnoreCollision((Collider)(object)wheelCollider, ((RaycastHit)(ref val)).collider);
+				Physics.IgnoreCollision((Collider)(object)wheelCollider, val.collider);
 			}
 		}
 		return false;
@@ -2635,9 +2636,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((Component)this).transform.forward + ((Component)this).transform.right * 0.5f;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		val = ((Component)this).transform.forward - ((Component)this).transform.right * 0.5f;
-		Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+		Vector3 normalized2 = val.normalized;
 		float num = CheckSideClearance(normalized, detectDistance);
 		float num2 = CheckSideClearance(normalized2, detectDistance);
 		if (!(num > num2))
@@ -2655,12 +2656,12 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.SphereCast(((Component)this).transform.position + Vector3.up * 1f, avoidanceSphereRadius, direction, ref val, distance, LayerMask.op_Implicit(avoidanceObstacleMask)))
 		{
-			if (GameObjectEx.ToBaseEntity(((RaycastHit)(ref val)).collider) is TreeEntity)
+			if (GameObjectEx.ToBaseEntity(val.collider) is TreeEntity)
 			{
-				return ((RaycastHit)(ref val)).distance;
+				return val.distance;
 			}
 			return distance;
 		}
@@ -2675,7 +2676,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	protected void OnCollisionEnter(Collision collision)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			ProcessCollision(collision, rigidBody);
 		}
@@ -2688,11 +2689,11 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null))
+		if (!isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null))
 		{
 			Vector3 relativeVelocity = collision.relativeVelocity;
-			float num = ((Vector3)(ref relativeVelocity)).magnitude * rigidBody.mass;
-			float num2 = Vector3.Dot(-((ContactPoint)(ref collision.contacts[0])).normal, ((Component)this).transform.forward);
+			float num = relativeVelocity.magnitude * rigidBody.mass;
+			float num2 = Vector3.Dot(-collision.contacts[0].normal, ((Component)this).transform.forward);
 			float num3 = Mathf.Lerp(0.2f, 1f, Mathf.Clamp01(num2));
 			num *= num3;
 			if (QueueCollisionDamage(this, num) > 0f)
@@ -3053,7 +3054,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		else
 		{
 			leadingPlayer.modifiers.RemoveFromSource(Modifier.ModifierSource.Interaction);
-			playerLeadingId = default(NetworkableId);
+			playerLeadingId = default;
 		}
 		leadingPlayer = target;
 		SendNetworkUpdateImmediate();
@@ -3076,9 +3077,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SERVER_Lead(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -3124,10 +3125,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		List<Collider> list = Pool.Get<List<Collider>>();
-		Vis.Colliders<Collider>(((Component)mountPoints[0].mountable.eyePositionOverride).transform.position - ((Component)this).transform.forward * 1f, 2f, list, 2162689, (QueryTriggerInteraction)2);
-		bool num = list.Count > 0;
+		Vis.Colliders(((Component)mountPoints[0].mountable.eyePositionOverride).transform.position - ((Component)this).transform.forward * 1f, 2f, list, 2162689, (QueryTriggerInteraction)2);
+		bool flag = list.Count > 0;
 		Pool.FreeUnmanaged<Collider>(ref list);
-		return !num;
+		return !flag;
 	}
 
 	public override float GetNetworkTime()
@@ -3208,9 +3209,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	public void SetForSale()
 	{
 		SetFlagLocal(Flags.Reserved2, b: true);
-		Flags num = flags;
+		Flags flags = base.flags;
 		SetSeatCount(0);
-		if (num == flags)
+		if (flags == base.flags)
 		{
 			SendNetworkUpdate();
 		}
@@ -3253,10 +3254,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		Matrix4x4 localToWorldMatrix = ((Component)clippingMountCheckCollider).transform.localToWorldMatrix;
-		Vector3 val = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(clippingMountCheckCollider.center);
+		Vector3 val = localToWorldMatrix.MultiplyPoint3x4(clippingMountCheckCollider.center);
 		Vector3 val2 = Vector3.zero;
-		((Vector3)(ref val2))[clippingMountCheckCollider.direction] = 1f;
-		val2 = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyVector(val2);
+		val2[clippingMountCheckCollider.direction] = 1f;
+		val2 = localToWorldMatrix.MultiplyVector(val2);
 		float num = clippingMountCheckCollider.radius * 0.9f;
 		float num2 = 0.5f * clippingMountCheckCollider.height * 0.9f - num;
 		Vector3 point = val + val2 * num2;
@@ -3266,7 +3267,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		for (int i = 0; i < list.Count; i++)
 		{
 			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(list[i]);
-			if ((Object)(object)baseEntity != (Object)null && (baseEntity.isClient != base.isClient || (Object)(object)baseEntity == (Object)(object)this))
+			if ((Object)(object)baseEntity != (Object)null && (baseEntity.isClient != isClient || (Object)(object)baseEntity == (Object)(object)this))
 			{
 				ListEx.RemoveUnordered<Collider>(list, i);
 				i--;
@@ -3352,7 +3353,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		{
 			return;
 		}
-		foreach (MountPointInfo allMountPoint in base.allMountPoints)
+		foreach (MountPointInfo allMountPoint in allMountPoints)
 		{
 			if (!((Object)(object)allMountPoint.mountable == (Object)null) && !((Object)(object)allMountPoint.mountable.GetMounted() == (Object)null))
 			{
@@ -3376,9 +3377,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			flagsUpdateScope.Set(Flags.Reserved10, b: true);
 			break;
 		}
-		Flags num = base.flags;
+		Flags flags2 = base.flags;
 		UpdateMountFlags();
-		if (num == base.flags && flags != base.flags)
+		if (flags2 == base.flags && flags != base.flags)
 		{
 			SendNetworkUpdate();
 		}
@@ -3443,7 +3444,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		TryLeaveHitch();
 		TowDetach();
 		RagdollAllRiders();
-		Invoke(base.KillMessage, 0.5f);
+		Invoke(KillMessage, 0.5f);
 		base.OnDied(hitInfo);
 	}
 
@@ -3455,7 +3456,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		TryLeaveHitch();
 		TowDetach();
 		RagdollAllRiders();
-		Invoke(base.KillMessage, 0.5f);
+		Invoke(KillMessage, 0.5f);
 		base.AdminKill();
 	}
 
@@ -3483,10 +3484,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	{
 		if (force || AnyMounted() || IsLeading)
 		{
-			byte num = (byte)((duckInputDown ? (-1f) : throttleInput) + 1f);
-			byte b = (byte)(steerInput + 1f);
-			byte b2 = (byte)(avoidanceSteeringInput + 1);
-			byte arg = (byte)(num | (b << 2) | (b2 << 4));
+			byte b = (byte)((duckInputDown ? (-1f) : throttleInput) + 1f);
+			byte b2 = (byte)(steerInput + 1f);
+			byte b3 = (byte)(avoidanceSteeringInput + 1);
+			byte arg = (byte)(b | (b2 << 2) | (b3 << 4));
 			byte arg2 = (byte)Mathf.Clamp(normalVariation / 100f * 255f, 0f, 255f);
 			ClientRPC(RpcTarget.NetworkGroup("CLIENT_HorseUpdate"), currentStamina, currentMaxStamina, (byte)currentGait, arg, arg2);
 		}
@@ -3528,7 +3529,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public void OnTowAttach()
 	{
-		Invoke(delegate
+		Invoke(() =>
 		{
 			ComponentExtensions.SetActive<TriggerTowing>(towingTrigger, false);
 		}, 0f);
@@ -3536,16 +3537,16 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public void OnTowDetach()
 	{
-		Invoke(delegate
+		Invoke(() =>
 		{
 			ComponentExtensions.SetActive<TriggerTowing>(towingTrigger, true);
 		}, 1f);
 	}
 
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void SERVER_RequestTow(RPCMessage msg)
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
@@ -3598,7 +3599,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		towingEntityId = towableEntity.TowEntity.net.ID;
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_SetTowId"), towableEntity.TowEntity.net.ID);
 		towingAttachment.AttachTo(towableEntity);
-		Invoke(delegate
+		Invoke(() =>
 		{
 			ComponentExtensions.SetActive<TriggerTowing>(towingTrigger, false);
 		}, 0f);
@@ -3611,8 +3612,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		if (IsTowing)
 		{
-			towingEntityId = default(NetworkableId);
-			((BaseEntity)this).ClientRPC(RpcTarget.NetworkGroup("CLIENT_SetTowId"), default(NetworkableId));
+			towingEntityId = default;
+			ClientRPC(RpcTarget.NetworkGroup("CLIENT_SetTowId"), default(NetworkableId));
 			ClientRPC(RpcTarget.NetworkGroup("CLIENT_CanTow"), arg1: false);
 			towableEntity = null;
 			towingAttachment.Detach();
@@ -3661,7 +3662,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private void HorseDecay()
 	{
-		if (base.healthFraction != 0f && !base.IsDestroyed && !(Time.time < lastRiddenTime + 600f) && !(Time.time < lastEatTime + 600f) && !IsForSale && !(Time.time < nextDecayTime))
+		if (healthFraction != 0f && !IsDestroyed && !(Time.time < lastRiddenTime + 600f) && !(Time.time < lastEatTime + 600f) && !IsForSale && !(Time.time < nextDecayTime))
 		{
 			float num = 1f / decayMinutes;
 			float num2 = ((!IsOutside()) ? 1f : 0.5f);
@@ -3791,7 +3792,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			baseDrag = rigidBody.linearDamping;
 			baseAngularDrag = rigidBody.angularDamping;
 		}
-		bonesInitialLocalPos = (Vector3[])(object)new Vector3[allBones.Length];
+		bonesInitialLocalPos = new Vector3[allBones.Length];
 		for (int i = 0; i < allBones.Length; i++)
 		{
 			bonesInitialLocalPos[i] = allBones[i].localPosition;
@@ -3810,7 +3811,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (old != next && base.isServer)
+		if (old != next && isServer)
 		{
 			ServerFlagsChanged(old, next);
 		}
@@ -3910,69 +3911,11 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
-		currentBreedIndex = -1;
-		allowedContents = ItemContainer.ContentsType.Generic;
-		equipmentSlots = 4;
-		lootPanelName = "animal";
-		storagePanelName = "animal-storage";
-		isLootable = true;
-		caloriesToDigestPerHour = 100f;
-		dungProducedPerCalorie = 0.1f;
-		lastEatTime = float.NegativeInfinity;
-		damageSinceLastTick = new Dictionary<BaseEntity, float>();
-		doubleTapTime = 0.25f;
-		lastDuckTapTime = -1f;
-		targetUp = Vector3.up;
-		averagedUp = Vector3.up;
-		gaitProgressionInterval = 1f;
-		gravity = 10f;
-		waterGravity = 1f;
-		groundAlignmentSpeed = 50f;
-		roadSpeedBonus = 1f;
-		reverseSpeedFactor = 0.5f;
-		reverseAccelerationForce = 4000f;
-		rotationResponsiveness = 1f;
-		minMaxSlopeAngle = new Vector2(10f, 60f);
-		minCollisionDamageForce = 20000f;
-		maxCollisionDamageForce = 2500000f;
-		collisionDamageMultiplier = 1f;
-		playerDamageThreshold = 40f;
-		playerRagdollThreshold = 75f;
-		maxAirTimeBeforeRagdoll = 1.5f;
-		towingAccelerationBoost = 2f;
-		towingMaxSpeedBoost = 1f;
-		maxTowingGait = GaitType.Trot;
-		currentStamina = 10f;
-		currentMaxStamina = 10f;
-		maxStamina = 20f;
-		staminaCoreLossRatio = 0.1f;
-		staminaCoreSpeedBonus = 3f;
-		calorieToStaminaRatio = 0.1f;
-		hydrationToStaminaRatio = 0.5f;
-		maxStaminaCoreFromWater = 0.5f;
-		avoidanceSphereRadius = 0.5f;
-		avoidanceDetectionDistance = new Vector2(3f, 8f);
-		groundAngleSlideThresholdForced = 50f;
-		groundAngleSlideThreshold = 37f;
-		groundAngleToRecoverFromSlide = 24f;
-		normalVariationSlideThreshold = 2.5f;
-		healingMultiplier = 4f;
-		staminaReplenishAmount = 1f;
-		prohibitedMedicalItems = Array.Empty<ItemDefinition>();
-		base._002Ector();
 	}
 
 	static RidableHorse()
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Expected O, but got Unknown
-		dungTimeScale = 1f;
-		TowAngleErrorPhrase = new Phrase("horse_tow_error", "Straighten up to tow");
-		debug = false;
-		autoAvoidance = true;
-		throttledGroundAngleUpdate = true;
-		groundAngleUpdateRate = 0.05f;
-		decayMinutes = 180f;
-		Population = 2f;
+		//IL_001e: Expected Obj, but got Unknown
 	}
 }

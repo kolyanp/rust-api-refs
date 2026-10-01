@@ -8,22 +8,22 @@ namespace FIMSpace.GroundFitter;
 public class FGroundFitter_Movement : MonoBehaviour
 {
 	[Header("> Main Tweak Variables <")]
-	public float BaseSpeed;
+	public float BaseSpeed = 3f;
 
-	public float RotateToTargetSpeed;
+	public float RotateToTargetSpeed = 6f;
 
-	public float SprintingSpeed;
+	public float SprintingSpeed = 10f;
 
 	protected float ActiveSpeed;
 
-	public float AccelerationSpeed;
+	public float AccelerationSpeed = 10f;
 
-	public float DecelerationSpeed;
+	public float DecelerationSpeed = 10f;
 
 	[Header("> Additional Options <")]
-	public float JumpPower;
+	public float JumpPower = 7f;
 
-	public float gravity;
+	public float gravity = 15f;
 
 	public bool MultiplySprintAnimation;
 
@@ -48,15 +48,15 @@ public class FGroundFitter_Movement : MonoBehaviour
 
 	protected float gravitUpOffset;
 
-	internal Vector3 lastNotZeroMoveVector;
+	internal Vector3 lastNotZeroMoveVector = Vector3.zero;
 
-	internal Vector3 MoveVector;
+	internal Vector3 MoveVector = Vector3.zero;
 
 	internal bool Sprint;
 
 	internal float RotationOffset;
 
-	protected string lastAnim;
+	protected string lastAnim = "";
 
 	protected Animator animator;
 
@@ -82,25 +82,25 @@ public class FGroundFitter_Movement : MonoBehaviour
 
 	internal static int _hash_animSp = Animator.StringToHash("AnimationSpeed");
 
-	private int _hash_IsGrounded;
+	private int _hash_IsGrounded = -1;
 
-	private int _hash_IsMov;
+	private int _hash_IsMov = -1;
 
 	private bool slidingAssigned;
 
 	private float? yAdjustPos;
 
-	[HideInInspector]
 	[Tooltip("If you want to set some animator parameter during being grounded")]
-	public string SetIsGroundedParam;
+	[HideInInspector]
+	public string SetIsGroundedParam = "";
 
 	[Tooltip("If you want to set some animator parameter during accelerating moving")]
 	[HideInInspector]
-	public string SetIsMovingParam;
+	public string SetIsMovingParam = "";
 
 	[Tooltip("If using physical move with collider, assigning to the collider sliding material")]
 	[HideInInspector]
-	public bool UseSlidingMat;
+	public bool UseSlidingMat = true;
 
 	private static PhysicsMaterial pm_Sliding = null;
 
@@ -139,7 +139,7 @@ public class FGroundFitter_Movement : MonoBehaviour
 		}
 		FGroundFitter fGroundFitter = fitter;
 		Quaternion rotation = ((Component)this).transform.rotation;
-		fGroundFitter.UpAxisRotation = ((Quaternion)(ref rotation)).eulerAngles.y;
+		fGroundFitter.UpAxisRotation = rotation.eulerAngles.y;
 		initialUpOffset = fitter.UpOffset;
 		fitter.RefreshLastRaycast();
 		clips = new FAnimationClips(animator);
@@ -165,7 +165,7 @@ public class FGroundFitter_Movement : MonoBehaviour
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Expected O, but got Unknown
+		//IL_0069: Expected Obj, but got Unknown
 		if (Object.op_Implicit((Object)(object)rigb))
 		{
 			if (UsePhysics)
@@ -274,7 +274,7 @@ public class FGroundFitter_Movement : MonoBehaviour
 		if (((Behaviour)fitter).enabled)
 		{
 			RaycastHit lastRaycast = fitter.LastRaycast;
-			if (!Object.op_Implicit((Object)(object)((RaycastHit)(ref lastRaycast)).transform))
+			if (!Object.op_Implicit((Object)(object)lastRaycast.transform))
 			{
 				if (!inAir)
 				{
@@ -301,16 +301,16 @@ public class FGroundFitter_Movement : MonoBehaviour
 		if (YVelocity < 0f)
 		{
 			RaycastHit val = fitter.CastRay();
-			if (Object.op_Implicit((Object)(object)((RaycastHit)(ref val)).transform) && ((Component)this).transform.position.y + YVelocity * delta <= ((RaycastHit)(ref val)).point.y + initialUpOffset + 0.05f)
+			if (Object.op_Implicit((Object)(object)val.transform) && ((Component)this).transform.position.y + YVelocity * delta <= val.point.y + initialUpOffset + 0.05f)
 			{
-				fitter.UpOffset -= ((RaycastHit)(ref val)).point.y - freezeJumpYPosition;
+				fitter.UpOffset -= val.point.y - freezeJumpYPosition;
 				HitGround();
 			}
 		}
 		else
 		{
 			RaycastHit val2 = fitter.CastRay();
-			if (Object.op_Implicit((Object)(object)((RaycastHit)(ref val2)).transform) && ((RaycastHit)(ref val2)).point.y - 0.1f > ((Component)this).transform.position.y)
+			if (Object.op_Implicit((Object)(object)val2.transform) && val2.point.y - 0.1f > ((Component)this).transform.position.y)
 			{
 				fitter.UpOffset = initialUpOffset;
 				YVelocity = -1f;
@@ -386,9 +386,9 @@ public class FGroundFitter_Movement : MonoBehaviour
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		holdJumpPosition = ((RaycastHit)(ref hit)).point;
-		freezeJumpYPosition = ((RaycastHit)(ref hit)).point.y;
-		fitter.UpOffset = Mathf.Abs(((RaycastHit)(ref hit)).point.y - ((Component)this).transform.position.y);
+		holdJumpPosition = hit.point;
+		freezeJumpYPosition = hit.point.y;
+		fitter.UpOffset = Mathf.Abs(hit.point.y - ((Component)this).transform.position.y);
 	}
 
 	protected virtual void HandleTransforming()
@@ -430,10 +430,10 @@ public class FGroundFitter_Movement : MonoBehaviour
 		if (((Behaviour)fitter).enabled)
 		{
 			RaycastHit lastRaycast = fitter.LastRaycast;
-			if (Object.op_Implicit((Object)(object)((RaycastHit)(ref lastRaycast)).transform))
+			if (Object.op_Implicit((Object)(object)lastRaycast.transform))
 			{
 				lastRaycast = fitter.LastRaycast;
-				Vector3 val = ((RaycastHit)(ref lastRaycast)).point + fitter.UpOffset * Vector3.up;
+				Vector3 val = lastRaycast.point + fitter.UpOffset * Vector3.up;
 				if (!UsePhysics)
 				{
 					((Component)this).transform.position = val;
@@ -537,9 +537,9 @@ public class FGroundFitter_Movement : MonoBehaviour
 		{
 			animator.rootRotation = fitter.LastRotation;
 			Quaternion deltaRotation = animator.deltaRotation;
-			float num = default(float);
-			Vector3 val = default(Vector3);
-			((Quaternion)(ref deltaRotation)).ToAngleAxis(ref num, ref val);
+			float num = default;
+			Vector3 val = default;
+			deltaRotation.ToAngleAxis(ref num, ref val);
 			float y = (val * num * (MathF.PI / 180f)).y;
 			fitter.UpAxisRotation += y / Time.deltaTime;
 		}
@@ -595,21 +595,5 @@ public class FGroundFitter_Movement : MonoBehaviour
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		BaseSpeed = 3f;
-		RotateToTargetSpeed = 6f;
-		SprintingSpeed = 10f;
-		AccelerationSpeed = 10f;
-		DecelerationSpeed = 10f;
-		JumpPower = 7f;
-		gravity = 15f;
-		lastNotZeroMoveVector = Vector3.zero;
-		MoveVector = Vector3.zero;
-		lastAnim = "";
-		_hash_IsGrounded = -1;
-		_hash_IsMov = -1;
-		SetIsGroundedParam = "";
-		SetIsMovingParam = "";
-		UseSlidingMat = true;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

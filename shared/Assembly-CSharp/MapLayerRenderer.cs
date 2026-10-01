@@ -15,8 +15,6 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 
 	public Camera renderCamera;
 
-	public CameraEvent cameraEvent;
-
 	public Material renderMaterial;
 
 	private MapLayer? _currentlyRenderedLayer;
@@ -44,7 +42,7 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 		CommandBuffer val2 = BuildCommandBufferDungeons(proceduralDynamicDungeon);
 		try
 		{
-			RenderImpl(val2);
+			Graphics.ExecuteCommandBuffer(val2);
 		}
 		finally
 		{
@@ -54,21 +52,15 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 
 	private CommandBuffer BuildCommandBufferDungeons(ProceduralDynamicDungeon closest)
 	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		CommandBuffer val = new CommandBuffer
-		{
-			name = "DungeonsLayer Render"
-		};
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		CommandBuffer val = CreateCommandBuffer("DungeonsLayer Render");
 		if ((Object)(object)closest != (Object)null && closest.spawnedCells != null)
 		{
 			Matrix4x4 val2 = Matrix4x4.Translate(closest.mapOffset);
@@ -127,7 +119,7 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 		CommandBuffer val = BuildCommandBufferTrainTunnels();
 		try
 		{
-			RenderImpl(val);
+			Graphics.ExecuteCommandBuffer(val);
 		}
 		finally
 		{
@@ -137,14 +129,8 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 
 	private CommandBuffer BuildCommandBufferTrainTunnels()
 	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		CommandBuffer val = new CommandBuffer
-		{
-			name = "TrainLayer Render"
-		};
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		CommandBuffer val = CreateCommandBuffer("TrainLayer Render");
 		foreach (DungeonGridCell dungeonGridCell in TerrainMeta.Path.DungeonGridCells)
 		{
 			if (dungeonGridCell.MapRendererLods == null || dungeonGridCell.MapRendererLods.Length == 0)
@@ -173,7 +159,7 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 		CommandBuffer val = BuildCommandBufferUnderwaterLabs(floor);
 		try
 		{
-			RenderImpl(val);
+			Graphics.ExecuteCommandBuffer(val);
 		}
 		finally
 		{
@@ -198,14 +184,8 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 
 	private CommandBuffer BuildCommandBufferUnderwaterLabs(int floor)
 	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
-		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
-		CommandBuffer val = new CommandBuffer
-		{
-			name = "UnderwaterLabLayer Render"
-		};
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		CommandBuffer val = CreateCommandBuffer("UnderwaterLabLayer Render");
 		foreach (DungeonBaseInfo dungeonBaseEntrance in TerrainMeta.Path.DungeonBaseEntrances)
 		{
 			if (dungeonBaseEntrance.Floors.Count <= floor)
@@ -280,15 +260,31 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 		}
 	}
 
-	private void RenderImpl(CommandBuffer cb)
+	private CommandBuffer CreateCommandBuffer(string name)
 	{
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Expected Obj, but got Unknown
 		double num = (double)World.Size * 1.5;
 		renderCamera.orthographicSize = (float)num / 2f;
-		renderCamera.RemoveAllCommandBuffers();
-		renderCamera.AddCommandBuffer(cameraEvent, cb);
-		renderCamera.Render();
-		renderCamera.RemoveAllCommandBuffers();
+		CommandBuffer val = new CommandBuffer
+		{
+			name = name
+		};
+		val.SetRenderTarget(RenderTargetIdentifier.op_Implicit((Texture)(object)renderCamera.targetTexture));
+		val.ClearRenderTarget(true, true, renderCamera.backgroundColor);
+		val.SetViewProjectionMatrices(renderCamera.worldToCameraMatrix, renderCamera.projectionMatrix);
+		val.SetViewport(renderCamera.pixelRect);
+		return val;
 	}
 
 	public static MapLayerRenderer GetOrCreate()

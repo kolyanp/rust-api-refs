@@ -23,7 +23,7 @@ public class ScientistNPC2 : BaseNPC2
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			Vector3 serverWorldPosition = ServerWorldPosition;
 			Matrix4x4 worldToNavMeshSpace = WorldToNavMeshSpace;
-			return ((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyPoint(serverWorldPosition);
+			return worldToNavMeshSpace.MultiplyPoint(serverWorldPosition);
 		}
 		set
 		{
@@ -34,7 +34,7 @@ public class ScientistNPC2 : BaseNPC2
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 			Matrix4x4 navMeshToWorldSpace = NavMeshToWorldSpace;
-			ServerWorldPosition = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyPoint(value);
+			ServerWorldPosition = navMeshToWorldSpace.MultiplyPoint(value);
 		}
 	}
 
@@ -45,7 +45,7 @@ public class ScientistNPC2 : BaseNPC2
 			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-			RustNavMeshAgent rustNavMeshAgent = default(RustNavMeshAgent);
+			RustNavMeshAgent rustNavMeshAgent = default;
 			if (AI.useUnityNavmesh)
 			{
 				GhostShip ghostShip = GetParentEntity() as GhostShip;
@@ -69,7 +69,7 @@ public class ScientistNPC2 : BaseNPC2
 			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-			RustNavMeshAgent rustNavMeshAgent = default(RustNavMeshAgent);
+			RustNavMeshAgent rustNavMeshAgent = default;
 			if (AI.useUnityNavmesh)
 			{
 				GhostShip ghostShip = GetParentEntity() as GhostShip;

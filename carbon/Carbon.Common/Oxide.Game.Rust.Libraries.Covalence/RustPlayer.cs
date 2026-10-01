@@ -337,11 +337,6 @@ public class RustPlayer : IPlayer
 	public void Rename(string name)
 	{
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)BasePlayer == (Object)null)
 		{
 			perms.UpdateNickname(Id, name);
@@ -349,15 +344,18 @@ public class RustPlayer : IPlayer
 		}
 		name = (string.IsNullOrEmpty(name.Trim()) ? BasePlayer.displayName : name);
 		SingletonComponent<ServerMgr>.Instance.persistance.SetPlayerName(EncryptedValue<ulong>.op_Implicit(BasePlayer.userID), name);
-		((BaseNetworkable)BasePlayer).net.connection.username = name;
+		Networkable net = ((BaseNetworkable)BasePlayer).net;
+		if (((net != null) ? net.connection : null) != null)
+		{
+			((BaseNetworkable)BasePlayer).net.connection.username = name;
+		}
 		BasePlayer.displayName = name;
 		((BaseEntity)BasePlayer)._name = name;
 		((BaseNetworkable)BasePlayer).SendNetworkUpdateImmediate();
 		RustPlayer rustPlayer = BasePlayer.AsIPlayer();
 		rustPlayer.Name = name;
 		perms.UpdateNickname(BasePlayer.UserIDString, name);
-		Vector3 position = ((Component)BasePlayer).transform.position;
-		Teleport(position.x, position.y, position.z);
+		Player.RefreshForOtherClients(BasePlayer);
 	}
 
 	public void Reply(string message, string prefix, params object[] args)
@@ -396,6 +394,7 @@ public class RustPlayer : IPlayer
 
 	public void Teleport(float x, float y, float z)
 	{
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
@@ -405,8 +404,7 @@ public class RustPlayer : IPlayer
 		}
 		try
 		{
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(x, y, z);
+			Vector3 val = new Vector3(x, y, z);
 			BasePlayer.EnsureDismounted();
 			((BaseEntity)BasePlayer).SetParent((BaseEntity)null, true, true);
 			BasePlayer.SetServerFall(true);

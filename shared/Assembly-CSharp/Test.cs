@@ -120,6 +120,10 @@ public class Test : MonoBehaviour
 	private void OnDrawGizmos()
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
@@ -143,18 +147,15 @@ public class Test : MonoBehaviour
 		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
 		float num = TableWidth * 0.5f;
 		float num2 = TableHeight * 0.5f;
 		Gizmos.color = Color.green;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(0f - num, 0f, 0f - num2);
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(num, 0f, 0f - num2);
-		Vector3 val3 = default(Vector3);
-		((Vector3)(ref val3))._002Ector(0f - num, 0f, num2);
-		Vector3 val4 = default(Vector3);
-		((Vector3)(ref val4))._002Ector(num, 0f, num2);
+		Vector3 val = new Vector3(0f - num, 0f, 0f - num2);
+		Vector3 val2 = new Vector3(num, 0f, 0f - num2);
+		Vector3 val3 = new Vector3(0f - num, 0f, num2);
+		Vector3 val4 = new Vector3(num, 0f, num2);
 		Gizmos.DrawLine(val, val2);
 		Gizmos.DrawLine(val2, val4);
 		Gizmos.DrawLine(val4, val3);
@@ -181,12 +182,11 @@ public class Test : MonoBehaviour
 		Enumerator<Data.Wall> enumerator2 = poolEngine.Walls.GetEnumerator();
 		try
 		{
-			Vector3 val6 = default(Vector3);
 			while (enumerator2.MoveNext())
 			{
 				Data.Wall current2 = enumerator2.Current;
 				Vector3 val5 = new Vector3(current2.A.x, 0f, current2.A.y);
-				((Vector3)(ref val6))._002Ector(current2.B.x, 0f, current2.B.y);
+				Vector3 val6 = new Vector3(current2.B.x, 0f, current2.B.y);
 				Gizmos.DrawLine(val5, val6);
 			}
 		}
@@ -216,7 +216,7 @@ public class Test : MonoBehaviour
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 val = b - a;
 		Vector2 val2 = new Vector2(0f - val.y, val.x);
-		Vector2 normalized = ((Vector2)(ref val2)).normalized;
+		Vector2 normalized = val2.normalized;
 		return new Data.Wall
 		{
 			A = a,

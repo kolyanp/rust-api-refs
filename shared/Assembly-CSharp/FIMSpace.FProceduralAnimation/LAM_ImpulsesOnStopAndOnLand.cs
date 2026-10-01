@@ -55,7 +55,7 @@ public class LAM_ImpulsesOnStopAndOnLand : LegsAnimatorControlModuleBase
 
 	public override void OnUpdate(LegsAnimator.LegsAnimatorCustomModuleHelper helper)
 	{
-		LegsAnimator lA = base.LA;
+		LegsAnimator lA = LA;
 		if (lA.IsInAir && lA.InAirTime > 0f)
 		{
 			lastUngroundedTime = lA.InAirTime;

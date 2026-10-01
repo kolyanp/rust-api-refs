@@ -14,13 +14,7 @@ public class FElasticTransform
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float RotationRapidness = 0.1f;
 
-	[CompilerGenerated]
-	private Vector3 _003CProceduralPosition_003Ek__BackingField;
-
 	private Quaternion proceduralRotation;
-
-	[CompilerGenerated]
-	private Vector3 _003CsourceAnimationPosition_003Ek__BackingField;
 
 	private float delta = 0.01f;
 
@@ -32,14 +26,14 @@ public class FElasticTransform
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CProceduralPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CProceduralPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -49,14 +43,14 @@ public class FElasticTransform
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CsourceAnimationPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CsourceAnimationPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -139,9 +133,9 @@ public class FElasticTransform
 		this.delta = delta;
 		if (elParent != null)
 		{
-			FElasticTransform obj = (((Object)(object)elParent.transform == (Object)null) ? elParent.elParent : elParent);
-			Quaternion rotation = obj.transform.rotation;
-			Vector3 desired = obj.ProceduralPosition + rotation * transform.localPosition;
+			FElasticTransform fElasticTransform = (((Object)(object)elParent.transform == (Object)null) ? elParent.elParent : elParent);
+			Quaternion rotation = fElasticTransform.transform.rotation;
+			Vector3 desired = fElasticTransform.ProceduralPosition + rotation * transform.localPosition;
 			PositionMuscle.Update(delta, desired);
 			ProceduralPosition = PositionMuscle.ProceduralPosition;
 		}
@@ -223,7 +217,7 @@ public class FElasticTransform
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = lookPos - BlendVector(ProceduralPosition, blending);
-		return Quaternion.FromToRotation(localOffset, ((Vector3)(ref val)).normalized) * transform.rotation;
+		return Quaternion.FromToRotation(localOffset, val.normalized) * transform.rotation;
 	}
 
 	public Quaternion GetTargetRotation(Vector3 lookPos, Vector3 localOffset, Vector3 pos)
@@ -238,6 +232,6 @@ public class FElasticTransform
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = lookPos - pos;
-		return Quaternion.FromToRotation(localOffset, ((Vector3)(ref val)).normalized) * transform.rotation;
+		return Quaternion.FromToRotation(localOffset, val.normalized) * transform.rotation;
 	}
 }

@@ -22,7 +22,7 @@ public class ModuleProcessor : BaseProcessor, IModuleProcessor, IDisposable
 	public void Init()
 	{
 		_modules = ((IModuleProcessor)this).Modules;
-		Community.Runtime.Events.Subscribe(CarbonEvent.ModuleLoaded, delegate(EventArgs e)
+		Community.Runtime.Events.Subscribe(CarbonEvent.ModuleLoaded, (EventArgs e) =>
 		{
 			if (e is ModuleEventArgs e2)
 			{
@@ -32,7 +32,7 @@ public class ModuleProcessor : BaseProcessor, IModuleProcessor, IDisposable
 				array = null;
 			}
 		});
-		Community.Runtime.Events.Subscribe(CarbonEvent.ModuleUnloaded, delegate(EventArgs e)
+		Community.Runtime.Events.Subscribe(CarbonEvent.ModuleUnloaded, (EventArgs e) =>
 		{
 			if (e is ModuleEventArgs e2)
 			{
@@ -108,6 +108,7 @@ public class ModuleProcessor : BaseProcessor, IModuleProcessor, IDisposable
 	public void Setup(BaseHookable hookable)
 	{
 		_modules.Add(hookable);
+		HookSubscriberIndex.Invalidate();
 	}
 
 	public void Build(params Type[] types)
@@ -227,6 +228,7 @@ public class ModuleProcessor : BaseProcessor, IModuleProcessor, IDisposable
 	public void Uninstall(IModule module)
 	{
 		_modules.RemoveAll((BaseHookable x) => x == module);
+		HookSubscriberIndex.Invalidate();
 	}
 
 	public void Save()
@@ -262,6 +264,7 @@ public class ModuleProcessor : BaseProcessor, IModuleProcessor, IDisposable
 			module.Dispose();
 		}
 		_modules.Clear();
+		HookSubscriberIndex.Invalidate();
 		base.Dispose();
 	}
 }

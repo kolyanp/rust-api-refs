@@ -24,7 +24,7 @@ public class TriggerBase : BaseMonoBehaviour
 
 	private static bool _useExcludeLayers;
 
-	private static readonly List<TriggerBase> _allTriggerBase = new List<TriggerBase>();
+	private static readonly HashSet<TriggerBase> _allTriggerBase = new HashSet<TriggerBase>();
 
 	public LayerMask InterestLayers
 	{
@@ -46,8 +46,8 @@ public class TriggerBase : BaseMonoBehaviour
 
 	public bool HasAnyEntityContents => !CollectionEx.IsNullOrEmpty(entityContents);
 
-	[ClientVar(Help = "(Generated) When enabled, triggers use an exclude layer mask to filter out specific physics layers from trigger detection; toggling clears or sets all active triggers")]
 	[ServerVar(Help = "(Generated) When enabled, triggers use an exclude layer mask to filter out specific physics layers from trigger detection; toggling clears or sets all active triggers")]
+	[ClientVar(Help = "(Generated) When enabled, triggers use an exclude layer mask to filter out specific physics layers from trigger detection; toggling clears or sets all active triggers")]
 	public static bool UseExcludeLayers
 	{
 		get
@@ -77,6 +77,11 @@ public class TriggerBase : BaseMonoBehaviour
 	{
 		_allTriggerBase.Add(this);
 		UpdateExcludeLayers();
+	}
+
+	protected virtual void OnDestroy()
+	{
+		_allTriggerBase.Remove(this);
 	}
 
 	private void UpdateExcludeLayers()
@@ -153,7 +158,7 @@ public class TriggerBase : BaseMonoBehaviour
 	public virtual GameObject InterestedInObject(GameObject obj)
 	{
 		int num = 1 << obj.layer;
-		if ((((LayerMask)(ref interestLayers)).value & num) != num)
+		if ((interestLayers.value & num) != num)
 		{
 			return null;
 		}
@@ -276,7 +281,7 @@ public class TriggerBase : BaseMonoBehaviour
 			return;
 		}
 		Bounds bounds = component.bounds;
-		((Bounds)(ref bounds)).Expand(1f);
+		bounds.Expand(1f);
 		List<BaseEntity> list = null;
 		foreach (BaseEntity entityContent in entityContents)
 		{
@@ -292,7 +297,7 @@ public class TriggerBase : BaseMonoBehaviour
 				}
 				list.Add(entityContent);
 			}
-			else if (!((Bounds)(ref bounds)).Contains(entityContent.ClosestPoint(((Component)this).transform.position)))
+			else if (!bounds.Contains(entityContent.ClosestPoint(((Component)this).transform.position)))
 			{
 				if (Debugging.checktriggers)
 				{
@@ -332,8 +337,8 @@ public class TriggerBase : BaseMonoBehaviour
 			return true;
 		}
 		Bounds bounds = component.bounds;
-		((Bounds)(ref bounds)).Expand(1f);
-		return ((Bounds)(ref bounds)).Contains(ent.ClosestPoint(((Component)this).transform.position));
+		bounds.Expand(1f);
+		return bounds.Contains(ent.ClosestPoint(((Component)this).transform.position));
 	}
 
 	public virtual void OnObjects()

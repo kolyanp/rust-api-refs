@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public struct FixedSByteNorm3
+public struct FixedSByteNorm3(Vector3 vec)
 {
 	private const int FracBits = 7;
 
@@ -8,21 +8,11 @@ public struct FixedSByteNorm3
 
 	private const float RcpMaxFrac = 1f / 128f;
 
-	public sbyte x;
+	public sbyte x = (sbyte)(vec.x * 128f);
 
-	public sbyte y;
+	public sbyte y = (sbyte)(vec.y * 128f);
 
-	public sbyte z;
-
-	public FixedSByteNorm3(Vector3 vec)
-	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		x = (sbyte)(vec.x * 128f);
-		y = (sbyte)(vec.y * 128f);
-		z = (sbyte)(vec.z * 128f);
-	}
+	public sbyte z = (sbyte)(vec.z * 128f);
 
 	public static explicit operator Vector3(FixedSByteNorm3 vec)
 	{

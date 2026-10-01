@@ -17,7 +17,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 
 	public NavMeshBuildParams BuildParamsHiRes = new NavMeshBuildParams(true);
 
-	private const string LOG_PREFIX = "[RustNav] ";
+	internal const string LOG_PREFIX = "[RustNav] ";
 
 	private BackgroundTileBuilder tileBuilder;
 
@@ -62,6 +62,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 					_defaultNavmesh.debugName = "default";
 				}
 				OnDefaultNavmeshInstanceChanged();
+				RustNavDoorGates.ForgetPolyRefs();
 			}
 		}
 	}
@@ -80,13 +81,50 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 
 	public static bool HasTunnelRegions { get; private set; }
 
+	public bool IsNavmeshSaveInFlight
+	{
+		get
+		{
+			if (DefaultNavmesh != null)
+			{
+				return DefaultNavmesh.IsSaveInFlight;
+			}
+			return false;
+		}
+	}
+
+	public NavmeshSaveCatchUpStats SaveGateCatchUp
+	{
+		get
+		{
+			if (tileBuilder == null)
+			{
+				return default;
+			}
+			return tileBuilder.SaveGateCatchUp;
+		}
+	}
+
 	[MonoPInvokeCallback(typeof(RecastWrapper.LogCallback))]
 	public static void LogMessage(string message)
 	{
-		if (AI.logIssues && EnsureNewNavmesh())
+		if ((AI.logIssues || IsSaveOrLoadMessage(message)) && EnsureNewNavmesh())
 		{
 			Debug.Log((object)("[RustNav] DLL Log: " + message));
 		}
+	}
+
+	private static bool IsSaveOrLoadMessage(string message)
+	{
+		if (message != null)
+		{
+			if (!message.StartsWith("SaveNavMesh", StringComparison.Ordinal) && !message.StartsWith("AppendNavMeshDelta", StringComparison.Ordinal))
+			{
+				return message.StartsWith("LoadNavMesh", StringComparison.Ordinal);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public static bool EnsureNewNavmesh()
@@ -112,6 +150,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		if ((Object)(object)Instance == (Object)null)
 		{
 			Instance = this;
+			RustNavDoorGates.Clear();
 			if (!AI.useUnityNavmesh)
 			{
 				RecastWrapper.SetLogCallback(logMessageDelegate);
@@ -176,6 +215,20 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			DefaultNavmesh.Dispose();
 		}
 		DefaultNavmesh = rustNavmesh;
+		RustNavDoorGates.ReassertAll();
+	}
+
+	public bool HasPendingTiles()
+	{
+		if (tileBuilder == null)
+		{
+			return false;
+		}
+		List<(RustNavmesh, int, int)> list = Pool.Get<List<(RustNavmesh, int, int)>>();
+		tileBuilder.GetPendingTilesOnMainThread(list);
+		bool result = list.Count > 0;
+		Pool.FreeUnmanaged<(RustNavmesh, int, int)>(ref list);
+		return result;
 	}
 
 	public void RebuildTileSynchronous(RustNavmesh navmesh, int tx, int ty)
@@ -183,6 +236,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		if (tileBuilder != null && navmesh != null)
 		{
 			tileBuilder.EnqueueOnMainThread(navmesh, tx, ty, synchronous: true);
+			RustNavDoorGates.FlushTileReasserts();
 		}
 	}
 
@@ -263,8 +317,8 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			return false;
 		}
 		GetTunnelCellRange(worldBounds, out var minX, out var maxX, out var minZ, out var maxZ);
-		Vector3 min = ((Bounds)(ref worldBounds)).min;
-		Vector3 max = ((Bounds)(ref worldBounds)).max;
+		Vector3 min = worldBounds.min;
+		Vector3 max = worldBounds.max;
 		for (int i = minX; i <= maxX; i++)
 		{
 			for (int j = minZ; j <= maxZ; j++)
@@ -276,8 +330,8 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				foreach (Bounds item in value)
 				{
 					Bounds current = item;
-					Vector3 min2 = ((Bounds)(ref current)).min;
-					Vector3 max2 = ((Bounds)(ref current)).max;
+					Vector3 min2 = current.min;
+					Vector3 max2 = current.max;
 					if (min2.x <= max.x && max2.x >= min.x && min2.z <= max.z && max2.z >= min.z)
 					{
 						return true;
@@ -294,17 +348,24 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		minX = Mathf.FloorToInt(((Bounds)(ref worldBounds)).min.x / 32f);
-		maxX = Mathf.FloorToInt(((Bounds)(ref worldBounds)).max.x / 32f);
-		minZ = Mathf.FloorToInt(((Bounds)(ref worldBounds)).min.z / 32f);
-		maxZ = Mathf.FloorToInt(((Bounds)(ref worldBounds)).max.z / 32f);
+		minX = Mathf.FloorToInt(worldBounds.min.x / 32f);
+		maxX = Mathf.FloorToInt(worldBounds.max.x / 32f);
+		minZ = Mathf.FloorToInt(worldBounds.min.z / 32f);
+		maxZ = Mathf.FloorToInt(worldBounds.max.z / 32f);
 	}
 
 	public void Tick()
 	{
-		if (!AI.useUnityNavmesh && tileBuilder != null)
+		if (!AI.useUnityNavmesh)
 		{
-			tileBuilder.TickOnMainThread();
+			if (DefaultNavmesh != null)
+			{
+				DefaultNavmesh.PollSaveOnMainThread();
+			}
+			if (tileBuilder != null)
+			{
+				tileBuilder.TickOnMainThread();
+			}
 		}
 	}
 
@@ -353,22 +414,67 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 	{
 		using (TimeWarning.New("RustNavigation.Save"))
 		{
-			if (!EnsureNewNavmesh())
-			{
-				return false;
-			}
-			if (DefaultNavmesh == null)
+			if (!CanSave())
 			{
 				return false;
 			}
 			Log("Saving navmesh to path: " + path + "...");
-			string directoryName = Path.GetDirectoryName(path);
-			if (!string.IsNullOrEmpty(directoryName) && !Directory.Exists(directoryName))
-			{
-				Directory.CreateDirectory(directoryName);
-			}
 			return DefaultNavmesh.Save(path);
 		}
+	}
+
+	public bool BeginSave(string path)
+	{
+		using (TimeWarning.New("RustNavigation.BeginSave"))
+		{
+			if (!CanSave())
+			{
+				return false;
+			}
+			if (DefaultNavmesh.BeginSave(path))
+			{
+				Log("Saving navmesh to path: " + path + "...");
+				return true;
+			}
+			if (DefaultNavmesh.IsSaveInFlight)
+			{
+				Log("A navmesh save is still in flight, this cycle's write is queued behind it");
+			}
+			return false;
+		}
+	}
+
+	public void JoinSave()
+	{
+		if (!AI.useUnityNavmesh && DefaultNavmesh != null)
+		{
+			DefaultNavmesh.JoinSaveOnMainThread();
+		}
+	}
+
+	public void JoinSaveAndLandParkedTiles()
+	{
+		if (!AI.useUnityNavmesh && DefaultNavmesh != null)
+		{
+			DefaultNavmesh.JoinSaveAndLandParkedTilesOnMainThread();
+		}
+	}
+
+	public void FlushSaves()
+	{
+		if (!AI.useUnityNavmesh && DefaultNavmesh != null)
+		{
+			DefaultNavmesh.FlushSavesOnMainThread();
+		}
+	}
+
+	private bool CanSave()
+	{
+		if (!EnsureNewNavmesh())
+		{
+			return false;
+		}
+		return DefaultNavmesh != null;
 	}
 
 	public bool Load(string path, bool synchronous = false)
@@ -380,6 +486,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				return false;
 			}
 			Log($"Loading navmesh from path: {path} (synchronous: {synchronous})...");
+			JoinSave();
 			if (!File.Exists(path))
 			{
 				LogWarning("Navmesh file not found at path: " + path);
@@ -399,6 +506,8 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				DefaultNavmesh.Dispose();
 			}
 			DefaultNavmesh = rustNavmesh;
+			rustNavmesh.ResetDoorPolyFlagsToOpen();
+			RustNavDoorGates.ReassertAll();
 			RustNavMeshAgent.RebindAgentsAfterNavmeshSwap();
 			if (AI.checkTileValid)
 			{
@@ -507,11 +616,25 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				string text = ((item.lastFullBuildSeconds >= 0.0) ? $"{item.lastFullBuildSeconds:F2}s" : "building");
 				stringBuilder.AppendLine(string.Format("{0,-40} worker {1,10:F1}ms  tiles {2,6}/{3,-6} first full build {4}", new object[5] { item.debugName, num3, item.NumBuiltTiles, item.TotalTiles, text }));
 			}
+			AppendLastSaveLine(stringBuilder);
 			return stringBuilder.ToString();
 		}
 		finally
 		{
 			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private void AppendLastSaveLine(StringBuilder sb)
+	{
+		if (_defaultNavmesh != null)
+		{
+			sb.AppendLine($"navmesh save in flight: {IsNavmeshSaveInFlight}");
+			sb.AppendLine("last navmesh save: " + _defaultNavmesh.LastSaveStats.Describe());
+			if (tileBuilder != null)
+			{
+				sb.AppendLine(tileBuilder.DescribeSaveGateCatchUp());
+			}
 		}
 	}
 
@@ -538,11 +661,44 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				{
 					DefaultNavmesh.RebuildTilesInBounds(rebuildBounds, synchronous);
 				}
+				if (synchronous)
+				{
+					RustNavDoorGates.FlushTileReasserts();
+				}
 			}
 			finally
 			{
 				((IDisposable)val)?.Dispose();
 			}
+		}
+	}
+
+	public void RebuildTilesUnder(BaseEntity entity)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		OBB val = entity.WorldSpaceBounds();
+		Bounds rebuildBounds = val.ToBounds();
+		PooledList<Collider> val2 = Pool.Get<PooledList<Collider>>();
+		try
+		{
+			((Component)entity).GetComponentsInChildren<Collider>((List<Collider>)(object)val2);
+			foreach (Collider item in (List<Collider>)(object)val2)
+			{
+				if (item.enabled && !item.isTrigger && (0x41218101 & (1 << ((Component)item).gameObject.layer)) != 0)
+				{
+					rebuildBounds.Encapsulate(item.bounds);
+				}
+			}
+			RebuildTilesInBounds(rebuildBounds);
+		}
+		finally
+		{
+			((IDisposable)val2)?.Dispose();
 		}
 	}
 
@@ -626,10 +782,10 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		float drawRadius = RustNav.drawRadius;
-		Bounds val = default(Bounds);
-		((Bounds)(ref val))._002Ector(((Component)viewer).transform.position, new Vector3(drawRadius * 2f, ((Bounds)(ref tileBounds)).size.y, drawRadius * 2f));
-		return ((Bounds)(ref val)).Intersects(tileBounds);
+		Bounds val = new Bounds(((Component)viewer).transform.position, new Vector3(drawRadius * 2f, tileBounds.size.y, drawRadius * 2f));
+		return val.Intersects(tileBounds);
 	}
 }

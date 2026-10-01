@@ -13,13 +13,13 @@ public class HitInfo : IPooled, IDisposable
 
 	public AttackEntity Weapon;
 
-	public bool DoHitEffects;
+	public bool DoHitEffects = true;
 
-	public bool DoDecals;
+	public bool DoDecals = true;
 
 	public bool IsPredicting;
 
-	public bool UseProtection;
+	public bool UseProtection = true;
 
 	public bool UseProtectionForNPCs;
 
@@ -38,6 +38,8 @@ public class HitInfo : IPooled, IDisposable
 	public Vector3 HitPositionWorld;
 
 	public Vector3 HitPositionLocal;
+
+	public NetworkableId DstParentID;
 
 	public Vector3 HitNormalWorld;
 
@@ -67,13 +69,13 @@ public class HitInfo : IPooled, IDisposable
 
 	public DamageProperties damageProperties;
 
-	public DamageTypeList damageTypes;
+	public DamageTypeList damageTypes = new DamageTypeList();
 
 	public bool CanGather;
 
 	public bool DidGather;
 
-	public float gatherScale;
+	public float gatherScale = 1f;
 
 	public BasePlayer InitiatorPlayer
 	{
@@ -97,7 +99,7 @@ public class HitInfo : IPooled, IDisposable
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 			Vector3 val = PointEnd - PointStart;
-			return ((Vector3)(ref val)).normalized;
+			return val.normalized;
 		}
 	}
 
@@ -214,7 +216,8 @@ public class HitInfo : IPooled, IDisposable
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
 		Initiator = null;
 		WeaponPrefab = null;
 		Weapon = null;
@@ -229,19 +232,20 @@ public class HitInfo : IPooled, IDisposable
 		HitBone = 0u;
 		HitPart = 0u;
 		HitMaterial = 0u;
-		HitPositionWorld = default(Vector3);
-		HitPositionLocal = default(Vector3);
-		HitNormalWorld = default(Vector3);
-		HitNormalLocal = default(Vector3);
-		PointStart = default(Vector3);
-		PointEnd = default(Vector3);
+		HitPositionWorld = default;
+		HitPositionLocal = default;
+		DstParentID = default;
+		HitNormalWorld = default;
+		HitNormalLocal = default;
+		PointStart = default;
+		PointEnd = default;
 		ProjectileID = 0;
 		ProjectileHits = 0;
 		ProjectileDistance = 0f;
 		ProjectileIntegrity = 0f;
 		ProjectileTravelTime = 0f;
 		ProjectileTrajectoryMismatch = 0f;
-		ProjectileVelocity = default(Vector3);
+		ProjectileVelocity = default;
 		ProjectilePrefab = null;
 		material = null;
 		damageProperties = null;
@@ -265,8 +269,10 @@ public class HitInfo : IPooled, IDisposable
 		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
 		Initiator = other.Initiator;
 		WeaponPrefab = other.WeaponPrefab;
 		Weapon = other.Weapon;
@@ -283,6 +289,7 @@ public class HitInfo : IPooled, IDisposable
 		HitMaterial = other.HitMaterial;
 		HitPositionWorld = other.HitPositionWorld;
 		HitPositionLocal = other.HitPositionLocal;
+		DstParentID = other.DstParentID;
 		HitNormalWorld = other.HitNormalWorld;
 		HitNormalLocal = other.HitNormalLocal;
 		PointStart = other.PointStart;
@@ -329,35 +336,17 @@ public class HitInfo : IPooled, IDisposable
 
 	public HitInfo()
 	{
-		DoHitEffects = true;
-		DoDecals = true;
-		UseProtection = true;
-		damageTypes = new DamageTypeList();
-		gatherScale = 1f;
-		base._002Ector();
 	}
 
 	public HitInfo(BaseEntity attacker, BaseEntity target, DamageType type, float damageAmount, Vector3 vhitPosition)
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		DoHitEffects = true;
-		DoDecals = true;
-		UseProtection = true;
-		damageTypes = new DamageTypeList();
-		gatherScale = 1f;
-		base._002Ector();
 		Init(attacker, target, type, damageAmount, vhitPosition);
 	}
 
 	public HitInfo(BaseEntity attacker, BaseEntity target, DamageType type, float damageAmount)
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		DoHitEffects = true;
-		DoDecals = true;
-		UseProtection = true;
-		damageTypes = new DamageTypeList();
-		gatherScale = 1f;
-		base._002Ector();
 		Init(attacker, target, type, damageAmount, ((Component)target).transform.position);
 	}
 
@@ -371,29 +360,31 @@ public class HitInfo : IPooled, IDisposable
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
 		HitEntity = null;
 		PointStart = attack.pointStart;
 		PointEnd = attack.pointEnd;
-		if (((NetworkableId)(ref attack.hitID)).IsValid)
+		if (attack.hitID.IsValid)
 		{
 			DidHit = true;
 			if (serverSide)
@@ -409,10 +400,11 @@ public class HitInfo : IPooled, IDisposable
 		DidHit = true;
 		HitPositionLocal = attack.hitPositionLocal;
 		HitPositionWorld = attack.hitPositionWorld;
-		HitNormalLocal = ((Vector3)(ref attack.hitNormalLocal)).normalized;
-		HitNormalWorld = ((Vector3)(ref attack.hitNormalWorld)).normalized;
+		DstParentID = attack.dstParentID;
+		HitNormalLocal = attack.hitNormalLocal.normalized;
+		HitNormalWorld = attack.hitNormalWorld.normalized;
 		HitMaterial = attack.hitMaterialID;
-		if (((NetworkableId)(ref attack.srcParentID)).IsValid)
+		if (attack.srcParentID.IsValid)
 		{
 			BaseEntity baseEntity = null;
 			if (serverSide)
@@ -424,7 +416,7 @@ public class HitInfo : IPooled, IDisposable
 				PointStart = ((Component)baseEntity).transform.TransformPoint(PointStart);
 			}
 		}
-		if (((NetworkableId)(ref attack.dstParentID)).IsValid)
+		if (attack.dstParentID.IsValid)
 		{
 			BaseEntity baseEntity2 = null;
 			if (serverSide)
@@ -444,25 +436,25 @@ public class HitInfo : IPooled, IDisposable
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		Ray val = default(Ray);
-		((Ray)(ref val))._002Ector(PointStart, attackNormal);
+		Ray val = new Ray(PointStart, attackNormal);
 		if ((Object)(object)ProjectilePrefab == (Object)null)
 		{
 			return RayEx.ClosestPoint(val, position);
 		}
-		Sphere val2 = default(Sphere);
-		((Sphere)(ref val2))._002Ector(position, ProjectilePrefab.thickness);
-		RaycastHit val3 = default(RaycastHit);
-		if (((Sphere)(ref val2)).Trace(val, ref val3, float.PositiveInfinity))
+		Sphere val2 = new Sphere(position, ProjectilePrefab.thickness);
+		RaycastHit val3 = default;
+		if (val2.Trace(val, ref val3, float.PositiveInfinity))
 		{
-			return ((RaycastHit)(ref val3)).point;
+			return val3.point;
 		}
 		return position;
 	}

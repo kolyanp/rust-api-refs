@@ -17,11 +17,11 @@ public class State_Intimidated : State_PlayAnimationRM
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		FaceTarget = true;
-		if (base.Senses.FindTargetPosition(out var targetPosition))
+		if (Senses.FindTargetPosition(out var targetPosition))
 		{
 			Vector3 forward = ((Component)Owner).transform.forward;
 			Vector3 val = ((Component)Owner).transform.position - targetPosition;
-			if (Vector3.Dot(forward, ((Vector3)(ref val)).normalized) > facingAwayDotThreshold)
+			if (Vector3.Dot(forward, val.normalized) > facingAwayDotThreshold)
 			{
 				return EFSMStateStatus.Success;
 			}

@@ -71,9 +71,9 @@ public class ChristmasLights : StringLights
 		return 5;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_SetAnimationStyle(RPCMessage msg)
 	{
 		AnimationType animationType = (AnimationType)Mathf.Clamp(msg.read.Int32(), 1, 7);

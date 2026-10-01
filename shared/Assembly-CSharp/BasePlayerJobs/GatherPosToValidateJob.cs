@@ -31,9 +31,9 @@ internal struct GatherPosToValidateJob : IJob
 			int num = Indices[i];
 			Vector3 startPoint = TickInterpolatorCache.GetStartPoint(TickCache, num);
 			Vector3 endPoint = TickInterpolatorCache.GetEndPoint(TickCache, num);
-			bool num2 = startPoint != endPoint;
+			bool flag = startPoint != endPoint;
 			Changes[num] = BasePlayer.PositionChange.Same;
-			if (num2)
+			if (flag)
 			{
 				ToValidate.AddNoResize(num);
 			}

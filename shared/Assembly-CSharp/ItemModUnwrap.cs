@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class ItemModUnwrap : ItemMod
 {
-	public static readonly Phrase UnwrapGiftTitle;
+	public static readonly Phrase UnwrapGiftTitle = new Phrase("unwrap_gift", "Unwrap");
 
-	public static readonly Phrase UnwrapGiftDesc;
+	public static readonly Phrase UnwrapGiftDesc = new Phrase("unwrap_gift_desc", "Unwrap the gift");
 
 	public Phrase OwnershipPhrase;
 
@@ -26,7 +26,7 @@ public class ItemModUnwrap : ItemMod
 		{
 			item.UseItem();
 			int num = Random.Range(minTries, maxTries + 1);
-			ItemOwnershipShare ownership = default(ItemOwnershipShare);
+			ItemOwnershipShare ownership = default;
 			if (OwnershipPhrase != null && !string.IsNullOrEmpty(OwnershipPhrase.token))
 			{
 				ownership = new ItemOwnershipShare
@@ -49,10 +49,8 @@ public class ItemModUnwrap : ItemMod
 	static ItemModUnwrap()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		UnwrapGiftTitle = new Phrase("unwrap_gift", "Unwrap");
-		UnwrapGiftDesc = new Phrase("unwrap_gift_desc", "Unwrap the gift");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

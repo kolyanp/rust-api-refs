@@ -12,50 +12,50 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 
 	public Transform DetachedSpawnPoint;
 
-	public float ConditionLossPerUse;
+	public float ConditionLossPerUse = 0.2f;
 
-	public float HurtDeployTime;
+	public float HurtDeployTime = 1f;
 
-	public float HurtAmount;
+	public float HurtAmount = 80f;
 
 	public Animator ColliderAnimator;
 
 	public Animator ColliderWorldAnimator;
 
-	public float UprightLerpForce;
+	public float UprightLerpForce = 5f;
 
-	public float ConstantForwardForce;
+	public float ConstantForwardForce = 2f;
 
-	public ForceMode ForwardForceMode;
+	public ForceMode ForwardForceMode = (ForceMode)5;
 
-	public float TurnForce;
+	public float TurnForce = 2f;
 
-	public ForceMode TurnForceMode;
+	public ForceMode TurnForceMode = (ForceMode)5;
 
-	public float ForwardTiltAcceleration;
+	public float ForwardTiltAcceleration = 2f;
 
-	public float BackInputForceMultiplier;
+	public float BackInputForceMultiplier = 0.2f;
 
-	public float DeployAnimationLength;
+	public float DeployAnimationLength = 3f;
 
-	public float TargetDrag;
+	public float TargetDrag = 1f;
 
-	public float TargetAngularDrag;
+	public float TargetAngularDrag = 1f;
 
-	public AnimationCurve DragCurve;
+	public AnimationCurve DragCurve = new AnimationCurve();
 
-	public AnimationCurve DragDamageCurve;
+	public AnimationCurve DragDamageCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
 
-	public AnimationCurve MassDamageCurve;
+	public AnimationCurve MassDamageCurve = AnimationCurve.Linear(0f, 30f, 1f, 1f);
 
-	public AnimationCurve DamageHorizontalVelocityCurve;
+	public AnimationCurve DamageHorizontalVelocityCurve = AnimationCurve.Linear(0f, 5f, 1f, 20f);
 
 	[Range(0f, 1f)]
-	public float DamageTester;
+	public float DamageTester = 1f;
 
-	public float AnimationInputSmoothness;
+	public float AnimationInputSmoothness = 1f;
 
-	public Vector2 AnimationInputScale;
+	public Vector2 AnimationInputScale = new Vector2(0.5f, 0.5f);
 
 	public ParachuteWearable FirstPersonCanopy;
 
@@ -95,15 +95,15 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 
 	public bool collisionDeath;
 
-	public Vector3 collisionImpulse;
+	public Vector3 collisionImpulse = Vector3.zero;
 
 	private float startHeight;
 
 	private float distanceTravelled;
 
-	private Vector3 lastPosition;
+	private Vector3 lastPosition = Vector3.zero;
 
-	private Vector2 lerpedInput;
+	private Vector2 lerpedInput = Vector2.zero;
 
 	public Vector3 collisionLocalPos;
 
@@ -241,7 +241,7 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 		{
 			base.VehicleFixedUpdate();
 			TriggerParachuteForceVolume triggerParachuteForceVolume = FindTrigger<TriggerParachuteForceVolume>();
-			float num = base.healthFraction * DamageTester;
+			float num = healthFraction * DamageTester;
 			float num2 = DragCurve.Evaluate(TimeSince.op_Implicit(mountTime));
 			float num3 = DragDamageCurve.Evaluate(num);
 			float mass = MassDamageCurve.Evaluate(num);
@@ -265,18 +265,18 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 			if (lerpedInput.x != 0f)
 			{
 				rotation = rigidBody.rotation;
-				Quaternion val2 = Quaternion.Euler(Vector3Ex.WithZ(((Quaternion)(ref rotation)).eulerAngles, Mathx.RemapValClamped(lerpedInput.x, -1f, 1f, 40f, -40f)));
+				Quaternion val2 = Quaternion.Euler(Vector3Ex.WithZ(rotation.eulerAngles, Mathx.RemapValClamped(lerpedInput.x, -1f, 1f, 40f, -40f)));
 				rigidBody.MoveRotation(Quaternion.Lerp(rigidBody.rotation, val2, Time.fixedDeltaTime * 30f));
 				rigidBody.AddTorque(((Component)this).transform.TransformDirection(Vector3.up * (TurnForce * num * 0.2f * lerpedInput.x)), TurnForceMode);
 			}
 			if (lerpedInput.y > 0f)
 			{
 				rotation = rigidBody.rotation;
-				Quaternion val3 = Quaternion.Euler(Vector3Ex.WithX(((Quaternion)(ref rotation)).eulerAngles, Mathx.RemapValClamped(lerpedInput.y, -1f, 1f, -50f, 60f)));
+				Quaternion val3 = Quaternion.Euler(Vector3Ex.WithX(rotation.eulerAngles, Mathx.RemapValClamped(lerpedInput.y, -1f, 1f, -50f, 60f)));
 				rigidBody.MoveRotation(Quaternion.Lerp(rigidBody.rotation, val3, Time.fixedDeltaTime * 60f));
 			}
 			rotation = rigidBody.rotation;
-			Quaternion val4 = Quaternion.Euler(Vector3Ex.WithZ(Vector3Ex.WithX(((Quaternion)(ref rotation)).eulerAngles, 0f), 0f));
+			Quaternion val4 = Quaternion.Euler(Vector3Ex.WithZ(Vector3Ex.WithX(rotation.eulerAngles, 0f), 0f));
 			rigidBody.rotation = Quaternion.Lerp(rigidBody.rotation, val4, Time.fixedDeltaTime * UprightLerpForce);
 			float num5 = DamageHorizontalVelocityCurve.Evaluate(num);
 			Vector3 linearVelocity = rigidBody.linearVelocity;
@@ -303,7 +303,7 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 			}
 			else
 			{
-				float magnitude = ((Vector3)(ref collisionImpulse)).magnitude;
+				float magnitude = collisionImpulse.magnitude;
 				if (magnitude > 50f)
 				{
 					float amount = Mathx.RemapValClamped(magnitude, 50f, 400f, 5f, 50f);
@@ -336,10 +336,10 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		float num = base.healthFraction;
+		float num = healthFraction;
 		num -= ConditionLossPerUse;
-		bool num2 = num > 0f;
-		if (num2 && !BypassRepack)
+		bool flag = num > 0f;
+		if (flag && !BypassRepack)
 		{
 			ParachuteUnpacked parachuteUnpacked = GameManager.server.CreateEntity(DetachedParachute.resourcePath, DetachedSpawnPoint.position, DetachedSpawnPoint.rotation) as ParachuteUnpacked;
 			if ((Object)(object)parachuteUnpacked != (Object)null)
@@ -347,7 +347,7 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 				parachuteUnpacked.skinID = skinID;
 				parachuteUnpacked.Spawn();
 				parachuteUnpacked.Hurt(parachuteUnpacked.MaxHealth() * (1f - num), DamageType.Generic, null, useProtection: false);
-				Rigidbody val = default(Rigidbody);
+				Rigidbody val = default;
 				if (((Component)parachuteUnpacked).TryGetComponent<Rigidbody>(ref val))
 				{
 					val.linearVelocity = rigidBody.linearVelocity;
@@ -355,7 +355,7 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 			}
 		}
 		DestroyMode mode = DestroyMode.None;
-		if (!num2)
+		if (!flag)
 		{
 			mode = DestroyMode.Gib;
 		}
@@ -379,14 +379,14 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 		{
 			hitEntity = GameObjectEx.ToBaseEntity(collision.collider);
 		}
-		if (!((Object)(object)hitEntity == (Object)(object)this) && (!((Object)(object)hitEntity != (Object)null) || hitEntity.isServer == base.isServer) && base.isServer && !(hitEntity is TimedExplosive) && !collisionDeath)
+		if (!((Object)(object)hitEntity == (Object)(object)this) && (!((Object)(object)hitEntity != (Object)null) || hitEntity.isServer == isServer) && isServer && !(hitEntity is TimedExplosive) && !collisionDeath)
 		{
 			collisionImpulse = collision.impulse;
 			Transform transform = ((Component)this).transform;
 			ContactPoint contact = collision.GetContact(0);
-			collisionLocalPos = transform.InverseTransformPoint(((ContactPoint)(ref contact)).point);
+			collisionLocalPos = transform.InverseTransformPoint(contact.point);
 			contact = collision.GetContact(0);
-			collisionWorldNormal = ((ContactPoint)(ref contact)).normal;
+			collisionWorldNormal = contact.normal;
 			collisionDeath = true;
 			Invoke(DelayedDismount, 0f);
 		}
@@ -499,7 +499,7 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Expected O, but got Unknown
+		//IL_0092: Expected Obj, but got Unknown
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
@@ -508,29 +508,5 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		ConditionLossPerUse = 0.2f;
-		HurtDeployTime = 1f;
-		HurtAmount = 80f;
-		UprightLerpForce = 5f;
-		ConstantForwardForce = 2f;
-		ForwardForceMode = (ForceMode)5;
-		TurnForce = 2f;
-		TurnForceMode = (ForceMode)5;
-		ForwardTiltAcceleration = 2f;
-		BackInputForceMultiplier = 0.2f;
-		DeployAnimationLength = 3f;
-		TargetDrag = 1f;
-		TargetAngularDrag = 1f;
-		DragCurve = new AnimationCurve();
-		DragDamageCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
-		MassDamageCurve = AnimationCurve.Linear(0f, 30f, 1f, 1f);
-		DamageHorizontalVelocityCurve = AnimationCurve.Linear(0f, 5f, 1f, 20f);
-		DamageTester = 1f;
-		AnimationInputSmoothness = 1f;
-		AnimationInputScale = new Vector2(0.5f, 0.5f);
-		collisionImpulse = Vector3.zero;
-		lastPosition = Vector3.zero;
-		lerpedInput = Vector2.zero;
-		base._002Ector();
 	}
 }

@@ -215,17 +215,24 @@ public class VehiclePrivilege : SimplePrivilege
 
 	public bool IsDriver(BasePlayer player)
 	{
+		if ((Object)(object)player == (Object)null)
+		{
+			return false;
+		}
 		BaseEntity baseEntity = GetParentEntity();
 		if ((Object)(object)baseEntity == (Object)null)
 		{
 			return false;
 		}
-		BaseVehicle baseVehicle = baseEntity as BaseVehicle;
-		if ((Object)(object)baseVehicle == (Object)null)
+		if (baseEntity is BaseVehicle baseVehicle)
 		{
-			return false;
+			return baseVehicle.IsDriver(player);
 		}
-		return baseVehicle.IsDriver(player);
+		if (baseEntity is BaseMountable baseMountable)
+		{
+			return (Object)(object)baseMountable.GetMounted() == (Object)(object)player;
+		}
+		return false;
 	}
 
 	[RPC_Server.MaxDistance(3f)]
@@ -239,8 +246,8 @@ public class VehiclePrivilege : SimplePrivilege
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void AddAuthorize(RPCMessage rpc)
 	{
 		if (SupportFriendListAdd && rpc.player.CanInteract() && IsAuthed(rpc.player) && CanModifyAuth(rpc.player))
@@ -287,8 +294,8 @@ public class VehiclePrivilege : SimplePrivilege
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void ClearList(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanModifyAuth(rpc.player) && Interface.CallHook("OnCupboardClearList", this, rpc.player) == null)

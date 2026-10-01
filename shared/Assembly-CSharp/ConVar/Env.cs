@@ -41,6 +41,26 @@ public class Env : ConsoleSystem
 		}
 	}
 
+	[ServerVar(ShowInAdminUI = true, Help = "How many real minutes one in-game day lasts on the server. Not sent to clients, whose sky keeps its own day length between time syncs, so lower it headless or in the editor to run a day through quickly. Never zero, freeze time with env.progresstime instead")]
+	public static float daylength
+	{
+		get
+		{
+			if ((Object)(object)TOD_Sky.Instance == (Object)null)
+			{
+				return 0f;
+			}
+			return TOD_Sky.Instance.Components.Time.DayLengthInMinutes;
+		}
+		set
+		{
+			if (!((Object)(object)TOD_Sky.Instance == (Object)null))
+			{
+				TOD_Sky.Instance.Components.Time.DayLengthInMinutes = Mathf.Max(0.01f, value);
+			}
+		}
+	}
+
 	[ServerVar(ShowInAdminUI = true, Help = "(Generated) Gets or sets the current in-game time of day as a decimal hour (0.0-24.0); writing a value immediately jumps the time to that point")]
 	public static float time
 	{

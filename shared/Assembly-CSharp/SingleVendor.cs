@@ -18,7 +18,7 @@ public class SingleVendor : FacepunchBehaviour, IComparable<SingleVendor>
 
 	public Transform AccordionChevron;
 
-	public Image[] AccordionImages = (Image[])(object)new Image[3];
+	public Image[] AccordionImages = new Image[3];
 
 	public GameObjectRef VendorListingPrefab;
 

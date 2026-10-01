@@ -14,13 +14,13 @@ public class Category_Network
 	public class Network_BaseNetworkable
 	{
 		[Patch("CanNetworkTo", "CanNetworkTo", "BaseNetworkable", "ShouldNetworkTo", new string[] { "BasePlayer" })]
-		[Identifier("1571090eebe541e2bbe66661be82eb48")]
+		[Identifier("0794c5541a314fb3855d0308cf926337")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNetworkable", false)]
 		[Return(typeof(bool))]
 		[Category("Network")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Network_BaseNetworkable_1571090eebe541e2bbe66661be82eb48 : Patch
+		public class Network_BaseNetworkable_0794c5541a314fb3855d0308cf926337 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -58,13 +58,13 @@ public class Category_Network
 		}
 
 		[Patch("OnNetworkGroupEntered", "OnNetworkGroupEntered", "BaseNetworkable", "OnNetworkGroupEnter", new string[] { "Network.Visibility.Group" })]
-		[Identifier("730076ff9e2044e0a63915388e695e51")]
+		[Identifier("3b8f227e9ab74f898b5ded4670e15d0f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNetworkable", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Network")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Network_BaseNetworkable_730076ff9e2044e0a63915388e695e51 : Patch
+		public class Network_BaseNetworkable_3b8f227e9ab74f898b5ded4670e15d0f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -92,13 +92,13 @@ public class Category_Network
 		}
 
 		[Patch("OnNetworkGroupLeft", "OnNetworkGroupLeft", "BaseNetworkable", "OnNetworkGroupLeave", new string[] { "Network.Visibility.Group" })]
-		[Identifier("165b2ef563f641408a18d275eb29cb28")]
+		[Identifier("e8fbefb924fd417ea838356a60f95acd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseNetworkable", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Network")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Network_BaseNetworkable_165b2ef563f641408a18d275eb29cb28 : Patch
+		public class Network_BaseNetworkable_e8fbefb924fd417ea838356a60f95acd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -129,13 +129,13 @@ public class Category_Network
 	public class Network_NetworkVisibilityGrid
 	{
 		[Patch("OnNetworkSubscriptionsGather", "OnNetworkSubscriptionsGather", "NetworkVisibilityGrid", "GetVisibleFrom", new string[] { "Network.Visibility.Group", "ListHashSet`1<Network.Visibility.Group>", "System.Int32" })]
-		[Identifier("c98ff684c69b4906b12037deb129b81d")]
+		[Identifier("4b043fe795a041fe98d0219645ea9b01")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NetworkVisibilityGrid", false)]
 		[Return(typeof(void))]
 		[Category("Network")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Network_NetworkVisibilityGrid_c98ff684c69b4906b12037deb129b81d : Patch
+		public class Network_NetworkVisibilityGrid_4b043fe795a041fe98d0219645ea9b01 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -175,22 +175,22 @@ public class Category_Network
 	public class Network_NetworkNetworkable
 	{
 		[Patch("OnNetworkSubscriptionsUpdate", "OnNetworkSubscriptionsUpdate", "Network.Networkable", "UpdateSubscriptions", new string[] { "System.Int32", "System.Int32" })]
-		[Identifier("a5879ae80fe543c191ab20cd0889087c")]
+		[Identifier("d4c899a7c3144f7d8029c6cd55ca0466")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Network")]
 		[Assembly("Facepunch.Network.dll")]
-		public class Network_NetworkNetworkable_a5879ae80fe543c191ab20cd0889087c : Patch
+		public class Network_NetworkNetworkable_d4c899a7c3144f7d8029c6cd55ca0466 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0022: Expected O, but got Unknown
+				//IL_0022: Expected Obj, but got Unknown
 				//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0033: Expected O, but got Unknown
+				//IL_0033: Expected Obj, but got Unknown
 				//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00c2: Expected O, but got Unknown
+				//IL_00c2: Expected Obj, but got Unknown
 				//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00e7: Expected O, but got Unknown
+				//IL_00e7: Expected Obj, but got Unknown
 				List<CodeInstruction> list = new List<CodeInstruction>();
 				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
 				list.Add(new CodeInstruction(OpCodes.Ldstr, (object)"OnNetworkSubscriptionsUpdate"));
@@ -205,37 +205,37 @@ public class Category_Network
 					typeof(object)
 				}, (Type[])null)));
 				Label label = Generator.DefineLabel();
-				CodeInstruction obj = list2[120];
+				CodeInstruction val = list2[120];
 				list.Add(new CodeInstruction(OpCodes.Brtrue_S, (object)label));
 				if (list.Count > 0)
 				{
 					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[31]), list2[31]);
 				}
 				list2.InsertRange(31, list);
-				obj.labels.Add(label);
+				val.labels.Add(label);
 				return list2.AsEnumerable();
 			}
 		}
 
 		[Patch("OnNetworkSubscriptionsUpdate", "OnNetworkSubscriptionsUpdate [2]", "Network.Networkable", "UpdateHighPrioritySubscriptions", new string[] { })]
-		[Identifier("b084fd9d3d934124b539932ba3677080")]
+		[Identifier("61777ab154a64235a796c8d057a22f9c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Network")]
 		[Assembly("Facepunch.Network.dll")]
-		public class Network_NetworkNetworkable_b084fd9d3d934124b539932ba3677080 : Patch
+		public class Network_NetworkNetworkable_61777ab154a64235a796c8d057a22f9c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0022: Expected O, but got Unknown
+				//IL_0022: Expected Obj, but got Unknown
 				//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0033: Expected O, but got Unknown
+				//IL_0033: Expected Obj, but got Unknown
 				//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-				//IL_005c: Expected O, but got Unknown
+				//IL_005c: Expected Obj, but got Unknown
 				//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00bb: Expected O, but got Unknown
+				//IL_00bb: Expected Obj, but got Unknown
 				//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00e0: Expected O, but got Unknown
+				//IL_00e0: Expected Obj, but got Unknown
 				List<CodeInstruction> list = new List<CodeInstruction>();
 				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
 				list.Add(new CodeInstruction(OpCodes.Ldstr, (object)"OnNetworkSubscriptionsUpdate"));
@@ -250,14 +250,14 @@ public class Category_Network
 					typeof(object)
 				}, (Type[])null)));
 				Label label = Generator.DefineLabel();
-				CodeInstruction obj = list2[56];
+				CodeInstruction val = list2[56];
 				list.Add(new CodeInstruction(OpCodes.Brtrue_S, (object)label));
 				if (list.Count > 0)
 				{
 					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[26]), list2[26]);
 				}
 				list2.InsertRange(26, list);
-				obj.labels.Add(label);
+				val.labels.Add(label);
 				return list2.AsEnumerable();
 			}
 		}

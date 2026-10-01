@@ -138,29 +138,29 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 
 	public ListHashSet<Func<BaseEntity, bool, (string name, string color, string command, bool shouldShow)>> CustomButons = new ListHashSet<Func<BaseEntity, bool, (string, string, string, bool)>>();
 
-	private static readonly Phrase destroyingBuildingCancelledPhrase;
+	private static readonly Phrase destroyingBuildingCancelledPhrase = new Phrase("destroyedbuildingCancelled", "Destroying building: <color=white>cancelled</color>");
 
-	private static readonly Phrase destroyingBuildingPhrase;
+	private static readonly Phrase destroyingBuildingPhrase = new Phrase("destroyedbuilding", "Destroying building: <color=white>{0}</color>/{1} entities ({2} dead)");
 
-	private static readonly Phrase repairedCancelledPhrase;
+	private static readonly Phrase repairedCancelledPhrase = new Phrase("repairedCancelled", "Repairing: <color=white>cancelled</color>");
 
-	private static readonly Phrase repairedPhrase;
+	private static readonly Phrase repairedPhrase = new Phrase("repaired", "Repairing: <color=white>{0}</color>/{1} entities ({2} needed repair, {3} dead)");
 
-	private static readonly Dictionary<ulong, BaseEntity> lastCreativeModePlayers;
+	private static readonly Dictionary<ulong, BaseEntity> lastCreativeModePlayers = new Dictionary<ulong, BaseEntity>();
 
-	private static readonly Dictionary<ulong, BaseEntity> lastLastCreativeModePlayers;
+	private static readonly Dictionary<ulong, BaseEntity> lastLastCreativeModePlayers = new Dictionary<ulong, BaseEntity>();
 
-	private static readonly Dictionary<string, ModalModule.Modal.Field> temp;
+	private static readonly Dictionary<string, ModalModule.Modal.Field> temp = new Dictionary<string, ModalModule.Modal.Field>();
 
-	private static CuiDraggableComponent cachedDraggable;
+	private static CuiDraggableComponent cachedDraggable = new CuiDraggableComponent();
 
 	private static HammerModule ins;
 
-	private static bool isSubscribedToOnPlayerInput;
+	private static bool isSubscribedToOnPlayerInput = true;
 
 	private static bool forcefullySubscribeToOnPlayerInput;
 
-	private static readonly string[] blacklistedMovingPrefabs;
+	private static readonly string[] blacklistedMovingPrefabs = new string[8] { "crudeoutput", "hopperoutput", "fuelstorage", "excavator_output_pile", "static", "caboose", "elevator", "mission" };
 
 	public ModalModule Modal;
 
@@ -180,11 +180,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.UIDistanceFlyMultiplier;
+			return ConfigInstance.UIDistanceFlyMultiplier;
 		}
 		set
 		{
-			base.ConfigInstance.UIDistanceFlyMultiplier = value.Clamp(1f, 10f);
+			ConfigInstance.UIDistanceFlyMultiplier = value.Clamp(1f, 10f);
 			Save();
 		}
 	}
@@ -195,11 +195,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.UIDefaultDistance;
+			return ConfigInstance.UIDefaultDistance;
 		}
 		set
 		{
-			base.ConfigInstance.UIDefaultDistance = value.Clamp(0.5f, 50f);
+			ConfigInstance.UIDefaultDistance = value.Clamp(0.5f, 50f);
 			Save();
 		}
 	}
@@ -210,13 +210,13 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.UIRefreshRate;
+			return ConfigInstance.UIRefreshRate;
 		}
 		set
 		{
-			base.ConfigInstance.UIRefreshRate = value.Clamp(0f, 2.5f);
+			ConfigInstance.UIRefreshRate = value.Clamp(0f, 2.5f);
 			timer?.Destroy();
-			timer = Community.Runtime.Core.timer.Every(base.ConfigInstance.UIRefreshRate, TickCheck);
+			timer = Community.Runtime.Core.timer.Every(ConfigInstance.UIRefreshRate, TickCheck);
 			Save();
 		}
 	}
@@ -227,11 +227,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.DefaultMoveDistance;
+			return ConfigInstance.DefaultMoveDistance;
 		}
 		set
 		{
-			base.ConfigInstance.DefaultMoveDistance = value.Clamp(0.5f, 50f);
+			ConfigInstance.DefaultMoveDistance = value.Clamp(0.5f, 50f);
 			Save();
 		}
 	}
@@ -242,11 +242,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.MoveLerp;
+			return ConfigInstance.MoveLerp;
 		}
 		set
 		{
-			base.ConfigInstance.MoveLerp = value.Clamp(1f, 20f);
+			ConfigInstance.MoveLerp = value.Clamp(1f, 20f);
 			Save();
 		}
 	}
@@ -257,11 +257,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.MoveEverything;
+			return ConfigInstance.MoveEverything;
 		}
 		set
 		{
-			base.ConfigInstance.MoveEverything = value;
+			ConfigInstance.MoveEverything = value;
 			Save();
 		}
 	}
@@ -272,11 +272,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.UIDefaultX;
+			return ConfigInstance.UIDefaultX;
 		}
 		set
 		{
-			base.ConfigInstance.UIDefaultX = value.Clamp(0f, 1f);
+			ConfigInstance.UIDefaultX = value.Clamp(0f, 1f);
 			Save();
 		}
 	}
@@ -287,11 +287,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.UIDefaultY;
+			return ConfigInstance.UIDefaultY;
 		}
 		set
 		{
-			base.ConfigInstance.UIDefaultY = value.Clamp(0f, 1f);
+			ConfigInstance.UIDefaultY = value.Clamp(0f, 1f);
 			Save();
 		}
 	}
@@ -302,11 +302,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.BuildingRepairBatchCount;
+			return ConfigInstance.BuildingRepairBatchCount;
 		}
 		set
 		{
-			base.ConfigInstance.BuildingRepairBatchCount = value.Clamp(1, 100);
+			ConfigInstance.BuildingRepairBatchCount = value.Clamp(1, 100);
 			Save();
 		}
 	}
@@ -317,11 +317,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.BuildingDestroyBatchCount;
+			return ConfigInstance.BuildingDestroyBatchCount;
 		}
 		set
 		{
-			base.ConfigInstance.BuildingDestroyBatchCount = value.Clamp(1, 100);
+			ConfigInstance.BuildingDestroyBatchCount = value.Clamp(1, 100);
 			Save();
 		}
 	}
@@ -332,11 +332,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.BuildingBatchRefreshRate;
+			return ConfigInstance.BuildingBatchRefreshRate;
 		}
 		set
 		{
-			base.ConfigInstance.BuildingBatchRefreshRate = value.Clamp(0f, 2f);
+			ConfigInstance.BuildingBatchRefreshRate = value.Clamp(0f, 2f);
 			Save();
 		}
 	}
@@ -347,11 +347,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	{
 		get
 		{
-			return base.ConfigInstance.MinimumAuthLevel;
+			return ConfigInstance.MinimumAuthLevel;
 		}
 		set
 		{
-			base.ConfigInstance.MinimumAuthLevel = value.Clamp(0, 4);
+			ConfigInstance.MinimumAuthLevel = value.Clamp(0, 4);
 			Save();
 		}
 	}
@@ -388,7 +388,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			BasePlayer player = BasePlayer.activePlayerList[i];
 			ClearGUI(player);
 		}
-		foreach (KeyValuePair<ulong, HammerEditor> hammer in base.DataInstance.Hammers)
+		foreach (KeyValuePair<ulong, HammerEditor> hammer in DataInstance.Hammers)
 		{
 			HammerEditor value = hammer.Value;
 			value.Reset();
@@ -420,7 +420,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 
 	public void ValidatePermanentPlayerInputHook()
 	{
-		foreach (KeyValuePair<ulong, HammerEditor> hammer in base.DataInstance.Hammers)
+		foreach (KeyValuePair<ulong, HammerEditor> hammer in DataInstance.Hammers)
 		{
 			if (hammer.Value.bypassHammer || hammer.Value.bypassCreativeMode)
 			{
@@ -438,7 +438,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		{
 			return false;
 		}
-		if (((NetworkableId)(ref ((BaseNetworkable)player).net.ID)).Equals(((BaseNetworkable)entity).net.ID))
+		if (((BaseNetworkable)player).net.ID.Equals(((BaseNetworkable)entity).net.ID))
 		{
 			return false;
 		}
@@ -672,7 +672,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			{
 				foreach (KeyValuePair<ulong, BaseEntity> lastCreativeModePlayer in lastCreativeModePlayers)
 				{
-					HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(lastCreativeModePlayer.Key);
+					HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(lastCreativeModePlayer.Key);
 					if (!ShouldShowUI(orCreateEditor, out var _))
 					{
 						((List<HammerEditor>)(object)val).Add(orCreateEditor);
@@ -687,7 +687,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				for (int i = 0; i < BasePlayer.activePlayerList.Count; i++)
 				{
 					BasePlayer val2 = BasePlayer.activePlayerList[i];
-					HammerEditor orCreateEditor2 = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(val2.userID));
+					HammerEditor orCreateEditor2 = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(val2.userID));
 					if (ShouldShowUI(orCreateEditor2, out var entity2) && !orCreateEditor2.showExtra)
 					{
 						if (!lastLastCreativeModePlayers.TryGetValue(EncryptedValue<ulong>.op_Implicit(val2.userID), out var value) || (Object)(object)value != (Object)(object)entity2)
@@ -740,7 +740,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			flag = flag3;
 		}
 		bool flag5 = flag;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if ((!player.IsInCreativeMode && !editor.bypassCreativeMode) || !flag5 || !Physics.Raycast(player.eyes.HeadRay(), ref val, num, -1, (QueryTriggerInteraction)1))
 		{
 			return false;
@@ -815,7 +815,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		}
 		using (CUI cUI = new CUI(Community.Runtime.Core.CuiHandler))
 		{
-			HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
+			HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
 			float offset = 0f;
 			Vector2 coordinates = orCreateEditor.GetCoordinates();
 			CuiElementContainer cuiElementContainer = cUI.CreateContainer("hammereditor.cui", Cache.CUI.BlackColor, coordinates.x, coordinates.x, coordinates.y, coordinates.y, -150f, 150f, 0f, 0f, 0f, 0f, showExtra, showExtra, CUI.ClientPanels.Hud, "hammereditor.cui");
@@ -825,7 +825,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			cachedDraggable.ParentLimitIndex = 1;
 			cachedDraggable.DragAlpha = 0.5f;
 			cachedDraggable.PositionRPC = (DraggablePositionSendType)0;
-			NetworkableId val = (NetworkableId)(BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) ? ((BaseNetworkable)entity).net.ID : default(NetworkableId));
+			NetworkableId val = (BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) ? ((BaseNetworkable)entity).net.ID : default(NetworkableId));
 			CreateText(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, (CanBeMoved(player, entity) ? "<color=green><b>✓</b></color>" : "<color=red><b>✘</b></color>") + " Use <color=white>RIGHT-CLICK</color> to move the entity (hold <color=white>SPRINT</color> to skip auto-snapping)\n" + (CanBeToggled(entity) ? "<color=green><b>✓</b></color>" : "<color=red><b>✘</b></color>") + " Use <color=white>MIDDLE-CLICK</color> to toggle the entity (hold <color=white>SPRINT</color> to lock/unlock)");
 			if (showExtra || orCreateEditor.destructionMode)
 			{
@@ -854,44 +854,44 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			}
 			if (showExtra)
 			{
-				BaseLock obj = entity.GetLock();
-				CodeLock val3 = (CodeLock)(object)((obj is CodeLock) ? obj : null);
-				if (val3 != null)
+				BaseLock val3 = entity.GetLock();
+				CodeLock val4 = (CodeLock)(object)((val3 is CodeLock) ? val3 : null);
+				if (val4 != null)
 				{
-					if (val3.hasGuestCode)
+					if (val4.hasGuestCode)
 					{
-						CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Guest Code", val3.guestCode);
+						CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Guest Code", val4.guestCode);
 					}
-					CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Code", val3.code);
+					CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Code", val4.code);
 				}
 			}
-			ModularCar val4 = null;
-			SleepingBag val5 = (SleepingBag)(object)((entity is SleepingBag) ? entity : null);
-			if (val5 == null)
+			ModularCar val5 = null;
+			SleepingBag val6 = (SleepingBag)(object)((entity is SleepingBag) ? entity : null);
+			if (val6 == null)
 			{
-				MiningQuarry val6 = (MiningQuarry)(object)((entity is MiningQuarry) ? entity : null);
-				if (val6 == null)
+				MiningQuarry val7 = (MiningQuarry)(object)((entity is MiningQuarry) ? entity : null);
+				if (val7 == null)
 				{
-					IOEntity val7 = (IOEntity)(object)((entity is IOEntity) ? entity : null);
-					if (val7 == null)
+					IOEntity val8 = (IOEntity)(object)((entity is IOEntity) ? entity : null);
+					if (val8 == null)
 					{
-						SteeringWheel val8 = (SteeringWheel)(object)((entity is SteeringWheel) ? entity : null);
-						if (val8 == null)
+						SteeringWheel val9 = (SteeringWheel)(object)((entity is SteeringWheel) ? entity : null);
+						if (val9 == null)
 						{
 							if (!(entity is PlanterBox))
 							{
-								VehicleModuleEngine val9 = (VehicleModuleEngine)(object)((entity is VehicleModuleEngine) ? entity : null);
-								if (val9 == null)
+								VehicleModuleEngine val10 = (VehicleModuleEngine)(object)((entity is VehicleModuleEngine) ? entity : null);
+								if (val10 == null)
 								{
-									ModularCar val10 = (ModularCar)(object)((entity is ModularCar) ? entity : null);
-									if (val10 != null)
+									ModularCar val11 = (ModularCar)(object)((entity is ModularCar) ? entity : null);
+									if (val11 != null)
 									{
-										val4 = val10;
+										val5 = val11;
 									}
 								}
 								else
 								{
-									val4 = ((VehicleModuleSeating)val9).Car;
+									val5 = ((VehicleModuleSeating)val10).Car;
 								}
 							}
 							else
@@ -903,37 +903,37 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 						{
 							CUI cui = cUI;
 							string name = cuiElementContainer.Name;
-							PlayerBoatLock boatLock = val8.BoatLock;
+							PlayerBoatLock boatLock = val9.BoatLock;
 							CreateOption(cui, cuiElementContainer, name, ref offset, val, "Code", (boatLock != null) ? boatLock.Code : null);
 						}
 					}
 					else
 					{
-						CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Power", val7.currentEnergy.ToString("0"));
+						CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Power", val8.currentEnergy.ToString("0"));
 					}
 				}
 				else
 				{
-					CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Static Type", val6.staticType);
+					CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Static Type", val7.staticType);
 				}
 			}
 			else
 			{
-				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Assigned To", ((object)BasePlayer.FindAwakeOrSleepingByID(val5.deployerUserID))?.ToString() ?? val5.deployerUserID.ToString());
+				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Assigned To", ((object)BasePlayer.FindAwakeOrSleepingByID(val6.deployerUserID))?.ToString() ?? val6.deployerUserID.ToString());
 			}
-			if (showExtra && BaseNetworkableEx.IsValid((BaseNetworkable)(object)val4) && val4.CarLock.HasALock)
+			if (showExtra && BaseNetworkableEx.IsValid((BaseNetworkable)(object)val5) && val5.CarLock.HasALock)
 			{
-				if (val4.CarLock.whitelistPlayers.Count > 0)
+				if (val5.CarLock.whitelistPlayers.Count > 0)
 				{
-					ulong num = val4.CarLock.whitelistPlayers[0];
+					ulong num = val5.CarLock.whitelistPlayers[0];
 					CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Lock Owner ID", num);
-					BasePlayer val11 = BasePlayer.FindAwakeOrSleepingByID(num);
-					if (val11 != null && BaseNetworkableEx.IsValid((BaseNetworkable)(object)val11))
+					BasePlayer val12 = BasePlayer.FindAwakeOrSleepingByID(num);
+					if (val12 != null && BaseNetworkableEx.IsValid((BaseNetworkable)(object)val12))
 					{
-						CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Lock Owner", val11.displayName);
+						CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Lock Owner", val12.displayName);
 					}
 				}
-				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Code", val4.CarLock.Code);
+				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Code", val5.CarLock.Code);
 			}
 			if (entity == null || (int)entity.flags > 0)
 			{
@@ -943,47 +943,47 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			{
 				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Skin ID", entity?.skinID);
 			}
-			Vector3? val12 = ((entity != null) ? new Vector3?(((Component)entity).transform.localScale) : ((Vector3?)null));
+			Vector3? val13 = ((entity != null) ? new Vector3?(((Component)entity).transform.localScale) : ((Vector3?)null));
 			Vector3 one = Vector3.one;
-			if (!val12.HasValue || val12.GetValueOrDefault() != one)
+			if (!val13.HasValue || val13.GetValueOrDefault() != one)
 			{
 				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Scale", (entity != null) ? new Vector3?(((Component)entity).transform.localScale) : ((Vector3?)null));
 			}
 			CUI cui2 = cUI;
 			string name2 = cuiElementContainer.Name;
-			Vector3? val13;
+			Vector3? val14;
 			if (entity == null)
 			{
-				val13 = null;
+				val14 = null;
 			}
 			else
 			{
 				Quaternion rotation = ((Component)entity).transform.rotation;
-				val13 = ((Quaternion)(ref rotation)).eulerAngles;
+				val14 = rotation.eulerAngles;
 			}
-			CreateOption(cui2, cuiElementContainer, name2, ref offset, val, "Rotation", val13);
+			CreateOption(cui2, cuiElementContainer, name2, ref offset, val, "Rotation", val14);
 			CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Position", (entity != null) ? new Vector3?(((Component)entity).transform.position) : ((Vector3?)null));
 			if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && entity.OwnerID != 0L)
 			{
 				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Owner ID", entity.OwnerID);
-				BasePlayer val14 = BasePlayer.FindAwakeOrSleepingByID(entity.OwnerID);
-				if (val14 != null && BaseNetworkableEx.IsValid((BaseNetworkable)(object)val14))
+				BasePlayer val15 = BasePlayer.FindAwakeOrSleepingByID(entity.OwnerID);
+				if (val15 != null && BaseNetworkableEx.IsValid((BaseNetworkable)(object)val15))
 				{
-					CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Owner", val14.displayName);
+					CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Owner", val15.displayName);
 				}
 			}
-			BasePlayer val15 = (BasePlayer)(object)((entity is BasePlayer) ? entity : null);
-			if (val15 != null)
-			{
-				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Display Name", val15.displayName);
-			}
-			BuildingBlock val16 = (BuildingBlock)(object)((entity is BuildingBlock) ? entity : null);
+			BasePlayer val16 = (BasePlayer)(object)((entity is BasePlayer) ? entity : null);
 			if (val16 != null)
 			{
-				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Building ID", ((DecayEntity)val16).buildingID);
+				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Display Name", val16.displayName);
+			}
+			BuildingBlock val17 = (BuildingBlock)(object)((entity is BuildingBlock) ? entity : null);
+			if (val17 != null)
+			{
+				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Building ID", ((DecayEntity)val17).buildingID);
 				if (showExtra)
 				{
-					CreateButton(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, $"Destroy Building ({((DecayEntity)val16).GetBuilding().decayEntities.Count:n0} entities)", 2);
+					CreateButton(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, $"Destroy Building ({((DecayEntity)val17).GetBuilding().decayEntities.Count:n0} entities)", 2);
 				}
 			}
 			CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "NetID", val);
@@ -1033,7 +1033,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		cUI.Destroy("hammereditor.cui", player);
 	}
 
-	private unsafe void OnPlayerInput(BasePlayer player, InputState state)
+	private void OnPlayerInput(BasePlayer player, InputState state)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_034e: Unknown result type (might be due to invalid IL or missing references)
@@ -1085,12 +1085,12 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 					FlagsUpdateScope val4 = ((BaseEntity)val3).StartSetFlags((FlagsUpdateMode)2);
 					try
 					{
-						((FlagsUpdateScope)(ref val4)).Set((Flags)16, !((BaseEntity)val3).IsLocked(), false);
+						val4.Set((Flags)16, !((BaseEntity)val3).IsLocked(), false);
 						return;
 					}
 					finally
 					{
-						((IDisposable)(*(FlagsUpdateScope*)(&val4))/*cast due to constrained. prefix*/).Dispose();
+						((IDisposable)val4/*cast due to constrained. prefix*/).Dispose();
 					}
 				}
 			}
@@ -1134,11 +1134,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 								FlagsUpdateScope val9 = value.StartSetFlags((FlagsUpdateMode)2);
 								try
 								{
-									((FlagsUpdateScope)(ref val9)).Set(val2, !value.HasFlag(val2), false);
+									val9.Set(val2, !value.HasFlag(val2), false);
 								}
 								finally
 								{
-									((IDisposable)(*(FlagsUpdateScope*)(&val9))/*cast due to constrained. prefix*/).Dispose();
+									((IDisposable)val9/*cast due to constrained. prefix*/).Dispose();
 								}
 							}
 						}
@@ -1148,12 +1148,12 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 							FlagsUpdateScope val10 = value.StartSetFlags((FlagsUpdateMode)2);
 							try
 							{
-								((FlagsUpdateScope)(ref val10)).Set(val2, !flag2, false);
-								((FlagsUpdateScope)(ref val10)).Set((Flags)65536, !flag2, false);
+								val10.Set(val2, !flag2, false);
+								val10.Set((Flags)65536, !flag2, false);
 							}
 							finally
 							{
-								((IDisposable)(*(FlagsUpdateScope*)(&val10))/*cast due to constrained. prefix*/).Dispose();
+								((IDisposable)val10/*cast due to constrained. prefix*/).Dispose();
 							}
 						}
 					}
@@ -1162,11 +1162,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 						FlagsUpdateScope val11 = value.StartSetFlags((FlagsUpdateMode)2);
 						try
 						{
-							((FlagsUpdateScope)(ref val11)).Set(val, !value.HasFlag(val), false);
+							val11.Set(val, !value.HasFlag(val), false);
 						}
 						finally
 						{
-							((IDisposable)(*(FlagsUpdateScope*)(&val11))/*cast due to constrained. prefix*/).Dispose();
+							((IDisposable)val11/*cast due to constrained. prefix*/).Dispose();
 						}
 					}
 				}
@@ -1198,7 +1198,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		}
 		if (state.WasJustPressed((BUTTON)2048) && player.Connection.authLevel >= MinimumAuthLevel)
 		{
-			HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
+			HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
 			if (orCreateEditor.isMovingEntity)
 			{
 				orCreateEditor.isMovingEntity = false;
@@ -1208,7 +1208,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			{
 				orCreateEditor.isMovingEntity = true;
 				lastCreativeModePlayers.Remove(EncryptedValue<ulong>.op_Implicit(player.userID));
-				((MonoBehaviour)player).StartCoroutine(MoveEntityRoutine(base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID)), value));
+				((MonoBehaviour)player).StartCoroutine(MoveEntityRoutine(DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID)), value));
 			}
 		}
 	}
@@ -1220,7 +1220,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		{
 			return null;
 		}
-		HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
+		HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
 		if ((!player.IsInCreativeMode && !orCreateEditor.bypassCreativeMode) || info == null)
 		{
 			return null;
@@ -1265,7 +1265,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		{
 			return;
 		}
-		HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
+		HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
 		bool bypassHammer = orCreateEditor.bypassHammer;
 		bool flag = bypassHammer;
 		if (!flag)
@@ -1292,7 +1292,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)player) && player.IsConnected && player.Connection.authLevel >= MinimumAuthLevel)
 		{
-			HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
+			HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
 			orCreateEditor.Reset();
 			ClearGUI(player);
 		}
@@ -1303,7 +1303,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (player.IsConnected && player.Connection.authLevel >= MinimumAuthLevel)
 		{
-			HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
+			HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
 			orCreateEditor.Reset();
 			ClearGUI(player);
 		}
@@ -1314,7 +1314,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)player) && player.Connection != null && player.Connection.authLevel < MinimumAuthLevel)
 		{
-			HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
+			HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
 			orCreateEditor.bypassCreativeMode = false;
 			orCreateEditor.bypassHammer = false;
 			orCreateEditor.bypassImmovableEntityDestroyConfirmations = false;
@@ -1326,7 +1326,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)player) && player.Connection.authLevel >= MinimumAuthLevel)
 		{
-			HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
+			HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID));
 			orCreateEditor.Reset();
 		}
 	}
@@ -1340,7 +1340,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		if (name.Equals("hammereditor.cui") && (int)type == 1)
 		{
-			base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID)).SetCoordinates(Vector2.op_Implicit(position));
+			DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(player.userID)).SetCoordinates(Vector2.op_Implicit(position));
 		}
 	}
 
@@ -1357,10 +1357,10 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer val = ArgEx.Player(arg);
-		HammerEditor editor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(val.userID));
+		HammerEditor editor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(val.userID));
 		int num = arg.GetInt(0, 0);
-		BaseNetworkable obj = BaseNetworkable.serverEntities.Find(ArgEx.GetEntityID(arg, 1, default(NetworkableId)));
-		BaseEntity entity = (BaseEntity)(object)((obj is BaseEntity) ? obj : null);
+		BaseNetworkable val2 = BaseNetworkable.serverEntities.Find(ArgEx.GetEntityID(arg, 1, default(NetworkableId)));
+		BaseEntity entity = (BaseEntity)(object)((val2 is BaseEntity) ? val2 : null);
 		if (num != 0 && !BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity))
 		{
 			val.ChatMessage("Entity is now invalid");
@@ -1396,7 +1396,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				ClearGUI(val);
 				break;
 			}
-			Modal.Open(val, "Are you sure you wanna destroy that entity?", temp, delegate(BasePlayer player, ModalModule.Modal modal)
+			Modal.Open(val, "Are you sure you wanna destroy that entity?", temp, (BasePlayer player, ModalModule.Modal modal) =>
 			{
 				((BaseNetworkable)entity).Kill((DestroyMode)1, true);
 				editor.showExtra = false;
@@ -1405,15 +1405,15 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			break;
 		case 2:
 		{
-			BaseEntity obj2 = entity;
-			BuildingBlock block = (BuildingBlock)(object)((obj2 is BuildingBlock) ? obj2 : null);
+			BaseEntity val3 = entity;
+			BuildingBlock block = (BuildingBlock)(object)((val3 is BuildingBlock) ? val3 : null);
 			if (block != null && !editor.isRepairingOrDestroyingBuilding)
 			{
-				Modal.Open(val, "Are you sure you wanna destroy that building?", temp, delegate(BasePlayer player, ModalModule.Modal modal)
+				Modal.Open(val, "Are you sure you wanna destroy that building?", temp, (BasePlayer player, ModalModule.Modal modal) =>
 				{
-					PooledList<BaseEntity> val2 = Pool.Get<PooledList<BaseEntity>>();
-					((List<BaseEntity>)(object)val2).AddRange((IEnumerable<BaseEntity>)((DecayEntity)block).GetBuilding().decayEntities);
-					((MonoBehaviour)player).StartCoroutine(DestroyEntitiesOverTime(editor, (List<BaseEntity>)(object)val2));
+					PooledList<BaseEntity> val4 = Pool.Get<PooledList<BaseEntity>>();
+					((List<BaseEntity>)(object)val4).AddRange((IEnumerable<BaseEntity>)((DecayEntity)block).GetBuilding().decayEntities);
+					((MonoBehaviour)player).StartCoroutine(DestroyEntitiesOverTime(editor, (List<BaseEntity>)(object)val4));
 					editor.showExtra = false;
 					ClearGUI(player);
 				});
@@ -1561,7 +1561,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		editor.isRepairingOrDestroyingBuilding = false;
 	}
 
-	private unsafe IEnumerator MoveEntityRoutine(HammerEditor editor, BaseEntity entity)
+	private IEnumerator MoveEntityRoutine(HammerEditor editor, BaseEntity entity)
 	{
 		int layer = 1218652417;
 		if (editor.waterLayer)
@@ -1583,11 +1583,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			FlagsUpdateScope val = entity.StartSetFlags((FlagsUpdateMode)2);
 			try
 			{
-				((FlagsUpdateScope)(ref val)).Set((Flags)16777216, true, false);
+				val.Set((Flags)16777216, true, false);
 			}
 			finally
 			{
-				((IDisposable)(*(FlagsUpdateScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
 		if (entity is RidableHorse)
@@ -1595,15 +1595,15 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			FlagsUpdateScope val2 = entity.StartSetFlags((FlagsUpdateMode)2);
 			try
 			{
-				((FlagsUpdateScope)(ref val2)).Set((Flags)2097152, true, false);
+				val2.Set((Flags)2097152, true, false);
 			}
 			finally
 			{
-				((IDisposable)(*(FlagsUpdateScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
 		ClearGUI(player);
-		RaycastHit hit = default(RaycastHit);
+		RaycastHit hit = default;
 		if (entity != null)
 		{
 			entity.SetParent((BaseEntity)null, true, false);
@@ -1613,7 +1613,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		while (BaseNetworkableEx.IsValid((BaseNetworkable)(object)player) && BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && editor.isMovingEntity && !player.IsSleeping())
 		{
 			hits.Clear();
-			hit = default(RaycastHit);
+			hit = default;
 			GamePhysics.TraceAll(player.eyes.HeadRay(), 0f, hits, editor.moveDistance, layer, (QueryTriggerInteraction)1, (BaseEntity)null);
 			for (int i = 0; i < hits.Count; i++)
 			{
@@ -1625,10 +1625,10 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 					break;
 				}
 			}
-			hasContact = ((RaycastHit)(ref hit)).point != Vector3.zero;
+			hasContact = hit.point != Vector3.zero;
 			if (!hasContact)
 			{
-				((RaycastHit)(ref hit)).point = player.eyes.position + player.eyes.HeadForward() * editor.moveDistance;
+				hit.point = player.eyes.position + player.eyes.HeadForward() * editor.moveDistance;
 			}
 			if (player.serverInput.WasJustPressed((BUTTON)8192))
 			{
@@ -1636,22 +1636,22 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				player.serverInput.SwallowButton((BUTTON)8192);
 			}
 			float num = Time.deltaTime * MoveLerp;
-			transform.position = Vector3.Lerp(transform.position, ((RaycastHit)(ref hit)).point, num);
+			transform.position = Vector3.Lerp(transform.position, hit.point, num);
 			Quaternion localRotation = transform.localRotation;
-			Quaternion val4 = Quaternion.FromToRotation(Vector3.up, ((RaycastHit)(ref hit)).normal) * Quaternion.Euler(rotation);
+			Quaternion val4 = Quaternion.FromToRotation(Vector3.up, hit.normal) * Quaternion.Euler(rotation);
 			lookRotation = player.eyes.GetLookRotation();
-			transform.localRotation = Quaternion.Slerp(localRotation, val4 * Quaternion.Euler(Vector3Ex.WithX(((Quaternion)(ref lookRotation)).eulerAngles, 0f)), num);
+			transform.localRotation = Quaternion.Slerp(localRotation, val4 * Quaternion.Euler(Vector3Ex.WithX(lookRotation.eulerAngles, 0f)), num);
 			((BaseNetworkable)entity).SendNetworkUpdate_Position();
 			yield return null;
 		}
 		if (!hasContact && BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && !player.serverInput.IsDown((BUTTON)128))
 		{
-			RaycastHit hit2 = default(RaycastHit);
+			RaycastHit hit2 = default;
 			GamePhysics.Trace(new Ray(transform.position, Vector3.down), 0f, ref hit2, float.MaxValue, layer, (QueryTriggerInteraction)1, (BaseEntity)null);
-			Vector3 targetPosition = ((RaycastHit)(ref hit2)).point;
-			Quaternion val5 = Quaternion.FromToRotation(Vector3.up, ((RaycastHit)(ref hit2)).normal) * Quaternion.Euler(rotation);
+			Vector3 targetPosition = hit2.point;
+			Quaternion val5 = Quaternion.FromToRotation(Vector3.up, hit2.normal) * Quaternion.Euler(rotation);
 			lookRotation = player.eyes.GetLookRotation();
-			Quaternion targetRotation = val5 * Quaternion.Euler(Vector3Ex.WithX(((Quaternion)(ref lookRotation)).eulerAngles, 0f));
+			Quaternion targetRotation = val5 * Quaternion.Euler(Vector3Ex.WithX(lookRotation.eulerAngles, 0f));
 			if (targetPosition != Vector3.zero)
 			{
 				float currentTime = 0f;
@@ -1701,11 +1701,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			FlagsUpdateScope val7 = entity.StartSetFlags((FlagsUpdateMode)2);
 			try
 			{
-				((FlagsUpdateScope)(ref val7)).Set((Flags)16777216, false, false);
+				val7.Set((Flags)16777216, false, false);
 			}
 			finally
 			{
-				((IDisposable)(*(FlagsUpdateScope*)(&val7))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val7/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && entity is RidableHorse)
@@ -1713,11 +1713,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			FlagsUpdateScope val8 = entity.StartSetFlags((FlagsUpdateMode)2);
 			try
 			{
-				((FlagsUpdateScope)(ref val8)).Set((Flags)2097152, false, false);
+				val8.Set((Flags)2097152, false, false);
 			}
 			finally
 			{
-				((IDisposable)(*(FlagsUpdateScope*)(&val8))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val8/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && !(entity is BaseCorpse) && !BaseEntityEx.HasEntityInParents(entity, (BaseEntity)(object)player) && !BaseEntityEx.HasEntityInParents((BaseEntity)(object)player, entity))
@@ -1764,7 +1764,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			arg.ReplyWith("Low auth level");
 			return;
 		}
-		HammerEditor orCreateEditor = base.DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(val.userID));
+		HammerEditor orCreateEditor = DataInstance.GetOrCreateEditor(EncryptedValue<ulong>.op_Implicit(val.userID));
 		string text = arg.GetString(0, "");
 		bool flag = true;
 		object arg2 = null;
@@ -1790,8 +1790,8 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			arg2 = (orCreateEditor.bypassImmovableEntityDestroyConfirmations = arg.GetBool(1, orCreateEditor.bypassImmovableEntityDestroyConfirmations));
 			break;
 		case "resetui":
-			orCreateEditor.x = base.ConfigInstance.UIDefaultX;
-			orCreateEditor.y = base.ConfigInstance.UIDefaultY;
+			orCreateEditor.x = ConfigInstance.UIDefaultX;
+			orCreateEditor.y = ConfigInstance.UIDefaultY;
 			orCreateEditor.Reset();
 			arg2 = "Hammer UI has been reset";
 			break;
@@ -2057,22 +2057,12 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 	static HammerModule()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
-		destroyingBuildingCancelledPhrase = new Phrase("destroyedbuildingCancelled", "Destroying building: <color=white>cancelled</color>");
-		destroyingBuildingPhrase = new Phrase("destroyedbuilding", "Destroying building: <color=white>{0}</color>/{1} entities ({2} dead)");
-		repairedCancelledPhrase = new Phrase("repairedCancelled", "Repairing: <color=white>cancelled</color>");
-		repairedPhrase = new Phrase("repaired", "Repairing: <color=white>{0}</color>/{1} entities ({2} needed repair, {3} dead)");
-		lastCreativeModePlayers = new Dictionary<ulong, BaseEntity>();
-		lastLastCreativeModePlayers = new Dictionary<ulong, BaseEntity>();
-		temp = new Dictionary<string, ModalModule.Modal.Field>();
-		cachedDraggable = new CuiDraggableComponent();
-		isSubscribedToOnPlayerInput = true;
-		blacklistedMovingPrefabs = new string[8] { "crudeoutput", "hopperoutput", "fuelstorage", "excavator_output_pile", "static", "caboose", "elevator", "mission" };
+		//IL_0050: Expected Obj, but got Unknown
 	}
 }

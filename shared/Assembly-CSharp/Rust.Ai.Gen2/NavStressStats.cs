@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -23,9 +24,17 @@ public static class NavStressStats
 
 	public static int destinationPatches;
 
+	public static int pathQueries;
+
+	public static int pathQueryFails;
+
+	public static double pathQueryMs;
+
 	private static readonly Stopwatch stopwatch = new Stopwatch();
 
 	private static readonly Stopwatch driverStopwatch = new Stopwatch();
+
+	private static readonly Stopwatch pathQueryStopwatch = new Stopwatch();
 
 	private static readonly List<double> frameMs = new List<double>(32768);
 
@@ -37,7 +46,11 @@ public static class NavStressStats
 
 	private static long allocAtFrameStart;
 
-	private static bool allocSupported = true;
+	private static bool allocChecked;
+
+	private static bool allocSupported;
+
+	private static ProfilerRecorder allocRecorder;
 
 	[Conditional("DEBUG")]
 	public static void CountCornerRefresh()
@@ -70,24 +83,63 @@ public static class NavStressStats
 	}
 
 	[Conditional("DEBUG")]
+	public static void PathQueryBegin()
+	{
+		if (enabled)
+		{
+			pathQueryStopwatch.Restart();
+		}
+	}
+
+	[Conditional("DEBUG")]
+	public static void PathQueryEnd(bool complete)
+	{
+		if (enabled)
+		{
+			pathQueryStopwatch.Stop();
+			pathQueryMs += pathQueryStopwatch.Elapsed.TotalMilliseconds;
+			pathQueries++;
+			if (!complete)
+			{
+				pathQueryFails++;
+			}
+		}
+	}
+
+	[Conditional("DEBUG")]
 	public static void FrameBegin()
 	{
-		if (!enabled)
+		if (enabled)
 		{
-			return;
+			if (IsAllocationMeasurable())
+			{
+				allocAtFrameStart = allocRecorder.CurrentValue;
+			}
+			stopwatch.Restart();
 		}
-		if (allocSupported)
+	}
+
+	private static bool IsAllocationMeasurable()
+	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		if (allocChecked)
 		{
-			try
-			{
-				allocAtFrameStart = System.GC.GetAllocatedBytesForCurrentThread();
-			}
-			catch (Exception)
-			{
-				allocSupported = false;
-			}
+			return allocSupported;
 		}
-		stopwatch.Restart();
+		allocChecked = true;
+		allocRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame", 1, (ProfilerRecorderOptions)24);
+		if (!allocRecorder.Valid)
+		{
+			return false;
+		}
+		long currentValue = allocRecorder.CurrentValue;
+		byte[] array = new byte[4096];
+		long currentValue2 = allocRecorder.CurrentValue;
+		System.GC.KeepAlive(array);
+		allocSupported = currentValue2 - currentValue >= array.Length;
+		return allocSupported;
 	}
 
 	[Conditional("DEBUG")]
@@ -105,7 +157,7 @@ public static class NavStressStats
 			agentTicks += agentCount;
 			if (allocSupported)
 			{
-				allocBytes += System.GC.GetAllocatedBytesForCurrentThread() - allocAtFrameStart;
+				allocBytes += allocRecorder.CurrentValue - allocAtFrameStart;
 			}
 		}
 	}
@@ -141,6 +193,9 @@ public static class NavStressStats
 		cornerRefreshes = 0;
 		pathResets = 0;
 		destinationPatches = 0;
+		pathQueries = 0;
+		pathQueryFails = 0;
+		pathQueryMs = 0.0;
 	}
 
 	public static double MeanMs()
@@ -186,8 +241,8 @@ public static class NavStressStats
 		double num4 = list[Mathf.Min(count - 1, Mathf.FloorToInt((float)count * 0.95f))];
 		double num5 = list[count - 1];
 		double num6 = ((agentTicks > 0) ? (num * 1000.0 * (double)count / (double)agentTicks) : 0.0);
-		double num7 = (double)allocBytes / (double)count;
-		return string.Format("[{0}] {1} agents, {2} frames: tick {3:F1}us + driver {4:F1}us p50 {5:F1}us p95 {6:F1}us max {7:F1}us, {8:F2}us/agent, alloc {9:F0}B/frame, setDest {10} ({11} fail, {12} patched), corridorInvalid {13}, replans {14}, cornerPulls {15}, pathResets {16}", new object[17]
+		string text = (allocSupported ? $"{(double)allocBytes / (double)count:F0}B/frame" : "cannot measure");
+		return string.Format("[{0}] {1} agents, {2} frames: tick {3:F1}us + driver {4:F1}us p50 {5:F1}us p95 {6:F1}us max {7:F1}us, {8:F2}us/agent, alloc {9}, setDest {10} ({11} fail, {12} patched), corridorInvalid {13}, replans {14}, cornerPulls {15}, pathResets {16}", new object[17]
 		{
 			label,
 			agentCount,
@@ -198,7 +253,7 @@ public static class NavStressStats
 			num4 * 1000.0,
 			num5 * 1000.0,
 			num6,
-			num7,
+			text,
 			setDestinationCalls,
 			setDestinationFails,
 			destinationPatches,

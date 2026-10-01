@@ -17,8 +17,10 @@ public class AddToHeightMap : ProceduralObject
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
@@ -26,16 +28,14 @@ public class AddToHeightMap : ProceduralObject
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		Collider component = ((Component)this).GetComponent<Collider>();
 		Bounds bounds = component.bounds;
-		int num = TerrainMeta.HeightMap.Index(TerrainMeta.NormalizeX(((Bounds)(ref bounds)).min.x));
-		int num2 = TerrainMeta.HeightMap.Index(TerrainMeta.NormalizeX(((Bounds)(ref bounds)).max.x));
-		int num3 = TerrainMeta.HeightMap.Index(TerrainMeta.NormalizeZ(((Bounds)(ref bounds)).min.z));
-		int num4 = TerrainMeta.HeightMap.Index(TerrainMeta.NormalizeZ(((Bounds)(ref bounds)).max.z));
+		int num = TerrainMeta.HeightMap.Index(TerrainMeta.NormalizeX(bounds.min.x));
+		int num2 = TerrainMeta.HeightMap.Index(TerrainMeta.NormalizeX(bounds.max.x));
+		int num3 = TerrainMeta.HeightMap.Index(TerrainMeta.NormalizeZ(bounds.min.z));
+		int num4 = TerrainMeta.HeightMap.Index(TerrainMeta.NormalizeZ(bounds.max.z));
 		TerrainHeightMap heightMap = TerrainMeta.HeightMap;
 		Vector3 position = TerrainMeta.Position;
 		Vector3 size = TerrainMeta.Size;
-		Vector3 val = default(Vector3);
-		Ray val2 = default(Ray);
-		RaycastHit val3 = default(RaycastHit);
+		RaycastHit val3 = default;
 		for (int i = num3; i <= num4; i++)
 		{
 			float normZ = TerrainMeta.HeightMap.Coordinate(i);
@@ -50,10 +50,10 @@ public class AddToHeightMap : ProceduralObject
 				}
 				else
 				{
-					((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), ((Bounds)(ref bounds)).max.y, TerrainMeta.DenormalizeZ(normZ));
-					((Ray)(ref val2))._002Ector(val, Vector3.down);
-					flag = component.Raycast(val2, ref val3, ((Bounds)(ref bounds)).size.y);
-					height = (flag ? TerrainMeta.NormalizeY(((RaycastHit)(ref val3)).point.y) : 0f);
+					Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), bounds.max.y, TerrainMeta.DenormalizeZ(normZ));
+					Ray val2 = new Ray(val, Vector3.down);
+					flag = component.Raycast(val2, ref val3, bounds.size.y);
+					height = (flag ? TerrainMeta.NormalizeY(val3.point.y) : 0f);
 				}
 				if (flag)
 				{

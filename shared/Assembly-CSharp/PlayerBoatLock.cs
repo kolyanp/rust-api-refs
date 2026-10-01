@@ -98,6 +98,28 @@ public class PlayerBoatLock
 		return HasALock;
 	}
 
+	public bool TryChangeCode(string newCode, BasePlayer player)
+	{
+		if (!isServer)
+		{
+			return false;
+		}
+		if (!HasALock)
+		{
+			return false;
+		}
+		if (owningWheel.IsDead())
+		{
+			return false;
+		}
+		if (!TrySetNewCode(newCode, player))
+		{
+			return false;
+		}
+		DoEffect(((Object)(object)owningWheel != (Object)null) ? owningWheel.effectCodeChanged.resourcePath : null);
+		return true;
+	}
+
 	public bool IsValidLockCode(string code)
 	{
 		if (code != null && code.Length == 4)
@@ -114,7 +136,10 @@ public class PlayerBoatLock
 			return false;
 		}
 		Code = newCode;
-		owningWheel.Privilege.AddPlayer(player);
+		if (!owningWheel.Privilege.IsAuthed(player))
+		{
+			owningWheel.Privilege.AddPlayer(player);
+		}
 		owningWheel.SendNetworkUpdate();
 		return true;
 	}

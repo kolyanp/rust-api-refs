@@ -4,9 +4,9 @@ using UnityEngine;
 namespace VLB;
 
 [ExecuteInEditMode]
+[DisallowMultipleComponent]
 [HelpURL("http://saladgamer.com/vlb-doc/comp-dustparticles/")]
 [RequireComponent(typeof(VolumetricLightBeam))]
-[DisallowMultipleComponent]
 public class VolumetricDustParticles : MonoBehaviour
 {
 	public enum Direction
@@ -73,7 +73,7 @@ public class VolumetricDustParticles : MonoBehaviour
 				return 0;
 			}
 			MainModule main = m_Particles.main;
-			return ((MainModule)(ref main)).maxParticles;
+			return main.maxParticles;
 		}
 	}
 
@@ -181,7 +181,7 @@ public class VolumetricDustParticles : MonoBehaviour
 		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0181: Expected O, but got Unknown
+		//IL_0181: Expected Obj, but got Unknown
 		//IL_025c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0261: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
@@ -196,27 +196,27 @@ public class VolumetricDustParticles : MonoBehaviour
 		float num3 = num2 * density;
 		int maxParticles = (int)(num3 * 4f);
 		MainModule main = m_Particles.main;
-		MinMaxCurve startLifetime = ((MainModule)(ref main)).startLifetime;
-		((MinMaxCurve)(ref startLifetime)).mode = (ParticleSystemCurveMode)3;
-		((MinMaxCurve)(ref startLifetime)).constantMin = 4f;
-		((MinMaxCurve)(ref startLifetime)).constantMax = 6f;
-		((MainModule)(ref main)).startLifetime = startLifetime;
-		MinMaxCurve startSize = ((MainModule)(ref main)).startSize;
-		((MinMaxCurve)(ref startSize)).mode = (ParticleSystemCurveMode)3;
-		((MinMaxCurve)(ref startSize)).constantMin = size * 0.9f;
-		((MinMaxCurve)(ref startSize)).constantMax = size * 1.1f;
-		((MainModule)(ref main)).startSize = startSize;
-		MinMaxGradient startColor = ((MainModule)(ref main)).startColor;
+		MinMaxCurve startLifetime = main.startLifetime;
+		startLifetime.mode = (ParticleSystemCurveMode)3;
+		startLifetime.constantMin = 4f;
+		startLifetime.constantMax = 6f;
+		main.startLifetime = startLifetime;
+		MinMaxCurve startSize = main.startSize;
+		startSize.mode = (ParticleSystemCurveMode)3;
+		startSize.constantMin = size * 0.9f;
+		startSize.constantMax = size * 1.1f;
+		main.startSize = startSize;
+		MinMaxGradient startColor = main.startColor;
 		if (m_Master.colorMode == ColorMode.Flat)
 		{
-			((MinMaxGradient)(ref startColor)).mode = (ParticleSystemGradientMode)0;
+			startColor.mode = (ParticleSystemGradientMode)0;
 			Color color = m_Master.color;
 			color.a *= alpha;
-			((MinMaxGradient)(ref startColor)).color = color;
+			startColor.color = color;
 		}
 		else
 		{
-			((MinMaxGradient)(ref startColor)).mode = (ParticleSystemGradientMode)1;
+			startColor.mode = (ParticleSystemGradientMode)1;
 			Gradient colorGradient = m_Master.colorGradient;
 			GradientColorKey[] colorKeys = colorGradient.colorKeys;
 			GradientAlphaKey[] alphaKeys = colorGradient.alphaKeys;
@@ -226,24 +226,24 @@ public class VolumetricDustParticles : MonoBehaviour
 			}
 			Gradient val = new Gradient();
 			val.SetKeys(colorKeys, alphaKeys);
-			((MinMaxGradient)(ref startColor)).gradient = val;
+			startColor.gradient = val;
 		}
-		((MainModule)(ref main)).startColor = startColor;
-		MinMaxCurve startSpeed = ((MainModule)(ref main)).startSpeed;
-		((MinMaxCurve)(ref startSpeed)).constant = speed;
-		((MainModule)(ref main)).startSpeed = startSpeed;
-		((MainModule)(ref main)).maxParticles = maxParticles;
+		main.startColor = startColor;
+		MinMaxCurve startSpeed = main.startSpeed;
+		startSpeed.constant = speed;
+		main.startSpeed = startSpeed;
+		main.maxParticles = maxParticles;
 		ShapeModule shape = m_Particles.shape;
-		((ShapeModule)(ref shape)).shapeType = (ParticleSystemShapeType)8;
-		((ShapeModule)(ref shape)).radius = m_Master.coneRadiusStart * Mathf.Lerp(0.3f, 1f, num);
-		((ShapeModule)(ref shape)).angle = m_Master.coneAngle * 0.5f * Mathf.Lerp(0.7f, 1f, num);
-		((ShapeModule)(ref shape)).length = num2;
-		((ShapeModule)(ref shape)).arc = 360f;
-		((ShapeModule)(ref shape)).randomDirectionAmount = ((direction == Direction.Random) ? 1f : 0f);
+		shape.shapeType = (ParticleSystemShapeType)8;
+		shape.radius = m_Master.coneRadiusStart * Mathf.Lerp(0.3f, 1f, num);
+		shape.angle = m_Master.coneAngle * 0.5f * Mathf.Lerp(0.7f, 1f, num);
+		shape.length = num2;
+		shape.arc = 360f;
+		shape.randomDirectionAmount = ((direction == Direction.Random) ? 1f : 0f);
 		EmissionModule emission = m_Particles.emission;
-		MinMaxCurve rateOverTime = ((EmissionModule)(ref emission)).rateOverTime;
-		((MinMaxCurve)(ref rateOverTime)).constant = num3;
-		((EmissionModule)(ref emission)).rateOverTime = rateOverTime;
+		MinMaxCurve rateOverTime = emission.rateOverTime;
+		rateOverTime.constant = num3;
+		emission.rateOverTime = rateOverTime;
 		if (Object.op_Implicit((Object)(object)m_Renderer))
 		{
 			((Renderer)m_Renderer).sortingLayerID = m_Master.sortingLayerID;
@@ -267,7 +267,7 @@ public class VolumetricDustParticles : MonoBehaviour
 			{
 				float num = cullingMaxDistance * cullingMaxDistance;
 				Bounds bounds = m_Master.bounds;
-				flag = ((Bounds)(ref bounds)).SqrDistance(((Component)mainCamera).transform.position) <= num;
+				flag = bounds.SqrDistance(((Component)mainCamera).transform.position) <= num;
 			}
 			else
 			{

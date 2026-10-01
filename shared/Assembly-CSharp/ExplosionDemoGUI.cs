@@ -4,7 +4,7 @@ public class ExplosionDemoGUI : MonoBehaviour
 {
 	public GameObject[] Prefabs;
 
-	public float reactivateTime;
+	public float reactivateTime = 4f;
 
 	public Light Sun;
 
@@ -12,7 +12,7 @@ public class ExplosionDemoGUI : MonoBehaviour
 
 	private GameObject currentInstance;
 
-	private GUIStyle guiStyleHeader;
+	private GUIStyle guiStyleHeader = new GUIStyle();
 
 	private float sunIntensity;
 
@@ -89,9 +89,6 @@ public class ExplosionDemoGUI : MonoBehaviour
 	public ExplosionDemoGUI()
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected O, but got Unknown
-		reactivateTime = 4f;
-		guiStyleHeader = new GUIStyle();
-		((MonoBehaviour)this)._002Ector();
+		//IL_0016: Expected Obj, but got Unknown
 	}
 }

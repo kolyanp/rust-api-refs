@@ -37,9 +37,9 @@ public static class NPCOverwatchSpot
 		{
 			return null;
 		}
-		NavMeshHit val = default(NavMeshHit);
-		RaycastHit val2 = default(RaycastHit);
-		RaycastHit val3 = default(RaycastHit);
+		NavMeshHit val = default;
+		RaycastHit val2 = default;
+		RaycastHit val3 = default;
 		for (int num = corners.Count - 1; num >= 2; num--)
 		{
 			NavVector3 navVector = corners[num];
@@ -53,11 +53,11 @@ public static class NPCOverwatchSpot
 			NavVector3 navVector7 = (navVector2 - navVector).NormalizeXZ() * 100f;
 			if (NavMesh.Raycast(navVector.Value, (navVector + navVector7).Value, ref val, -1))
 			{
-				NavVector3 navVector8 = new NavVector3(((NavMeshHit)(ref val)).position);
-				if (((NavMeshHit)(ref val)).distance >= 7f)
+				NavVector3 navVector8 = new NavVector3(val.position);
+				if (val.distance >= 7f)
 				{
 					Vector3 value = corners[corners.Count - 1].Value;
-					Vector3 position = ((NavMeshHit)(ref val)).position;
+					Vector3 position = val.position;
 					if (Physics.Linecast(value + 1.7f * Vector3.up, position + 1.7f * Vector3.up, ref val2, 1218652417) && Physics.Linecast(value + 0.2f * Vector3.up, position + 0.2f * Vector3.up, ref val3, 1218652417))
 					{
 						return (navVector8, NavVector3.LookDirection(navVector8, navVector));

@@ -13,7 +13,7 @@ public class BaseAnimalNPC : BaseNpc, IAIAttack, IAITirednessAbove, IAISleep, IA
 	{
 		base.ServerInit();
 		brain = ((Component)this).GetComponent<AnimalBrain>();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			AIThinkManager.AddAnimal(this);
 		}
@@ -21,7 +21,7 @@ public class BaseAnimalNPC : BaseNpc, IAIAttack, IAITirednessAbove, IAISleep, IA
 
 	internal override void DoServerDestroy()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			AIThinkManager.RemoveAnimal(this);
 			base.DoServerDestroy();
@@ -60,13 +60,13 @@ public class BaseAnimalNPC : BaseNpc, IAIAttack, IAITirednessAbove, IAISleep, IA
 				initiatorPlayer.LifeStoryKill(this);
 			}
 		}
-		base.OnDied((HitInfo)null);
+		base.OnDied();
 	}
 
 	public override void OnAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (base.isServer && Object.op_Implicit((Object)(object)info.InitiatorPlayer) && !info.damageTypes.IsMeleeType())
+		if (isServer && Object.op_Implicit((Object)(object)info.InitiatorPlayer) && !info.damageTypes.IsMeleeType())
 		{
 			info.InitiatorPlayer.LifeStoryShotHit(info.Weapon);
 		}
@@ -123,7 +123,7 @@ public class BaseAnimalNPC : BaseNpc, IAIAttack, IAITirednessAbove, IAISleep, IA
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		dist = Vector3.Distance(((Component)entity).transform.position, base.AttackPosition);
+		dist = Vector3.Distance(((Component)entity).transform.position, AttackPosition);
 		return dist <= EngagementRange();
 	}
 

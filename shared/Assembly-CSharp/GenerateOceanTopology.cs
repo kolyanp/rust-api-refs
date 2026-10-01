@@ -11,7 +11,7 @@ public class GenerateOceanTopology : ProceduralComponent
 		TerrainHeightMap heightmap = TerrainMeta.HeightMap;
 		NativeArray<int> dst = topologymap.dst;
 		int res = topologymap.res;
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			for (int i = 0; i < res; i++)
 			{
@@ -28,13 +28,13 @@ public class GenerateOceanTopology : ProceduralComponent
 				}
 			}
 		});
-		ImageProcessing.FloodFill2D(0, 0, res, res, (int x, int z) => (dst[z * res + x] & 0x80) != 0, delegate(int x, int z)
+		ImageProcessing.FloodFill2D(0, 0, res, res, (int x, int z) => (dst[z * res + x] & 0x80) != 0, (int x, int z) =>
 		{
 			ref NativeArray<int> reference = ref dst;
 			int num = z * res + x;
 			reference[num] &= -129;
 		});
-		ImageProcessing.FloodFill2D(0, 0, res, res, delegate(int x, int z)
+		ImageProcessing.FloodFill2D(0, 0, res, res, (int x, int z) =>
 		{
 			if ((dst[z * res + x] & 0x810080) != 0)
 			{
@@ -43,7 +43,7 @@ public class GenerateOceanTopology : ProceduralComponent
 			float normX = topologymap.Coordinate(x);
 			float normZ = topologymap.Coordinate(z);
 			return heightmap.GetHeight01(normX, normZ) <= 0.5f;
-		}, delegate(int x, int z)
+		}, (int x, int z) =>
 		{
 			ref NativeArray<int> reference = ref dst;
 			int num = z * res + x;

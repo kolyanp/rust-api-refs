@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using ConVar;
 using Oxide.Core;
 using Rust.Ai.Gen2;
@@ -9,7 +8,7 @@ using UnityEngine;
 
 public class NPCPlayer : BasePlayer
 {
-	public float MovementTickStartDelay;
+	public float MovementTickStartDelay = 1f;
 
 	public AIInformationZone VirtualInfoZone;
 
@@ -23,17 +22,17 @@ public class NPCPlayer : BasePlayer
 
 	public PlayerInventoryProperties[] loadouts;
 
-	public LayerMask movementMask;
+	public LayerMask movementMask = LayerMask.op_Implicit(1503731969);
 
-	public bool LegacyNavigation;
+	public bool LegacyNavigation = true;
 
 	public RustNavMeshAgent NavAgent;
 
-	public float damageScale;
+	public float damageScale = 1f;
 
-	public float shortRange;
+	public float shortRange = 10f;
 
-	public float attackLengthMaxShortRangeScale;
+	public float attackLengthMaxShortRangeScale = 1f;
 
 	private bool _isDormant;
 
@@ -123,7 +122,7 @@ public class NPCPlayer : BasePlayer
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -351,16 +350,16 @@ public class NPCPlayer : BasePlayer
 	public virtual void EquipWeapon(bool skipDeployDelay = false)
 	{
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)base.inventory == (Object)null || base.inventory.containerBelt == null)
+		if ((Object)(object)inventory == (Object)null || inventory.containerBelt == null)
 		{
 			return;
 		}
-		Item slot = base.inventory.containerBelt.GetSlot(0);
+		Item slot = inventory.containerBelt.GetSlot(0);
 		if (Interface.CallHook("OnNpcEquipWeapon", this, slot) != null || slot == null)
 		{
 			return;
 		}
-		UpdateActiveItem(base.inventory.containerBelt.GetSlot(0).uid);
+		UpdateActiveItem(inventory.containerBelt.GetSlot(0).uid);
 		BaseEntity heldEntity = slot.GetHeldEntity();
 		if (!((Object)(object)heldEntity != (Object)null))
 		{
@@ -431,7 +430,7 @@ public class NPCPlayer : BasePlayer
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		if (!LegacyNavigation || base.isClient || !IsAlive() || IsWounded() || (!base.isMounted && !IsNavRunning()))
+		if (!LegacyNavigation || isClient || !IsAlive() || IsWounded() || (!isMounted && !IsNavRunning()))
 		{
 			return;
 		}
@@ -458,9 +457,9 @@ public class NPCPlayer : BasePlayer
 	private bool ValidateNextPosition(ref Vector3 moveToPosition)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		if (!ValidBounds.Test(this, moveToPosition) && (Object)(object)((Component)this).transform != (Object)null && !base.IsDestroyed)
+		if (!ValidBounds.Test(this, moveToPosition) && (Object)(object)((Component)this).transform != (Object)null && !IsDestroyed)
 		{
-			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
+			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)moveToPosition/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
 			Kill();
 			return false;
 		}
@@ -516,10 +515,10 @@ public class NPCPlayer : BasePlayer
 		if (Vector3Ex.Distance2D(finalDestination, GetPosition()) >= 1f)
 		{
 			Vector3 val = finalDestination - GetPosition();
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			return new Vector3(normalized.x, 0f, normalized.z);
 		}
-		return base.eyes.BodyForward();
+		return eyes.BodyForward();
 	}
 
 	public virtual void SetAimDirection(Vector3 newAim)
@@ -544,10 +543,10 @@ public class NPCPlayer : BasePlayer
 			{
 				newAim = attackEntity.ModifyAIAim(newAim);
 			}
-			base.eyes.rotation = Quaternion.LookRotation(newAim, Vector3.up);
-			Quaternion rotation = base.eyes.rotation;
-			viewAngles = ((Quaternion)(ref rotation)).eulerAngles;
-			ServerRotation = base.eyes.rotation;
+			eyes.rotation = Quaternion.LookRotation(newAim, Vector3.up);
+			Quaternion rotation = eyes.rotation;
+			viewAngles = rotation.eulerAngles;
+			ServerRotation = eyes.rotation;
 			lastPositionUpdateTime = Time.time;
 		}
 	}
@@ -632,13 +631,13 @@ public class NPCPlayer : BasePlayer
 
 	public Item FindThrownWeapon()
 	{
-		if ((Object)(object)base.inventory == (Object)null || base.inventory.containerBelt == null)
+		if ((Object)(object)inventory == (Object)null || inventory.containerBelt == null)
 		{
 			return null;
 		}
-		for (int i = 0; i < base.inventory.containerBelt.capacity; i++)
+		for (int i = 0; i < inventory.containerBelt.capacity; i++)
 		{
-			Item slot = base.inventory.containerBelt.GetSlot(i);
+			Item slot = inventory.containerBelt.GetSlot(i);
 			if (slot != null && (Object)(object)(slot.GetHeldEntity() as ThrownWeapon) != (Object)null)
 			{
 				return slot;
@@ -671,11 +670,11 @@ public class NPCPlayer : BasePlayer
 				}
 				if (CopyInventoryToCorpse)
 				{
-					nPCPlayerCorpse.TakeFrom(this, base.inventory.containerMain, base.inventory.containerWear, base.inventory.containerBelt);
+					nPCPlayerCorpse.TakeFrom(this, inventory.containerMain, inventory.containerWear, inventory.containerBelt);
 				}
 				else
 				{
-					nPCPlayerCorpse.CreateEmptyContainer(base.inventory.containerMain.capacity);
+					nPCPlayerCorpse.CreateEmptyContainer(inventory.containerMain.capacity);
 				}
 				nPCPlayerCorpse.playerName = OverrideCorpseName;
 				nPCPlayerCorpse.playerSteamID = userID;
@@ -711,12 +710,5 @@ public class NPCPlayer : BasePlayer
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		MovementTickStartDelay = 1f;
-		movementMask = LayerMask.op_Implicit(1503731969);
-		LegacyNavigation = true;
-		damageScale = 1f;
-		shortRange = 10f;
-		attackLengthMaxShortRangeScale = 1f;
-		base._002Ector();
 	}
 }

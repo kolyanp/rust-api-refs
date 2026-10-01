@@ -16,7 +16,7 @@ public class UI_RegisterNavigation : MonoBehaviour
 
 	private void SetupEntry()
 	{
-		UI_Page page = default(UI_Page);
+		UI_Page page = default;
 		if (!((Object)(object)NavigationEntry.Reference == (Object)null) && NavigationEntry.Reference.TryGetComponent<UI_Page>(ref page))
 		{
 			NavigationEntry.Page = page;

@@ -8,7 +8,7 @@ public class GenerateDecorTopology : ProceduralComponent
 	{
 		TerrainTopologyMap topomap = TerrainMeta.TopologyMap;
 		int topores = topomap.res;
-		Parallel.For(0, topores, delegate(int z)
+		Parallel.For(0, topores, (int z) =>
 		{
 			for (int i = 0; i < topores; i++)
 			{

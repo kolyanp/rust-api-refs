@@ -5,7 +5,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,12 +76,12 @@ public class AnalyticsManager
 				Start(table);
 			}
 			AccumulateImpl(table, record, ref stringBuilder);
-			((Utf8ValueStringBuilder)(ref stringBuilder)).WriteTo((compressStream != null) ? ((Stream)compressStream) : ((Stream)buffer));
+			stringBuilder.WriteTo((compressStream != null) ? ((Stream)compressStream) : ((Stream)buffer));
 			if (Analytics.Log)
 			{
-				logString += ((object)System.Runtime.CompilerServices.Unsafe.As<Utf8ValueStringBuilder, Utf8ValueStringBuilder>(ref stringBuilder)/*cast due to constrained. prefix*/).ToString();
+				logString += ((object)stringBuilder/*cast due to constrained. prefix*/).ToString();
 			}
-			((Utf8ValueStringBuilder)(ref stringBuilder)).Clear();
+			stringBuilder.Clear();
 			itemsWritten++;
 			bytesWritten += buffer.Length - streamLength;
 			streamLength = buffer.Length;
@@ -111,15 +110,15 @@ public class AnalyticsManager
 		private void End(AnalyticsTable table)
 		{
 			EndImpl(table, ref stringBuilder);
-			if (((Utf8ValueStringBuilder)(ref stringBuilder)).Length > 0)
+			if (stringBuilder.Length > 0)
 			{
-				((Utf8ValueStringBuilder)(ref stringBuilder)).WriteTo((compressStream != null) ? ((Stream)compressStream) : ((Stream)buffer));
+				stringBuilder.WriteTo((compressStream != null) ? ((Stream)compressStream) : ((Stream)buffer));
 				if (Analytics.Log)
 				{
-					logString += ((object)System.Runtime.CompilerServices.Unsafe.As<Utf8ValueStringBuilder, Utf8ValueStringBuilder>(ref stringBuilder)/*cast due to constrained. prefix*/).ToString();
+					logString += ((object)stringBuilder/*cast due to constrained. prefix*/).ToString();
 				}
 			}
-			((Utf8ValueStringBuilder)(ref stringBuilder)).Dispose();
+			stringBuilder.Dispose();
 			bytesWritten += buffer.Length - streamLength;
 			streamLength = 0L;
 			if (compressStream != null)
@@ -164,7 +163,7 @@ public class AnalyticsManager
 				compressStream = null;
 				Recycle(buffer);
 				buffer = null;
-				((Utf8ValueStringBuilder)(ref stringBuilder)).Dispose();
+				stringBuilder.Dispose();
 			}
 			streamLength = 0L;
 		}
@@ -191,7 +190,7 @@ public class AnalyticsManager
 		protected override void AccumulateImpl(AnalyticsTable table, EventRecord record, ref Utf8ValueStringBuilder builder)
 		{
 			record.SerializeAsCSV(ref builder);
-			((Utf8ValueStringBuilder)(ref builder)).AppendLine();
+			builder.AppendLine();
 		}
 	}
 
@@ -203,7 +202,7 @@ public class AnalyticsManager
 
 		protected override void StartImpl(AnalyticsTable table, ref Utf8ValueStringBuilder builder)
 		{
-			((Utf8ValueStringBuilder)(ref builder)).Append('[');
+			builder.Append('[');
 			writtenCount = 0;
 		}
 
@@ -211,7 +210,7 @@ public class AnalyticsManager
 		{
 			if (writtenCount > 0)
 			{
-				((Utf8ValueStringBuilder)(ref builder)).Append(',');
+				builder.Append(',');
 			}
 			record.SerializeAsJson(ref builder, table.UseJsonDataObject);
 			writtenCount++;
@@ -219,7 +218,7 @@ public class AnalyticsManager
 
 		protected override void EndImpl(AnalyticsTable table, ref Utf8ValueStringBuilder builder)
 		{
-			((Utf8ValueStringBuilder)(ref builder)).Append(']');
+			builder.Append(']');
 		}
 	}
 
@@ -240,7 +239,7 @@ public class AnalyticsManager
 			default:
 				throw new NotImplementedException($"Not implemented: {table.Mode}");
 			}
-			((Utf8ValueStringBuilder)(ref builder)).AppendLine();
+			builder.AppendLine();
 		}
 	}
 
@@ -642,11 +641,11 @@ public class AnalyticsManager
 		private BlobContainerClient CreateContainerClient()
 		{
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001d: Expected O, but got Unknown
+			//IL_001d: Expected Obj, but got Unknown
 			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009e: Expected O, but got Unknown
+			//IL_009e: Expected Obj, but got Unknown
 			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b0: Expected O, but got Unknown
+			//IL_00b0: Expected Obj, but got Unknown
 			BlobContainerClient result;
 			if (!string.IsNullOrEmpty(Analytics.BulkUploadConnectionString))
 			{
@@ -954,7 +953,7 @@ public class AnalyticsManager
 
 	public TelemStats GatherStats()
 	{
-		TelemStats result = default(TelemStats);
+		TelemStats result = default;
 		foreach (UploadingTable table in tables)
 		{
 			result.QueueCount += table.Table.QueueCount;

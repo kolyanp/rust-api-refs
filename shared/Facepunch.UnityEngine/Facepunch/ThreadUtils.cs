@@ -34,16 +34,39 @@ public static class ThreadUtils
 				foreach (UniTask task in tasks)
 				{
 					UniTask current = task;
-					flag |= !UniTaskStatusExtensions.IsCompleted(((UniTask)(ref current)).Status);
+					flag |= !UniTaskStatusExtensions.IsCompleted(current.Status);
 				}
 			}
 			while (flag);
 			foreach (UniTask task2 in tasks)
 			{
 				UniTask current2 = task2;
-				Awaiter awaiter = ((UniTask)(ref current2)).GetAwaiter();
-				((Awaiter)(ref awaiter)).GetResult();
+				Awaiter awaiter = current2.GetAwaiter();
+				awaiter.GetResult();
 			}
 		}
+	}
+
+	public static void WaitForCompletion(this UniTask task)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		while (!UniTaskStatusExtensions.IsCompleted(task.Status))
+		{
+		}
+		Awaiter awaiter = task.GetAwaiter();
+		awaiter.GetResult();
+	}
+
+	public static T WaitForCompletion<T>(this UniTask<T> task)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		while (!UniTaskStatusExtensions.IsCompleted(task.Status))
+		{
+		}
+		return task.GetAwaiter().GetResult();
 	}
 }

@@ -18,7 +18,7 @@ public class Trans_InitialAlliesNotFighting : FSMTransitionBase
 			PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
 			try
 			{
-				base.Senses.GetInitialAllies((List<BaseEntity>)(object)val);
+				Senses.GetInitialAllies((List<BaseEntity>)(object)val);
 				foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 				{
 					if (!((Component)item).GetComponent<SenseComponent>().FindTarget(out var _) && (!(item is BaseCombatEntity baseCombatEntity) || !(baseCombatEntity.healthFraction < MinAllyHealthFraction)))

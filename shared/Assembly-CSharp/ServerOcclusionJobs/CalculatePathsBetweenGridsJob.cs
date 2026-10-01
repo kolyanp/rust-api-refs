@@ -22,15 +22,17 @@ public struct CalculatePathsBetweenGridsJob : IJobParallelForBatch
 
 	public void Execute(int startIndex, int count)
 	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		int3 val = default(int3);
-		int3 to = default(int3);
 		for (int i = startIndex; i < startIndex + count; i++)
 		{
-			var (subGrid, subGrid2) = Paths[i];
-			((int3)(ref val))._002Ector(subGrid.x, subGrid.y, subGrid.z);
-			((int3)(ref to))._002Ector(subGrid2.x, subGrid2.y, subGrid2.z);
+			(ServerOcclusion.SubGrid, ServerOcclusion.SubGrid) tuple = Paths[i];
+			ServerOcclusion.SubGrid item = tuple.Item1;
+			ServerOcclusion.SubGrid item2 = tuple.Item2;
+			int3 val = new int3(item.x, item.y, item.z);
+			int3 to = new int3(item2.x, item2.y, item2.z);
 			PathsBlocked[i] = Algorithm.Trace(val, to, in Grid, BlockedGridThreshold, NeighbourThreshold, UseNeighbourThresholds);
 		}
 	}

@@ -286,9 +286,9 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 		CancelPlayerRotation();
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (!added && (Object)(object)rotatorPlayer != (Object)null)
 		{
 			rotatorPlayer.AddClanScore((ClanScoreEventType)15);
@@ -296,27 +296,27 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		switch (id)
 		{
-		case 0:
-			if (Global.developer > 2)
-			{
-				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: rotateProgress for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
-			}
-			SyncVarNetWrite(writer, __sync_rotateProgress);
-			return true;
 		case 1:
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: outputtedPower for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: rotateProgress for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_rotateProgress);
+			return true;
+		case 2:
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: outputtedPower for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_outputtedPower);
 			return true;
@@ -329,7 +329,7 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 	{
 		switch (id)
 		{
-		case 0:
+		case 1:
 			try
 			{
 				_ = __sync_rotateProgress;
@@ -341,7 +341,7 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 				Debug.LogException(ex2);
 			}
 			return true;
-		case 1:
+		case 2:
 			try
 			{
 				_ = __sync_outputtedPower;
@@ -364,11 +364,11 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 		{
 			if (propertyName == "outputtedPower")
 			{
-				return 1;
+				return 2;
 			}
 			return byte.MaxValue;
 		}
-		return 0;
+		return 1;
 	}
 
 	protected override void WriteAutoSaveSyncVars(NetWrite writer)
@@ -402,8 +402,8 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 	{
 		return id switch
 		{
-			0 => true, 
 			1 => true, 
+			2 => true, 
 			_ => base.ShouldInvalidateCache(id), 
 		};
 	}

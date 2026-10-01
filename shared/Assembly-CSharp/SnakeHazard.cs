@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class SnakeHazard : WildlifeHazard
 {
-	public static Phrase SnakeHazardFailedTipPhrase;
+	public const string KillAchievement = "KILL_SNAKE";
+
+	public static Phrase SnakeHazardFailedTipPhrase = new Phrase("toast.snake_hazard_failed", "Jump immediately when a Snake hisses to avoid its attack.");
 
 	[ServerVar(Help = "Population active on the server, per square km", ShowInAdminUI = true)]
-	public static float Population;
+	public static float Population = 5f;
 
 	public List<ModifierDefintion> FailModifierEffects;
 
@@ -68,9 +70,9 @@ public class SnakeHazard : WildlifeHazard
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		base.StartReposition();
-		if (!base.IsCorpse)
+		if (!IsCorpse)
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				ClientRPC(RpcTarget.NetworkGroup("CL_RepositionDisappear"), repositionTo);
 			}
@@ -94,10 +96,10 @@ public class SnakeHazard : WildlifeHazard
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3.MoveTowards(((Component)this).transform.position, repositionTo, SlitherSpeed * slitherRate);
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (Physics.Raycast(val + Vector3.up * 1f, Vector3.down, ref val2, 5f, 8388608))
 		{
-			val = ((RaycastHit)(ref val2)).point;
+			val = val2.point;
 		}
 		((Component)this).transform.position = val;
 		try
@@ -113,7 +115,7 @@ public class SnakeHazard : WildlifeHazard
 
 	private void StartDelayedTeleport()
 	{
-		if (!base.IsCorpse)
+		if (!IsCorpse)
 		{
 			CancelInvoke(SlitherTick);
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
@@ -136,7 +138,7 @@ public class SnakeHazard : WildlifeHazard
 		}
 		ServerPosition = repositionTo;
 		SendNetworkUpdate_Position();
-		if (base.isServer)
+		if (isServer)
 		{
 			if (PrefabRepositionEffect != null && PrefabRepositionEffect.isValid)
 			{
@@ -171,6 +173,10 @@ public class SnakeHazard : WildlifeHazard
 	{
 		base.OnDied(info);
 		CancelSnakeInvokes();
+		if (info != null && (Object)(object)info.InitiatorPlayer != (Object)null && !info.InitiatorPlayer.IsNpc && !info.InitiatorPlayer.IsBot)
+		{
+			info.InitiatorPlayer.GiveAchievement("KILL_SNAKE");
+		}
 	}
 
 	public override void OnKilled()
@@ -190,8 +196,6 @@ public class SnakeHazard : WildlifeHazard
 	static SnakeHazard()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		SnakeHazardFailedTipPhrase = new Phrase("toast.snake_hazard_failed", "Jump immediately when a Snake hisses to avoid its attack.");
-		Population = 5f;
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

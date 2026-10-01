@@ -599,9 +599,9 @@ public class IndustrialStorageAdaptor : IndustrialEntity, IIndustrialStorage
 		goto IL_006b;
 	}
 
-	[RPC_Server.MaxRepeatedElements(64)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxRepeatedElements(64)]
 	public void UpdatedStorageSettings(RPCMessage msg)
 	{
 		SortSettings val = msg.read.Proto<SortSettings>((SortSettings)null);
@@ -609,7 +609,7 @@ public class IndustrialStorageAdaptor : IndustrialEntity, IIndustrialStorage
 		{
 			if (val == null)
 			{
-				currentSortSettings = default(SortSettings);
+				currentSortSettings = default;
 			}
 			else
 			{
@@ -630,13 +630,13 @@ public class IndustrialStorageAdaptor : IndustrialEntity, IIndustrialStorage
 		{
 			if (currentSortSettings.enabled)
 			{
-				currentSortSettings = default(SortSettings);
+				currentSortSettings = default;
 			}
 			currentSortSettings.LoadFrom(info.msg.storageAdaptor.sortingSettings);
 		}
 		else
 		{
-			currentSortSettings = default(SortSettings);
+			currentSortSettings = default;
 		}
 	}
 

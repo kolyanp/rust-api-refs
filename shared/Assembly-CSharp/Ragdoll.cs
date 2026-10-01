@@ -10,8 +10,8 @@ using UnityEngine;
 
 public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 {
-	[Tooltip("If true, ragdoll physics are simulated on the server instead of the client")]
 	[Header("Ragdoll")]
+	[Tooltip("If true, ragdoll physics are simulated on the server instead of the client")]
 	public bool simOnServer;
 
 	public float lerpToServerSimTime = 0.5f;
@@ -47,8 +47,8 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	[SerializeField]
 	private List<CharacterJoint> characterJoints = new List<CharacterJoint>();
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private List<ConfigurableJoint> configurableJoints = new List<ConfigurableJoint>();
 
 	[ReadOnly]
@@ -154,12 +154,12 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 				rigidbody.mass = 1f;
 			}
 			Vector3 val = rigidbody.linearVelocity;
-			if (((Vector3)(ref val)).sqrMagnitude < 0.25f)
+			if (val.sqrMagnitude < 0.25f)
 			{
 				rigidbody.linearVelocity += Random.onUnitSphere * 2.5f;
 			}
 			val = rigidbody.angularVelocity;
-			if (((Vector3)(ref val)).sqrMagnitude < 0.25f)
+			if (val.sqrMagnitude < 0.25f)
 			{
 				rigidbody.angularVelocity += Random.onUnitSphere * 2.5f;
 			}
@@ -182,7 +182,19 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 		{
 			return;
 		}
-		RigidbodyInterpolation interpolation = (simOnServer ? ((RigidbodyInterpolation)0) : (((Object)(object)parent == (Object)null) ? ((RigidbodyInterpolation)1) : ((!AnyParentMoves(parent)) ? ((RigidbodyInterpolation)1) : ((RigidbodyInterpolation)0))));
+		RigidbodyInterpolation interpolation;
+		if (simOnServer)
+		{
+			interpolation = (RigidbodyInterpolation)0;
+		}
+		else if ((Object)(object)parent == (Object)null)
+		{
+			interpolation = (RigidbodyInterpolation)1;
+		}
+		else
+		{
+			interpolation = ((!AnyParentMoves(parent)) ? ((RigidbodyInterpolation)1) : ((RigidbodyInterpolation)0));
+		}
 		foreach (Rigidbody rigidbody in rigidbodies)
 		{
 			rigidbody.interpolation = interpolation;
@@ -258,8 +270,8 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		int num = bones.Length;
-		bonePos = (Vector3[])(object)new Vector3[num];
-		boneRot = (Quaternion[])(object)new Quaternion[num];
+		bonePos = new Vector3[num];
+		boneRot = new Quaternion[num];
 		for (int i = 0; i < num; i++)
 		{
 			if ((Object)(object)bones[i] != (Object)null)
@@ -360,7 +372,7 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 		SetUpPhysics(isServer: true);
 		if (!CollectionEx.IsEmpty(rbTransforms))
 		{
-			rbTransformHandles = (TransformHandle[])(object)new TransformHandle[rbTransforms.Count];
+			rbTransformHandles = new TransformHandle[rbTransforms.Count];
 			for (int i = 0; i < rbTransforms.Count; i++)
 			{
 				rbTransformHandles[i] = ((Component)rbTransforms[i]).transformHandle;
@@ -404,7 +416,7 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 				FixedTime = Time.fixedTime
 			};
 			SetRagdollMessageVals(val, in time);
-			base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("RPCSyncJoints"), val);
+			baseEntity.ClientRPC(RpcTarget.NetworkGroup("RPCSyncJoints"), val);
 		}
 		finally
 		{
@@ -451,7 +463,7 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 				Vector3 localPosMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalPosMT(in handle);
 				Quaternion localRotMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in handle);
 				int item = Compression.PackVector3ToInt(localPosMT, -2f, 2f);
-				int item2 = Compression.PackVector3ToInt(((Quaternion)(ref localRotMT)).eulerAngles, -360f, 360f);
+				int item2 = Compression.PackVector3ToInt(localRotMT.eulerAngles, -360f, 360f);
 				list.Add(item);
 				list2.Add(item2);
 			}
@@ -466,7 +478,7 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 				list2.Add(item4);
 			}
 		}
-		ragdollMsg.time = base.baseEntity.GetNetworkTime(in time);
+		ragdollMsg.time = baseEntity.GetNetworkTime(in time);
 		ragdollMsg.positions = list;
 		ragdollMsg.rotations = list2;
 	}
@@ -484,9 +496,9 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 			rigidbody.isKinematic = false;
 			SetCollisionMode(rigidbody, isServer);
 			rigidbody.WakeUp();
-			if ((Object)(object)base.baseEntity != (Object)null && base.baseEntity.HasParent())
+			if ((Object)(object)baseEntity != (Object)null && baseEntity.HasParent())
 			{
-				Rigidbody component = ((Component)base.baseEntity.GetParentEntity()).GetComponent<Rigidbody>();
+				Rigidbody component = ((Component)baseEntity.GetParentEntity()).GetComponent<Rigidbody>();
 				if ((Object)(object)component != (Object)null)
 				{
 					rigidbody.linearVelocity = component.linearVelocity;

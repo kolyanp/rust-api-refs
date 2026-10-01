@@ -4,11 +4,11 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class AtmosphereVolumeRenderer : MonoBehaviour
 {
-	public FogMode Mode;
+	public FogMode Mode = (FogMode)3;
 
-	public bool DistanceFog;
+	public bool DistanceFog = true;
 
-	public bool HeightFog;
+	public bool HeightFog = true;
 
 	public AtmosphereVolume Volume;
 
@@ -30,9 +30,5 @@ public class AtmosphereVolumeRenderer : MonoBehaviour
 	public AtmosphereVolumeRenderer()
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		Mode = (FogMode)3;
-		DistanceFog = true;
-		HeightFog = true;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

@@ -21,8 +21,8 @@ public class World : ConsoleSystem
 	[ServerVar(Help = "(Generated) Path to a world generation config file used by the procedural map generator; used when configString is empty")]
 	public static string configFile = string.Empty;
 
-	[ClientVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
 	[ServerVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
+	[ClientVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
 	public static void monuments(Arg arg)
 	{
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
@@ -95,7 +95,7 @@ public class World : ConsoleSystem
 	private static void RenderMapLayerToFile(Arg arg, string name, MapLayer layer)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Expected O, but got Unknown
+		//IL_0058: Expected Obj, but got Unknown
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
@@ -176,8 +176,8 @@ public class World : ConsoleSystem
 			float num2 = TerrainMeta.Position.x + TerrainMeta.Size.x + TerrainMeta.Size.x;
 			float num3 = TerrainMeta.Position.z - TerrainMeta.Size.z;
 			float num4 = TerrainMeta.Position.z + TerrainMeta.Size.z + TerrainMeta.Size.z;
-			Bounds bounds = default(Bounds);
-			((Bounds)(ref bounds)).SetMinMax(new Vector3(num, 0f, num3), new Vector3(num2, 0f, num4));
+			Bounds bounds = default;
+			bounds.SetMinMax(new Vector3(num, 0f, num3), new Vector3(num2, 0f, num4));
 			DrawBoundsFlat(basePlayer, bounds, y, duration, Color.yellow, "TerrainMargin");
 		}
 		DrawBoundsFlat(basePlayer, DeepSeaManager.DeepSeaBounds, y, duration, Color.cyan, "DeepSea");
@@ -191,18 +191,22 @@ public class World : ConsoleSystem
 			Color val = (flag ? Color.green : Color.magenta);
 			val = (serverPortal.IsOpen() ? val : val.WithAlpha(0.1f));
 			OBB val2 = serverPortal.WorldSpaceBounds();
-			DrawBoundsFlat(basePlayer, ((OBB)(ref val2)).ToBounds(), y, duration, val, flag ? "Entrance Portal" : "Exit Portal");
+			DrawBoundsFlat(basePlayer, val2.ToBounds(), y, duration, val, flag ? "Entrance Portal" : "Exit Portal");
 		}
 		static void DrawBoundsFlat(BasePlayer player, Bounds val4, float num5, float duration2, Color color, string label)
 		{
 			//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0083: Unknown result type (might be due to invalid IL or missing references)
@@ -223,14 +227,10 @@ public class World : ConsoleSystem
 			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-			Vector3 val3 = default(Vector3);
-			((Vector3)(ref val3))._002Ector(((Bounds)(ref val4)).min.x, num5, ((Bounds)(ref val4)).min.z);
-			Vector3 val5 = default(Vector3);
-			((Vector3)(ref val5))._002Ector(((Bounds)(ref val4)).max.x, num5, ((Bounds)(ref val4)).min.z);
-			Vector3 val6 = default(Vector3);
-			((Vector3)(ref val6))._002Ector(((Bounds)(ref val4)).max.x, num5, ((Bounds)(ref val4)).max.z);
-			Vector3 val7 = default(Vector3);
-			((Vector3)(ref val7))._002Ector(((Bounds)(ref val4)).min.x, num5, ((Bounds)(ref val4)).max.z);
+			Vector3 val3 = new Vector3(val4.min.x, num5, val4.min.z);
+			Vector3 val5 = new Vector3(val4.max.x, num5, val4.min.z);
+			Vector3 val6 = new Vector3(val4.max.x, num5, val4.max.z);
+			Vector3 val7 = new Vector3(val4.min.x, num5, val4.max.z);
 			UnityEngine.DDraw.Line(player, val3, val5, color, duration2, distanceFade: false);
 			UnityEngine.DDraw.Line(player, val5, val6, color, duration2, distanceFade: false);
 			UnityEngine.DDraw.Line(player, val6, val7, color, duration2, distanceFade: false);

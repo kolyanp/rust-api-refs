@@ -11,13 +11,13 @@ public class ItemModSetFrequency : ItemMod
 		public TimeSince TimeSinceEdit;
 	}
 
-	public static readonly Phrase RfOffTitle;
+	public static readonly Phrase RfOffTitle = new Phrase("rf_off", "Disable RF");
 
-	public static readonly Phrase RfOffDesc;
+	public static readonly Phrase RfOffDesc = new Phrase("rf_off_desc", " Disable detonation via RF");
 
-	public static readonly Phrase RfOnTitle;
+	public static readonly Phrase RfOnTitle = new Phrase("rf_on", "Enable RF");
 
-	public static readonly Phrase RfOnDesc;
+	public static readonly Phrase RfOnDesc = new Phrase("rf_on_desc", " Enable detonation via RF");
 
 	public GameObjectRef frequencyPanelPrefab;
 
@@ -29,7 +29,7 @@ public class ItemModSetFrequency : ItemMod
 
 	public bool loseConditionOnChange;
 
-	private static List<ItemTime> itemsOnCooldown;
+	private static List<ItemTime> itemsOnCooldown = new List<ItemTime>();
 
 	public override void ServerCommand(Item item, string command, BasePlayer player)
 	{
@@ -104,7 +104,7 @@ public class ItemModSetFrequency : ItemMod
 	public override void OnItemCreated(Item item)
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Expected O, but got Unknown
+		//IL_0013: Expected Obj, but got Unknown
 		if (item.instanceData == null)
 		{
 			item.instanceData = new InstanceData();
@@ -116,17 +116,12 @@ public class ItemModSetFrequency : ItemMod
 	static ItemModSetFrequency()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
-		RfOffTitle = new Phrase("rf_off", "Disable RF");
-		RfOffDesc = new Phrase("rf_off_desc", " Disable detonation via RF");
-		RfOnTitle = new Phrase("rf_on", "Enable RF");
-		RfOnDesc = new Phrase("rf_on_desc", " Enable detonation via RF");
-		itemsOnCooldown = new List<ItemTime>();
+		//IL_0050: Expected Obj, but got Unknown
 	}
 }

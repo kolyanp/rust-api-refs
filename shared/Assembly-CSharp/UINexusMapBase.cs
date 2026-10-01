@@ -52,13 +52,13 @@ public abstract class UINexusMapBase : BaseMonoBehaviour, IPointerDownHandler, I
 	[Header("Behavior")]
 	public bool ShowLocalPlayer;
 
-	public float OutOfBoundsScaleFactor;
+	public float OutOfBoundsScaleFactor = 5f;
 
-	public float ZoneNameAlphaPower;
+	public float ZoneNameAlphaPower = 100f;
 
-	public UnityEvent OnMapLoaded;
+	public UnityEvent OnMapLoaded = new UnityEvent();
 
-	public UnityEvent OnClicked;
+	public UnityEvent OnClicked = new UnityEvent();
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
@@ -67,13 +67,8 @@ public abstract class UINexusMapBase : BaseMonoBehaviour, IPointerDownHandler, I
 	protected UINexusMapBase()
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
+		//IL_0021: Expected Obj, but got Unknown
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
-		OutOfBoundsScaleFactor = 5f;
-		ZoneNameAlphaPower = 100f;
-		OnMapLoaded = new UnityEvent();
-		OnClicked = new UnityEvent();
-		base._002Ector();
+		//IL_002c: Expected Obj, but got Unknown
 	}
 }

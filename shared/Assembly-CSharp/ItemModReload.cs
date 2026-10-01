@@ -2,13 +2,11 @@ using UnityEngine;
 
 public class ItemModReload : ItemMod
 {
-	public float conditionLost;
-
 	public GameObjectRef successEffect;
 
 	public int workbenchLvlRequired;
 
-	public Phrase reloadPhrase;
+	public Phrase reloadPhrase = new Phrase("reload_item", "Reload Item");
 
 	public bool HasCraftLevel(BasePlayer player = null)
 	{
@@ -34,21 +32,24 @@ public class ItemModReload : ItemMod
 			return;
 		}
 		BaseProjectile component = ((Component)heldEntity).GetComponent<BaseProjectile>();
-		if (!((Object)(object)component == (Object)null))
+		if ((Object)(object)component == (Object)null)
 		{
-			int num = component.primaryMagazine.capacity - component.primaryMagazine.contents;
-			if (num != 0 && component.TryReloadMagazine(player.inventory, num) && successEffect.isValid)
+			return;
+		}
+		int num = component.primaryMagazine.capacity - component.primaryMagazine.contents;
+		if (num != 0 && component.TryReloadMagazine(player.inventory, num))
+		{
+			if (successEffect.isValid)
 			{
 				Effect.server.Run(successEffect.resourcePath, player.eyes.position);
 			}
+			item.MarkDirty();
 		}
 	}
 
 	public ItemModReload()
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Expected O, but got Unknown
-		reloadPhrase = new Phrase("reload_item", "Reload Item");
-		base._002Ector();
+		//IL_0015: Expected Obj, but got Unknown
 	}
 }

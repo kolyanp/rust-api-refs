@@ -7,24 +7,15 @@ using UnityEngine;
 public class ItemBlueprint : MonoBehaviour
 {
 	[Serializable]
-	public struct BlueprintOverride
+	public struct BlueprintOverride(ItemBlueprint bp)
 	{
-		public Era TargetEra;
+		public Era TargetEra = (Era)0;
 
-		public List<ItemAmount> Ingredients;
+		public List<ItemAmount> Ingredients = bp.ingredients;
 
-		public float craftTime;
+		public float craftTime = bp.time;
 
-		public int workbenchLevel;
-
-		public BlueprintOverride(ItemBlueprint bp)
-		{
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			TargetEra = (Era)0;
-			Ingredients = bp.ingredients;
-			craftTime = bp.time;
-			workbenchLevel = bp.workbenchLevelRequired;
-		}
+		public int workbenchLevel = bp.workbenchLevelRequired;
 	}
 
 	[Serializable]
@@ -68,8 +59,8 @@ public class ItemBlueprint : MonoBehaviour
 
 	public int scrapFromRecycle;
 
-	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
 	[Header("Unlocking")]
+	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
 	public bool NeedsSteamItem;
 
 	public ItemDefinition RequireUnlockedItem;

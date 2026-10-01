@@ -96,28 +96,28 @@ public class ClawMarkSpawner : EntityComponent<BaseEntity>, IServerComponent
 		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.baseEntity.isServer)
+		if (!baseEntity.isServer)
 		{
 			return;
 		}
 		if (AI.logIssues && clawMarks.Count > 0)
 		{
-			Debug.LogWarning((object)$"Claw marks already spawned for {base.baseEntity}.");
+			Debug.LogWarning((object)$"Claw marks already spawned for {baseEntity}.");
 			return;
 		}
 		PooledList<TreeEntity> val = Pool.Get<PooledList<TreeEntity>>();
 		try
 		{
-			BaseEntity.Query.Server.GetInSphere(((Component)base.baseEntity).transform.position, radius, (List<TreeEntity>)(object)val);
+			BaseEntity.Query.Server.GetInSphere(((Component)baseEntity).transform.position, radius, (List<TreeEntity>)(object)val);
 			clawMarks.Capacity = ((List<TreeEntity>)(object)val).Count;
-			RaycastHit val3 = default(RaycastHit);
+			RaycastHit val3 = default;
 			foreach (TreeEntity item in (List<TreeEntity>)(object)val)
 			{
 				if (Random.value > ratioOfTreesMarked || (Object)(object)item.serverCollider == (Object)null)
 				{
 					continue;
 				}
-				float num = Mathf.Min(((Bounds)(ref item.bounds)).extents.x, ((Bounds)(ref item.bounds)).extents.z);
+				float num = Mathf.Min(item.bounds.extents.x, item.bounds.extents.z);
 				if (num < minTreeRadius)
 				{
 					continue;
@@ -128,12 +128,12 @@ public class ClawMarkSpawner : EntityComponent<BaseEntity>, IServerComponent
 				{
 					continue;
 				}
-				ClawMark clawMark = GameManager.server.CreateEntity(clawDecal.resourcePath, ((RaycastHit)(ref val3)).point, Quaternion.LookRotation(-((RaycastHit)(ref val3)).normal)) as ClawMark;
+				ClawMark clawMark = GameManager.server.CreateEntity(clawDecal.resourcePath, val3.point, Quaternion.LookRotation(-val3.normal)) as ClawMark;
 				if ((Object)(object)clawMark == (Object)null)
 				{
 					if (AI.logIssues)
 					{
-						Debug.LogWarning((object)$"Failed to create claw mark for {base.baseEntity}.");
+						Debug.LogWarning((object)$"Failed to create claw mark for {baseEntity}.");
 					}
 				}
 				else
@@ -152,7 +152,7 @@ public class ClawMarkSpawner : EntityComponent<BaseEntity>, IServerComponent
 
 	private void ClearClawMarks()
 	{
-		if (!base.baseEntity.isServer)
+		if (!baseEntity.isServer)
 		{
 			return;
 		}

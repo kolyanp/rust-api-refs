@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -9,7 +10,7 @@ public class SwingSeat : BaseVehicleSeat
 {
 	public Transform pivot;
 
-	public Vector3 swingAxis;
+	public Vector3 swingAxis = Vector3.right;
 
 	public float minAngle;
 
@@ -21,16 +22,16 @@ public class SwingSeat : BaseVehicleSeat
 
 	public float damping;
 
-	public float launchScale;
+	public float launchScale = 1f;
 
-	public float launchMinSpeed;
+	public float launchMinSpeed = 20f;
 
 	[Range(0f, 1f)]
-	public float launchLift;
+	public float launchLift = 0.25f;
 
 	public bool heavyLanding;
 
-	public bool flailOnLaunch;
+	public bool flailOnLaunch = true;
 
 	public ChildAnimatorSubSystem swingAnimator;
 
@@ -42,7 +43,7 @@ public class SwingSeat : BaseVehicleSeat
 
 	public AnimationCurve swingMovementGainCurve;
 
-	public float swingMovementSmoothing;
+	public float swingMovementSmoothing = 4f;
 
 	public AnimationCurve swingMovementAccentGainCurve;
 
@@ -175,10 +176,10 @@ public class SwingSeat : BaseVehicleSeat
 		if ((Object)(object)pivot != (Object)null && (Object)(object)mountAnchor != (Object)null && (Object)(object)player != (Object)null && Mathf.Abs(velocity) > launchMinSpeed)
 		{
 			Vector3 val = pivot.TransformDirection(swingAxis);
-			Vector3 val2 = ((Vector3)(ref val)).normalized * (velocity * (MathF.PI / 180f));
+			Vector3 val2 = val.normalized * (velocity * (MathF.PI / 180f));
 			Vector3 val3 = mountAnchor.position - pivot.position;
 			Vector3 val4 = Vector3.Cross(val2, val3) * launchScale;
-			val4 += Vector3.up * (((Vector3)(ref val4)).magnitude * launchLift);
+			val4 += Vector3.up * (val4.magnitude * launchLift);
 			player.Ragdoll(val4, heavyLanding, flailOnLaunch);
 			BaseMountable mounted = player.GetMounted();
 			if ((Object)(object)mounted != (Object)null)
@@ -226,7 +227,7 @@ public class SwingSeat : BaseVehicleSeat
 		UpdateSwingingFlag();
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -235,7 +236,7 @@ public class SwingSeat : BaseVehicleSeat
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: SwingAngle for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: SwingAngle for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_SwingAngle);
 			return true;
@@ -287,18 +288,34 @@ public class SwingSeat : BaseVehicleSeat
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -334,12 +351,5 @@ public class SwingSeat : BaseVehicleSeat
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		swingAxis = Vector3.right;
-		launchScale = 1f;
-		launchMinSpeed = 20f;
-		launchLift = 0.25f;
-		flailOnLaunch = true;
-		swingMovementSmoothing = 4f;
-		base._002Ector();
 	}
 }

@@ -74,7 +74,7 @@ public class AIDesign
 	public AIDesign ToProto(int currentStateID)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0006: Expected O, but got Unknown
+		//IL_0006: Expected Obj, but got Unknown
 		AIDesign val = new AIDesign();
 		val.description = Description;
 		val.scope = (int)Scope;

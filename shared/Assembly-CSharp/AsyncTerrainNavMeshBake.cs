@@ -37,7 +37,7 @@ public class AsyncTerrainNavMeshBake : CustomYieldInstruction
 		get
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0006: Expected O, but got Unknown
+			//IL_0006: Expected Obj, but got Unknown
 			Mesh val = new Mesh();
 			if (vertices != null)
 			{
@@ -70,10 +70,10 @@ public class AsyncTerrainNavMeshBake : CustomYieldInstruction
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		NavMeshBuildSource result = default(NavMeshBuildSource);
-		((NavMeshBuildSource)(ref result)).transform = Matrix4x4.TRS(pivot, Quaternion.identity, Vector3.one);
-		((NavMeshBuildSource)(ref result)).shape = (NavMeshBuildSourceShape)0;
-		((NavMeshBuildSource)(ref result)).sourceObject = (Object)(object)mesh;
+		NavMeshBuildSource result = default;
+		result.transform = Matrix4x4.TRS(pivot, Quaternion.identity, Vector3.one);
+		result.shape = (NavMeshBuildSourceShape)0;
+		result.sourceObject = (Object)(object)mesh;
 		return result;
 	}
 
@@ -83,7 +83,7 @@ public class AsyncTerrainNavMeshBake : CustomYieldInstruction
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		NavMeshBuildSource result = CreateNavMeshBuildSource();
-		((NavMeshBuildSource)(ref result)).area = area;
+		result.area = area;
 		return result;
 	}
 
@@ -91,7 +91,6 @@ public class AsyncTerrainNavMeshBake : CustomYieldInstruction
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		((CustomYieldInstruction)this)._002Ector();
 		this.pivot = pivot;
 		this.width = width;
 		this.height = height;
@@ -106,8 +105,10 @@ public class AsyncTerrainNavMeshBake : CustomYieldInstruction
 
 	private void DoWork()
 	{
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
@@ -123,10 +124,8 @@ public class AsyncTerrainNavMeshBake : CustomYieldInstruction
 		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector((float)(width / 2), 0f, (float)(height / 2));
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(pivot.x - val.x, 0f, pivot.z - val.z);
+		Vector3 val = new Vector3((float)(width / 2), 0f, (float)(height / 2));
+		Vector3 val2 = new Vector3(pivot.x - val.x, 0f, pivot.z - val.z);
 		TerrainHeightMap heightMap = TerrainMeta.HeightMap;
 		TerrainAlphaMap alphaMap = TerrainMeta.AlphaMap;
 		int num = 0;

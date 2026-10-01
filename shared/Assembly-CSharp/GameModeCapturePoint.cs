@@ -53,7 +53,7 @@ public class GameModeCapturePoint : BaseEntity
 
 	public void Update()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			UpdateCaptureAmount();
 		}
@@ -101,7 +101,7 @@ public class GameModeCapturePoint : BaseEntity
 
 	public void UpdateCaptureAmount()
 	{
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}

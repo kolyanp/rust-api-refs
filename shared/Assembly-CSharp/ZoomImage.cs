@@ -51,7 +51,7 @@ public class ZoomImage : MonoBehaviour, IScrollHandler, IEventSystemHandler
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		Transform transform = ((Component)this).transform;
 		_thisTransform = (RectTransform)(object)((transform is RectTransform) ? transform : null);
-		((Vector3)(ref _scale)).Set(_initialScale, _initialScale, 1f);
+		_scale.Set(_initialScale, _initialScale, 1f);
 		((Transform)_thisTransform).localScale = _scale;
 	}
 
@@ -69,19 +69,19 @@ public class ZoomImage : MonoBehaviour, IScrollHandler, IEventSystemHandler
 		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
-		Vector2 val = default(Vector2);
+		Vector2 val = default;
 		RectTransformUtility.ScreenPointToLocalPointInRectangle(_thisTransform, ((InputControl<Vector2>)(object)((Pointer)Mouse.current).position).ReadValue(), (Camera)null, ref val);
 		float y = eventData.scrollDelta.y;
 		if (y > 0f && _scale.x < _maximumScale)
 		{
-			((Vector3)(ref _scale)).Set(_scale.x + _scaleIncrement, _scale.y + _scaleIncrement, 1f);
+			_scale.Set(_scale.x + _scaleIncrement, _scale.y + _scaleIncrement, 1f);
 			((Transform)_thisTransform).localScale = _scale;
 			RectTransform thisTransform = _thisTransform;
 			thisTransform.anchoredPosition -= val * _scaleIncrement;
 		}
 		else if (y < 0f && _scale.x > _minimumScale)
 		{
-			((Vector3)(ref _scale)).Set(_scale.x - _scaleIncrement, _scale.y - _scaleIncrement, 1f);
+			_scale.Set(_scale.x - _scaleIncrement, _scale.y - _scaleIncrement, 1f);
 			((Transform)_thisTransform).localScale = _scale;
 			RectTransform thisTransform2 = _thisTransform;
 			thisTransform2.anchoredPosition += val * _scaleIncrement;

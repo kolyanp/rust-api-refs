@@ -9,10 +9,12 @@ public class State_PlayAnimation : State_PlayAnimationBase
 	[SerializeField]
 	public AnimationClip Animation;
 
+	public bool HasAnimation => (Object)(object)Animation != (Object)null;
+
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		EFSMStateStatus result = base.OnStateEnter(payload);
-		animState = base.AnimPlayer.PlayServerAndTakeFromPool(Animation);
+		animState = AnimPlayer.PlayServerAndTakeFromPool(Animation);
 		return result;
 	}
 

@@ -4,17 +4,17 @@ using UnityEngine;
 public abstract class TerrainPlacement : PrefabAttribute
 {
 	[ReadOnly]
-	public Vector3 size;
+	public Vector3 size = Vector3.zero;
 
 	[ReadOnly]
-	public Vector3 extents;
+	public Vector3 extents = Vector3.zero;
 
 	[ReadOnly]
-	public Vector3 offset;
+	public Vector3 offset = Vector3.zero;
 
-	public bool HeightMap;
+	public bool HeightMap = true;
 
-	public bool AlphaMap;
+	public bool AlphaMap = true;
 
 	public bool WaterMap;
 
@@ -179,11 +179,5 @@ public abstract class TerrainPlacement : PrefabAttribute
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		size = Vector3.zero;
-		extents = Vector3.zero;
-		offset = Vector3.zero;
-		HeightMap = true;
-		AlphaMap = true;
-		base._002Ector();
 	}
 }

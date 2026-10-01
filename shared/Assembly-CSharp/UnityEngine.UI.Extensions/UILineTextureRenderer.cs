@@ -7,12 +7,12 @@ namespace UnityEngine.UI.Extensions;
 public class UILineTextureRenderer : UIPrimitiveBase
 {
 	[SerializeField]
-	private Rect m_UVRect;
+	private Rect m_UVRect = new Rect(0f, 0f, 1f, 1f);
 
 	[SerializeField]
 	private Vector2[] m_points;
 
-	public float LineThickness;
+	public float LineThickness = 2f;
 
 	public bool UseMargins;
 
@@ -106,8 +106,10 @@ public class UILineTextureRenderer : UIPrimitiveBase
 		//IL_0274: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
@@ -162,6 +164,11 @@ public class UILineTextureRenderer : UIPrimitiveBase
 		//IL_040f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0411: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0416: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0424: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0435: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0446: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0457: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0468: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0475: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0477: Unknown result type (might be due to invalid IL or missing references)
 		//IL_047e: Unknown result type (might be due to invalid IL or missing references)
@@ -208,7 +215,7 @@ public class UILineTextureRenderer : UIPrimitiveBase
 		//IL_0538: Unknown result type (might be due to invalid IL or missing references)
 		if (m_points == null || m_points.Length < 2)
 		{
-			m_points = (Vector2[])(object)new Vector2[2]
+			m_points = new Vector2[2]
 			{
 				new Vector2(0f, 0f),
 				new Vector2(1f, 1f)
@@ -216,15 +223,15 @@ public class UILineTextureRenderer : UIPrimitiveBase
 		}
 		int num = 24;
 		Rect rect = ((Graphic)this).rectTransform.rect;
-		float num2 = ((Rect)(ref rect)).width;
+		float num2 = rect.width;
 		rect = ((Graphic)this).rectTransform.rect;
-		float num3 = ((Rect)(ref rect)).height;
+		float num3 = rect.height;
 		float num4 = 0f - ((Graphic)this).rectTransform.pivot.x;
 		rect = ((Graphic)this).rectTransform.rect;
-		float num5 = num4 * ((Rect)(ref rect)).width;
+		float num5 = num4 * rect.width;
 		float num6 = 0f - ((Graphic)this).rectTransform.pivot.y;
 		rect = ((Graphic)this).rectTransform.rect;
-		float num7 = num6 * ((Rect)(ref rect)).height;
+		float num7 = num6 * rect.height;
 		if (!relativeSize)
 		{
 			num2 = 1f;
@@ -234,7 +241,7 @@ public class UILineTextureRenderer : UIPrimitiveBase
 		list.Add(m_points[0]);
 		Vector2 val = m_points[0];
 		Vector2 val2 = m_points[1] - m_points[0];
-		Vector2 item = val + ((Vector2)(ref val2)).normalized * (float)num;
+		Vector2 item = val + val2.normalized * (float)num;
 		list.Add(item);
 		for (int i = 1; i < m_points.Length - 1; i++)
 		{
@@ -242,7 +249,7 @@ public class UILineTextureRenderer : UIPrimitiveBase
 		}
 		Vector2 val3 = m_points[m_points.Length - 1];
 		val2 = m_points[m_points.Length - 1] - m_points[m_points.Length - 2];
-		item = val3 - ((Vector2)(ref val2)).normalized * (float)num;
+		item = val3 - val2.normalized * (float)num;
 		list.Add(item);
 		list.Add(m_points[m_points.Length - 1]);
 		Vector2[] array = list.ToArray();
@@ -256,17 +263,12 @@ public class UILineTextureRenderer : UIPrimitiveBase
 		vh.Clear();
 		Vector2 val4 = Vector2.zero;
 		Vector2 val5 = Vector2.zero;
-		Vector2 val12 = default(Vector2);
-		Vector2 val13 = default(Vector2);
-		Vector2 val14 = default(Vector2);
-		Vector2 val15 = default(Vector2);
-		Vector2 val16 = default(Vector2);
 		for (int j = 1; j < array.Length; j++)
 		{
 			Vector2 val6 = array[j - 1];
 			Vector2 val7 = array[j];
-			((Vector2)(ref val6))._002Ector(val6.x * num2 + num5, val6.y * num3 + num7);
-			((Vector2)(ref val7))._002Ector(val7.x * num2 + num5, val7.y * num3 + num7);
+			val6 = new Vector2(val6.x * num2 + num5, val6.y * num3 + num7);
+			val7 = new Vector2(val7.x * num2 + num5, val7.y * num3 + num7);
 			float num8 = Mathf.Atan2(val7.y - val6.y, val7.x - val6.x) * 180f / MathF.PI;
 			Vector2 val8 = val6 + new Vector2(0f, (0f - LineThickness) / 2f);
 			Vector2 val9 = val6 + new Vector2(0f, LineThickness / 2f);
@@ -277,25 +279,25 @@ public class UILineTextureRenderer : UIPrimitiveBase
 			val10 = Vector2.op_Implicit(RotatePointAroundPivot(Vector2.op_Implicit(val10), Vector2.op_Implicit(val7), new Vector3(0f, 0f, num8)));
 			val11 = Vector2.op_Implicit(RotatePointAroundPivot(Vector2.op_Implicit(val11), Vector2.op_Implicit(val7), new Vector3(0f, 0f, num8)));
 			Vector2 zero = Vector2.zero;
-			((Vector2)(ref val12))._002Ector(0f, 1f);
-			((Vector2)(ref val13))._002Ector(0.5f, 0f);
-			((Vector2)(ref val14))._002Ector(0.5f, 1f);
-			((Vector2)(ref val15))._002Ector(1f, 0f);
-			((Vector2)(ref val16))._002Ector(1f, 1f);
-			Vector2[] uvs = (Vector2[])(object)new Vector2[4] { val13, val14, val14, val13 };
+			Vector2 val12 = new Vector2(0f, 1f);
+			Vector2 val13 = new Vector2(0.5f, 0f);
+			Vector2 val14 = new Vector2(0.5f, 1f);
+			Vector2 val15 = new Vector2(1f, 0f);
+			Vector2 val16 = new Vector2(1f, 1f);
+			Vector2[] uvs = new Vector2[4] { val13, val14, val14, val13 };
 			if (j > 1)
 			{
-				vh.AddUIVertexQuad(SetVbo((Vector2[])(object)new Vector2[4] { val4, val5, val8, val9 }, uvs));
+				vh.AddUIVertexQuad(SetVbo(new Vector2[4] { val4, val5, val8, val9 }, uvs));
 			}
 			if (j == 1)
 			{
-				uvs = (Vector2[])(object)new Vector2[4] { zero, val12, val14, val13 };
+				uvs = new Vector2[4] { zero, val12, val14, val13 };
 			}
 			else if (j == array.Length - 1)
 			{
-				uvs = (Vector2[])(object)new Vector2[4] { val13, val14, val16, val15 };
+				uvs = new Vector2[4] { val13, val14, val16, val15 };
 			}
-			vh.AddUIVertexQuad(SetVbo((Vector2[])(object)new Vector2[4] { val8, val9, val10, val11 }, uvs));
+			vh.AddUIVertexQuad(SetVbo(new Vector2[4] { val8, val9, val10, val11 }, uvs));
 			val4 = val10;
 			val5 = val11;
 		}
@@ -327,8 +329,5 @@ public class UILineTextureRenderer : UIPrimitiveBase
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		m_UVRect = new Rect(0f, 0f, 1f, 1f);
-		LineThickness = 2f;
-		base._002Ector();
 	}
 }

@@ -8,12 +8,12 @@ using UnityEngine.AI;
 
 public class ServerBuildingManager : BuildingManager
 {
-	private static readonly Action<BuildingBlock, uint> _AttachToBuildingCallback = delegate(BuildingBlock block, uint newID)
+	private static readonly Action<BuildingBlock, uint> _AttachToBuildingCallback = (BuildingBlock block, uint newID) =>
 	{
 		block.AttachToBuilding(newID);
 	};
 
-	private static readonly Action<BuildingBlock, ServerBuildingManager, Building> _CheckMergeCallback = delegate(BuildingBlock block, ServerBuildingManager manager, Building building)
+	private static readonly Action<BuildingBlock, ServerBuildingManager, Building> _CheckMergeCallback = (BuildingBlock block, ServerBuildingManager manager, Building building) =>
 	{
 		if (block.buildingID != building.ID)
 		{
@@ -100,7 +100,7 @@ public class ServerBuildingManager : BuildingManager
 		}
 		SplitEntities<BuildingPrivlidge>(oldBuilding.buildingPrivileges, largestSplit);
 		SplitEntities<DecayEntity>(oldBuilding.decayEntities, largestSplit);
-		if (AI.nav_carve_use_building_optimization)
+		if (AI.useUnityNavmesh && AI.nav_carve_use_building_optimization)
 		{
 			oldBuilding.isNavMeshCarvingDirty = true;
 			int ticks = 2;
@@ -132,7 +132,7 @@ public class ServerBuildingManager : BuildingManager
 		if (building != null)
 		{
 			ent.EntityLinkMessage(_CheckMergeCallback, this, building, onlyBuildingConnections: true);
-			if (AI.nav_carve_use_building_optimization)
+			if (AI.useUnityNavmesh && AI.nav_carve_use_building_optimization)
 			{
 				building.isNavMeshCarvingDirty = true;
 				int ticks = 2;
@@ -148,7 +148,7 @@ public class ServerBuildingManager : BuildingManager
 		{
 			building2.decayEntities[0].AttachToBuilding(building1.ID);
 		}
-		if (AI.nav_carve_use_building_optimization)
+		if (AI.useUnityNavmesh && AI.nav_carve_use_building_optimization)
 		{
 			building1.isNavMeshCarvingDirty = true;
 			building2.isNavMeshCarvingDirty = true;
@@ -164,6 +164,7 @@ public class ServerBuildingManager : BuildingManager
 		{
 			((ObjectWorkQueue<StabilityEntity>)StabilityEntity.stabilityCheckQueue).RunQueue((double)Stability.stabilityqueue);
 		}
+		RoomOcclusionManager.Cycle();
 		using (TimeWarning.New("UpdateSurroundingsQueue"))
 		{
 			((ObjectWorkQueue<Bounds>)StabilityEntity.updateSurroundingsQueue).RunQueue((double)Stability.surroundingsqueue);
@@ -229,7 +230,7 @@ public class ServerBuildingManager : BuildingManager
 				decayTickWorldIndex = 0;
 			}
 		}
-		if (!AI.nav_carve_use_building_optimization)
+		if (!AI.useUnityNavmesh || !AI.nav_carve_use_building_optimization)
 		{
 			return;
 		}
@@ -255,43 +256,45 @@ public class ServerBuildingManager : BuildingManager
 
 	public void UpdateNavMeshCarver(Building building, ref int ticks, int i)
 	{
-		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0189: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0198: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0204: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0284: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0274: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0280: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0330: Unknown result type (might be due to invalid IL or missing references)
-		//IL_033c: Unknown result type (might be due to invalid IL or missing references)
-		if (!AI.nav_carve_use_building_optimization || (!building.isNavMeshCarveOptimized && building.navmeshCarvers.Count < AI.nav_carve_min_building_blocks_to_apply_optimization) || !building.isNavMeshCarvingDirty)
+		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0337: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0343: Unknown result type (might be due to invalid IL or missing references)
+		if (!AI.useUnityNavmesh || !AI.nav_carve_use_building_optimization || (!building.isNavMeshCarveOptimized && building.navmeshCarvers.Count < AI.nav_carve_min_building_blocks_to_apply_optimization) || !building.isNavMeshCarvingDirty)
 		{
 			return;
 		}
@@ -306,10 +309,8 @@ public class ServerBuildingManager : BuildingManager
 			}
 			return;
 		}
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector((float)World.Size, (float)World.Size, (float)World.Size);
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector((float)(0L - (long)World.Size), (float)(0L - (long)World.Size), (float)(0L - (long)World.Size));
+		Vector3 val = new Vector3((float)World.Size, (float)World.Size, (float)World.Size);
+		Vector3 val2 = new Vector3((float)(0L - (long)World.Size), (float)(0L - (long)World.Size), (float)(0L - (long)World.Size));
 		int count = building.navmeshCarvers.Count;
 		if (count > 0)
 		{
@@ -323,18 +324,18 @@ public class ServerBuildingManager : BuildingManager
 				for (int k = 0; k < 3; k++)
 				{
 					Vector3 position = ((Component)val3).transform.position;
-					if (((Vector3)(ref position))[k] < ((Vector3)(ref val))[k])
+					if (position[k] < val[k])
 					{
 						int num = k;
 						position = ((Component)val3).transform.position;
-						((Vector3)(ref val))[num] = ((Vector3)(ref position))[k];
+						val[num] = position[k];
 					}
 					position = ((Component)val3).transform.position;
-					if (((Vector3)(ref position))[k] > ((Vector3)(ref val2))[k])
+					if (position[k] > val2[k])
 					{
 						int num2 = k;
 						position = ((Component)val3).transform.position;
-						((Vector3)(ref val2))[num2] = ((Vector3)(ref position))[k];
+						val2[num2] = position[k];
 					}
 				}
 			}

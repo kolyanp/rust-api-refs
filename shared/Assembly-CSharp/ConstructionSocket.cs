@@ -173,14 +173,14 @@ public class ConstructionSocket : Socket_Base
 		}
 		Matrix4x4 val = Matrix4x4.TRS(position, rotation, Vector3.one);
 		Matrix4x4 val2 = Matrix4x4.TRS(socketPosition, socketRotation, Vector3.one);
-		Vector3 val3 = ((Matrix4x4)(ref val)).MultiplyPoint3x4(worldPosition);
-		Vector3 val4 = ((Matrix4x4)(ref val2)).MultiplyPoint3x4(socket.worldPosition);
+		Vector3 val3 = val.MultiplyPoint3x4(worldPosition);
+		Vector3 val4 = val2.MultiplyPoint3x4(socket.worldPosition);
 		if (Vector3.Distance(val3, val4) > 0.02f)
 		{
 			return false;
 		}
-		Vector3 val5 = ((Matrix4x4)(ref val)).MultiplyVector(worldRotation * Vector3.forward);
-		Vector3 val6 = ((Matrix4x4)(ref val2)).MultiplyVector(socket.worldRotation * Vector3.forward);
+		Vector3 val5 = val.MultiplyVector(worldRotation * Vector3.forward);
+		Vector3 val6 = val2.MultiplyVector(socket.worldRotation * Vector3.forward);
 		float num = Vector3.Angle(val5, val6);
 		if (male && female)
 		{
@@ -211,7 +211,7 @@ public class ConstructionSocket : Socket_Base
 		if (restrictPlacementAngle)
 		{
 			Quaternion val = Quaternion.Euler(0f, faceAngle, 0f) * suggestedAng;
-			float num = Vector3Ex.DotDegrees(Vector3Ex.XZ3D(((Ray)(ref target.ray)).direction), val * Vector3.forward);
+			float num = Vector3Ex.DotDegrees(Vector3Ex.XZ3D(target.ray.direction), val * Vector3.forward);
 			if (num > angleAllowed * 0.5f)
 			{
 				return false;
@@ -298,18 +298,18 @@ public class ConstructionSocket : Socket_Base
 		//IL_01fa: Unknown result type (might be due to invalid IL or missing references)
 		if (!Object.op_Implicit((Object)(object)target.entity) || !Object.op_Implicit((Object)(object)((Component)target.entity).transform))
 		{
-			return default(Construction.Placement);
+			return default;
 		}
 		if (!CanConnectToEntity(target))
 		{
-			return default(Construction.Placement);
+			return default;
 		}
 		ConstructionSocket constructionSocket = target.socket as ConstructionSocket;
 		Vector3 val = target.GetWorldPosition();
 		Quaternion val2 = target.GetWorldRotation(female: true);
 		if (constructionSocket != null && !IsCompatible(constructionSocket))
 		{
-			return default(Construction.Placement);
+			return default;
 		}
 		if (wantsInside)
 		{
@@ -317,7 +317,7 @@ public class ConstructionSocket : Socket_Base
 			if (IsOutside(pos, ((Component)target.entity).transform))
 			{
 				Construction.lastPlacementError = ConstructionErrors.WantsInside;
-				return default(Construction.Placement);
+				return default;
 			}
 		}
 		if (rotationDegrees > 0 && (constructionSocket == null || !constructionSocket.restrictPlacementRotation))
@@ -328,7 +328,7 @@ public class ConstructionSocket : Socket_Base
 			for (int i = 0; i < 360; i += rotationDegrees)
 			{
 				Quaternion val3 = Quaternion.Euler(0f, (float)(rotationOffset + i), 0f);
-				Vector3 direction = ((Ray)(ref target.ray)).direction;
+				Vector3 direction = target.ray.direction;
 				Vector3 val4 = val3 * val2 * Vector3.up;
 				float num3 = Vector3.Angle(direction, val4);
 				if (num3 < num)
@@ -364,7 +364,7 @@ public class ConstructionSocket : Socket_Base
 		result.rotation = val10;
 		if (!TestRestrictedAngles(val, val2, target))
 		{
-			return default(Construction.Placement);
+			return default;
 		}
 		return result;
 	}
@@ -430,13 +430,13 @@ public class ConstructionSocket : Socket_Base
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		Vector3[] array = new Vector3[4];
 		Vector3 val = new Vector3(0f, 1f, 0f);
-		array[0] = ((Vector3)(ref val)).normalized;
+		array[0] = val.normalized;
 		val = new Vector3(1f, 0f, 0f);
-		array[1] = ((Vector3)(ref val)).normalized;
+		array[1] = val.normalized;
 		val = new Vector3(0f, 0f, 1f);
-		array[2] = ((Vector3)(ref val)).normalized;
+		array[2] = val.normalized;
 		val = new Vector3(0f, 0f, -1f);
-		array[3] = ((Vector3)(ref val)).normalized;
-		outsideLookupDirs = (Vector3[])(object)array;
+		array[3] = val.normalized;
+		outsideLookupDirs = array;
 	}
 }

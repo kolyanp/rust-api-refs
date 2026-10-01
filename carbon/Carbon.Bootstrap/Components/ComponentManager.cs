@@ -29,7 +29,7 @@ internal sealed class ComponentManager : AddonManager
 			if (extension == ".dll")
 			{
 				Assembly assembly = _loader.Load(file, requester, _directories)?.Assembly ?? throw new ReflectionTypeLoadException(null, null, null);
-				if (base.AssemblyManager.IsType<ICarbonComponent>(assembly, out var output))
+				if (AssemblyManager.IsType<ICarbonComponent>(assembly, out var output))
 				{
 					if (output != null)
 					{
@@ -47,7 +47,7 @@ internal sealed class ComponentManager : AddonManager
 								e.Init(file);
 								Bootstrap.Events.Trigger(CarbonEvent.ComponentLoaded, e);
 								Pool.Free<CarbonEventArgs>(ref e);
-								base._loaded.Add(new Item
+								_loaded.Add(new Item
 								{
 									Addon = carbonComponent,
 									File = file

@@ -7,7 +7,7 @@ public class AggressionTimerAIEvent : BaseAIEvent
 	public AggressionTimerAIEvent()
 		: base(AIEventType.AggressionTimer)
 	{
-		base.Rate = ExecuteRate.Fast;
+		Rate = ExecuteRate.Fast;
 	}
 
 	public override void Init(AIEventData data, BaseEntity owner)
@@ -20,23 +20,23 @@ public class AggressionTimerAIEvent : BaseAIEvent
 	public override AIEventData ToProto()
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
-		AIEventData obj = base.ToProto();
-		obj.aggressionTimerData = new AggressionTimerAIEventData();
-		obj.aggressionTimerData.value = Value;
-		return obj;
+		//IL_0011: Expected Obj, but got Unknown
+		AIEventData val = base.ToProto();
+		val.aggressionTimerData = new AggressionTimerAIEventData();
+		val.aggressionTimerData.value = Value;
+		return val;
 	}
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
-		base.Result = base.Inverted;
-		if (base.Inverted)
+		Result = Inverted;
+		if (Inverted)
 		{
-			base.Result = senses.TimeInAgressiveState < Value;
+			Result = senses.TimeInAgressiveState < Value;
 		}
 		else
 		{
-			base.Result = senses.TimeInAgressiveState >= Value;
+			Result = senses.TimeInAgressiveState >= Value;
 		}
 	}
 }

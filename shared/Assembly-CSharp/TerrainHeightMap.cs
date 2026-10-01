@@ -134,8 +134,8 @@ public class TerrainHeightMap : TerrainMap<short>
 
 	public Texture2D NormalTexture;
 
-	[Header("Collider Sampling")]
 	[Min(1f)]
+	[Header("Collider Sampling")]
 	public int ColliderSamplesPerAxis = 1;
 
 	[Range(0f, 1f)]
@@ -290,7 +290,7 @@ public class TerrainHeightMap : TerrainMap<short>
 	public void ApplyToTerrain()
 	{
 		float[,] heights = terrainData.GetHeights(0, 0, res, res);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			for (int i = 0; i < res; i++)
 			{
@@ -309,7 +309,7 @@ public class TerrainHeightMap : TerrainMap<short>
 	public void ApplyToTerrainDelay()
 	{
 		float[,] heights = terrainData.GetHeights(0, 0, res, res);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			for (int i = 0; i < res; i++)
 			{
@@ -353,7 +353,7 @@ public class TerrainHeightMap : TerrainMap<short>
 		float num3 = 0.5f * (float)(num - 1) * num2;
 		bool flag = false;
 		float num4 = 1f;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		for (int i = 0; i < num; i++)
 		{
 			float num5 = (float)i * num2 - num3;
@@ -362,9 +362,9 @@ public class TerrainHeightMap : TerrainMap<short>
 				float num6 = (float)j * num2 - num3;
 				float num7 = Mathf.Clamp01(normX + num6);
 				float num8 = Mathf.Clamp01(normZ + num5);
-				if (Physics.Raycast(new Vector3(terrainPos.x + terrainSize.x * num7, terrainPos.y + terrainSize.y + 1f, terrainPos.z + terrainSize.z * num8), Vector3.down, ref val, terrainSize.y + 2f, layerMask) && (!((Object)(object)filterCollider != (Object)null) || !((Object)(object)((RaycastHit)(ref val)).collider != (Object)(object)filterCollider)))
+				if (Physics.Raycast(new Vector3(terrainPos.x + terrainSize.x * num7, terrainPos.y + terrainSize.y + 1f, terrainPos.z + terrainSize.z * num8), Vector3.down, ref val, terrainSize.y + 2f, layerMask) && (!((Object)(object)filterCollider != (Object)null) || !((Object)(object)val.collider != (Object)(object)filterCollider)))
 				{
-					float num9 = Mathf.Clamp01((((RaycastHit)(ref val)).point.y - terrainPos.y) / terrainSize.y);
+					float num9 = Mathf.Clamp01((val.point.y - terrainPos.y) / terrainSize.y);
 					if (!flag || num9 < num4)
 					{
 						num4 = num9;
@@ -380,15 +380,15 @@ public class TerrainHeightMap : TerrainMap<short>
 	public void GenerateTextures(bool heightTexture = true, bool normalTexture = true, bool useRGBA32 = false)
 	{
 		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0178: Expected O, but got Unknown
+		//IL_0178: Expected Obj, but got Unknown
 		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Expected O, but got Unknown
+		//IL_00be: Expected Obj, but got Unknown
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Expected O, but got Unknown
+		//IL_0033: Expected Obj, but got Unknown
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		if (heightTexture)
@@ -399,7 +399,7 @@ public class TerrainHeightMap : TerrainMap<short>
 				((Object)HeightTexture).name = "HeightTexture";
 				((Texture)HeightTexture).wrapMode = (TextureWrapMode)1;
 				NativeArray<Color32> heights = HeightTexture.GetPixelData<Color32>(0);
-				Parallel.For(0, res, delegate(int z)
+				Parallel.For(0, res, (int z) =>
 				{
 					//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 					for (int i = 0; i < res; i++)
@@ -417,7 +417,7 @@ public class TerrainHeightMap : TerrainMap<short>
 				((Texture)HeightTexture).wrapMode = (TextureWrapMode)1;
 				NativeArray<RG16> heights2 = HeightTexture.GetPixelData<RG16>(0);
 				float[,] terrainHeights = terrainData.GetHeights(0, 0, res, res);
-				Parallel.For(0, res, delegate(int z)
+				Parallel.For(0, res, (int z) =>
 				{
 					for (int i = 0; i < res; i++)
 					{
@@ -437,7 +437,7 @@ public class TerrainHeightMap : TerrainMap<short>
 		((Object)NormalTexture).name = "NormalTexture";
 		((Texture)NormalTexture).wrapMode = (TextureWrapMode)1;
 		NativeArray<Color32> normals = NormalTexture.GetPixelData<Color32>(0);
-		Parallel.For(0, normalres, delegate(int z)
+		Parallel.For(0, normalres, (int z) =>
 		{
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0033: Unknown result type (might be due to invalid IL or missing references)
@@ -615,6 +615,7 @@ public class TerrainHeightMap : TerrainMap<short>
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
@@ -633,9 +634,8 @@ public class TerrainHeightMap : TerrainMap<short>
 		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		ReadOnly<short> data = (isForDeepSea ? deepSeaHeights.AsReadOnly() : src.AsReadOnly());
 		Bounds deepSeaBounds = DeepSeaManager.DeepSeaBounds;
-		Vector3 min = ((Bounds)(ref deepSeaBounds)).min;
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(1f / ((Bounds)(ref deepSeaBounds)).size.x, 1f / ((Bounds)(ref deepSeaBounds)).size.z);
+		Vector3 min = deepSeaBounds.min;
+		Vector2 val = new Vector2(1f / deepSeaBounds.size.x, 1f / deepSeaBounds.size.z);
 		Vector3 terrainPosition = (isForDeepSea ? min : TerrainMeta.Position);
 		Vector2 val2 = (isForDeepSea ? val : Vector3Ex.XZ2D(TerrainMeta.OneOverSize));
 		return new HeightMapQueryStructure
@@ -1059,7 +1059,7 @@ public class TerrainHeightMap : TerrainMap<short>
 
 	public void SetHeight(float normX, float normZ, float height, float opacity, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if (lerp > 0f)
 			{
@@ -1082,7 +1082,7 @@ public class TerrainHeightMap : TerrainMap<short>
 
 	public void LowerHeight(float normX, float normZ, float height, float opacity, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if (lerp > 0f)
 			{
@@ -1105,7 +1105,7 @@ public class TerrainHeightMap : TerrainMap<short>
 
 	public void RaiseHeight(float normX, float normZ, float height, float opacity, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if (lerp > 0f)
 			{
@@ -1126,7 +1126,7 @@ public class TerrainHeightMap : TerrainMap<short>
 
 	public void AddHeight(float normX, float normZ, float delta, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if (lerp > 0f)
 			{
@@ -1184,7 +1184,7 @@ public class TerrainHeightMap : TerrainMap<short>
 				for (int l = num7; l <= num8; l++)
 				{
 					val = new Vector2((float)l + 0.5f - num5, (float)k + 0.5f - num6);
-					float magnitude = ((Vector2)(ref val)).magnitude;
+					float magnitude = val.magnitude;
 					float num14 = Mathf.InverseLerp(num4, num3, magnitude);
 					if (num14 > 0f)
 					{
@@ -1203,7 +1203,7 @@ public class TerrainHeightMap : TerrainMap<short>
 			for (int n = num7; n <= num8; n++)
 			{
 				val = new Vector2((float)n + 0.5f - num5, (float)m + 0.5f - num6);
-				float num15 = ((((Vector2)(ref val)).magnitude < num4) ? 1 : 0);
+				float num15 = ((val.magnitude < num4) ? 1 : 0);
 				if (num15 > 0f)
 				{
 					subHeights[n - num11 + num13, m - num12 + num13] = GetAddHeight(n, m, num15 * delta);
@@ -1232,6 +1232,6 @@ public class TerrainHeightMap : TerrainMap<short>
 		{
 			return HeightSampler.Create(src, res, TerrainMeta.Position, TerrainMeta.Size, TerrainMeta.Position.y, TerrainMeta.Size.y);
 		}
-		return HeightSampler.Create(deepSeaHeights, res, ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).min, ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size, TerrainMeta.Position.y, TerrainMeta.Size.y);
+		return HeightSampler.Create(deepSeaHeights, res, DeepSeaManager.DeepSeaBounds.min, DeepSeaManager.DeepSeaBounds.size, TerrainMeta.Position.y, TerrainMeta.Size.y);
 	}
 }

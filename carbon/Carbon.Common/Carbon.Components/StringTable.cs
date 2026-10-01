@@ -76,7 +76,7 @@ public struct StringTable : IDisposable
 
 	public static StringTable From<T>(params T[] values)
 	{
-		StringTable result = default(StringTable);
+		StringTable result = default;
 		string[] columns = GetColumns<T>();
 		result.AddColumn(columns);
 		foreach (IEnumerable<object> item in values.Select((T value) => columns.Select((string column) => GetColumnValue<T>(value, column))))
@@ -93,7 +93,7 @@ public struct StringTable : IDisposable
 
 	private string ToStringNone()
 	{
-		using StringBody stringBody = default(StringBody);
+		using StringBody stringBody = default;
 		IEnumerable<int> columnLengths = ColumnLengths();
 		string format = Format(columnLengths, '\0');
 		object[] array = Columns.ToArray();

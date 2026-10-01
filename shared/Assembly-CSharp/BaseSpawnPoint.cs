@@ -13,8 +13,8 @@ public abstract class BaseSpawnPoint : MonoBehaviour, IServerComponent
 
 	public SpawnPointType spawnPointType;
 
-	[Range(1f, 25f)]
 	[SerializeField]
+	[Range(1f, 25f)]
 	[Tooltip("Min distance between the spawn area and any human players")]
 	protected float playerCheckMargin = 2f;
 
@@ -89,8 +89,8 @@ public abstract class BaseSpawnPoint : MonoBehaviour, IServerComponent
 		}
 		if (TransformUtil.GetGroundInfo(pos, out var hitOut, 20f, LayerMask.op_Implicit(1235288065)))
 		{
-			pos = ((RaycastHit)(ref hitOut)).point;
-			rot = Quaternion.LookRotation(rot * Vector3.forward, ((RaycastHit)(ref hitOut)).normal);
+			pos = hitOut.point;
+			rot = Quaternion.LookRotation(rot * Vector3.forward, hitOut.normal);
 		}
 	}
 }

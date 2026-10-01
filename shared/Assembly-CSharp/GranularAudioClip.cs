@@ -162,11 +162,11 @@ public class GranularAudioClip : MonoBehaviour
 	private void InitAudioClip()
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Expected O, but got Unknown
+		//IL_0047: Expected Obj, but got Unknown
 		int num = 1;
 		int num2 = 1;
 		AudioSettings.GetDSPBufferSize(ref num, ref num2);
-		granularClip = AudioClip.Create(((Object)sourceClip).name + " (granular)", num, sourceClip.channels, sampleRate, true, new PCMReaderCallback(OnAudioRead));
+		granularClip = AudioClip.Create(((Object)sourceClip).name + " (granular)", num, sourceClip.channels, sampleRate, true, (PCMReaderCallback)OnAudioRead);
 		sourceChannels = sourceClip.channels;
 	}
 

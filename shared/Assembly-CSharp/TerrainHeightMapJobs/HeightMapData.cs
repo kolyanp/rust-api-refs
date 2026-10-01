@@ -107,7 +107,7 @@ public struct HeightMapData
 		Vector3 val = Vector3.Slerp(normal, normal2, num6);
 		Vector3 val2 = Vector3.Slerp(normal3, normal4, num6);
 		Vector3 val3 = Vector3.Slerp(val, val2, num7);
-		return ((Vector3)(ref val3)).normalized;
+		return val3.normalized;
 	}
 
 	public static Vector3 GetNormal(int x, int z, float normY, ReadOnly<short> data, int res)
@@ -129,6 +129,6 @@ public struct HeightMapData
 		float num2 = (height2 - height) * 0.5f;
 		float num3 = (height3 - height) * 0.5f;
 		Vector3 val = new Vector3(0f - num2, normY, 0f - num3);
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 }

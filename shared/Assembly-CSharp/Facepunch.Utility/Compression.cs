@@ -28,11 +28,11 @@ public class Compression
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(Mathf.InverseLerp(minValue, maxValue, vector.x), Mathf.InverseLerp(minValue, maxValue, vector.y), Mathf.InverseLerp(minValue, maxValue, vector.z));
+		Vector3 val = new Vector3(Mathf.InverseLerp(minValue, maxValue, vector.x), Mathf.InverseLerp(minValue, maxValue, vector.y), Mathf.InverseLerp(minValue, maxValue, vector.z));
 		return 0 | ((int)(val.x * 1023f) << 20) | ((int)(val.y * 1023f) << 10) | (int)(val.z * 1023f);
 	}
 

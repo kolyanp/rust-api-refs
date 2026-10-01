@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SocketMod_TerrainBoundsCheck : SocketMod
 {
-	private static Phrase lastError;
+	private static Phrase lastError = new Phrase("", "");
 
 	protected override Phrase ErrorPhrase => lastError;
 
@@ -35,7 +35,6 @@ public class SocketMod_TerrainBoundsCheck : SocketMod
 	static SocketMod_TerrainBoundsCheck()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		lastError = new Phrase("", "");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

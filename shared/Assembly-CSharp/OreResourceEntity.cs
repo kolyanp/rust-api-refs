@@ -13,7 +13,7 @@ public class OreResourceEntity : StagedResourceEntity
 
 	public GameObjectRef bonusFailEffect;
 
-	public bool useHotspotMinigame;
+	public bool useHotspotMinigame = true;
 
 	public SoundPlayer bonusSound;
 
@@ -27,7 +27,7 @@ public class OreResourceEntity : StagedResourceEntity
 
 	private Action _actionRespawnBonus;
 
-	public Vector3 lastNodeDir;
+	public Vector3 lastNodeDir = Vector3.zero;
 
 	private Ray? spawnBonusHitRay;
 
@@ -121,7 +121,7 @@ public class OreResourceEntity : StagedResourceEntity
 					{
 						spawnBonusHitRay = new Ray(info.PointStart, info.attackNormal);
 						Vector3 val = info.PointStart - (((Component)this).transform.position + new Vector3(0f, 0.5f, 0f));
-						lastNodeDir = ((Vector3)(ref val)).normalized;
+						lastNodeDir = val.normalized;
 						float num3 = 0.5f;
 						if (lastNodeDir.y > num3)
 						{
@@ -177,7 +177,7 @@ public class OreResourceEntity : StagedResourceEntity
 		{
 			RustNavigation instance = RustNavigation.Instance;
 			OBB val = WorldSpaceBounds();
-			instance.RebuildTilesInBounds(((OBB)(ref val)).ToBounds());
+			instance.RebuildTilesInBounds(val.ToBounds());
 		}
 	}
 
@@ -188,11 +188,11 @@ public class OreResourceEntity : StagedResourceEntity
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		base.DestroyShared();
 		CleanupBonus();
-		if (base.isServer && !AI.useUnityNavmesh)
+		if (isServer && !AI.useUnityNavmesh)
 		{
 			RustNavigation instance = RustNavigation.Instance;
 			OBB val = WorldSpaceBounds();
-			instance.RebuildTilesInBounds(((OBB)(ref val)).ToBounds());
+			instance.RebuildTilesInBounds(val.ToBounds());
 		}
 	}
 
@@ -242,7 +242,7 @@ public class OreResourceEntity : StagedResourceEntity
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return null;
 		}
@@ -254,10 +254,10 @@ public class OreResourceEntity : StagedResourceEntity
 		{
 			return null;
 		}
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (((Collider)ResourceMeshColliders[0]).Raycast(r, ref val, 15f))
 		{
-			OreHotSpot obj = GameManager.server.CreateEntity(bonusPrefab.resourcePath, ((RaycastHit)(ref val)).point - ((Ray)(ref r)).direction * 0.025f, Quaternion.LookRotation(((RaycastHit)(ref val)).normal, Vector3.up)) as OreHotSpot;
+			OreHotSpot obj = GameManager.server.CreateEntity(bonusPrefab.resourcePath, val.point - r.direction * 0.025f, Quaternion.LookRotation(val.normal, Vector3.up)) as OreHotSpot;
 			obj.Spawn();
 			obj.OreOwner(this);
 			return obj;
@@ -337,7 +337,7 @@ public class OreResourceEntity : StagedResourceEntity
 		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
 		//IL_022d: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return null;
 		}
@@ -353,7 +353,7 @@ public class OreResourceEntity : StagedResourceEntity
 		MeshCollider val = ResourceMeshColliders[0];
 		Transform transform = ((Component)this).transform;
 		Bounds val2 = ((Collider)val).bounds;
-		Vector3 val3 = transform.InverseTransformPoint(((Bounds)(ref val2)).center);
+		Vector3 val3 = transform.InverseTransformPoint(val2.center);
 		Vector3 val7;
 		if (lastDirection == Vector3.zero)
 		{
@@ -363,8 +363,8 @@ public class OreResourceEntity : StagedResourceEntity
 				num = heightOffset;
 			}
 			Vector3 val4 = RandomCircle();
-			Vector3 val5 = (lastNodeDir = ((Component)this).transform.TransformDirection(((Vector3)(ref val4)).normalized));
-			val4 = ((Component)this).transform.position + ((Component)this).transform.up * (val3.y + num) + ((Vector3)(ref val5)).normalized * 5f;
+			Vector3 val5 = (lastNodeDir = ((Component)this).transform.TransformDirection(val4.normalized));
+			val4 = ((Component)this).transform.position + ((Component)this).transform.up * (val3.y + num) + val5.normalized * 5f;
 			zero = val4;
 		}
 		else
@@ -373,19 +373,19 @@ public class OreResourceEntity : StagedResourceEntity
 			float num2 = Random.Range(0.25f, 0.5f) + (float)stage * 0.25f;
 			float num3 = ((Random.Range(0, 2) == 0) ? (-1f) : 1f);
 			val7 = lastNodeDir + val6 * (num2 * num3);
-			Vector3 val8 = (lastNodeDir = ((Vector3)(ref val7)).normalized);
+			Vector3 val8 = (lastNodeDir = val7.normalized);
 			zero = ((Component)this).transform.position + ((Component)this).transform.TransformDirection(val8) * 2f;
 			float num4 = Random.Range(1f, 1.5f);
 			zero += ((Component)this).transform.up * (val3.y + num4);
 		}
 		bonusesSpawned++;
 		val2 = ((Collider)val).bounds;
-		val7 = ((Bounds)(ref val2)).center - zero;
-		Vector3 normalized = ((Vector3)(ref val7)).normalized;
-		RaycastHit val9 = default(RaycastHit);
+		val7 = val2.center - zero;
+		Vector3 normalized = val7.normalized;
+		RaycastHit val9 = default;
 		if (((Collider)val).Raycast(new Ray(zero, normalized), ref val9, 15f))
 		{
-			OreHotSpot obj = GameManager.server.CreateEntity(bonusPrefab.resourcePath, ((RaycastHit)(ref val9)).point - normalized * 0.025f, Quaternion.LookRotation(((RaycastHit)(ref val9)).normal, Vector3.up)) as OreHotSpot;
+			OreHotSpot obj = GameManager.server.CreateEntity(bonusPrefab.resourcePath, val9.point - normalized * 0.025f, Quaternion.LookRotation(val9.normal, Vector3.up)) as OreHotSpot;
 			obj.Spawn();
 			obj.OreOwner(this);
 			return obj;
@@ -407,7 +407,7 @@ public class OreResourceEntity : StagedResourceEntity
 		if (!allowInside)
 		{
 			Vector2 insideUnitCircle = Random.insideUnitCircle;
-			val = ((Vector2)(ref insideUnitCircle)).normalized;
+			val = insideUnitCircle.normalized;
 		}
 		else
 		{
@@ -426,6 +426,7 @@ public class OreResourceEntity : StagedResourceEntity
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
@@ -436,17 +437,16 @@ public class OreResourceEntity : StagedResourceEntity
 		if (!allowInside)
 		{
 			Vector2 insideUnitCircle = Random.insideUnitCircle;
-			val = ((Vector2)(ref insideUnitCircle)).normalized;
+			val = insideUnitCircle.normalized;
 		}
 		else
 		{
 			val = Random.insideUnitCircle;
 		}
 		Vector2 val2 = val;
-		Vector3 val3 = default(Vector3);
-		((Vector3)(ref val3))._002Ector(val2.x * degreesOffset, changeHeight ? (Random.Range(-1f, 1f) * degreesOffset) : 0f, val2.y * degreesOffset);
+		Vector3 val3 = new Vector3(val2.x * degreesOffset, changeHeight ? (Random.Range(-1f, 1f) * degreesOffset) : 0f, val2.y * degreesOffset);
 		Vector3 val4 = input + val3;
-		return ((Vector3)(ref val4)).normalized;
+		return val4.normalized;
 	}
 
 	public Vector3 ClampToHemisphere(Vector3 hemiInput, float degreesOffset, Vector3 inputVec)
@@ -468,12 +468,12 @@ public class OreResourceEntity : StagedResourceEntity
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		degreesOffset = Mathf.Clamp(degreesOffset / 180f, -180f, 180f);
 		Vector3 val = hemiInput + Vector3.one * degreesOffset;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		val = hemiInput + Vector3.one * (0f - degreesOffset);
-		Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+		Vector3 normalized2 = val.normalized;
 		for (int i = 0; i < 3; i++)
 		{
-			((Vector3)(ref inputVec))[i] = Mathf.Clamp(((Vector3)(ref inputVec))[i], ((Vector3)(ref normalized2))[i], ((Vector3)(ref normalized))[i]);
+			inputVec[i] = Mathf.Clamp(inputVec[i], normalized2[i], normalized[i]);
 		}
 		return inputVec;
 	}
@@ -497,7 +497,7 @@ public class OreResourceEntity : StagedResourceEntity
 		if (!allowInside)
 		{
 			Vector2 insideUnitCircle = Random.insideUnitCircle;
-			val = ((Vector2)(ref insideUnitCircle)).normalized;
+			val = insideUnitCircle.normalized;
 		}
 		else
 		{
@@ -505,7 +505,7 @@ public class OreResourceEntity : StagedResourceEntity
 		}
 		Vector2 val2 = val;
 		Vector3 val3 = new Vector3(val2.x, 0f, val2.y);
-		Vector3 result = ((Vector3)(ref val3)).normalized * distance;
+		Vector3 result = val3.normalized * distance;
 		result.y = Random.Range(minHeight, maxHeight);
 		return result;
 	}
@@ -520,8 +520,5 @@ public class OreResourceEntity : StagedResourceEntity
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		useHotspotMinigame = true;
-		lastNodeDir = Vector3.zero;
-		base._002Ector();
 	}
 }

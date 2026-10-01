@@ -54,7 +54,7 @@ public class BaseMagnet : MonoBehaviour
 		}
 		BaseEntity component = ((Component)((Joint)fixedJoint).connectedBody).gameObject.GetComponent<BaseEntity>();
 		Bounds bounds = component.bounds;
-		((Bounds)(ref bounds)).extents = ((Bounds)(ref bounds)).extents * scale;
+		bounds.extents *= scale;
 		return new OBB(((Component)component).transform.position, ((Component)component).transform.rotation, bounds);
 	}
 
@@ -124,6 +124,7 @@ public class BaseMagnet : MonoBehaviour
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
@@ -148,7 +149,6 @@ public class BaseMagnet : MonoBehaviour
 		{
 			return;
 		}
-		OBB val = default(OBB);
 		foreach (BaseEntity entityContent in magnetTrigger.entityContents)
 		{
 			if ((Object)(object)entityContent == (Object)null || !entityContent.syncPosition)
@@ -160,8 +160,8 @@ public class BaseMagnet : MonoBehaviour
 			{
 				continue;
 			}
-			((OBB)(ref val))._002Ector(((Component)entityContent).transform.position, ((Component)entityContent).transform.rotation, entityContent.bounds);
-			if (((OBB)(ref val)).Contains(attachDepthPoint.position))
+			OBB val = new OBB(((Component)entityContent).transform.position, ((Component)entityContent).transform.rotation, entityContent.bounds);
+			if (val.Contains(attachDepthPoint.position))
 			{
 				MagnetLiftable component2 = ((Component)entityContent).GetComponent<MagnetLiftable>();
 				if ((Object)(object)component2 != (Object)null)

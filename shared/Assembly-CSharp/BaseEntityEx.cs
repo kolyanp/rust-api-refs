@@ -23,7 +23,7 @@ public static class BaseEntityEx
 			return true;
 		}
 		NetworkableId otherID = ((toFind.net != null) ? toFind.net.ID : NetworkableId.EmptyId);
-		if (((NetworkableId)(ref otherID)).IsValid)
+		if (otherID.IsValid)
 		{
 			if (ent.EqualNetID(otherID))
 			{

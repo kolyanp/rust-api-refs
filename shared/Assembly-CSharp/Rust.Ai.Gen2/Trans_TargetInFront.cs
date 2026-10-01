@@ -19,7 +19,7 @@ public class Trans_TargetInFront : FSMTransitionBase
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Trans_TargetInFront"))
 		{
-			if (!base.Senses.FindTargetPosition(out var targetPosition))
+			if (!Senses.FindTargetPosition(out var targetPosition))
 			{
 				return false;
 			}
@@ -30,6 +30,6 @@ public class Trans_TargetInFront : FSMTransitionBase
 
 	public override string GetName()
 	{
-		return string.Format("{0} {1}{2}°", base.GetName(), Inverted ? ">=" : "<", Angle);
+		return string.Format("{0} {1}{2}\ufffd", base.GetName(), Inverted ? ">=" : "<", Angle);
 	}
 }

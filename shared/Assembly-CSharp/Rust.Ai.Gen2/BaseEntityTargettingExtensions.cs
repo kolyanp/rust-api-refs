@@ -4,15 +4,6 @@ namespace Rust.Ai.Gen2;
 
 public static class BaseEntityTargettingExtensions
 {
-	public static bool InSameNpcTeam(this BaseEntity entity, BaseEntity other)
-	{
-		if ((Object)(object)entity == (Object)null || (Object)(object)other == (Object)null)
-		{
-			return false;
-		}
-		return ((object)entity).GetType() == ((object)other).GetType();
-	}
-
 	public static bool IsNonNpcPlayer(this BaseEntity entity)
 	{
 		BasePlayer basePlayer = entity.ToPlayer();

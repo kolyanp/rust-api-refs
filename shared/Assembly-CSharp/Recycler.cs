@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
@@ -36,9 +37,9 @@ public class Recycler : StorageContainer, IPowergridEntity
 
 	public Light lightComponent;
 
-	public Color lightGreenColor;
+	public Color lightGreenColor = new Color(2f / 3f, 1f, 22f / 255f);
 
-	public Color lightRedColor;
+	public Color lightRedColor = new Color(1f, 0.04849673f, 0.01568627f);
 
 	public string recyclerGreenMaterialAssetPath;
 
@@ -171,9 +172,9 @@ public class Recycler : StorageContainer, IPowergridEntity
 		{
 			return (bool)obj;
 		}
-		if (item != null)
+		if (item != null && (Object)(object)item.info.Blueprint != (Object)null)
 		{
-			return (Object)(object)item.info.Blueprint != (Object)null;
+			return item.info.category != ItemCategory.Food;
 		}
 		return false;
 	}
@@ -185,7 +186,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 
 	void IPowergridEntity.Server_OnPowergridStageChanged(int newStage)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			CurrentReceivedPowergridStage = newStage;
 			Server_RefreshPowergridState();
@@ -194,7 +195,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 
 	public void Server_RefreshPowergridState()
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -212,12 +213,12 @@ public class Recycler : StorageContainer, IPowergridEntity
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (base.isServer)
+		if (isServer)
 		{
-			ItemContainer itemContainer = base.inventory;
+			ItemContainer itemContainer = inventory;
 			itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(RecyclerItemFilter));
-			ItemContainer itemContainer2 = base.inventory;
-			itemContainer2.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(itemContainer2.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			ItemContainer itemContainer2 = inventory;
+			itemContainer2.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(itemContainer2.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedRemoved));
 			if (!Application.isLoadingSave)
 			{
 				RecyclerTypeSyncVar = (int)recyclerType;
@@ -233,23 +234,23 @@ public class Recycler : StorageContainer, IPowergridEntity
 		Server_RefreshPowergridState();
 	}
 
-	private void OnItemAddedRemoved(Item item, bool added)
+	private void OnItemAddedRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		if (added && IsOn() && (Object)(object)base.LastLootedByPlayer != (Object)null)
+		if (added && IsOn() && (Object)(object)LastLootedByPlayer != (Object)null)
 		{
-			item.CollectedForCrafting(base.LastLootedByPlayer);
+			item.CollectedForCrafting(LastLootedByPlayer);
 		}
 	}
 
 	public bool RecyclerItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		int num = Mathf.CeilToInt((float)base.inventory.capacity * 0.5f);
+		int num = Mathf.CeilToInt((float)inventory.capacity * 0.5f);
 		if (targetSlot == -1)
 		{
 			bool flag = false;
 			for (int i = 0; i < num; i++)
 			{
-				if (!base.inventory.SlotTaken(item, i))
+				if (!inventory.SlotTaken(item, i))
 				{
 					flag = true;
 					break;
@@ -267,8 +268,8 @@ public class Recycler : StorageContainer, IPowergridEntity
 		return true;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void SVSwitch(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -278,7 +279,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 		}
 		if (flag)
 		{
-			foreach (Item item in base.inventory.itemList)
+			foreach (Item item in inventory.itemList)
 			{
 				item.CollectedForCrafting(msg.player);
 			}
@@ -304,7 +305,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 		int num = -1;
 		for (int i = 6; i < 12; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot == null)
 			{
 				num = i;
@@ -328,7 +329,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 				return true;
 			}
 		}
-		if (num != -1 && newItem.MoveToContainer(base.inventory, num))
+		if (num != -1 && newItem.MoveToContainer(inventory, num))
 		{
 			return true;
 		}
@@ -340,18 +341,15 @@ public class Recycler : StorageContainer, IPowergridEntity
 	{
 		for (int i = 0; i < 6; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
-			if (slot != null)
+			Item slot = inventory.GetSlot(i);
+			object obj = Interface.CallHook("CanRecycle", this, slot);
+			if (obj is bool)
 			{
-				object obj = Interface.CallHook("CanRecycle", this, slot);
-				if (obj is bool)
-				{
-					return (bool)obj;
-				}
-				if ((Object)(object)slot.info.Blueprint != (Object)null)
-				{
-					return true;
-				}
+				return (bool)obj;
+			}
+			if (CanBeRecycled(slot))
+			{
+				return true;
 			}
 		}
 		return false;
@@ -367,7 +365,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 		{
 			if (num2 < 6)
 			{
-				Item slot = base.inventory.GetSlot(num2);
+				Item slot = inventory.GetSlot(num2);
 				if (!CanBeRecycled(slot))
 				{
 					num2++;
@@ -416,9 +414,9 @@ public class Recycler : StorageContainer, IPowergridEntity
 					if (num6 >= 1)
 					{
 						Item item = ItemManager.CreateByName("scrap", num6, 0uL);
-						if ((Object)(object)base.LastLootedByPlayer != (Object)null)
+						if ((Object)(object)LastLootedByPlayer != (Object)null)
 						{
-							item.SetItemOwnership(base.LastLootedByPlayer, ItemOwnershipPhrases.Recycler);
+							item.SetItemOwnership(LastLootedByPlayer, ItemOwnershipPhrases.Recycler);
 						}
 						Facepunch.Rust.Analytics.Azure.OnRecyclerItemProduced(item.info.shortname, item.amount, this, slot);
 						MoveItemToOutput(item);
@@ -464,9 +462,9 @@ public class Recycler : StorageContainer, IPowergridEntity
 						{
 							int num13 = ((num10 > ingredient.itemDef.stackable) ? ingredient.itemDef.stackable : num10);
 							Item item2 = ItemManager.Create(ingredient.itemDef, num13, 0uL, isServerSide: true, 0uL);
-							if ((Object)(object)base.LastLootedByPlayer != (Object)null)
+							if ((Object)(object)LastLootedByPlayer != (Object)null)
 							{
-								item2.SetItemOwnership(base.LastLootedByPlayer, ItemOwnershipPhrases.Recycler);
+								item2.SetItemOwnership(LastLootedByPlayer, ItemOwnershipPhrases.Recycler);
 							}
 							Facepunch.Rust.Analytics.Azure.OnRecyclerItemProduced(item2.info.shortname, item2.amount, this, slot);
 							if (!MoveItemToOutput(item2))
@@ -494,7 +492,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 	{
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer || IsOn())
+		if (!isServer || IsOn())
 		{
 			return;
 		}
@@ -510,7 +508,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -529,7 +527,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 
 	public void UpdateInSafeZone()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags))
 			{
@@ -542,7 +540,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 	private bool IsInSafeZone()
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		if (BaseGameMode.TryGetActiveGameMode(base.isServer, out var gameMode) && !gameMode.safeZone)
+		if (BaseGameMode.TryGetActiveGameMode(isServer, out var gameMode) && !gameMode.safeZone)
 		{
 			return false;
 		}
@@ -573,11 +571,11 @@ public class Recycler : StorageContainer, IPowergridEntity
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer)
+		if (isServer)
 		{
-			bool num = (old & Flags.Reserved11) == Flags.Reserved11;
-			bool flag = (next & Flags.Reserved11) == Flags.Reserved11;
-			if (num != flag && !flag)
+			bool flag = (old & Flags.Reserved11) == Flags.Reserved11;
+			bool flag2 = (next & Flags.Reserved11) == Flags.Reserved11;
+			if (flag != flag2 && !flag2)
 			{
 				StopRecycling();
 			}
@@ -670,7 +668,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 	{
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
@@ -682,7 +680,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: CurrentReceivedPowergridStage for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: CurrentReceivedPowergridStage for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_CurrentReceivedPowergridStage);
 			return true;
@@ -690,7 +688,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: RecyclerTypeSyncVar for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: RecyclerTypeSyncVar for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_RecyclerTypeSyncVar);
 			return true;
@@ -767,18 +765,34 @@ public class Recycler : StorageContainer, IPowergridEntity
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -818,8 +832,5 @@ public class Recycler : StorageContainer, IPowergridEntity
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		lightGreenColor = new Color(2f / 3f, 1f, 0.08627451f);
-		lightRedColor = new Color(1f, 0.04849673f, 0.01568627f);
-		base._002Ector();
 	}
 }

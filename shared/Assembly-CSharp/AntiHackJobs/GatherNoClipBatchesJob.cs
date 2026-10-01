@@ -81,9 +81,9 @@ public struct GatherNoClipBatchesJob : IJob
 			int num = Indices[i];
 			TickInterpolatorCache.PlayerTickIterator playerTickIterator = TickInterpolatorCache.GetPlayerTickIterator(TickCache, num);
 			Matrix4x4 val2 = Matrices[i];
-			bool flag = ((Matrix4x4)(ref val2))[15] == 0f;
-			Vector3 val3 = (flag ? playerTickIterator.StartPoint : ((Matrix4x4)(ref val2)).MultiplyPoint3x4(playerTickIterator.StartPoint));
-			Vector3 val4 = (flag ? playerTickIterator.EndPoint : ((Matrix4x4)(ref val2)).MultiplyPoint3x4(playerTickIterator.EndPoint));
+			bool flag = val2[15] == 0f;
+			Vector3 val3 = (flag ? playerTickIterator.StartPoint : val2.MultiplyPoint3x4(playerTickIterator.StartPoint));
+			Vector3 val4 = (flag ? playerTickIterator.EndPoint : val2.MultiplyPoint3x4(playerTickIterator.EndPoint));
 			AntiHack.Batch batch = Batches[i];
 			bool num2 = DeltaTimes[num] < LagThreshold && TickBufferPrevention;
 			int count = batch.Count;
@@ -99,7 +99,7 @@ public struct GatherNoClipBatchesJob : IJob
 				while (playerTickIterator.MoveNext(distance))
 				{
 					num4++;
-					val4 = (flag ? playerTickIterator.CurrentPoint : ((Matrix4x4)(ref val2)).MultiplyPoint3x4(playerTickIterator.CurrentPoint));
+					val4 = (flag ? playerTickIterator.CurrentPoint : val2.MultiplyPoint3x4(playerTickIterator.CurrentPoint));
 					From.AddNoResize(val3 + val);
 					To.AddNoResize(val4 + val);
 					val3 = val4;

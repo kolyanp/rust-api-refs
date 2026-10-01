@@ -26,6 +26,6 @@ public struct FloatSnapshot : ISnapshot<FloatSnapshot>
 
 	public FloatSnapshot GetNew()
 	{
-		return default(FloatSnapshot);
+		return default;
 	}
 }

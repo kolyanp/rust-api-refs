@@ -68,23 +68,33 @@ internal sealed class ModuleManager : AddonManager
 		}
 	}
 
-	private static readonly string[] _references;
+	private static readonly string[] _references = new string[5]
+	{
+		Context.CarbonModules,
+		Context.CarbonExtensions,
+		Context.CarbonManaged,
+		Context.CarbonLib,
+		Context.GameManaged
+	};
 
-	public static Dictionary<string, Assembly> ModuleAssemblyCache;
+	public static Dictionary<string, Assembly> ModuleAssemblyCache = new Dictionary<string, Assembly>();
 
 	public static Resolver ResolverInstance;
 
-	public static ReaderParameters ReadingParameters;
+	public static ReaderParameters ReadingParameters = new ReaderParameters
+	{
+		AssemblyResolver = (IAssemblyResolver)(object)(ResolverInstance = new Resolver())
+	};
 
 	internal void Awake()
 	{
 		FileWatcherManager watcher = Bootstrap.Watcher;
-		WatchFolder obj = new WatchFolder
+		WatchFolder watchFolder = new WatchFolder
 		{
 			Filter = "*.dll",
 			IncludeSubFolders = false,
 			Directory = Context.CarbonModules,
-			OnEvent = delegate(WatchFileEvent e)
+			OnEvent = (WatchFileEvent e) =>
 			{
 				if (e.IsInitial && e.Type == WatcherChangeTypes.Created)
 				{
@@ -92,8 +102,8 @@ internal sealed class ModuleManager : AddonManager
 				}
 			}
 		};
-		WatchFolder item = obj;
-		base.Watcher = obj;
+		WatchFolder item = watchFolder;
+		Watcher = watchFolder;
 		watcher.Watch(item);
 	}
 
@@ -102,7 +112,7 @@ internal sealed class ModuleManager : AddonManager
 	{
 		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		Item item = base._loaded.FirstOrDefault((Item x) => x.File == file);
+		Item item = _loaded.FirstOrDefault((Item x) => x.File == file);
 		AssemblyDefinition val = null;
 		MemoryStream stream = null;
 		IModulePackage modulePackage = null;
@@ -148,31 +158,31 @@ internal sealed class ModuleManager : AddonManager
 			ModuleAssemblyCache[assembly.FullName] = assembly;
 			bool isProfiledAssembly = MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Module, assembly, Path.GetFileNameWithoutExtension(file));
 			Assemblies.Modules.Update(Path.GetFileNameWithoutExtension(file), assembly, file, isProfiledAssembly);
-			if (base.AssemblyManager.IsType<IModulePackage>(assembly, out var output))
+			if (AssemblyManager.IsType<IModulePackage>(assembly, out var output))
 			{
 				string file2 = Path.Combine(Context.CarbonModules, text + ".dll");
 				if (item == null)
 				{
-					List<Item> loaded = base._loaded;
-					Item obj = new Item
+					List<Item> loaded = _loaded;
+					Item item2 = new Item
 					{
 						File = file2
 					};
-					item = obj;
-					loaded.Add(obj);
+					item = item2;
+					loaded.Add(item2);
 				}
 				item.PostProcessedRaw = array;
 				item.Shared = assembly.GetTypes();
 				List<Type> list = new List<Type>();
 				if (output != null)
 				{
-					foreach (Type item2 in output)
+					foreach (Type item3 in output)
 					{
-						if (Enumerable.Contains<Type>(item2.GetInterfaces(), typeof(IModulePackage)))
+						if (Enumerable.Contains(item3.GetInterfaces(), typeof(IModulePackage)))
 						{
-							modulePackage = Activator.CreateInstance(item2) as IModulePackage;
+							modulePackage = Activator.CreateInstance(item3) as IModulePackage;
 							Hydrate(assembly, modulePackage);
-							list.Add(item2);
+							list.Add(item3);
 							item.Addon = modulePackage;
 						}
 					}
@@ -217,7 +227,7 @@ internal sealed class ModuleManager : AddonManager
 	[MethodImpl(MethodImplOptions.NoInlining)]
 	public override void Unload(string file, string requester)
 	{
-		Item item = base._loaded.FirstOrDefault((Item x) => x.File == file);
+		Item item = _loaded.FirstOrDefault((Item x) => x.File == file);
 		if (item == null)
 		{
 			Utility.Logger.Log("Couldn't find module '" + file + "' (requested by " + requester + ")");
@@ -239,7 +249,7 @@ internal sealed class ModuleManager : AddonManager
 			Bootstrap.Events.Trigger(CarbonEvent.ModuleUnloadFailed, e2);
 			Pool.Free<ModuleEventArgs>(ref e2);
 		}
-		base._loaded.Remove(item);
+		_loaded.Remove(item);
 	}
 
 	internal override void Hydrate(Assembly assembly, ICarbonAddon addon)
@@ -269,19 +279,6 @@ internal sealed class ModuleManager : AddonManager
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Expected O, but got Unknown
-		_references = new string[5]
-		{
-			Context.CarbonModules,
-			Context.CarbonExtensions,
-			Context.CarbonManaged,
-			Context.CarbonLib,
-			Context.GameManaged
-		};
-		ModuleAssemblyCache = new Dictionary<string, Assembly>();
-		ReadingParameters = new ReaderParameters
-		{
-			AssemblyResolver = (IAssemblyResolver)(object)(ResolverInstance = new Resolver())
-		};
+		//IL_0058: Expected Obj, but got Unknown
 	}
 }

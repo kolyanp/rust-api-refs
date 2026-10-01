@@ -151,7 +151,7 @@ public class ConvarControlledSpawnPopulationRail : ConvarControlledSpawnPopulati
 		float distance = Random.Range(75f, length - 75f);
 		pos = spline.GetPointAndTangentCubicHermiteWorld(distance, out var tangent) + Vector3.up * 0.5f;
 		rot = Quaternion.LookRotation(tangent);
-		float radius = Vector3Ex.Max(((Bounds)(ref trainCar.bounds)).extents);
+		float radius = Vector3Ex.Max(trainCar.bounds.extents);
 		List<Collider> list = Pool.Get<List<Collider>>();
 		GamePhysics.OverlapSphere(pos, radius, list, 32768, (QueryTriggerInteraction)1);
 		bool result = true;

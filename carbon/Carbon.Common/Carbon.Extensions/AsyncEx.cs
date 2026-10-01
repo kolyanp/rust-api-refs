@@ -7,7 +7,7 @@ public class AsyncEx
 	public static async Task NextTick()
 	{
 		TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-		Community.Runtime.Core.NextTick(delegate
+		Community.Runtime.Core.NextTick(() =>
 		{
 			tcs.SetResult(result: true);
 		});

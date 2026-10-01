@@ -37,7 +37,7 @@ public struct RaycastSamplePositionsJob : IJob
 		}
 		for (num = res.x * res.y - 1; num >= 1; num--)
 		{
-			int num2 = ((Random)(ref random)).NextInt(num + 1);
+			int num2 = random.NextInt(num + 1);
 			ref NativeArray<int2> reference = ref positions;
 			int num3 = num;
 			ref NativeArray<int2> reference2 = ref positions;

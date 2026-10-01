@@ -97,13 +97,13 @@ public class FEditor_StylesIn
 	public static GUIStyle Style(Color bgColor)
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Expected O, but got Unknown
+		//IL_0010: Expected Obj, but got Unknown
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Expected O, but got Unknown
+		//IL_0027: Expected Obj, but got Unknown
 		GUIStyle val = new GUIStyle(GUI.skin.box);
-		Color[] pixels = (Color[])(object)new Color[1] { bgColor };
+		Color[] pixels = new Color[1] { bgColor };
 		Texture2D val2 = new Texture2D(1, 1);
 		val2.SetPixels(pixels);
 		val2.Apply();

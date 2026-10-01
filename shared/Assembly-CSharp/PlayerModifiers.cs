@@ -45,15 +45,16 @@ public class PlayerModifiers : BaseModifiers<BasePlayer>
 		PlayerModifiers val = Pool.Get<PlayerModifiers>();
 		val.modifiers = Pool.Get<List<Modifier>>();
 		float value = GetValue(Modifier.ModifierType.DigestionBoost, 1f);
+		float value2 = GetValue(Modifier.ModifierType.DigestionBoostTimeMod, 1f);
 		foreach (Modifier item in All)
 		{
 			if (item != null && (!forDisk || item.Source != Modifier.ModifierSource.Interaction))
 			{
 				Modifier val2 = item.Save();
-				if (!forDisk && value > 1f && IsModifierCompatibleWithDigestionBoost(item.Type))
+				if (!forDisk && IsModifierCompatibleWithDigestionBoost(item.Type))
 				{
-					val2.duration *= value - 1f;
-					val2.timeRemaining *= (double)(value - 1f);
+					val2.duration /= value2;
+					val2.timeRemaining /= (double)value2;
 					val2.value *= value;
 				}
 				val.modifiers.Add(val2);
@@ -142,7 +143,7 @@ public class PlayerModifiers : BaseModifiers<BasePlayer>
 		PlayerModifiers val = Save(forDisk: false);
 		try
 		{
-			base.baseEntity.ClientRPC(RpcTarget.Player("UpdateModifiers", base.baseEntity), val);
+			baseEntity.ClientRPC(RpcTarget.Player("UpdateModifiers", baseEntity), val);
 		}
 		finally
 		{

@@ -63,7 +63,7 @@ public class ElevatorLift : BaseCombatEntity
 
 	private HashSet<uint> vehiclePrefabWhitelist = new HashSet<uint>();
 
-	protected Elevator owner => ownerElevator.Get(base.isServer);
+	protected Elevator owner => ownerElevator.Get(isServer);
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{

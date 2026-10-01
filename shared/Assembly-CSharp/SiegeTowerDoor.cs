@@ -4,6 +4,8 @@ public class SiegeTowerDoor : Door
 {
 	private SiegeTower tower;
 
+	protected override bool AllowNavGate => false;
+
 	protected override bool OnlyCheckForVehicles()
 	{
 		return false;
@@ -28,7 +30,7 @@ public class SiegeTowerDoor : Door
 	{
 		if (HasParent() && (Object)(object)tower != (Object)null)
 		{
-			tower.ProtectedSetHealth(base.health);
+			tower.ProtectedSetHealth(health);
 		}
 	}
 

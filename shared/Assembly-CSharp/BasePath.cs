@@ -91,7 +91,7 @@ public class BasePath : MonoBehaviour, IAIPath
 		foreach (BasePathNode node in nodes)
 		{
 			Vector3 val = Vector3Ex.XZ(point) - Vector3Ex.XZ(node.Position);
-			if (((Vector3)(ref val)).sqrMagnitude <= dist * dist)
+			if (val.sqrMagnitude <= dist * dist)
 			{
 				nearNodes.Add(node);
 			}
@@ -111,7 +111,7 @@ public class BasePath : MonoBehaviour, IAIPath
 			if (!((Object)(object)node == (Object)null) && !((Object)(object)((Component)node).transform == (Object)null))
 			{
 				Vector3 val = point - node.Position;
-				float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+				float sqrMagnitude = val.sqrMagnitude;
 				if (sqrMagnitude < num)
 				{
 					num = sqrMagnitude;
@@ -134,7 +134,7 @@ public class BasePath : MonoBehaviour, IAIPath
 		{
 			iAIPathInterestNode = interestZones[Random.Range(0, interestZones.Count)];
 			Vector3 val = iAIPathInterestNode.Position - from;
-			if (!(((Vector3)(ref val)).sqrMagnitude < dist * dist))
+			if (!(val.sqrMagnitude < dist * dist))
 			{
 				break;
 			}
@@ -218,11 +218,11 @@ public class BasePath : MonoBehaviour, IAIPath
 			Vector3 position2 = nodes[i].Position;
 			Vector3 position3 = nodes[i + 1].Position;
 			Vector3 val = position2 - position3;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			val = position2 - position;
-			Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+			Vector3 normalized2 = val.normalized;
 			val = position3 - position;
-			Vector3 normalized3 = ((Vector3)(ref val)).normalized;
+			Vector3 normalized3 = val.normalized;
 			float num2 = Vector3.Distance(position2, position3);
 			float num3 = Vector3.Dot(normalized, normalized2);
 			float num4 = Vector3.Dot(-normalized, normalized3);
@@ -279,7 +279,7 @@ public class BasePath : MonoBehaviour, IAIPath
 				float num4 = (num - num2) / num3;
 				pos = Vector3.Lerp(nodes[i].Position, nodes[i + 1].Position, num4);
 				Vector3 val = nodes[i + 1].Position - nodes[i].Position;
-				rotation = ((Vector3)(ref val)).normalized;
+				rotation = val.normalized;
 				break;
 			}
 			num2 += num3;

@@ -90,7 +90,7 @@ public class DiamondGraph : UIPrimitiveBase
 		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
 		vh.Clear();
 		Rect rect = ((Graphic)this).rectTransform.rect;
-		float num = ((Rect)(ref rect)).width / 2f;
+		float num = rect.width / 2f;
 		m_a = Math.Min(1f, Math.Max(0f, m_a));
 		m_b = Math.Min(1f, Math.Max(0f, m_b));
 		m_c = Math.Min(1f, Math.Max(0f, m_c));

@@ -24,7 +24,7 @@ public class WebRequests : Library
 
 			public Client()
 			{
-				base.Encoding = System.Text.Encoding.UTF8;
+				Encoding = System.Text.Encoding.UTF8;
 			}
 
 			protected override WebResponse GetWebResponse(System.Net.WebRequest request, IAsyncResult result)
@@ -186,7 +186,7 @@ public class WebRequests : Library
 				{
 					if (_data)
 					{
-						_client.DownloadDataCompleted += delegate(object _, DownloadDataCompletedEventArgs e)
+						_client.DownloadDataCompleted += (object _, DownloadDataCompletedEventArgs e) =>
 						{
 							ResponseDuration = DateTime.Now - _time;
 							ResponseCode = _client.StatusCode;
@@ -217,7 +217,7 @@ public class WebRequests : Library
 						_client.DownloadDataAsync(_uri);
 						break;
 					}
-					_client.DownloadStringCompleted += delegate(object _, DownloadStringCompletedEventArgs e)
+					_client.DownloadStringCompleted += (object _, DownloadStringCompletedEventArgs e) =>
 					{
 						ResponseDuration = DateTime.Now - _time;
 						ResponseCode = _client.StatusCode;
@@ -264,7 +264,7 @@ public class WebRequests : Library
 				{
 					if (_data)
 					{
-						_client.UploadDataCompleted += delegate(object _, UploadDataCompletedEventArgs e)
+						_client.UploadDataCompleted += (object _, UploadDataCompletedEventArgs e) =>
 						{
 							ResponseDuration = DateTime.Now - _time;
 							ResponseCode = _client.StatusCode;
@@ -295,7 +295,7 @@ public class WebRequests : Library
 						_client.UploadDataAsync(_uri, Method, Encoding.Default.GetBytes(Body));
 						break;
 					}
-					_client.UploadStringCompleted += delegate(object _, UploadStringCompletedEventArgs e)
+					_client.UploadStringCompleted += (object _, UploadStringCompletedEventArgs e) =>
 					{
 						ResponseDuration = DateTime.Now - _time;
 						ResponseCode = _client.StatusCode;
@@ -410,7 +410,7 @@ public class WebRequests : Library
 	{
 		TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
 		WebRequest request = null;
-		request = new WebRequest(url, delegate(int code, string data)
+		request = new WebRequest(url, (int code, string data) =>
 		{
 			try
 			{
@@ -437,7 +437,7 @@ public class WebRequests : Library
 	{
 		TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
 		WebRequest request = null;
-		request = new WebRequest(url, delegate(int code, byte[] data)
+		request = new WebRequest(url, (int code, byte[] data) =>
 		{
 			try
 			{

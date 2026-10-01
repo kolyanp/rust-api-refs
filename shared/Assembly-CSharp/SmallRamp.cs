@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Facepunch;
 using UnityEngine;
 
-public class SmallRamp : Door, global::IBoatBuildingPiece
+public class SmallRamp : Door, IBoatBuildingPiece
 {
 	[Header("SmallRamp")]
 	public TriggerParent ParentTrigger;
@@ -28,7 +28,7 @@ public class SmallRamp : Door, global::IBoatBuildingPiece
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		AnimatorStateInfo currentAnimatorStateInfo = model.animator.GetCurrentAnimatorStateInfo(0);
-		model.animator.Play("small_ramp_raise", 0, 1f - ((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime);
+		model.animator.Play("small_ramp_raise", 0, 1f - currentAnimatorStateInfo.normalizedTime);
 	}
 
 	protected override bool CheckOnClose()
@@ -43,7 +43,7 @@ public class SmallRamp : Door, global::IBoatBuildingPiece
 
 	public override void StabilityCheck()
 	{
-		GroundWatch groundWatch = default(GroundWatch);
+		GroundWatch groundWatch = default;
 		if (((Component)this).TryGetComponent<GroundWatch>(ref groundWatch))
 		{
 			groundWatch.DirectCallOnPhysicsNeighbourChanged();
@@ -64,7 +64,7 @@ public class SmallRamp : Door, global::IBoatBuildingPiece
 		foreach (BasePlayer ply in list)
 		{
 			ply.SetParent(null, worldPositionStays: true, sendImmediate: true);
-			Invoke(delegate
+			Invoke(() =>
 			{
 				ply.SetServerFall(wantsOn: true);
 			}, 1.5f);

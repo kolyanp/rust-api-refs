@@ -294,7 +294,7 @@ public class HeldEntity : BaseEntity
 
 	public virtual void SetOwnerPlayer(BasePlayer player)
 	{
-		Assert.IsTrue(base.isServer, "Should be server!");
+		Assert.IsTrue(isServer, "Should be server!");
 		Assert.IsTrue(player.isServer, "Player should be serverside!");
 		TransformEx.Identity(((Component)this).gameObject);
 		SetParent(player, handBone);
@@ -306,7 +306,7 @@ public class HeldEntity : BaseEntity
 
 	public virtual void ClearOwnerPlayer()
 	{
-		Assert.IsTrue(base.isServer, "Should be server!");
+		Assert.IsTrue(isServer, "Should be server!");
 		SetHeld(bHeld: false);
 		SetParent(null);
 	}
@@ -348,7 +348,18 @@ public class HeldEntity : BaseEntity
 		if (!genericVisible && Object.op_Implicit((Object)(object)GetOwnerPlayer()))
 		{
 			bool flag2 = (Object)(object)GetOwnerPlayer().GetHeldEntity() == (Object)(object)this || (IsShield && IsDeployed());
-			flag = ((!ConVar.Server.showHolsteredItems && !flag2) ? UpdateVisiblity_Invis() : (flag2 ? UpdateVisibility_Hand() : ((!holsterVisible) ? UpdateVisiblity_Invis() : UpdateVisiblity_Holster())));
+			if (!ConVar.Server.showHolsteredItems && !flag2)
+			{
+				flag = UpdateVisiblity_Invis();
+			}
+			else if (flag2)
+			{
+				flag = UpdateVisibility_Hand();
+			}
+			else
+			{
+				flag = ((!holsterVisible) ? UpdateVisiblity_Invis() : UpdateVisiblity_Holster());
+			}
 		}
 		else if (genericVisible)
 		{
@@ -371,7 +382,7 @@ public class HeldEntity : BaseEntity
 			return false;
 		}
 		currentVisState = heldEntityVisState.Hand;
-		base.limitNetworking = false;
+		limitNetworking = false;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Disabled, b: false);
@@ -387,7 +398,7 @@ public class HeldEntity : BaseEntity
 			return false;
 		}
 		currentVisState = heldEntityVisState.GenericVis;
-		base.limitNetworking = false;
+		limitNetworking = false;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Disabled, b: false);
@@ -402,7 +413,7 @@ public class HeldEntity : BaseEntity
 			return false;
 		}
 		currentVisState = heldEntityVisState.Holster;
-		base.limitNetworking = false;
+		limitNetworking = false;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Disabled, b: false);
@@ -419,7 +430,7 @@ public class HeldEntity : BaseEntity
 		}
 		currentVisState = heldEntityVisState.Invis;
 		SetParent(GetOwnerPlayer(), GetBone(handBone));
-		base.limitNetworking = true;
+		limitNetworking = true;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Disabled, b: true);
@@ -429,20 +440,20 @@ public class HeldEntity : BaseEntity
 
 	public virtual void SetHeld(bool bHeld)
 	{
-		Assert.IsTrue(base.isServer, "Should be server!");
+		Assert.IsTrue(isServer, "Should be server!");
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
 		{
-			bool num = HasFlag(Flags.Reserved4);
+			bool flag = HasFlag(Flags.Reserved4);
 			flagsUpdateScope.Set(Flags.Reserved4, bHeld);
 			if (!bHeld)
 			{
 				UpdateVisiblity_Invis();
 			}
-			if (num | bHeld)
+			if (flag | bHeld)
 			{
 				UpdateShieldState(bHeld && canBeUsedWithShield);
 			}
-			base.limitNetworking = !bHeld;
+			limitNetworking = !bHeld;
 			flagsUpdateScope.Set(Flags.Disabled, !bHeld);
 		}
 		SendNetworkUpdate();
@@ -458,7 +469,7 @@ public class HeldEntity : BaseEntity
 		}
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		Item anyBackpack = ownerPlayer.inventory.GetAnyBackpack();
-		ItemModShield itemModShield = default(ItemModShield);
+		ItemModShield itemModShield = default;
 		if (anyBackpack != null && ((Component)anyBackpack.info).TryGetComponent<ItemModShield>(ref itemModShield))
 		{
 			HeldEntity heldEntity = anyBackpack.GetHeldEntity() as HeldEntity;

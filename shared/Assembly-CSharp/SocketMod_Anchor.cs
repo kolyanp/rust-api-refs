@@ -29,7 +29,7 @@ public class SocketMod_Anchor : SocketMod
 		pos += Vector3.up;
 		if (GamePhysics.Trace(new Ray(pos, Vector3.down), Radius, out var hitInfo, 10f, 144769024, (QueryTriggerInteraction)0))
 		{
-			return (Object)(object)((Component)((RaycastHit)(ref hitInfo)).collider).GetComponent<BoatBuildingNetting>() != (Object)null;
+			return (Object)(object)((Component)hitInfo.collider).GetComponent<BoatBuildingNetting>() != (Object)null;
 		}
 		return false;
 	}

@@ -71,43 +71,43 @@ public class LAM_RotationStability : LegsAnimatorControlModuleBase
 		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
-		float num = _powerV.GetFloat() * base.EffectBlend;
+		float num = _powerV.GetFloat() * EffectBlend;
 		if (num == 0f)
 		{
 			return;
 		}
 		Vector3 zero = Vector3.zero;
-		zero += base.LA._Get_Hips_StabilityLocalOffset;
-		zero += base.LA._Get_Hips_StabilityLocalAdjustement;
-		zero.x /= base.LA.ScaleReferenceNoScale;
+		zero += LA._Get_Hips_StabilityLocalOffset;
+		zero += LA._Get_Hips_StabilityLocalAdjustement;
+		zero.x /= LA.ScaleReferenceNoScale;
 		zero.z += zero.y * 0.4f;
-		zero.z /= base.LA.ScaleReferenceNoScale;
+		zero.z /= LA.ScaleReferenceNoScale;
 		zero.x *= 60f;
 		zero.z *= 60f;
 		Quaternion identity = Quaternion.identity;
-		float num2 = 1f / Mathf.Max(0.15f, base.LA.StabilizeCenterOfMass) * 0.5f;
-		identity *= Quaternion.AngleAxis(zero.z * num * _forwV.GetFloat() * num2, base.LA.BaseTransform.right);
-		identity *= Quaternion.AngleAxis(zero.x * num * _sideV.GetFloat() * num2, base.LA.BaseTransform.forward);
-		LegsAnimator lA = base.LA;
+		float num2 = 1f / Mathf.Max(0.15f, LA.StabilizeCenterOfMass) * 0.5f;
+		identity *= Quaternion.AngleAxis(zero.z * num * _forwV.GetFloat() * num2, LA.BaseTransform.right);
+		identity *= Quaternion.AngleAxis(zero.x * num * _sideV.GetFloat() * num2, LA.BaseTransform.forward);
+		LegsAnimator lA = LA;
 		lA._LastHipsRotationOffsetOutsideInfo *= identity;
-		for (int i = 0; i < base.LA.HipsHubs.Count; i++)
+		for (int i = 0; i < LA.HipsHubs.Count; i++)
 		{
-			LegsAnimator.HipsReference hipsReference = base.LA.HipsHubs[i];
+			LegsAnimator.HipsReference hipsReference = LA.HipsHubs[i];
 			hipsReference._LastHipsRotationOffsetOutsideInfo *= identity;
 		}
-		if ((Object)(object)base.LA.SpineBone != (Object)null)
+		if ((Object)(object)LA.SpineBone != (Object)null)
 		{
 			Quaternion val = Quaternion.identity;
-			if ((Object)(object)base.LA.SpineBone != (Object)null)
+			if ((Object)(object)LA.SpineBone != (Object)null)
 			{
-				val = base.LA.SpineBone.rotation;
+				val = LA.SpineBone.rotation;
 			}
-			base.LA.Hips.rotation = identity * base.LA.Hips.rotation;
-			base.LA.SpineBone.rotation = Quaternion.Lerp(base.LA.SpineBone.rotation, val, _compenV.GetFloat());
+			LA.Hips.rotation = identity * LA.Hips.rotation;
+			LA.SpineBone.rotation = Quaternion.Lerp(LA.SpineBone.rotation, val, _compenV.GetFloat());
 		}
 		else
 		{
-			base.LA.Hips.rotation = identity * base.LA.Hips.rotation;
+			LA.Hips.rotation = identity * LA.Hips.rotation;
 		}
 	}
 }

@@ -31,10 +31,10 @@ public class State_CrocCharge : FSMStateBase
 		ResetSurprise();
 		if ((Object)(object)payload.entity != (Object)null)
 		{
-			base.Senses.TrySetTarget(payload.entity);
+			Senses.TrySetTarget(payload.entity);
 		}
-		base.Agent.ResetPath();
-		if (!GetMoveDestination(out var destination) || !base.Agent.SetDestinationWithParams(destination, autoBraking: false))
+		Agent.ResetPath();
+		if (!GetMoveDestination(out var destination) || !Agent.SetDestinationWithParams(destination, autoBraking: false))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -43,7 +43,7 @@ public class State_CrocCharge : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.Agent.ResetPath();
+		Agent.ResetPath();
 	}
 
 	private void ResetStamina()
@@ -69,19 +69,19 @@ public class State_CrocCharge : FSMStateBase
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target))
+		if (!Senses.FindTarget(out var target))
 		{
 			return EFSMStateStatus.Success;
 		}
-		base.Agent._acceleration.Value = 20f;
+		Agent._acceleration.Value = 20f;
 		BaseCombatEntity baseCombatEntity = Owner as BaseCombatEntity;
 		float num = Mathx.RemapValClamped(baseCombatEntity.healthFraction, 1f, 0.3f, 0f, 1f);
 		bool flag = false;
 		BasePlayer player;
-		if (base.Agent.IsSwimming)
+		if (Agent.IsSwimming)
 		{
 			flag = true;
-			base.Agent._acceleration.Value = 2.5f;
+			Agent._acceleration.Value = 2.5f;
 			num = 1f;
 		}
 		else if (baseCombatEntity.lastAttackedTime > 0f && Time.time < baseCombatEntity.lastAttackedTime + 0.5f)
@@ -93,7 +93,7 @@ public class State_CrocCharge : FSMStateBase
 		{
 			num = 1f;
 		}
-		else if (base.Agent.remainingDistance < 4f)
+		else if (Agent.remainingDistance < 4f)
 		{
 			flag = true;
 			num = 1f;
@@ -101,9 +101,9 @@ public class State_CrocCharge : FSMStateBase
 		else if (target.ToNonNpcPlayer(out player) && player.modelState.sprinting)
 		{
 			Vector3 estimatedVelocity = player.estimatedVelocity;
-			if (Vector3.Dot(((Vector3)(ref estimatedVelocity)).normalized, ((Component)Owner).transform.forward) > 0.5f)
+			if (Vector3.Dot(estimatedVelocity.normalized, ((Component)Owner).transform.forward) > 0.5f)
 			{
-				base.Agent._acceleration.Value = 2f;
+				Agent._acceleration.Value = 2f;
 				num = 1f;
 			}
 		}
@@ -120,12 +120,12 @@ public class State_CrocCharge : FSMStateBase
 		{
 			num = Mathf.Min(num, 0.3f);
 		}
-		base.Agent.SetSpeedRatio(num, RustNavMeshAgent.Speeds.Sneak, RustNavMeshAgent.Speeds.FullSprint);
-		if (base.Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
+		Agent.SetSpeedRatio(num, RustNavMeshAgent.Speeds.Sneak, RustNavMeshAgent.Speeds.FullSprint);
+		if (Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
 		{
-			base.Agent.desiredSwimDepth.Value = Mathf.Max(base.Agent.desiredSwimDepth.DefaultValue, status.lastWaterInfo.Value.currentDepth - 1f);
+			Agent.desiredSwimDepth.Value = Mathf.Max(Agent.desiredSwimDepth.DefaultValue, status.lastWaterInfo.Value.currentDepth - 1f);
 		}
-		if (!GetMoveDestination(out var destination) || !base.Agent.SetDestinationWithParams(destination, autoBraking: false))
+		if (!GetMoveDestination(out var destination) || !Agent.SetDestinationWithParams(destination, autoBraking: false))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -140,17 +140,17 @@ public class State_CrocCharge : FSMStateBase
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		destination = default(NavVector3);
-		if (!base.Senses.FindTarget(out var target))
+		destination = default;
+		if (!Senses.FindTarget(out var target))
 		{
 			return false;
 		}
 		Vector3 positionWS = ((Component)target).transform.position;
-		if (target.IsNonNpcPlayer() && base.Agent.canSwim && base.Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
+		if (target.IsNonNpcPlayer() && Agent.canSwim && Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
 		{
 			positionWS = Vector3Ex.WithY(((Component)target).transform.position, status.lastWaterInfo.Value.terrainHeight);
 		}
-		destination = base.Agent.WorldToNavSpace(positionWS);
+		destination = Agent.WorldToNavSpace(positionWS);
 		return true;
 	}
 }

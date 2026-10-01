@@ -9,7 +9,7 @@ public interface IMetalDetectable
 
 	bool VerifyScanPosition(Vector3 playerPos, Vector3 pos, out Vector3 spotPos);
 
-	void Detected(Vector3 pos);
+	void Detected(Vector3 pos, float maxRange = 0.2f);
 
 	float GetRadius();
 

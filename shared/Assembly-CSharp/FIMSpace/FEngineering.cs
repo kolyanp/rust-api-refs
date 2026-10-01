@@ -21,7 +21,7 @@ public static class FEngineering
 		get
 		{
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0021: Expected O, but got Unknown
+			//IL_0021: Expected Obj, but got Unknown
 			if (Object.op_Implicit((Object)(object)_slidingMat))
 			{
 				return _slidingMat;
@@ -39,7 +39,7 @@ public static class FEngineering
 		get
 		{
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0021: Expected O, but got Unknown
+			//IL_0021: Expected Obj, but got Unknown
 			if (Object.op_Implicit((Object)(object)_frictMat))
 			{
 				return _frictMat;
@@ -57,7 +57,7 @@ public static class FEngineering
 		get
 		{
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0021: Expected O, but got Unknown
+			//IL_0021: Expected Obj, but got Unknown
 			if (Object.op_Implicit((Object)(object)_slidingMat2D))
 			{
 				return _slidingMat2D;
@@ -73,7 +73,7 @@ public static class FEngineering
 		get
 		{
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0021: Expected O, but got Unknown
+			//IL_0021: Expected Obj, but got Unknown
 			if (Object.op_Implicit((Object)(object)_frictMat2D))
 			{
 				return _frictMat2D;
@@ -86,7 +86,7 @@ public static class FEngineering
 
 	public static bool VIsZero(this Vector3 vec)
 	{
-		if (((Vector3)(ref vec)).sqrMagnitude == 0f)
+		if (vec.sqrMagnitude == 0f)
 		{
 			return true;
 		}
@@ -171,16 +171,16 @@ public static class FEngineering
 		switch (axis)
 		{
 		case 3:
-			((Plane)(ref axis2DProjection)).SetNormalAndPosition(parent.forward, parentPos);
+			axis2DProjection.SetNormalAndPosition(parent.forward, parentPos);
 			break;
 		case 2:
-			((Plane)(ref axis2DProjection)).SetNormalAndPosition(parent.up, parentPos);
+			axis2DProjection.SetNormalAndPosition(parent.up, parentPos);
 			break;
 		default:
-			((Plane)(ref axis2DProjection)).SetNormalAndPosition(parent.right, parentPos);
+			axis2DProjection.SetNormalAndPosition(parent.right, parentPos);
 			break;
 		}
-		return ((Plane)(ref axis2DProjection)).normal * ((Plane)(ref axis2DProjection)).GetDistanceToPoint(childPos);
+		return axis2DProjection.normal * axis2DProjection.GetDistanceToPoint(childPos);
 	}
 
 	public static Quaternion QToLocal(this Quaternion parentRotation, Quaternion worldRotation)
@@ -282,9 +282,9 @@ public static class FEngineering
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		float num = default(float);
-		Vector3 val = default(Vector3);
-		((Quaternion)(ref deltaRotation)).ToAngleAxis(ref num, ref val);
+		float num = default;
+		Vector3 val = default;
+		deltaRotation.ToAngleAxis(ref num, ref val);
 		if (num != 0f)
 		{
 			num = Mathf.DeltaAngle(0f, num);
@@ -456,7 +456,7 @@ public static class FEngineering
 		target.z *= num;
 		target.w *= num;
 		Vector4 val = new Vector4(Mathf.SmoothDamp(current.x, target.x, ref velocityRef.x, duration, maxSpeed, delta), Mathf.SmoothDamp(current.y, target.y, ref velocityRef.y, duration, maxSpeed, delta), Mathf.SmoothDamp(current.z, target.z, ref velocityRef.z, duration, maxSpeed, delta), Mathf.SmoothDamp(current.w, target.w, ref velocityRef.w, duration, maxSpeed, delta));
-		Vector4 normalized = ((Vector4)(ref val)).normalized;
+		Vector4 normalized = val.normalized;
 		Vector4 val2 = Vector4.Project(new Vector4(velocityRef.x, velocityRef.y, velocityRef.z, velocityRef.w), normalized);
 		velocityRef.x -= val2.x;
 		velocityRef.y -= val2.y;
@@ -551,7 +551,7 @@ public static class FEngineering
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		return Vector4.op_Implicit(((Matrix4x4)(ref m)).GetColumn(3));
+		return Vector4.op_Implicit(m.GetColumn(3));
 	}
 
 	public static Quaternion RotFromMatrix(this Matrix4x4 m)
@@ -561,7 +561,7 @@ public static class FEngineering
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		return Quaternion.LookRotation(Vector4.op_Implicit(((Matrix4x4)(ref m)).GetColumn(2)), Vector4.op_Implicit(((Matrix4x4)(ref m)).GetColumn(1)));
+		return Quaternion.LookRotation(Vector4.op_Implicit(m.GetColumn(2)), Vector4.op_Implicit(m.GetColumn(1)));
 	}
 
 	public static Vector3 ScaleFromMatrix(this Matrix4x4 m)
@@ -573,12 +573,12 @@ public static class FEngineering
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		Vector4 column = ((Matrix4x4)(ref m)).GetColumn(0);
-		float magnitude = ((Vector4)(ref column)).magnitude;
-		column = ((Matrix4x4)(ref m)).GetColumn(1);
-		float magnitude2 = ((Vector4)(ref column)).magnitude;
-		column = ((Matrix4x4)(ref m)).GetColumn(2);
-		return new Vector3(magnitude, magnitude2, ((Vector4)(ref column)).magnitude);
+		Vector4 column = m.GetColumn(0);
+		float magnitude = column.magnitude;
+		column = m.GetColumn(1);
+		float magnitude2 = column.magnitude;
+		column = m.GetColumn(2);
+		return new Vector3(magnitude, magnitude2, column.magnitude);
 	}
 
 	public static Bounds TransformBounding(Bounds b, Transform by)
@@ -611,20 +611,21 @@ public static class FEngineering
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = ((Matrix4x4)(ref mx)).MultiplyPoint(((Bounds)(ref b)).min);
-		Vector3 val2 = ((Matrix4x4)(ref mx)).MultiplyPoint(((Bounds)(ref b)).max);
-		Vector3 val3 = ((Matrix4x4)(ref mx)).MultiplyPoint(new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).center.y, ((Bounds)(ref b)).min.z));
-		Vector3 val4 = ((Matrix4x4)(ref mx)).MultiplyPoint(new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).center.y, ((Bounds)(ref b)).max.z));
-		((Bounds)(ref b))._002Ector(val, Vector3.zero);
-		((Bounds)(ref b)).Encapsulate(val);
-		((Bounds)(ref b)).Encapsulate(val2);
-		((Bounds)(ref b)).Encapsulate(val3);
-		((Bounds)(ref b)).Encapsulate(val4);
+		Vector3 val = mx.MultiplyPoint(b.min);
+		Vector3 val2 = mx.MultiplyPoint(b.max);
+		Vector3 val3 = mx.MultiplyPoint(new Vector3(b.max.x, b.center.y, b.min.z));
+		Vector3 val4 = mx.MultiplyPoint(new Vector3(b.min.x, b.center.y, b.max.z));
+		b = new Bounds(val, Vector3.zero);
+		b.Encapsulate(val);
+		b.Encapsulate(val2);
+		b.Encapsulate(val3);
+		b.Encapsulate(val4);
 		return b;
 	}
 
@@ -698,23 +699,23 @@ public static class FEngineering
 			return b;
 		}
 		Matrix4x4 val = Matrix4x4.Rotate(rotation);
-		Bounds result = default(Bounds);
-		Vector3 val2 = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).min.y, ((Bounds)(ref b)).max.z));
-		Vector3 val3 = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).min.y, ((Bounds)(ref b)).min.z));
-		Vector3 val4 = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).min.y, ((Bounds)(ref b)).min.z));
-		Vector3 val5 = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).min.y, ((Bounds)(ref b)).max.z));
-		((Bounds)(ref result)).Encapsulate(val2);
-		((Bounds)(ref result)).Encapsulate(val3);
-		((Bounds)(ref result)).Encapsulate(val4);
-		((Bounds)(ref result)).Encapsulate(val5);
-		Vector3 val6 = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).max.y, ((Bounds)(ref b)).max.z));
-		Vector3 val7 = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).max.y, ((Bounds)(ref b)).min.z));
-		Vector3 val8 = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).max.y, ((Bounds)(ref b)).min.z));
-		Vector3 val9 = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).max.y, ((Bounds)(ref b)).max.z));
-		((Bounds)(ref result)).Encapsulate(val6);
-		((Bounds)(ref result)).Encapsulate(val7);
-		((Bounds)(ref result)).Encapsulate(val8);
-		((Bounds)(ref result)).Encapsulate(val9);
+		Bounds result = default;
+		Vector3 val2 = val.MultiplyPoint(new Vector3(b.max.x, b.min.y, b.max.z));
+		Vector3 val3 = val.MultiplyPoint(new Vector3(b.max.x, b.min.y, b.min.z));
+		Vector3 val4 = val.MultiplyPoint(new Vector3(b.min.x, b.min.y, b.min.z));
+		Vector3 val5 = val.MultiplyPoint(new Vector3(b.min.x, b.min.y, b.max.z));
+		result.Encapsulate(val2);
+		result.Encapsulate(val3);
+		result.Encapsulate(val4);
+		result.Encapsulate(val5);
+		Vector3 val6 = val.MultiplyPoint(new Vector3(b.max.x, b.max.y, b.max.z));
+		Vector3 val7 = val.MultiplyPoint(new Vector3(b.max.x, b.max.y, b.min.z));
+		Vector3 val8 = val.MultiplyPoint(new Vector3(b.min.x, b.max.y, b.min.z));
+		Vector3 val9 = val.MultiplyPoint(new Vector3(b.min.x, b.max.y, b.max.z));
+		result.Encapsulate(val6);
+		result.Encapsulate(val7);
+		result.Encapsulate(val8);
+		result.Encapsulate(val9);
 		return result;
 	}
 
@@ -734,11 +735,11 @@ public static class FEngineering
 		float num = Quaternion.Angle(rotation, Quaternion.identity);
 		if (num > 45f && num < 135f)
 		{
-			((Bounds)(ref b)).size = new Vector3(((Bounds)(ref b)).size.z, ((Bounds)(ref b)).size.y, ((Bounds)(ref b)).size.x);
+			b.size = new Vector3(b.size.z, b.size.y, b.size.x);
 		}
 		if (num < 315f && num > 225f)
 		{
-			((Bounds)(ref b)).size = new Vector3(((Bounds)(ref b)).size.z, ((Bounds)(ref b)).size.y, ((Bounds)(ref b)).size.x);
+			b.size = new Vector3(b.size.z, b.size.y, b.size.x);
 		}
 		return b;
 	}

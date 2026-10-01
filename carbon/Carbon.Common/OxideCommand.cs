@@ -8,11 +8,11 @@ public class OxideCommand : AuthenticatedCommand
 	{
 		get
 		{
-			return base.Name;
+			return Name;
 		}
 		set
 		{
-			base.Name = value;
+			Name = value;
 		}
 	}
 
@@ -24,17 +24,17 @@ public class OxideCommand : AuthenticatedCommand
 	{
 		get
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				return base.Auth.Permissions;
+				return Auth.Permissions;
 			}
 			return null;
 		}
 		set
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				base.Auth.Permissions = value;
+				Auth.Permissions = value;
 			}
 		}
 	}
@@ -43,17 +43,17 @@ public class OxideCommand : AuthenticatedCommand
 	{
 		get
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				return base.Auth.Groups;
+				return Auth.Groups;
 			}
 			return null;
 		}
 		set
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				base.Auth.Groups = value;
+				Auth.Groups = value;
 			}
 		}
 	}
@@ -62,17 +62,17 @@ public class OxideCommand : AuthenticatedCommand
 	{
 		get
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				return base.Auth.AuthLevel;
+				return Auth.AuthLevel;
 			}
 			return 0;
 		}
 		set
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				base.Auth.AuthLevel = value;
+				Auth.AuthLevel = value;
 			}
 		}
 	}
@@ -81,17 +81,17 @@ public class OxideCommand : AuthenticatedCommand
 	{
 		get
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				return base.Auth.Cooldown;
+				return Auth.Cooldown;
 			}
 			return 0;
 		}
 		set
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				base.Auth.Cooldown = value;
+				Auth.Cooldown = value;
 			}
 		}
 	}
@@ -100,17 +100,17 @@ public class OxideCommand : AuthenticatedCommand
 	{
 		get
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				return base.Auth.DoCooldownPenalty;
+				return Auth.DoCooldownPenalty;
 			}
 			return false;
 		}
 		set
 		{
-			if (base.Auth != null)
+			if (Auth != null)
 			{
-				base.Auth.DoCooldownPenalty = value;
+				Auth.DoCooldownPenalty = value;
 			}
 		}
 	}

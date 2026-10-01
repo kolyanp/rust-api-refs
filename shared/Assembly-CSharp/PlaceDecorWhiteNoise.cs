@@ -25,6 +25,7 @@ public class PlaceDecorWhiteNoise : ProceduralComponent
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
@@ -70,7 +71,6 @@ public class PlaceDecorWhiteNoise : ProceduralComponent
 		float z = position.z;
 		float num2 = position.x + size.x;
 		float num3 = position.z + size.z;
-		Vector3 pos = default(Vector3);
 		for (int i = 0; i < num; i++)
 		{
 			float num4 = SeedRandom.Range(ref seed, x, num2);
@@ -88,7 +88,7 @@ public class PlaceDecorWhiteNoise : ProceduralComponent
 				}
 			}
 			float height = heightMap.GetHeight(normX, normZ);
-			((Vector3)(ref pos))._002Ector(num4, height, num5);
+			Vector3 pos = new Vector3(num4, height, num5);
 			Quaternion rot = random.Object.transform.localRotation;
 			Vector3 scale = random.Object.transform.localScale;
 			random.ApplyDecorComponents(ref pos, ref rot, ref scale);

@@ -17,10 +17,10 @@ public class State_Observe : State_MoveToTarget
 		}
 		succeedWhenDestinationIsReached = false;
 		stopAtDestination = false;
-		base.Agent.deceleration.Value = 0.1f;
-		base.Agent.SetGait(RustNavMeshAgent.Speeds.Sneak);
+		Agent.deceleration.Value = 0.1f;
+		Agent.SetGait(RustNavMeshAgent.Speeds.Sneak);
 		startTime = Time.timeAsDouble;
-		base.Agent.currentDeviation = 2f;
+		Agent.currentDeviation = 2f;
 		return eFSMStateStatus;
 	}
 
@@ -28,7 +28,7 @@ public class State_Observe : State_MoveToTarget
 	{
 		if (Time.timeAsDouble - startTime > 6.0)
 		{
-			base.Agent.speed = 0.2f;
+			Agent.speed = 0.2f;
 		}
 		return base.OnStateUpdate(deltaTime);
 	}

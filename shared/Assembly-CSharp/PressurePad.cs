@@ -51,7 +51,7 @@ public class PressurePad : BaseDetector
 	{
 		if (HasFlag(Flags.Reserved1))
 		{
-			int passthroughAmount = base.GetPassthroughAmount(0);
+			int passthroughAmount = base.GetPassthroughAmount();
 			if (HasFlag(Flags.Reserved3))
 			{
 				return Mathf.Max(pressPowerAmount, passthroughAmount);

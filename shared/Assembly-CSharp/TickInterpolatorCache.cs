@@ -36,24 +36,13 @@ public class TickInterpolatorCache
 		}
 	}
 
-	public struct ReadOnlyState
+	public struct ReadOnlyState(ReadOnly<Segment> playerSegments, ReadOnly<PlayerInfo> playerInfos, int bufferSize)
 	{
-		public readonly ReadOnly<Segment> Segments;
+		public readonly ReadOnly<Segment> Segments = playerSegments;
 
-		public readonly ReadOnly<PlayerInfo> Infos;
+		public readonly ReadOnly<PlayerInfo> Infos = playerInfos;
 
-		public readonly int BufferSize;
-
-		public ReadOnlyState(ReadOnly<Segment> playerSegments, ReadOnly<PlayerInfo> playerInfos, int bufferSize)
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			Segments = playerSegments;
-			Infos = playerInfos;
-			BufferSize = bufferSize;
-		}
+		public readonly int BufferSize = bufferSize;
 	}
 
 	public struct PlayerTickIterator
@@ -151,7 +140,7 @@ public class TickInterpolatorCache
 
 	private NativeArray<PlayerInfo> playerInfos;
 
-	private int bufferSize;
+	private int bufferSize = 9;
 
 	public ReadOnlyState ReadOnly
 	{
@@ -169,8 +158,6 @@ public class TickInterpolatorCache
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		bufferSize = 9;
-		base._002Ector();
 		playerSegments = new NativeArray<Segment>(bufferSize * capacity, (Allocator)4, (NativeArrayOptions)0);
 		playerInfos = new NativeArray<PlayerInfo>(capacity, (Allocator)4, (NativeArrayOptions)1);
 	}
@@ -183,7 +170,7 @@ public class TickInterpolatorCache
 
 	public void ReplacePlayer(int index)
 	{
-		playerInfos[index] = default(PlayerInfo);
+		playerInfos[index] = default;
 	}
 
 	public void MovePlayer(int from, int to)
@@ -240,7 +227,7 @@ public class TickInterpolatorCache
 	public void Reset(int playerIndex, Vector3 point)
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		playerInfos[playerIndex] = default(PlayerInfo);
+		playerInfos[playerIndex] = default;
 		int num = playerIndex * bufferSize;
 		playerSegments[num] = new Segment(point);
 	}
@@ -297,7 +284,7 @@ public class TickInterpolatorCache
 		for (int i = 0; i < span.Length; i++)
 		{
 			ref Segment reference = ref span[i];
-			reference.point = ((Matrix4x4)(ref matrix)).MultiplyPoint3x4(reference.point);
+			reference.point = matrix.MultiplyPoint3x4(reference.point);
 		}
 	}
 
@@ -311,6 +298,7 @@ public class TickInterpolatorCache
 
 	private void GrowSegments(int oldPlayerCap)
 	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
@@ -324,8 +312,7 @@ public class TickInterpolatorCache
 		{
 			bufferSize += 4;
 		}
-		NativeArray<Segment> val = default(NativeArray<Segment>);
-		val._002Ector(length * bufferSize, (Allocator)4, (NativeArrayOptions)0);
+		NativeArray<Segment> val = new NativeArray<Segment>(length * bufferSize, (Allocator)4, (NativeArrayOptions)0);
 		for (int i = 0; i < oldPlayerCap; i++)
 		{
 			int count = playerInfos[i].Count;

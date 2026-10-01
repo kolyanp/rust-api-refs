@@ -56,7 +56,7 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 	{
 		AdminModule.PlayerSession playerSession = Admin.GetPlayerSession(player);
 		playerSession.SetStorage(playerSession.SelectedTab, "colorpicker_alpha", 1f);
-		if (!base.ModuleConfiguration.Enabled)
+		if (!ModuleConfiguration.Enabled)
 		{
 			string empty = string.Empty;
 			onColorPicked?.Invoke(empty, empty, 1f);
@@ -208,7 +208,7 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 	}
 
 	[ProtectedCommand("carbonuicolorpicker.pickcolor")]
-	private unsafe void PickColorPickerUI(Arg arg)
+	private void PickColorPickerUI(Arg arg)
 	{
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
@@ -220,8 +220,8 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 			string text2 = arg.GetString(1, "");
 			float storage = playerSession.GetStorage(playerSession.SelectedTab, "colorpicker_alpha", 1f);
 			string arg2 = string.Join(" ", from x in arg.Args.Skip(2)
-				select ((object)(*(StringView*)(&x))/*cast due to constrained. prefix*/).ToString());
-			Color val = default(Color);
+				select ((object)x/*cast due to constrained. prefix*/).ToString());
+			Color val = default;
 			ColorUtility.TryParseHtmlString("#" + text2, ref val);
 			float storage2 = playerSession.GetStorage(playerSession.SelectedTab, "colorpicker_brightness", 1f);
 			int storage3 = playerSession.GetStorage(playerSession.SelectedTab, "colorpicker_brightnessindicator", 8);

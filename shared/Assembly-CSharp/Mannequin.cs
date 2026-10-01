@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -55,9 +56,6 @@ public class Mannequin : StorageContainer
 
 	public MannequinPose[] AvailablePoses;
 
-	[CompilerGenerated]
-	private TimeSince _003CLastPoseChange_003Ek__BackingField;
-
 	private static Item[] clothingBuffer;
 
 	private static Item[] lockerBuffer;
@@ -90,14 +88,14 @@ public class Mannequin : StorageContainer
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLastPoseChange_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLastPoseChange_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -208,7 +206,7 @@ public class Mannequin : StorageContainer
 		base.Save(info);
 		info.msg.mannequin = Pool.Get<Mannequin>();
 		info.msg.mannequin.clothingItems = Pool.Get<List<ClothingItem>>();
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			ClothingItem val = Pool.Get<ClothingItem>();
 			val.itemId = item.info.itemid;
@@ -236,9 +234,9 @@ public class Mannequin : StorageContainer
 		{
 			return false;
 		}
-		bool num = item.IsBackpack();
-		bool flag = IsBackpackSlot(targetSlot);
-		if (num != flag)
+		bool flag = item.IsBackpack();
+		bool flag2 = IsBackpackSlot(targetSlot);
+		if (flag != flag2)
 		{
 			return false;
 		}
@@ -251,15 +249,15 @@ public class Mannequin : StorageContainer
 
 	private bool CanAcceptItem(BasePlayer player, Item newItem, int slot)
 	{
-		ItemModWearable itemModWearable = default(ItemModWearable);
+		ItemModWearable itemModWearable = default;
 		if (!((Component)newItem.info).TryGetComponent<ItemModWearable>(ref itemModWearable))
 		{
 			return false;
 		}
-		ItemModWearable wearable = default(ItemModWearable);
-		for (int i = 0; i < base.inventory.capacity; i++)
+		ItemModWearable wearable = default;
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item slot2 = base.inventory.GetSlot(i);
+			Item slot2 = inventory.GetSlot(i);
 			if (slot2 != null && ((Component)slot2.info).TryGetComponent<ItemModWearable>(ref wearable) && !itemModWearable.CanExistWith(wearable) && slot != i)
 			{
 				return false;
@@ -326,7 +324,7 @@ public class Mannequin : StorageContainer
 		{
 			player.ShowToast(GameTip.Styles.Error, PlayerInventoryErrors.ContainerLocked, false);
 		}
-		else if (SwapPlayerInventoryWithContainer(msg.player, base.inventory, GetDropPosition(), GetDropVelocity(), FilterItems))
+		else if (SwapPlayerInventoryWithContainer(msg.player, inventory, GetDropPosition(), GetDropVelocity(), FilterItems))
 		{
 			if (EquipSound != null)
 			{
@@ -351,14 +349,14 @@ public class Mannequin : StorageContainer
 
 	public static bool SwapPlayerInventoryWithContainer(BasePlayer player, ItemContainer inventory, Vector3 dropPosition, Vector3 dropVelocity, Func<Item, bool> filterItems = null)
 	{
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
 		bool result = false;
 		for (int i = 0; i < clothingBuffer.Length; i++)
 		{
@@ -404,7 +402,7 @@ public class Mannequin : StorageContainer
 		return result;
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -413,7 +411,7 @@ public class Mannequin : StorageContainer
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: PoseIndex for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: PoseIndex for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_PoseIndex);
 			return true;
@@ -465,18 +463,34 @@ public class Mannequin : StorageContainer
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -511,8 +525,8 @@ public class Mannequin : StorageContainer
 	static Mannequin()
 	{
 		HumanBodyBones[] array = new HumanBodyBones[49];
-		RuntimeHelpers.InitializeArray(array, (RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/);
-		ValidBoneArray = (HumanBodyBones[])(object)array;
+		RuntimeHelpers.InitializeArray(array, __ldtoken(_003CPrivateImplementationDetails_003E.B75E8A426ABC97E5121195CEFBF6EB3596FF3326EF57E9E9A53B8886FD803B73));
+		ValidBoneArray = array;
 		clothingBuffer = new Item[8];
 		lockerBuffer = new Item[8];
 	}

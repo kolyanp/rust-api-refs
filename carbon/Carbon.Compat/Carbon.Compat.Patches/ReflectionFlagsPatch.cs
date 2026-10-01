@@ -59,7 +59,7 @@ public class ReflectionFlagsPatch : IAssemblyPatch
 					}
 					IResolutionScope scope = val5.Scope;
 					AssemblyReference val6 = (AssemblyReference)(object)((scope is AssemblyReference) ? scope : null);
-					if (val6 == null || !((AssemblyDescriptor)val6).IsCorLib || !(val5.Name == "Type") || !ReflectionTypeMethods.Contains(Utf8String.op_Implicit(val3.Name)) || !((MethodSignatureBase)val4).ParameterTypes.Any(delegate(TypeSignature x)
+					if (val6 == null || !((AssemblyDescriptor)val6).IsCorLib || !(val5.Name == "Type") || !ReflectionTypeMethods.Contains(Utf8String.op_Implicit(val3.Name)) || !((MethodSignatureBase)val4).ParameterTypes.Any((TypeSignature x) =>
 					{
 						IResolutionScope scope2 = x.Scope;
 						AssemblyReference val8 = (AssemblyReference)(object)((scope2 is AssemblyReference) ? scope2 : null);

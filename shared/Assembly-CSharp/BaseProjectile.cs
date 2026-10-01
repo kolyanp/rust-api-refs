@@ -22,8 +22,8 @@ public class BaseProjectile : AttackEntity
 			[Tooltip("Set to 0 to not use inbuilt mag")]
 			public int builtInSize;
 
-			[InspectorFlags]
 			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
+			[InspectorFlags]
 			public AmmoTypes ammoTypes;
 		}
 
@@ -99,37 +99,37 @@ public class BaseProjectile : AttackEntity
 	}
 
 	[Header("NPC Info")]
-	public float NoiseRadius;
+	public float NoiseRadius = 100f;
 
 	[Header("Projectile")]
 	[Tooltip("Scales the damage of the projectile across all ranges.")]
-	public float damageScale;
+	public float damageScale = 1f;
 
 	[Tooltip("Scales the damage falloff window of the projectile.")]
-	public float distanceScale;
+	public float distanceScale = 1f;
 
 	[Tooltip("Overrides the projectile's far damage multiplier. Negative values use the projectile default.")]
-	public float farDamageScale;
+	public float farDamageScale = -1f;
 
 	[Tooltip("Scales only the projectile's far falloff distance. Negative values use the projectile default.")]
-	public float farDistanceScale;
+	public float farDistanceScale = -1f;
 
-	public float projectileVelocityScale;
+	public float projectileVelocityScale = 1f;
 
 	public bool automatic;
 
-	public bool usableByTurret;
+	public bool usableByTurret = true;
 
 	[Tooltip("Final damage is scaled by this amount before being applied to a target when this weapon is mounted to a turret")]
-	public float turretDamageScale;
+	public float turretDamageScale = 0.35f;
 
 	public bool largeTurretWeapon;
 
-	public float turretReloadDurationOverride;
+	public float turretReloadDurationOverride = -1f;
 
-	[Tooltip("How far away this attack effect can be heard")]
 	[Header("Effects")]
-	public float maxAttackEffectDistance;
+	[Tooltip("How far away this attack effect can be heard")]
+	public float maxAttackEffectDistance = 400f;
 
 	public GameObjectRef attackFX;
 
@@ -142,9 +142,9 @@ public class BaseProjectile : AttackEntity
 	public Transform MuzzlePoint;
 
 	[Header("Reloading")]
-	public float reloadTime;
+	public float reloadTime = 1f;
 
-	public bool canUnloadAmmo;
+	public bool canUnloadAmmo = true;
 
 	public Magazine primaryMagazine;
 
@@ -161,31 +161,35 @@ public class BaseProjectile : AttackEntity
 	public bool sendReloadSignalFromServer;
 
 	[Header("Recoil")]
-	public float aimSway;
+	public float aimSway = 3f;
 
-	public float aimSwaySpeed;
+	public float aimSwaySpeed = 1f;
 
 	public RecoilProperties recoil;
 
 	[Header("Aim Cone")]
-	public AnimationCurve aimconeCurve;
+	public AnimationCurve aimconeCurve = new AnimationCurve(new Keyframe[2]
+	{
+		new Keyframe(0f, 1f),
+		new Keyframe(1f, 1f)
+	});
 
 	public float aimCone;
 
-	public float hipAimCone;
+	public float hipAimCone = 1.8f;
 
 	public float aimconePenaltyPerShot;
 
 	public float aimConePenaltyMax;
 
-	public float aimconePenaltyRecoverTime;
+	public float aimconePenaltyRecoverTime = 0.1f;
 
-	public float aimconePenaltyRecoverDelay;
+	public float aimconePenaltyRecoverDelay = 0.1f;
 
-	public float stancePenaltyScale;
+	public float stancePenaltyScale = 1f;
 
 	[Header("Iconsights")]
-	public bool hasADS;
+	public bool hasADS = true;
 
 	public bool noAimingWhileCycling;
 
@@ -205,29 +209,30 @@ public class BaseProjectile : AttackEntity
 	[Header("Burst Information")]
 	public bool isBurstWeapon;
 
-	public bool canChangeFireModes;
+	public bool canChangeFireModes = true;
 
-	public bool defaultOn;
+	public bool defaultOn = true;
 
-	public float internalBurstRecoilScale;
+	public float internalBurstRecoilScale = 0.8f;
 
-	public float internalBurstFireRateScale;
+	public float internalBurstFireRateScale = 0.8f;
 
-	public float internalBurstAimConeScale;
+	public float internalBurstAimConeScale = 0.8f;
 
-	public float resetDuration;
+	public float resetDuration = 0.3f;
 
+	[NonSerialized]
 	public int numShotsFired;
 
 	public const float maxDistance = 300f;
 
 	[NonSerialized]
-	private EncryptedValue<float> nextReloadTime;
+	private EncryptedValue<float> nextReloadTime = float.NegativeInfinity;
 
 	[NonSerialized]
-	private EncryptedValue<float> startReloadTime;
+	private EncryptedValue<float> startReloadTime = float.NegativeInfinity;
 
-	private float lastReloadTime;
+	private float lastReloadTime = -10f;
 
 	private bool modsChangedInitialized;
 
@@ -237,11 +242,11 @@ public class BaseProjectile : AttackEntity
 
 	private uint cachedModHash;
 
-	private float sightAimConeScale;
+	private float sightAimConeScale = 1f;
 
 	private float sightAimConeOffset;
 
-	private float hipAimConeScale;
+	private float hipAimConeScale = 1f;
 
 	private float hipAimConeOffset;
 
@@ -709,7 +714,7 @@ public class BaseProjectile : AttackEntity
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient && (Object)(object)MuzzlePoint != (Object)null)
+		if (isClient && (Object)(object)MuzzlePoint != (Object)null)
 		{
 			Gizmos.color = Color.blue;
 			Gizmos.DrawLine(MuzzlePoint.position, MuzzlePoint.position + MuzzlePoint.forward * 10f);
@@ -815,7 +820,7 @@ public class BaseProjectile : AttackEntity
 		float num = Time.time * (aimSwaySpeed * 1f + aiAimSwayOffset);
 		float num2 = Mathf.Sin(Time.time * 2f);
 		float num3 = ((num2 < 0f) ? (1f - Mathf.Clamp(Mathf.Abs(num2) / 1f, 0f, 1f)) : 1f);
-		float num4 = (false ? 0.6f : 1f);
+		float num4 = ((0 != 0) ? 0.6f : 1f);
 		float num5 = (aimSway * 1f + aiAimSwayOffset) * num4 * num3 * swayModifier;
 		eulerInput.y += (Mathf.PerlinNoise(num, num) - 0.5f) * num5 * Time.deltaTime;
 		eulerInput.x += (Mathf.PerlinNoise(num + 0.1f, num + 0.2f) - 0.5f) * num5 * Time.deltaTime;
@@ -861,6 +866,7 @@ public class BaseProjectile : AttackEntity
 		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0249: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0250: Unknown result type (might be due to invalid IL or missing references)
 		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
@@ -894,7 +900,7 @@ public class BaseProjectile : AttackEntity
 		//IL_04e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04f5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04fa: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient || HasAttackCooldown())
+		if (isClient || HasAttackCooldown())
 		{
 			return;
 		}
@@ -928,9 +934,9 @@ public class BaseProjectile : AttackEntity
 		if (parameters.originOverride.HasValue)
 		{
 			Matrix4x4 value = parameters.originOverride.Value;
-			val = ((Matrix4x4)(ref value)).GetPosition();
+			val = value.GetPosition();
 			value = parameters.originOverride.Value;
-			val2 = ((Matrix4x4)(ref value)).MultiplyVector(Vector3.forward);
+			val2 = value.MultiplyVector(Vector3.forward);
 		}
 		ItemModProjectile ammoInfo = ((Component)primaryMagazine.ammoType).GetComponent<ItemModProjectile>();
 		SignalBroadcast(Signal.Attack, string.Empty, null, GetAttackEffect(), maxAttackEffectDistance);
@@ -942,13 +948,20 @@ public class BaseProjectile : AttackEntity
 		{
 			val2 = ownerPlayer.eyes.BodyForward();
 		}
-		Ray val4 = default(Ray);
 		for (int i = 0; i < ammoInfo.numProjectiles; i++)
 		{
-			Vector3 val3 = (flag2 ? AimConeUtil.GetModifiedAimConeDirection(ammoInfo.projectileSpread + GetAimCone() + GetAIAimcone(), val2) : ((!flag3) ? AimConeUtil.GetModifiedAimConeDirection(ammoInfo.projectileSpread + GetAimCone(), val2) : val2));
+			Vector3 val3;
+			if (flag2)
+			{
+				val3 = AimConeUtil.GetModifiedAimConeDirection(ammoInfo.projectileSpread + GetAimCone() + GetAIAimcone(), val2);
+			}
+			else
+			{
+				val3 = ((!flag3) ? AimConeUtil.GetModifiedAimConeDirection(ammoInfo.projectileSpread + GetAimCone(), val2) : val2);
+			}
 			float radius = (parameters.useBulletThickness ? GetOverrideProjectileThickness(component) : 0f);
 			List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
-			((Ray)(ref val4))._002Ector(val, val3);
+			Ray val4 = new Ray(val, val3);
 			GamePhysics.TraceAll(val4, radius, list, 300f, 1220225793, (QueryTriggerInteraction)1, ownerPlayer);
 			float distanceOverride = 0f;
 			for (int j = 0; j < list.Count && parameters.damageModifier != 0f; j++)
@@ -970,7 +983,7 @@ public class BaseProjectile : AttackEntity
 				{
 					Vector3 val5 = ((Component)this).transform.InverseTransformPoint(((Component)foundShield).transform.position);
 					Vector3 val6 = ((Component)this).transform.InverseTransformPoint(basePlayer.CenterPoint());
-					if (((Vector3)(ref val5)).sqrMagnitude < ((Vector3)(ref val6)).sqrMagnitude)
+					if (val5.sqrMagnitude < val6.sqrMagnitude)
 					{
 						continue;
 					}
@@ -979,38 +992,38 @@ public class BaseProjectile : AttackEntity
 				{
 					continue;
 				}
-				ColliderInfo component2 = ((Component)((RaycastHit)(ref hit)).collider).GetComponent<ColliderInfo>();
+				ColliderInfo component2 = ((Component)hit.collider).GetComponent<ColliderInfo>();
 				if ((Object)(object)component2 != (Object)null && !component2.HasFlag(ColliderInfo.Flags.Shootable))
 				{
 					continue;
 				}
 				BaseCombatEntity baseCombatEntity = entity as BaseCombatEntity;
-				if (((((Object)(object)entity != (Object)null && entity.IsNpc) & flag4) && (Object)(object)baseCombatEntity != (Object)null && baseCombatEntity.GetFaction() != BaseCombatEntity.Faction.Horror && !(entity is BasePet)) || !((Object)(object)entity != (Object)null) || (!((Object)(object)baseEntity == (Object)null) && !((Object)(object)entity == (Object)(object)baseEntity) && !entity.EqualNetID((BaseNetworkable)baseEntity)) || !entity.IsVisible(val, ((RaycastHit)(ref hit)).point, 300f))
+				if (((((Object)(object)entity != (Object)null && entity.IsNpc) & flag4) && (Object)(object)baseCombatEntity != (Object)null && baseCombatEntity.GetFaction() != BaseCombatEntity.Faction.Horror && !(entity is BasePet)) || !((Object)(object)entity != (Object)null) || (!((Object)(object)baseEntity == (Object)null) && !((Object)(object)entity == (Object)(object)baseEntity) && !entity.EqualNetID((BaseNetworkable)baseEntity)) || !entity.IsVisible(val, hit.point, 300f))
 				{
 					continue;
 				}
 				HitInfo info = Pool.Get<HitInfo>();
 				AssignInitiator(info);
 				info.Weapon = this;
-				info.WeaponPrefab = base.gameManager.FindPrefab(base.PrefabName).GetComponent<AttackEntity>();
+				info.WeaponPrefab = gameManager.FindPrefab(PrefabName).GetComponent<AttackEntity>();
 				info.IsPredicting = false;
 				info.DoHitEffects = component.doHitEffects;
 				info.DidHit = true;
 				info.ProjectileVelocity = val3 * 300f;
 				info.PointStart = MuzzlePoint.position;
-				info.PointEnd = ((RaycastHit)(ref hit)).point;
-				info.HitPositionWorld = ((RaycastHit)(ref hit)).point;
-				info.HitNormalWorld = ((RaycastHit)(ref hit)).normal;
+				info.PointEnd = hit.point;
+				info.HitPositionWorld = hit.point;
+				info.HitNormalWorld = hit.normal;
 				info.HitEntity = entity;
 				info.UseProtection = true;
 				info.UseProtectionForNPCs = parameters.useProtectionForNPCs;
-				distanceOverride = ((RaycastHit)(ref hit)).distance;
+				distanceOverride = hit.distance;
 				component.CalculateDamage(info, GetProjectileModifier(), 1f);
 				info.damageTypes.ScaleAll(GetDamageScale() * parameters.damageModifier * (flag4 ? npcDamageScale : turretDamageScale));
-				float num2 = ((num > 0f) ? (((RaycastHit)(ref hit)).distance / num) : 0f);
+				float num2 = ((num > 0f) ? (hit.distance / num) : 0f);
 				if (num2 > 0.2f)
 				{
-					Invoke(delegate
+					Invoke(() =>
 					{
 						ProcessHit(info, ammoInfo);
 					}, num2);
@@ -1082,7 +1095,7 @@ public class BaseProjectile : AttackEntity
 			if (item != null && item.contents != null)
 			{
 				ItemContainer contents = item.contents;
-				contents.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(contents.onItemAddedRemoved, new Action<Item, bool>(ModsChanged));
+				contents.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(contents.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(ModsChanged));
 				modsChangedInitialized = true;
 			}
 		}
@@ -1090,20 +1103,20 @@ public class BaseProjectile : AttackEntity
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			Item item = GetCachedItem();
 			if (item != null && item.contents != null)
 			{
 				ItemContainer contents = item.contents;
-				contents.onItemAddedRemoved = (Action<Item, bool>)Delegate.Remove(contents.onItemAddedRemoved, new Action<Item, bool>(ModsChanged));
+				contents.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Remove(contents.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(ModsChanged));
 				modsChangedInitialized = false;
 			}
 		}
 		base.DestroyShared();
 	}
 
-	public void ModsChanged(Item item, bool added)
+	public void ModsChanged(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		Invoke(DelayedModsChanged, 0.1f);
 	}
@@ -1267,7 +1280,7 @@ public class BaseProjectile : AttackEntity
 		{
 			if (!IsDeployed())
 			{
-				return parentEntity.Get(base.isServer) is AutoTurret;
+				return parentEntity.Get(isServer) is AutoTurret;
 			}
 			return true;
 		}
@@ -1316,7 +1329,7 @@ public class BaseProjectile : AttackEntity
 			num3 += recoilProperties.aimconeCurve.Evaluate((float)numShotsFired / (float)primaryMagazine.capacity % 1f) * recoilProperties.aimconeCurveScale;
 			aimconePenalty = 0f;
 		}
-		if (aiming || base.isServer)
+		if (aiming || isServer)
 		{
 			return (num3 + aimconePenalty + stancePenalty * stancePenaltyScale) * sightAimConeScale + sightAimConeOffset;
 		}
@@ -1471,9 +1484,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1519,8 +1532,8 @@ public class BaseProjectile : AttackEntity
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void SwitchAmmoTo(RPCMessage msg)
 	{
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
@@ -1562,8 +1575,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void StartReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1592,8 +1605,8 @@ public class BaseProjectile : AttackEntity
 		UpdateShieldState(bHeld: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void ServerFractionalReloadInsert(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1606,13 +1619,13 @@ public class BaseProjectile : AttackEntity
 		}
 		if (!fractionalReload)
 		{
-			AntiHack.Log(player, AntiHackType.ReloadHack, "Fractional reload not allowed (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ReloadHack, "Fractional reload not allowed (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "reload_type");
 			return;
 		}
 		if (!reloadStarted)
 		{
-			AntiHack.Log(player, AntiHackType.ReloadHack, "Fractional reload request skipped (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ReloadHack, "Fractional reload request skipped (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "reload_skip");
 			reloadStarted = false;
 			reloadFinished = false;
@@ -1620,7 +1633,7 @@ public class BaseProjectile : AttackEntity
 		}
 		if (GetReloadIdle() > 3f)
 		{
-			AntiHack.Log(player, AntiHackType.ReloadHack, $"T+{GetReloadIdle()}s ({base.ShortPrefabName})");
+			AntiHack.Log(player, AntiHackType.ReloadHack, $"T+{GetReloadIdle()}s ({ShortPrefabName})");
 			player.stats.combat.LogInvalid(player, this, "reload_time");
 			reloadStarted = false;
 			reloadFinished = false;
@@ -1628,14 +1641,14 @@ public class BaseProjectile : AttackEntity
 		}
 		if (Time.unscaledTime < (float)startReloadTime + reloadStartDuration)
 		{
-			AntiHack.Log(player, AntiHackType.ReloadHack, "Fractional reload too early (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ReloadHack, "Fractional reload too early (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "reload_fraction_too_early");
 			reloadStarted = false;
 			reloadFinished = false;
 		}
 		if (Time.unscaledTime < (float)startReloadTime + reloadStartDuration + (float)fractionalInsertCounter * reloadFractionDuration)
 		{
-			AntiHack.Log(player, AntiHackType.ReloadHack, "Fractional reload rate too high (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ReloadHack, "Fractional reload rate too high (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "reload_fraction_rate");
 			reloadStarted = false;
 			reloadFinished = false;
@@ -1650,8 +1663,8 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void Reload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1664,7 +1677,7 @@ public class BaseProjectile : AttackEntity
 		}
 		if (!reloadStarted)
 		{
-			AntiHack.Log(player, AntiHackType.ReloadHack, "Request skipped (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ReloadHack, "Request skipped (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "reload_skip");
 			reloadStarted = false;
 			reloadFinished = false;
@@ -1674,7 +1687,7 @@ public class BaseProjectile : AttackEntity
 		{
 			if (GetReloadCooldown() > 1f)
 			{
-				AntiHack.Log(player, AntiHackType.ReloadHack, $"T-{GetReloadCooldown()}s ({base.ShortPrefabName})");
+				AntiHack.Log(player, AntiHackType.ReloadHack, $"T-{GetReloadCooldown()}s ({ShortPrefabName})");
 				player.stats.combat.LogInvalid(player, this, "reload_time");
 				reloadStarted = false;
 				reloadFinished = false;
@@ -1682,7 +1695,7 @@ public class BaseProjectile : AttackEntity
 			}
 			if (GetReloadIdle() > 1.5f)
 			{
-				AntiHack.Log(player, AntiHackType.ReloadHack, $"T+{GetReloadIdle()}s ({base.ShortPrefabName})");
+				AntiHack.Log(player, AntiHackType.ReloadHack, $"T+{GetReloadIdle()}s ({ShortPrefabName})");
 				player.stats.combat.LogInvalid(player, this, "reload_time");
 				reloadStarted = false;
 				reloadFinished = false;
@@ -1703,9 +1716,9 @@ public class BaseProjectile : AttackEntity
 	}
 
 	[RPC_Server]
+	[RPC_Server.MaxRepeatedElements(64)]
 	[RPC_Server.FromOwner]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server.MaxRepeatedElements(64)]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
@@ -1734,15 +1747,15 @@ public class BaseProjectile : AttackEntity
 		}
 		if (reloadFinished && HasReloadCooldown())
 		{
-			AntiHack.Log(player, AntiHackType.ProjectileHack, "Reloading (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ProjectileHack, "Reloading (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "reload_cooldown");
 			return;
 		}
 		reloadStarted = false;
 		reloadFinished = false;
-		if (primaryMagazine.contents <= 0 && !base.UsingInfiniteAmmoCheat)
+		if (primaryMagazine.contents <= 0 && !UsingInfiniteAmmoCheat)
 		{
-			AntiHack.Log(player, AntiHackType.ProjectileHack, "Project magazine empty (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ProjectileHack, "Project magazine empty (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "magazine_empty_project");
 			return;
 		}
@@ -1752,24 +1765,24 @@ public class BaseProjectile : AttackEntity
 		{
 			if (primaryMagazineAmmo.itemid != val.ammoType)
 			{
-				AntiHack.Log(player, AntiHackType.ProjectileHack, "Ammo mismatch (" + base.ShortPrefabName + ")");
+				AntiHack.Log(player, AntiHackType.ProjectileHack, "Ammo mismatch (" + ShortPrefabName + ")");
 				player.stats.combat.LogInvalid(player, this, "ammo_mismatch");
 				return;
 			}
-			if (!base.UsingInfiniteAmmoCheat)
+			if (!UsingInfiniteAmmoCheat)
 			{
 				ModifyAmmoCount(-1);
 			}
 			ItemModProjectile component = ((Component)primaryMagazineAmmo).GetComponent<ItemModProjectile>();
 			if ((Object)(object)component == (Object)null)
 			{
-				AntiHack.Log(player, AntiHackType.ProjectileHack, "Item mod not found (" + base.ShortPrefabName + ")");
+				AntiHack.Log(player, AntiHackType.ProjectileHack, "Item mod not found (" + ShortPrefabName + ")");
 				player.stats.combat.LogInvalid(player, this, "mod_missing");
 				return;
 			}
 			if (val.projectiles.Count > component.numProjectiles)
 			{
-				AntiHack.Log(player, AntiHackType.ProjectileHack, "Count mismatch (" + base.ShortPrefabName + ")");
+				AntiHack.Log(player, AntiHackType.ProjectileHack, "Count mismatch (" + ShortPrefabName + ")");
 				player.stats.combat.LogInvalid(player, this, "count_mismatch");
 				return;
 			}
@@ -1861,7 +1874,7 @@ public class BaseProjectile : AttackEntity
 		}
 		float barrelConditionLoss = ((Component)primaryMagazine.ammoType).GetComponent<ItemModProjectile>().barrelConditionLoss;
 		float num = 0.25f;
-		bool usingInfiniteAmmoCheat = base.UsingInfiniteAmmoCheat;
+		bool usingInfiniteAmmoCheat = UsingInfiniteAmmoCheat;
 		if (!usingInfiniteAmmoCheat)
 		{
 			ownerItem.LoseCondition(num + barrelConditionLoss);
@@ -1952,7 +1965,7 @@ public class BaseProjectile : AttackEntity
 		}
 		if (children != null)
 		{
-			EffectSilencerSelect effectSilencerSelect = default(EffectSilencerSelect);
+			EffectSilencerSelect effectSilencerSelect = default;
 			foreach (BaseEntity child in children)
 			{
 				ProjectileWeaponMod projectileWeaponMod = child as ProjectileWeaponMod;
@@ -2008,8 +2021,8 @@ public class BaseProjectile : AttackEntity
 			}
 			else
 			{
-				GameObject obj2 = entityPrefab.Get();
-				obj = ((obj2 != null) ? GameObjectEx.ToBaseEntity(obj2) : null);
+				GameObject val = entityPrefab.Get();
+				obj = ((val != null) ? GameObjectEx.ToBaseEntity(val) : null);
 			}
 		}
 		BaseEntity baseEntity = (BaseEntity)obj;
@@ -2089,42 +2102,6 @@ public class BaseProjectile : AttackEntity
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Expected O, but got Unknown
-		NoiseRadius = 100f;
-		damageScale = 1f;
-		distanceScale = 1f;
-		farDamageScale = -1f;
-		farDistanceScale = -1f;
-		projectileVelocityScale = 1f;
-		usableByTurret = true;
-		turretDamageScale = 0.35f;
-		turretReloadDurationOverride = -1f;
-		maxAttackEffectDistance = 400f;
-		reloadTime = 1f;
-		canUnloadAmmo = true;
-		aimSway = 3f;
-		aimSwaySpeed = 1f;
-		aimconeCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 1f),
-			new Keyframe(1f, 1f)
-		});
-		hipAimCone = 1.8f;
-		aimconePenaltyRecoverTime = 0.1f;
-		aimconePenaltyRecoverDelay = 0.1f;
-		stancePenaltyScale = 1f;
-		hasADS = true;
-		canChangeFireModes = true;
-		defaultOn = true;
-		internalBurstRecoilScale = 0.8f;
-		internalBurstFireRateScale = 0.8f;
-		internalBurstAimConeScale = 0.8f;
-		resetDuration = 0.3f;
-		nextReloadTime = float.NegativeInfinity;
-		startReloadTime = float.NegativeInfinity;
-		lastReloadTime = -10f;
-		sightAimConeScale = 1f;
-		hipAimConeScale = 1f;
-		base._002Ector();
+		//IL_00cf: Expected Obj, but got Unknown
 	}
 }

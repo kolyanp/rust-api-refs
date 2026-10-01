@@ -27,11 +27,11 @@ public class TriggerHostileWarningZone : TriggerBase
 		BaseEntity baseEntity = GameObjectEx.ToBaseEntity(TargetGameObject);
 		if (!((Object)(object)baseEntity == (Object)null) && baseEntity is IHostileWarningEntity hostileWarningEntity)
 		{
-			Collider obj = triggerCollider;
-			SphereCollider val = (SphereCollider)(object)((obj is SphereCollider) ? obj : null);
-			if ((Object)(object)val != (Object)null)
+			Collider val = triggerCollider;
+			SphereCollider val2 = (SphereCollider)(object)((val is SphereCollider) ? val : null);
+			if ((Object)(object)val2 != (Object)null)
 			{
-				val.radius = hostileWarningEntity.WarningRange();
+				val2.radius = hostileWarningEntity.WarningRange();
 			}
 		}
 	}

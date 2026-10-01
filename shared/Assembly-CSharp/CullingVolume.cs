@@ -19,4 +19,7 @@ public class CullingVolume : MonoBehaviour, IClientComponent
 	public bool IncludeLodGroup;
 
 	public bool AllowOnEntities;
+
+	[Tooltip("By default renderers in a culling volume are excluded from HLOD, enable this to include these renderers")]
+	public bool IncludeInHLOD;
 }

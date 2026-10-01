@@ -88,31 +88,31 @@ public static class Helpers
 	public static Utf8String ToLower(this Utf8String str)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
+		//IL_0011: Expected Obj, but got Unknown
 		return new Utf8String(str.Value.ToLower());
 	}
 
 	public static void AddDefaultCtor(this TypeDefinition type, ModuleDefinition asm, ReferenceImporter importer)
 	{
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Expected O, but got Unknown
+		//IL_0025: Expected Obj, but got Unknown
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Expected O, but got Unknown
+		//IL_0031: Expected Obj, but got Unknown
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Expected O, but got Unknown
+		//IL_004f: Expected Obj, but got Unknown
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Expected O, but got Unknown
+		//IL_0073: Expected Obj, but got Unknown
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Expected O, but got Unknown
+		//IL_0080: Expected Obj, but got Unknown
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Expected O, but got Unknown
+		//IL_008d: Expected Obj, but got Unknown
 		MethodDefinition val = new MethodDefinition(Utf8String.op_Implicit(".ctor"), (MethodAttributes)6278, MethodSignature.CreateInstance((TypeSignature)(object)asm.CorLibTypeFactory.Void));
 		val.MethodBody = (MethodBody)new CilMethodBody(val);
-		val.CilMethodBody.Instructions.AddRange((IEnumerable<CilInstruction>)(object)new CilInstruction[4]
+		val.CilMethodBody.Instructions.AddRange((IEnumerable<CilInstruction>)new CilInstruction[4]
 		{
 			new CilInstruction(CilOpCodes.Ldarg_0),
 			new CilInstruction(CilOpCodes.Call, (object)importer.ImportMethod((MethodBase)AccessTools.Constructor(typeof(object), (Type[])null, false))),
@@ -151,7 +151,7 @@ public static class Helpers
 		static ITypeDescriptor rec(ITypeDescriptor ftype, out AssemblyReference reference)
 		{
 			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-			//IL_002d: Expected O, but got Unknown
+			//IL_002d: Expected Obj, but got Unknown
 			IResolutionScope scope = ftype.Scope;
 			AssemblyReference val = (AssemblyReference)(object)((scope is AssemblyReference) ? scope : null);
 			if (val != null)

@@ -29,7 +29,7 @@ public class TmProEmojiRedirector : MonoBehaviour
 
 	public static void FindEmojiSubstitutions(string text, RustEmojiLibrary library, List<(EmojiSub, int)> foundSubs, bool richText, bool isServer = false, int messageLength = 0)
 	{
-		EmojiSub item = default(EmojiSub);
+		EmojiSub item = default;
 		bool flag = false;
 		int num = 0;
 		int num2 = 0;
@@ -97,7 +97,7 @@ public class TmProEmojiRedirector : MonoBehaviour
 					{
 						foundSubs.Add((item, skinVariantIndex));
 					}
-					item = default(EmojiSub);
+					item = default;
 					flag = false;
 				}
 			}
@@ -106,7 +106,7 @@ public class TmProEmojiRedirector : MonoBehaviour
 				item.targetEmoji += c;
 				if (c == ' ')
 				{
-					item = default(EmojiSub);
+					item = default;
 					flag = false;
 				}
 			}

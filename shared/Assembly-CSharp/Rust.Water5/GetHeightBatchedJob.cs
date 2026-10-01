@@ -16,7 +16,7 @@ internal struct GetHeightBatchedJob : IJob, IJobParallelFor
 
 	public float OneOverOctave0Scale;
 
-	public Rust.Water5.NativeOceanDisplacementShort3.ReadOnly SimData;
+	public NativeOceanDisplacementShort3.ReadOnly SimData;
 
 	public int Spectrum0;
 
@@ -41,7 +41,7 @@ internal struct GetHeightBatchedJob : IJob, IJobParallelFor
 			ref NativeArray<float3> positions = ref Positions;
 			int num = i;
 			float3 val = Positions[i];
-			positions[num] = float3.op_Implicit(GetHeightRaw(((float3)(ref val)).xyz));
+			positions[num] = float3.op_Implicit(GetHeightRaw(val.xyz));
 		}
 	}
 
@@ -53,7 +53,7 @@ internal struct GetHeightBatchedJob : IJob, IJobParallelFor
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		ref NativeArray<float3> positions = ref Positions;
 		float3 val = Positions[index];
-		positions[index] = float3.op_Implicit(GetHeightRaw(((float3)(ref val)).xyz));
+		positions[index] = float3.op_Implicit(GetHeightRaw(val.xyz));
 	}
 
 	private float GetHeightRaw(float3 position)

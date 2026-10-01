@@ -17,7 +17,7 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	public const int MESH_COUNT = 3;
 
 	[SerializeField]
-	protected TerrainTopology terrainTopology;
+	protected TerrainTopology terrainTopology = TerrainTopology.UnityQuads;
 
 	[SerializeField]
 	public ComputeShader terrainCompute;
@@ -25,37 +25,37 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[SerializeField]
 	public Material terrainMaterial;
 
-	[Range(1f, 8f)]
 	[SerializeField]
-	public int minVertLOD;
+	[Range(1f, 8f)]
+	public int minVertLOD = 4;
 
 	[SerializeField]
 	[Range(1f, 10f)]
-	protected int lodGlobalScale;
+	protected int lodGlobalScale = 2;
 
 	[SerializeField]
-	public float renderDistance;
+	public float renderDistance = 2500f;
 
 	[SerializeField]
-	public LayerSelect terrainLayer;
+	public LayerSelect terrainLayer = 23;
 
 	[SerializeField]
-	public ShadowCastingMode terrainShadows;
+	public ShadowCastingMode terrainShadows = (ShadowCastingMode)1;
 
 	public ReflectionProbeUsage reflectionProbeUsage;
 
-	public bool isDepthPrepassEnabled;
+	public bool isDepthPrepassEnabled = true;
 
 	public Mesh terrainCellMaster;
 
 	public bool debugValidate;
 
-	public bool allowEditorCamLOD;
+	public bool allowEditorCamLOD = true;
 
 	public float cellSize;
 
-	[Range(0f, 4f)]
 	[SerializeField]
+	[Range(0f, 4f)]
 	protected int colliderVertexReduction;
 
 	[Range(0f, 4f)]
@@ -66,17 +66,17 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[SerializeField]
 	protected int vertexDensityReduction;
 
-	public bool debugCullingOn;
+	public bool debugCullingOn = true;
 
 	public bool debugTestDeform;
 
 	public bool debugTestApply;
 
-	public float deformRadius;
+	public float deformRadius = 5f;
 
-	public float deformFade;
+	public float deformFade = 1f;
 
-	public float deformDelta;
+	public float deformDelta = 1f;
 
 	public bool testColliderOneObject;
 
@@ -85,24 +85,10 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	private const string OUTPUT_DEPTH_PREPASS_KEYWORD = "OUTPUT_DEPTH_PREPASS";
 
 	[SerializeField]
-	private int[] lodCellExtents;
+	private int[] lodCellExtents = new int[6];
 
 	public GeometryClipmapTerrain()
 	{
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		terrainTopology = TerrainTopology.UnityQuads;
-		minVertLOD = 4;
-		lodGlobalScale = 2;
-		renderDistance = 2500f;
-		terrainLayer = 23;
-		terrainShadows = (ShadowCastingMode)1;
-		isDepthPrepassEnabled = true;
-		allowEditorCamLOD = true;
-		debugCullingOn = true;
-		deformRadius = 5f;
-		deformFade = 1f;
-		deformDelta = 1f;
-		lodCellExtents = new int[6];
-		((MonoBehaviour)this)._002Ector();
 	}
 }

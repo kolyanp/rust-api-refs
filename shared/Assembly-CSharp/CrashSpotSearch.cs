@@ -42,7 +42,7 @@ public class CrashSpotSearch
 
 	private readonly int[] order;
 
-	private readonly List<Vector3> tcPositions;
+	private readonly List<Vector3> tcPositions = new List<Vector3>();
 
 	private bool initialized;
 
@@ -62,9 +62,6 @@ public class CrashSpotSearch
 
 	private int physicalUneven;
 
-	[CompilerGenerated]
-	private Vector3 _003CResult_003Ek__BackingField;
-
 	private const float GoldenAngle = 2.3999631f;
 
 	private const int FootprintSampleCount = 13;
@@ -79,7 +76,7 @@ public class CrashSpotSearch
 
 	private const float SeaLevelClearance = 0.5f;
 
-	public int TcsInArea { get; private set; }
+	public int TcsInArea { get; private set; } = -1;
 
 	public int SamplesTested => nextSample;
 
@@ -89,14 +86,14 @@ public class CrashSpotSearch
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CResult_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CResult_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -119,9 +116,6 @@ public class CrashSpotSearch
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		tcPositions = new List<Vector3>();
-		TcsInArea = -1;
-		base._002Ector();
 		this.center = center;
 		this.radius = radius;
 		this.clearanceRadius = clearanceRadius;
@@ -177,6 +171,7 @@ public class CrashSpotSearch
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
@@ -195,8 +190,7 @@ public class CrashSpotSearch
 		int index = order[nextSample];
 		nextSample++;
 		Vector2 val = SampleDiscPointXZ(center, radius, index, n);
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(val.x, 0f, val.y);
+		Vector3 val2 = new Vector3(val.x, 0f, val.y);
 		val2.y = TerrainMeta.HeightMap.GetHeight(val2);
 		switch (EvaluateCrashSpot(val2, clearanceRadius))
 		{
@@ -471,7 +465,7 @@ public class CrashSpotSearch
 			val2 += sampleNormals[i];
 		}
 		centroid = val / (float)samples.Length;
-		normal = ((((Vector3)(ref val2)).sqrMagnitude > 0.0001f) ? ((Vector3)(ref val2)).normalized : Vector3.up);
+		normal = ((val2.sqrMagnitude > 0.0001f) ? val2.normalized : Vector3.up);
 		maxDeviation = 0f;
 		for (int j = 0; j < samples.Length; j++)
 		{
@@ -479,7 +473,7 @@ public class CrashSpotSearch
 		}
 	}
 
-	public unsafe static bool SampleFootprintPlane(Vector3 center, float radius, out Vector3 centroid, out Vector3 normal, out float maxDeviation)
+	public static bool SampleFootprintPlane(Vector3 center, float radius, out Vector3 centroid, out Vector3 normal, out float maxDeviation)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -503,10 +497,10 @@ public class CrashSpotSearch
 		{
 			return false;
 		}
-		Span<Vector2> offsets = new Span<Vector2>(stackalloc Vector2[13], 13);
+		Span<Vector2> offsets = stackalloc Vector2[13];
 		GetFootprintOffsetsXZ(radius, offsets);
-		Span<Vector3> span = new Span<Vector3>(stackalloc Vector3[13], 13);
-		Span<Vector3> span2 = new Span<Vector3>(stackalloc Vector3[13], 13);
+		Span<Vector3> span = stackalloc Vector3[13];
+		Span<Vector3> span2 = stackalloc Vector3[13];
 		for (int i = 0; i < 13; i++)
 		{
 			Vector3 val = center + new Vector3(offsets[i].x, 0f, offsets[i].y);
@@ -544,7 +538,7 @@ public class CrashSpotSearch
 		return ExceedsSiteShapeLimits(normal, maxDeviation);
 	}
 
-	private unsafe static bool IsPhysicalSurfaceTooUneven(Vector3 pos)
+	private static bool IsPhysicalSurfaceTooUneven(Vector3 pos)
 	{
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
@@ -571,19 +565,19 @@ public class CrashSpotSearch
 			return false;
 		}
 		float site_footprint_radius = Satellite.site_footprint_radius;
-		Span<Vector2> offsets = new Span<Vector2>(stackalloc Vector2[13], 13);
+		Span<Vector2> offsets = stackalloc Vector2[13];
 		GetFootprintOffsetsXZ(site_footprint_radius, offsets);
-		Span<Vector3> span = new Span<Vector3>(stackalloc Vector3[13], 13);
-		Span<Vector3> span2 = new Span<Vector3>(stackalloc Vector3[13], 13);
-		RaycastHit val2 = default(RaycastHit);
+		Span<Vector3> span = stackalloc Vector3[13];
+		Span<Vector3> span2 = stackalloc Vector3[13];
+		RaycastHit val2 = default;
 		for (int i = 0; i < 13; i++)
 		{
 			Vector3 val = pos + new Vector3(offsets[i].x, 0f, offsets[i].y);
 			float height = heightMap.GetHeight(val);
 			if (Physics.Raycast(new Vector3(val.x, height + 50f, val.z), Vector3.down, ref val2, 100f, 8454145, (QueryTriggerInteraction)1))
 			{
-				span[i] = ((RaycastHit)(ref val2)).point;
-				span2[i] = ((RaycastHit)(ref val2)).normal;
+				span[i] = val2.point;
+				span2[i] = val2.normal;
 			}
 			else
 			{
@@ -647,7 +641,7 @@ public class CrashSpotSearch
 			if (!((Object)(object)triggerSafeZone == (Object)null) && !((Object)(object)triggerSafeZone.triggerCollider == (Object)null))
 			{
 				Vector3 val = triggerSafeZone.triggerCollider.ClosestPoint(pos) - pos;
-				if (((Vector3)(ref val)).sqrMagnitude < clearanceRadius * clearanceRadius && triggerSafeZone.PassesHeightChecks(pos))
+				if (val.sqrMagnitude < clearanceRadius * clearanceRadius && triggerSafeZone.PassesHeightChecks(pos))
 				{
 					result = true;
 					break;

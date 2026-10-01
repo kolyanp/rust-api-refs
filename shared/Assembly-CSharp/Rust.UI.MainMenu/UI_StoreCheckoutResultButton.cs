@@ -21,8 +21,8 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private HttpImage httpImage;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject gaugeParent;
 
 	[SerializeField]

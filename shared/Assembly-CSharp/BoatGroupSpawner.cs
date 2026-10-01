@@ -27,6 +27,7 @@ public class BoatGroupSpawner : BaseMonoBehaviour
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
@@ -48,14 +49,13 @@ public class BoatGroupSpawner : BaseMonoBehaviour
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(((Component)this).transform.position.x, ((Component)this).transform.position.z);
+		Vector2 val = new Vector2(((Component)this).transform.position.x, ((Component)this).transform.position.z);
 		if (!BoatAI.FindBoatSpawnPositionInRadius(val, radius, out var position))
 		{
 			return;
 		}
 		Vector2 val2 = val - position;
-		Vector3 val3 = Vector2.op_Implicit(((Vector2)(ref val2)).normalized);
+		Vector3 val3 = Vector2.op_Implicit(val2.normalized);
 		bool flag = false;
 		if ((Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null)
 		{

@@ -68,11 +68,11 @@ public class WipeTimer : BaseEntity
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			serverinstance = this;
 		}
-		if (base.isClient)
+		if (isClient)
 		{
 			clientinstance = this;
 		}
@@ -80,11 +80,11 @@ public class WipeTimer : BaseEntity
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			serverinstance = null;
 		}
-		if (base.isClient)
+		if (isClient)
 		{
 			clientinstance = null;
 		}
@@ -162,7 +162,7 @@ public class WipeTimer : BaseEntity
 		serverinstance.RecalculateWipeFrequency();
 		serverinstance.TryAndUpdate();
 		TimeZoneInfo timeZone = GetTimeZone();
-		string text2 = default(string);
+		string text2 = default;
 		string text = (TZConvert.TryWindowsToIana(timeZone.Id, ref text2) ? text2 : timeZone.Id);
 		DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow.AddDays(daysToAddTest).AddHours(hoursToAddTest);
 		DateTimeOffset wipeTime = serverinstance.GetWipeTime(dateTimeOffset);

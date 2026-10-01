@@ -21,7 +21,7 @@ public class GenerateRiverTopology : ProceduralComponent
 		TerrainTopologyMap topomap = TerrainMeta.TopologyMap;
 		NativeArray<int> map = topomap.dst;
 		int res = topomap.res;
-		ImageProcessing.Dilate2D(map, res, res, 49152, 6, delegate(int x, int y)
+		ImageProcessing.Dilate2D(map, res, res, 49152, 6, (int x, int y) =>
 		{
 			if ((map[x * res + y] & 0x31) != 0)
 			{

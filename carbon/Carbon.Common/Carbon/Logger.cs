@@ -22,7 +22,7 @@ public sealed class Logger : ILogger
 
 	public static void InitTaskExceptions()
 	{
-		TaskScheduler.UnobservedTaskException += delegate(object _, UnobservedTaskExceptionEventArgs args)
+		TaskScheduler.UnobservedTaskException += (object _, UnobservedTaskExceptionEventArgs args) =>
 		{
 			args.SetObserved();
 			Error("Unobserved task exception [GC]", args.Exception.InnerException);

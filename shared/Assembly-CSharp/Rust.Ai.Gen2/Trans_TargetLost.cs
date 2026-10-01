@@ -8,11 +8,11 @@ public class Trans_TargetLost : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_TargetLost"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return false;
 			}
-			if (!base.Senses.GetVisibilityStatus(target, out var status) || status.IsVisible)
+			if (!Senses.GetVisibilityStatus(target, out var status) || status.IsVisible)
 			{
 				return false;
 			}

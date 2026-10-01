@@ -200,7 +200,7 @@ public class GameManager
 		if (!Clientside && Serverside && (Object)(object)val2.transform.parent == (Object)null && Application.isPlaying)
 		{
 			Scene entityScene = Rust.Server.EntityScene;
-			if (!((Scene)(ref entityScene)).IsValid() || !((Scene)(ref entityScene)).isLoaded)
+			if (!entityScene.IsValid() || !entityScene.isLoaded)
 			{
 				Destroy(val2);
 				return null;

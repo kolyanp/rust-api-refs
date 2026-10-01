@@ -48,7 +48,7 @@ public struct PreCullingJob : IJob
 			}
 			else
 			{
-				RenderSlices[i] = default(RenderSlice);
+				RenderSlices[i] = default;
 			}
 		}
 	}

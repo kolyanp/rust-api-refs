@@ -2,23 +2,23 @@ using UnityEngine;
 
 public class JiggleBone : BaseMonoBehaviour
 {
-	public bool debugMode;
+	public bool debugMode = true;
 
 	private Vector3 targetPos;
 
 	private Vector3 dynamicPos;
 
-	public Vector3 boneAxis;
+	public Vector3 boneAxis = new Vector3(0f, 0f, 1f);
 
-	public float targetDistance;
+	public float targetDistance = 2f;
 
-	public float bStiffness;
+	public float bStiffness = 0.1f;
 
-	public float bMass;
+	public float bMass = 0.9f;
 
-	public float bDamping;
+	public float bDamping = 0.75f;
 
-	public float bGravity;
+	public float bGravity = 0.75f;
 
 	private Vector3 force;
 
@@ -26,13 +26,13 @@ public class JiggleBone : BaseMonoBehaviour
 
 	private Vector3 vel;
 
-	public bool SquashAndStretch;
+	public bool SquashAndStretch = true;
 
-	public float sideStretch;
+	public float sideStretch = 0.15f;
 
-	public float frontStretch;
+	public float frontStretch = 0.2f;
 
-	public float disableDistance;
+	public float disableDistance = 20f;
 
 	private void Awake()
 	{
@@ -92,7 +92,7 @@ public class JiggleBone : BaseMonoBehaviour
 		//IL_0394: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0399: Unknown result type (might be due to invalid IL or missing references)
 		//IL_032c: Unknown result type (might be due to invalid IL or missing references)
-		((Component)this).transform.rotation = default(Quaternion);
+		((Component)this).transform.rotation = default;
 		Vector3 val = ((Component)this).transform.TransformDirection(new Vector3(boneAxis.x * targetDistance, boneAxis.y * targetDistance, boneAxis.z * targetDistance));
 		Vector3 val2 = ((Component)this).transform.TransformDirection(new Vector3(0f, 1f, 0f));
 		Vector3 val3 = ((Component)this).transform.position + ((Component)this).transform.TransformDirection(new Vector3(boneAxis.x * targetDistance, boneAxis.y * targetDistance, boneAxis.z * targetDistance));
@@ -111,7 +111,7 @@ public class JiggleBone : BaseMonoBehaviour
 		if (SquashAndStretch)
 		{
 			Vector3 val4 = dynamicPos - val3;
-			float magnitude = ((Vector3)(ref val4)).magnitude;
+			float magnitude = val4.magnitude;
 			float num = ((boneAxis.x != 0f) ? (1f + magnitude * frontStretch) : (1f + (0f - magnitude) * sideStretch));
 			float num2 = ((boneAxis.y != 0f) ? (1f + magnitude * frontStretch) : (1f + (0f - magnitude) * sideStretch));
 			float num3 = ((boneAxis.z != 0f) ? (1f + magnitude * frontStretch) : (1f + (0f - magnitude) * sideStretch));
@@ -130,17 +130,5 @@ public class JiggleBone : BaseMonoBehaviour
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		debugMode = true;
-		boneAxis = new Vector3(0f, 0f, 1f);
-		targetDistance = 2f;
-		bStiffness = 0.1f;
-		bMass = 0.9f;
-		bDamping = 0.75f;
-		bGravity = 0.75f;
-		SquashAndStretch = true;
-		sideStretch = 0.15f;
-		frontStretch = 0.2f;
-		disableDistance = 20f;
-		base._002Ector();
 	}
 }

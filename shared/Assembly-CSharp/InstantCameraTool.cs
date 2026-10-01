@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using UnityEngine;
@@ -100,33 +101,33 @@ public class InstantCameraTool : HeldEntity
 		base.OnFlagsChanged(old, next);
 		bool flag = (old & Flags.Reserved5) == Flags.Reserved5;
 		bool flag2 = (next & Flags.Reserved5) == Flags.Reserved5;
-		if (base.isServer && flag != flag2 && flashToggleEffect.isValid)
+		if (isServer && flag != flag2 && flashToggleEffect.isValid)
 		{
 			EffectNetwork.Send(new Effect(flashToggleEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero));
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	private void TakePhoto(RPCMessage msg)
 	{
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0200: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0215: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0221: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028b: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		Item item = GetItem();
 		if ((Object)(object)player == (Object)null || item == null || item.condition <= 0f)
@@ -145,7 +146,7 @@ public class InstantCameraTool : HeldEntity
 			return;
 		}
 		item2.SetItemOwnership(msg.player, ItemOwnershipPhrases.Photographed);
-		if (!((NetworkableId)(ref item2.instanceData.subEntity)).IsValid)
+		if (!item2.instanceData.subEntity.IsValid)
 		{
 			item2.Remove();
 			Debug.LogError((object)"Photo has no sub-entity");
@@ -169,6 +170,7 @@ public class InstantCameraTool : HeldEntity
 				return;
 			}
 			photoEntity.SetImageData(player.userID, array);
+			Facepunch.Rust.Analytics.Azure.OnUGCCreated(player, photoEntity, "photo", array.Length);
 			if (!player.inventory.GiveItem(item2))
 			{
 				item2.Drop(player.GetDropPosition(), player.GetDropVelocity());

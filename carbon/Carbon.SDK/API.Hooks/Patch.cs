@@ -6,7 +6,7 @@ namespace API.Hooks;
 
 public class Patch
 {
-	internal static readonly Lazy<IEventManager> _events = new Lazy<IEventManager>(delegate
+	internal static readonly Lazy<IEventManager> _events = new Lazy<IEventManager>(() =>
 	{
 		GameObject val = GameObject.Find("Carbon");
 		if (!((Object)(object)val == (Object)null))

@@ -98,7 +98,7 @@ public class SeekerTest : BaseEntity, SeekerTarget.ISeekerTargetOwner
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			SeekerTarget.SetSeekerTarget(this, SeekerTarget.SeekerStrength.OFF);
 		}

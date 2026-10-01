@@ -48,7 +48,7 @@ public static class EACServer
 		return (IntPtr)(++clientHandleCounter);
 	}
 
-	public unsafe static void Encrypt(Connection connection, ArraySegment<byte> src, ref ArraySegment<byte> dst)
+	public static void Encrypt(Connection connection, ArraySegment<byte> src, ref ArraySegment<byte> dst)
 	{
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
@@ -65,12 +65,12 @@ public static class EACServer
 		IntPtr client = GetClient(connection);
 		if (client != IntPtr.Zero)
 		{
-			ProtectMessageOptions val = default(ProtectMessageOptions);
-			((ProtectMessageOptions)(ref val)).ClientHandle = client;
-			((ProtectMessageOptions)(ref val)).Data = src;
-			((ProtectMessageOptions)(ref val)).OutBufferSizeBytes = count;
+			ProtectMessageOptions val = default;
+			val.ClientHandle = client;
+			val.Data = src;
+			val.OutBufferSizeBytes = count;
 			ProtectMessageOptions val2 = val;
-			uint count2 = default(uint);
+			uint count2 = default;
 			Result val3 = Interface.ProtectMessage(ref val2, dst, ref count2);
 			if ((int)val3 == 0)
 			{
@@ -78,12 +78,12 @@ public static class EACServer
 			}
 			else
 			{
-				Debug.LogWarning((object)("[EAC] ProtectMessage failed: " + ((object)(*(Result*)(&val3))/*cast due to constrained. prefix*/).ToString()));
+				Debug.LogWarning((object)("[EAC] ProtectMessage failed: " + ((object)val3/*cast due to constrained. prefix*/).ToString()));
 			}
 		}
 	}
 
-	public unsafe static void Decrypt(Connection connection, ArraySegment<byte> src, ref ArraySegment<byte> dst)
+	public static void Decrypt(Connection connection, ArraySegment<byte> src, ref ArraySegment<byte> dst)
 	{
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
@@ -100,12 +100,12 @@ public static class EACServer
 		IntPtr client = GetClient(connection);
 		if (client != IntPtr.Zero)
 		{
-			UnprotectMessageOptions val = default(UnprotectMessageOptions);
-			((UnprotectMessageOptions)(ref val)).ClientHandle = client;
-			((UnprotectMessageOptions)(ref val)).Data = src;
-			((UnprotectMessageOptions)(ref val)).OutBufferSizeBytes = count;
+			UnprotectMessageOptions val = default;
+			val.ClientHandle = client;
+			val.Data = src;
+			val.OutBufferSizeBytes = count;
 			UnprotectMessageOptions val2 = val;
-			uint count2 = default(uint);
+			uint count2 = default;
 			Result val3 = Interface.UnprotectMessage(ref val2, dst, ref count2);
 			if ((int)val3 == 0)
 			{
@@ -113,7 +113,7 @@ public static class EACServer
 			}
 			else
 			{
-				Debug.LogWarning((object)("[EAC] UnprotectMessage failed: " + ((object)(*(Result*)(&val3))/*cast due to constrained. prefix*/).ToString()));
+				Debug.LogWarning((object)("[EAC] UnprotectMessage failed: " + ((object)val3/*cast due to constrained. prefix*/).ToString()));
 			}
 		}
 	}
@@ -166,7 +166,7 @@ public static class EACServer
 			Debug.LogWarning((object)"[EAC] Verify ID token skipped: server.anticheattoken == false");
 			return;
 		}
-		IntPtr client = (IntPtr)((VerifyIdTokenCallbackInfo)(ref data)).ClientData;
+		IntPtr client = (IntPtr)data.ClientData;
 		Connection connection = GetConnection(client);
 		if (connection == null)
 		{
@@ -178,15 +178,15 @@ public static class EACServer
 			Debug.LogWarning((object)("[EAC] Verify ID token skipped for unprotected client: " + connection.ToString()));
 			return;
 		}
-		if ((int)((VerifyIdTokenCallbackInfo)(ref data)).ResultCode != 0)
+		if ((int)data.ResultCode != 0)
 		{
-			string text = "Verify ID token " + ((object)((VerifyIdTokenCallbackInfo)(ref data)).ResultCode/*cast due to constrained. prefix*/).ToString();
+			string text = "Verify ID token " + ((object)data.ResultCode/*cast due to constrained. prefix*/).ToString();
 			Debug.Log((object)$"[EAC] Kicking {connection.userid} / {connection.username} ({text})");
 			connection.authStatusEAC = "eactoken";
 			Net.sv.Kick(connection, "EAC: " + text);
 			return;
 		}
-		string text2 = ((object)((VerifyIdTokenCallbackInfo)(ref data)).AccountId).ToString();
+		string text2 = ((object)data.AccountId).ToString();
 		string text3 = connection.userid.ToString();
 		if (text2 != text3)
 		{
@@ -212,32 +212,32 @@ public static class EACServer
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Expected O, but got Unknown
+		//IL_00ca: Expected Obj, but got Unknown
 		using (TimeWarning.New("AntiCheatKickPlayer", 10))
 		{
-			IntPtr clientHandle = ((OnClientAuthStatusChangedCallbackInfo)(ref data)).ClientHandle;
+			IntPtr clientHandle = data.ClientHandle;
 			Connection connection = GetConnection(clientHandle);
 			if (connection == null)
 			{
 				Debug.LogError((object)("[EAC] Status update for invalid client: " + clientHandle));
 			}
-			else if ((int)((OnClientAuthStatusChangedCallbackInfo)(ref data)).ClientAuthStatus == 1)
+			else if ((int)data.ClientAuthStatus == 1)
 			{
 				OnAuthenticatedLocal(connection);
-				SetClientNetworkStateOptions val = default(SetClientNetworkStateOptions);
-				((SetClientNetworkStateOptions)(ref val)).ClientHandle = clientHandle;
-				((SetClientNetworkStateOptions)(ref val)).IsNetworkActive = false;
+				SetClientNetworkStateOptions val = default;
+				val.ClientHandle = clientHandle;
+				val.IsNetworkActive = false;
 				SetClientNetworkStateOptions val2 = val;
 				Interface.SetClientNetworkState(ref val2);
 			}
-			else if ((int)((OnClientAuthStatusChangedCallbackInfo)(ref data)).ClientAuthStatus == 2)
+			else if ((int)data.ClientAuthStatus == 2)
 			{
 				OnAuthenticatedRemote(connection);
-				IdToken val3 = default(IdToken);
-				((IdToken)(ref val3)).ProductUserId = ProductUserId.FromString(Utf8String.op_Implicit(connection.anticheatId));
-				((IdToken)(ref val3)).JsonWebToken = Utf8String.op_Implicit(connection.anticheatToken);
+				IdToken val3 = default;
+				val3.ProductUserId = ProductUserId.FromString(Utf8String.op_Implicit(connection.anticheatId));
+				val3.JsonWebToken = Utf8String.op_Implicit(connection.anticheatToken);
 				IdToken val4 = val3;
-				EOS.VerifyIdToken(clientHandle, val4, new OnVerifyIdTokenCallback(OnVerifyIdToken));
+				EOS.VerifyIdToken(clientHandle, val4, (OnVerifyIdTokenCallback)OnVerifyIdToken);
 			}
 		}
 	}
@@ -258,7 +258,7 @@ public static class EACServer
 		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("OnClientActionRequired", 10))
 		{
-			IntPtr clientHandle = ((OnClientActionRequiredCallbackInfo)(ref data)).ClientHandle;
+			IntPtr clientHandle = data.ClientHandle;
 			Connection connection = GetConnection(clientHandle);
 			if (connection == null)
 			{
@@ -266,11 +266,11 @@ public static class EACServer
 			}
 			else
 			{
-				if ((int)((OnClientActionRequiredCallbackInfo)(ref data)).ClientAction != 1)
+				if ((int)data.ClientAction != 1)
 				{
 					return;
 				}
-				Utf8String actionReasonDetailsString = ((OnClientActionRequiredCallbackInfo)(ref data)).ActionReasonDetailsString;
+				Utf8String actionReasonDetailsString = data.ActionReasonDetailsString;
 				if (connection.IsDevelopmentBuild())
 				{
 					Debug.LogWarning((object)("[EAC] Remove player action skipped for unprotected client: " + connection.ToString()));
@@ -280,18 +280,18 @@ public static class EACServer
 				connection.authStatusEAC = "eac";
 				Net.sv.Kick(connection, Utf8String.op_Implicit(Utf8String.op_Implicit("EAC: ") + actionReasonDetailsString));
 				Oxide.Core.Interface.CallHook("OnPlayerKicked", connection, actionReasonDetailsString.ToString());
-				if ((int)((OnClientActionRequiredCallbackInfo)(ref data)).ActionReasonCode == 10 || (int)((OnClientActionRequiredCallbackInfo)(ref data)).ActionReasonCode == 9)
+				if ((int)data.ActionReasonCode == 10 || (int)data.ActionReasonCode == 9)
 				{
 					connection.authStatusEAC = "eacbanned";
 					ConsoleNetwork.BroadcastToAllClients("chat.add", 2, 0, "<color=#fff>SERVER</color> Kicking " + connection.username + " (banned by anticheat)");
 					Oxide.Core.Interface.CallHook("OnPlayerBanned", connection, actionReasonDetailsString.ToString());
-					if ((int)((OnClientActionRequiredCallbackInfo)(ref data)).ActionReasonCode == 10)
+					if ((int)data.ActionReasonCode == 10)
 					{
 						Entity.DeleteBy(connection.userid);
 					}
 				}
-				UnregisterClientOptions val = default(UnregisterClientOptions);
-				((UnregisterClientOptions)(ref val)).ClientHandle = clientHandle;
+				UnregisterClientOptions val = default;
+				val.ClientHandle = clientHandle;
 				UnregisterClientOptions val2 = val;
 				Interface.UnregisterClient(ref val2);
 				client2connection.TryRemove((uint)(int)clientHandle, out var _);
@@ -303,7 +303,7 @@ public static class EACServer
 
 	private static void SendToClient(ref OnMessageToClientCallbackInfo data)
 	{
-		IntPtr clientHandle = ((OnMessageToClientCallbackInfo)(ref data)).ClientHandle;
+		IntPtr clientHandle = data.ClientHandle;
 		Connection connection = GetConnection(clientHandle);
 		if (connection == null)
 		{
@@ -312,8 +312,8 @@ public static class EACServer
 		}
 		NetWrite netWrite = Net.sv.StartWrite();
 		netWrite.PacketID(Message.Type.EAC);
-		netWrite.UInt32((uint)((OnMessageToClientCallbackInfo)(ref data)).MessageData.Count);
-		netWrite.Write(((OnMessageToClientCallbackInfo)(ref data)).MessageData.Array, ((OnMessageToClientCallbackInfo)(ref data)).MessageData.Offset, ((OnMessageToClientCallbackInfo)(ref data)).MessageData.Count);
+		netWrite.UInt32((uint)data.MessageData.Count);
+		netWrite.Write(data.MessageData.Array, data.MessageData.Offset, data.MessageData.Count);
 		netWrite.Send(new SendInfo(connection));
 	}
 
@@ -335,11 +335,11 @@ public static class EACServer
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f5: Expected O, but got Unknown
+		//IL_00f5: Expected Obj, but got Unknown
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010f: Expected O, but got Unknown
+		//IL_010f: Expected Obj, but got Unknown
 		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Expected O, but got Unknown
+		//IL_0129: Expected Obj, but got Unknown
 		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
@@ -351,23 +351,23 @@ public static class EACServer
 			client2connection.Clear();
 			connection2client.Clear();
 			connection2status.Clear();
-			AddNotifyClientActionRequiredOptions val = default(AddNotifyClientActionRequiredOptions);
-			AddNotifyClientAuthStatusChangedOptions val2 = default(AddNotifyClientAuthStatusChangedOptions);
-			AddNotifyMessageToClientOptions val3 = default(AddNotifyMessageToClientOptions);
-			BeginSessionOptions val4 = default(BeginSessionOptions);
-			((BeginSessionOptions)(ref val4)).LocalUserId = null;
-			((BeginSessionOptions)(ref val4)).EnableGameplayData = CanEnableGameplayData;
-			((BeginSessionOptions)(ref val4)).RegisterTimeoutSeconds = 20u;
-			((BeginSessionOptions)(ref val4)).ServerName = Utf8String.op_Implicit(ConVar.Server.hostname);
+			AddNotifyClientActionRequiredOptions val = default;
+			AddNotifyClientAuthStatusChangedOptions val2 = default;
+			AddNotifyMessageToClientOptions val3 = default;
+			BeginSessionOptions val4 = default;
+			val4.LocalUserId = null;
+			val4.EnableGameplayData = CanEnableGameplayData;
+			val4.RegisterTimeoutSeconds = 20u;
+			val4.ServerName = Utf8String.op_Implicit(ConVar.Server.hostname);
 			BeginSessionOptions val5 = val4;
-			LogGameRoundStartOptions val6 = default(LogGameRoundStartOptions);
-			((LogGameRoundStartOptions)(ref val6)).LevelName = Utf8String.op_Implicit(World.Name);
+			LogGameRoundStartOptions val6 = default;
+			val6.LevelName = Utf8String.op_Implicit(World.Name);
 			LogGameRoundStartOptions val7 = val6;
 			EOS.Initialize(true, ConVar.Server.anticheatid, ConVar.Server.anticheatkey, ConVar.Server.rootFolder + "/Log.EAC.txt");
 			Interface = EOS.Interface.GetAntiCheatServerInterface();
-			Interface.AddNotifyClientActionRequired(ref val, (object)null, new OnClientActionRequiredCallback(OnClientActionRequired));
-			Interface.AddNotifyClientAuthStatusChanged(ref val2, (object)null, new OnClientAuthStatusChangedCallback(OnClientAuthStatusChanged));
-			Interface.AddNotifyMessageToClient(ref val3, (object)null, new OnMessageToClientCallback(SendToClient));
+			Interface.AddNotifyClientActionRequired(ref val, (object)null, (OnClientActionRequiredCallback)OnClientActionRequired);
+			Interface.AddNotifyClientAuthStatusChanged(ref val2, (object)null, (OnClientAuthStatusChangedCallback)OnClientAuthStatusChanged);
+			Interface.AddNotifyMessageToClient(ref val3, (object)null, (OnMessageToClientCallback)SendToClient);
 			Interface.BeginSession(ref val5);
 			Interface.LogGameRoundStart(ref val7);
 			if (CanSendAnalytics)
@@ -409,7 +409,7 @@ public static class EACServer
 			if ((Handle)(object)Interface != (Handle)null)
 			{
 				Debug.Log((object)"EasyAntiCheat Server Shutting Down");
-				EndSessionOptions val = default(EndSessionOptions);
+				EndSessionOptions val = default;
 				Interface.EndSession(ref val);
 				Interface = null;
 				EOS.Shutdown();
@@ -437,8 +437,8 @@ public static class EACServer
 				IntPtr client = GetClient(connection);
 				if (client != IntPtr.Zero)
 				{
-					UnregisterClientOptions val = default(UnregisterClientOptions);
-					((UnregisterClientOptions)(ref val)).ClientHandle = client;
+					UnregisterClientOptions val = default;
+					val.ClientHandle = client;
 					UnregisterClientOptions val2 = val;
 					Interface.UnregisterClient(ref val2);
 					client2connection.TryRemove((uint)(int)client, out var _);
@@ -477,21 +477,21 @@ public static class EACServer
 				Debug.LogError((object)("[EAC] GenerateCompatibilityClient returned invalid client: " + intPtr));
 				return;
 			}
-			RegisterClientOptions val = default(RegisterClientOptions);
-			((RegisterClientOptions)(ref val)).ClientHandle = intPtr;
-			((RegisterClientOptions)(ref val)).UserId = ProductUserId.FromString(Utf8String.op_Implicit(connection.anticheatId));
-			((RegisterClientOptions)(ref val)).IpAddress = Utf8String.op_Implicit(connection.IPAddressWithoutPort());
-			((RegisterClientOptions)(ref val)).ClientType = (AntiCheatCommonClientType)(connection.IsDevelopmentBuild() ? 1 : 0);
-			((RegisterClientOptions)(ref val)).ClientPlatform = (AntiCheatCommonClientPlatform)((connection.os == "windows") ? 1 : ((connection.os == "linux") ? 3 : ((connection.os == "mac") ? 2 : 0)));
-			((RegisterClientOptions)(ref val)).Reserved01 = (int)((!connection.IsDevelopmentBuild()) ? requiredSystemConfig : EAC.SystemConfig.None);
+			RegisterClientOptions val = default;
+			val.ClientHandle = intPtr;
+			val.UserId = ProductUserId.FromString(Utf8String.op_Implicit(connection.anticheatId));
+			val.IpAddress = Utf8String.op_Implicit(connection.IPAddressWithoutPort());
+			val.ClientType = (AntiCheatCommonClientType)(connection.IsDevelopmentBuild() ? 1 : 0);
+			val.ClientPlatform = (AntiCheatCommonClientPlatform)((connection.os == "windows") ? 1 : ((connection.os == "linux") ? 3 : ((connection.os == "mac") ? 2 : 0)));
+			val.Reserved01 = (int)((!connection.IsDevelopmentBuild()) ? requiredSystemConfig : EAC.SystemConfig.None);
 			RegisterClientOptions val2 = val;
-			if ((int)((RegisterClientOptions)(ref val2)).ClientType == 1)
+			if ((int)val2.ClientType == 1)
 			{
 				Debug.LogWarning((object)("[EAC] Joining game as unprotected client: " + connection.ToString()));
 			}
-			SetClientDetailsOptions val3 = default(SetClientDetailsOptions);
-			((SetClientDetailsOptions)(ref val3)).ClientHandle = intPtr;
-			((SetClientDetailsOptions)(ref val3)).ClientFlags = (AntiCheatCommonClientFlags)((connection.authLevel != 0) ? 1 : 0);
+			SetClientDetailsOptions val3 = default;
+			val3.ClientHandle = intPtr;
+			val3.ClientFlags = (AntiCheatCommonClientFlags)(connection.authLevel != 0);
 			SetClientDetailsOptions val4 = val3;
 			Interface.RegisterClient(ref val2);
 			Interface.SetClientDetails(ref val4);
@@ -518,9 +518,9 @@ public static class EACServer
 			IntPtr client = GetClient(connection);
 			if (client != IntPtr.Zero)
 			{
-				SetClientNetworkStateOptions val = default(SetClientNetworkStateOptions);
-				((SetClientNetworkStateOptions)(ref val)).ClientHandle = client;
-				((SetClientNetworkStateOptions)(ref val)).IsNetworkActive = false;
+				SetClientNetworkStateOptions val = default;
+				val.ClientHandle = client;
+				val.IsNetworkActive = false;
 				SetClientNetworkStateOptions val2 = val;
 				Interface.SetClientNetworkState(ref val2);
 			}
@@ -538,9 +538,9 @@ public static class EACServer
 			IntPtr client = GetClient(connection);
 			if (client != IntPtr.Zero)
 			{
-				SetClientNetworkStateOptions val = default(SetClientNetworkStateOptions);
-				((SetClientNetworkStateOptions)(ref val)).ClientHandle = client;
-				((SetClientNetworkStateOptions)(ref val)).IsNetworkActive = true;
+				SetClientNetworkStateOptions val = default;
+				val.ClientHandle = client;
+				val.IsNetworkActive = true;
 				SetClientNetworkStateOptions val2 = val;
 				Interface.SetClientNetworkState(ref val2);
 			}
@@ -562,9 +562,9 @@ public static class EACServer
 		}
 		else if (message.read.TemporaryBytesWithSize(out buffer, out size))
 		{
-			ReceiveMessageFromClientOptions val = default(ReceiveMessageFromClientOptions);
-			((ReceiveMessageFromClientOptions)(ref val)).ClientHandle = client;
-			((ReceiveMessageFromClientOptions)(ref val)).Data = new ArraySegment<byte>(buffer, 0, size);
+			ReceiveMessageFromClientOptions val = default;
+			val.ClientHandle = client;
+			val.Data = new ArraySegment<byte>(buffer, 0, size);
 			ReceiveMessageFromClientOptions val2 = val;
 			Interface.ReceiveMessageFromClient(ref val2);
 		}
@@ -599,22 +599,22 @@ public static class EACServer
 				Quaternion networkRotation = player.GetNetworkRotation();
 				Item item = weapon.GetItem();
 				string text = ((item != null) ? item.info.shortname : "unknown");
-				LogPlayerUseWeaponOptions val = default(LogPlayerUseWeaponOptions);
-				LogPlayerUseWeaponData value = default(LogPlayerUseWeaponData);
-				((LogPlayerUseWeaponData)(ref value)).PlayerHandle = GetClient(player.net.connection);
-				Vec3f value2 = default(Vec3f);
-				((Vec3f)(ref value2)).x = networkPosition.x;
-				((Vec3f)(ref value2)).y = networkPosition.y;
-				((Vec3f)(ref value2)).z = networkPosition.z;
-				((LogPlayerUseWeaponData)(ref value)).PlayerPosition = value2;
-				Quat value3 = default(Quat);
-				((Quat)(ref value3)).w = networkRotation.w;
-				((Quat)(ref value3)).x = networkRotation.x;
-				((Quat)(ref value3)).y = networkRotation.y;
-				((Quat)(ref value3)).z = networkRotation.z;
-				((LogPlayerUseWeaponData)(ref value)).PlayerViewRotation = value3;
-				((LogPlayerUseWeaponData)(ref value)).WeaponName = Utf8String.op_Implicit(text);
-				((LogPlayerUseWeaponOptions)(ref val)).UseWeaponData = value;
+				LogPlayerUseWeaponOptions val = default;
+				LogPlayerUseWeaponData value = default;
+				value.PlayerHandle = GetClient(player.net.connection);
+				Vec3f value2 = default;
+				value2.x = networkPosition.x;
+				value2.y = networkPosition.y;
+				value2.z = networkPosition.z;
+				value.PlayerPosition = value2;
+				Quat value3 = default;
+				value3.w = networkRotation.w;
+				value3.x = networkRotation.x;
+				value3.y = networkRotation.y;
+				value3.z = networkRotation.z;
+				value.PlayerViewRotation = value3;
+				value.WeaponName = Utf8String.op_Implicit(text);
+				val.UseWeaponData = value;
 				Interface.LogPlayerUseWeapon(ref val);
 			}
 		}
@@ -628,8 +628,8 @@ public static class EACServer
 		{
 			using (TimeWarning.New("EAC.LogPlayerSpawn"))
 			{
-				LogPlayerSpawnOptions val = default(LogPlayerSpawnOptions);
-				((LogPlayerSpawnOptions)(ref val)).SpawnedPlayerHandle = GetClient(player.net.connection);
+				LogPlayerSpawnOptions val = default;
+				val.SpawnedPlayerHandle = GetClient(player.net.connection);
 				Interface.LogPlayerSpawn(ref val);
 			}
 		}
@@ -643,8 +643,8 @@ public static class EACServer
 		{
 			using (TimeWarning.New("EAC.LogPlayerDespawn"))
 			{
-				LogPlayerDespawnOptions val = default(LogPlayerDespawnOptions);
-				((LogPlayerDespawnOptions)(ref val)).DespawnedPlayerHandle = GetClient(player.net.connection);
+				LogPlayerDespawnOptions val = default;
+				val.DespawnedPlayerHandle = GetClient(player.net.connection);
 				Interface.LogPlayerDespawn(ref val);
 			}
 		}
@@ -699,68 +699,68 @@ public static class EACServer
 		}
 		using (TimeWarning.New("EAC.LogPlayerTakeDamage"))
 		{
-			LogPlayerTakeDamageOptions val = default(LogPlayerTakeDamageOptions);
-			LogPlayerUseWeaponData value = default(LogPlayerUseWeaponData);
-			((LogPlayerTakeDamageOptions)(ref val)).AttackerPlayerHandle = GetClient(basePlayer.net.connection);
-			((LogPlayerTakeDamageOptions)(ref val)).VictimPlayerHandle = GetClient(player.net.connection);
-			((LogPlayerTakeDamageOptions)(ref val)).DamageTaken = info.damageTypes.Total();
-			Vec3f value2 = default(Vec3f);
-			((Vec3f)(ref value2)).x = info.HitPositionWorld.x;
-			((Vec3f)(ref value2)).y = info.HitPositionWorld.y;
-			((Vec3f)(ref value2)).z = info.HitPositionWorld.z;
-			((LogPlayerTakeDamageOptions)(ref val)).DamagePosition = value2;
-			((LogPlayerTakeDamageOptions)(ref val)).IsCriticalHit = info.isHeadshot;
+			LogPlayerTakeDamageOptions val = default;
+			LogPlayerUseWeaponData value = default;
+			val.AttackerPlayerHandle = GetClient(basePlayer.net.connection);
+			val.VictimPlayerHandle = GetClient(player.net.connection);
+			val.DamageTaken = info.damageTypes.Total();
+			Vec3f value2 = default;
+			value2.x = info.HitPositionWorld.x;
+			value2.y = info.HitPositionWorld.y;
+			value2.z = info.HitPositionWorld.z;
+			val.DamagePosition = value2;
+			val.IsCriticalHit = info.isHeadshot;
 			if (player.IsDead())
 			{
-				((LogPlayerTakeDamageOptions)(ref val)).DamageResult = (AntiCheatCommonPlayerTakeDamageResult)(wasWounded ? 5 : 4);
+				val.DamageResult = (AntiCheatCommonPlayerTakeDamageResult)(wasWounded ? 5 : 4);
 			}
 			else if (player.IsWounded())
 			{
-				((LogPlayerTakeDamageOptions)(ref val)).DamageResult = (AntiCheatCommonPlayerTakeDamageResult)3;
+				val.DamageResult = (AntiCheatCommonPlayerTakeDamageResult)3;
 			}
 			if ((Object)(object)info.Weapon != (Object)null)
 			{
 				Item item = info.Weapon.GetItem();
 				if (item != null)
 				{
-					((LogPlayerUseWeaponData)(ref value)).WeaponName = Utf8String.op_Implicit(item.info.shortname);
+					value.WeaponName = Utf8String.op_Implicit(item.info.shortname);
 				}
 				else
 				{
-					((LogPlayerUseWeaponData)(ref value)).WeaponName = Utf8String.op_Implicit("unknown");
+					value.WeaponName = Utf8String.op_Implicit("unknown");
 				}
 			}
 			else
 			{
-				((LogPlayerUseWeaponData)(ref value)).WeaponName = Utf8String.op_Implicit("unknown");
+				value.WeaponName = Utf8String.op_Implicit("unknown");
 			}
 			Vector3 position = basePlayer.eyes.position;
 			Quaternion rotation = basePlayer.eyes.rotation;
 			Vector3 position2 = player.eyes.position;
 			Quaternion rotation2 = player.eyes.rotation;
-			value2 = default(Vec3f);
-			((Vec3f)(ref value2)).x = position.x;
-			((Vec3f)(ref value2)).y = position.y;
-			((Vec3f)(ref value2)).z = position.z;
-			((LogPlayerTakeDamageOptions)(ref val)).AttackerPlayerPosition = value2;
-			Quat value3 = default(Quat);
-			((Quat)(ref value3)).w = rotation.w;
-			((Quat)(ref value3)).x = rotation.x;
-			((Quat)(ref value3)).y = rotation.y;
-			((Quat)(ref value3)).z = rotation.z;
-			((LogPlayerTakeDamageOptions)(ref val)).AttackerPlayerViewRotation = value3;
-			value2 = default(Vec3f);
-			((Vec3f)(ref value2)).x = position2.x;
-			((Vec3f)(ref value2)).y = position2.y;
-			((Vec3f)(ref value2)).z = position2.z;
-			((LogPlayerTakeDamageOptions)(ref val)).VictimPlayerPosition = value2;
-			value3 = default(Quat);
-			((Quat)(ref value3)).w = rotation2.w;
-			((Quat)(ref value3)).x = rotation2.x;
-			((Quat)(ref value3)).y = rotation2.y;
-			((Quat)(ref value3)).z = rotation2.z;
-			((LogPlayerTakeDamageOptions)(ref val)).VictimPlayerViewRotation = value3;
-			((LogPlayerTakeDamageOptions)(ref val)).PlayerUseWeaponData = value;
+			value2 = default;
+			value2.x = position.x;
+			value2.y = position.y;
+			value2.z = position.z;
+			val.AttackerPlayerPosition = value2;
+			Quat value3 = default;
+			value3.w = rotation.w;
+			value3.x = rotation.x;
+			value3.y = rotation.y;
+			value3.z = rotation.z;
+			val.AttackerPlayerViewRotation = value3;
+			value2 = default;
+			value2.x = position2.x;
+			value2.y = position2.y;
+			value2.z = position2.z;
+			val.VictimPlayerPosition = value2;
+			value3 = default;
+			value3.w = rotation2.w;
+			value3.x = rotation2.x;
+			value3.y = rotation2.y;
+			value3.z = rotation2.z;
+			val.VictimPlayerViewRotation = value3;
+			val.PlayerUseWeaponData = value;
 			Interface.LogPlayerTakeDamage(ref val);
 		}
 	}
@@ -785,9 +785,9 @@ public static class EACServer
 		{
 			using (TimeWarning.New("EAC.LogPlayerRevive"))
 			{
-				LogPlayerReviveOptions val = default(LogPlayerReviveOptions);
-				((LogPlayerReviveOptions)(ref val)).RevivedPlayerHandle = GetClient(target.net.connection);
-				((LogPlayerReviveOptions)(ref val)).ReviverPlayerHandle = GetClient(source.net.connection);
+				LogPlayerReviveOptions val = default;
+				val.RevivedPlayerHandle = GetClient(target.net.connection);
+				val.ReviverPlayerHandle = GetClient(source.net.connection);
 				Interface.LogPlayerRevive(ref val);
 			}
 		}
@@ -801,11 +801,11 @@ public static class EACServer
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		if (CanSendReports)
 		{
-			SendPlayerBehaviorReportOptions val = default(SendPlayerBehaviorReportOptions);
-			((SendPlayerBehaviorReportOptions)(ref val)).ReportedUserId = ProductUserId.FromString(Utf8String.op_Implicit(reportedID));
-			((SendPlayerBehaviorReportOptions)(ref val)).ReporterUserId = ProductUserId.FromString(Utf8String.op_Implicit(reporter.UserIDString));
-			((SendPlayerBehaviorReportOptions)(ref val)).Category = reportCategory;
-			((SendPlayerBehaviorReportOptions)(ref val)).Message = Utf8String.op_Implicit(reportText);
+			SendPlayerBehaviorReportOptions val = default;
+			val.ReportedUserId = ProductUserId.FromString(Utf8String.op_Implicit(reportedID));
+			val.ReporterUserId = ProductUserId.FromString(Utf8String.op_Implicit(reporter.UserIDString));
+			val.Category = reportCategory;
+			val.Message = Utf8String.op_Implicit(reportText);
 			SendPlayerBehaviorReportOptions val2 = val;
 			Reports.SendPlayerBehaviorReport(ref val2, (object)null, (OnSendPlayerBehaviorReportCompleteCallback)null);
 		}
@@ -819,10 +819,10 @@ public static class EACServer
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		if (CanSendReports)
 		{
-			SendPlayerBehaviorReportOptions val = default(SendPlayerBehaviorReportOptions);
-			((SendPlayerBehaviorReportOptions)(ref val)).ReportedUserId = ProductUserId.FromString(Utf8String.op_Implicit(reportedID));
-			((SendPlayerBehaviorReportOptions)(ref val)).Category = reportCategory;
-			((SendPlayerBehaviorReportOptions)(ref val)).Message = Utf8String.op_Implicit(reportText);
+			SendPlayerBehaviorReportOptions val = default;
+			val.ReportedUserId = ProductUserId.FromString(Utf8String.op_Implicit(reportedID));
+			val.Category = reportCategory;
+			val.Message = Utf8String.op_Implicit(reportText);
 			SendPlayerBehaviorReportOptions val2 = val;
 			Reports.SendPlayerBehaviorReport(ref val2, (object)null, (OnSendPlayerBehaviorReportCompleteCallback)null);
 		}

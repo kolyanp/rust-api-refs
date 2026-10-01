@@ -5,17 +5,17 @@ public class IsVisibleAIEvent : BaseAIEvent
 	public IsVisibleAIEvent()
 		: base(AIEventType.IsVisible)
 	{
-		base.Rate = ExecuteRate.Fast;
+		Rate = ExecuteRate.Fast;
 	}
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
-		base.Result = false;
-		BaseEntity baseEntity = memory.Entity.Get(base.InputEntityMemorySlot);
-		if (!((Object)(object)baseEntity == (Object)null) && base.Owner is IAIAttack)
+		Result = false;
+		BaseEntity baseEntity = memory.Entity.Get(InputEntityMemorySlot);
+		if (!((Object)(object)baseEntity == (Object)null) && Owner is IAIAttack)
 		{
 			bool flag = senses.Memory.IsLOS(baseEntity);
-			base.Result = (base.Inverted ? (!flag) : flag);
+			Result = (Inverted ? (!flag) : flag);
 		}
 	}
 }

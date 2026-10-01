@@ -32,7 +32,7 @@ public class UI_MenuBackgroundVideo : SingletonComponent<UI_MenuBackgroundVideo>
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Invalid comparison between Unknown and I4
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Expected O, but got Unknown
+		//IL_005c: Expected Obj, but got Unknown
 		base.Awake();
 		if (RestrictMP4)
 		{
@@ -44,7 +44,7 @@ public class UI_MenuBackgroundVideo : SingletonComponent<UI_MenuBackgroundVideo>
 		{
 			forceWebmOnly = true;
 		}
-		_videoPlayer.errorReceived += new ErrorEventHandler(OnVideoError);
+		_videoPlayer.errorReceived += OnVideoError;
 		LoadVideoList();
 		NextVideo();
 	}

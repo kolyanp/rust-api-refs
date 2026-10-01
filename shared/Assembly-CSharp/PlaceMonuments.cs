@@ -330,6 +330,7 @@ public class PlaceMonuments : ProceduralComponent
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
@@ -407,8 +408,7 @@ public class PlaceMonuments : ProceduralComponent
 		int num3 = 0;
 		bool result = false;
 		int num4 = int.MinValue;
-		SpawnInfo spawnInfo = default(SpawnInfo);
-		Vector3 pos = default(Vector3);
+		SpawnInfo spawnInfo = default;
 		for (int i = 0; i < attempts; i++)
 		{
 			float num5 = SeedRandom.Range(ref seed, x, num);
@@ -422,7 +422,7 @@ public class PlaceMonuments : ProceduralComponent
 				continue;
 			}
 			float height = heightMap.GetHeight(normX, normZ);
-			((Vector3)(ref pos))._002Ector(num5, height, num6);
+			Vector3 pos = new Vector3(num5, height, num6);
 			Quaternion rot = prefab.Object.transform.localRotation;
 			Vector3 scale = prefab.Object.transform.localScale;
 			Vector3 val = pos;
@@ -562,6 +562,7 @@ public class PlaceMonuments : ProceduralComponent
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
@@ -584,14 +585,13 @@ public class PlaceMonuments : ProceduralComponent
 			minDistanceDungeonEntrance = float.MaxValue,
 			maxDistanceDungeonEntrance = float.MinValue
 		};
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(monumentPos, monumentScale, monumentRot, prefab.Component.Bounds);
+		OBB val = new OBB(monumentPos, monumentScale, monumentRot, prefab.Component.Bounds);
 		if (spawns != null)
 		{
 			foreach (SpawnInfo spawn in spawns)
 			{
 				OBB val2 = new OBB(spawn.position, spawn.scale, spawn.rotation, spawn.prefab.Component.Bounds);
-				float num = ((OBB)(ref val2)).SqrDistance(val);
+				float num = val2.SqrDistance(val);
 				if (spawn.prefab.Folder == prefab.Folder)
 				{
 					if (num < result.minDistanceSameType)
@@ -620,7 +620,7 @@ public class PlaceMonuments : ProceduralComponent
 				if (spawn2.dungeonEntrance)
 				{
 					Vector3 val3 = spawn2.dungeonEntrancePos - dungeonPos;
-					float sqrMagnitude = ((Vector3)(ref val3)).sqrMagnitude;
+					float sqrMagnitude = val3.sqrMagnitude;
 					if (sqrMagnitude < result.minDistanceDungeonEntrance)
 					{
 						result.minDistanceDungeonEntrance = sqrMagnitude;

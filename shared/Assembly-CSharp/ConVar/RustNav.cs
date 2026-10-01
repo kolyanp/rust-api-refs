@@ -26,6 +26,12 @@ public class RustNav : ConsoleSystem
 	[ServerVar(Help = "Main-thread time budget per frame (ms) for navmesh tile geometry collection. The full-map bake wall clock is roughly tiles / (budget-worth of tiles per frame) / fps, so raise this while baking to trade frame time for bake speed")]
 	public static float collectBudgetMs = 1f;
 
+	[ServerVar(Help = "Main-thread time budget per frame (ms) for adding built navmesh tiles to their navmesh. A base rebuild lands dozens of results in one frame and the rest waits for the next one. 0 or less adds every result that is ready, which is what shipped before the budget existed")]
+	public static float addTileBudgetMs = 2f;
+
+	[ServerVar(Help = "How many doors re-assert their gate state per navmesh drain tick. A rebuilt tile bakes its apertures shut, so every open or npc-openable door over the rebuilt area has to write its state again, and a megabase queues hundreds of them at once. 0 or less applies the whole queue in one frame, which is what shipped before the budget existed")]
+	public static int doorReassertsPerTick = 24;
+
 	[ServerVar(Help = "Metres of open water past which default navmesh tiles are dropped instead of baked. A tile only drops when every point in it is that far from land, so shores keep their navmesh and so do rivers and lakes, which are never that wide. Independent navmeshes (oilrigs, tropical islands, ghost ships) are never touched. 0 or less bakes the open sea like before. Applies to tiles queued after the change")]
 	public static float maxShoreDistance = 100f;
 
@@ -43,6 +49,15 @@ public class RustNav : ConsoleSystem
 
 	[ServerVar(Help = "Worker threads for navmesh save/load compression. 0 = auto")]
 	public static int saveThreads = 0;
+
+	[ServerVar(Help = "Log the navmesh save completion line as a warning past this many milliseconds. 0 or less never warns")]
+	public static float saveWarnMs = 1000f;
+
+	[ServerVar(Help = "Append only the tiles that changed to the navmesh file instead of rewriting all of it. The first save after a boot or a rebuild is always a full write, and a full write also happens once the appended part grows past rustnav.savedeltabudget")]
+	public static bool saveDelta = true;
+
+	[ServerVar(Help = "How large the appended part of the navmesh file may grow, as a fraction of the full file, before the next save rewrites the whole thing. A save whose changed tiles are a larger share of the mesh than this rewrites it too. Bounds both file growth and boot load time. 0 or less removes the bound, to stop appending altogether use rustnav.savedelta false")]
+	public static float saveDeltaBudget = 0.5f;
 
 	[ServerVar(Help = "A/B kill switch: build navmesh tiles with the stock pre optimization algorithms (clip rasterizer, full ledge and region rescans, unfused filters). Combine with detailsampledistmult 6 to approximate the old build end to end. Applies to tiles built after the change")]
 	public static bool legacyBuild = false;

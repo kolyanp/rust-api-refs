@@ -37,7 +37,6 @@ public class SimpleSplineTranslator
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		this.spline = spline;
 		this.speed = speed;
 		this.loop = loop;
@@ -51,7 +50,6 @@ public class SimpleSplineTranslator
 	{
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		spline = null;
 		splineData = null;
 		speed = 0f;

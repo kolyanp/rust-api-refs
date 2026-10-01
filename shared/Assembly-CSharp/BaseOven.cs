@@ -167,7 +167,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		}
 	}
 
-	public ItemContainer Container => base.inventory;
+	public ItemContainer Container => inventory;
 
 	public BaseEntity IndustrialEntity => this;
 
@@ -234,7 +234,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		{
 			for (int i = _inputSlotIndex; i <= _inputSlotIndex + inputSlots - 1; i++)
 			{
-				if (base.inventory.GetSlot(i) == item)
+				if (inventory.GetSlot(i) == item)
 				{
 					AddVisualFood(item, i - _inputSlotIndex);
 					break;
@@ -251,9 +251,9 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		}
 	}
 
-	public override void OnItemPositionChanged(Item item, int from, int to)
+	public override void OnItemPositionChanged(Item item, int from, int to, BasePlayer sourcePlayer)
 	{
-		base.OnItemPositionChanged(item, from, to);
+		base.OnItemPositionChanged(item, from, to, sourcePlayer);
 		if (from < _inputSlotIndex || to > _inputSlotIndex + inputSlots)
 		{
 			return;
@@ -267,12 +267,12 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		}
 	}
 
-	public override void OnItemAddedToStack(Item item, int amount)
+	public override void OnItemAddedToStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
 		UpdateVisualFoodAmount(item);
 	}
 
-	public override void OnItemRemovedFromStack(Item item, int amount)
+	public override void OnItemRemovedFromStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
 		UpdateVisualFoodAmount(item);
 	}
@@ -364,7 +364,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 				bool flag = true;
 				for (int i = _outputSlotIndex; i <= _outputSlotIndex + outputSlots - 1; i++)
 				{
-					Item slot = base.inventory.GetSlot(i);
+					Item slot = inventory.GetSlot(i);
 					if (slot != null && slot.info.itemid == cookedItem.info.itemid)
 					{
 						flag = false;
@@ -398,9 +398,9 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 	{
 		foreach (CookingItem cookingItem in cookingItems)
 		{
-			if (base.inventory != null && cookingItem != null && cookingItem.cookingProgress != 1f)
+			if (inventory != null && cookingItem != null && cookingItem.cookingProgress != 1f)
 			{
-				Item slot = base.inventory.GetSlot(cookingItem.slotIndex + _inputSlotIndex);
+				Item slot = inventory.GetSlot(cookingItem.slotIndex + _inputSlotIndex);
 				if (slot == null)
 				{
 					cookingItem.cookingProgress = 1f;
@@ -473,9 +473,9 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool bAdded)
+	public override void OnItemAddedOrRemoved(Item item, bool bAdded, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, bAdded);
+		base.OnItemAddedOrRemoved(item, bAdded, sourcePlayer);
 		if (item != null)
 		{
 			CookableItemInfo cookableItemInfo = ((this is Composter) ? item.info.ItemModCompostable : item.info.ItemModCookable);
@@ -570,7 +570,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		}
 		for (int i = allowedSlots.Value.Min; i <= allowedSlots.Value.Max; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot == null || (slot.CanStack(item) && slot.amount < slot.MaxStackable()))
 			{
 				return i;
@@ -610,7 +610,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 			StopCooking();
 			return;
 		}
-		foreach (Item item2 in base.inventory.itemList)
+		foreach (Item item2 in inventory.itemList)
 		{
 			if (item2.position >= _inputSlotIndex && item2.position < _inputSlotIndex + inputSlots && !item2.HasFlag(Item.Flag.Cooking))
 			{
@@ -660,7 +660,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		{
 			int num = burnable.byproductAmount * GetCharcoalRate();
 			bool flag = false;
-			foreach (Item item2 in base.inventory.itemList)
+			foreach (Item item2 in inventory.itemList)
 			{
 				if ((Object)(object)item2.info == (Object)(object)burnable.byproductItem && item2.amount + num < item2.info.stackable)
 				{
@@ -673,10 +673,10 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 			if (!flag)
 			{
 				Item item = ItemManager.Create(burnable.byproductItem, num, 0uL, isServerSide: true, 0uL);
-				if (!item.MoveToContainer(base.inventory))
+				if (!item.MoveToContainer(inventory))
 				{
 					OvenFull();
-					item.Drop(base.inventory.dropPosition, base.inventory.dropVelocity);
+					item.Drop(inventory.dropPosition, inventory.dropVelocity);
 				}
 			}
 		}
@@ -692,8 +692,8 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		Facepunch.Rust.Analytics.Azure.AddPendingItems(this, fuel.info.shortname, fuelRate, "smelt");
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	protected virtual void SVSwitch(RPCMessage msg)
 	{
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
@@ -752,17 +752,17 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		BaseEntity slot = GetSlot(Slot.FireMod);
 		if (Object.op_Implicit((Object)(object)slot))
 		{
-			((Component)slot).SendMessage("ParentTemperatureUpdate", (object)base.inventory.temperature, (SendMessageOptions)1);
+			((Component)slot).SendMessage("ParentTemperatureUpdate", (object)inventory.temperature, (SendMessageOptions)1);
 		}
 	}
 
 	protected bool HasInputItems()
 	{
-		if (base.inventory == null)
+		if (inventory == null)
 		{
 			return false;
 		}
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			if (item.position >= _inputSlotIndex && item.position < _inputSlotIndex + inputSlots)
 			{
@@ -794,7 +794,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		if (Interface.CallHook("OnOvenStart", this) == null && (FindBurnable() != null || CanRunWithNoFuel))
 		{
-			base.inventory.temperature = cookingTemperature;
+			inventory.temperature = cookingTemperature;
 			UpdateAttachmentTemperature();
 			((PersistentObjectWorkQueue<BaseOven>)cookQueue).Add(this);
 			lastCookUpdate = TimeSince.op_Implicit(0f);
@@ -815,10 +815,10 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 	public virtual void StopCooking()
 	{
 		UpdateAttachmentTemperature();
-		if (base.inventory != null)
+		if (inventory != null)
 		{
-			base.inventory.temperature = 15f;
-			foreach (Item item in base.inventory.itemList)
+			inventory.temperature = 15f;
+			foreach (Item item in inventory.itemList)
 			{
 				if (item.HasFlag(Item.Flag.OnFire))
 				{
@@ -846,7 +846,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 
 	public bool WantsSplash(ItemDefinition splashType, int amount)
 	{
-		if (!base.IsDestroyed && IsOn())
+		if (!IsDestroyed && IsOn())
 		{
 			return disabledBySplash;
 		}
@@ -868,11 +868,11 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		}
 		using (TimeWarning.New("FindBurnable"))
 		{
-			if (base.inventory == null)
+			if (inventory == null)
 			{
 				return null;
 			}
-			foreach (Item item in base.inventory.itemList)
+			foreach (Item item in inventory.itemList)
 			{
 				if (IsBurnableItem(item))
 				{
@@ -888,7 +888,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		using (TimeWarning.New("IncreaseCookTime"))
 		{
 			List<Item> list = Pool.Get<List<Item>>();
-			foreach (Item item in base.inventory.itemList)
+			foreach (Item item in inventory.itemList)
 			{
 				if (item.HasFlag(Item.Flag.Cooking))
 				{
@@ -970,7 +970,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 
 	public float GetSmeltingSpeed()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return smeltSpeed;
 		}
@@ -1087,7 +1087,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		ItemAmount[] array = startupContents;
 		foreach (ItemAmount itemAmount in array)
 		{
-			base.inventory.Take(null, itemAmount.itemid, (int)itemAmount.amount);
+			inventory.Take(null, itemAmount.itemid, (int)itemAmount.amount);
 		}
 		base.Reskin_Restore(ref preserveInfo);
 	}

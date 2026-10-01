@@ -41,6 +41,6 @@ public class TriggerNoSpray : TriggerBase
 	public bool IsPositionValid(Vector3 worldPosition)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return !((OBB)(ref cachedBounds)).Contains(worldPosition);
+		return !cachedBounds.Contains(worldPosition);
 	}
 }

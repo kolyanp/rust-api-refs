@@ -13,7 +13,7 @@ public class EntityFlag_TOD : EntityComponent<BaseEntity>
 
 	public void Initialize()
 	{
-		if (!((Object)(object)base.baseEntity == (Object)null) && !base.baseEntity.isClient)
+		if (!((Object)(object)baseEntity == (Object)null) && !baseEntity.isClient)
 		{
 			InvokeRandomized(DoTimeCheck, 0f, 5f, 1f);
 		}
@@ -35,13 +35,13 @@ public class EntityFlag_TOD : EntityComponent<BaseEntity>
 
 	private void DoTimeCheck()
 	{
-		bool num = base.baseEntity.HasFlag(desiredFlag);
-		bool flag = WantsOn();
-		if (num != flag)
+		bool flag = baseEntity.HasFlag(desiredFlag);
+		bool flag2 = WantsOn();
+		if (flag != flag2)
 		{
-			using (BaseEntity.FlagsUpdateScope flagsUpdateScope = base.baseEntity.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate))
+			using (BaseEntity.FlagsUpdateScope flagsUpdateScope = baseEntity.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate))
 			{
-				flagsUpdateScope.Set(desiredFlag, flag);
+				flagsUpdateScope.Set(desiredFlag, flag2);
 			}
 		}
 	}

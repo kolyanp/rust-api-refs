@@ -38,6 +38,6 @@ public class Info : BasePlayerHandler<AppEmpty>
 		AppResponse val2 = Pool.Get<AppResponse>();
 		val2.info = val;
 		Send(val2);
-		return default(ValueTask);
+		return default;
 	}
 }

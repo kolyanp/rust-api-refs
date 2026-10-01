@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 using Carbon;
+using Carbon.Extensions;
 using Facepunch;
 using Oxide.Core.Plugins;
 using UnityEngine;
@@ -11,6 +14,16 @@ public class Timer : Library
 {
 	public class TimerInstance : IDisposable
 	{
+		internal double ExpiresAtDouble;
+
+		internal double DueAt;
+
+		internal int HeapIndex = -1;
+
+		internal int Generation;
+
+		internal int CollectedGeneration;
+
 		public Plugin Plugin { get; set; }
 
 		public Plugin Owner => Plugin;
@@ -27,13 +40,25 @@ public class Timer : Library
 
 		public float Delay { get; set; }
 
-		public float ExpiresAt { get; set; }
+		public float ExpiresAt
+		{
+			get
+			{
+				return (float)ExpiresAtDouble;
+			}
+			set
+			{
+				ExpiresAtDouble = value;
+			}
+		}
 
-		public bool StartupRepeating { get; set; }
+		public bool Repeating { get; set; }
 
 		public int TimesTriggered { get; set; }
 
 		public bool Destroyed { get; set; }
+
+		public bool Scheduled => HeapIndex >= 0;
 
 		public TimerInstance()
 		{
@@ -48,111 +73,45 @@ public class Timer : Library
 
 		public void Reset(float delay = -1f, int repetitions = 1)
 		{
-			TimesTriggered = 0;
-			Repetitions = repetitions;
-			StartupRepeating = repetitions != 1;
-			if (delay < 0f)
-			{
-				delay = Delay;
-			}
-			else
-			{
-				Delay = delay;
-			}
 			if ((Object)(object)Persistence == (Object)null)
 			{
 				Logger.Warn("Cannot restart a timer for '" + (Plugin?.ToPrettyString() ?? "unknown plugin") + "' because persistence is null.");
 				return;
 			}
-			RemoveStartupTimer(this);
-			if (Callback != null)
+			lock (SchedulerLock)
 			{
-				((FacepunchBehaviour)Persistence).CancelInvoke(Callback);
-				((FacepunchBehaviour)Persistence).CancelInvokeFixedTime(Callback);
-			}
-			Destroyed = false;
-			OwnerTimers?.TrackTimer(this);
-			if (Repetitions == 1)
-			{
-				Action callback = null;
-				callback = delegate
+				TimesTriggered = 0;
+				Repetitions = repetitions;
+				Repeating = repetitions != 1;
+				if (delay < 0f)
 				{
-					try
-					{
-						Activity?.Invoke();
-						if (Destroyed || Callback != callback)
-						{
-							return;
-						}
-						int timesTriggered = TimesTriggered;
-						TimesTriggered = timesTriggered + 1;
-					}
-					catch (Exception ex)
-					{
-						Logger.Error($"Timer of {delay}s has failed in '{Plugin.ToPrettyString()}' [callback]", ex);
-						Destroy();
-						return;
-					}
-					Destroy();
-				};
-				Callback = callback;
-				if (Community.IsServerInitialized)
-				{
-					((FacepunchBehaviour)Persistence).Invoke(Callback, delay);
-					return;
+					delay = Delay;
 				}
-				ExpiresAt = Time.realtimeSinceStartup + delay;
-				QueueStartupTimer(this);
-				return;
-			}
-			Action callback2 = null;
-			callback2 = delegate
-			{
-				try
+				else
 				{
-					Activity?.Invoke();
-					if (!Destroyed && !(Callback != callback2))
-					{
-						int timesTriggered = TimesTriggered;
-						TimesTriggered = timesTriggered + 1;
-						if (Repetitions > 0 && TimesTriggered >= Repetitions)
-						{
-							Destroy();
-						}
-					}
+					Delay = delay;
 				}
-				catch (Exception ex)
-				{
-					Logger.Error($"Timer of {delay}s has failed in '{Plugin.ToPrettyString()}' [callback]", ex);
-					Destroy();
-				}
-			};
-			Callback = callback2;
-			if (Community.IsServerInitialized)
-			{
-				((FacepunchBehaviour)Persistence).InvokeRepeating(Callback, delay, delay);
-				return;
+				Unschedule(this);
+				Generation++;
+				Destroyed = false;
+				Callback = Activity;
+				OwnerTimers?.TrackTimer(this);
+				ScheduleIn(this, Repeating ? NormalizeRepeatDelay(delay) : delay);
 			}
-			ExpiresAt = Time.realtimeSinceStartup + NormalizeStartupRepeatDelay(delay);
-			QueueStartupTimer(this);
 		}
 
 		public bool Destroy()
 		{
-			bool destroyed = Destroyed;
-			Destroyed = true;
-			RemoveStartupTimer(this);
-			OwnerTimers?.UntrackTimer(this);
-			if (Callback != null)
+			lock (SchedulerLock)
 			{
-				Plugin.Persistence persistence = Persistence;
-				if (persistence != null)
-				{
-					((FacepunchBehaviour)persistence).CancelInvoke(Callback);
-				}
+				bool destroyed = Destroyed;
+				Destroyed = true;
+				Generation++;
+				Unschedule(this);
+				OwnerTimers?.UntrackTimer(this);
 				Callback = null;
+				return !destroyed;
 			}
-			return !destroyed;
 		}
 
 		public void DestroyToPool()
@@ -166,23 +125,48 @@ public class Timer : Library
 		}
 	}
 
-	private static readonly object StartupTimerLock = new object();
+	private struct ScheduledEntry
+	{
+		public double At;
 
-	private static readonly List<TimerInstance> StartupTimers = new List<TimerInstance>();
+		public long Sequence;
 
-	private static float _nextStartupTimerAt = float.PositiveInfinity;
+		public TimerInstance Instance;
+	}
 
-	private const int MaxStartupTimersPerFrame = 256;
+	internal readonly HashSet<TimerInstance> _timers = new HashSet<TimerInstance>();
 
-	private const float StartupTimerDueTolerance = 0.001f;
+	private static readonly object SchedulerLock;
 
-	private const float MinimumStartupRepeatDelay = 0.001f;
+	private static ScheduledEntry[] Heap;
+
+	private static int HeapCount;
+
+	private static long HeapSequence;
+
+	private const int InitialHeapCapacity = 1024;
+
+	private const int MaxTimersPerFrame = 8192;
+
+	private const int LivenessChecksPerFrame = 50;
+
+	private const float MinimumRepeatDelay = 0.001f;
+
+	private static bool ClockPrimed;
+
+	private static bool ProcessingTimers;
+
+	private static int LivenessIndex;
+
+	private static readonly double TimestampToSeconds;
+
+	private static double ClockOffset;
 
 	public Plugin Plugin { get; }
 
-	internal List<TimerInstance> _timers { get; set; } = new List<TimerInstance>();
-
 	public Plugin.Persistence Persistence => Plugin.persistence;
+
+	internal static double CurrentTime => (double)Stopwatch.GetTimestamp() * TimestampToSeconds + Volatile.Read(in ClockOffset);
 
 	public Timer()
 	{
@@ -210,11 +194,7 @@ public class Timer : Library
 	internal void TrackTimer(TimerInstance timer)
 	{
 		timer.OwnerTimers = this;
-		if (_timers == null)
-		{
-			List<TimerInstance> list = (_timers = new List<TimerInstance>());
-		}
-		if (!_timers.Contains(timer))
+		lock (SchedulerLock)
 		{
 			_timers.Add(timer);
 		}
@@ -222,9 +202,13 @@ public class Timer : Library
 
 	internal void UntrackTimer(TimerInstance timer)
 	{
-		if (timer.OwnerTimers == this)
+		if (timer.OwnerTimers != this)
 		{
-			_timers?.Remove(timer);
+			return;
+		}
+		lock (SchedulerLock)
+		{
+			_timers.Remove(timer);
 		}
 	}
 
@@ -234,39 +218,13 @@ public class Timer : Library
 		{
 			return null;
 		}
-		TimerInstance timer = new TimerInstance(Persistence, action, plugin ?? Plugin);
-		TrackTimer(timer);
-		timer.Repetitions = 1;
-		Action action2 = delegate
-		{
-			try
-			{
-				Action callback = timer.Callback;
-				action?.Invoke();
-				if (!timer.Destroyed && !(timer.Callback != callback))
-				{
-					timer.TimesTriggered++;
-					timer.Destroy();
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.Error($"Timer of {time}s has failed in '{(plugin ?? Plugin).ToPrettyString()}' [callback]", ex);
-				timer.Destroy();
-			}
-		};
-		timer.Delay = time;
-		timer.Callback = action2;
-		if (Community.IsServerInitialized)
-		{
-			((FacepunchBehaviour)Persistence).Invoke(action2, time);
-		}
-		else
-		{
-			timer.ExpiresAt = Time.realtimeSinceStartup + time;
-			QueueStartupTimer(timer);
-		}
-		return timer;
+		TimerInstance timerInstance = new TimerInstance(Persistence, action, plugin ?? Plugin);
+		timerInstance.Delay = time;
+		timerInstance.Repetitions = 1;
+		timerInstance.Callback = action;
+		TrackTimer(timerInstance);
+		ScheduleIn(timerInstance, time);
+		return timerInstance;
 	}
 
 	public TimerInstance Once(float time, Action action, Plugin plugin = null)
@@ -280,39 +238,14 @@ public class Timer : Library
 		{
 			return null;
 		}
-		TimerInstance timer = new TimerInstance(Persistence, action, plugin ?? Plugin);
-		TrackTimer(timer);
-		Action action2 = delegate
-		{
-			try
-			{
-				Action callback = timer.Callback;
-				action?.Invoke();
-				if (!timer.Destroyed && !(timer.Callback != callback))
-				{
-					timer.TimesTriggered++;
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.Error($"Timer of {time}s has failed in '{(plugin ?? Plugin).ToPrettyString()}' [callback]", ex);
-				timer.Destroy();
-			}
-		};
-		timer.Delay = time;
-		timer.Repetitions = 0;
-		timer.StartupRepeating = true;
-		timer.Callback = action2;
-		if (Community.IsServerInitialized)
-		{
-			((FacepunchBehaviour)Persistence).InvokeRepeating(action2, time, time);
-		}
-		else
-		{
-			timer.ExpiresAt = Time.realtimeSinceStartup + NormalizeStartupRepeatDelay(time);
-			QueueStartupTimer(timer);
-		}
-		return timer;
+		TimerInstance timerInstance = new TimerInstance(Persistence, action, plugin ?? Plugin);
+		timerInstance.Delay = time;
+		timerInstance.Repetitions = 0;
+		timerInstance.Repeating = true;
+		timerInstance.Callback = action;
+		TrackTimer(timerInstance);
+		ScheduleIn(timerInstance, NormalizeRepeatDelay(time));
+		return timerInstance;
 	}
 
 	public TimerInstance Repeat(float time, int times, Action action, Plugin plugin = null)
@@ -321,48 +254,14 @@ public class Timer : Library
 		{
 			return null;
 		}
-		TimerInstance timer = new TimerInstance(Persistence, action, plugin ?? Plugin);
-		TrackTimer(timer);
-		Action action2 = delegate
-		{
-			try
-			{
-				Action callback = timer.Callback;
-				action?.Invoke();
-				if (!timer.Destroyed && !(timer.Callback != callback))
-				{
-					timer.TimesTriggered++;
-					if (times > 0 && timer.TimesTriggered >= times)
-					{
-						timer.Destroy();
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.Error($"Timer of {time}s has failed in '{(plugin ?? Plugin).ToPrettyString()}' [callback]", ex);
-				timer.Destroy();
-			}
-		};
-		timer.Delay = time;
-		timer.Repetitions = times;
-		timer.StartupRepeating = times != 1;
-		timer.Callback = action2;
-		if (Community.IsServerInitialized)
-		{
-			((FacepunchBehaviour)Persistence).InvokeRepeating(action2, time, time);
-		}
-		else if (timer.StartupRepeating)
-		{
-			timer.ExpiresAt = Time.realtimeSinceStartup + NormalizeStartupRepeatDelay(time);
-			QueueStartupTimer(timer);
-		}
-		else
-		{
-			timer.ExpiresAt = Time.realtimeSinceStartup + time;
-			QueueStartupTimer(timer);
-		}
-		return timer;
+		TimerInstance timerInstance = new TimerInstance(Persistence, action, plugin ?? Plugin);
+		timerInstance.Delay = time;
+		timerInstance.Repetitions = times;
+		timerInstance.Repeating = times != 1;
+		timerInstance.Callback = action;
+		TrackTimer(timerInstance);
+		ScheduleIn(timerInstance, timerInstance.Repeating ? NormalizeRepeatDelay(time) : time);
+		return timerInstance;
 	}
 
 	public void Destroy(ref TimerInstance timer)
@@ -376,119 +275,20 @@ public class Timer : Library
 
 	public void DestroyAll()
 	{
-		if (_timers != null)
-		{
-			while (_timers.Count > 0)
-			{
-				List<TimerInstance> timers = _timers;
-				TimerInstance timerInstance = timers[timers.Count - 1];
-				_timers.RemoveAt(_timers.Count - 1);
-				timerInstance.Destroy();
-			}
-		}
-	}
-
-	internal static float NormalizeStartupRepeatDelay(float delay)
-	{
-		if (!(delay > 0.001f))
-		{
-			return 0.001f;
-		}
-		return delay;
-	}
-
-	internal static void QueueStartupTimer(TimerInstance timer)
-	{
-		lock (StartupTimerLock)
-		{
-			if (StartupTimers.Contains(timer))
-			{
-				RefreshNextStartupTimerAt();
-				return;
-			}
-			StartupTimers.Add(timer);
-			TrackNextStartupTimerAt(timer);
-		}
-	}
-
-	internal static void RemoveStartupTimer(TimerInstance timer)
-	{
-		if (Community.IsServerInitialized)
-		{
-			return;
-		}
-		lock (StartupTimerLock)
-		{
-			if (StartupTimers.Remove(timer))
-			{
-				RefreshNextStartupTimerAt();
-			}
-		}
-	}
-
-	internal static void UpdateStartupTimers()
-	{
-		if (!Community.IsServerInitialized)
-		{
-			FireDueStartupTimers(256);
-		}
-	}
-
-	internal static void FireDueStartupTimers(int maxTimers = int.MaxValue)
-	{
-		if (maxTimers <= 0)
-		{
-			return;
-		}
-		float realtimeSinceStartup = Time.realtimeSinceStartup;
-		if (!HasDueStartupTimers(realtimeSinceStartup))
-		{
-			return;
-		}
-		List<TimerInstance> timers = Pool.Get<List<TimerInstance>>();
-		List<Action> callbacks = Pool.Get<List<Action>>();
-		try
-		{
-			CollectDueStartupTimers(timers, callbacks, realtimeSinceStartup, maxTimers);
-			FireStartupTimers(timers, callbacks);
-		}
-		finally
-		{
-			Pool.FreeUnmanaged<TimerInstance>(ref timers);
-			Pool.FreeUnmanaged<Action>(ref callbacks);
-		}
-	}
-
-	internal static void ConvertRemainingStartupTimersToInvokes()
-	{
 		List<TimerInstance> list = Pool.Get<List<TimerInstance>>();
 		try
 		{
-			lock (StartupTimerLock)
+			lock (SchedulerLock)
 			{
-				for (int i = 0; i < StartupTimers.Count; i++)
+				if (_timers.Count == 0)
 				{
-					list.Add(StartupTimers[i]);
+					return;
 				}
-				StartupTimers.Clear();
-				_nextStartupTimerAt = float.PositiveInfinity;
+				list.AddRange(_timers);
 			}
-			float realtimeSinceStartup = Time.realtimeSinceStartup;
-			for (int j = 0; j < list.Count; j++)
+			for (int i = 0; i < list.Count; i++)
 			{
-				TimerInstance timerInstance = list[j];
-				if (!timerInstance.Destroyed && !((Object)(object)timerInstance.Persistence == (Object)null) && timerInstance.Callback != null)
-				{
-					float num = Math.Max(0f, timerInstance.ExpiresAt - realtimeSinceStartup);
-					if (timerInstance.StartupRepeating)
-					{
-						((FacepunchBehaviour)timerInstance.Persistence).InvokeRepeating(timerInstance.Callback, num, timerInstance.Delay);
-					}
-					else
-					{
-						((FacepunchBehaviour)timerInstance.Persistence).Invoke(timerInstance.Callback, num);
-					}
-				}
+				list[i].Destroy();
 			}
 		}
 		finally
@@ -497,9 +297,283 @@ public class Timer : Library
 		}
 	}
 
-	private static bool ShouldRequeueStartupTimer(TimerInstance timer)
+	static Timer()
 	{
-		if (!timer.StartupRepeating || timer.Destroyed || Community.IsServerInitialized)
+		SchedulerLock = new object();
+		Heap = new ScheduledEntry[1024];
+		TimestampToSeconds = 1.0 / (double)Stopwatch.Frequency;
+		ClockOffset = (double)(-Stopwatch.GetTimestamp()) * TimestampToSeconds;
+		try
+		{
+			if (ThreadEx.IsOnMainThread())
+			{
+				PrimeClock();
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	internal static void PrimeClock()
+	{
+		double realtimeSinceStartupAsDouble = Time.realtimeSinceStartupAsDouble;
+		long timestamp = Stopwatch.GetTimestamp();
+		lock (SchedulerLock)
+		{
+			UpdateClock(realtimeSinceStartupAsDouble, timestamp);
+		}
+	}
+
+	private static void UpdateClock(double realtime, long timestamp)
+	{
+		double num = realtime - (double)timestamp * TimestampToSeconds;
+		if (!ClockPrimed)
+		{
+			ClockPrimed = true;
+			double num2 = num - ClockOffset;
+			for (int i = 0; i < HeapCount; i++)
+			{
+				Heap[i].At += num2;
+				Heap[i].Instance.ExpiresAtDouble += num2;
+			}
+		}
+		Volatile.Write(ref ClockOffset, num);
+	}
+
+	internal static float NormalizeRepeatDelay(float delay)
+	{
+		if (!(delay > 0.001f))
+		{
+			return 0.001f;
+		}
+		return delay;
+	}
+
+	internal static void ScheduleIn(TimerInstance timer, float delay)
+	{
+		lock (SchedulerLock)
+		{
+			Schedule(timer, CurrentTime + (double)delay);
+		}
+	}
+
+	internal static void Schedule(TimerInstance timer, double at)
+	{
+		if (!timer.Destroyed)
+		{
+			if (double.IsNaN(at))
+			{
+				at = double.NegativeInfinity;
+			}
+			if (timer.HeapIndex >= 0)
+			{
+				RemoveAt(timer.HeapIndex);
+			}
+			timer.ExpiresAtDouble = at;
+			Push(new ScheduledEntry
+			{
+				At = at,
+				Sequence = ++HeapSequence,
+				Instance = timer
+			});
+		}
+	}
+
+	internal static void Unschedule(TimerInstance timer)
+	{
+		if (timer.HeapIndex >= 0)
+		{
+			RemoveAt(timer.HeapIndex);
+			timer.HeapIndex = -1;
+		}
+	}
+
+	internal static void ProcessTimers(int maxTimers = 8192)
+	{
+		if (ProcessingTimers)
+		{
+			return;
+		}
+		List<TimerInstance> list = null;
+		ProcessingTimers = true;
+		try
+		{
+			double realtimeSinceStartupAsDouble = Time.realtimeSinceStartupAsDouble;
+			long timestamp = Stopwatch.GetTimestamp();
+			bool flag;
+			lock (SchedulerLock)
+			{
+				UpdateClock(realtimeSinceStartupAsDouble, timestamp);
+				flag = HasDueTimers(realtimeSinceStartupAsDouble);
+			}
+			PurgeDeadTimers();
+			if (flag)
+			{
+				list = Pool.Get<List<TimerInstance>>();
+				CollectDueTimers(list, realtimeSinceStartupAsDouble, maxTimers);
+				FireTimers(list, realtimeSinceStartupAsDouble);
+			}
+		}
+		finally
+		{
+			ProcessingTimers = false;
+			if (list != null)
+			{
+				Pool.FreeUnmanaged<TimerInstance>(ref list);
+			}
+		}
+	}
+
+	private static void PurgeDeadTimers()
+	{
+		List<TimerInstance> list = null;
+		lock (SchedulerLock)
+		{
+			if (HeapCount == 0)
+			{
+				LivenessIndex = 0;
+				return;
+			}
+			if (LivenessIndex >= HeapCount)
+			{
+				LivenessIndex = 0;
+			}
+			int num = Math.Min(LivenessIndex + 50, HeapCount);
+			while (LivenessIndex < num)
+			{
+				TimerInstance instance = Heap[LivenessIndex].Instance;
+				if (instance.Destroyed || (Object)(object)instance.Persistence == (Object)null || instance.Callback == null)
+				{
+					if (list == null)
+					{
+						list = Pool.Get<List<TimerInstance>>();
+					}
+					list.Add(instance);
+				}
+				LivenessIndex++;
+			}
+		}
+		if (list != null)
+		{
+			for (int i = 0; i < list.Count; i++)
+			{
+				list[i].Destroy();
+			}
+			Pool.FreeUnmanaged<TimerInstance>(ref list);
+		}
+	}
+
+	private static bool HasDueTimers(double now)
+	{
+		if (HeapCount > 0)
+		{
+			return Heap[0].At <= now;
+		}
+		return false;
+	}
+
+	private static void CollectDueTimers(List<TimerInstance> timers, double now, int maxTimers)
+	{
+		lock (SchedulerLock)
+		{
+			while (timers.Count < maxTimers && HasDueTimers(now))
+			{
+				TimerInstance instance = Heap[0].Instance;
+				instance.DueAt = Heap[0].At;
+				RemoveAt(0);
+				instance.HeapIndex = -1;
+				if (instance.Destroyed || (Object)(object)instance.Persistence == (Object)null || instance.Callback == null)
+				{
+					instance.Destroyed = true;
+					instance.Callback = null;
+					instance.OwnerTimers?.UntrackTimer(instance);
+				}
+				else
+				{
+					instance.CollectedGeneration = instance.Generation;
+					timers.Add(instance);
+				}
+			}
+		}
+	}
+
+	private static void FireTimers(List<TimerInstance> timers, double now)
+	{
+		for (int i = 0; i < timers.Count; i++)
+		{
+			FireTimer(timers[i], now);
+		}
+	}
+
+	private static void FireTimer(TimerInstance timer, double now)
+	{
+		int collectedGeneration = timer.CollectedGeneration;
+		try
+		{
+			FireCollectedTimer(timer, collectedGeneration, now);
+		}
+		catch (Exception ex)
+		{
+			lock (SchedulerLock)
+			{
+				if (!timer.Destroyed && timer.Generation == collectedGeneration)
+				{
+					timer.Destroy();
+				}
+			}
+			try
+			{
+				Logger.Error(string.Format("Failed processing a timer of {0}s in '{1}'", timer.Delay, timer.Plugin?.ToPrettyString() ?? "unknown plugin"), ex);
+			}
+			catch
+			{
+			}
+		}
+	}
+
+	private static void FireCollectedTimer(TimerInstance timer, int generation, double now)
+	{
+		if (timer.Destroyed || timer.Generation != generation)
+		{
+			return;
+		}
+		if ((Object)(object)timer.Persistence == (Object)null)
+		{
+			timer.Destroy();
+			return;
+		}
+		try
+		{
+			timer.Activity?.Invoke();
+		}
+		catch (Exception ex)
+		{
+			Logger.Error(string.Format("Timer of {0}s has failed in '{1}' [callback]", timer.Delay, timer.Plugin?.ToPrettyString() ?? "unknown plugin"), ex);
+			timer.Destroy();
+		}
+		lock (SchedulerLock)
+		{
+			if (!timer.Destroyed && timer.Generation == generation)
+			{
+				timer.TimesTriggered++;
+				if (ShouldRequeue(timer))
+				{
+					double num = NormalizeRepeatDelay(timer.Delay);
+					double at = ((now <= timer.DueAt) ? (timer.DueAt + num) : (now + num - (now - timer.DueAt) % num));
+					Schedule(timer, at);
+				}
+				else
+				{
+					timer.Destroy();
+				}
+			}
+		}
+	}
+
+	private static bool ShouldRequeue(TimerInstance timer)
+	{
+		if (!timer.Repeating || timer.Destroyed || (Object)(object)timer.Persistence == (Object)null)
 		{
 			return false;
 		}
@@ -510,92 +584,86 @@ public class Timer : Library
 		return true;
 	}
 
-	private static bool HasDueStartupTimers(float now)
+	private static void Push(ScheduledEntry entry)
 	{
-		lock (StartupTimerLock)
+		if (HeapCount == Heap.Length)
 		{
-			return StartupTimers.Count > 0 && IsStartupTimerDue(_nextStartupTimerAt, now);
+			Array.Resize(ref Heap, Heap.Length << 1);
+		}
+		Heap[HeapCount] = entry;
+		SiftUp(HeapCount);
+		HeapCount++;
+	}
+
+	private static void RemoveAt(int index)
+	{
+		HeapCount--;
+		if (index == HeapCount)
+		{
+			Heap[index] = default;
+			return;
+		}
+		Heap[index] = Heap[HeapCount];
+		Heap[HeapCount] = default;
+		TimerInstance instance = Heap[index].Instance;
+		instance.HeapIndex = index;
+		SiftDown(index);
+		if (instance.HeapIndex == index)
+		{
+			SiftUp(index);
 		}
 	}
 
-	private static void CollectDueStartupTimers(List<TimerInstance> timers, List<Action> callbacks, float now, int maxTimers)
+	private static void SiftUp(int index)
 	{
-		lock (StartupTimerLock)
+		ScheduledEntry a = Heap[index];
+		while (index > 0)
 		{
-			if (StartupTimers.Count == 0 || !IsStartupTimerDue(_nextStartupTimerAt, now))
+			int num = index - 1 >> 1;
+			if (!IsBefore(in a, in Heap[num]))
 			{
-				return;
+				break;
 			}
-			for (int i = 0; i < StartupTimers.Count; i++)
-			{
-				TimerInstance timerInstance = StartupTimers[i];
-				if (timerInstance.Destroyed)
-				{
-					StartupTimers.RemoveAt(i);
-					i--;
-				}
-				else if (!(timerInstance.ExpiresAt - now > 0.001f))
-				{
-					StartupTimers.RemoveAt(i);
-					i--;
-					timers.Add(timerInstance);
-					callbacks.Add(timerInstance.Callback);
-					if (timers.Count >= maxTimers)
-					{
-						break;
-					}
-				}
-			}
-			RefreshNextStartupTimerAt();
+			Heap[index] = Heap[num];
+			Heap[index].Instance.HeapIndex = index;
+			index = num;
 		}
+		Heap[index] = a;
+		a.Instance.HeapIndex = index;
 	}
 
-	private static void FireStartupTimers(List<TimerInstance> timers, List<Action> callbacks)
+	private static void SiftDown(int index)
 	{
-		for (int i = 0; i < timers.Count; i++)
+		ScheduledEntry b = Heap[index];
+		while (true)
 		{
-			TimerInstance timerInstance = timers[i];
-			Action action = callbacks[i];
-			if (!timerInstance.Destroyed && action != null && !(timerInstance.Callback != action))
+			int num = (index << 1) + 1;
+			if (num >= HeapCount)
 			{
-				action();
-				if (timerInstance.Callback == action && ShouldRequeueStartupTimer(timerInstance))
-				{
-					timerInstance.ExpiresAt = Time.realtimeSinceStartup + NormalizeStartupRepeatDelay(timerInstance.Delay);
-					QueueStartupTimer(timerInstance);
-				}
+				break;
 			}
+			if (num + 1 < HeapCount && IsBefore(in Heap[num + 1], in Heap[num]))
+			{
+				num++;
+			}
+			if (!IsBefore(in Heap[num], in b))
+			{
+				break;
+			}
+			Heap[index] = Heap[num];
+			Heap[index].Instance.HeapIndex = index;
+			index = num;
 		}
+		Heap[index] = b;
+		b.Instance.HeapIndex = index;
 	}
 
-	private static void TrackNextStartupTimerAt(TimerInstance timer)
+	private static bool IsBefore(in ScheduledEntry a, in ScheduledEntry b)
 	{
-		if (!timer.Destroyed && timer.ExpiresAt < _nextStartupTimerAt)
+		if (a.At != b.At)
 		{
-			_nextStartupTimerAt = timer.ExpiresAt;
+			return a.At < b.At;
 		}
-	}
-
-	private static void RefreshNextStartupTimerAt()
-	{
-		_nextStartupTimerAt = float.PositiveInfinity;
-		for (int i = 0; i < StartupTimers.Count; i++)
-		{
-			TimerInstance timerInstance = StartupTimers[i];
-			if (timerInstance.Destroyed)
-			{
-				StartupTimers.RemoveAt(i);
-				i--;
-			}
-			else
-			{
-				TrackNextStartupTimerAt(timerInstance);
-			}
-		}
-	}
-
-	private static bool IsStartupTimerDue(float expiresAt, float now)
-	{
-		return expiresAt - now <= 0.001f;
+		return a.Sequence < b.Sequence;
 	}
 }

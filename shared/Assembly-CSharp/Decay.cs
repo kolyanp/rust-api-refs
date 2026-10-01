@@ -87,7 +87,7 @@ public abstract class Decay : PrefabAttribute, IServerComponent
 	{
 		if (!ConVar.Decay.upkeep)
 		{
-			ent.EntityLinkBroadcast(delegate(DecayEntity decayEnt)
+			ent.EntityLinkBroadcast((DecayEntity decayEnt) =>
 			{
 				decayEnt.DecayTouch();
 			});

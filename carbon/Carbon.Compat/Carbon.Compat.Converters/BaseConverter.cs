@@ -19,9 +19,9 @@ public abstract class BaseConverter
 		public byte[] Buffer;
 	}
 
-	internal static ManagedPEImageBuilder _imageBuilder;
+	internal static ManagedPEImageBuilder _imageBuilder = new ManagedPEImageBuilder();
 
-	internal static ManagedPEFileBuilder _fileBuilder;
+	internal static ManagedPEFileBuilder _fileBuilder = new ManagedPEFileBuilder();
 
 	public abstract ImmutableList<IAssemblyPatch> Patches { get; }
 
@@ -30,7 +30,7 @@ public abstract class BaseConverter
 	public virtual byte[] Convert(ModuleDefinition asm, Context ctx = default(Context))
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Expected O, but got Unknown
+		//IL_0007: Expected Obj, but got Unknown
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		ReferenceImporter importer = new ReferenceImporter(asm);
 		foreach (IAssemblyPatch patch in Patches)
@@ -50,10 +50,8 @@ public abstract class BaseConverter
 	static BaseConverter()
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Expected O, but got Unknown
+		//IL_000a: Expected Obj, but got Unknown
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		_imageBuilder = new ManagedPEImageBuilder();
-		_fileBuilder = new ManagedPEFileBuilder();
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

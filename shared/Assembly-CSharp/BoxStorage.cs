@@ -13,7 +13,7 @@ public class BoxStorage : StorageContainer
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		return ClosestPoint(base.GetDropPosition() + base.LastAttackedDir * 10f);
+		return ClosestPoint(base.GetDropPosition() + LastAttackedDir * 10f);
 	}
 
 	public override bool SupportsChildDeployables()

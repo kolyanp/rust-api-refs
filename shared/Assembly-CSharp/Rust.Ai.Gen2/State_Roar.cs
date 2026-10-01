@@ -9,11 +9,11 @@ public class State_Roar : State_PlayAnimation
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		if (!base.Senses.FindTarget(out var _))
+		if (!Senses.FindTarget(out var _))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		base.Blackboard.Add("AlreadyRoared");
+		Blackboard.Add("AlreadyRoared");
 		return base.OnStateEnter(payload);
 	}
 }

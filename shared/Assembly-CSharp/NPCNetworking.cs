@@ -18,9 +18,6 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 
 	public const BaseEntity.Flags FLAG_IS_ALERT = BaseEntity.Flags.Reserved6;
 
-	[CompilerGenerated]
-	private Vector3 _003CLookDirection_003Ek__BackingField;
-
 	private SenseComponent _senses;
 
 	private RustNavMeshAgent _agent;
@@ -31,27 +28,27 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLookDirection_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLookDirection_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
 	public float DesiredSwimDepth { get; private set; }
 
-	private SenseComponent Senses => _senses ?? (_senses = ((Component)base.baseEntity).GetComponent<SenseComponent>());
+	private SenseComponent Senses => _senses ?? (_senses = ((Component)baseEntity).GetComponent<SenseComponent>());
 
-	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)base.baseEntity).GetComponent<RustNavMeshAgent>());
+	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)baseEntity).GetComponent<RustNavMeshAgent>());
 
 	public override void InitShared()
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
 			LookDirection = ((Component)this).transform.forward;
 		}
@@ -70,15 +67,15 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 lookDirection = LookDirection;
 		float desiredSwimDepth = DesiredSwimDepth;
-		bool flag = base.baseEntity.HasFlag(BaseEntity.Flags.Reserved6);
+		bool flag = baseEntity.HasFlag(BaseEntity.Flags.Reserved6);
 		Matrix4x4 eyeTransform = Senses.GetEyeTransform();
-		LookDirection = ((Matrix4x4)(ref eyeTransform)).rotation * Vector3.forward;
+		LookDirection = eyeTransform.rotation * Vector3.forward;
 		DesiredSwimDepth = Agent.desiredSwimDepth.Value;
 		bool flag2 = Senses.FindTarget(out var _);
-		if (base.baseEntity.net != null && base.baseEntity.net.group != null && base.baseEntity.net.group.subscribers != null && base.baseEntity.net.group.subscribers.Count > 0 && (lookDirection != LookDirection || desiredSwimDepth != DesiredSwimDepth || flag != flag2))
+		if (baseEntity.net != null && baseEntity.net.group != null && baseEntity.net.group.subscribers != null && baseEntity.net.group.subscribers.Count > 0 && (lookDirection != LookDirection || desiredSwimDepth != DesiredSwimDepth || flag != flag2))
 		{
-			base.baseEntity.SetFlagLocal(BaseEntity.Flags.Reserved6, flag2);
-			base.baseEntity.SendNetworkUpdate();
+			baseEntity.SetFlagLocal(BaseEntity.Flags.Reserved6, flag2);
+			baseEntity.SendNetworkUpdate();
 		}
 	}
 
@@ -87,7 +84,7 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		base.SaveComponent(info);
-		if (base.baseEntity.isServer && !info.forDisk)
+		if (baseEntity.isServer && !info.forDisk)
 		{
 			info.msg.npcTargetState = Pool.Get<NPCTargetState>();
 			info.msg.npcTargetState.lookDirection = LookDirection;

@@ -182,7 +182,7 @@ public class TreeManager : BaseEntity
 	private void InitTreeGrid()
 	{
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Expected O, but got Unknown
+		//IL_00af: Expected Obj, but got Unknown
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
@@ -204,7 +204,7 @@ public class TreeManager : BaseEntity
 		treesGrid = new List<TreeCell>(gridSize * gridSize);
 		for (int i = 0; i < gridSize * gridSize; i++)
 		{
-			TreeCell item = default(TreeCell);
+			TreeCell item = default;
 			item.TreeList = new TreeList();
 			item.TreeList.trees = new List<Tree>();
 			item.SerializedCell = new MemoryStream();
@@ -344,7 +344,7 @@ public class TreeManager : BaseEntity
 		}
 		Pool.FreeUnmanaged(ref stopwatch2);
 		Pool.FreeUnmanaged(ref stopwatch);
-		playersToProcess.RemoveAll(delegate(ToProcess toProcess)
+		playersToProcess.RemoveAll((ToProcess toProcess) =>
 		{
 			if (toProcess.Left == 0)
 			{

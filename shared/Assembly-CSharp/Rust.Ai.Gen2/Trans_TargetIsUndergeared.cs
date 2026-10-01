@@ -8,7 +8,7 @@ public class Trans_TargetIsUndergeared : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_TargetIsUndergeared"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return false;
 			}

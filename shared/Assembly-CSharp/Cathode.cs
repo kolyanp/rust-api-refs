@@ -7,73 +7,142 @@ using UnityEngine.Rendering.PostProcessing;
 public class Cathode : PostProcessEffectSettings
 {
 	[Range(0f, 1f)]
-	public FloatParameter intensity;
+	public FloatParameter intensity = new FloatParameter
+	{
+		value = 0f
+	};
 
 	[Range(1f, 16f)]
-	public IntParameter downscale;
+	public IntParameter downscale = new IntParameter
+	{
+		value = 1
+	};
 
 	[Range(1f, 16f)]
-	public IntParameter downscaleTemporal;
+	public IntParameter downscaleTemporal = new IntParameter
+	{
+		value = 1
+	};
 
 	[Range(0f, 3f)]
-	public FloatParameter horizontalBlur;
+	public FloatParameter horizontalBlur = new FloatParameter
+	{
+		value = 1f
+	};
 
 	[Range(0f, 3f)]
-	public FloatParameter verticalBlur;
+	public FloatParameter verticalBlur = new FloatParameter
+	{
+		value = 1f
+	};
 
 	[Range(0f, 5f)]
-	public FloatParameter chromaSubsampling;
+	public FloatParameter chromaSubsampling = new FloatParameter
+	{
+		value = 1.7f
+	};
 
 	[Range(0f, 5f)]
-	public FloatParameter sharpen;
+	public FloatParameter sharpen = new FloatParameter
+	{
+		value = 1.2f
+	};
 
 	[Range(0f, 5f)]
-	public FloatParameter sharpenRadius;
+	public FloatParameter sharpenRadius = new FloatParameter
+	{
+		value = 1.2f
+	};
 
 	[Range(0f, 0.5f)]
-	public FloatParameter colorNoise;
+	public FloatParameter colorNoise = new FloatParameter
+	{
+		value = 0.05f
+	};
 
 	[Range(0f, 5f)]
-	public FloatParameter restlessFoot;
+	public FloatParameter restlessFoot = new FloatParameter
+	{
+		value = 0.2f
+	};
 
 	[Range(0f, 0.1f)]
-	public FloatParameter footAmplitude;
+	public FloatParameter footAmplitude = new FloatParameter
+	{
+		value = 0.02f
+	};
 
 	[Range(0f, 3f)]
-	public FloatParameter chromaIntensity;
+	public FloatParameter chromaIntensity = new FloatParameter
+	{
+		value = 1f
+	};
 
 	[Range(0f, 1f)]
-	public FloatParameter chromaInstability;
+	public FloatParameter chromaInstability = new FloatParameter
+	{
+		value = 1f
+	};
 
 	[Range(0f, 0.1f)]
-	public FloatParameter chromaOffset;
+	public FloatParameter chromaOffset = new FloatParameter
+	{
+		value = 0.02f
+	};
 
 	[Range(-2f, 2f)]
-	public FloatParameter responseCurve;
+	public FloatParameter responseCurve = new FloatParameter
+	{
+		value = 0f
+	};
 
 	[Range(-1f, 1f)]
-	public FloatParameter saturation;
+	public FloatParameter saturation = new FloatParameter
+	{
+		value = 1f
+	};
 
 	[Range(0f, 1f)]
-	public FloatParameter cometTrailing;
+	public FloatParameter cometTrailing = new FloatParameter
+	{
+		value = 0.3f
+	};
 
 	[Range(0f, 1f)]
-	public FloatParameter burnIn;
+	public FloatParameter burnIn = new FloatParameter
+	{
+		value = 0.1f
+	};
 
 	[Range(0f, 1f)]
-	public FloatParameter tapeDust;
+	public FloatParameter tapeDust = new FloatParameter
+	{
+		value = 0.1f
+	};
 
 	[Range(0f, 2f)]
-	public FloatParameter wobble;
+	public FloatParameter wobble = new FloatParameter
+	{
+		value = 1f
+	};
 
 	[Range(0f, 1f)]
-	public Vector2Parameter blackWhiteLevels;
+	public Vector2Parameter blackWhiteLevels = new Vector2Parameter
+	{
+		value = new Vector2(0f, 1f)
+	};
 
 	[Range(0f, 1f)]
-	public Vector2Parameter dynamicRange;
+	public Vector2Parameter dynamicRange = new Vector2Parameter
+	{
+		value = new Vector2(0f, 1f)
+	};
 
 	[Range(-1f, 1f)]
-	public FloatParameter whiteBallance;
+	public FloatParameter whiteBallance = new FloatParameter
+	{
+		value = 0f
+	};
 
 	public Cathode()
 	{
@@ -81,98 +150,5 @@ public class Cathode : PostProcessEffectSettings
 		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
-		intensity = new FloatParameter
-		{
-			value = 0f
-		};
-		downscale = new IntParameter
-		{
-			value = 1
-		};
-		downscaleTemporal = new IntParameter
-		{
-			value = 1
-		};
-		horizontalBlur = new FloatParameter
-		{
-			value = 1f
-		};
-		verticalBlur = new FloatParameter
-		{
-			value = 1f
-		};
-		chromaSubsampling = new FloatParameter
-		{
-			value = 1.7f
-		};
-		sharpen = new FloatParameter
-		{
-			value = 1.2f
-		};
-		sharpenRadius = new FloatParameter
-		{
-			value = 1.2f
-		};
-		colorNoise = new FloatParameter
-		{
-			value = 0.05f
-		};
-		restlessFoot = new FloatParameter
-		{
-			value = 0.2f
-		};
-		footAmplitude = new FloatParameter
-		{
-			value = 0.02f
-		};
-		chromaIntensity = new FloatParameter
-		{
-			value = 1f
-		};
-		chromaInstability = new FloatParameter
-		{
-			value = 1f
-		};
-		chromaOffset = new FloatParameter
-		{
-			value = 0.02f
-		};
-		responseCurve = new FloatParameter
-		{
-			value = 0f
-		};
-		saturation = new FloatParameter
-		{
-			value = 1f
-		};
-		cometTrailing = new FloatParameter
-		{
-			value = 0.3f
-		};
-		burnIn = new FloatParameter
-		{
-			value = 0.1f
-		};
-		tapeDust = new FloatParameter
-		{
-			value = 0.1f
-		};
-		wobble = new FloatParameter
-		{
-			value = 1f
-		};
-		blackWhiteLevels = new Vector2Parameter
-		{
-			value = new Vector2(0f, 1f)
-		};
-		dynamicRange = new Vector2Parameter
-		{
-			value = new Vector2(0f, 1f)
-		};
-		whiteBallance = new FloatParameter
-		{
-			value = 0f
-		};
-		base._002Ector();
 	}
 }

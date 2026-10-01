@@ -10,7 +10,7 @@ public class ShadowCacher
 {
 	private const int CACHE_TEXTURE_RESOLUTION = 256;
 
-	private const float CACHE_TEXTURE_FRAGMENT_SIZE = 0.00390625f;
+	private const float CACHE_TEXTURE_FRAGMENT_SIZE = 1f / 256f;
 
 	private const GraphicsFormat CACHE_TEXTURE_FORMAT = (GraphicsFormat)52;
 
@@ -79,14 +79,14 @@ public class ShadowCacher
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Expected O, but got Unknown
+		//IL_0055: Expected Obj, but got Unknown
 		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013a: Invalid comparison between Unknown and I4
 		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010d: Invalid comparison between Unknown and I4
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Expected O, but got Unknown
+		//IL_0089: Expected Obj, but got Unknown
 		if (isInitialized)
 		{
 			return;
@@ -137,11 +137,27 @@ public class ShadowCacher
 		if ((Object)(object)originalCookieTexture == (Object)null)
 		{
 			type = light.type;
-			Texture val3 = (Texture)(((int)type == 0) ? defaultSpotLightCookie : (((int)type != 2) ? ((object)Texture2D.whiteTexture) : ((object)defaultWhiteCubemap)));
+			Texture val3;
+			if ((int)type != 0)
+			{
+				val3 = (((int)type != 2) ? ((Texture)(object)Texture2D.whiteTexture) : ((Texture)(object)defaultWhiteCubemap));
+			}
+			else
+			{
+				val3 = defaultSpotLightCookie;
+			}
 			originalCookieTexture = val3;
 		}
 		type = light.type;
-		RenderTexturePool renderTexturePool = (((int)type == 0) ? spotLightRtPool : (((int)type != 2) ? null : pointLightRtPool));
+		RenderTexturePool renderTexturePool;
+		if ((int)type != 0)
+		{
+			renderTexturePool = (((int)type != 2) ? null : pointLightRtPool);
+		}
+		else
+		{
+			renderTexturePool = spotLightRtPool;
+		}
 		this.renderTexturePool = renderTexturePool;
 		cachedShadowMap = this.renderTexturePool?.GetInstance();
 		if ((Object)(object)cachedShadowMap == (Object)null)
@@ -158,7 +174,7 @@ public class ShadowCacher
 	private void InitializeCommandBuffers()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
@@ -200,9 +216,9 @@ public class ShadowCacher
 			{
 				shadowCopyCommandBuffer.SetGlobalInt(cubemapFaceId, i);
 				shadowCopyCommandBuffer.Blit(RenderTargetIdentifier.op_Implicit((Texture)null), RenderTargetIdentifier.op_Implicit(tempShadowMapCacheId), copyShadowMapMat, 0, i);
-				shadowCopyCommandBuffer.SetGlobalVector(blurDirectionId, Vector4.op_Implicit(new Vector2(0.00390625f, 0f)));
+				shadowCopyCommandBuffer.SetGlobalVector(blurDirectionId, Vector4.op_Implicit(new Vector2(1f / 256f, 0f)));
 				shadowCopyCommandBuffer.Blit(RenderTargetIdentifier.op_Implicit(tempShadowMapCacheId), RenderTargetIdentifier.op_Implicit(tempGaussianBlurId), gaussianBlurMat, 0, i);
-				shadowCopyCommandBuffer.SetGlobalVector(blurDirectionId, Vector4.op_Implicit(new Vector2(0f, 0.00390625f)));
+				shadowCopyCommandBuffer.SetGlobalVector(blurDirectionId, Vector4.op_Implicit(new Vector2(0f, 1f / 256f)));
 				shadowCopyCommandBuffer.Blit(RenderTargetIdentifier.op_Implicit(tempGaussianBlurId), RenderTargetIdentifier.op_Implicit(tempShadowMapCacheId), gaussianBlurMat, 0, i);
 				shadowCopyCommandBuffer.CopyTexture(RenderTargetIdentifier.op_Implicit(tempShadowMapCacheId), i, 0, RenderTargetIdentifier.op_Implicit((Texture)(object)cachedShadowMap), i, 0);
 			}
@@ -214,9 +230,9 @@ public class ShadowCacher
 			shadowCopyCommandBuffer.GetTemporaryRT(tempShadowMapCacheId, 256, 256, 0, (FilterMode)0, (GraphicsFormat)52);
 			shadowCopyCommandBuffer.GetTemporaryRT(tempGaussianBlurId, 256, 256, 0, (FilterMode)0, (GraphicsFormat)52);
 			shadowCopyCommandBuffer.Blit((Texture)null, RenderTargetIdentifier.op_Implicit(tempShadowMapCacheId), copyShadowMapMat, 1);
-			shadowCopyCommandBuffer.SetGlobalVector(blurDirectionId, Vector4.op_Implicit(new Vector2(0.00390625f, 0f)));
+			shadowCopyCommandBuffer.SetGlobalVector(blurDirectionId, Vector4.op_Implicit(new Vector2(1f / 256f, 0f)));
 			shadowCopyCommandBuffer.Blit(RenderTargetIdentifier.op_Implicit(tempShadowMapCacheId), RenderTargetIdentifier.op_Implicit(tempGaussianBlurId), gaussianBlurMat, 1);
-			shadowCopyCommandBuffer.SetGlobalVector(blurDirectionId, Vector4.op_Implicit(new Vector2(0f, 0.00390625f)));
+			shadowCopyCommandBuffer.SetGlobalVector(blurDirectionId, Vector4.op_Implicit(new Vector2(0f, 1f / 256f)));
 			shadowCopyCommandBuffer.Blit(RenderTargetIdentifier.op_Implicit(tempGaussianBlurId), RenderTargetIdentifier.op_Implicit(tempShadowMapCacheId), gaussianBlurMat, 1);
 			shadowCopyCommandBuffer.CopyTexture(RenderTargetIdentifier.op_Implicit(tempShadowMapCacheId), RenderTargetIdentifier.op_Implicit((Texture)(object)cachedShadowMap));
 			shadowCopyCommandBuffer.ReleaseTemporaryRT(tempShadowMapCacheId);
@@ -249,7 +265,7 @@ public class ShadowCacher
 		if (refreshDistanceDelta > 0f)
 		{
 			Vector3 val = ((Component)lightLod).transform.position - lastRefreshPosition;
-			return ((Vector3)(ref val)).sqrMagnitude >= refreshDistanceDelta * refreshDistanceDelta;
+			return val.sqrMagnitude >= refreshDistanceDelta * refreshDistanceDelta;
 		}
 		return false;
 	}
@@ -309,10 +325,10 @@ public class ShadowCacher
 				light.RemoveCommandBuffer((LightEvent)1, shadowCopyCommandBuffer);
 			}
 		}
-		CommandBuffer obj = shadowCopyCommandBuffer;
-		if (obj != null)
+		CommandBuffer val = shadowCopyCommandBuffer;
+		if (val != null)
 		{
-			obj.Release();
+			val.Release();
 		}
 		shadowCopyCommandBuffer = null;
 		SetEnabledFlag(enabled: false, light);

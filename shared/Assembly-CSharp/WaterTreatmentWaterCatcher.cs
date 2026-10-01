@@ -31,7 +31,7 @@ public class WaterTreatmentWaterCatcher : WaterCatcher
 		ToggleProducing(true);
 		float num = ((overrideCollectInterval > 0f) ? overrideCollectInterval : 60f);
 		nextCollect = TimeUntil.op_Implicit(num + Random.Range(0f, num * 0.1f));
-		if (base.inventory != null && !IsFull())
+		if (inventory != null && !IsFull())
 		{
 			if (WaterTreatmentFlowRateBroadcast.WaterTreatmentBroadcastFlowRate > 0f)
 			{

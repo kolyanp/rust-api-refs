@@ -71,9 +71,9 @@ public struct GatherFlyingBatchesJob : IJob
 			int playerIndex = Indices[i];
 			TickInterpolatorCache.PlayerTickIterator playerTickIterator = TickInterpolatorCache.GetPlayerTickIterator(TickCache, playerIndex);
 			Matrix4x4 val = Matrices[i];
-			bool flag = ((Matrix4x4)(ref val))[15] == 0f;
-			Vector3 val2 = (flag ? playerTickIterator.StartPoint : ((Matrix4x4)(ref val)).MultiplyPoint3x4(playerTickIterator.StartPoint));
-			Vector3 val3 = (flag ? playerTickIterator.EndPoint : ((Matrix4x4)(ref val)).MultiplyPoint3x4(playerTickIterator.EndPoint));
+			bool flag = val[15] == 0f;
+			Vector3 val2 = (flag ? playerTickIterator.StartPoint : val.MultiplyPoint3x4(playerTickIterator.StartPoint));
+			Vector3 val3 = (flag ? playerTickIterator.EndPoint : val.MultiplyPoint3x4(playerTickIterator.EndPoint));
 			AntiHack.FlyingBatch flyingBatch = Batches[i];
 			flyingBatch.PlayerIndex = playerIndex;
 			playerTickIterator.Reset();
@@ -87,7 +87,7 @@ public struct GatherFlyingBatchesJob : IJob
 				int num2 = 0;
 				while (playerTickIterator.MoveNext(distance))
 				{
-					val3 = (flag ? playerTickIterator.CurrentPoint : ((Matrix4x4)(ref val)).MultiplyPoint3x4(playerTickIterator.CurrentPoint));
+					val3 = (flag ? playerTickIterator.CurrentPoint : val.MultiplyPoint3x4(playerTickIterator.CurrentPoint));
 					From.AddNoResize(val2);
 					To.AddNoResize(val3);
 					CheckPoses.AddNoResize((val2 + val3) * 0.5f);

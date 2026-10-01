@@ -9,8 +9,8 @@ public class UI_SteamInventory : UI_Page
 	[SerializeField]
 	private FlexVirtualScroll virtualScrollFlex;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SteamInventoryCrafting crafting;
 
 	[SerializeField]
@@ -34,19 +34,17 @@ public class UI_SteamInventory : UI_Page
 	[SerializeField]
 	private RustInput searchBar;
 
-	private static readonly Phrase inventoryRetryPhrase;
+	private static readonly Phrase inventoryRetryPhrase = new Phrase("inventory.retry", "Retry");
 
-	private static readonly Phrase inventoryConnectionIssuePhrase;
+	private static readonly Phrase inventoryConnectionIssuePhrase = new Phrase("inventory.connection_issue", "Your Steam inventory failed to load. Steam might be down?");
 
 	public static UI_SteamInventoryCrafting Crafting => Instance?.crafting;
 
 	static UI_SteamInventory()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		inventoryRetryPhrase = new Phrase("inventory.retry", "Retry");
-		inventoryConnectionIssuePhrase = new Phrase("inventory.connection_issue", "Your Steam inventory failed to load. Steam might be down?");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

@@ -61,7 +61,7 @@ public static class MeshCache
 			data.uv4 = mesh.uv4;
 			data.bounds = mesh.bounds;
 			data.meshName = ((Object)mesh).name;
-			data.submeshes = (SubMeshDescriptor[])(object)new SubMeshDescriptor[mesh.subMeshCount];
+			data.submeshes = new SubMeshDescriptor[mesh.subMeshCount];
 			for (int i = 0; i < data.submeshes.Length; i++)
 			{
 				data.submeshes[i] = mesh.GetSubMesh(i);

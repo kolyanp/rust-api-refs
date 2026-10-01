@@ -4,18 +4,18 @@ public class MissionObjective_UnderwaterLabsBoomboxBonus : MissionObjective
 {
 	public string targetRadioIp;
 
-	[BaseMission.PositionGenerator.PositionPoint]
 	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
+	[BaseMission.PositionGenerator.PositionPoint]
 	public string requireProximityToPosition;
 
-	[Min(0f)]
 	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
+	[Min(0f)]
 	public float minimumDistanceToMissionPoint;
 
 	public bool shouldHideCompassMarkerWhenClose;
 
-	[Min(0f)]
 	[Tooltip("If \"Should Hide Compass Marker When Close\" is enabled and player is within this distance of the mission point then hide the compass marker, else the compass marker is visible.")]
+	[Min(0f)]
 	public float hideCompassMarkerDistance = 50f;
 
 	private float sqrDistanceToHideCompassMarker;
@@ -68,7 +68,7 @@ public class MissionObjective_UnderwaterLabsBoomboxBonus : MissionObjective
 		instance.objectiveStatuses[index].progressTarget = num2;
 	}
 
-	public unsafe override void ProcessMissionEvent(BasePlayer playerFor, BaseMission.MissionInstance instance, int index, BaseMission.MissionEventType type, BaseMission.MissionEventPayload payload, float amount)
+	public override void ProcessMissionEvent(BasePlayer playerFor, BaseMission.MissionInstance instance, int index, BaseMission.MissionEventType type, BaseMission.MissionEventPayload payload, float amount)
 	{
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
@@ -79,7 +79,7 @@ public class MissionObjective_UnderwaterLabsBoomboxBonus : MissionObjective
 		}
 		if (!BaseNetworkable.serverEntities.TryGetEntity(payload.NetworkIdentifier, out var entity))
 		{
-			Debug.LogError((object)("Failed to find a server entity with network ID " + ((object)(*(NetworkableId*)(&payload.NetworkIdentifier))/*cast due to constrained. prefix*/).ToString()));
+			Debug.LogError((object)("Failed to find a server entity with network ID " + ((object)payload.NetworkIdentifier/*cast due to constrained. prefix*/).ToString()));
 			return;
 		}
 		for (int i = 0; i < instance.persistentMissionEntities.Count; i++)

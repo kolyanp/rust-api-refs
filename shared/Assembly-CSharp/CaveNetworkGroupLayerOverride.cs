@@ -53,7 +53,7 @@ public class CaveNetworkGroupLayerOverride : MonoBehaviour, IServerComponent
 		foreach (OverrideData @override in _overrides)
 		{
 			Vector3 val = @override.Position - pos;
-			if (((Vector3)(ref val)).sqrMagnitude <= @override.RadiusSquared)
+			if (val.sqrMagnitude <= @override.RadiusSquared)
 			{
 				return true;
 			}

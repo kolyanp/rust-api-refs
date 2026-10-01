@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -36,7 +37,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 
 	public Phrase currentLoadingPhrase;
 
-	private float currentLoadingProgress;
+	private float currentLoadingProgress = -1f;
 
 	public CanvasGroup BootstrapUiCanvas;
 
@@ -48,7 +49,9 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 
 	private const bool fastBootstrap = false;
 
-	private Phrase openingBundles;
+	private HashSet<string> dynamicBundles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	private Phrase openingBundles = new Phrase("bootstrap.openingbundles", "Opening Bundles");
 
 	private static string loadingStepName;
 
@@ -61,8 +64,6 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 	public static bool needsSetup => !bootstrapInitRun;
 
 	private static bool ShouldDoServerStartupYields => true;
-
-	public static bool GameUIEnabled => true;
 
 	public static bool isPresent
 	{
@@ -79,6 +80,8 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 			return false;
 		}
 	}
+
+	public static bool GameUIEnabled => true;
 
 	public static void RunDefaults()
 	{
@@ -147,9 +150,9 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 				SynchronizationContext syncContext = SynchronizationContext.Current;
 				Process processById = Process.GetProcessById(parentProcessId);
 				processById.EnableRaisingEvents = true;
-				processById.Exited += delegate
+				processById.Exited += (object _, EventArgs _) =>
 				{
-					syncContext.Post(delegate
+					syncContext.Post((object obj) =>
 					{
 						WriteToLog($"Parent process ID {parentProcessId} exited. Exiting the server now...");
 						ConsoleSystem.Run(ConsoleSystem.Option.Server, "quit");
@@ -171,7 +174,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Expected O, but got Unknown
+		//IL_0026: Expected Obj, but got Unknown
 		Global.Init();
 		Translate.Init();
 		Integration val = new Integration();
@@ -217,18 +220,18 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 	public static void NetworkInitRaknet()
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Expected O, but got Unknown
+		//IL_000a: Expected Obj, but got Unknown
 		Net.sv = (Network.Server)new Server();
 	}
 
 	public static void NetworkInitSteamworks(bool enableSteamDatagramRelay)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		Net.sv = (Network.Server)new Server(enableSteamDatagramRelay);
 	}
 
-	private unsafe IEnumerator Start()
+	private IEnumerator Start()
 	{
 		WriteToLog("Bootstrap Startup");
 		timeSinceBootstrapStart = RealTimeSince.op_Implicit(0f);
@@ -238,12 +241,14 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		timer?.Start();
 		if (!Application.isEditor)
 		{
-			BuildInfo current = BuildInfo.Current;
-			bool flag = (current.Scm.Branch != null && current.Scm.Branch == "experimental/release") || current.Scm.Branch == "release";
-			ExceptionReporter.Initialize("https://gw.facepunch.com/facetry/errors", flag ? "server-release" : "server-staging");
+			bool flag = ExceptionReporter.IsReleaseBranch(BuildInfo.Current.Scm.Branch);
+			ExceptionReporter.Initialize("https://gw.facepunch.com/facetry/errors", ExceptionReporter.GetSentryProject(flag), "https://gw.facepunch.com/facetry/minidump");
 			bool num = CommandLine.Full.Contains("-official") || CommandLine.Full.Contains("-server.official") || CommandLine.Full.Contains("+official") || CommandLine.Full.Contains("+server.official");
 			bool flag2 = CommandLine.Full.Contains("-stats") || CommandLine.Full.Contains("-server.stats") || CommandLine.Full.Contains("+stats") || CommandLine.Full.Contains("+server.stats");
 			ExceptionReporter.Disabled = !(num & flag2);
+			ExceptionReporter.IsOfficialServer = num;
+			CrashSessionMarker.Start();
+			MinidumpScanner.RunBootScan();
 		}
 		Scope val;
 		Scope val2;
@@ -255,12 +260,12 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 			{
 				yield return ((MonoBehaviour)this).StartCoroutine(LoadingUpdate(openingBundles));
 				char directorySeparatorChar = Path.DirectorySeparatorChar;
-				newBackend.Load("Bundles" + directorySeparatorChar + "Bundles");
+				newBackend.Load("Bundles" + directorySeparatorChar + "Bundles", dynamicBundles);
 				FileSystem.Backend = (FileSystemBackend)(object)newBackend;
 			}
 			finally
 			{
-				((IDisposable)(*(Scope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 			}
 			if (FileSystem.Backend.isError)
 			{
@@ -274,7 +279,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 			}
 			finally
 			{
-				((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 			}
 			while (true)
 			{
@@ -314,7 +319,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		finally
 		{
-			((IDisposable)(*(Scope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 		}
 		val = BenchmarkTimer.Measure("bootstrap;selfcheck");
 		try
@@ -324,7 +329,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		finally
 		{
-			((IDisposable)(*(Scope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 		}
 		if (isErrored)
 		{
@@ -338,7 +343,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		finally
 		{
-			((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 		}
 		val2 = BenchmarkTimer.Measure("bootstrap;commandlinevalues");
 		try
@@ -347,7 +352,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		finally
 		{
-			((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 		}
 		yield return ((MonoBehaviour)this).StartCoroutine(LoadingUpdate(Phrase.op_Implicit("Bootstrap Systems")));
 		val2 = BenchmarkTimer.Measure("bootstrap;init_systems");
@@ -357,7 +362,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		finally
 		{
-			((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 		}
 		yield return ((MonoBehaviour)this).StartCoroutine(LoadingUpdate(Phrase.op_Implicit("Bootstrap Config")));
 		val2 = BenchmarkTimer.Measure("bootstrap;init_config");
@@ -367,7 +372,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		finally
 		{
-			((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 		}
 		val2 = BenchmarkTimer.Measure("bootstrap;commandlinevalues2");
 		try
@@ -376,7 +381,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		finally
 		{
-			((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 		}
 		if (!isErrored)
 		{
@@ -388,7 +393,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 			}
 			finally
 			{
-				((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 			}
 			if (!isErrored)
 			{
@@ -461,7 +466,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 	}
 
-	public unsafe static IEnumerator StartServer(bool doLoad, string saveFileOverride, bool allowOutOfDateSaves)
+	public static IEnumerator StartServer(bool doLoad, string saveFileOverride, bool allowOutOfDateSaves)
 	{
 		float timeScale = Time.timeScale;
 		if (ConVar.Time.pausewhileloading)
@@ -637,7 +642,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		finally
 		{
-			((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 		}
 		RustEmojiLibrary.FindAllServerEmoji();
 		_ = PaintballColorLookup.instance;
@@ -731,10 +736,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 
 	public Bootstrap()
 	{
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Expected O, but got Unknown
-		currentLoadingProgress = -1f;
-		openingBundles = new Phrase("bootstrap.openingbundles", "Opening Bundles");
-		base._002Ector();
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Expected Obj, but got Unknown
 	}
 }

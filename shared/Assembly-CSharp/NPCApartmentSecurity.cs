@@ -40,7 +40,7 @@ public class NPCApartmentSecurity : NPCTalking
 		}
 		List<TimerSwitch> list = Pool.Get<List<TimerSwitch>>();
 		Vis.Entities(position, 10f, list, -1, (QueryTriggerInteraction)2);
-		TimerSwitch timerSwitch = list.OrderByDescending(delegate
+		TimerSwitch timerSwitch = list.OrderByDescending((TimerSwitch x) =>
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)

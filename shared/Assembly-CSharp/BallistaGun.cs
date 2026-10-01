@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using ConVar;
 using Facepunch;
 using Network;
@@ -27,38 +26,30 @@ public class BallistaGun : BaseVehicleSeat
 		public GameObjectRef effectPrefab;
 	}
 
-	private enum AimDirection
-	{
-		Left,
-		Right,
-		Up,
-		Down
-	}
-
+	[SerializeField]
 	[Header("Ballista")]
-	[SerializeField]
-	private bool isMountedOnVehicle;
+	private bool isMountedOnVehicle = true;
 
 	[SerializeField]
-	private float turnSensivity;
+	private float turnSensivity = 2f;
 
 	[SerializeField]
-	private float reloadTime;
+	private float reloadTime = 3f;
 
 	[SerializeField]
-	private bool syncAimDirOnFire;
+	private bool syncAimDirOnFire = true;
 
 	[SerializeField]
-	private bool syncAimDirOnReload;
+	private bool syncAimDirOnReload = true;
 
 	[SerializeField]
 	private bool reloadPreventsAiming;
 
 	[SerializeField]
-	private float fovMultiplier;
+	private float fovMultiplier = 1f;
 
 	[SerializeField]
-	private bool noHeadshots;
+	private bool noHeadshots = true;
 
 	[SerializeField]
 	private CapsuleCollider playerServerCollider;
@@ -96,7 +87,7 @@ public class BallistaGun : BaseVehicleSeat
 	private bool useVehicleParentYaw;
 
 	[SerializeField]
-	protected BUTTON reloadButton;
+	protected BUTTON reloadButton = BUTTON.RELOAD;
 
 	public DamageRenderer damageRenderer;
 
@@ -112,8 +103,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[SerializeField]
 	[Header("Effects")]
+	[SerializeField]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -143,8 +134,8 @@ public class BallistaGun : BaseVehicleSeat
 
 	private SoundModulation.Modulator aimMovementPitchGainMod;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private bool runSideChecks;
 
 	[SerializeField]
@@ -193,11 +184,11 @@ public class BallistaGun : BaseVehicleSeat
 
 	public const Flags Flag_Loaded = Flags.Reserved5;
 
-	private readonly float progressTickRate;
+	private readonly float progressTickRate = 0.1f;
 
 	private RealTimeSinceEx timeSinceLastServerTick;
 
-	private Vector3 lastSentAimDir;
+	private Vector3 lastSentAimDir = Vector3.zero;
 
 	public virtual bool RunInLateUpdate => runInLateUpdate;
 
@@ -431,31 +422,31 @@ public class BallistaGun : BaseVehicleSeat
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0189: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
 		float y = mountAnchor.position.y;
 		MoveMountAnchor();
 		float num = y - mountAnchor.position.y;
@@ -488,24 +479,13 @@ public class BallistaGun : BaseVehicleSeat
 		{
 			num4 = 0f;
 		}
-		if (runBoundsChecks)
-		{
-			if (num4 != 0f && !CheckBallistaBounds((!(num4 < 0f)) ? AimDirection.Right : AimDirection.Left))
-			{
-				num4 = 0f;
-			}
-			if (num3 != 0f && !CheckBallistaBounds((num3 < 0f) ? AimDirection.Up : AimDirection.Down))
-			{
-				num3 = 0f;
-			}
-		}
 		Quaternion val = Quaternion.LookRotation(aimDir, ((Component)this).transform.up);
-		Vector3 val2 = ((Quaternion)(ref val)).eulerAngles + new Vector3(num3, num4, 0f);
+		Vector3 val2 = val.eulerAngles + new Vector3(num3, num4, 0f);
 		val2.x = ClampPitch(val2.x);
 		Transform val3 = (HasOwner() ? ((Component)this).transform.parent : yawTransform);
 		float y2 = val2.y;
 		val = Quaternion.LookRotation(val3.forward, ((Component)this).transform.up);
-		val2.y = ClampYaw(y2, ((Quaternion)(ref val)).eulerAngles.y);
+		val2.y = ClampYaw(y2, val.eulerAngles.y);
 		Vector3 val4 = Quaternion.Euler(val2) * Vector3.forward;
 		bool result = !Mathf.Approximately(aimDir.x, val4.x) || !Mathf.Approximately(aimDir.y, val4.y) || !Mathf.Approximately(aimDir.z, val4.z);
 		if (reloadPreventsAiming && HasFlag(Flags.Reserved4))
@@ -560,18 +540,22 @@ public class BallistaGun : BaseVehicleSeat
 		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
 		if ((isMountedOnVehicle && (Object)(object)((Component)this).transform.parent == (Object)null) || aimDir == Vector3.zero)
 		{
 			return;
@@ -590,17 +574,23 @@ public class BallistaGun : BaseVehicleSeat
 		if (!(val2 == Vector3.zero))
 		{
 			Quaternion val3 = Quaternion.LookRotation(val2, Vector3.up);
-			float num2 = ClampYaw(((Quaternion)(ref val3)).eulerAngles.y, 0f);
+			float num2 = ClampYaw(val3.eulerAngles.y, 0f);
 			Quaternion val4 = Quaternion.Euler(0f, num2, 0f);
 			bool flag = TryGetAppliedAimDir(out var localPitchRot);
 			Quaternion val5 = val.rotation * val4;
+			bool flag2 = false;
 			if (yawTransform.rotation != val5)
 			{
-				yawTransform.rotation = Mathx.Lerp(yawTransform.rotation, val5, num, dt);
+				flag2 = !TryRotate(yawTransform, Mathx.Lerp(yawTransform.rotation, val5, num, dt));
 			}
 			if (((!RunInLateUpdate && ShouldApplyAimDir()) & flag) && pitchTransform.localRotation != localPitchRot)
 			{
-				pitchTransform.localRotation = Mathx.Lerp(pitchTransform.localRotation, localPitchRot, num, dt);
+				Quaternion targetRotation = pitchTransform.parent.rotation * Mathx.Lerp(pitchTransform.localRotation, localPitchRot, num, dt);
+				flag2 |= !TryRotate(pitchTransform, targetRotation);
+			}
+			if (flag2)
+			{
+				ResetAimToCurrentRotation();
 			}
 		}
 	}
@@ -613,7 +603,7 @@ public class BallistaGun : BaseVehicleSeat
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		Quaternion val = Quaternion.LookRotation(muzzle.forward, Vector3.up);
-		float num = Mathf.InverseLerp(pitchClamp.y, pitchClamp.x, Mathf.DeltaAngle(0f, ((Quaternion)(ref val)).eulerAngles.x));
+		float num = Mathf.InverseLerp(pitchClamp.y, pitchClamp.x, Mathf.DeltaAngle(0f, val.eulerAngles.x));
 		verticalRatio = Mathf.Lerp(-1f, 1f, num);
 	}
 
@@ -685,7 +675,7 @@ public class BallistaGun : BaseVehicleSeat
 			return false;
 		}
 		Quaternion val3 = Quaternion.LookRotation(val2, Vector3.up);
-		float num = ClampPitch(((Quaternion)(ref val3)).eulerAngles.x);
+		float num = ClampPitch(val3.eulerAngles.x);
 		if (TryGetPitchOverride(num, out var overridePitch, out var overrideWeight))
 		{
 			num = Mathf.LerpAngle(num, overridePitch, Mathf.Clamp01(overrideWeight));
@@ -742,14 +732,14 @@ public class BallistaGun : BaseVehicleSeat
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		float num = 1f;
 		Vector3 up = checkTransform.up;
 		Vector3 val2 = -up;
 		Vector3 val3 = up * 0.6f;
 		if (Physics.SphereCast(checkTransform.position + val3, 0.5f, val2, ref val, num, 1503731969))
 		{
-			return ((RaycastHit)(ref val)).normal.y > 0f;
+			return val.normal.y > 0f;
 		}
 		return false;
 	}
@@ -759,7 +749,7 @@ public class BallistaGun : BaseVehicleSeat
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		float num = 0.2f;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		return Physics.SphereCast(origin, 0.05f, direction, ref val, num, 1503731969);
 	}
 
@@ -780,14 +770,14 @@ public class BallistaGun : BaseVehicleSeat
 		float num = 2f;
 		Vector3 val = mountAnchor.parent.TransformPoint(originalLocalMountPos) + Vector3.up * 0.8f;
 		Vector3 down = Vector3.down;
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (Physics.SphereCast(val, 0.05f, down, ref val2, num, 1503731969))
 		{
-			float y = ((RaycastHit)(ref val2)).point.y;
+			float y = val2.point.y;
 			float y2 = mountAnchor.parent.TransformPoint(originalLocalMountPos).y;
 			if (Mathf.Abs(y - y2) < 0.5f)
 			{
-				mountAnchor.position = ((RaycastHit)(ref val2)).point;
+				mountAnchor.position = val2.point;
 			}
 		}
 	}
@@ -822,56 +812,152 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
-	private bool CheckBallistaBounds(AimDirection direction)
+	private bool TryRotate(Transform rotatingTransform, Quaternion targetRotation)
 	{
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		List<Bounds> list = Pool.Get<List<Bounds>>();
-		bool num = direction == AimDirection.Up || direction == AimDirection.Down;
-		Vector3 val = pitchTransform.position;
-		if (num)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		if (!runBoundsChecks)
 		{
-			Vector3 val2 = ((direction == AimDirection.Up) ? pitchTransform.up : (-pitchTransform.up));
-			val += ((Vector3)(ref val2)).normalized * 0.05f;
-			list.Add(areaChecks[areaChecks.Length - 1]);
+			rotatingTransform.rotation = targetRotation;
+			return true;
 		}
-		else
+		Quaternion startRotation = rotatingTransform.rotation;
+		Quaternion inverseStartRotation = Quaternion.Inverse(startRotation);
+		Vector3 pivot = rotatingTransform.position;
+		Vector3 pitchPosition = pitchTransform.position;
+		Quaternion pitchRotation = pitchTransform.rotation;
+		float num = 0f;
+		Bounds[] array = areaChecks;
+		for (int i = 0; i < array.Length; i++)
 		{
-			int num2 = ((direction != AimDirection.Left) ? 1 : 0);
-			list.Add(areaChecks[num2]);
-			list.Add(areaChecks[areaChecks.Length - 1]);
+			Bounds val = array[i];
+			Vector3 val2 = pitchPosition + pitchRotation * val.center;
+			float num2 = num;
+			float num3 = Vector3.Distance(pivot, val2);
+			Vector3 extents = val.extents;
+			num = Mathf.Max(num2, num3 + extents.magnitude);
 		}
-		bool result = true;
-		foreach (Bounds item in list)
+		float num4 = Quaternion.Angle(startRotation, targetRotation) * (MathF.PI / 180f) * num;
+		int num5 = Mathf.Max(1, Mathf.CeilToInt(num4 / 0.025f));
+		float stepPadding = num4 / (float)num5 * 0.5f;
+		for (int j = 1; j <= num5; j++)
 		{
-			if (SocketMod_AreaCheck.IsInArea(val, new OBB(val, pitchTransform.rotation, item), LayerMask.op_Implicit(1503731969), out var _, wantsInside: true, shouldParent: false, null, this))
+			if (!CheckRotationStep(((float)j - 1f) / (float)num5, (float)j / (float)num5, stepPadding, 8))
 			{
-				result = false;
-				break;
+				rotatingTransform.rotation = Quaternion.Slerp(startRotation, targetRotation, ((float)j - 1f) / (float)num5);
+				return false;
 			}
 		}
-		Pool.FreeUnmanaged<Bounds>(ref list);
-		return result;
+		rotatingTransform.rotation = targetRotation;
+		return true;
+		bool CheckRotationStep(float from, float to, float num7, int remainingSubdivisions)
+		{
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+			float num6 = (from + to) * 0.5f;
+			Quaternion val3 = Quaternion.Slerp(startRotation, targetRotation, num6) * inverseStartRotation;
+			Vector3 position = pivot + val3 * (pitchPosition - pivot);
+			Quaternion rotation = val3 * pitchRotation;
+			if (CheckBallistaBounds(position, rotation, num7))
+			{
+				return true;
+			}
+			if (remainingSubdivisions == 0)
+			{
+				return false;
+			}
+			if (CheckRotationStep(from, num6, num7 * 0.5f, remainingSubdivisions - 1))
+			{
+				return CheckRotationStep(num6, to, num7 * 0.5f, remainingSubdivisions - 1);
+			}
+			return false;
+		}
+	}
+
+	private bool CheckBallistaBounds(Vector3 position, Quaternion rotation, float padding)
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		Bounds[] array = areaChecks;
+		for (int i = 0; i < array.Length; i++)
+		{
+			Bounds val = array[i];
+			val.Expand(padding * 2f);
+			if (SocketMod_AreaCheck.IsInArea(position, new OBB(position, rotation, val), LayerMask.op_Implicit(1503731969), out var _, wantsInside: true, shouldParent: false, null, this))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void ResetAimToCurrentRotation()
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		aimDir = pitchTransform.forward;
+		Transform transform = ((Component)GetRootParentEntity()).transform;
+		if (useVehicleParentYaw && (Object)(object)transform != (Object)(object)((Component)this).transform)
+		{
+			aimDir = transform.InverseTransformDirection(aimDir);
+		}
 	}
 
 	public override void ServerInit()
@@ -882,7 +968,7 @@ public class BallistaGun : BaseVehicleSeat
 
 	private void ServerTick()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			float dt = (float)(double)timeSinceLastServerTick;
 			timeSinceLastServerTick = 0.0;
@@ -1012,7 +1098,7 @@ public class BallistaGun : BaseVehicleSeat
 			LoadAmmo(reloadingPlayer);
 			if (syncAimDirOnReload)
 			{
-				Invoke(delegate
+				Invoke(() =>
 				{
 					SendAimDirImmediate(force: true);
 				}, 0.5f);
@@ -1077,10 +1163,10 @@ public class BallistaGun : BaseVehicleSeat
 		mounted.inventory.ServerUpdate(0f);
 	}
 
-	[RPC_Server.MaxRepeatedElements(1)]
 	[RPC_Server]
 	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxRepeatedElements(1)]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -1099,7 +1185,7 @@ public class BallistaGun : BaseVehicleSeat
 		{
 			if (val.projectiles.Count != 1)
 			{
-				AntiHack.Log(player, AntiHackType.ProjectileHack, "Projectile count mismatch (" + base.ShortPrefabName + ")");
+				AntiHack.Log(player, AntiHackType.ProjectileHack, "Projectile count mismatch (" + ShortPrefabName + ")");
 				player.stats.combat.LogInvalid(player, null, "count_mismatch");
 				return;
 			}
@@ -1174,7 +1260,7 @@ public class BallistaGun : BaseVehicleSeat
 		ammoItem = magazine.ammoType;
 		if ((Object)(object)ammoItem == (Object)null)
 		{
-			AntiHack.Log(player, AntiHackType.ProjectileHack, "Item not found (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ProjectileHack, "Item not found (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "item_missing");
 			itemModProjectile = null;
 			return true;
@@ -1182,7 +1268,7 @@ public class BallistaGun : BaseVehicleSeat
 		itemModProjectile = ((Component)ammoItem).GetComponent<ItemModProjectile>();
 		if ((Object)(object)itemModProjectile == (Object)null)
 		{
-			AntiHack.Log(player, AntiHackType.ProjectileHack, "Item mod not found (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ProjectileHack, "Item mod not found (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "mod_missing");
 			return true;
 		}
@@ -1221,50 +1307,50 @@ public class BallistaGun : BaseVehicleSeat
 		BasePlayer mounted = GetMounted();
 		if ((Object)(object)mounted == (Object)null)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Owner not found (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Owner not found (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "owner_missing");
 			return false;
 		}
 		if ((Object)(object)mounted != (Object)(object)player)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player mismatch (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player mismatch (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "player_mismatch");
 			return false;
 		}
 		if (player.IsDead())
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player dead (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player dead (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "player_dead");
 			return false;
 		}
 		if (player.IsWounded())
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player down (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player down (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "player_down");
 			return false;
 		}
 		if (player.IsSleeping())
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player sleeping (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player sleeping (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "player_sleeping");
 			return false;
 		}
 		if (player.desyncTimeRaw > ConVar.AntiHack.maxdesync)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player stalled (" + base.ShortPrefabName + " with " + player.desyncTimeRaw + "s)");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player stalled (" + ShortPrefabName + " with " + player.desyncTimeRaw + "s)");
 			player.stats.combat.LogInvalid(player, null, "player_stalled");
 			return false;
 		}
 		if ((Object)(object)magazine.ammoType == (Object)null)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Item not found (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Item not found (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "item_missing");
 			return false;
 		}
 		return true;
 	}
 
-	protected unsafe bool ValidateFirePos(BasePlayer player, Vector3 firePos)
+	protected bool ValidateFirePos(BasePlayer player, Vector3 firePos)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
@@ -1280,7 +1366,7 @@ public class BallistaGun : BaseVehicleSeat
 		bool flag = true;
 		if (Vector3Ex.IsNaNOrInfinity(firePos))
 		{
-			string shortPrefabName = base.ShortPrefabName;
+			string shortPrefabName = ShortPrefabName;
 			AntiHack.Log(player, AntiHackType.EyeHack, "Contains NaN (" + shortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, null, "eye_nan");
 			flag = false;
@@ -1291,13 +1377,13 @@ public class BallistaGun : BaseVehicleSeat
 			if (ConVar.AntiHack.eye_protection >= 1)
 			{
 				val = player.GetParentVelocity();
-				float magnitude = ((Vector3)(ref val)).magnitude;
+				float magnitude = val.magnitude;
 				val = player.GetMountVelocity();
-				float num = magnitude + ((Vector3)(ref val)).magnitude + ConVar.AntiHack.eye_forgiveness;
+				float num = magnitude + val.magnitude + ConVar.AntiHack.eye_forgiveness;
 				float num2 = Vector3.Distance(((Component)muzzle).transform.position, firePos);
 				if (num2 > num)
 				{
-					string shortPrefabName2 = base.ShortPrefabName;
+					string shortPrefabName2 = ShortPrefabName;
 					AntiHack.Log(player, AntiHackType.EyeHack, "Distance (" + shortPrefabName2 + " on attack with " + num2 + "m > " + num + "m)");
 					player.stats.combat.LogInvalid(player, null, "eye_distance");
 					flag = false;
@@ -1314,16 +1400,16 @@ public class BallistaGun : BaseVehicleSeat
 			}
 			if (ConVar.AntiHack.eye_protection >= 2 && !CanSeeFirePoint(player, 0.05f))
 			{
-				string shortPrefabName3 = base.ShortPrefabName;
-				string[] obj = new string[8] { "Line of sight (", shortPrefabName3, " on attack) ", null, null, null, null, null };
+				string shortPrefabName3 = ShortPrefabName;
+				string[] array = new string[8] { "Line of sight (", shortPrefabName3, " on attack) ", null, null, null, null, null };
 				val = player.eyes.center;
-				obj[3] = ((object)(*(Vector3*)(&val))/*cast due to constrained. prefix*/).ToString();
-				obj[4] = " ";
+				array[3] = ((object)val/*cast due to constrained. prefix*/).ToString();
+				array[4] = " ";
 				val = player.eyes.position;
-				obj[5] = ((object)(*(Vector3*)(&val))/*cast due to constrained. prefix*/).ToString();
-				obj[6] = " ";
-				obj[7] = ((object)(*(Vector3*)(&firePos))/*cast due to constrained. prefix*/).ToString();
-				AntiHack.Log(player, AntiHackType.EyeHack, string.Concat(obj));
+				array[5] = ((object)val/*cast due to constrained. prefix*/).ToString();
+				array[6] = " ";
+				array[7] = ((object)firePos/*cast due to constrained. prefix*/).ToString();
+				AntiHack.Log(player, AntiHackType.EyeHack, string.Concat(array));
 				player.stats.combat.LogInvalid(player, null, "eye_los");
 				flag = false;
 			}
@@ -1346,8 +1432,8 @@ public class BallistaGun : BaseVehicleSeat
 	}
 
 	[RPC_Server]
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromMounted]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -1374,9 +1460,9 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1497,7 +1583,7 @@ public class BallistaGun : BaseVehicleSeat
 			{
 				magazine.Load(info.msg.ballistaGun.magazine);
 			}
-			if (base.isServer)
+			if (isServer)
 			{
 				reloadProgress = info.msg.ballistaGun.reloadProgress;
 				aimDir = info.msg.ballistaGun.aimDir;
@@ -1510,16 +1596,5 @@ public class BallistaGun : BaseVehicleSeat
 	{
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		isMountedOnVehicle = true;
-		turnSensivity = 2f;
-		reloadTime = 3f;
-		syncAimDirOnFire = true;
-		syncAimDirOnReload = true;
-		fovMultiplier = 1f;
-		noHeadshots = true;
-		reloadButton = BUTTON.RELOAD;
-		progressTickRate = 0.1f;
-		lastSentAimDir = Vector3.zero;
-		base._002Ector();
 	}
 }

@@ -153,7 +153,7 @@ public class KeyValuesConverter : JsonConverter
 		{
 			Dictionary<string, object> source = (Dictionary<string, object>)value;
 			writer.WriteStartObject();
-			foreach (KeyValuePair<string, object> item in source.OrderBy(delegate(KeyValuePair<string, object> i)
+			foreach (KeyValuePair<string, object> item in source.OrderBy((KeyValuePair<string, object> i) =>
 			{
 				KeyValuePair<string, object> keyValuePair = i;
 				return keyValuePair.Key;

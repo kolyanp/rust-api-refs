@@ -34,7 +34,7 @@ public abstract class TerrainMap : TerrainExtension
 				for (int j = num7; j <= num8; j++)
 				{
 					val = new Vector2((float)j + 0.5f - num5, (float)i + 0.5f - num6);
-					float magnitude = ((Vector2)(ref val)).magnitude;
+					float magnitude = val.magnitude;
 					float arg = Mathf.InverseLerp(num4, num3, magnitude);
 					action(j, i, arg);
 				}
@@ -46,7 +46,7 @@ public abstract class TerrainMap : TerrainExtension
 			for (int l = num7; l <= num8; l++)
 			{
 				val = new Vector2((float)l + 0.5f - num5, (float)k + 0.5f - num6);
-				float arg2 = ((((Vector2)(ref val)).magnitude < num4) ? 1 : 0);
+				float arg2 = ((val.magnitude < num4) ? 1 : 0);
 				action(l, k, arg2);
 			}
 		}
@@ -90,19 +90,19 @@ public abstract class TerrainMap : TerrainExtension
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		Vector2i v3 = default(Vector2i);
-		((Vector2i)(ref v3))._002Ector(Index(TerrainMeta.NormalizeX(v0.x)), Index(TerrainMeta.NormalizeZ(v0.z)));
-		Vector2i v4 = default(Vector2i);
-		((Vector2i)(ref v4))._002Ector(Index(TerrainMeta.NormalizeX(v1.x)), Index(TerrainMeta.NormalizeZ(v1.z)));
-		Vector2i v5 = default(Vector2i);
-		((Vector2i)(ref v5))._002Ector(Index(TerrainMeta.NormalizeX(v2.x)), Index(TerrainMeta.NormalizeZ(v2.z)));
+		Vector2i v3 = new Vector2i(Index(TerrainMeta.NormalizeX(v0.x)), Index(TerrainMeta.NormalizeZ(v0.z)));
+		Vector2i v4 = new Vector2i(Index(TerrainMeta.NormalizeX(v1.x)), Index(TerrainMeta.NormalizeZ(v1.z)));
+		Vector2i v5 = new Vector2i(Index(TerrainMeta.NormalizeX(v2.x)), Index(TerrainMeta.NormalizeZ(v2.z)));
 		ForEachParallel(v3, v4, v5, action);
 	}
 
@@ -116,6 +116,7 @@ public abstract class TerrainMap : TerrainExtension
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
@@ -127,10 +128,9 @@ public abstract class TerrainMap : TerrainExtension
 		int num3 = Mathx.Min(v0.y, v1.y, v2.y);
 		int num4 = Mathx.Max(v0.y, v1.y, v2.y);
 		Vector2i base_min = new Vector2i(num, num3);
-		Vector2i val = default(Vector2i);
-		((Vector2i)(ref val))._002Ector(num2, num4);
+		Vector2i val = new Vector2i(num2, num4);
 		Vector2i base_count = val - base_min + Vector2i.one;
-		ParallelEx.Call(delegate(int thread_id, int thread_count)
+		ParallelEx.Call((int thread_id, int thread_count) =>
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -161,33 +161,33 @@ public abstract class TerrainMap : TerrainExtension
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		Vector2i v3 = default(Vector2i);
-		((Vector2i)(ref v3))._002Ector(Index(TerrainMeta.NormalizeX(v0.x)), Index(TerrainMeta.NormalizeZ(v0.z)));
-		Vector2i v4 = default(Vector2i);
-		((Vector2i)(ref v4))._002Ector(Index(TerrainMeta.NormalizeX(v1.x)), Index(TerrainMeta.NormalizeZ(v1.z)));
-		Vector2i v5 = default(Vector2i);
-		((Vector2i)(ref v5))._002Ector(Index(TerrainMeta.NormalizeX(v2.x)), Index(TerrainMeta.NormalizeZ(v2.z)));
+		Vector2i v3 = new Vector2i(Index(TerrainMeta.NormalizeX(v0.x)), Index(TerrainMeta.NormalizeZ(v0.z)));
+		Vector2i v4 = new Vector2i(Index(TerrainMeta.NormalizeX(v1.x)), Index(TerrainMeta.NormalizeZ(v1.z)));
+		Vector2i v5 = new Vector2i(Index(TerrainMeta.NormalizeX(v2.x)), Index(TerrainMeta.NormalizeZ(v2.z)));
 		ForEach(v3, v4, v5, action);
 	}
 
 	public void ForEach(Vector2i v0, Vector2i v1, Vector2i v2, Action<int, int> action)
 	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		Vector2i min = default(Vector2i);
-		((Vector2i)(ref min))._002Ector(int.MinValue, int.MinValue);
-		Vector2i max = default(Vector2i);
-		((Vector2i)(ref max))._002Ector(int.MaxValue, int.MaxValue);
+		Vector2i min = new Vector2i(int.MinValue, int.MinValue);
+		Vector2i max = new Vector2i(int.MaxValue, int.MaxValue);
 		ForEachInternal(v0, v1, v2, action, min, max);
 	}
 
@@ -221,6 +221,7 @@ public abstract class TerrainMap : TerrainExtension
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
@@ -259,8 +260,7 @@ public abstract class TerrainMap : TerrainExtension
 		int num8 = v2.x - v1.x;
 		int num9 = v2.y - v0.y;
 		int num10 = v0.x - v2.x;
-		Vector2i val = default(Vector2i);
-		((Vector2i)(ref val))._002Ector(num, num3);
+		Vector2i val = new Vector2i(num, num3);
 		int num11 = (v2.x - v1.x) * (val.y - v1.y) - (v2.y - v1.y) * (val.x - v1.x);
 		int num12 = (v0.x - v2.x) * (val.y - v2.y) - (v0.y - v2.y) * (val.x - v2.x);
 		int num13 = (v1.x - v0.x) * (val.y - v0.y) - (v1.y - v0.y) * (val.x - v0.x);
@@ -293,24 +293,24 @@ public abstract class TerrainMap : TerrainExtension
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		Vector2i v4 = default(Vector2i);
-		((Vector2i)(ref v4))._002Ector(Index(TerrainMeta.NormalizeX(v0.x)), Index(TerrainMeta.NormalizeZ(v0.z)));
-		Vector2i v5 = default(Vector2i);
-		((Vector2i)(ref v5))._002Ector(Index(TerrainMeta.NormalizeX(v1.x)), Index(TerrainMeta.NormalizeZ(v1.z)));
-		Vector2i v6 = default(Vector2i);
-		((Vector2i)(ref v6))._002Ector(Index(TerrainMeta.NormalizeX(v2.x)), Index(TerrainMeta.NormalizeZ(v2.z)));
-		Vector2i v7 = default(Vector2i);
-		((Vector2i)(ref v7))._002Ector(Index(TerrainMeta.NormalizeX(v3.x)), Index(TerrainMeta.NormalizeZ(v3.z)));
+		Vector2i v4 = new Vector2i(Index(TerrainMeta.NormalizeX(v0.x)), Index(TerrainMeta.NormalizeZ(v0.z)));
+		Vector2i v5 = new Vector2i(Index(TerrainMeta.NormalizeX(v1.x)), Index(TerrainMeta.NormalizeZ(v1.z)));
+		Vector2i v6 = new Vector2i(Index(TerrainMeta.NormalizeX(v2.x)), Index(TerrainMeta.NormalizeZ(v2.z)));
+		Vector2i v7 = new Vector2i(Index(TerrainMeta.NormalizeX(v3.x)), Index(TerrainMeta.NormalizeZ(v3.z)));
 		ForEachParallel(v4, v5, v6, v7, action);
 	}
 
@@ -346,7 +346,7 @@ public abstract class TerrainMap : TerrainExtension
 		Vector2i val = new Vector2i(num2, num4) - base_min + Vector2i.one;
 		Vector2i size_x = new Vector2i(val.x, 0);
 		Vector2i size_y = new Vector2i(0, val.y);
-		ParallelEx.Call(delegate(int thread_id, int thread_count)
+		ParallelEx.Call((int thread_id, int thread_count) =>
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -380,39 +380,39 @@ public abstract class TerrainMap : TerrainExtension
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		Vector2i v4 = default(Vector2i);
-		((Vector2i)(ref v4))._002Ector(Index(TerrainMeta.NormalizeX(v0.x)), Index(TerrainMeta.NormalizeZ(v0.z)));
-		Vector2i v5 = default(Vector2i);
-		((Vector2i)(ref v5))._002Ector(Index(TerrainMeta.NormalizeX(v1.x)), Index(TerrainMeta.NormalizeZ(v1.z)));
-		Vector2i v6 = default(Vector2i);
-		((Vector2i)(ref v6))._002Ector(Index(TerrainMeta.NormalizeX(v2.x)), Index(TerrainMeta.NormalizeZ(v2.z)));
-		Vector2i v7 = default(Vector2i);
-		((Vector2i)(ref v7))._002Ector(Index(TerrainMeta.NormalizeX(v3.x)), Index(TerrainMeta.NormalizeZ(v3.z)));
+		Vector2i v4 = new Vector2i(Index(TerrainMeta.NormalizeX(v0.x)), Index(TerrainMeta.NormalizeZ(v0.z)));
+		Vector2i v5 = new Vector2i(Index(TerrainMeta.NormalizeX(v1.x)), Index(TerrainMeta.NormalizeZ(v1.z)));
+		Vector2i v6 = new Vector2i(Index(TerrainMeta.NormalizeX(v2.x)), Index(TerrainMeta.NormalizeZ(v2.z)));
+		Vector2i v7 = new Vector2i(Index(TerrainMeta.NormalizeX(v3.x)), Index(TerrainMeta.NormalizeZ(v3.z)));
 		ForEach(v4, v5, v6, v7, action);
 	}
 
 	public void ForEach(Vector2i v0, Vector2i v1, Vector2i v2, Vector2i v3, Action<int, int> action)
 	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		Vector2i min = default(Vector2i);
-		((Vector2i)(ref min))._002Ector(int.MinValue, int.MinValue);
-		Vector2i max = default(Vector2i);
-		((Vector2i)(ref max))._002Ector(int.MaxValue, int.MaxValue);
+		Vector2i min = new Vector2i(int.MinValue, int.MinValue);
+		Vector2i max = new Vector2i(int.MaxValue, int.MaxValue);
 		ForEachInternal(v0, v1, v2, v3, action, min, max);
 	}
 
@@ -462,6 +462,7 @@ public abstract class TerrainMap : TerrainExtension
 		//IL_014a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
@@ -530,8 +531,7 @@ public abstract class TerrainMap : TerrainExtension
 		int num14 = v1.x - v2.x;
 		int num15 = v1.y - v3.y;
 		int num16 = v3.x - v1.x;
-		Vector2i val = default(Vector2i);
-		((Vector2i)(ref val))._002Ector(num, num3);
+		Vector2i val = new Vector2i(num, num3);
 		int num17 = (v2.x - v1.x) * (val.y - v1.y) - (v2.y - v1.y) * (val.x - v1.x);
 		int num18 = (v0.x - v2.x) * (val.y - v2.y) - (v0.y - v2.y) * (val.x - v2.x);
 		int num19 = (v1.x - v0.x) * (val.y - v0.y) - (v1.y - v0.y) * (val.x - v0.x);
@@ -703,6 +703,7 @@ public abstract class TerrainMap<T> : TerrainMap, IDisposable where T : unmanage
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		if (dat == null)
 		{
 			throw new ArgumentNullException("dat");
@@ -717,9 +718,7 @@ public abstract class TerrainMap<T> : TerrainMap, IDisposable where T : unmanage
 		{
 			throw new ArgumentException("TerrainMap length exceeds expected native capacity - likely a corrupted/tampered map file");
 		}
-		NativeSlice<byte> val2 = default(NativeSlice<byte>);
-		val2._002Ector(val, 0, dat.Length);
-		val2.CopyFrom(dat);
+		new NativeSlice<byte>(val, 0, dat.Length).CopyFrom(dat);
 	}
 
 	public void OnDestroy()

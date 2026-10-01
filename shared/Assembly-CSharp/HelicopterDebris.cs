@@ -17,7 +17,7 @@ public class HelicopterDebris : ServerGib
 
 	private const int coolDownTime = 480;
 
-	private static Phrase TooHotToHarvestPhrase;
+	private static Phrase TooHotToHarvestPhrase = new Phrase("debris_too_hot", "The debris is too hot to harvest! Wait for it to cool off");
 
 	public override void ServerInit()
 	{
@@ -39,7 +39,7 @@ public class HelicopterDebris : ServerGib
 	public override void PhysicsInit(Mesh mesh)
 	{
 		base.PhysicsInit(mesh);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -108,7 +108,6 @@ public class HelicopterDebris : ServerGib
 	static HelicopterDebris()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		TooHotToHarvestPhrase = new Phrase("debris_too_hot", "The debris is too hot to harvest! Wait for it to cool off");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

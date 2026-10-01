@@ -245,14 +245,14 @@ public class FrankensteinTable : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
-		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
+		inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		SendNetworkUpdateImmediate();
 	}
 
@@ -297,7 +297,7 @@ public class FrankensteinTable : StorageContainer
 		{
 			return false;
 		}
-		if (!HasValidItems(base.inventory))
+		if (!HasValidItems(inventory))
 		{
 			return false;
 		}
@@ -306,9 +306,9 @@ public class FrankensteinTable : StorageContainer
 
 	private bool IsInventoryEmpty()
 	{
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			if (base.inventory.GetSlot(i) != null)
+			if (inventory.GetSlot(i) != null)
 			{
 				return false;
 			}
@@ -318,9 +318,9 @@ public class FrankensteinTable : StorageContainer
 
 	private void ConsumeInventory()
 	{
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			slot?.UseItem(slot.amount);
 		}
 		ItemManager.DoRemoves();
@@ -338,7 +338,7 @@ public class FrankensteinTable : StorageContainer
 		if (!((Object)(object)owner == (Object)null) && CanStartCreating(owner) && Interface.CallHook("OnFrankensteinPetWake", this, owner) == null)
 		{
 			waking = true;
-			base.inventory.SetLocked(isLocked: true);
+			inventory.SetLocked(isLocked: true);
 			SendNetworkUpdateImmediate();
 			((MonoBehaviour)this).StartCoroutine(DelayWakeFrankenstein(owner));
 			ClientRPC(RpcTarget.NetworkGroup("CL_WakeFrankenstein"));
@@ -351,19 +351,19 @@ public class FrankensteinTable : StorageContainer
 		yield return (object)new WaitForSeconds(TableDownDuration);
 		if ((Object)(object)owner != (Object)null && (Object)(object)owner.PetEntity != (Object)null)
 		{
-			base.inventory.SetLocked(isLocked: false);
+			inventory.SetLocked(isLocked: false);
 			SendNetworkUpdateImmediate();
 			waking = false;
 			yield break;
 		}
-		ItemsToUse = GetValidItems(base.inventory);
+		ItemsToUse = GetValidItems(inventory);
 		BaseEntity baseEntity = GameManager.server.CreateEntity(FrankensteinPrefab.resourcePath, SpawnLocation.position, SpawnLocation.rotation, startActive: false);
 		baseEntity.enableSaving = false;
 		PoolableEx.AwakeFromInstantiate(((Component)baseEntity).gameObject);
 		baseEntity.Spawn();
 		EquipFrankenstein(baseEntity as FrankensteinPet);
 		ConsumeInventory();
-		base.inventory.SetLocked(isLocked: false);
+		inventory.SetLocked(isLocked: false);
 		SendNetworkUpdateImmediate();
 		((MonoBehaviour)this).StartCoroutine(WaitForFrankensteinBrainInit(baseEntity as BasePet, owner));
 		waking = false;
@@ -417,7 +417,7 @@ public class FrankensteinTable : StorageContainer
 		{
 			for (int i = 0; i < frank.inventory.containerWear.capacity; i++)
 			{
-				frank.inventory.containerWear.GetSlot(i)?.MoveToContainer(base.inventory);
+				frank.inventory.containerWear.GetSlot(i)?.MoveToContainer(inventory);
 			}
 		}
 	}
@@ -440,9 +440,9 @@ public class FrankensteinTable : StorageContainer
 		}
 		info.msg.FrankensteinTable = Pool.Get<FrankensteinTable>();
 		info.msg.FrankensteinTable.itemIds = new List<int>();
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot != null)
 			{
 				info.msg.FrankensteinTable.itemIds.Add(slot.info.itemid);

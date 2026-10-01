@@ -35,7 +35,7 @@ public static class TransformEx
 	public static void RetireAllChildren(this Transform transform, GameManager gameManager)
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Expected O, but got Unknown
+		//IL_001b: Expected Obj, but got Unknown
 		List<GameObject> list = Pool.Get<List<GameObject>>();
 		foreach (Transform item in transform)
 		{
@@ -135,8 +135,8 @@ public static class TransformEx
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Expected O, but got Unknown
-		//IL_001e: Expected O, but got Unknown
+		//IL_001d: Expected Obj, but got Unknown
+		//IL_001e: Expected Obj, but got Unknown
 		GameObject val = new GameObject();
 		val.transform.parent = go.transform;
 		Identity(val);
@@ -145,10 +145,10 @@ public static class TransformEx
 
 	public static GameObject InstantiateChild(this GameObject go, GameObject prefab)
 	{
-		GameObject obj = Instantiate.GameObject(prefab, (Transform)null);
-		obj.transform.SetParent(go.transform, false);
-		Identity(obj);
-		return obj;
+		GameObject val = Instantiate.GameObject(prefab, (Transform)null);
+		val.transform.SetParent(go.transform, false);
+		Identity(val);
+		return val;
 	}
 
 	public static void SetLayerRecursive(this GameObject go, int Layer)
@@ -197,30 +197,30 @@ public static class TransformEx
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		Bounds bounds = default(Bounds);
-		((Bounds)(ref bounds))._002Ector(Vector3.zero, Vector3.zero);
+		Bounds result = new Bounds(Vector3.zero, Vector3.zero);
 		Renderer[] componentsInChildren = ((Component)tx).GetComponentsInChildren<Renderer>();
 		foreach (Renderer val in componentsInChildren)
 		{
 			if (!(val is ParticleSystemRenderer))
 			{
-				if (((Bounds)(ref bounds)).center == Vector3.zero)
+				if (result.center == Vector3.zero)
 				{
-					bounds = val.bounds;
+					result = val.bounds;
 				}
 				else
 				{
-					((Bounds)(ref bounds)).Encapsulate(val.bounds);
+					result.Encapsulate(val.bounds);
 				}
 			}
 		}
-		return bounds;
+		return result;
 	}
 
 	public static List<T> GetSiblings<T>(this Transform transform, bool includeSelf = false)
@@ -302,6 +302,7 @@ public static class TransformEx
 	{
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
@@ -352,8 +353,7 @@ public static class TransformEx
 		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = false;
-		Bounds result = default(Bounds);
-		((Bounds)(ref result))._002Ector(Vector3.zero, Vector3.zero);
+		Bounds result = new Bounds(Vector3.zero, Vector3.zero);
 		if (includeRenderers)
 		{
 			MeshLOD[] componentsInChildren = ((Component)transform).GetComponentsInChildren<MeshLOD>(includeInactive);
@@ -369,7 +369,7 @@ public static class TransformEx
 						result = val;
 						flag = true;
 					}
-					((Bounds)(ref result)).Encapsulate(val);
+					result.Encapsulate(val);
 				}
 			}
 			MeshFilter[] componentsInChildren2 = ((Component)transform).GetComponentsInChildren<MeshFilter>(includeInactive);
@@ -385,7 +385,7 @@ public static class TransformEx
 						result = val3;
 						flag = true;
 					}
-					((Bounds)(ref result)).Encapsulate(BoundsEx.Transform(bounds, matrix2));
+					result.Encapsulate(BoundsEx.Transform(bounds, matrix2));
 				}
 			}
 			SkinnedMeshRenderer[] componentsInChildren3 = ((Component)transform).GetComponentsInChildren<SkinnedMeshRenderer>(includeInactive);
@@ -400,7 +400,7 @@ public static class TransformEx
 						result = val5;
 						flag = true;
 					}
-					((Bounds)(ref result)).Encapsulate(val5);
+					result.Encapsulate(val5);
 				}
 			}
 		}
@@ -418,7 +418,7 @@ public static class TransformEx
 						result = val7;
 						flag = true;
 					}
-					((Bounds)(ref result)).Encapsulate(val7);
+					result.Encapsulate(val7);
 				}
 			}
 		}

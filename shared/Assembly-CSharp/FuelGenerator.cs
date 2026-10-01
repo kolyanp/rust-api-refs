@@ -153,7 +153,7 @@ public class FuelGenerator : ContainerIOEntity
 
 	public int GetFuelAmount()
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || slot.amount < 1)
 		{
 			return 0;
@@ -168,7 +168,7 @@ public class FuelGenerator : ContainerIOEntity
 
 	public bool UseFuel(float seconds)
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || slot.amount < 1)
 		{
 			return false;

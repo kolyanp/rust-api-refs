@@ -25,54 +25,54 @@ public class BoatBuildingStation : DecayEntity
 		Invalid_Too_Many_Deployables
 	}
 
-	public static readonly Phrase invalidTooManyDeployablesPhrase;
+	public static readonly Phrase invalidTooManyDeployablesPhrase = new Phrase("boatbuilding.invalid.tooManyDeployables", "Deployable limit reached");
 
-	public static readonly Phrase invalidIllegalPlacement;
+	public static readonly Phrase invalidIllegalPlacement = new Phrase("boatbuilding.invalid.illegalPlacement", "Illegal deployable placement.");
 
 	[ReplicatedVar]
-	public static int max_bbs;
+	public static int max_bbs = 1;
 
-	private static Dictionary<ulong, List<BoatBuildingStation>> bbsPerPlayer;
+	private static Dictionary<ulong, List<BoatBuildingStation>> bbsPerPlayer = new Dictionary<ulong, List<BoatBuildingStation>>();
 
-	public static Phrase bbsLimitPhrase;
+	public static Phrase bbsLimitPhrase = new Phrase("bbs_limit_update", "You are now at {0}/{1} Boat Building Stations");
 
-	public static Phrase bbsLimitReachedPhrase;
+	public static Phrase bbsLimitReachedPhrase = new Phrase("bbs_limit_reached", "You have reached your Boat Building Station limit!");
 
 	private float lastInteractionTime;
 
 	public const string ACHIEVEMENT_FINISH_BOAT_NAME = "BBS_FINISH_BOAT";
 
-	[ServerVar]
 	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
-	public static bool StaticStationsEnabled;
+	[ServerVar]
+	public static bool StaticStationsEnabled = true;
 
 	[ServerVar]
 	[Help("When set above zero, enables a global shared cooldown for boat edit/finishing.")]
-	public static float GlobalEditFinishUseInterval;
+	public static float GlobalEditFinishUseInterval = 0f;
 
-	public static float NextGlobalEditFinishUseTime;
-
-	[ServerVar]
-	public static bool LogBoatBuildingEvents;
+	public static float NextGlobalEditFinishUseTime = 0f;
 
 	[ServerVar]
-	public static float AutoClosePlayerCheckInterval;
+	public static bool LogBoatBuildingEvents = false;
 
 	[ServerVar]
-	public static int AutoClosePlayerCheckTriggerCount;
+	public static float AutoClosePlayerCheckInterval = 150f;
 
-	private static Grid<BoatBuildingStation> serverStations;
+	[ServerVar]
+	public static int AutoClosePlayerCheckTriggerCount = 2;
+
+	private static Grid<BoatBuildingStation> serverStations = new Grid<BoatBuildingStation>(32, 8096f);
 
 	private int autoClosePassCount;
 
 	private ulong bbsOwnerID;
 
-	private static StringBuilder logStringBuilder;
+	private static StringBuilder logStringBuilder = new StringBuilder();
 
 	public bool IsStatic;
 
 	[ReplicatedVar]
-	public static float EditFinishUseInterval;
+	public static float EditFinishUseInterval = 5f;
 
 	public GameObjectRef BoatPrefab;
 
@@ -96,7 +96,9 @@ public class BoatBuildingStation : DecayEntity
 
 	public TriggerBoatBuildingArea BoatBuildingAreaTrigger;
 
-	private const float GridQueryRadius = 20f;
+	private const float GridQueryRadius = 40f;
+
+	public const float BuildAreaEdgePadding = 1.5f;
 
 	private SteeringWheel cachedSteeringWheel;
 
@@ -237,8 +239,8 @@ public class BoatBuildingStation : DecayEntity
 
 	public static Planner.CanBuildResult? CanBuildBBS(BasePlayer player, Construction construction)
 	{
-		GameObject obj = GameManager.server.FindPrefab(construction.prefabID);
-		if (((obj != null) ? obj.GetComponent<BaseEntity>() : null) is BoatBuildingStation)
+		GameObject val = GameManager.server.FindPrefab(construction.prefabID);
+		if (((val != null) ? val.GetComponent<BaseEntity>() : null) is BoatBuildingStation)
 		{
 			int num = 1;
 			if (bbsPerPlayer.TryGetValue(player.userID, out var value))
@@ -336,7 +338,7 @@ public class BoatBuildingStation : DecayEntity
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -376,7 +378,7 @@ public class BoatBuildingStation : DecayEntity
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		if (base.isServer)
+		if (isServer)
 		{
 			if (IsInvoking(ClearCooldown))
 			{
@@ -393,7 +395,7 @@ public class BoatBuildingStation : DecayEntity
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			info.msg.boatBuildingStation = Pool.Get<BoatBuildingStation>();
 			info.msg.boatBuildingStation.ownerId = bbsOwnerID;
@@ -404,7 +406,7 @@ public class BoatBuildingStation : DecayEntity
 	{
 		if ((Object)(object)player != (Object)null)
 		{
-			base.OwnerID = player.userID;
+			OwnerID = player.userID;
 		}
 		if (bbsPerPlayer.TryGetValue(player.userID, out var value) && value.Count >= max_bbs)
 		{
@@ -451,8 +453,8 @@ public class BoatBuildingStation : DecayEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void EditBoat(RPCMessage msg)
 	{
@@ -513,9 +515,9 @@ public class BoatBuildingStation : DecayEntity
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(3uL)]
 	public void FinishBuilding(RPCMessage msg)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -548,7 +550,7 @@ public class BoatBuildingStation : DecayEntity
 			return true;
 		}
 		List<BoatBuildingBlock> entitiesInBuildArea = GetEntitiesInBuildArea<BoatBuildingBlock>(BuildArea, 134217728, server: true);
-		List<BaseEntity> deployedEntities = GetDeployedEntities();
+		List<BaseEntity> deployedEntities = GetDeployedEntities(1.5f);
 		bool flag = ValidBoat(entitiesInBuildArea, deployedEntities) == BoatValidationStatus.Valid;
 		bool flag2 = flag || (entitiesInBuildArea.Count == 0 && deployedEntities.Count == 0);
 		if (flag2)
@@ -564,7 +566,7 @@ public class BoatBuildingStation : DecayEntity
 				BaseEntity baseEntity = CreateBoat(entitiesInBuildArea, deployedEntities, ((Component)this).gameObject);
 				if ((Object)(object)player != (Object)null && (Object)(object)baseEntity != (Object)null)
 				{
-					if (Rust.GameInfo.HasAchievements)
+					if (GameInfo.HasAchievements)
 					{
 						player.GiveAchievement("BBS_FINISH_BOAT");
 					}
@@ -647,9 +649,9 @@ public class BoatBuildingStation : DecayEntity
 		Pool.FreeUnmanaged<PlayerBoat>(ref playerBoats);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void ClearArea(RPCMessage msg)
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
@@ -756,10 +758,10 @@ public class BoatBuildingStation : DecayEntity
 
 	private void CheckAutoClose()
 	{
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		if (AutoClosePlayerTrigger.contents == null || AutoClosePlayerTrigger.contents.Count == 0)
 		{
-			if (GetEntitiesInBuildArea<BaseEntity>(BuildArea, -1, base.isServer).Count > 1)
+			if (GetEntitiesInBuildArea<BaseEntity>(BuildArea, -1, isServer).Count > 1)
 			{
 				autoClosePassCount = 0;
 				return;
@@ -803,7 +805,7 @@ public class BoatBuildingStation : DecayEntity
 
 	private void KillAllBoatBuildingEntities()
 	{
-		List<BoatBuildingBlock> entitiesInBuildArea = GetEntitiesInBuildArea<BoatBuildingBlock>(BuildArea, 134217728, base.isServer);
+		List<BoatBuildingBlock> entitiesInBuildArea = GetEntitiesInBuildArea<BoatBuildingBlock>(BuildArea, 134217728, isServer);
 		List<BaseEntity> deployedEntities = GetDeployedEntities();
 		for (int num = entitiesInBuildArea.Count - 1; num >= 0; num--)
 		{
@@ -857,7 +859,7 @@ public class BoatBuildingStation : DecayEntity
 			PooledList<BoatBuildingStation> val = Pool.Get<PooledList<BoatBuildingStation>>();
 			try
 			{
-				grid.Query(position.x, position.z, 20f, (List<BoatBuildingStation>)(object)val);
+				grid.Query(position.x, position.z, 40f, (List<BoatBuildingStation>)(object)val);
 				foreach (BoatBuildingStation item in (List<BoatBuildingStation>)(object)val)
 				{
 					if (item.IsInsideBuildArea(position, padding))
@@ -944,7 +946,7 @@ public class BoatBuildingStation : DecayEntity
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.msg.boatBuildingStation != null)
+		if (isServer && info.msg.boatBuildingStation != null)
 		{
 			bbsOwnerID = info.msg.boatBuildingStation.ownerId;
 			AddToBBSList(bbsOwnerID);
@@ -1032,7 +1034,7 @@ public class BoatBuildingStation : DecayEntity
 			return false;
 		}
 		OBB buildAreaOBB = GetBuildAreaOBB(BuildArea, padding);
-		return ((OBB)(ref buildAreaOBB)).Contains(pos);
+		return buildAreaOBB.Contains(pos);
 	}
 
 	public bool IntersectsBuildArea(OBB obb)
@@ -1041,7 +1043,7 @@ public class BoatBuildingStation : DecayEntity
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		OBB buildAreaOBB = GetBuildAreaOBB(BuildArea);
-		return ((OBB)(ref buildAreaOBB)).Intersects(obb);
+		return buildAreaOBB.Intersects(obb);
 	}
 
 	public bool IsOnEditFinishCooldown()
@@ -1257,9 +1259,9 @@ public class BoatBuildingStation : DecayEntity
 		return false;
 	}
 
-	public List<BaseEntity> GetDeployedEntities()
+	public List<BaseEntity> GetDeployedEntities(float padding = 0f)
 	{
-		List<BaseEntity> entitiesInBuildArea = GetEntitiesInBuildArea<BaseEntity>(BuildArea, 2097408, base.isServer);
+		List<BaseEntity> entitiesInBuildArea = GetEntitiesInBuildArea<BaseEntity>(BuildArea, 2097408, isServer, padding);
 		if (entitiesInBuildArea.Count > 0)
 		{
 			for (int num = entitiesInBuildArea.Count - 1; num >= 0; num--)
@@ -1304,17 +1306,17 @@ public class BoatBuildingStation : DecayEntity
 
 	private List<PlayerBoat> GetPlayerBoats()
 	{
-		return GetEntitiesInBuildArea<PlayerBoat>(BuildArea, 134217728, base.isServer);
+		return GetEntitiesInBuildArea<PlayerBoat>(BuildArea, 134217728, isServer);
 	}
 
 	private List<BaseVehicle> GetAllVehicles()
 	{
-		return GetEntitiesInBuildArea<BaseVehicle>(BuildArea, -1, base.isServer);
+		return GetEntitiesInBuildArea<BaseVehicle>(BuildArea, -1, isServer);
 	}
 
 	private List<BaseVehicle> GetNonPlayerBoatVehicles()
 	{
-		List<BaseVehicle> entitiesInBuildArea = GetEntitiesInBuildArea<BaseVehicle>(BuildArea, 134225920, base.isServer);
+		List<BaseVehicle> entitiesInBuildArea = GetEntitiesInBuildArea<BaseVehicle>(BuildArea, 134225920, isServer);
 		for (int num = entitiesInBuildArea.Count - 1; num >= 0; num--)
 		{
 			BaseVehicle baseVehicle = entitiesInBuildArea[num];
@@ -1326,11 +1328,11 @@ public class BoatBuildingStation : DecayEntity
 		return entitiesInBuildArea;
 	}
 
-	public static List<T> GetEntitiesInBuildArea<T>(GameObject buildArea, int layerMask, bool server) where T : BaseEntity
+	public static List<T> GetEntitiesInBuildArea<T>(GameObject buildArea, int layerMask, bool server, float padding = 0f) where T : BaseEntity
 	{
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		List<T> list = Pool.Get<List<T>>();
-		Vis.Entities(GetBuildAreaOBB(buildArea), list, layerMask, (QueryTriggerInteraction)2);
+		Vis.Entities(GetBuildAreaOBB(buildArea, padding), list, layerMask, (QueryTriggerInteraction)2);
 		if (list.Count > 0)
 		{
 			for (int num = list.Count - 1; num >= 0; num--)
@@ -1379,10 +1381,10 @@ public class BoatBuildingStation : DecayEntity
 			if (!((Object)(object)block == (Object)null) && !block.isClient)
 			{
 				OBB val = block.WorldSpaceBounds();
-				list.Add(((OBB)(ref val)).GetPoint(-1f, -1f, -1f));
-				list.Add(((OBB)(ref val)).GetPoint(-1f, -1f, 1f));
-				list.Add(((OBB)(ref val)).GetPoint(1f, 1f, -1f));
-				list.Add(((OBB)(ref val)).GetPoint(1f, 1f, 1f));
+				list.Add(val.GetPoint(-1f, -1f, -1f));
+				list.Add(val.GetPoint(-1f, -1f, 1f));
+				list.Add(val.GetPoint(1f, 1f, -1f));
+				list.Add(val.GetPoint(1f, 1f, 1f));
 			}
 		}
 		GetOBBExtents(list, forward, out center, out halfExtents, out rot);
@@ -1412,6 +1414,8 @@ public class BoatBuildingStation : DecayEntity
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
@@ -1439,20 +1443,18 @@ public class BoatBuildingStation : DecayEntity
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		forward = ((Vector3)(ref forward)).normalized;
+		forward = forward.normalized;
 		Vector3 val = Vector3.Cross(Vector3.up, forward);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = Vector3.Cross(forward, normalized);
 		rotation = Quaternion.LookRotation(forward, val2);
 		Matrix4x4 val3 = Matrix4x4.Rotate(rotation);
-		Matrix4x4 inverse = ((Matrix4x4)(ref val3)).inverse;
-		Vector3 val4 = default(Vector3);
-		((Vector3)(ref val4))._002Ector(float.MaxValue, float.MaxValue, float.MaxValue);
-		Vector3 val5 = default(Vector3);
-		((Vector3)(ref val5))._002Ector(float.MinValue, float.MinValue, float.MinValue);
+		Matrix4x4 inverse = val3.inverse;
+		Vector3 val4 = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+		Vector3 val5 = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 		foreach (Vector3 point in points)
 		{
-			Vector3 val6 = ((Matrix4x4)(ref inverse)).MultiplyPoint3x4(point);
+			Vector3 val6 = inverse.MultiplyPoint3x4(point);
 			val4 = Vector3.Min(val4, val6);
 			val5 = Vector3.Max(val5, val6);
 		}
@@ -1489,27 +1491,12 @@ public class BoatBuildingStation : DecayEntity
 	static BoatBuildingStation()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Expected O, but got Unknown
+		//IL_004c: Expected Obj, but got Unknown
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Expected O, but got Unknown
-		invalidTooManyDeployablesPhrase = new Phrase("boatbuilding.invalid.tooManyDeployables", "Deployable limit reached");
-		invalidIllegalPlacement = new Phrase("boatbuilding.invalid.illegalPlacement", "Illegal deployable placement.");
-		max_bbs = 1;
-		bbsPerPlayer = new Dictionary<ulong, List<BoatBuildingStation>>();
-		bbsLimitPhrase = new Phrase("bbs_limit_update", "You are now at {0}/{1} Boat Building Stations");
-		bbsLimitReachedPhrase = new Phrase("bbs_limit_reached", "You have reached your Boat Building Station limit!");
-		StaticStationsEnabled = true;
-		GlobalEditFinishUseInterval = 0f;
-		NextGlobalEditFinishUseTime = 0f;
-		LogBoatBuildingEvents = false;
-		AutoClosePlayerCheckInterval = 150f;
-		AutoClosePlayerCheckTriggerCount = 2;
-		serverStations = new Grid<BoatBuildingStation>(32, 8096f);
-		logStringBuilder = new StringBuilder();
-		EditFinishUseInterval = 5f;
+		//IL_0060: Expected Obj, but got Unknown
 	}
 }

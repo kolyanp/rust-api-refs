@@ -24,19 +24,19 @@ public class GenerateDungeonBase : ProceduralComponent
 		public int floor;
 	}
 
-	public string EntranceFolder;
+	public string EntranceFolder = string.Empty;
 
-	public string LinkFolder;
+	public string LinkFolder = string.Empty;
 
-	public string EndFolder;
+	public string EndFolder = string.Empty;
 
-	public string TransitionFolder;
+	public string TransitionFolder = string.Empty;
 
-	public InfrastructureType ConnectionType;
+	public InfrastructureType ConnectionType = InfrastructureType.UnderwaterLab;
 
-	private static Vector3 VolumeExtrudePositive;
+	private static Vector3 VolumeExtrudePositive = Vector3.one * 0.01f;
 
-	private static Vector3 VolumeExtrudeNegative;
+	private static Vector3 VolumeExtrudeNegative = Vector3.one * -0.01f;
 
 	private const int MaxCount = int.MaxValue;
 
@@ -44,13 +44,29 @@ public class GenerateDungeonBase : ProceduralComponent
 
 	private const int MaxFloor = 2;
 
-	private List<DungeonSegment> segmentsTotal;
+	private List<DungeonSegment> segmentsTotal = new List<DungeonSegment>();
 
-	private Quaternion[] horizontalRotations;
+	private Quaternion[] horizontalRotations = new Quaternion[1] { Quaternion.Euler(0f, 0f, 0f) };
 
-	private Quaternion[] pillarRotations;
+	private Quaternion[] pillarRotations = new Quaternion[4]
+	{
+		Quaternion.Euler(0f, 0f, 0f),
+		Quaternion.Euler(0f, 90f, 0f),
+		Quaternion.Euler(0f, 180f, 0f),
+		Quaternion.Euler(0f, 270f, 0f)
+	};
 
-	private Quaternion[] verticalRotations;
+	private Quaternion[] verticalRotations = new Quaternion[8]
+	{
+		Quaternion.Euler(0f, 0f, 0f),
+		Quaternion.Euler(0f, 45f, 0f),
+		Quaternion.Euler(0f, 90f, 0f),
+		Quaternion.Euler(0f, 135f, 0f),
+		Quaternion.Euler(0f, 180f, 0f),
+		Quaternion.Euler(0f, 225f, 0f),
+		Quaternion.Euler(0f, 270f, 0f),
+		Quaternion.Euler(0f, 315f, 0f)
+	};
 
 	public override bool RunOnCache => true;
 
@@ -129,7 +145,7 @@ public class GenerateDungeonBase : ProceduralComponent
 					}
 					if (list.Count > 5)
 					{
-						list = list.OrderByDescending(delegate(DungeonSegment x)
+						list = list.OrderByDescending((DungeonSegment x) =>
 						{
 							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 							//IL_000c: Unknown result type (might be due to invalid IL or missing references)
@@ -141,7 +157,7 @@ public class GenerateDungeonBase : ProceduralComponent
 					if (list.Count > 25)
 					{
 						DungeonSegment segmentEnd = list[list.Count - 1];
-						list = list.OrderByDescending(delegate(DungeonSegment x)
+						list = list.OrderByDescending((DungeonSegment x) =>
 						{
 							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 							//IL_0011: Unknown result type (might be due to invalid IL or missing references)
@@ -231,7 +247,7 @@ public class GenerateDungeonBase : ProceduralComponent
 			if ((Object)(object)segment.link == (Object)null)
 			{
 				val = segment.position - transitionPos;
-				if (((Vector3)(ref val)).sqrMagnitude < 0.01f)
+				if (val.sqrMagnitude < 0.01f)
 				{
 					flag = false;
 					flag2 = false;
@@ -241,7 +257,7 @@ public class GenerateDungeonBase : ProceduralComponent
 			foreach (DungeonBaseSocket socket in segment.link.Sockets)
 			{
 				val = segment.position + segment.rotation * ((Component)socket).transform.localPosition - transitionPos;
-				if (((Vector3)(ref val)).sqrMagnitude < 0.01f)
+				if (val.sqrMagnitude < 0.01f)
 				{
 					if (!flag && segment.link.Type == transition.Neighbour1)
 					{
@@ -287,7 +303,7 @@ public class GenerateDungeonBase : ProceduralComponent
 					{
 						Vector3 val2 = linkPos + linkRot * ((Component)socket2).transform.localPosition;
 						Vector3 val3 = val - val2;
-						if (((Vector3)(ref val3)).sqrMagnitude < 0.01f)
+						if (val3.sqrMagnitude < 0.01f)
 						{
 							num++;
 						}
@@ -315,7 +331,7 @@ public class GenerateDungeonBase : ProceduralComponent
 				if (!((Object)(object)socket2 == (Object)(object)socket))
 				{
 					Vector3 val = segment.position + segment.rotation * ((Component)socket2).transform.localPosition - socketPos;
-					if (((Vector3)(ref val)).sqrMagnitude < 0.01f)
+					if (val.sqrMagnitude < 0.01f)
 					{
 						return true;
 					}
@@ -452,7 +468,7 @@ public class GenerateDungeonBase : ProceduralComponent
 				foreach (DungeonVolume volume2 in segment.link.Volumes)
 				{
 					OBB bounds3 = volume2.GetBounds(segment.position, segment.rotation, VolumeExtrudeNegative);
-					if (((OBB)(ref bounds)).Intersects(bounds3))
+					if (bounds.Intersects(bounds3))
 					{
 						return true;
 					}
@@ -460,7 +476,7 @@ public class GenerateDungeonBase : ProceduralComponent
 				foreach (DungeonBaseSocket socket in segment.link.Sockets)
 				{
 					Vector3 val = segment.position + segment.rotation * ((Component)socket).transform.localPosition;
-					if (!((OBB)(ref bounds2)).Contains(val))
+					if (!bounds2.Contains(val))
 					{
 						continue;
 					}
@@ -469,7 +485,7 @@ public class GenerateDungeonBase : ProceduralComponent
 					{
 						Vector3 val2 = linkPos + linkRot * ((Component)socket2).transform.localPosition;
 						val3 = val - val2;
-						if (((Vector3)(ref val3)).sqrMagnitude < 0.01f)
+						if (val3.sqrMagnitude < 0.01f)
 						{
 							flag = true;
 							break;
@@ -490,7 +506,7 @@ public class GenerateDungeonBase : ProceduralComponent
 				foreach (DungeonBaseSocket socket3 in link.Sockets)
 				{
 					Vector3 val4 = linkPos + linkRot * ((Component)socket3).transform.localPosition;
-					if (!((OBB)(ref bounds4)).Contains(val4))
+					if (!bounds4.Contains(val4))
 					{
 						continue;
 					}
@@ -498,7 +514,7 @@ public class GenerateDungeonBase : ProceduralComponent
 					foreach (DungeonBaseSocket socket4 in segment2.link.Sockets)
 					{
 						val3 = segment2.position + segment2.rotation * ((Component)socket4).transform.localPosition - val4;
-						if (((Vector3)(ref val3)).sqrMagnitude < 0.01f)
+						if (val3.sqrMagnitude < 0.01f)
 						{
 							flag2 = true;
 							break;
@@ -744,7 +760,7 @@ public class GenerateDungeonBase : ProceduralComponent
 	public static void SetupAI()
 	{
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Expected O, but got Unknown
+		//IL_00c6: Expected Obj, but got Unknown
 		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
@@ -790,12 +806,12 @@ public class GenerateDungeonBase : ProceduralComponent
 			aIInformationZone.ShouldSleepAI = true;
 			val.transform.SetParent(((Component)dungeonBaseEntrance).gameObject.transform);
 			GameObject val2 = new GameObject("WakeTrigger");
-			val2.transform.position = val.transform.position + ((Bounds)(ref aIInformationZone.bounds)).center;
+			val2.transform.position = val.transform.position + aIInformationZone.bounds.center;
 			val2.layer = LayerMask.NameToLayer("Trigger");
 			val2.transform.SetParent(((Component)dungeonBaseEntrance).gameObject.transform);
 			WakeAIZ wakeAIZ = val2.AddComponent<WakeAIZ>();
 			wakeAIZ.isBox = true;
-			wakeAIZ.size = ((Bounds)(ref aIInformationZone.bounds)).extents + new Vector3(100f, 100f, 100f);
+			wakeAIZ.size = aIInformationZone.bounds.extents + new Vector3(100f, 100f, 100f);
 			wakeAIZ.Init(aIInformationZone);
 		}
 	}
@@ -827,10 +843,10 @@ public class GenerateDungeonBase : ProceduralComponent
 					continue;
 				}
 				GameObject val = new GameObject("LabNavmesh");
-				val.transform.position = ((Bounds)(ref bounds)).center;
+				val.transform.position = bounds.center;
 				val.transform.SetParent(((Component)dungeonBaseEntrance).gameObject.transform, true);
 				IndependantNavmesh independantNavmesh = val.AddComponent<IndependantNavmesh>();
-				independantNavmesh.size = ((Bounds)(ref bounds)).size;
+				independantNavmesh.size = bounds.size;
 				independantNavmesh.forceHiRes = true;
 				RustNavigation.Instance.AddNavmesh(independantNavmesh);
 			}
@@ -841,7 +857,7 @@ public class GenerateDungeonBase : ProceduralComponent
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		bool hasFootprint = false;
-		bounds = default(Bounds);
+		bounds = default;
 		NavMeshTools.EncapsulateNavmeshColliders(((Component)dungeon).gameObject, ref bounds, ref hasFootprint);
 		foreach (GameObject link in dungeon.Links)
 		{
@@ -878,32 +894,6 @@ public class GenerateDungeonBase : ProceduralComponent
 		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
-		EntranceFolder = string.Empty;
-		LinkFolder = string.Empty;
-		EndFolder = string.Empty;
-		TransitionFolder = string.Empty;
-		ConnectionType = InfrastructureType.UnderwaterLab;
-		segmentsTotal = new List<DungeonSegment>();
-		horizontalRotations = (Quaternion[])(object)new Quaternion[1] { Quaternion.Euler(0f, 0f, 0f) };
-		pillarRotations = (Quaternion[])(object)new Quaternion[4]
-		{
-			Quaternion.Euler(0f, 0f, 0f),
-			Quaternion.Euler(0f, 90f, 0f),
-			Quaternion.Euler(0f, 180f, 0f),
-			Quaternion.Euler(0f, 270f, 0f)
-		};
-		verticalRotations = (Quaternion[])(object)new Quaternion[8]
-		{
-			Quaternion.Euler(0f, 0f, 0f),
-			Quaternion.Euler(0f, 45f, 0f),
-			Quaternion.Euler(0f, 90f, 0f),
-			Quaternion.Euler(0f, 135f, 0f),
-			Quaternion.Euler(0f, 180f, 0f),
-			Quaternion.Euler(0f, 225f, 0f),
-			Quaternion.Euler(0f, 270f, 0f),
-			Quaternion.Euler(0f, 315f, 0f)
-		};
-		base._002Ector();
 	}
 
 	static GenerateDungeonBase()
@@ -914,7 +904,5 @@ public class GenerateDungeonBase : ProceduralComponent
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		VolumeExtrudePositive = Vector3.one * 0.01f;
-		VolumeExtrudeNegative = Vector3.one * -0.01f;
 	}
 }

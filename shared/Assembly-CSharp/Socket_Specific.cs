@@ -77,6 +77,7 @@ public class Socket_Specific : Socket_Base
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
@@ -117,7 +118,7 @@ public class Socket_Specific : Socket_Base
 		Socket_Specific_Female socket_Specific_Female = target.socket as Socket_Specific_Female;
 		Transform val2 = (socket_Specific_Female.parentToBone ? target.entity.FindBone(socket_Specific_Female.boneName) : ((Component)target.entity).transform);
 		Matrix4x4 localToWorldMatrix = val2.localToWorldMatrix;
-		Vector3 val3 = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(target.socket.localPosition);
+		Vector3 val3 = localToWorldMatrix.MultiplyPoint3x4(target.socket.localPosition);
 		Quaternion val4;
 		if (useFemaleRotation)
 		{
@@ -126,10 +127,9 @@ public class Socket_Specific : Socket_Base
 		else
 		{
 			Vector3 val5 = new Vector3(val3.x, 0f, val3.z);
-			Vector3 val6 = default(Vector3);
-			((Vector3)(ref val6))._002Ector(target.player.eyes.position.x, 0f, target.player.eyes.position.z);
+			Vector3 val6 = new Vector3(target.player.eyes.position.x, 0f, target.player.eyes.position.z);
 			Vector3 val7 = val5 - val6;
-			val4 = Quaternion.LookRotation(((Vector3)(ref val7)).normalized) * val;
+			val4 = Quaternion.LookRotation(val7.normalized) * val;
 		}
 		Construction.Placement result = new Construction.Placement(target);
 		Quaternion val8 = val4 * Quaternion.Inverse(rotation);

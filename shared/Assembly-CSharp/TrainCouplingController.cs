@@ -82,14 +82,22 @@ public class TrainCouplingController
 		{
 			return false;
 		}
-		bool num2 = num < 90f;
-		TrainCoupling trainCoupling2 = ((!num2) ? ((ourLocation == TriggerTrainCollisions.Location.Front) ? them.coupling.frontCoupling : them.coupling.rearCoupling) : ((ourLocation == TriggerTrainCollisions.Location.Front) ? them.coupling.rearCoupling : them.coupling.frontCoupling));
-		float num3 = them.GetTrackSpeed();
-		if (!num2)
+		bool flag = num < 90f;
+		TrainCoupling trainCoupling2;
+		if (flag)
 		{
-			num3 = 0f - num3;
+			trainCoupling2 = ((ourLocation == TriggerTrainCollisions.Location.Front) ? them.coupling.rearCoupling : them.coupling.frontCoupling);
 		}
-		if (Mathf.Abs(num3 - owner.GetTrackSpeed()) > max_couple_speed)
+		else
+		{
+			trainCoupling2 = ((ourLocation == TriggerTrainCollisions.Location.Front) ? them.coupling.frontCoupling : them.coupling.rearCoupling);
+		}
+		float num2 = them.GetTrackSpeed();
+		if (!flag)
+		{
+			num2 = 0f - num2;
+		}
+		if (Mathf.Abs(num2 - owner.GetTrackSpeed()) > max_couple_speed)
 		{
 			trainCoupling.timeSinceCouplingBlock = TimeSince.op_Implicit(0f);
 			trainCoupling2.timeSinceCouplingBlock = TimeSince.op_Implicit(0f);

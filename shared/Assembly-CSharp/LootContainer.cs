@@ -35,33 +35,33 @@ public class LootContainer : StorageContainer, ILootContainer
 		public Era[] eras;
 	}
 
-	public bool destroyOnEmpty;
+	public bool destroyOnEmpty = true;
 
 	public LootSpawn lootDefinition;
 
 	public int maxDefinitionsToSpawn;
 
-	public float minSecondsBetweenRefresh;
+	public float minSecondsBetweenRefresh = 3600f;
 
-	public float maxSecondsBetweenRefresh;
+	public float maxSecondsBetweenRefresh = 7200f;
 
-	public bool initialLootSpawn;
+	public bool initialLootSpawn = true;
 
-	public float xpLootedScale;
+	public float xpLootedScale = 1f;
 
-	public float xpDestroyedScale;
+	public float xpDestroyedScale = 1f;
 
 	public bool BlockPlayerItemInput;
 
 	public int scrapAmount;
 
-	public string deathStat;
+	public string deathStat = "";
 
 	public LootSpawnSlot[] LootSpawnSlots;
 
 	public spawnType SpawnType;
 
-	public ClanScoreEventType clanScoreEventForFirstLooter;
+	public ClanScoreEventType clanScoreEventForFirstLooter = (ClanScoreEventType)(-1);
 
 	[NonSerialized]
 	public bool HasBeenLooted;
@@ -78,8 +78,6 @@ public class LootContainer : StorageContainer, ILootContainer
 	private bool isRestoringFromSave;
 
 	private Action _actionSpawnLoot;
-
-	private static ItemDefinition scrapDef;
 
 	public bool shouldRefreshContents
 	{
@@ -152,24 +150,24 @@ public class LootContainer : StorageContainer, ILootContainer
 		{
 			SpawnLoot();
 		}
-		if (BlockPlayerItemInput && !Application.isLoadingSave && base.inventory != null)
+		if (BlockPlayerItemInput && !Application.isLoadingSave && inventory != null)
 		{
-			base.inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+			inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 		}
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Reserved6, PlayerInventory.IsBirthday());
 		}
-		NavMeshObstacle val = default(NavMeshObstacle);
+		NavMeshObstacle val = default;
 		if (Debugging.disableLootNavObstaclesInDeepSea && DeepSeaManager.IsInsideDeepSea((BaseNetworkable)this) && ((Component)this).TryGetComponent<NavMeshObstacle>(ref val))
 		{
 			val.carving = false;
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (!added)
 		{
 			HasBeenLooted = true;
@@ -191,9 +189,9 @@ public class LootContainer : StorageContainer, ILootContainer
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		if (BlockPlayerItemInput && base.inventory != null)
+		if (BlockPlayerItemInput && inventory != null)
 		{
-			base.inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+			inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 		}
 	}
 
@@ -205,21 +203,21 @@ public class LootContainer : StorageContainer, ILootContainer
 
 	public ItemContainer GetInventory()
 	{
-		return base.inventory;
+		return inventory;
 	}
 
 	public virtual void SpawnLoot()
 	{
-		if (base.IsDestroyed)
+		if (IsDestroyed)
 		{
 			return;
 		}
-		if (base.inventory == null)
+		if (inventory == null)
 		{
 			Debug.Log((object)"CONTACT DEVELOPERS! LootContainer::PopulateLoot has null inventory!!!");
 			return;
 		}
-		base.inventory.Clear();
+		inventory.Clear();
 		ItemManager.DoRemoves();
 		if (Interface.CallHook("OnLootSpawn", this) == null)
 		{
@@ -277,10 +275,10 @@ public class LootContainer : StorageContainer, ILootContainer
 
 	public virtual void PopulateLoot()
 	{
-		FillLoot(base.inventory, lootDefinition, maxDefinitionsToSpawn, LootSpawnSlots);
+		FillLoot(inventory, lootDefinition, maxDefinitionsToSpawn, LootSpawnSlots);
 		if (SpawnType == spawnType.ROADSIDE || SpawnType == spawnType.TOWN)
 		{
-			foreach (Item item in base.inventory.itemList)
+			foreach (Item item in inventory.itemList)
 			{
 				if (item.hasCondition)
 				{
@@ -295,23 +293,19 @@ public class LootContainer : StorageContainer, ILootContainer
 
 	public void GenerateScrap()
 	{
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		if (scrapAmount <= 0)
 		{
 			return;
 		}
-		if ((Object)(object)scrapDef == (Object)null)
-		{
-			scrapDef = ItemManager.FindItemDefinition("scrap");
-		}
 		int num = scrapAmount;
 		if (num > 0)
 		{
-			Item item = ItemManager.Create(scrapDef, num, 0uL, isServerSide: true, 0uL);
-			if (!item.MoveToContainer(base.inventory))
+			Item item = ItemManager.Create(ItemManager.Items.Scrap, num, 0uL, isServerSide: true, 0uL);
+			if (!item.MoveToContainer(inventory))
 			{
 				item.Drop(((Component)this).transform.position, GetInheritedDropVelocity());
 			}
@@ -320,19 +314,19 @@ public class LootContainer : StorageContainer, ILootContainer
 
 	public override void DropBonusItems(BaseEntity initiator, ItemContainer container)
 	{
-		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
 		base.DropBonusItems(initiator, container);
 		if ((Object)(object)initiator == (Object)null || container == null)
 		{
 			return;
 		}
 		BasePlayer basePlayer = initiator as BasePlayer;
-		if ((Object)(object)basePlayer == (Object)null || scrapAmount <= 0 || !((Object)(object)scrapDef != (Object)null))
+		if ((Object)(object)basePlayer == (Object)null || scrapAmount <= 0 || !((Object)(object)ItemManager.Items.Scrap != (Object)null))
 		{
 			return;
 		}
@@ -353,7 +347,7 @@ public class LootContainer : StorageContainer, ILootContainer
 		basePlayer.modifiers.SetVariableValue(Modifier.ModifierType.Scrap_Yield, variableValue);
 		if (num3 > 0)
 		{
-			Item item = ItemManager.Create(scrapDef, num3, 0uL, isServerSide: true, 0uL);
+			Item item = ItemManager.Create(ItemManager.Items.Scrap, num3, 0uL, isServerSide: true, 0uL);
 			if (item != null && Interface.CallHook("OnBonusItemDrop", item, basePlayer, container) == null)
 			{
 				(item.Drop(GetDropPosition() + new Vector3(0f, 0.5f, 0f), GetInheritedDropVelocity()) as DroppedItem).DropReason = DroppedItem.DropReasonEnum.Loot;
@@ -375,14 +369,14 @@ public class LootContainer : StorageContainer, ILootContainer
 			{
 				player.AddClanScore(clanScoreEventForFirstLooter);
 			}
-			if (base.inventory != null && base.inventory.itemList != null)
+			if (inventory != null && inventory.itemList != null)
 			{
-				foreach (Item item in base.inventory.itemList)
+				foreach (Item item in inventory.itemList)
 				{
 					item?.SetItemOwnership(player, ItemOwnershipPhrases.LootedPhrase);
 				}
 			}
-			if (Rust.GameInfo.HasAchievements)
+			if (GameInfo.HasAchievements)
 			{
 				string name = (player.IsInsideDeepSea() ? "STAT_LOOT_DEEPSEA" : "STAT_LOOT_MAINLAND");
 				player?.stats.Add(name, 1);
@@ -394,7 +388,7 @@ public class LootContainer : StorageContainer, ILootContainer
 	public override void PlayerStoppedLooting(BasePlayer player)
 	{
 		base.PlayerStoppedLooting(player);
-		if (destroyOnEmpty && (base.inventory == null || base.inventory.itemList == null || base.inventory.itemList.Count == 0))
+		if (destroyOnEmpty && (inventory == null || inventory.itemList == null || inventory.itemList.Count == 0))
 		{
 			Kill(DestroyMode.Gib);
 		}
@@ -414,7 +408,7 @@ public class LootContainer : StorageContainer, ILootContainer
 	{
 		if (initiator is BasePlayer player)
 		{
-			foreach (Item item in base.inventory.itemList)
+			foreach (Item item in inventory.itemList)
 			{
 				item?.SetItemOwnership(player, ItemOwnershipPhrases.LootedPhrase);
 			}
@@ -464,14 +458,5 @@ public class LootContainer : StorageContainer, ILootContainer
 	public LootContainer()
 	{
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		destroyOnEmpty = true;
-		minSecondsBetweenRefresh = 3600f;
-		maxSecondsBetweenRefresh = 7200f;
-		initialLootSpawn = true;
-		xpLootedScale = 1f;
-		xpDestroyedScale = 1f;
-		deathStat = "";
-		clanScoreEventForFirstLooter = (ClanScoreEventType)(-1);
-		base._002Ector();
 	}
 }

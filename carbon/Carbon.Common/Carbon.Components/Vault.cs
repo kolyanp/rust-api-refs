@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using Carbon.Core;
@@ -45,7 +44,7 @@ public class Vault
 
 		public bool HasItem(uint item)
 		{
-			for (int i = 0; i < base.Count; i++)
+			for (int i = 0; i < Count; i++)
 			{
 				Item item2 = base[i];
 				if (item2.id == item)
@@ -58,7 +57,7 @@ public class Vault
 
 		public bool HasItem(uint item, out Item value)
 		{
-			for (int i = 0; i < base.Count; i++)
+			for (int i = 0; i < Count; i++)
 			{
 				value = base[i];
 				if (value.id == item)
@@ -72,7 +71,7 @@ public class Vault
 
 		public Item GetItem(uint item)
 		{
-			for (int i = 0; i < base.Count; i++)
+			for (int i = 0; i < Count; i++)
 			{
 				Item item2 = base[i];
 				if (item2.id == item)
@@ -113,24 +112,17 @@ public class Vault
 
 		internal byte[] hash;
 
-		[CompilerGenerated]
-		private string _003CCache_003Ek__BackingField;
-
 		internal string Cache
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(_003CCache_003Ek__BackingField))
+				if (string.IsNullOrEmpty(field))
 				{
-					_003CCache_003Ek__BackingField = Encoding.UTF8.GetString(encrypted ? DecryptData(hash, CARBON_ID, salt) : hash);
+					field = Encoding.UTF8.GetString(encrypted ? DecryptData(hash, CARBON_ID, salt) : hash);
 				}
-				return _003CCache_003Ek__BackingField;
+				return field;
 			}
-			[CompilerGenerated]
-			set
-			{
-				_003CCache_003Ek__BackingField = value;
-			}
+			set;
 		}
 
 		public void EnterPool()
@@ -236,7 +228,7 @@ public class Vault
 		}
 	}
 
-	public static readonly string Global;
+	public static readonly string Global = "global";
 
 	private const int DEFAULT_KEY_BIT_SIZE = 256;
 
@@ -246,9 +238,9 @@ public class Vault
 
 	private const int SALT_SIZE = 16;
 
-	private static readonly SecureRandom RANDOM;
+	private static readonly SecureRandom RANDOM = new SecureRandom();
 
-	private static readonly List<Factory> FACTORIES;
+	private static readonly List<Factory> FACTORIES = new List<Factory>();
 
 	private static string CARBON_ID_CACHE;
 
@@ -269,13 +261,13 @@ public class Vault
 	private static byte[] DecryptImpl(byte[] encryptedMessage, byte[] key, int nonSecretPayloadLength = 0)
 	{
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Expected O, but got Unknown
+		//IL_0046: Expected Obj, but got Unknown
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Expected O, but got Unknown
+		//IL_0048: Expected Obj, but got Unknown
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Expected O, but got Unknown
+		//IL_005a: Expected Obj, but got Unknown
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Expected O, but got Unknown
+		//IL_005c: Expected Obj, but got Unknown
 		ValidateKeyImpl(key);
 		if (encryptedMessage == null || encryptedMessage.Length == 0)
 		{
@@ -298,13 +290,13 @@ public class Vault
 	private static byte[] EncryptImpl(byte[] messageToEncrypt, byte[] key, byte[] nonSecretPayload = null)
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Expected O, but got Unknown
+		//IL_0031: Expected Obj, but got Unknown
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Expected O, but got Unknown
+		//IL_0032: Expected Obj, but got Unknown
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Expected O, but got Unknown
+		//IL_0044: Expected Obj, but got Unknown
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Expected O, but got Unknown
+		//IL_0045: Expected Obj, but got Unknown
 		ValidateKeyImpl(key);
 		if (nonSecretPayload == null)
 		{
@@ -581,9 +573,6 @@ public class Vault
 	static Vault()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		Global = "global";
-		RANDOM = new SecureRandom();
-		FACTORIES = new List<Factory>();
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

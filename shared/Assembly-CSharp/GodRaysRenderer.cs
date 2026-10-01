@@ -32,6 +32,10 @@ public class GodRaysRenderer : PostProcessEffectRenderer<GodRays>
 
 	private void DrawBorder(PostProcessRenderContext context, RenderTargetIdentifier buffer1)
 	{
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
@@ -45,14 +49,10 @@ public class GodRaysRenderer : PostProcessEffectRenderer<GodRays>
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
 		PropertySheet propertySheet = context.propertySheets.Get(ScreenClearShader);
-		Rect value = default(Rect);
-		((Rect)(ref value))._002Ector(0f, (float)(context.height - 1), (float)context.width, 1f);
-		Rect value2 = default(Rect);
-		((Rect)(ref value2))._002Ector(0f, 0f, (float)context.width, 1f);
-		Rect value3 = default(Rect);
-		((Rect)(ref value3))._002Ector(0f, 0f, 1f, (float)context.height);
-		Rect value4 = default(Rect);
-		((Rect)(ref value4))._002Ector((float)(context.width - 1), 0f, 1f, (float)context.height);
+		Rect value = new Rect(0f, (float)(context.height - 1), (float)context.width, 1f);
+		Rect value2 = new Rect(0f, 0f, (float)context.width, 1f);
+		Rect value3 = new Rect(0f, 0f, 1f, (float)context.height);
+		Rect value4 = new Rect((float)(context.width - 1), 0f, 1f, (float)context.height);
 		context.command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), buffer1, propertySheet, 0, clear: false, value);
 		context.command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), buffer1, propertySheet, 0, clear: false, value2);
 		context.command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), buffer1, propertySheet, 0, clear: false, value3);
@@ -177,15 +177,15 @@ public class GodRaysRenderer : PostProcessEffectRenderer<GodRays>
 			Vector3 val = camera.WorldToViewportPoint(instance.Components.LightTransform.position);
 			CommandBuffer command = context.command;
 			PropertySheet propertySheet = context.propertySheets.Get(GodRayShader);
-			int skyMask = GetSkyMask(context, base.settings.Resolution.value, val, base.settings.BlurIterations.value, base.settings.BlurRadius.value, base.settings.MaxRadius.value);
+			int skyMask = GetSkyMask(context, settings.Resolution.value, val, settings.BlurIterations.value, settings.BlurRadius.value, settings.MaxRadius.value);
 			Color val2 = Color.black;
 			if ((double)val.z >= 0.0)
 			{
-				val2 = ((!instance.IsDay) ? (base.settings.Intensity.value * instance.MoonVisibility * instance.MoonRayColor) : (base.settings.Intensity.value * instance.SunVisibility * instance.SunRayColor));
+				val2 = ((!instance.IsDay) ? (settings.Intensity.value * instance.MoonVisibility * instance.MoonRayColor) : (settings.Intensity.value * instance.SunVisibility * instance.SunRayColor));
 			}
 			propertySheet.properties.SetColor("_LightColor", val2);
 			command.SetGlobalTexture("_SkyMask", RenderTargetIdentifier.op_Implicit(skyMask));
-			if (base.settings.BlendMode.value == BlendModeType.Screen)
+			if (settings.BlendMode.value == BlendModeType.Screen)
 			{
 				context.command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 0);
 			}

@@ -1,5 +1,4 @@
 using System;
-using Unity.Collections;
 using UnityEngine;
 
 public class TerrainPlacementMap : TerrainMap<bool>
@@ -38,8 +37,8 @@ public class TerrainPlacementMap : TerrainMap<bool>
 				dst.Dispose();
 			}
 		}
-		src = default(NativeArray<bool>);
-		dst = default(NativeArray<bool>);
+		src = default;
+		dst = default;
 		Disable();
 	}
 
@@ -151,7 +150,7 @@ public class TerrainPlacementMap : TerrainMap<bool>
 
 	public void SetBlocked(float normX, float normZ, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if ((double)lerp > 0.5)
 			{

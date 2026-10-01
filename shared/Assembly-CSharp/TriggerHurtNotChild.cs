@@ -228,7 +228,7 @@ public class TriggerHurtNotChild : TriggerBase, IServerComponent, IHurtTrigger
 					Vector3 val = item.TriggerPoint();
 					Bounds bounds = triggerCollider.bounds;
 					float num2 = Vector3.Distance(val, BoundsEx.ClosestPointOnSurface(bounds, val));
-					float num3 = Vector3.Distance(val, ((Bounds)(ref bounds)).center);
+					float num3 = Vector3.Distance(val, bounds.center);
 					float num4 = num2 + num3;
 					float num5 = Mathf.Lerp(1f, DamageMultAtCenter, 1f - num3 / num4);
 					num *= num5;

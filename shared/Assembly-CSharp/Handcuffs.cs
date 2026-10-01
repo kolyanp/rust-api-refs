@@ -229,7 +229,7 @@ public class Handcuffs : BaseMelee
 	{
 		base.Load(info);
 		Item item = GetItem();
-		if (base.isServer && item != null)
+		if (isServer && item != null)
 		{
 			SetLocked(Locked);
 		}
@@ -257,7 +257,7 @@ public class Handcuffs : BaseMelee
 	public void SetLocked(bool flag, BasePlayer player = null, Item handcuffsItem = null)
 	{
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -339,7 +339,7 @@ public class Handcuffs : BaseMelee
 
 	public void RepairOnPush()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			GetOwnerItem()?.DoRepair(maxConditionRepairLossOnPush);
 		}
@@ -347,12 +347,12 @@ public class Handcuffs : BaseMelee
 
 	public void InterruptUnlockMiniGame(bool wasPushedOrDamaged = false)
 	{
-		if (base.isServer && unlockStartTime > 0f && !wasPushedOrDamaged)
+		if (isServer && unlockStartTime > 0f && !wasPushedOrDamaged)
 		{
 			ModifyConditionForElapsedTime(Time.realtimeSinceStartup - unlockStartTime);
 		}
 		unlockStartTime = 0f;
-		if (base.isServer)
+		if (isServer)
 		{
 			BasePlayer ownerPlayer = GetOwnerPlayer();
 			if (!((Object)(object)ownerPlayer == (Object)null))
@@ -420,8 +420,8 @@ public class Handcuffs : BaseMelee
 		Effect.server.Run(escapeEffect.resourcePath, player, 0u, Vector3.zero, Vector3.zero);
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_ReqLock(RPCMessage rpc)
 	{
@@ -528,7 +528,7 @@ public class Handcuffs : BaseMelee
 
 	public override void DoAttackShared(HitInfo info)
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}

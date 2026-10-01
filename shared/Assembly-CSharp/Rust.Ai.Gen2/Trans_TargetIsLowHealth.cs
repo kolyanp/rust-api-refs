@@ -14,7 +14,7 @@ public class Trans_TargetIsLowHealth : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_TargetIsLowHealth"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return false;
 			}

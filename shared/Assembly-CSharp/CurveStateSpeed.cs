@@ -13,7 +13,7 @@ public class CurveStateSpeed : StateMachineBehaviour
 		float speed = 1f;
 		if (!animator.IsInTransition(layerIndex))
 		{
-			speed = SpeedCurve.Evaluate(((AnimatorStateInfo)(ref stateInfo)).normalizedTime);
+			speed = SpeedCurve.Evaluate(stateInfo.normalizedTime);
 		}
 		animator.speed = speed;
 	}

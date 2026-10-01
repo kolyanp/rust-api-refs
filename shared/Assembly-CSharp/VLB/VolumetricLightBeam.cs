@@ -6,99 +6,99 @@ using UnityEngine.Serialization;
 namespace VLB;
 
 [HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
-[SelectionBase]
 [DisallowMultipleComponent]
+[SelectionBase]
 [ExecuteInEditMode]
 public class VolumetricLightBeam : MonoBehaviour
 {
-	public bool colorFromLight;
+	public bool colorFromLight = true;
 
 	public ColorMode colorMode;
 
 	[FormerlySerializedAs("colorValue")]
 	[ColorUsage(true, true)]
-	public Color color;
+	public Color color = Consts.FlatColor;
 
 	public Gradient colorGradient;
 
 	[Range(0f, 1f)]
-	public float alphaInside;
+	public float alphaInside = 1f;
 
-	[Range(0f, 1f)]
 	[FormerlySerializedAs("alpha")]
-	public float alphaOutside;
+	[Range(0f, 1f)]
+	public float alphaOutside = 1f;
 
 	public BlendingMode blendingMode;
 
 	[FormerlySerializedAs("angleFromLight")]
-	public bool spotAngleFromLight;
+	public bool spotAngleFromLight = true;
 
 	[Range(0.1f, 179.9f)]
-	public float spotAngle;
+	public float spotAngle = 35f;
 
 	[FormerlySerializedAs("radiusStart")]
-	public float coneRadiusStart;
+	public float coneRadiusStart = 0.1f;
 
 	public MeshType geomMeshType;
 
 	[FormerlySerializedAs("geomSides")]
-	public int geomCustomSides;
+	public int geomCustomSides = 18;
 
-	public int geomCustomSegments;
+	public int geomCustomSegments = 5;
 
 	public bool geomCap;
 
-	public bool fadeEndFromLight;
+	public bool fadeEndFromLight = true;
 
-	public AttenuationEquation attenuationEquation;
+	public AttenuationEquation attenuationEquation = AttenuationEquation.Quadratic;
 
 	[Range(0f, 1f)]
-	public float attenuationCustomBlending;
+	public float attenuationCustomBlending = 0.5f;
 
 	public float fadeStart;
 
-	public float fadeEnd;
+	public float fadeEnd = 3f;
 
-	public float depthBlendDistance;
+	public float depthBlendDistance = 2f;
 
-	public float cameraClippingDistance;
-
-	[Range(0f, 1f)]
-	public float glareFrontal;
+	public float cameraClippingDistance = 0.5f;
 
 	[Range(0f, 1f)]
-	public float glareBehind;
+	public float glareFrontal = 0.5f;
+
+	[Range(0f, 1f)]
+	public float glareBehind = 0.5f;
 
 	[Obsolete("Use 'glareFrontal' instead")]
-	public float boostDistanceInside;
+	public float boostDistanceInside = 0.5f;
 
 	[Obsolete("This property has been merged with 'fresnelPow'")]
-	public float fresnelPowInside;
+	public float fresnelPowInside = 6f;
 
 	[FormerlySerializedAs("fresnelPowOutside")]
-	public float fresnelPow;
+	public float fresnelPow = 8f;
 
 	public bool noiseEnabled;
 
 	[Range(0f, 1f)]
-	public float noiseIntensity;
+	public float noiseIntensity = 0.5f;
 
-	public bool noiseScaleUseGlobal;
+	public bool noiseScaleUseGlobal = true;
 
 	[Range(0.01f, 2f)]
-	public float noiseScaleLocal;
+	public float noiseScaleLocal = 0.5f;
 
-	public bool noiseVelocityUseGlobal;
+	public bool noiseVelocityUseGlobal = true;
 
-	public Vector3 noiseVelocityLocal;
+	public Vector3 noiseVelocityLocal = Consts.NoiseVelocityDefault;
 
 	private Plane m_PlaneWS;
 
 	[SerializeField]
-	private int pluginVersion;
+	private int pluginVersion = -1;
 
-	[FormerlySerializedAs("trackChangesDuringPlaytime")]
 	[SerializeField]
+	[FormerlySerializedAs("trackChangesDuringPlaytime")]
 	private bool _TrackChangesDuringPlaytime;
 
 	[SerializeField]
@@ -108,6 +108,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	private int _SortingOrder;
 
 	private BeamGeometry m_BeamGeom;
+
+	private bool m_HasGeneratedGeometry;
 
 	private Coroutine m_CoPlaytimeUpdate;
 
@@ -354,7 +356,7 @@ public class VolumetricLightBeam : MonoBehaviour
 		{
 			m_BeamGeom.SetClippingPlaneOff();
 		}
-		m_PlaneWS = default(Plane);
+		m_PlaneWS = default;
 	}
 
 	public bool IsColliderHiddenByDynamicOccluder(Collider collider)
@@ -368,7 +370,7 @@ public class VolumetricLightBeam : MonoBehaviour
 		{
 			return false;
 		}
-		return !GeometryUtility.TestPlanesAABB((Plane[])(object)new Plane[1] { m_PlaneWS }, collider.bounds);
+		return !GeometryUtility.TestPlanesAABB(new Plane[1] { m_PlaneWS }, collider.bounds);
 	}
 
 	public float GetInsideBeamFactor(Vector3 posWS)
@@ -395,8 +397,8 @@ public class VolumetricLightBeam : MonoBehaviour
 			return -1f;
 		}
 		Vector2 val = Utils.xy(posOS);
-		val = new Vector2(((Vector2)(ref val)).magnitude, posOS.z + coneApexOffsetZ);
-		Vector2 normalized = ((Vector2)(ref val)).normalized;
+		val = new Vector2(val.magnitude, posOS.z + coneApexOffsetZ);
+		Vector2 normalized = val.normalized;
 		return Mathf.Clamp((Mathf.Abs(Mathf.Sin(coneAngle * (MathF.PI / 180f) / 2f)) - Mathf.Abs(normalized.x)) / 0.1f, -1f, 1f);
 	}
 
@@ -424,6 +426,7 @@ public class VolumetricLightBeam : MonoBehaviour
 		}
 		m_BeamGeom.RegenerateMesh();
 		m_BeamGeom.visible = ((Behaviour)this).enabled;
+		m_HasGeneratedGeometry = true;
 	}
 
 	public virtual void UpdateAfterManualPropertyChange()
@@ -442,6 +445,10 @@ public class VolumetricLightBeam : MonoBehaviour
 
 	private void OnEnable()
 	{
+		if (!Object.op_Implicit((Object)(object)m_BeamGeom) && m_HasGeneratedGeometry && Application.isPlaying)
+		{
+			GenerateGeometry();
+		}
 		if (Object.op_Implicit((Object)(object)m_BeamGeom))
 		{
 			m_BeamGeom.visible = true;
@@ -475,6 +482,11 @@ public class VolumetricLightBeam : MonoBehaviour
 	private void OnDestroy()
 	{
 		DestroyBeam();
+	}
+
+	internal void ReleaseBeamGeometry()
+	{
+		m_BeamGeom = null;
 	}
 
 	private void DestroyBeam()
@@ -557,32 +569,5 @@ public class VolumetricLightBeam : MonoBehaviour
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		colorFromLight = true;
-		color = Consts.FlatColor;
-		alphaInside = 1f;
-		alphaOutside = 1f;
-		spotAngleFromLight = true;
-		spotAngle = 35f;
-		coneRadiusStart = 0.1f;
-		geomCustomSides = 18;
-		geomCustomSegments = 5;
-		fadeEndFromLight = true;
-		attenuationEquation = AttenuationEquation.Quadratic;
-		attenuationCustomBlending = 0.5f;
-		fadeEnd = 3f;
-		depthBlendDistance = 2f;
-		cameraClippingDistance = 0.5f;
-		glareFrontal = 0.5f;
-		glareBehind = 0.5f;
-		boostDistanceInside = 0.5f;
-		fresnelPowInside = 6f;
-		fresnelPow = 8f;
-		noiseIntensity = 0.5f;
-		noiseScaleUseGlobal = true;
-		noiseScaleLocal = 0.5f;
-		noiseVelocityUseGlobal = true;
-		noiseVelocityLocal = Consts.NoiseVelocityDefault;
-		pluginVersion = -1;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

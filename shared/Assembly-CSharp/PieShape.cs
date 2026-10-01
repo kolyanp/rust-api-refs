@@ -8,33 +8,18 @@ using UnityEngine.UI;
 public class PieShape : Graphic
 {
 	[Range(0f, 1f)]
-	public float outerSize;
+	public float outerSize = 1f;
 
 	[Range(0f, 1f)]
-	public float innerSize;
+	public float innerSize = 0.5f;
 
-	public float startRadius;
+	public float startRadius = -45f;
 
-	public float endRadius;
+	public float endRadius = 45f;
 
 	public float border;
 
 	public bool debugDrawing;
-
-	[CompilerGenerated]
-	private Rect _003CdrawRect_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector2 _003CcentrePosition_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector2 _003CfirstPosition_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector2 _003ClastPosition_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CaveragePosition_003Ek__BackingField;
 
 	public bool calculateAverage;
 
@@ -44,14 +29,14 @@ public class PieShape : Graphic
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CdrawRect_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CdrawRect_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -61,14 +46,14 @@ public class PieShape : Graphic
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CcentrePosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CcentrePosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -78,14 +63,14 @@ public class PieShape : Graphic
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CfirstPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CfirstPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -95,14 +80,14 @@ public class PieShape : Graphic
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003ClastPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003ClastPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -112,14 +97,14 @@ public class PieShape : Graphic
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CaveragePosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CaveragePosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -213,7 +198,7 @@ public class PieShape : Graphic
 		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f9: Unknown result type (might be due to invalid IL or missing references)
-		Rect val = (drawRect = default(Rect));
+		Rect val = (drawRect = default);
 		vbo.Clear();
 		UIVertex simpleVert = UIVertex.simpleVert;
 		float num = startRadius;
@@ -229,10 +214,10 @@ public class PieShape : Graphic
 		}
 		float num4 = (num2 - num) / num3;
 		float num5 = num + (num2 - num) * 0.5f;
-		averagePosition = default(Vector3);
+		averagePosition = default;
 		Color val3 = ((Graphic)this).color;
 		val = ((Graphic)this).rectTransform.rect;
-		float num6 = ((Rect)(ref val)).height * 0.5f;
+		float num6 = val.height * 0.5f;
 		Vector2 val4 = new Vector2(Mathf.Sin(num5 * (MathF.PI / 180f)), Mathf.Cos(num5 * (MathF.PI / 180f))) * border;
 		int num7 = 0;
 		firstPosition = Vector2.zero;
@@ -304,10 +289,6 @@ public class PieShape : Graphic
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		outerSize = 1f;
-		innerSize = 0.5f;
-		startRadius = -45f;
-		endRadius = 45f;
 		averagePosition = Vector2.op_Implicit(default(Vector2));
 		((Graphic)this)._002Ector();
 	}

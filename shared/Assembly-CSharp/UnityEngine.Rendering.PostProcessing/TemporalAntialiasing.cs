@@ -14,8 +14,8 @@ public sealed class TemporalAntialiasing
 		SolverNoDilate
 	}
 
-	[Tooltip("The diameter (in texels) inside which jitter samples are spread. Smaller values result in crisper but more aliased output, while larger values result in more stable, but blurrier, output.")]
 	[Range(0.1f, 1f)]
+	[Tooltip("The diameter (in texels) inside which jitter samples are spread. Smaller values result in crisper but more aliased output, while larger values result in more stable, but blurrier, output.")]
 	public float jitterSpread = 0.75f;
 
 	[Range(0f, 3f)]
@@ -26,19 +26,13 @@ public sealed class TemporalAntialiasing
 	[Tooltip("The blend coefficient for a stationary fragment. Controls the percentage of history sample blended into the final color.")]
 	public float stationaryBlending = 0.95f;
 
-	[Range(0f, 0.99f)]
 	[Tooltip("The blend coefficient for a fragment with significant motion. Controls the percentage of history sample blended into the final color.")]
+	[Range(0f, 0.99f)]
 	public float motionBlending = 0.85f;
 
 	public Func<Camera, Vector2, Matrix4x4> jitteredMatrixFunc;
 
-	[CompilerGenerated]
-	private Vector2 _003Cjitter_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector2 _003CjitterRaw_003Ek__BackingField;
-
-	private readonly RenderTargetIdentifier[] m_Mrt = (RenderTargetIdentifier[])(object)new RenderTargetIdentifier[2];
+	private readonly RenderTargetIdentifier[] m_Mrt = new RenderTargetIdentifier[2];
 
 	private bool m_ResetHistory = true;
 
@@ -56,14 +50,14 @@ public sealed class TemporalAntialiasing
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cjitter_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cjitter_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -73,14 +67,14 @@ public sealed class TemporalAntialiasing
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CjitterRaw_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CjitterRaw_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -137,7 +131,15 @@ public sealed class TemporalAntialiasing
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		jitter = GenerateRandomOffset();
-		Matrix4x4 result = ((jitteredMatrixFunc == null) ? (camera.orthographic ? RuntimeUtilities.GetJitteredOrthographicProjectionMatrix(camera, jitter) : RuntimeUtilities.GetJitteredPerspectiveProjectionMatrix(camera, jitter)) : jitteredMatrixFunc(camera, jitter));
+		Matrix4x4 result;
+		if (jitteredMatrixFunc == null)
+		{
+			result = (camera.orthographic ? RuntimeUtilities.GetJitteredOrthographicProjectionMatrix(camera, jitter) : RuntimeUtilities.GetJitteredPerspectiveProjectionMatrix(camera, jitter));
+		}
+		else
+		{
+			result = jitteredMatrixFunc(camera, jitter);
+		}
 		jitterRaw = jitter;
 		jitter = new Vector2(jitter.x / (float)camera.pixelWidth, jitter.y / (float)camera.pixelHeight);
 		return result;
@@ -208,7 +210,7 @@ public sealed class TemporalAntialiasing
 		int xrActiveEye = context.xrActiveEye;
 		if (m_HistoryTextures[xrActiveEye] == null)
 		{
-			m_HistoryTextures[xrActiveEye] = (RenderTexture[])(object)new RenderTexture[2];
+			m_HistoryTextures[xrActiveEye] = new RenderTexture[2];
 		}
 		RenderTexture val = m_HistoryTextures[xrActiveEye][id];
 		if (m_ResetHistory || (Object)(object)val == (Object)null || !val.IsCreated())
@@ -250,10 +252,10 @@ public sealed class TemporalAntialiasing
 		RenderTexture val = CheckHistory(++num % 2, context);
 		RenderTexture val2 = CheckHistory(++num % 2, context);
 		m_HistoryPingPong[context.xrActiveEye] = ++num % 2;
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Jitter, Vector4.op_Implicit(jitter));
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.Sharpness, sharpness);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.FinalBlendParameters, new Vector4(stationaryBlending, motionBlending, 6000f, 0f));
-		propertySheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.HistoryTex, (Texture)(object)val);
+		propertySheet.properties.SetVector(ShaderIDs.Jitter, Vector4.op_Implicit(jitter));
+		propertySheet.properties.SetFloat(ShaderIDs.Sharpness, sharpness);
+		propertySheet.properties.SetVector(ShaderIDs.FinalBlendParameters, new Vector4(stationaryBlending, motionBlending, 6000f, 0f));
+		propertySheet.properties.SetTexture(ShaderIDs.HistoryTex, (Texture)(object)val);
 		int pass = (context.camera.orthographic ? 1 : 0);
 		m_Mrt[0] = context.destination;
 		m_Mrt[1] = RenderTargetIdentifier.op_Implicit((Texture)(object)val2);

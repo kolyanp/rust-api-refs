@@ -12,7 +12,7 @@ public class BushEntity : BaseEntity, IPrefabPreProcess
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			DecorComponent[] components = PrefabAttribute.server.FindAll<DecorComponent>(prefabID);
 			((Component)this).transform.ApplyDecorComponentsScaleOnly(components);

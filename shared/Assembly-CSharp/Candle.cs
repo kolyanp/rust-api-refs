@@ -58,8 +58,8 @@ public class Candle : BaseCombatEntity, ISplashable, IIgniteable, IAlwaysOn
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SetWantsOn(RPCMessage msg)
 	{
 		bool b = msg.read.Bit();
@@ -118,7 +118,7 @@ public class Candle : BaseCombatEntity, ISplashable, IIgniteable, IAlwaysOn
 
 	public override void OnAttacked(HitInfo info)
 	{
-		if (base.isServer && info.damageTypes.Get(DamageType.Heat) > 0f && !IsOn())
+		if (isServer && info.damageTypes.Get(DamageType.Heat) > 0f && !IsOn())
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
@@ -131,7 +131,7 @@ public class Candle : BaseCombatEntity, ISplashable, IIgniteable, IAlwaysOn
 
 	public bool WantsSplash(ItemDefinition splashType, int amount)
 	{
-		if (!base.IsDestroyed && amount > 1)
+		if (!IsDestroyed && amount > 1)
 		{
 			return IsOn();
 		}

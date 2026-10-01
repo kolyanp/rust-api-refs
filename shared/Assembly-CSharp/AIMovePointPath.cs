@@ -15,11 +15,11 @@ public class AIMovePointPath : MonoBehaviour
 		Backwards
 	}
 
-	public Color DebugPathColor;
+	public Color DebugPathColor = Color.green;
 
 	public Mode LoopMode;
 
-	public List<AIMovePoint> Points;
+	public List<AIMovePoint> Points = new List<AIMovePoint>();
 
 	public void Clear()
 	{
@@ -151,8 +151,5 @@ public class AIMovePointPath : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		DebugPathColor = Color.green;
-		Points = new List<AIMovePoint>();
-		((MonoBehaviour)this)._002Ector();
 	}
 }

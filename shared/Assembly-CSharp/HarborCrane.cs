@@ -29,7 +29,7 @@ public class HarborCrane : HarborProximityEntity
 		if (!((Object)(object)ArmSupportUpper == (Object)null) && !((Object)(object)ArmSupportLower == (Object)null))
 		{
 			Vector3 val = ArmSupportUpper.position - ArmSupportLower.position;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			ArmSupportLower.rotation = Quaternion.LookRotation(fwd, normalized);
 			ArmSupportUpper.rotation = Quaternion.LookRotation(fwd, normalized);
 		}

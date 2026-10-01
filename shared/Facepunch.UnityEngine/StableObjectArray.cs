@@ -43,7 +43,6 @@ public class StableObjectArray<T> : StableObjectArray, IDisposable
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		_objects = new T[initCapacity];
 		_movingIndices = new int[initCapacity];
 		_stableIndexLookup = new NativeArray<int>(initCapacity, (Allocator)4, (NativeArrayOptions)0);
@@ -86,7 +85,7 @@ public class StableObjectArray<T> : StableObjectArray, IDisposable
 			_movingIndices[stableIndex] = AsFreeIndex(_firstFree);
 			_firstFree = stableIndex;
 		}
-		_objects[num] = default(T);
+		_objects[num] = default;
 		_canRepack |= !invalidateStableIndex;
 	}
 
@@ -97,7 +96,7 @@ public class StableObjectArray<T> : StableObjectArray, IDisposable
 		{
 			return _objects[num];
 		}
-		return default(T);
+		return default;
 	}
 
 	public int GetIndexForSyncRemove(int stableIndex)

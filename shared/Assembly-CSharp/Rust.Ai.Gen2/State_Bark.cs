@@ -12,20 +12,20 @@ public class State_Bark : State_PlayAnimation
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		if (!base.Senses.FindTarget(out var targetEntity))
+		if (!Senses.FindTarget(out var targetEntity))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		base.Blackboard.Add("WolfNearbyAlreadyBarked");
+		Blackboard.Add("WolfNearbyAlreadyBarked");
 		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
 		try
 		{
-			base.Senses.GetInitialAllies((List<BaseEntity>)(object)val);
+			Senses.GetInitialAllies((List<BaseEntity>)(object)val);
 			foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 			{
 				((Component)item).GetComponent<BlackboardComponent>().Add("WolfNearbyAlreadyBarked");
 				Wolf2FSM otherWolf = ((Component)item).GetComponent<Wolf2FSM>();
-				Owner.Invoke(delegate
+				Owner.Invoke(() =>
 				{
 					otherWolf.Bark(targetEntity);
 				}, Mathf.Max(0f, Animation.length + Random.Range(-0.5f, 0.5f)));

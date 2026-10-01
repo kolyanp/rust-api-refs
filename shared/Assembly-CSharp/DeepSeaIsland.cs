@@ -44,7 +44,7 @@ public class DeepSeaIsland : BaseEntity, IDeepSeaSpawner
 		BakedShoreVectors bakedShoreVectors = PrefabAttribute.server.Find<BakedShoreVectors>(prefabID);
 		if (bakedShoreVectors != null)
 		{
-			Invoke(delegate
+			Invoke(() =>
 			{
 				TerrainMeta.Texturing.ApplyBakedDeepSeaVectors(bakedShoreVectors, ((Component)this).transform);
 			}, 0f);

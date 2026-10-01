@@ -10,6 +10,8 @@ public class SparseGridWithBounds<T>
 
 	private int cellSize;
 
+	public int Count => reverseLookup.Count;
+
 	public SparseGridWithBounds(int cellSize = 32)
 	{
 		this.cellSize = cellSize;
@@ -26,8 +28,8 @@ public class SparseGridWithBounds<T>
 		}
 		HashSet<(int, int)> hashSet = Pool.Get<HashSet<(int, int)>>();
 		reverseLookup.Add(item, hashSet);
-		(int, int) cellKey = GetCellKey(((Bounds)(ref bounds)).min);
-		(int, int) cellKey2 = GetCellKey(((Bounds)(ref bounds)).max);
+		(int, int) cellKey = GetCellKey(bounds.min);
+		(int, int) cellKey2 = GetCellKey(bounds.max);
 		var (i, _) = cellKey;
 		for (; i <= cellKey2.Item1; i++)
 		{
@@ -76,8 +78,8 @@ public class SparseGridWithBounds<T>
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		foundItems.Clear();
-		(int, int) cellKey = GetCellKey(((Bounds)(ref bounds)).min);
-		(int, int) cellKey2 = GetCellKey(((Bounds)(ref bounds)).max);
+		(int, int) cellKey = GetCellKey(bounds.min);
+		(int, int) cellKey2 = GetCellKey(bounds.max);
 		var (i, _) = cellKey;
 		for (; i <= cellKey2.Item1; i++)
 		{

@@ -105,6 +105,7 @@ public struct RaycastRayProcessingJob : IJobParallelFor
 		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
@@ -137,7 +138,7 @@ public struct RaycastRayProcessingJob : IJobParallelFor
 		else
 		{
 			val = reference;
-			distance = ((RaycastHit)(ref val)).distance;
+			distance = val.distance;
 		}
 		float num3 = distance;
 		float3 val2;
@@ -148,31 +149,31 @@ public struct RaycastRayProcessingJob : IJobParallelFor
 		else
 		{
 			val = reference;
-			val2 = float3.op_Implicit(((RaycastHit)(ref val)).normal);
+			val2 = float3.op_Implicit(val.normal);
 		}
 		float3 val3 = val2;
 		if (oceanEnabled)
 		{
 			RaycastCommand val4 = raycastCommands[index];
-			float3 val5 = float3.op_Implicit(((RaycastCommand)(ref val4)).from);
+			float3 val5 = float3.op_Implicit(val4.from);
 			float num4 = -1f;
 			float3 val6 = float3.zero;
 			if (flag)
 			{
 				val = reference;
-				float3 val7 = float3.op_Implicit(((RaycastHit)(ref val)).point);
+				float3 val7 = float3.op_Implicit(val.point);
 				if (val5.y > oceanLevel && val7.y < oceanLevel)
 				{
 					float num5 = (val5.y - oceanLevel) / (val5.y - val7.y);
 					val = reference;
-					num4 = ((RaycastHit)(ref val)).distance * num5;
+					num4 = val.distance * num5;
 					val6 = math.lerp(val5, val7, num5);
 				}
 			}
 			else
 			{
 				val4 = raycastCommands[index];
-				float3 val8 = float3.op_Implicit(((RaycastCommand)(ref val4)).direction);
+				float3 val8 = float3.op_Implicit(val4.direction);
 				if (val5.y > oceanLevel && val8.y < 0f)
 				{
 					float num6 = (oceanLevel - val5.y) / val8.y;
@@ -192,7 +193,7 @@ public struct RaycastRayProcessingJob : IJobParallelFor
 				{
 					b = 2;
 					num3 = num4;
-					((float3)(ref val3))._002Ector(0f, 1f, 0f);
+					val3 = new float3(0f, 1f, 0f);
 				}
 			}
 		}

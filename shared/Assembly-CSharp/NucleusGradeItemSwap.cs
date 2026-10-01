@@ -10,7 +10,7 @@ public class NucleusGradeItemSwap : ItemModSwap
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
+		//IL_002c: Expected Obj, but got Unknown
 		if ((Object)(object)item.info == (Object)(object)NucleusItem)
 		{
 			item.instanceData = new InstanceData

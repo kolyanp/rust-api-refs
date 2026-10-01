@@ -57,10 +57,10 @@ public class PhysicsEffects : MonoBehaviour
 			return;
 		}
 		Vector3 relativeVelocity = collision.relativeVelocity;
-		float magnitude = ((Vector3)(ref relativeVelocity)).magnitude;
+		float magnitude = relativeVelocity.magnitude;
 		magnitude = magnitude * 0.055f * hardnessScale;
-		Rigidbody val = default(Rigidbody);
-		if (!(magnitude <= ignoreImpactThreshold) && (!((useCollisionPositionInsteadOfTransform ? Vector3.Distance(((ContactPoint)(ref collision.contacts[0])).point, lastCollisionPos) : Vector3.Distance(((Component)this).transform.position, lastCollisionPos)) < minDistBetweenEffects) || lastEffectPlayed == 0f) && (!(minimumRigidbodyImpactWeight > 0f) || !collision.gameObject.TryGetComponent<Rigidbody>(ref val) || !(val.mass < minimumRigidbodyImpactWeight)))
+		Rigidbody val = default;
+		if (!(magnitude <= ignoreImpactThreshold) && (!((useCollisionPositionInsteadOfTransform ? Vector3.Distance(collision.contacts[0].point, lastCollisionPos) : Vector3.Distance(((Component)this).transform.position, lastCollisionPos)) < minDistBetweenEffects) || lastEffectPlayed == 0f) && (!(minimumRigidbodyImpactWeight > 0f) || !collision.gameObject.TryGetComponent<Rigidbody>(ref val) || !(val.mass < minimumRigidbodyImpactWeight)))
 		{
 			if ((Object)(object)entity != (Object)null)
 			{
@@ -69,7 +69,7 @@ public class PhysicsEffects : MonoBehaviour
 			lastEffectPlayed = Time.time;
 			if (useCollisionPositionInsteadOfTransform)
 			{
-				lastCollisionPos = ((Component)this).transform.InverseTransformPoint(((ContactPoint)(ref collision.contacts[0])).point);
+				lastCollisionPos = ((Component)this).transform.InverseTransformPoint(collision.contacts[0].point);
 			}
 			else
 			{

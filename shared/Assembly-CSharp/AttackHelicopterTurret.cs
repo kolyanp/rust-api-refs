@@ -110,7 +110,7 @@ public class AttackHelicopterTurret : StorageContainer
 
 	public HeldEntity GetAttachedHeldEntity()
 	{
-		HeldEntity heldEntity = attachedHeldEntity.Get(base.isServer);
+		HeldEntity heldEntity = attachedHeldEntity.Get(isServer);
 		if (heldEntity.IsValid())
 		{
 			return heldEntity;
@@ -123,16 +123,16 @@ public class AttackHelicopterTurret : StorageContainer
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		clip = 0;
 		available = 0;
-		if (base.isServer && GetAttachedHeldEntity() is BaseProjectile baseProjectile)
+		if (isServer && GetAttachedHeldEntity() is BaseProjectile baseProjectile)
 		{
 			clip = baseProjectile.primaryMagazine.contents;
 			if (baseProjectile.primaryMagazine.allowAmmoSwitching)
 			{
-				available = base.inventory.GetAmmoAmount(baseProjectile.primaryMagazine.definition.ammoTypes);
+				available = inventory.GetAmmoAmount(baseProjectile.primaryMagazine.definition.ammoTypes);
 			}
 			else
 			{
-				available = base.inventory.GetAmmoAmount(baseProjectile.primaryMagazine.ammoType);
+				available = inventory.GetAmmoAmount(baseProjectile.primaryMagazine.ammoType);
 			}
 		}
 	}
@@ -160,7 +160,7 @@ public class AttackHelicopterTurret : StorageContainer
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 		InvokeRandomized(RefreshGunState, 0f, 0.25f, 0.05f);
 		turretHorHandle = ((Component)turretHorizontal).transformHandle;
@@ -191,8 +191,8 @@ public class AttackHelicopterTurret : StorageContainer
 			{
 				Quaternion localRotMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in turretVerHandle);
 				Quaternion localRotMT2 = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in turretHorHandle);
-				info.msg.attackHeliTurret.xRot = ((Quaternion)(ref localRotMT)).eulerAngles.x;
-				info.msg.attackHeliTurret.yRot = ((Quaternion)(ref localRotMT2)).eulerAngles.y;
+				info.msg.attackHeliTurret.xRot = localRotMT.eulerAngles.x;
+				info.msg.attackHeliTurret.yRot = localRotMT2.eulerAngles.y;
 			}
 			else
 			{
@@ -214,7 +214,7 @@ public class AttackHelicopterTurret : StorageContainer
 
 	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (IsValidWeapon(item) && targetSlot == 0)
 		{
 			return true;
@@ -305,13 +305,13 @@ public class AttackHelicopterTurret : StorageContainer
 		{
 			turretNotify.WarmupTick(wantsShoot: false);
 		}
-		((Ray)(ref input.eyeRay)).direction = ClampEyeAngle(((Component)owner).transform, ((Ray)(ref input.eyeRay)).direction, owner.turretPitchClamp, owner.turretYawClamp);
+		input.eyeRay.direction = ClampEyeAngle(((Component)owner).transform, input.eyeRay.direction, owner.turretPitchClamp, owner.turretYawClamp);
 		Vector3 bulletHitPoint = Ballistics.GetBulletHitPoint(input.eyeRay);
 		bulletHitPoint.y -= muzzleYOffset;
 		Vector3 val = bulletHitPoint - turretSocket.position;
 		val = ((Component)this).transform.InverseTransformDirection(val);
 		Quaternion val2 = Quaternion.LookRotation(val, Vector3.up);
-		Vector3 eulerAngles = ((Quaternion)(ref val2)).eulerAngles;
+		Vector3 eulerAngles = val2.eulerAngles;
 		float num = 0f - eulerAngles.x;
 		float y = eulerAngles.y;
 		SetGunRotation(num, y);
@@ -350,9 +350,9 @@ public class AttackHelicopterTurret : StorageContainer
 		return heliTransform.TransformDirection(val);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (Object.op_Implicit((Object)(object)((Component)item.info).GetComponent<ItemModEntity>()))
 		{
 			if (IsInvoking(UpdateAttachedWeapon))
@@ -378,7 +378,7 @@ public class AttackHelicopterTurret : StorageContainer
 			Debug.LogError((object)(((object)this).GetType().Name + ": Turret socket not yet set."));
 			return;
 		}
-		HeldEntity heldEntity = AutoTurret.TryAddWeaponToTurret(base.inventory.GetSlot(0), turretSocket, this, -0.5f);
+		HeldEntity heldEntity = AutoTurret.TryAddWeaponToTurret(inventory.GetSlot(0), turretSocket, this, -0.5f);
 		if ((Object)(object)heldEntity != (Object)null)
 		{
 			attachedHeldEntity.Set(heldEntity);
@@ -404,12 +404,12 @@ public class AttackHelicopterTurret : StorageContainer
 
 	private bool TryReload(BaseProjectile gun)
 	{
-		bool num = gun.ServerTryReload(base.inventory);
-		if (num)
+		bool flag = gun.ServerTryReload(inventory);
+		if (flag)
 		{
 			UpdateAmmoAmounts();
 		}
-		return num;
+		return flag;
 	}
 
 	public bool TryFireWeapon()

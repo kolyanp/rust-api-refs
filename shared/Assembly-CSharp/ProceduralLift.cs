@@ -138,7 +138,7 @@ public class ProceduralLift : BaseEntity
 	private void MoveToFloor(int floor)
 	{
 		floorIndex = Mathf.Clamp(floor, 0, stops.Length - 1);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -158,7 +158,7 @@ public class ProceduralLift : BaseEntity
 		floorIndex = Mathf.Clamp(floor, 0, stops.Length - 1);
 		ProceduralLiftStop proceduralLiftStop = stops[floorIndex];
 		((Component)cabin).transform.position = ((Component)proceduralLiftStop).transform.position;
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -174,7 +174,7 @@ public class ProceduralLift : BaseEntity
 
 	private void OnFinishedMoving()
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}

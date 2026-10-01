@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ConVar;
 using Facepunch;
 using Facepunch.Rust;
 using UnityEngine;
@@ -57,6 +58,8 @@ public class VehicleSpawner : BaseEntity
 
 	public float safeRadius = 10f;
 
+	private EntityRef<RepairableVehiclePad> repairableVehiclePadRef;
+
 	protected virtual bool LogAnalytics => true;
 
 	public virtual int GetOccupyLayer()
@@ -78,6 +81,12 @@ public class VehicleSpawner : BaseEntity
 		return result;
 	}
 
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		FindRepairableVehiclePad();
+	}
+
 	public bool IsPadOccupied()
 	{
 		IVehicleSpawnUser vehicleOccupying = GetVehicleOccupying();
@@ -86,6 +95,39 @@ public class VehicleSpawner : BaseEntity
 			return !vehicleOccupying.IsDespawnEligable();
 		}
 		return false;
+	}
+
+	public bool IsPadUsable()
+	{
+		if (!vehicle.padrepairsrequired)
+		{
+			return true;
+		}
+		if (!repairableVehiclePadRef.IsValid(serverside: true))
+		{
+			return true;
+		}
+		return repairableVehiclePadRef.Get(serverside: true).IsRepaired;
+	}
+
+	public void FindRepairableVehiclePad()
+	{
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		if (repairableVehiclePadRef.IsValid(serverside: true))
+		{
+			return;
+		}
+		List<RepairableVehiclePad> list = Pool.Get<List<RepairableVehiclePad>>();
+		Vis.Entities(((Component)spawnOffset).transform.position, occupyRadius, list, 1218652417, (QueryTriggerInteraction)2);
+		foreach (RepairableVehiclePad item in list)
+		{
+			if (!item.isClient && item.IsValid())
+			{
+				repairableVehiclePadRef.Set(item);
+				break;
+			}
+		}
+		Pool.FreeUnmanaged<RepairableVehiclePad>(ref list);
 	}
 
 	public override void OnEntityMessage(BaseEntity from, string msg)

@@ -50,7 +50,7 @@ public class UIGridRenderer : UILineRenderer
 			num++;
 		}
 		num += GridColumns * 3 + 1;
-		m_points = (Vector2[])(object)new Vector2[num];
+		m_points = new Vector2[num];
 		int num2 = 0;
 		for (int i = 0; i < GridRows; i++)
 		{

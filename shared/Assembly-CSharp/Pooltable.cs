@@ -10,7 +10,7 @@ using UnityEngine.Assertions;
 
 public class Pooltable : BaseCombatEntity
 {
-	private readonly Dictionary<ulong, BaseEntity> playerMountables;
+	private readonly Dictionary<ulong, BaseEntity> playerMountables = new Dictionary<ulong, BaseEntity>();
 
 	private TimeSince timeSinceLastMove;
 
@@ -19,38 +19,38 @@ public class Pooltable : BaseCombatEntity
 	private float ballRadius;
 
 	[SerializeField]
-	private float tableWidth;
+	private float tableWidth = 1.2f;
 
 	[SerializeField]
-	private float tableHeight;
+	private float tableHeight = 0.6f;
 
 	[SerializeField]
-	private float pocketRadius;
+	private float pocketRadius = 0.045f;
 
 	[SerializeField]
-	private float mouthWidth;
+	private float mouthWidth = 0.08f;
 
 	[SerializeField]
-	private float cueBallStartX;
+	private float cueBallStartX = -0.545f;
 
 	[SerializeField]
 	private WorldSpline worldSpline;
 
+	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	[SerializeField]
 	[Range(0f, 0.75f)]
-	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
-	private float splineTableCloseness;
+	private float splineTableCloseness = 0.25f;
 
 	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	[SerializeField]
-	private bool runWalkClippingChecks;
+	private bool runWalkClippingChecks = true;
 
-	[SerializeField]
 	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
-	private Bounds walkAreaCheck;
-
 	[SerializeField]
+	private Bounds walkAreaCheck = new Bounds(new Vector3(0f, 0f, 0.24f), new Vector3(0.55f, 1.3f, 0.44f));
+
 	[Header("Server")]
+	[SerializeField]
 	private GameObjectRef mountableRef;
 
 	[SerializeField]
@@ -82,14 +82,14 @@ public class Pooltable : BaseCombatEntity
 	private GameObjectRef resetGameEffect;
 
 	[SerializeField]
-	private Vector2 ballCollisionSpeedRange;
+	private Vector2 ballCollisionSpeedRange = new Vector2(0.1f, 3f);
 
 	[SerializeField]
-	private float ballCollisionSoundInterval;
+	private float ballCollisionSoundInterval = 0.02f;
 
+	[SerializeField]
 	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
 	[Header("Ball Return")]
-	[SerializeField]
 	private WorldSpline ballReturnPath;
 
 	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
@@ -97,38 +97,38 @@ public class Pooltable : BaseCombatEntity
 	private GameObject[] basketBalls;
 
 	[SerializeField]
-	private float ballReturnSpeed;
+	private float ballReturnSpeed = 1.5f;
 
 	[SerializeField]
-	private float eyeOverrideBehindCueBallOffset;
+	private float eyeOverrideBehindCueBallOffset = 0.6f;
 
 	[SerializeField]
-	private float eyeOverrideHeightOffset;
+	private float eyeOverrideHeightOffset = 0.2f;
 
 	protected const Flags Flag_IdleResettable = Flags.Reserved1;
 
 	[ReplicatedVar]
-	public static bool debug_pool;
+	public static bool debug_pool = false;
 
 	[ReplicatedVar]
-	public static float physics_update_rate;
+	public static float physics_update_rate = 64f;
 
 	[ServerVar(Saved = true, Help = "Show pool game tooltip notifications")]
-	public static bool show_tooltips;
+	public static bool show_tooltips = false;
 
 	[ServerVar(Help = "(Generated) Anyone can reset a pool game nobody has interacted with for this many seconds")]
-	public static float idle_reset_seconds;
+	public static float idle_reset_seconds = 180f;
 
 	[ServerVar(Help = "(Generated) Seconds the shooter stays seated watching their shot before being dismounted")]
-	public static float watch_after_shot_seconds;
+	public static float watch_after_shot_seconds = 2f;
 
 	private Engine physicsEngine;
 
 	private PoolTableGameController gameController;
 
-	private static readonly Phrase ProcessingTurnPhrase;
+	private static readonly Phrase ProcessingTurnPhrase = new Phrase("poolprocessing", "Processing turn");
 
-	private static readonly Phrase WaitingForPlayerPhrase;
+	private static readonly Phrase WaitingForPlayerPhrase = new Phrase("poolwaiting", "Waiting for player");
 
 	private const float MinShotForce = 1f;
 
@@ -150,7 +150,14 @@ public class Pooltable : BaseCombatEntity
 
 	private const float WalkCheckScanStep = 0.25f;
 
-	private static readonly int[][] RackRows;
+	private static readonly int[][] RackRows = new int[5][]
+	{
+		new int[1] { 1 },
+		new int[2] { 9, 2 },
+		new int[3] { 10, 8, 3 },
+		new int[4] { 11, 4, 12, 5 },
+		new int[5] { 13, 6, 14, 15, 7 }
+	};
 
 	private float PhysicsRate => 1f / physics_update_rate;
 
@@ -457,7 +464,7 @@ public class Pooltable : BaseCombatEntity
 		using (TimeWarning.New("Pooltable.Save"))
 		{
 			base.Save(info);
-			if (!base.isServer || info.forDisk)
+			if (!isServer || info.forDisk)
 			{
 				return;
 			}
@@ -488,8 +495,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -556,8 +563,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_RequestMount(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null && gameController.HasGame && gameController.CanMount(msg.player.userID))
@@ -594,8 +601,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestShoot(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -619,7 +626,7 @@ public class Pooltable : BaseCombatEntity
 			val.y = 0f;
 			val = Vector3.ClampMagnitude(val, 1f);
 			num = Mathf.Clamp(num, 1f, 8f);
-			if (!(((Vector3)(ref val)).sqrMagnitude <= Mathf.Epsilon))
+			if (!(val.sqrMagnitude <= Mathf.Epsilon))
 			{
 				gameController.OnShotFired();
 				timeSinceLastMove = TimeSince.op_Implicit(0f);
@@ -756,7 +763,7 @@ public class Pooltable : BaseCombatEntity
 	{
 		base.Load(info);
 		Pooltable pooltable = info.msg.Pooltable;
-		if (pooltable != null && base.isServer)
+		if (pooltable != null && isServer)
 		{
 			gameController?.Load(pooltable);
 		}
@@ -781,7 +788,7 @@ public class Pooltable : BaseCombatEntity
 			physicsEngine.SetBallVelocity(0, Vector2.zero);
 			physicsEngine.SetBallIsKinematic(0, isKinematic: false);
 			DebugPool("RespotCueBallAfterFoul");
-			if (base.isServer)
+			if (isServer)
 			{
 				SendNetworkUpdateImmediate();
 			}
@@ -835,8 +842,10 @@ public class Pooltable : BaseCombatEntity
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
@@ -859,11 +868,11 @@ public class Pooltable : BaseCombatEntity
 		}
 		Vector3 val = worldDirection;
 		val.y = 0f;
-		if (((Vector3)(ref val)).sqrMagnitude <= Mathf.Epsilon)
+		if (val.sqrMagnitude <= Mathf.Epsilon)
 		{
 			return worldOrigin;
 		}
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		if (physicsEngine == null || !physicsEngine.IsReady)
 		{
 			return worldOrigin + normalized * maxDistance;
@@ -871,15 +880,13 @@ public class Pooltable : BaseCombatEntity
 		Vector3 val2 = ((Component)this).transform.InverseTransformPoint(worldOrigin);
 		Vector3 val3 = ((Component)this).transform.InverseTransformDirection(normalized);
 		val3.y = 0f;
-		Vector2 val4 = default(Vector2);
-		((Vector2)(ref val4))._002Ector(val3.x, val3.z);
-		if (((Vector2)(ref val4)).sqrMagnitude <= Mathf.Epsilon)
+		Vector2 val4 = new Vector2(val3.x, val3.z);
+		if (val4.sqrMagnitude <= Mathf.Epsilon)
 		{
 			return worldOrigin;
 		}
-		((Vector2)(ref val4)).Normalize();
-		Vector2 val5 = default(Vector2);
-		((Vector2)(ref val5))._002Ector(val2.x, val2.z);
+		val4.Normalize();
+		Vector2 val5 = new Vector2(val2.x, val2.z);
 		if (physicsEngine.Raycast(val5, val4, maxDistance, out var hit, ignoreBallId, includeBalls: true, includeWalls))
 		{
 			return ((Component)this).transform.TransformPoint(new Vector3(hit.Point.x, 0f, hit.Point.y));
@@ -906,11 +913,11 @@ public class Pooltable : BaseCombatEntity
 		Vector2 position = physicsEngine.Balls[0].Position;
 		Vector3 val = ((Component)this).transform.TransformPoint(new Vector3(position.x, 0f, position.y)) - pos;
 		val.y = 0f;
-		if (((Vector3)(ref val)).sqrMagnitude <= Mathf.Epsilon)
+		if (val.sqrMagnitude <= Mathf.Epsilon)
 		{
 			return ((Component)this).transform.forward;
 		}
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		normalized.y = 0f;
 		return normalized;
 	}
@@ -998,8 +1005,8 @@ public class Pooltable : BaseCombatEntity
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		pos = default(Vector3);
-		rot = default(Quaternion);
+		pos = default;
+		rot = default;
 		if ((Object)(object)worldSpline == (Object)null)
 		{
 			return false;
@@ -1050,7 +1057,7 @@ public class Pooltable : BaseCombatEntity
 				result = true;
 				break;
 			}
-			if (baseEntity.isServer == base.isServer && !((Object)(object)baseEntity.GetRootParentEntity() == (Object)(object)rootParentEntity))
+			if (baseEntity.isServer == isServer && !((Object)(object)baseEntity.GetRootParentEntity() == (Object)(object)rootParentEntity))
 			{
 				result = true;
 				break;
@@ -1174,7 +1181,7 @@ public class Pooltable : BaseCombatEntity
 				{
 					lastPhysicsTime = Time.timeAsDouble;
 				}
-				if (base.isServer && num > 0)
+				if (isServer && num > 0)
 				{
 					using (TimeWarning.New("Pooltable.PhysicsTick.SendNetworkUpdate"))
 					{
@@ -1191,7 +1198,7 @@ public class Pooltable : BaseCombatEntity
 					using (TimeWarning.New("Pooltable.PhysicsTick.OnBallsStopped"))
 					{
 						gameController?.OnBallsStopped();
-						if (base.isServer)
+						if (isServer)
 						{
 							CancelInvoke(DismountAllSeatedPlayers);
 							Invoke(DismountAllSeatedPlayers, watch_after_shot_seconds);
@@ -1217,7 +1224,7 @@ public class Pooltable : BaseCombatEntity
 		float rowSpacingX = num * 0.866f;
 		float rowSpacingY = num;
 		Vector2 rackOrigin = new Vector2(0.4f, 0f);
-		Vector2[] array = (Vector2[])(object)new Vector2[16];
+		Vector2[] array = new Vector2[16];
 		for (int i = 0; i < RackRows.Length; i++)
 		{
 			int[] array2 = RackRows[i];
@@ -1259,9 +1266,9 @@ public class Pooltable : BaseCombatEntity
 				IsKinematic = false
 			});
 		}
-		if (base.isServer)
+		if (isServer)
 		{
-			Invoke(base.SendNetworkUpdateImmediate, 0.1f);
+			Invoke(SendNetworkUpdateImmediate, 0.1f);
 		}
 	}
 
@@ -1438,7 +1445,7 @@ public class Pooltable : BaseCombatEntity
 		physicsEngine.SetBallIsKinematic(ballId, isKinematic: true);
 		gameController?.OnBallPocketed(ballId);
 		DebugPool($"OnBallPocketed ballId={ballId}");
-		if (base.isServer)
+		if (isServer)
 		{
 			SendNetworkUpdateImmediate();
 		}
@@ -1465,43 +1472,13 @@ public class Pooltable : BaseCombatEntity
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		playerMountables = new Dictionary<ulong, BaseEntity>();
-		tableWidth = 1.2f;
-		tableHeight = 0.6f;
-		pocketRadius = 0.045f;
-		mouthWidth = 0.08f;
-		cueBallStartX = -0.545f;
-		splineTableCloseness = 0.25f;
-		runWalkClippingChecks = true;
-		walkAreaCheck = new Bounds(new Vector3(0f, 0f, 0.24f), new Vector3(0.55f, 1.3f, 0.44f));
-		ballCollisionSpeedRange = new Vector2(0.1f, 3f);
-		ballCollisionSoundInterval = 0.02f;
-		ballReturnSpeed = 1.5f;
-		eyeOverrideBehindCueBallOffset = 0.6f;
-		eyeOverrideHeightOffset = 0.2f;
-		base._002Ector();
 	}
 
 	static Pooltable()
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Expected O, but got Unknown
+		//IL_003e: Expected Obj, but got Unknown
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Expected O, but got Unknown
-		debug_pool = false;
-		physics_update_rate = 64f;
-		show_tooltips = false;
-		idle_reset_seconds = 180f;
-		watch_after_shot_seconds = 2f;
-		ProcessingTurnPhrase = new Phrase("poolprocessing", "Processing turn");
-		WaitingForPlayerPhrase = new Phrase("poolwaiting", "Waiting for player");
-		RackRows = new int[5][]
-		{
-			new int[1] { 1 },
-			new int[2] { 9, 2 },
-			new int[3] { 10, 8, 3 },
-			new int[4] { 11, 4, 12, 5 },
-			new int[5] { 13, 6, 14, 15, 7 }
-		};
+		//IL_0052: Expected Obj, but got Unknown
 	}
 }

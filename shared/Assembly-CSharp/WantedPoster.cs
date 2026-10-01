@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using ProtoBuf;
 using TMPro;
@@ -158,9 +159,9 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void UpdatePoster(RPCMessage msg)
 	{
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
@@ -195,6 +196,7 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 				FileStorage.server.RemoveExact(imageCrc, FileType, net.ID, 0u);
 			}
 			imageCrc = FileStorage.server.Store(array, FileType, net.ID);
+			Analytics.Azure.OnUGCCreated(msg.player, this, "wanted_poster", array.Length);
 		}
 		SendNetworkUpdate();
 	}
@@ -273,7 +275,7 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		}
 		if (IsLocked())
 		{
-			return (ulong)player.userID == base.OwnerID;
+			return (ulong)player.userID == OwnerID;
 		}
 		return true;
 	}

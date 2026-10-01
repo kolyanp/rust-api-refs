@@ -69,11 +69,11 @@ public class ItemModContainer : ItemMod
 		Debug.Assert(item.contents == null, "Double init of contents!");
 		item.contents = Pool.Get<ItemContainer>();
 		item.contents.flags = containerFlags;
-		item.contents.allowedContents = ((onlyAllowedContents == (ItemContainer.ContentsType)0) ? ItemContainer.ContentsType.Generic : onlyAllowedContents);
+		item.contents.allowedContents = ((onlyAllowedContents == 0) ? ItemContainer.ContentsType.Generic : onlyAllowedContents);
 		SetAllowedItems(item.contents);
 		item.contents.UpdateAvailableSlots(availableSlots);
 		ItemContainer contents = item.contents;
-		contents.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(contents.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedOrRemoved));
+		contents.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(contents.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedOrRemoved));
 		if ((validItemWhitelist != null && validItemWhitelist.Length != 0) || ForceAcceptItemCheck)
 		{
 			item.contents.canAcceptItem = CanAcceptItem;
@@ -102,7 +102,7 @@ public class ItemModContainer : ItemMod
 		return false;
 	}
 
-	private void OnItemAddedOrRemoved(Item item, bool added)
+	private void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		if (!Application.isLoadingSave)
 		{

@@ -19,6 +19,7 @@ public class DeployVolumeRequireBoatBuildingVolume : DeployVolume
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
@@ -36,12 +37,11 @@ public class DeployVolumeRequireBoatBuildingVolume : DeployVolume
 				Vector3 position2 = ((Component)current).transform.position;
 				Vector3 lossyScale = ((Component)current).transform.lossyScale;
 				Quaternion rotation2 = ((Component)current).transform.rotation;
-				OBB val = default(OBB);
-				((OBB)(ref val))._002Ector(position2, lossyScale, rotation2);
+				OBB val = new OBB(position2, lossyScale, rotation2);
 				foreach (Transform point in Points)
 				{
 					Vector3 val2 = position + rotation * point.position;
-					if (!((OBB)(ref val)).Contains(val2))
+					if (!val.Contains(val2))
 					{
 						Pool.FreeUnmanaged<TriggerBoatBuildingArea>(ref list);
 						return true;

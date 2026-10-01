@@ -55,9 +55,9 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 	[Range(0f, 3f)]
 	public float underwaterDrag = 2f;
 
-	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
-	[Range(0f, 1f)]
 	[FormerlySerializedAs("flatWaterLerp")]
+	[Range(0f, 1f)]
+	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
 	public float wavesEffect = 1f;
 
 	public Action<bool> SubmergedChanged;
@@ -69,8 +69,8 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 
 	public bool FlowForceDisabled;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private BuoyancyPointData[] pointData;
 
 	private bool initedPointArrays;
@@ -381,9 +381,9 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 			if (priority == Priority.Low && priority != buoyancyPriority)
 			{
 				Vector3 val = Vector3Ex.WithY(((Component)this).transform.TransformPoint(Vector3.forward * 2f), position.y);
-				Rigidbody obj = rigidBody;
-				Vector3 val2 = val - rigidBody.position;
-				obj.rotation = Quaternion.LookRotation(((Vector3)(ref val2)).normalized, Vector3.up);
+				Rigidbody val2 = rigidBody;
+				Vector3 val3 = val - rigidBody.position;
+				val2.rotation = Quaternion.LookRotation(val3.normalized, Vector3.up);
 			}
 		}
 		if (priority != buoyancyPriority)
@@ -412,6 +412,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 
 	private static void DoCycleBatched(ReadOnlySpan<Buoyancy> buoyancies, bool forced)
 	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
@@ -421,8 +422,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		{
 			return;
 		}
-		PooledArray<bool> wasSubmergedStates = default(PooledArray<bool>);
-		wasSubmergedStates._002Ector(buoyancies.Length);
+		PooledArray<bool> wasSubmergedStates = new PooledArray<bool>(buoyancies.Length);
 		try
 		{
 			PooledArray<bool> wasSubmergedStates2 = new PooledArray<bool>(buoyancies.Length);
@@ -534,16 +534,16 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		{
 			return;
 		}
-		bool num = submergedFraction > 0f;
-		BuoyancyFixedUpdate();
 		bool flag = submergedFraction > 0f;
-		if (num == flag)
+		BuoyancyFixedUpdate();
+		bool flag2 = submergedFraction > 0f;
+		if (flag == flag2)
 		{
 			return;
 		}
 		if (useUnderwaterDrag && (Object)(object)rigidBody != (Object)null)
 		{
-			if (flag)
+			if (flag2)
 			{
 				defaultDrag = rigidBody.linearDamping;
 				defaultAngularDrag = rigidBody.angularDamping;
@@ -558,7 +558,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		}
 		if (SubmergedChanged != null)
 		{
-			SubmergedChanged(flag);
+			SubmergedChanged(flag2);
 		}
 	}
 
@@ -637,6 +637,15 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0372: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0382: Unknown result type (might be due to invalid IL or missing references)
+		//IL_038c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0396: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
 		//IL_026c: Unknown result type (might be due to invalid IL or missing references)
@@ -684,6 +693,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		//IL_07ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_07b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_07b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_080e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0813: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0815: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0817: Unknown result type (might be due to invalid IL or missing references)
@@ -731,32 +741,30 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		};
 		IJobExtensions.RunByRef<FillJob<float>>(ref fillJob);
 		WaterSystem.Collision?.GetIgnore(allPositions.AsReadOnly(), subArray.AsReadOnly(), waterIgnoreStates);
-		NativeArray<bool> needsDeepWaterChecks = default(NativeArray<bool>);
-		needsDeepWaterChecks._002Ector(pointWaterInfo.Length, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<bool> needsDeepWaterChecks = new NativeArray<bool>(pointWaterInfo.Length, (Allocator)2, (NativeArrayOptions)1);
 		WaterLevelBurst.GetBuoyancyWaterInfoBatched(in allPositions, in posUV, in terrainHeight, in waterHeight, in instanceDoDeepWaterChecksStateArray, ref pointWaterInfo, in subArray2, activeComponents.Length, in topologyMap, in waterIgnoreStates, ref needsDeepWaterChecks, isDeepSea, out var hasAnyDeepWaterChecks);
 		if (hasAnyDeepWaterChecks)
 		{
 			WaterLevelBurst.ConstructDeepWaterCommands(in allPositions, in pointWaterInfo, in needsDeepWaterChecks, out var deepWaterCasts, out var raycastPointIndices, (Allocator)3);
 			if (deepWaterCasts.Length > 0)
 			{
-				NativeArray<RaycastHit> val2 = default(NativeArray<RaycastHit>);
-				val2._002Ector(deepWaterCasts.Length, (Allocator)3, (NativeArrayOptions)1);
+				NativeArray<RaycastHit> val2 = new NativeArray<RaycastHit>(deepWaterCasts.Length, (Allocator)3, (NativeArrayOptions)1);
 				NativeArray<RaycastCommand> val3 = NativeList<RaycastCommand>.op_Implicit(deepWaterCasts);
 				NativeArray<RaycastHit> val4 = val2;
-				JobHandle val5 = default(JobHandle);
+				JobHandle val5 = default;
 				val5 = RaycastCommand.ScheduleBatch(val3, val4, 1, val5);
-				((JobHandle)(ref val5)).Complete();
+				val5.Complete();
 				for (int j = 0; j < deepWaterCasts.Length; j++)
 				{
 					RaycastHit val6 = val2[j];
-					if (((RaycastHit)(ref val6)).colliderInstanceID != 0)
+					if (val6.colliderInstanceID != 0)
 					{
 						int num = raycastPointIndices[j];
 						WaterLevel.WaterInfo waterInfo = pointWaterInfo[num];
 						float surfaceLevel = waterInfo.surfaceLevel;
 						val6 = val2[j];
-						Bounds bounds = ((RaycastHit)(ref val6)).collider.bounds;
-						float num2 = Mathf.Min(surfaceLevel, ((Bounds)(ref bounds)).max.y);
+						Bounds bounds = val6.collider.bounds;
+						float num2 = Mathf.Min(surfaceLevel, bounds.max.y);
 						waterInfo.currentDepth = Mathf.Max(0f, num2 - allPositions[num].y);
 						waterInfo.overallDepth = Mathf.Max(0f, num2 - terrainHeight[num]);
 						waterInfo.surfaceLevel = num2;
@@ -768,20 +776,13 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		}
 		float time = Time.time;
 		float fixedDeltaTime = Time.fixedDeltaTime;
-		NativeArray<BuoyancyForceAccumulationBurst.InstanceInput> instances = default(NativeArray<BuoyancyForceAccumulationBurst.InstanceInput>);
-		instances._002Ector(activeComponents.Length, (Allocator)2, (NativeArrayOptions)1);
-		NativeArray<BuoyancyForceAccumulationBurst.InstanceOutput> results = default(NativeArray<BuoyancyForceAccumulationBurst.InstanceOutput>);
-		results._002Ector(activeComponents.Length, (Allocator)2, (NativeArrayOptions)1);
-		NativeArray<float> pointSize = default(NativeArray<float>);
-		pointSize._002Ector(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
-		NativeArray<float> pointBuoyancyForce = default(NativeArray<float>);
-		pointBuoyancyForce._002Ector(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
-		NativeArray<float> pointRandomOffset = default(NativeArray<float>);
-		pointRandomOffset._002Ector(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
-		NativeArray<float> pointWaveFrequency = default(NativeArray<float>);
-		pointWaveFrequency._002Ector(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
-		NativeArray<float> pointWaveScale = default(NativeArray<float>);
-		pointWaveScale._002Ector(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<BuoyancyForceAccumulationBurst.InstanceInput> instances = new NativeArray<BuoyancyForceAccumulationBurst.InstanceInput>(activeComponents.Length, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<BuoyancyForceAccumulationBurst.InstanceOutput> results = new NativeArray<BuoyancyForceAccumulationBurst.InstanceOutput>(activeComponents.Length, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<float> pointSize = new NativeArray<float>(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<float> pointBuoyancyForce = new NativeArray<float>(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<float> pointRandomOffset = new NativeArray<float>(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<float> pointWaveFrequency = new NativeArray<float>(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<float> pointWaveScale = new NativeArray<float>(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1);
 		int num3 = 0;
 		for (int k = 0; k < activeComponents.Length; k++)
 		{
@@ -839,7 +840,6 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		NativeArray<float3> pointFlowDirection = (((Object)(object)TerrainMeta.WaterFlowMap != (Object)null) ? TerrainMeta.WaterFlowMap.GetFlowDirections(allPositions, (Allocator)2) : new NativeArray<float3>(pointIndexOffset, (Allocator)2, (NativeArrayOptions)1));
 		BuoyancyForceAccumulationBurst.Compute(in instances, allPositions.Reinterpret<float3>(), in shore, in pointWaterInfo, in pointSize, in pointBuoyancyForce, in pointRandomOffset, in pointWaveFrequency, in pointWaveScale, in pointFlowDirection, time, ref results);
 		num3 = 0;
-		Vector3 val13 = default(Vector3);
 		for (int m = 0; m < activeComponents.Length; m++)
 		{
 			Buoyancy buoyancy3 = activeComponents[m];
@@ -875,10 +875,10 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 				if ((buoyancyPoint3.doSplashEffects && ((!buoyancyPoint3.wasSubmergedLastFrame & flag2) || (!flag2 && buoyancyPoint3.wasSubmergedLastFrame))) & flag)
 				{
 					Vector3 relativePointVelocity = val8.GetRelativePointVelocity(localPosition);
-					if (((Vector3)(ref relativePointVelocity)).magnitude > 1f)
+					if (relativePointVelocity.magnitude > 1f)
 					{
 						string strName = ((array != null && array.Length != 0 && array[0].isValid) ? array[0].resourcePath : DefaultWaterImpact());
-						((Vector3)(ref val13))._002Ector(Random.Range(-0.25f, 0.25f), 0f, Random.Range(-0.25f, 0.25f));
+						Vector3 val13 = new Vector3(Random.Range(-0.25f, 0.25f), 0f, Random.Range(-0.25f, 0.25f));
 						Effect.server.Run(strName, val12 + val13, Vector3.up);
 						buoyancyPoint3.nexSplashTime = time + 0.25f;
 					}
@@ -887,11 +887,11 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 				num8++;
 			}
 			num3 += pointCount2;
-			if (((Vector3)(ref val10)).sqrMagnitude > 0f)
+			if (val10.sqrMagnitude > 0f)
 			{
 				val8.AddForce(val10, (ForceMode)0);
 			}
-			if (((Vector3)(ref val11)).sqrMagnitude > 0f)
+			if (val11.sqrMagnitude > 0f)
 			{
 				val8.AddTorque(val11, (ForceMode)0);
 			}
@@ -967,11 +967,13 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_030e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_043a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_043c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04b6: Unknown result type (might be due to invalid IL or missing references)
@@ -1001,17 +1003,17 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		}
 		float time = Time.time;
 		Matrix4x4 localToWorldMatrix = ((Component)this).transform.localToWorldMatrix;
-		bool flag = DeepSeaManager.IsInsideDeepSea(((Matrix4x4)(ref localToWorldMatrix)).GetPosition());
+		bool flag = DeepSeaManager.IsInsideDeepSea(localToWorldMatrix.GetPosition());
 		float x;
 		float z;
 		float x2;
 		float z2;
 		if (flag)
 		{
-			x = ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).min.x;
-			z = ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).min.z;
-			x2 = Vector3Ex.Inverse(((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size).x;
-			z2 = Vector3Ex.Inverse(((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size).z;
+			x = DeepSeaManager.DeepSeaBounds.min.x;
+			z = DeepSeaManager.DeepSeaBounds.min.z;
+			x2 = Vector3Ex.Inverse(DeepSeaManager.DeepSeaBounds.size).x;
+			z2 = Vector3Ex.Inverse(DeepSeaManager.DeepSeaBounds.size).z;
 		}
 		else
 		{
@@ -1022,7 +1024,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		}
 		for (int i = 0; i < pointData.Length; i++)
 		{
-			Vector3 val = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(pointData[i].rootToPoint);
+			Vector3 val = localToWorldMatrix.MultiplyPoint3x4(pointData[i].rootToPoint);
 			pointData[i].position = val;
 			float num = (val.x - x) * x2;
 			float num2 = (val.z - z) * z2;
@@ -1032,8 +1034,6 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		WaterSystem.GetHeightArray(pointPositionArray, pointPositionUVArray, pointShoreDistanceArray, pointTerrainHeightArray, pointWaterHeightArray, flag);
 		bool flag2 = wavesEffect < 1f;
 		int num3 = 0;
-		Vector3 accumForce = default(Vector3);
-		Vector3 val2 = default(Vector3);
 		for (int j = 0; j < points.Length; j++)
 		{
 			BuoyancyPoint buoyancyPoint = points[j];
@@ -1069,17 +1069,17 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 				{
 					scaledBuoyancyForce *= rigidBody.mass;
 				}
-				((Vector3)(ref accumForce))._002Ector(0f, num6 * num5 * scaledBuoyancyForce, 0f);
+				Vector3 accumForce = new Vector3(0f, num6 * num5 * scaledBuoyancyForce, 0f);
 				AccumulateFlowForce(ref accumForce, in pos, in waterInfo2, Mathf.Abs(pointShoreDistanceArray[j]), ref scaledBuoyancyForce, in FlowForceDisabled, in flowMovementScale);
 				rigidBody.AddForceAtPosition(accumForce, pos, (ForceMode)0);
 			}
 			if (buoyancyPoint.doSplashEffects && ((!buoyancyPoint.wasSubmergedLastFrame & flag3) || (!flag3 && buoyancyPoint.wasSubmergedLastFrame)) && doEffects)
 			{
 				Vector3 relativePointVelocity = rigidBody.GetRelativePointVelocity(localPosition);
-				if (((Vector3)(ref relativePointVelocity)).magnitude > 1f)
+				if (relativePointVelocity.magnitude > 1f)
 				{
 					string strName = ((waterImpacts != null && waterImpacts.Length != 0 && waterImpacts[0].isValid) ? waterImpacts[0].resourcePath : DefaultWaterImpact());
-					((Vector3)(ref val2))._002Ector(Random.Range(-0.25f, 0.25f), 0f, Random.Range(-0.25f, 0.25f));
+					Vector3 val2 = new Vector3(Random.Range(-0.25f, 0.25f), 0f, Random.Range(-0.25f, 0.25f));
 					Effect.server.Run(strName, pos + val2, Vector3.up);
 					buoyancyPoint.nexSplashTime = Time.time + 0.25f;
 				}
@@ -1125,8 +1125,8 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 
 	private void InitPointArrays()
 	{
-		pointPositionArray = (Vector2[])(object)new Vector2[points.Length];
-		pointPositionUVArray = (Vector2[])(object)new Vector2[points.Length];
+		pointPositionArray = new Vector2[points.Length];
+		pointPositionUVArray = new Vector2[points.Length];
 		pointShoreDistanceArray = new float[points.Length];
 		pointTerrainHeightArray = new float[points.Length];
 		pointWaterHeightArray = new float[points.Length];

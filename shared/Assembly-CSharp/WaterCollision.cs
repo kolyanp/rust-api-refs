@@ -120,18 +120,21 @@ public class WaterCollision : MonoBehaviour
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
@@ -156,11 +159,10 @@ public class WaterCollision : MonoBehaviour
 				Step = 1,
 				Count = positions.Length
 			}, default(JobHandle)) : visibilityGrid.Check(positions, radii, indicesToCheck));
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			if (!indicesToCheck.IsEmpty)
 			{
-				NativeArray<Vector3> results2 = default(NativeArray<Vector3>);
-				results2._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<Vector3> results2 = new NativeArray<Vector3>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<Vector3> gatherJob = new GatherJob<Vector3>
 				{
 					Results = results2,
@@ -168,8 +170,7 @@ public class WaterCollision : MonoBehaviour
 					Indices = indicesToCheck.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<Vector3>>(ref gatherJob);
-				NativeArray<float> results3 = default(NativeArray<float>);
-				results3._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<float> results3 = new NativeArray<float>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<float> gatherJob2 = new GatherJob<float>
 				{
 					Results = results3,
@@ -177,8 +178,7 @@ public class WaterCollision : MonoBehaviour
 					Indices = indicesToCheck.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<float>>(ref gatherJob2);
-				NativeArray<int> values = default(NativeArray<int>);
-				values._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<int> values = new NativeArray<int>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				FillJob<int> fillJob2 = new FillJob<int>
 				{
 					Values = values,
@@ -207,20 +207,24 @@ public class WaterCollision : MonoBehaviour
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
@@ -236,7 +240,7 @@ public class WaterCollision : MonoBehaviour
 			};
 			IJobExtensions.RunByRef<FillJob<bool>>(ref fillJob);
 			PrepareIndiciesToCheckList(indices.Length);
-			JobHandle val = default(JobHandle);
+			JobHandle val = default;
 			if (visibilityGrid != null)
 			{
 				val = visibilityGrid.CheckIndirect(pos, radii, indices, indicesToCheck);
@@ -245,11 +249,10 @@ public class WaterCollision : MonoBehaviour
 			{
 				indicesToCheck.CopyFrom(in indices);
 			}
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			if (!indicesToCheck.IsEmpty)
 			{
-				NativeArray<Vector3> results2 = default(NativeArray<Vector3>);
-				results2._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<Vector3> results2 = new NativeArray<Vector3>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<Vector3> gatherJob = new GatherJob<Vector3>
 				{
 					Results = results2,
@@ -257,8 +260,7 @@ public class WaterCollision : MonoBehaviour
 					Indices = indicesToCheck.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<Vector3>>(ref gatherJob);
-				NativeArray<float> results3 = default(NativeArray<float>);
-				results3._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<float> results3 = new NativeArray<float>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<float> gatherJob2 = new GatherJob<float>
 				{
 					Results = results3,
@@ -266,16 +268,14 @@ public class WaterCollision : MonoBehaviour
 					Indices = indicesToCheck.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<float>>(ref gatherJob2);
-				NativeArray<int> values = default(NativeArray<int>);
-				values._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<int> values = new NativeArray<int>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				FillJob<int> fillJob2 = new FillJob<int>
 				{
 					Values = values,
 					Value = 262144
 				};
 				IJobExtensions.RunByRef<FillJob<int>>(ref fillJob2);
-				NativeArray<bool> results4 = default(NativeArray<bool>);
-				results4._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<bool> results4 = new NativeArray<bool>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GamePhysics.CheckSpheres<WaterVisibilityTrigger>(results2.AsReadOnly(), results3.AsReadOnly(), values.AsReadOnly(), results4, GamePhysics.DefaultMaxResultsPerQuery, (QueryTriggerInteraction)2, GamePhysics.MasksToValidate.None);
 				ReadOnlySpan<bool> readOnlySpan = NativeArray<bool>.op_Implicit(ref results4);
 				Span<bool> to = NativeArray<bool>.op_Implicit(ref results);
@@ -327,26 +327,31 @@ public class WaterCollision : MonoBehaviour
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
@@ -362,7 +367,7 @@ public class WaterCollision : MonoBehaviour
 			};
 			IJobExtensions.RunByRef<FillJob<bool>>(ref fillJob);
 			PrepareIndiciesToCheckList(indices.Length);
-			JobHandle val = default(JobHandle);
+			JobHandle val = default;
 			if (visibilityGrid != null)
 			{
 				val = visibilityGrid.CheckIndirect(starts, ends, radii, indices, indicesToCheck);
@@ -371,11 +376,10 @@ public class WaterCollision : MonoBehaviour
 			{
 				indicesToCheck.CopyFrom(in indices);
 			}
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			if (!indicesToCheck.IsEmpty)
 			{
-				NativeArray<Vector3> results2 = default(NativeArray<Vector3>);
-				results2._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<Vector3> results2 = new NativeArray<Vector3>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<Vector3> gatherJob = new GatherJob<Vector3>
 				{
 					Results = results2,
@@ -383,8 +387,7 @@ public class WaterCollision : MonoBehaviour
 					Indices = indicesToCheck.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<Vector3>>(ref gatherJob);
-				NativeArray<Vector3> results3 = default(NativeArray<Vector3>);
-				results3._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<Vector3> results3 = new NativeArray<Vector3>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<Vector3> gatherJob2 = new GatherJob<Vector3>
 				{
 					Results = results3,
@@ -392,8 +395,7 @@ public class WaterCollision : MonoBehaviour
 					Indices = indicesToCheck.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<Vector3>>(ref gatherJob2);
-				NativeArray<float> results4 = default(NativeArray<float>);
-				results4._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<float> results4 = new NativeArray<float>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<float> gatherJob3 = new GatherJob<float>
 				{
 					Results = results4,
@@ -401,16 +403,14 @@ public class WaterCollision : MonoBehaviour
 					Indices = indicesToCheck.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<float>>(ref gatherJob3);
-				NativeArray<int> values = default(NativeArray<int>);
-				values._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<int> values = new NativeArray<int>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				FillJob<int> fillJob2 = new FillJob<int>
 				{
 					Values = values,
 					Value = 262144
 				};
 				IJobExtensions.RunByRef<FillJob<int>>(ref fillJob2);
-				NativeArray<bool> val2 = default(NativeArray<bool>);
-				val2._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<bool> val2 = new NativeArray<bool>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				GamePhysics.CheckCapsules<WaterVisibilityTrigger>(results2.AsReadOnly(), results3.AsReadOnly(), results4.AsReadOnly(), values.AsReadOnly(), NativeArray<bool>.op_Implicit(ref val2), GamePhysics.DefaultMaxResultsPerQuery, (QueryTriggerInteraction)2, GamePhysics.MasksToValidate.None, true);
 				ReadOnlySpan<bool> readOnlySpan = NativeArray<bool>.op_Implicit(ref val2);
 				Span<bool> to = NativeArray<bool>.op_Implicit(ref results);
@@ -428,9 +428,9 @@ public class WaterCollision : MonoBehaviour
 	public bool GetIgnore(RaycastHit hit)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		if (waterColliders.Contains(((RaycastHit)(ref hit)).collider))
+		if (waterColliders.Contains(hit.collider))
 		{
-			return GetIgnore(((RaycastHit)(ref hit)).point);
+			return GetIgnore(hit.point);
 		}
 		return false;
 	}

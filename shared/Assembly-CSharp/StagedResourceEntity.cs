@@ -33,7 +33,7 @@ public class StagedResourceEntity : ResourceEntity
 		if (info.msg.resource != null)
 		{
 			int num = info.msg.resource.stage;
-			if (info.fromDisk && base.isServer)
+			if (info.fromDisk && isServer)
 			{
 				health = startHealth;
 				num = 0;
@@ -96,7 +96,7 @@ public class StagedResourceEntity : ResourceEntity
 		{
 			return cachedInfo;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			cachedInfo = PrefabAttribute.server.Find<StagedDestructionEntityInfo>(prefabID);
 		}
@@ -110,7 +110,7 @@ public class StagedResourceEntity : ResourceEntity
 			return;
 		}
 		StagedDestructionEntityInfo.StageCollider[] colliders = cachedInfo.GetColliders(stage);
-		int num = ((colliders != null) ? colliders.Length : 0);
+		int num = colliders?.Length ?? 0;
 		for (int i = 0; i < ResourceMeshColliders.Length; i++)
 		{
 			MeshCollider val = ResourceMeshColliders[i];

@@ -9,18 +9,18 @@ public static class EnvironmentVolumeEx
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		List<EnvironmentVolume> list = Pool.Get<List<EnvironmentVolume>>();
 		((Component)transform).GetComponentsInChildren<EnvironmentVolume>(true, list);
-		OBB obb = default(OBB);
 		for (int i = 0; i < list.Count; i++)
 		{
 			EnvironmentVolume environmentVolume = list[i];
-			((OBB)(ref obb))._002Ector(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
-			((OBB)(ref obb)).Transform(pos, scale, rot);
+			OBB obb = new OBB(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
+			obb.Transform(pos, scale, rot);
 			if (EnvironmentManager.Check(obb, type))
 			{
 				Pool.FreeUnmanaged<EnvironmentVolume>(ref list);
@@ -44,6 +44,7 @@ public static class EnvironmentVolumeEx
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
@@ -73,7 +74,6 @@ public static class EnvironmentVolumeEx
 			Pool.FreeUnmanaged<EnvironmentVolume>(ref list);
 			return true;
 		}
-		OBB val = default(OBB);
 		for (int i = 0; i < list.Count; i++)
 		{
 			EnvironmentVolume environmentVolume = list[i];
@@ -81,16 +81,16 @@ public static class EnvironmentVolumeEx
 			{
 				continue;
 			}
-			((OBB)(ref val))._002Ector(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
-			((OBB)(ref val)).Transform(pos, scale, rot);
-			Vector3 point = ((OBB)(ref val)).GetPoint(-1f, 0f, -1f);
-			Vector3 point2 = ((OBB)(ref val)).GetPoint(1f, 0f, -1f);
-			Vector3 point3 = ((OBB)(ref val)).GetPoint(-1f, 0f, 1f);
-			Vector3 point4 = ((OBB)(ref val)).GetPoint(1f, 0f, 1f);
-			Bounds val2 = ((OBB)(ref val)).ToBounds();
-			float max = ((Bounds)(ref val2)).max.y + padding;
+			OBB val = new OBB(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
+			val.Transform(pos, scale, rot);
+			Vector3 point = val.GetPoint(-1f, 0f, -1f);
+			Vector3 point2 = val.GetPoint(1f, 0f, -1f);
+			Vector3 point3 = val.GetPoint(-1f, 0f, 1f);
+			Vector3 point4 = val.GetPoint(1f, 0f, 1f);
+			Bounds val2 = val.ToBounds();
+			float max = val2.max.y + padding;
 			bool fail = false;
-			TerrainMeta.HeightMap.ForEachParallel(point, point2, point3, point4, delegate(int x, int z)
+			TerrainMeta.HeightMap.ForEachParallel(point, point2, point3, point4, (int x, int z) =>
 			{
 				if (TerrainMeta.HeightMap.GetHeight(x, z) <= max)
 				{
@@ -120,6 +120,7 @@ public static class EnvironmentVolumeEx
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
@@ -149,7 +150,6 @@ public static class EnvironmentVolumeEx
 			Pool.FreeUnmanaged<EnvironmentVolume>(ref list);
 			return true;
 		}
-		OBB val = default(OBB);
 		for (int i = 0; i < list.Count; i++)
 		{
 			EnvironmentVolume environmentVolume = list[i];
@@ -157,16 +157,16 @@ public static class EnvironmentVolumeEx
 			{
 				continue;
 			}
-			((OBB)(ref val))._002Ector(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
-			((OBB)(ref val)).Transform(pos, scale, rot);
-			Vector3 point = ((OBB)(ref val)).GetPoint(-1f, 0f, -1f);
-			Vector3 point2 = ((OBB)(ref val)).GetPoint(1f, 0f, -1f);
-			Vector3 point3 = ((OBB)(ref val)).GetPoint(-1f, 0f, 1f);
-			Vector3 point4 = ((OBB)(ref val)).GetPoint(1f, 0f, 1f);
-			Bounds val2 = ((OBB)(ref val)).ToBounds();
-			float min = ((Bounds)(ref val2)).min.y - padding;
+			OBB val = new OBB(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
+			val.Transform(pos, scale, rot);
+			Vector3 point = val.GetPoint(-1f, 0f, -1f);
+			Vector3 point2 = val.GetPoint(1f, 0f, -1f);
+			Vector3 point3 = val.GetPoint(-1f, 0f, 1f);
+			Vector3 point4 = val.GetPoint(1f, 0f, 1f);
+			Bounds val2 = val.ToBounds();
+			float min = val2.min.y - padding;
 			bool fail = false;
-			TerrainMeta.HeightMap.ForEachParallel(point, point2, point3, point4, delegate(int x, int z)
+			TerrainMeta.HeightMap.ForEachParallel(point, point2, point3, point4, (int x, int z) =>
 			{
 				if (TerrainMeta.HeightMap.GetHeight(x, z) >= min)
 				{
@@ -196,6 +196,7 @@ public static class EnvironmentVolumeEx
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
@@ -209,16 +210,15 @@ public static class EnvironmentVolumeEx
 			Pool.FreeUnmanaged<EnvironmentVolume>(ref list);
 			return true;
 		}
-		OBB val = default(OBB);
 		for (int i = 0; i < list.Count; i++)
 		{
 			EnvironmentVolume environmentVolume = list[i];
 			if ((environmentVolume.Type & typeRequire) != 0 && (environmentVolume.Type & typeIgnore) == 0)
 			{
-				((OBB)(ref val))._002Ector(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
-				((OBB)(ref val)).Transform(pos, scale, rot);
-				Bounds val2 = ((OBB)(ref val)).ToBounds();
-				if (((Bounds)(ref val2)).min.y <= altitude)
+				OBB val = new OBB(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
+				val.Transform(pos, scale, rot);
+				Bounds val2 = val.ToBounds();
+				if (val2.min.y <= altitude)
 				{
 					Pool.FreeUnmanaged<EnvironmentVolume>(ref list);
 					return false;
@@ -242,6 +242,7 @@ public static class EnvironmentVolumeEx
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
@@ -255,16 +256,15 @@ public static class EnvironmentVolumeEx
 			Pool.FreeUnmanaged<EnvironmentVolume>(ref list);
 			return true;
 		}
-		OBB val = default(OBB);
 		for (int i = 0; i < list.Count; i++)
 		{
 			EnvironmentVolume environmentVolume = list[i];
 			if ((environmentVolume.Type & typeRequire) != 0 && (environmentVolume.Type & typeIgnore) == 0)
 			{
-				((OBB)(ref val))._002Ector(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
-				((OBB)(ref val)).Transform(pos, scale, rot);
-				Bounds val2 = ((OBB)(ref val)).ToBounds();
-				if (((Bounds)(ref val2)).max.y >= altitude)
+				OBB val = new OBB(((Component)environmentVolume).transform, new Bounds(environmentVolume.Center, environmentVolume.Size));
+				val.Transform(pos, scale, rot);
+				Bounds val2 = val.ToBounds();
+				if (val2.max.y >= altitude)
 				{
 					Pool.FreeUnmanaged<EnvironmentVolume>(ref list);
 					return false;

@@ -112,7 +112,7 @@ public class SocketMod_UseTargetOrientation : SocketMod
 		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
-		if (inheritAxes == (OrientationAxes)0 || (ignoreIfHoldingShift && place.isHoldingShift) || (Object)(object)place.transform == (Object)null)
+		if (inheritAxes == 0 || (ignoreIfHoldingShift && place.isHoldingShift) || (Object)(object)place.transform == (Object)null)
 		{
 			return;
 		}
@@ -146,9 +146,25 @@ public class SocketMod_UseTargetOrientation : SocketMod
 		{
 		case 1:
 		{
-			Vector3 val8 = (flag2 ? (rotation * Vector3.right) : (flag3 ? (rotation * Vector3.up) : (rotation * Vector3.forward)));
-			Vector3 val9 = (flag2 ? (rotation2 * Vector3.right) : (flag3 ? (rotation2 * Vector3.up) : (rotation2 * Vector3.forward)));
-			if (((Vector3)(ref val8)).sqrMagnitude > 0.0001f && ((Vector3)(ref val9)).sqrMagnitude > 0.0001f)
+			Vector3 val8;
+			if (flag2)
+			{
+				val8 = rotation * Vector3.right;
+			}
+			else
+			{
+				val8 = (flag3 ? (rotation * Vector3.up) : (rotation * Vector3.forward));
+			}
+			Vector3 val9;
+			if (flag2)
+			{
+				val9 = rotation2 * Vector3.right;
+			}
+			else
+			{
+				val9 = (flag3 ? (rotation2 * Vector3.up) : (rotation2 * Vector3.forward));
+			}
+			if (val8.sqrMagnitude > 0.0001f && val9.sqrMagnitude > 0.0001f)
 			{
 				Quaternion val10 = Quaternion.FromToRotation(val8, val9);
 				place.rotation = val10 * rotation;
@@ -163,8 +179,8 @@ public class SocketMod_UseTargetOrientation : SocketMod
 				Vector3 val = rotation2 * Vector3.right;
 				Vector3 val2 = rotation2 * Vector3.up;
 				val3 = Vector3.Cross(val, val2);
-				Vector3 normalized = ((Vector3)(ref val3)).normalized;
-				if (((Vector3)(ref normalized)).sqrMagnitude > 0.0001f)
+				Vector3 normalized = val3.normalized;
+				if (normalized.sqrMagnitude > 0.0001f)
 				{
 					place.rotation = Quaternion.LookRotation(normalized, val2);
 				}
@@ -174,8 +190,8 @@ public class SocketMod_UseTargetOrientation : SocketMod
 				Vector3 val4 = rotation2 * Vector3.up;
 				Vector3 val5 = rotation2 * Vector3.forward;
 				val3 = Vector3.Cross(val4, val5);
-				Vector3 normalized2 = ((Vector3)(ref val3)).normalized;
-				if (((Vector3)(ref normalized2)).sqrMagnitude > 0.0001f)
+				Vector3 normalized2 = val3.normalized;
+				if (normalized2.sqrMagnitude > 0.0001f)
 				{
 					place.rotation = Quaternion.LookRotation(val5, val4);
 				}
@@ -185,8 +201,8 @@ public class SocketMod_UseTargetOrientation : SocketMod
 				Vector3 val6 = rotation2 * Vector3.right;
 				Vector3 val7 = rotation2 * Vector3.forward;
 				val3 = Vector3.Cross(val7, val6);
-				Vector3 normalized3 = ((Vector3)(ref val3)).normalized;
-				if (((Vector3)(ref normalized3)).sqrMagnitude > 0.0001f)
+				Vector3 normalized3 = val3.normalized;
+				if (normalized3.sqrMagnitude > 0.0001f)
 				{
 					place.rotation = Quaternion.LookRotation(val7, normalized3);
 				}

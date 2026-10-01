@@ -30,6 +30,7 @@ public class GenerateErosionSplat : ProceduralComponent
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
@@ -54,7 +55,7 @@ public class GenerateErosionSplat : ProceduralComponent
 		NativeArray<float> heightMapDelta = GenerateErosion.splatPaintingData.HeightMapDelta;
 		NativeArray<float> angleMap = GenerateErosion.splatPaintingData.AngleMap;
 		int res = TerrainMeta.HeightMap.res;
-		Parallel.For(1, res - 1, delegate(int z)
+		Parallel.For(1, res - 1, (int z) =>
 		{
 			for (int i = 1; i < res - 1; i++)
 			{
@@ -62,14 +63,13 @@ public class GenerateErosionSplat : ProceduralComponent
 			}
 		});
 		splatMap.Push();
-		NativeHashMap<int, int> val = default(NativeHashMap<int, int>);
-		val._002Ector(splatMap.num, AllocatorHandle.op_Implicit((Allocator)3));
+		NativeHashMap<int, int> val = new NativeHashMap<int, int>(splatMap.num, AllocatorHandle.op_Implicit((Allocator)3));
 		foreach (var (num3, num4) in TerrainSplat.GetType2IndexDic())
 		{
 			val.Add(num3, num4);
 		}
-		JobHandle val2 = default(JobHandle);
-		GenerateErosionJobs.PaintSplatJob paintSplatJob = new GenerateErosionJobs.PaintSplatJob
+		JobHandle val2 = default;
+		PaintSplatJob paintSplatJob = new PaintSplatJob
 		{
 			HeightMapDelta = heightMapDelta.AsReadOnly(),
 			HeightMapRes = TerrainMeta.HeightMap.res,
@@ -82,10 +82,10 @@ public class GenerateErosionSplat : ProceduralComponent
 			SplatType2Index = val.AsReadOnly(),
 			TerrainOneOverSizeX = TerrainMeta.OneOverSize.x
 		};
-		val2 = IJobForExtensions.ScheduleByRef<GenerateErosionJobs.PaintSplatJob>(ref paintSplatJob, heightMapDelta.Length, val2);
+		val2 = IJobForExtensions.ScheduleByRef<PaintSplatJob>(ref paintSplatJob, heightMapDelta.Length, val2);
 		val.Dispose(val2);
 		GenerateErosion.splatPaintingData.Dispose(val2);
-		((JobHandle)(ref val2)).Complete();
+		val2.Complete();
 		splatMap.Pop();
 	}
 }

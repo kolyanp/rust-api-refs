@@ -49,7 +49,7 @@ public class MLRS : BaseMountable
 
 	public Vector3 trueTargetHitPos;
 
-	public static readonly Phrase RaidWindowBlockedToast;
+	public static readonly Phrase RaidWindowBlockedToast = new Phrase("mlrs.raidwindowblocked", "The MLRS can only be fired during the raid window");
 
 	[Header("MLRS Components")]
 	[SerializeField]
@@ -83,8 +83,8 @@ public class MLRS : BaseMountable
 	[Header("MLRS Weaponry")]
 	public float minRange = 200f;
 
-	[SerializeField]
 	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
+	[SerializeField]
 	public float targetAreaRadius = 30f;
 
 	[SerializeField]
@@ -134,13 +134,7 @@ public class MLRS : BaseMountable
 	private ParticleSystem bottomScreenShutdown;
 
 	[ServerVar(Help = "How many minutes before the MLRS recovers from use and can be used again")]
-	public static float brokenDownMinutes;
-
-	[CompilerGenerated]
-	private Vector3 _003CUserTargetHitPos_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CTrueHitPos_003Ek__BackingField;
+	public static float brokenDownMinutes = 20f;
 
 	public const Flags FLAG_FIRING_ROCKETS = Flags.Reserved6;
 
@@ -162,14 +156,14 @@ public class MLRS : BaseMountable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CUserTargetHitPos_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CUserTargetHitPos_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -179,14 +173,14 @@ public class MLRS : BaseMountable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CTrueHitPos_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CTrueHitPos_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -435,7 +429,7 @@ public class MLRS : BaseMountable
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (child.prefabID == rocketStoragePrefab.GetEntity().prefabID)
 			{
@@ -750,9 +744,9 @@ public class MLRS : BaseMountable
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_SetTargetHitPos(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -816,11 +810,11 @@ public class MLRS : BaseMountable
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		base.InitShared();
-		GameObject obj = mlrsRocket.Get();
-		ServerProjectile component = obj.GetComponent<ServerProjectile>();
+		GameObject val = mlrsRocket.Get();
+		ServerProjectile component = val.GetComponent<ServerProjectile>();
 		rocketBaseGravity = (0f - Physics.gravity.y) * component.gravityModifier;
 		rocketSpeed = component.speed;
-		TimedExplosive component2 = obj.GetComponent<TimedExplosive>();
+		TimedExplosive component2 = val.GetComponent<TimedExplosive>();
 		RocketDamageRadius = component2.explosionRadius;
 	}
 
@@ -839,7 +833,7 @@ public class MLRS : BaseMountable
 			TrueHitPos = info.msg.mlrs.curHitPos;
 			HitPosToRotation(TrueHitPos, out var hRot, out var vRot, out var g);
 			CurGravityMultiplier = g / (0f - Physics.gravity.y);
-			if (base.isServer)
+			if (isServer)
 			{
 				HRotation = hRot;
 				VRotation = vRot;
@@ -902,7 +896,7 @@ public class MLRS : BaseMountable
 		{
 			return;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			Vector3 position = TerrainMeta.Position;
 			Vector3 val = position + TerrainMeta.Size;
@@ -915,20 +909,20 @@ public class MLRS : BaseMountable
 			return;
 		}
 		UserTargetHitPos = worldPos;
-		if (base.isServer)
+		if (isServer)
 		{
 			trueTargetHitPos = UserTargetHitPos;
 			foreach (TriggerSafeZone allSafeZone in TriggerSafeZone.allSafeZones)
 			{
 				Bounds val2 = allSafeZone.triggerCollider.bounds;
-				Vector3 center = ((Bounds)(ref val2)).center;
+				Vector3 center = val2.center;
 				center.y = 0f;
 				float num = ColliderEx.GetRadius(allSafeZone.triggerCollider, ((Component)allSafeZone).transform.localScale) + targetAreaRadius;
 				trueTargetHitPos.y = 0f;
 				if (Vector3.Distance(center, trueTargetHitPos) < num)
 				{
 					Vector3 val3 = trueTargetHitPos - center;
-					trueTargetHitPos = center + ((Vector3)(ref val3)).normalized * num;
+					trueTargetHitPos = center + val3.normalized * num;
 					trueTargetHitPos.y = GetSurfaceHeight(trueTargetHitPos);
 					break;
 				}
@@ -939,7 +933,7 @@ public class MLRS : BaseMountable
 
 	public StorageContainer GetRocketContainer()
 	{
-		BaseEntity baseEntity = rocketStorageInstance.Get(base.isServer);
+		BaseEntity baseEntity = rocketStorageInstance.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsValid())
 		{
 			return baseEntity as StorageContainer;
@@ -949,7 +943,7 @@ public class MLRS : BaseMountable
 
 	public StorageContainer GetDashboardContainer()
 	{
-		BaseEntity baseEntity = dashboardStorageInstance.Get(base.isServer);
+		BaseEntity baseEntity = dashboardStorageInstance.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsValid())
 		{
 			return baseEntity as StorageContainer;
@@ -973,7 +967,7 @@ public class MLRS : BaseMountable
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 aimToTarget = Ballistics.GetAimToTarget(firingPoint.position, hitPos, rocketSpeed, vRotMax, rocketBaseGravity, minRange, out g);
 		Quaternion val = Quaternion.LookRotation(aimToTarget, Vector3.up);
-		Vector3 eulerAngles = ((Quaternion)(ref val)).eulerAngles;
+		Vector3 eulerAngles = val.eulerAngles;
 		vRot = eulerAngles.x - 360f;
 		aimToTarget.y = 0f;
 		hRot = eulerAngles.y;
@@ -993,8 +987,6 @@ public class MLRS : BaseMountable
 	static MLRS()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		RaidWindowBlockedToast = new Phrase("mlrs.raidwindowblocked", "The MLRS can only be fired during the raid window");
-		brokenDownMinutes = 20f;
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

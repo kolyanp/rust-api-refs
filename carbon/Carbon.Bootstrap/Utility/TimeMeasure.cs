@@ -12,7 +12,7 @@ public struct TimeMeasure : IDisposable
 
 	public static TimeMeasure New(string name)
 	{
-		TimeMeasure result = default(TimeMeasure);
+		TimeMeasure result = default;
 		result._watch = Pool.Get<Stopwatch>();
 		result._name = name;
 		result._watch.Start();

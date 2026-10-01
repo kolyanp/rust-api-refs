@@ -79,12 +79,12 @@ public class SimpleBuildingBlock : StabilityEntity, ISimpleUpgradable, IReskinCa
 
 	public bool CanUpgrade(BasePlayer player, ItemDefinition upgradeItem)
 	{
-		return global::SimpleUpgrade.CanUpgrade(this, upgradeItem, player);
+		return SimpleUpgrade.CanUpgrade(this, upgradeItem, player);
 	}
 
 	public void DoUpgrade(BasePlayer player, ItemDefinition upgradeItem)
 	{
-		global::SimpleUpgrade.DoUpgrade(this, player, upgradeItem);
+		SimpleUpgrade.DoUpgrade(this, player, upgradeItem);
 	}
 
 	public Menu.Option GetUpgradeMenuOption()
@@ -111,9 +111,9 @@ public class SimpleBuildingBlock : StabilityEntity, ISimpleUpgradable, IReskinCa
 	[RPC_Server.IsVisible(3f)]
 	public void DoSimpleUpgrade(RPCMessage msg)
 	{
-		if (base.SecondsSinceAttacked < 30f)
+		if (SecondsSinceAttacked < 30f)
 		{
-			msg.player.ShowToast(GameTip.Styles.Error, ConstructionErrors.CantUpgradeRecentlyDamaged, false, (30f - base.SecondsSinceAttacked).ToString("N0"));
+			msg.player.ShowToast(GameTip.Styles.Error, ConstructionErrors.CantUpgradeRecentlyDamaged, false, (30f - SecondsSinceAttacked).ToString("N0"));
 			return;
 		}
 		int num = msg.read.Int32();
@@ -135,7 +135,7 @@ public class SimpleBuildingBlock : StabilityEntity, ISimpleUpgradable, IReskinCa
 
 	private void PopulateVariants()
 	{
-		if (base.isServer && variants.Any())
+		if (isServer && variants.Any())
 		{
 			ulong value = net.ID.Value;
 			SeedRandom.Wanghash(ref value);
@@ -198,7 +198,7 @@ public class SimpleBuildingBlock : StabilityEntity, ISimpleUpgradable, IReskinCa
 	public override void OnDied(HitInfo info)
 	{
 		base.OnDied(info);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -230,13 +230,13 @@ public class SimpleBuildingBlock : StabilityEntity, ISimpleUpgradable, IReskinCa
 		{
 			return;
 		}
-		base.gameManager.Retire(currentModel);
+		gameManager.Retire(currentModel);
 		SimpleBuildingBlockModelVariant[] array = variants;
 		foreach (SimpleBuildingBlockModelVariant simpleBuildingBlockModelVariant in array)
 		{
 			if (HasFlag(simpleBuildingBlockModelVariant.Flag))
 			{
-				GameObject val = base.gameManager.CreatePrefab(simpleBuildingBlockModelVariant.prefab.resourcePath, ((Component)this).transform);
+				GameObject val = gameManager.CreatePrefab(simpleBuildingBlockModelVariant.prefab.resourcePath, ((Component)this).transform);
 				if (Object.op_Implicit((Object)(object)val))
 				{
 					val.transform.localPosition = simpleBuildingBlockModelVariant.localPosition;
@@ -250,7 +250,7 @@ public class SimpleBuildingBlock : StabilityEntity, ISimpleUpgradable, IReskinCa
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		base.gameManager.Retire(currentModel);
+		gameManager.Retire(currentModel);
 		currentModel = null;
 	}
 }

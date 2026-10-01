@@ -9,9 +9,9 @@ public class StaticMissionItemDispenser : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (base.inventory != null)
+		if (inventory != null)
 		{
-			base.inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+			inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 		}
 	}
 
@@ -40,7 +40,7 @@ public class StaticMissionItemDispenser : StorageContainer
 			{
 				if (instance.objectiveStatuses[i].IsObjectiveActive() && mission.objectives[i].objective is MissionObjective_AcquireItem missionObjective_AcquireItem)
 				{
-					base.inventory.AddItem(missionObjective_AcquireItem.targetItem, missionObjective_AcquireItem.targetItemAmount, 0uL);
+					inventory.AddItem(missionObjective_AcquireItem.targetItem, missionObjective_AcquireItem.targetItemAmount, 0uL);
 				}
 			}
 		}
@@ -49,7 +49,7 @@ public class StaticMissionItemDispenser : StorageContainer
 
 	public override void PlayerStoppedLooting(BasePlayer player)
 	{
-		base.inventory.Clear();
+		inventory.Clear();
 		base.PlayerStoppedLooting(player);
 	}
 
@@ -79,7 +79,7 @@ public class StaticMissionItemDispenser : StorageContainer
 			BaseMission.MissionInstance.ObjectiveStatus objectiveStatus = instance.objectiveStatuses[i];
 			if (objectiveStatus.IsObjectiveActive() && !objectiveStatus.softCompleted && mission.objectives[i].Get() is MissionObjective_AcquireItem missionObjective_AcquireItem)
 			{
-				if (!string.IsNullOrEmpty(missionObjective_AcquireItem.position) && base.isServer && (!instance.missionPoints.TryGetValue(missionObjective_AcquireItem.position, out var value) || Vector3.SqrMagnitude(value - ((Component)this).transform.position) > 9f))
+				if (!string.IsNullOrEmpty(missionObjective_AcquireItem.position) && isServer && (!instance.missionPoints.TryGetValue(missionObjective_AcquireItem.position, out var value) || Vector3.SqrMagnitude(value - ((Component)this).transform.position) > 9f))
 				{
 					return false;
 				}

@@ -21,7 +21,7 @@ public class ChickenCoop : StorageContainer
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			status.spawnedChicken = SpawnedAnimal.uid;
-			status.timeUntilHatch = ((TimeUntil)(ref TimeUntilHatch)).LeftFrom(time.Time);
+			status.timeUntilHatch = TimeUntilHatch.LeftFrom(time.Time);
 		}
 
 		public void CopyFrom(ChickenStatus status)
@@ -96,9 +96,9 @@ public class ChickenCoop : StorageContainer
 
 	public bool IsOnTerrain { get; private set; }
 
-	public Item CurrentFoodItem => base.inventory?.GetSlot(1);
+	public Item CurrentFoodItem => inventory?.GetSlot(1);
 
-	public Item CurrentWaterItem => base.inventory?.GetSlot(2);
+	public Item CurrentWaterItem => inventory?.GetSlot(2);
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -198,14 +198,14 @@ public class ChickenCoop : StorageContainer
 		InvokeRepeating(ScheduleWorkQueue, Random.Range(0f, SunCheckRate), SunCheckRate);
 		if (GamePhysics.Trace(new Ray(((Component)this).transform.position + ((Component)this).transform.up, -((Component)this).transform.up), 0f, out var hitInfo, 1.1f, 10485760, (QueryTriggerInteraction)0))
 		{
-			IsOnTerrain = ColliderEx.IsOnLayer(((RaycastHit)(ref hitInfo)).collider, (Layer)23);
+			IsOnTerrain = ColliderEx.IsOnLayer(hitInfo.collider, (Layer)23);
 			UpdateMovementPlane();
 		}
 		if (reservedSlotCallback == null)
 		{
 			reservedSlotCallback = SlotIsReserved;
 		}
-		base.inventory.slotIsReserved = reservedSlotCallback;
+		inventory.slotIsReserved = reservedSlotCallback;
 	}
 
 	public void UpdateMovementPlane()
@@ -224,16 +224,16 @@ public class ChickenCoop : StorageContainer
 	{
 		try
 		{
-			base.inventory.slotIsReserved = null;
+			inventory.slotIsReserved = null;
 			Item item = ItemManager.Create(def, 1, 0uL, isServerSide: true, 0uL);
-			if (!item.MoveToContainer(base.inventory, 3))
+			if (!item.MoveToContainer(inventory, 3))
 			{
 				item.Remove();
 			}
 		}
 		finally
 		{
-			base.inventory.slotIsReserved = reservedSlotCallback;
+			inventory.slotIsReserved = reservedSlotCallback;
 		}
 	}
 
@@ -251,8 +251,8 @@ public class ChickenCoop : StorageContainer
 		((ObjectWorkQueue<ChickenCoop>)CoopWorkQueue).Add(this);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void SubmitEggForHatching(RPCMessage msg)
 	{
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
@@ -261,7 +261,7 @@ public class ChickenCoop : StorageContainer
 		{
 			return;
 		}
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot != null && !((Object)(object)slot.info != (Object)(object)EggDef) && !((Object)(object)msg.player.inventory.loot.entitySource != (Object)(object)this))
 		{
 			slot.UseItem();
@@ -317,7 +317,7 @@ public class ChickenCoop : StorageContainer
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		FarmableAnimal obj = base.gameManager.CreateEntity(ChickenPrefab.resourcePath, ((Component)this).transform.TransformPoint(GetRandomMovePoint()), Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)) as FarmableAnimal;
+		FarmableAnimal obj = gameManager.CreateEntity(ChickenPrefab.resourcePath, ((Component)this).transform.TransformPoint(GetRandomMovePoint()), Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)) as FarmableAnimal;
 		obj.SetParent(this, worldPositionStays: true);
 		string text = RandomUsernames.Get(Random.Range(0, 1000));
 		text = text[0].ToString().ToUpper() + text.Substring(1);
@@ -433,7 +433,7 @@ public class ChickenCoop : StorageContainer
 	{
 		while (Animals.Count < MaxChickens)
 		{
-			AnimalStatus item = default(AnimalStatus);
+			AnimalStatus item = default;
 			FarmableAnimal entity = SpawnChicken(Animals.Count);
 			item.SpawnedAnimal.Set(entity);
 			Animals.Add(item);
@@ -494,7 +494,7 @@ public class ChickenCoop : StorageContainer
 
 	public override void DropItems(BaseEntity initiator = null)
 	{
-		base.inventory.GetSlot(2)?.Remove();
+		inventory.GetSlot(2)?.Remove();
 		base.DropItems(initiator);
 	}
 
@@ -510,7 +510,7 @@ public class ChickenCoop : StorageContainer
 			if ((Object)(object)farmableAnimal != (Object)null && (Object)(object)farmableAnimal != (Object)(object)ignoreAnimal)
 			{
 				Vector3 val = ((Component)farmableAnimal).transform.localPosition - pos;
-				if (((Vector3)(ref val)).sqrMagnitude < radius * radius)
+				if (val.sqrMagnitude < radius * radius)
 				{
 					return false;
 				}
@@ -521,7 +521,7 @@ public class ChickenCoop : StorageContainer
 
 	private bool IsValidFoodItem(Item item)
 	{
-		ItemModConsumable itemModConsumable = default(ItemModConsumable);
+		ItemModConsumable itemModConsumable = default;
 		if (item != null && ((Component)item.info).TryGetComponent<ItemModConsumable>(ref itemModConsumable))
 		{
 			return itemModConsumable.chickenCoopFood;
@@ -539,7 +539,7 @@ public class ChickenCoop : StorageContainer
 		}
 		foreach (ChickenStatus chicken in info.msg.chickenCoop.chickens)
 		{
-			AnimalStatus item = default(AnimalStatus);
+			AnimalStatus item = default;
 			item.CopyFrom(chicken);
 			Animals.Add(item);
 		}

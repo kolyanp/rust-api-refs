@@ -133,13 +133,13 @@ public class BezierPath
 			Vector2 val7 = segmentPoints[i];
 			Vector2 val8 = segmentPoints[i + 1];
 			Vector2 val9 = val8 - val6;
-			Vector2 normalized = ((Vector2)(ref val9)).normalized;
+			Vector2 normalized = val9.normalized;
 			Vector2 val10 = scale * normalized;
 			val9 = val7 - val6;
-			Vector2 item3 = val7 - val10 * ((Vector2)(ref val9)).magnitude;
+			Vector2 item3 = val7 - val10 * val9.magnitude;
 			Vector2 val11 = scale * normalized;
 			val9 = val8 - val7;
-			Vector2 item4 = val7 + val11 * ((Vector2)(ref val9)).magnitude;
+			Vector2 item4 = val7 + val11 * val9.magnitude;
 			controlPoints.Add(item3);
 			controlPoints.Add(val7);
 			controlPoints.Add(item4);
@@ -200,10 +200,10 @@ public class BezierPath
 		for (num = 2; num < sourcePoints.Count; num++)
 		{
 			val2 = val - sourcePoints[num];
-			if (((Vector2)(ref val2)).sqrMagnitude > minSqrDistance)
+			if (val2.sqrMagnitude > minSqrDistance)
 			{
 				val2 = stack.Peek() - sourcePoints[num];
-				if (((Vector2)(ref val2)).sqrMagnitude > maxSqrDistance)
+				if (val2.sqrMagnitude > maxSqrDistance)
 				{
 					stack.Push(val);
 				}
@@ -213,11 +213,11 @@ public class BezierPath
 		Vector2 val3 = stack.Pop();
 		Vector2 val4 = stack.Peek();
 		val2 = val4 - val;
-		Vector2 normalized = ((Vector2)(ref val2)).normalized;
+		Vector2 normalized = val2.normalized;
 		val2 = val - val3;
-		float magnitude = ((Vector2)(ref val2)).magnitude;
+		float magnitude = val2.magnitude;
 		val2 = val3 - val4;
-		float magnitude2 = ((Vector2)(ref val2)).magnitude;
+		float magnitude2 = val2.magnitude;
 		val3 += normalized * ((magnitude2 - magnitude) / 2f);
 		stack.Push(val3);
 		stack.Push(val);
@@ -367,16 +367,16 @@ public class BezierPath
 		Vector2 val = CalculateBezierPoint(curveIndex, t0);
 		Vector2 val2 = CalculateBezierPoint(curveIndex, t1);
 		Vector2 val3 = val - val2;
-		if (((Vector2)(ref val3)).sqrMagnitude < MINIMUM_SQR_DISTANCE)
+		if (val3.sqrMagnitude < MINIMUM_SQR_DISTANCE)
 		{
 			return 0;
 		}
 		float num = (t0 + t1) / 2f;
 		Vector2 val4 = CalculateBezierPoint(curveIndex, num);
 		val3 = val - val4;
-		Vector2 normalized = ((Vector2)(ref val3)).normalized;
+		Vector2 normalized = val3.normalized;
 		val3 = val2 - val4;
-		Vector2 normalized2 = ((Vector2)(ref val3)).normalized;
+		Vector2 normalized2 = val3.normalized;
 		if (Vector2.Dot(normalized, normalized2) > DIVISION_THRESHOLD || Mathf.Abs(num - 0.5f) < 0.0001f)
 		{
 			int num2 = 0;

@@ -28,6 +28,8 @@ public class HeadEntity : BaseEntity
 		CurrentTrophyData.playerName = string.Empty;
 		CurrentTrophyData.clothing?.Clear();
 		CurrentTrophyData.clothingSkins?.Clear();
+		CurrentTrophyData.livestockGenes = 0;
+		CurrentTrophyData.livestockName = string.Empty;
 	}
 
 	public void SetupPlayerId(string playerName, ulong playerId)
@@ -48,13 +50,13 @@ public class HeadEntity : BaseEntity
 		{
 			CurrentTrophyData.clothingSkins = Pool.Get<List<ulong>>();
 		}
-		ItemModWearable itemModWearable = default(ItemModWearable);
+		ItemModWearable itemModWearable = default;
 		foreach (Item item in container.itemList)
 		{
 			if (((Component)item.info).TryGetComponent<ItemModWearable>(ref itemModWearable) && itemModWearable.entityPrefab.isValid)
 			{
 				Wearable component = itemModWearable.entityPrefab.Get().GetComponent<Wearable>();
-				if ((component.occupationOver & (Wearable.OccupationSlots.HeadTop | Wearable.OccupationSlots.Face | Wearable.OccupationSlots.HeadBack | Wearable.OccupationSlots.Mouth | Wearable.OccupationSlots.Eyes)) != 0 || component.occupationOver == (Wearable.OccupationSlots)0)
+				if ((component.occupationOver & (Wearable.OccupationSlots.HeadTop | Wearable.OccupationSlots.Face | Wearable.OccupationSlots.HeadBack | Wearable.OccupationSlots.Mouth | Wearable.OccupationSlots.Eyes)) != 0 || component.occupationOver == 0)
 				{
 					CurrentTrophyData.clothing.Add(item.info.itemid);
 					CurrentTrophyData.clothingSkins.Add(item.skin);
@@ -82,6 +84,13 @@ public class HeadEntity : BaseEntity
 	{
 		InitTrophyData();
 		CurrentTrophyData.horseBreed = breed;
+	}
+
+	public void AssignLivestock(int genes, string animalName)
+	{
+		InitTrophyData();
+		CurrentTrophyData.livestockGenes = genes;
+		CurrentTrophyData.livestockName = animalName;
 	}
 
 	private void InitTrophyData()

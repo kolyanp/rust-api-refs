@@ -73,7 +73,14 @@ public class LeanTest
 		float num = 0f;
 		for (int i = 0; i < str.Length; i++)
 		{
-			num = ((str[i] != "I"[0]) ? ((str[i] != "J"[0]) ? (num + 1f) : (num + 0.85f)) : (num + 0.5f));
+			if (str[i] != "I"[0])
+			{
+				num = ((str[i] != "J"[0]) ? (num + 1f) : (num + 0.85f));
+			}
+			else
+			{
+				num += 0.5f;
+			}
 		}
 		return num;
 	}

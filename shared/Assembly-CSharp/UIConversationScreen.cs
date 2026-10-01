@@ -30,6 +30,8 @@ public class UIConversationScreen : SingletonComponent<UIConversationScreen>, IU
 
 	public UIMissionInfoConversation missionInfo;
 
+	public UIAnimalSaleInfoConversation animalSaleInfo;
+
 	public Canvas canvas;
 
 	public GraphicRaycaster graphicRaycaster;

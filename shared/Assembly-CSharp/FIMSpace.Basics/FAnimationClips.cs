@@ -136,7 +136,7 @@ public class FAnimationClips : Dictionary<string, int>
 		if (Animator.IsInTransition(Layer))
 		{
 			val = Animator.GetNextAnimatorStateInfo(Layer);
-			if (((AnimatorStateInfo)(ref val)).shortNameHash == base[clip])
+			if (val.shortNameHash == base[clip])
 			{
 				return true;
 			}
@@ -144,7 +144,7 @@ public class FAnimationClips : Dictionary<string, int>
 		else
 		{
 			val = Animator.GetCurrentAnimatorStateInfo(Layer);
-			if (((AnimatorStateInfo)(ref val)).shortNameHash == base[clip])
+			if (val.shortNameHash == base[clip])
 			{
 				return true;
 			}

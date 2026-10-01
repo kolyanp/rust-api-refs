@@ -312,7 +312,7 @@ public class TriggerAchievementAdvanced : TriggerBase
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		Gizmos.color = ((requiredExitSides == ExitSideMask.Any || (requiredExitSides & side) != ExitSideMask.Any) ? new Color(0.2f, 1f, 0.35f, 0.9f) : new Color(1f, 0.25f, 0.25f, 0.7f));
+		Gizmos.color = ((requiredExitSides == ExitSideMask.Any || (requiredExitSides & side) != 0) ? new Color(0.2f, 1f, 0.35f, 0.9f) : new Color(1f, 0.25f, 0.25f, 0.7f));
 		Vector3 val = size * 0.5f;
 		Vector3 val2 = center + Vector3.Scale(normal, val);
 		Vector3 val3 = val2 + normal * (markerSize * 3f);

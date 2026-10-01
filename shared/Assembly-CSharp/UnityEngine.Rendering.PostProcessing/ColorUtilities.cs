@@ -35,6 +35,7 @@ public static class ColorUtilities
 
 	public static Vector3 ComputeColorBalance(float temperature, float tint)
 	{
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
@@ -48,8 +49,7 @@ public static class ColorUtilities
 		float num2 = tint / 60f;
 		float x = 0.31271f - num * ((num < 0f) ? 0.1f : 0.05f);
 		float y = StandardIlluminantY(x) + num2 * 0.05f;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(0.949237f, 1.03542f, 1.08728f);
+		Vector3 val = new Vector3(0.949237f, 1.03542f, 1.08728f);
 		Vector3 val2 = CIExyToLMS(x, y);
 		return new Vector3(val.x / val2.x, val.y / val2.y, val.z / val2.z);
 	}
@@ -59,21 +59,22 @@ public static class ColorUtilities
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(color.x, color.y, color.z);
+		Vector3 val = new Vector3(color.x, color.y, color.z);
 		float num = val.x * 0.2126f + val.y * 0.7152f + val.z * 0.0722f;
-		((Vector3)(ref val))._002Ector(val.x - num, val.y - num, val.z - num);
+		val = new Vector3(val.x - num, val.y - num, val.z - num);
 		float w = color.w;
 		return new Vector3(val.x + w, val.y + w, val.z + w);
 	}
@@ -83,21 +84,22 @@ public static class ColorUtilities
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(color.x, color.y, color.z);
+		Vector3 val = new Vector3(color.x, color.y, color.z);
 		float num = val.x * 0.2126f + val.y * 0.7152f + val.z * 0.0722f;
-		((Vector3)(ref val))._002Ector(val.x - num, val.y - num, val.z - num);
+		val = new Vector3(val.x - num, val.y - num, val.z - num);
 		float num2 = color.w + 1f;
 		return new Vector3(1f / Mathf.Max(val.x + num2, 0.001f), 1f / Mathf.Max(val.y + num2, 0.001f), 1f / Mathf.Max(val.z + num2, 0.001f));
 	}
@@ -107,21 +109,22 @@ public static class ColorUtilities
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(color.x, color.y, color.z);
+		Vector3 val = new Vector3(color.x, color.y, color.z);
 		float num = val.x * 0.2126f + val.y * 0.7152f + val.z * 0.0722f;
-		((Vector3)(ref val))._002Ector(val.x - num, val.y - num, val.z - num);
+		val = new Vector3(val.x - num, val.y - num, val.z - num);
 		float num2 = color.w + 1f;
 		return new Vector3(val.x + num2, val.y + num2, val.z + num2);
 	}

@@ -83,7 +83,7 @@ public class PlanterBoxStatic : PlanterBox
 		GameObjectRef randomStaticPlant = GetRandomStaticPlant();
 		Socket_Base[] array = PrefabAttribute.server.FindAll<Socket_Base>(prefabID);
 		bool deepSeaMode = DeepSeaMode;
-		if ((deepSeaMode && TimeSince.op_Implicit(lastDeepSeaSpawn) < DeepSeaRespawnCheckTimer) || (deepSeaMode && (Object)(object)DeepSeaManager.Get(base.isServer) != (Object)null && DeepSeaManager.Get(base.isServer).IsBusy()))
+		if ((deepSeaMode && TimeSince.op_Implicit(lastDeepSeaSpawn) < DeepSeaRespawnCheckTimer) || (deepSeaMode && (Object)(object)DeepSeaManager.Get(isServer) != (Object)null && DeepSeaManager.Get(isServer).IsBusy()))
 		{
 			return;
 		}

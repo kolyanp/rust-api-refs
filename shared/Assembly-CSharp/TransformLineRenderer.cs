@@ -6,14 +6,14 @@ public class TransformLineRenderer : MonoBehaviour, IClientComponent
 {
 	internal struct LineRendererUpdateJob : IJobParallelForTransform
 	{
-		[NativeMatchesParallelForLength]
 		[WriteOnly]
+		[NativeMatchesParallelForLength]
 		public NativeArray<Vector3> ResultWorldPositions;
 
 		public void Execute(int index, [ReadOnly] TransformAccess transform)
 		{
 			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			ResultWorldPositions[index] = ((TransformAccess)(ref transform)).position;
+			ResultWorldPositions[index] = transform.position;
 		}
 	}
 

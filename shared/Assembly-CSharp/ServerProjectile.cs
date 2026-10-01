@@ -41,9 +41,6 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 
 	public float swimRandom;
 
-	[CompilerGenerated]
-	private Vector3 _003CCurrentVelocity_003Ek__BackingField;
-
 	public virtual bool HasRangeLimit => true;
 
 	protected virtual int mask => 1237003025;
@@ -54,14 +51,14 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CCurrentVelocity_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CCurrentVelocity_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -81,7 +78,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 
 	protected void FixedUpdate()
 	{
-		if ((Object)(object)base.baseEntity != (Object)null && base.baseEntity.isServer && base.baseEntity.IsFullySpawned())
+		if ((Object)(object)baseEntity != (Object)null && baseEntity.isServer && baseEntity.IsFullySpawned())
 		{
 			DoMovement();
 		}
@@ -96,7 +93,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		if (runSpawnHitChecks)
 		{
 			Vector3 currentVelocity = CurrentVelocity;
-			CheckSpawnedInsideCollider(((Vector3)(ref currentVelocity)).normalized);
+			CheckSpawnedInsideCollider(currentVelocity.normalized);
 		}
 	}
 
@@ -115,9 +112,9 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
 		List<Collider> list = Pool.Get<List<Collider>>();
 		GamePhysics.OverlapSphere(((Component)this).transform.position, Mathf.Max(radius, 0.01f), list, mask, (QueryTriggerInteraction)1);
-		bool num = list.Count > 0;
+		bool flag = list.Count > 0;
 		Pool.FreeUnmanaged<Collider>(ref list);
-		if (!num)
+		if (!flag)
 		{
 			return;
 		}
@@ -162,7 +159,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		if (AutomaticallyRotate())
 		{
-			((Component)this).transform.rotation = Quaternion.LookRotation(((Vector3)(ref overrideVel)).normalized);
+			((Component)this).transform.rotation = Quaternion.LookRotation(overrideVel.normalized);
 		}
 		initialVelocity = overrideVel;
 		CurrentVelocity = overrideVel;
@@ -177,7 +174,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		if (AutomaticallyRotate() && overrideVel != Vector3.zero)
 		{
-			((Component)this).transform.rotation = Quaternion.LookRotation(((Vector3)(ref overrideVel)).normalized);
+			((Component)this).transform.rotation = Quaternion.LookRotation(overrideVel.normalized);
 		}
 		CurrentVelocity = overrideVel;
 	}
@@ -199,7 +196,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
-		if (base.baseEntity.isClient)
+		if (baseEntity.isClient)
 		{
 			return false;
 		}
@@ -209,7 +206,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		}
 		CurrentVelocity += GetVelocityStep();
 		Vector3 val = AddSwim(CurrentVelocity);
-		float num = ((Vector3)(ref val)).magnitude * Time.fixedDeltaTime;
+		float num = val.magnitude * Time.fixedDeltaTime;
 		if (DoHitDetection(val, num))
 		{
 			return false;
@@ -221,7 +218,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		}
 		if (AutomaticallyRotate() && val != Vector3.zero)
 		{
-			((Component)this).transform.rotation = Quaternion.LookRotation(((Vector3)(ref val)).normalized);
+			((Component)this).transform.rotation = Quaternion.LookRotation(val.normalized);
 		}
 		PostDoMove();
 		return true;
@@ -242,7 +239,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
 		Vector3 position = ((Component)this).transform.position;
-		GamePhysics.TraceAll(new Ray(position, ((Vector3)(ref velocityToUse)).normalized), radius, list, distance + scanRange, mask, (QueryTriggerInteraction)1);
+		GamePhysics.TraceAll(new Ray(position, velocityToUse.normalized), radius, list, distance + scanRange, mask, (QueryTriggerInteraction)1);
 		foreach (RaycastHit item in list)
 		{
 			BaseEntity entity = RaycastHitEx.GetEntity(item);
@@ -264,6 +261,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
@@ -279,8 +277,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 				swimRandom = Random.Range(0f, 20f);
 			}
 			float num = Time.time + swimRandom;
-			Vector3 val2 = default(Vector3);
-			((Vector3)(ref val2))._002Ector(Mathf.Sin(num * swimSpeed.x) * swimScale.x, Mathf.Cos(num * swimSpeed.y) * swimScale.y, Mathf.Sin(num * swimSpeed.z) * swimScale.z);
+			Vector3 val2 = new Vector3(Mathf.Sin(num * swimSpeed.x) * swimScale.x, Mathf.Cos(num * swimSpeed.y) * swimScale.y, Mathf.Sin(num * swimSpeed.z) * swimScale.z);
 			val2 = ((Component)this).transform.InverseTransformDirection(val2);
 			val += val2;
 		}
@@ -298,9 +295,9 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		Transform transform = ((Component)this).transform;
-		transform.position += ((Component)this).transform.forward * Mathf.Max(0f, ((RaycastHit)(ref hitInfo)).distance - 0.1f);
+		transform.position += ((Component)this).transform.forward * Mathf.Max(0f, hitInfo.distance - 0.1f);
 		((Component)this).GetComponent<IProjectileImpact>()?.ProjectileImpact(hitInfo, rayOrigin);
-		SingletonComponent<NpcNoiseManager>.Instance.OnServerProjectileHit(base.baseEntity, this, hitInfo);
+		SingletonComponent<NpcNoiseManager>.Instance.OnServerProjectileHit(baseEntity, this, hitInfo);
 		impacted = true;
 		OnHit(hitInfo, hitEnt);
 		PostDoMove();
@@ -308,7 +305,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 
 	protected bool IsShootable(RaycastHit hitInfo)
 	{
-		ColliderInfo colliderInfo = (((Object)(object)((RaycastHit)(ref hitInfo)).collider != (Object)null) ? ((Component)((RaycastHit)(ref hitInfo)).collider).GetComponent<ColliderInfo>() : null);
+		ColliderInfo colliderInfo = (((Object)(object)hitInfo.collider != (Object)null) ? ((Component)hitInfo.collider).GetComponent<ColliderInfo>() : null);
 		if (!((Object)(object)colliderInfo == (Object)null))
 		{
 			return colliderInfo.HasFlag(ColliderInfo.Flags.Shootable);
@@ -334,7 +331,7 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 		{
 			return true;
 		}
-		if (base.baseEntity.creatorEntity.IsValid() && hitEnt.net.ID == base.baseEntity.creatorEntity.net.ID)
+		if (baseEntity.creatorEntity.IsValid() && hitEnt.net.ID == baseEntity.creatorEntity.net.ID)
 		{
 			return false;
 		}

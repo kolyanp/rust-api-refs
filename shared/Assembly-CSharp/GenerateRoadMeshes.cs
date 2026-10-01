@@ -21,7 +21,7 @@ public class GenerateRoadMeshes : ProceduralComponent
 	public override void Process(uint seed)
 	{
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Expected O, but got Unknown
+		//IL_005b: Expected Obj, but got Unknown
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
@@ -31,11 +31,11 @@ public class GenerateRoadMeshes : ProceduralComponent
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0110: Expected O, but got Unknown
+		//IL_0110: Expected Obj, but got Unknown
 		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
 		if (RoadMeshes == null || RoadMeshes.Length == 0)
 		{
-			RoadMeshes = (Mesh[])(object)new Mesh[1] { RoadMesh };
+			RoadMeshes = new Mesh[1] { RoadMesh };
 		}
 		foreach (PathList road in TerrainMeta.Path.Roads)
 		{
@@ -52,10 +52,10 @@ public class GenerateRoadMeshes : ProceduralComponent
 				val2.tag = "IgnoreCollider";
 				val2.transform.SetParent(val.transform, true);
 				val2.SetActive(false);
-				MeshCollider obj = val2.AddComponent<MeshCollider>();
-				((Collider)obj).sharedMaterial = RoadPhysicMaterial;
-				obj.sharedMesh = item.Meshes[0];
-				TagComponentEx.SetCustomTag(val2, GameObjectTag.Road, apply: true);
+				MeshCollider val3 = val2.AddComponent<MeshCollider>();
+				((Collider)val3).sharedMaterial = RoadPhysicMaterial;
+				val3.sharedMesh = item.Meshes[0];
+				val2.SetCustomTag(GameObjectTag.Road, apply: true);
 				val2.AddComponent<AddToHeightMap>();
 				val2.SetActive(true);
 			}

@@ -167,7 +167,7 @@ public class Territory : ConsoleSystem
 				arg.ReplyWith("Faction name must be a non-numeric string");
 				return;
 			}
-			Color val = default(Color);
+			Color val = default;
 			if (!ColorUtility.TryParseHtmlString(arg.GetString(1), ref val))
 			{
 				arg.ReplyWith("Couldn't parse colour");
@@ -288,14 +288,14 @@ public class Territory : ConsoleSystem
 	[ServerVar(Help = "Set the hex cell containing a world position: territory.setat <x> <z> <faction name|none>")]
 	public static void setat(Arg arg)
 	{
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		TerritoryZoneController orCreate = GetOrCreate();
 		if (!((Object)(object)orCreate == (Object)null))
 		{
-			Vector3 worldPos = default(Vector3);
-			((Vector3)(ref worldPos))._002Ector(arg.GetFloat(0), 0f, arg.GetFloat(1));
+			Vector3 worldPos = new Vector3(arg.GetFloat(0), 0f, arg.GetFloat(1));
 			int num = ParseFaction(orCreate, arg.GetString(2));
 			if (num < 0)
 			{

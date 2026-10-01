@@ -40,8 +40,8 @@ public class FlashbangEffectRenderer : PostProcessEffectRenderer<FlashbangEffect
 		}
 		PropertySheet propertySheet = context.propertySheets.Get(flashbangEffectShader);
 		propertySheet.properties.Clear();
-		propertySheet.properties.SetFloat("_BurnIntensity", base.settings.burnIntensity.value);
-		propertySheet.properties.SetFloat("_WhiteoutIntensity", base.settings.whiteoutIntensity.value);
+		propertySheet.properties.SetFloat("_BurnIntensity", settings.burnIntensity.value);
+		propertySheet.properties.SetFloat("_WhiteoutIntensity", settings.whiteoutIntensity.value);
 		if (Object.op_Implicit((Object)(object)screenRT))
 		{
 			propertySheet.properties.SetTexture("_BurnOverlay", (Texture)(object)screenRT);
@@ -61,7 +61,7 @@ public class FlashbangEffectRenderer : PostProcessEffectRenderer<FlashbangEffect
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Expected O, but got Unknown
+		//IL_0038: Expected Obj, but got Unknown
 		if ((Object)(object)rt == (Object)null || ((Texture)rt).width != width || ((Texture)rt).height != height)
 		{
 			SafeDestroyRenderTexture(ref rt);

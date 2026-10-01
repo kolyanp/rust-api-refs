@@ -71,12 +71,12 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[SerializeField]
 	private Seating seating;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 steerAngle;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 accelAngle;
 
 	[SerializeField]
@@ -242,7 +242,7 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 		base.ModuleAdded(vehicle, firstSocketIndex);
 		Car = vehicle as ModularCar;
 		VehicleLockUser = vehicle as IVehicleLockUser;
-		if (!HasSeating || !base.isServer)
+		if (!HasSeating || !isServer)
 		{
 			return;
 		}
@@ -268,7 +268,7 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 		{
 			return false;
 		}
-		if (base.Vehicle.IsDead())
+		if (Vehicle.IsDead())
 		{
 			return false;
 		}
@@ -353,7 +353,7 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	public override void OnEngineStateChanged(VehicleEngineController<GroundVehicle>.EngineState oldState, VehicleEngineController<GroundVehicle>.EngineState newState)
 	{
 		base.OnEngineStateChanged(oldState, newState);
-		if (!Rust.GameInfo.HasAchievements || base.isClient || newState != VehicleEngineController<GroundVehicle>.EngineState.On || mountPoints == null)
+		if (!GameInfo.HasAchievements || isClient || newState != VehicleEngineController<GroundVehicle>.EngineState.On || mountPoints == null)
 		{
 			return;
 		}

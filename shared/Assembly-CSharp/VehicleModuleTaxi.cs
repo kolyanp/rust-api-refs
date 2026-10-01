@@ -6,8 +6,8 @@ using UnityEngine.Assertions;
 
 public class VehicleModuleTaxi : VehicleModuleStorage
 {
-	[Header("Taxi")]
 	[SerializeField]
+	[Header("Taxi")]
 	private SoundDefinition kickButtonSound;
 
 	[SerializeField]
@@ -82,11 +82,11 @@ public class VehicleModuleTaxi : VehicleModuleStorage
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.IsOnAVehicle)
+		if (!IsOnAVehicle)
 		{
 			return false;
 		}
-		if (base.Vehicle.GetSpeed() > maxKickVelocity)
+		if (Vehicle.GetSpeed() > maxKickVelocity)
 		{
 			return false;
 		}
@@ -94,14 +94,14 @@ public class VehicleModuleTaxi : VehicleModuleStorage
 		{
 			return false;
 		}
-		if (!base.Vehicle.PlayerIsMounted(player))
+		if (!Vehicle.PlayerIsMounted(player))
 		{
 			return false;
 		}
 		Vector3 val = KickButtonPos - ((Component)player).transform.position;
 		if (Vector3.Dot(val, ((Component)player).transform.forward) < 0f)
 		{
-			return ((Vector3)(ref val)).sqrMagnitude < 4f;
+			return val.sqrMagnitude < 4f;
 		}
 		return false;
 	}
@@ -119,7 +119,7 @@ public class VehicleModuleTaxi : VehicleModuleStorage
 
 	private void KickPassengers()
 	{
-		if (!base.IsOnAVehicle)
+		if (!IsOnAVehicle)
 		{
 			return;
 		}

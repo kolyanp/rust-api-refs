@@ -9,11 +9,11 @@ public class ThrownBoomerang : BaseEntity
 	public ItemDefinition boomerangItem;
 
 	[Header("Settings")]
-	public float timeToReturnOnArc;
+	public float timeToReturnOnArc = 3f;
 
-	public float secondsUntilStartArc;
+	public float secondsUntilStartArc = 0.9f;
 
-	public float lerpSpeed;
+	public float lerpSpeed = 20f;
 
 	private const float CATCH_DISTANCE = 1.5f;
 
@@ -21,7 +21,7 @@ public class ThrownBoomerang : BaseEntity
 
 	private Vector3 lastMoveDirection;
 
-	private Vector3 gravityVelocity;
+	private Vector3 gravityVelocity = Vector3.zero;
 
 	private bool calculated;
 
@@ -35,7 +35,7 @@ public class ThrownBoomerang : BaseEntity
 
 	private Vector3 endLocation;
 
-	private Vector3 spawnLocation;
+	private Vector3 spawnLocation = Vector3.zero;
 
 	private ThrownBoomerangServerProjectile projectile;
 
@@ -180,18 +180,18 @@ public class ThrownBoomerang : BaseEntity
 			endLocation = spawnLocation;
 			endLocation += Vector3.up * 1.2f;
 			val = endLocation - startLocation;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			Vector3 val2 = Vector3.Cross(Vector3.up, normalized);
 			midLocation = (startLocation + endLocation) / 2f;
 			midLocation += val2 * num;
-			if (base.isServer)
+			if (isServer)
 			{
 				projectile.ProjectileHandleMovement(state: false);
 			}
 			calculated = true;
 		}
 		BasePlayer basePlayer = null;
-		if (base.isServer)
+		if (isServer)
 		{
 			basePlayer = creatorPlayer;
 		}
@@ -200,7 +200,7 @@ public class ThrownBoomerang : BaseEntity
 			endLocation = ((Component)basePlayer).transform.position;
 			endLocation += Vector3.up * 1.5f;
 			val = endLocation - startLocation;
-			Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+			Vector3 normalized2 = val.normalized;
 			Vector3 val3 = Vector3.Cross(Vector3.up, normalized2);
 			midLocation = (startLocation + endLocation) / 2f;
 			midLocation += val3 * num;
@@ -218,10 +218,10 @@ public class ThrownBoomerang : BaseEntity
 			val4 += Vector3.down * 0.03f;
 		}
 		Vector3 val5 = val4 - ((Component)this).transform.position;
-		if (val5 != Vector3.zero && base.isServer)
+		if (val5 != Vector3.zero && isServer)
 		{
 			projectile.SetVelocity(val5);
-			((Component)this).transform.rotation = Quaternion.Slerp(((Component)this).transform.rotation, Quaternion.LookRotation(((Vector3)(ref val5)).normalized), deltaTime * 2f);
+			((Component)this).transform.rotation = Quaternion.Slerp(((Component)this).transform.rotation, Quaternion.LookRotation(val5.normalized), deltaTime * 2f);
 		}
 		((Component)this).transform.position = Vector3.MoveTowards(((Component)this).transform.position, val4, deltaTime * lerpSpeed);
 		if (num2 <= 1f)
@@ -261,7 +261,7 @@ public class ThrownBoomerang : BaseEntity
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -278,7 +278,7 @@ public class ThrownBoomerang : BaseEntity
 				return;
 			}
 			creatorPlayer = basePlayer;
-			base.OwnerID = creatorPlayer.userID;
+			OwnerID = creatorPlayer.userID;
 			creatorEntity = creatorPlayer;
 			Item activeItem = creatorPlayer.GetActiveItem();
 			if (activeItem != null)
@@ -347,12 +347,12 @@ public class ThrownBoomerang : BaseEntity
 		else if (info.HitBone == 0)
 		{
 			Vector3 hitPositionLocal = info.HitPositionLocal;
-			baseEntity = item.CreateWorldObject(hitPositionLocal, Quaternion.LookRotation(((Component)info.HitEntity).transform.InverseTransformDirection(((Vector3)(ref attackDir)).normalized)), info.HitEntity);
+			baseEntity = item.CreateWorldObject(hitPositionLocal, Quaternion.LookRotation(((Component)info.HitEntity).transform.InverseTransformDirection(attackDir.normalized)), info.HitEntity);
 			flag = false;
 		}
 		else
 		{
-			baseEntity = item.CreateWorldObject(info.HitPositionWorld, Quaternion.LookRotation(((Component)info.HitEntity).transform.InverseTransformDirection(((Vector3)(ref attackDir)).normalized)));
+			baseEntity = item.CreateWorldObject(info.HitPositionWorld, Quaternion.LookRotation(((Component)info.HitEntity).transform.InverseTransformDirection(attackDir.normalized)));
 			flag = false;
 		}
 		if (flag)
@@ -369,11 +369,11 @@ public class ThrownBoomerang : BaseEntity
 		}
 		else
 		{
-			((Component)baseEntity).GetComponent<Rigidbody>().AddTorque(((Vector3)(ref attackDir)).normalized * Random.Range(5f, 10f), (ForceMode)1);
+			((Component)baseEntity).GetComponent<Rigidbody>().AddTorque(attackDir.normalized * Random.Range(5f, 10f), (ForceMode)1);
 		}
 		item.condition = Condition;
 		item.SetItemOwnership(ItemOwnership);
-		baseEntity.OwnerID = base.OwnerID;
+		baseEntity.OwnerID = OwnerID;
 		baseEntity.creatorEntity = creatorEntity;
 	}
 
@@ -419,11 +419,5 @@ public class ThrownBoomerang : BaseEntity
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		timeToReturnOnArc = 3f;
-		secondsUntilStartArc = 0.9f;
-		lerpSpeed = 20f;
-		gravityVelocity = Vector3.zero;
-		spawnLocation = Vector3.zero;
-		base._002Ector();
 	}
 }

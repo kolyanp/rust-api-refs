@@ -85,43 +85,27 @@ public class ItemModFoodSpoiling : ItemMod
 
 		public static void DeductTimeFromFoodItem(Item foodItem, float timeToApply, bool setDirty)
 		{
-			//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01db: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0157: Unknown result type (might be due to invalid IL or missing references)
-			//IL_015c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_016d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-			//IL_017c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0181: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0188: Unknown result type (might be due to invalid IL or missing references)
-			//IL_018e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0139: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 			if (foodItem.instanceData != null)
 			{
 				float dataFloat = foodItem.instanceData.dataFloat;
-				float num = 1f;
-				IFoodSpoilModifier foodSpoilModifier = default(IFoodSpoilModifier);
-				if (foodItem.parent != null && (Object)(object)foodItem.parent.entityOwner != (Object)null && ((Component)foodItem.parent.entityOwner).TryGetComponent<IFoodSpoilModifier>(ref foodSpoilModifier))
+				RefreshRefrigeration(foodItem, out var spoilMultiplier, out var inRefrigeratedContainer);
+				if (inRefrigeratedContainer)
 				{
-					num = foodSpoilModifier.GetSpoilMultiplier(foodItem);
-				}
-				if (num > 0f && GetWorldPositionForItem(foodItem, out var pos) && TerrainMeta.BiomeMap.GetBiome(pos, 8) > 0f)
-				{
-					num = 0f;
-				}
-				bool flag = num != 1f;
-				if (foodItem.HasFlag(Item.Flag.Refrigerated) != flag)
-				{
-					foodItem.SetFlag(Item.Flag.Refrigerated, flag);
-					foodItem.MarkDirty();
-					if ((Object)(object)foodItem.GetEntityOwner() != (Object)null)
-					{
-						foodItem.GetEntityOwner().SendNetworkUpdate();
-					}
+					ItemModConditionRefrigeratedTime.AddRefrigeratedTime(foodItem, timeToApply);
 				}
 				InstanceData instanceData = foodItem.instanceData;
-				instanceData.dataFloat -= timeToApply * num;
+				instanceData.dataFloat -= timeToApply * spoilMultiplier;
 				if (!(foodItem.instanceData.dataFloat <= 0f) || !(dataFloat > 0f))
 				{
 					return;
@@ -134,7 +118,7 @@ public class ItemModFoodSpoiling : ItemMod
 				{
 					if ((Object)(object)parent.entityOwner != (Object)null)
 					{
-						item.Drop(((Component)parent.entityOwner).transform.position + Vector3.up * ((Bounds)(ref parent.entityOwner.bounds)).size.y, Vector3.zero);
+						item.Drop(((Component)parent.entityOwner).transform.position + Vector3.up * parent.entityOwner.bounds.size.y, Vector3.zero);
 					}
 					else
 					{
@@ -165,6 +149,43 @@ public class ItemModFoodSpoiling : ItemMod
 				}
 			}
 		}
+
+		private static bool IsInRefrigeratedContainer(Item item, out float spoilMultiplier)
+		{
+			spoilMultiplier = 1f;
+			if (item.parent == null || (Object)(object)item.parent.entityOwner == (Object)null)
+			{
+				return false;
+			}
+			IFoodSpoilModifier foodSpoilModifier = default;
+			if (!((Component)item.parent.entityOwner).TryGetComponent<IFoodSpoilModifier>(ref foodSpoilModifier))
+			{
+				return false;
+			}
+			spoilMultiplier = foodSpoilModifier.GetSpoilMultiplier(item);
+			return spoilMultiplier < 1f;
+		}
+
+		public static void RefreshRefrigeration(Item item, out float spoilMultiplier, out bool inRefrigeratedContainer)
+		{
+			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+			inRefrigeratedContainer = IsInRefrigeratedContainer(item, out spoilMultiplier);
+			if (spoilMultiplier > 0f && GetWorldPositionForItem(item, out var pos) && TerrainMeta.BiomeMap.GetBiome(pos, 8) > 0f)
+			{
+				spoilMultiplier = 0f;
+			}
+			bool flag = spoilMultiplier != 1f;
+			if (item.HasFlag(Item.Flag.Refrigerated) != flag || item.HasFlag(Item.Flag.InRefrigeratedContainer) != inRefrigeratedContainer)
+			{
+				item.SetFlag(Item.Flag.Refrigerated, flag);
+				item.SetFlag(Item.Flag.InRefrigeratedContainer, inRefrigeratedContainer);
+				item.MarkDirty();
+				if ((Object)(object)item.GetEntityOwner() != (Object)null)
+				{
+					item.GetEntityOwner().SendNetworkUpdate();
+				}
+			}
+		}
 	}
 
 	public float TotalSpoilTimeHours = 12f;
@@ -191,11 +212,20 @@ public class ItemModFoodSpoiling : ItemMod
 		((PersistentObjectWorkQueue<Item>)foodSpoilItems).Remove(item);
 	}
 
+	public override void OnParentChanged(Item item)
+	{
+		base.OnParentChanged(item);
+		if (item.parent != null)
+		{
+			FoodSpoilingWorkQueue.RefreshRefrigeration(item, out var _, out var _);
+		}
+	}
+
 	public static void DeductTimeFromAll(TimeSpan span)
 	{
-		((PersistentObjectWorkQueue<Item>)foodSpoilItems).RunOnAll((Action<Item>)delegate(Item foodItem)
+		((PersistentObjectWorkQueue<Item>)foodSpoilItems).RunOnAll((Action<Item>)((Item foodItem) =>
 		{
 			FoodSpoilingWorkQueue.DeductTimeFromFoodItem(foodItem, (float)span.TotalSeconds, setDirty: true);
-		});
+		}));
 	}
 }

@@ -18,6 +18,8 @@ public class ESPPlayerInfo : MonoBehaviour
 
 	public RustIcon VoipIcon;
 
+	public RectTransform IconsLayout;
+
 	public GameObject ClanElement;
 
 	public RustText ClanText;

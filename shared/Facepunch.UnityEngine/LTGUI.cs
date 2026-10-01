@@ -8,11 +8,11 @@ public class LTGUI
 		Label
 	}
 
-	public static int RECT_LEVELS;
+	public static int RECT_LEVELS = 5;
 
-	public static int RECTS_PER_LEVEL;
+	public static int RECTS_PER_LEVEL = 10;
 
-	public static int BUTTONS_MAX;
+	public static int BUTTONS_MAX = 24;
 
 	private static LTRect[] levels;
 
@@ -26,11 +26,11 @@ public class LTGUI
 
 	private static LTRect r;
 
-	private static Color color;
+	private static Color color = Color.white;
 
-	private static bool isGUIEnabled;
+	private static bool isGUIEnabled = false;
 
-	private static int global_counter;
+	private static int global_counter = 0;
 
 	public static void init()
 	{
@@ -45,7 +45,7 @@ public class LTGUI
 	{
 		if (buttons == null)
 		{
-			buttons = (Rect[])(object)new Rect[BUTTONS_MAX];
+			buttons = new Rect[BUTTONS_MAX];
 			buttonLevels = new int[BUTTONS_MAX];
 			buttonLastFrame = new int[BUTTONS_MAX];
 			for (int i = 0; i < buttonLevels.Length; i++)
@@ -152,24 +152,24 @@ public class LTGUI
 				if (r.useSimpleScale)
 				{
 					rect = r.rect;
-					float num3 = (((Rect)(ref rect)).x + r.margin.x + ((Rect)(ref r.relativeRect)).x) * ((Rect)(ref r.relativeRect)).width;
+					float num3 = (rect.x + r.margin.x + r.relativeRect.x) * r.relativeRect.width;
 					rect = r.rect;
-					float num4 = (((Rect)(ref rect)).y + r.margin.y + ((Rect)(ref r.relativeRect)).y) * ((Rect)(ref r.relativeRect)).height;
+					float num4 = (rect.y + r.margin.y + r.relativeRect.y) * r.relativeRect.height;
 					rect = r.rect;
-					float num5 = ((Rect)(ref rect)).width * ((Rect)(ref r.relativeRect)).width;
+					float num5 = rect.width * r.relativeRect.width;
 					rect = r.rect;
-					GUI.Label(new Rect(num3, num4, num5, ((Rect)(ref rect)).height * ((Rect)(ref r.relativeRect)).height), r.labelStr);
+					GUI.Label(new Rect(num3, num4, num5, rect.height * r.relativeRect.height), r.labelStr);
 				}
 				else
 				{
 					rect = r.rect;
-					float num6 = ((Rect)(ref rect)).x + r.margin.x;
+					float num6 = rect.x + r.margin.x;
 					rect = r.rect;
-					float num7 = ((Rect)(ref rect)).y + r.margin.y;
+					float num7 = rect.y + r.margin.y;
 					rect = r.rect;
-					float width = ((Rect)(ref rect)).width;
+					float width = rect.width;
 					rect = r.rect;
-					GUI.Label(new Rect(num6, num7, width, ((Rect)(ref rect)).height), r.labelStr);
+					GUI.Label(new Rect(num6, num7, width, rect.height), r.labelStr);
 				}
 			}
 			else if (r.type == Element_Type.Texture && (Object)(object)r.texture != (Object)null)
@@ -178,14 +178,14 @@ public class LTGUI
 				if (!r.useSimpleScale)
 				{
 					rect = r.rect;
-					float width2 = ((Rect)(ref rect)).width;
+					float width2 = rect.width;
 					rect = r.rect;
-					val = new Vector2(width2, ((Rect)(ref rect)).height);
+					val = new Vector2(width2, rect.height);
 				}
 				else
 				{
 					rect = r.rect;
-					val = new Vector2(0f, ((Rect)(ref rect)).height * ((Rect)(ref r.relativeRect)).height);
+					val = new Vector2(0f, rect.height * r.relativeRect.height);
 				}
 				Vector2 val2 = val;
 				if (r.sizeByHeight)
@@ -195,16 +195,16 @@ public class LTGUI
 				if (r.useSimpleScale)
 				{
 					rect = r.rect;
-					float num8 = (((Rect)(ref rect)).x + r.margin.x + ((Rect)(ref r.relativeRect)).x) * ((Rect)(ref r.relativeRect)).width;
+					float num8 = (rect.x + r.margin.x + r.relativeRect.x) * r.relativeRect.width;
 					rect = r.rect;
-					GUI.DrawTexture(new Rect(num8, (((Rect)(ref rect)).y + r.margin.y + ((Rect)(ref r.relativeRect)).y) * ((Rect)(ref r.relativeRect)).height, val2.x, val2.y), r.texture);
+					GUI.DrawTexture(new Rect(num8, (rect.y + r.margin.y + r.relativeRect.y) * r.relativeRect.height, val2.x, val2.y), r.texture);
 				}
 				else
 				{
 					rect = r.rect;
-					float num9 = ((Rect)(ref rect)).x + r.margin.x;
+					float num9 = rect.x + r.margin.x;
 					rect = r.rect;
-					GUI.DrawTexture(new Rect(num9, ((Rect)(ref rect)).y + r.margin.y, val2.x, val2.y), r.texture);
+					GUI.DrawTexture(new Rect(num9, rect.y + r.margin.y, val2.x, val2.y), r.texture);
 				}
 			}
 		}
@@ -213,11 +213,11 @@ public class LTGUI
 
 	public static bool checkOnScreen(Rect rect)
 	{
-		bool num = ((Rect)(ref rect)).x + ((Rect)(ref rect)).width < 0f;
-		bool flag = ((Rect)(ref rect)).x > (float)Screen.width;
-		bool flag2 = ((Rect)(ref rect)).y > (float)Screen.height;
-		bool flag3 = ((Rect)(ref rect)).y + ((Rect)(ref rect)).height < 0f;
-		return !(num | flag | flag2 | flag3);
+		bool flag = rect.x + rect.width < 0f;
+		bool flag2 = rect.x > (float)Screen.width;
+		bool flag3 = rect.y > (float)Screen.height;
+		bool flag4 = rect.y + rect.height < 0f;
+		return !(flag | flag2 | flag3 | flag4);
 	}
 
 	public static void destroy(int id)
@@ -284,7 +284,7 @@ public class LTGUI
 		{
 			Debug.LogWarning((object)"Your GUI normal color has an alpha of zero, and will not be rendered.");
 		}
-		if (((Rect)(ref rect.relativeRect)).width == float.PositiveInfinity)
+		if (rect.relativeRect.width == float.PositiveInfinity)
 		{
 			rect.relativeRect = new Rect(0f, 0f, (float)Screen.width, (float)Screen.height);
 		}
@@ -357,9 +357,9 @@ public class LTGUI
 			return false;
 		}
 		float num = (float)Screen.height - val.y;
-		if (val.x > ((Rect)(ref rect)).x && val.x < ((Rect)(ref rect)).x + ((Rect)(ref rect)).width && num > ((Rect)(ref rect)).y)
+		if (val.x > rect.x && val.x < rect.x + rect.width && num > rect.y)
 		{
-			return num < ((Rect)(ref rect)).y + ((Rect)(ref rect)).height;
+			return num < rect.y + rect.height;
 		}
 		return false;
 	}
@@ -372,9 +372,9 @@ public class LTGUI
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		vec2.y = (float)Screen.height - vec2.y;
-		if (vec2.x > ((Rect)(ref rect)).x && vec2.x < ((Rect)(ref rect)).x + ((Rect)(ref rect)).width && vec2.y > ((Rect)(ref rect)).y)
+		if (vec2.x > rect.x && vec2.x < rect.x + rect.width && vec2.y > rect.y)
 		{
-			return vec2.y < ((Rect)(ref rect)).y + ((Rect)(ref rect)).height;
+			return vec2.y < rect.y + rect.height;
 		}
 		return false;
 	}
@@ -387,7 +387,7 @@ public class LTGUI
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		if (Input.touchCount > 0)
 		{
-			return ((Touch)(ref Input.touches[0])).position;
+			return Input.touches[0].position;
 		}
 		if (Input.GetMouseButton(0))
 		{
@@ -400,11 +400,5 @@ public class LTGUI
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		RECT_LEVELS = 5;
-		RECTS_PER_LEVEL = 10;
-		BUTTONS_MAX = 24;
-		color = Color.white;
-		isGUIEnabled = false;
-		global_counter = 0;
 	}
 }

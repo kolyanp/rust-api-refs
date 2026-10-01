@@ -14,7 +14,7 @@ public struct OccludeeSphere
 	{
 		id = -1;
 		state = null;
-		sphere = default(OcclusionCulling.Sphere);
+		sphere = default;
 	}
 
 	public OccludeeSphere(int id)

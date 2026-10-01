@@ -42,6 +42,8 @@ public class Construction : PrefabAttribute
 
 		public bool shouldParent;
 
+		public bool placementWarning;
+
 		public Quaternion GetWorldRotation(bool female)
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -68,7 +70,7 @@ public class Construction : PrefabAttribute
 			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 			Matrix4x4 localToWorldMatrix = ((Component)entity).transform.localToWorldMatrix;
-			return ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(socket.position);
+			return localToWorldMatrix.MultiplyPoint3x4(socket.position);
 		}
 	}
 
@@ -158,7 +160,7 @@ public class Construction : PrefabAttribute
 
 	public bool canBypassBuildingPermission;
 
-	public bool showBuildingBlockedPreview;
+	public bool showBuildingBlockedPreview = true;
 
 	[InspectorName("Can Bypass Road Checks")]
 	public bool canPlaceOnRoads;
@@ -185,9 +187,9 @@ public class Construction : PrefabAttribute
 
 	public LayerMask additionalPlacementLayer;
 
-	public Vector3 rotationAmount;
+	public Vector3 rotationAmount = new Vector3(0f, 90f, 0f);
 
-	public Vector3 applyStartingRotation;
+	public Vector3 applyStartingRotation = Vector3.zero;
 
 	public Transform deployOffset;
 
@@ -217,19 +219,19 @@ public class Construction : PrefabAttribute
 
 	public Vector3[] alternativeLOSPositions;
 
-	public bool canUseLastValidPosition;
+	public bool canUseLastValidPosition = true;
 
 	[Range(0f, 10f)]
-	public float healthMultiplier;
+	public float healthMultiplier = 1f;
 
 	[Range(0f, 10f)]
-	public float costMultiplier;
+	public float costMultiplier = 1f;
 
 	[Range(1f, 50f)]
-	public float maxplaceDistance;
+	public float maxplaceDistance = 4f;
 
 	[Range(0f, 10f)]
-	public float minPlaceDistance;
+	public float minPlaceDistance = 1f;
 
 	public Mesh guideMesh;
 
@@ -394,7 +396,7 @@ public class Construction : PrefabAttribute
 		common.FindMaleSockets(target, list);
 		foreach (Socket_Base item in list)
 		{
-			Placement placement = default(Placement);
+			Placement placement = default;
 			if ((Object)(object)target.entity != (Object)null && target.socket != null && target.entity.IsOccupied(target.socket))
 			{
 				continue;
@@ -408,7 +410,7 @@ public class Construction : PrefabAttribute
 				TutorialIsland currentTutorialIsland = target.player.GetCurrentTutorialIsland();
 				if ((Object)(object)currentTutorialIsland != (Object)null && !currentTutorialIsland.CheckPlacement(common, target, ref placement))
 				{
-					placement = default(Placement);
+					placement = default;
 				}
 			}
 			if (!placement.isPopulated)
@@ -428,8 +430,8 @@ public class Construction : PrefabAttribute
 			}
 			if (!IOEntity.allow_on_boats && (Object)(object)target.entity != (Object)null)
 			{
-				GameObject obj = GameManager.server.FindPrefab(common.prefabID);
-				BaseEntity baseEntity = ((obj != null) ? obj.GetComponent<BaseEntity>() : null);
+				GameObject val = GameManager.server.FindPrefab(common.prefabID);
+				BaseEntity baseEntity = ((val != null) ? val.GetComponent<BaseEntity>() : null);
 				if ((baseEntity is IOEntity iOEntity && !(iOEntity is Signage)) || baseEntity is ElectricOven)
 				{
 					if (!(target.entity is BoatBuildingBlock))
@@ -561,6 +563,7 @@ public class Construction : PrefabAttribute
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
@@ -572,16 +575,15 @@ public class Construction : PrefabAttribute
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(placement.position, Vector3.one, placement.rotation, bounds);
+		OBB val = new OBB(placement.position, Vector3.one, placement.rotation, bounds);
 		Vector3 center = target.player.GetCenter(ducked: true);
-		Vector3 origin = ((Ray)(ref target.ray)).origin;
+		Vector3 origin = target.ray.origin;
 		if (Physics.Linecast(center, origin, 65536, (QueryTriggerInteraction)1))
 		{
 			return false;
 		}
-		RaycastHit val3 = default(RaycastHit);
-		Vector3 val2 = (((OBB)(ref val)).Trace(target.ray, ref val3, float.PositiveInfinity) ? ((RaycastHit)(ref val3)).point : ((OBB)(ref val)).ClosestPoint(origin));
+		RaycastHit val3 = default;
+		Vector3 val2 = (val.Trace(target.ray, ref val3, float.PositiveInfinity) ? val3.point : val.ClosestPoint(origin));
 		if (Physics.Linecast(origin, val2, 65536, (QueryTriggerInteraction)1))
 		{
 			return false;
@@ -613,9 +615,9 @@ public class Construction : PrefabAttribute
 		{
 			val += placement.rotation * common.deployOffset.localPosition;
 		}
-		Vector3 val2 = val - ((Ray)(ref target.ray)).origin;
-		RaycastHit hit = default(RaycastHit);
-		if (!Physics.Raycast(((Ray)(ref target.ray)).origin, ((Vector3)(ref val2)).normalized, ref hit, ((Vector3)(ref val2)).magnitude, 2097152))
+		Vector3 val2 = val - target.ray.origin;
+		RaycastHit hit = default;
+		if (!Physics.Raycast(target.ray.origin, val2.normalized, ref hit, val2.magnitude, 2097152))
 		{
 			return true;
 		}
@@ -624,11 +626,11 @@ public class Construction : PrefabAttribute
 		{
 			return true;
 		}
-		if (((Vector3)(ref val2)).magnitude - ((RaycastHit)(ref hit)).distance < 0.2f)
+		if (val2.magnitude - hit.distance < 0.2f)
 		{
 			return true;
 		}
-		transform.SetPositionAndRotation(((RaycastHit)(ref hit)).point, placement.rotation);
+		transform.SetPositionAndRotation(hit.point, placement.rotation);
 		return false;
 	}
 
@@ -638,6 +640,7 @@ public class Construction : PrefabAttribute
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
@@ -672,8 +675,7 @@ public class Construction : PrefabAttribute
 		{
 			return true;
 		}
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(placement.position, Vector3.one, placement.rotation, bounds);
+		OBB val = new OBB(placement.position, Vector3.one, placement.rotation, bounds);
 		float num = Mathf.Abs(heightMap.GetHeight(val.position) - val.position.y);
 		if (num > 9f)
 		{
@@ -681,10 +683,10 @@ public class Construction : PrefabAttribute
 		}
 		float radius = Mathf.Lerp(3f, 0f, num / 9f);
 		Vector3 position = val.position;
-		Vector3 point = ((OBB)(ref val)).GetPoint(-1f, 0f, -1f);
-		Vector3 point2 = ((OBB)(ref val)).GetPoint(-1f, 0f, 1f);
-		Vector3 point3 = ((OBB)(ref val)).GetPoint(1f, 0f, -1f);
-		Vector3 point4 = ((OBB)(ref val)).GetPoint(1f, 0f, 1f);
+		Vector3 point = val.GetPoint(-1f, 0f, -1f);
+		Vector3 point2 = val.GetPoint(-1f, 0f, 1f);
+		Vector3 point3 = val.GetPoint(1f, 0f, -1f);
+		Vector3 point4 = val.GetPoint(1f, 0f, 1f);
 		int topology = topologyMap.GetTopology(position, radius);
 		int topology2 = topologyMap.GetTopology(point, radius);
 		int topology3 = topologyMap.GetTopology(point2, radius);
@@ -699,7 +701,11 @@ public class Construction : PrefabAttribute
 
 	public virtual bool ShowAsNeutral(Target target)
 	{
-		return target.buildingBlocked;
+		if (!target.buildingBlocked)
+		{
+			return target.placementWarning;
+		}
+		return true;
 	}
 
 	public bool TargetIsInteractable(Target target)
@@ -850,14 +856,5 @@ public class Construction : PrefabAttribute
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		showBuildingBlockedPreview = true;
-		rotationAmount = new Vector3(0f, 90f, 0f);
-		applyStartingRotation = Vector3.zero;
-		canUseLastValidPosition = true;
-		healthMultiplier = 1f;
-		costMultiplier = 1f;
-		maxplaceDistance = 4f;
-		minPlaceDistance = 1f;
-		base._002Ector();
 	}
 }

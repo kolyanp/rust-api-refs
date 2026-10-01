@@ -124,7 +124,7 @@ public class TrainCoupling
 			id = CoupledTo.owner.net.ID;
 			return true;
 		}
-		id = default(NetworkableId);
+		id = default;
 		return false;
 	}
 }

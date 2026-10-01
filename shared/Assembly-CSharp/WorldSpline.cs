@@ -52,7 +52,7 @@ public class WorldSpline : MonoBehaviour
 		lutInterval = Mathf.Clamp(lutInterval, 0.05f, 100f);
 		if (points == null || points.Length < 2)
 		{
-			points = (Vector3[])(object)new Vector3[2];
+			points = new Vector3[2];
 			points[0] = Vector3.zero;
 			points[1] = Vector3.zero;
 		}
@@ -60,7 +60,7 @@ public class WorldSpline : MonoBehaviour
 		{
 			return;
 		}
-		Vector3[] array = (Vector3[])(object)new Vector3[points.Length];
+		Vector3[] array = new Vector3[points.Length];
 		for (int i = 0; i < array.Length; i++)
 		{
 			if (tangents != null && i < tangents.Length)
@@ -127,7 +127,7 @@ public class WorldSpline : MonoBehaviour
 		{
 			Gizmos.color = Color.magenta;
 			Gizmos.DrawSphere(pointsWorld[i], 0.25f);
-			if (((Vector3)(ref tangentsWorld[i])).magnitude > 0f)
+			if (tangentsWorld[i].magnitude > 0f)
 			{
 				Gizmos.color = Color.cyan;
 				Vector3 val = pointsWorld[i] + tangentsWorld[i] + Vector3.up * 0.1f;
@@ -301,7 +301,7 @@ public class WorldSpline : MonoBehaviour
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		Vector3[] array = (Vector3[])(object)new Vector3[points.Length];
+		Vector3[] array = new Vector3[points.Length];
 		for (int i = 0; i < points.Length; i++)
 		{
 			array[i] = tr.TransformPoint(points[i]);
@@ -317,7 +317,7 @@ public class WorldSpline : MonoBehaviour
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		Vector3[] array = (Vector3[])(object)new Vector3[tangents.Length];
+		Vector3[] array = new Vector3[tangents.Length];
 		for (int i = 0; i < tangents.Length; i++)
 		{
 			array[i] = Vector3.Scale(tr.rotation * tangents[i], tr.localScale);

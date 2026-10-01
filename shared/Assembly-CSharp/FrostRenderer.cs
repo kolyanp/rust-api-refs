@@ -26,10 +26,10 @@ public class FrostRenderer : PostProcessEffectRenderer<Frost>
 		command.BeginSample("Frost");
 		PropertySheet propertySheet = context.propertySheets.Get(frostShader);
 		propertySheet.properties.Clear();
-		propertySheet.properties.SetFloat(scaleProperty, base.settings.scale.value);
-		propertySheet.properties.SetFloat(sharpnessProperty, base.settings.sharpness.value * 0.01f);
-		propertySheet.properties.SetFloat(darknessProperty, base.settings.darkness.value * 0.02f);
-		command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, base.settings.enableVignette.value ? 1 : 0);
+		propertySheet.properties.SetFloat(scaleProperty, settings.scale.value);
+		propertySheet.properties.SetFloat(sharpnessProperty, settings.sharpness.value * 0.01f);
+		propertySheet.properties.SetFloat(darknessProperty, settings.darkness.value * 0.02f);
+		command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, settings.enableVignette.value ? 1 : 0);
 		command.EndSample("Frost");
 	}
 }

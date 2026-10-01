@@ -114,14 +114,14 @@ public class VineLaunchPoint : MonoBehaviour
 		Vector3 position = ((Component)this).transform.position;
 		Vector3 val = forPoint;
 		Vector3 val2 = val - position;
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		position += normalized * VineSpawnOffset;
 		val += normalized * (0f - VineSpawnOffset);
 		float num = Mathx.RemapValClamped(Vector3.Distance(position, val), MinimumDestinationRange, MaximumDestinationRange, 0f, 1f);
 		Vector3 point = VineUtils.SampleParabola(position, val, Mathf.Lerp(minDistanceHeight, maxDistanceHeight, num), time, useLevelDirection);
 		Vector3 pivot = (position + val) / 2f;
 		val2 = position - val;
-		return VineUtils.RotateAroundWorldAxis(point, pivot, ((Vector3)(ref val2)).normalized, angle);
+		return VineUtils.RotateAroundWorldAxis(point, pivot, val2.normalized, angle);
 	}
 
 	public void ServerInit()
@@ -279,7 +279,7 @@ public class VineLaunchPoint : MonoBehaviour
 					continue;
 				}
 				Vector3 val2 = Vector3Ex.WithY(position2, position.y) - position;
-				if (!(Vector3.Angle(forward, ((Vector3)(ref val2)).normalized) > 45f) && !(Vector3.Angle(forward, -((Component)item).transform.forward) > 90f))
+				if (!(Vector3.Angle(forward, val2.normalized) > 45f) && !(Vector3.Angle(forward, -((Component)item).transform.forward) > 90f))
 				{
 					if (!GamePhysics.LineOfSightRadius(position, position2, 1084293377, 0.25f, ParentTree))
 					{
@@ -362,12 +362,12 @@ public class VineLaunchPoint : MonoBehaviour
 					}
 				}
 			}
-			bool num3 = (Object)(object)val2 != (Object)null;
-			if (num3)
+			bool flag2 = (Object)(object)val2 != (Object)null;
+			if (flag2)
 			{
 				worldPos = val2.position;
 			}
-			return num3;
+			return flag2;
 		}
 		finally
 		{

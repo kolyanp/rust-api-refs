@@ -108,13 +108,13 @@ public class UI_StoreItemGrid : MonoBehaviour
 
 	public bool fixedGrid;
 
-	public List<Vector2Int> fixedSizes;
+	public List<Vector2Int> fixedSizes = new List<Vector2Int>();
 
 	[SerializeField]
 	private bool autoSizing;
 
 	[SerializeField]
-	private Vector2 baseItemSize;
+	private Vector2 baseItemSize = new Vector2(1f, 1f);
 
 	[SerializeField]
 	private Vector2 featuredItemSize;
@@ -123,25 +123,25 @@ public class UI_StoreItemGrid : MonoBehaviour
 	private ItemSizeSettings[] sizeOverrides;
 
 	[SerializeField]
-	private List<OrderingRule> orderingRules;
+	private List<OrderingRule> orderingRules = new List<OrderingRule>();
 
 	[SerializeField]
-	private List<SteamInventoryItem> whiteListedItems;
+	private List<SteamInventoryItem> whiteListedItems = new List<SteamInventoryItem>();
 
 	[SerializeField]
 	private UI_StoreFakeItemsTakeover fakeAdditionalItems;
 
-	public bool dynamicContent;
+	public bool dynamicContent = true;
 
 	[Tooltip("Items already spawned by these grids won't spawn here again, avoids duplicates across grids")]
 	[SerializeField]
-	private List<UI_StoreItemGrid> excludeItemsFromGrids;
+	private List<UI_StoreItemGrid> excludeItemsFromGrids = new List<UI_StoreItemGrid>();
 
 	[SerializeField]
-	private RuleMatchMode ruleMatchMode;
+	private RuleMatchMode ruleMatchMode = RuleMatchMode.Any;
 
 	[SerializeField]
-	private List<StoreFilterRule> rules;
+	private List<StoreFilterRule> rules = new List<StoreFilterRule>();
 
 	public FlexGridsElement Grid => grid;
 
@@ -151,14 +151,5 @@ public class UI_StoreItemGrid : MonoBehaviour
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		fixedSizes = new List<Vector2Int>();
-		baseItemSize = new Vector2(1f, 1f);
-		orderingRules = new List<OrderingRule>();
-		whiteListedItems = new List<SteamInventoryItem>();
-		dynamicContent = true;
-		excludeItemsFromGrids = new List<UI_StoreItemGrid>();
-		ruleMatchMode = RuleMatchMode.Any;
-		rules = new List<StoreFilterRule>();
-		((MonoBehaviour)this)._002Ector();
 	}
 }

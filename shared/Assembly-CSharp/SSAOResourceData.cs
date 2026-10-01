@@ -26,7 +26,7 @@ public class SSAOResourceData : ContextItem
 		get
 		{
 			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0019: Expected O, but got Unknown
+			//IL_0019: Expected Obj, but got Unknown
 			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
@@ -50,14 +50,14 @@ public class SSAOResourceData : ContextItem
 			Mesh val = new Mesh();
 			((Object)val).hideFlags = (HideFlags)52;
 			((Object)val).name = "SSAO Fullscreen Quad";
-			val.vertices = (Vector3[])(object)new Vector3[4]
+			val.vertices = new Vector3[4]
 			{
 				new Vector3(0f, 0f, 0f),
 				new Vector3(0f, 1f, 0f),
 				new Vector3(1f, 1f, 0f),
 				new Vector3(1f, 0f, 0f)
 			};
-			val.uv = (Vector2[])(object)new Vector2[4]
+			val.uv = new Vector2[4]
 			{
 				new Vector2(0f, 0f),
 				new Vector2(0f, 1f),

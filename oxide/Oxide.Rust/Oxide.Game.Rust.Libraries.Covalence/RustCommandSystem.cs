@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Facepunch;
 using Facepunch.Extend;
 using Oxide.Core;
@@ -146,7 +145,7 @@ public class RustCommandSystem : ICommandSystem
 			Client = true,
 			ClientInfo = false,
 			Variable = false,
-			Call = delegate(ConsoleSystem.Arg arg)
+			Call = (ConsoleSystem.Arg arg) =>
 			{
 				if (arg != null)
 				{
@@ -266,6 +265,6 @@ public class RustCommandSystem : ICommandSystem
 		{
 			return new string[0];
 		}
-		return StringExtensions.SplitQuotesStrings(((object)Unsafe.As<StringView, StringView>(ref arg.FullString)/*cast due to constrained. prefix*/).ToString(), int.MaxValue);
+		return StringExtensions.SplitQuotesStrings(((object)arg.FullString/*cast due to constrained. prefix*/).ToString(), int.MaxValue);
 	}
 }

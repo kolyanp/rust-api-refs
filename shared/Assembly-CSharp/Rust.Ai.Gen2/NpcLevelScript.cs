@@ -75,7 +75,7 @@ public class NpcLevelScript : TriggerBase, IServerComponent
 		//IL_0357: Unknown result type (might be due to invalid IL or missing references)
 		//IL_035e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0360: Unknown result type (might be due to invalid IL or missing references)
-		BoxCollider val = default(BoxCollider);
+		BoxCollider val = default;
 		foreach (NpcLevelTrigger linkedTrigger in linkedTriggers)
 		{
 			if (((Behaviour)linkedTrigger).isActiveAndEnabled && ((Component)linkedTrigger).TryGetComponent<BoxCollider>(ref val))
@@ -87,7 +87,7 @@ public class NpcLevelScript : TriggerBase, IServerComponent
 				Gizmos.matrix = matrix;
 			}
 		}
-		Collider val3 = default(Collider);
+		Collider val3 = default;
 		foreach (NpcPositionHint positionHint in positionHints)
 		{
 			if ((Object)(object)positionHint == (Object)null || !((Behaviour)positionHint).isActiveAndEnabled || positionHint is NpcGrenadePositionHint)
@@ -102,7 +102,7 @@ public class NpcLevelScript : TriggerBase, IServerComponent
 				{
 					Vector3 val4 = val3.ClosestPoint(((Component)positionHint).transform.position);
 					Vector3 val5 = val4 - ((Component)positionHint).transform.position;
-					float sqrMagnitude = ((Vector3)(ref val5)).sqrMagnitude;
+					float sqrMagnitude = val5.sqrMagnitude;
 					if (sqrMagnitude < num)
 					{
 						num = sqrMagnitude;

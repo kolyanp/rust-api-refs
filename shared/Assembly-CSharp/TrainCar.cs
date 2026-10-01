@@ -52,8 +52,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public float lastDecayTick;
 
-	[SerializeField]
 	[Header("Train Car")]
+	[SerializeField]
 	public float corpseSeconds = 60f;
 
 	[SerializeField]
@@ -127,16 +127,16 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	private TrainCarAudio trainCarAudio;
 
-	[SerializeField]
 	[FormerlySerializedAs("frontCoupleFx")]
+	[SerializeField]
 	public ParticleSystem frontCouplingChangedFx;
 
 	[SerializeField]
 	[FormerlySerializedAs("rearCoupleFx")]
 	public ParticleSystem rearCouplingChangedFx;
 
-	[FormerlySerializedAs("fxCoupling")]
 	[SerializeField]
+	[FormerlySerializedAs("fxCoupling")]
 	public ParticleSystem newCouplingFX;
 
 	[SerializeField]
@@ -146,8 +146,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public Vector3 frontBogieLocalOffset;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public Vector3 rearBogieLocalOffset;
 
 	[SerializeField]
@@ -356,7 +356,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		if (base.health <= 0f)
+		if (health <= 0f)
 		{
 			ActualDeath();
 			return;
@@ -384,12 +384,12 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 			FrontTrackSection = splineResult;
 			if (!Application.isLoadingSave && !SpaceIsClear())
 			{
-				Invoke(base.KillMessage, 0f);
+				Invoke(KillMessage, 0f);
 			}
 		}
 		else if (killofftracktrains)
 		{
-			Invoke(base.KillMessage, 0f);
+			Invoke(KillMessage, 0f);
 		}
 	}
 
@@ -456,8 +456,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -474,7 +474,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && itemStoragePrefab != null && itemStoragePrefab.isValid)
+		if (isServer && itemStoragePrefab != null && itemStoragePrefab.isValid)
 		{
 			BaseEntity entity = itemStoragePrefab.GetEntity();
 			if ((Object)(object)entity != (Object)null && child.prefabID == entity.prefabID)
@@ -486,7 +486,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public StorageContainer GetItemContainer()
 	{
-		BaseEntity baseEntity = itemStorageInstance.Get(base.isServer);
+		BaseEntity baseEntity = itemStorageInstance.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsValid())
 		{
 			return baseEntity as StorageContainer;
@@ -513,7 +513,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		{
 			Invoke(ActualDeath, corpseSeconds);
 		}
-		if (base.IsDestroyed && fxDestroyed.isValid)
+		if (IsDestroyed && fxDestroyed.isValid)
 		{
 			Effect.server.Run(fxDestroyed.resourcePath, GetExplosionPos(), Vector3.up, null, broadcast: true);
 		}
@@ -560,7 +560,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		RemoveFromCompleteTrain();
 		if (vehicle.vehiclesdroploot)
 		{
-			StorageContainer storageContainer = itemStorageInstance.Get(base.isServer);
+			StorageContainer storageContainer = itemStorageInstance.Get(isServer);
 			if ((Object)(object)storageContainer != (Object)null && storageContainer.IsValid())
 			{
 				storageContainer.DropItems();
@@ -688,7 +688,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		return ((Component)this).transform.position + ((Component)this).transform.rotation * ((Bounds)(ref bounds)).center;
+		return ((Component)this).transform.position + ((Component)this).transform.rotation * bounds.center;
 	}
 
 	public Vector3 GetFrontOfTrainPos()
@@ -702,7 +702,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		return ((Component)this).transform.position + ((Component)this).transform.rotation * (((Bounds)(ref bounds)).center + Vector3.forward * ((Bounds)(ref bounds)).extents.z);
+		return ((Component)this).transform.position + ((Component)this).transform.rotation * (bounds.center + Vector3.forward * bounds.extents.z);
 	}
 
 	public Vector3 GetRearOfTrainPos()
@@ -716,7 +716,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		return ((Component)this).transform.position + ((Component)this).transform.rotation * (((Bounds)(ref bounds)).center - Vector3.forward * ((Bounds)(ref bounds)).extents.z);
+		return ((Component)this).transform.position + ((Component)this).transform.rotation * (bounds.center - Vector3.forward * bounds.extents.z);
 	}
 
 	public void FrontTrainCarTick(TrainTrackSpline.TrackSelection trackSelection, float dt)
@@ -856,12 +856,12 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		}
 		RearTrackSection = spline;
 		Vector3 val = targetFrontWheelPos - positionAndTangent;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = targetFrontWheelPos - Quaternion.LookRotation(normalized) * frontBogieLocalOffset;
 		if (instantMove)
 		{
 			((Component)this).transform.position = val2;
-			if (((Vector3)(ref normalized)).magnitude == 0f)
+			if (normalized.magnitude == 0f)
 			{
 				((Component)this).transform.rotation = Quaternion.identity;
 			}
@@ -873,7 +873,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		else
 		{
 			((Component)this).transform.position = val2;
-			if (((Vector3)(ref normalized)).magnitude == 0f)
+			if (normalized.magnitude == 0f)
 			{
 				((Component)this).transform.rotation = Quaternion.identity;
 			}
@@ -949,7 +949,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		{
 			return true;
 		}
-		BaseEntity baseEntity2 = baseEntity.parentEntity.Get(base.isServer);
+		BaseEntity baseEntity2 = baseEntity.parentEntity.Get(isServer);
 		if (baseEntity2.IsValid())
 		{
 			return (Object)(object)baseEntity2 == (Object)(object)this;
@@ -1056,8 +1056,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		if (!((Object)(object)frontBogiePivot == (Object)null) && !((Object)(object)rearBogiePivot == (Object)null))
 		{
 			frontBogieLocalOffset = ((Component)this).transform.InverseTransformPoint(frontBogiePivot.position);
-			float num = ((!((Object)(object)frontCoupling != (Object)null)) ? (((Bounds)(ref bounds)).extents.z + ((Bounds)(ref bounds)).center.z) : ((Component)this).transform.InverseTransformPoint(frontCoupling.position).z);
-			float num2 = ((!((Object)(object)rearCoupling != (Object)null)) ? (0f - ((Bounds)(ref bounds)).extents.z + ((Bounds)(ref bounds)).center.z) : ((Component)this).transform.InverseTransformPoint(rearCoupling.position).z);
+			float num = ((!((Object)(object)frontCoupling != (Object)null)) ? (bounds.extents.z + bounds.center.z) : ((Component)this).transform.InverseTransformPoint(frontCoupling.position).z);
+			float num2 = ((!((Object)(object)rearCoupling != (Object)null)) ? (0f - bounds.extents.z + bounds.center.z) : ((Component)this).transform.InverseTransformPoint(rearCoupling.position).z);
 			DistFrontWheelToFrontCoupling = num - frontBogieLocalOffset.z;
 			DistFrontWheelToBackCoupling = 0f - num2 + frontBogieLocalOffset.z;
 			rearBogieLocalOffset = ((Component)this).transform.InverseTransformPoint(rearBogiePivot.position);
@@ -1074,7 +1074,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	{
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (info.msg.baseTrain != null && base.isServer)
+		if (info.msg.baseTrain != null && isServer)
 		{
 			frontBogieYRot = info.msg.baseTrain.frontBogieYRot;
 			rearBogieYRot = info.msg.baseTrain.rearBogieYRot;
@@ -1085,7 +1085,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (old != next && base.isServer)
+		if (old != next && isServer)
 		{
 			ServerFlagsChanged(old, next);
 		}
@@ -1106,7 +1106,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		if (localTrackSelection != trackSelection)
 		{
 			localTrackSelection = trackSelection;
-			if (base.isServer)
+			if (isServer)
 			{
 				ClientRPC(RpcTarget.NetworkGroup("SetTrackSelection"), (sbyte)localTrackSelection);
 			}

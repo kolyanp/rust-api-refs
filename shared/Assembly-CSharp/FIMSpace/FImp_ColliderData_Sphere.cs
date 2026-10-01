@@ -13,26 +13,26 @@ public class FImp_ColliderData_Sphere : FImp_ColliderData_Base
 	public FImp_ColliderData_Sphere(SphereCollider collider)
 	{
 		Is2D = false;
-		base.Transform = ((Component)collider).transform;
-		base.Collider = (Collider)(object)collider;
+		Transform = ((Component)collider).transform;
+		Collider = (Collider)(object)collider;
 		Sphere = collider;
-		base.ColliderType = EFColliderType.Sphere;
+		ColliderType = EFColliderType.Sphere;
 		RefreshColliderData();
 	}
 
 	public FImp_ColliderData_Sphere(CircleCollider2D collider)
 	{
 		Is2D = true;
-		base.Transform = ((Component)collider).transform;
-		base.Collider2D = (Collider2D)(object)collider;
+		Transform = ((Component)collider).transform;
+		Collider2D = (Collider2D)(object)collider;
 		Sphere2D = collider;
-		base.ColliderType = EFColliderType.Sphere;
+		ColliderType = EFColliderType.Sphere;
 		RefreshColliderData();
 	}
 
 	public override void RefreshColliderData()
 	{
-		if (!base.IsStatic)
+		if (!IsStatic)
 		{
 			if ((Object)(object)Sphere2D == (Object)null)
 			{
@@ -87,7 +87,7 @@ public class FImp_ColliderData_Sphere : FImp_ColliderData_Base
 		Vector3 val = ((Component)sphere).transform.position + ((Component)sphere).transform.TransformVector(sphere.center);
 		float num = collidingSphereRadius + segmentColliderRadius;
 		Vector3 val2 = segmentPos + segmentOffset - val;
-		float sqrMagnitude = ((Vector3)(ref val2)).sqrMagnitude;
+		float sqrMagnitude = val2.sqrMagnitude;
 		if (sqrMagnitude > 0f && sqrMagnitude < num * num)
 		{
 			segmentPos = val - segmentOffset + val2 * (num / Mathf.Sqrt(sqrMagnitude));
@@ -125,7 +125,7 @@ public class FImp_ColliderData_Sphere : FImp_ColliderData_Base
 		Vector3 val2 = segmentPos;
 		val2.z = 0f;
 		Vector3 val3 = val2 + segmentOffset - val;
-		float sqrMagnitude = ((Vector3)(ref val3)).sqrMagnitude;
+		float sqrMagnitude = val3.sqrMagnitude;
 		if (sqrMagnitude > 0f && sqrMagnitude < num * num)
 		{
 			segmentPos = val - segmentOffset + val3 * (num / Mathf.Sqrt(sqrMagnitude));

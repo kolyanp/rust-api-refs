@@ -11,10 +11,10 @@ public class CameraUnsubscribe : BaseHandler<AppEmpty>
 		if (!CameraRenderer.enabled)
 		{
 			SendError("not_enabled");
-			return default(ValueTask);
+			return default;
 		}
-		base.Client.EndViewing();
+		Client.EndViewing();
 		SendSuccess();
-		return default(ValueTask);
+		return default;
 	}
 }

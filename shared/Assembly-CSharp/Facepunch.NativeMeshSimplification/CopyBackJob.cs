@@ -36,15 +36,15 @@ internal struct CopyBackJob : IJob
 		{
 			ref NativeList<int> dstIndices = ref DstIndices;
 			NativeMeshSimplifier.Triangle triangle = SrcTriangles[j];
-			int num = ((int3)(ref triangle.vIndex))[0];
+			int num = triangle.vIndex[0];
 			dstIndices.Add(ref num);
 			ref NativeList<int> dstIndices2 = ref DstIndices;
 			triangle = SrcTriangles[j];
-			num = ((int3)(ref triangle.vIndex))[1];
+			num = triangle.vIndex[1];
 			dstIndices2.Add(ref num);
 			ref NativeList<int> dstIndices3 = ref DstIndices;
 			triangle = SrcTriangles[j];
-			num = ((int3)(ref triangle.vIndex))[2];
+			num = triangle.vIndex[2];
 			dstIndices3.Add(ref num);
 		}
 	}

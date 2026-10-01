@@ -15,17 +15,17 @@ public class TriggerRadiation : TriggerBase
 	public bool ScaleByArmor;
 
 	[Space]
-	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
 	[Min(0f)]
+	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
 	public float falloff = 0.1f;
 
 	public bool usePerAxisFalloff;
 
 	public Vector3 falloffPerAxis;
 
+	[FormerlySerializedAs("UseColliderRadius")]
 	[Space]
 	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
-	[FormerlySerializedAs("UseColliderRadius")]
 	public bool DontScaleRadiationSize;
 
 	public bool UseLOSCheck;
@@ -139,6 +139,7 @@ public class TriggerRadiation : TriggerBase
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
@@ -202,8 +203,7 @@ public class TriggerRadiation : TriggerBase
 		{
 			(Vector3, Vector3) radiationBounds = GetRadiationBounds();
 			Vector3 val = Quaternion.Inverse(((Component)this).transform.rotation) * (position - radiationBounds.Item1);
-			Vector3 val2 = default(Vector3);
-			((Vector3)(ref val2))._002Ector(Mathf.Abs(val.x), Mathf.Abs(val.y), Mathf.Abs(val.z));
+			Vector3 val2 = new Vector3(Mathf.Abs(val.x), Mathf.Abs(val.y), Mathf.Abs(val.z));
 			Vector3 item = radiationBounds.Item2;
 			Vector3 val3 = radiationBounds.Item2;
 			if (usePerAxisFalloff)

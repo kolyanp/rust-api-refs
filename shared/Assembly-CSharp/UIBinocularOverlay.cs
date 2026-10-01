@@ -10,7 +10,7 @@ public class UIBinocularOverlay : UIBlackoutOverlay, IShadowGroupVisibility
 
 	public RectTransform RangeTransform;
 
-	public Vector2 RangeScreenPosition;
+	public Vector2 RangeScreenPosition = new Vector2(0f, 0f);
 
 	public Material binocularEffectMaterial;
 
@@ -35,7 +35,5 @@ public class UIBinocularOverlay : UIBlackoutOverlay, IShadowGroupVisibility
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		RangeScreenPosition = new Vector2(0f, 0f);
-		base._002Ector();
 	}
 }

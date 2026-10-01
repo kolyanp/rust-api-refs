@@ -45,7 +45,7 @@ public class Barricade : DecayEntity
 		if (animalAgentTypeId < 0)
 		{
 			settingsByIndex = NavMesh.GetSettingsByIndex(1);
-			animalAgentTypeId = ((NavMeshBuildSettings)(ref settingsByIndex)).agentTypeID;
+			animalAgentTypeId = settingsByIndex.agentTypeID;
 		}
 		if ((Object)(object)NavMeshVolumeAnimals == (Object)null)
 		{
@@ -60,7 +60,7 @@ public class Barricade : DecayEntity
 			if (humanoidAgentTypeId < 0)
 			{
 				settingsByIndex = NavMesh.GetSettingsByIndex(0);
-				humanoidAgentTypeId = ((NavMeshBuildSettings)(ref settingsByIndex)).agentTypeID;
+				humanoidAgentTypeId = settingsByIndex.agentTypeID;
 			}
 			if ((Object)(object)NavMeshVolumeHumanoids == (Object)null)
 			{
@@ -82,7 +82,7 @@ public class Barricade : DecayEntity
 	{
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer && info.WeaponPrefab is BaseMelee && !info.IsProjectile())
+		if (isServer && info.WeaponPrefab is BaseMelee && !info.IsProjectile())
 		{
 			BasePlayer basePlayer = info.Initiator as BasePlayer;
 			if (Object.op_Implicit((Object)(object)basePlayer) && reflectDamage > 0f)

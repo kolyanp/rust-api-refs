@@ -3,21 +3,21 @@ using UnityEngine;
 public class BiomeBenchmarkScene : BenchmarkScene
 {
 	[Header("Biome Benchmark")]
-	public uint IslandWidth;
+	public uint IslandWidth = 300u;
 
-	public uint IslandHeight;
+	public uint IslandHeight = 1000u;
 
-	public uint IslandGap;
+	public uint IslandGap = 50u;
 
-	public float FlyingSpeed;
+	public float FlyingSpeed = 16f;
 
 	public GameObject WorldSetupPrefab;
 
 	public TerrainConfig TerrainConfig;
 
-	public Enum BiomesToTest;
+	public Enum BiomesToTest = (Enum)(-1);
 
-	public float StreamingPause;
+	public float StreamingPause = 4f;
 
 	[Header("Biome Benchmark - Debug")]
 	public bool DebugMode;
@@ -31,12 +31,5 @@ public class BiomeBenchmarkScene : BenchmarkScene
 	public BiomeBenchmarkScene()
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		IslandWidth = 300u;
-		IslandHeight = 1000u;
-		IslandGap = 50u;
-		FlyingSpeed = 16f;
-		BiomesToTest = (Enum)(-1);
-		StreamingPause = 4f;
-		base._002Ector();
 	}
 }

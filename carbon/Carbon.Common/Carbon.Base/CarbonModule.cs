@@ -102,9 +102,9 @@ public abstract class CarbonModule<C, D> : BaseModule, IModule, IDisposable
 		{
 			string text = (base.Name = Name);
 		}
-		if ((object)base.HookableType == null)
+		if ((object)HookableType == null)
 		{
-			Type type = (base.HookableType = Type);
+			Type type = (HookableType = Type);
 		}
 		if (!ForceDisabled)
 		{
@@ -115,7 +115,7 @@ public abstract class CarbonModule<C, D> : BaseModule, IModule, IDisposable
 
 	public virtual bool InitEnd()
 	{
-		if (ForceDisabled || base.HasInitialized)
+		if (ForceDisabled || HasInitialized)
 		{
 			return false;
 		}
@@ -146,7 +146,7 @@ public abstract class CarbonModule<C, D> : BaseModule, IModule, IDisposable
 		{
 			Puts("Initialized.");
 		}
-		base.HasInitialized = true;
+		HasInitialized = true;
 		return true;
 	}
 
@@ -353,7 +353,12 @@ public abstract class CarbonModule<C, D> : BaseModule, IModule, IDisposable
 
 	private void RefreshEnabledCache()
 	{
-		_isEnabledCached = !ForceDisabled && (ModuleConfiguration?.Enabled ?? false);
+		bool flag = !ForceDisabled && (ModuleConfiguration?.Enabled ?? false);
+		if (_isEnabledCached != flag)
+		{
+			_isEnabledCached = flag;
+			HookSubscriberIndex.Invalidate();
+		}
 	}
 
 	public virtual void OnDisabled(bool initialized)

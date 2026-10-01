@@ -20,13 +20,13 @@ public static class FAnimatorMethods
 		{
 			if (checkAnimLoop)
 			{
-				if (!((AnimatorStateInfo)(ref currentAnimatorStateInfo)).loop && !reverse)
+				if (!currentAnimatorStateInfo.loop && !reverse)
 				{
-					if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime > 0.98f)
+					if (currentAnimatorStateInfo.normalizedTime > 0.98f)
 					{
 						return true;
 					}
-					if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime < 0.02f)
+					if (currentAnimatorStateInfo.normalizedTime < 0.02f)
 					{
 						return true;
 					}
@@ -34,11 +34,11 @@ public static class FAnimatorMethods
 			}
 			else if (!reverse)
 			{
-				if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime > 0.98f)
+				if (currentAnimatorStateInfo.normalizedTime > 0.98f)
 				{
 					return true;
 				}
-				if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime < 0.02f)
+				if (currentAnimatorStateInfo.normalizedTime < 0.02f)
 				{
 					return true;
 				}

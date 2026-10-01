@@ -34,10 +34,10 @@ public static class TransformUtil
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		startPos.y += 0.25f;
 		range += 0.25f;
-		hitOut = default(RaycastHit);
+		hitOut = default;
 		if (GamePhysics.Trace(new Ray(startPos, Vector3.down), 0f, out var hitInfo, range, LayerMask.op_Implicit(mask), (QueryTriggerInteraction)0))
 		{
-			if ((Object)(object)ignoreTransform != (Object)null && (Object)(object)((RaycastHit)(ref hitInfo)).collider != (Object)null && ((Object)(object)((Component)((RaycastHit)(ref hitInfo)).collider).transform == (Object)(object)ignoreTransform || ((Component)((RaycastHit)(ref hitInfo)).collider).transform.IsChildOf(ignoreTransform)))
+			if ((Object)(object)ignoreTransform != (Object)null && (Object)(object)hitInfo.collider != (Object)null && ((Object)(object)((Component)hitInfo.collider).transform == (Object)(object)ignoreTransform || ((Component)hitInfo.collider).transform.IsChildOf(ignoreTransform)))
 			{
 				return GetGroundInfo(startPos - new Vector3(0f, 0.01f, 0f), out hitOut, range, mask, ignoreTransform);
 			}
@@ -84,7 +84,7 @@ public static class TransformUtil
 		foreach (RaycastHit item in list)
 		{
 			RaycastHit current = item;
-			Collider collider = ((RaycastHit)(ref current)).collider;
+			Collider collider = current.collider;
 			if ((Object)(object)collider == (Object)null)
 			{
 				continue;
@@ -97,8 +97,8 @@ public static class TransformUtil
 					continue;
 				}
 			}
-			pos = ((RaycastHit)(ref current)).point;
-			normal = ((RaycastHit)(ref current)).normal;
+			pos = current.point;
+			normal = current.normal;
 			Pool.FreeUnmanaged<RaycastHit>(ref list);
 			return true;
 		}
@@ -138,11 +138,11 @@ public static class TransformUtil
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		startPos.y += 0.25f;
 		range += 0.25f;
-		RaycastHit val = default(RaycastHit);
-		if (Physics.Raycast(new Ray(startPos, Vector3.down), ref val, range, LayerMask.op_Implicit(mask)) && ((RaycastHit)(ref val)).collider is TerrainCollider)
+		RaycastHit val = default;
+		if (Physics.Raycast(new Ray(startPos, Vector3.down), ref val, range, LayerMask.op_Implicit(mask)) && val.collider is TerrainCollider)
 		{
-			pos = ((RaycastHit)(ref val)).point;
-			normal = ((RaycastHit)(ref val)).normal;
+			pos = val.point;
+			normal = val.normal;
 			return true;
 		}
 		pos = startPos;
@@ -174,7 +174,7 @@ public static class TransformUtil
 	private static void AddChildrenRecursive(Transform current, List<Transform> list)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
+		//IL_0021: Expected Obj, but got Unknown
 		list.Add(current);
 		foreach (Transform item in current)
 		{

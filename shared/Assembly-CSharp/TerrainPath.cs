@@ -76,7 +76,7 @@ public class TerrainPath : TerrainExtension
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		T result = default(T);
+		T result = default;
 		float num = float.MaxValue;
 		foreach (T item in list)
 		{
@@ -289,7 +289,7 @@ public class TerrainPath : TerrainExtension
 					if (!(item.WirePrefab.guid != gameObjectRef?.guid) && component.connections.Count == num)
 					{
 						Vector3 val2 = val.transform.position - ((Component)item).transform.position;
-						if (!(((Vector3)(ref val2)).sqrMagnitude > item.MaxDistance * item.MaxDistance))
+						if (!(val2.sqrMagnitude > item.MaxDistance * item.MaxDistance))
 						{
 							goto IL_010f;
 						}
@@ -306,7 +306,7 @@ public class TerrainPath : TerrainExtension
 			void CreateWire(List<GameObject> objects, GameObjectRef wirePrefab)
 			{
 				//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0061: Expected O, but got Unknown
+				//IL_0061: Expected Obj, but got Unknown
 				if (objects.Count >= 3 && wirePrefab != null && wirePrefab.isValid)
 				{
 					PowerLineWire powerLineWire = PowerLineWire.Create(null, objects, wirePrefab, "Powerline Wires", null, 1f, 0.1f);

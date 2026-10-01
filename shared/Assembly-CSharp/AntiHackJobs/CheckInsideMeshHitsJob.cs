@@ -20,6 +20,6 @@ public struct CheckInsideMeshHitsJob : IJobFor
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		RaycastHit val = Hits[index];
-		Results[index] = ((RaycastHit)(ref val)).colliderInstanceID != 0 && Vector3.Dot(Vector3.up, ((RaycastHit)(ref val)).normal) > 0f;
+		Results[index] = val.colliderInstanceID != 0 && Vector3.Dot(Vector3.up, val.normal) > 0f;
 	}
 }

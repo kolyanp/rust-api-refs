@@ -110,13 +110,13 @@ public class ServerPerformance : BaseMonoBehaviour
 			orderby x.Count() descending
 			select x)
 		{
-			string[] obj = new string[5] { "\t", null, null, null, null };
-			Object obj2 = item.ElementAt(0);
-			obj[1] = WorkoutPrefabName(((Component)((obj2 is Component) ? obj2 : null)).gameObject);
-			obj[2] = " - ";
-			obj[3] = item.Count().ToString();
-			obj[4] = "\r\n";
-			File.AppendAllText(filename, string.Concat(obj));
+			string[] array = new string[5] { "\t", null, null, null, null };
+			Object val = item.ElementAt(0);
+			array[1] = WorkoutPrefabName(((Component)((val is Component) ? val : null)).gameObject);
+			array[2] = " - ";
+			array[3] = item.Count().ToString();
+			array[4] = "\r\n";
+			File.AppendAllText(filename, string.Concat(array));
 		}
 		File.AppendAllText(filename, "\r\nTotal: " + objects.Count() + "\r\n\r\n\r\n");
 	}

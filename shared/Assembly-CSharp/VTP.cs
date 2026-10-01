@@ -11,12 +11,12 @@ public class VTP : MonoBehaviour
 		Vector3[] vertices = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.vertices;
 		int[] triangles = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.triangles;
 		Color[] colors = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.colors;
-		int triangleIndex = ((RaycastHit)(ref hit)).triangleIndex;
+		int triangleIndex = hit.triangleIndex;
 		float num = float.PositiveInfinity;
 		int num2 = 0;
 		for (int i = 0; i < 3; i++)
 		{
-			float num3 = Vector3.Distance(transform.TransformPoint(vertices[triangles[triangleIndex * 3 + i]]), ((RaycastHit)(ref hit)).point);
+			float num3 = Vector3.Distance(transform.TransformPoint(vertices[triangles[triangleIndex * 3 + i]]), hit.point);
 			if (num3 < num)
 			{
 				num2 = triangles[triangleIndex * 3 + i];
@@ -36,7 +36,7 @@ public class VTP : MonoBehaviour
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		int[] triangles = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.triangles;
 		Color[] colors = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.colors;
-		int triangleIndex = ((RaycastHit)(ref hit)).triangleIndex;
+		int triangleIndex = hit.triangleIndex;
 		int num = triangles[triangleIndex * 3];
 		return (colors[num] + colors[num + 1] + colors[num + 2]) / 3f;
 	}
@@ -55,12 +55,12 @@ public class VTP : MonoBehaviour
 		Vector3[] vertices = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.vertices;
 		int[] triangles = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.triangles;
 		Color[] colors = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.colors;
-		int triangleIndex = ((RaycastHit)(ref hit)).triangleIndex;
+		int triangleIndex = hit.triangleIndex;
 		float num = float.PositiveInfinity;
 		int num2 = 0;
 		for (int i = 0; i < 3; i += 3)
 		{
-			float num3 = Vector3.Distance(transform.TransformPoint(vertices[triangles[triangleIndex * 3 + i]]), ((RaycastHit)(ref hit)).point);
+			float num3 = Vector3.Distance(transform.TransformPoint(vertices[triangles[triangleIndex * 3 + i]]), hit.point);
 			if (num3 < num)
 			{
 				num2 = triangles[triangleIndex * 3 + i];
@@ -82,7 +82,7 @@ public class VTP : MonoBehaviour
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		int[] triangles = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.triangles;
 		Color[] colors = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.colors;
-		int triangleIndex = ((RaycastHit)(ref hit)).triangleIndex;
+		int triangleIndex = hit.triangleIndex;
 		int num = 0;
 		for (int i = 0; i < 3; i++)
 		{
@@ -106,12 +106,12 @@ public class VTP : MonoBehaviour
 		Vector3[] vertices = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.vertices;
 		int[] triangles = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.triangles;
 		Vector3[] normals = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.normals;
-		int triangleIndex = ((RaycastHit)(ref hit)).triangleIndex;
+		int triangleIndex = hit.triangleIndex;
 		float num = float.PositiveInfinity;
 		int num2 = 0;
 		for (int i = 0; i < 3; i++)
 		{
-			float num3 = Vector3.Distance(transform.TransformPoint(vertices[triangles[triangleIndex * 3 + i]]), ((RaycastHit)(ref hit)).point);
+			float num3 = Vector3.Distance(transform.TransformPoint(vertices[triangles[triangleIndex * 3 + i]]), hit.point);
 			if (num3 < num)
 			{
 				num2 = triangles[triangleIndex * 3 + i];
@@ -152,7 +152,7 @@ public class VTP : MonoBehaviour
 		Vector3[] vertices = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.vertices;
 		int[] triangles = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.triangles;
 		Vector3[] normals = ((Component)transform).GetComponent<MeshFilter>().sharedMesh.normals;
-		int triangleIndex = ((RaycastHit)(ref hit)).triangleIndex;
+		int triangleIndex = hit.triangleIndex;
 		int num = 0;
 		int num2 = 1;
 		if (!up)
@@ -204,8 +204,8 @@ public class VTP : MonoBehaviour
 		for (int i = 0; i < currentVertices.Length; i++)
 		{
 			Vector3 val = Vector3.Cross(currentNormals[i], new Vector3(currentTangents[i].x, currentTangents[i].y, currentTangents[i].z));
-			Vector3 val2 = transform.TransformDirection(((Vector3)(ref val)).normalized * currentTangents[i].w);
-			Vector3 val3 = transform.TransformDirection(Vector4.op_Implicit(((Vector4)(ref currentTangents[i])).normalized));
+			Vector3 val2 = transform.TransformDirection(val.normalized * currentTangents[i].w);
+			Vector3 val3 = transform.TransformDirection(Vector4.op_Implicit(currentTangents[i].normalized));
 			float num = 0.5f + 0.5f * val3.y;
 			float num2 = 0.5f + 0.5f * val2.y;
 			uv[i] = new Vector2(num, num2);
@@ -245,6 +245,8 @@ public class VTP : MonoBehaviour
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
@@ -282,11 +284,9 @@ public class VTP : MonoBehaviour
 		//IL_02e7: Unknown result type (might be due to invalid IL or missing references)
 		int num = triangles.Length;
 		int num2 = vertices.Length;
-		Vector3[] array = (Vector3[])(object)new Vector3[num2];
-		Vector3[] array2 = (Vector3[])(object)new Vector3[num2];
-		Vector4[] array3 = (Vector4[])(object)new Vector4[num2];
-		Vector3 val7 = default(Vector3);
-		Vector3 val8 = default(Vector3);
+		Vector3[] array = new Vector3[num2];
+		Vector3[] array2 = new Vector3[num2];
+		Vector4[] array3 = new Vector4[num2];
 		for (long num3 = 0L; num3 < num; num3 += 3)
 		{
 			long num4 = triangles[num3];
@@ -310,8 +310,8 @@ public class VTP : MonoBehaviour
 			float num16 = val6.y - val4.y;
 			float num17 = num13 * num16 - num14 * num15;
 			float num18 = ((num17 == 0f) ? 0f : (1f / num17));
-			((Vector3)(ref val7))._002Ector((num16 * num7 - num15 * num8) * num18, (num16 * num9 - num15 * num10) * num18, (num16 * num11 - num15 * num12) * num18);
-			((Vector3)(ref val8))._002Ector((num13 * num8 - num14 * num7) * num18, (num13 * num10 - num14 * num9) * num18, (num13 * num12 - num14 * num11) * num18);
+			Vector3 val7 = new Vector3((num16 * num7 - num15 * num8) * num18, (num16 * num9 - num15 * num10) * num18, (num16 * num11 - num15 * num12) * num18);
+			Vector3 val8 = new Vector3((num13 * num8 - num14 * num7) * num18, (num13 * num10 - num14 * num9) * num18, (num13 * num12 - num14 * num11) * num18);
 			ref Vector3 reference = ref array[num4];
 			reference += val7;
 			ref Vector3 reference2 = ref array[num5];

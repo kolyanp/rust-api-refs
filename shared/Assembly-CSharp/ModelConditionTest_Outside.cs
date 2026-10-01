@@ -11,6 +11,6 @@ public class ModelConditionTest_Outside : ModelConditionTest
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		OBB val = ent.WorldSpaceBounds();
-		return ent.IsOutside(((OBB)(ref val)).GetPoint(0f, 1f, 0f));
+		return ent.IsOutside(val.GetPoint(0f, 1f, 0f));
 	}
 }

@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class ZiplineMountable : BaseMountable
 {
-	public float MoveSpeed;
+	public float MoveSpeed = 4f;
 
-	public float ForwardAdditive;
+	public float ForwardAdditive = 5f;
 
 	public CapsuleCollider ZipCollider;
 
@@ -18,7 +18,7 @@ public class ZiplineMountable : BaseMountable
 
 	public Transform RightHandIkPoint;
 
-	public float SpeedUpTime;
+	public float SpeedUpTime = 0.6f;
 
 	public bool EditorHoldInPlace;
 
@@ -26,11 +26,11 @@ public class ZiplineMountable : BaseMountable
 
 	public const Flags PushForward = Flags.Reserved1;
 
-	public AnimationCurve MountPositionCurve;
+	public AnimationCurve MountPositionCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
-	public AnimationCurve MountRotationCurve;
+	public AnimationCurve MountRotationCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
-	public float MountEaseInTime;
+	public float MountEaseInTime = 0.5f;
 
 	public const Flags ShowHandle = Flags.Reserved2;
 
@@ -42,17 +42,17 @@ public class ZiplineMountable : BaseMountable
 
 	private bool hasEnded;
 
-	public List<Collider> ignoreColliders;
+	public List<Collider> ignoreColliders = new List<Collider>();
 
 	private Vector3 lastSafePosition;
 
-	public Vector3 startPosition;
+	public Vector3 startPosition = Vector3.zero;
 
-	public Vector3 endPosition;
+	public Vector3 endPosition = Vector3.zero;
 
-	public Quaternion startRotation;
+	public Quaternion startRotation = Quaternion.identity;
 
-	public Quaternion endRotation;
+	public Quaternion endRotation = Quaternion.identity;
 
 	public float elapsedMoveTime;
 
@@ -105,7 +105,7 @@ public class ZiplineMountable : BaseMountable
 			Vector3 val = list[list.Count - 2];
 			List<Vector3> list2 = linePoints;
 			Vector3 val2 = val - list2[list2.Count - 1];
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			List<Vector3> list3 = linePoints;
 			return list3[list3.Count - 1] + normalized * 1.5f;
 		}
@@ -142,9 +142,9 @@ public class ZiplineMountable : BaseMountable
 		for (int i = 1; i < linePoints.Count - 1; i++)
 		{
 			Vector3 val = linePoints[i + 1] - position;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			val = linePoints[i - 1] - position;
-			Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+			Vector3 normalized2 = val.normalized;
 			float num = Vector3.Dot(forward, normalized);
 			float num2 = Vector3.Dot(forward, normalized2);
 			if (num > 0f && num2 < 0f)
@@ -234,7 +234,7 @@ public class ZiplineMountable : BaseMountable
 		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
-		if (linePoints == null || base.isClient || isAnimatingIn || hasEnded)
+		if (linePoints == null || isClient || isAnimatingIn || hasEnded)
 		{
 			return;
 		}
@@ -248,9 +248,9 @@ public class ZiplineMountable : BaseMountable
 		foreach (RaycastHit item in list)
 		{
 			RaycastHit current = item;
-			if (!((Object)(object)((RaycastHit)(ref current)).collider == (Object)(object)ZipCollider) && !ignoreColliders.Contains(((RaycastHit)(ref current)).collider) && !((Object)(object)((Component)((RaycastHit)(ref current)).collider).GetComponentInParent<PowerlineNode>() != (Object)null) && !((Object)(object)((Component)((RaycastHit)(ref current)).collider).GetComponent<TreeEntity>() != (Object)null) && !((Object)(object)((Component)((RaycastHit)(ref current)).collider).GetComponentInParent<TreeEntity>() != (Object)null))
+			if (!((Object)(object)current.collider == (Object)(object)ZipCollider) && !ignoreColliders.Contains(current.collider) && !((Object)(object)((Component)current.collider).GetComponentInParent<PowerlineNode>() != (Object)null) && !((Object)(object)((Component)current.collider).GetComponent<TreeEntity>() != (Object)null) && !((Object)(object)((Component)current.collider).GetComponentInParent<TreeEntity>() != (Object)null))
 			{
-				ZiplineMountable componentInParent = ((Component)((RaycastHit)(ref current)).collider).GetComponentInParent<ZiplineMountable>();
+				ZiplineMountable componentInParent = ((Component)current.collider).GetComponentInParent<ZiplineMountable>();
 				if ((Object)(object)componentInParent != (Object)null)
 				{
 					componentInParent.EndZipline();
@@ -276,7 +276,7 @@ public class ZiplineMountable : BaseMountable
 			lastSafePosition = ((Component)this).transform.position;
 		}
 		Vector3 val2 = val - Vector3Ex.WithY(((Component)this).transform.position, val.y);
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		((Component)this).transform.position = Vector3.Lerp(((Component)this).transform.position, val, Time.deltaTime * 12f);
 		if (normalized != Vector3.zero)
 		{
@@ -320,7 +320,7 @@ public class ZiplineMountable : BaseMountable
 	public override void OnPlayerDismounted(BasePlayer player)
 	{
 		base.OnPlayerDismounted(player);
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			Kill();
 		}
@@ -392,7 +392,7 @@ public class ZiplineMountable : BaseMountable
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer && (old & Flags.Busy) == Flags.Busy && (next & Flags.Busy) != Flags.Busy && !base.IsDestroyed)
+		if (isServer && (old & Flags.Busy) == Flags.Busy && (next & Flags.Busy) != Flags.Busy && !IsDestroyed)
 		{
 			Kill();
 		}
@@ -408,17 +408,5 @@ public class ZiplineMountable : BaseMountable
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		MoveSpeed = 4f;
-		ForwardAdditive = 5f;
-		SpeedUpTime = 0.6f;
-		MountPositionCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-		MountRotationCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-		MountEaseInTime = 0.5f;
-		ignoreColliders = new List<Collider>();
-		startPosition = Vector3.zero;
-		endPosition = Vector3.zero;
-		startRotation = Quaternion.identity;
-		endRotation = Quaternion.identity;
-		base._002Ector();
 	}
 }

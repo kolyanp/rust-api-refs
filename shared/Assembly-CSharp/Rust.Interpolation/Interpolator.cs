@@ -48,7 +48,7 @@ public class Interpolator<T> where T : ISnapshot<T>, new()
 
 	public Segment Query(float time, float interpolation, float extrapolation, float smoothing, ref T t)
 	{
-		Segment result = default(Segment);
+		Segment result = default;
 		if (list.Count == 0)
 		{
 			result.prev = last;

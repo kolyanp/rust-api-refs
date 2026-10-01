@@ -42,17 +42,17 @@ public class m2bradleyAnimator : MonoBehaviour
 
 	public Transform[] targetSideguns;
 
-	private Vector3 vecTurret;
+	private Vector3 vecTurret = new Vector3(0f, 0f, 0f);
 
-	private Vector3 vecMainCannon;
+	private Vector3 vecMainCannon = new Vector3(0f, 0f, 0f);
 
-	private Vector3 vecCoaxGun;
+	private Vector3 vecCoaxGun = new Vector3(0f, 0f, 0f);
 
-	private Vector3 vecRocketsPitch;
+	private Vector3 vecRocketsPitch = new Vector3(0f, 0f, 0f);
 
-	private Vector3 vecSpotLightBase;
+	private Vector3 vecSpotLightBase = new Vector3(0f, 0f, 0f);
 
-	private Vector3 vecSpotLight;
+	private Vector3 vecSpotLight = new Vector3(0f, 0f, 0f);
 
 	private float sideMGPitchValue;
 
@@ -81,22 +81,22 @@ public class m2bradleyAnimator : MonoBehaviour
 
 	public Vector3[] vecSideGunRotation;
 
-	public float treadConstant;
+	public float treadConstant = 0.14f;
 
-	public float wheelSpinConstant;
+	public float wheelSpinConstant = 80f;
 
 	[Header("Gun Movement speeds")]
-	public float sidegunsTurnSpeed;
+	public float sidegunsTurnSpeed = 30f;
 
-	public float turretTurnSpeed;
+	public float turretTurnSpeed = 6f;
 
-	public float cannonPitchSpeed;
+	public float cannonPitchSpeed = 10f;
 
-	public float rocketPitchSpeed;
+	public float rocketPitchSpeed = 20f;
 
-	public float spotLightTurnSpeed;
+	public float spotLightTurnSpeed = 60f;
 
-	public float machineGunSpeed;
+	public float machineGunSpeed = 20f;
 
 	private float wheelAngle;
 
@@ -167,18 +167,18 @@ public class m2bradleyAnimator : MonoBehaviour
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
-		Ray val = default(Ray);
+		Ray val = default;
 		int mask = LayerMask.GetMask(new string[3] { "Terrain", "World", "Construction" });
 		int num = ShocksBones.Length;
 		float num2 = 0.55f;
 		float num3 = 0.79f;
 		float num4 = 0.26f;
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		for (int i = 0; i < num; i++)
 		{
-			((Ray)(ref val)).origin = ShockTraceLineBegin[i].position;
-			((Ray)(ref val)).direction = ((Component)this).transform.up * -1f;
-			num4 = ((!Physics.SphereCast(val, 0.15f, ref val2, num3, mask)) ? 0.26f : (((RaycastHit)(ref val2)).distance - num2));
+			val.origin = ShockTraceLineBegin[i].position;
+			val.direction = ((Component)this).transform.up * -1f;
+			num4 = ((!Physics.SphereCast(val, 0.15f, ref val2, num3, mask)) ? 0.26f : (val2.distance - num2));
 			vecShocksOffsetPosition[i].y = Mathf.Lerp(vecShocksOffsetPosition[i].y, Mathf.Clamp(num4 * -1f, -0.26f, 0f), Time.deltaTime * 5f);
 			ShocksBones[i].localPosition = vecShocksOffsetPosition[i];
 		}
@@ -206,7 +206,7 @@ public class m2bradleyAnimator : MonoBehaviour
 			return;
 		}
 		Vector3 val = targetTurret.position - turret.position;
-		_ = ((Vector3)(ref val)).normalized;
+		_ = val.normalized;
 		CalculateYawPitchOffset(turret, turret.position, targetTurret.position, out var yaw, out var pitch);
 		yaw = NormalizeYaw(yaw);
 		float num = Time.deltaTime * turretTurnSpeed;
@@ -278,7 +278,7 @@ public class m2bradleyAnimator : MonoBehaviour
 		if ((Object)(object)targetSpotLight != (Object)null)
 		{
 			Vector3 val = targetSpotLight.position - spotLightYaw.position;
-			_ = ((Vector3)(ref val)).normalized;
+			_ = val.normalized;
 			CalculateYawPitchOffset(spotLightYaw, spotLightYaw.position, targetSpotLight.position, out var yaw, out var pitch);
 			yaw = NormalizeYaw(yaw);
 			float num = Time.deltaTime * spotLightTurnSpeed;
@@ -321,7 +321,7 @@ public class m2bradleyAnimator : MonoBehaviour
 			if (!((Object)(object)targetSideguns[i] == (Object)null))
 			{
 				Vector3 val = targetSideguns[i].position - sideguns[i].position;
-				_ = ((Vector3)(ref val)).normalized;
+				_ = val.normalized;
 				CalculateYawPitchOffset(sideguns[i], sideguns[i].position, targetSideguns[i].position, out var yaw, out var pitch);
 				yaw = NormalizeYaw(yaw);
 				float num = Time.deltaTime * sidegunsTurnSpeed;
@@ -376,10 +376,10 @@ public class m2bradleyAnimator : MonoBehaviour
 		float num = Mathf.Sqrt(val.x * val.x + val.z * val.z);
 		pitch = (0f - Mathf.Atan2(val.y, num)) * (180f / MathF.PI);
 		Vector3 val2 = vecEnd - vecStart;
-		val = ((Vector3)(ref val2)).normalized;
+		val = val2.normalized;
 		Vector3 forward = objectTransform.forward;
 		forward.y = 0f;
-		((Vector3)(ref forward)).Normalize();
+		forward.Normalize();
 		float num2 = Vector3.Dot(val, forward);
 		float num3 = Vector3.Dot(val, objectTransform.right);
 		float num4 = 360f * num3;
@@ -410,20 +410,5 @@ public class m2bradleyAnimator : MonoBehaviour
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		vecTurret = new Vector3(0f, 0f, 0f);
-		vecMainCannon = new Vector3(0f, 0f, 0f);
-		vecCoaxGun = new Vector3(0f, 0f, 0f);
-		vecRocketsPitch = new Vector3(0f, 0f, 0f);
-		vecSpotLightBase = new Vector3(0f, 0f, 0f);
-		vecSpotLight = new Vector3(0f, 0f, 0f);
-		treadConstant = 0.14f;
-		wheelSpinConstant = 80f;
-		sidegunsTurnSpeed = 30f;
-		turretTurnSpeed = 6f;
-		cannonPitchSpeed = 10f;
-		rocketPitchSpeed = 20f;
-		spotLightTurnSpeed = 60f;
-		machineGunSpeed = 20f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -19,9 +18,9 @@ public static class Consts
 
 	public const string HelpUrlConfig = "http://saladgamer.com/vlb-doc/config/";
 
-	public static readonly bool ProceduralObjectsVisibleInEditor;
+	public static readonly bool ProceduralObjectsVisibleInEditor = true;
 
-	public static readonly Color FlatColor;
+	public static readonly Color FlatColor = Color.white;
 
 	public const ColorMode ColorModeDefault = ColorMode.Flat;
 
@@ -85,7 +84,7 @@ public static class Consts
 
 	public const float NoiseScaleDefault = 0.5f;
 
-	public static readonly Vector3 NoiseVelocityDefault;
+	public static readonly Vector3 NoiseVelocityDefault = new Vector3(0.07f, 0.18f, 0.05f);
 
 	public const BlendingMode BlendingModeDefault = BlendingMode.Additive;
 
@@ -139,15 +138,12 @@ public static class Consts
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		ProceduralObjectsVisibleInEditor = true;
-		FlatColor = Color.white;
-		NoiseVelocityDefault = new Vector3(0.07f, 0.18f, 0.05f);
 		BlendMode[] array = new BlendMode[3];
-		RuntimeHelpers.InitializeArray(array, (RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/);
-		BlendingMode_SrcFactor = (BlendMode[])(object)array;
+		RuntimeHelpers.InitializeArray(array, __ldtoken(_003CPrivateImplementationDetails_003E.F186F2262AE48F2AA4F90C9A6B35913B0F6B0B895423B6267252259BFD357D3B));
+		BlendingMode_SrcFactor = array;
 		BlendMode[] array2 = new BlendMode[3];
-		RuntimeHelpers.InitializeArray(array2, (RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/);
-		BlendingMode_DstFactor = (BlendMode[])(object)array2;
+		RuntimeHelpers.InitializeArray(array2, __ldtoken(_003CPrivateImplementationDetails_003E._0A0EC6D4742068B4D88C6145B8224EF1DC240C8A305CDFC50C3AAF9121E6875D));
+		BlendingMode_DstFactor = array2;
 		BlendingMode_AlphaAsBlack = new bool[3] { true, true, false };
 	}
 }

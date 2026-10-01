@@ -40,36 +40,36 @@ internal struct TraceAllJob : IJobFor
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		((Ray)(ref ray)).origin = ((Matrix4x4)(ref shape.inverseTransform)).MultiplyPoint3x4(((Ray)(ref ray)).origin);
-		((Ray)(ref ray)).direction = ((Matrix4x4)(ref shape.inverseTransform)).MultiplyVector(((Ray)(ref ray)).direction);
+		ray.origin = shape.inverseTransform.MultiplyPoint3x4(ray.origin);
+		ray.direction = shape.inverseTransform.MultiplyVector(ray.direction);
 		if (shape.type == HitboxDefinition.Type.BOX)
 		{
-			AABB val = default(AABB);
-			((AABB)(ref val))._002Ector(Vector3.zero, shape.size);
-			if (!((AABB)(ref val)).Trace(ray, ref hit, forgivness, maxDistance))
+			AABB val = new AABB(Vector3.zero, shape.size);
+			if (!val.Trace(ray, ref hit, forgivness, maxDistance))
 			{
 				return false;
 			}
 		}
 		else
 		{
-			Capsule val2 = default(Capsule);
-			((Capsule)(ref val2))._002Ector(Vector3.zero, shape.size.x, shape.size.y * 0.5f);
-			if (!((Capsule)(ref val2)).Trace(ray, ref hit, forgivness, maxDistance))
+			Capsule val2 = new Capsule(Vector3.zero, shape.size.x, shape.size.y * 0.5f);
+			if (!val2.Trace(ray, ref hit, forgivness, maxDistance))
 			{
 				return false;
 			}
 		}
-		((RaycastHit)(ref hit)).point = ((Matrix4x4)(ref shape.transform)).MultiplyPoint3x4(((RaycastHit)(ref hit)).point);
-		((RaycastHit)(ref hit)).normal = ((Matrix4x4)(ref shape.transform)).MultiplyVector(((RaycastHit)(ref hit)).normal);
+		hit.point = shape.transform.MultiplyPoint3x4(hit.point);
+		hit.normal = shape.transform.MultiplyVector(hit.normal);
 		return true;
 	}
 }

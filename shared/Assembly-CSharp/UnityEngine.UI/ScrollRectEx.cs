@@ -5,10 +5,10 @@ using UnityEngine.Events;
 
 namespace UnityEngine.UI;
 
-[ExecuteInEditMode]
-[AddComponentMenu("UI/Scroll Rect Ex", 37)]
 [RequireComponent(typeof(RectTransform))]
+[AddComponentMenu("UI/Scroll Rect Ex", 37)]
 [SelectionBase]
+[ExecuteInEditMode]
 public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEventSystemHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IScrollHandler, ICanvasElement, ILayoutGroup, ILayoutController
 {
 	public enum MovementType
@@ -38,25 +38,25 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 	private RectTransform m_Content;
 
 	[SerializeField]
-	private bool m_Horizontal;
+	private bool m_Horizontal = true;
 
 	[SerializeField]
-	private bool m_Vertical;
+	private bool m_Vertical = true;
 
 	[SerializeField]
-	private MovementType m_MovementType;
+	private MovementType m_MovementType = MovementType.Elastic;
 
 	[SerializeField]
-	private float m_Elasticity;
+	private float m_Elasticity = 0.1f;
 
 	[SerializeField]
-	private bool m_Inertia;
+	private bool m_Inertia = true;
 
 	[SerializeField]
-	private float m_DecelerationRate;
+	private float m_DecelerationRate = 0.135f;
 
 	[SerializeField]
-	private float m_ScrollSensitivity;
+	private float m_ScrollSensitivity = 1f;
 
 	[SerializeField]
 	private RectTransform m_Viewport;
@@ -80,11 +80,11 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 	private float m_VerticalScrollbarSpacing;
 
 	[SerializeField]
-	private ScrollRectEvent m_OnValueChanged;
+	private ScrollRectEvent m_OnValueChanged = new ScrollRectEvent();
 
-	private Vector2 m_PointerStartLocalCursor;
+	private Vector2 m_PointerStartLocalCursor = Vector2.zero;
 
-	private Vector2 m_ContentStartPosition;
+	private Vector2 m_ContentStartPosition = Vector2.zero;
 
 	private RectTransform m_ViewRect;
 
@@ -96,7 +96,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 
 	private bool m_Dragging;
 
-	private Vector2 m_PrevPosition;
+	private Vector2 m_PrevPosition = Vector2.zero;
 
 	private Bounds m_PrevContentBounds;
 
@@ -122,7 +122,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 
 	private DrivenRectTransformTracker m_Tracker;
 
-	private readonly Vector3[] m_Corners;
+	private readonly Vector3[] m_Corners = new Vector3[4];
 
 	public RectTransform content
 	{
@@ -344,7 +344,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		get
 		{
 			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0039: Expected O, but got Unknown
+			//IL_0039: Expected Obj, but got Unknown
 			if ((Object)(object)m_ViewRect == (Object)null)
 			{
 				m_ViewRect = m_Viewport;
@@ -413,11 +413,11 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 			UpdateBounds();
-			if (((Bounds)(ref m_ContentBounds)).size.x <= ((Bounds)(ref m_ViewBounds)).size.x)
+			if (m_ContentBounds.size.x <= m_ViewBounds.size.x)
 			{
-				return (((Bounds)(ref m_ViewBounds)).min.x > ((Bounds)(ref m_ContentBounds)).min.x) ? 1 : 0;
+				return (m_ViewBounds.min.x > m_ContentBounds.min.x) ? 1 : 0;
 			}
-			return (((Bounds)(ref m_ViewBounds)).min.x - ((Bounds)(ref m_ContentBounds)).min.x) / (((Bounds)(ref m_ContentBounds)).size.x - ((Bounds)(ref m_ViewBounds)).size.x);
+			return (m_ViewBounds.min.x - m_ContentBounds.min.x) / (m_ContentBounds.size.x - m_ViewBounds.size.x);
 		}
 		set
 		{
@@ -438,11 +438,11 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 			UpdateBounds();
-			if (((Bounds)(ref m_ContentBounds)).size.y <= ((Bounds)(ref m_ViewBounds)).size.y)
+			if (m_ContentBounds.size.y <= m_ViewBounds.size.y)
 			{
-				return (((Bounds)(ref m_ViewBounds)).min.y > ((Bounds)(ref m_ContentBounds)).min.y) ? 1 : 0;
+				return (m_ViewBounds.min.y > m_ContentBounds.min.y) ? 1 : 0;
 			}
-			return (((Bounds)(ref m_ViewBounds)).min.y - ((Bounds)(ref m_ContentBounds)).min.y) / (((Bounds)(ref m_ContentBounds)).size.y - ((Bounds)(ref m_ViewBounds)).size.y);
+			return (m_ViewBounds.min.y - m_ContentBounds.min.y) / (m_ContentBounds.size.y - m_ViewBounds.size.y);
 		}
 		set
 		{
@@ -458,7 +458,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 			if (Application.isPlaying)
 			{
-				return ((Bounds)(ref m_ContentBounds)).size.x > ((Bounds)(ref m_ViewBounds)).size.x + 0.01f;
+				return m_ContentBounds.size.x > m_ViewBounds.size.x + 0.01f;
 			}
 			return true;
 		}
@@ -472,7 +472,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 			if (Application.isPlaying)
 			{
-				return ((Bounds)(ref m_ContentBounds)).size.y > ((Bounds)(ref m_ViewBounds)).size.y + 0.01f;
+				return m_ContentBounds.size.y > m_ViewBounds.size.y + 0.01f;
 			}
 			return true;
 		}
@@ -504,9 +504,9 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 			//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0085: Unknown result type (might be due to invalid IL or missing references)
 			UpdateBounds();
-			Vector3 val = Vector3Ex.Inverse(((Bounds)(ref m_ContentBounds)).size);
-			Vector3 val2 = Vector3.Scale(Vector3Ex.Abs(((Bounds)(ref m_ContentBounds)).center - ((Bounds)(ref m_ContentBounds)).extents) + new Vector3(0f - ((Bounds)(ref m_ViewBounds)).extents.x, ((Bounds)(ref m_ViewBounds)).extents.y), val);
-			Vector3 val3 = Vector3.Scale(((Bounds)(ref m_ViewBounds)).size, val);
+			Vector3 val = Vector3Ex.Inverse(m_ContentBounds.size);
+			Vector3 val2 = Vector3.Scale(Vector3Ex.Abs(m_ContentBounds.center - m_ContentBounds.extents) + new Vector3(0f - m_ViewBounds.extents.x, m_ViewBounds.extents.y), val);
+			Vector3 val3 = Vector3.Scale(m_ViewBounds.size, val);
 			return new Rect(Vector2.op_Implicit(val2), Vector2.op_Implicit(val3));
 		}
 	}
@@ -519,19 +519,6 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		m_Horizontal = true;
-		m_Vertical = true;
-		m_MovementType = MovementType.Elastic;
-		m_Elasticity = 0.1f;
-		m_Inertia = true;
-		m_DecelerationRate = 0.135f;
-		m_ScrollSensitivity = 1f;
-		m_OnValueChanged = new ScrollRectEvent();
-		m_PointerStartLocalCursor = Vector2.zero;
-		m_ContentStartPosition = Vector2.zero;
-		m_PrevPosition = Vector2.zero;
-		m_Corners = (Vector3[])(object)new Vector3[4];
-		((UIBehaviour)this)._002Ector();
 	}
 
 	public virtual void Rebuild(CanvasUpdate executing)
@@ -582,18 +569,18 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 			verticalScrollbarRect = null;
 		}
 		m_VerticalScrollbarRect = (RectTransform)verticalScrollbarRect;
-		bool num = (Object)(object)((Transform)viewRect).parent == (Object)(object)transform;
-		bool flag = !Object.op_Implicit((Object)(object)m_HorizontalScrollbarRect) || (Object)(object)((Transform)m_HorizontalScrollbarRect).parent == (Object)(object)transform;
-		bool flag2 = !Object.op_Implicit((Object)(object)m_VerticalScrollbarRect) || (Object)(object)((Transform)m_VerticalScrollbarRect).parent == (Object)(object)transform;
-		bool flag3 = num & flag & flag2;
-		m_HSliderExpand = flag3 && Object.op_Implicit((Object)(object)m_HorizontalScrollbarRect) && horizontalScrollbarVisibility == ScrollbarVisibility.AutoHideAndExpandViewport;
-		m_VSliderExpand = flag3 && Object.op_Implicit((Object)(object)m_VerticalScrollbarRect) && verticalScrollbarVisibility == ScrollbarVisibility.AutoHideAndExpandViewport;
+		bool flag = (Object)(object)((Transform)viewRect).parent == (Object)(object)transform;
+		bool flag2 = !Object.op_Implicit((Object)(object)m_HorizontalScrollbarRect) || (Object)(object)((Transform)m_HorizontalScrollbarRect).parent == (Object)(object)transform;
+		bool flag3 = !Object.op_Implicit((Object)(object)m_VerticalScrollbarRect) || (Object)(object)((Transform)m_VerticalScrollbarRect).parent == (Object)(object)transform;
+		bool flag4 = flag & flag2 & flag3;
+		m_HSliderExpand = flag4 && Object.op_Implicit((Object)(object)m_HorizontalScrollbarRect) && horizontalScrollbarVisibility == ScrollbarVisibility.AutoHideAndExpandViewport;
+		m_VSliderExpand = flag4 && Object.op_Implicit((Object)(object)m_VerticalScrollbarRect) && verticalScrollbarVisibility == ScrollbarVisibility.AutoHideAndExpandViewport;
 		Rect rect;
 		float hSliderHeight;
 		if (!((Object)(object)m_HorizontalScrollbarRect == (Object)null))
 		{
 			rect = m_HorizontalScrollbarRect.rect;
-			hSliderHeight = ((Rect)(ref rect)).height;
+			hSliderHeight = rect.height;
 		}
 		else
 		{
@@ -604,7 +591,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		if (!((Object)(object)m_VerticalScrollbarRect == (Object)null))
 		{
 			rect = m_VerticalScrollbarRect.rect;
-			vSliderWidth = ((Rect)(ref rect)).width;
+			vSliderWidth = rect.width;
 		}
 		else
 		{
@@ -641,7 +628,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 				((UnityEvent<float>)(object)m_VerticalScrollbar.onValueChanged).RemoveListener((UnityAction<float>)SetVerticalNormalizedPosition);
 			}
 			m_HasRebuiltLayout = false;
-			((DrivenRectTransformTracker)(ref m_Tracker)).Clear();
+			m_Tracker.Clear();
 			LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
 			((UIBehaviour)this).OnDisable();
 		}
@@ -811,7 +798,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		Vector2 val = default(Vector2);
+		Vector2 val = default;
 		if ((eventData.button != scrollButton && eventData.button != altScrollButton) || !((UIBehaviour)this).IsActive() || !RectTransformUtility.ScreenPointToLocalPointInRectangle(viewRect, eventData.position, eventData.pressEventCamera, ref val))
 		{
 			return;
@@ -825,11 +812,11 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		{
 			if (val4.x != 0f)
 			{
-				val3.x -= RubberDelta(val4.x, ((Bounds)(ref m_ViewBounds)).size.x);
+				val3.x -= RubberDelta(val4.x, m_ViewBounds.size.x);
 			}
 			if (val4.y != 0f)
 			{
-				val3.y -= RubberDelta(val4.y, ((Bounds)(ref m_ViewBounds)).size.y);
+				val3.y -= RubberDelta(val4.y, m_ViewBounds.size.y);
 			}
 		}
 		SetContentAnchoredPosition(val3);
@@ -918,32 +905,32 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 			Vector2 val2 = m_Content.anchoredPosition;
 			for (int i = 0; i < 2; i++)
 			{
-				if (m_MovementType == MovementType.Elastic && ((Vector2)(ref val))[i] != 0f)
+				if (m_MovementType == MovementType.Elastic && val[i] != 0f)
 				{
-					float num = ((Vector2)(ref m_Velocity))[i];
+					float num = m_Velocity[i];
 					int num2 = i;
 					Vector2 anchoredPosition = m_Content.anchoredPosition;
-					float num3 = ((Vector2)(ref anchoredPosition))[i];
+					float num3 = anchoredPosition[i];
 					anchoredPosition = m_Content.anchoredPosition;
-					((Vector2)(ref val2))[num2] = Mathf.SmoothDamp(num3, ((Vector2)(ref anchoredPosition))[i] + ((Vector2)(ref val))[i], ref num, m_Elasticity, float.PositiveInfinity, unscaledDeltaTime);
-					((Vector2)(ref m_Velocity))[i] = num;
+					val2[num2] = Mathf.SmoothDamp(num3, anchoredPosition[i] + val[i], ref num, m_Elasticity, float.PositiveInfinity, unscaledDeltaTime);
+					m_Velocity[i] = num;
 				}
 				else if (m_Inertia)
 				{
 					ref Vector2 reference = ref m_Velocity;
 					int num4 = i;
-					((Vector2)(ref reference))[num4] = ((Vector2)(ref reference))[num4] * Mathf.Pow(m_DecelerationRate, unscaledDeltaTime);
-					if (Mathf.Abs(((Vector2)(ref m_Velocity))[i]) < 1f)
+					reference[num4] *= Mathf.Pow(m_DecelerationRate, unscaledDeltaTime);
+					if (Mathf.Abs(m_Velocity[i]) < 1f)
 					{
-						((Vector2)(ref m_Velocity))[i] = 0f;
+						m_Velocity[i] = 0f;
 					}
 					reference = ref val2;
 					num4 = i;
-					((Vector2)(ref reference))[num4] = ((Vector2)(ref reference))[num4] + ((Vector2)(ref m_Velocity))[i] * unscaledDeltaTime;
+					reference[num4] += m_Velocity[i] * unscaledDeltaTime;
 				}
 				else
 				{
-					((Vector2)(ref m_Velocity))[i] = 0f;
+					m_Velocity[i] = 0f;
 				}
 			}
 			if (m_Velocity != Vector2.zero)
@@ -1003,9 +990,9 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
 		if (Object.op_Implicit((Object)(object)m_HorizontalScrollbar))
 		{
-			if (((Bounds)(ref m_ContentBounds)).size.x > 0f)
+			if (m_ContentBounds.size.x > 0f)
 			{
-				m_HorizontalScrollbar.size = Mathf.Clamp01((((Bounds)(ref m_ViewBounds)).size.x - Mathf.Abs(offset.x)) / ((Bounds)(ref m_ContentBounds)).size.x);
+				m_HorizontalScrollbar.size = Mathf.Clamp01((m_ViewBounds.size.x - Mathf.Abs(offset.x)) / m_ContentBounds.size.x);
 			}
 			else
 			{
@@ -1015,9 +1002,9 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		}
 		if (Object.op_Implicit((Object)(object)m_VerticalScrollbar))
 		{
-			if (((Bounds)(ref m_ContentBounds)).size.y > 0f)
+			if (m_ContentBounds.size.y > 0f)
 			{
-				m_VerticalScrollbar.size = Mathf.Clamp01((((Bounds)(ref m_ViewBounds)).size.y - Mathf.Abs(offset.y)) / ((Bounds)(ref m_ContentBounds)).size.y);
+				m_VerticalScrollbar.size = Mathf.Clamp01((m_ViewBounds.size.y - Mathf.Abs(offset.y)) / m_ContentBounds.size.y);
 			}
 			else
 			{
@@ -1056,22 +1043,22 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		EnsureLayoutHasRebuilt();
 		UpdateBounds();
-		Vector3 val = ((Bounds)(ref m_ContentBounds)).size;
-		float num = ((Vector3)(ref val))[axis];
-		val = ((Bounds)(ref m_ViewBounds)).size;
-		float num2 = num - ((Vector3)(ref val))[axis];
-		val = ((Bounds)(ref m_ViewBounds)).min;
-		float num3 = ((Vector3)(ref val))[axis] - value * num2;
+		Vector3 val = m_ContentBounds.size;
+		float num = val[axis];
+		val = m_ViewBounds.size;
+		float num2 = num - val[axis];
+		val = m_ViewBounds.min;
+		float num3 = val[axis] - value * num2;
 		val = ((Transform)m_Content).localPosition;
-		float num4 = ((Vector3)(ref val))[axis] + num3;
-		val = ((Bounds)(ref m_ContentBounds)).min;
-		float num5 = num4 - ((Vector3)(ref val))[axis];
+		float num4 = val[axis] + num3;
+		val = m_ContentBounds.min;
+		float num5 = num4 - val[axis];
 		Vector3 localPosition = ((Transform)m_Content).localPosition;
-		if (Mathf.Abs(((Vector3)(ref localPosition))[axis] - num5) > 0.01f)
+		if (Mathf.Abs(localPosition[axis] - num5) > 0.01f)
 		{
-			((Vector3)(ref localPosition))[axis] = num5;
+			localPosition[axis] = num5;
 			((Transform)m_Content).localPosition = localPosition;
-			((Vector2)(ref m_Velocity))[axis] = 0f;
+			m_Velocity[axis] = 0f;
 			UpdateBounds();
 		}
 	}
@@ -1136,20 +1123,20 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
-		((DrivenRectTransformTracker)(ref m_Tracker)).Clear();
+		m_Tracker.Clear();
 		Rect rect;
 		if (m_HSliderExpand || m_VSliderExpand)
 		{
-			((DrivenRectTransformTracker)(ref m_Tracker)).Add((Object)(object)this, viewRect, (DrivenTransformProperties)16134);
+			m_Tracker.Add((Object)(object)this, viewRect, (DrivenTransformProperties)16134);
 			viewRect.anchorMin = Vector2.zero;
 			viewRect.anchorMax = Vector2.one;
 			viewRect.sizeDelta = Vector2.zero;
 			viewRect.anchoredPosition = Vector2.zero;
 			LayoutRebuilder.ForceRebuildLayoutImmediate(content);
 			rect = viewRect.rect;
-			Vector3 val = Vector2.op_Implicit(((Rect)(ref rect)).center);
+			Vector3 val = Vector2.op_Implicit(rect.center);
 			rect = viewRect.rect;
-			m_ViewBounds = new Bounds(val, Vector2.op_Implicit(((Rect)(ref rect)).size));
+			m_ViewBounds = new Bounds(val, Vector2.op_Implicit(rect.size));
 			m_ContentBounds = GetBounds();
 		}
 		if (m_VSliderExpand && vScrollingNeeded)
@@ -1157,18 +1144,18 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 			viewRect.sizeDelta = new Vector2(0f - (m_VSliderWidth + m_VerticalScrollbarSpacing), viewRect.sizeDelta.y);
 			LayoutRebuilder.ForceRebuildLayoutImmediate(content);
 			rect = viewRect.rect;
-			Vector3 val2 = Vector2.op_Implicit(((Rect)(ref rect)).center);
+			Vector3 val2 = Vector2.op_Implicit(rect.center);
 			rect = viewRect.rect;
-			m_ViewBounds = new Bounds(val2, Vector2.op_Implicit(((Rect)(ref rect)).size));
+			m_ViewBounds = new Bounds(val2, Vector2.op_Implicit(rect.size));
 			m_ContentBounds = GetBounds();
 		}
 		if (m_HSliderExpand && hScrollingNeeded)
 		{
 			viewRect.sizeDelta = new Vector2(viewRect.sizeDelta.x, 0f - (m_HSliderHeight + m_HorizontalScrollbarSpacing));
 			rect = viewRect.rect;
-			Vector3 val3 = Vector2.op_Implicit(((Rect)(ref rect)).center);
+			Vector3 val3 = Vector2.op_Implicit(rect.center);
 			rect = viewRect.rect;
-			m_ViewBounds = new Bounds(val3, Vector2.op_Implicit(((Rect)(ref rect)).size));
+			m_ViewBounds = new Bounds(val3, Vector2.op_Implicit(rect.size));
 			m_ContentBounds = GetBounds();
 		}
 		if (m_VSliderExpand && vScrollingNeeded && viewRect.sizeDelta.x == 0f && viewRect.sizeDelta.y < 0f)
@@ -1193,9 +1180,9 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		UpdateScrollbarLayout();
 		Rect rect = viewRect.rect;
-		Vector3 val = Vector2.op_Implicit(((Rect)(ref rect)).center);
+		Vector3 val = Vector2.op_Implicit(rect.center);
 		rect = viewRect.rect;
-		m_ViewBounds = new Bounds(val, Vector2.op_Implicit(((Rect)(ref rect)).size));
+		m_ViewBounds = new Bounds(val, Vector2.op_Implicit(rect.size));
 		m_ContentBounds = GetBounds();
 	}
 
@@ -1235,7 +1222,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
 		if (m_VSliderExpand && Object.op_Implicit((Object)(object)m_HorizontalScrollbar))
 		{
-			((DrivenRectTransformTracker)(ref m_Tracker)).Add((Object)(object)this, m_HorizontalScrollbarRect, (DrivenTransformProperties)5378);
+			m_Tracker.Add((Object)(object)this, m_HorizontalScrollbarRect, (DrivenTransformProperties)5378);
 			m_HorizontalScrollbarRect.anchorMin = new Vector2(0f, m_HorizontalScrollbarRect.anchorMin.y);
 			m_HorizontalScrollbarRect.anchorMax = new Vector2(1f, m_HorizontalScrollbarRect.anchorMax.y);
 			m_HorizontalScrollbarRect.anchoredPosition = new Vector2(0f, m_HorizontalScrollbarRect.anchoredPosition.y);
@@ -1250,7 +1237,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		}
 		if (m_HSliderExpand && Object.op_Implicit((Object)(object)m_VerticalScrollbar))
 		{
-			((DrivenRectTransformTracker)(ref m_Tracker)).Add((Object)(object)this, m_VerticalScrollbarRect, (DrivenTransformProperties)10756);
+			m_Tracker.Add((Object)(object)this, m_VerticalScrollbarRect, (DrivenTransformProperties)10756);
 			m_VerticalScrollbarRect.anchorMin = new Vector2(m_VerticalScrollbarRect.anchorMin.x, 0f);
 			m_VerticalScrollbarRect.anchorMax = new Vector2(m_VerticalScrollbarRect.anchorMax.x, 1f);
 			m_VerticalScrollbarRect.anchoredPosition = new Vector2(m_VerticalScrollbarRect.anchoredPosition.x, 0f);
@@ -1298,32 +1285,34 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
 		Rect rect = viewRect.rect;
-		Vector3 val = Vector2.op_Implicit(((Rect)(ref rect)).center);
+		Vector3 val = Vector2.op_Implicit(rect.center);
 		rect = viewRect.rect;
-		m_ViewBounds = new Bounds(val, Vector2.op_Implicit(((Rect)(ref rect)).size));
+		m_ViewBounds = new Bounds(val, Vector2.op_Implicit(rect.size));
 		m_ContentBounds = GetBounds();
 		if (!((Object)(object)m_Content == (Object)null))
 		{
-			Vector3 size = ((Bounds)(ref m_ContentBounds)).size;
-			Vector3 center = ((Bounds)(ref m_ContentBounds)).center;
-			Vector3 val2 = ((Bounds)(ref m_ViewBounds)).size - size;
+			Vector3 size = m_ContentBounds.size;
+			Vector3 center = m_ContentBounds.center;
+			Vector3 val2 = m_ViewBounds.size - size;
 			if (val2.x > 0f)
 			{
 				center.x -= val2.x * (m_Content.pivot.x - 0.5f);
-				size.x = ((Bounds)(ref m_ViewBounds)).size.x;
+				size.x = m_ViewBounds.size.x;
 			}
 			if (val2.y > 0f)
 			{
 				center.y -= val2.y * (m_Content.pivot.y - 0.5f);
-				size.y = ((Bounds)(ref m_ViewBounds)).size.y;
+				size.y = m_ViewBounds.size.y;
 			}
-			((Bounds)(ref m_ContentBounds)).size = size;
-			((Bounds)(ref m_ContentBounds)).center = center;
+			m_ContentBounds.size = size;
+			m_ContentBounds.center = center;
 		}
 	}
 
 	private Bounds GetBounds()
 	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
@@ -1339,27 +1328,25 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)m_Content == (Object)null)
 		{
-			return default(Bounds);
+			return default;
 		}
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(float.MaxValue, float.MaxValue, float.MaxValue);
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(float.MinValue, float.MinValue, float.MinValue);
+		Vector3 val = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+		Vector3 val2 = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 		Matrix4x4 worldToLocalMatrix = ((Transform)viewRect).worldToLocalMatrix;
 		m_Content.GetWorldCorners(m_Corners);
 		for (int i = 0; i < 4; i++)
 		{
-			Vector3 val3 = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyPoint3x4(m_Corners[i]);
+			Vector3 val3 = worldToLocalMatrix.MultiplyPoint3x4(m_Corners[i]);
 			val = Vector3.Min(val3, val);
 			val2 = Vector3.Max(val3, val2);
 		}
-		Bounds result = default(Bounds);
-		((Bounds)(ref result))._002Ector(val, Vector3.zero);
-		((Bounds)(ref result)).Encapsulate(val2);
+		Bounds result = new Bounds(val, Vector3.zero);
+		result.Encapsulate(val2);
 		return result;
 	}
 
@@ -1400,32 +1387,32 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		{
 			return zero;
 		}
-		Vector2 val = Vector2.op_Implicit(((Bounds)(ref m_ContentBounds)).min);
-		Vector2 val2 = Vector2.op_Implicit(((Bounds)(ref m_ContentBounds)).max);
+		Vector2 val = Vector2.op_Implicit(m_ContentBounds.min);
+		Vector2 val2 = Vector2.op_Implicit(m_ContentBounds.max);
 		if (m_Horizontal)
 		{
 			val.x += delta.x;
 			val2.x += delta.x;
-			if (val.x > ((Bounds)(ref m_ViewBounds)).min.x)
+			if (val.x > m_ViewBounds.min.x)
 			{
-				zero.x = ((Bounds)(ref m_ViewBounds)).min.x - val.x;
+				zero.x = m_ViewBounds.min.x - val.x;
 			}
-			else if (val2.x < ((Bounds)(ref m_ViewBounds)).max.x)
+			else if (val2.x < m_ViewBounds.max.x)
 			{
-				zero.x = ((Bounds)(ref m_ViewBounds)).max.x - val2.x;
+				zero.x = m_ViewBounds.max.x - val2.x;
 			}
 		}
 		if (m_Vertical)
 		{
 			val.y += delta.y;
 			val2.y += delta.y;
-			if (val2.y < ((Bounds)(ref m_ViewBounds)).max.y)
+			if (val2.y < m_ViewBounds.max.y)
 			{
-				zero.y = ((Bounds)(ref m_ViewBounds)).max.y - val2.y;
+				zero.y = m_ViewBounds.max.y - val2.y;
 			}
-			else if (val.y > ((Bounds)(ref m_ViewBounds)).min.y)
+			else if (val.y > m_ViewBounds.min.y)
 			{
-				zero.y = ((Bounds)(ref m_ViewBounds)).min.y - val.y;
+				zero.y = m_ViewBounds.min.y - val.y;
 			}
 		}
 		return zero;
@@ -1452,6 +1439,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
@@ -1464,6 +1452,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
@@ -1475,19 +1464,17 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
 		Transform transform = ((Component)this).transform;
 		RectTransform val = (RectTransform)(object)((transform is RectTransform) ? transform : null);
-		Vector2 val2 = default(Vector2);
-		((Vector2)(ref val2))._002Ector(((Transform)content).localScale.x, ((Transform)content).localScale.y);
+		Vector2 val2 = new Vector2(((Transform)content).localScale.x, ((Transform)content).localScale.y);
 		pos.x *= val2.x;
 		pos.y *= val2.y;
 		Rect rect = content.rect;
-		float num = ((Rect)(ref rect)).width * val2.x;
+		float num = rect.width * val2.x;
 		rect = val.rect;
-		float num2 = num - ((Rect)(ref rect)).width;
+		float num2 = num - rect.width;
 		rect = content.rect;
-		float num3 = ((Rect)(ref rect)).height * val2.y;
+		float num3 = rect.height * val2.y;
 		rect = val.rect;
-		Vector2 val3 = default(Vector2);
-		((Vector2)(ref val3))._002Ector(num2, num3 - ((Rect)(ref rect)).height);
+		Vector2 val3 = new Vector2(num2, num3 - rect.height);
 		pos.x = pos.x / val3.x + content.pivot.x;
 		pos.y = pos.y / val3.y + content.pivot.y;
 		if (movementType != MovementType.Unrestricted)

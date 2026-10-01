@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class NpcWalkAnimation : MonoBehaviour, IClientComponent
 {
-	public Vector3 HipFudge;
+	public Vector3 HipFudge = new Vector3(-90f, 0f, 90f);
 
 	public BaseNpc Npc;
 
@@ -12,29 +12,29 @@ public class NpcWalkAnimation : MonoBehaviour, IClientComponent
 
 	public Transform LookBone;
 
-	public bool UpdateWalkSpeed;
+	public bool UpdateWalkSpeed = true;
 
-	public bool UpdateFacingDirection;
+	public bool UpdateFacingDirection = true;
 
-	public bool UpdateGroundNormal;
+	public bool UpdateGroundNormal = true;
 
 	public Transform alignmentRoot;
 
-	public bool LaggyAss;
+	public bool LaggyAss = true;
 
 	public bool LookAtTarget;
 
-	public float MaxLaggyAssRotation;
+	public float MaxLaggyAssRotation = 70f;
 
-	public float MaxWalkAnimSpeed;
+	public float MaxWalkAnimSpeed = 25f;
 
 	public bool UseDirectionBlending;
 
 	public bool useTurnPosing;
 
-	public float turnPoseScale;
+	public float turnPoseScale = 0.5f;
 
-	public float laggyAssLerpScale;
+	public float laggyAssLerpScale = 15f;
 
 	public bool skeletonChainInverted;
 
@@ -42,15 +42,5 @@ public class NpcWalkAnimation : MonoBehaviour, IClientComponent
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		HipFudge = new Vector3(-90f, 0f, 90f);
-		UpdateWalkSpeed = true;
-		UpdateFacingDirection = true;
-		UpdateGroundNormal = true;
-		LaggyAss = true;
-		MaxLaggyAssRotation = 70f;
-		MaxWalkAnimSpeed = 25f;
-		turnPoseScale = 0.5f;
-		laggyAssLerpScale = 15f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

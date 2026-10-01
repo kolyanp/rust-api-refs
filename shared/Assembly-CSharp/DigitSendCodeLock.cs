@@ -85,9 +85,9 @@ public class DigitSendCodeLock : CodeLock
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(4uL)]
+	[RPC_Server.MaxDistance(3f)]
 	private void OnDigitEntered(RPCMessage rpc)
 	{
 		int num = rpc.read.Int16();
@@ -97,7 +97,7 @@ public class DigitSendCodeLock : CodeLock
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -106,7 +106,7 @@ public class DigitSendCodeLock : CodeLock
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: digitsInputted for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: digitsInputted for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_digitsInputted);
 			return true;

@@ -40,15 +40,15 @@ internal struct BatchUpdateVelocityEndJob : IJobParallelForTransform
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		if (((TransformAccess)(ref transform)).isValid && BatchedIndices.Contains(index))
+		if (transform.isValid && BatchedIndices.Contains(index))
 		{
 			BatchData batchData = BatchedData[index];
 			if (index != batchData.DebugStableIndex)
 			{
 				throw new Exception($"{batchData.DebugStableIndex} {index}");
 			}
-			Quaternion val = ((!(batchData.TumbleSpeed > 0f)) ? Quaternion.LookRotation(batchData.CurrentVelocity) : (((TransformAccess)(ref transform)).rotation * Quaternion.AngleAxis(batchData.TumbleSpeed * DeltaTime, batchData.TumbleAxis)));
-			((TransformAccess)(ref transform)).SetPositionAndRotation(batchData.CurrentPosition, val);
+			Quaternion val = ((!(batchData.TumbleSpeed > 0f)) ? Quaternion.LookRotation(batchData.CurrentVelocity) : (transform.rotation * Quaternion.AngleAxis(batchData.TumbleSpeed * DeltaTime, batchData.TumbleAxis)));
+			transform.SetPositionAndRotation(batchData.CurrentPosition, val);
 		}
 	}
 }

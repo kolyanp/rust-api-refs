@@ -52,7 +52,7 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 			{
 				return "";
 			}
-			return NameHelper.Get(playerSteamID, _playerName, base.isClient);
+			return NameHelper.Get(playerSteamID, _playerName, isClient);
 		}
 		set
 		{
@@ -114,7 +114,7 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 	public override bool OnStartBeingLooted(BasePlayer baseEntity)
 	{
 		bool flag = Player.adminsafezonelooting && baseEntity.IsAdmin;
-		if (playerSteamID != 0L && !flag && (baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && (!baseEntity.InSafeCombatZone() || !InSafeCombatZone()))
+		if (playerSteamID != 0L && !flag && (baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && (!baseEntity.InVerifiedSafeCombatZone() || !InVerifiedSafeCombatZone()))
 		{
 			baseEntity.ShowToast(GameTip.Styles.Error, PlayerCorpse.CantLootSafeZoneError, false);
 			return false;
@@ -293,8 +293,8 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 		Pool.Free<Item>(ref list, false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (inventory != null)

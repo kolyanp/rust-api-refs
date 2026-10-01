@@ -6,37 +6,38 @@ using UnityEngine;
 
 public class Powergrid : ConsoleSystem
 {
-	[ReplicatedVar]
 	[Help("If disabled power grid functionality will be disabled.")]
+	[ReplicatedVar]
 	public static bool enabled = true;
 
 	[ReplicatedVar]
 	[Help("Required powergrid stage for green recyclers to return to baseline efficiency. If < 0 then will use the default values.")]
 	public static int greenRecyclerFullEfficiencyStage = -1;
 
-	[Help("Pretend there are this many additional heavy fuses currently plugged into the power plant. Can input negative numbers to negate the effect of any currently plugged in fuses.")]
 	[ServerVar]
+	[Help("Pretend there are this many additional heavy fuses currently plugged into the power plant. Can input negative numbers to negate the effect of any currently plugged in fuses.")]
 	public static int simulatePowerPlantFuses = 0;
 
 	[ServerVar(Help = "How long a heavy fuse plugged into the power plant lasts while it is decaying at the full rate (how long the worst fuses in the power plant survive for). If <= 0 then fuses last forever.", Saved = true)]
 	public static float fuseLifespanSeconds = 9600f;
 
-	private const float defaultFuseLifespanSeconds = 9600f;
-
 	[ServerVar(Help = "How many of the worst condition heavy fuses in the power plant decay at the full rate (burning out after fuseLifespanSeconds). Every other inserted fuse decays slowly instead. If 0 no fuse ever decays at the full rate.", Saved = true)]
 	public static int fuseFullDecayCount = 3;
-
-	private const int defaultFuseFullDecayCount = 3;
 
 	[ServerVar(Help = "Minimum fraction (0-1) of the full decay rate applied to heavy fuses that aren't one of the worst fuseFullDecayCount. Each fuse rolls its own fraction between fuseSlowDecayFractionMin and fuseSlowDecayFractionMax and keeps it for its lifetime.", Saved = true)]
 	public static float fuseSlowDecayFractionMin = 0.08f;
 
-	private const float defaultFuseSlowDecayFractionMin = 0.08f;
-
 	[ServerVar(Help = "Maximum fraction (0-1) of the full decay rate applied to heavy fuses that aren't one of the worst fuseFullDecayCount. See fuseSlowDecayFractionMin.", Saved = true)]
 	public static float fuseSlowDecayFractionMax = 0.12f;
 
-	private const float defaultFuseSlowDecayFractionMax = 0.12f;
+	[ServerVar(Help = "Connected player count at or below which heavy fuses in the power plant decay at fuseDecayLowPopScale times the normal rate. Decay rate scale rises linearly as pop increases to fuseDecayHighPop where scale returns to 1x.", Saved = true)]
+	public static int fuseDecayLowPop = 10;
+
+	[ServerVar(Help = "Connected player count at or above which heavy fuses in the power plant decay at their normal rate. See fuseDecayLowPop.", Saved = true)]
+	public static int fuseDecayHighPop = 100;
+
+	[ServerVar(Help = "Multiplier on the decay rate of heavy fuses in the power plant while the connected player count is at or below fuseDecayLowPop. At 1 the player count has no effect on decay.", Saved = true)]
+	public static float fuseDecayLowPopScale = 0.25f;
 
 	[ServerVar(Help = "Starting power output of powerline poles when 1 heavy fuse is inserted at the power plant.", Saved = true)]
 	public static int powerlineBasePowerOutput = 5;
@@ -73,7 +74,7 @@ public class Powergrid : ConsoleSystem
 	[ServerVar]
 	public static void status(Arg arg)
 	{
-		//IL_034a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03c5: Unknown result type (might be due to invalid IL or missing references)
 		PowergridManager serverInstance = PointEntity<PowergridManager>.ServerInstance;
 		if ((Object)(object)serverInstance == (Object)null)
 		{
@@ -87,6 +88,9 @@ public class Powergrid : ConsoleSystem
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseFullDecayCount", fuseFullDecayCount));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseSlowDecayFractionMin", fuseSlowDecayFractionMin));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseSlowDecayFractionMax", fuseSlowDecayFractionMax));
+		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseDecayLowPop", fuseDecayLowPop));
+		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseDecayHighPop", fuseDecayHighPop));
+		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseDecayLowPopScale", fuseDecayLowPopScale));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "powerlineBasePowerOutput", powerlineBasePowerOutput));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "powerlineMaxPowerOutput", powerlineMaxPowerOutput));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "greenRecyclerFullEfficiencyStage", greenRecyclerFullEfficiencyStage));
@@ -108,6 +112,7 @@ public class Powergrid : ConsoleSystem
 				stringBuilder.AppendLine($"Stage {i} required fuses: {stageData.requiredFuses}");
 			}
 		}
+		stringBuilder.AppendLine($"Current powerline available energy: {PowergridManager.Server_GetCurrentPowerlineEnergy()}");
 		stringBuilder.AppendLine($"Number of inserted PowerPlant fuses: {serverInstance.Server_GetPowerPlantInsertedFuses()}");
 		stringBuilder.AppendLine($"Number of PowerPlant fuse sockets: {serverInstance.Server_GetFuseSocketsCount()}");
 		stringBuilder.AppendLine($"Number of Powergrid access points: {PowergridManager.GetNoOfPowergridAccessPoints()}");
@@ -125,7 +130,7 @@ public class Powergrid : ConsoleSystem
 	[ServerVar]
 	public static void fuseStatus(Arg arg)
 	{
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)PointEntity<PowergridManager>.ServerInstance == (Object)null)
 		{
 			arg.ReplyWith("Failed to retrieve server instance for PowergridManager");
@@ -142,17 +147,20 @@ public class Powergrid : ConsoleSystem
 				try
 				{
 					PowergridManager.Server_GatherFullDecayFuses((List<Item>)(object)val2);
+					int count = BasePlayer.activePlayerList.Count;
+					float num = PowergridManager.Server_GetPopDecayRateScale(count);
+					stringBuilder.AppendLine($"Pop decay rate scale: {num:P0} (player count {count})");
 					int i = 0;
-					for (int count = ((List<Item>)(object)val).Count; i < count; i++)
+					for (int count2 = ((List<Item>)(object)val).Count; i < count2; i++)
 					{
 						Item item = ((List<Item>)(object)val)[i];
-						float num = (((List<Item>)(object)val2).Contains(item) ? 1f : PowergridManager.Server_GetSlowDecayRateScale(item));
+						float num2 = (((List<Item>)(object)val2).Contains(item) ? 1f : PowergridManager.Server_GetSlowDecayRateScale(item)) * num;
 						stringBuilder.Append($"  Fuse {item.uid}: condition {item.conditionNormalized:P0}");
-						stringBuilder.Append($", decay rate {num:P0}");
-						if (fuseLifespanSeconds > 0f && num > 0f)
+						stringBuilder.Append($", decay rate {num2:P0}");
+						if (fuseLifespanSeconds > 0f && num2 > 0f)
 						{
-							float num2 = item.conditionNormalized * fuseLifespanSeconds / num;
-							stringBuilder.Append($", ~{TimeSpan.FromSeconds(num2):d\\.hh\\:mm\\:ss} left at this rate");
+							float num3 = item.conditionNormalized * fuseLifespanSeconds / num2;
+							stringBuilder.Append($", ~{TimeSpan.FromSeconds(num3):d\\.hh\\:mm\\:ss} left at this rate");
 						}
 						else
 						{

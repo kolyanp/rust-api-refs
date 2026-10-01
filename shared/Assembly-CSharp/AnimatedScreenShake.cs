@@ -32,6 +32,8 @@ public class AnimatedScreenShake : BaseScreenShake
 
 	public override void Run(float delta, ref CachedTransform<Camera> cam, ref CachedTransform<BaseViewModel> vm)
 	{
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
@@ -58,19 +60,17 @@ public class AnimatedScreenShake : BaseScreenShake
 			float num4 = posX.Evaluate(delta);
 			float num5 = posY.Evaluate(delta);
 			float num6 = posZ.Evaluate(delta);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(num, num2, num3);
-			Vector3 val2 = default(Vector3);
-			((Vector3)(ref val2))._002Ector(num4, num5, num6);
+			Vector3 val = new Vector3(num, num2, num3);
+			Vector3 val2 = new Vector3(num4, num5, num6);
 			if ((bool)cam)
 			{
-				cam.rotation = Quaternion.Euler(((Quaternion)(ref cam.rotation)).eulerAngles + val);
+				cam.rotation = Quaternion.Euler(cam.rotation.eulerAngles + val);
 				ref Vector3 position = ref cam.position;
 				position += val2;
 			}
 			if ((bool)vm)
 			{
-				vm.rotation = Quaternion.Euler(((Quaternion)(ref vm.rotation)).eulerAngles + val);
+				vm.rotation = Quaternion.Euler(vm.rotation.eulerAngles + val);
 				ref Vector3 position2 = ref vm.position;
 				position2 += val2;
 			}

@@ -11,9 +11,9 @@ public class LootPanelRecycler : LootPanel
 
 	public RustText recycler_stats;
 
-	public Color goodStatsColor;
+	public Color goodStatsColor = new Color(0.584712f, 0.75f, 0.2922794f);
 
-	public Color badStatsColor;
+	public Color badStatsColor = new Color(205f / 255f, 0.254902f, 0.1686275f);
 
 	public LootPanelRecycler()
 	{
@@ -21,8 +21,5 @@ public class LootPanelRecycler : LootPanel
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		goodStatsColor = new Color(0.584712f, 0.75f, 0.2922794f);
-		badStatsColor = new Color(41f / 51f, 0.254902f, 0.1686275f);
-		base._002Ector();
 	}
 }

@@ -21,8 +21,8 @@ public class TransformLoopPreview : MonoBehaviour
 	[SerializeField]
 	private float movementDistance = 10f;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float movementSpeed = 5f;
 
 	[Tooltip("Uses the object's rotated local axes instead of world axes.")]
@@ -32,8 +32,8 @@ public class TransformLoopPreview : MonoBehaviour
 	[SerializeField]
 	private MovementAxis movementAxis = MovementAxis.PositiveZ;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 originPosition;
 
 	[SerializeField]
@@ -102,7 +102,7 @@ public class TransformLoopPreview : MonoBehaviour
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = (Vector3)(movementAxis switch
+		Vector3 val = movementAxis switch
 		{
 			MovementAxis.PositiveX => Vector3.right, 
 			MovementAxis.NegativeX => Vector3.left, 
@@ -110,12 +110,12 @@ public class TransformLoopPreview : MonoBehaviour
 			MovementAxis.NegativeY => Vector3.down, 
 			MovementAxis.NegativeZ => Vector3.back, 
 			_ => Vector3.forward, 
-		});
+		};
 		if (useLocalAxis)
 		{
 			val = ((Component)this).transform.TransformDirection(val);
 		}
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	public void CaptureOrigin()

@@ -75,6 +75,6 @@ public class NpcSleepingComponent : EntityComponent<BaseEntity>, IAISleepable, I
 				((Behaviour)val).enabled = !newSleeping;
 			}
 		}
-		base.baseEntity.limitNetworking = newSleeping;
+		baseEntity.limitNetworking = newSleeping;
 	}
 }

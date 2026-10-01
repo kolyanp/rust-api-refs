@@ -18,7 +18,7 @@ public class PlayerCorpse : LootableCorpse
 
 	public const Flags BlockClothingRebuild = Flags.Reserved2;
 
-	public static readonly Phrase CantLootSafeZoneError;
+	public static readonly Phrase CantLootSafeZoneError = new Phrase("error_cantlootsafezone", "Cannot loot other players in safe zones");
 
 	private Vector3 prevLocalPos;
 
@@ -51,7 +51,7 @@ public class PlayerCorpse : LootableCorpse
 
 	public override bool OnStartBeingLooted(BasePlayer baseEntity)
 	{
-		if ((!Player.adminsafezonelooting || !baseEntity.IsAdmin) && (baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && (!baseEntity.InSafeCombatZone() || !InSafeCombatZone()))
+		if ((!Player.adminsafezonelooting || !baseEntity.IsAdmin) && (baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && (!baseEntity.InVerifiedSafeCombatZone() || !InVerifiedSafeCombatZone()))
 		{
 			baseEntity.ShowToast(GameTip.Styles.Error, CantLootSafeZoneError, false);
 			return false;
@@ -226,6 +226,13 @@ public class PlayerCorpse : LootableCorpse
 		return 0.9f;
 	}
 
+	public override bool FillHeadData(HeadEntity head)
+	{
+		head.SetupPlayerId(playerName, playerSteamID);
+		head.AssignClothing(containers[1]);
+		return true;
+	}
+
 	private void OnPhysicsNeighbourChanged()
 	{
 		BecomeActive();
@@ -273,7 +280,7 @@ public class PlayerCorpse : LootableCorpse
 				info.msg.lootableCorpse.paintballColor = item.instanceData?.dataInt ?? 0;
 			}
 		}
-		if (base.isServer && containers != null && containers.Length > 1 && !info.forDisk)
+		if (isServer && containers != null && containers.Length > 1 && !info.forDisk)
 		{
 			info.msg.storageBox = Pool.Get<StorageBox>();
 			info.msg.storageBox.contents = containers[1].Save();
@@ -288,7 +295,6 @@ public class PlayerCorpse : LootableCorpse
 	static PlayerCorpse()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		CantLootSafeZoneError = new Phrase("error_cantlootsafezone", "Cannot loot other players in safe zones");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

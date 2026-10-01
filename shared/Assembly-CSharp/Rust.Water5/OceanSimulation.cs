@@ -26,7 +26,7 @@ public class OceanSimulation : IDisposable
 
 	public const float phsyicsDeltaTime = 0.25f;
 
-	public const float oneOverPhysicsSimulationSize = 0.00390625f;
+	public const float oneOverPhysicsSimulationSize = 1f / 256f;
 
 	public const int physicsFrameSize = 65536;
 
@@ -62,11 +62,11 @@ public class OceanSimulation : IDisposable
 
 	private float deltaTime;
 
-	private Rust.Water5.NativeOceanDisplacementShort3 nativeSimData;
+	private NativeOceanDisplacementShort3 nativeSimData;
 
-	private Rust.Water5.GetHeightBatchedJob _cachedBatchJob;
+	private GetHeightBatchedJob _cachedBatchJob;
 
-	private Rust.Water5.GetHeightsJobIndirect _heightsJobIndirect;
+	private GetHeightsJobIndirect _heightsJobIndirect;
 
 	private NativeArray<float3> _batchPositionQueryArr;
 
@@ -82,7 +82,7 @@ public class OceanSimulation : IDisposable
 
 	public float FrameBlend => frameBlend;
 
-	internal OceanSimulation(OceanSettings oceanSettings, Rust.Water5.NativeOceanDisplacementShort3 simData)
+	internal OceanSimulation(OceanSettings oceanSettings, NativeOceanDisplacementShort3 simData)
 	{
 		this.oceanSettings = oceanSettings;
 		oneOverOctave0Scale = 1f / oceanSettings.octaveScales[0];
@@ -95,11 +95,11 @@ public class OceanSimulation : IDisposable
 		spectrumRanges = oceanSettings.spectrumRanges;
 		depthAttenuationFactor = oceanSettings.depthAttenuationFactor;
 		distanceAttenuationFactor = oceanSettings.distanceAttenuationFactor;
-		_cachedBatchJob = new Rust.Water5.GetHeightBatchedJob
+		_cachedBatchJob = new GetHeightBatchedJob
 		{
 			SimData = nativeSimData.AsReadOnly()
 		};
-		_heightsJobIndirect = new Rust.Water5.GetHeightsJobIndirect
+		_heightsJobIndirect = new GetHeightsJobIndirect
 		{
 			SimData = nativeSimData
 		};
@@ -178,7 +178,7 @@ public class OceanSimulation : IDisposable
 		float num = Mathf.Lerp(spectrumRanges[spectrum0], spectrumRanges[spectrum1], spectrumBlend);
 		if (num <= 0.1f)
 		{
-			inputDeps = IJobParallelForDeferExtensions.Schedule<OceanSimulationJobs.SmallDisplacementPlaneTraceJob, int>(new OceanSimulationJobs.SmallDisplacementPlaneTraceJob
+			inputDeps = IJobParallelForDeferExtensions.Schedule<SmallDisplacementPlaneTraceJob, int>(new SmallDisplacementPlaneTraceJob
 			{
 				SeaPlane = new Plane(Vector3.up, 0f - WaterSystem.OceanLevel),
 				Indices = indices,
@@ -189,7 +189,7 @@ public class OceanSimulation : IDisposable
 			}, indices, 256, inputDeps);
 			return inputDeps;
 		}
-		inputDeps = IJobParallelForDeferExtensions.Schedule<OceanSimulationJobs.OceanTraceJob, int>(new OceanSimulationJobs.OceanTraceJob
+		inputDeps = IJobParallelForDeferExtensions.Schedule<OceanTraceJob, int>(new OceanTraceJob
 		{
 			SeaLevel = WaterSystem.OceanLevel,
 			MaxDisplacement = num,
@@ -221,6 +221,7 @@ public class OceanSimulation : IDisposable
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
@@ -293,31 +294,30 @@ public class OceanSimulation : IDisposable
 		float num = Mathf.Lerp(spectrumRanges[spectrum0], spectrumRanges[spectrum1], spectrumBlend);
 		if (num <= 0.1f)
 		{
-			Plane val = default(Plane);
-			((Plane)(ref val))._002Ector(Vector3.up, 0f - oceanLevel);
-			float num2 = default(float);
-			if (((Plane)(ref val)).Raycast(ray, ref num2) && num2 < maxDist)
+			Plane val = new Plane(Vector3.up, 0f - oceanLevel);
+			float num2 = default;
+			if (val.Raycast(ray, ref num2) && num2 < maxDist)
 			{
-				result = ((Ray)(ref ray)).GetPoint(num2);
+				result = ray.GetPoint(num2);
 				return true;
 			}
 			result = Vector3.zero;
 			return false;
 		}
 		float num3 = 0f - num;
-		Vector3 point = ((Ray)(ref ray)).GetPoint(maxDist);
-		if (((Ray)(ref ray)).origin.y > num + oceanLevel && point.y > num + oceanLevel)
+		Vector3 point = ray.GetPoint(maxDist);
+		if (ray.origin.y > num + oceanLevel && point.y > num + oceanLevel)
 		{
 			result = Vector3.zero;
 			return false;
 		}
-		if (((Ray)(ref ray)).origin.y < num3 + oceanLevel && point.y < num3 + oceanLevel)
+		if (ray.origin.y < num3 + oceanLevel && point.y < num3 + oceanLevel)
 		{
 			result = Vector3.zero;
 			return false;
 		}
-		Vector3 val2 = ((Ray)(ref ray)).origin;
-		Vector3 direction = ((Ray)(ref ray)).direction;
+		Vector3 val2 = ray.origin;
+		Vector3 direction = ray.direction;
 		float num4 = 0f;
 		float num5 = 0f;
 		float num6 = 2f / (math.abs(direction.y) + 1f);
@@ -363,7 +363,7 @@ public class OceanSimulation : IDisposable
 		{
 			num4 = (0f - (val2.y + num - oceanLevel)) / direction.y;
 			Vector3 val3 = val2;
-			Vector3 val4 = val2 + num4 * ((Ray)(ref ray)).direction;
+			Vector3 val4 = val2 + num4 * ray.direction;
 			for (int i = 0; i < 16; i++)
 			{
 				val2 = (val3 + val4) * 0.5f;
@@ -409,6 +409,7 @@ public class OceanSimulation : IDisposable
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
@@ -436,8 +437,7 @@ public class OceanSimulation : IDisposable
 		float z2 = TerrainMeta.OneOverSize.z;
 		float num = (position.x - x) * x2;
 		float num2 = (position.z - z) * z2;
-		Vector2 uv = default(Vector2);
-		((Vector2)(ref uv))._002Ector(num, num2);
+		Vector2 uv = new Vector2(num, num2);
 		float num3 = (((Object)(object)TerrainTexturing.Instance != (Object)null) ? TerrainTexturing.Instance.GetCoarseDistanceToShore(position) : 0f);
 		float num4 = (((Object)(object)TerrainMeta.HeightMap != (Object)null) ? TerrainMeta.HeightMap.GetHeight(uv) : 0f);
 		float num5 = Mathf.Clamp01(num3 / distAttenFactor);
@@ -556,12 +556,12 @@ public class OceanSimulation : IDisposable
 		_cachedBatchJob.frameBlend = frameBlend;
 		_cachedBatchJob.Positions = _batchPositionQueryArr;
 		_cachedBatchJob.Count = positions.Length;
-		ref Rust.Water5.GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
+		ref GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
 		int num = positions.Length;
 		int batchSize = ThreadUtils.GetBatchSize(positions.Length);
-		JobHandle val = default(JobHandle);
-		val = IJobParallelForExtensions.ScheduleByRef<Rust.Water5.GetHeightBatchedJob>(ref cachedBatchJob, num, batchSize, val);
-		((JobHandle)(ref val)).Complete();
+		JobHandle val = default;
+		val = IJobParallelForExtensions.ScheduleByRef<GetHeightBatchedJob>(ref cachedBatchJob, num, batchSize, val);
+		val.Complete();
 		for (int i = 0; i < heights.Length; i++)
 		{
 			heights[i] = _batchPositionQueryArr[i].x * GetHeightAttenuation(shore[i], terrainHeight[i]);
@@ -589,12 +589,12 @@ public class OceanSimulation : IDisposable
 		_cachedBatchJob.frameBlend = frameBlend;
 		_cachedBatchJob.Positions = _batchPositionQueryArr;
 		_cachedBatchJob.Count = positions.Length;
-		ref Rust.Water5.GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
+		ref GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
 		int length = positions.Length;
 		int batchSize = ThreadUtils.GetBatchSize(positions.Length);
-		JobHandle val = default(JobHandle);
-		val = IJobParallelForExtensions.ScheduleByRef<Rust.Water5.GetHeightBatchedJob>(ref cachedBatchJob, length, batchSize, val);
-		((JobHandle)(ref val)).Complete();
+		JobHandle val = default;
+		val = IJobParallelForExtensions.ScheduleByRef<GetHeightBatchedJob>(ref cachedBatchJob, length, batchSize, val);
+		val.Complete();
 		for (int i = 0; i < heights.Length; i++)
 		{
 			heights[i] = _batchPositionQueryArr[i].x * GetHeightAttenuation(shore[i], terrainHeight[i]);
@@ -621,12 +621,12 @@ public class OceanSimulation : IDisposable
 		_cachedBatchJob.frameBlend = frameBlend;
 		_cachedBatchJob.Positions = positions;
 		_cachedBatchJob.Count = positions.Length;
-		ref Rust.Water5.GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
+		ref GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
 		int length = positions.Length;
 		int batchSize = ThreadUtils.GetBatchSize(positions.Length);
-		JobHandle val = default(JobHandle);
-		val = IJobParallelForExtensions.ScheduleByRef<Rust.Water5.GetHeightBatchedJob>(ref cachedBatchJob, length, batchSize, val);
-		((JobHandle)(ref val)).Complete();
+		JobHandle val = default;
+		val = IJobParallelForExtensions.ScheduleByRef<GetHeightBatchedJob>(ref cachedBatchJob, length, batchSize, val);
+		val.Complete();
 		for (int i = 0; i < heights.Length; i++)
 		{
 			heights[i] = positions[i].x * GetHeightAttenuation(shore[i], terrainHeight[i]);
@@ -659,7 +659,7 @@ public class OceanSimulation : IDisposable
 		_heightsJobIndirect.FrameBlend = frameBlend;
 		_heightsJobIndirect.DistanceAttenuationFactor = distanceAttenuationFactor;
 		_heightsJobIndirect.DepthAttenuationFactor = depthAttenuationFactor;
-		IJobExtensions.RunByRef<Rust.Water5.GetHeightsJobIndirect>(ref _heightsJobIndirect);
+		IJobExtensions.RunByRef<GetHeightsJobIndirect>(ref _heightsJobIndirect);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -681,7 +681,7 @@ public class OceanSimulation : IDisposable
 		PopulateBatchNative(position);
 		_cachedBatchJob.Positions = _batchPositionQueryArr;
 		_cachedBatchJob.Count = 1;
-		IJobExtensions.RunByRef<Rust.Water5.GetHeightBatchedJob>(ref _cachedBatchJob);
+		IJobExtensions.RunByRef<GetHeightBatchedJob>(ref _cachedBatchJob);
 		return _cachedBatchJob.Positions[0].x * heightAttenuation;
 	}
 

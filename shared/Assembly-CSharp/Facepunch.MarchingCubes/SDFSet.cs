@@ -28,9 +28,6 @@ public class SDFSet : FacepunchBehaviour, IDisposable
 	[NonSerialized]
 	public List<SDFChunk> CensorChunks;
 
-	[CompilerGenerated]
-	private JobHandle _003CDataDependency_003Ek__BackingField;
-
 	public const float SoftnessFraction = 0.15f;
 
 	public JobHandle DataDependency
@@ -39,14 +36,14 @@ public class SDFSet : FacepunchBehaviour, IDisposable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CDataDependency_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CDataDependency_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -58,7 +55,7 @@ public class SDFSet : FacepunchBehaviour, IDisposable
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		JobHandle dataDependency = DataDependency;
-		DataDependency = default(JobHandle);
+		DataDependency = default;
 		return dataDependency;
 	}
 
@@ -77,8 +74,8 @@ public class SDFSet : FacepunchBehaviour, IDisposable
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		JobHandle val = DataDependency;
-		((JobHandle)(ref val)).Complete();
-		val = (DataDependency = default(JobHandle));
+		val.Complete();
+		val = (DataDependency = default);
 	}
 
 	public void Init()
@@ -268,14 +265,14 @@ public class SDFSet : FacepunchBehaviour, IDisposable
 	public int GetMaxYLayer()
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		CompleteDataJobs();
-		NativeReference<int> maxYLayer = default(NativeReference<int>);
-		maxYLayer._002Ector(AllocatorHandle.op_Implicit((Allocator)3), (NativeArrayOptions)1);
+		NativeReference<int> maxYLayer = new NativeReference<int>(AllocatorHandle.op_Implicit((Allocator)3), (NativeArrayOptions)1);
 		FindMaxYLayerJob findMaxYLayerJob = new FindMaxYLayerJob
 		{
 			data = Chunks[0].DataArray,

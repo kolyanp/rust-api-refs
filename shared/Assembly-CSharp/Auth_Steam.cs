@@ -64,7 +64,7 @@ public static class Auth_Steam
 		}
 	}
 
-	public unsafe static bool ValidateConnecting(ulong steamid, ulong ownerSteamID, AuthResponse response)
+	public static bool ValidateConnecting(ulong steamid, ulong ownerSteamID, AuthResponse response)
 	{
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Invalid comparison between Unknown and I4
@@ -106,7 +106,7 @@ public static class Auth_Steam
 			connection.authStatusSteam = "ok";
 			return true;
 		}
-		connection.authStatusSteam = ((object)(*(AuthResponse*)(&response))/*cast due to constrained. prefix*/).ToString();
+		connection.authStatusSteam = ((object)response/*cast due to constrained. prefix*/).ToString();
 		return true;
 	}
 }

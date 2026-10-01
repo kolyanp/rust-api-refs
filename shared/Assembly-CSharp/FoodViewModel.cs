@@ -26,7 +26,7 @@ public class FoodViewModel : BaseViewModel
 		public void InitForItemDef(ItemDefinition itemDef)
 		{
 			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001d: Expected O, but got Unknown
+			//IL_001d: Expected Obj, but got Unknown
 			if ((Object)(object)itemDef == (Object)null)
 			{
 				return;

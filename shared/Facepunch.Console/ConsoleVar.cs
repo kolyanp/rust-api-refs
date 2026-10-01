@@ -16,6 +16,8 @@ public class ConsoleVar : Attribute
 
 	public bool Saved;
 
+	public bool SavedInEditor;
+
 	public string Help;
 
 	public bool ClientInfo;

@@ -17,14 +17,14 @@ public class SupplySignal : TimedExplosive
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		BaseEntity baseEntity = GameManager.server.CreateEntity(EntityToCreate.resourcePath);
 		if (Object.op_Implicit((Object)(object)baseEntity))
 		{
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(Random.Range(-20f, 20f), 0f, Random.Range(-20f, 20f));
+			Vector3 val = new Vector3(Random.Range(-20f, 20f), 0f, Random.Range(-20f, 20f));
 			((Component)baseEntity).SendMessage("InitDropPosition", (object)(((Component)this).transform.position + val), (SendMessageOptions)1);
 			baseEntity.Spawn();
 			Interface.CallHook("OnCargoPlaneSignaled", baseEntity, this);

@@ -15,14 +15,14 @@ public class Category_Fishing
 	public class Fishing_BaseFishingRod
 	{
 		[Patch("OnFishingStopped", "OnFishingStopped", "BaseFishingRod", "Server_Cancel", new string[] { "BaseFishingRod/FailReason" })]
-		[Identifier("0f7810a6c80d44b98424eed0dc092993")]
+		[Identifier("2d34042f8c414b1491dcebcbf9c10f52")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseFishingRod", false)]
 		[Parameter("reason", "BaseFishingRod+FailReason", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_0f7810a6c80d44b98424eed0dc092993 : Patch
+		public class Fishing_BaseFishingRod_2d34042f8c414b1491dcebcbf9c10f52 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -51,7 +51,7 @@ public class Category_Fishing
 		}
 
 		[Patch("OnFishingRodCast", "OnFishingRodCast", "BaseFishingRod", "Server_RequestCast", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("7335b586c56b41f1bc51a8db44e3364a")]
+		[Identifier("6874f896d5314f9b92a4f392327d0c90")]
 		[Dependencies(new string[] { "CanCastFishingRod" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseFishingRod", false)]
@@ -60,7 +60,7 @@ public class Category_Fishing
 		[Return(typeof(void), Discarded = true)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_7335b586c56b41f1bc51a8db44e3364a : Patch
+		public class Fishing_BaseFishingRod_6874f896d5314f9b92a4f392327d0c90 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -90,16 +90,16 @@ public class Category_Fishing
 		}
 
 		[Patch("OnFishCaught", "OnFishCaught", "BaseFishingRod", "CatchProcessBudgeted", new string[] { })]
-		[Identifier("ed8e8f45b3164f8ca59abf325f685693")]
+		[Identifier("40fbf900813a465484d1dced8277e930")]
 		[Dependencies(new string[] { "OnFishCatch" })]
 		[Options(/*Could not decode attribute arguments.*/)]
+		[Parameter("currentFishTarget", "ItemDefinition", false)]
 		[Parameter("self", "BaseFishingRod", false)]
-		[Parameter("self1", "BaseFishingRod", false)]
 		[Parameter("local2", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_ed8e8f45b3164f8ca59abf325f685693 : Patch
+		public class Fishing_BaseFishingRod_40fbf900813a465484d1dced8277e930 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -130,32 +130,32 @@ public class Category_Fishing
 		}
 
 		[Patch("CanCastFishingRod", "CanCastFishingRod", "BaseFishingRod", "Server_RequestCast", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("9cd5fe1a9f694b4a938355d94718ebb3")]
+		[Identifier("f288ff1d06d94985b0fb70fce667e4b7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_9cd5fe1a9f694b4a938355d94718ebb3 : Patch
+		public class Fishing_BaseFishingRod_f288ff1d06d94985b0fb70fce667e4b7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0022: Expected O, but got Unknown
+				//IL_0022: Expected Obj, but got Unknown
 				//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004b: Expected O, but got Unknown
+				//IL_004b: Expected Obj, but got Unknown
 				//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0095: Expected O, but got Unknown
+				//IL_0095: Expected Obj, but got Unknown
 				//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0101: Expected O, but got Unknown
+				//IL_0101: Expected Obj, but got Unknown
 				//IL_0143: Unknown result type (might be due to invalid IL or missing references)
-				//IL_014d: Expected O, but got Unknown
+				//IL_014d: Expected Obj, but got Unknown
 				//IL_0168: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0172: Expected O, but got Unknown
+				//IL_0172: Expected Obj, but got Unknown
 				//IL_019b: Unknown result type (might be due to invalid IL or missing references)
-				//IL_01a5: Expected O, but got Unknown
+				//IL_01a5: Expected Obj, but got Unknown
 				//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
-				//IL_01bb: Expected O, but got Unknown
+				//IL_01bb: Expected Obj, but got Unknown
 				//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
-				//IL_01cc: Expected O, but got Unknown
+				//IL_01cc: Expected Obj, but got Unknown
 				List<CodeInstruction> list = new List<CodeInstruction>();
 				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
 				list.Add(new CodeInstruction(OpCodes.Ldstr, (object)"CanCastFishingRod"));
@@ -176,7 +176,7 @@ public class Category_Fishing
 				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 11, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Isinst, (object)typeof(bool)));
 				Label label = Generator.DefineLabel();
-				CodeInstruction obj = list2[28];
+				CodeInstruction val = list2[28];
 				list.Add(new CodeInstruction(OpCodes.Brfalse_S, (object)label));
 				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 11, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Unbox_Any, (object)typeof(bool)));
@@ -187,36 +187,36 @@ public class Category_Fishing
 					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[28]), list2[28]);
 				}
 				list2.InsertRange(28, list);
-				obj.labels.Add(label);
+				val.labels.Add(label);
 				return list2.AsEnumerable();
 			}
 		}
 
 		[Patch("CanCatchFish", "CanCatchFish", "BaseFishingRod", "CatchProcessBudgeted", new string[] { })]
-		[Identifier("382f3905b111443182fcf6140c60ce9b")]
+		[Identifier("755e316f57a643c8ac961ded25ca0ac3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_382f3905b111443182fcf6140c60ce9b : Patch
+		public class Fishing_BaseFishingRod_755e316f57a643c8ac961ded25ca0ac3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0022: Expected O, but got Unknown
+				//IL_0022: Expected Obj, but got Unknown
 				//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004b: Expected O, but got Unknown
+				//IL_004b: Expected Obj, but got Unknown
 				//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00c3: Expected O, but got Unknown
+				//IL_00c3: Expected Obj, but got Unknown
 				//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-				//IL_010f: Expected O, but got Unknown
+				//IL_010f: Expected Obj, but got Unknown
 				//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0137: Expected O, but got Unknown
+				//IL_0137: Expected Obj, but got Unknown
 				//IL_0160: Unknown result type (might be due to invalid IL or missing references)
-				//IL_016a: Expected O, but got Unknown
+				//IL_016a: Expected Obj, but got Unknown
 				//IL_0176: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0180: Expected O, but got Unknown
+				//IL_0180: Expected Obj, but got Unknown
 				//IL_0187: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0191: Expected O, but got Unknown
+				//IL_0191: Expected Obj, but got Unknown
 				List<CodeInstruction> list = new List<CodeInstruction>();
 				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
 				list.Add(new CodeInstruction(OpCodes.Ldstr, (object)"CanCatchFish"));
@@ -234,7 +234,7 @@ public class Category_Fishing
 				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 18, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Isinst, (object)typeof(bool)));
 				Label label = Generator.DefineLabel();
-				CodeInstruction obj = list2[527];
+				CodeInstruction val = list2[527];
 				list.Add(new CodeInstruction(OpCodes.Brfalse_S, (object)label));
 				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 18, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Unbox_Any, (object)typeof(bool)));
@@ -245,41 +245,41 @@ public class Category_Fishing
 					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[527]), list2[527]);
 				}
 				list2.InsertRange(527, list);
-				obj.labels.Add(label);
+				val.labels.Add(label);
 				return list2.AsEnumerable();
 			}
 		}
 
 		[Patch("OnFishCatch", "OnFishCatch", "BaseFishingRod", "CatchProcessBudgeted", new string[] { })]
-		[Identifier("0f0632e3e5324efcb44154c3a888e897")]
+		[Identifier("a664aeedb3c24214b06819d584664fb3")]
 		[Dependencies(new string[] { "CanCatchFish" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_0f0632e3e5324efcb44154c3a888e897 : Patch
+		public class Fishing_BaseFishingRod_a664aeedb3c24214b06819d584664fb3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0022: Expected O, but got Unknown
+				//IL_0022: Expected Obj, but got Unknown
 				//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004c: Expected O, but got Unknown
+				//IL_004c: Expected Obj, but got Unknown
 				//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00c3: Expected O, but got Unknown
+				//IL_00c3: Expected Obj, but got Unknown
 				//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-				//IL_010f: Expected O, but got Unknown
+				//IL_010f: Expected Obj, but got Unknown
 				//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0138: Expected O, but got Unknown
+				//IL_0138: Expected Obj, but got Unknown
 				//IL_0161: Unknown result type (might be due to invalid IL or missing references)
-				//IL_016b: Expected O, but got Unknown
+				//IL_016b: Expected Obj, but got Unknown
 				//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-				//IL_019a: Expected O, but got Unknown
+				//IL_019a: Expected Obj, but got Unknown
 				//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
-				//IL_01cd: Expected O, but got Unknown
+				//IL_01cd: Expected Obj, but got Unknown
 				//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0205: Expected O, but got Unknown
+				//IL_0205: Expected Obj, but got Unknown
 				//IL_022e: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0238: Expected O, but got Unknown
+				//IL_0238: Expected Obj, but got Unknown
 				List<CodeInstruction> list = new List<CodeInstruction>();
 				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
 				list.Add(new CodeInstruction(OpCodes.Ldstr, (object)"OnFishCatch"));

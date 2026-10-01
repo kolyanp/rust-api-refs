@@ -51,7 +51,7 @@ public class MetalDetectorSource : BaseEntity, IMetalDetectable
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.limitNetworking = true;
+		limitNetworking = true;
 		ServerCount++;
 		SpawnRadius = Random.Range(SpawnRadiusMin, SpawnRadiusMax);
 		ResetTimeout();
@@ -95,12 +95,12 @@ public class MetalDetectorSource : BaseEntity, IMetalDetectable
 		{
 			Vector3 val = Vector2.op_Implicit(Random.insideUnitCircle);
 			Vector3 pos = ((Component)this).transform.position + new Vector3(val.x, 0f, val.y) * (SpawnRadius - SpawnRadiusBuffer);
-			bool num2 = ValidateSourcePosition(ref pos);
-			if (num2)
+			bool flag2 = ValidateSourcePosition(ref pos);
+			if (flag2)
 			{
 				AddSource(pos);
 			}
-			flag = !num2 && ++num < AttemptsPerSubSourceSpawn;
+			flag = !flag2 && ++num < AttemptsPerSubSourceSpawn;
 		}
 	}
 
@@ -124,25 +124,25 @@ public class MetalDetectorSource : BaseEntity, IMetalDetectable
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(pos + Vector3.up, Vector3.down, ref val, 4f, 8388608))
 		{
 			foreach (Vector3 spawnLocation in SpawnLocations)
 			{
-				if (Vector3.SqrMagnitude(((RaycastHit)(ref val)).point - spawnLocation) < MinDistanceBetweenSubSources * MinDistanceBetweenSubSources)
+				if (Vector3.SqrMagnitude(val.point - spawnLocation) < MinDistanceBetweenSubSources * MinDistanceBetweenSubSources)
 				{
 					return false;
 				}
 			}
-			if (!GamePhysics.LineOfSight(((RaycastHit)(ref val)).point, ((RaycastHit)(ref val)).point + Vector3.up * 4f, 1075904769))
+			if (!GamePhysics.LineOfSight(val.point, val.point + Vector3.up * 4f, 1075904769))
 			{
 				return false;
 			}
-			if (!GamePhysics.LineOfSight(((Component)this).transform.position, ((RaycastHit)(ref val)).point, 1075904769))
+			if (!GamePhysics.LineOfSight(((Component)this).transform.position, val.point, 1075904769))
 			{
 				return false;
 			}
-			pos = ((RaycastHit)(ref val)).point;
+			pos = val.point;
 			return true;
 		}
 		return false;
@@ -206,20 +206,20 @@ public class MetalDetectorSource : BaseEntity, IMetalDetectable
 		return result;
 	}
 
-	public void RemoveSweetSpotAndCreateFlag(Vector3 position)
+	public void RemoveSweetSpotAndCreateFlag(Vector3 position, float maxRange = 0.2f)
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = false;
 		for (int num = SpawnLocations.Count - 1; num >= 0; num--)
 		{
 			Vector3 val = SpawnLocations[num];
-			if (Vector3.SqrMagnitude(position - val) <= 0.040000003f)
+			if (Vector3.SqrMagnitude(position - val) <= maxRange * maxRange)
 			{
 				RemoveSource(val);
 				CreateFlag(val);
@@ -294,10 +294,10 @@ public class MetalDetectorSource : BaseEntity, IMetalDetectable
 		return VerifySweetSpotPosition(playerPos, pos, out spotPos);
 	}
 
-	public void Detected(Vector3 pos)
+	public void Detected(Vector3 pos, float maxRange = 0.2f)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		RemoveSweetSpotAndCreateFlag(pos);
+		RemoveSweetSpotAndCreateFlag(pos, maxRange);
 	}
 
 	public float GetRadius()

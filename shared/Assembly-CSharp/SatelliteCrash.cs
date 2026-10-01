@@ -39,9 +39,9 @@ public class SatelliteCrash : BaseCombatEntity
 
 	private const float EntryDirCenterDeadzone = 25f;
 
-	private static readonly Phrase CrashEventTitlePhrase;
+	private static readonly Phrase CrashEventTitlePhrase = new Phrase("satellite.event.title", "SATELLITE EVENT");
 
-	private static readonly Phrase CrashEventBodyPhrase;
+	private static readonly Phrase CrashEventBodyPhrase = new Phrase("satellite.event.crashed", "A satellite has crashed at {0}!");
 
 	private bool hasCrashed;
 
@@ -81,7 +81,7 @@ public class SatelliteCrash : BaseCombatEntity
 
 	private const float CrateClearanceSkin = 0.1f;
 
-	private static readonly Collider[] crateClearanceBuffer;
+	private static readonly Collider[] crateClearanceBuffer = new Collider[16];
 
 	private const float CrateMaxFloorSlope = 30f;
 
@@ -120,9 +120,9 @@ public class SatelliteCrash : BaseCombatEntity
 	[Tooltip("Visual effect played at the crash position when the satellite hits the ground")]
 	public GameObjectRef groundImpactEffect;
 
+	[FormerlySerializedAs("maxCratesToSpawn")]
 	[Header("Crash Config")]
 	[Tooltip("Loot budget at 1.0x mass scale, in crate-equivalents. Multiplied by the mass-to-loot curve; the result spawns as crates up to Max Crates Per Crash, with any overflow going into extra items per crate.")]
-	[FormerlySerializedAs("maxCratesToSpawn")]
 	public int baselineCrateSpawnCount = 6;
 
 	public int maxFireballs = 10;
@@ -212,7 +212,7 @@ public class SatelliteCrash : BaseCombatEntity
 		crashTarget = target;
 		satelliteMass = sat.mass;
 		controlComputerId = computerId;
-		hasNoOwner = !((NetworkableId)(ref computerId)).IsValid;
+		hasNoOwner = !computerId.IsValid;
 		fuelAtLaunch = sat.fuel;
 		fuelAtLockIn = fuelRemainingAtLockIn;
 		IsDescending = true;
@@ -240,7 +240,7 @@ public class SatelliteCrash : BaseCombatEntity
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = crashTarget - descentStartPos;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		return descentStartPos - normalized * Satellite.phase1_extra_distance;
 	}
 
@@ -323,11 +323,11 @@ public class SatelliteCrash : BaseCombatEntity
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = TerrainMeta.Center - target;
 		val.y = 0f;
-		if (((Vector3)(ref val)).sqrMagnitude < 625f)
+		if (val.sqrMagnitude < 625f)
 		{
 			return RandomHorizontalDir();
 		}
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	public void InitDirectDescent(Vector3 target)
@@ -390,7 +390,7 @@ public class SatelliteCrash : BaseCombatEntity
 		{
 			Vector3 val = descentStartPos - crashTarget;
 			val.y = 0f;
-			val = ((((Vector3)(ref val)).sqrMagnitude > 0.01f) ? ((Vector3)(ref val)).normalized : RandomHorizontalDir());
+			val = ((val.sqrMagnitude > 0.01f) ? val.normalized : RandomHorizontalDir());
 			Vector3 p = crashTarget + val * FlyoverDiveDistance;
 			p.y = descentStartPos.y;
 			FlyoverCurve flyoverCurve = new FlyoverCurve();
@@ -504,9 +504,9 @@ public class SatelliteCrash : BaseCombatEntity
 			else
 			{
 				Vector3 val = crashTarget - ((Component)this).transform.position;
-				descentVelocity = ((Vector3)(ref val)).normalized * (((Vector3)(ref val)).magnitude / num);
+				descentVelocity = val.normalized * (val.magnitude / num);
 			}
-			((Component)this).transform.rotation = Quaternion.LookRotation(((Vector3)(ref descentVelocity)).normalized);
+			((Component)this).transform.rotation = Quaternion.LookRotation(descentVelocity.normalized);
 			time = Mathf.Max(safetyDespawnTime, num + 30f);
 			DrawImpactDebugSphere(crashTarget);
 		}
@@ -516,7 +516,7 @@ public class SatelliteCrash : BaseCombatEntity
 			CalculateEntry(position, out var startPos, out var velocity);
 			((Component)this).transform.position = startPos;
 			descentVelocity = velocity;
-			((Component)this).transform.rotation = Quaternion.LookRotation(((Vector3)(ref velocity)).normalized);
+			((Component)this).transform.rotation = Quaternion.LookRotation(velocity.normalized);
 			DrawImpactDebugSphere(position);
 		}
 		Invoke(SafetyDespawn, time);
@@ -536,7 +536,7 @@ public class SatelliteCrash : BaseCombatEntity
 		}
 		Vector3 val = ((Component)this).transform.position - crashTarget;
 		val.y = 0f;
-		return ((Vector3)(ref val)).magnitude > FlyoverDiveDistance * 1.5f;
+		return val.magnitude > FlyoverDiveDistance * 1.5f;
 	}
 
 	private void StartFlyoverCurve(float duration)
@@ -569,12 +569,12 @@ public class SatelliteCrash : BaseCombatEntity
 		Vector3 position = ((Component)this).transform.position;
 		Vector3 val = position - crashTarget;
 		val.y = 0f;
-		val = ((((Vector3)(ref val)).sqrMagnitude > 0.01f) ? ((Vector3)(ref val)).normalized : RandomHorizontalDir());
+		val = ((val.sqrMagnitude > 0.01f) ? val.normalized : RandomHorizontalDir());
 		Vector3 val2 = crashTarget + val * FlyoverDiveDistance;
 		val2.y = position.y;
 		curve.Build(position, val2, crashTarget, duration);
 		Vector3 val3 = val2 - position;
-		descentVelocity = ((Vector3)(ref val3)).normalized * (curve.TotalLength / curve.Duration);
+		descentVelocity = val3.normalized * (curve.TotalLength / curve.Duration);
 	}
 
 	private void FixedUpdate()
@@ -604,7 +604,7 @@ public class SatelliteCrash : BaseCombatEntity
 		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer || hasCrashed)
+		if (!isServer || hasCrashed)
 		{
 			return;
 		}
@@ -630,9 +630,9 @@ public class SatelliteCrash : BaseCombatEntity
 		if (crashTarget != Vector3.zero)
 		{
 			Vector3 val2 = crashTarget - ((Component)this).transform.position;
-			float num = ((Vector3)(ref descentVelocity)).magnitude * Time.fixedDeltaTime;
-			LogDescentProgress(Time.fixedDeltaTime, "Phase 2 (final descent)", curve.Active ? (curve.Duration - curve.Elapsed) : (((Vector3)(ref val2)).magnitude / Mathf.Max(0.01f, ((Vector3)(ref descentVelocity)).magnitude)));
-			if (((Vector3)(ref val2)).magnitude <= num || Vector3.Dot(val2, descentVelocity) <= 0f)
+			float num = descentVelocity.magnitude * Time.fixedDeltaTime;
+			LogDescentProgress(Time.fixedDeltaTime, "Phase 2 (final descent)", curve.Active ? (curve.Duration - curve.Elapsed) : (val2.magnitude / Mathf.Max(0.01f, descentVelocity.magnitude)));
+			if (val2.magnitude <= num || Vector3.Dot(val2, descentVelocity) <= 0f)
 			{
 				((Component)this).transform.position = crashTarget;
 				PerformCrash();
@@ -651,9 +651,9 @@ public class SatelliteCrash : BaseCombatEntity
 		}
 		Transform transform = ((Component)this).transform;
 		transform.position += descentVelocity * Time.fixedDeltaTime;
-		if (((Vector3)(ref descentVelocity)).sqrMagnitude > 1f)
+		if (descentVelocity.sqrMagnitude > 1f)
 		{
-			((Component)this).transform.rotation = Quaternion.LookRotation(((Vector3)(ref descentVelocity)).normalized);
+			((Component)this).transform.rotation = Quaternion.LookRotation(descentVelocity.normalized);
 		}
 	}
 
@@ -685,7 +685,7 @@ public class SatelliteCrash : BaseCombatEntity
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		startPos = targetPos + RandomHorizontalDir() * startHeight + Vector3.up * startHeight;
 		Vector3 val = targetPos - startPos;
-		velocity = ((Vector3)(ref val)).normalized * speed;
+		velocity = val.normalized * speed;
 	}
 
 	private void DrawImpactDebugSphere(Vector3 target)
@@ -746,7 +746,7 @@ public class SatelliteCrash : BaseCombatEntity
 		computerNotified = true;
 		if (!hasNoOwner)
 		{
-			SatelliteControlComputer satelliteControlComputer = (((NetworkableId)(ref controlComputerId)).IsValid ? (BaseNetworkable.serverEntities.Find(controlComputerId) as SatelliteControlComputer) : SatelliteControlComputer.ActiveDescending);
+			SatelliteControlComputer satelliteControlComputer = (controlComputerId.IsValid ? (BaseNetworkable.serverEntities.Find(controlComputerId) as SatelliteControlComputer) : SatelliteControlComputer.ActiveDescending);
 			if ((Object)(object)satelliteControlComputer != (Object)null)
 			{
 				satelliteControlComputer.OnSatelliteCrashed(crashed);
@@ -784,7 +784,7 @@ public class SatelliteCrash : BaseCombatEntity
 		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer || hasCrashed)
+		if (!isServer || hasCrashed)
 		{
 			return;
 		}
@@ -810,7 +810,7 @@ public class SatelliteCrash : BaseCombatEntity
 			GameManager server = GameManager.server;
 			string resourcePath = debrisFieldMarker.resourcePath;
 			Vector3 pos = position;
-			rot = default(Quaternion);
+			rot = default;
 			BaseEntity baseEntity = server.CreateEntity(resourcePath, pos, rot);
 			if ((Object)(object)baseEntity != (Object)null)
 			{
@@ -823,14 +823,14 @@ public class SatelliteCrash : BaseCombatEntity
 			Vector3 val = descentVelocity;
 			val.y = 0f;
 			float num4;
-			if (!(((Vector3)(ref val)).sqrMagnitude > 0.01f))
+			if (!(val.sqrMagnitude > 0.01f))
 			{
 				num4 = 0f;
 			}
 			else
 			{
 				rot = Quaternion.LookRotation(val);
-				num4 = ((Quaternion)(ref rot)).eulerAngles.y;
+				num4 = rot.eulerAngles.y;
 			}
 			float num5 = num4;
 			Effect.server.Run(groundImpactEffect.resourcePath, position, Vector3.up, null, broadcast: true, null, Mathf.RoundToInt(num5));
@@ -885,18 +885,18 @@ public class SatelliteCrash : BaseCombatEntity
 		}
 		Vector3 val = impactVelocity;
 		val.y = 0f;
-		if (((Vector3)(ref val)).sqrMagnitude < 0.01f)
+		if (val.sqrMagnitude < 0.01f)
 		{
 			val = Vector3.forward;
 		}
-		return QuaternionEx.LookRotationForcedUp(((Vector3)(ref val)).normalized, up);
+		return QuaternionEx.LookRotationForcedUp(val.normalized, up);
 	}
 
 	private void ClearArea(Vector3 crashPos)
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		float kill_radius = Satellite.kill_radius;
-		if (base.isServer && !(kill_radius <= 0f))
+		if (isServer && !(kill_radius <= 0f))
 		{
 			List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
 			Vis.Entities(crashPos, kill_radius, list, 1277853953, (QueryTriggerInteraction)2);
@@ -967,11 +967,11 @@ public class SatelliteCrash : BaseCombatEntity
 			{
 				Vector3 val = pos - ((Component)monument).transform.position;
 				val.y = 0f;
-				if (((Vector3)(ref val)).sqrMagnitude < 0.01f)
+				if (val.sqrMagnitude < 0.01f)
 				{
 					val = Vector3.forward;
 				}
-				((Vector3)(ref val)).Normalize();
+				val.Normalize();
 				pos = ((Component)monument).transform.position + val * exclusionDistance;
 				pos.y = TerrainMeta.HeightMap.GetHeight(pos);
 			}
@@ -1119,12 +1119,12 @@ public class SatelliteCrash : BaseCombatEntity
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		floorCollider = null;
 		float height = TerrainMeta.HeightMap.GetHeight(pos);
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(new Vector3(pos.x, Mathf.Max(pos.y, height) + 30f, pos.z), Vector3.down, ref val, 60f, 8454145, (QueryTriggerInteraction)1))
 		{
-			floorCollider = ((RaycastHit)(ref val)).collider;
-			floorNormal = ((RaycastHit)(ref val)).normal;
-			return ((RaycastHit)(ref val)).point;
+			floorCollider = val.collider;
+			floorNormal = val.normal;
+			return val.point;
 		}
 		floorNormal = TerrainMeta.HeightMap.GetNormal(pos);
 		pos.y = height;
@@ -1177,7 +1177,7 @@ public class SatelliteCrash : BaseCombatEntity
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		groundPos = default(Vector3);
+		groundPos = default;
 		while (points.Count > 0)
 		{
 			Transform val = points[points.Count - 1];
@@ -1258,10 +1258,10 @@ public class SatelliteCrash : BaseCombatEntity
 				{
 					lootContainer.Invoke(lootContainer.RemoveMe, crateLifetimeMinutes * 60f);
 				}
-				Rigidbody obj = ((Component)baseEntity).gameObject.AddComponent<Rigidbody>();
-				ConfigureScatterRigidbody(obj, 2f, 0.2f, 0.080000006f, useGravity: true);
-				obj.velocity = Vector3.zero;
-				obj.angularVelocity = Vector3.zero;
+				Rigidbody val2 = ((Component)baseEntity).gameObject.AddComponent<Rigidbody>();
+				ConfigureScatterRigidbody(val2, 2f, 0.2f, 0.080000006f, useGravity: true);
+				val2.velocity = Vector3.zero;
+				val2.angularVelocity = Vector3.zero;
 				if (this.fireBall.isValid)
 				{
 					FireBall fireBall = GameManager.server.CreateEntity(this.fireBall.resourcePath) as FireBall;
@@ -1322,11 +1322,8 @@ public class SatelliteCrash : BaseCombatEntity
 	static SatelliteCrash()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		CrashEventTitlePhrase = new Phrase("satellite.event.title", "SATELLITE EVENT");
-		CrashEventBodyPhrase = new Phrase("satellite.event.crashed", "A satellite has crashed at {0}!");
-		crateClearanceBuffer = (Collider[])(object)new Collider[16];
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

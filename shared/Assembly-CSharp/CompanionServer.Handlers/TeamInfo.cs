@@ -8,11 +8,11 @@ public class TeamInfo : BasePlayerHandler<AppEmpty>
 {
 	public override ValueTask Execute()
 	{
-		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(base.UserId);
-		AppTeamInfo teamInfo = ((playerTeam == null) ? base.Player.GetAppTeamInfo(base.UserId) : playerTeam.GetAppTeamInfo(base.UserId));
+		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(UserId);
+		AppTeamInfo teamInfo = ((playerTeam == null) ? Player.GetAppTeamInfo(UserId) : playerTeam.GetAppTeamInfo(UserId));
 		AppResponse val = Pool.Get<AppResponse>();
 		val.teamInfo = teamInfo;
 		Send(val);
-		return default(ValueTask);
+		return default;
 	}
 }

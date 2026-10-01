@@ -13,27 +13,27 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 		Capsule
 	}
 
-	private static readonly Vector3[] volumeCorners;
+	private static readonly Vector3[] volumeCorners = new Vector3[8]
+	{
+		new Vector3(-0.5f, -0.5f, -0.5f),
+		new Vector3(0.5f, -0.5f, -0.5f),
+		new Vector3(0.5f, 0.5f, -0.5f),
+		new Vector3(-0.5f, 0.5f, -0.5f),
+		new Vector3(-0.5f, -0.5f, 0.5f),
+		new Vector3(0.5f, -0.5f, 0.5f),
+		new Vector3(0.5f, 0.5f, 0.5f),
+		new Vector3(-0.5f, 0.5f, 0.5f)
+	};
 
 	[InspectorFlags]
-	public EnvironmentType Type;
+	public EnvironmentType Type = EnvironmentType.Underground;
 
 	[InspectorFlags]
 	public NetworkGroupType NetworkType;
 
-	public Vector3 Center;
+	public Vector3 Center = Vector3.zero;
 
-	public Vector3 Size;
-
-	[Tooltip("Controls the falloff amount of the positive axes of spatially aware volumes.")]
-	[SerializeField]
-	[CompilerGenerated]
-	private Vector3 _003CFalloffPositive_003Ek__BackingField;
-
-	[Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
-	[SerializeField]
-	[CompilerGenerated]
-	private Vector3 _003CFalloffNegative_003Ek__BackingField;
+	public Vector3 Size = Vector3.one;
 
 	[NonSerialized]
 	public float4x4 VolumeTransformation;
@@ -47,37 +47,41 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 	[NonSerialized]
 	public Bounds VolumeBounds;
 
+	[field: SerializeField]
+	[field: Tooltip("Controls the falloff amount of the positive axes of spatially aware volumes.")]
 	public Vector3 FalloffPositive
 	{
 		[CompilerGenerated]
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CFalloffPositive_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CFalloffPositive_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
+	[field: SerializeField]
+	[field: Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
 	public Vector3 FalloffNegative
 	{
 		[CompilerGenerated]
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CFalloffNegative_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CFalloffNegative_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -185,12 +189,12 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 			trigger = (Collider)(object)((Component)this).gameObject.AddComponent<BoxCollider>();
 		}
 		trigger.isTrigger = true;
-		Collider obj = trigger;
-		BoxCollider val = (BoxCollider)(object)((obj is BoxCollider) ? obj : null);
-		if (Object.op_Implicit((Object)(object)val))
+		Collider val = trigger;
+		BoxCollider val2 = (BoxCollider)(object)((val is BoxCollider) ? val : null);
+		if (Object.op_Implicit((Object)(object)val2))
 		{
-			val.center = Center;
-			val.size = Size;
+			val2.center = Center;
+			val2.size = Size;
 		}
 	}
 
@@ -204,9 +208,6 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		Type = EnvironmentType.Underground;
-		Center = Vector3.zero;
-		Size = Vector3.one;
 		FalloffPositive = Vector3.zero;
 		FalloffNegative = Vector3.zero;
 		((MonoBehaviour)this)._002Ector();
@@ -230,16 +231,5 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		volumeCorners = (Vector3[])(object)new Vector3[8]
-		{
-			new Vector3(-0.5f, -0.5f, -0.5f),
-			new Vector3(0.5f, -0.5f, -0.5f),
-			new Vector3(0.5f, 0.5f, -0.5f),
-			new Vector3(-0.5f, 0.5f, -0.5f),
-			new Vector3(-0.5f, -0.5f, 0.5f),
-			new Vector3(0.5f, -0.5f, 0.5f),
-			new Vector3(0.5f, 0.5f, 0.5f),
-			new Vector3(-0.5f, 0.5f, 0.5f)
-		};
 	}
 }

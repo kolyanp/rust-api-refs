@@ -67,7 +67,7 @@ public static class FileEx
 	{
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Expected O, but got Unknown
+		//IL_0044: Expected Obj, but got Unknown
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		FileInfo fileInfo = new FileInfo(fileName);
 		if (!fileInfo.Exists)

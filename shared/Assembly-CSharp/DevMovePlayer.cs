@@ -8,9 +8,9 @@ public class DevMovePlayer : BaseMonoBehaviour
 
 	public bool moveRandomly;
 
-	public Vector3 destination;
+	public Vector3 destination = Vector3.zero;
 
-	public Vector3 lookPoint;
+	public Vector3 lookPoint = Vector3.zero;
 
 	private int waypointIndex;
 
@@ -114,7 +114,7 @@ public class DevMovePlayer : BaseMonoBehaviour
 		{
 			destination = Waypoints[waypointIndex].position;
 			Vector3 val = destination - ((Component)this).transform.position;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			float running = Mathf.Sin(Time.time + randRun);
 			float speed = player.GetSpeed(running, 0f, 0f);
 			Vector3 position = ((Component)this).transform.position;
@@ -122,11 +122,11 @@ public class DevMovePlayer : BaseMonoBehaviour
 			LayerMask mask = LayerMask.op_Implicit(1537286401);
 			if (TransformUtil.GetGroundInfo(((Component)this).transform.position + normalized * speed * Time.deltaTime, out var hitOut, range, mask, ((Component)player).transform))
 			{
-				position = ((RaycastHit)(ref hitOut)).point;
+				position = hitOut.point;
 			}
 			((Component)this).transform.position = position;
 			val = new Vector3(destination.x, 0f, destination.z) - new Vector3(((Component)player).transform.position.x, 0f, ((Component)player).transform.position.z);
-			_ = ((Vector3)(ref val)).normalized;
+			_ = val.normalized;
 			player.SendNetworkUpdate();
 		}
 	}
@@ -137,8 +137,5 @@ public class DevMovePlayer : BaseMonoBehaviour
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		destination = Vector3.zero;
-		lookPoint = Vector3.zero;
-		base._002Ector();
 	}
 }

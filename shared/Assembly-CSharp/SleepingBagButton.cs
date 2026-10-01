@@ -53,7 +53,7 @@ public class SleepingBagButton : MonoBehaviour
 
 	public Button FavouriteButton;
 
-	public static Phrase toastHoldToUnclaimBag;
+	public static Phrase toastHoldToUnclaimBag = new Phrase("hold_unclaim_bag", "Hold down the delete button to unclaim a sleeping bag");
 
 	public GameObject CorpseRoot;
 
@@ -64,7 +64,6 @@ public class SleepingBagButton : MonoBehaviour
 	static SleepingBagButton()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		toastHoldToUnclaimBag = new Phrase("hold_unclaim_bag", "Hold down the delete button to unclaim a sleeping bag");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

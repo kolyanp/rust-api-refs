@@ -120,11 +120,11 @@ public class FGroundRotator : FGroundFitter_Base
 		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
 		targetRotationToApply = helperRotation;
 		targetRotationToApply *= RootTransform.rotation;
-		Vector3 eulerAngles = ((Quaternion)(ref targetRotationToApply)).eulerAngles;
+		Vector3 eulerAngles = targetRotationToApply.eulerAngles;
 		targetRotationToApply = Quaternion.Euler(Mathf.Clamp(FLogicMethods.WrapAngle(eulerAngles.x), 0f - MaxForwardRotation, MaxForwardRotation) * (1f - MildForwardValue), eulerAngles.y, Mathf.Clamp(FLogicMethods.WrapAngle(eulerAngles.z), 0f - MaxHorizontalRotation, MaxHorizontalRotation) * (1f - MildHorizontalValue));
-		eulerAngles = ((Quaternion)(ref targetRotationToApply)).eulerAngles;
+		eulerAngles = targetRotationToApply.eulerAngles;
 		Quaternion val = FEngineering.QToLocal(RootTransform.rotation, Quaternion.Euler(eulerAngles));
-		eulerAngles = ((Quaternion)(ref val)).eulerAngles;
+		eulerAngles = val.eulerAngles;
 		Quaternion val2 = TransformToRotate.rotation;
 		if (eulerAngles.x != 0f)
 		{

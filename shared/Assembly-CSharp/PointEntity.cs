@@ -8,7 +8,7 @@ public class PointEntity<T> : PointEntity where T : PointEntity<T>
 	public override void PreInitShared()
 	{
 		base.PreInitShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			ServerInstance = this as T;
 		}
@@ -17,7 +17,7 @@ public class PointEntity<T> : PointEntity where T : PointEntity<T>
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			ServerInstance = null;
 		}

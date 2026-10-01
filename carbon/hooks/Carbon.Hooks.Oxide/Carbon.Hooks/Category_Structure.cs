@@ -15,7 +15,7 @@ public class Category_Structure
 	public class Structure_BuildingBlock
 	{
 		[Patch("OnWallpaperSet", "OnWallpaperSet", "BuildingBlock", "SetWallpaper", new string[] { "System.UInt64", "System.Int32", "System.Single" })]
-		[Identifier("18b3660fab314353871039c0aa016bba")]
+		[Identifier("479b7b6da4c84573bd03fe938c50d7a1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BuildingBlock", false)]
 		[Parameter("id", "System.UInt64", false)]
@@ -24,7 +24,7 @@ public class Category_Structure
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingBlock_18b3660fab314353871039c0aa016bba : Patch
+		public class Structure_BuildingBlock_479b7b6da4c84573bd03fe938c50d7a1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -63,14 +63,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnWallpaperRemove", "OnWallpaperRemove", "BuildingBlock", "RemoveWallpaper", new string[] { "System.Int32" })]
-		[Identifier("655a0013820d4552842a2c036f99e85c")]
+		[Identifier("2eae71f478134a81b75ca1efff3429b1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BuildingBlock", false)]
 		[Parameter("side", "System.Int32", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingBlock_655a0013820d4552842a2c036f99e85c : Patch
+		public class Structure_BuildingBlock_2eae71f478134a81b75ca1efff3429b1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -103,7 +103,7 @@ public class Category_Structure
 		}
 
 		[Patch("OnStructureUpgrade", "OnStructureUpgrade", "BuildingBlock", "DoUpgradeToGrade", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("59a305b682024e34b03b61c7fb65bc88")]
+		[Identifier("546ad648f3964f288779472669561b8c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BuildingBlock", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -112,7 +112,7 @@ public class Category_Structure
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingBlock_59a305b682024e34b03b61c7fb65bc88 : Patch
+		public class Structure_BuildingBlock_546ad648f3964f288779472669561b8c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -155,14 +155,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnStructureRotate", "OnStructureRotate", "BuildingBlock", "DoRotation", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("c69d6b02dc6b491cacf52eb6929e4f8a")]
+		[Identifier("07a762f7ac6d4efe82ec612764399c06")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BuildingBlock", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingBlock_c69d6b02dc6b491cacf52eb6929e4f8a : Patch
+		public class Structure_BuildingBlock_07a762f7ac6d4efe82ec612764399c06 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -195,7 +195,7 @@ public class Category_Structure
 		}
 
 		[Patch("CanChangeGrade", "CanChangeGrade", "BuildingBlock", "CanChangeToGrade", new string[] { "BuildingGrade/Enum", "System.UInt64", "BasePlayer" })]
-		[Identifier("f77d8e0e84e0455faf62311ed0cbff2c")]
+		[Identifier("ad885e80ca614933be765d8c8109969d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "BuildingBlock", false)]
@@ -204,7 +204,7 @@ public class Category_Structure
 		[Return(typeof(bool))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingBlock_f77d8e0e84e0455faf62311ed0cbff2c : Patch
+		public class Structure_BuildingBlock_ad885e80ca614933be765d8c8109969d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -248,7 +248,7 @@ public class Category_Structure
 		}
 
 		[Patch("CanAffordUpgrade", "CanAffordUpgrade", "BuildingBlock", "CanAffordUpgrade", new string[] { "BuildingGrade/Enum", "System.UInt64", "BasePlayer" })]
-		[Identifier("9193a62352e2476f9e9760fa869cb8ba")]
+		[Identifier("b1c0c59c7632455db291ce56ea100273")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "BuildingBlock", false)]
@@ -257,7 +257,7 @@ public class Category_Structure
 		[Return(typeof(bool))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingBlock_9193a62352e2476f9e9760fa869cb8ba : Patch
+		public class Structure_BuildingBlock_b1c0c59c7632455db291ce56ea100273 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -301,7 +301,7 @@ public class Category_Structure
 		}
 
 		[Patch("OnPlayerPveDamage", "OnPlayerPveDamage [BuildingBlock]", "BuildingBlock", "Hurt", new string[] { "HitInfo" })]
-		[Identifier("0b4c81a248dd46748c288de4d6d7aed3")]
+		[Identifier("e979390cb8414fedb0bebb5a26b90c9a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("initiator", "BaseEntity", false)]
 		[Parameter("info", "HitInfo", false)]
@@ -309,7 +309,7 @@ public class Category_Structure
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingBlock_0b4c81a248dd46748c288de4d6d7aed3 : Patch
+		public class Structure_BuildingBlock_e979390cb8414fedb0bebb5a26b90c9a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -344,7 +344,7 @@ public class Category_Structure
 		}
 
 		[Patch("OnStructureUpgraded", "OnStructureUpgraded", "BuildingBlock", "DoUpgradeToGrade", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("826c38c975b6433994527f5510379db2")]
+		[Identifier("63e4a64322234a3c94115a18eed9a56f")]
 		[Dependencies(new string[] { "OnStructureUpgrade" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BuildingBlock", false)]
@@ -354,7 +354,7 @@ public class Category_Structure
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingBlock_826c38c975b6433994527f5510379db2 : Patch
+		public class Structure_BuildingBlock_63e4a64322234a3c94115a18eed9a56f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -396,14 +396,14 @@ public class Category_Structure
 	public class Structure_DecayEntity
 	{
 		[Patch("OnStructureDemolish", "OnStructureDemolish [immediate = true]", "DecayEntity", "DoImmediateDemolish", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("9e58492bc77b466cafdfdbf53f611680")]
+		[Identifier("e50dc1833b204e81a71d542dc93c8c06")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "DecayEntity", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_DecayEntity_9e58492bc77b466cafdfdbf53f611680 : Patch
+		public class Structure_DecayEntity_e50dc1833b204e81a71d542dc93c8c06 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -438,14 +438,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnStructureDemolish", "OnStructureDemolish [immediate = false]", "DecayEntity", "DoDemolish", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("c5c27a40a67f4599ad571a72b31fa485")]
+		[Identifier("bf717fd629e04945b260532bc381162f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "DecayEntity", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_DecayEntity_c5c27a40a67f4599ad571a72b31fa485 : Patch
+		public class Structure_DecayEntity_bf717fd629e04945b260532bc381162f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -480,14 +480,14 @@ public class Category_Structure
 		}
 
 		[Patch("CanDemolish", "CanDemolish", "DecayEntity", "CanDemolish", new string[] { "BasePlayer" })]
-		[Identifier("6dd9a6aa30fb43e383778246a70def68")]
+		[Identifier("5242af92aa7347f7beceb03702dc77f1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "DecayEntity", false)]
 		[Return(typeof(bool))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_DecayEntity_6dd9a6aa30fb43e383778246a70def68 : Patch
+		public class Structure_DecayEntity_5242af92aa7347f7beceb03702dc77f1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -528,14 +528,14 @@ public class Category_Structure
 	public class Structure_Signage
 	{
 		[Patch("OnSignLocked", "OnSignLocked [Signage]", "Signage", "LockSign", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("e25393cd4eaa4b5dbb01e1055218d108")]
+		[Identifier("a7c72ff6030543afa0350aeb53effbab")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Signage", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Signage_e25393cd4eaa4b5dbb01e1055218d108 : Patch
+		public class Structure_Signage_a7c72ff6030543afa0350aeb53effbab : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -564,7 +564,7 @@ public class Category_Structure
 		}
 
 		[Patch("OnSignUpdated", "OnSignUpdated [Signage]", "Signage", "UpdateSign", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1968de090458425b9fa1b1bfe0223222")]
+		[Identifier("d4705885499d4d7d886bae49c2fbe13e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Signage", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -572,7 +572,7 @@ public class Category_Structure
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Signage_1968de090458425b9fa1b1bfe0223222 : Patch
+		public class Structure_Signage_d4705885499d4d7d886bae49c2fbe13e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -607,14 +607,14 @@ public class Category_Structure
 	public class Structure_Door
 	{
 		[Patch("OnDoorOpened", "OnDoorOpened", "Door", "RPC_OpenDoor", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("2285832104f14e3881b9d8c23c652f89")]
+		[Identifier("744bf7b73302493fb1c8eea2daf2ef22")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Door", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Door_2285832104f14e3881b9d8c23c652f89 : Patch
+		public class Structure_Door_744bf7b73302493fb1c8eea2daf2ef22 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -643,14 +643,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnDoorClosed", "OnDoorClosed", "Door", "RPC_CloseDoor", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("8942385c56614231bd6f0392b8c341b0")]
+		[Identifier("adfdfffaefd2485c9051fe610014bb13")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Door", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Door_8942385c56614231bd6f0392b8c341b0 : Patch
+		public class Structure_Door_adfdfffaefd2485c9051fe610014bb13 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -679,14 +679,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnDoorKnocked", "OnDoorKnocked [Door]", "Door", "RPC_KnockDoor", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("cfa5630edd0943268532dfe2415fbd0e")]
+		[Identifier("c1f0cdb02bd14dba9bb95bec92594dd8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Door", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Door_cfa5630edd0943268532dfe2415fbd0e : Patch
+		public class Structure_Door_c1f0cdb02bd14dba9bb95bec92594dd8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -718,14 +718,14 @@ public class Category_Structure
 	public class Structure_Hammer
 	{
 		[Patch("OnHammerHit", "OnHammerHit", "Hammer", "DoAttackShared", new string[] { "HitInfo" })]
-		[Identifier("96b95bbcf6454a7f9c9c49428e18f3c0")]
+		[Identifier("4a822cd36faf4a818d2ebec82bf4d5cd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Parameter("info", "HitInfo", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Hammer_96b95bbcf6454a7f9c9c49428e18f3c0 : Patch
+		public class Structure_Hammer_4a822cd36faf4a818d2ebec82bf4d5cd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -762,13 +762,13 @@ public class Category_Structure
 	public class Structure_BaseCombatEntity
 	{
 		[Patch("OnStructureRepair", "OnStructureRepair", "BaseCombatEntity", "DoRepair", new string[] { "BasePlayer" })]
-		[Identifier("45f99779b9024b03bed328eb49666143")]
+		[Identifier("85045647494c47f28aa979bc96b77133")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseCombatEntity", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BaseCombatEntity_45f99779b9024b03bed328eb49666143 : Patch
+		public class Structure_BaseCombatEntity_85045647494c47f28aa979bc96b77133 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -805,14 +805,14 @@ public class Category_Structure
 	public class Structure_BuildingPrivlidge
 	{
 		[Patch("OnCupboardDeauthorize", "OnCupboardDeauthorize", "BuildingPrivlidge", "RemoveSelfAuthorize", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("a086970a2f0a497aab29f6479429eef0")]
+		[Identifier("7dcbae2a1bbf4abbbee4de8562eecd6d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BuildingPrivlidge", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingPrivlidge_a086970a2f0a497aab29f6479429eef0 : Patch
+		public class Structure_BuildingPrivlidge_7dcbae2a1bbf4abbbee4de8562eecd6d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -845,14 +845,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnCupboardClearList", "OnCupboardClearList", "BuildingPrivlidge", "ClearList", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("3c1c3da832de4b18908e9602768bc763")]
+		[Identifier("38dbc090e965464c8793ac6452819cfe")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BuildingPrivlidge", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingPrivlidge_3c1c3da832de4b18908e9602768bc763 : Patch
+		public class Structure_BuildingPrivlidge_38dbc090e965464c8793ac6452819cfe : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -885,14 +885,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnCupboardProtectionCalculated", "OnCupboardProtectionCalculated", "BuildingPrivlidge", "GetProtectedMinutes", new string[] { "System.Boolean" })]
-		[Identifier("6ecc6299f40a4ddf8dc39c319f328a0a")]
+		[Identifier("6efe75e2172340c68909a358e4fee88c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BuildingPrivlidge", false)]
-		[Parameter("self1", "BuildingPrivlidge", false)]
+		[Parameter("cachedProtectedMinutes", "System.Single", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingPrivlidge_6ecc6299f40a4ddf8dc39c319f328a0a : Patch
+		public class Structure_BuildingPrivlidge_6efe75e2172340c68909a358e4fee88c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -922,7 +922,7 @@ public class Category_Structure
 		}
 
 		[Patch("IOnCupboardAuthorize", "IOnCupboardAuthorize [BuildingPrivlidge]", "BuildingPrivlidge", "AddAuthorize", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("14d61947fbbc4ec497740510d09dd9ee")]
+		[Identifier("ec94fc1a63394a79a23743560ab9532c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "System.UInt64", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -930,7 +930,7 @@ public class Category_Structure
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_BuildingPrivlidge_14d61947fbbc4ec497740510d09dd9ee : Patch
+		public class Structure_BuildingPrivlidge_ec94fc1a63394a79a23743560ab9532c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -961,7 +961,7 @@ public class Category_Structure
 	public class Structure_Planner
 	{
 		[Patch("CanBuild", "CanBuild", "Planner", "DoBuild", new string[] { "ProtoBuf.CreateBuilding" })]
-		[Identifier("652cb9dcb2a14b57b2162782aa3e679c")]
+		[Identifier("28441203b3784add95c6cc3c01146ad4")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Planner", false)]
 		[Parameter("local1", "Construction", false)]
@@ -969,14 +969,14 @@ public class Category_Structure
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Planner_652cb9dcb2a14b57b2162782aa3e679c : Patch
+		public class Structure_Planner_28441203b3784add95c6cc3c01146ad4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 293)
+					if (x++ != 324)
 					{
 						yield return instruction;
 						continue;
@@ -1006,14 +1006,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnEntityBuilt", "OnEntityBuilt", "Planner", "DoBuild", new string[] { "Construction/Target", "Construction" })]
-		[Identifier("36204b2699724918962b3b9007700bcc")]
+		[Identifier("96d2739f42bb49608a37d664992a9640")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Planner", false)]
 		[Parameter("local2", "UnityEngine.GameObject", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Planner_36204b2699724918962b3b9007700bcc : Patch
+		public class Structure_Planner_96d2739f42bb49608a37d664992a9640 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1041,7 +1041,7 @@ public class Category_Structure
 		}
 
 		[Patch("CanAffordToPlace", "CanAffordToPlace", "Planner", "CanAffordToPlace", new string[] { "Construction" })]
-		[Identifier("6941dcb9f5ab4d1686d10d7e8742d7cd")]
+		[Identifier("0a67eb9623784c79bea43b4eebcc4d2f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Parameter("self", "Planner", false)]
@@ -1049,7 +1049,7 @@ public class Category_Structure
 		[Return(typeof(bool))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Planner_6941dcb9f5ab4d1686d10d7e8742d7cd : Patch
+		public class Structure_Planner_0a67eb9623784c79bea43b4eebcc4d2f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1089,50 +1089,50 @@ public class Category_Structure
 		}
 
 		[Patch("OnConstructionPlace", "OnConstructionPlace", "Planner", "DoPlacement", new string[] { "Construction/Target", "Construction" })]
-		[Identifier("f257600bdb414dd286cb9555b6f999c7")]
+		[Identifier("fb6158ca331242b0b7c28ff282d0f3c5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Planner_f257600bdb414dd286cb9555b6f999c7 : Patch
+		public class Structure_Planner_fb6158ca331242b0b7c28ff282d0f3c5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0022: Expected O, but got Unknown
+				//IL_0022: Expected Obj, but got Unknown
 				//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004b: Expected O, but got Unknown
+				//IL_004b: Expected Obj, but got Unknown
 				//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-				//IL_005c: Expected O, but got Unknown
+				//IL_005c: Expected Obj, but got Unknown
 				//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0076: Expected O, but got Unknown
+				//IL_0076: Expected Obj, but got Unknown
 				//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00fa: Expected O, but got Unknown
+				//IL_00fa: Expected Obj, but got Unknown
 				//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0120: Expected O, but got Unknown
+				//IL_0120: Expected Obj, but got Unknown
 				//IL_0166: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0170: Expected O, but got Unknown
+				//IL_0170: Expected Obj, but got Unknown
 				//IL_0185: Unknown result type (might be due to invalid IL or missing references)
-				//IL_018f: Expected O, but got Unknown
+				//IL_018f: Expected Obj, but got Unknown
 				//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
-				//IL_01cd: Expected O, but got Unknown
+				//IL_01cd: Expected Obj, but got Unknown
 				//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
-				//IL_01ec: Expected O, but got Unknown
+				//IL_01ec: Expected Obj, but got Unknown
 				//IL_0214: Unknown result type (might be due to invalid IL or missing references)
-				//IL_021e: Expected O, but got Unknown
+				//IL_021e: Expected Obj, but got Unknown
 				//IL_026a: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0274: Expected O, but got Unknown
+				//IL_0274: Expected Obj, but got Unknown
 				//IL_0289: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0293: Expected O, but got Unknown
+				//IL_0293: Expected Obj, but got Unknown
 				//IL_02c7: Unknown result type (might be due to invalid IL or missing references)
-				//IL_02d1: Expected O, but got Unknown
+				//IL_02d1: Expected Obj, but got Unknown
 				//IL_0305: Unknown result type (might be due to invalid IL or missing references)
-				//IL_030f: Expected O, but got Unknown
+				//IL_030f: Expected Obj, but got Unknown
 				//IL_0343: Unknown result type (might be due to invalid IL or missing references)
-				//IL_034d: Expected O, but got Unknown
+				//IL_034d: Expected Obj, but got Unknown
 				//IL_0354: Unknown result type (might be due to invalid IL or missing references)
-				//IL_035e: Expected O, but got Unknown
+				//IL_035e: Expected Obj, but got Unknown
 				//IL_0365: Unknown result type (might be due to invalid IL or missing references)
-				//IL_036f: Expected O, but got Unknown
+				//IL_036f: Expected Obj, but got Unknown
 				List<CodeInstruction> list = new List<CodeInstruction>();
 				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
 				list.Add(new CodeInstruction(OpCodes.Ldstr, (object)"OnConstructionPlace"));
@@ -1150,7 +1150,7 @@ public class Category_Structure
 					typeof(object)
 				}, (Type[])null)));
 				Label label = Generator.DefineLabel();
-				CodeInstruction val = list2[94];
+				CodeInstruction val = list2[18];
 				list.Add(new CodeInstruction(OpCodes.Brfalse_S, (object)label));
 				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 1, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(AccessToolsEx.TypeByName("BaseNetworkableEx"), "IsValid", new Type[1] { typeof(BaseNetworkable) }, (Type[])null)));
@@ -1162,12 +1162,12 @@ public class Category_Structure
 				list.Add(new CodeInstruction(OpCodes.Br_S, (object)label3));
 				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 1, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Isinst, (object)typeof(DecayEntity)));
-				list.Add(__GeneratorRuntime.CreateStoreLocalInstruction(Generator, Method, 8, typeof(object)));
-				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 8, typeof(object)));
+				list.Add(__GeneratorRuntime.CreateStoreLocalInstruction(Generator, Method, 2, typeof(object)));
+				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 2, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(AccessToolsEx.TypeByName("UnityEngine.Object"), "op_Implicit", (Type[])null, (Type[])null)));
 				Label label4 = Generator.DefineLabel();
 				list.Add(new CodeInstruction(OpCodes.Brfalse_S, (object)label4));
-				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 8, typeof(object)));
+				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 2, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("DecayEntity"), "DoServerDestroy", (Type[])null, (Type[])null)));
 				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 1, typeof(object)));
 				list.Add(new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("BaseNetworkable"), "TerminateOnServer", (Type[])null, (Type[])null)));
@@ -1180,9 +1180,9 @@ public class Category_Structure
 				list[22].labels.Add(label4);
 				if (list.Count > 0)
 				{
-					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[94]), list2[94]);
+					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[18]), list2[18]);
 				}
-				list2.InsertRange(94, list);
+				list2.InsertRange(18, list);
 				val.labels.Add(label);
 				return list2.AsEnumerable();
 			}
@@ -1192,7 +1192,7 @@ public class Category_Structure
 	public class Structure_CodeLock
 	{
 		[Patch("OnCodeEntered", "OnCodeEntered", "CodeLock", "UnlockWithCode", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("0b876043e094453bbe28a4b5a0ac385c")]
+		[Identifier("5d39da8731114ac1bff91f5ea6db38db")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CodeLock", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -1200,7 +1200,7 @@ public class Category_Structure
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_CodeLock_0b876043e094453bbe28a4b5a0ac385c : Patch
+		public class Structure_CodeLock_5d39da8731114ac1bff91f5ea6db38db : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1237,7 +1237,7 @@ public class Category_Structure
 		}
 
 		[Patch("OnCodeChanged", "OnCodeChanged", "CodeLock", "RPC_ChangeCode", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("cc76bdaebf554095875c1eff8a2755f6")]
+		[Identifier("da5a171f127c417f9559e649966b1d07")]
 		[Dependencies(new string[] { "CanChangeCode" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
@@ -1247,7 +1247,7 @@ public class Category_Structure
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_CodeLock_cc76bdaebf554095875c1eff8a2755f6 : Patch
+		public class Structure_CodeLock_da5a171f127c417f9559e649966b1d07 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1284,14 +1284,14 @@ public class Category_Structure
 	public class Structure_ServerBuildingManager
 	{
 		[Patch("OnBuildingSplit", "OnBuildingSplit", "ServerBuildingManager", "Split", new string[] { "BuildingManager/Building" })]
-		[Identifier("c03769a0ce2a467c8d2bd5de258daea8")]
+		[Identifier("20cd41946c63409b9e15065063f9c65c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("oldBuilding", "BuildingManager+Building", false)]
 		[Parameter("local3", "System.UInt32", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_ServerBuildingManager_c03769a0ce2a467c8d2bd5de258daea8 : Patch
+		public class Structure_ServerBuildingManager_20cd41946c63409b9e15065063f9c65c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1320,13 +1320,13 @@ public class Category_Structure
 		}
 
 		[Patch("OnBuildingMerge", "OnBuildingMerge", "ServerBuildingManager", "Merge", new string[] { "BuildingManager/Building", "BuildingManager/Building" })]
-		[Identifier("2ea00c2bd3084cb88b76c0611a14a1bb")]
+		[Identifier("879240035a5e48b0aba0bf0f99849528")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ServerBuildingManager", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_ServerBuildingManager_2ea00c2bd3084cb88b76c0611a14a1bb : Patch
+		public class Structure_ServerBuildingManager_879240035a5e48b0aba0bf0f99849528 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1359,14 +1359,14 @@ public class Category_Structure
 	public class Structure_PhotoFrame
 	{
 		[Patch("OnSignLocked", "OnSignLocked [PhotoFrame]", "PhotoFrame", "LockSign", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("4f421ac150e3416181277729fbc01362")]
+		[Identifier("b064f06173bd4178af4ed85421a0dd38")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhotoFrame", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_PhotoFrame_4f421ac150e3416181277729fbc01362 : Patch
+		public class Structure_PhotoFrame_b064f06173bd4178af4ed85421a0dd38 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1395,14 +1395,14 @@ public class Category_Structure
 		}
 
 		[Patch("OnSignUpdated", "OnSignUpdated [PhotoFrame]", "PhotoFrame", "UpdateSign", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("43c1bc5638694e03ae5001aca81b6183")]
+		[Identifier("7cfef295204b4543af994527fc893bb3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhotoFrame", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_PhotoFrame_43c1bc5638694e03ae5001aca81b6183 : Patch
+		public class Structure_PhotoFrame_7cfef295204b4543af994527fc893bb3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1434,14 +1434,14 @@ public class Category_Structure
 	public class Structure_ItemModDeployable
 	{
 		[Patch("OnCupboardAuthorize", "OnCupboardAuthorize [ItemModDeployable]", "ItemModDeployable", "OnDeployed", new string[] { "BaseEntity", "BasePlayer" })]
-		[Identifier("21513924a5004fafa3b0f1f83a5fdb6d")]
+		[Identifier("19c455e0ec1a4c94a78148ed8361c927")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "BuildingPrivlidge", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_ItemModDeployable_21513924a5004fafa3b0f1f83a5fdb6d : Patch
+		public class Structure_ItemModDeployable_19c455e0ec1a4c94a78148ed8361c927 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1476,14 +1476,14 @@ public class Category_Structure
 	public class Structure_CarvablePumpkin
 	{
 		[Patch("OnSignUpdated", "OnSignUpdated [CarvablePumpkin]", "CarvablePumpkin", "UpdateSign", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("a5245ef34e5e46b58758128f2c80b032")]
+		[Identifier("0e36f4f09ec147948c018c38da819660")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CarvablePumpkin", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_CarvablePumpkin_a5245ef34e5e46b58758128f2c80b032 : Patch
+		public class Structure_CarvablePumpkin_0e36f4f09ec147948c018c38da819660 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1515,13 +1515,13 @@ public class Category_Structure
 	public class Structure_DoorKnocker
 	{
 		[Patch("OnDoorKnocked", "OnDoorKnocked [DoorKnocker]", "DoorKnocker", "Knock", new string[] { "BasePlayer" })]
-		[Identifier("b7aa52bf036445919ac1bad5bd23b5fa")]
+		[Identifier("06b5a14ac96c4558aa2d652c39d11f13")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "DoorKnocker", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_DoorKnocker_b7aa52bf036445919ac1bad5bd23b5fa : Patch
+		public class Structure_DoorKnocker_06b5a14ac96c4558aa2d652c39d11f13 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1552,7 +1552,7 @@ public class Category_Structure
 	public class Structure_Locker
 	{
 		[Patch("OnLockerSwap", "OnLockerSwap", "Locker", "RPC_Equip", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("5004d7565fc645628af96a1ba448dfc7")]
+		[Identifier("8a0e2b21db774b69b0919f245f2a8d00")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Locker", false)]
 		[Parameter("local0", "System.Int32", false)]
@@ -1560,7 +1560,7 @@ public class Category_Structure
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_Locker_5004d7565fc645628af96a1ba448dfc7 : Patch
+		public class Structure_Locker_8a0e2b21db774b69b0919f245f2a8d00 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1601,7 +1601,7 @@ public class Category_Structure
 	public class Structure_StringLights
 	{
 		[Patch("OnPoweredLightsPointAdd", "OnPoweredLightsPointAdd", "StringLights", "SERVER_AddPoint", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("5832d06b798740afb751b8f088f34ce5")]
+		[Identifier("e5ef24ad0492492fa1af2dc061d6ff46")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "StringLights", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -1610,7 +1610,7 @@ public class Category_Structure
 		[Return(typeof(void))]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_StringLights_5832d06b798740afb751b8f088f34ce5 : Patch
+		public class Structure_StringLights_e5ef24ad0492492fa1af2dc061d6ff46 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1651,7 +1651,7 @@ public class Category_Structure
 	public class Structure_SignContent
 	{
 		[Patch("OnSignContentCopied", "OnSignContentCopied", "SignContent", "CopyInfoToSign", new string[] { "ISignage", "IUGCBrowserEntity" })]
-		[Identifier("6191f2689753461abebaf93bc2f9ae20")]
+		[Identifier("e422644f45a24b12883e1d906a54a078")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "SignContent", false)]
 		[Parameter("s", "ISignage", false)]
@@ -1659,7 +1659,7 @@ public class Category_Structure
 		[Return(typeof(void), Discarded = true)]
 		[Category("Structure")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Structure_SignContent_6191f2689753461abebaf93bc2f9ae20 : Patch
+		public class Structure_SignContent_e422644f45a24b12883e1d906a54a078 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

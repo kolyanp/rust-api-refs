@@ -134,7 +134,7 @@ public class AttackEntity : HeldEntity
 	{
 		float num = (unscaledTime ? Time.unscaledTime : Time.time);
 		float num2 = 0f;
-		if (base.isServer)
+		if (isServer)
 		{
 			BasePlayer ownerPlayer = GetOwnerPlayer();
 			num2 += 0.1f;
@@ -171,50 +171,50 @@ public class AttackEntity : HeldEntity
 		BasePlayer ownerPlayer = GetOwnerPlayer();
 		if ((Object)(object)ownerPlayer == (Object)null)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Owner not found (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Owner not found (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "owner_missing");
 			return false;
 		}
 		if ((Object)(object)ownerPlayer != (Object)(object)player)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player mismatch (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player mismatch (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "player_mismatch");
 			return false;
 		}
 		if (player.IsDead())
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player dead (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player dead (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "player_dead");
 			return false;
 		}
 		if (player.IsWounded())
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player down (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player down (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "player_down");
 			return false;
 		}
 		if (player.IsSleeping())
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Player sleeping (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Player sleeping (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "player_sleeping");
 			return false;
 		}
 		if (player.desyncTimeRaw > ConVar.AntiHack.maxdesync)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, $"Player stalled ({base.ShortPrefabName} with {player.desyncTimeRaw}s)");
+			AntiHack.Log(player, AntiHackType.AttackHack, $"Player stalled ({ShortPrefabName} with {player.desyncTimeRaw}s)");
 			player.stats.combat.LogInvalid(player, this, "player_stalled");
 			return false;
 		}
 		Item ownerItem = GetOwnerItem();
 		if (ownerItem == null)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Item not found (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Item not found (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "item_missing");
 			return false;
 		}
 		if (ownerItem.isBroken)
 		{
-			AntiHack.Log(player, AntiHackType.AttackHack, "Item broken (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.AttackHack, "Item broken (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "item_broken");
 			return false;
 		}
@@ -229,7 +229,7 @@ public class AttackEntity : HeldEntity
 		}
 		if (HasAttackCooldown())
 		{
-			AntiHack.Log(player, AntiHackType.CooldownHack, $"T-{GetAttackCooldown()}s ({base.ShortPrefabName})");
+			AntiHack.Log(player, AntiHackType.CooldownHack, $"T-{GetAttackCooldown()}s ({ShortPrefabName})");
 			player.stats.combat.LogInvalid(player, this, "attack_cooldown");
 			return false;
 		}
@@ -285,7 +285,7 @@ public class AttackEntity : HeldEntity
 		bool flag = true;
 		if (Vector3Ex.IsNaNOrInfinity(eyePos))
 		{
-			string shortPrefabName = base.ShortPrefabName;
+			string shortPrefabName = ShortPrefabName;
 			AntiHack.Log(player, AntiHackType.EyeHack, "Contains NaN (" + shortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "eye_nan");
 			flag = false;
@@ -295,15 +295,15 @@ public class AttackEntity : HeldEntity
 			if (ConVar.AntiHack.eye_protection >= 1)
 			{
 				Vector3 val = player.GetParentVelocity();
-				float magnitude = ((Vector3)(ref val)).magnitude;
+				float magnitude = val.magnitude;
 				val = player.GetMountVelocity();
-				float num = magnitude + ((Vector3)(ref val)).magnitude;
+				float num = magnitude + val.magnitude;
 				float num2 = ((player.HasParent() || player.isMounted) ? ConVar.AntiHack.eye_distance_parented_mounted_forgiveness : 0f) + ((player.estimatedSpeed > 0f) ? ConVar.AntiHack.eye_forgiveness : 0f);
 				float num3 = num + num2;
 				float num4 = player.tickHistory.Distance(player, eyePos);
 				if (num4 > num3)
 				{
-					string shortPrefabName2 = base.ShortPrefabName;
+					string shortPrefabName2 = ShortPrefabName;
 					AntiHack.Log(player, AntiHackType.EyeHack, $"Distance ({shortPrefabName2} on attack with {num4}m > {num3}m)");
 					player.stats.combat.LogInvalid(player, this, "eye_distance");
 					flag = false;
@@ -315,7 +315,7 @@ public class AttackEntity : HeldEntity
 				float num6 = Mathf.Abs(player.eyes.position.y - eyePos.y);
 				if (num6 > num5)
 				{
-					string shortPrefabName3 = base.ShortPrefabName;
+					string shortPrefabName3 = ShortPrefabName;
 					AntiHack.Log(player, AntiHackType.EyeHack, $"Altitude ({shortPrefabName3} on attack with {num6}m > {num5}m)");
 					player.stats.combat.LogInvalid(player, this, "eye_altitude");
 					flag = false;
@@ -338,7 +338,7 @@ public class AttackEntity : HeldEntity
 					Vector3 position = player.eyes.position;
 					if (!GamePhysics.LineOfSightRadius(center, position, num7, ConVar.AntiHack.eye_losradius) || !GamePhysics.LineOfSightRadius(position, eyePos, num7, ConVar.AntiHack.eye_losradius))
 					{
-						string shortPrefabName4 = base.ShortPrefabName;
+						string shortPrefabName4 = ShortPrefabName;
 						AntiHack.Log(player, AntiHackType.EyeHack, string.Format("Line of sight ({0} on attack) {1} {2} {3}", new object[4] { shortPrefabName4, center, position, eyePos }));
 						player.stats.combat.LogInvalid(player, this, "eye_los");
 						flag = false;
@@ -353,7 +353,7 @@ public class AttackEntity : HeldEntity
 					{
 						if (AntiHack.TestNoClipping(player, position2, eyePos, BasePlayer.NoClipRadius(ConVar.AntiHack.eye_noclip_margin), ConVar.AntiHack.eye_noclip_backtracking, out col, overlapVehicleLayer: false, null, forceCast: true))
 						{
-							string shortPrefabName5 = base.ShortPrefabName;
+							string shortPrefabName5 = ShortPrefabName;
 							AntiHack.Log(player, AntiHackType.EyeHack, $"NoClip (cutoff) ({shortPrefabName5} on attack) {position2} {eyePos}");
 							player.stats.combat.LogInvalid(player, this, "eye_noclip_cutoff");
 							flag = false;
@@ -361,7 +361,7 @@ public class AttackEntity : HeldEntity
 					}
 					else if (num8 > 0.01f && AntiHack.TestNoClipping(player, position2, eyePos, 0.1f, ConVar.AntiHack.eye_noclip_backtracking, out col, overlapVehicleLayer: false, null, forceCast: true))
 					{
-						string shortPrefabName6 = base.ShortPrefabName;
+						string shortPrefabName6 = ShortPrefabName;
 						AntiHack.Log(player, AntiHackType.EyeHack, $"NoClip ({shortPrefabName6} on attack) {position2} {eyePos}");
 						player.stats.combat.LogInvalid(player, this, "eye_noclip");
 						flag = false;

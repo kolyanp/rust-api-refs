@@ -15,7 +15,7 @@ public class StringFirecracker : TimedExplosive
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}

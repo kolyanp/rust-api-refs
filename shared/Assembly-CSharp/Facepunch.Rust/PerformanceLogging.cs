@@ -359,17 +359,17 @@ public class PerformanceLogging
 			record.AddField("nexus_endpoint", Nexus.endpoint);
 			EventRecord eventRecord = record;
 			NexusZoneClient zoneClient = NexusServer.ZoneClient;
-			int? obj3;
+			int? num;
 			if (zoneClient == null)
 			{
-				obj3 = null;
+				num = null;
 			}
 			else
 			{
 				ZoneDetails zone = zoneClient.Zone;
-				obj3 = ((zone != null) ? new int?(zone.ZoneId) : ((int?)null));
+				num = ((zone != null) ? new int?(zone.ZoneId) : ((int?)null));
 			}
-			eventRecord.AddField("nexus_zone_id", obj3 ?? (-1));
+			eventRecord.AddField("nexus_zone_id", num ?? (-1));
 			record.AddField("nexus_zone_key", NexusServer.ZoneKey ?? "");
 			record.AddField("nexus_controller", Nexus.zoneController);
 		}
@@ -384,7 +384,7 @@ public class PerformanceLogging
 		List<TimeSpan> craftingFrametimes = null;
 		List<TimeSpan> contactsFrametimes = null;
 		List<TimeSpan> mapFrametimes = null;
-		Task.Run(async delegate
+		Task.Run(async () =>
 		{
 			try
 			{
@@ -483,7 +483,7 @@ public class PerformanceLogging
 				int count = times.Count;
 				Mathf.Max(1, times.Count / 100);
 				Mathf.Max(1, times.Count / 1000);
-				TimeSpan value = default(TimeSpan);
+				TimeSpan value = default;
 				for (int i = 0; i < count; i++)
 				{
 					TimeSpan timeSpan = ((List<TimeSpan>)(object)val)[i];

@@ -56,7 +56,7 @@ public abstract class InvokeHandlerBase<T> : SingletonComponent<T> where T : Mon
 			doTickTimer.Restart();
 		}
 		int num = 0;
-		TimeSpan executedTime = default(TimeSpan);
+		TimeSpan executedTime = default;
 		for (int i = 0; i < count; i++)
 		{
 			if (time < buffer[i])

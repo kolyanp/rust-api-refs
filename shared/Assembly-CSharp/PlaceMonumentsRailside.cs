@@ -71,7 +71,7 @@ public class PlaceMonumentsRailside : ProceduralComponent
 
 	private const int IndividualCandidates = 8;
 
-	private static Quaternion rot90;
+	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
 
 	public override void Process(uint seed)
 	{
@@ -273,9 +273,9 @@ public class PlaceMonumentsRailside : ProceduralComponent
 					}
 				}
 				Vector3 val4 = val3 - val2;
-				Vector3 normalized = ((Vector3)(ref val4)).normalized;
+				Vector3 normalized = val4.normalized;
 				val4 = rot90 * normalized;
-				Vector3 normalized2 = ((Vector3)(ref val4)).normalized;
+				Vector3 normalized2 = val4.normalized;
 				if (num4 > 1)
 				{
 					val /= (float)num4;
@@ -292,7 +292,7 @@ public class PlaceMonumentsRailside : ProceduralComponent
 					{
 						Vector3 val5 = (rail.Spline ? path.GetPointCubicHermite(num11) : path.GetPoint(num11));
 						val4 = path.GetPoint(num11 + num6) - path.GetPoint(num11 - num6);
-						Vector3 normalized3 = ((Vector3)(ref val4)).normalized;
+						Vector3 normalized3 = val4.normalized;
 						for (int num12 = Mathf.RoundToInt((float)PositionOffset); num12 <= Mathf.CeilToInt((float)PositionOffset * 1.5f); num12 += 25)
 						{
 							for (int num13 = -1; num13 <= 1; num13 += 2)
@@ -343,7 +343,7 @@ public class PlaceMonumentsRailside : ProceduralComponent
 					int num18 = 100000 * num17 * num17 * num17 * num17;
 					int num19 = 0;
 					int num20 = 0;
-					SpawnInfo item2 = default(SpawnInfo);
+					SpawnInfo item2 = default;
 					ListEx.Shuffle<SpawnInfo>(spawnInfoGroup4.candidates, ref seed);
 					for (int num21 = 0; num21 < spawnInfoGroup4.candidates.Count; num21++)
 					{
@@ -435,6 +435,7 @@ public class PlaceMonumentsRailside : ProceduralComponent
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
@@ -452,8 +453,7 @@ public class PlaceMonumentsRailside : ProceduralComponent
 			minDistanceSameType = float.MaxValue,
 			maxDistanceSameType = float.MinValue
 		};
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(monumentPos, monumentScale, monumentRot, prefab.Component.Bounds);
+		OBB val = new OBB(monumentPos, monumentScale, monumentRot, prefab.Component.Bounds);
 		if ((Object)(object)TerrainMeta.Path != (Object)null)
 		{
 			foreach (MonumentInfo monument in TerrainMeta.Path.Monuments)
@@ -485,7 +485,7 @@ public class PlaceMonumentsRailside : ProceduralComponent
 			foreach (SpawnInfo spawn in spawns)
 			{
 				OBB val2 = new OBB(spawn.position, spawn.scale, spawn.rotation, spawn.prefab.Component.Bounds);
-				float num2 = ((OBB)(ref val2)).SqrDistance(val);
+				float num2 = val2.SqrDistance(val);
 				if (num2 < result.minDistanceSameType)
 				{
 					result.minDistanceSameType = num2;
@@ -562,6 +562,5 @@ public class PlaceMonumentsRailside : ProceduralComponent
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		rot90 = Quaternion.Euler(0f, 90f, 0f);
 	}
 }

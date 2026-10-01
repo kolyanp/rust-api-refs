@@ -11,24 +11,24 @@ public class LiquidWeaponEffects : MonoBehaviour
 	public LiquidWobble Liquid;
 
 	[Header("Main Stream")]
-	public float MinPressureSpeed;
+	public float MinPressureSpeed = 1f;
 
-	public float MaxPressureSpeed;
+	public float MaxPressureSpeed = 20f;
 
 	public AnimationCurve PressureSpeedCurve;
 
-	public Vector2 StreamSize;
+	public Vector2 StreamSize = new Vector2(0.04f, 0.08f);
 
 	public AnimationCurve PressureSizeMultiplierCurve;
 
 	[Header("Inner Stream")]
-	public float MinPressureInnerSpeed;
+	public float MinPressureInnerSpeed = 1f;
 
-	public float MaxPressureInnerSpeed;
+	public float MaxPressureInnerSpeed = 20f;
 
 	public AnimationCurve InnerPressureSpeedCurve;
 
-	public Vector2 InnerStreamSize;
+	public Vector2 InnerStreamSize = new Vector2(0.02f, 0.02f);
 
 	public AnimationCurve InnerPressureSizeMultiplierCurve;
 
@@ -37,9 +37,9 @@ public class LiquidWeaponEffects : MonoBehaviour
 
 	public GameObjectRef ImpactSplashEffect;
 
-	public float ImpactSplashEffectInterval;
+	public float ImpactSplashEffectInterval = 0.1f;
 
-	public float FillSpeed;
+	public float FillSpeed = 1f;
 
 	[Header("Audio")]
 	public bool firstPersonSounds;
@@ -60,14 +60,5 @@ public class LiquidWeaponEffects : MonoBehaviour
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		MinPressureSpeed = 1f;
-		MaxPressureSpeed = 20f;
-		StreamSize = new Vector2(0.04f, 0.08f);
-		MinPressureInnerSpeed = 1f;
-		MaxPressureInnerSpeed = 20f;
-		InnerStreamSize = new Vector2(0.02f, 0.02f);
-		ImpactSplashEffectInterval = 0.1f;
-		FillSpeed = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

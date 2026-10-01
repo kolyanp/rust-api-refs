@@ -23,9 +23,9 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 
 	private NPCVoiceline? conversationResponse;
 
-	private SenseComponent SenseComponent => _senseComponent ?? (_senseComponent = ((Component)base.baseEntity).GetComponent<SenseComponent>());
+	private SenseComponent SenseComponent => _senseComponent ?? (_senseComponent = ((Component)baseEntity).GetComponent<SenseComponent>());
 
-	private NpcZoneComponent NpcZoneComponent => _npcZoneComponent ?? (_npcZoneComponent = ((Component)base.baseEntity).GetComponent<NpcZoneComponent>());
+	private NpcZoneComponent NpcZoneComponent => _npcZoneComponent ?? (_npcZoneComponent = ((Component)baseEntity).GetComponent<NpcZoneComponent>());
 
 	private double LastTickTime
 	{
@@ -83,7 +83,7 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 					{
 						num++;
 					}
-					else if (!nPCVoiceline.HasValue && SingletonComponent<NpcBarkManager>.Instance.CanPlay(base.baseEntity, nPCVoiceline2))
+					else if (!nPCVoiceline.HasValue && SingletonComponent<NpcBarkManager>.Instance.CanPlay(baseEntity, nPCVoiceline2))
 					{
 						nPCVoiceline = nPCVoiceline2;
 					}
@@ -103,7 +103,7 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 					foreach (int item2 in (List<int>)(object)val)
 					{
 						NPCVoiceline nPCVoiceline4 = voicelinesInCategory[item2];
-						if (nPCVoiceline4.importance == ENpcVoicelineImportance.Conversation && SingletonComponent<NpcBarkManager>.Instance.CanPlay(base.baseEntity, nPCVoiceline4))
+						if (nPCVoiceline4.importance == ENpcVoicelineImportance.Conversation && SingletonComponent<NpcBarkManager>.Instance.CanPlay(baseEntity, nPCVoiceline4))
 						{
 							nPCVoiceline3 = nPCVoiceline4;
 							break;
@@ -125,7 +125,7 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 					foreach (int item3 in (List<int>)(object)val)
 					{
 						NPCVoiceline nPCVoiceline5 = voicelinesInCategory[item3];
-						if (SingletonComponent<NpcBarkManager>.Instance.CanPlay(base.baseEntity, nPCVoiceline5))
+						if (SingletonComponent<NpcBarkManager>.Instance.CanPlay(baseEntity, nPCVoiceline5))
 						{
 							nPCVoiceline3 = nPCVoiceline5;
 							break;
@@ -152,24 +152,24 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 		{
 			return false;
 		}
-		if ((Object)(object)targetAlly == (Object)null && !NpcPushHelper.FindBestPartner(((Component)base.baseEntity).transform.position, SenseComponent, NpcZoneComponent, out targetAlly, 50f))
+		if ((Object)(object)targetAlly == (Object)null && !NpcPushHelper.FindBestPartner(((Component)baseEntity).transform.position, SenseComponent, NpcZoneComponent, out targetAlly, 50f))
 		{
 			return false;
 		}
 		if ((Object)(object)targetAlly == (Object)null)
 		{
-			Debug.LogError((object)$"NpcBarkComponent.PlayConversation - {base.baseEntity} found invalid ally for conversation response: {starter.text} > {response.text}");
+			Debug.LogError((object)$"NpcBarkComponent.PlayConversation - {baseEntity} found invalid ally for conversation response: {starter.text} > {response.text}");
 			return false;
 		}
-		NpcBarkComponent npcBarkComponent = default(NpcBarkComponent);
+		NpcBarkComponent npcBarkComponent = default;
 		if (!((Component)targetAlly).TryGetComponent<NpcBarkComponent>(ref npcBarkComponent))
 		{
-			Debug.LogError((object)string.Format("NpcBarkComponent.PlayConversation - {0}'s ally {1} has no NpcBarkComponent to play conversation response after playing starter: {2} > {3}", new object[4] { base.baseEntity, targetAlly, starter.text, response.text }));
+			Debug.LogError((object)string.Format("NpcBarkComponent.PlayConversation - {0}'s ally {1} has no NpcBarkComponent to play conversation response after playing starter: {2} > {3}", new object[4] { baseEntity, targetAlly, starter.text, response.text }));
 			return false;
 		}
 		if (starter.duration == 0f)
 		{
-			Debug.LogError((object)$"NpcBarkComponent.PlayConversation - {base.baseEntity} is trying to say something with a duration of 0: {starter.text}");
+			Debug.LogError((object)$"NpcBarkComponent.PlayConversation - {baseEntity} is trying to say something with a duration of 0: {starter.text}");
 			return false;
 		}
 		if (!starter.otherNpcShouldSpeakFirst)
@@ -191,14 +191,14 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 
 	private bool PlayVoiceline(NPCVoiceline voiceline, bool setCooldown = true)
 	{
-		if (!SingletonComponent<NpcBarkManager>.Instance.CanPlay(base.baseEntity, voiceline))
+		if (!SingletonComponent<NpcBarkManager>.Instance.CanPlay(baseEntity, voiceline))
 		{
 			return false;
 		}
-		base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayBark"), voiceline.index);
+		baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayBark"), voiceline.index);
 		if (setCooldown)
 		{
-			SingletonComponent<NpcBarkManager>.Instance.OnPlay(base.baseEntity, voiceline);
+			SingletonComponent<NpcBarkManager>.Instance.OnPlay(baseEntity, voiceline);
 		}
 		return true;
 	}

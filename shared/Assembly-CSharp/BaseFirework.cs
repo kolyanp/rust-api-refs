@@ -90,7 +90,7 @@ public class BaseFirework : BaseCombatEntity, IIgniteable
 	public override void OnAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (base.isServer && Interface.CallHook("OnFireworkDamage", this, info) == null && info.damageTypes.Has(DamageType.Heat))
+		if (isServer && Interface.CallHook("OnFireworkDamage", this, info) == null && info.damageTypes.Has(DamageType.Heat))
 		{
 			StaggeredTryLightFuse();
 		}

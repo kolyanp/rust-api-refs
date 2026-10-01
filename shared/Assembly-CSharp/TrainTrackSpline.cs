@@ -458,11 +458,11 @@ public class TrainTrackSpline : WorldSpline
 			{
 				continue;
 			}
-			float magnitude = ((Vector3)(ref val)).magnitude;
+			float magnitude = val.magnitude;
 			if (magnitude > minHazardDist && magnitude < maxHazardDist)
 			{
 				Vector3 worldVelocity = trackUser.GetWorldVelocity();
-				if (((Vector3)(ref worldVelocity)).sqrMagnitude < 4f || Vector3.Dot(worldVelocity, val) < 0f)
+				if (worldVelocity.sqrMagnitude < 4f || Vector3.Dot(worldVelocity, val) < 0f)
 				{
 					return true;
 				}

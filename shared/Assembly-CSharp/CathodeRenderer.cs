@@ -103,7 +103,7 @@ public class CathodeRenderer : PostProcessEffectRenderer<Cathode>
 	public override void Render(PostProcessRenderContext context)
 	{
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Expected O, but got Unknown
+		//IL_0095: Expected Obj, but got Unknown
 		//IL_0818: Unknown result type (might be due to invalid IL or missing references)
 		//IL_081e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_06a0: Unknown result type (might be due to invalid IL or missing references)
@@ -123,8 +123,8 @@ public class CathodeRenderer : PostProcessEffectRenderer<Cathode>
 		//IL_07e4: Unknown result type (might be due to invalid IL or missing references)
 		CommandBuffer command = context.command;
 		command.BeginSample("CathodeAnalogueVideo");
-		int num = context.width / (int)base.settings.downscaleTemporal;
-		int num2 = context.height / (int)base.settings.downscaleTemporal;
+		int num = context.width / (int)settings.downscaleTemporal;
+		int num2 = context.height / (int)settings.downscaleTemporal;
 		if ((Object)(object)temporalRT == (Object)null || ((Texture)temporalRT).width != num || ((Texture)temporalRT).height != num2)
 		{
 			if ((Object)(object)temporalRT != (Object)null)
@@ -133,7 +133,7 @@ public class CathodeRenderer : PostProcessEffectRenderer<Cathode>
 			}
 			temporalRT = new RenderTexture(num, num2, 0, (RenderTextureFormat)9);
 		}
-		if ((float)base.settings.intensity > 0f)
+		if ((float)settings.intensity > 0f)
 		{
 			PropertySheet propertySheet = context.propertySheets.Get(grayShader);
 			PropertySheet propertySheet2 = context.propertySheets.Get(primaryShader);
@@ -145,44 +145,44 @@ public class CathodeRenderer : PostProcessEffectRenderer<Cathode>
 			propertySheet3.properties.Clear();
 			propertySheet4.properties.Clear();
 			propertySheet5.properties.Clear();
-			propertySheet.properties.SetFloat(_Intensity, (float)base.settings.intensity);
-			propertySheet.properties.SetFloat(_SizeX, (float)base.settings.horizontalBlur);
-			propertySheet.properties.SetFloat(_SizeY, (float)base.settings.verticalBlur);
-			propertySheet2.properties.SetFloat(_Intensity, (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_ChromaSubsampling, (float)base.settings.chromaSubsampling * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_Sharpen, (float)base.settings.sharpen * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_SharpenRadius, (float)base.settings.sharpenRadius * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_ColorNoise, (float)base.settings.colorNoise * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_RestlessFoot, (float)base.settings.restlessFoot * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_FootAmplitude, (float)base.settings.footAmplitude * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_ChromaOffset, (float)base.settings.chromaOffset * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_ChromaIntensity, Mathf.Lerp(1f, (float)base.settings.chromaIntensity, (float)base.settings.intensity));
-			propertySheet2.properties.SetFloat(_ChromaInstability, (float)base.settings.chromaInstability * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_BurnIn, (float)base.settings.burnIn * (float)base.settings.intensity);
-			propertySheet2.properties.SetFloat(_TapeDust, 1f - (float)base.settings.tapeDust * (float)base.settings.intensity);
+			propertySheet.properties.SetFloat(_Intensity, (float)settings.intensity);
+			propertySheet.properties.SetFloat(_SizeX, (float)settings.horizontalBlur);
+			propertySheet.properties.SetFloat(_SizeY, (float)settings.verticalBlur);
+			propertySheet2.properties.SetFloat(_Intensity, (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_ChromaSubsampling, (float)settings.chromaSubsampling * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_Sharpen, (float)settings.sharpen * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_SharpenRadius, (float)settings.sharpenRadius * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_ColorNoise, (float)settings.colorNoise * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_RestlessFoot, (float)settings.restlessFoot * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_FootAmplitude, (float)settings.footAmplitude * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_ChromaOffset, (float)settings.chromaOffset * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_ChromaIntensity, Mathf.Lerp(1f, (float)settings.chromaIntensity, (float)settings.intensity));
+			propertySheet2.properties.SetFloat(_ChromaInstability, (float)settings.chromaInstability * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_BurnIn, (float)settings.burnIn * (float)settings.intensity);
+			propertySheet2.properties.SetFloat(_TapeDust, 1f - (float)settings.tapeDust * (float)settings.intensity);
 			propertySheet2.properties.SetTexture(_TrailTex, (Texture)(object)temporalRT);
 			propertySheet2.properties.SetTexture(_NoiseTex, (Texture)(object)noiseTex);
-			propertySheet3.properties.SetFloat(_Intensity, (float)base.settings.intensity);
+			propertySheet3.properties.SetFloat(_Intensity, (float)settings.intensity);
 			propertySheet3.properties.SetFloat(_Gamma, 1f);
-			propertySheet4.properties.SetFloat(_Intensity, (float)base.settings.intensity);
-			propertySheet4.properties.SetFloat(_ResponseCurve, (float)base.settings.responseCurve * (float)base.settings.intensity);
-			propertySheet4.properties.SetFloat(_Saturation, Mathf.Lerp(1f, (float)base.settings.saturation, (float)base.settings.intensity));
-			propertySheet4.properties.SetFloat(_Wobble, (float)base.settings.wobble * (float)base.settings.intensity);
-			propertySheet4.properties.SetFloat(_Black, base.settings.blackWhiteLevels.value.x * (float)base.settings.intensity);
-			propertySheet4.properties.SetFloat(_White, 1f - (1f - base.settings.blackWhiteLevels.value.y) * (float)base.settings.intensity);
-			propertySheet4.properties.SetFloat(_DynamicRangeMin, base.settings.dynamicRange.value.x * (float)base.settings.intensity);
-			propertySheet4.properties.SetFloat(_DynamicRangeMax, 1f - (1f - base.settings.dynamicRange.value.y) * (float)base.settings.intensity);
-			propertySheet4.properties.SetFloat(_ScreenWhiteBal, (float)base.settings.whiteBallance * (float)base.settings.intensity);
-			propertySheet5.properties.SetFloat(_Trailing, 1f - (float)base.settings.cometTrailing * (float)base.settings.intensity);
-			RenderTextureDescriptor val = default(RenderTextureDescriptor);
-			((RenderTextureDescriptor)(ref val)).dimension = (TextureDimension)2;
-			((RenderTextureDescriptor)(ref val)).width = context.width / (int)base.settings.downscale;
-			((RenderTextureDescriptor)(ref val)).height = context.height / (int)base.settings.downscale;
-			((RenderTextureDescriptor)(ref val)).depthBufferBits = 0;
-			((RenderTextureDescriptor)(ref val)).colorFormat = (RenderTextureFormat)9;
-			((RenderTextureDescriptor)(ref val)).useMipMap = true;
-			((RenderTextureDescriptor)(ref val)).autoGenerateMips = true;
-			((RenderTextureDescriptor)(ref val)).msaaSamples = 1;
+			propertySheet4.properties.SetFloat(_Intensity, (float)settings.intensity);
+			propertySheet4.properties.SetFloat(_ResponseCurve, (float)settings.responseCurve * (float)settings.intensity);
+			propertySheet4.properties.SetFloat(_Saturation, Mathf.Lerp(1f, (float)settings.saturation, (float)settings.intensity));
+			propertySheet4.properties.SetFloat(_Wobble, (float)settings.wobble * (float)settings.intensity);
+			propertySheet4.properties.SetFloat(_Black, settings.blackWhiteLevels.value.x * (float)settings.intensity);
+			propertySheet4.properties.SetFloat(_White, 1f - (1f - settings.blackWhiteLevels.value.y) * (float)settings.intensity);
+			propertySheet4.properties.SetFloat(_DynamicRangeMin, settings.dynamicRange.value.x * (float)settings.intensity);
+			propertySheet4.properties.SetFloat(_DynamicRangeMax, 1f - (1f - settings.dynamicRange.value.y) * (float)settings.intensity);
+			propertySheet4.properties.SetFloat(_ScreenWhiteBal, (float)settings.whiteBallance * (float)settings.intensity);
+			propertySheet5.properties.SetFloat(_Trailing, 1f - (float)settings.cometTrailing * (float)settings.intensity);
+			RenderTextureDescriptor val = default;
+			val.dimension = (TextureDimension)2;
+			val.width = context.width / (int)settings.downscale;
+			val.height = context.height / (int)settings.downscale;
+			val.depthBufferBits = 0;
+			val.colorFormat = (RenderTextureFormat)9;
+			val.useMipMap = true;
+			val.autoGenerateMips = true;
+			val.msaaSamples = 1;
 			RenderTextureDescriptor val2 = val;
 			command.GetTemporaryRT(_CathodeRT1, val2, (FilterMode)2);
 			command.GetTemporaryRT(_CathodeRT2, val2, (FilterMode)2);

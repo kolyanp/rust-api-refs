@@ -40,9 +40,10 @@ public sealed class WaveformMonitor : Monitor
 	internal override void Render(PostProcessRenderContext context)
 	{
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Expected O, but got Unknown
+		//IL_006d: Expected Obj, but got Unknown
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Expected O, but got Unknown
+		//IL_0096: Expected Obj, but got Unknown
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
@@ -69,24 +70,23 @@ public sealed class WaveformMonitor : Monitor
 		ComputeShader waveform = context.resources.computeShaders.waveform;
 		CommandBuffer command = context.command;
 		command.BeginSample("Waveform");
-		Vector4 val = default(Vector4);
-		((Vector4)(ref val))._002Ector((float)num2, (float)height, (float)(RuntimeUtilities.isLinearColorSpace ? 1 : 0), 0f);
+		Vector4 val = new Vector4((float)num2, (float)height, (float)(RuntimeUtilities.isLinearColorSpace ? 1 : 0), 0f);
 		int num4 = waveform.FindKernel("KWaveformClear");
 		command.SetComputeBufferParam(waveform, num4, "_WaveformBuffer", m_Data);
 		command.SetComputeVectorParam(waveform, "_Params", val);
 		command.DispatchCompute(waveform, num4, Mathf.CeilToInt((float)num2 / 16f), Mathf.CeilToInt((float)height / 16f), 1);
-		command.GetTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.WaveformSource, num2, height, 0, (FilterMode)1, context.sourceFormat);
-		RuntimeUtilities.BlitFullscreenTriangle(command, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.HalfResFinalCopy), RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.WaveformSource));
+		command.GetTemporaryRT(ShaderIDs.WaveformSource, num2, height, 0, (FilterMode)1, context.sourceFormat);
+		RuntimeUtilities.BlitFullscreenTriangle(command, RenderTargetIdentifier.op_Implicit(ShaderIDs.HalfResFinalCopy), RenderTargetIdentifier.op_Implicit(ShaderIDs.WaveformSource));
 		num4 = waveform.FindKernel("KWaveformGather");
 		command.SetComputeBufferParam(waveform, num4, "_WaveformBuffer", m_Data);
-		command.SetComputeTextureParam(waveform, num4, "_Source", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.WaveformSource));
+		command.SetComputeTextureParam(waveform, num4, "_Source", RenderTargetIdentifier.op_Implicit(ShaderIDs.WaveformSource));
 		command.SetComputeVectorParam(waveform, "_Params", val);
 		command.DispatchCompute(waveform, num4, num2, Mathf.CeilToInt((float)height / 256f), 1);
-		command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.WaveformSource);
+		command.ReleaseTemporaryRT(ShaderIDs.WaveformSource);
 		PropertySheet propertySheet = context.propertySheets.Get(context.resources.shaders.waveform);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Params, new Vector4((float)num2, (float)height, exposure, 0f));
-		propertySheet.properties.SetBuffer(UnityEngine.Rendering.PostProcessing.ShaderIDs.WaveformBuffer, m_Data);
-		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), RenderTargetIdentifier.op_Implicit((Texture)(object)base.output), propertySheet, 0);
+		propertySheet.properties.SetVector(ShaderIDs.Params, new Vector4((float)num2, (float)height, exposure, 0f));
+		propertySheet.properties.SetBuffer(ShaderIDs.WaveformBuffer, m_Data);
+		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), RenderTargetIdentifier.op_Implicit((Texture)(object)output), propertySheet, 0);
 		command.EndSample("Waveform");
 	}
 }

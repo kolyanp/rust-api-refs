@@ -12,7 +12,7 @@ public class SocketMod_BoatBuildingBlockHeight : SocketMod_BuildingBlock
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		float maxHeight = Env.oceanlevel + MaxHeight;
-		return !ValidPlacementHeight(pos, sphereRadius, ((LayerMask)(ref layerMask)).value, queryTriggers, maxHeight);
+		return !ValidPlacementHeight(pos, sphereRadius, layerMask.value, queryTriggers, maxHeight);
 	}
 
 	public static bool ValidPlacementHeight(Vector3 pos, float sphereRadius, int layerMask, QueryTriggerInteraction queryTriggers, float maxHeight)
@@ -22,9 +22,9 @@ public class SocketMod_BoatBuildingBlockHeight : SocketMod_BuildingBlock
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		List<BoatBuildingBlock> list = Pool.Get<List<BoatBuildingBlock>>();
 		Vis.Entities(pos, sphereRadius, list, layerMask, queryTriggers);
-		bool num = list.Count > 0;
+		bool flag = list.Count > 0;
 		Pool.FreeUnmanaged<BoatBuildingBlock>(ref list);
-		if (!num)
+		if (!flag)
 		{
 			return true;
 		}

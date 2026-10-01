@@ -8,62 +8,62 @@ namespace ConVar;
 [Factory("nexus")]
 public class Nexus : ConsoleSystem
 {
-	public static readonly Phrase RedirectPhrase;
+	public static readonly Phrase RedirectPhrase = new Phrase("loading.redirect", "Switching servers");
 
 	private const string DefaultEndpoint = "https://gw.facepunch.com/nexus/";
 
 	private const string DefaultServerListEndpoint = "https://gw.facepunch.com/nexus/browserList";
 
 	[ReplicatedVar(Help = "URL endpoint to use for the Nexus API", Default = "https://gw.facepunch.com/nexus/")]
-	public static string endpoint;
+	public static string endpoint = "https://gw.facepunch.com/nexus/";
 
 	[ServerVar(Clientside = true, Help = "(Generated) When enabled, logs all Nexus zone transfer and communication events to the server console; useful for debugging cross-server player transfers")]
-	public static bool logging;
+	public static bool logging = true;
 
 	[ServerVar(Help = "(Generated) Shared secret key used to authenticate Nexus inter-server communication; must match across all servers in the same Nexus cluster")]
-	public static string secretKey;
+	public static string secretKey = "";
 
 	[ServerVar(Help = "(Generated) Name of the zone controller implementation used for this Nexus server (e.g. basic, advanced); controls how players are routed between servers")]
-	public static string zoneController;
+	public static string zoneController = "basic";
 
 	[ServerVar(Help = "Time in seconds to allow the server to process nexus messages before re-sending (requires restart)")]
-	public static int messageLockDuration;
+	public static int messageLockDuration = 5;
 
 	[ServerVar(Help = "Maximum amount of time in seconds that transfers should be cached before auto-saving")]
-	public static int transferFlushTime;
+	public static int transferFlushTime = 60;
 
 	[ServerVar(Help = "How far away islands should be spawned, as a factor of the map size")]
-	public static float islandSpawnDistance;
+	public static float islandSpawnDistance = 1.5f;
 
 	[ServerVar(Help = "Default distance between zones to allow boat travel, if map.contactRadius isn't set in the nexus (uses normalized coordinates)")]
-	public static float defaultZoneContactRadius;
+	public static float defaultZoneContactRadius = 0.33f;
 
 	[ServerVar(Help = "Hide islands that we know are full, preventing players from being transferred to them")]
-	public static bool hideFullIslands;
+	public static bool hideFullIslands = false;
 
 	[ServerVar(Help = "Time offset in hours from the nexus clock")]
-	public static float timeOffset;
+	public static float timeOffset = 0f;
 
 	[ServerVar(Help = "Multiplier for nexus RPC timeout durations in case we expect different latencies")]
-	public static float rpcTimeoutMultiplier;
+	public static float rpcTimeoutMultiplier = 1f;
 
 	[ServerVar(Help = "Time in seconds to keep players in the loading state before going to sleep")]
-	public static float loadingTimeout;
+	public static float loadingTimeout = 900f;
 
 	[ServerVar(Help = "Time in seconds to wait between server status pings")]
-	public static float pingInterval;
+	public static float pingInterval = 30f;
 
 	[ServerVar(Help = "Maximum time in seconds to keep transfer protection enabled on entities")]
-	public static float protectionDuration;
+	public static float protectionDuration = 300f;
 
 	[ServerVar(Help = "Maximum duration in seconds to batch clan chat messages to send to other servers on the nexus")]
-	public static float clanClatBatchDuration;
+	public static float clanClatBatchDuration = 1f;
 
 	[ServerVar(Help = "Interval in seconds to broadcast the player manifest to other servers on the nexus")]
-	public static float playerManifestInterval;
+	public static float playerManifestInterval = 30f;
 
 	[ServerVar(Help = "Scale of the map to render and upload to the nexus")]
-	public static float mapImageScale;
+	public static float mapImageScale = 0.5f;
 
 	[ServerVar(Help = "(Generated) Initiates a Nexus transfer of the specified player to a named destination server or zone in the cluster")]
 	public static void transfer(Arg arg)
@@ -207,24 +207,6 @@ public class Nexus : ConsoleSystem
 	static Nexus()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		RedirectPhrase = new Phrase("loading.redirect", "Switching servers");
-		endpoint = "https://gw.facepunch.com/nexus/";
-		logging = true;
-		secretKey = "";
-		zoneController = "basic";
-		messageLockDuration = 5;
-		transferFlushTime = 60;
-		islandSpawnDistance = 1.5f;
-		defaultZoneContactRadius = 0.33f;
-		hideFullIslands = false;
-		timeOffset = 0f;
-		rpcTimeoutMultiplier = 1f;
-		loadingTimeout = 900f;
-		pingInterval = 30f;
-		protectionDuration = 300f;
-		clanClatBatchDuration = 1f;
-		playerManifestInterval = 30f;
-		mapImageScale = 0.5f;
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

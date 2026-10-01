@@ -33,7 +33,7 @@ public class VineSwingingTree : TreeEntity
 	{
 		int index = point.Index();
 		EnsureVineArrayLength(index);
-		return SpawnedVines[index].Get(base.isServer);
+		return SpawnedVines[index].Get(isServer);
 	}
 
 	private void EnsureVineArrayLength(int index)
@@ -42,7 +42,7 @@ public class VineSwingingTree : TreeEntity
 		{
 			while (SpawnedVines.Count <= index)
 			{
-				SpawnedVines.Add(default(EntityRef<VineMountable>));
+				SpawnedVines.Add(default);
 			}
 		}
 	}
@@ -51,7 +51,7 @@ public class VineSwingingTree : TreeEntity
 	{
 		int index = point.Index();
 		EnsureVineArrayLength(index);
-		EntityRef<VineMountable> value = default(EntityRef<VineMountable>);
+		EntityRef<VineMountable> value = default;
 		value.Set(vine);
 		SpawnedVines[index] = value;
 	}
@@ -100,7 +100,7 @@ public class VineSwingingTree : TreeEntity
 		Vector3 val2 = ((Component)this).transform.position + ((Component)this).transform.up * VineSpawnHeight;
 		val = Vector3Ex.WithY(val, val2.y);
 		Vector3 val3 = val - val2;
-		Vector3 normalized = ((Vector3)(ref val3)).normalized;
+		Vector3 normalized = val3.normalized;
 		return val2 + normalized * VineSpawnRadius;
 	}
 
@@ -167,7 +167,7 @@ public class VineSwingingTree : TreeEntity
 		}
 		if (StumpPrefab.isValid)
 		{
-			VineSwingingTreeStump obj = base.gameManager.CreateEntity(StumpPrefab.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation) as VineSwingingTreeStump;
+			VineSwingingTreeStump obj = gameManager.CreateEntity(StumpPrefab.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation) as VineSwingingTreeStump;
 			obj.InitializeTree(this);
 			obj.Spawn();
 		}
@@ -250,7 +250,7 @@ public class VineSwingingTree : TreeEntity
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		base.OnAttacked(info);
-		if ((Object)(object)info.InitiatorPlayer == (Object)null || base.isClient)
+		if ((Object)(object)info.InitiatorPlayer == (Object)null || isClient)
 		{
 			return;
 		}

@@ -55,7 +55,7 @@ public class ScarecrowNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 	{
 		base.ServerInit();
 		Brain = ((Component)this).GetComponent<ScarecrowBrain>();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			AIThinkManager.Add(this);
 			wasSoulReleased = false;
@@ -221,9 +221,9 @@ public class ScarecrowNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		if (!((Object)(object)target == (Object)null))
 		{
 			Vector3 val = target.ServerPosition - ServerPosition;
-			if (((Vector3)(ref val)).magnitude > 0.001f)
+			if (val.magnitude > 0.001f)
 			{
-				ServerRotation = Quaternion.LookRotation(((Vector3)(ref val)).normalized);
+				ServerRotation = Quaternion.LookRotation(val.normalized);
 			}
 			AttackEntity attackEntity = GetAttackEntity();
 			if (Object.op_Implicit((Object)(object)attackEntity))
@@ -332,7 +332,7 @@ public class ScarecrowNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 	public override void AttackerInfo(DeathInfo info)
 	{
 		base.AttackerInfo(info);
-		info.inflictorName = base.inventory.containerBelt.GetSlot(0).info.shortname;
-		info.attackerName = base.ShortPrefabName;
+		info.inflictorName = inventory.containerBelt.GetSlot(0).info.shortname;
+		info.attackerName = ShortPrefabName;
 	}
 }

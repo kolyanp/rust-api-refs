@@ -49,25 +49,25 @@ public static class StringExtensions
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		str = ((StringView)(ref str)).Trim('(', ')', ' ');
-		int num = ((StringView)(ref str)).IndexOfAny(StringView.op_Implicit(" ,"));
+		str = str.Trim('(', ')', ' ');
+		int num = str.IndexOfAny(StringView.op_Implicit(" ,"));
 		if (num == -1)
 		{
-			return default(Vector3);
+			return default;
 		}
-		StringView val = ((StringView)(ref str)).Substring(0, num);
-		StringView val2 = ((StringView)(ref val)).Trim(' ', ',');
-		val = ((StringView)(ref str)).Substring(num + 1);
-		str = ((StringView)(ref val)).Trim(' ', ',');
-		num = ((StringView)(ref str)).IndexOfAny(StringView.op_Implicit(" ,"));
+		StringView val = str.Substring(0, num);
+		StringView val2 = val.Trim(' ', ',');
+		val = str.Substring(num + 1);
+		str = val.Trim(' ', ',');
+		num = str.IndexOfAny(StringView.op_Implicit(" ,"));
 		if (num == -1)
 		{
-			return default(Vector3);
+			return default;
 		}
-		val = ((StringView)(ref str)).Substring(0, num);
-		StringView val3 = ((StringView)(ref val)).Trim(' ', ',');
-		val = ((StringView)(ref str)).Substring(num + 1);
-		StringView val4 = ((StringView)(ref val)).Trim(' ', ',');
+		val = str.Substring(0, num);
+		StringView val3 = val.Trim(' ', ',');
+		val = str.Substring(num + 1);
+		StringView val4 = val.Trim(' ', ',');
 		return new Vector3(StringExtensions.ToFloat(val2, 0f), StringExtensions.ToFloat(val3, 0f), StringExtensions.ToFloat(val4, 0f));
 	}
 
@@ -110,28 +110,28 @@ public static class StringExtensions
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		int num = ((StringView)(ref str)).IndexOf(StringView.op_Implicit(","));
+		int num = str.IndexOf(StringView.op_Implicit(","));
 		if (num == -1)
 		{
-			return default(Color);
+			return default;
 		}
-		StringView val = ((StringView)(ref str)).Substring(0, num);
-		str = ((StringView)(ref str)).Substring(num + 1);
-		num = ((StringView)(ref str)).IndexOf(StringView.op_Implicit(","));
+		StringView val = str.Substring(0, num);
+		str = str.Substring(num + 1);
+		num = str.IndexOf(StringView.op_Implicit(","));
 		if (num == -1)
 		{
-			return default(Color);
+			return default;
 		}
-		StringView val2 = ((StringView)(ref str)).Substring(0, num);
-		str = ((StringView)(ref str)).Substring(num + 1);
-		num = ((StringView)(ref str)).IndexOf(StringView.op_Implicit(","));
+		StringView val2 = str.Substring(0, num);
+		str = str.Substring(num + 1);
+		num = str.IndexOf(StringView.op_Implicit(","));
 		if (num == -1)
 		{
 			StringView val3 = str;
 			return new Color(StringExtensions.ToFloat(val, 0f), StringExtensions.ToFloat(val2, 0f), StringExtensions.ToFloat(val3, 0f));
 		}
-		StringView val4 = ((StringView)(ref str)).Substring(0, num);
-		StringView val5 = ((StringView)(ref str)).Substring(num + 1);
+		StringView val4 = str.Substring(0, num);
+		StringView val5 = str.Substring(num + 1);
 		return new Color(StringExtensions.ToFloat(val, 0f), StringExtensions.ToFloat(val2, 0f), StringExtensions.ToFloat(val4, 0f), StringExtensions.ToFloat(val5, 0f));
 	}
 }

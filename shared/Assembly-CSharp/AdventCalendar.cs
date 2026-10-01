@@ -33,23 +33,23 @@ public class AdventCalendar : BaseCombatEntity
 
 	public GameObject[] crosses;
 
-	public static List<AdventCalendar> all;
+	public static List<AdventCalendar> all = new List<AdventCalendar>();
 
-	public static Dictionary<ulong, List<int>> playerRewardHistory;
+	public static Dictionary<ulong, List<int>> playerRewardHistory = new Dictionary<ulong, List<int>>();
 
-	public static readonly Phrase CheckLater;
+	public static readonly Phrase CheckLater = new Phrase("adventcalendar.checklater", "You've already claimed today's gift. Come back tomorrow.");
 
-	public static readonly Phrase EventOver;
+	public static readonly Phrase EventOver = new Phrase("adventcalendar.eventover", "The Advent Calendar event is over. See you next year.");
 
 	public GameObjectRef giftEffect;
 
 	public GameObjectRef boxCloseEffect;
 
 	[ServerVar]
-	public static int overrideAdventCalendarDay;
+	public static int overrideAdventCalendarDay = 0;
 
 	[ServerVar]
-	public static int overrideAdventCalendarMonth;
+	public static int overrideAdventCalendarMonth = 0;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -196,8 +196,8 @@ public class AdventCalendar : BaseCombatEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_RequestGift(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -214,14 +214,8 @@ public class AdventCalendar : BaseCombatEntity
 	static AdventCalendar()
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
-		all = new List<AdventCalendar>();
-		playerRewardHistory = new Dictionary<ulong, List<int>>();
-		CheckLater = new Phrase("adventcalendar.checklater", "You've already claimed today's gift. Come back tomorrow.");
-		EventOver = new Phrase("adventcalendar.eventover", "The Advent Calendar event is over. See you next year.");
-		overrideAdventCalendarDay = 0;
-		overrideAdventCalendarMonth = 0;
+		//IL_003c: Expected Obj, but got Unknown
 	}
 }

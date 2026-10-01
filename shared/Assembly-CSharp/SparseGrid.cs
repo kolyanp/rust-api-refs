@@ -63,8 +63,8 @@ public class SparseGrid<T>
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		(int, int) cellKey = GetCellKey(((Bounds)(ref bounds)).min);
-		(int, int) cellKey2 = GetCellKey(((Bounds)(ref bounds)).max);
+		(int, int) cellKey = GetCellKey(bounds.min);
+		(int, int) cellKey2 = GetCellKey(bounds.max);
 		var (i, _) = cellKey;
 		for (; i <= cellKey2.Item1; i++)
 		{

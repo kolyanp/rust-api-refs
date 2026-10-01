@@ -7,7 +7,7 @@ public class ItemModBeehiveNucleus : ItemMod
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
+		//IL_0021: Expected Obj, but got Unknown
 		base.OnVirginItem(item, creatingPlayer);
 		item.instanceData = new InstanceData
 		{

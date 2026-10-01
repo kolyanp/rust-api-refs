@@ -119,7 +119,7 @@ public class WaterPurifier : LiquidContainer
 
 	public bool HasDirtyWater()
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot != null && slot.info.itemType == ItemContainer.ContentsType.Liquid)
 		{
 			return slot.amount > 0;
@@ -176,7 +176,7 @@ public class WaterPurifier : LiquidContainer
 		dirtyWaterProcssed += num;
 		if (dirtyWaterProcssed >= 1f)
 		{
-			Item slot2 = base.inventory.GetSlot(0);
+			Item slot2 = inventory.GetSlot(0);
 			int num3 = Mathf.Min(Mathf.FloorToInt(dirtyWaterProcssed), slot2.amount);
 			num = num3;
 			slot2.UseItem(num3);

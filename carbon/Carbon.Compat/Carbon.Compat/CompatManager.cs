@@ -18,21 +18,21 @@ public class CompatManager : CarbonBehaviour, ICompatManager
 
 	private readonly BaseConverter harmonyConverter = new HarmonyConverter();
 
-	private static readonly ModuleReaderParameters readerArgs;
+	private static readonly ModuleReaderParameters readerArgs = new ModuleReaderParameters((IErrorListener)(object)EmptyErrorListener.Instance);
 
-	private static readonly Version zeroVersion;
+	private static readonly Version zeroVersion = new Version(0, 0, 0, 0);
 
-	public static readonly AssemblyReference SDK;
+	public static readonly AssemblyReference SDK = new AssemblyReference(Utf8String.op_Implicit("Carbon.SDK"), zeroVersion);
 
-	public static readonly AssemblyReference Common;
+	public static readonly AssemblyReference Common = new AssemblyReference(Utf8String.op_Implicit("Carbon.Common"), zeroVersion);
 
-	public static readonly AssemblyReference Newtonsoft;
+	public static readonly AssemblyReference Newtonsoft = new AssemblyReference(Utf8String.op_Implicit("Newtonsoft.Json"), zeroVersion);
 
-	public static readonly AssemblyReference protobuf;
+	public static readonly AssemblyReference protobuf = new AssemblyReference(Utf8String.op_Implicit("protobuf-net"), zeroVersion);
 
-	public static readonly AssemblyReference protobufCore;
+	public static readonly AssemblyReference protobufCore = new AssemblyReference(Utf8String.op_Implicit("protobuf-net.Core"), zeroVersion);
 
-	public static readonly AssemblyReference wsSharp;
+	public static readonly AssemblyReference wsSharp = new AssemblyReference(Utf8String.op_Implicit("websocket-sharp"), zeroVersion);
 
 	private bool ConvertAssembly(ModuleDefinition md, BaseConverter converter, ref byte[] buffer, bool noEntrypoint = false)
 	{
@@ -90,11 +90,11 @@ public class CompatManager : CarbonBehaviour, ICompatManager
 
 	public void Init()
 	{
-		Community.Runtime.Events.Subscribe(CarbonEvent.HookFetchStart, delegate
+		Community.Runtime.Events.Subscribe(CarbonEvent.HookFetchStart, (EventArgs args) =>
 		{
 			HookProcessor.HookClear();
 		});
-		Community.Runtime.Events.Subscribe(CarbonEvent.HookFetchEnd, delegate
+		Community.Runtime.Events.Subscribe(CarbonEvent.HookFetchEnd, (EventArgs args) =>
 		{
 			HookProcessor.HookReload();
 		});
@@ -103,26 +103,18 @@ public class CompatManager : CarbonBehaviour, ICompatManager
 	static CompatManager()
 	{
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000f: Expected O, but got Unknown
+		//IL_000f: Expected Obj, but got Unknown
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Expected O, but got Unknown
+		//IL_0036: Expected Obj, but got Unknown
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Expected O, but got Unknown
+		//IL_004f: Expected Obj, but got Unknown
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Expected O, but got Unknown
+		//IL_0068: Expected Obj, but got Unknown
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Expected O, but got Unknown
+		//IL_0081: Expected Obj, but got Unknown
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Expected O, but got Unknown
+		//IL_009a: Expected Obj, but got Unknown
 		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Expected O, but got Unknown
-		readerArgs = new ModuleReaderParameters((IErrorListener)(object)EmptyErrorListener.Instance);
-		zeroVersion = new Version(0, 0, 0, 0);
-		SDK = new AssemblyReference(Utf8String.op_Implicit("Carbon.SDK"), zeroVersion);
-		Common = new AssemblyReference(Utf8String.op_Implicit("Carbon.Common"), zeroVersion);
-		Newtonsoft = new AssemblyReference(Utf8String.op_Implicit("Newtonsoft.Json"), zeroVersion);
-		protobuf = new AssemblyReference(Utf8String.op_Implicit("protobuf-net"), zeroVersion);
-		protobufCore = new AssemblyReference(Utf8String.op_Implicit("protobuf-net.Core"), zeroVersion);
-		wsSharp = new AssemblyReference(Utf8String.op_Implicit("websocket-sharp"), zeroVersion);
+		//IL_00b3: Expected Obj, but got Unknown
 	}
 }

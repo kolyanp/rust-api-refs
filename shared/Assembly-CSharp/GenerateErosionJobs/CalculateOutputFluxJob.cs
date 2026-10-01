@@ -34,6 +34,7 @@ internal struct CalculateOutputFluxJob : IJobParallelFor
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
@@ -74,10 +75,9 @@ internal struct CalculateOutputFluxJob : IJobParallelFor
 		float num3 = TerrainHeightMapFloatVal[index];
 		float num4 = WaterMap[index];
 		float num5 = num3 + num4;
-		int4x2 val = default(int4x2);
-		((int4x2)(ref val))._002Ector(new int4(num - 1, num + 1, num, num), new int4(num2, num2, num2 + 1, num2 - 1));
+		int4x2 val = new int4x2(new int4(num - 1, num + 1, num, num), new int4(num2, num2, num2 + 1, num2 - 1));
 		int4 val2 = math.mad(val.c1, int4.op_Implicit(Res), val.c0);
-		float4 val3 = default(float4);
+		float4 val3 = default;
 		val3.x = *(float*)BurstUtil.GetReadonly<float>(ref TerrainHeightMapFloatVal, val2.x) + *(float*)BurstUtil.GetReadonly<float>(ref WaterMap, val2.x);
 		val3.y = *(float*)BurstUtil.GetReadonly<float>(ref TerrainHeightMapFloatVal, val2.y) + *(float*)BurstUtil.GetReadonly<float>(ref WaterMap, val2.y);
 		val3.z = *(float*)BurstUtil.GetReadonly<float>(ref TerrainHeightMapFloatVal, val2.z) + *(float*)BurstUtil.GetReadonly<float>(ref WaterMap, val2.z);

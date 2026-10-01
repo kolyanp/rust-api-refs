@@ -25,8 +25,8 @@ public struct FindSphereCmdsInCapsuleCmdsJob : IJob
 		for (int i = 0; i < Commands.Length; i++)
 		{
 			OverlapCapsuleCommand val = Commands[i];
-			Vector3 val2 = ((OverlapCapsuleCommand)(ref val)).point1 - ((OverlapCapsuleCommand)(ref val)).point0;
-			if (((Vector3)(ref val2)).magnitude / 2f <= 0f)
+			Vector3 val2 = val.point1 - val.point0;
+			if (val2.magnitude / 2f <= 0f)
 			{
 				SphereIndices.AddNoResize(i);
 			}

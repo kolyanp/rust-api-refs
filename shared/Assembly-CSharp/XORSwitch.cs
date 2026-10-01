@@ -24,9 +24,9 @@ public class XORSwitch : IOEntity
 
 	public override bool WantsPower(int inputIndex)
 	{
-		bool num = input1Amount > 0;
-		bool flag = input2Amount > 0;
-		return num != flag;
+		bool flag = input1Amount > 0;
+		bool flag2 = input2Amount > 0;
+		return flag != flag2;
 	}
 
 	public override void ResetState()

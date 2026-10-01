@@ -14,14 +14,14 @@ public class Category_Firework
 	public class Firework_PatternFirework
 	{
 		[Patch("CanDesignFirework", "CanDesignFirework", "PatternFirework", "PlayerCanModify", new string[] { "BasePlayer" })]
-		[Identifier("8afe957bd9d64da6818d5318f9f2db21")]
+		[Identifier("f8ad2ba8d9574c4ca14eeda013ac3741")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "PatternFirework", false)]
 		[Return(typeof(bool))]
 		[Category("Firework")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Firework_PatternFirework_8afe957bd9d64da6818d5318f9f2db21 : Patch
+		public class Firework_PatternFirework_f8ad2ba8d9574c4ca14eeda013ac3741 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -59,7 +59,7 @@ public class Category_Firework
 		}
 
 		[Patch("OnFireworkDesignChange", "OnFireworkDesignChange", "PatternFirework", "ServerSetFireworkDesign", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("a46de2c877a94714ae11720500fc180d")]
+		[Identifier("59c47e8b37294f26b452396fb9c5c506")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatternFirework", false)]
 		[Parameter("local0", "ProtoBuf.PatternFirework+Design", false)]
@@ -67,7 +67,7 @@ public class Category_Firework
 		[Return(typeof(void))]
 		[Category("Firework")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Firework_PatternFirework_a46de2c877a94714ae11720500fc180d : Patch
+		public class Firework_PatternFirework_59c47e8b37294f26b452396fb9c5c506 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -104,7 +104,7 @@ public class Category_Firework
 		}
 
 		[Patch("OnFireworkDesignChanged", "OnFireworkDesignChanged", "PatternFirework", "ServerSetFireworkDesign", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("b0338800d7ef4e77849c224d390baf61")]
+		[Identifier("85c51076e06247a4b9da109e1704b85f")]
 		[Dependencies(new string[] { "OnFireworkDesignChange" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatternFirework", false)]
@@ -113,7 +113,7 @@ public class Category_Firework
 		[Return(typeof(void), Discarded = true)]
 		[Category("Firework")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Firework_PatternFirework_b0338800d7ef4e77849c224d390baf61 : Patch
+		public class Firework_PatternFirework_85c51076e06247a4b9da109e1704b85f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -147,13 +147,13 @@ public class Category_Firework
 	public class Firework_BaseFirework
 	{
 		[Patch("OnFireworkStarted", "OnFireworkStarted", "BaseFirework", "Begin", new string[] { })]
-		[Identifier("5d4c239ffa16438e8f426656a7b29421")]
+		[Identifier("6e4102ce644f446c8b4303456c81e141")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseFirework", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Firework")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Firework_BaseFirework_5d4c239ffa16438e8f426656a7b29421 : Patch
+		public class Firework_BaseFirework_6e4102ce644f446c8b4303456c81e141 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -179,13 +179,13 @@ public class Category_Firework
 		}
 
 		[Patch("OnFireworkExhausted", "OnFireworkExhausted", "BaseFirework", "OnExhausted", new string[] { })]
-		[Identifier("a813ba92ec834cce91cde0321fb98353")]
+		[Identifier("77ae828e6ac345fda5efa5eae2f57105")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseFirework", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Firework")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Firework_BaseFirework_a813ba92ec834cce91cde0321fb98353 : Patch
+		public class Firework_BaseFirework_77ae828e6ac345fda5efa5eae2f57105 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -211,13 +211,13 @@ public class Category_Firework
 		}
 
 		[Patch("OnFireworkDamage", "OnFireworkDamage", "BaseFirework", "OnAttacked", new string[] { "HitInfo" })]
-		[Identifier("24d447d301f94ee9b34d4069b9b7192b")]
+		[Identifier("83fade939fea466aa2817d234da1e91a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseFirework", false)]
 		[Return(typeof(void))]
 		[Category("Firework")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Firework_BaseFirework_24d447d301f94ee9b34d4069b9b7192b : Patch
+		public class Firework_BaseFirework_83fade939fea466aa2817d234da1e91a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using ProtoBuf;
 using UnityEngine;
@@ -165,7 +166,7 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 		AudioId = info.msg.cassette.audioId;
 		CreatorSteamId = info.msg.cassette.creatorSteamId;
 		preloadedAudioId = info.msg.cassette.preloadAudioId;
-		if (base.isServer && ((NetworkableId)(ref info.msg.cassette.holder)).IsValid)
+		if (isServer && info.msg.cassette.holder.IsValid)
 		{
 			BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(info.msg.cassette.holder);
 			if ((Object)(object)baseNetworkable != (Object)null && baseNetworkable is ICassettePlayer cassettePlayer)
@@ -235,20 +236,21 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	public void Server_MakeNewFile(RPCMessage msg)
 	{
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)msg.player == (Object)null) && GetParentEntity() is RecorderTool recorderTool && !((Object)(object)recorderTool.GetOwnerPlayer() != (Object)(object)msg.player) && !((Object)(object)recorderTool.cachedCassette != (Object)(object)this))
 		{
-			byte[] data = msg.read.BytesWithSize();
-			if (IsOggValid(data, this))
+			byte[] array = msg.read.BytesWithSize();
+			if (IsOggValid(array, this))
 			{
 				FileStorage.server.RemoveAllByEntity(net.ID);
-				uint id = FileStorage.server.Store(data, FileStorage.Type.ogg, net.ID);
+				uint id = FileStorage.server.Store(array, FileStorage.Type.ogg, net.ID);
 				SetAudioId(id, msg.player.userID);
+				Analytics.Azure.OnUGCCreated(msg.player, this, "cassette", array.Length);
 			}
 		}
 	}

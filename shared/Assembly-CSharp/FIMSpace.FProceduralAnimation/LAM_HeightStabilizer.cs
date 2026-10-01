@@ -12,9 +12,9 @@ public class LAM_HeightStabilizer : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _extrV;
 
-	private Vector3 adjustement;
+	private Vector3 adjustement = Vector3.zero;
 
-	private Vector3 sd_adjustement;
+	private Vector3 sd_adjustement = Vector3.zero;
 
 	public override bool AskForSpineBone => true;
 
@@ -65,20 +65,20 @@ public class LAM_HeightStabilizer : LegsAnimatorControlModuleBase
 		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 lastAppliedHipsFinalPosition = base.LA._LastAppliedHipsFinalPosition;
-		Vector3 val = base.LA.ToRootLocalSpace(lastAppliedHipsFinalPosition);
-		Vector3 lastKeyframeLocalPosition = base.LA.HipsSetup.LastKeyframeLocalPosition;
+		Vector3 lastAppliedHipsFinalPosition = LA._LastAppliedHipsFinalPosition;
+		Vector3 val = LA.ToRootLocalSpace(lastAppliedHipsFinalPosition);
+		Vector3 lastKeyframeLocalPosition = LA.HipsSetup.LastKeyframeLocalPosition;
 		val.y = 0f;
 		lastKeyframeLocalPosition.y = 0f;
 		Vector3 val2 = lastKeyframeLocalPosition - val;
-		float magnitude = ((Vector3)(ref val2)).magnitude;
+		float magnitude = val2.magnitude;
 		val2.y -= magnitude * _thresV.GetFloat();
 		val2 *= _powerV.GetFloat();
-		val2.y -= Mathf.InverseLerp(base.LA.ScaleReferenceNoScale * 0.001f, base.LA.ScaleReferenceNoScale * (0.15f + _extrV.GetFloat() * 0.1f), magnitude) * _extrV.GetFloat() * 0.25f;
-		val2 *= base.EffectBlend;
-		adjustement = Vector3.SmoothDamp(adjustement, val2, ref sd_adjustement, Mathf.Lerp(0.4f, 0.005f, _reactV.GetFloat()), 1000000f, base.LA.DeltaTime);
-		LegsAnimator lA = base.LA;
-		lA._Hips_Modules_ExtraWOffset += base.LA.RootToWorldSpaceVec(adjustement);
+		val2.y -= Mathf.InverseLerp(LA.ScaleReferenceNoScale * 0.001f, LA.ScaleReferenceNoScale * (0.15f + _extrV.GetFloat() * 0.1f), magnitude) * _extrV.GetFloat() * 0.25f;
+		val2 *= EffectBlend;
+		adjustement = Vector3.SmoothDamp(adjustement, val2, ref sd_adjustement, Mathf.Lerp(0.4f, 0.005f, _reactV.GetFloat()), 1000000f, LA.DeltaTime);
+		LegsAnimator lA = LA;
+		lA._Hips_Modules_ExtraWOffset += LA.RootToWorldSpaceVec(adjustement);
 	}
 
 	public LAM_HeightStabilizer()
@@ -87,8 +87,5 @@ public class LAM_HeightStabilizer : LegsAnimatorControlModuleBase
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		adjustement = Vector3.zero;
-		sd_adjustement = Vector3.zero;
-		base._002Ector();
 	}
 }

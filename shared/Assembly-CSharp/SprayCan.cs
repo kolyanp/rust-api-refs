@@ -43,51 +43,51 @@ public class SprayCan : HeldEntity
 
 	public const Flags IsFreeSpraying = Flags.Reserved1;
 
-	public static Phrase LastReskinError;
+	public static Phrase LastReskinError = Phrase.op_Implicit(string.Empty);
 
-	public static BaseEntity LastReskinErrorEntity;
+	public static BaseEntity LastReskinErrorEntity = null;
 
-	public static string LastReskinErrorArgString;
+	public static string LastReskinErrorArgString = string.Empty;
 
-	public static readonly Phrase FreeSprayNamePhrase;
+	public static readonly Phrase FreeSprayNamePhrase = new Phrase("freespray_radial", "Free Spray");
 
-	public static readonly Phrase FreeSprayDescPhrase;
+	public static readonly Phrase FreeSprayDescPhrase = new Phrase("freespray_radial_desc", "Spray shapes freely with various colors");
 
-	public static readonly Phrase BuildingSkinColourPhrase;
+	public static readonly Phrase BuildingSkinColourPhrase = new Phrase("buildingskin_colour", "Set colour");
 
-	public static readonly Phrase BuildingSkinColourDescPhrase;
+	public static readonly Phrase BuildingSkinColourDescPhrase = new Phrase("buildingskin_colour_desc", "Set the block to the highlighted colour");
 
-	public static readonly Phrase EntityChangeSkinPhrase;
+	public static readonly Phrase EntityChangeSkinPhrase = new Phrase("entity_changeskin", "Change skin");
 
-	public static readonly Phrase EntityChangeSkinDescPhrase;
+	public static readonly Phrase EntityChangeSkinDescPhrase = new Phrase("entity_changeskin_desc", "Open skin selection");
 
-	public static readonly Phrase EntityChangeColourPhrase;
+	public static readonly Phrase EntityChangeColourPhrase = new Phrase("entity_changecolour", "Change colour");
 
-	public static readonly Phrase EntityChangeColourDescPhrase;
+	public static readonly Phrase EntityChangeColourDescPhrase = new Phrase("entity_changecolour_desc", "Open colour selection");
 
-	public static readonly Phrase DoorMustBeClosed;
+	public static readonly Phrase DoorMustBeClosed = new Phrase("error_doormustbeclosed", "Door must be closed");
 
-	public static readonly Phrase NeedDoorAccess;
+	public static readonly Phrase NeedDoorAccess = new Phrase("error_needdooraccess", "Need door access");
 
-	public static readonly Phrase CannotReskinThatDoor;
+	public static readonly Phrase CannotReskinThatDoor = new Phrase("error_cannotreskindoor", "Cannot reskin that door");
 
-	public static readonly Phrase RecentlyDamaged;
+	public static readonly Phrase RecentlyDamaged = new Phrase("error_reskin_recentlydamaged", "Recently damaged, reskinnable in {0} seconds");
 
-	public static readonly Phrase ExplosivesActive;
+	public static readonly Phrase ExplosivesActive = new Phrase("error_explosivesactive", "Cannot reskin an object with explosives attached");
 
-	public static readonly Phrase PlayerInAir;
+	public static readonly Phrase PlayerInAir = new Phrase("error_playerinair", "You must be on the ground");
 
-	public static readonly Phrase BlockedByPlayer;
+	public static readonly Phrase BlockedByPlayer = new Phrase("error_blockedbyplayer_reskin", "Blocked by intersecting player");
 
-	public static readonly Phrase BlockedBySomething;
+	public static readonly Phrase BlockedBySomething = new Phrase("error_blockedbysomething", "Blocked by something");
 
-	public static readonly Phrase PlayerIsMounted;
+	public static readonly Phrase PlayerIsMounted = new Phrase("error_playerismounted", "Player {0} is mounted");
 
-	public static readonly Phrase CannotReskinInMonument;
+	public static readonly Phrase CannotReskinInMonument = new Phrase("error_reskin_monument", "Cannot reskin objects inside a monument");
 
-	public static readonly Phrase NeedLockAccess;
+	public static readonly Phrase NeedLockAccess = new Phrase("error_needlockaccess", "Need lock access");
 
-	public static readonly Phrase NotAuthorized;
+	public static readonly Phrase NotAuthorized = new Phrase("error_notauthorized", "You are not authorized");
 
 	public SoundDefinition SpraySound;
 
@@ -101,7 +101,7 @@ public class SprayCan : HeldEntity
 
 	public GameObjectRef LinePrefab;
 
-	public Color[] SprayColours = (Color[])(object)new Color[0];
+	public Color[] SprayColours = new Color[0];
 
 	public float[] SprayWidths = new float[3] { 0.1f, 0.2f, 0.3f };
 
@@ -371,6 +371,8 @@ public class SprayCan : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
@@ -378,8 +380,6 @@ public class SprayCan : HeldEntity
 		typeof(int),
 		typeof(int)
 	})]
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
 	private void BeginFreehandSpray(RPCMessage msg)
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
@@ -420,7 +420,7 @@ public class SprayCan : HeldEntity
 	public void ClearPaintingLine(bool allowNewSprayImmediately)
 	{
 		paintingLine = null;
-		if (!base.UsingInfiniteAmmoCheat)
+		if (!UsingInfiniteAmmoCheat)
 		{
 			LoseCondition(ConditionLossPerSpray);
 		}
@@ -447,15 +447,15 @@ public class SprayCan : HeldEntity
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void ChangeItemSkin(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
 		NetworkableId uid = msg.read.EntityID();
 		int num = msg.read.Int32();
 		BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(uid);
@@ -507,7 +507,7 @@ public class SprayCan : HeldEntity
 			baseEntity.SendNetworkUpdate();
 			Interface.CallHook("OnEntityReskinned", baseEntity, num2, msg.player);
 			ClientRPC(RpcTarget.NetworkGroup("Client_ReskinResult"), 1, baseEntity.net.ID);
-			if (!base.UsingInfiniteAmmoCheat)
+			if (!UsingInfiniteAmmoCheat)
 			{
 				LoseCondition(ConditionLossPerReskin);
 			}
@@ -521,14 +521,14 @@ public class SprayCan : HeldEntity
 		}
 	}
 
-	private BaseEntity DoRedirectSwap(BaseEntity entity, string newResourcePath, ulong targetSkinID)
+	public static BaseEntity DoRedirectSwap(BaseEntity entity, string newResourcePath, ulong targetSkinID)
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		ReskinPreserveInfo preserveInfo = default(ReskinPreserveInfo);
+		ReskinPreserveInfo preserveInfo = default;
 		entity.Reskin_Preserve(ref preserveInfo);
-		Vector3 pos = default(Vector3);
-		Quaternion rot = default(Quaternion);
+		Vector3 pos = default;
+		Quaternion rot = default;
 		((Component)entity).transform.GetPositionAndRotation(ref pos, ref rot);
 		entity.Kill();
 		BaseEntity baseEntity = GameManager.server.CreateEntity(newResourcePath, pos, rot);
@@ -568,7 +568,7 @@ public class SprayCan : HeldEntity
 			return false;
 		}
 		OBB val = targetEnt.WorldSpaceBounds();
-		Vector3 position = ((OBB)(ref val)).ClosestPoint(player.eyes.position);
+		Vector3 position = val.ClosestPoint(player.eyes.position);
 		if (!player.IsVisible(position, 3f))
 		{
 			LastReskinError = ConstructionErrors.LineOfSightBlocked;
@@ -592,7 +592,7 @@ public class SprayCan : HeldEntity
 		{
 			return false;
 		}
-		if (global::SimpleUpgrade.IsUpgradeBlocked(entity, targetRedirect, player))
+		if (SimpleUpgrade.IsUpgradeBlocked(entity, targetRedirect, player))
 		{
 			if ((Object)(object)DeployVolume.LastDeployHit != (Object)null)
 			{
@@ -635,10 +635,10 @@ public class SprayCan : HeldEntity
 		}
 	}
 
+	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.MaxDistance(5f)]
-	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	private void ChangeWallpaper(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -743,19 +743,19 @@ public class SprayCan : HeldEntity
 	private bool GetEntityPrefabPath(ItemDefinition def, out string resourcePath)
 	{
 		resourcePath = string.Empty;
-		ItemModDeployable itemModDeployable = default(ItemModDeployable);
+		ItemModDeployable itemModDeployable = default;
 		if (((Component)def).TryGetComponent<ItemModDeployable>(ref itemModDeployable))
 		{
 			resourcePath = itemModDeployable.entityPrefab.resourcePath;
 			return true;
 		}
-		ItemModEntity itemModEntity = default(ItemModEntity);
+		ItemModEntity itemModEntity = default;
 		if (((Component)def).TryGetComponent<ItemModEntity>(ref itemModEntity))
 		{
 			resourcePath = itemModEntity.entityPrefab.resourcePath;
 			return true;
 		}
-		ItemModEntityReference itemModEntityReference = default(ItemModEntityReference);
+		ItemModEntityReference itemModEntityReference = default;
 		if (((Component)def).TryGetComponent<ItemModEntityReference>(ref itemModEntityReference))
 		{
 			resourcePath = itemModEntityReference.entityPrefab.resourcePath;
@@ -801,6 +801,7 @@ public class SprayCan : HeldEntity
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
@@ -839,10 +840,9 @@ public class SprayCan : HeldEntity
 		{
 			return;
 		}
-		Plane val4 = default(Plane);
-		((Plane)(ref val4))._002Ector(val2, val);
-		Vector3 val5 = ((Plane)(ref val4)).ClosestPointOnPlane(val3) - val;
-		Quaternion val6 = Quaternion.LookRotation(((Vector3)(ref val5)).normalized, val2);
+		Plane val4 = new Plane(val2, val);
+		Vector3 val5 = val4.ClosestPointOnPlane(val3) - val;
+		Quaternion val6 = Quaternion.LookRotation(val5.normalized, val2);
 		val6 *= Quaternion.Euler(0f, 0f, 90f);
 		if (num != 0 && !msg.player.blueprints.CheckSkinOwnership(num, msg.player))
 		{
@@ -872,7 +872,7 @@ public class SprayCan : HeldEntity
 			}
 			((Component)baseEntity).transform.localScale = one;
 			baseEntity.Spawn();
-			if (!base.UsingInfiniteAmmoCheat)
+			if (!UsingInfiniteAmmoCheat)
 			{
 				LoseCondition(ConditionLossPerSpray);
 			}
@@ -904,9 +904,9 @@ public class SprayCan : HeldEntity
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server.CallsPerSecond(3uL)]
 	private void Server_SetEntityColour(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -954,67 +954,44 @@ public class SprayCan : HeldEntity
 	static SprayCan()
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Expected O, but got Unknown
+		//IL_0033: Expected Obj, but got Unknown
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Expected O, but got Unknown
+		//IL_0047: Expected Obj, but got Unknown
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Expected O, but got Unknown
+		//IL_005b: Expected Obj, but got Unknown
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Expected O, but got Unknown
+		//IL_006f: Expected Obj, but got Unknown
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Expected O, but got Unknown
+		//IL_0083: Expected Obj, but got Unknown
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Expected O, but got Unknown
+		//IL_0097: Expected Obj, but got Unknown
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ab: Expected O, but got Unknown
+		//IL_00ab: Expected Obj, but got Unknown
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Expected O, but got Unknown
+		//IL_00bf: Expected Obj, but got Unknown
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Expected O, but got Unknown
+		//IL_00d3: Expected Obj, but got Unknown
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e7: Expected O, but got Unknown
+		//IL_00e7: Expected Obj, but got Unknown
 		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fb: Expected O, but got Unknown
+		//IL_00fb: Expected Obj, but got Unknown
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010f: Expected O, but got Unknown
+		//IL_010f: Expected Obj, but got Unknown
 		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0123: Expected O, but got Unknown
+		//IL_0123: Expected Obj, but got Unknown
 		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0137: Expected O, but got Unknown
+		//IL_0137: Expected Obj, but got Unknown
 		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014b: Expected O, but got Unknown
+		//IL_014b: Expected Obj, but got Unknown
 		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015f: Expected O, but got Unknown
+		//IL_015f: Expected Obj, but got Unknown
 		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0173: Expected O, but got Unknown
+		//IL_0173: Expected Obj, but got Unknown
 		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0187: Expected O, but got Unknown
+		//IL_0187: Expected Obj, but got Unknown
 		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019b: Expected O, but got Unknown
+		//IL_019b: Expected Obj, but got Unknown
 		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01af: Expected O, but got Unknown
-		LastReskinError = Phrase.op_Implicit(string.Empty);
-		LastReskinErrorEntity = null;
-		LastReskinErrorArgString = string.Empty;
-		FreeSprayNamePhrase = new Phrase("freespray_radial", "Free Spray");
-		FreeSprayDescPhrase = new Phrase("freespray_radial_desc", "Spray shapes freely with various colors");
-		BuildingSkinColourPhrase = new Phrase("buildingskin_colour", "Set colour");
-		BuildingSkinColourDescPhrase = new Phrase("buildingskin_colour_desc", "Set the block to the highlighted colour");
-		EntityChangeSkinPhrase = new Phrase("entity_changeskin", "Change skin");
-		EntityChangeSkinDescPhrase = new Phrase("entity_changeskin_desc", "Open skin selection");
-		EntityChangeColourPhrase = new Phrase("entity_changecolour", "Change colour");
-		EntityChangeColourDescPhrase = new Phrase("entity_changecolour_desc", "Open colour selection");
-		DoorMustBeClosed = new Phrase("error_doormustbeclosed", "Door must be closed");
-		NeedDoorAccess = new Phrase("error_needdooraccess", "Need door access");
-		CannotReskinThatDoor = new Phrase("error_cannotreskindoor", "Cannot reskin that door");
-		RecentlyDamaged = new Phrase("error_reskin_recentlydamaged", "Recently damaged, reskinnable in {0} seconds");
-		ExplosivesActive = new Phrase("error_explosivesactive", "Cannot reskin an object with explosives attached");
-		PlayerInAir = new Phrase("error_playerinair", "You must be on the ground");
-		BlockedByPlayer = new Phrase("error_blockedbyplayer_reskin", "Blocked by intersecting player");
-		BlockedBySomething = new Phrase("error_blockedbysomething", "Blocked by something");
-		PlayerIsMounted = new Phrase("error_playerismounted", "Player {0} is mounted");
-		CannotReskinInMonument = new Phrase("error_reskin_monument", "Cannot reskin objects inside a monument");
-		NeedLockAccess = new Phrase("error_needlockaccess", "Need lock access");
-		NotAuthorized = new Phrase("error_notauthorized", "You are not authorized");
+		//IL_01af: Expected Obj, but got Unknown
 	}
 }

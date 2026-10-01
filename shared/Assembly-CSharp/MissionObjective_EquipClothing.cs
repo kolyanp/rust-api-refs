@@ -12,7 +12,7 @@ public class MissionObjective_EquipClothing : MissionObjective
 		base.ServerObjectiveStarted(playerFor, index, instance);
 		if (CheckExistingClothingOnStart)
 		{
-			ProcessMissionEvent(playerFor, instance, index, BaseMission.MissionEventType.CLOTHINGCHANGED, default(BaseMission.MissionEventPayload), 0f);
+			ProcessMissionEvent(playerFor, instance, index, BaseMission.MissionEventType.CLOTHINGCHANGED, default, 0f);
 		}
 	}
 

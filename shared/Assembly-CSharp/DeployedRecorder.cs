@@ -69,9 +69,9 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		bool play = msg.read.ReadByte() == 1;
@@ -112,7 +112,7 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 
 	public override void OnCollision(Collision collision, BaseEntity hitEntity)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			DoCollisionStick(collision, hitEntity);
 		}
@@ -125,7 +125,7 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		ContactPoint contact = collision.GetContact(0);
-		DoStick(((ContactPoint)(ref contact)).point, ((ContactPoint)(ref contact)).normal, ent, collision.collider);
+		DoStick(contact.point, contact.normal, ent, collision.collider);
 	}
 
 	public virtual void SetMotionEnabled(bool wantsMotion)
@@ -224,7 +224,7 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 	public override void ResetState()
 	{
 		base.ResetState();
-		if (base.isServer)
+		if (isServer)
 		{
 			initialCollisionDetectionMode = null;
 		}

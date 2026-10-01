@@ -76,6 +76,8 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 
 	public GameObject currentViewmodelGameObject { get; private set; }
 
+	public SkinViewerModelAnimator currentModelAnimator { get; private set; }
+
 	public bool isShowingViewmodel { get; private set; }
 
 	public bool isViewmodelAdsing { get; private set; }

@@ -17,7 +17,7 @@ public static class BaseNetworkableEx
 
 	public static bool Is<T>(this Object unityObject, out T castedUnityObject) where T : Object
 	{
-		castedUnityObject = default(T);
+		castedUnityObject = default;
 		if (unityObject == (Object)null)
 		{
 			return false;

@@ -32,7 +32,7 @@ public class UI_LoadingRotate : MonoBehaviour
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		float z = RotateImage.localEulerAngles.z;
 		float to = z + 360f;
-		LeanTween.value(((Component)RotateImage).gameObject, z, to, 0.5f).setEase(LeanTweenType.linear).setOnUpdate(delegate(float angle, object obj)
+		LeanTween.value(((Component)RotateImage).gameObject, z, to, 0.5f).setEase(LeanTweenType.linear).setOnUpdate((float angle, object obj) =>
 		{
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 			Transform val = (Transform)((obj is Transform) ? obj : null);

@@ -32,15 +32,15 @@ internal struct OceanTraceJob : IJobParallelForDefer
 	[NativeDisableParallelForRestriction]
 	public NativeArray<bool> HitResults;
 
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<Vector3> HitPositions;
 
 	public float OneOverOctave0Scale;
 
-	[NativeDisableParallelForRestriction]
 	[ReadOnly]
-	public Rust.Water5.NativeOceanDisplacementShort3 SimData;
+	[NativeDisableParallelForRestriction]
+	public NativeOceanDisplacementShort3 SimData;
 
 	public int Spectrum0;
 
@@ -144,19 +144,19 @@ internal struct OceanTraceJob : IJobParallelForDefer
 		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
 		float num = 0f - MaxDisplacement;
-		Vector3 point = ((Ray)(ref ray)).GetPoint(maxDist);
-		if (((Ray)(ref ray)).origin.y > MaxDisplacement + SeaLevel && point.y > MaxDisplacement + SeaLevel)
+		Vector3 point = ray.GetPoint(maxDist);
+		if (ray.origin.y > MaxDisplacement + SeaLevel && point.y > MaxDisplacement + SeaLevel)
 		{
 			result = Vector3.zero;
 			return false;
 		}
-		if (((Ray)(ref ray)).origin.y < num + SeaLevel && point.y < num + SeaLevel)
+		if (ray.origin.y < num + SeaLevel && point.y < num + SeaLevel)
 		{
 			result = Vector3.zero;
 			return false;
 		}
-		Vector3 val = ((Ray)(ref ray)).origin;
-		Vector3 direction = ((Ray)(ref ray)).direction;
+		Vector3 val = ray.origin;
+		Vector3 direction = ray.direction;
 		float num2 = 0f;
 		float num3 = 0f;
 		float num4 = 2f / (math.abs(direction.y) + 1f);
@@ -202,7 +202,7 @@ internal struct OceanTraceJob : IJobParallelForDefer
 		{
 			num2 = (0f - (val.y + MaxDisplacement - SeaLevel)) / direction.y;
 			Vector3 val2 = val;
-			Vector3 val3 = val + num2 * ((Ray)(ref ray)).direction;
+			Vector3 val3 = val + num2 * ray.direction;
 			for (int i = 0; i < 16; i++)
 			{
 				val = (val2 + val3) * 0.5f;
@@ -238,6 +238,7 @@ internal struct OceanTraceJob : IJobParallelForDefer
 	{
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 		float x = HeightMapQueryStructure.TerrainPosition.x;
@@ -246,8 +247,7 @@ internal struct OceanTraceJob : IJobParallelForDefer
 		float z2 = HeightMapQueryStructure.TerrainOneOverSize.z;
 		float num = (position.x - x) * x2;
 		float num2 = (position.z - z) * z2;
-		Vector2 uv = default(Vector2);
-		((Vector2)(ref uv))._002Ector(num, num2);
+		Vector2 uv = new Vector2(num, num2);
 		float coarseDistanceToShore = ShoreVectorQueryStructure.GetCoarseDistanceToShore(position);
 		float heightFromUV = HeightMapQueryStructure.GetHeightFromUV(uv);
 		float num3 = Mathf.Clamp01(coarseDistanceToShore / distanceAttenuationFactor);

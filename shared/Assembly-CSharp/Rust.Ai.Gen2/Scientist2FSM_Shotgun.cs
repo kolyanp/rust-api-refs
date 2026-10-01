@@ -3,8 +3,8 @@ using UnityEngine;
 namespace Rust.Ai.Gen2;
 
 [SoftRequireComponent(typeof(BlackboardComponent), typeof(NpcBarkManager))]
-[SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
 [SoftRequireComponent(typeof(NpcZoneComponent), typeof(NPCEncounterTimer), typeof(NpcShootingComponent))]
+[SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
 public class Scientist2FSM_Shotgun : FSMComponent
 {
 	public State_PatrolIdle idle = new State_PatrolIdle();
@@ -35,11 +35,11 @@ public class Scientist2FSM_Shotgun : FSMComponent
 
 	private NpcBarkComponent _barkComponent;
 
-	private NpcBarkComponent BarkComponent => _barkComponent ?? (_barkComponent = ((Component)base.baseEntity).GetComponent<NpcBarkComponent>());
+	private NpcBarkComponent BarkComponent => _barkComponent ?? (_barkComponent = ((Component)baseEntity).GetComponent<NpcBarkComponent>());
 
 	public override void InitShared()
 	{
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
 			State_Nothing state_Nothing = new State_Nothing
 			{
@@ -52,31 +52,31 @@ public class Scientist2FSM_Shotgun : FSMComponent
 			HurtTrans = new Trans_Triggerable_HitInfo();
 			DeathTrans = new Trans_Triggerable_HitInfo();
 			RushPositionTrans = new Trans_Triggerable();
-			State_Nothing obj = new State_Nothing
+			State_Nothing state_Nothing3 = new State_Nothing
 			{
 				Name = "Root"
 			};
-			State_Nothing state_Nothing3 = new State_Nothing
+			State_Nothing state_Nothing4 = new State_Nothing
 			{
 				Name = "Alive"
 			};
-			State_Nothing state_Nothing4 = new State_Nothing
+			State_Nothing state_Nothing5 = new State_Nothing
 			{
 				Name = "OnNavmesh"
 			};
-			State_Nothing state_Nothing5 = new State_Nothing
+			State_Nothing state_Nothing6 = new State_Nothing
 			{
 				Name = "Roaming"
 			};
-			State_Nothing state_Nothing6 = new State_Nothing
+			State_Nothing state_Nothing7 = new State_Nothing
 			{
 				Name = "Has target"
 			};
-			State_Nothing state_Nothing7 = new State_Nothing
+			State_Nothing state_Nothing8 = new State_Nothing
 			{
 				Name = "Searching"
 			};
-			State_Nothing state_Nothing8 = new State_Nothing
+			State_Nothing state_Nothing9 = new State_Nothing
 			{
 				Name = "See target switch"
 			};
@@ -103,11 +103,11 @@ public class Scientist2FSM_Shotgun : FSMComponent
 			{
 				cooldown = 5f
 			} & ~new Trans_CanSeeTarget() & (new Trans_TargetIsLowHealth() | new Trans_TargetIsUndergeared());
-			_ = obj + (state_Nothing3.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(patrol, new Trans_IsNavmeshReady()) + (state_Nothing4 + (state_Nothing5.AddTickBranchingTrans(goHide, new Trans_HasTarget(), surprised, dstState2Trans) + patrol.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(idle) + idle.AddTickTransition(patrol, new Trans_ElapsedTimeRandomized
+			_ = state_Nothing3 + (state_Nothing4.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(patrol, new Trans_IsNavmeshReady()) + (state_Nothing5 + (state_Nothing6.AddTickBranchingTrans(goHide, new Trans_HasTarget(), surprised, dstState2Trans) + patrol.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(idle) + idle.AddTickTransition(patrol, new Trans_ElapsedTimeRandomized
 			{
 				MinDuration = 1.0,
 				MaxDuration = 10.0
-			})) + (state_Nothing6.AddTickTransition(patrol, ~new Trans_HasTarget()) + (state_Nothing2.AddTickTransition(chase, fSMTransitionBase & RushPositionTrans) + state_Nothing8.AddTickTransition(goHide, trans_IsReloading | ~new Trans_TargetLkpInRange
+			})) + (state_Nothing7.AddTickTransition(patrol, ~new Trans_HasTarget()) + (state_Nothing2.AddTickTransition(chase, fSMTransitionBase & RushPositionTrans) + state_Nothing9.AddTickTransition(goHide, trans_IsReloading | ~new Trans_TargetLkpInRange
 			{
 				Range = 30f
 			}).AddTickTransition(chase, new Trans_TargetLkpInRange
@@ -148,17 +148,17 @@ public class Scientist2FSM_Shotgun : FSMComponent
 			{
 				MinDuration = 5.0,
 				MaxDuration = 10.0
-			}, flank, trans_And).AddTickBranchingTrans(state_Nothing8, trans_CanSeeTarget, surprised, dstState2Trans) + flank.AddTickBranchingTrans(state_Nothing8, trans_CanSeeTarget, surprised, dstState2Trans).AddFailureTransition(chase).AddEndTransition(state_Search) + (state_Nothing7.AddTickBranchingTrans(state_Nothing8, trans_CanSeeTarget, surprised, dstState2Trans).AddTickTransition(flank, new Trans_Cooldown
+			}, flank, trans_And).AddTickBranchingTrans(state_Nothing9, trans_CanSeeTarget, surprised, dstState2Trans) + flank.AddTickBranchingTrans(state_Nothing9, trans_CanSeeTarget, surprised, dstState2Trans).AddFailureTransition(chase).AddEndTransition(state_Search) + (state_Nothing8.AddTickBranchingTrans(state_Nothing9, trans_CanSeeTarget, surprised, dstState2Trans).AddTickTransition(flank, new Trans_Cooldown
 			{
 				cooldown = 5f
-			} & fSMTransitionBase2 & new Trans_HeardNoise()).AddFailureTransition(goHide)
-				.AddEndTransition(search, new Trans_Bark
-				{
-					category = ENPCVoicelineCategory.Search
-				}) + state_Search + search) + surprised.AddEndTransition(state_Nothing8)) + chase.AddTickBranchingTrans(dogFight, new Trans_CanSeeTarget() & new Trans_TargetLkpInRange
+			} & fSMTransitionBase2 & new Trans_HeardNoise()).AddFailureTransition(goHide) + state_Search.AddEndTransition(search, new Trans_Bark
+			{
+				category = ENPCVoicelineCategory.Search
+			}) + search) + surprised.AddEndTransition(state_Nothing9)) + chase.AddTickBranchingTrans(dogFight, new Trans_CanSeeTarget() & new Trans_TargetLkpInRange
 			{
 				Range = num
 			}, surprised, dstState2Trans).AddFailureTransition(goHide).AddEndTransition(state_Search)))) + dead;
+			RegisterDebugMoveTo(state_Nothing4);
 			SetState(state_Nothing);
 			SetFsmActive(newActive: true);
 		}

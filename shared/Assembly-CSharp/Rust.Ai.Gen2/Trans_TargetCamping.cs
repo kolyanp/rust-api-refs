@@ -6,11 +6,11 @@ public class Trans_TargetCamping : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_TargetCamping"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return true;
 			}
-			if (!base.Senses.GetVisibilityStatus(target, out var status))
+			if (!Senses.GetVisibilityStatus(target, out var status))
 			{
 				return true;
 			}

@@ -852,7 +852,7 @@ public class PermissionSql : Permission
 				userdata[item.Item1] = item.Item2;
 			}
 		}
-		base.IsLoaded = true;
+		IsLoaded = true;
 	}
 
 	public void LoadGroups()

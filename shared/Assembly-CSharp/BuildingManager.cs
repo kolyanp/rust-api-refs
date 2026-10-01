@@ -111,7 +111,7 @@ public abstract class BuildingManager
 				return;
 			}
 			buildingBlocks.Add(ent);
-			if (!AI.nav_carve_use_building_optimization)
+			if (!AI.useUnityNavmesh || !AI.nav_carve_use_building_optimization)
 			{
 				return;
 			}
@@ -134,7 +134,7 @@ public abstract class BuildingManager
 				return;
 			}
 			buildingBlocks.Remove(ent);
-			if (!AI.nav_carve_use_building_optimization || navmeshCarvers == null)
+			if (!AI.useUnityNavmesh || !AI.nav_carve_use_building_optimization || navmeshCarvers == null)
 			{
 				return;
 			}

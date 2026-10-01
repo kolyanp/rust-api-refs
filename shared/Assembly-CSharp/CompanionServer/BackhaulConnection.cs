@@ -75,14 +75,14 @@ public sealed class BackhaulConnection
 
 	private void HandleData(uint channelId, Span<byte> payload)
 	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		if (payload.Length <= App.maxmessagesize && _channels.TryGetValue(channelId, out var value))
 		{
-			MemoryBuffer val = default(MemoryBuffer);
-			((MemoryBuffer)(ref val))._002Ector(payload.Length);
+			MemoryBuffer val = new MemoryBuffer(payload.Length);
 			payload.CopyTo(MemoryBuffer.op_Implicit(val));
-			_listener.Enqueue(value, ((MemoryBuffer)(ref val)).Slice(payload.Length));
+			_listener.Enqueue(value, val.Slice(payload.Length));
 		}
 	}
 
@@ -109,11 +109,11 @@ public sealed class BackhaulConnection
 	{
 		try
 		{
-			SendFramed(0, channelId, ((MemoryBuffer)(ref payload)).Data, ((MemoryBuffer)(ref payload)).Length);
+			SendFramed(0, channelId, payload.Data, payload.Length);
 		}
 		finally
 		{
-			((MemoryBuffer)(ref payload)).Dispose();
+			payload.Dispose();
 		}
 	}
 
@@ -128,25 +128,25 @@ public sealed class BackhaulConnection
 
 	private void SendFramed(byte opcode, uint channelId, byte[] payload, int payloadLength)
 	{
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		if (_connection != null && _connection.IsAvailable)
 		{
 			int num = 5 + payloadLength;
-			MemoryBuffer val = default(MemoryBuffer);
-			((MemoryBuffer)(ref val))._002Ector(num);
-			((MemoryBuffer)(ref val)).Data[0] = opcode;
-			BinaryPrimitives.WriteUInt32LittleEndian(((MemoryBuffer)(ref val)).Data.AsSpan(1, 4), channelId);
+			MemoryBuffer val = new MemoryBuffer(num);
+			val.Data[0] = opcode;
+			BinaryPrimitives.WriteUInt32LittleEndian(val.Data.AsSpan(1, 4), channelId);
 			if (payloadLength > 0)
 			{
-				Array.Copy(payload, 0, ((MemoryBuffer)(ref val)).Data, 5, payloadLength);
+				Array.Copy(payload, 0, val.Data, 5, payloadLength);
 			}
-			_connection.Send(((MemoryBuffer)(ref val)).Slice(num));
+			_connection.Send(val.Slice(num));
 		}
 	}
 
 	private void PostClose(Connection connection)
 	{
-		_syncContext.Post(delegate(object c)
+		_syncContext.Post((object c) =>
 		{
 			((Connection)c).OnClose();
 		}, connection);

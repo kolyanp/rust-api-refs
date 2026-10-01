@@ -10,10 +10,10 @@ namespace Rust.Ai.Gen2;
 public class State_TryAmbushUnderwater : FSMStateBase
 {
 	[SerializeField]
-	private Vector2 distanceRange;
+	private Vector2 distanceRange = new Vector2(10f, 20f);
 
 	[SerializeField]
-	private float maxDistFromDivingPoint;
+	private float maxDistFromDivingPoint = 50f;
 
 	private const float desiredDepth = 3f;
 
@@ -29,7 +29,7 @@ public class State_TryAmbushUnderwater : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		if (!base.Agent.hasPath)
+		if (!Agent.hasPath)
 		{
 			return FindNewUnderwaterWaitingPosition();
 		}
@@ -38,8 +38,8 @@ public class State_TryAmbushUnderwater : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.Agent.ResetPath();
-		base.Agent.desiredSwimDepth.Reset();
+		Agent.ResetPath();
+		Agent.desiredSwimDepth.Reset();
 		base.OnStateExit();
 	}
 
@@ -48,18 +48,18 @@ public class State_TryAmbushUnderwater : FSMStateBase
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		NavVector3 nextPosition = base.Agent.nextPosition;
+		NavVector3 nextPosition = Agent.nextPosition;
 		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
 			float num = Random.Range(distanceRange.x, distanceRange.y);
-			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val, num, num, 8);
+			bool flag = Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val, num, num, 8);
 			if (Vector3.Distance(divePosition, ((Component)Owner).transform.position) > maxDistFromDivingPoint)
 			{
 				Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 				try
 				{
-					NavVector3 normalized = (base.Agent.WorldToNavSpace(divePosition) - nextPosition).normalized;
+					NavVector3 normalized = (Agent.WorldToNavSpace(divePosition) - nextPosition).normalized;
 					foreach (NavVector3 item2 in (List<NavVector3>)(object)val)
 					{
 						float item = NavVector3.Dot(normalized, (item2 - nextPosition).NormalizeXZ());
@@ -82,17 +82,17 @@ public class State_TryAmbushUnderwater : FSMStateBase
 				NavVector3 navVector = item3;
 				if (!flag)
 				{
-					if (!base.Agent.SamplePosition(item3, out var hitNS, 10f))
+					if (!Agent.SamplePosition(item3, out var hitNS, 10f))
 					{
 						continue;
 					}
 					navVector = hitNS.position;
 				}
-				if (base.Agent.IsInWater(navVector))
+				if (Agent.IsInWater(navVector))
 				{
-					RustNavMeshAgent agent = base.Agent;
+					RustNavMeshAgent agent = Agent;
 					NavVector3 targetPositionNS = navVector;
-					RustNavMeshAgent.Speeds? gait = ((!base.Agent.IsSwimming) ? RustNavMeshAgent.Speeds.Run : RustNavMeshAgent.Speeds.Sneak);
+					RustNavMeshAgent.Speeds? gait = ((!Agent.IsSwimming) ? RustNavMeshAgent.Speeds.Run : RustNavMeshAgent.Speeds.Sneak);
 					float? swimDepth = 3f;
 					if (agent.SetDestinationWithParams(targetPositionNS, autoBraking: true, gait, null, null, null, swimDepth))
 					{
@@ -112,8 +112,5 @@ public class State_TryAmbushUnderwater : FSMStateBase
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		distanceRange = new Vector2(10f, 20f);
-		maxDistFromDivingPoint = 50f;
-		base._002Ector();
 	}
 }

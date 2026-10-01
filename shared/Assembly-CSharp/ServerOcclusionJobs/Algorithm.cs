@@ -141,14 +141,17 @@ public struct Algorithm
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
 		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0233: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
@@ -181,10 +184,9 @@ public struct Algorithm
 		{
 			int num17 = num12 - num8;
 			int num18 = num13 - num8;
-			int3 val = default(int3);
 			for (int i = 0; i < num8; i++)
 			{
-				((int3)(ref val))._002Ector(num2, num3, num4);
+				int3 val = new int3(num2, num3, num4);
 				if (!AddToGridArea(val, in gridDef, nStep, ref neighboursChecked, useNeighbourThresholds, neighbourThreshold, cells))
 				{
 					(int3, Color) tuple = (val, Color.red);
@@ -213,10 +215,9 @@ public struct Algorithm
 		{
 			int num17 = num11 - num9;
 			int num18 = num13 - num9;
-			int3 val2 = default(int3);
 			for (int j = 0; j < num9; j++)
 			{
-				((int3)(ref val2))._002Ector(num2, num3, num4);
+				int3 val2 = new int3(num2, num3, num4);
 				if (!AddToGridArea(val2, in gridDef, nStep, ref neighboursChecked, useNeighbourThresholds, neighbourThreshold, cells))
 				{
 					(int3, Color) tuple = (val2, Color.red);
@@ -245,10 +246,9 @@ public struct Algorithm
 		{
 			int num17 = num12 - num10;
 			int num18 = num11 - num10;
-			int3 val3 = default(int3);
 			for (int k = 0; k < num10; k++)
 			{
-				((int3)(ref val3))._002Ector(num2, num3, num4);
+				int3 val3 = new int3(num2, num3, num4);
 				if (!AddToGridArea(val3, in gridDef, nStep, ref neighboursChecked, useNeighbourThresholds, neighbourThreshold, cells))
 				{
 					(int3, Color) tuple = (val3, Color.red);

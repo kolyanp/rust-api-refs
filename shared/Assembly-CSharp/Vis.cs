@@ -6,7 +6,7 @@ public static class Vis
 {
 	private static int colCount = 0;
 
-	public static Collider[] colBuffer = (Collider[])(object)new Collider[32768];
+	public static Collider[] colBuffer = new Collider[32768];
 
 	private static HashSet<object> hashSet = new HashSet<object>();
 
@@ -60,7 +60,7 @@ public static class Vis
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		Buffer(position, radius, layerMask, triggerInteraction);
-		T item = default(T);
+		T item = default;
 		for (int i = 0; i < colCount; i++)
 		{
 			Collider val = colBuffer[i];

@@ -2,19 +2,9 @@ using Unity.Profiling;
 
 namespace Facepunch.Rust.Profiling;
 
-public struct RustProfilerRecorder
+public struct RustProfilerRecorder(string column, ProfilerCategory category, string sample, int sampleCount = 1, ProfilerRecorderOptions options = (ProfilerRecorderOptions)24)
 {
-	public string ColumnName;
+	public string ColumnName = column;
 
-	public ProfilerRecorder Recorder;
-
-	public RustProfilerRecorder(string column, ProfilerCategory category, string sample, int sampleCount = 1, ProfilerRecorderOptions options = (ProfilerRecorderOptions)24)
-	{
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		ColumnName = column;
-		Recorder = ProfilerRecorder.StartNew(category, sample, sampleCount, options);
-	}
+	public ProfilerRecorder Recorder = ProfilerRecorder.StartNew(category, sample, sampleCount, options);
 }

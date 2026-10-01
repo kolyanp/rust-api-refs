@@ -2,34 +2,27 @@ using UnityEngine;
 
 public class ScaleBySpeed : MonoBehaviour, IClientComponent
 {
-	public float minScale;
+	public float minScale = 0.001f;
 
-	public float maxScale;
+	public float maxScale = 1f;
 
 	public float minSpeed;
 
-	public float maxSpeed;
+	public float maxSpeed = 1f;
 
 	public MonoBehaviour component;
 
-	public bool toggleComponent;
+	public bool toggleComponent = true;
 
 	public bool onlyWhenSubmerged;
 
-	public float submergedThickness;
+	public float submergedThickness = 0.33f;
 
-	private Vector3 prevPosition;
+	private Vector3 prevPosition = Vector3.zero;
 
 	public ScaleBySpeed()
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		minScale = 0.001f;
-		maxScale = 1f;
-		maxSpeed = 1f;
-		toggleComponent = true;
-		submergedThickness = 0.33f;
-		prevPosition = Vector3.zero;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

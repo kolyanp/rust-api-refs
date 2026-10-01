@@ -23,7 +23,7 @@ public class AimConeUtil
 		if (!anywhereInside)
 		{
 			Vector2 insideUnitCircle = Random.insideUnitCircle;
-			val2 = ((Vector2)(ref insideUnitCircle)).normalized;
+			val2 = insideUnitCircle.normalized;
 		}
 		else
 		{

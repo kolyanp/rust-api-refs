@@ -8,6 +8,7 @@ public class DefaultSubscriberStrategy : ISubscriberStrategy
 	public void GatherHighPrioSubscriptions(Networkable net, ListHashSet<Group> visible)
 	{
 		GatherHighPrioSubscriptions(net.group, net.secondaryGroup, net.sv.visibility, visible);
+		AddRoomGroups(net, visible);
 	}
 
 	public void GatherHighPrioSubscriptions(Group primaryGroup, Group secondaryGroup, Manager visManager, ListHashSet<Group> visible)
@@ -22,6 +23,19 @@ public class DefaultSubscriberStrategy : ISubscriberStrategy
 	public void GatherSubscriptions(Networkable net, ListHashSet<Group> visible)
 	{
 		GatherSubscriptions(net.group, net.secondaryGroup, net.sv.visibility, visible);
+		AddRoomGroups(net, visible);
+	}
+
+	private static void AddRoomGroups(Networkable net, ListHashSet<Group> visible)
+	{
+		ListHashSet<Group> roomGroups = net.roomGroups;
+		if (roomGroups != null)
+		{
+			for (int i = 0; i < roomGroups.Count; i++)
+			{
+				visible.TryAdd(roomGroups[i]);
+			}
+		}
 	}
 
 	public void GatherSubscriptions(Group primaryGroup, Group secondaryGroup, Manager visManager, ListHashSet<Group> visible)

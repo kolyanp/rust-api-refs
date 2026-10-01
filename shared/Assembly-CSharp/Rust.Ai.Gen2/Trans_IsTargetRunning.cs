@@ -6,7 +6,7 @@ public class Trans_IsTargetRunning : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_IsTargetRunning"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return false;
 			}

@@ -29,9 +29,9 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	public CoverImage coverImage;
 
+	[Space]
 	[Header("Header")]
 	[SerializeField]
-	[Space]
 	private GameObject headerTextGroup;
 
 	[SerializeField]

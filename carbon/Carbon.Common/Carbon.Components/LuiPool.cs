@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Carbon.Components;
 
@@ -218,7 +217,7 @@ public static class LuiPool
 		LuiOutlineComp luiOutlineComp = _outlines.Pop() as LuiOutlineComp;
 		luiOutlineComp.enabled = true;
 		luiOutlineComp.color = null;
-		luiOutlineComp.distance = default(Vector2);
+		luiOutlineComp.distance = default;
 		luiOutlineComp.useGraphicAlpha = false;
 		return luiOutlineComp;
 	}
@@ -346,7 +345,7 @@ public static class LuiPool
 		}
 		LuiGridLayoutGroupComp luiGridLayoutGroupComp = _grids.Pop() as LuiGridLayoutGroupComp;
 		luiGridLayoutGroupComp.cellSize = LUI.defaultCellSize;
-		luiGridLayoutGroupComp.spacing = default(Vector2);
+		luiGridLayoutGroupComp.spacing = default;
 		luiGridLayoutGroupComp.startCorner = null;
 		luiGridLayoutGroupComp.startAxis = null;
 		luiGridLayoutGroupComp.childAlignment = null;
@@ -402,8 +401,8 @@ public static class LuiPool
 		luiDraggableComp.dragAlpha = -1f;
 		luiDraggableComp.parentLimitIndex = -1;
 		luiDraggableComp.filter = null;
-		luiDraggableComp.parentPadding = default(Vector2);
-		luiDraggableComp.anchorOffset = default(Vector2);
+		luiDraggableComp.parentPadding = default;
+		luiDraggableComp.anchorOffset = default;
 		luiDraggableComp.keepOnTop = false;
 		luiDraggableComp.positionRPC = null;
 		luiDraggableComp.moveToAnchor = false;
@@ -454,8 +453,8 @@ public static class LuiPool
 		luiScrollComp.inertia = false;
 		luiScrollComp.decelerationRate = -1f;
 		luiScrollComp.scrollSensitivity = -1f;
-		luiScrollComp.horizontalScrollbar = default(LuiScrollbar);
-		luiScrollComp.verticalScrollbar = default(LuiScrollbar);
+		luiScrollComp.horizontalScrollbar = default;
+		luiScrollComp.verticalScrollbar = default;
 		luiScrollComp.horizontalNormalizedPosition = 0f;
 		luiScrollComp.verticalNormalizedPosition = 0f;
 		return luiScrollComp;
@@ -700,6 +699,7 @@ public static class LuiPool
 			luiContainer.fadeOut = 0f;
 			luiContainer.update = false;
 			luiContainer.activeSelf = true;
+			luiContainer.activeSelfSet = false;
 			return luiContainer;
 		}
 		LUI.LuiContainer luiContainer2 = _containers.Pop();
@@ -709,6 +709,8 @@ public static class LuiPool
 		luiContainer2.destroyUi = null;
 		luiContainer2.fadeOut = 0f;
 		luiContainer2.update = false;
+		luiContainer2.activeSelf = true;
+		luiContainer2.activeSelfSet = false;
 		return luiContainer2;
 	}
 

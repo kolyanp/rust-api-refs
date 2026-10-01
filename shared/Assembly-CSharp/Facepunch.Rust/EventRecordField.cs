@@ -55,9 +55,9 @@ public struct EventRecordField
 		IsObject = false;
 		String = null;
 		Bytes = null;
-		Chars = default(ReadOnlyMemory<char>);
+		Chars = default;
 		Ints = null;
-		Value = default(ValueUnion);
+		Value = default;
 	}
 
 	public EventRecordField(string key1, string key2)
@@ -68,9 +68,9 @@ public struct EventRecordField
 		IsObject = false;
 		String = null;
 		Bytes = null;
-		Chars = default(ReadOnlyMemory<char>);
+		Chars = default;
 		Ints = null;
-		Value = default(ValueUnion);
+		Value = default;
 	}
 
 	public void Serialize(ref Utf8ValueStringBuilder writer, AnalyticsDocumentMode format)
@@ -87,7 +87,7 @@ public struct EventRecordField
 			}
 			if (IsObject)
 			{
-				((Utf8ValueStringBuilder)(ref writer)).Append(String);
+				writer.Append(String);
 				break;
 			}
 			string text = String;
@@ -103,16 +103,16 @@ public struct EventRecordField
 		{
 			Span<char> destination = stackalloc char[128];
 			Value.Float.TryFormat(destination, out var charsWritten);
-			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination.Slice(0, charsWritten));
+			writer.Append((ReadOnlySpan<char>)destination.Slice(0, charsWritten));
 			break;
 		}
 		case FieldType.Number:
-			((Utf8ValueStringBuilder)(ref writer)).Append(Value.Number);
+			writer.Append(Value.Number);
 			break;
 		case FieldType.Guid:
 		{
 			StandardFormat standardFormat = new StandardFormat('N');
-			((Utf8ValueStringBuilder)(ref writer)).Append(Value.Guid, standardFormat);
+			writer.Append(Value.Guid, standardFormat);
 			break;
 		}
 		case FieldType.Vector:
@@ -120,17 +120,17 @@ public struct EventRecordField
 			Span<char> destination2 = stackalloc char[128];
 			Vector3 vector = Value.Vector;
 			vector.x.TryFormat(destination2, out var charsWritten2);
-			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
-			((Utf8ValueStringBuilder)(ref writer)).Append(',');
+			writer.Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
+			writer.Append(',');
 			vector.y.TryFormat(destination2, out charsWritten2);
-			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
-			((Utf8ValueStringBuilder)(ref writer)).Append(',');
+			writer.Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
+			writer.Append(',');
 			vector.z.TryFormat(destination2, out charsWritten2);
-			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
+			writer.Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
 			break;
 		}
 		case FieldType.DateTime:
-			((Utf8ValueStringBuilder)(ref writer)).Append(Value.DateTime, StandardFormats.DateTime_ISO);
+			writer.Append(Value.DateTime, StandardFormats.DateTime_ISO);
 			break;
 		case FieldType.Bytes:
 			if (Bytes != null)
@@ -144,7 +144,7 @@ public struct EventRecordField
 					int length3 = ((num2 > num) ? num : num2);
 					Convert.TryToBase64Chars(new Span<byte>(buffer, l, length3), chars, out var charsWritten3);
 					Span<char> span2 = chars.Slice(0, charsWritten3);
-					((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)span2);
+					writer.Append((ReadOnlySpan<char>)span2);
 				}
 			}
 			break;
@@ -152,7 +152,7 @@ public struct EventRecordField
 		{
 			if (IsObject)
 			{
-				((Utf8ValueStringBuilder)(ref writer)).Append(Chars.Span);
+				writer.Append(Chars.Span);
 				break;
 			}
 			int length2 = Chars.Length;
@@ -165,7 +165,7 @@ public struct EventRecordField
 			break;
 		}
 		case FieldType.JsonIntArray:
-			((Utf8ValueStringBuilder)(ref writer)).Append('[');
+			writer.Append('[');
 			if (Ints != null)
 			{
 				int count = Ints.Count;
@@ -173,12 +173,12 @@ public struct EventRecordField
 				{
 					if (i > 0)
 					{
-						((Utf8ValueStringBuilder)(ref writer)).Append(',');
+						writer.Append(',');
 					}
-					((Utf8ValueStringBuilder)(ref writer)).Append(Ints[i]);
+					writer.Append(Ints[i]);
 				}
 			}
-			((Utf8ValueStringBuilder)(ref writer)).Append(']');
+			writer.Append(']');
 			break;
 		default:
 			Debug.LogWarning((object)"Unhandled field type attempted to be serialized");
@@ -188,7 +188,7 @@ public struct EventRecordField
 		{
 			if (c3 == '\\' && format == AnalyticsDocumentMode.JSON)
 			{
-				((Utf8ValueStringBuilder)(ref reference)).Append("\\\\");
+				reference.Append("\\\\");
 			}
 			else
 			{
@@ -197,24 +197,24 @@ public struct EventRecordField
 				case '"':
 					if (format == AnalyticsDocumentMode.JSON)
 					{
-						((Utf8ValueStringBuilder)(ref reference)).Append("\\\"");
+						reference.Append("\\\"");
 					}
 					else
 					{
-						((Utf8ValueStringBuilder)(ref reference)).Append("\"\"");
+						reference.Append("\"\"");
 					}
 					break;
 				case '\n':
-					((Utf8ValueStringBuilder)(ref reference)).Append("\\n");
+					reference.Append("\\n");
 					break;
 				case '\r':
-					((Utf8ValueStringBuilder)(ref reference)).Append("\\r");
+					reference.Append("\\r");
 					break;
 				case '\t':
-					((Utf8ValueStringBuilder)(ref reference)).Append("\\t");
+					reference.Append("\\t");
 					break;
 				default:
-					((Utf8ValueStringBuilder)(ref reference)).Append(c3);
+					reference.Append(c3);
 					break;
 				}
 			}

@@ -42,7 +42,7 @@ public class TeslaCoil : IOEntity
 
 	public bool CanDischarge()
 	{
-		return base.healthFraction >= 0.1f;
+		return healthFraction >= 0.1f;
 	}
 
 	public override void UpdateFromInput(int inputAmount, int inputSlot)

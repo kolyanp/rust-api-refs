@@ -55,9 +55,9 @@ public class StabilityEntity : DecayEntity
 				return;
 			}
 			List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
-			Vector3 center = ((Bounds)(ref bounds)).center;
-			Vector3 extents = ((Bounds)(ref bounds)).extents;
-			Vis.Entities(center, ((Vector3)(ref extents)).magnitude + 1f, list, -2010478334, (QueryTriggerInteraction)2);
+			Vector3 center = bounds.center;
+			Vector3 extents = bounds.extents;
+			Vis.Entities(center, extents.magnitude + 1f, list, -2010478334, (QueryTriggerInteraction)2);
 			foreach (BaseEntity item in list)
 			{
 				if (!item.IsDestroyed && !item.isClient)
@@ -178,7 +178,7 @@ public class StabilityEntity : DecayEntity
 		base.ResetState();
 		cachedStability = 0f;
 		cachedDistanceFromGround = int.MaxValue;
-		if (base.isServer)
+		if (isServer)
 		{
 			supports = null;
 			stabilityStrikes = 0;
@@ -361,7 +361,7 @@ public class StabilityEntity : DecayEntity
 	public virtual void StabilityCheck()
 	{
 		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		if (base.IsDestroyed || Interface.CallHook("OnEntityStabilityCheck", this) != null)
+		if (IsDestroyed || Interface.CallHook("OnEntityStabilityCheck", this) != null)
 		{
 			return;
 		}
@@ -446,9 +446,9 @@ public class StabilityEntity : DecayEntity
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		UpdateSurroundingsQueue obj = updateSurroundingsQueue;
+		UpdateSurroundingsQueue updateSurroundingsQueue = StabilityEntity.updateSurroundingsQueue;
 		OBB val = WorldSpaceBounds();
-		((ObjectWorkQueue<Bounds>)obj).Add(((OBB)(ref val)).ToBounds());
+		((ObjectWorkQueue<Bounds>)updateSurroundingsQueue).Add(val.ToBounds());
 	}
 
 	public void UpdateConnectedEntities()
@@ -474,7 +474,7 @@ public class StabilityEntity : DecayEntity
 
 	protected void OnPhysicsNeighbourChanged()
 	{
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			StabilityCheck();
 		}

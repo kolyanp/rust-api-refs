@@ -11,8 +11,8 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 {
 	private const Flags Flag_Horn = Flags.Reserved18;
 
-	[SerializeField]
 	[Header("Tugboat")]
+	[SerializeField]
 	private Canvas monitorCanvas;
 
 	[SerializeField]
@@ -63,8 +63,8 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 	[SerializeField]
 	private TriggerParent parentTrigger;
 
-	[ServerVar]
 	[Help("how long until boat corpses despawn (excluding tugboat)")]
+	[ServerVar]
 	public static float tugcorpseseconds = 7200f;
 
 	[ServerVar(Help = "How long before a tugboat loses all its health while outside")]
@@ -127,7 +127,7 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 	public override void BoatDecay()
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.IsDying)
+		if (!IsDying)
 		{
 			BaseBoat.WaterVehicleDecay(this, 60f, TimeSince.op_Implicit(timeSinceLastUsedFuel), tugdecayminutes, tugdecayminutes, tugdecaystartdelayminutes, preventDecayIndoors);
 		}
@@ -157,7 +157,7 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 
 	protected override void EnterCorpseState()
 	{
-		Invoke(base.ActualDeath, tugcorpseseconds);
+		Invoke(ActualDeath, tugcorpseseconds);
 	}
 
 	public override bool AnyPlayersOnBoat()
@@ -168,9 +168,9 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 		}
 		List<BasePlayer> list = Pool.Get<List<BasePlayer>>();
 		GetPlayersOnBoat(list);
-		bool num = list.Count > 0;
+		bool flag = list.Count > 0;
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
-		if (!num)
+		if (!flag)
 		{
 			return base.AnyPlayersOnBoat();
 		}
@@ -263,13 +263,13 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 		{
 			return false;
 		}
-		if (base.IsDying)
+		if (IsDying)
 		{
 			return false;
 		}
 		if (!pusher.isMounted && pusher.IsOnGround())
 		{
-			return base.healthFraction > 0f;
+			return healthFraction > 0f;
 		}
 		return false;
 	}

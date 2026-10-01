@@ -109,7 +109,7 @@ public class DigitalClock : IOEntity, INotifyLOD
 
 	private void OnMinute()
 	{
-		if (IsOn() && base.isServer)
+		if (IsOn() && isServer)
 		{
 			CheckAlarms();
 		}
@@ -179,8 +179,8 @@ public class DigitalClock : IOEntity, INotifyLOD
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxRepeatedElements(5)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	public void RPC_SetAlarms(RPCMessage msg)

@@ -50,15 +50,15 @@ public class WaterSystem : MonoBehaviour
 
 		internal OceanSimulation deepSeaSimulation;
 
-		internal Rust.Water5.NativeOceanDisplacementShort3 mainlandData;
+		internal NativeOceanDisplacementShort3 mainlandData;
 
-		internal Rust.Water5.NativeOceanDisplacementShort3 deepSeaData;
+		internal NativeOceanDisplacementShort3 deepSeaData;
 
 		private bool sharedSimData;
 
 		internal static OceanSimulationWrapper Init(OceanSettings mainland, OceanSettings deepsea)
 		{
-			OceanSimulationWrapper result = default(OceanSimulationWrapper);
+			OceanSimulationWrapper result = default;
 			result.sharedSimData = (Object)(object)mainland == (Object)(object)deepsea;
 			result.mainlandData = mainland.LoadNativeSimData();
 			result.deepSeaData = (result.sharedSimData ? result.mainlandData : deepsea.LoadNativeSimData());
@@ -211,7 +211,7 @@ public class WaterSystem : MonoBehaviour
 		if (!Application.isPlaying || !Application.isQuitting)
 		{
 			oceanSimulationWrapper.Dispose();
-			oceanSimulationWrapper = default(OceanSimulationWrapper);
+			oceanSimulationWrapper = default;
 			IsInitialized = false;
 			Instance = null;
 		}
@@ -241,7 +241,7 @@ public class WaterSystem : MonoBehaviour
 			position = Vector3.zero;
 			return false;
 		}
-		if (Instance.GetOceanSimulation(((Ray)(ref ray)).origin).Trace(ray, maxDist, out position) && TerrainMeta.TopologyMap.GetTopology(position, 384))
+		if (Instance.GetOceanSimulation(ray.origin).Trace(ray, maxDist, out position) && TerrainMeta.TopologyMap.GetTopology(position, 384))
 		{
 			return true;
 		}
@@ -266,7 +266,7 @@ public class WaterSystem : MonoBehaviour
 			return false;
 		}
 		normal = Vector3.up;
-		if (Instance.GetOceanSimulation(((Ray)(ref ray)).origin).Trace(ray, maxDist, out position) && TerrainMeta.TopologyMap.GetTopology(position, 384))
+		if (Instance.GetOceanSimulation(ray.origin).Trace(ray, maxDist, out position) && TerrainMeta.TopologyMap.GetTopology(position, 384))
 		{
 			return true;
 		}
@@ -327,7 +327,7 @@ public class WaterSystem : MonoBehaviour
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)Instance == (Object)null)
 		{
-			inputDeps = IJobParallelForDeferExtensions.Schedule<WaterSystemJobs.FillFalseJobDefer, Ray>(new WaterSystemJobs.FillFalseJobDefer
+			inputDeps = IJobParallelForDeferExtensions.Schedule<FillFalseJobDefer, Ray>(new FillFalseJobDefer
 			{
 				rays = rays,
 				HitResults = hitResults
@@ -337,7 +337,7 @@ public class WaterSystem : MonoBehaviour
 		NativeArray<Ray> rays2 = rays.AsDeferredJobArray();
 		inputDeps = Instance.oceanSimulationWrapper.mainlandSimulation.TraceBatch(mainIndices, rays2, maxDists, hitResults, hitPositions, inputDeps);
 		inputDeps = Instance.oceanSimulationWrapper.deepSeaSimulation.TraceBatch(deepIndices, rays2, maxDists, hitResults, hitPositions, inputDeps);
-		inputDeps = IJobParallelForDeferExtensions.Schedule<WaterSystemJobs.AdjustByTopologyJob, Ray>(new WaterSystemJobs.AdjustByTopologyJob
+		inputDeps = IJobParallelForDeferExtensions.Schedule<AdjustByTopologyJob, Ray>(new AdjustByTopologyJob
 		{
 			rays = rays,
 			hitResults = hitResults,

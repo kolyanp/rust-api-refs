@@ -123,7 +123,7 @@ public class HBHFSensor : BaseDetector
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient || !IsPowered())
+		if (isClient || !IsPowered())
 		{
 			return;
 		}
@@ -200,7 +200,7 @@ public class HBHFSensor : BaseDetector
 			{
 				Vector3 val2 = basePlayer.ClosestPoint(val);
 				Vector3 val3 = val2 - val;
-				Vector3 normalized = ((Vector3)(ref val3)).normalized;
+				Vector3 normalized = val3.normalized;
 				Vector3 val4 = val2 + normalized * 0.5f;
 				bool flag3 = basePlayer.IsVisible(val, val2, range);
 				bool flag4 = flag3 && basePlayer.CanSee(val2, val4);
@@ -218,9 +218,9 @@ public class HBHFSensor : BaseDetector
 		return num;
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	public void SetConfig(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

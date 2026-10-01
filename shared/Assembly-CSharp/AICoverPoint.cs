@@ -59,9 +59,9 @@ public class AICoverPoint : AIPoint
 		Gizmos.DrawCube(((Component)this).transform.position + Vector3.up * 0.125f, new Vector3(0.5f, 0.25f, 0.5f));
 		Gizmos.DrawLine(((Component)this).transform.position, val);
 		Vector3 val2 = ((Component)this).transform.forward + ((Component)this).transform.right * coverDot * 1f;
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		val2 = ((Component)this).transform.forward + -((Component)this).transform.right * coverDot * 1f;
-		Vector3 normalized2 = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized2 = val2.normalized;
 		Gizmos.DrawLine(val, val + normalized * 1f);
 		Gizmos.DrawLine(val, val + normalized2 * 1f);
 	}

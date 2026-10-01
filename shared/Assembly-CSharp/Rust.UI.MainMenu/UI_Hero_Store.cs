@@ -8,8 +8,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_Hero_Store : UI_Hero_InfoBox
 {
-	[SerializeField]
 	[Header("Hero Store")]
+	[SerializeField]
 	private VideoPlayer _video;
 
 	[SerializeField]

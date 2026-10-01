@@ -7,15 +7,15 @@ namespace UnityEngine.UI.Extensions;
 public class UICircle : UIPrimitiveBase
 {
 	[Tooltip("The Arc Invert property will invert the construction of the Arc.")]
-	public bool ArcInvert;
+	public bool ArcInvert = true;
 
-	[Tooltip("The Arc property is a percentage of the entire circumference of the circle.")]
 	[Range(0f, 1f)]
-	public float Arc;
+	[Tooltip("The Arc property is a percentage of the entire circumference of the circle.")]
+	public float Arc = 1f;
 
 	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
 	[Range(0f, 1000f)]
-	public int ArcSteps;
+	public int ArcSteps = 100;
 
 	[Range(0f, 360f)]
 	[Tooltip("The Arc Rotation property permits adjusting the geometry orientation around the Z axis.")]
@@ -27,19 +27,19 @@ public class UICircle : UIPrimitiveBase
 
 	private float _progress;
 
-	public Color ProgressColor;
+	public Color ProgressColor = new Color(255f, 255f, 255f, 255f);
 
-	public bool Fill;
+	public bool Fill = true;
 
-	public float Thickness;
+	public float Thickness = 5f;
 
 	public int Padding;
 
-	private List<int> indices;
+	private List<int> indices = new List<int>();
 
-	private List<UIVertex> vertices;
+	private List<UIVertex> vertices = new List<UIVertex>();
 
-	private Vector2 uvCenter;
+	private Vector2 uvCenter = new Vector2(0.5f, 0.5f);
 
 	protected override void OnPopulateMesh(VertexHelper vh)
 	{
@@ -70,6 +70,7 @@ public class UICircle : UIPrimitiveBase
 		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
@@ -122,18 +123,18 @@ public class UICircle : UIPrimitiveBase
 		//IL_032b: Unknown result type (might be due to invalid IL or missing references)
 		int num = ((!ArcInvert) ? 1 : (-1));
 		Rect rect = ((Graphic)this).rectTransform.rect;
-		float width = ((Rect)(ref rect)).width;
+		float width = rect.width;
 		rect = ((Graphic)this).rectTransform.rect;
 		float num2;
-		if (!(width < ((Rect)(ref rect)).height))
+		if (!(width < rect.height))
 		{
 			rect = ((Graphic)this).rectTransform.rect;
-			num2 = ((Rect)(ref rect)).height;
+			num2 = rect.height;
 		}
 		else
 		{
 			rect = ((Graphic)this).rectTransform.rect;
-			num2 = ((Rect)(ref rect)).width;
+			num2 = rect.width;
 		}
 		float num3 = num2 - (float)Padding;
 		float num4 = (0f - ((Graphic)this).rectTransform.pivot.x) * num3;
@@ -154,13 +155,12 @@ public class UICircle : UIPrimitiveBase
 		simpleVert.position = Vector2.op_Implicit(new Vector2(num4 * num10, num4 * num11));
 		simpleVert.uv0 = Vector4.op_Implicit(new Vector2(simpleVert.position.x / num3 + 0.5f, simpleVert.position.y / num3 + 0.5f));
 		vertices.Add(simpleVert);
-		Vector2 zero = default(Vector2);
-		((Vector2)(ref zero))._002Ector(num5 * num10, num5 * num11);
+		Vector2 val = new Vector2(num5 * num10, num5 * num11);
 		if (Fill)
 		{
-			zero = Vector2.zero;
+			val = Vector2.zero;
 		}
-		simpleVert.position = Vector2.op_Implicit(zero);
+		simpleVert.position = Vector2.op_Implicit(val);
 		simpleVert.uv0 = Vector4.op_Implicit((Vector2)(Fill ? uvCenter : new Vector2(simpleVert.position.x / num3 + 0.5f, simpleVert.position.y / num3 + 0.5f)));
 		vertices.Add(simpleVert);
 		for (int i = 1; i <= ArcSteps; i++)
@@ -206,7 +206,7 @@ public class UICircle : UIPrimitiveBase
 		}
 		if (Fill)
 		{
-			simpleVert.position = Vector2.op_Implicit(zero);
+			simpleVert.position = Vector2.op_Implicit(val);
 			simpleVert.color = Color32.op_Implicit(((Graphic)this).color);
 			simpleVert.uv0 = Vector4.op_Implicit(uvCenter);
 			vertices.Add(simpleVert);
@@ -294,15 +294,5 @@ public class UICircle : UIPrimitiveBase
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		ArcInvert = true;
-		Arc = 1f;
-		ArcSteps = 100;
-		ProgressColor = new Color(255f, 255f, 255f, 255f);
-		Fill = true;
-		Thickness = 5f;
-		indices = new List<int>();
-		vertices = new List<UIVertex>();
-		uvCenter = new Vector2(0.5f, 0.5f);
-		base._002Ector();
 	}
 }

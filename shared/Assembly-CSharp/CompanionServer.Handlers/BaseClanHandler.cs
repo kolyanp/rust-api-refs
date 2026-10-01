@@ -14,12 +14,12 @@ public abstract class BaseClanHandler<T> : BasePlayerHandler<T> where T : class
 		{
 			return null;
 		}
-		ClanValueResult<IClan> val = ((!((Object)(object)base.Player != (Object)null) || base.Player.clanId == 0L) ? (await ClanBackend.GetByMember(base.UserId)) : (await ClanBackend.Get(base.Player.clanId)));
+		ClanValueResult<IClan> val = ((!((Object)(object)Player != (Object)null) || Player.clanId == 0L) ? (await ClanBackend.GetByMember(UserId)) : (await ClanBackend.Get(Player.clanId)));
 		ClanValueResult<IClan> val2 = val;
 		if ((int)val2.Result != 3 && (int)val2.Result != 4)
 		{
 			IClan value = val2.Value;
-			base.Client.Subscribe(new ClanTarget(value.ClanId));
+			Client.Subscribe(new ClanTarget(value.ClanId));
 			return value;
 		}
 		return null;
@@ -33,12 +33,12 @@ public abstract class BaseClanHandler<T> : BasePlayerHandler<T> where T : class
 
 	public override ValidationResult Validate()
 	{
-		ValidationResult num = base.Validate();
-		if (num == ValidationResult.Success && (Object)(object)ClanManager.ServerInstance != (Object)null)
+		ValidationResult validationResult = base.Validate();
+		if (validationResult == ValidationResult.Success && (Object)(object)ClanManager.ServerInstance != (Object)null)
 		{
 			ClanBackend = ClanManager.ServerInstance.Backend;
 		}
-		return num;
+		return validationResult;
 	}
 
 	protected void SendError(ClanResult result)

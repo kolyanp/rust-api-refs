@@ -1071,23 +1071,23 @@ public readonly struct CUI : IDisposable
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		Color val = default(Color);
+		Color val = default;
 		if (!ColorUtility.TryParseHtmlString(hexColor, ref val))
 		{
-			float[] obj = new float[4] { 1f, 1f, 1f, 0f };
-			obj[3] = alpha ?? 1f;
-			return LUIBuilder.GetStringFloat(obj);
+			float[] array = new float[4] { 1f, 1f, 1f, 0f };
+			array[3] = alpha ?? 1f;
+			return LUIBuilder.GetStringFloat(array);
 		}
 		return LUIBuilder.GetStringFloat(val.r, val.g, val.b, alpha ?? val.a);
 	}
 
 	public static string RustToHexColor(string rustColor, float? alpha = null, bool includeAlpha = true)
 	{
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		string[] array = rustColor.Split(' ');
-		Color val = default(Color);
-		((Color)(ref val))._002Ector(array[0].ToFloat(), array[1].ToFloat(), array[2].ToFloat(), (!includeAlpha) ? 1f : (alpha ?? ((array.Length > 2) ? array[3].ToFloat() : 1f)));
+		Color val = new Color(array[0].ToFloat(), array[1].ToFloat(), array[2].ToFloat(), (!includeAlpha) ? 1f : (alpha ?? ((array.Length > 2) ? array[3].ToFloat() : 1f)));
 		string text = (includeAlpha ? ColorUtility.ToHtmlStringRGBA(val) : ColorUtility.ToHtmlStringRGB(val));
 		Array.Clear(array, 0, array.Length);
 		return "#" + text;

@@ -19,7 +19,7 @@ public abstract class DeployVolume : PrefabAttribute
 		Ignore
 	}
 
-	public LayerMask layers;
+	public LayerMask layers = LayerMask.op_Implicit(537001984);
 
 	[InspectorFlags]
 	public ColliderInfo.Flags ignore;
@@ -271,7 +271,5 @@ public abstract class DeployVolume : PrefabAttribute
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		layers = LayerMask.op_Implicit(537001984);
-		base._002Ector();
 	}
 }

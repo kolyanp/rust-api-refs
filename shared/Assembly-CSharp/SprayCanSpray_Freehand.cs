@@ -11,9 +11,9 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 {
 	public AlignedLineDrawer LineDrawer;
 
-	public List<AlignedLineDrawer.LinePoint> LinePoints;
+	public List<AlignedLineDrawer.LinePoint> LinePoints = new List<AlignedLineDrawer.LinePoint>();
 
-	public Color colour;
+	public Color colour = Color.white;
 
 	public float width;
 
@@ -206,7 +206,7 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 
 	public void EnableChanges(BasePlayer byPlayer)
 	{
-		base.OwnerID = byPlayer.userID;
+		OwnerID = byPlayer.userID;
 		editingPlayer.Set(byPlayer);
 		Invoke(TimeoutEditing, 30f);
 	}
@@ -268,7 +268,7 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 			LinePoints.Clear();
 			for (int i = 0; i < count; i++)
 			{
-				if (((Vector3)(ref val.linePoints[i].localPosition)).sqrMagnitude < 100f)
+				if (val.linePoints[i].localPosition.sqrMagnitude < 100f)
 				{
 					LinePoints.Add(new AlignedLineDrawer.LinePoint
 					{
@@ -311,7 +311,7 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer && LinePoints.Count > 1)
+		if (isServer && LinePoints.Count > 1)
 		{
 			Vector3 groundPosition = Vector3.Lerp(LinePoints[0].LocalPosition, LinePoints[LinePoints.Count - 1].LocalPosition, 0.5f);
 			if ((Object)(object)groundWatch != (Object)null)
@@ -405,8 +405,5 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		LinePoints = new List<AlignedLineDrawer.LinePoint>();
-		colour = Color.white;
-		base._002Ector();
 	}
 }

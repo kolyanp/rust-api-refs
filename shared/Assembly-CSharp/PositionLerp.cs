@@ -29,7 +29,7 @@ public class PositionLerp : IPooled
 
 	private IPosLerpTarget target;
 
-	private static TransformSnapshot snapshotPrototype = default(TransformSnapshot);
+	private static TransformSnapshot snapshotPrototype = default;
 
 	private float timeOffset0 = float.MaxValue;
 
@@ -48,6 +48,10 @@ public class PositionLerp : IPooled
 	private float extrapolatedTime;
 
 	private float enabledTime;
+
+	private Vector3 estimatedVelocityCached;
+
+	private int estimatedVelocityFrame = -1;
 
 	public bool Enabled
 	{
@@ -193,16 +197,16 @@ public class PositionLerp : IPooled
 
 	protected void DoCycle()
 	{
-		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
 		if (target == null)
 		{
 			return;
@@ -212,8 +216,9 @@ public class PositionLerp : IPooled
 		float extrapolationTime = target.GetExtrapolationTime();
 		float interpolation = target.GetInterpolationDelay(ILerpInfo.LerpType.Position) * num;
 		float num2 = target.GetInterpolationSmoothing() * num;
-		Interpolator<TransformSnapshot>.Segment segment = interpolator.Query(LerpTime, interpolation, extrapolationTime, num2, ref snapshotPrototype);
-		if (segment.next.Time >= interpolator.last.Time)
+		Interpolator<TransformSnapshot>.Segment query = interpolator.Query(LerpTime, interpolation, extrapolationTime, num2, ref snapshotPrototype);
+		CacheEstimatedVelocity(in query);
+		if (query.next.Time >= interpolator.last.Time)
 		{
 			extrapolatedTime = Mathf.Min(extrapolatedTime + Time.deltaTime, extrapolationTime);
 		}
@@ -224,14 +229,14 @@ public class PositionLerp : IPooled
 		if (extrapolatedTime > 0f && extrapolationTime > 0f && num2 > 0f)
 		{
 			float num3 = Time.deltaTime / (extrapolatedTime / extrapolationTime * num2);
-			segment.tick.pos = Vector3.Lerp(target.GetNetworkPosition(), segment.tick.pos, num3);
-			segment.tick.rot = Quaternion.Slerp(target.GetNetworkRotation(), segment.tick.rot, num3);
+			query.tick.pos = Vector3.Lerp(target.GetNetworkPosition(), query.tick.pos, num3);
+			query.tick.rot = Quaternion.Slerp(target.GetNetworkRotation(), query.tick.rot, num3);
 		}
-		target.SetNetworkPosition(segment.tick.pos);
-		target.SetNetworkRotation(segment.tick.rot);
+		target.SetNetworkPosition(query.tick.pos);
+		target.SetNetworkRotation(query.tick.rot);
 		if (DebugDraw)
 		{
-			target.DrawInterpolationState(segment, interpolator.list);
+			target.DrawInterpolationState(query, interpolator.list);
 		}
 		if (LerpTime - lastClientTime > 10f)
 		{
@@ -262,15 +267,15 @@ public class PositionLerp : IPooled
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		Quaternion rotation = ((Matrix4x4)(ref matrix)).rotation;
+		Quaternion rotation = matrix.rotation;
 		for (int i = 0; i < interpolator.list.Count; i++)
 		{
 			TransformSnapshot value = interpolator.list[i];
-			value.pos = ((Matrix4x4)(ref matrix)).MultiplyPoint3x4(value.pos);
+			value.pos = matrix.MultiplyPoint3x4(value.pos);
 			value.rot = rotation * value.rot;
 			interpolator.list[i] = value;
 		}
-		interpolator.last.pos = ((Matrix4x4)(ref matrix)).MultiplyPoint3x4(interpolator.last.pos);
+		interpolator.last.pos = matrix.MultiplyPoint3x4(interpolator.last.pos);
 		interpolator.last.rot = rotation * interpolator.last.rot;
 	}
 
@@ -297,38 +302,51 @@ public class PositionLerp : IPooled
 		{
 			return Quaternion.identity;
 		}
-		return Quaternion.Euler((((Quaternion)(ref prev.rot)).eulerAngles - ((Quaternion)(ref next.rot)).eulerAngles) / (prev.Time - next.Time));
+		return Quaternion.Euler((prev.rot.eulerAngles - next.rot.eulerAngles) / (prev.Time - next.Time));
 	}
 
 	public Vector3 GetEstimatedVelocity()
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		if (target == null)
 		{
 			return Vector3.zero;
 		}
+		if (estimatedVelocityFrame == Time.frameCount)
+		{
+			return estimatedVelocityCached;
+		}
 		float extrapolationTime = target.GetExtrapolationTime();
 		float interpolationDelay = target.GetInterpolationDelay(ILerpInfo.LerpType.Position);
 		float interpolationSmoothing = target.GetInterpolationSmoothing();
-		Interpolator<TransformSnapshot>.Segment segment = interpolator.Query(LerpTime, interpolationDelay, extrapolationTime, interpolationSmoothing, ref snapshotPrototype);
-		TransformSnapshot next = segment.next;
-		TransformSnapshot prev = segment.prev;
-		if (next.Time == prev.Time)
-		{
-			return Vector3.zero;
-		}
-		return (prev.pos - next.pos) / (prev.Time - next.Time);
+		CacheEstimatedVelocity(interpolator.Query(LerpTime, interpolationDelay, extrapolationTime, interpolationSmoothing, ref snapshotPrototype));
+		return estimatedVelocityCached;
+	}
+
+	private void CacheEstimatedVelocity(in Interpolator<TransformSnapshot>.Segment query)
+	{
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		TransformSnapshot next = query.next;
+		TransformSnapshot prev = query.prev;
+		estimatedVelocityCached = ((next.Time == prev.Time) ? Vector3.zero : ((prev.pos - next.pos) / (prev.Time - next.Time)));
+		estimatedVelocityFrame = Time.frameCount;
 	}
 
 	void IPooled.EnterPool()
 	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		target = null;
 		idleDisable = null;
+		estimatedVelocityCached = Vector3.zero;
+		estimatedVelocityFrame = -1;
 		interpolator.Clear();
 		timeOffset0 = float.MaxValue;
 		timeOffset1 = float.MaxValue;

@@ -17,19 +17,19 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 	[Tooltip("The image tinted with the colours below - light, dark, or current winner.")]
 	public Image rowImage;
 
-	public Color lightColour;
+	public Color lightColour = Color.white;
 
-	public Color darkColour;
+	public Color darkColour = Color.grey;
 
-	public Color currentWinnerColour;
+	public Color currentWinnerColour = Color.yellow;
 
 	[Header("Text Colours")]
 	[Tooltip("Every text in here gets the normal colour, or the winner colour on the current winner row.")]
-	public List<RustText> rowTexts;
+	public List<RustText> rowTexts = new List<RustText>();
 
-	public Color normalTextColour;
+	public Color normalTextColour = Color.white;
 
-	public Color winnerTextColour;
+	public Color winnerTextColour = Color.black;
 
 	[Tooltip("Turned on for the current winner row only, off on every other row.")]
 	public GameObject currentWinnerIcon;
@@ -50,7 +50,15 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 		DartsThrown.SetText(leaderboardEntry.dartsThrown.ToString());
 		TimeTaken.SetText(TimeSpan.FromSeconds(leaderboardEntry.timeTaken).ToString("m\\:ss"));
 		bool flag = position == 0;
-		Color color = (flag ? currentWinnerColour : ((position % 2 == 1) ? lightColour : darkColour));
+		Color color;
+		if (flag)
+		{
+			color = currentWinnerColour;
+		}
+		else
+		{
+			color = ((position % 2 == 1) ? lightColour : darkColour);
+		}
 		if ((Object)(object)rowImage != (Object)null)
 		{
 			((Graphic)rowImage).color = color;
@@ -81,12 +89,5 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		lightColour = Color.white;
-		darkColour = Color.grey;
-		currentWinnerColour = Color.yellow;
-		rowTexts = new List<RustText>();
-		normalTextColour = Color.white;
-		winnerTextColour = Color.black;
-		base._002Ector();
 	}
 }

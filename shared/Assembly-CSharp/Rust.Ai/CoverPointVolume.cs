@@ -14,9 +14,9 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		Full
 	}
 
-	public float DefaultCoverPointScore;
+	public float DefaultCoverPointScore = 1f;
 
-	public float CoverPointRayLength;
+	public float CoverPointRayLength = 1f;
 
 	public LayerMask CoverLayerMask;
 
@@ -30,15 +30,15 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 	[ServerVar(Help = "cover_point_sample_step_height defines the height of the steps we do vertically for the cover point volume's cover point generation (smaller steps gives more accurate cover points, but at a higher processing cost). (default: 2.0)")]
 	public static float cover_point_sample_step_height = 2f;
 
-	public readonly List<CoverPoint> CoverPoints;
+	public readonly List<CoverPoint> CoverPoints = new List<CoverPoint>();
 
-	private readonly List<CoverPointBlockerVolume> _coverPointBlockers;
+	private readonly List<CoverPointBlockerVolume> _coverPointBlockers = new List<CoverPointBlockerVolume>();
 
-	private float _dynNavMeshBuildCompletionTime;
+	private float _dynNavMeshBuildCompletionTime = -1f;
 
 	private int _genAttempts;
 
-	private Bounds bounds;
+	private Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
 
 	public bool repeat => true;
 
@@ -88,8 +88,8 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 center = ((Bounds)(ref bounds)).center;
-		if (Mathf.Approximately(((Vector3)(ref center)).sqrMagnitude, 0f))
+		Vector3 center = bounds.center;
+		if (Mathf.Approximately(center.sqrMagnitude, 0f))
 		{
 			bounds = new Bounds(((Component)this).transform.position, ((Component)this).transform.localScale);
 		}
@@ -125,33 +125,33 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 	{
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0261: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0268: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0241: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021b: Unknown result type (might be due to invalid IL or missing references)
 		_ = Time.realtimeSinceStartup;
 		ClearCoverPoints();
 		if ((Object)(object)ManualCoverPointGroup == (Object)null)
@@ -185,23 +185,23 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		}
 		Vector3 position = ((Component)this).transform.position;
 		Vector3 val = ((Component)this).transform.lossyScale * 0.5f;
-		NavMeshHit info = default(NavMeshHit);
+		NavMeshHit info = default;
 		for (float num = position.x - val.x + 1f; num < position.x + val.x - 1f; num += cover_point_sample_step_size)
 		{
 			for (float num2 = position.z - val.z + 1f; num2 < position.z + val.z - 1f; num2 += cover_point_sample_step_size)
 			{
 				for (float num3 = position.y - val.y; num3 < position.y + val.y; num3 += cover_point_sample_step_height)
 				{
-					if (!NavMesh.FindClosestEdge(new Vector3(num, num3, num2), ref info, ((NavMeshHit)(ref hitWS)).mask))
+					if (!NavMesh.FindClosestEdge(new Vector3(num, num3, num2), ref info, hitWS.mask))
 					{
 						continue;
 					}
-					((NavMeshHit)(ref info)).position = new Vector3(((NavMeshHit)(ref info)).position.x, ((NavMeshHit)(ref info)).position.y + 0.5f, ((NavMeshHit)(ref info)).position.z);
+					info.position = new Vector3(info.position.x, info.position.y + 0.5f, info.position.z);
 					bool flag = true;
 					foreach (CoverPoint coverPoint2 in CoverPoints)
 					{
-						Vector3 val2 = coverPoint2.Position - ((NavMeshHit)(ref info)).position;
-						if (((Vector3)(ref val2)).sqrMagnitude < cover_point_sample_step_size * cover_point_sample_step_size)
+						Vector3 val2 = coverPoint2.Position - info.position;
+						if (val2.sqrMagnitude < cover_point_sample_step_size * cover_point_sample_step_size)
 						{
 							flag = false;
 							break;
@@ -229,15 +229,15 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		CoverType coverType = ProvidesCoverInDir(new Ray(((NavMeshHit)(ref info)).position, -((NavMeshHit)(ref info)).normal), CoverPointRayLength, out var _);
+		CoverType coverType = ProvidesCoverInDir(new Ray(info.position, -info.normal), CoverPointRayLength, out var _);
 		if (coverType == CoverType.None)
 		{
 			return null;
 		}
 		CoverPoint coverPoint = new CoverPoint(this, DefaultCoverPointScore)
 		{
-			Position = ((NavMeshHit)(ref info)).position,
-			Normal = -((NavMeshHit)(ref info)).normal
+			Position = info.position,
+			Normal = -info.normal
 		};
 		switch (coverType)
 		{
@@ -270,26 +270,26 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		rayHit = default(RaycastHit);
-		if (Vector3Ex.IsNaNOrInfinity(((Ray)(ref ray)).origin))
+		rayHit = default;
+		if (Vector3Ex.IsNaNOrInfinity(ray.origin))
 		{
 			return CoverType.None;
 		}
-		if (Vector3Ex.IsNaNOrInfinity(((Ray)(ref ray)).direction))
+		if (Vector3Ex.IsNaNOrInfinity(ray.direction))
 		{
 			return CoverType.None;
 		}
-		if (((Ray)(ref ray)).direction == Vector3.zero)
+		if (ray.direction == Vector3.zero)
 		{
 			return CoverType.None;
 		}
-		((Ray)(ref ray)).origin = ((Ray)(ref ray)).origin + PlayerEyes.EyeOffset;
-		if (Physics.Raycast(((Ray)(ref ray)).origin, ((Ray)(ref ray)).direction, ref rayHit, maxDistance, LayerMask.op_Implicit(CoverLayerMask)))
+		ray.origin += PlayerEyes.EyeOffset;
+		if (Physics.Raycast(ray.origin, ray.direction, ref rayHit, maxDistance, LayerMask.op_Implicit(CoverLayerMask)))
 		{
 			return CoverType.Full;
 		}
-		((Ray)(ref ray)).origin = ((Ray)(ref ray)).origin + PlayerEyes.DuckOffset;
-		if (Physics.Raycast(((Ray)(ref ray)).origin, ((Ray)(ref ray)).direction, ref rayHit, maxDistance, LayerMask.op_Implicit(CoverLayerMask)))
+		ray.origin += PlayerEyes.DuckOffset;
+		if (Physics.Raycast(ray.origin, ray.direction, ref rayHit, maxDistance, LayerMask.op_Implicit(CoverLayerMask)))
 		{
 			return CoverType.Partial;
 		}
@@ -300,10 +300,10 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		Bounds val = default(Bounds);
-		((Bounds)(ref val))._002Ector(((Component)this).transform.position, ((Component)this).transform.localScale);
-		return ((Bounds)(ref val)).Contains(point);
+		Bounds val = new Bounds(((Component)this).transform.position, ((Component)this).transform.localScale);
+		return val.Contains(point);
 	}
 
 	public CoverPointVolume()
@@ -312,12 +312,5 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		DefaultCoverPointScore = 1f;
-		CoverPointRayLength = 1f;
-		CoverPoints = new List<CoverPoint>();
-		_coverPointBlockers = new List<CoverPointBlockerVolume>();
-		_dynNavMeshBuildCompletionTime = -1f;
-		bounds = new Bounds(Vector3.zero, Vector3.zero);
-		((MonoBehaviour)this)._002Ector();
 	}
 }

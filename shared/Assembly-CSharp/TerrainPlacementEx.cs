@@ -31,7 +31,7 @@ public static class TerrainPlacementEx
 				Vector3 val = pos + rot * Vector3.Scale(terrainPlacement.worldPosition, scale);
 				Quaternion val2 = rot * terrainPlacement.worldRotation;
 				Matrix4x4 localToWorld = Matrix4x4.TRS(val, val2, scale);
-				Matrix4x4 inverse = ((Matrix4x4)(ref localToWorld)).inverse;
+				Matrix4x4 inverse = localToWorld.inverse;
 				placements[i].Apply(localToWorld, inverse);
 			}
 		}

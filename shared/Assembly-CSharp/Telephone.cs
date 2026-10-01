@@ -615,7 +615,7 @@ public class Telephone : ContainerIOEntity, ICassettePlayer
 	{
 		base.ServerInit();
 		Controller.ServerInit();
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 	}
 
@@ -631,15 +631,15 @@ public class Telephone : ContainerIOEntity, ICassettePlayer
 		Controller.DoServerDestroy();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server]
 	public void ClearCurrentUser(RPCMessage msg)
 	{
 		Controller.ClearCurrentUser(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SetCurrentUser(RPCMessage msg)
 	{
 		Controller.SetCurrentUser(msg);
@@ -652,8 +652,8 @@ public class Telephone : ContainerIOEntity, ICassettePlayer
 		Controller.InitiateCall(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void AnswerPhone(RPCMessage msg)
 	{
 		Controller.AnswerPhone(msg);
@@ -678,7 +678,7 @@ public class Telephone : ContainerIOEntity, ICassettePlayer
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		cachedCassette = null;
 		Controller.DeleteAllVoicemail();
-		((BaseEntity)this).ClientRPC(RpcTarget.NetworkGroup("ClientOnCassetteChanged"), default(NetworkableId));
+		ClientRPC(RpcTarget.NetworkGroup("ClientOnCassetteChanged"), default(NetworkableId));
 	}
 
 	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
@@ -694,25 +694,25 @@ public class Telephone : ContainerIOEntity, ICassettePlayer
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	public void UpdatePhoneName(RPCMessage msg)
 	{
 		Controller.RPC_UpdatePhoneName(msg);
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void Server_RequestPhoneDirectory(RPCMessage msg)
 	{
 		Controller.Server_RequestPhoneDirectory(msg);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_AddSavedNumber(RPCMessage msg)
 	{
 		Controller.Server_AddSavedNumber(msg);
@@ -726,32 +726,32 @@ public class Telephone : ContainerIOEntity, ICassettePlayer
 		Controller.Server_RemoveSavedNumber(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void ServerSendVoicemail(RPCMessage msg)
 	{
 		Controller.ServerSendVoicemail(msg);
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	public void ServerPlayVoicemail(RPCMessage msg)
 	{
 		Controller.ServerPlayVoicemail(msg);
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void ServerStopVoicemail(RPCMessage msg)
 	{
 		Controller.ServerStopVoicemail(msg);
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void ServerDeleteVoicemail(RPCMessage msg)
 	{
 		Controller.ServerDeleteVoicemail(msg);
@@ -819,7 +819,7 @@ public class Telephone : ContainerIOEntity, ICassettePlayer
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (Controller.RequirePower && (next & Flags.Busy) == Flags.Busy && (next & Flags.Reserved8) != Flags.Reserved8)
 			{

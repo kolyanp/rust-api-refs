@@ -10,10 +10,10 @@ public class BaseEntityRef : ResourceRef<BaseEntity>
 		{
 			return _cachedObject;
 		}
-		Object obj = GameManifest.GUIDToObject(guid);
-		GameObject val = (GameObject)(object)((obj is GameObject) ? obj : null);
+		Object val = GameManifest.GUIDToObject(guid);
+		GameObject val2 = (GameObject)(object)((val is GameObject) ? val : null);
 		BaseEntity baseEntity = null;
-		if ((Object)(object)val != (Object)null && val.TryGetComponent<BaseEntity>(ref baseEntity))
+		if ((Object)(object)val2 != (Object)null && val2.TryGetComponent<BaseEntity>(ref baseEntity))
 		{
 			_cachedObject = baseEntity;
 		}

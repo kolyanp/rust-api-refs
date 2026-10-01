@@ -201,17 +201,18 @@ public class Satellite : ConsoleSystem
 	public static void trigger(Arg arg)
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		float num = 0f;
-		Vector3 position = default(Vector3);
+		Vector3 targetPos;
 		if (arg.HasArgs(2))
 		{
 			float num2 = arg.GetFloat(0);
 			float num3 = arg.GetFloat(1);
 			float height = TerrainMeta.HeightMap.GetHeight(new Vector3(num2, 0f, num3));
-			((Vector3)(ref position))._002Ector(num2, height, num3);
+			targetPos = new Vector3(num2, height, num3);
 			num = arg.GetFloat(2);
 		}
 		else
@@ -222,10 +223,10 @@ public class Satellite : ConsoleSystem
 				arg.ReplyWith("No player found. Provide coordinates: satellite.trigger <x> <z> [mass]");
 				return;
 			}
-			position = ((Component)basePlayer).transform.position;
+			targetPos = ((Component)basePlayer).transform.position;
 			num = arg.GetFloat(0);
 		}
-		SpawnCrashAt(arg, position, "Satellite crash triggered", num);
+		SpawnCrashAt(arg, targetPos, "Satellite crash triggered", num);
 	}
 
 	[ServerVar(Help = "Dev: search for a safe crash site around the calling player using the exact same acceptance checks a control computer's lock-in uses (topology, water, unevenness, safezones, obstructions), then launch the full orbital descent there. Not a full session replica: searches around the player rather than a computer's semi-random targeting center, always does a fresh scan (no thruster-history reuse), and has no owning computer (no countdown screen, radius floor still enforced, no-build volume self-despawns after impact instead of being computer-managed): satellite.launch [radius]")]
@@ -314,11 +315,11 @@ public class Satellite : ConsoleSystem
 	public static void random(Arg arg)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		float num = TerrainMeta.Size.x * 0.4f;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(Random.Range(0f - num, num), 0f, Random.Range(0f - num, num));
+		Vector3 val = new Vector3(Random.Range(0f - num, num), 0f, Random.Range(0f - num, num));
 		val.y = TerrainMeta.HeightMap.GetHeight(val);
 		SpawnCrashAt(arg, val, "Random satellite crash triggered");
 	}

@@ -20,7 +20,7 @@ public class ProcessedTexture
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Expected O, but got Unknown
+		//IL_0036: Expected Obj, but got Unknown
 		RenderTexture val = new RenderTexture(width, height, 0, (RenderTextureFormat)0, (RenderTextureReadWrite)(linear ? 1 : 2))
 		{
 			hideFlags = (HideFlags)52,
@@ -61,7 +61,7 @@ public class ProcessedTexture
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000f: Expected O, but got Unknown
+		//IL_000f: Expected Obj, but got Unknown
 		return new Material(shader)
 		{
 			hideFlags = (HideFlags)52

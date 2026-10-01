@@ -64,7 +64,7 @@ public static class Noise3D
 	private static Texture3D LoadTexture3D(TextAsset textData, int size)
 	{
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Expected O, but got Unknown
+		//IL_0062: Expected Obj, but got Unknown
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
@@ -82,7 +82,7 @@ public static class Noise3D
 			return null;
 		}
 		Texture3D val = new Texture3D(size, size, size, (TextureFormat)1, false);
-		Color[] array = (Color[])(object)new Color[num];
+		Color[] array = new Color[num];
 		for (int i = 0; i < num; i++)
 		{
 			array[i] = Color32.op_Implicit(new Color32((byte)0, (byte)0, (byte)0, bytes[i]));

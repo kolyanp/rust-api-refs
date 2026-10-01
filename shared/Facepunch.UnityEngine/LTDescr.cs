@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -159,7 +158,7 @@ public class LTDescr
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		return (((Object)(object)trans != (Object)null) ? ("name:" + ((Object)((Component)trans).gameObject).name) : "gameObject:null") + " toggle:" + toggle + " passed:" + passed + " time:" + time + " delay:" + delay + " direction:" + direction + " from:" + ((object)from/*cast due to constrained. prefix*/).ToString() + " to:" + ((object)to/*cast due to constrained. prefix*/).ToString() + " diff:" + ((object)Unsafe.As<Vector3, Vector3>(ref diff)/*cast due to constrained. prefix*/).ToString() + " type:" + type.ToString() + " ease:" + easeType.ToString() + " useEstimatedTime:" + useEstimatedTime + " id:" + id + " hasInitiliazed:" + hasInitiliazed;
+		return (((Object)(object)trans != (Object)null) ? ("name:" + ((Object)((Component)trans).gameObject).name) : "gameObject:null") + " toggle:" + toggle + " passed:" + passed + " time:" + time + " delay:" + delay + " direction:" + direction + " from:" + ((object)from/*cast due to constrained. prefix*/).ToString() + " to:" + ((object)to/*cast due to constrained. prefix*/).ToString() + " diff:" + ((object)diff/*cast due to constrained. prefix*/).ToString() + " type:" + type.ToString() + " ease:" + easeType.ToString() + " useEstimatedTime:" + useEstimatedTime + " id:" + id + " hasInitiliazed:" + hasInitiliazed;
 	}
 
 	[Obsolete("Use 'LeanTween.cancel( id )' instead")]
@@ -198,12 +197,12 @@ public class LTDescr
 	public LTDescr setMoveX()
 	{
 		type = TweenAction.MOVE_X;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.position.x;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -217,12 +216,12 @@ public class LTDescr
 	public LTDescr setMoveY()
 	{
 		type = TweenAction.MOVE_Y;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.position.y;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -236,12 +235,12 @@ public class LTDescr
 	public LTDescr setMoveZ()
 	{
 		type = TweenAction.MOVE_Z;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.position.z;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -255,12 +254,12 @@ public class LTDescr
 	public LTDescr setMoveLocalX()
 	{
 		type = TweenAction.MOVE_LOCAL_X;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.localPosition.x;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -274,12 +273,12 @@ public class LTDescr
 	public LTDescr setMoveLocalY()
 	{
 		type = TweenAction.MOVE_LOCAL_Y;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.localPosition.y;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -293,12 +292,12 @@ public class LTDescr
 	public LTDescr setMoveLocalZ()
 	{
 		type = TweenAction.MOVE_LOCAL_Z;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.localPosition.z;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -318,7 +317,7 @@ public class LTDescr
 	{
 		type = TweenAction.MOVE_CURVED;
 		initInternal = initFromInternal;
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -348,7 +347,7 @@ public class LTDescr
 	{
 		type = TweenAction.MOVE_CURVED_LOCAL;
 		initInternal = initFromInternal;
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -378,7 +377,7 @@ public class LTDescr
 	{
 		type = TweenAction.MOVE_SPLINE;
 		initInternal = initFromInternal;
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -408,7 +407,7 @@ public class LTDescr
 	{
 		type = TweenAction.MOVE_SPLINE_LOCAL;
 		initInternal = initFromInternal;
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -437,12 +436,12 @@ public class LTDescr
 	public LTDescr setScaleX()
 	{
 		type = TweenAction.SCALE_X;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.localScale.x;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -456,12 +455,12 @@ public class LTDescr
 	public LTDescr setScaleY()
 	{
 		type = TweenAction.SCALE_Y;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.localScale.y;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -475,12 +474,12 @@ public class LTDescr
 	public LTDescr setScaleZ()
 	{
 		type = TweenAction.SCALE_Z;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.localScale.z;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -494,13 +493,13 @@ public class LTDescr
 	public LTDescr setRotateX()
 	{
 		type = TweenAction.ROTATE_X;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.eulerAngles.x;
 			toInternal.x = LeanTween.closestRot(fromInternal.x, toInternal.x);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -514,13 +513,13 @@ public class LTDescr
 	public LTDescr setRotateY()
 	{
 		type = TweenAction.ROTATE_Y;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.eulerAngles.y;
 			toInternal.x = LeanTween.closestRot(fromInternal.x, toInternal.x);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -534,13 +533,13 @@ public class LTDescr
 	public LTDescr setRotateZ()
 	{
 		type = TweenAction.ROTATE_Z;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = trans.eulerAngles.z;
 			toInternal.x = LeanTween.closestRot(fromInternal.x, toInternal.x);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -554,13 +553,13 @@ public class LTDescr
 	public LTDescr setRotateAround()
 	{
 		type = TweenAction.ROTATE_AROUND;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = 0f;
 			_optional.origRotation = trans.rotation;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -602,13 +601,13 @@ public class LTDescr
 	public LTDescr setRotateAroundLocal()
 	{
 		type = TweenAction.ROTATE_AROUND_LOCAL;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = 0f;
 			_optional.origRotation = trans.localRotation;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -649,7 +648,7 @@ public class LTDescr
 	public LTDescr setAlpha()
 	{
 		type = TweenAction.ALPHA;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0075: Unknown result type (might be due to invalid IL or missing references)
@@ -657,7 +656,7 @@ public class LTDescr
 			//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
 			//IL_010b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0111: Expected O, but got Unknown
+			//IL_0111: Expected Obj, but got Unknown
 			//IL_0134: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0139: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0141: Unknown result type (might be due to invalid IL or missing references)
@@ -688,7 +687,7 @@ public class LTDescr
 					}
 				}
 			}
-			easeInternal = delegate
+			easeInternal = () =>
 			{
 				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 				//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -707,7 +706,7 @@ public class LTDescr
 				}
 			};
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -733,13 +732,13 @@ public class LTDescr
 	public LTDescr setTextAlpha()
 	{
 		type = TweenAction.TEXT_ALPHA;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 			uiText = ((Component)trans).GetComponent<Text>();
 			fromInternal.x = (((Object)(object)uiText != (Object)null) ? ((Graphic)uiText).color.a : 1f);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			textAlphaRecursive(trans, easeMethod().x, useRecursion);
@@ -750,11 +749,11 @@ public class LTDescr
 	public LTDescr setAlphaVertex()
 	{
 		type = TweenAction.ALPHA_VERTEX;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			fromInternal.x = (int)((Component)trans).GetComponent<MeshFilter>().mesh.colors32[0].a;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -766,6 +765,7 @@ public class LTDescr
 			//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0071: Unknown result type (might be due to invalid IL or missing references)
@@ -774,12 +774,11 @@ public class LTDescr
 			LTDescr.val = newVect.x;
 			Mesh mesh = ((Component)trans).GetComponent<MeshFilter>().mesh;
 			Vector3[] vertices = mesh.vertices;
-			Color32[] array = (Color32[])(object)new Color32[vertices.Length];
+			Color32[] array = new Color32[vertices.Length];
 			if (array.Length == 0)
 			{
-				Color32 val = default(Color32);
-				((Color32)(ref val))._002Ector(byte.MaxValue, byte.MaxValue, byte.MaxValue, (byte)0);
-				array = (Color32[])(object)new Color32[mesh.vertices.Length];
+				Color32 val = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, (byte)0);
+				array = new Color32[mesh.vertices.Length];
 				for (int i = 0; i < array.Length; i++)
 				{
 					array[i] = val;
@@ -800,7 +799,7 @@ public class LTDescr
 	public LTDescr setColor()
 	{
 		type = TweenAction.COLOR;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0062: Unknown result type (might be due to invalid IL or missing references)
@@ -810,7 +809,7 @@ public class LTDescr
 			//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ed: Expected O, but got Unknown
+			//IL_00ed: Expected Obj, but got Unknown
 			//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 			//IL_011a: Unknown result type (might be due to invalid IL or missing references)
@@ -843,7 +842,7 @@ public class LTDescr
 				}
 			}
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -881,13 +880,13 @@ public class LTDescr
 	public LTDescr setCallbackColor()
 	{
 		type = TweenAction.CALLBACK_COLOR;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 			diff = new Vector3(1f, 0f, 0f);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -925,14 +924,14 @@ public class LTDescr
 	public LTDescr setTextColor()
 	{
 		type = TweenAction.TEXT_COLOR;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 			uiText = ((Component)trans).GetComponent<Text>();
 			setFromColor(((Object)(object)uiText != (Object)null) ? ((Graphic)uiText).color : Color.white);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -960,7 +959,7 @@ public class LTDescr
 	public LTDescr setCanvasAlpha()
 	{
 		type = TweenAction.CANVAS_ALPHA;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
@@ -982,7 +981,7 @@ public class LTDescr
 				}
 			}
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1018,11 +1017,11 @@ public class LTDescr
 	public LTDescr setCanvasGroupAlpha()
 	{
 		type = TweenAction.CANVASGROUP_ALPHA;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			fromInternal.x = ((Component)trans).GetComponent<CanvasGroup>().alpha;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			((Component)trans).GetComponent<CanvasGroup>().alpha = easeMethod().x;
@@ -1033,7 +1032,7 @@ public class LTDescr
 	public LTDescr setCanvasColor()
 	{
 		type = TweenAction.CANVAS_COLOR;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
@@ -1049,7 +1048,7 @@ public class LTDescr
 				setFromColor(((Graphic)uiImage).color);
 			}
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1085,12 +1084,12 @@ public class LTDescr
 	public LTDescr setCanvasMoveX()
 	{
 		type = TweenAction.CANVAS_MOVE_X;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = rectTransform.anchoredPosition3D.x;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1107,12 +1106,12 @@ public class LTDescr
 	public LTDescr setCanvasMoveY()
 	{
 		type = TweenAction.CANVAS_MOVE_Y;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = rectTransform.anchoredPosition3D.y;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1129,12 +1128,12 @@ public class LTDescr
 	public LTDescr setCanvasMoveZ()
 	{
 		type = TweenAction.CANVAS_MOVE_Z;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal.x = rectTransform.anchoredPosition3D.z;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1160,7 +1159,7 @@ public class LTDescr
 	{
 		type = TweenAction.CANVAS_ROTATEAROUND;
 		initInternal = initCanvasRotateAround;
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1197,7 +1196,7 @@ public class LTDescr
 	{
 		type = TweenAction.CANVAS_ROTATEAROUND_LOCAL;
 		initInternal = initCanvasRotateAround;
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1235,12 +1234,12 @@ public class LTDescr
 	public LTDescr setCanvasPlaySprite()
 	{
 		type = TweenAction.CANVAS_PLAYSPRITE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			uiImage = ((Component)trans).GetComponent<Image>();
 			fromInternal.x = 0f;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1255,13 +1254,13 @@ public class LTDescr
 	public LTDescr setCanvasMove()
 	{
 		type = TweenAction.CANVAS_MOVE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			fromInternal = rectTransform.anchoredPosition3D;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			rectTransform.anchoredPosition3D = easeMethod();
@@ -1272,12 +1271,12 @@ public class LTDescr
 	public LTDescr setCanvasScale()
 	{
 		type = TweenAction.CANVAS_SCALE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			from = ((Transform)rectTransform).localScale;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			((Transform)rectTransform).localScale = easeMethod();
@@ -1288,13 +1287,13 @@ public class LTDescr
 	public LTDescr setCanvasSizeDelta()
 	{
 		type = TweenAction.CANVAS_SIZEDELTA;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			from = Vector2.op_Implicit(rectTransform.sizeDelta);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
@@ -1314,7 +1313,7 @@ public class LTDescr
 	public LTDescr setCallback()
 	{
 		type = TweenAction.CALLBACK;
-		initInternal = delegate
+		initInternal = () =>
 		{
 		};
 		easeInternal = callback;
@@ -1324,7 +1323,7 @@ public class LTDescr
 	public LTDescr setValue3()
 	{
 		type = TweenAction.VALUE3;
-		initInternal = delegate
+		initInternal = () =>
 		{
 		};
 		easeInternal = callback;
@@ -1334,12 +1333,12 @@ public class LTDescr
 	public LTDescr setMove()
 	{
 		type = TweenAction.MOVE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			from = trans.position;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1353,12 +1352,12 @@ public class LTDescr
 	public LTDescr setMoveLocal()
 	{
 		type = TweenAction.MOVE_LOCAL;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			from = trans.localPosition;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1372,12 +1371,12 @@ public class LTDescr
 	public LTDescr setMoveToTransform()
 	{
 		type = TweenAction.MOVE_TO_TRANSFORM;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			from = trans.position;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -1402,7 +1401,7 @@ public class LTDescr
 	public LTDescr setRotate()
 	{
 		type = TweenAction.ROTATE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
@@ -1413,7 +1412,7 @@ public class LTDescr
 			from = trans.eulerAngles;
 			to = new Vector3(LeanTween.closestRot(fromInternal.x, toInternal.x), LeanTween.closestRot(from.y, to.y), LeanTween.closestRot(from.z, to.z));
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1427,7 +1426,7 @@ public class LTDescr
 	public LTDescr setRotateLocal()
 	{
 		type = TweenAction.ROTATE_LOCAL;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
@@ -1438,7 +1437,7 @@ public class LTDescr
 			from = trans.localEulerAngles;
 			to = new Vector3(LeanTween.closestRot(fromInternal.x, toInternal.x), LeanTween.closestRot(from.y, to.y), LeanTween.closestRot(from.z, to.z));
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1452,12 +1451,12 @@ public class LTDescr
 	public LTDescr setScale()
 	{
 		type = TweenAction.SCALE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			from = trans.localScale;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1471,7 +1470,7 @@ public class LTDescr
 	public LTDescr setGUIMove()
 	{
 		type = TweenAction.GUI_MOVE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
@@ -1479,11 +1478,11 @@ public class LTDescr
 			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			Rect rect = _optional.ltRect.rect;
-			float x = ((Rect)(ref rect)).x;
+			float x = rect.x;
 			rect = _optional.ltRect.rect;
-			from = new Vector3(x, ((Rect)(ref rect)).y, 0f);
+			from = new Vector3(x, rect.y, 0f);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1499,9 +1498,9 @@ public class LTDescr
 			float x = val.x;
 			float y = val.y;
 			Rect rect = _optional.ltRect.rect;
-			float width = ((Rect)(ref rect)).width;
+			float width = rect.width;
 			rect = _optional.ltRect.rect;
-			lTRect.rect = new Rect(x, y, width, ((Rect)(ref rect)).height);
+			lTRect.rect = new Rect(x, y, width, rect.height);
 		};
 		return this;
 	}
@@ -1509,13 +1508,13 @@ public class LTDescr
 	public LTDescr setGUIMoveMargin()
 	{
 		type = TweenAction.GUI_MOVE_MARGIN;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 			from = Vector2.op_Implicit(new Vector2(_optional.ltRect.margin.x, _optional.ltRect.margin.y));
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1532,7 +1531,7 @@ public class LTDescr
 	public LTDescr setGUIScale()
 	{
 		type = TweenAction.GUI_SCALE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
@@ -1540,11 +1539,11 @@ public class LTDescr
 			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			Rect rect = _optional.ltRect.rect;
-			float width = ((Rect)(ref rect)).width;
+			float width = rect.width;
 			rect = _optional.ltRect.rect;
-			from = new Vector3(width, ((Rect)(ref rect)).height, 0f);
+			from = new Vector3(width, rect.height, 0f);
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -1558,9 +1557,9 @@ public class LTDescr
 			Vector3 val = easeMethod();
 			LTRect lTRect = _optional.ltRect;
 			Rect rect = _optional.ltRect.rect;
-			float x = ((Rect)(ref rect)).x;
+			float x = rect.x;
 			rect = _optional.ltRect.rect;
-			lTRect.rect = new Rect(x, ((Rect)(ref rect)).y, val.x, val.y);
+			lTRect.rect = new Rect(x, rect.y, val.x, val.y);
 		};
 		return this;
 	}
@@ -1568,11 +1567,11 @@ public class LTDescr
 	public LTDescr setGUIAlpha()
 	{
 		type = TweenAction.GUI_ALPHA;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			fromInternal.x = _optional.ltRect.alpha;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			_optional.ltRect.alpha = easeMethod().x;
@@ -1583,7 +1582,7 @@ public class LTDescr
 	public LTDescr setGUIRotate()
 	{
 		type = TweenAction.GUI_ROTATE;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			if (!_optional.ltRect.rotateEnabled)
 			{
@@ -1592,7 +1591,7 @@ public class LTDescr
 			}
 			fromInternal.x = _optional.ltRect.rotation;
 		};
-		easeInternal = delegate
+		easeInternal = () =>
 		{
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			_optional.ltRect.rotation = easeMethod().x;
@@ -1603,7 +1602,7 @@ public class LTDescr
 	public LTDescr setDelayedSound()
 	{
 		type = TweenAction.DELAYED_SOUND;
-		initInternal = delegate
+		initInternal = () =>
 		{
 			hasExtraOnCompletes = true;
 		};
@@ -1664,7 +1663,7 @@ public class LTDescr
 			return;
 		}
 		Vector3 val = to - from;
-		time = ((Vector3)(ref val)).magnitude / speed;
+		time = val.magnitude / speed;
 	}
 
 	public LTDescr updateNow()
@@ -1754,7 +1753,7 @@ public class LTDescr
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Expected O, but got Unknown
+		//IL_004b: Expected Obj, but got Unknown
 		if (type == TweenAction.GUI_ROTATE)
 		{
 			_optional.ltRect.rotateFinished = true;
@@ -1802,7 +1801,7 @@ public class LTDescr
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Expected O, but got Unknown
+		//IL_00dc: Expected Obj, but got Unknown
 		Renderer component = ((Component)transform).gameObject.GetComponent<Renderer>();
 		if ((Object)(object)component != (Object)null)
 		{
@@ -1826,7 +1825,7 @@ public class LTDescr
 		}
 		foreach (Transform item in transform)
 		{
-			alphaRecursive(item, val, true);
+			alphaRecursive(item, val);
 		}
 	}
 
@@ -1835,7 +1834,7 @@ public class LTDescr
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Expected O, but got Unknown
+		//IL_005a: Expected Obj, but got Unknown
 		Renderer component = ((Component)transform).gameObject.GetComponent<Renderer>();
 		if ((Object)(object)component != (Object)null)
 		{
@@ -1851,14 +1850,14 @@ public class LTDescr
 		}
 		foreach (Transform item in transform)
 		{
-			colorRecursive(item, toColor, true);
+			colorRecursive(item, toColor);
 		}
 	}
 
 	private static void alphaRecursive(RectTransform rectTransform, float val, int recursiveLevel = 0)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
+		//IL_0021: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
@@ -1897,7 +1896,7 @@ public class LTDescr
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Expected O, but got Unknown
+		//IL_0060: Expected Obj, but got Unknown
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
@@ -1921,7 +1920,7 @@ public class LTDescr
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Expected O, but got Unknown
+		//IL_003f: Expected Obj, but got Unknown
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		if (transform.childCount <= 0)
 		{
@@ -1941,7 +1940,7 @@ public class LTDescr
 	private static void colorRecursive(RectTransform rectTransform, Color toColor)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Expected O, but got Unknown
+		//IL_001e: Expected Obj, but got Unknown
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
@@ -1973,7 +1972,7 @@ public class LTDescr
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Expected O, but got Unknown
+		//IL_004d: Expected Obj, but got Unknown
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
@@ -2000,7 +1999,7 @@ public class LTDescr
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Expected O, but got Unknown
+		//IL_004d: Expected Obj, but got Unknown
 		Text component = ((Component)trans).GetComponent<Text>();
 		if ((Object)(object)component != (Object)null)
 		{
@@ -2023,7 +2022,7 @@ public class LTDescr
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Expected O, but got Unknown
+		//IL_003a: Expected Obj, but got Unknown
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		if (trans.childCount <= 0)
 		{

@@ -120,7 +120,7 @@ public class Command : Library
 	[LibraryFunction("AddChatCommand")]
 	public void AddChatCommand(string name, Plugin plugin, string callback)
 	{
-		AddChatCommand(name, plugin, delegate(BasePlayer player, string command, string[] args)
+		AddChatCommand(name, plugin, (BasePlayer player, string command, string[] args) =>
 		{
 			plugin.CallHook(callback, player, command, args);
 		});

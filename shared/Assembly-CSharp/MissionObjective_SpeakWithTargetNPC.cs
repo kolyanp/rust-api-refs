@@ -6,16 +6,16 @@ public class MissionObjective_SpeakWithTargetNPC : MissionObjective
 {
 	public BaseEntityRef TargetNPC;
 
-	public LayerMask targetLayerMask;
+	public LayerMask targetLayerMask = LayerMask.op_Implicit(-1);
 
-	public ItemAmount[] requiredReturnItems;
+	public ItemAmount[] requiredReturnItems = Array.Empty<ItemAmount>();
 
 	[Tooltip("The target NPC must be nearby this mission point for the objective to complete.")]
 	[BaseMission.PositionGenerator.PositionPoint]
 	public string RequireProximityToPosition;
 
-	[Min(0f)]
 	[Tooltip("This defines the minimum proximity between the target NPC and the mission point.")]
+	[Min(0f)]
 	public float MinimumDistanceToMissionPoint;
 
 	public bool destroyReturnItems;
@@ -249,8 +249,5 @@ public class MissionObjective_SpeakWithTargetNPC : MissionObjective
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		targetLayerMask = LayerMask.op_Implicit(-1);
-		requiredReturnItems = Array.Empty<ItemAmount>();
-		base._002Ector();
 	}
 }

@@ -33,9 +33,9 @@ public class FluidSwitch : ElectricSwitch
 		{
 			return;
 		}
-		bool num = pumpEnabled;
+		bool flag = pumpEnabled;
 		pumpEnabled = inputAmount > 0;
-		if (num != pumpEnabled)
+		if (flag != pumpEnabled)
 		{
 			lastPassthroughEnergy = -1;
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))

@@ -40,10 +40,10 @@ public class PetBrain : BaseAIBrain
 	public override void InitializeAI()
 	{
 		base.InitializeAI();
-		base.ThinkMode = AIThinkMode.Interval;
+		ThinkMode = AIThinkMode.Interval;
 		thinkRate = 0.25f;
-		base.PathFinder = new HumanPathFinder();
-		((HumanPathFinder)base.PathFinder).Init(GetBaseEntity());
+		PathFinder = new HumanPathFinder();
+		((HumanPathFinder)PathFinder).Init(GetBaseEntity());
 		Count++;
 	}
 
@@ -78,13 +78,13 @@ public class PetBrain : BaseAIBrain
 		bool flag = false;
 		if (IdleWhenOwnerOfflineOrDead)
 		{
-			flag = (IdleWhenOwnerOfflineOrDead && (Object)(object)base.OwningPlayer == (Object)null) || base.OwningPlayer.IsSleeping() || base.OwningPlayer.IsDead();
+			flag = (IdleWhenOwnerOfflineOrDead && (Object)(object)OwningPlayer == (Object)null) || OwningPlayer.IsSleeping() || OwningPlayer.IsDead();
 		}
 		if (IdleWhenOwnerMounted && !flag)
 		{
-			flag = (Object)(object)base.OwningPlayer != (Object)null && base.OwningPlayer.isMounted;
+			flag = (Object)(object)OwningPlayer != (Object)null && OwningPlayer.isMounted;
 		}
-		if ((Object)(object)base.OwningPlayer != (Object)null && Vector3.Distance(((Component)this).transform.position, ((Component)base.OwningPlayer).transform.position) > ControlDistance)
+		if ((Object)(object)OwningPlayer != (Object)null && Vector3.Distance(((Component)this).transform.position, ((Component)OwningPlayer).transform.position) > ControlDistance)
 		{
 			flag = true;
 		}

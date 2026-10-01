@@ -120,7 +120,7 @@ public class ElectricBattery : IOEntity, IInstanceDataReceiver
 	public override void OnPickedUp(Item createdItem, BasePlayer player)
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Expected O, but got Unknown
+		//IL_001b: Expected Obj, but got Unknown
 		base.OnPickedUp(createdItem, player);
 		if (createdItem.instanceData == null)
 		{
@@ -338,19 +338,19 @@ public class ElectricBattery : IOEntity, IInstanceDataReceiver
 	public void TickUsage()
 	{
 		float oldCharge = rustWattSeconds;
-		bool num = rustWattSeconds > 0f;
+		bool flag = rustWattSeconds > 0f;
 		if (rustWattSeconds >= 1f)
 		{
-			float num2 = 1f * (float)activeDrain;
-			rustWattSeconds -= num2;
+			float num = 1f * (float)activeDrain;
+			rustWattSeconds -= num;
 		}
 		if (rustWattSeconds <= 0f)
 		{
 			rustWattSeconds = 0f;
 		}
-		bool flag = rustWattSeconds > 0f;
+		bool flag2 = rustWattSeconds > 0f;
 		ChargeChanged(oldCharge);
-		if (num != flag)
+		if (flag != flag2)
 		{
 			MarkDirty();
 			SendNetworkUpdate();

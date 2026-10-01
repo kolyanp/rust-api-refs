@@ -115,7 +115,7 @@ public class NetProfileSnapshot
 				ref NetProfileEvent reference = ref array[j];
 				ResolveName(netProfileSnapshot.Names, reference.PrefabId, nameResolver);
 				ResolveName(netProfileSnapshot.Names, reference.RpcId, nameResolver);
-				if ((reference.Flags & NetProfileEventFlags.AuxIsStringId) != NetProfileEventFlags.None)
+				if ((reference.Flags & NetProfileEventFlags.AuxIsStringId) != 0)
 				{
 					ResolveName(netProfileSnapshot.Names, reference.Aux, nameResolver);
 				}

@@ -77,7 +77,7 @@ public class LegacyShelterDoor : Door
 	{
 		if (HasParent() && (Object)(object)shelter != (Object)null)
 		{
-			shelter.SetHealth(base.health);
+			shelter.SetHealth(health);
 		}
 	}
 }

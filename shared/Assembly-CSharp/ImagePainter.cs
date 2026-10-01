@@ -53,7 +53,7 @@ public class ImagePainter : MonoBehaviour, IPointerDownHandler, IEventSystemHand
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		if ((int)eventData.button != 1)
 		{
-			Vector2 position = default(Vector2);
+			Vector2 position = default;
 			RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, ref position);
 			DrawAt(position, eventData.button);
 			pointerState[eventData.button].isDown = true;
@@ -82,7 +82,7 @@ public class ImagePainter : MonoBehaviour, IPointerDownHandler, IEventSystemHand
 		}
 		else
 		{
-			Vector2 position = default(Vector2);
+			Vector2 position = default;
 			RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, ref position);
 			DrawAt(position, eventData.button);
 		}
@@ -148,8 +148,8 @@ public class ImagePainter : MonoBehaviour, IPointerDownHandler, IEventSystemHand
 		if (pointerState.isDown)
 		{
 			Vector2 val2 = pointerState.lastPos - val;
-			Vector2 normalized = ((Vector2)(ref val2)).normalized;
-			for (float num = 0f; num < ((Vector2)(ref val2)).magnitude; num += Mathf.Max(brush.spacing, 1f) * Mathf.Max(spacingScale, 0.1f))
+			Vector2 normalized = val2.normalized;
+			for (float num = 0f; num < val2.magnitude; num += Mathf.Max(brush.spacing, 1f) * Mathf.Max(spacingScale, 0.1f))
 			{
 				((UnityEvent<Vector2, Brush>)onDrawing).Invoke(val + num * normalized, brush);
 			}

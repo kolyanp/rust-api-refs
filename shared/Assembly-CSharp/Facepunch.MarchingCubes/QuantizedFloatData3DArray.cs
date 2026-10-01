@@ -104,8 +104,8 @@ public struct QuantizedFloatData3DArray : IDisposable
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		min = math.max(int3.op_Implicit(0), (int3)math.floor(float3.op_Implicit(((Bounds)(ref worldFloatBounds)).min) - float3.op_Implicit(Origin)));
-		max = math.min(Bounds - 1, (int3)math.ceil(float3.op_Implicit(((Bounds)(ref worldFloatBounds)).max) - float3.op_Implicit(Origin)));
+		min = math.max(int3.op_Implicit(0), (int3)math.floor(float3.op_Implicit(worldFloatBounds.min) - float3.op_Implicit(Origin)));
+		max = math.min(Bounds - 1, (int3)math.ceil(float3.op_Implicit(worldFloatBounds.max) - float3.op_Implicit(Origin)));
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

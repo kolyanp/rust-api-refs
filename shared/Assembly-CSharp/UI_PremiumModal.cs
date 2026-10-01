@@ -22,12 +22,11 @@ public class UI_PremiumModal : UI_Window
 
 	public Phrase SearchingPhrase;
 
-	public static readonly Phrase ErrorPhrase;
+	public static readonly Phrase ErrorPhrase = new Phrase("premium.error", "Error");
 
 	static UI_PremiumModal()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		ErrorPhrase = new Phrase("premium.error", "Error");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

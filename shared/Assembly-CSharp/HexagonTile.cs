@@ -37,9 +37,9 @@ public class HexagonTile : BaseCombatEntity, IDetector
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if ((old & Flags.Busy) == Flags.Busy != ((next & Flags.Busy) == Flags.Busy) && base.isServer)
+		if ((old & Flags.Busy) == Flags.Busy != ((next & Flags.Busy) == Flags.Busy) && isServer)
 		{
-			Invoke(delegate
+			Invoke(() =>
 			{
 				Kill();
 			}, 1.2f);

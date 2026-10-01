@@ -17,7 +17,7 @@
     <Reference Include="Mono.Cecil" />
     <Reference Include="0Harmony" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net.Core" />
     <Reference Include="Mono.Cecil.Rocks" />

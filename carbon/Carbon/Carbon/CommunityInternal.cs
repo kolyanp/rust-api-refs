@@ -46,29 +46,29 @@ public class CommunityInternal : Community
 	internal void _installCore()
 	{
 		Community runtime = Community.Runtime;
-		CorePlugin core = (base.Core = new CorePlugin());
+		CorePlugin core = (Core = new CorePlugin());
 		runtime.Core = core;
-		base.Core.Setup("Core", "Carbon Community", new VersionNumber(1, 0, 0), string.Empty);
-		ModLoader.ProcessPrecompiledType(base.Core);
-		CorePlugin core2 = base.Core;
-		bool isCorePlugin = (base.Core.IsPrecompiled = true);
+		Core.Setup("Core", "Carbon Community", new VersionNumber(1, 0, 0), string.Empty);
+		ModLoader.ProcessPrecompiledType(Core);
+		CorePlugin core2 = Core;
+		bool isCorePlugin = (Core.IsPrecompiled = true);
 		core2.IsCorePlugin = isCorePlugin;
-		base.Core.IInit();
-		base.Core.ILoadDefaultMessages();
-		ModLoader.RegisterPackage(base.Core.Package = ModLoader.Package.Get("Carbon Community", isCoreMod: true).AddPlugin(base.Core));
-		ModLoader.Package package = (base.Plugins = ModLoader.Package.Get("Scripts", isCoreMod: false));
+		Core.IInit();
+		Core.ILoadDefaultMessages();
+		ModLoader.RegisterPackage(Core.Package = ModLoader.Package.Get("Carbon Community", isCoreMod: true).AddPlugin(Core));
+		ModLoader.Package package = (Plugins = ModLoader.Package.Get("Scripts", isCoreMod: false));
 		ModLoader.RegisterPackage(package);
-		package = (base.ZipPlugins = ModLoader.Package.Get("Zip Scripts", isCoreMod: false));
+		package = (ZipPlugins = ModLoader.Package.Get("Zip Scripts", isCoreMod: false));
 		ModLoader.RegisterPackage(package);
-		ModLoader.ProcessCommands(typeof(CorePlugin), base.Core, BindingFlags.Instance | BindingFlags.NonPublic, "c");
-		ModLoader.ProcessCommands(typeof(CorePlugin), base.Core, BindingFlags.Instance | BindingFlags.NonPublic, "carbon", hidden: true);
-		int num = base.CommandManager.Chat.Count((Command x) => x.Reference == base.Core && !x.HasFlag(CommandFlags.Hidden)) + base.CommandManager.ClientConsole.Count((Command x) => x.Reference == base.Core && !x.HasFlag(CommandFlags.Hidden));
-		if (!base.Config.Logging.ReducedLogging)
+		ModLoader.ProcessCommands(typeof(CorePlugin), Core, BindingFlags.Instance | BindingFlags.NonPublic, "c");
+		ModLoader.ProcessCommands(typeof(CorePlugin), Core, BindingFlags.Instance | BindingFlags.NonPublic, "carbon", hidden: true);
+		int num = CommandManager.Chat.Count((Command x) => x.Reference == Core && !x.HasFlag(CommandFlags.Hidden)) + CommandManager.ClientConsole.Count((Command x) => x.Reference == Core && !x.HasFlag(CommandFlags.Hidden));
+		if (!Config.Logging.ReducedLogging)
 		{
 			Logger.Log(string.Format("Initialized Carbon Core plugin ({0:n0} {1}, {2:n0} {3})", new object[4]
 			{
-				base.Core.Hooks.Count,
-				base.Core.Hooks.Count.Plural("hook", "hooks"),
+				Core.Hooks.Count,
+				Core.Hooks.Count.Plural("hook", "hooks"),
 				num,
 				num.Plural("command", "commands")
 			}));
@@ -80,18 +80,18 @@ public class CommunityInternal : Community
 	internal void _installProcessors()
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Expected O, but got Unknown
-		if (!base.Config.Logging.ReducedLogging)
+		//IL_002d: Expected Obj, but got Unknown
+		if (!Config.Logging.ReducedLogging)
 		{
 			Logger.Log("Installed processors");
 		}
 		_uninstallProcessors();
 		GameObject val = new GameObject("Processors");
-		base.ScriptProcessor = val.AddComponent<ScriptProcessor>();
-		base.ZipScriptProcessor = val.AddComponent<ZipScriptProcessor>();
-		base.CarbonProcessor = val.AddComponent<CarbonProcessor>();
-		base.HookManager = val.AddComponent<PatchManager>();
-		base.ModuleProcessor = val.AddComponent<ModuleProcessor>();
+		ScriptProcessor = val.AddComponent<ScriptProcessor>();
+		ZipScriptProcessor = val.AddComponent<ZipScriptProcessor>();
+		CarbonProcessor = val.AddComponent<CarbonProcessor>();
+		HookManager = val.AddComponent<PatchManager>();
+		ModuleProcessor = val.AddComponent<ModuleProcessor>();
 		_registerProcessors();
 		ScriptCompilationThread._injectPatchedReferences();
 	}
@@ -99,7 +99,7 @@ public class CommunityInternal : Community
 	internal void _installTest()
 	{
 		Integrations.Logger = new Logger();
-		if (!base.Config.Logging.ReducedLogging)
+		if (!Config.Logging.ReducedLogging)
 		{
 			Logger.Log("Initialized Carbon.Test backend");
 		}
@@ -107,22 +107,22 @@ public class CommunityInternal : Community
 
 	internal void _registerProcessors()
 	{
-		if (base.ScriptProcessor != null)
+		if (ScriptProcessor != null)
 		{
-			base.ScriptProcessor?.Start();
+			ScriptProcessor?.Start();
 		}
-		if (base.ZipScriptProcessor != null)
+		if (ZipScriptProcessor != null)
 		{
-			base.ZipScriptProcessor?.Start();
+			ZipScriptProcessor?.Start();
 		}
-		if (base.ScriptProcessor != null)
+		if (ScriptProcessor != null)
 		{
-			base.ScriptProcessor.InvokeRepeating(delegate
+			ScriptProcessor.InvokeRepeating(() =>
 			{
 				RefreshConsoleInfo();
 			}, 1f, 1f);
 		}
-		if (!base.Config.Logging.ReducedLogging)
+		if (!Config.Logging.ReducedLogging)
 		{
 			Logger.Log("Registered processors");
 		}
@@ -130,24 +130,24 @@ public class CommunityInternal : Community
 
 	internal void _uninstallProcessors()
 	{
-		GameObject val = ((base.ScriptProcessor == null) ? null : base.ScriptProcessor.gameObject);
+		GameObject val = ((ScriptProcessor == null) ? null : ScriptProcessor.gameObject);
 		try
 		{
-			if (base.ScriptProcessor != null)
+			if (ScriptProcessor != null)
 			{
-				base.ScriptProcessor?.Dispose();
+				ScriptProcessor?.Dispose();
 			}
-			if (base.ZipScriptProcessor != null)
+			if (ZipScriptProcessor != null)
 			{
-				base.ZipScriptProcessor?.Dispose();
+				ZipScriptProcessor?.Dispose();
 			}
-			if (base.ModuleProcessor != null)
+			if (ModuleProcessor != null)
 			{
-				base.ModuleProcessor?.Dispose();
+				ModuleProcessor?.Dispose();
 			}
-			if (base.CarbonProcessor != null)
+			if (CarbonProcessor != null)
 			{
-				base.CarbonProcessor?.Dispose();
+				CarbonProcessor?.Dispose();
 			}
 		}
 		catch
@@ -180,15 +180,16 @@ public class CommunityInternal : Community
 		HookCaller.Caller = new HookCallerInternal();
 		LoadConfig();
 		LoadMonoProfilerConfig();
-		if (!base.Config.Logging.ReducedLogging)
+		RefreshConsoleInfo();
+		if (!Config.Logging.ReducedLogging)
 		{
 			Logger.Log(Environment.NewLine + "                                               " + Environment.NewLine + "  ______ _______ ______ ______ _______ _______ " + Environment.NewLine + " |      |   _   |   __ \\   __ \\       |    |  |" + Environment.NewLine + " |   ---|       |      <   __ <   -   |       |" + Environment.NewLine + " |______|___|___|___|__|______/_______|__|____|" + Environment.NewLine + "                          discord.gg/carbonmod " + Environment.NewLine + "                                               " + Environment.NewLine);
 			Logger.Log("Initializing...");
 		}
-		base.Compat.Init();
-		base.Events.Trigger(CarbonEvent.CarbonStartup, EventArgs.Empty);
+		Compat.Init();
+		Events.Trigger(CarbonEvent.CarbonStartup, EventArgs.Empty);
 		Logger.InitTaskExceptions();
-		if (!base.Config.Logging.ReducedLogging)
+		if (!Config.Logging.ReducedLogging)
 		{
 			Logger.Log("Loaded config");
 		}
@@ -197,14 +198,14 @@ public class CommunityInternal : Community
 		_handleThreads();
 		_installProcessors();
 		_installTest();
-		base.Events.Subscribe(CarbonEvent.HooksInstalled, delegate
+		Events.Subscribe(CarbonEvent.HooksInstalled, (EventArgs args) =>
 		{
 			ClearCommands();
 			_installCore();
-			base.ModuleProcessor.Init();
-			base.Events.Trigger(CarbonEvent.HookValidatorRefreshed, EventArgs.Empty);
+			ModuleProcessor.Init();
+			Events.Trigger(CarbonEvent.HookValidatorRefreshed, EventArgs.Empty);
 		});
-		base.Events.Subscribe(CarbonEvent.HookValidatorRefreshed, delegate
+		Events.Subscribe(CarbonEvent.HookValidatorRefreshed, (EventArgs args) =>
 		{
 			CommandLine.ExecuteCommands("+carbon.onboot", "Carbon boot");
 			string file = Path.Combine(Server.GetServerFolder("cfg"), "server.cfg");
@@ -217,13 +218,12 @@ public class CommunityInternal : Community
 			}
 			ReloadPlugins();
 		});
-		Logger.Log("Carbon " + base.Analytics.Version + " [" + base.Analytics.Protocol + "] " + Build.Git.HashShort + " on " + base.Analytics.Platform.ToCamelCase());
+		Logger.Log("Carbon " + Analytics.Version + " [" + Analytics.Protocol + "] " + Build.Git.HashShort + " on " + Analytics.Platform.ToCamelCase());
 		Logger.Log("       " + Build.Git.Author + " on " + Build.Git.Branch + " (" + Build.Git.Date + ")");
 		Logger.Log("Rust   " + BuildInfo.Current.Build.Number + "/" + Protocol.printable + " on " + BuildInfo.Current.Scm.Branch + " (" + BuildInfo.Current.Scm.Date + ") " + BuildInfo.Current.Scm.ChangeId);
 		Interface.Initialize();
-		RefreshConsoleInfo();
 		IsInitialized = true;
-		base.Events.Trigger(CarbonEvent.CarbonStartupComplete, EventArgs.Empty);
+		Events.Trigger(CarbonEvent.CarbonStartupComplete, EventArgs.Empty);
 		WebControlPanel.Init();
 	}
 
@@ -231,15 +231,16 @@ public class CommunityInternal : Community
 	{
 		try
 		{
-			base.Events.Trigger(CarbonEvent.CarbonShutdown, EventArgs.Empty);
+			Events.Trigger(CarbonEvent.CarbonShutdown, EventArgs.Empty);
 			_uninstallProcessors();
 			ClearCommands(all: true);
 			ClearPlugins(all: true);
 			ModLoader.Packages.Clear();
+			HookSubscriberIndex.Invalidate();
 			Debug.Log((object)"Unloaded Carbon.");
 			try
 			{
-				if (Community.IsConfigReady && base.Config.Misc.ShowConsoleInfo && (Object)(object)SingletonComponent<ServerConsole>.Instance != (Object)null && SingletonComponent<ServerConsole>.Instance.input != null)
+				if (Community.IsConfigReady && Config.Misc.ShowConsoleInfo && (Object)(object)SingletonComponent<ServerConsole>.Instance != (Object)null && SingletonComponent<ServerConsole>.Instance.input != null)
 				{
 					SingletonComponent<ServerConsole>.Instance.input.statusText = new string[3];
 				}
@@ -248,12 +249,12 @@ public class CommunityInternal : Community
 			{
 			}
 			Logger.Dispose();
-			base.Events.Trigger(CarbonEvent.CarbonShutdownComplete, EventArgs.Empty);
+			Events.Trigger(CarbonEvent.CarbonShutdownComplete, EventArgs.Empty);
 		}
 		catch (Exception ex)
 		{
 			Logger.Error("Failed Carbon uninitialization.", ex);
-			base.Events.Trigger(CarbonEvent.CarbonShutdownFailed, EventArgs.Empty);
+			Events.Trigger(CarbonEvent.CarbonShutdownFailed, EventArgs.Empty);
 		}
 		InternalRuntime = null;
 		base.Uninitialize();

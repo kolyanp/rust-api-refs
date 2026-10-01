@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -51,8 +52,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 
 	private static readonly Action<TrainEngine> _decreaseThrottleCallback = DecreaseThrottle;
 
-	[SerializeField]
 	[Header("Train Engine")]
+	[SerializeField]
 	public Transform leftHandLever;
 
 	[SerializeField]
@@ -152,12 +153,15 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	[SerializeField]
 	private ParticleSystemContainer[] sparks;
 
-	[FormerlySerializedAs("brakeSparkLights")]
 	[SerializeField]
+	[FormerlySerializedAs("brakeSparkLights")]
 	private Light[] sparkLights;
 
 	[SerializeField]
 	private TrainEngineAudio trainAudio;
+
+	[SerializeField]
+	private GameObjectRef bellRingEffect;
 
 	public const Flags Flag_HazardAhead = Flags.Reserved6;
 
@@ -299,14 +303,25 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 		engineLocalOffset = ((Component)this).transform.InverseTransformPoint(((Component)engineWorldCol).transform.position + ((Component)engineWorldCol).transform.rotation * engineWorldCol.center);
 	}
 
+	public override void OnAttacked(HitInfo info)
+	{
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		base.OnAttacked(info);
+		if (isServer && info.HitBone == StringPool.Get("bell") && bellRingEffect.isValid)
+		{
+			Effect.server.Run(bellRingEffect.resourcePath, this, info.HitBone, info.HitPositionLocal, Vector3.up);
+		}
+	}
+
 	public override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && isSpawned)
+		if (isServer && isSpawned)
 		{
 			GetFuelSystem().CheckNewChild(child);
 		}
-		if (base.isServer && !enableSaving && child is StorageContainer)
+		if (isServer && !enableSaving && child is StorageContainer)
 		{
 			child.EnableSaving(wants: false);
 			child.InvalidateNetworkCache();
@@ -464,7 +479,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 
 	protected override float GetThrottleForce()
 	{
-		if (IsDead() || base.IsDestroyed)
+		if (IsDead() || IsDestroyed)
 		{
 			return 0f;
 		}
@@ -563,7 +578,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 		if (trackSpeed > 4.5f || trackSpeed < -4.5f)
 		{
 			float maxHazardDist = Mathf.Lerp(40f, 325f, Mathf.Abs(trackSpeed) * 0.05f);
-			flagsUpdateScope.Set(Flags.Reserved6, base.FrontTrackSection.HasValidHazardWithin(this, base.FrontWheelSplineDist, 20f, maxHazardDist, localTrackSelection, trackSpeed, base.RearTrackSection, null));
+			flagsUpdateScope.Set(Flags.Reserved6, FrontTrackSection.HasValidHazardWithin(this, FrontWheelSplineDist, 20f, maxHazardDist, localTrackSelection, trackSpeed, RearTrackSection, null));
 		}
 		else
 		{
@@ -614,9 +629,9 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	public override void InitShared()
 	{
 		base.InitShared();
-		IFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
-		engineController = new VehicleEngineController<TrainEngine>(this, fuelSystem, base.isServer, engineStartupTime);
-		if (base.isServer)
+		IFuelSystem fuelSystem = new EntityFuelSystem(isServer, fuelStoragePrefab, children);
+		engineController = new VehicleEngineController<TrainEngine>(this, fuelSystem, isServer, engineStartupTime);
+		if (isServer)
 		{
 			bool b = SeedRandom.Range((uint)net.ID.Value, 0, 2) == 0;
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
@@ -652,7 +667,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 			return PlayerIsOnPlatform(player);
 		}
 		Vector3 localVelocity = GetLocalVelocity();
-		if (((Vector3)(ref localVelocity)).magnitude < 2f)
+		if (localVelocity.magnitude < 2f)
 		{
 			return true;
 		}
@@ -661,11 +676,11 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 
 	public float GetEnginePowerMultiplier(float minPercent)
 	{
-		if (base.healthFraction > 0.4f)
+		if (healthFraction > 0.4f)
 		{
 			return 1f;
 		}
-		return Mathf.Lerp(minPercent, 1f, base.healthFraction / 0.4f);
+		return Mathf.Lerp(minPercent, 1f, healthFraction / 0.4f);
 	}
 
 	public float GetThrottleFraction()
@@ -706,7 +721,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 		if (CurThrottleSetting != throttle)
 		{
 			CurThrottleSetting = throttle;
-			if (base.isServer)
+			if (isServer)
 			{
 				ClientRPC(RpcTarget.NetworkGroup("SetThrottle"), (sbyte)throttle);
 			}
@@ -722,7 +737,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 		return true;
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -736,7 +751,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: FuelAmountSync for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: FuelAmountSync for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_FuelAmountSync);
 			return true;
@@ -744,7 +759,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: NumConnectedCarsSync for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: NumConnectedCarsSync for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_NumConnectedCarsSync);
 			return true;
@@ -752,7 +767,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: LinedUpToUnloadSync for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: LinedUpToUnloadSync for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_LinedUpToUnloadSync);
 			return true;
@@ -810,9 +825,9 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	{
 		return propertyName switch
 		{
-			"FuelAmountSync" => 0, 
-			"NumConnectedCarsSync" => 1, 
-			"LinedUpToUnloadSync" => 2, 
+			"FuelAmountSync" => (byte)0, 
+			"NumConnectedCarsSync" => (byte)1, 
+			"LinedUpToUnloadSync" => (byte)2, 
 			_ => byte.MaxValue, 
 		};
 	}
@@ -837,18 +852,34 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}

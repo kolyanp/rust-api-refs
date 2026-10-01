@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class GroundWatch : EntityComponent<BaseEntity>, IServerComponent
 {
-	public Vector3 groundPosition;
+	public Vector3 groundPosition = Vector3.zero;
 
-	public LayerMask layers;
+	public LayerMask layers = LayerMask.op_Implicit(161546240);
 
-	public float radius;
+	public float radius = 0.1f;
 
 	public bool needBuildingBlock;
 
@@ -57,9 +57,9 @@ public class GroundWatch : EntityComponent<BaseEntity>, IServerComponent
 		}
 		Bounds bounds = component.bounds;
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
-		Vector3 center = ((Bounds)(ref bounds)).center;
-		Vector3 extents = ((Bounds)(ref bounds)).extents;
-		Vis.Entities(center, ((Vector3)(ref extents)).magnitude + 1f, list, 136481024, (QueryTriggerInteraction)2);
+		Vector3 center = bounds.center;
+		Vector3 extents = bounds.extents;
+		Vis.Entities(center, extents.magnitude + 1f, list, 136481024, (QueryTriggerInteraction)2);
 		foreach (BaseEntity item in list)
 		{
 			if (!item.IsDestroyed && !item.isClient && !(item is BuildingBlock))
@@ -133,11 +133,11 @@ public class GroundWatch : EntityComponent<BaseEntity>, IServerComponent
 		List<Collider> list = Pool.Get<List<Collider>>();
 		if ((Object)(object)component != (Object)null && !PlayerBoat.IsChildOfFinishedPlayerBoat(component))
 		{
-			Vis.Colliders<Collider>(((Component)this).transform.TransformPoint(groundPosition), radius, list, 2097152, (QueryTriggerInteraction)2);
+			Vis.Colliders(((Component)this).transform.TransformPoint(groundPosition), radius, list, 2097152, (QueryTriggerInteraction)2);
 		}
 		else
 		{
-			Vis.Colliders<Collider>(((Component)this).transform.TransformPoint(groundPosition), radius, list, 136314880, (QueryTriggerInteraction)2);
+			Vis.Colliders(((Component)this).transform.TransformPoint(groundPosition), radius, list, 136314880, (QueryTriggerInteraction)2);
 		}
 		bool result = false;
 		foreach (Collider item in list)
@@ -229,7 +229,7 @@ public class GroundWatch : EntityComponent<BaseEntity>, IServerComponent
 			return false;
 		}
 		List<Collider> list = Pool.Get<List<Collider>>();
-		Vis.Colliders<Collider>(((Component)this).transform.TransformPoint(groundPosition), radius, list, LayerMask.op_Implicit(layers), (QueryTriggerInteraction)2);
+		Vis.Colliders(((Component)this).transform.TransformPoint(groundPosition), radius, list, LayerMask.op_Implicit(layers), (QueryTriggerInteraction)2);
 		foreach (Collider item in list)
 		{
 			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((Component)item).gameObject);
@@ -278,9 +278,5 @@ public class GroundWatch : EntityComponent<BaseEntity>, IServerComponent
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		groundPosition = Vector3.zero;
-		layers = LayerMask.op_Implicit(161546240);
-		radius = 0.1f;
-		base._002Ector();
 	}
 }

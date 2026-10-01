@@ -90,7 +90,7 @@ public class CH47FlightTest : MonoBehaviour
 		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		HelicopterInputState_t result = default(HelicopterInputState_t);
+		HelicopterInputState_t result = default;
 		Vector3 val = Vector3.Cross(Vector3.up, ((Component)this).transform.right);
 		float num = Vector3.Dot(Vector3.Cross(Vector3.up, val), Vector3Ex.Direction2D(AIMoveTarget.position, ((Component)this).transform.position));
 		result.yaw = ((num < 0f) ? 1f : 0f);
@@ -125,7 +125,18 @@ public class CH47FlightTest : MonoBehaviour
 		float idealAltitude = GetIdealAltitude();
 		float y = ((Component)this).transform.position.y;
 		float num6 = 0f;
-		num6 = ((y > idealAltitude + altitudeTolerance) ? (-1f) : ((y < idealAltitude - altitudeTolerance) ? 1f : ((!(num3 > 20f)) ? 0f : Mathf.Lerp(0f, 1f, num3 / 20f))));
+		if (y > idealAltitude + altitudeTolerance)
+		{
+			num6 = -1f;
+		}
+		else if (y < idealAltitude - altitudeTolerance)
+		{
+			num6 = 1f;
+		}
+		else
+		{
+			num6 = ((!(num3 > 20f)) ? 0f : Mathf.Lerp(0f, 1f, num3 / 20f));
+		}
 		Debug.Log((object)("desiredThrottle : " + num6));
 		result.throttle = num6 * 1f;
 		return result;
@@ -179,12 +190,12 @@ public class CH47FlightTest : MonoBehaviour
 		float num2 = Mathf.InverseLerp(liftDotMax, 1f, num);
 		Vector3 val = Vector3.up * engineThrustMax * 0.5f * currentThrottle * num2;
 		Vector3 val2 = ((Component)this).transform.up - Vector3.up;
-		Vector3 val3 = ((Vector3)(ref val2)).normalized * engineThrustMax * currentThrottle * (1f - num2);
+		Vector3 val3 = val2.normalized * engineThrustMax * currentThrottle * (1f - num2);
 		float num3 = rigidBody.mass * (0f - Physics.gravity.y);
 		rigidBody.AddForce(((Component)this).transform.up * num3 * num2 * 0.99f, (ForceMode)0);
 		rigidBody.AddForce(val, (ForceMode)0);
 		rigidBody.AddForce(val3, (ForceMode)0);
-		RaycastHit val5 = default(RaycastHit);
+		RaycastHit val5 = default;
 		for (int i = 0; i < GroundEffects.Length; i++)
 		{
 			Transform obj = GroundPoints[i];
@@ -192,7 +203,7 @@ public class CH47FlightTest : MonoBehaviour
 			if (Physics.Raycast(((Component)obj).transform.position, Vector3.down, ref val5, 50f, 8388608))
 			{
 				((Component)val4).gameObject.SetActive(true);
-				((Component)val4).transform.position = ((RaycastHit)(ref val5)).point + new Vector3(0f, 1f, 0f);
+				((Component)val4).transform.position = val5.point + new Vector3(0f, 1f, 0f);
 			}
 			else
 			{

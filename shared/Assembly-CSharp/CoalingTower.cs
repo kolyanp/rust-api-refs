@@ -29,8 +29,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private Action CheckWagonLineUpCB;
 
-	[Header("Coaling Tower")]
 	[SerializeField]
+	[Header("Coaling Tower")]
 	private BoxCollider unloadingBounds;
 
 	[SerializeField]
@@ -57,8 +57,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private float vacuumStartDelay = 2f;
 
-	[FormerlySerializedAs("unloadingFXContainer")]
 	[SerializeField]
+	[FormerlySerializedAs("unloadingFXContainer")]
 	private ParticleSystemContainer unloadingFXContainerOre;
 
 	[SerializeField]
@@ -89,8 +89,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private TokenisedPhrase trainHasThrottle;
 
-	[Header("Coaling Tower Audio")]
 	[SerializeField]
+	[Header("Coaling Tower Audio")]
 	private GameObject buttonSoundPos;
 
 	[SerializeField]
@@ -187,9 +187,6 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	public const float TIME_TO_EMPTY = 40f;
 
-	[CompilerGenerated]
-	private Vector3 _003CUnloadingPos_003Ek__BackingField;
-
 	private static List<CoalingTower> unloadersInWorld = new List<CoalingTower>();
 
 	private Sound armMovementLoopSound;
@@ -202,9 +199,9 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private Sound unloadDestinationSound;
 
-	private bool HasTrainCar => activeTrainCarRef.IsValid(base.isServer);
+	private bool HasTrainCar => activeTrainCarRef.IsValid(isServer);
 
-	private bool HasUnloadable => activeUnloadableRef.IsValid(base.isServer);
+	private bool HasUnloadable => activeUnloadableRef.IsValid(isServer);
 
 	private bool HasUnloadableLinedUp => HasFlag(Flags.Reserved5);
 
@@ -214,14 +211,14 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CUnloadingPos_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CUnloadingPos_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -258,7 +255,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (child.prefabID == oreStoragePrefab.GetEntity().prefabID)
 			{
@@ -292,7 +289,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	{
 		if (ent.IsValid() && !ent.isClient)
 		{
-			BaseEntity baseEntity = ent.parentEntity.Get(base.isServer);
+			BaseEntity baseEntity = ent.parentEntity.Get(isServer);
 			TrainCar trainCar = activeTrainCarRef.Get(serverside: true);
 			if ((Object)(object)trainCar == (Object)(object)ent && (Object)(object)trainCar != (Object)(object)baseEntity)
 			{
@@ -314,13 +311,13 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 			{
 				activeUnloadableRef.Set(null);
 			}
-			bool num = activeUnloadableRef.IsValid(serverside: true);
+			bool flag = activeUnloadableRef.IsValid(serverside: true);
 			CheckWagonLinedUp(networkUpdate: false);
 			if (CheckWagonLineUpCB == null)
 			{
 				CheckWagonLineUpCB = CheckWagonLinedUp;
 			}
-			if (num)
+			if (flag)
 			{
 				InvokeRandomized(CheckWagonLineUpCB, 0.15f, 0.15f, 0.015f);
 			}
@@ -553,7 +550,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		Vector3 position2 = ((Component)result).transform.position;
 		position2.y = 0f;
 		Vector3 shuntDirection = unloadingPos - position2;
-		float magnitude = ((Vector3)(ref shuntDirection)).magnitude;
+		float magnitude = shuntDirection.magnitude;
 		return activeTrainCar.completeTrain.TryShuntCarTo(shuntDirection, magnitude, result, ShuntEnded, out attemptStatus);
 	}
 
@@ -570,8 +567,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Unload(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnCoalingTowerStart", this, msg.player) == null && !TryUnloadActiveWagon(out var attemptStatus) && (Object)(object)msg.player != (Object)null)
@@ -580,8 +577,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Next(RPCMessage msg)
 	{
 		if (TryShuntTrain(next: true, out var attemptStatus))
@@ -685,7 +682,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private OreHopper GetOreStorage()
 	{
-		OreHopper oreHopper = oreStorageInstance.Get(base.isServer);
+		OreHopper oreHopper = oreStorageInstance.Get(isServer);
 		if (oreHopper.IsValid())
 		{
 			return oreHopper;
@@ -695,7 +692,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private PercentFullStorageContainer GetFuelStorage()
 	{
-		PercentFullStorageContainer percentFullStorageContainer = fuelStorageInstance.Get(base.isServer);
+		PercentFullStorageContainer percentFullStorageContainer = fuelStorageInstance.Get(isServer);
 		if (percentFullStorageContainer.IsValid())
 		{
 			return percentFullStorageContainer;
@@ -705,7 +702,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private TrainCar GetActiveTrainCar()
 	{
-		TrainCar trainCar = activeTrainCarRef.Get(base.isServer);
+		TrainCar trainCar = activeTrainCarRef.Get(isServer);
 		if (trainCar.IsValid())
 		{
 			return trainCar;
@@ -715,7 +712,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private TrainCarUnloadable GetActiveUnloadable()
 	{
-		TrainCarUnloadable trainCarUnloadable = activeUnloadableRef.Get(base.isServer);
+		TrainCarUnloadable trainCarUnloadable = activeUnloadableRef.Get(isServer);
 		if (trainCarUnloadable.IsValid())
 		{
 			return trainCarUnloadable;

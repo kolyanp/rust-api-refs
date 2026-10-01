@@ -11,7 +11,7 @@ using UnityEngine.Assertions;
 
 public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealSlotEntity, ILootableEntity, IInventoryProvider, LootPanel.IHasLootPanel, IContainerSounds, IIndustrialStorage
 {
-	public string LootPanelName;
+	public string LootPanelName = "generic";
 
 	public bool NeedsBuildingPrivilegeToUse;
 
@@ -21,7 +21,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 
 	public SoundDefinition ContainerCloseSound;
 
-	public AnimationCurve MaterialOffsetCurve;
+	public AnimationCurve MaterialOffsetCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
 	public const Flags Crafting = Flags.Reserved1;
 
@@ -32,9 +32,6 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 	public ParticleSystemContainer JobCompleteFx;
 
 	public SoundDefinition JobCompleteSoundDef;
-
-	[CompilerGenerated]
-	private TimeUntilWithDuration _003CjobFinishes_003Ek__BackingField;
 
 	public const int BlueprintSlotStart = 0;
 
@@ -56,7 +53,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 
 	private const int OutputSlotEnd = 12;
 
-	private Phrase _lootPanelTitle;
+	private Phrase _lootPanelTitle = new Phrase("industrial.crafter.loot", "Industrial Crafter");
 
 	public TimeUntilWithDuration jobFinishes
 	{
@@ -64,14 +61,14 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CjobFinishes_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CjobFinishes_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -189,7 +186,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 	{
 		base.OnFlagsChanged(old, next);
 		bool flag = (next & Flags.On) == Flags.On;
-		if ((old & Flags.On) == Flags.On != flag && base.isServer)
+		if ((old & Flags.On) == Flags.On != flag && isServer)
 		{
 			float industrialCrafterFrequency = ConVar.Server.industrialCrafterFrequency;
 			if (flag && industrialCrafterFrequency > 0f)
@@ -223,8 +220,8 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 	{
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (_inventory != null)
@@ -582,7 +579,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 			_inventory.Load(info.msg.storageBox.contents);
 			_inventory.capacity = 13;
 		}
-		if (base.isServer && info.fromDisk && info.msg.industrialCrafter != null)
+		if (isServer && info.fromDisk && info.msg.industrialCrafter != null)
 		{
 			currentlyCrafting = ItemManager.FindItemDefinition(info.msg.industrialCrafter.currentlyCrafting);
 			currentlyCraftingAmount = info.msg.industrialCrafter.currentlyCraftingAmount;
@@ -703,8 +700,8 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	private void SvSwitch(RPCMessage msg)
 	{
@@ -735,7 +732,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		return default(ItemContainerId);
+		return default;
 	}
 
 	public Workbench GetWorkbench()
@@ -746,10 +743,6 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 	public IndustrialCrafter()
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Expected O, but got Unknown
-		LootPanelName = "generic";
-		MaterialOffsetCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-		_lootPanelTitle = new Phrase("industrial.crafter.loot", "Industrial Crafter");
-		base._002Ector();
+		//IL_003f: Expected Obj, but got Unknown
 	}
 }

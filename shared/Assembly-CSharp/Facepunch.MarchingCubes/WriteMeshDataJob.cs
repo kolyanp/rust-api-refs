@@ -22,6 +22,7 @@ internal struct WriteMeshDataJob : IJob
 
 	public void Execute()
 	{
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
@@ -36,20 +37,19 @@ internal struct WriteMeshDataJob : IJob
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
 		int length = vertices.Length;
 		int length2 = indices.Length;
-		NativeArray<VertexAttributeDescriptor> val = default(NativeArray<VertexAttributeDescriptor>);
-		val._002Ector((!withNormals) ? 1 : 2, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<VertexAttributeDescriptor> val = new NativeArray<VertexAttributeDescriptor>((!withNormals) ? 1 : 2, (Allocator)2, (NativeArrayOptions)1);
 		val[0] = new VertexAttributeDescriptor((VertexAttribute)0, (VertexAttributeFormat)0, 3, 0);
 		if (withNormals)
 		{
 			val[1] = new VertexAttributeDescriptor((VertexAttribute)1, (VertexAttributeFormat)0, 3, 1);
 		}
-		((MeshData)(ref meshData)).SetVertexBufferParams(length, val);
-		((MeshData)(ref meshData)).GetVertexData<float3>(0).CopyFrom(vertices);
+		meshData.SetVertexBufferParams(length, val);
+		meshData.GetVertexData<float3>(0).CopyFrom(vertices);
 		bool flag = length <= 65535;
-		((MeshData)(ref meshData)).SetIndexBufferParams(length2, (IndexFormat)(!flag));
+		meshData.SetIndexBufferParams(length2, (IndexFormat)(!flag));
 		if (flag)
 		{
-			NativeArray<ushort> indexData = ((MeshData)(ref meshData)).GetIndexData<ushort>();
+			NativeArray<ushort> indexData = meshData.GetIndexData<ushort>();
 			for (int i = 0; i < length2; i++)
 			{
 				indexData[i] = (ushort)indices[i];
@@ -57,14 +57,14 @@ internal struct WriteMeshDataJob : IJob
 		}
 		else
 		{
-			((MeshData)(ref meshData)).GetIndexData<int>().CopyFrom(indices);
+			meshData.GetIndexData<int>().CopyFrom(indices);
 		}
 		if (withNormals)
 		{
 			WriteNormals();
 		}
-		((MeshData)(ref meshData)).subMeshCount = 1;
-		((MeshData)(ref meshData)).SetSubMesh(0, new SubMeshDescriptor(0, length2, (MeshTopology)0), (MeshUpdateFlags)13);
+		meshData.subMeshCount = 1;
+		meshData.SetSubMesh(0, new SubMeshDescriptor(0, length2, (MeshTopology)0), (MeshUpdateFlags)13);
 	}
 
 	private void WriteNormals()
@@ -94,7 +94,7 @@ internal struct WriteMeshDataJob : IJob
 		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
-		NativeArray<float3> array = ((MeshData)(ref meshData)).GetVertexData<float3>(1);
+		NativeArray<float3> array = meshData.GetVertexData<float3>(1);
 		array.MemClear<float3>();
 		for (int i = 0; i < indices.Length; i += 3)
 		{

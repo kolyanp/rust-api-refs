@@ -17,9 +17,9 @@ public class ComputerStationIO : IOEntity
 
 	public override bool ShouldDrainBattery(IOEntity battery)
 	{
-		if ((Object)(object)parentComputer == (Object)null && parentEntity.IsValid(base.isServer))
+		if ((Object)(object)parentComputer == (Object)null && parentEntity.IsValid(isServer))
 		{
-			parentComputer = ((Component)parentEntity.Get(base.isServer)).GetComponent<ComputerStation>();
+			parentComputer = ((Component)parentEntity.Get(isServer)).GetComponent<ComputerStation>();
 		}
 		if ((Object)(object)parentComputer != (Object)null && parentComputer.IsOn())
 		{
@@ -43,13 +43,13 @@ public class ComputerStationIO : IOEntity
 	public override void IOStateChanged(int inputAmount, int inputSlot)
 	{
 		base.IOStateChanged(inputAmount, inputSlot);
-		bool num = IsOn();
-		bool flag = IsPowered();
-		if (num != flag)
+		bool flag = IsOn();
+		bool flag2 = IsPowered();
+		if (flag != flag2)
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags))
 			{
-				flagsUpdateScope.Set(Flags.On, flag);
+				flagsUpdateScope.Set(Flags.On, flag2);
 			}
 		}
 	}

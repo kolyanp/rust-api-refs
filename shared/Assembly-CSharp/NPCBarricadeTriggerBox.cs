@@ -19,10 +19,10 @@ public class NPCBarricadeTriggerBox : MonoBehaviour
 		target = t;
 		((Component)this).transform.SetParent(((Component)target).transform, false);
 		((Component)this).gameObject.layer = 18;
-		BoxCollider obj = ((Component)this).gameObject.AddComponent<BoxCollider>();
-		((Collider)obj).isTrigger = true;
-		obj.center = Vector3.zero;
-		obj.size = Vector3.one * AI.npc_door_trigger_size + Vector3.right * ((Bounds)(ref target.bounds)).size.x;
+		BoxCollider val = ((Component)this).gameObject.AddComponent<BoxCollider>();
+		((Collider)val).isTrigger = true;
+		val.center = Vector3.zero;
+		val.size = Vector3.one * AI.npc_door_trigger_size + Vector3.right * target.bounds.size.x;
 	}
 
 	private void OnTriggerEnter(Collider other)

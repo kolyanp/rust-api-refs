@@ -121,8 +121,8 @@ public static class FVectorMethods
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = Vector3.Scale(((Bounds)(ref bounds)).size, normalized);
-		return ((Vector3)(ref val)).magnitude;
+		Vector3 val = Vector3.Scale(bounds.size, normalized);
+		return val.magnitude;
 	}
 
 	public static Vector3 ChooseDominantAxis(Vector3 axis)
@@ -130,6 +130,7 @@ public static class FVectorMethods
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
@@ -144,8 +145,7 @@ public static class FVectorMethods
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(Mathf.Abs(axis.x), Mathf.Abs(axis.y), Mathf.Abs(axis.z));
+		Vector3 val = new Vector3(Mathf.Abs(axis.x), Mathf.Abs(axis.y), Mathf.Abs(axis.z));
 		if (val.x > val.y)
 		{
 			if (val.z > val.x)
@@ -262,7 +262,7 @@ public static class FVectorMethods
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((!forward.HasValue) ? Vector3.forward : forward.Value);
-		return Quaternion.Euler(FlattenVector(((Quaternion)(ref orientation)).eulerAngles, to)) * val;
+		return Quaternion.Euler(FlattenVector(orientation.eulerAngles, to)) * val;
 	}
 
 	public static Vector3 EqualVector(float valueAll)
@@ -276,6 +276,6 @@ public static class FVectorMethods
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		return Quaternion.Euler(FlattenVector(((Quaternion)(ref orientation)).eulerAngles, to));
+		return Quaternion.Euler(FlattenVector(orientation.eulerAngles, to));
 	}
 }

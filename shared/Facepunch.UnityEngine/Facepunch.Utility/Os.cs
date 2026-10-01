@@ -81,10 +81,10 @@ public static class Os
 
 	public static bool StartProcess(string executable, string arguments)
 	{
-		PROCESS_INFORMATION lpProcessInformation = default(PROCESS_INFORMATION);
-		STARTUPINFO lpStartupInfo = default(STARTUPINFO);
-		SECURITY_ATTRIBUTES lpProcessAttributes = default(SECURITY_ATTRIBUTES);
-		SECURITY_ATTRIBUTES lpThreadAttributes = default(SECURITY_ATTRIBUTES);
+		PROCESS_INFORMATION lpProcessInformation = default;
+		STARTUPINFO lpStartupInfo = default;
+		SECURITY_ATTRIBUTES lpProcessAttributes = default;
+		SECURITY_ATTRIBUTES lpThreadAttributes = default;
 		lpProcessAttributes.nLength = Marshal.SizeOf(lpProcessAttributes);
 		lpThreadAttributes.nLength = Marshal.SizeOf(lpThreadAttributes);
 		return CreateProcess(executable, " " + arguments, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles: false, 32u, IntPtr.Zero, null, ref lpStartupInfo, out lpProcessInformation);

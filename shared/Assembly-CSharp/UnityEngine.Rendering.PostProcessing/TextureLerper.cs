@@ -5,7 +5,7 @@ namespace UnityEngine.Rendering.PostProcessing;
 
 internal class TextureLerper
 {
-	private static UnityEngine.Rendering.PostProcessing.TextureLerper m_Instance;
+	private static TextureLerper m_Instance;
 
 	private CommandBuffer m_Command;
 
@@ -17,13 +17,13 @@ internal class TextureLerper
 
 	private List<RenderTexture> m_Actives;
 
-	internal static UnityEngine.Rendering.PostProcessing.TextureLerper instance
+	internal static TextureLerper instance
 	{
 		get
 		{
 			if (m_Instance == null)
 			{
-				m_Instance = new UnityEngine.Rendering.PostProcessing.TextureLerper();
+				m_Instance = new TextureLerper();
 			}
 			return m_Instance;
 		}
@@ -77,7 +77,7 @@ internal class TextureLerper
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Expected O, but got Unknown
+		//IL_00b7: Expected Obj, but got Unknown
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Invalid comparison between Unknown and I4
 		RenderTexture val = null;
@@ -156,9 +156,9 @@ internal class TextureLerper
 			m_Command.SetComputeTextureParam(texture3dLerp, num3, "_Output", RenderTargetIdentifier.op_Implicit((Texture)(object)val));
 			m_Command.SetComputeTextureParam(texture3dLerp, num3, "_From", RenderTargetIdentifier.op_Implicit(from));
 			m_Command.SetComputeTextureParam(texture3dLerp, num3, "_To", RenderTargetIdentifier.op_Implicit(to));
-			uint num4 = default(uint);
-			uint num5 = default(uint);
-			uint num6 = default(uint);
+			uint num4 = default;
+			uint num5 = default;
+			uint num6 = default;
 			texture3dLerp.GetKernelThreadGroupSizes(num3, ref num4, ref num5, ref num6);
 			Assert.AreEqual(num4, num5);
 			int num7 = Mathf.CeilToInt((float)num2 / (float)num4);
@@ -169,8 +169,8 @@ internal class TextureLerper
 		RenderTextureFormat uncompressedRenderTextureFormat = TextureFormatUtilities.GetUncompressedRenderTextureFormat(to);
 		val = Get(uncompressedRenderTextureFormat, to.width, to.height);
 		PropertySheet propertySheet = m_PropertySheets.Get(m_Resources.shaders.texture2dLerp);
-		propertySheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.To, to);
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.Interp, t);
+		propertySheet.properties.SetTexture(ShaderIDs.To, to);
+		propertySheet.properties.SetFloat(ShaderIDs.Interp, t);
 		m_Command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(from), RenderTargetIdentifier.op_Implicit((Texture)(object)val), propertySheet, 0);
 		return (Texture)(object)val;
 	}
@@ -222,8 +222,8 @@ internal class TextureLerper
 		RenderTextureFormat uncompressedRenderTextureFormat = TextureFormatUtilities.GetUncompressedRenderTextureFormat(from);
 		val = Get(uncompressedRenderTextureFormat, from.width, from.height);
 		PropertySheet propertySheet = m_PropertySheets.Get(m_Resources.shaders.texture2dLerp);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.TargetColor, new Vector4(to.r, to.g, to.b, to.a));
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.Interp, t);
+		propertySheet.properties.SetVector(ShaderIDs.TargetColor, new Vector4(to.r, to.g, to.b, to.a));
+		propertySheet.properties.SetFloat(ShaderIDs.Interp, t);
 		m_Command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(from), RenderTargetIdentifier.op_Implicit((Texture)(object)val), propertySheet, 1);
 		return (Texture)(object)val;
 	}

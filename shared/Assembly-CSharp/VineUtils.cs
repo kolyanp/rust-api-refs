@@ -67,7 +67,7 @@ public static class VineUtils
 		{
 			val5 = -val5;
 		}
-		return start + t * val2 + ((0f - num) * num + 1f) * height * ((Vector3)(ref val5)).normalized;
+		return start + t * val2 + ((0f - num) * num + 1f) * height * val5.normalized;
 	}
 
 	public static float FindT(Vector3 start, Vector3 end, float height, Vector3 targetPosition, bool useLevelDirection = false)

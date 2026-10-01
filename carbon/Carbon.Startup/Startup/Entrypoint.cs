@@ -121,7 +121,7 @@ public sealed class Entrypoint
 			Logger.Error("Failed to init native", ex);
 		}
 		IEnumerable<string> enumerable = Directory.EnumerateFiles(Defines.GetRustManagedFolder());
-		Patch.onBufferUpdate = delegate((string path, byte[] buffer) arg)
+		Patch.onBufferUpdate = ((string path, byte[] buffer) arg) =>
 		{
 			PatchedAssemblies.AssemblyCache[Path.GetFileNameWithoutExtension(arg.path)] = arg.buffer;
 		};

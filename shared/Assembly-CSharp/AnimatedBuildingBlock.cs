@@ -82,8 +82,8 @@ public class AnimatedBuildingBlock : StabilityEntity
 			}
 			else
 			{
-				model.animator.fireEvents = base.isClient;
-				if (base.isServer)
+				model.animator.fireEvents = isClient;
+				if (isServer)
 				{
 					using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 					flagsUpdateScope.Set(Flags.Busy, b: true);
@@ -114,7 +114,7 @@ public class AnimatedBuildingBlock : StabilityEntity
 			return;
 		}
 		((Behaviour)model.animator).enabled = false;
-		if (base.isServer)
+		if (isServer)
 		{
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope.Set(Flags.Busy, b: false);

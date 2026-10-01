@@ -29,11 +29,11 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
 		UidMapping.Clear();
-		base.Request.InspectUids((UidInspector<ulong>)UpdateWithNewUid);
+		Request.InspectUids((UidInspector<ulong>)UpdateWithNewUid);
 		UidToEntity.Clear();
 		PlayerIds.Clear();
 		EntitiesToProtect.Clear();
-		foreach (Entity entity in base.Request.entities)
+		foreach (Entity entity in Request.entities)
 		{
 			UidToEntity.Add(entity.baseNetworkable.uid, entity);
 			if (entity.basePlayer != null)
@@ -70,7 +70,7 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 		SpawnedPlayers.Clear();
 		SpawnEntities(SpawnedPlayers);
 		TeamMapping.Clear();
-		foreach (PlayerSecondaryData secondaryDatum in base.Request.secondaryData)
+		foreach (PlayerSecondaryData secondaryDatum in Request.secondaryData)
 		{
 			if (!SpawnedPlayers.TryGetValue(secondaryDatum.userId, out var value))
 			{
@@ -86,7 +86,7 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 				TeamMapping.Add(secondaryDatum.teamId, playerTeam);
 			}
 		}
-		foreach (PlayerSecondaryData secondaryDatum2 in base.Request.secondaryData)
+		foreach (PlayerSecondaryData secondaryDatum2 in Request.secondaryData)
 		{
 			if (SpawnedPlayers.TryGetValue(secondaryDatum2.userId, out var value2) && secondaryDatum2.teamId != 0L && !secondaryDatum2.isTeamLeader)
 			{
@@ -176,30 +176,30 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
-		Entity obj = base.Request.entities[0];
-		Vector3 pos = obj.baseEntity.pos;
-		Quaternion val = Quaternion.Euler(obj.baseEntity.rot);
-		(Vector3 Position, Quaternion Rotation, bool PreserveY) tuple = ZoneController.Instance.ChooseTransferDestination(base.FromZone.Key, base.Request.method, base.Request.from, base.Request.to, pos, val);
-		var (val2, val3, _) = tuple;
+		Entity val = Request.entities[0];
+		Vector3 pos = val.baseEntity.pos;
+		Quaternion val2 = Quaternion.Euler(val.baseEntity.rot);
+		(Vector3 Position, Quaternion Rotation, bool PreserveY) tuple = ZoneController.Instance.ChooseTransferDestination(FromZone.Key, Request.method, Request.from, Request.to, pos, val2);
+		var (val3, val4, _) = tuple;
 		if (tuple.PreserveY)
 		{
-			val2.y = pos.y;
+			val3.y = pos.y;
 		}
-		Vector3 val4 = val2 - pos;
-		Quaternion val5 = Quaternion.Inverse(val) * val3;
-		foreach (Entity entity in base.Request.entities)
+		Vector3 val5 = val3 - pos;
+		Quaternion val6 = Quaternion.Inverse(val2) * val4;
+		foreach (Entity entity in Request.entities)
 		{
 			if (entity.baseEntity == null)
 			{
 				continue;
 			}
-			if (entity.parent != null && ((NetworkableId)(ref entity.parent.uid)).IsValid)
+			if (entity.parent != null && entity.parent.uid.IsValid)
 			{
 				if (!UidToEntity.TryGetValue(entity.parent.uid, out var _))
 				{
 					Debug.LogError((object)$"Transferred entity (ID={entity.baseNetworkable.uid}) has a parent set but it wasn't found in the transfer! The parent is required to correctly restore this entity's position!");
 				}
-				if (((Vector3)(ref entity.baseEntity.pos)).magnitude > 100f)
+				if (entity.baseEntity.pos.magnitude > 100f)
 				{
 					Debug.LogError((object)$"Transferred entity (ID={entity.baseNetworkable.uid}) has a valid parent (ID={entity.parent.uid}) but its position ({entity.baseEntity.pos}) doesn't seem to be in local space! This will probably not work properly!");
 				}
@@ -207,10 +207,10 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 			else
 			{
 				BaseEntity baseEntity = entity.baseEntity;
-				baseEntity.pos += val4;
+				baseEntity.pos += val5;
 				BaseEntity baseEntity2 = entity.baseEntity;
-				Quaternion val6 = Quaternion.Euler(entity.baseEntity.rot) * val5;
-				baseEntity2.rot = ((Quaternion)(ref val6)).eulerAngles;
+				Quaternion val7 = Quaternion.Euler(entity.baseEntity.rot) * val6;
+				baseEntity2.rot = val7.eulerAngles;
 			}
 		}
 	}
@@ -228,7 +228,7 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 		try
 		{
 			EntityToSpawn.Clear();
-			foreach (Entity entity in base.Request.entities)
+			foreach (Entity entity in Request.entities)
 			{
 				BaseEntity baseEntity = GameManager.server.CreateEntity(StringPool.Get(entity.baseNetworkable.prefabID), entity.baseEntity.pos, Quaternion.Euler(entity.baseEntity.rot));
 				if ((Object)(object)baseEntity != (Object)null)

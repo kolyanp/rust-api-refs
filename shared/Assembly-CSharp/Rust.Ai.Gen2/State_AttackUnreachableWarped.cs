@@ -73,12 +73,12 @@ public class State_AttackUnreachableWarped : FSMStateBase
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target) || !(target is BasePlayer targetAsPlayer))
+		if (!Senses.FindTarget(out var target) || !(target is BasePlayer targetAsPlayer))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		destination = ((Component)target).transform.position;
-		if (!SampleGroundPositionUnderTarget(base.Agent, targetAsPlayer, out destination))
+		if (!SampleGroundPositionUnderTarget(Agent, targetAsPlayer, out destination))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -86,14 +86,14 @@ public class State_AttackUnreachableWarped : FSMStateBase
 		{
 			return EFSMStateStatus.Failure;
 		}
-		base.Agent.Pause(this);
+		Agent.Pause(this);
 		didHit = false;
 		elapsedTime = 0f;
-		targetLock = base.Senses.LockCurrentTarget();
+		targetLock = Senses.LockCurrentTarget();
 		animState = RootMotionPlayer.PlayServerState.TakeFromPool(animClip, ((Component)Owner).transform);
 		animState.warps = warps;
 		animState.constrainToNavmesh = false;
-		base.AnimPlayer.PlayServer(animState);
+		AnimPlayer.PlayServer(animState);
 		SetPhase(Phase.PreJump);
 		return base.OnStateEnter(payload);
 	}
@@ -135,11 +135,11 @@ public class State_AttackUnreachableWarped : FSMStateBase
 		phase = newPhase;
 		if (phase == Phase.Jump)
 		{
-			if (!base.Senses.FindTarget(out var target) || !(target is BasePlayer targetAsPlayer))
+			if (!Senses.FindTarget(out var target) || !(target is BasePlayer targetAsPlayer))
 			{
 				return EFSMStateStatus.Failure;
 			}
-			if (SampleGroundPositionUnderTarget(base.Agent, targetAsPlayer, out var projectedLocation))
+			if (SampleGroundPositionUnderTarget(Agent, targetAsPlayer, out var projectedLocation))
 			{
 				destination = projectedLocation;
 			}
@@ -158,11 +158,11 @@ public class State_AttackUnreachableWarped : FSMStateBase
 			warp2.translationScale.z = Vector3.Distance(Vector3Ex.WithY(destination, 0f), Vector3Ex.WithY(position, 0f)) / num3;
 			warp2.translationScale.y = (destination.y - position.y) / num4;
 			warps[1] = warp2;
-			base.Agent.IsJumping = true;
+			Agent.IsJumping = true;
 		}
 		else if (phase == Phase.Attack)
 		{
-			if (base.Senses.FindTarget(out var target2))
+			if (Senses.FindTarget(out var target2))
 			{
 				if (target2 is BaseCombatEntity baseCombatEntity && Vector3.Distance(((Component)Owner).transform.position, ((Component)baseCombatEntity).transform.position) <= 1.7f)
 				{
@@ -177,7 +177,7 @@ public class State_AttackUnreachableWarped : FSMStateBase
 		}
 		else if (phase == Phase.PostJumpBack)
 		{
-			base.Agent.IsJumping = false;
+			Agent.IsJumping = false;
 		}
 		return EFSMStateStatus.None;
 	}
@@ -196,7 +196,7 @@ public class State_AttackUnreachableWarped : FSMStateBase
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		elapsedTime += deltaTime;
-		if (!base.Senses.FindTargetPosition(out var targetPosition))
+		if (!Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -235,12 +235,12 @@ public class State_AttackUnreachableWarped : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.AnimPlayer.StopServerAndReturnToPool(ref animState);
-		base.Senses.UnlockTarget(ref targetLock);
-		base.Agent.Unpause(this);
+		AnimPlayer.StopServerAndReturnToPool(ref animState);
+		Senses.UnlockTarget(ref targetLock);
+		Agent.Unpause(this);
 		if (phase != Phase.PostJumpBack)
 		{
-			base.Agent.IsJumping = false;
+			Agent.IsJumping = false;
 		}
 		base.OnStateExit();
 	}

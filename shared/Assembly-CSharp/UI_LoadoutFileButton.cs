@@ -12,8 +12,8 @@ public class UI_LoadoutFileButton : MonoBehaviour
 	[SerializeField]
 	private RustText itemCountText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject deleteButton;
 
 	[SerializeField]

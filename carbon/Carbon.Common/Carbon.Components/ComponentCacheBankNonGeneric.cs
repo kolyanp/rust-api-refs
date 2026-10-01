@@ -14,7 +14,7 @@ public static class ComponentCacheBankNonGeneric
 		{
 			return ComponentCacheBank<T>.Instance.Add(go);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T GetComponentCache<T>(this GameObject go) where T : MonoBehaviour
@@ -23,7 +23,7 @@ public static class ComponentCacheBankNonGeneric
 		{
 			return ComponentCacheBank<T>.Instance.Get(go);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static bool RemoveComponentCache<T>(this GameObject go) where T : MonoBehaviour
@@ -37,10 +37,10 @@ public static class ComponentCacheBankNonGeneric
 
 	public static bool TryGetOrAddComponentCache<T>(this GameObject go, out T component) where T : MonoBehaviour
 	{
-		T obj = go.GetComponentCache<T>() ?? go.AddComponentCache<T>();
-		T val = obj;
-		component = obj;
-		return (Object)(object)val != (Object)null;
+		T val = go.GetComponentCache<T>() ?? go.AddComponentCache<T>();
+		T val2 = val;
+		component = val;
+		return (Object)(object)val2 != (Object)null;
 	}
 
 	public static bool DestroyCache(this GameObject go)

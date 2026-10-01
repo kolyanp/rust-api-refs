@@ -10,19 +10,11 @@ public class WorldSplineData
 	public class LUTEntry
 	{
 		[Serializable]
-		public struct LUTPoint
+		public struct LUTPoint(float distance, Vector3 pos)
 		{
-			public float distance;
+			public float distance = distance;
 
-			public Vector3 pos;
-
-			public LUTPoint(float distance, Vector3 pos)
-			{
-				//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-				this.distance = distance;
-				this.pos = pos;
-			}
+			public Vector3 pos = pos;
 		}
 
 		public List<LUTPoint> points = new List<LUTPoint>();
@@ -45,9 +37,9 @@ public class WorldSplineData
 	{
 		worldSpline.CheckValidity();
 		LUTValues = new List<LUTEntry>();
-		inputPoints = (Vector3[])(object)new Vector3[worldSpline.points.Length];
+		inputPoints = new Vector3[worldSpline.points.Length];
 		worldSpline.points.CopyTo(inputPoints, 0);
-		inputTangents = (Vector3[])(object)new Vector3[worldSpline.tangents.Length];
+		inputTangents = new Vector3[worldSpline.tangents.Length];
 		worldSpline.tangents.CopyTo(inputTangents, 0);
 		inputLUTInterval = worldSpline.lutInterval;
 		maxPointsIndex = inputPoints.Length - 1;
@@ -115,7 +107,7 @@ public class WorldSplineData
 			for (int j = 0; j < lUTEntry.points.Count; j++)
 			{
 				val = lUTEntry.points[j].pos - localPoint;
-				float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+				float sqrMagnitude = val.sqrMagnitude;
 				if (sqrMagnitude < num)
 				{
 					num = sqrMagnitude;
@@ -130,9 +122,9 @@ public class WorldSplineData
 			float num4 = Mathf.Max(num2 - num3, 0f);
 			float num5 = Mathf.Min(num2 + num3, Length);
 			val = GetPointCubicHermite(num4) - localPoint;
-			float sqrMagnitude2 = ((Vector3)(ref val)).sqrMagnitude;
+			float sqrMagnitude2 = val.sqrMagnitude;
 			val = GetPointCubicHermite(num5) - localPoint;
-			float sqrMagnitude3 = ((Vector3)(ref val)).sqrMagnitude;
+			float sqrMagnitude3 = val.sqrMagnitude;
 			if (sqrMagnitude2 < num)
 			{
 				num = sqrMagnitude2;
@@ -261,7 +253,7 @@ public class WorldSplineData
 			}
 			float num5 = Mathf.InverseLerp(num3, num4, distance);
 			Vector3 val3 = val2 - val;
-			tangent = ((Vector3)(ref val3)).normalized;
+			tangent = val3.normalized;
 			return Vector3.Lerp(val, val2, num5);
 		}
 		tangent = GetEndTangent();

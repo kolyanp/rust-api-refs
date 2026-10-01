@@ -14,7 +14,7 @@ public class Category_Vending
 	public class Vending_VendingMachine
 	{
 		[Patch("OnBuyVendingItem", "OnBuyVendingItem", "VendingMachine", "BuyItem", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("689c1cb098ae45ee9d3a5ec34407feb7")]
+		[Identifier("2b5247c271c648c99f69205f9a013cd7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -23,7 +23,7 @@ public class Category_Vending
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_689c1cb098ae45ee9d3a5ec34407feb7 : Patch
+		public class Vending_VendingMachine_2b5247c271c648c99f69205f9a013cd7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -62,14 +62,14 @@ public class Category_Vending
 		}
 
 		[Patch("CanUseVending", "CanUseVending", "VendingMachine", "CanOpenLootPanel", new string[] { "BasePlayer", "System.String" })]
-		[Identifier("5518833af2d14e52afd04049ebed3cba")]
+		[Identifier("80750cb42599492594226ca7117f9eaf")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "VendingMachine", false)]
 		[Return(typeof(bool))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_5518833af2d14e52afd04049ebed3cba : Patch
+		public class Vending_VendingMachine_80750cb42599492594226ca7117f9eaf : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -107,14 +107,14 @@ public class Category_Vending
 		}
 
 		[Patch("CanAdministerVending", "CanAdministerVending", "VendingMachine", "CanPlayerAdmin", new string[] { "BasePlayer" })]
-		[Identifier("f1a0593eb72c4ed9a3b735f0b9c788c6")]
+		[Identifier("5a413a109938424c859f129bc1f6670a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "VendingMachine", false)]
 		[Return(typeof(bool))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_f1a0593eb72c4ed9a3b735f0b9c788c6 : Patch
+		public class Vending_VendingMachine_5a413a109938424c859f129bc1f6670a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -152,21 +152,21 @@ public class Category_Vending
 		}
 
 		[Patch("OnRefreshVendingStock", "OnRefreshVendingStock", "VendingMachine", "RefreshSellOrderStockLevel", new string[] { "ItemDefinition" })]
-		[Identifier("c20793975cbf4e57920d4a7e5267c67c")]
+		[Identifier("b9f69d08673e4a7fb60329bfa9bd9238")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("itemDef", "ItemDefinition", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_c20793975cbf4e57920d4a7e5267c67c : Patch
+		public class Vending_VendingMachine_b9f69d08673e4a7fb60329bfa9bd9238 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 61)
+					if (x++ != 62)
 					{
 						yield return instruction;
 						continue;
@@ -187,14 +187,14 @@ public class Category_Vending
 		}
 
 		[Patch("OnToggleVendingBroadcast", "OnToggleVendingBroadcast", "VendingMachine", "RPC_Broadcast", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("2d8711f5085548849dfc27ac44e9c559")]
+		[Identifier("0b6cd21c7c45469f8b78b078de52e2a3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_2d8711f5085548849dfc27ac44e9c559 : Patch
+		public class Vending_VendingMachine_0b6cd21c7c45469f8b78b078de52e2a3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -222,14 +222,14 @@ public class Category_Vending
 		}
 
 		[Patch("OnDeleteVendingOffer", "OnDeleteVendingOffer", "VendingMachine", "RPC_DeleteSellOrder", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("0070ef72bfc74a348e4f983413d44ddd")]
+		[Identifier("9361ef53dcd54b14889b7b8e8310648f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("local1", "System.Int32", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_0070ef72bfc74a348e4f983413d44ddd : Patch
+		public class Vending_VendingMachine_9361ef53dcd54b14889b7b8e8310648f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -258,14 +258,14 @@ public class Category_Vending
 		}
 
 		[Patch("OnOpenVendingAdmin", "OnOpenVendingAdmin", "VendingMachine", "RPC_OpenAdmin", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("ea5584767bac4fcdaa15e0b363611fa3")]
+		[Identifier("fae66046daaf4ff0a90c60956108d55b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_ea5584767bac4fcdaa15e0b363611fa3 : Patch
+		public class Vending_VendingMachine_fae66046daaf4ff0a90c60956108d55b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -293,14 +293,14 @@ public class Category_Vending
 		}
 
 		[Patch("OnVendingShopOpen", "OnVendingShopOpen [VendingMachine]", "VendingMachine", "RPC_OpenShop", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("68c5797e8e7144af91c3864010bf26ff")]
+		[Identifier("d74182031a314246b979146dfd7e0a34")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_68c5797e8e7144af91c3864010bf26ff : Patch
+		public class Vending_VendingMachine_d74182031a314246b979146dfd7e0a34 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -333,14 +333,14 @@ public class Category_Vending
 		}
 
 		[Patch("OnRotateVendingMachine", "OnRotateVendingMachine", "VendingMachine", "RPC_RotateVM", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("2506e53a5d62462a8ebdc21ab52f2684")]
+		[Identifier("856d1369c3cb42b280a3e3a5be69739e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_2506e53a5d62462a8ebdc21ab52f2684 : Patch
+		public class Vending_VendingMachine_856d1369c3cb42b280a3e3a5be69739e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -373,7 +373,7 @@ public class Category_Vending
 		}
 
 		[Patch("CanVendingAcceptItem", "CanVendingAcceptItem", "VendingMachine", "CanAcceptItem", new string[] { "BasePlayer", "Item", "System.Int32" })]
-		[Identifier("2a0784805c804700b5c3bd70b626a184")]
+		[Identifier("776a4c8442d44bf2b0de602508c25971")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("item", "Item", false)]
@@ -382,7 +382,7 @@ public class Category_Vending
 		[Return(typeof(bool))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_2a0784805c804700b5c3bd70b626a184 : Patch
+		public class Vending_VendingMachine_776a4c8442d44bf2b0de602508c25971 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -425,14 +425,14 @@ public class Category_Vending
 		}
 
 		[Patch("OnAddVendingOffer", "OnAddVendingOffer", "VendingMachine", "AddSellOrder", new string[] { "System.Int32", "System.Int32", "System.Int32", "System.Int32", "System.Byte", "System.UInt64", "System.UInt64" })]
-		[Identifier("2a2bb96e7c454c758f6514fd9fb6f5a7")]
+		[Identifier("de4d2df17fa04689a9039b5503506bac")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("local2", "ProtoBuf.VendingMachine+SellOrder", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_2a2bb96e7c454c758f6514fd9fb6f5a7 : Patch
+		public class Vending_VendingMachine_de4d2df17fa04689a9039b5503506bac : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -460,7 +460,7 @@ public class Category_Vending
 		}
 
 		[Patch("OnGiveSoldItem", "OnGiveSoldItem", "VendingMachine", "GiveSoldItem", new string[] { "Item", "BasePlayer" })]
-		[Identifier("27534eba885b4bc5bb8443428bb1f6dd")]
+		[Identifier("32eb7d0acd064b0bb0f971a07669731e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("soldItem", "Item", false)]
@@ -468,7 +468,7 @@ public class Category_Vending
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_27534eba885b4bc5bb8443428bb1f6dd : Patch
+		public class Vending_VendingMachine_32eb7d0acd064b0bb0f971a07669731e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -502,7 +502,7 @@ public class Category_Vending
 		}
 
 		[Patch("OnVendingShopRename", "OnVendingShopRename", "VendingMachine", "RPC_UpdateShopName", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("ca4013ccbec249ddabb15eb017d62a83")]
+		[Identifier("cf384d29513346a1bb19aa46300979d3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("local1", "System.String", false)]
@@ -510,7 +510,7 @@ public class Category_Vending
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_ca4013ccbec249ddabb15eb017d62a83 : Patch
+		public class Vending_VendingMachine_cf384d29513346a1bb19aa46300979d3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -544,14 +544,14 @@ public class Category_Vending
 		}
 
 		[Patch("OnTakeCurrencyItem", "OnTakeCurrencyItem", "VendingMachine", "TakeCurrencyItem", new string[] { "Item" })]
-		[Identifier("c9c63a67be2a41188c653e560b3d9d18")]
+		[Identifier("027d2eb0febd4f80b78c80d48ce4f2c3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("takenCurrencyItem", "Item", false)]
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_c9c63a67be2a41188c653e560b3d9d18 : Patch
+		public class Vending_VendingMachine_027d2eb0febd4f80b78c80d48ce4f2c3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -583,7 +583,7 @@ public class Category_Vending
 		}
 
 		[Patch("OnVendingTransaction", "OnVendingTransaction", "VendingMachine", "DoTransaction", new string[] { "BasePlayer", "System.Int32", "System.Int32", "ItemContainer", "System.Action`2<BasePlayer,Item>", "System.Action`2<BasePlayer,Item>", "MarketTerminal" })]
-		[Identifier("997043d1a2af4906832800a0bd212f26")]
+		[Identifier("4b1e17f47e114675a89a158e59a9df79")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
 		[Parameter("buyer", "BasePlayer", false)]
@@ -593,7 +593,7 @@ public class Category_Vending
 		[Return(typeof(bool))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_997043d1a2af4906832800a0bd212f26 : Patch
+		public class Vending_VendingMachine_4b1e17f47e114675a89a158e59a9df79 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -639,7 +639,7 @@ public class Category_Vending
 		}
 
 		[Patch("CanPurchaseItem", "CanPurchaseItem", "VendingMachine", "DoTransaction", new string[] { "BasePlayer", "System.Int32", "System.Int32", "ItemContainer", "System.Action`2<BasePlayer,Item>", "System.Action`2<BasePlayer,Item>", "MarketTerminal" })]
-		[Identifier("5175a5470059452e918b4363531cf6b1")]
+		[Identifier("d394da48c9544e79890ae6cbfa70410f")]
 		[Dependencies(new string[] { "OnVendingTransaction" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("buyer", "BasePlayer", false)]
@@ -650,14 +650,14 @@ public class Category_Vending
 		[Return(typeof(bool))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_5175a5470059452e918b4363531cf6b1 : Patch
+		public class Vending_VendingMachine_d394da48c9544e79890ae6cbfa70410f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 323)
+					if (x++ != 324)
 					{
 						yield return instruction;
 						continue;
@@ -698,7 +698,7 @@ public class Category_Vending
 		}
 
 		[Patch("OnVendingShopOpened", "OnVendingShopOpened [VendingMachine]", "VendingMachine", "RPC_OpenShop", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("e9bf3d14be5d4f8a8ad26efb960684b3")]
+		[Identifier("66c09d5daf444c2cbde327f78c665e16")]
 		[Dependencies(new string[] { "OnVendingShopOpen [VendingMachine]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "VendingMachine", false)]
@@ -706,7 +706,7 @@ public class Category_Vending
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_VendingMachine_e9bf3d14be5d4f8a8ad26efb960684b3 : Patch
+		public class Vending_VendingMachine_66c09d5daf444c2cbde327f78c665e16 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -738,14 +738,14 @@ public class Category_Vending
 	public class Vending_NPCVendingMachine
 	{
 		[Patch("CanAdministerVending", "CanAdministerVending [NPC]", "NPCVendingMachine", "CanPlayerAdmin", new string[] { "BasePlayer" })]
-		[Identifier("f423fa5c781f4fa1981039b16f14e471")]
+		[Identifier("6eec1057075d4ee4a09446d569399753")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "NPCVendingMachine", false)]
 		[Return(typeof(bool))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_NPCVendingMachine_f423fa5c781f4fa1981039b16f14e471 : Patch
+		public class Vending_NPCVendingMachine_6eec1057075d4ee4a09446d569399753 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -783,14 +783,14 @@ public class Category_Vending
 		}
 
 		[Patch("OnTakeCurrencyItem", "OnTakeCurrencyItem [NPC]", "NPCVendingMachine", "TakeCurrencyItem", new string[] { "Item" })]
-		[Identifier("0aa140caf475408f9ffd710b771c1bca")]
+		[Identifier("af9ae26aa54344158fd8050b6e8009f9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "NPCVendingMachine", false)]
 		[Parameter("takenCurrencyItem", "Item", false)]
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_NPCVendingMachine_0aa140caf475408f9ffd710b771c1bca : Patch
+		public class Vending_NPCVendingMachine_af9ae26aa54344158fd8050b6e8009f9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -825,14 +825,14 @@ public class Category_Vending
 	public class Vending_MarketTerminal
 	{
 		[Patch("CanAccessVendingMachine", "CanAccessVendingMachine", "MarketTerminal", "<GetDeliveryEligibleVendingMachines>g__IsEligible|27_0", new string[] { "VendingMachine", "UnityEngine.Vector3", "System.Int32" })]
-		[Identifier("79c985d42f234bfb87a6d1bcdbddc4b5")]
+		[Identifier("df16a1fb80194de4a2d2cc57b4a79b23")]
 		[Options(/*Could not decode attribute arguments.*/)]
-		[Parameter("self", "MarketTerminal", false)]
+		[Parameter("config", "DeliveryDroneConfig", false)]
 		[Parameter("vendingMachine", "VendingMachine", false)]
 		[Return(typeof(bool))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_MarketTerminal_79c985d42f234bfb87a6d1bcdbddc4b5 : Patch
+		public class Vending_MarketTerminal_df16a1fb80194de4a2d2cc57b4a79b23 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -874,14 +874,14 @@ public class Category_Vending
 	public class Vending_NPCTalking
 	{
 		[Patch("OnVendingShopOpen", "OnVendingShopOpen [NPCTalking]", "NPCTalking", "OnConversationAction", new string[] { "BasePlayer", "System.String" })]
-		[Identifier("cd14c0c3127448dc8026a0b186787c8f")]
+		[Identifier("52ca585d097d4f12a7d5def6293d16ac")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "InvisibleVendingMachine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_NPCTalking_cd14c0c3127448dc8026a0b186787c8f : Patch
+		public class Vending_NPCTalking_52ca585d097d4f12a7d5def6293d16ac : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -915,7 +915,7 @@ public class Category_Vending
 		}
 
 		[Patch("OnVendingShopOpened", "OnVendingShopOpened [NPCTalking]", "NPCTalking", "OnConversationAction", new string[] { "BasePlayer", "System.String" })]
-		[Identifier("255d6f68152f43cdafabc6c6932a2d10")]
+		[Identifier("bd568ea8b892412da46b36c19d92f914")]
 		[Dependencies(new string[] { "OnVendingShopOpen [NPCTalking]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "InvisibleVendingMachine", false)]
@@ -923,7 +923,7 @@ public class Category_Vending
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_NPCTalking_255d6f68152f43cdafabc6c6932a2d10 : Patch
+		public class Vending_NPCTalking_bd568ea8b892412da46b36c19d92f914 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -954,14 +954,14 @@ public class Category_Vending
 	public class Vending_TravellingVendor
 	{
 		[Patch("OnVendingShopOpen", "OnVendingShopOpen [TravellingVendor]", "TravellingVendor", "SV_OpenMenu", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1030a42fe08e4987b76f872c378babd2")]
+		[Identifier("3e648f5347ed44698abcb0eb73901761")]
 		[Options(/*Could not decode attribute arguments.*/)]
-		[Parameter("self", "TravellingVendor", false)]
+		[Parameter("vendingMachine", "NPCVendingMachine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_TravellingVendor_1030a42fe08e4987b76f872c378babd2 : Patch
+		public class Vending_TravellingVendor_3e648f5347ed44698abcb0eb73901761 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -995,15 +995,15 @@ public class Category_Vending
 		}
 
 		[Patch("OnVendingShopOpened", "OnVendingShopOpened [TravellingVendor]", "TravellingVendor", "SV_OpenMenu", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("f0fb0040d1ff4c929065704b3153167b")]
+		[Identifier("47077acf78534af2a7199de07253d5db")]
 		[Dependencies(new string[] { "OnVendingShopOpen [TravellingVendor]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
-		[Parameter("self", "TravellingVendor", false)]
+		[Parameter("vendingMachine", "NPCVendingMachine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Vending")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Vending_TravellingVendor_f0fb0040d1ff4c929065704b3153167b : Patch
+		public class Vending_TravellingVendor_47077acf78534af2a7199de07253d5db : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -3,13 +3,13 @@ using UnityEngine;
 public class RandomScale : MonoBehaviour
 {
 	[SerializeField]
-	private bool multiplyByExistingScale;
+	private bool multiplyByExistingScale = true;
 
 	[SerializeField]
-	private Vector3 minScale;
+	private Vector3 minScale = Vector3.one * 0.8f;
 
 	[SerializeField]
-	private Vector3 maxScale;
+	private Vector3 maxScale = Vector3.one * 1.2f;
 
 	private void Awake()
 	{
@@ -36,9 +36,5 @@ public class RandomScale : MonoBehaviour
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		multiplyByExistingScale = true;
-		minScale = Vector3.one * 0.8f;
-		maxScale = Vector3.one * 1.2f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

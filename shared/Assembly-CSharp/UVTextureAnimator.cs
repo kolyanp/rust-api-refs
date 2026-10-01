@@ -47,6 +47,7 @@ internal class UVTextureAnimator : MonoBehaviour
 	{
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
@@ -65,8 +66,7 @@ internal class UVTextureAnimator : MonoBehaviour
 		index = Columns - 1;
 		Vector3 zero = Vector3.zero;
 		OffsetMat -= OffsetMat / count * count;
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(1f / (float)Columns, 1f / (float)Rows);
+		Vector2 val = new Vector2(1f / (float)Columns, 1f / (float)Rows);
 		if ((Object)(object)currentRenderer != (Object)null)
 		{
 			instanceMaterial = currentRenderer.material;
@@ -131,6 +131,7 @@ internal class UVTextureAnimator : MonoBehaviour
 
 	private void UpdateCorutineFrame()
 	{
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		allCount++;
 		index++;
@@ -138,8 +139,7 @@ internal class UVTextureAnimator : MonoBehaviour
 		{
 			index = 0;
 		}
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector((float)index / (float)Columns - (float)(index / Columns), 1f - (float)(index / Columns) / (float)Rows);
+		Vector2 val = new Vector2((float)index / (float)Columns - (float)(index / Columns), 1f - (float)(index / Columns) / (float)Rows);
 		if ((Object)(object)currentRenderer != (Object)null)
 		{
 			instanceMaterial.SetTextureOffset("_MainTex", val);

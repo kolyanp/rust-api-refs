@@ -145,7 +145,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 		}
 	}
 
-	private struct IsClippingState : IDisposable
+	private struct IsClippingState(int overlapCount, NativeList<OBB> obbs, NativeList<int> obbLayerMasks) : IDisposable
 	{
 		public ref struct ReadOnly
 		{
@@ -162,35 +162,15 @@ public class TriggerParent : TriggerBase, IServerComponent
 
 		public const int MaxOverlaps = 6;
 
-		public NativeList<int> TriggerLookup;
+		public NativeList<int> TriggerLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)2));
 
-		public NativeList<int> EntLookup;
+		public NativeList<int> EntLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)2));
 
-		public NativeList<OBB> OBBs;
+		public NativeList<OBB> OBBs = obbs;
 
-		public NativeList<int> OBBLayerMasks;
+		public NativeList<int> OBBLayerMasks = obbLayerMasks;
 
-		public JobHandle OBBOverlapsHandle;
-
-		public IsClippingState(int overlapCount, NativeList<OBB> obbs, NativeList<int> obbLayerMasks)
-		{
-			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-			TriggerLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)2));
-			EntLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)2));
-			OBBs = obbs;
-			OBBLayerMasks = obbLayerMasks;
-			OBBOverlapsHandle = default(JobHandle);
-		}
+		public JobHandle OBBOverlapsHandle = default;
 
 		public ReadOnly AsReadOnly()
 		{
@@ -221,7 +201,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 		}
 	}
 
-	private struct IsInsideState : IDisposable
+	private struct IsInsideState(int overlapCount, NativeList<OBB> obbs, NativeList<Vector3> entPoints) : IDisposable
 	{
 		public ref struct ReadOnly
 		{
@@ -232,25 +212,11 @@ public class TriggerParent : TriggerBase, IServerComponent
 			public ReadOnly<Vector3> EntPoints;
 		}
 
-		public NativeList<int> EntLookup;
+		public NativeList<int> EntLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)3));
 
-		public NativeList<OBB> TriggerOBBs;
+		public NativeList<OBB> TriggerOBBs = obbs;
 
-		public NativeList<Vector3> EntPoints;
-
-		public IsInsideState(int overlapCount, NativeList<OBB> obbs, NativeList<Vector3> entPoints)
-		{
-			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-			EntLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)3));
-			TriggerOBBs = obbs;
-			EntPoints = entPoints;
-		}
+		public NativeList<Vector3> EntPoints = entPoints;
 
 		public ReadOnly AsReadOnly()
 		{
@@ -307,9 +273,9 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[NonSerialized]
 	public int StableIndex = -1;
 
+	[Header("General")]
 	[SerializeField]
 	[Tooltip("Deparent if the parented entity clips into an obstacle")]
-	[Header("General")]
 	protected bool doClippingCheck;
 
 	[Tooltip("If deparenting via clipping, this will be used (if assigned) to also move the entity to a valid dismount position")]
@@ -330,15 +296,15 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[Tooltip("When parenting an NPC don't check if they are shop keepers or mission providers.")]
 	public bool SkipNPCChecks;
 
-	[Header("Other")]
 	[Tooltip("If the player is already parented to something else, they'll switch over to another parent only if this is true")]
+	[Header("Other")]
 	public bool overrideOtherTriggers;
 
 	[Tooltip("Requires associatedMountable to be set. Prevents players entering the trigger if there's something between their feet and the bottom of the parent trigger")]
 	public bool checkForObjUnderFeet;
 
-	[SerializeField]
 	[Header("You probably don't need it")]
+	[SerializeField]
 	private bool doExpensivePlayerClippingChecks;
 
 	[Tooltip("TickMode 1 only - Allow trigger to sleep if it hasn't moved on selected axis. Set to None if it should never ignore")]
@@ -539,10 +505,10 @@ public class TriggerParent : TriggerBase, IServerComponent
 	private static void RunCustomJobsQueue()
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		NativeList<int> toUpdate = default(NativeList<int>);
-		toUpdate._002Ector(ActiveTriggers.Count, AllocatorHandle.op_Implicit((Allocator)2));
+		NativeList<int> toUpdate = new NativeList<int>(ActiveTriggers.Count, AllocatorHandle.op_Implicit((Allocator)2));
 		int overlapCount = GatherTriggersToUpdate(toUpdate);
 		ShouldParentEntitiesJobs(toUpdate.AsReadOnly(), overlapCount);
 		toUpdate.Dispose();
@@ -636,14 +602,14 @@ public class TriggerParent : TriggerBase, IServerComponent
 					try
 					{
 						InitialShouldParentChecks(toUpdate, in areSwimmingState, in isClippingState, in hasObjUnderFeetState, in isInsideState, val, entToTriggerLookup, shouldParentEnt);
-						isClippingState.OBBOverlapsHandle = default(JobHandle);
+						isClippingState.OBBOverlapsHandle = default;
 						IsClippingState.ReadOnly state;
 						if (isClippingState.OBBs.Length > 0)
 						{
 							state = isClippingState.AsReadOnly();
 							isClippingState.OBBOverlapsHandle = ScheduleClippingOverlaps(in state);
 						}
-						JobHandle val2 = default(JobHandle);
+						JobHandle val2 = default;
 						if (isInsideState.TriggerOBBs.Length > 0)
 						{
 							NativeArrayEx.Expand(ref IsInsideResults, isInsideState.TriggerOBBs.Length, (NativeArrayOptions)0, copyContents: false);
@@ -665,7 +631,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 						}
 						if (val2 != default(JobHandle))
 						{
-							((JobHandle)(ref val2)).Complete();
+							val2.Complete();
 							ScatterToAndJob scatterToAndJob = new ScatterToAndJob
 							{
 								To = shouldParentEnt.AsArray(),
@@ -715,8 +681,10 @@ public class TriggerParent : TriggerBase, IServerComponent
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0346: Unknown result type (might be due to invalid IL or missing references)
 		//IL_034b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0351: Unknown result type (might be due to invalid IL or missing references)
@@ -730,10 +698,12 @@ public class TriggerParent : TriggerBase, IServerComponent
 		//IL_03ab: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03d7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03e0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03e5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03fd: Unknown result type (might be due to invalid IL or missing references)
@@ -770,9 +740,6 @@ public class TriggerParent : TriggerBase, IServerComponent
 			Enumerator<int> enumerator = toUpdate.GetEnumerator();
 			try
 			{
-				Bounds val2 = default(Bounds);
-				QueryParameters val4 = default(QueryParameters);
-				RaycastCommand val5 = default(RaycastCommand);
 				while (enumerator.MoveNext())
 				{
 					int current = enumerator.Current;
@@ -794,18 +761,18 @@ public class TriggerParent : TriggerBase, IServerComponent
 						}
 					}
 					bool flag3 = triggerParent is TriggerParentEnclosed;
-					OBB val = default(OBB);
+					OBB val = default;
 					TriggerParentEnclosed.TriggerMode triggerMode = TriggerParentEnclosed.TriggerMode.TriggerPoint;
 					if (flag3)
 					{
 						TriggerParentEnclosed triggerParentEnclosed = triggerParent as TriggerParentEnclosed;
 						BoxCollider boxCollider = triggerParentEnclosed.boxCollider;
-						((Bounds)(ref val2))._002Ector(boxCollider.center, boxCollider.size);
+						Bounds val2 = new Bounds(boxCollider.center, boxCollider.size);
 						if (triggerParentEnclosed.Padding > 0f)
 						{
-							((Bounds)(ref val2)).Expand(triggerParentEnclosed.Padding);
+							val2.Expand(triggerParentEnclosed.Padding);
 						}
-						((OBB)(ref val))._002Ector(((Component)boxCollider).transform, val2);
+						val = new OBB(((Component)boxCollider).transform, val2);
 						triggerMode = triggerParentEnclosed.intersectionMode;
 					}
 					foreach (BaseEntity entityContent in triggerParent.entityContents)
@@ -884,8 +851,8 @@ public class TriggerParent : TriggerBase, IServerComponent
 							{
 								Vector3 val3 = entityContent.PivotPoint() + ((Component)entityContent).transform.up * 0.1f;
 								float num = triggerParent.triggerHeight + 0.1f;
-								((QueryParameters)(ref val4))._002Ector(1503731969, false, (QueryTriggerInteraction)1, false);
-								((RaycastCommand)(ref val5))._002Ector(val3, -((Component)triggerParent).transform.up, val4, num);
+								QueryParameters val4 = new QueryParameters(1503731969, false, (QueryTriggerInteraction)1, false);
+								RaycastCommand val5 = new RaycastCommand(val3, -((Component)triggerParent).transform.up, val4, num);
 								hasObjUnderFeetState.Commands.AddNoResize(val5);
 								hasObjUnderFeetState.IgnoreEnts.Add(entityContent);
 								hasObjUnderFeetState.TriggerLookup.AddNoResize(current);
@@ -1035,11 +1002,11 @@ public class TriggerParent : TriggerBase, IServerComponent
 			{
 				RaycastHit val = TraceHits[i];
 				bool flag = false;
-				if (((RaycastHit)(ref val)).colliderInstanceID != 0)
+				if (val.colliderInstanceID != 0)
 				{
 					TriggerParent triggerParent = objects[state.TriggerLookup[i]];
 					BaseEntity entity = triggerParent.Entity;
-					BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((RaycastHit)(ref val)).collider);
+					BaseEntity baseEntity = GameObjectEx.ToBaseEntity(val.collider);
 					if ((Object)(object)baseEntity == (Object)null || !baseEntity.HasEntityInParents(entity) || (Object.op_Implicit((Object)(object)triggerParent.associatedMountable) && !baseEntity.HasEntityInParents(triggerParent.associatedMountable)))
 					{
 						flag = true;
@@ -1078,7 +1045,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 			using (TimeWarning.New("Wait for overlaps"))
 			{
 				JobHandle oBBOverlapsHandle = state.OBBOverlapsHandle;
-				((JobHandle)(ref oBBOverlapsHandle)).Complete();
+				oBBOverlapsHandle.Complete();
 			}
 			ReadOnlySpan<TriggerParent> objects = ActiveTriggers.Objects;
 			for (int i = 0; i < state.OBBs.Length; i++)
@@ -1094,13 +1061,13 @@ public class TriggerParent : TriggerBase, IServerComponent
 				for (int j = 0; j < 6; j++)
 				{
 					ColliderHit val = ClippingHits[i * 6 + j];
-					if (((ColliderHit)(ref val)).instanceID == 0)
+					if (val.instanceID == 0)
 					{
 						break;
 					}
 					if (flag)
 					{
-						BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((ColliderHit)(ref val)).collider);
+						BaseEntity baseEntity = GameObjectEx.ToBaseEntity(val.collider);
 						if (!Object.op_Implicit((Object)(object)baseEntity) || !baseEntity.isServer || (Object)(object)baseEntity.GetRootParentEntity() == (Object)(object)triggerParent.associatedMountable)
 						{
 							continue;
@@ -1163,7 +1130,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 		base.Awake();
 		Collider component = ((Component)this).GetComponent<Collider>();
 		Bounds bounds = component.bounds;
-		triggerHeight = ((Bounds)(ref bounds)).size.y;
+		triggerHeight = bounds.size.y;
 	}
 
 	public override GameObject InterestedInObject(GameObject obj)
@@ -1395,7 +1362,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 		}
 		if (ply.IsSleeping())
 		{
-			ply.Invoke(delegate
+			ply.Invoke(() =>
 			{
 				ply.SetServerFall(wantsOn: true);
 			}, 0.05f);
@@ -1488,15 +1455,15 @@ public class TriggerParent : TriggerBase, IServerComponent
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ent.PivotPoint() + ((Component)ent).transform.up * 0.1f;
 		float maxDistance = triggerHeight + 0.1f;
-		Ray ray = default(Ray);
-		((Ray)(ref ray))._002Ector(val, -((Component)this).transform.up);
-		if (GamePhysics.TraceRealm(GamePhysics.Realm.Server, ray, 0f, out var hitInfo, maxDistance, 1503731969, (QueryTriggerInteraction)1, ent) && (Object)(object)((RaycastHit)(ref hitInfo)).collider != (Object)null)
+		Ray ray = new Ray(val, -((Component)this).transform.up);
+		if (GamePhysics.TraceRealm(GamePhysics.Realm.Server, ray, 0f, out var hitInfo, maxDistance, 1503731969, (QueryTriggerInteraction)1, ent) && (Object)(object)hitInfo.collider != (Object)null)
 		{
 			BaseEntity entity = Entity;
-			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((RaycastHit)(ref hitInfo)).collider);
+			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(hitInfo.collider);
 			if ((Object)(object)baseEntity == (Object)null || !baseEntity.HasEntityInParents(entity) || (Object.op_Implicit((Object)(object)associatedMountable) && !baseEntity.HasEntityInParents(associatedMountable)))
 			{
 				return true;

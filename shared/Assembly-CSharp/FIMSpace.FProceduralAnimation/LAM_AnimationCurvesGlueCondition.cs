@@ -25,14 +25,14 @@ public class LAM_AnimationCurvesGlueCondition : LegsAnimatorControlModuleBase
 
 	public override void OnInit(LegsAnimator.LegsAnimatorCustomModuleHelper helper)
 	{
-		if (!((Object)(object)base.LA.Mecanim == (Object)null) && helper.customStringList != null)
+		if (!((Object)(object)LA.Mecanim == (Object)null) && helper.customStringList != null)
 		{
 			_useHelper = helper;
 			_play_FloorValueBelow = FloorValueBelowVar;
 			_play_IgnoreMidConditions = IgnoreMidConditionsVar;
 			_play_AllowHeightGlueOnLevels = AllowHeightGlueOnLevelVar;
 			animatorHashes = new List<int>();
-			for (int i = 0; i < base.LA.Legs.Count && i < helper.customStringList.Count; i++)
+			for (int i = 0; i < LA.Legs.Count && i < helper.customStringList.Count; i++)
 			{
 				animatorHashes.Add(Animator.StringToHash(helper.customStringList[i]));
 			}
@@ -46,14 +46,14 @@ public class LAM_AnimationCurvesGlueCondition : LegsAnimatorControlModuleBase
 		{
 			return;
 		}
-		float num = base.LA.Mecanim.GetFloat(animatorHashes[leg.PlaymodeIndex]);
+		float num = LA.Mecanim.GetFloat(animatorHashes[leg.PlaymodeIndex]);
 		if (num <= _play_AllowHeightGlueOnLevels.GetFloat() && leg.A_PreWasAligning)
 		{
 			num = _play_FloorValueBelow.GetFloat() - 0.01f;
 		}
 		if (num <= _play_FloorValueBelow.GetFloat())
 		{
-			leg.G_CustomForceAttach = base.LA.GroundedTime > 0.2f;
+			leg.G_CustomForceAttach = LA.GroundedTime > 0.2f;
 			if (_play_IgnoreMidConditions.GetBool())
 			{
 				leg.G_CustomForceNOTDetach = true;

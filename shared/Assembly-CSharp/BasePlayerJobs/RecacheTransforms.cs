@@ -22,9 +22,9 @@ public struct RecacheTransforms : IJobParallelForTransform
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		LocalPos[index] = ((TransformAccess)(ref transf)).localPosition;
-		Pos[index] = ((TransformAccess)(ref transf)).position;
-		LocalRots[index] = ((TransformAccess)(ref transf)).localRotation;
-		Rots[index] = ((TransformAccess)(ref transf)).rotation;
+		LocalPos[index] = transf.localPosition;
+		Pos[index] = transf.position;
+		LocalRots[index] = transf.localRotation;
+		Rots[index] = transf.rotation;
 	}
 }

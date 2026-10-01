@@ -111,7 +111,7 @@ public class Performance : SingletonComponent<Performance>
 			current.workshopSkinsQueued = WorkshopSkin.QueuedCount;
 			current.workshopSkinsPendingUnload = WorkshopSkin.PendingUnloadCount;
 			current.performanceSample = PerformanceMetrics.PerformancePerSecond;
-			PerformanceMetrics.PerformancePerSecond = default(PerformanceSamplePoint);
+			PerformanceMetrics.PerformancePerSecond = default;
 			current.gcTriggered = memoryCollections != current.memoryCollections;
 			frames = 0;
 			time = 0f;

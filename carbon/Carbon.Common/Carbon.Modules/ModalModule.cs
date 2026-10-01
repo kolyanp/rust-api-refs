@@ -157,7 +157,7 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			}
 		}
 
-		public string[] InvalidMessages => Fields.Where((KeyValuePair<string, Field> x) => x.Value.Value != null && x.Value.CustomIsInvalid != null).Select(delegate(KeyValuePair<string, Field> x)
+		public string[] InvalidMessages => Fields.Where((KeyValuePair<string, Field> x) => x.Value.Value != null && x.Value.CustomIsInvalid != null).Select((KeyValuePair<string, Field> x) =>
 		{
 			try
 			{
@@ -206,7 +206,7 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			float num2 = 60f;
 			CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, "0 0 0 0", null, 0f, 1f, 0f, 1f, 0f, 0f, -35f, -35f);
 			IEnumerable<KeyValuePair<string, Field>> enumerable = Fields.Skip(Page * 4).Take(4);
-			bool flag = default(bool);
+			bool flag = default;
 			foreach (KeyValuePair<string, Field> item in enumerable)
 			{
 				CUI.Pair<string, CuiElement> pair3 = cui.CreatePanel(container, pair2, "0 0 0 0.5", null, 0f, 1f, 0.8f, 1f, 0f, 0f, num, num);
@@ -252,7 +252,15 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 				case Field.FieldTypes.RustColor:
 				case Field.FieldTypes.HexColor:
 				{
-					string text2 = ((!string.IsNullOrEmpty($"{item.Value.Value}")) ? item.Value.Value.ToString() : ((item.Value.Type == Field.FieldTypes.RustColor) ? "1 1 1" : "#ffffff"));
+					string text2;
+					if (string.IsNullOrEmpty($"{item.Value.Value}"))
+					{
+						text2 = ((item.Value.Type == Field.FieldTypes.RustColor) ? "1 1 1" : "#ffffff");
+					}
+					else
+					{
+						text2 = item.Value.Value.ToString();
+					}
 					string text3 = ((item.Value.Type == Field.FieldTypes.RustColor) ? CUI.RustToHexColor(text2) : text2);
 					string text4 = ((item.Value.Type == Field.FieldTypes.HexColor) ? CUI.HexToRustColor(text2) : text2);
 					string[] array = text4.Split(' ');
@@ -308,7 +316,7 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			{
 				return (T)value.Value;
 			}
-			return default(T);
+			return default;
 		}
 	}
 
@@ -350,7 +358,7 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			OnFieldChanged = onFieldChanged,
 			Handler = new CUI.Handler()
 		};
-		NextFrame(delegate
+		NextFrame(() =>
 		{
 			modal.Draw(player);
 		});
@@ -398,9 +406,9 @@ public class ModalModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 				break;
 			case Modal.Field.FieldTypes.RustColor:
 			case Modal.Field.FieldTypes.HexColor:
-				Community.Runtime.Core.NextFrame(delegate
+				Community.Runtime.Core.NextFrame(() =>
 				{
-					ColorPicker.Open(ap.Player, delegate(string hexColor, string rustColor, float alpha)
+					ColorPicker.Open(ap.Player, (string hexColor, string rustColor, float alpha) =>
 					{
 						object value2 = field.Value;
 						if (field.Type == Modal.Field.FieldTypes.RustColor)

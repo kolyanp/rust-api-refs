@@ -132,7 +132,7 @@ public class CH47AIBrain : BaseAIBrain
 			if (CanDrop() && Vector3Ex.Distance2D(brain.mainInterestPoint, ((Component)cH47HelicopterAIController).transform.position) < 5f)
 			{
 				Vector3 linearVelocity = cH47HelicopterAIController.rigidBody.linearVelocity;
-				if (((Vector3)(ref linearVelocity)).magnitude < 5f)
+				if (linearVelocity.magnitude < 5f)
 				{
 					cH47HelicopterAIController.DropCrate();
 					nextDropTime = Time.time + 120f;
@@ -223,10 +223,10 @@ public class CH47AIBrain : BaseAIBrain
 			Rigidbody rigidBody = obj.rigidBody;
 			Vector3 val = rigidBody.linearVelocity;
 			Vector3 val2;
-			if (!(((Vector3)(ref val)).magnitude < 0.1f))
+			if (!(val.magnitude < 0.1f))
 			{
 				val = rigidBody.linearVelocity;
-				val2 = ((Vector3)(ref val)).normalized;
+				val2 = val.normalized;
 			}
 			else
 			{
@@ -238,7 +238,7 @@ public class CH47AIBrain : BaseAIBrain
 			{
 				val4.x = 0f - val4.x;
 				val = new Vector3(val4.x, 0f, val4.z);
-				val4 = ((Vector3)(ref val)).normalized;
+				val4 = val.normalized;
 			}
 			brain.mainInterestPoint = transform.position + val4 * 8000f;
 			brain.mainInterestPoint.y = 100f;
@@ -281,7 +281,7 @@ public class CH47AIBrain : BaseAIBrain
 			}
 			egressAltitueAchieved = true;
 			cH47HelicopterAIController.SetMoveTarget(brain.mainInterestPoint);
-			if (base.TimeInState > 300f)
+			if (TimeInState > 300f)
 			{
 				SingletonComponent<InvokeHandler>.Instance.Invoke(cH47HelicopterAIController.DelayedKill, 2f);
 				killing = true;
@@ -308,7 +308,7 @@ public class CH47AIBrain : BaseAIBrain
 			CH47HelicopterAIController cH47HelicopterAIController = entity as CH47HelicopterAIController;
 			Vector3 position = cH47HelicopterAIController.GetPosition();
 			Vector3 linearVelocity = cH47HelicopterAIController.rigidBody.linearVelocity;
-			cH47HelicopterAIController.SetMoveTarget(position + ((Vector3)(ref linearVelocity)).normalized * 10f);
+			cH47HelicopterAIController.SetMoveTarget(position + linearVelocity.normalized * 10f);
 			base.StateEnter(brain, entity);
 		}
 	}
@@ -391,7 +391,7 @@ public class CH47AIBrain : BaseAIBrain
 				return StateStatus.Error;
 			}
 			Vector3 linearVelocity = cH47HelicopterAIController.rigidBody.linearVelocity;
-			float magnitude = ((Vector3)(ref linearVelocity)).magnitude;
+			float magnitude = linearVelocity.magnitude;
 			float num = Vector3Ex.Distance2D(((Component)closest).transform.position, position);
 			bool enabled = num < 40f;
 			bool altitudeProtection = num > 15f && position.y < ((Component)closest).transform.position.y + 10f;
@@ -425,11 +425,11 @@ public class CH47AIBrain : BaseAIBrain
 			if (num < 100f && num > 15f)
 			{
 				Vector3 val = Vector3Ex.Direction2D(((Component)closest).transform.position, position);
-				RaycastHit val2 = default(RaycastHit);
+				RaycastHit val2 = default;
 				if (Physics.SphereCast(position, 15f, val, ref val2, num, 1218511105))
 				{
 					Vector3 val3 = Vector3.Cross(val, Vector3.up);
-					moveTarget = ((RaycastHit)(ref val2)).point + val3 * 50f;
+					moveTarget = val2.point + val3 * 50f;
 				}
 			}
 			cH47HelicopterAIController.SetMoveTarget(moveTarget);
@@ -489,7 +489,7 @@ public class CH47AIBrain : BaseAIBrain
 		{
 			if (IsInState())
 			{
-				float num = 1f - Mathf.InverseLerp(120f, 180f, base.TimeInState);
+				float num = 1f - Mathf.InverseLerp(120f, 180f, TimeInState);
 				return 5f * num;
 			}
 			if (brain.CurrentState != null && brain.CurrentState.StateType == AIState.Patrol && brain.CurrentState is PatrolState patrolState && patrolState.AtPatrolDestination())
@@ -549,7 +549,7 @@ public class CH47AIBrain : BaseAIBrain
 			float num = ((Vector3.Dot(Vector3.Cross(((Component)cH47HelicopterAIController).transform.right, Vector3.up), val2) < 0f) ? (-1f) : 1f);
 			float num2 = 75f;
 			Vector3 val3 = -val + val2 * num * 0.6f;
-			Vector3 normalized = ((Vector3)(ref val3)).normalized;
+			Vector3 normalized = val3.normalized;
 			Vector3 val4 = orbitCenter + normalized * num2;
 			cH47HelicopterAIController.SetMoveTarget(val4);
 			cH47HelicopterAIController.SetAimDirection(Vector3Ex.Direction2D(val4, position));
@@ -625,7 +625,7 @@ public class CH47AIBrain : BaseAIBrain
 		{
 			if (IsInState())
 			{
-				if (AtPatrolDestination() && base.TimeInState > 2f)
+				if (AtPatrolDestination() && TimeInState > 2f)
 				{
 					return 0f;
 				}
@@ -650,13 +650,13 @@ public class CH47AIBrain : BaseAIBrain
 	public override void InitializeAI()
 	{
 		base.InitializeAI();
-		base.ThinkMode = AIThinkMode.FixedUpdate;
-		base.PathFinder = new CH47PathFinder();
+		ThinkMode = AIThinkMode.FixedUpdate;
+		PathFinder = new CH47PathFinder();
 	}
 
 	public void FixedUpdate()
 	{
-		if (!((Object)(object)base.baseEntity == (Object)null) && !base.baseEntity.isClient)
+		if (!((Object)(object)baseEntity == (Object)null) && !baseEntity.isClient)
 		{
 			Think(Time.fixedDeltaTime);
 		}

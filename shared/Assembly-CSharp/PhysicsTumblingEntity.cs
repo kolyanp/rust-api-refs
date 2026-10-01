@@ -59,27 +59,27 @@ public class PhysicsTumblingEntity : BaseEntity
 		{
 			hitEntity = GameObjectEx.ToBaseEntity(collision.collider);
 		}
-		if ((Object)(object)hitEntity == (Object)(object)this || ((Object)(object)hitEntity != (Object)null && hitEntity.isServer != base.isServer) || hitEntity is TimedExplosive)
+		if ((Object)(object)hitEntity == (Object)(object)this || ((Object)(object)hitEntity != (Object)null && hitEntity.isServer != isServer) || hitEntity is TimedExplosive)
 		{
 			return;
 		}
 		float num = Random.Range(min_tumbling_force, max_tumbling_force);
 		Vector3 val = rb.linearVelocity;
-		if (!(((Vector3)(ref val)).magnitude < velocity_threshold_for_tumbling_force))
+		if (!(val.magnitude < velocity_threshold_for_tumbling_force))
 		{
 			if ((Object)(object)hitEntity == (Object)null)
 			{
-				Vector3 point = ((ContactPoint)(ref collision.contacts[0])).point;
+				Vector3 point = collision.contacts[0].point;
 				val = collision.impulse;
-				RagdollPlayers(point, -((Vector3)(ref val)).normalized * player_impulse_multiplier);
+				RagdollPlayers(point, -val.normalized * player_impulse_multiplier);
 			}
 			else
 			{
 				val = collision.impulse;
-				Vector3 val2 = RandomVectorInCone(((Vector3)(ref val)).normalized, tumbling_force_cone_angle);
+				Vector3 val2 = RandomVectorInCone(val.normalized, tumbling_force_cone_angle);
 				val2 *= num;
 				rb.AddForce(val2, (ForceMode)1);
-				Debug.DrawLine(((ContactPoint)(ref collision.contacts[0])).point, ((ContactPoint)(ref collision.contacts[0])).point + val2, Color.gray, 10f);
+				Debug.DrawLine(collision.contacts[0].point, collision.contacts[0].point + val2, Color.gray, 10f);
 			}
 		}
 	}
@@ -141,17 +141,17 @@ public class PhysicsTumblingEntity : BaseEntity
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		normal = ((Vector3)(ref normal)).normalized;
+		normal = normal.normalized;
 		float num = Random.Range(0f, coneAngle);
 		float num2 = Random.Range(0f, 360f);
 		Vector3 val = Vector3.Cross(normal, Vector3.up);
-		if (((Vector3)(ref val)).sqrMagnitude < 0.001f)
+		if (val.sqrMagnitude < 0.001f)
 		{
 			val = Vector3.Cross(normal, Vector3.right);
 		}
-		((Vector3)(ref val)).Normalize();
+		val.Normalize();
 		val = Quaternion.AngleAxis(num2, normal) * val;
 		Vector3 val2 = Quaternion.AngleAxis(num, val) * normal;
-		return ((Vector3)(ref val2)).normalized;
+		return val2.normalized;
 	}
 }

@@ -21,16 +21,16 @@ public class UIMixingTableItem : MonoBehaviour
 	public void Init(Recipe r, UnityAction<Recipe> onClicked)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Expected O, but got Unknown
+		//IL_004b: Expected Obj, but got Unknown
 		Recipe = r;
 		if ((Object)(object)Recipe == (Object)null)
 		{
 			return;
 		}
-		((UnityEvent)Utils.GetOrAddComponent<Button>(((Component)this).gameObject).onClick).AddListener((UnityAction)delegate
+		((UnityEvent)Utils.GetOrAddComponent<Button>(((Component)this).gameObject).onClick).AddListener((UnityAction)(() =>
 		{
 			onClicked.Invoke(Recipe);
-		});
+		}));
 		ItemIcon.sprite = Recipe.DisplayIcon;
 		TextItemNameAndQuantity.SetText($"{Recipe.ProducedItemCount} x {Recipe.DisplayName}", true, false);
 		ItemTooltip.Text = Recipe.DisplayDescription;

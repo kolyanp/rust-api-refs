@@ -36,11 +36,11 @@ public class FGroundFitter_Input : FGroundFitter_InputBase
 		{
 			if (Input.GetKey((KeyCode)304))
 			{
-				base.Sprint = true;
+				Sprint = true;
 			}
 			else
 			{
-				base.Sprint = false;
+				Sprint = false;
 			}
 			if (Input.GetKey((KeyCode)119))
 			{
@@ -58,32 +58,32 @@ public class FGroundFitter_Input : FGroundFitter_InputBase
 			{
 				zero.z--;
 			}
-			((Vector3)(ref zero)).Normalize();
+			zero.Normalize();
 			Quaternion val = Quaternion.LookRotation(zero);
-			base.RotationOffset = ((Quaternion)(ref val)).eulerAngles.y;
-			base.MoveVector = Vector3.forward;
+			RotationOffset = val.eulerAngles.y;
+			MoveVector = Vector3.forward;
 		}
 		else
 		{
-			base.Sprint = false;
-			base.MoveVector = Vector3.zero;
+			Sprint = false;
+			MoveVector = Vector3.zero;
 		}
 		if (Input.GetKey((KeyCode)120))
 		{
-			base.MoveVector -= Vector3.forward;
+			MoveVector -= Vector3.forward;
 		}
 		if (Input.GetKey((KeyCode)113))
 		{
-			base.MoveVector += Vector3.left;
+			MoveVector += Vector3.left;
 		}
 		if (Input.GetKey((KeyCode)101))
 		{
-			base.MoveVector += Vector3.right;
+			MoveVector += Vector3.right;
 		}
-		Vector3 moveVector = base.MoveVector;
-		((Vector3)(ref moveVector)).Normalize();
-		controller.Sprint = base.Sprint;
-		controller.MoveVector = base.MoveVector;
-		controller.RotationOffset = base.RotationOffset;
+		Vector3 moveVector = MoveVector;
+		moveVector.Normalize();
+		controller.Sprint = Sprint;
+		controller.MoveVector = MoveVector;
+		controller.RotationOffset = RotationOffset;
 	}
 }

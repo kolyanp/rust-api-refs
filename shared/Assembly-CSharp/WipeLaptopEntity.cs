@@ -9,11 +9,11 @@ using UnityEngine.UI;
 
 public class WipeLaptopEntity : BaseEntity
 {
-	public static Phrase Phrase_Armed;
+	public static Phrase Phrase_Armed = new Phrase("laptop_armed", "Warhead Status: Armed");
 
-	public static Phrase Phrase_Disarmed;
+	public static Phrase Phrase_Disarmed = new Phrase("laptop_disarmed", "Warhead Status: Disarmed");
 
-	public static Flags ArmedFlag;
+	public static Flags ArmedFlag = Flags.Reserved1;
 
 	public float ArmTime = 5f;
 
@@ -110,7 +110,7 @@ public class WipeLaptopEntity : BaseEntity
 	public override void Save(SaveInfo info)
 	{
 		info.msg.wipeLaptop = Pool.Get<WipeLaptop>();
-		info.msg.wipeLaptop.timeLeft = (int)((TimeUntil)(ref TimeLeft)).LeftFrom(info.cachedTime.Time);
+		info.msg.wipeLaptop.timeLeft = (int)TimeLeft.LeftFrom(info.cachedTime.Time);
 		info.msg.wipeLaptop.armTime = ArmTime;
 		info.msg.wipeLaptop.disarmTime = DisarmTime;
 		base.Save(info);
@@ -129,8 +129,8 @@ public class WipeLaptopEntity : BaseEntity
 		base.Load(info);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(5f)]
+	[RPC_Server]
 	public void ArmLaptop(RPCMessage msg)
 	{
 		if (msg.read.Int32() == 3 && !IsArmed())
@@ -169,7 +169,7 @@ public class WipeLaptopEntity : BaseEntity
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		TimeLeft = TimeUntil.op_Implicit((float)seconds);
-		if (base.isServer)
+		if (isServer)
 		{
 			SendNetworkUpdate();
 		}
@@ -178,11 +178,8 @@ public class WipeLaptopEntity : BaseEntity
 	static WipeLaptopEntity()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		Phrase_Armed = new Phrase("laptop_armed", "Warhead Status: Armed");
-		Phrase_Disarmed = new Phrase("laptop_disarmed", "Warhead Status: Disarmed");
-		ArmedFlag = Flags.Reserved1;
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

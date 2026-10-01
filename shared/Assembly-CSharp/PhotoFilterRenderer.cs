@@ -25,8 +25,8 @@ public class PhotoFilterRenderer : PostProcessEffectRenderer<PhotoFilter>
 		command.BeginSample("PhotoFilter");
 		PropertySheet propertySheet = context.propertySheets.Get(greyScaleShader);
 		propertySheet.properties.Clear();
-		propertySheet.properties.SetColor(rgbProperty, base.settings.color.value);
-		propertySheet.properties.SetFloat(densityProperty, base.settings.density.value);
+		propertySheet.properties.SetColor(rgbProperty, settings.color.value);
+		propertySheet.properties.SetFloat(densityProperty, settings.density.value);
 		command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 0);
 		command.EndSample("PhotoFilter");
 	}

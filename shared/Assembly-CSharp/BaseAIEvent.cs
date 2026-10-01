@@ -79,7 +79,7 @@ public class BaseAIEvent
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Expected O, but got Unknown
+		//IL_004e: Expected Obj, but got Unknown
 		return new AIEventData
 		{
 			id = ID,

@@ -55,8 +55,8 @@ public class BaseMission : BaseScriptableObject
 				failed = false;
 				progressTarget = 0f;
 				progressCurrent = 0f;
-				worldLocation = default(Vector3);
-				sinceLastThink = default(RealTimeSince);
+				worldLocation = default;
+				sinceLastThink = default;
 			}
 
 			public bool IsObjectiveActive()
@@ -228,7 +228,7 @@ public class BaseMission : BaseScriptableObject
 			else if (TryGetMissionPoint(missionEntityEntry.spawnPositionToUse, out point))
 			{
 				BaseEntity baseEntity = GameManager.server.CreateEntity(missionEntityEntry.entityRef.resourcePath, point, Quaternion.identity);
-				MissionEntity missionEntity = default(MissionEntity);
+				MissionEntity missionEntity = default;
 				value = (((Component)baseEntity).gameObject.TryGetComponent<MissionEntity>(ref missionEntity) ? missionEntity : ((Component)baseEntity).gameObject.AddComponent<MissionEntity>());
 				value.Setup(playerFor, this, identifier, missionEntityEntry.cleanupOnMissionSuccess, missionEntityEntry.cleanupOnMissionFailed);
 				baseEntity.Spawn();
@@ -275,7 +275,7 @@ public class BaseMission : BaseScriptableObject
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			RemovePositionBlockers(this);
-			providerID = default(NetworkableId);
+			providerID = default;
 			missionID = 0u;
 			status = MissionStatus.Undefined;
 			startTimeUtcSeconds = long.MinValue;
@@ -474,9 +474,9 @@ public class BaseMission : BaseScriptableObject
 					outPosition = Vector3.zero;
 					return false;
 				}
-				bool num = TryGetRelativeToPosition(instance, depth, out var point);
+				bool flag = TryGetRelativeToPosition(instance, depth, out var point);
 				outPosition = point;
-				if (!num)
+				if (!flag)
 				{
 					Debug.LogError((object)("Failed to get relative to position for mission " + ((Object)instance.GetMission()).name), (Object)(object)instance.GetMission());
 					return false;
@@ -502,18 +502,18 @@ public class BaseMission : BaseScriptableObject
 				case PositionType.WorldPositionGenerator:
 					if ((Object)(object)worldPositionGenerator != (Object)null)
 					{
-						bool flag = false;
+						bool flag2 = false;
 						if (worldPositionGenerator.TrySample(point, minDistForMovePoint, maxDistForMovePoint, minDistForMovePoint_2x, maxDistForMovePoint_2x, out var position3))
 						{
 							outPosition = position3;
-							flag = true;
+							flag2 = true;
 						}
-						if (!flag && allowDoubleDistanceIfNoOptionsAreFound && worldPositionGenerator.TrySample(point, minDistForMovePoint, maxDistForMovePoint_2x, minDistForMovePoint_2x, maxDistForMovePoint_4x, out position3))
+						if (!flag2 && allowDoubleDistanceIfNoOptionsAreFound && worldPositionGenerator.TrySample(point, minDistForMovePoint, maxDistForMovePoint_2x, minDistForMovePoint_2x, maxDistForMovePoint_4x, out position3))
 						{
 							outPosition = position3;
-							flag = true;
+							flag2 = true;
 						}
-						return flag;
+						return flag2;
 					}
 					goto default;
 				case PositionType.DungeonPoint:
@@ -525,7 +525,7 @@ public class BaseMission : BaseScriptableObject
 					{
 						Vector3 onUnitSphere = Random.onUnitSphere;
 						onUnitSphere.y = 0f;
-						((Vector3)(ref onUnitSphere)).Normalize();
+						onUnitSphere.Normalize();
 						Vector3 val2 = point + onUnitSphere * Random.Range(minDistForMovePoint, maxDistForMovePoint);
 						val2.y = WaterLevel.GetWaterOrTerrainSurface(val2, waves: false, volumes: false);
 						if (TryAlignToGround(val2, out var correctedPosition))
@@ -575,7 +575,7 @@ public class BaseMission : BaseScriptableObject
 						Debug.LogError((object)("Failed to find lab boombox objective in mission " + ((Object)mission).name), (Object)(object)mission);
 						return false;
 					}
-					int num2 = 0;
+					int num = 0;
 					if (string.IsNullOrWhiteSpace(missionObjective_UnderwaterLabsBoomboxBonus.requireProximityToPosition))
 					{
 						using (TimeWarning.New("PositionGenerator.TryGetPosition.UnderwaterLabWithBoomboxes.GetValidLabDistanceIrrespective"))
@@ -587,9 +587,9 @@ public class BaseMission : BaseScriptableObject
 								{
 									if (EnvironmentManager.Check(((Component)deployableBoomBox).transform.position, EnvironmentType.UnderwaterLab))
 									{
-										num2++;
+										num++;
 									}
-									if (num2 >= 2)
+									if (num >= 2)
 									{
 										int index = Random.Range(0, count);
 										outPosition = ((Component)dungeonBaseEntrances[index]).transform.position;
@@ -610,8 +610,8 @@ public class BaseMission : BaseScriptableObject
 							}
 							while (val.Count > 0)
 							{
-								int num3 = Random.Range(0, val.Count);
-								Vector3 position = ((Component)dungeonBaseEntrances[num3]).transform.position;
+								int num2 = Random.Range(0, val.Count);
+								Vector3 position = ((Component)dungeonBaseEntrances[num2]).transform.position;
 								for (int l = 0; l < DeployableBoomBox.ServerStaticInstances.Count; l++)
 								{
 									using (TimeWarning.New("PositionGenerator.TryGetPosition.UnderwaterLabWithBoomboxes.CheckBoombox"))
@@ -627,9 +627,9 @@ public class BaseMission : BaseScriptableObject
 										{
 											if (EnvironmentManager.Check(((Component)deployableBoomBox2).transform.position, EnvironmentType.UnderwaterLab))
 											{
-												num2++;
+												num++;
 											}
-											if (num2 >= 2)
+											if (num >= 2)
 											{
 												outPosition = position;
 												Pool.FreeUnmanaged<Vector3>(ref val);
@@ -638,8 +638,8 @@ public class BaseMission : BaseScriptableObject
 										}
 									}
 								}
-								num2 = 0;
-								val.RemoveAt(num3);
+								num = 0;
+								val.RemoveAt(num2);
 							}
 							Pool.FreeUnmanaged<Vector3>(ref val);
 						}
@@ -706,7 +706,7 @@ public class BaseMission : BaseScriptableObject
 			using (TimeWarning.New("BaseMission.PositionGenerator.TryAlignToGround"))
 			{
 				Vector3 val = Vector3Ex.WithY(wishPosition, wishPosition.y + 50f);
-				RaycastHit hit = default(RaycastHit);
+				RaycastHit hit = default;
 				if (!Physics.Raycast(new Ray(val, Vector3.down), ref hit, 50f, 1218652417, (QueryTriggerInteraction)1))
 				{
 					correctedPosition = wishPosition;
@@ -717,7 +717,7 @@ public class BaseMission : BaseScriptableObject
 					correctedPosition = wishPosition;
 					return false;
 				}
-				correctedPosition = ((RaycastHit)(ref hit)).point;
+				correctedPosition = hit.point;
 				return true;
 			}
 		}
@@ -729,8 +729,8 @@ public class BaseMission : BaseScriptableObject
 		[FormerlySerializedAs("targetMission")]
 		public BaseMission mission;
 
-		[FormerlySerializedAs("targetMissionDesiredStatus")]
 		[FilteredEnum(0, 4)]
+		[FormerlySerializedAs("targetMissionDesiredStatus")]
 		public MissionStatus desiredStatus;
 
 		public uint missionID
@@ -824,19 +824,11 @@ public class BaseMission : BaseScriptableObject
 		public string StringIdentifier;
 	}
 
-	public struct MissionIdentifierData : IEquatable<MissionIdentifierData>
+	public struct MissionIdentifierData(BaseMission mission, NetworkableId missionProviderNetId) : IEquatable<MissionIdentifierData>
 	{
-		public BaseMission mission;
+		public BaseMission mission = mission;
 
-		public NetworkableId missionProviderNetId;
-
-		public MissionIdentifierData(BaseMission mission, NetworkableId missionProviderNetId)
-		{
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			this.mission = mission;
-			this.missionProviderNetId = missionProviderNetId;
-		}
+		public NetworkableId missionProviderNetId = missionProviderNetId;
 
 		public bool Equals(MissionIdentifierData other)
 		{
@@ -980,24 +972,24 @@ public class BaseMission : BaseScriptableObject
 		}
 	}
 
-	public static readonly Phrase missionFailedPhrase;
+	public static readonly Phrase missionFailedPhrase = new Phrase("missionfailed.message", "You have failed the mission: {0}. Reason: {1}");
 
-	public static readonly Phrase missionFailedReason_Timeout;
+	public static readonly Phrase missionFailedReason_Timeout = new Phrase("missionfailed.reason.timeout", "Mission timeout");
 
-	public static readonly Phrase missionFailedReason_Disconnect;
+	public static readonly Phrase missionFailedReason_Disconnect = new Phrase("missionfailed.reason.disconnect", "Disconnected");
 
-	public static readonly Phrase missionFailedReason_PlayerStateReset;
+	public static readonly Phrase missionFailedReason_PlayerStateReset = new Phrase("missionfailed.reason.playerstatereset", "Player state reset");
 
-	public static readonly Phrase missionFailedReason_Abandon;
+	public static readonly Phrase missionFailedReason_Abandon = new Phrase("missionfailed.reason.abandon", "Mission abandoned");
 
-	public static readonly Phrase missionFailedReason_ObjectiveFailed;
+	public static readonly Phrase missionFailedReason_ObjectiveFailed = new Phrase("missionfailed.reason.objectivefailed", "Objective failed");
 
-	public static readonly Phrase missionFailedReason_DeepSeaClosed;
+	public static readonly Phrase missionFailedReason_DeepSeaClosed = new Phrase("missionfailed.reason.deepseaclosed", "Deep sea closed");
 
 	[ServerVar(Help = "(Generated) When enabled, missions are available and can be assigned to players; disable to globally suppress mission generation and assignment on the server")]
-	public static bool missionsenabled;
+	public static bool missionsenabled = true;
 
-	public static Dictionary<MissionIdentifierData, MissionValidStateData> server_missionInstanceValidStates;
+	public static Dictionary<MissionIdentifierData, MissionValidStateData> server_missionInstanceValidStates = new Dictionary<MissionIdentifierData, MissionValidStateData>();
 
 	public string shortname;
 
@@ -1017,7 +1009,7 @@ public class BaseMission : BaseScriptableObject
 
 	public MissionObjectiveEntry[] objectives;
 
-	public static Dictionary<MissionInstance, ListHashSet<Vector3>> blockedPoints;
+	public static Dictionary<MissionInstance, ListHashSet<Vector3>> blockedPoints = new Dictionary<MissionInstance, ListHashSet<Vector3>>();
 
 	public GameObjectRef acceptEffect;
 
@@ -1053,25 +1045,25 @@ public class BaseMission : BaseScriptableObject
 	public bool hideRewardsPreview;
 
 	[ServerVar(Help = "How long per frame (ms) to spend processing updateMissionValidStateWorkQueue", Saved = true, ShowInAdminUI = true)]
-	public static float missionValidStateWorkQueueBudget;
+	public static float missionValidStateWorkQueueBudget = 0.1f;
 
 	[ServerVar(Help = "Minimum time (s) between starting runs of updateMissionValidStateWorkQueue", Saved = true, ShowInAdminUI = true)]
-	public static float missionValidStateWorkQueueCooldown;
+	public static float missionValidStateWorkQueueCooldown = 3f;
 
 	[ServerVar(Help = "Minimum time (s) between revalidating individual missions via updateMissionValidStateWorkQueue", Saved = true, ShowInAdminUI = true)]
-	public static float missionPerValidStateCooldown;
+	public static float missionPerValidStateCooldown = 3f;
 
-	public static UpdateMissionValidStateWorkQueue updateMissionValidStateWorkQueue;
+	public static UpdateMissionValidStateWorkQueue updateMissionValidStateWorkQueue = new UpdateMissionValidStateWorkQueue();
 
-	private static ListHashSet<MissionIdentifierData> validStatesToProcess;
+	private static ListHashSet<MissionIdentifierData> validStatesToProcess = new ListHashSet<MissionIdentifierData>();
 
-	private static ListHashSet<BasePlayer> playersRequestingValidStatesUpdate;
+	private static ListHashSet<BasePlayer> playersRequestingValidStatesUpdate = new ListHashSet<BasePlayer>();
 
 	private static float lastServerValidMissionsUpdateTime;
 
 	private static ServerProfiler.ScopeRecorder queueProfilerRecorder;
 
-	private static bool shouldProfileNextWorkQueueRun;
+	private static bool shouldProfileNextWorkQueueRun = false;
 
 	public uint id
 	{
@@ -1100,7 +1092,7 @@ public class BaseMission : BaseScriptableObject
 
 	public static Phrase GetPhraseForFailureReason(MissionFailReason reason)
 	{
-		return (Phrase)(reason switch
+		return reason switch
 		{
 			MissionFailReason.TimeOut => missionFailedReason_Timeout, 
 			MissionFailReason.Disconnect => missionFailedReason_Disconnect, 
@@ -1109,7 +1101,7 @@ public class BaseMission : BaseScriptableObject
 			MissionFailReason.ObjectiveFailed => missionFailedReason_ObjectiveFailed, 
 			MissionFailReason.DeepSeaClosed => missionFailedReason_DeepSeaClosed, 
 			_ => Phrase.op_Implicit($"Unhandled reason: {reason}"), 
-		});
+		};
 	}
 
 	public static void PlayerDisconnected(BasePlayer player)
@@ -1572,7 +1564,7 @@ public class BaseMission : BaseScriptableObject
 				assignee.RegisterFollowupMission(followupMission, missionProvider);
 			}
 		}
-		if (Rust.GameInfo.HasAchievements && mission != null && !(mission is TutorialMission))
+		if (GameInfo.HasAchievements && mission != null && !(mission is TutorialMission))
 		{
 			assignee.stats.Add("missions_completed", 1, Stats.All);
 			assignee.stats.Save(forceSteamSave: true);
@@ -1673,6 +1665,7 @@ public class BaseMission : BaseScriptableObject
 		}
 		item.SetItemOwnership(player, ItemOwnershipPhrases.MissionRewardPhrase);
 		player.GiveItem(item, BaseEntity.GiveItemReason.PickedUp);
+		Facepunch.Rust.Analytics.Azure.LogResource(Facepunch.Rust.Analytics.Azure.ResourceMode.Produced, "reward", reward.itemDef.shortname, (int)reward.amount, null, null, safezone: false, null, player.userID, null, null, null, 0uL);
 	}
 
 	public virtual void MissionFailed(MissionInstance instance, BasePlayer assignee, MissionFailReason failReason, bool saveImmediately = true)
@@ -1831,35 +1824,18 @@ public class BaseMission : BaseScriptableObject
 	static BaseMission()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
+		//IL_0050: Expected Obj, but got Unknown
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Expected O, but got Unknown
+		//IL_0064: Expected Obj, but got Unknown
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Expected O, but got Unknown
+		//IL_0078: Expected Obj, but got Unknown
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Expected O, but got Unknown
-		missionFailedPhrase = new Phrase("missionfailed.message", "You have failed the mission: {0}. Reason: {1}");
-		missionFailedReason_Timeout = new Phrase("missionfailed.reason.timeout", "Mission timeout");
-		missionFailedReason_Disconnect = new Phrase("missionfailed.reason.disconnect", "Disconnected");
-		missionFailedReason_PlayerStateReset = new Phrase("missionfailed.reason.playerstatereset", "Player state reset");
-		missionFailedReason_Abandon = new Phrase("missionfailed.reason.abandon", "Mission abandoned");
-		missionFailedReason_ObjectiveFailed = new Phrase("missionfailed.reason.objectivefailed", "Objective failed");
-		missionFailedReason_DeepSeaClosed = new Phrase("missionfailed.reason.deepseaclosed", "Deep sea closed");
-		missionsenabled = true;
-		server_missionInstanceValidStates = new Dictionary<MissionIdentifierData, MissionValidStateData>();
-		blockedPoints = new Dictionary<MissionInstance, ListHashSet<Vector3>>();
-		missionValidStateWorkQueueBudget = 0.1f;
-		missionValidStateWorkQueueCooldown = 3f;
-		missionPerValidStateCooldown = 3f;
-		updateMissionValidStateWorkQueue = new UpdateMissionValidStateWorkQueue();
-		validStatesToProcess = new ListHashSet<MissionIdentifierData>();
-		playersRequestingValidStatesUpdate = new ListHashSet<BasePlayer>();
-		shouldProfileNextWorkQueueRun = false;
+		//IL_008c: Expected Obj, but got Unknown
 	}
 }

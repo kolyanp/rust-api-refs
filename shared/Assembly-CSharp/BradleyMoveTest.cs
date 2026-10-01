@@ -116,7 +116,7 @@ public class BradleyMoveTest : MonoBehaviour
 		num5 = Mathf.Clamp(num5 + num7, -1f, 1f);
 		num6 = Mathf.Clamp(num6 + num7, -1f, 1f);
 		AdjustFriction();
-		float num8 = Mathf.InverseLerp(3f, 1f, ((Vector3)(ref linearVelocity)).magnitude * Mathf.Abs(Vector3.Dot(((Vector3)(ref linearVelocity)).normalized, ((Component)this).transform.forward)));
+		float num8 = Mathf.InverseLerp(3f, 1f, linearVelocity.magnitude * Mathf.Abs(Vector3.Dot(linearVelocity.normalized, ((Component)this).transform.forward)));
 		float torqueAmount = Mathf.Lerp(moveForceMax, turnForce, num8);
 		SetMotorTorque(num5, rightSide: false, torqueAmount);
 		SetMotorTorque(num6, rightSide: true, torqueAmount);

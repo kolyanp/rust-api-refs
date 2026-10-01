@@ -23,7 +23,7 @@ public class State_DogFight : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		if (base.Agent.hasPath)
+		if (Agent.hasPath)
 		{
 			return base.OnStateUpdate(deltaTime);
 		}
@@ -36,7 +36,7 @@ public class State_DogFight : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.Agent.ResetPath();
+		Agent.ResetPath();
 		base.OnStateExit();
 	}
 
@@ -72,23 +72,23 @@ public class State_DogFight : FSMStateBase
 		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTargetPosition(out var targetPosition))
+		if (!Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		Vector3 position = ((Component)Owner).transform.position;
 		Vector3 val = targetPosition - position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 normalized2;
 		if (!shouldGoRightNext)
 		{
 			val = Vector3.Cross(Vector3.up, normalized);
-			normalized2 = ((Vector3)(ref val)).normalized;
+			normalized2 = val.normalized;
 		}
 		else
 		{
 			val = Vector3.Cross(normalized, Vector3.up);
-			normalized2 = ((Vector3)(ref val)).normalized;
+			normalized2 = val.normalized;
 		}
 		Vector3 val2 = normalized2;
 		shouldGoRightNext = !shouldGoRightNext;
@@ -105,12 +105,12 @@ public class State_DogFight : FSMStateBase
 			num = Random.Range(1f, 2f);
 			value = RustNavMeshAgent.Speeds.Walk;
 		}
-		NavVector3 nextPosition = base.Agent.nextPosition;
-		NavVector3 aNS = base.Agent.WorldToNavDirection(directionWS);
+		NavVector3 nextPosition = Agent.nextPosition;
+		NavVector3 aNS = Agent.WorldToNavDirection(directionWS);
 		PooledList<NavVector3> val3 = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val3, num, num, 8);
+			bool flag = Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val3, num, num, 8);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
@@ -126,14 +126,14 @@ public class State_DogFight : FSMStateBase
 					NavVector3 navVector = item2;
 					if (!flag)
 					{
-						if (!base.Agent.SamplePosition(item2, out var hitNS, 3.5f))
+						if (!Agent.SamplePosition(item2, out var hitNS, 3.5f))
 						{
 							continue;
 						}
 						navVector = hitNS.position;
 					}
-					Vector3 positionWS = base.Agent.NavToWorldSpace(navVector);
-					if (!base.Agent.IsInWater(positionWS) && base.Agent.SetDestinationWithParams(navVector, autoBraking: false, value))
+					Vector3 positionWS = Agent.NavToWorldSpace(navVector);
+					if (!Agent.IsInWater(positionWS) && Agent.SetDestinationWithParams(navVector, autoBraking: false, value))
 					{
 						return EFSMStateStatus.None;
 					}

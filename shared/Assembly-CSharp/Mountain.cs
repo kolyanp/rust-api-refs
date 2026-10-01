@@ -59,14 +59,15 @@ public class Mountain : TerrainPlacement
 		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 position = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(Vector3.zero);
+		Vector3 position = localToWorld.MultiplyPoint3x4(Vector3.zero);
 		TextureData heightdata = new TextureData(heightmap.Get());
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
-		TerrainMeta.HeightMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
+		TerrainMeta.HeightMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
@@ -76,9 +77,8 @@ public class Mountain : TerrainPlacement
 			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 			float normZ = TerrainMeta.HeightMap.Coordinate(z);
 			float normX = TerrainMeta.HeightMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
 			float num = position.y + offset.y + heightdata.GetInterpolatedHalf((val2.x + extents.x) / size.x, (val2.z + extents.z) / size.z) * size.y;
 			float num2 = Mathf.InverseLerp(position.y, position.y + Fade, num);
 			if (num2 != 0f)
@@ -133,16 +133,17 @@ public class Mountain : TerrainPlacement
 		{
 			return;
 		}
-		Vector3 position = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(Vector3.zero);
+		Vector3 position = localToWorld.MultiplyPoint3x4(Vector3.zero);
 		TextureData heightdata = new TextureData(heightmap.Get());
 		TextureData splat0data = new TextureData(splatmap0.Get());
 		TextureData splat1data = new TextureData(splatmap1.Get());
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
-		TerrainMeta.SplatMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
+		TerrainMeta.SplatMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
@@ -166,9 +167,8 @@ public class Mountain : TerrainPlacement
 			}
 			float normZ = TerrainMeta.SplatMap.Coordinate(z);
 			float normX = TerrainMeta.SplatMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
 			float num = position.y + offset.y + heightdata.GetInterpolatedHalf((val2.x + extents.x) / size.x, (val2.z + extents.z) / size.z) * size.y;
 			float num2 = Mathf.InverseLerp(position.y, position.y + Fade, num);
 			if (num2 != 0f)
@@ -256,15 +256,16 @@ public class Mountain : TerrainPlacement
 		{
 			return;
 		}
-		Vector3 position = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(Vector3.zero);
+		Vector3 position = localToWorld.MultiplyPoint3x4(Vector3.zero);
 		TextureData heightdata = new TextureData(heightmap.Get());
 		TextureData biomedata = new TextureData(biomemap.Get());
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
-		TerrainMeta.BiomeMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
+		TerrainMeta.BiomeMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
@@ -280,9 +281,8 @@ public class Mountain : TerrainPlacement
 			//IL_0178: Unknown result type (might be due to invalid IL or missing references)
 			float normZ = TerrainMeta.BiomeMap.Coordinate(z);
 			float normX = TerrainMeta.BiomeMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
 			float num = position.y + offset.y + heightdata.GetInterpolatedHalf((val2.x + extents.x) / size.x, (val2.z + extents.z) / size.z) * size.y;
 			float num2 = Mathf.InverseLerp(position.y, position.y + Fade, num);
 			if (num2 != 0f)
@@ -347,12 +347,13 @@ public class Mountain : TerrainPlacement
 		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
 		TextureData topologydata = new TextureData(topologymap.Get());
-		Vector3 v = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
-		Vector3 v2 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
-		Vector3 v3 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
-		Vector3 v4 = ((Matrix4x4)(ref localToWorld)).MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
-		TerrainMeta.TopologyMap.ForEachParallel(v, v2, v3, v4, delegate(int x, int z)
+		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
+		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
+		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
+		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
+		TerrainMeta.TopologyMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
+			//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
@@ -369,9 +370,8 @@ public class Mountain : TerrainPlacement
 			}
 			float normZ = TerrainMeta.TopologyMap.Coordinate(z);
 			float normX = TerrainMeta.TopologyMap.Coordinate(x);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
-			Vector3 val2 = ((Matrix4x4)(ref worldToLocal)).MultiplyPoint3x4(val) - offset;
+			Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), 0f, TerrainMeta.DenormalizeZ(normZ));
+			Vector3 val2 = worldToLocal.MultiplyPoint3x4(val) - offset;
 			int interpolatedInt = topologydata.GetInterpolatedInt((val2.x + extents.x) / size.x, (val2.z + extents.z) / size.z);
 			if (ShouldTopology(interpolatedInt))
 			{

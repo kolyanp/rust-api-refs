@@ -31,13 +31,13 @@ public class ShopFront : StorageContainer
 
 	private bool swappingItems;
 
-	private static readonly Phrase TradeLockedError;
+	private static readonly Phrase TradeLockedError = new Phrase("error.tradelocked", "Trade Locked!");
 
-	private static readonly Phrase TradeUnsuccessfulError;
+	private static readonly Phrase TradeUnsuccessfulError = new Phrase("error.tradeunsuccessful", "Trade Unsuccessful!");
 
 	private float AngleDotProduct => 1f - maxUseAngle / 90f;
 
-	public ItemContainer vendorInventory => base.inventory;
+	public ItemContainer vendorInventory => inventory;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -159,7 +159,7 @@ public class ShopFront : StorageContainer
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 right = ((Component)this).transform.right;
 		Vector3 val = ((Component)player).transform.position - ((Component)this).transform.position;
-		return Vector3.Dot(right, ((Vector3)(ref val)).normalized) <= 0f - AngleDotProduct;
+		return Vector3.Dot(right, val.normalized) <= 0f - AngleDotProduct;
 	}
 
 	public bool PlayerInCustomerPos(BasePlayer player)
@@ -172,7 +172,7 @@ public class ShopFront : StorageContainer
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 right = ((Component)this).transform.right;
 		Vector3 val = ((Component)player).transform.position - ((Component)this).transform.position;
-		return Vector3.Dot(right, ((Vector3)(ref val)).normalized) >= AngleDotProduct;
+		return Vector3.Dot(right, val.normalized) >= AngleDotProduct;
 	}
 
 	public bool LootEligable(BasePlayer player)
@@ -242,8 +242,8 @@ public class ShopFront : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void AcceptClicked(RPCMessage msg)
 	{
 		if (!IsTradingPlayer(msg.player) || (Object)(object)vendorPlayer == (Object)null || (Object)(object)customerPlayer == (Object)null || Interface.CallHook("OnShopAcceptClick", this, msg.player) != null)
@@ -288,7 +288,7 @@ public class ShopFront : StorageContainer
 		if (customerInventory == null)
 		{
 			customerInventory = Pool.Get<ItemContainer>();
-			customerInventory.allowedContents = ((allowedContents == (ItemContainer.ContentsType)0) ? ItemContainer.ContentsType.Generic : allowedContents);
+			customerInventory.allowedContents = ((allowedContents == 0) ? ItemContainer.ContentsType.Generic : allowedContents);
 			customerInventory.SetOnlyAllowedItem(allowedItem);
 			customerInventory.entityOwner = this;
 			customerInventory.maxStackSize = maxStackSize;
@@ -310,21 +310,21 @@ public class ShopFront : StorageContainer
 		Pool.Free<ItemContainer>(ref customerInventory);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		ResetTrade();
 	}
 
-	public override void OnItemAddedToStack(Item item, int amount)
+	public override void OnItemAddedToStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedToStack(item, amount);
+		base.OnItemAddedToStack(item, amount, sourcePlayer);
 		ResetTrade();
 	}
 
-	public override void OnItemRemovedFromStack(Item item, int amount)
+	public override void OnItemRemovedFromStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
-		base.OnItemRemovedFromStack(item, amount);
+		base.OnItemRemovedFromStack(item, amount, sourcePlayer);
 		ResetTrade();
 	}
 
@@ -452,7 +452,7 @@ public class ShopFront : StorageContainer
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		ClientRPC(RpcTarget.NetworkGroup("CLIENT_ReceivePlayers"), (NetworkableId)(((Object)(object)vendorPlayer == (Object)null) ? default(NetworkableId) : vendorPlayer.net.ID), (NetworkableId)(((Object)(object)customerPlayer == (Object)null) ? default(NetworkableId) : customerPlayer.net.ID));
+		ClientRPC(RpcTarget.NetworkGroup("CLIENT_ReceivePlayers"), ((Object)(object)vendorPlayer == (Object)null) ? default(NetworkableId) : vendorPlayer.net.ID, ((Object)(object)customerPlayer == (Object)null) ? default(NetworkableId) : customerPlayer.net.ID);
 	}
 
 	public override void GetAllInventories(List<ItemContainer> list)
@@ -464,10 +464,8 @@ public class ShopFront : StorageContainer
 	static ShopFront()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		TradeLockedError = new Phrase("error.tradelocked", "Trade Locked!");
-		TradeUnsuccessfulError = new Phrase("error.tradeunsuccessful", "Trade Unsuccessful!");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

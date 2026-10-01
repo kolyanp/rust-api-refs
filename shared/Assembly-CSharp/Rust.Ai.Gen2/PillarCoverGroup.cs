@@ -44,16 +44,16 @@ public class PillarCoverGroup : CoverGroup
 		if ((Object)(object)component != (Object)null)
 		{
 			Bounds bounds = component.bounds;
-			radius = Mathf.Max(((Bounds)(ref bounds)).extents.x, ((Bounds)(ref bounds)).extents.z) - radiusOffset;
-			isTall = ((Bounds)(ref bounds)).size.y >= 1.8f;
+			radius = Mathf.Max(bounds.extents.x, bounds.extents.z) - radiusOffset;
+			isTall = bounds.size.y >= 1.8f;
 		}
 		else if ((Object)(object)componentInChildren != (Object)null)
 		{
 			Bounds localBounds = ((Renderer)componentInChildren).localBounds;
-			Vector3 extents = ((Bounds)(ref localBounds)).extents;
-			radius = ((Vector3)(ref extents)).magnitude * ((Component)componentInChildren).transform.lossyScale.x - radiusOffset;
+			Vector3 extents = localBounds.extents;
+			radius = extents.magnitude * ((Component)componentInChildren).transform.lossyScale.x - radiusOffset;
 			localBounds = ((Renderer)componentInChildren).localBounds;
-			isTall = ((Bounds)(ref localBounds)).size.y * ((Component)componentInChildren).transform.lossyScale.y >= 1.8f;
+			isTall = localBounds.size.y * ((Component)componentInChildren).transform.lossyScale.y >= 1.8f;
 		}
 	}
 
@@ -77,6 +77,7 @@ public class PillarCoverGroup : CoverGroup
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
@@ -116,10 +117,9 @@ public class PillarCoverGroup : CoverGroup
 		{
 			Vector3 val3 = rotation * Vector3.forward;
 			Vector3 val4 = rotation * Vector3.right;
-			Vector3 val5 = default(Vector3);
-			((Vector3)(ref val5))._002Ector(Vector3.Dot(val, val4), 0f, Vector3.Dot(val, val3));
+			Vector3 val5 = new Vector3(Vector3.Dot(val, val4), 0f, Vector3.Dot(val, val3));
 			float yaw2 = Mathf.Atan2(val.x, val.z) * 57.29578f;
-			Vector3 val6 = -((Vector3)(ref val5)).normalized * (radius + 0.5f);
+			Vector3 val6 = -val5.normalized * (radius + 0.5f);
 			Vector3 val7 = position + val4 * val6.x + val3 * val6.z;
 			covers.Add(new Cover(val7, yaw2, peeks));
 		}

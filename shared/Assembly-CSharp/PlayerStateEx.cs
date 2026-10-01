@@ -9,7 +9,7 @@ public static class PlayerStateEx
 		uint seed = state.seed;
 		int saveCreatedTime = state.saveCreatedTime;
 		int num = Epoch.FromDateTime(SaveRestore.SaveCreatedTime);
-		if (288 == protocol && World.Seed == seed)
+		if (289 == protocol && World.Seed == seed)
 		{
 			return num != saveCreatedTime;
 		}

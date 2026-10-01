@@ -2,31 +2,31 @@ using UnityEngine;
 
 public class InstrumentIKController : MonoBehaviour
 {
-	public Vector3 HitRotationVector;
+	public Vector3 HitRotationVector = Vector3.forward;
 
-	public Transform[] LeftHandIkTargets;
+	public Transform[] LeftHandIkTargets = new Transform[0];
 
-	public Transform[] LeftHandIKTargetHitRotations;
+	public Transform[] LeftHandIKTargetHitRotations = new Transform[0];
 
-	public Transform[] RightHandIkTargets;
+	public Transform[] RightHandIkTargets = new Transform[0];
 
-	public Transform[] RightHandIKTargetHitRotations;
+	public Transform[] RightHandIKTargetHitRotations = new Transform[0];
 
-	public Transform[] RightFootIkTargets;
+	public Transform[] RightFootIkTargets = new Transform[0];
 
 	public Transform LeftFootIkTarget;
 
-	public AnimationCurve HandHeightCurve;
+	public AnimationCurve HandHeightCurve = AnimationCurve.Constant(0f, 1f, 0f);
 
-	public float HandHeightMultiplier;
+	public float HandHeightMultiplier = 1f;
 
-	public float HandMoveLerpSpeed;
+	public float HandMoveLerpSpeed = 50f;
 
 	public bool DebugHitRotation;
 
-	public AnimationCurve HandHitCurve;
+	public AnimationCurve HandHitCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
-	public float NoteHitTime;
+	public float NoteHitTime = 0.5f;
 
 	[Header("Look IK")]
 	public float BodyLookWeight;
@@ -41,17 +41,5 @@ public class InstrumentIKController : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		HitRotationVector = Vector3.forward;
-		LeftHandIkTargets = (Transform[])(object)new Transform[0];
-		LeftHandIKTargetHitRotations = (Transform[])(object)new Transform[0];
-		RightHandIkTargets = (Transform[])(object)new Transform[0];
-		RightHandIKTargetHitRotations = (Transform[])(object)new Transform[0];
-		RightFootIkTargets = (Transform[])(object)new Transform[0];
-		HandHeightCurve = AnimationCurve.Constant(0f, 1f, 0f);
-		HandHeightMultiplier = 1f;
-		HandMoveLerpSpeed = 50f;
-		HandHitCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
-		NoteHitTime = 0.5f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

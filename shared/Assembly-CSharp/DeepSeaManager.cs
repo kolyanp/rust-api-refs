@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
@@ -30,19 +31,11 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		public GameObjectRef alarmEffect;
 	}
 
-	private struct PlacedPoint
+	private struct PlacedPoint(Vector2 pos, float radius)
 	{
-		public Vector2 pos;
+		public Vector2 pos = pos;
 
-		public float radius;
-
-		public PlacedPoint(Vector2 pos, float radius)
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			this.pos = pos;
-			this.radius = radius;
-		}
+		public float radius = radius;
 	}
 
 	[NonSerialized]
@@ -56,9 +49,9 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public List<BaseEntity> vehicleWhitelist;
 
-	public static List<DeepSeaPortal> ServerPortals;
+	public static List<DeepSeaPortal> ServerPortals = new List<DeepSeaPortal>();
 
-	public static List<DeepSeaPortal> ClientPortals;
+	public static List<DeepSeaPortal> ClientPortals = new List<DeepSeaPortal>();
 
 	public static Transform PortalEntranceTransform;
 
@@ -69,30 +62,32 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	public static OBB PortalExitBounds;
 
 	[NonSerialized]
-	public static ListHashSet<IslandBillboard> ServerBillboards;
+	public static ListHashSet<IslandBillboard> ServerBillboards = new ListHashSet<IslandBillboard>();
 
 	private readonly HashSet<uint> vehiclePrefabWhitelist = new HashSet<uint>();
 
 	[SerializeField]
 	private WipeStep[] wipeSteps;
 
-	public static Phrase AboutToClose_Phrase;
+	public static Phrase AboutToClose_Phrase = new Phrase("deepsea.abouttoclose", "The deep sea is no longer safe to enter");
 
-	public static Phrase BoatNotStrongEnough_ToDeepSea_Phrase;
+	public static Phrase BoatNotStrongEnough_ToDeepSea_Phrase = new Phrase("deepsea.wrongboat-todeepsea", "Your boat cannot survive the journey to the deep sea");
 
-	public static Phrase BoatNotStrongEnough_ToMainLand_Phrase;
+	public static Phrase BoatNotStrongEnough_ToMainLand_Phrase = new Phrase("deepsea.wrongboat-tomainland", "Your boat cannot survive the journey to the main land");
 
-	public static Phrase NeedBoat_ToDeepSea_Phrase;
+	public static Phrase NeedBoat_ToDeepSea_Phrase = new Phrase("deepsea.needboat-todeepsea", "You cannot reach the deep sea without a sturdy boat");
 
-	public static Phrase NeedBoat_ToMainLand_Phrase;
+	public static Phrase NeedBoat_ToMainLand_Phrase = new Phrase("deepsea.needboat-tomainland", "You cannot reach the main land without a sturdy boat");
 
-	public static Phrase UnauthorizedVehicle_Phrase;
+	public static Phrase UnauthorizedVehicle_Phrase = new Phrase("deepsea.unauthorizedvehicle", "You cannot reach the deep sea with other vehicles on board");
 
 	private Transform serverVolumesParent;
 
 	private int nextWipeStepIndex;
 
 	public const string ACHIEVEMENT_ENTER_DEEP_SEA_NAME = "ENTER_DEEP_SEA";
+
+	private static Dictionary<BasePlayer, Vector3> playerPassengerMoveLookup = new Dictionary<BasePlayer, Vector3>();
 
 	private readonly List<ulong> foodTollPaid = new List<ulong>();
 
@@ -105,16 +100,16 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	public Material SeaFloorMaterial;
 
 	[NonSerialized]
-	public static ListHashSet<DeepSeaIsland> ServerIslands;
+	public static ListHashSet<DeepSeaIsland> ServerIslands = new ListHashSet<DeepSeaIsland>();
 
 	[NonSerialized]
-	public static ListHashSet<GhostShip> ServerGhostShips;
+	public static ListHashSet<GhostShip> ServerGhostShips = new ListHashSet<GhostShip>();
 
 	[NonSerialized]
-	public static ListHashSet<DeepSeaFloatingCity> ServerFloatingCities;
+	public static ListHashSet<DeepSeaFloatingCity> ServerFloatingCities = new ListHashSet<DeepSeaFloatingCity>();
 
 	[NonSerialized]
-	public static ListHashSet<RHIB> ServerRHIBS;
+	public static ListHashSet<RHIB> ServerRHIBS = new ListHashSet<RHIB>();
 
 	public static WaitForSeconds WaitSpawnGroupInterval;
 
@@ -122,7 +117,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public static WaitForSeconds WaitNavMeshInterval;
 
-	private static readonly List<PlacedPoint> placedPoints;
+	private static readonly List<PlacedPoint> placedPoints = new List<PlacedPoint>();
 
 	private List<int>[,] grid;
 
@@ -138,9 +133,9 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public AnimationCurve EndWipeRadiationCurve;
 
-	public static Bounds DeepSeaBounds;
+	public static Bounds DeepSeaBounds = new Bounds(new Vector3(-5900f, 0f, 0f), new Vector3(4000f, 4000f, 4000f));
 
-	public static float SeaFloorDepth;
+	public static float SeaFloorDepth = -50f;
 
 	private const float RadVolumeWidth = 250f;
 
@@ -267,9 +262,9 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		if (portalMode == DeepSeaPortal.PortalModeEnum.Entrance)
 		{
-			return ((OBB)(ref PortalEntranceBounds)).Contains(position);
+			return PortalEntranceBounds.Contains(position);
 		}
-		return ((OBB)(ref PortalExitBounds)).Contains(position);
+		return PortalExitBounds.Contains(position);
 	}
 
 	public static bool IsInsideAnyPortal(Vector3 position, DeepSeaPortal.PortalModeEnum portalMode, out DeepSeaPortal deepSeaPortal)
@@ -283,7 +278,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			if (serverPortal.PortalMode == portalMode)
 			{
 				OBB val = serverPortal.WorldSpaceBounds();
-				if (((OBB)(ref val)).Contains(position))
+				if (val.Contains(position))
 				{
 					deepSeaPortal = serverPortal;
 					return true;
@@ -343,8 +338,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			float depth = 300f;
 			Bounds entrancePortalBounds = GetEntrancePortalBounds(cardinalDirection, depth);
 			Quaternion portalDirection = GetPortalDirection(cardinalDirection);
-			DeepSeaPortal obj = GameManager.server.CreateEntity(PortalPrefab.resourcePath, ((Bounds)(ref entrancePortalBounds)).center, portalDirection) as DeepSeaPortal;
-			((Component)obj).transform.localScale = ((Bounds)(ref entrancePortalBounds)).size;
+			DeepSeaPortal obj = GameManager.server.CreateEntity(PortalPrefab.resourcePath, entrancePortalBounds.center, portalDirection) as DeepSeaPortal;
+			((Component)obj).transform.localScale = entrancePortalBounds.size;
 			obj.PortalMode = DeepSeaPortal.PortalModeEnum.Entrance;
 			obj.PortalDirection = cardinalDirection;
 			obj.Spawn();
@@ -403,9 +398,9 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		float offset = num / 2f;
 		Bounds exitPortalBounds = GetExitPortalBounds(ExitPortalDirection, num, 300f, offset);
 		Quaternion portalDirection = GetPortalDirection(ExitPortalDirection);
-		Vector3 pos = ((Bounds)(ref exitPortalBounds)).center + ((Component)this).transform.position;
+		Vector3 pos = exitPortalBounds.center + ((Component)this).transform.position;
 		DeepSeaPortal obj = GameManager.server.CreateEntity(PortalPrefab.resourcePath, pos, portalDirection) as DeepSeaPortal;
-		((Component)obj).transform.localScale = ((Bounds)(ref exitPortalBounds)).size;
+		((Component)obj).transform.localScale = exitPortalBounds.size;
 		obj.PortalMode = DeepSeaPortal.PortalModeEnum.Exit;
 		obj.PortalDirection = ExitPortalDirection;
 		obj.Spawn();
@@ -522,7 +517,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 				float num3 = Random.Range(0f - num, num);
 				float num4 = Random.Range(0f - num2, num2);
 				lastCandidate = position + val * 2000f + val2 * num3 + portalDirection * Vector3.forward * num4;
-				if (!list.Any(delegate(Vector3 p)
+				if (!list.Any((Vector3 p) =>
 				{
 					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -577,6 +572,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
@@ -592,7 +588,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
 		float num = 60f;
-		Vector3 extents = ((Bounds)(ref SingletonComponent<ValidBounds>.Instance.worldBounds)).extents;
+		Vector3 extents = SingletonComponent<ValidBounds>.Instance.worldBounds.extents;
 		Vector3 val = TerrainMeta.MarginSize / 2f;
 		float num2 = Mathf.Min(Mathf.Min(extents.x, extents.z), Mathf.Min(val.x, val.z));
 		float num3 = vehicle.world_boundary_force_start_distance - vehicle.world_boundary_force_offset;
@@ -600,16 +596,15 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		float num5 = num2 * 2f;
 		float num6 = Mathf.Min(TerrainMeta.Size.x / 2f + DeepSea.island_portal_terrain_distance, num4);
 		num6 += offset;
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(num5, height, depth);
-		return (Bounds)(direction switch
+		Vector3 val2 = new Vector3(num5, height, depth);
+		return direction switch
 		{
 			CardinalDirection.North => new Bounds(new Vector3(0f, 0f, num6), val2), 
 			CardinalDirection.South => new Bounds(new Vector3(0f, 0f, 0f - num6), val2), 
 			CardinalDirection.East => new Bounds(new Vector3(num6, 0f, 0f), val2), 
 			CardinalDirection.West => new Bounds(new Vector3(0f - num6, 0f, 0f), val2), 
 			_ => default(Bounds), 
-		});
+		};
 	}
 
 	public Bounds GetExitPortalBounds(CardinalDirection direction, float depth, float height = 300f, float offset = 0f)
@@ -636,14 +631,14 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		return (Bounds)(direction switch
+		return direction switch
 		{
-			CardinalDirection.North => new Bounds(new Vector3(0f, 0f, ((Bounds)(ref DeepSeaBounds)).size.z / 2f - offset), new Vector3(((Bounds)(ref DeepSeaBounds)).size.x, height, depth)), 
-			CardinalDirection.South => new Bounds(new Vector3(0f, 0f, ((Bounds)(ref DeepSeaBounds)).size.z / -2f + offset), new Vector3(((Bounds)(ref DeepSeaBounds)).size.x, height, depth)), 
-			CardinalDirection.East => new Bounds(new Vector3(((Bounds)(ref DeepSeaBounds)).size.x / 2f - offset, 0f, 0f), new Vector3(((Bounds)(ref DeepSeaBounds)).size.z, height, depth)), 
-			CardinalDirection.West => new Bounds(new Vector3(((Bounds)(ref DeepSeaBounds)).size.x / -2f + offset, 0f, 0f), new Vector3(((Bounds)(ref DeepSeaBounds)).size.z, height, depth)), 
+			CardinalDirection.North => new Bounds(new Vector3(0f, 0f, DeepSeaBounds.size.z / 2f - offset), new Vector3(DeepSeaBounds.size.x, height, depth)), 
+			CardinalDirection.South => new Bounds(new Vector3(0f, 0f, DeepSeaBounds.size.z / -2f + offset), new Vector3(DeepSeaBounds.size.x, height, depth)), 
+			CardinalDirection.East => new Bounds(new Vector3(DeepSeaBounds.size.x / 2f - offset, 0f, 0f), new Vector3(DeepSeaBounds.size.z, height, depth)), 
+			CardinalDirection.West => new Bounds(new Vector3(DeepSeaBounds.size.x / -2f + offset, 0f, 0f), new Vector3(DeepSeaBounds.size.z, height, depth)), 
 			_ => default(Bounds), 
-		});
+		};
 	}
 
 	private Quaternion GetPortalDirection(CardinalDirection direction)
@@ -671,7 +666,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = SetToOceanHeight(((Bounds)(ref DeepSeaBounds)).center);
+		Vector3 val = SetToOceanHeight(DeepSeaBounds.center);
 		if (!FindPortals(out var entrancePortal, out var exitPortal))
 		{
 			Debug.LogWarning((object)"No entrance/exit portals found in deep sea, defaulting to center of deep sea");
@@ -679,7 +674,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		}
 		Vector3 normalizedPosition = ConvertInputPositionToOutputPosition(entrancePortal, exitPortal, ((Component)entity).transform.position);
 		OBB val2 = exitPortal.WorldSpaceBounds();
-		if (FindUnoccupiedPortalSpawnLocation(normalizedPosition, ((OBB)(ref val2)).ToBounds(), val, entity.bounds, out var spawnPos))
+		if (FindUnoccupiedPortalSpawnLocation(normalizedPosition, val2.ToBounds(), val, entity.bounds, out var spawnPos))
 		{
 			return spawnPos;
 		}
@@ -727,13 +722,13 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		Vector3 val = ConvertInputPositionToOutputPosition(exitPortal, entrancePortal, ((Component)entity).transform.position);
 		Vector3 centerOfArea = SetToOceanHeight(TerrainMeta.Center);
 		OBB val2 = entrancePortal.WorldSpaceBounds();
-		Bounds portalWorldBounds = ((OBB)(ref val2)).ToBounds();
+		Bounds portalWorldBounds = val2.ToBounds();
 		Vector3 right = ((Component)entrancePortal).transform.right;
 		Vector3 position = ((Component)entrancePortal).transform.position;
-		float num = ((Vector3)(ref position)).magnitude - ((Component)entrancePortal).transform.localScale.z * 0.5f - 50f;
+		float num = position.magnitude - ((Component)entrancePortal).transform.localScale.z * 0.5f - 50f;
 		float num2 = Mathf.Max(0f, ((Component)entrancePortal).transform.localScale.x - num * 2f);
-		((Bounds)(ref portalWorldBounds)).Expand(-new Vector3(Mathf.Abs(right.x) * num2, 0f, Mathf.Abs(right.z) * num2));
-		val = ((Bounds)(ref portalWorldBounds)).ClosestPoint(val);
+		portalWorldBounds.Expand(-new Vector3(Mathf.Abs(right.x) * num2, 0f, Mathf.Abs(right.z) * num2));
+		val = portalWorldBounds.ClosestPoint(val);
 		if (FindUnoccupiedPortalSpawnLocation(val, portalWorldBounds, centerOfArea, entity.bounds, out var spawnPos))
 		{
 			return spawnPos;
@@ -779,7 +774,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		val.x *= -1f;
 		Vector3 val2 = ((Component)outputPortal).transform.TransformPoint(val);
 		OBB val3 = outputPortal.WorldSpaceBounds();
-		return ((OBB)(ref val3)).ClosestPoint(val2);
+		return val3.ClosestPoint(val2);
 	}
 
 	private Vector3 AdjustPortalExitPosition(Vector3 position, Vector3 centerOfArea, float distanceToMove = 20f)
@@ -847,8 +842,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = AdjustPortalExitPosition(normalizedPosition, centerOfArea, distanceToMove);
-		Vector3 val2 = AdjustPortalExitPosition(((Bounds)(ref portalWorldBounds)).min, centerOfArea, distanceToMove);
-		Vector3 val3 = AdjustPortalExitPosition(((Bounds)(ref portalWorldBounds)).max, centerOfArea, distanceToMove);
+		Vector3 val2 = AdjustPortalExitPosition(portalWorldBounds.min, centerOfArea, distanceToMove);
+		Vector3 val3 = AdjustPortalExitPosition(portalWorldBounds.max, centerOfArea, distanceToMove);
 		float duration = 30f;
 		if (DeepSea.debug_portal_spawnattempts)
 		{
@@ -859,8 +854,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			ConsoleNetwork.BroadcastToAdmins(DDrawCommand.Sphere(val3, duration, Color.yellow, 10f));
 			ConsoleNetwork.BroadcastToAdmins(DDrawCommand.Text(val3, duration, Color.yellow, "Max"));
 		}
-		Vector3 extents = ((Bounds)(ref entityBounds)).extents;
-		float magnitude = ((Vector3)(ref extents)).magnitude;
+		Vector3 extents = entityBounds.extents;
+		float magnitude = extents.magnitude;
 		if (TestPortalSpawnLocations(val, val2, magnitude, out spawnPos))
 		{
 			return true;
@@ -869,7 +864,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		{
 			return true;
 		}
-		spawnPos = default(Vector3);
+		spawnPos = default;
 		return false;
 	}
 
@@ -917,7 +912,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			}
 			val = Vector3.MoveTowards(val, endPos, radius);
 		}
-		spawnPos = default(Vector3);
+		spawnPos = default;
 		return false;
 	}
 
@@ -1153,9 +1148,9 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public void MoveToDeepSea(BaseEntity entity)
 	{
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)entity == (Object)null)
 		{
 			return;
@@ -1170,9 +1165,11 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			try
 			{
 				BaseVehicle.GetPassengersForVehicle(entity, (List<BasePlayer>)(object)val);
+				CachePassengersLocalPosition(entity, val);
 				PreTeleportEntity(entity, (List<BasePlayer>)(object)val, isEnterDeepSea: true);
 				Vector3 deepSeaEntrancePosition = GetDeepSeaEntrancePosition(entity);
 				TeleportEntity(entity, deepSeaEntrancePosition);
+				RestorePlayersLocalPosition(entity, val);
 				PostTeleportEntity(entity, (List<BasePlayer>)(object)val);
 				NotifyEntityMovedToDeepSea(entity);
 			}
@@ -1183,11 +1180,46 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		}
 	}
 
+	private static void RestorePlayersLocalPosition(BaseEntity entity, PooledList<BasePlayer> passengers)
+	{
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		foreach (BasePlayer item in (List<BasePlayer>)(object)passengers)
+		{
+			if (item.isMounted || (Object)(object)item.GetParentEntity() != (Object)null)
+			{
+				break;
+			}
+			if (playerPassengerMoveLookup.TryGetValue(item, out var value))
+			{
+				Vector3 newPos = ((Component)entity).transform.TransformPoint(value);
+				item.MovePosition(newPos);
+			}
+		}
+	}
+
+	private static void CachePassengersLocalPosition(BaseEntity entity, PooledList<BasePlayer> passengers)
+	{
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		if (!DeepSea.strictTransitionReposition)
+		{
+			return;
+		}
+		playerPassengerMoveLookup.Clear();
+		foreach (BasePlayer item in (List<BasePlayer>)(object)passengers)
+		{
+			playerPassengerMoveLookup.TryAdd(item, ((Component)entity).transform.InverseTransformPoint(((Component)item).transform.position));
+		}
+	}
+
 	public void MoveToMainIsland(BaseEntity entity)
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)entity == (Object)null)
 		{
 			return;
@@ -1207,8 +1239,10 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		try
 		{
 			BaseVehicle.GetPassengersForVehicle(entity, (List<BasePlayer>)(object)val);
+			CachePassengersLocalPosition(entity, val);
 			PreTeleportEntity(entity, (List<BasePlayer>)(object)val, isEnterDeepSea: false);
 			TeleportEntity(entity, deepSeaExitPosition);
+			RestorePlayersLocalPosition(entity, val);
 			PostTeleportEntity(entity, (List<BasePlayer>)(object)val);
 			NotifyEntityMovedToMainIsland(entity);
 		}
@@ -1285,7 +1319,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			}
 			passenger.EnsureDismounted();
 			passenger.SendNetworkUpdateImmediate();
-			if (Rust.GameInfo.HasAchievements)
+			if (GameInfo.HasAchievements)
 			{
 				passenger.GiveAchievement("ENTER_DEEP_SEA");
 			}
@@ -1367,24 +1401,24 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			serverVolumesParent = new GameObject("Volumes").transform;
 			serverVolumesParent.SetParent(((Component)this).transform, false);
 		}
-		CardinalDirection num = GetEntrancePortalDirection().Opposite();
-		if (num != CardinalDirection.West)
+		CardinalDirection cardinalDirection = GetEntrancePortalDirection().Opposite();
+		if (cardinalDirection != CardinalDirection.West)
 		{
-			CreateRadiationVolume("DeepSea_RadVolume_Left", new Vector3(((Bounds)(ref DeepSeaBounds)).size.x / -2f, 0f, 0f), new Vector3(250f, ((Bounds)(ref DeepSeaBounds)).size.y, ((Bounds)(ref DeepSeaBounds)).size.z));
+			CreateRadiationVolume("DeepSea_RadVolume_Left", new Vector3(DeepSeaBounds.size.x / -2f, 0f, 0f), new Vector3(250f, DeepSeaBounds.size.y, DeepSeaBounds.size.z));
 		}
-		if (num != CardinalDirection.East)
+		if (cardinalDirection != CardinalDirection.East)
 		{
-			CreateRadiationVolume("DeepSea_RadVolume_Right", new Vector3(((Bounds)(ref DeepSeaBounds)).size.x / 2f, 0f, 0f), new Vector3(250f, ((Bounds)(ref DeepSeaBounds)).size.y, ((Bounds)(ref DeepSeaBounds)).size.z));
+			CreateRadiationVolume("DeepSea_RadVolume_Right", new Vector3(DeepSeaBounds.size.x / 2f, 0f, 0f), new Vector3(250f, DeepSeaBounds.size.y, DeepSeaBounds.size.z));
 		}
-		if (num != CardinalDirection.North)
+		if (cardinalDirection != CardinalDirection.North)
 		{
-			CreateRadiationVolume("DeepSea_RadVolume_Front", new Vector3(0f, 0f, ((Bounds)(ref DeepSeaBounds)).size.z / 2f), new Vector3(((Bounds)(ref DeepSeaBounds)).size.x, ((Bounds)(ref DeepSeaBounds)).size.y, 250f));
+			CreateRadiationVolume("DeepSea_RadVolume_Front", new Vector3(0f, 0f, DeepSeaBounds.size.z / 2f), new Vector3(DeepSeaBounds.size.x, DeepSeaBounds.size.y, 250f));
 		}
-		if (num != CardinalDirection.South)
+		if (cardinalDirection != CardinalDirection.South)
 		{
-			CreateRadiationVolume("DeepSea_RadVolume_Back", new Vector3(0f, 0f, ((Bounds)(ref DeepSeaBounds)).size.z / -2f), new Vector3(((Bounds)(ref DeepSeaBounds)).size.x, ((Bounds)(ref DeepSeaBounds)).size.y, 250f));
+			CreateRadiationVolume("DeepSea_RadVolume_Back", new Vector3(0f, 0f, DeepSeaBounds.size.z / -2f), new Vector3(DeepSeaBounds.size.x, DeepSeaBounds.size.y, 250f));
 		}
-		wipeRadiationVolume = CreateRadiationVolume("DeepSea_RadVolume_Wipe", Vector3.zero, ((Bounds)(ref DeepSeaBounds)).size);
+		wipeRadiationVolume = CreateRadiationVolume("DeepSea_RadVolume_Wipe", Vector3.zero, DeepSeaBounds.size);
 		ComponentExtensions.SetActive<TriggerRadiation>(wipeRadiationVolume, false);
 	}
 
@@ -1396,10 +1430,10 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		BoxCollider obj = CreateCollider(name, pos, size, serverVolumesParent);
-		((Collider)obj).isTrigger = true;
-		TransformEx.SetLayerRecursive(((Component)obj).gameObject, 18);
-		TriggerRadiation triggerRadiation = ((Component)obj).gameObject.AddComponent<TriggerRadiation>();
+		BoxCollider val = CreateCollider(name, pos, size, serverVolumesParent);
+		((Collider)val).isTrigger = true;
+		TransformEx.SetLayerRecursive(((Component)val).gameObject, 18);
+		TriggerRadiation triggerRadiation = ((Component)val).gameObject.AddComponent<TriggerRadiation>();
 		triggerRadiation.InterestLayers = LayerMask.op_Implicit(131072);
 		triggerRadiation.usePerAxisFalloff = true;
 		triggerRadiation.BypassArmor = true;
@@ -1939,72 +1973,81 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			DeepSea.rhib_radius
 		});
 		cellSize = num / Mathf.Sqrt(2f);
-		gridSizeX = Mathf.CeilToInt(((Bounds)(ref DeepSeaBounds)).size.x / cellSize);
-		gridSizeY = Mathf.CeilToInt(((Bounds)(ref DeepSeaBounds)).size.z / cellSize);
+		gridSizeX = Mathf.CeilToInt(DeepSeaBounds.size.x / cellSize);
+		gridSizeY = Mathf.CeilToInt(DeepSeaBounds.size.z / cellSize);
 		grid = new List<int>[gridSizeX, gridSizeY];
 		if (floatingCityRefs.Length != 0)
 		{
 			shuffledPrefabs = GetShuffledPrefabQueue(floatingCityRefs);
-			yield return ScatterPointsAsync(DeepSea.floatingcity_count, DeepSea.floatingcity_radius, DeepSea.floatingcity_edgeMargin, DeepSea.floatingcity_minDist, delegate(Vector2 point)
+			yield return ScatterPointsAsync(DeepSea.floatingcity_count, DeepSea.floatingcity_radius, DeepSea.floatingcity_edgeMargin, DeepSea.floatingcity_minDist, (Vector2 point) =>
 			{
-				//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+				//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 				//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+				//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 				GameObjectRef nextPrefab = GetNextPrefab(ref shuffledPrefabs, floatingCityRefs);
-				Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-				DeepSeaFloatingCity deepSeaFloatingCity = SpawnEntityAt(nextPrefab.resourcePath, new Vector3(point.x, 0f, point.y), rotation) as DeepSeaFloatingCity;
-				if ((Object)(object)deepSeaFloatingCity != (Object)null)
+				if (nextPrefab != null && nextPrefab.isValid)
 				{
-					ServerFloatingCities.TryAdd(deepSeaFloatingCity);
+					Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+					DeepSeaFloatingCity deepSeaFloatingCity = SpawnEntityAt(nextPrefab.resourcePath, new Vector3(point.x, 0f, point.y), rotation) as DeepSeaFloatingCity;
+					if ((Object)(object)deepSeaFloatingCity != (Object)null)
+					{
+						ServerFloatingCities.TryAdd(deepSeaFloatingCity);
+					}
 				}
 			});
 		}
 		Log($"Spawned {ServerFloatingCities.Count} floating cities");
 		shuffledPrefabs = GetShuffledPrefabQueue(islandRefs);
-		yield return ScatterPointsAsync(DeepSea.island_count, DeepSea.island_radius, DeepSea.island_edgeMargin, DeepSea.island_minDist, delegate(Vector2 point)
+		yield return ScatterPointsAsync(DeepSea.island_count, DeepSea.island_radius, DeepSea.island_edgeMargin, DeepSea.island_minDist, (Vector2 point) =>
 		{
-			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 			GameObjectRef nextPrefab = GetNextPrefab(ref shuffledPrefabs, islandRefs);
-			Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-			DeepSeaIsland deepSeaIsland = SpawnEntityAt(nextPrefab.resourcePath, new Vector3(point.x, 0f, point.y), rotation) as DeepSeaIsland;
-			if ((Object)(object)deepSeaIsland != (Object)null)
+			if (nextPrefab != null && nextPrefab.isValid)
 			{
-				ServerIslands.TryAdd(deepSeaIsland);
+				Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+				DeepSeaIsland deepSeaIsland = SpawnEntityAt(nextPrefab.resourcePath, new Vector3(point.x, 0f, point.y), rotation) as DeepSeaIsland;
+				if ((Object)(object)deepSeaIsland != (Object)null)
+				{
+					ServerIslands.TryAdd(deepSeaIsland);
+				}
 			}
 		});
 		Log($"Spawned {ServerIslands.Count} islands");
 		if (ghostShipRefs.Length != 0)
 		{
 			shuffledPrefabs = GetShuffledPrefabQueue(ghostShipRefs);
-			yield return ScatterPointsAsync(DeepSea.ghostship_count, DeepSea.ghostship_radius, DeepSea.ghostship_edgeMargin, DeepSea.ghostship_minDist, delegate(Vector2 point)
+			yield return ScatterPointsAsync(DeepSea.ghostship_count, DeepSea.ghostship_radius, DeepSea.ghostship_edgeMargin, DeepSea.ghostship_minDist, (Vector2 point) =>
 			{
-				//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+				//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 				//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+				//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 				GameObjectRef nextPrefab = GetNextPrefab(ref shuffledPrefabs, ghostShipRefs);
-				Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-				GhostShip ghostShip = SpawnEntityAt(nextPrefab.resourcePath, new Vector3(point.x, 0f, point.y), rotation) as GhostShip;
-				if ((Object)(object)ghostShip != (Object)null)
+				if (nextPrefab != null && nextPrefab.isValid)
 				{
-					ServerGhostShips.TryAdd(ghostShip);
+					Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+					GhostShip ghostShip = SpawnEntityAt(nextPrefab.resourcePath, new Vector3(point.x, 0f, point.y), rotation) as GhostShip;
+					if ((Object)(object)ghostShip != (Object)null)
+					{
+						ServerGhostShips.TryAdd(ghostShip);
+					}
 				}
 			});
 		}
 		Log($"Spawned {ServerGhostShips.Count} ghost ships");
 		if (AI.scientist_spawners_enabled)
 		{
-			yield return ScatterPointsAsync(DeepSea.rhib_count, DeepSea.rhib_radius, DeepSea.rhib_edgeMargin, DeepSea.rhib_minDist, delegate(Vector2 pos)
+			yield return ScatterPointsAsync(DeepSea.rhib_count, DeepSea.rhib_radius, DeepSea.rhib_edgeMargin, DeepSea.rhib_minDist, (Vector2 pos) =>
 			{
 				//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 				//IL_000a: Unknown result type (might be due to invalid IL or missing references)
@@ -2018,8 +2061,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 				//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-				Vector3 val = ((Bounds)(ref DeepSeaBounds)).center - new Vector3(pos.x, 0f, pos.y);
-				Quaternion rot = Quaternion.LookRotation(((Vector3)(ref val)).normalized);
+				Vector3 val = DeepSeaBounds.center - new Vector3(pos.x, 0f, pos.y);
+				Quaternion rot = Quaternion.LookRotation(val.normalized);
 				BoatAI.SpawnBoatGroup(pos, rot, null, registerWithDeepSea: true);
 				Log($"Spawning boat AI group at {pos}");
 			});
@@ -2064,10 +2107,10 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
 		Vector2Int val = ToCell(candidatePos);
 		int num = Mathf.CeilToInt(Mathf.Max(candidateRadius, minDist) / cellSize);
-		int num2 = Mathf.Max(0, ((Vector2Int)(ref val)).x - num);
-		int num3 = Mathf.Min(gridSizeX - 1, ((Vector2Int)(ref val)).x + num);
-		int num4 = Mathf.Max(0, ((Vector2Int)(ref val)).y - num);
-		int num5 = Mathf.Min(gridSizeY - 1, ((Vector2Int)(ref val)).y + num);
+		int num2 = Mathf.Max(0, val.x - num);
+		int num3 = Mathf.Min(gridSizeX - 1, val.x + num);
+		int num4 = Mathf.Max(0, val.y - num);
+		int num5 = Mathf.Min(gridSizeY - 1, val.y + num);
 		for (int i = num4; i <= num5; i++)
 		{
 			for (int j = num2; j <= num3; j++)
@@ -2082,7 +2125,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 					PlacedPoint placedPoint = placedPoints[item];
 					float num6 = ((item < startCount || minDist == 0f) ? Mathf.Max(placedPoint.radius, candidateRadius) : Mathf.Max(minDist, Mathf.Max(placedPoint.radius, candidateRadius)));
 					Vector2 val2 = candidatePos - placedPoint.pos;
-					if (((Vector2)(ref val2)).sqrMagnitude < num6 * num6)
+					if (val2.sqrMagnitude < num6 * num6)
 					{
 						return false;
 					}
@@ -2114,11 +2157,11 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		Vector2Int val = ToCell(point);
-		if (grid[((Vector2Int)(ref val)).x, ((Vector2Int)(ref val)).y] == null)
+		if (grid[val.x, val.y] == null)
 		{
-			grid[((Vector2Int)(ref val)).x, ((Vector2Int)(ref val)).y] = new List<int>(32);
+			grid[val.x, val.y] = new List<int>(32);
 		}
-		grid[((Vector2Int)(ref val)).x, ((Vector2Int)(ref val)).y].Add(index);
+		grid[val.x, val.y].Add(index);
 	}
 
 	private Vector2Int ToCell(Vector2 point)
@@ -2128,8 +2171,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		float num = (point.x - ((Bounds)(ref DeepSeaBounds)).min.x) / cellSize;
-		float num2 = (point.y - ((Bounds)(ref DeepSeaBounds)).min.z) / cellSize;
+		float num = (point.x - DeepSeaBounds.min.x) / cellSize;
+		float num2 = (point.y - DeepSeaBounds.min.z) / cellSize;
 		return new Vector2Int(Mathf.FloorToInt(num), Mathf.FloorToInt(num2));
 	}
 
@@ -2140,8 +2183,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		float num = Random.Range(((Bounds)(ref DeepSeaBounds)).min.x + edgeMargin, ((Bounds)(ref DeepSeaBounds)).max.x - edgeMargin);
-		float num2 = Random.Range(((Bounds)(ref DeepSeaBounds)).min.z + edgeMargin, ((Bounds)(ref DeepSeaBounds)).max.z - edgeMargin);
+		float num = Random.Range(DeepSeaBounds.min.x + edgeMargin, DeepSeaBounds.max.x - edgeMargin);
+		float num2 = Random.Range(DeepSeaBounds.min.z + edgeMargin, DeepSeaBounds.max.z - edgeMargin);
 		return new Vector2(num, num2);
 	}
 
@@ -2176,7 +2219,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			return null;
 		}
 		baseEntity.Spawn();
-		EntityParentSettings entityParentSettings = default(EntityParentSettings);
+		EntityParentSettings entityParentSettings = default;
 		if (((Component)baseEntity).TryGetComponent<EntityParentSettings>(ref entityParentSettings))
 		{
 			entityParentSettings.TryDetachChildren(baseEntity);
@@ -2235,17 +2278,17 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	public void CacheWaitForSeconds(bool fast = false)
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Expected O, but got Unknown
+		//IL_0040: Expected Obj, but got Unknown
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Expected O, but got Unknown
+		//IL_004f: Expected Obj, but got Unknown
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Expected O, but got Unknown
+		//IL_005e: Expected Obj, but got Unknown
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Expected O, but got Unknown
+		//IL_0012: Expected Obj, but got Unknown
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
+		//IL_0021: Expected Obj, but got Unknown
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Expected O, but got Unknown
+		//IL_0030: Expected Obj, but got Unknown
 		if (fast)
 		{
 			WaitEntitySpawnInterval = new WaitForSeconds(1f);
@@ -2282,8 +2325,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		base.InitShared();
 		CreateColliders();
 		CreateSeaFloor();
-		((Bounds)(ref bounds)).center = Vector3.zero;
-		((Bounds)(ref bounds)).size = ((Bounds)(ref DeepSeaBounds)).size;
+		bounds.center = Vector3.zero;
+		bounds.size = DeepSeaBounds.size;
 	}
 
 	private void CreateColliders()
@@ -2319,10 +2362,10 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			sharedCollidersParent = new GameObject("Colliders").transform;
 			sharedCollidersParent.SetParent(((Component)this).transform, false);
 		}
-		CreateCollider("DeepSea_Left", new Vector3(((Bounds)(ref DeepSeaBounds)).size.x / -2f, 0f, 0f), new Vector3(1f, ((Bounds)(ref DeepSeaBounds)).size.y, ((Bounds)(ref DeepSeaBounds)).size.z), sharedCollidersParent);
-		CreateCollider("DeepSea_Right", new Vector3(((Bounds)(ref DeepSeaBounds)).size.x / 2f, 0f, 0f), new Vector3(1f, ((Bounds)(ref DeepSeaBounds)).size.y, ((Bounds)(ref DeepSeaBounds)).size.z), sharedCollidersParent);
-		CreateCollider("DeepSea_Back", new Vector3(0f, 0f, ((Bounds)(ref DeepSeaBounds)).size.z / -2f), new Vector3(((Bounds)(ref DeepSeaBounds)).size.x, ((Bounds)(ref DeepSeaBounds)).size.y, 1f), sharedCollidersParent);
-		CreateCollider("DeepSea_Front", new Vector3(0f, 0f, ((Bounds)(ref DeepSeaBounds)).size.z / 2f), new Vector3(((Bounds)(ref DeepSeaBounds)).size.x, ((Bounds)(ref DeepSeaBounds)).size.y, 1f), sharedCollidersParent);
+		CreateCollider("DeepSea_Left", new Vector3(DeepSeaBounds.size.x / -2f, 0f, 0f), new Vector3(1f, DeepSeaBounds.size.y, DeepSeaBounds.size.z), sharedCollidersParent);
+		CreateCollider("DeepSea_Right", new Vector3(DeepSeaBounds.size.x / 2f, 0f, 0f), new Vector3(1f, DeepSeaBounds.size.y, DeepSeaBounds.size.z), sharedCollidersParent);
+		CreateCollider("DeepSea_Back", new Vector3(0f, 0f, DeepSeaBounds.size.z / -2f), new Vector3(DeepSeaBounds.size.x, DeepSeaBounds.size.y, 1f), sharedCollidersParent);
+		CreateCollider("DeepSea_Front", new Vector3(0f, 0f, DeepSeaBounds.size.z / 2f), new Vector3(DeepSeaBounds.size.x, DeepSeaBounds.size.y, 1f), sharedCollidersParent);
 	}
 
 	private BoxCollider CreateCollider(string colName, Vector3 pos, Vector3 size, Transform parent, bool worldPos = false)
@@ -2349,21 +2392,21 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	private void CreateSeaFloor()
 	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 localPosition = default(Vector3);
-		((Vector3)(ref localPosition))._002Ector(0f, SeaFloorDepth, 0f);
-		Vector3 localScale = default(Vector3);
-		((Vector3)(ref localScale))._002Ector(((Bounds)(ref DeepSeaBounds)).size.x, 1f, ((Bounds)(ref DeepSeaBounds)).size.z);
-		GameObject obj = GameObject.CreatePrimitive((PrimitiveType)3);
-		((Object)obj).name = "DeepSea_Bottom";
-		obj.transform.SetParent(((Component)sharedCollidersParent).transform, false);
-		obj.transform.localPosition = localPosition;
-		obj.transform.localScale = localScale;
-		TransformEx.SetLayerRecursive(obj, 16);
-		MeshRenderer component = obj.GetComponent<MeshRenderer>();
+		Vector3 localPosition = new Vector3(0f, SeaFloorDepth, 0f);
+		Vector3 localScale = new Vector3(DeepSeaBounds.size.x, 1f, DeepSeaBounds.size.z);
+		GameObject val = GameObject.CreatePrimitive((PrimitiveType)3);
+		((Object)val).name = "DeepSea_Bottom";
+		val.transform.SetParent(((Component)sharedCollidersParent).transform, false);
+		val.transform.localPosition = localPosition;
+		val.transform.localScale = localScale;
+		TransformEx.SetLayerRecursive(val, 16);
+		MeshRenderer component = val.GetComponent<MeshRenderer>();
 		((Renderer)component).sharedMaterial = SeaFloorMaterial;
 		((Renderer)component).shadowCastingMode = (ShadowCastingMode)0;
 	}
@@ -2387,13 +2430,13 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	public static bool IsInsideDeepSea(Vector3 position)
 	{
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		return ((Bounds)(ref DeepSeaBounds)).Contains(position);
+		return DeepSeaBounds.Contains(position);
 	}
 
 	public static bool IsInsideDeepSea(Bounds bounds)
 	{
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		return ((Bounds)(ref DeepSeaBounds)).Intersects(bounds);
+		return DeepSeaBounds.Intersects(bounds);
 	}
 
 	public static bool IsInsideDeepSea(BaseNetworkable entity)
@@ -2459,7 +2502,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		{
 			return false;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			return foodTollPaid.Contains(player.userID);
 		}
@@ -2475,8 +2518,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		worldPos.x = Mathx.RemapValClamped(worldPos.x, ((Bounds)(ref DeepSeaBounds)).min.x, ((Bounds)(ref DeepSeaBounds)).max.x, 0f, 1f);
-		worldPos.z = Mathx.RemapValClamped(worldPos.z, ((Bounds)(ref DeepSeaBounds)).min.z, ((Bounds)(ref DeepSeaBounds)).max.z, 0f, 1f);
+		worldPos.x = Mathx.RemapValClamped(worldPos.x, DeepSeaBounds.min.x, DeepSeaBounds.max.x, 0f, 1f);
+		worldPos.z = Mathx.RemapValClamped(worldPos.z, DeepSeaBounds.min.z, DeepSeaBounds.max.z, 0f, 1f);
 		worldPos.y = 0f;
 		return worldPos;
 	}
@@ -2485,14 +2528,14 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		return (x - ((Bounds)(ref DeepSeaBounds)).min.x) / ((Bounds)(ref DeepSeaBounds)).size.x;
+		return (x - DeepSeaBounds.min.x) / DeepSeaBounds.size.x;
 	}
 
 	public static float NormalizeZ(float z)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		return (z - ((Bounds)(ref DeepSeaBounds)).min.z) / ((Bounds)(ref DeepSeaBounds)).size.z;
+		return (z - DeepSeaBounds.min.z) / DeepSeaBounds.size.z;
 	}
 
 	public bool IsAccessible()
@@ -2510,7 +2553,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		bool flag = (old & Flags.Open) == Flags.Open;
 		bool flag2 = (next & Flags.Open) == Flags.Open;
 		bool flag3 = flag2 && (next & Flags.Reserved1) != Flags.Reserved1;
-		if (base.isServer && flag != flag2)
+		if (isServer && flag != flag2)
 		{
 			NPCVendingMachine.RefreshDeepSeaMapMarkers();
 		}
@@ -2553,7 +2596,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.msg.deepSeaManager == null || !base.isServer)
+		if (info.msg.deepSeaManager == null || !isServer)
 		{
 			return;
 		}
@@ -2577,7 +2620,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -2591,7 +2634,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: TimeToWipe for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: TimeToWipe for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_TimeToWipe);
 			return true;
@@ -2599,7 +2642,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: TimeToNextOpening for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: TimeToNextOpening for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_TimeToNextOpening);
 			return true;
@@ -2607,7 +2650,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: CurrentEntrancePortalDirection for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: CurrentEntrancePortalDirection for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_CurrentEntrancePortalDirection);
 			return true;
@@ -2665,9 +2708,9 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	{
 		return propertyName switch
 		{
-			"TimeToWipe" => 0, 
-			"TimeToNextOpening" => 1, 
-			"CurrentEntrancePortalDirection" => 2, 
+			"TimeToWipe" => (byte)0, 
+			"TimeToNextOpening" => (byte)1, 
+			"CurrentEntrancePortalDirection" => (byte)2, 
 			_ => byte.MaxValue, 
 		};
 	}
@@ -2692,18 +2735,34 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -2742,36 +2801,20 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	static DeepSeaManager()
 	{
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Expected O, but got Unknown
+		//IL_0032: Expected Obj, but got Unknown
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Expected O, but got Unknown
+		//IL_0046: Expected Obj, but got Unknown
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Expected O, but got Unknown
+		//IL_005a: Expected Obj, but got Unknown
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Expected O, but got Unknown
+		//IL_006e: Expected Obj, but got Unknown
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Expected O, but got Unknown
+		//IL_0082: Expected Obj, but got Unknown
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Expected O, but got Unknown
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Expected Obj, but got Unknown
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		ServerPortals = new List<DeepSeaPortal>();
-		ClientPortals = new List<DeepSeaPortal>();
-		ServerBillboards = new ListHashSet<IslandBillboard>();
-		AboutToClose_Phrase = new Phrase("deepsea.abouttoclose", "The deep sea is no longer safe to enter");
-		BoatNotStrongEnough_ToDeepSea_Phrase = new Phrase("deepsea.wrongboat-todeepsea", "Your boat cannot survive the journey to the deep sea");
-		BoatNotStrongEnough_ToMainLand_Phrase = new Phrase("deepsea.wrongboat-tomainland", "Your boat cannot survive the journey to the main land");
-		NeedBoat_ToDeepSea_Phrase = new Phrase("deepsea.needboat-todeepsea", "You cannot reach the deep sea without a sturdy boat");
-		NeedBoat_ToMainLand_Phrase = new Phrase("deepsea.needboat-tomainland", "You cannot reach the main land without a sturdy boat");
-		UnauthorizedVehicle_Phrase = new Phrase("deepsea.unauthorizedvehicle", "You cannot reach the deep sea with other vehicles on board");
-		ServerIslands = new ListHashSet<DeepSeaIsland>();
-		ServerGhostShips = new ListHashSet<GhostShip>();
-		ServerFloatingCities = new ListHashSet<DeepSeaFloatingCity>();
-		ServerRHIBS = new ListHashSet<RHIB>();
-		placedPoints = new List<PlacedPoint>();
-		DeepSeaBounds = new Bounds(new Vector3(-5900f, 0f, 0f), new Vector3(4000f, 4000f, 4000f));
-		SeaFloorDepth = -50f;
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
 	}
 }

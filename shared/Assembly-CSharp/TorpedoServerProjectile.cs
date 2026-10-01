@@ -38,9 +38,9 @@ public class TorpedoServerProjectile : ServerProjectile
 		}
 		else if (num <= minWaterDepth)
 		{
-			Vector3 currentVelocity = base.CurrentVelocity;
+			Vector3 currentVelocity = CurrentVelocity;
 			currentVelocity.y = 0f;
-			base.CurrentVelocity = currentVelocity;
+			CurrentVelocity = currentVelocity;
 			gravityModifier = 0.1f;
 		}
 		else if (num > minWaterDepth + 0.3f && num <= minWaterDepth + 0.7f)
@@ -49,7 +49,7 @@ public class TorpedoServerProjectile : ServerProjectile
 		}
 		else
 		{
-			gravityModifier = Mathf.Clamp(base.CurrentVelocity.y, -0.1f, 0.1f);
+			gravityModifier = Mathf.Clamp(CurrentVelocity.y, -0.1f, 0.1f);
 		}
 		return true;
 	}
@@ -68,6 +68,6 @@ public class TorpedoServerProjectile : ServerProjectile
 		float num2 = Mathf.InverseLerp(shallowWaterCutoff, shallowWaterCutoff + 2f, num);
 		float num3 = Mathf.Lerp(shallowWaterInaccuracy, deepWaterInaccuracy, num2);
 		initialVelocity = Vector3Ex.GetWithInaccuracy(initialVelocity, num3);
-		base.CurrentVelocity = initialVelocity;
+		CurrentVelocity = initialVelocity;
 	}
 }

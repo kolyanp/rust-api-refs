@@ -45,7 +45,7 @@ public class PartialMobileStaticGrid<T> where T : MonoBehaviour
 					Vector3 position = ((Component)(object)val).transform.position;
 					Vector3 val2 = mobilePositions.Values[i];
 					Vector3 val3 = position - Vector3Ex.WithY(val2, position.y);
-					if (((Vector3)(ref val3)).sqrMagnitude > num)
+					if (val3.sqrMagnitude > num)
 					{
 						grid.Remove(val);
 						grid.Add(val, position.x, position.z);

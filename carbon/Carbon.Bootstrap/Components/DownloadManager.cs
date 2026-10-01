@@ -78,7 +78,7 @@ internal sealed class DownloadManager : CarbonBehaviour, IDownloadManager
 			webClient.Headers.Add(HttpRequestHeader.CacheControl, "no-store, no-cache, must-revalidate, max-age=0");
 			webClient.Headers.Add(HttpRequestHeader.Pragma, "no-cache");
 			job.Client = webClient;
-			job.Registration = job.Token.Register(delegate
+			job.Registration = job.Token.Register(() =>
 			{
 				CancelJob(job);
 			});
@@ -200,7 +200,7 @@ internal sealed class DownloadManager : CarbonBehaviour, IDownloadManager
 	public async Task<byte[]> Download(string url, CancellationToken token, bool suppressErrors)
 	{
 		TaskCompletionSource<byte[]> tcs = new TaskCompletionSource<byte[]>();
-		using (token.Register(delegate
+		using (token.Register(() =>
 		{
 			tcs.TrySetCanceled();
 		}))
@@ -208,7 +208,7 @@ internal sealed class DownloadManager : CarbonBehaviour, IDownloadManager
 			DownloadItem item = new DownloadItem
 			{
 				URL = url,
-				Callback = delegate(string _, byte[] bytes)
+				Callback = (string _, byte[] bytes) =>
 				{
 					tcs.TrySetResult(bytes);
 				},

@@ -69,7 +69,7 @@ public class ValidBounds : SingletonComponent<ValidBounds>
 		{
 			return true;
 		}
-		if (!((Bounds)(ref worldBounds)).Contains(vPos))
+		if (!worldBounds.Contains(vPos))
 		{
 			return false;
 		}
@@ -96,6 +96,7 @@ public class ValidBounds : SingletonComponent<ValidBounds>
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
@@ -108,9 +109,8 @@ public class ValidBounds : SingletonComponent<ValidBounds>
 		{
 			return true;
 		}
-		Bounds val = default(Bounds);
-		((Bounds)(ref val))._002Ector(((Bounds)(ref worldBounds)).center, new Vector3(((Bounds)(ref worldBounds)).size.x + TutorialIsland.TutorialBoundsSize * 2f, ((Bounds)(ref worldBounds)).size.y, ((Bounds)(ref worldBounds)).size.z + TutorialIsland.TutorialBoundsSize * 2f));
-		if (!((Bounds)(ref val)).Contains(vPos))
+		Bounds val = new Bounds(worldBounds.center, new Vector3(worldBounds.size.x + TutorialIsland.TutorialBoundsSize * 2f, worldBounds.size.y, worldBounds.size.z + TutorialIsland.TutorialBoundsSize * 2f));
+		if (!val.Contains(vPos))
 		{
 			return false;
 		}
@@ -137,7 +137,7 @@ public class ValidBounds : SingletonComponent<ValidBounds>
 		{
 			return 0f;
 		}
-		return Mathf.Min(TerrainMeta.Position.x + TerrainMeta.Size.x * 2f + TutorialIsland.TutorialBoundsSize, ((Bounds)(ref SingletonComponent<ValidBounds>.Instance.worldBounds)).extents.x + TutorialIsland.TutorialBoundsSize);
+		return Mathf.Min(TerrainMeta.Position.x + TerrainMeta.Size.x * 2f + TutorialIsland.TutorialBoundsSize, SingletonComponent<ValidBounds>.Instance.worldBounds.extents.x + TutorialIsland.TutorialBoundsSize);
 	}
 
 	public static float GetMaximumPoint()
@@ -149,7 +149,7 @@ public class ValidBounds : SingletonComponent<ValidBounds>
 		{
 			return 0f;
 		}
-		float num = ((Bounds)(ref SingletonComponent<ValidBounds>.Instance.worldBounds)).max.x;
+		float num = SingletonComponent<ValidBounds>.Instance.worldBounds.max.x;
 		if ((bool)TerrainMeta.TerrainRenderer)
 		{
 			num = Mathf.Min(TerrainMeta.Position.x + TerrainMeta.Size.x, num);

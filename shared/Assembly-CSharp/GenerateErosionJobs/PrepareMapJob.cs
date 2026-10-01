@@ -23,9 +23,9 @@ internal struct PrepareMapJob : IJobParallelForBatch
 	public void Execute(int startIndex, int count)
 	{
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		NativeList<int> val = default(NativeList<int>);
-		val._002Ector(count, AllocatorHandle.op_Implicit((Allocator)2));
+		NativeList<int> val = new NativeList<int>(count, AllocatorHandle.op_Implicit((Allocator)2));
 		for (int i = startIndex; i < startIndex + count; i++)
 		{
 			float num = (HeightMapAsFloat[i] = TerrainPositionY + BitUtility.Short2Float((int)HeightMapAsShort[i]) * TerrainSizeY);

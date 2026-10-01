@@ -37,7 +37,7 @@ public class HuntingTrophy : StorageContainer
 			if (!flag)
 			{
 				GameObject headSource = headEnt.GetHeadSource();
-				BasePlayer basePlayer = default(BasePlayer);
+				BasePlayer basePlayer = default;
 				if ((Object)(object)headSource != (Object)null && headSource.TryGetComponent<BasePlayer>(ref basePlayer) && ((Component)entity).TryGetComponent<BasePlayer>(ref basePlayer))
 				{
 					flag = true;
@@ -62,7 +62,7 @@ public class HuntingTrophy : StorageContainer
 			{
 				GameObject val = null;
 				val = GameManager.server.FindPrefab(data.entitySource);
-				BasePlayer basePlayer = default(BasePlayer);
+				BasePlayer basePlayer = default;
 				if ((Object)(object)val != (Object)null && val.TryGetComponent<BasePlayer>(ref basePlayer) && ((Component)entity).TryGetComponent<BasePlayer>(ref basePlayer))
 				{
 					flag = true;
@@ -188,7 +188,7 @@ public class HuntingTrophy : StorageContainer
 	[RPC_Server.IsVisible(3f)]
 	private void ServerRequestSubmit()
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null)
 		{
 			return;
@@ -212,11 +212,11 @@ public class HuntingTrophy : StorageContainer
 				currentTrophyData.count++;
 			}
 		}
-		for (int i = 1; i <= base.inventory.capacity; i++)
+		for (int i = 1; i <= inventory.capacity; i++)
 		{
-			if (base.inventory.GetSlot(i) == null)
+			if (inventory.GetSlot(i) == null)
 			{
-				slot.MoveToContainer(base.inventory, i);
+				slot.MoveToContainer(inventory, i);
 				break;
 			}
 		}
@@ -231,7 +231,7 @@ public class HuntingTrophy : StorageContainer
 		{
 			CurrentTrophyData.Dispose();
 			CurrentTrophyData = null;
-			Item[] array = base.inventory.itemList.ToArray();
+			Item[] array = inventory.itemList.ToArray();
 			foreach (Item item in array)
 			{
 				msg.player.GiveItem(item);
@@ -265,7 +265,7 @@ public class HuntingTrophy : StorageContainer
 		if (!flag & flag2)
 		{
 			GameObject headSource = headEnt.GetHeadSource();
-			BasePlayer basePlayer = default(BasePlayer);
+			BasePlayer basePlayer = default;
 			if ((Object)(object)headSource != (Object)null && headSource.TryGetComponent<BasePlayer>(ref basePlayer) && (Object)(object)GetCurrentTrophyDataSource() == (Object)(object)headSource)
 			{
 				flag = true;

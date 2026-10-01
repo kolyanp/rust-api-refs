@@ -305,6 +305,7 @@ public class WildlifeHazard : BaseCombatEntity, IReceivePlayerTickListener
 
 	private bool FindSuitableReposition(out Vector3 pos)
 	{
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
@@ -314,12 +315,11 @@ public class WildlifeHazard : BaseCombatEntity, IReceivePlayerTickListener
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = true;
 		int num = 0;
-		Vector3 val = default(Vector3);
 		while (flag)
 		{
 			float num2 = Random.Range(RepositionRadiusMin, RepositionRadiusMax) * RepositionRadiusMultiplier;
 			float num3 = Random.value * (MathF.PI * 2f);
-			((Vector3)(ref val))._002Ector(Mathf.Cos(num3), 0f, Mathf.Sin(num3));
+			Vector3 val = new Vector3(Mathf.Cos(num3), 0f, Mathf.Sin(num3));
 			pos = ((Component)this).transform.position + val * num2;
 			bool flag2 = ValidatePosition(ref pos);
 			if (flag2)
@@ -355,22 +355,22 @@ public class WildlifeHazard : BaseCombatEntity, IReceivePlayerTickListener
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(pos + Vector3.up * 3f, Vector3.down, ref val, 6f, 8388608))
 		{
-			if (WaterLevel.GetOverallWaterDepth(((RaycastHit)(ref val)).point, waves: true, volumes: false) > MaxWaterDepth)
+			if (WaterLevel.GetOverallWaterDepth(val.point, waves: true, volumes: false) > MaxWaterDepth)
 			{
 				return false;
 			}
-			if (!GamePhysics.LineOfSight(((RaycastHit)(ref val)).point, ((RaycastHit)(ref val)).point + Vector3.up * 4f, 1075904769))
+			if (!GamePhysics.LineOfSight(val.point, val.point + Vector3.up * 4f, 1075904769))
 			{
 				return false;
 			}
-			if (!GamePhysics.LineOfSight(((Component)this).transform.position + Vector3.up * 0.25f, ((RaycastHit)(ref val)).point + Vector3.up * 0.25f, 1075904769))
+			if (!GamePhysics.LineOfSight(((Component)this).transform.position + Vector3.up * 0.25f, val.point + Vector3.up * 0.25f, 1075904769))
 			{
 				return false;
 			}
-			pos = ((RaycastHit)(ref val)).point;
+			pos = val.point;
 			return true;
 		}
 		return false;
@@ -396,7 +396,7 @@ public class WildlifeHazard : BaseCombatEntity, IReceivePlayerTickListener
 
 	public override void OnAttacked(HitInfo info)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if (IsCorpse)
 			{
@@ -425,7 +425,7 @@ public class WildlifeHazard : BaseCombatEntity, IReceivePlayerTickListener
 	private void OnAliveAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (base.isServer && Object.op_Implicit((Object)(object)info.InitiatorPlayer) && !info.damageTypes.IsMeleeType())
+		if (isServer && Object.op_Implicit((Object)(object)info.InitiatorPlayer) && !info.damageTypes.IsMeleeType())
 		{
 			info.InitiatorPlayer.LifeStoryShotHit(info.Weapon);
 		}
@@ -443,7 +443,7 @@ public class WildlifeHazard : BaseCombatEntity, IReceivePlayerTickListener
 
 	public override void OnDied(HitInfo info)
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -535,7 +535,7 @@ public class WildlifeHazard : BaseCombatEntity, IReceivePlayerTickListener
 	public override void Hurt(HitInfo info)
 	{
 		base.Hurt(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			ClientRPC(RpcTarget.NetworkGroup("CL_Hurt"));
 		}

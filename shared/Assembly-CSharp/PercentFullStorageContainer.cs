@@ -22,16 +22,16 @@ public class PercentFullStorageContainer : StorageContainer
 
 	public float GetPercentFull()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			float num = 0f;
-			if (base.inventory != null)
+			if (inventory != null)
 			{
-				foreach (Item item in base.inventory.itemList)
+				foreach (Item item in inventory.itemList)
 				{
 					num += (float)item.amount / (float)item.MaxStackable();
 				}
-				num /= (float)base.inventory.capacity;
+				num /= (float)inventory.capacity;
 			}
 			return num;
 		}

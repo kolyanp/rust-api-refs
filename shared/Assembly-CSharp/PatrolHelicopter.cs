@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Extend;
@@ -241,7 +242,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 	public override void OnAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			myAI.WasAttacked(info);
 		}
@@ -254,13 +255,13 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 			return;
 		}
 		bool flag = false;
-		if (info.damageTypes.Total() >= base.health)
+		if (info.damageTypes.Total() >= health)
 		{
 			if (Interface.CallHook("OnPatrolHelicopterKill", this, info) != null)
 			{
 				return;
 			}
-			base.health = 10000f;
+			health = 10000f;
 			myAI.CriticalDamage();
 			flag = true;
 			if ((Object)(object)info.InitiatorPlayer != (Object)null && info.InitiatorPlayer.serverClan != null)
@@ -343,7 +344,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 		base.Save(info);
 		info.msg.helicopter = Pool.Get<Helicopter>();
 		Quaternion val = ((!BaseNetworkable.UseParallelSaves) ? rotorPivot.transform.localRotation : Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in rotorPivotHandle));
-		info.msg.helicopter.tiltRot = ((Quaternion)(ref val)).eulerAngles;
+		info.msg.helicopter.tiltRot = val.eulerAngles;
 		info.msg.helicopter.spotlightVec = spotlightTarget;
 		info.msg.helicopter.weakspothealths = Pool.Get<List<float>>();
 		for (int i = 0; i < weakspots.Length; i++)
@@ -373,7 +374,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			SeekerTarget.SetSeekerTarget(this, SeekerTarget.SeekerStrength.OFF);
 		}
@@ -431,7 +432,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 		{
 			fleeMapMarkerInstance.Kill();
 			fleeMapMarkerInstance = null;
-			FleeMarkerId = default(NetworkableId);
+			FleeMarkerId = default;
 		}
 	}
 
@@ -494,7 +495,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -602,14 +603,14 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 
 	public void Update()
 	{
-		if (base.isServer && Time.realtimeSinceStartup - lastNetworkUpdate >= 0.25f)
+		if (isServer && Time.realtimeSinceStartup - lastNetworkUpdate >= 0.25f)
 		{
 			SendNetworkUpdate();
 			lastNetworkUpdate = Time.realtimeSinceStartup;
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -619,7 +620,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: FleeMarkerId for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: FleeMarkerId for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<NetworkableId>(writer, __sync_FleeMarkerId);
 			return true;
@@ -676,18 +677,34 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -708,7 +725,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		base.ResetSyncVars();
-		__sync_FleeMarkerId = default(NetworkableId);
+		__sync_FleeMarkerId = default;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)

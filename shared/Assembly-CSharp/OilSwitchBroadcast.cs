@@ -66,10 +66,22 @@ public class OilSwitchBroadcast : IOEntity
 		if (flag)
 		{
 			Broadcast();
-			if (hasPower && inputs.Length != 0 && inputs[0].IsConnected() && inputs[0].connectedTo.Get(base.isServer) is TimerSwitch timerSwitch && (Object)(object)timerSwitch.lastUsedPlayer != (Object)null)
+			if (hasPower && inputs.Length != 0 && inputs[0].IsConnected() && inputs[0].connectedTo.Get(isServer) is TimerSwitch timerSwitch && (Object)(object)timerSwitch.lastUsedPlayer != (Object)null)
 			{
 				timerSwitch.lastUsedPlayer.AddClanScore((ClanScoreEventType)17);
-				Analytics.Azure.OnOilRigFuelSwitchStarted(timerSwitch.lastUsedPlayer);
+				Analytics.Azure.OnOilRigFuelSwitchStarted(timerSwitch.lastUsedPlayer, this);
+			}
+			if (hasPower)
+			{
+				IOSlot[] array = inputs;
+				for (int i = 0; i < array.Length; i++)
+				{
+					if (array[i].connectedTo.TryGet(out var ioEntity) && ioEntity is TimerSwitch timerSwitch2)
+					{
+						timerSwitch2.timerLength = 1200f + WaterCatcher.OilProductionStartDelay;
+						timerSwitch2.SendNetworkUpdate();
+					}
+				}
 			}
 		}
 		return hasPower;

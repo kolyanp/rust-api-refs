@@ -35,14 +35,14 @@ public struct GenerateOverlapCapsuleCommandsJob : IJob
 	public void Execute()
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		QueryParameters val = default(QueryParameters);
 		for (int i = 0; i < From.Length; i++)
 		{
-			((QueryParameters)(ref val))._002Ector(LayerMasks[i], HitMultipleFaces, TriggerInteraction, HitBackfaces);
+			QueryParameters val = new QueryParameters(LayerMasks[i], HitMultipleFaces, TriggerInteraction, HitBackfaces);
 			CapsuleCommands[i] = new OverlapCapsuleCommand(From[i], To[i], Radiii[i], val);
 		}
 	}

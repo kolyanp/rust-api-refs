@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(RectTransform))]
 [ExecuteAlways]
+[RequireComponent(typeof(RectTransform))]
 public class UIBorder : MonoBehaviour
 {
 	private const string ChildName = "_UIBorder";
@@ -22,7 +22,7 @@ public class UIBorder : MonoBehaviour
 	private float left;
 
 	[SerializeField]
-	private Color color;
+	private Color color = Color.white;
 
 	[SerializeField]
 	private float topLeftRadius;
@@ -36,12 +36,12 @@ public class UIBorder : MonoBehaviour
 	[SerializeField]
 	private float bottomLeftRadius;
 
-	[SerializeField]
 	[Range(1f, 32f)]
-	private int segmentsPerCorner;
-
 	[SerializeField]
+	private int segmentsPerCorner = 8;
+
 	[HideInInspector]
+	[SerializeField]
 	private BorderGraphic graphic;
 
 	public float Top
@@ -226,7 +226,7 @@ public class UIBorder : MonoBehaviour
 	private void EnsureGraphic()
 	{
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cd: Expected O, but got Unknown
+		//IL_00cd: Expected Obj, but got Unknown
 		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
@@ -291,8 +291,5 @@ public class UIBorder : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		color = Color.white;
-		segmentsPerCorner = 8;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

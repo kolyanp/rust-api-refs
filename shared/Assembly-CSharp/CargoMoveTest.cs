@@ -53,7 +53,7 @@ public class CargoMoveTest : FacepunchBehaviour
 		Vector3 val = TerrainMeta.Path.OceanPatrolFar[targetNodeIndex];
 		float num = 0f;
 		Vector3 val2 = val - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		float num2 = Vector3.Dot(((Component)this).transform.forward, normalized);
 		num = Mathf.InverseLerp(0.5f, 1f, num2);
 		float num3 = Vector3.Dot(((Component)this).transform.right, normalized);

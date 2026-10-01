@@ -19,13 +19,13 @@ public class GenerateRailMeshes : ProceduralComponent
 	public override void Process(uint seed)
 	{
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Expected O, but got Unknown
+		//IL_004f: Expected Obj, but got Unknown
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d9: Expected O, but got Unknown
+		//IL_00d9: Expected Obj, but got Unknown
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
@@ -33,7 +33,7 @@ public class GenerateRailMeshes : ProceduralComponent
 		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
 		if (RailMeshes == null || RailMeshes.Length == 0)
 		{
-			RailMeshes = (Mesh[])(object)new Mesh[1] { RailMesh };
+			RailMeshes = new Mesh[1] { RailMesh };
 		}
 		foreach (PathList rail in TerrainMeta.Path.Rails)
 		{
@@ -43,14 +43,14 @@ public class GenerateRailMeshes : ProceduralComponent
 				GameObject val2 = new GameObject("Rail Mesh");
 				val2.transform.position = item.Position;
 				val2.tag = "Railway";
-				TagComponentEx.SetCustomTag(val2, GameObjectTag.AllowBarricadePlacement, apply: true);
+				val2.SetCustomTag(GameObjectTag.AllowBarricadePlacement, apply: true);
 				val2.layer = 16;
 				val2.transform.SetParent(val.transform, true);
 				val2.SetActive(false);
-				MeshCollider obj = val2.AddComponent<MeshCollider>();
-				((Collider)obj).sharedMaterial = RailPhysicMaterial;
+				MeshCollider val3 = val2.AddComponent<MeshCollider>();
+				((Collider)val3).sharedMaterial = RailPhysicMaterial;
 				item.Generate();
-				obj.sharedMesh = item.outputMeshes[0];
+				val3.sharedMesh = item.outputMeshes[0];
 				val2.AddComponent<AddToHeightMap>();
 				val2.SetActive(true);
 			}
@@ -71,13 +71,13 @@ public class GenerateRailMeshes : ProceduralComponent
 		{
 			TrainTrackSpline.SidingSplines.Add(trainTrackSpline);
 		}
-		Vector3[] array = (Vector3[])(object)new Vector3[rail.Path.Points.Length];
+		Vector3[] array = new Vector3[rail.Path.Points.Length];
 		for (int i = 0; i < array.Length; i++)
 		{
 			array[i] = rail.Path.Points[i];
 			array[i].y += 0.41f;
 		}
-		Vector3[] array2 = (Vector3[])(object)new Vector3[rail.Path.Tangents.Length];
+		Vector3[] array2 = new Vector3[rail.Path.Tangents.Length];
 		for (int j = 0; j < array.Length; j++)
 		{
 			array2[j] = rail.Path.Tangents[j];

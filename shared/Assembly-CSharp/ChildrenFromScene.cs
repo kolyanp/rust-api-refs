@@ -12,12 +12,12 @@ public class ChildrenFromScene : MonoBehaviour
 	{
 		Debug.LogWarning((object)("WARNING: CHILDRENFROMSCENE(" + SceneName + ") - WE SHOULDN'T BE USING THIS SHITTY COMPONENT NOW WE HAVE AWESOME PREFABS"), (Object)(object)((Component)this).gameObject);
 		Scene sceneByName = SceneManager.GetSceneByName(SceneName);
-		if (!((Scene)(ref sceneByName)).isLoaded)
+		if (!sceneByName.isLoaded)
 		{
 			yield return SceneManager.LoadSceneAsync(SceneName, (LoadSceneMode)1);
 		}
 		sceneByName = SceneManager.GetSceneByName(SceneName);
-		GameObject[] rootGameObjects = ((Scene)(ref sceneByName)).GetRootGameObjects();
+		GameObject[] rootGameObjects = sceneByName.GetRootGameObjects();
 		foreach (GameObject val in rootGameObjects)
 		{
 			val.transform.SetParent(((Component)this).transform, false);

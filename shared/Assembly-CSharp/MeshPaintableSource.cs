@@ -5,17 +5,17 @@ using UnityEngine;
 
 public class MeshPaintableSource : MonoBehaviour, IClientComponent
 {
-	public Vector4 uvRange;
+	public Vector4 uvRange = new Vector4(0f, 0f, 1f, 1f);
 
-	public int texWidth;
+	public int texWidth = 256;
 
-	public int texHeight;
+	public int texHeight = 128;
 
-	public string replacementTextureName;
+	public string replacementTextureName = "_DecalTexture";
 
-	public float cameraFOV;
+	public float cameraFOV = 60f;
 
-	public float cameraDistance;
+	public float cameraDistance = 2f;
 
 	[NonSerialized]
 	public Texture2D texture;
@@ -28,7 +28,7 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 
 	public Vector3 localRotation;
 
-	public bool applyToAllRenderers;
+	public bool applyToAllRenderers = true;
 
 	public Renderer[] extraRenderers;
 
@@ -36,9 +36,9 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 
 	public bool paint3D;
 
-	public bool applyToSkinRenderers;
+	public bool applyToSkinRenderers = true;
 
-	public bool applyToFirstPersonLegs;
+	public bool applyToFirstPersonLegs = true;
 
 	[NonSerialized]
 	public bool isSelected;
@@ -51,11 +51,11 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 	public void Init()
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Expected O, but got Unknown
+		//IL_0027: Expected Obj, but got Unknown
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Expected O, but got Unknown
+		//IL_0079: Expected Obj, but got Unknown
 		if ((Object)(object)texture == (Object)null)
 		{
 			texture = new Texture2D(texWidth, texHeight, (TextureFormat)5, false);
@@ -89,7 +89,7 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 			}
 		}
 		((Component)val).GetComponentsInChildren<Renderer>(true, list);
-		PlayerModelSkin playerModelSkin = default(PlayerModelSkin);
+		PlayerModelSkin playerModelSkin = default;
 		foreach (Renderer item in list)
 		{
 			if (!ignoreRenderers.Contains(item) && (applyToSkinRenderers || !((Component)item).TryGetComponent<PlayerModelSkin>(ref playerModelSkin)))
@@ -120,7 +120,7 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 	public void Free()
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		if (Object.op_Implicit((Object)(object)texture))
 		{
 			Object.Destroy((Object)(object)texture);
@@ -181,15 +181,5 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		uvRange = new Vector4(0f, 0f, 1f, 1f);
-		texWidth = 256;
-		texHeight = 128;
-		replacementTextureName = "_DecalTexture";
-		cameraFOV = 60f;
-		cameraDistance = 2f;
-		applyToAllRenderers = true;
-		applyToSkinRenderers = true;
-		applyToFirstPersonLegs = true;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

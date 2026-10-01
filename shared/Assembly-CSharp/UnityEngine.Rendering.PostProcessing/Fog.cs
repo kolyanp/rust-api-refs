@@ -52,11 +52,11 @@ public sealed class Fog
 		else
 		{
 			Color fogColor = RenderSettings.fogColor;
-			val = ((Color)(ref fogColor)).linear;
+			val = fogColor.linear;
 		}
 		Color val2 = val;
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.FogColor, Color.op_Implicit(val2));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.FogParams, Vector4.op_Implicit(new Vector3(RenderSettings.fogDensity, RenderSettings.fogStartDistance, RenderSettings.fogEndDistance)));
+		propertySheet.properties.SetVector(ShaderIDs.FogColor, Color.op_Implicit(val2));
+		propertySheet.properties.SetVector(ShaderIDs.FogParams, Vector4.op_Implicit(new Vector3(RenderSettings.fogDensity, RenderSettings.fogStartDistance, RenderSettings.fogEndDistance)));
 		context.command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, excludeSkybox ? 1 : 0);
 	}
 }

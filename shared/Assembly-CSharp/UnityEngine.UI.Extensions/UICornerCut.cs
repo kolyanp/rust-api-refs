@@ -3,11 +3,11 @@ namespace UnityEngine.UI.Extensions;
 [AddComponentMenu("UI/Extensions/Primitives/Cut Corners")]
 public class UICornerCut : UIPrimitiveBase
 {
-	public Vector2 cornerSize;
+	public Vector2 cornerSize = new Vector2(16f, 16f);
 
-	[SerializeField]
 	[Header("Corners to cut")]
-	private bool m_cutUL;
+	[SerializeField]
+	private bool m_cutUL = true;
 
 	[SerializeField]
 	private bool m_cutUR;
@@ -18,12 +18,12 @@ public class UICornerCut : UIPrimitiveBase
 	[SerializeField]
 	private bool m_cutLR;
 
-	[Tooltip("Up-Down colors become Left-Right colors")]
 	[SerializeField]
+	[Tooltip("Up-Down colors become Left-Right colors")]
 	private bool m_makeColumns;
 
-	[SerializeField]
 	[Header("Color the cut bars differently")]
+	[SerializeField]
 	private bool m_useColorUp;
 
 	[SerializeField]
@@ -163,6 +163,14 @@ public class UICornerCut : UIPrimitiveBase
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0290: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02d1: Unknown result type (might be due to invalid IL or missing references)
@@ -204,68 +212,68 @@ public class UICornerCut : UIPrimitiveBase
 		bool flag2 = m_cutLL | m_cutLR;
 		bool flag3 = m_cutLL | m_cutUL;
 		bool flag4 = m_cutLR | m_cutUR;
-		if (!(flag | flag2) || !(((Vector2)(ref cornerSize)).sqrMagnitude > 0f))
+		if (!(flag | flag2) || !(cornerSize.sqrMagnitude > 0f))
 		{
 			return;
 		}
 		vh.Clear();
 		if (flag3)
 		{
-			((Rect)(ref val)).xMin = ((Rect)(ref val)).xMin + cornerSize.x;
+			val.xMin += cornerSize.x;
 		}
 		if (flag2)
 		{
-			((Rect)(ref val)).yMin = ((Rect)(ref val)).yMin + cornerSize.y;
+			val.yMin += cornerSize.y;
 		}
 		if (flag)
 		{
-			((Rect)(ref val)).yMax = ((Rect)(ref val)).yMax - cornerSize.y;
+			val.yMax -= cornerSize.y;
 		}
 		if (flag4)
 		{
-			((Rect)(ref val)).xMax = ((Rect)(ref val)).xMax - cornerSize.x;
+			val.xMax -= cornerSize.x;
 		}
-		Vector2 val3 = default(Vector2);
-		Vector2 val4 = default(Vector2);
-		Vector2 val5 = default(Vector2);
-		Vector2 val6 = default(Vector2);
+		Vector2 val3;
+		Vector2 val4;
+		Vector2 val5;
+		Vector2 val6;
 		if (m_makeColumns)
 		{
-			((Vector2)(ref val3))._002Ector(((Rect)(ref rect)).xMin, m_cutUL ? ((Rect)(ref val)).yMax : ((Rect)(ref rect)).yMax);
-			((Vector2)(ref val4))._002Ector(((Rect)(ref rect)).xMax, m_cutUR ? ((Rect)(ref val)).yMax : ((Rect)(ref rect)).yMax);
-			((Vector2)(ref val5))._002Ector(((Rect)(ref rect)).xMin, m_cutLL ? ((Rect)(ref val)).yMin : ((Rect)(ref rect)).yMin);
-			((Vector2)(ref val6))._002Ector(((Rect)(ref rect)).xMax, m_cutLR ? ((Rect)(ref val)).yMin : ((Rect)(ref rect)).yMin);
+			val3 = new Vector2(rect.xMin, m_cutUL ? val.yMax : rect.yMax);
+			val4 = new Vector2(rect.xMax, m_cutUR ? val.yMax : rect.yMax);
+			val5 = new Vector2(rect.xMin, m_cutLL ? val.yMin : rect.yMin);
+			val6 = new Vector2(rect.xMax, m_cutLR ? val.yMin : rect.yMin);
 			if (flag3)
 			{
-				AddSquare(val5, val3, new Vector2(((Rect)(ref val)).xMin, ((Rect)(ref rect)).yMax), new Vector2(((Rect)(ref val)).xMin, ((Rect)(ref rect)).yMin), rect, m_useColorUp ? m_colorUp : val2, vh);
+				AddSquare(val5, val3, new Vector2(val.xMin, rect.yMax), new Vector2(val.xMin, rect.yMin), rect, m_useColorUp ? m_colorUp : val2, vh);
 			}
 			if (flag4)
 			{
-				AddSquare(val4, val6, new Vector2(((Rect)(ref val)).xMax, ((Rect)(ref rect)).yMin), new Vector2(((Rect)(ref val)).xMax, ((Rect)(ref rect)).yMax), rect, m_useColorDown ? m_colorDown : val2, vh);
+				AddSquare(val4, val6, new Vector2(val.xMax, rect.yMin), new Vector2(val.xMax, rect.yMax), rect, m_useColorDown ? m_colorDown : val2, vh);
 			}
 		}
 		else
 		{
-			((Vector2)(ref val3))._002Ector(m_cutUL ? ((Rect)(ref val)).xMin : ((Rect)(ref rect)).xMin, ((Rect)(ref rect)).yMax);
-			((Vector2)(ref val4))._002Ector(m_cutUR ? ((Rect)(ref val)).xMax : ((Rect)(ref rect)).xMax, ((Rect)(ref rect)).yMax);
-			((Vector2)(ref val5))._002Ector(m_cutLL ? ((Rect)(ref val)).xMin : ((Rect)(ref rect)).xMin, ((Rect)(ref rect)).yMin);
-			((Vector2)(ref val6))._002Ector(m_cutLR ? ((Rect)(ref val)).xMax : ((Rect)(ref rect)).xMax, ((Rect)(ref rect)).yMin);
+			val3 = new Vector2(m_cutUL ? val.xMin : rect.xMin, rect.yMax);
+			val4 = new Vector2(m_cutUR ? val.xMax : rect.xMax, rect.yMax);
+			val5 = new Vector2(m_cutLL ? val.xMin : rect.xMin, rect.yMin);
+			val6 = new Vector2(m_cutLR ? val.xMax : rect.xMax, rect.yMin);
 			if (flag2)
 			{
-				AddSquare(val6, val5, new Vector2(((Rect)(ref rect)).xMin, ((Rect)(ref val)).yMin), new Vector2(((Rect)(ref rect)).xMax, ((Rect)(ref val)).yMin), rect, m_useColorDown ? m_colorDown : val2, vh);
+				AddSquare(val6, val5, new Vector2(rect.xMin, val.yMin), new Vector2(rect.xMax, val.yMin), rect, m_useColorDown ? m_colorDown : val2, vh);
 			}
 			if (flag)
 			{
-				AddSquare(val3, val4, new Vector2(((Rect)(ref rect)).xMax, ((Rect)(ref val)).yMax), new Vector2(((Rect)(ref rect)).xMin, ((Rect)(ref val)).yMax), rect, m_useColorUp ? m_colorUp : val2, vh);
+				AddSquare(val3, val4, new Vector2(rect.xMax, val.yMax), new Vector2(rect.xMin, val.yMax), rect, m_useColorUp ? m_colorUp : val2, vh);
 			}
 		}
 		if (m_makeColumns)
 		{
-			AddSquare(new Rect(((Rect)(ref val)).xMin, ((Rect)(ref rect)).yMin, ((Rect)(ref val)).width, ((Rect)(ref rect)).height), rect, val2, vh);
+			AddSquare(new Rect(val.xMin, rect.yMin, val.width, rect.height), rect, val2, vh);
 		}
 		else
 		{
-			AddSquare(new Rect(((Rect)(ref rect)).xMin, ((Rect)(ref val)).yMin, ((Rect)(ref rect)).width, ((Rect)(ref val)).height), rect, val2, vh);
+			AddSquare(new Rect(rect.xMin, val.yMin, rect.width, val.height), rect, val2, vh);
 		}
 	}
 
@@ -279,10 +287,10 @@ public class UICornerCut : UIPrimitiveBase
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		int num = AddVert(((Rect)(ref rect)).xMin, ((Rect)(ref rect)).yMin, rectUV, color32, vh);
-		int num2 = AddVert(((Rect)(ref rect)).xMin, ((Rect)(ref rect)).yMax, rectUV, color32, vh);
-		int num3 = AddVert(((Rect)(ref rect)).xMax, ((Rect)(ref rect)).yMax, rectUV, color32, vh);
-		int num4 = AddVert(((Rect)(ref rect)).xMax, ((Rect)(ref rect)).yMin, rectUV, color32, vh);
+		int num = AddVert(rect.xMin, rect.yMin, rectUV, color32, vh);
+		int num2 = AddVert(rect.xMin, rect.yMax, rectUV, color32, vh);
+		int num3 = AddVert(rect.xMax, rect.yMax, rectUV, color32, vh);
+		int num4 = AddVert(rect.xMax, rect.yMin, rectUV, color32, vh);
 		vh.AddTriangle(num, num2, num3);
 		vh.AddTriangle(num3, num4, num);
 	}
@@ -315,12 +323,12 @@ public class UICornerCut : UIPrimitiveBase
 
 	private static int AddVert(float x, float y, Rect area, Color32 color32, VertexHelper vh)
 	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(Mathf.InverseLerp(((Rect)(ref area)).xMin, ((Rect)(ref area)).xMax, x), Mathf.InverseLerp(((Rect)(ref area)).yMin, ((Rect)(ref area)).yMax, y));
+		Vector2 val = new Vector2(Mathf.InverseLerp(area.xMin, area.xMax, x), Mathf.InverseLerp(area.yMin, area.yMax, y));
 		vh.AddVert(new Vector3(x, y), color32, Vector4.op_Implicit(val));
 		return vh.currentVertCount - 1;
 	}
@@ -329,8 +337,5 @@ public class UICornerCut : UIPrimitiveBase
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		cornerSize = new Vector2(16f, 16f);
-		m_cutUL = true;
-		base._002Ector();
 	}
 }

@@ -3,9 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(ItemModWearable))]
 public class ItemModPaintable : ItemModAssociatedEntity<PaintedItemStorageEntity>
 {
-	public static readonly Phrase ItemPaintTitle;
+	public static readonly Phrase ItemPaintTitle = new Phrase("item.paint", "Paint");
 
-	public static readonly Phrase ItemPaintDesc;
+	public static readonly Phrase ItemPaintDesc = new Phrase("item.paint.desc", "Paint on this item.");
 
 	public GameObjectRef ChangeSignTextDialog;
 
@@ -18,10 +18,8 @@ public class ItemModPaintable : ItemModAssociatedEntity<PaintedItemStorageEntity
 	static ItemModPaintable()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		ItemPaintTitle = new Phrase("item.paint", "Paint");
-		ItemPaintDesc = new Phrase("item.paint.desc", "Paint on this item.");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class RotateObject : MonoBehaviour
 {
-	public float rotateSpeed_X;
+	public float rotateSpeed_X = 1f;
 
-	public float rotateSpeed_Y;
+	public float rotateSpeed_Y = 1f;
 
-	public float rotateSpeed_Z;
+	public float rotateSpeed_Z = 1f;
 
 	public bool localSpace;
 
 	public bool randomizeRotation;
 
-	public Vector3 randomVariationRange;
+	public Vector3 randomVariationRange = new Vector3(0.5f, 0.5f, 0.5f);
 
 	private void Start()
 	{
@@ -28,6 +28,7 @@ public class RotateObject : MonoBehaviour
 
 	protected void Update()
 	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
@@ -35,8 +36,7 @@ public class RotateObject : MonoBehaviour
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		if (localSpace)
 		{
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(rotateSpeed_X, rotateSpeed_Y, rotateSpeed_Z);
+			Vector3 val = new Vector3(rotateSpeed_X, rotateSpeed_Y, rotateSpeed_Z);
 			((Component)this).transform.Rotate(val * Time.deltaTime, (Space)1);
 			return;
 		}
@@ -58,10 +58,5 @@ public class RotateObject : MonoBehaviour
 	{
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		rotateSpeed_X = 1f;
-		rotateSpeed_Y = 1f;
-		rotateSpeed_Z = 1f;
-		randomVariationRange = new Vector3(0.5f, 0.5f, 0.5f);
-		((MonoBehaviour)this)._002Ector();
 	}
 }

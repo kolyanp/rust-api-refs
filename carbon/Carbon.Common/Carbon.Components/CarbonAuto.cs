@@ -151,7 +151,7 @@ public class CarbonAuto : API.Abstracts.CarbonAuto
 			try
 			{
 				Refresh();
-				using StringBody stringBody = default(StringBody);
+				using StringBody stringBody = default;
 				foreach (KeyValuePair<string, AutoVar> item in AutoCache)
 				{
 					stringBody.Add($"{item.Key} \"{item.Value.GetValue()}\"");

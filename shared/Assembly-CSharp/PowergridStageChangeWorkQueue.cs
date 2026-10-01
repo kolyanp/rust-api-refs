@@ -87,7 +87,7 @@ public class PowergridStageChangeWorkQueue : PersistentObjectWorkQueue
 		double timeAsDouble = Time.timeAsDouble;
 		double num = timeAsDouble - lastUpdateTime;
 		lastUpdateTime = timeAsDouble;
-		((WorkQueueTelemStats)(ref base.Stats)).Clear();
+		base.Stats.Clear();
 		base.Stats.BudgetTime = ((maximumMilliseconds >= 1000.0) ? default(TimeSpan) : TimeSpanExt.FromMicroseconds(maximumMilliseconds));
 		if (!isRunning)
 		{

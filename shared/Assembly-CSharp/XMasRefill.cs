@@ -126,11 +126,11 @@ public class XMasRefill : BaseEntity
 		{
 			return false;
 		}
-		if (((1 << ((Component)((RaycastHit)(ref hitOut)).transform).gameObject.layer) & num2) == 0)
+		if (((1 << ((Component)hitOut.transform).gameObject.layer) & num2) == 0)
 		{
 			return false;
 		}
-		pos = ((RaycastHit)(ref hitOut)).point;
+		pos = hitOut.point;
 		return true;
 	}
 

@@ -26,12 +26,12 @@ public class State_CrocTurn : State_PlayAnimationRM
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTargetPosition(out var targetPosition))
+		if (!Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		Vector3 val = targetPosition - ((Component)Owner).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		float num = Vector3.SignedAngle(((Component)Owner).transform.forward, normalized, Vector3.up);
 		if (Mathf.Abs(num) > 130f)
 		{

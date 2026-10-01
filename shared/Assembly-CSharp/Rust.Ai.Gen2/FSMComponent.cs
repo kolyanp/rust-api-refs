@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace Rust.Ai.Gen2;
 
-[SoftRequireComponent(typeof(BlackboardComponent), typeof(NPCEncounterTimer))]
 [SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
+[SoftRequireComponent(typeof(BlackboardComponent), typeof(NPCEncounterTimer))]
 public class FSMComponent : EntityComponent<BaseEntity>
 {
 	public class TickFSMWorkQueue : PersistentObjectWorkQueue<FSMComponent>
@@ -18,18 +18,18 @@ public class FSMComponent : EntityComponent<BaseEntity>
 			if (((PersistentObjectWorkQueue<FSMComponent>)this).ShouldAdd(component) && component.isRunning)
 			{
 				component.Senses.Tick();
-				NPCEncounterTimer nPCEncounterTimer = default(NPCEncounterTimer);
+				NPCEncounterTimer nPCEncounterTimer = default;
 				if (((Component)component).TryGetComponent<NPCEncounterTimer>(ref nPCEncounterTimer))
 				{
 					nPCEncounterTimer.Tick();
 				}
 				component.Tick();
-				NpcBarkComponent npcBarkComponent = default(NpcBarkComponent);
+				NpcBarkComponent npcBarkComponent = default;
 				if (((Component)component).TryGetComponent<NpcBarkComponent>(ref npcBarkComponent))
 				{
 					npcBarkComponent.Tick();
 				}
-				NPCNetworking nPCNetworking = default(NPCNetworking);
+				NPCNetworking nPCNetworking = default;
 				if (((Component)component).TryGetComponent<NPCNetworking>(ref nPCNetworking))
 				{
 					nPCNetworking.Tick();
@@ -46,6 +46,19 @@ public class FSMComponent : EntityComponent<BaseEntity>
 			return false;
 		}
 	}
+
+	[Header("Mounting")]
+	public State_MountVehicle mountVehicle = new State_MountVehicle();
+
+	public State_Mounted mounted = new State_Mounted();
+
+	public State_DismountVehicle dismountVehicle = new State_DismountVehicle();
+
+	[NonSerialized]
+	private Trans_Triggerable mountTrans;
+
+	[NonSerialized]
+	private Trans_Triggerable dismountTrans;
 
 	private bool isRunning;
 
@@ -67,13 +80,30 @@ public class FSMComponent : EntityComponent<BaseEntity>
 
 	private FSMPayload pendingStateChangePayload;
 
-	public static TickFSMWorkQueue workQueue = new TickFSMWorkQueue();
+	private FSMTransitionBase pendingStateChangeTransition;
 
-	public const float frameBudgetMs = 1f;
+	public static TickFSMWorkQueue defaultWorkQueue = new TickFSMWorkQueue();
+
+	[NonSerialized]
+	private State_DebugMoveToPosition debugMoveTo;
+
+	[NonSerialized]
+	private Trans_Triggerable debugMoveToTrans;
+
+	[NonSerialized]
+	private FSMStateBase debugMoveToReturnState;
+
+	public bool SupportsMounting => mountTrans != null;
+
+	public bool IsMounting => CurrentState == mountVehicle;
+
+	public bool IsMounted => CurrentState == mounted;
+
+	public bool IsDismounting => CurrentState == dismountVehicle;
 
 	public FSMStateBase CurrentState { get; private set; }
 
-	private SenseComponent Senses => _senses ?? (_senses = ((Component)base.baseEntity).GetComponent<SenseComponent>());
+	protected SenseComponent Senses => _senses ?? (_senses = ((Component)baseEntity).GetComponent<SenseComponent>());
 
 	private float RefreshInterval
 	{
@@ -106,6 +136,75 @@ public class FSMComponent : EntityComponent<BaseEntity>
 		}
 	}
 
+	public IReadOnlyList<FSMStateBase> StatesEnteredThisTick => sameFrameStateChangesHistory;
+
+	public static float frameBudgetMs => AI.fsm_frametime;
+
+	protected virtual TickFSMWorkQueue workQueue => defaultWorkQueue;
+
+	public bool SupportsDebugMove => debugMoveTo != null;
+
+	public bool IsDebugMoving
+	{
+		get
+		{
+			if (debugMoveTo != null)
+			{
+				return CurrentState == debugMoveTo;
+			}
+			return false;
+		}
+	}
+
+	protected void RegisterMounting(FSMStateBase attachTo, FSMStateBase returnTo)
+	{
+		if (attachTo != null && returnTo != null)
+		{
+			mountTrans = new Trans_Triggerable();
+			dismountTrans = new Trans_Triggerable();
+			attachTo.AddChildren(mountVehicle, mounted, dismountVehicle);
+			attachTo.AddTickTransition(mountVehicle, mountTrans);
+			mountVehicle.AddFailureTransition(returnTo);
+			mountVehicle.AddEndTransition(mounted);
+			mounted.AddTickTransition(dismountVehicle, dismountTrans);
+			mounted.AddEndTransition(returnTo);
+			dismountVehicle.AddFailureTransition(mounted);
+			dismountVehicle.AddEndTransition(returnTo);
+		}
+	}
+
+	public bool StartMount()
+	{
+		if (mountTrans == null || CurrentState == null || !isRunning)
+		{
+			return false;
+		}
+		mountTrans.Trigger();
+		ForceTickOnTheNextUpdate();
+		return true;
+	}
+
+	public bool StartDismount()
+	{
+		if (dismountTrans == null || !IsMounted)
+		{
+			return false;
+		}
+		dismountTrans.Trigger();
+		ForceTickOnTheNextUpdate();
+		return true;
+	}
+
+	public bool ResumeMounted()
+	{
+		if (mountTrans == null)
+		{
+			return false;
+		}
+		SetState(mounted);
+		return true;
+	}
+
 	public void SetFsmActive(bool newActive)
 	{
 		if (newActive != isRunning)
@@ -125,7 +224,7 @@ public class FSMComponent : EntityComponent<BaseEntity>
 
 	public override void DestroyShared()
 	{
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
 			SetFsmActive(newActive: false);
 			base.DestroyShared();
@@ -135,7 +234,7 @@ public class FSMComponent : EntityComponent<BaseEntity>
 	public static void ShowDebugInfoAroundLocation(BasePlayer player, float radius = 100f)
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		if (!player.IsValid())
 		{
 			return;
@@ -149,7 +248,8 @@ public class FSMComponent : EntityComponent<BaseEntity>
 				FSMComponent component = ((Component)item).GetComponent<FSMComponent>();
 				if (!((Object)(object)component == (Object)null) && component.CurrentState != null && component.isRunning)
 				{
-					player.ClientRPC(RpcTarget.Player("CL_ShowStateDebugInfo", player), ((Component)component.baseEntity).transform.position, component.CurrentState.Name);
+					string arg = ((item is IFSMDebugInfo iFSMDebugInfo) ? (component.CurrentState.Name + "\n" + iFSMDebugInfo.GetDebugInfo()) : component.CurrentState.Name);
+					player.ClientRPC(RpcTarget.Player("CL_ShowStateDebugInfo", player), component.baseEntity.net.ID, arg);
 				}
 			}
 		}
@@ -164,6 +264,10 @@ public class FSMComponent : EntityComponent<BaseEntity>
 		nextRefreshTime = 0.0;
 	}
 
+	protected virtual void OnTicked(float deltaTime)
+	{
+	}
+
 	public void Tick()
 	{
 		using (TimeWarning.New("FSMComponent.Tick"))
@@ -175,10 +279,11 @@ public class FSMComponent : EntityComponent<BaseEntity>
 			nextRefreshTime = Time.timeAsDouble + (double)RefreshInterval;
 			float deltaTime = (float)(Time.timeAsDouble - LastTickTime);
 			LastTickTime = Time.timeAsDouble;
+			OnTicked(deltaTime);
 			sameFrameStateChangesHistory.Clear();
 			if (pendingStateChange != null)
 			{
-				SetState(pendingStateChange, pendingStateChangePayload);
+				SetState(pendingStateChange, pendingStateChangePayload, pendingStateChangeTransition);
 			}
 			else
 			{
@@ -186,7 +291,7 @@ public class FSMComponent : EntityComponent<BaseEntity>
 				{
 					return;
 				}
-				FSMPayload payload = default(FSMPayload);
+				FSMPayload payload = default;
 				using (TimeWarning.New("NormalTransitions"))
 				{
 					PooledList<FSMStateBase> val = Pool.Get<PooledList<FSMStateBase>>();
@@ -195,17 +300,15 @@ public class FSMComponent : EntityComponent<BaseEntity>
 						CurrentState.FindAncestry((List<FSMStateBase>)(object)val);
 						foreach (FSMStateBase item in (List<FSMStateBase>)(object)val)
 						{
-							foreach (var (fSMTransitionBase, fSMStateBase) in item.transitions)
+							foreach (var (fSMTransitionBase, dstState) in item.transitions)
 							{
 								if ((Object)(object)fSMTransitionBase.Owner == (Object)null)
 								{
-									fSMTransitionBase.Init(base.baseEntity);
+									fSMTransitionBase.Init(baseEntity);
 								}
-								if (fSMTransitionBase.Evaluate(ref payload))
+								if (fSMTransitionBase.Evaluate(ref payload) && !IsInheritedSelfTransition(item, dstState))
 								{
-									fSMStateBase.Owner = base.baseEntity;
-									fSMTransitionBase.OnTransitionTaken(CurrentState, fSMStateBase);
-									SetState(fSMStateBase, payload);
+									TakeTransition(fSMTransitionBase, dstState, payload);
 									return;
 								}
 							}
@@ -237,14 +340,14 @@ public class FSMComponent : EntityComponent<BaseEntity>
 			{
 				return;
 			}
-			FSMPayload payload = default(FSMPayload);
+			FSMPayload payload = default;
 			PooledList<FSMStateBase> val = Pool.Get<PooledList<FSMStateBase>>();
 			try
 			{
 				CurrentState.FindAncestry((List<FSMStateBase>)(object)val);
 				foreach (FSMStateBase item in (List<FSMStateBase>)(object)val)
 				{
-					foreach (var (fSMTransitionBase, fSMStateBase, eFSMStateStatus) in item.endTransitions)
+					foreach (var (fSMTransitionBase, dstState, eFSMStateStatus) in item.endTransitions)
 					{
 						if (eFSMStateStatus != (EFSMStateStatus.Success | EFSMStateStatus.Failure) && eFSMStateStatus != currentStateStatus)
 						{
@@ -255,15 +358,13 @@ public class FSMComponent : EntityComponent<BaseEntity>
 						{
 							if ((Object)(object)fSMTransitionBase.Owner == (Object)null)
 							{
-								fSMTransitionBase.Init(base.baseEntity);
+								fSMTransitionBase.Init(baseEntity);
 							}
 							flag = fSMTransitionBase.Evaluate(ref payload);
 						}
-						if (flag)
+						if (flag && !IsInheritedSelfTransition(item, dstState))
 						{
-							fSMStateBase.Owner = base.baseEntity;
-							fSMTransitionBase?.OnTransitionTaken(CurrentState, fSMStateBase);
-							SetState(fSMStateBase, payload);
+							TakeTransition(fSMTransitionBase, dstState, payload);
 							ForceTickOnTheNextUpdate();
 							return;
 						}
@@ -277,29 +378,59 @@ public class FSMComponent : EntityComponent<BaseEntity>
 		}
 	}
 
-	public void SetState(FSMStateBase newState, FSMPayload payload = default(FSMPayload))
+	private bool IsInheritedSelfTransition(FSMStateBase declaringState, FSMStateBase dstState)
+	{
+		if (dstState == CurrentState)
+		{
+			return declaringState != dstState;
+		}
+		return false;
+	}
+
+	protected virtual FSMStateBase RedirectStateChange(FSMStateBase newState)
+	{
+		return newState;
+	}
+
+	private void TakeTransition(FSMTransitionBase transition, FSMStateBase dstState, FSMPayload payload)
+	{
+		dstState.Owner = baseEntity;
+		FSMStateBase fSMStateBase = RedirectStateChange(dstState);
+		if (fSMStateBase != dstState)
+		{
+			SetState(fSMStateBase, payload);
+			return;
+		}
+		transition?.OnTransitionTaken(CurrentState, dstState);
+		SetState(dstState, payload, transition);
+	}
+
+	public void SetState(FSMStateBase newState, FSMPayload payload = default(FSMPayload), FSMTransitionBase takenBy = null)
 	{
 		using (TimeWarning.New("SetState"))
 		{
-			newState.Owner = base.baseEntity;
+			newState = RedirectStateChange(newState);
+			newState.Owner = baseEntity;
 			pendingStateChange = null;
-			pendingStateChangePayload = default(FSMPayload);
+			pendingStateChangePayload = default;
+			pendingStateChangeTransition = null;
 			sameFrameStateChangesHistory.Add(newState);
 			if (sameFrameStateChangesHistory.Count > 3)
 			{
+				pendingStateChange = newState;
+				pendingStateChangePayload = payload;
+				pendingStateChangeTransition = takenBy;
 				if (!AI.logIssues)
 				{
 					return;
 				}
 				StringBuilder stringBuilder = Pool.Get<StringBuilder>();
-				stringBuilder.AppendFormat("[FSM] Possible endless recursion detected from {0} to {1} on {2}\n", CurrentState?.Name, newState.Name, base.baseEntity);
+				stringBuilder.AppendFormat("[FSM] Possible endless recursion detected from {0} to {1} on {2}\n", CurrentState?.Name, newState.Name, baseEntity);
 				foreach (FSMStateBase item5 in sameFrameStateChangesHistory)
 				{
 					stringBuilder.AppendFormat("{0} -> ", item5.Name);
 				}
 				Debug.LogWarning((object)stringBuilder);
-				pendingStateChange = newState;
-				pendingStateChangePayload = payload;
 				Pool.FreeUnmanaged(ref stringBuilder);
 				return;
 			}
@@ -318,7 +449,7 @@ public class FSMComponent : EntityComponent<BaseEntity>
 								FSMTransitionBase item = endTransition.transition;
 								if (item != null && (Object)(object)item.Owner == (Object)null)
 								{
-									item.Init(base.baseEntity);
+									item.Init(baseEntity);
 								}
 								item?.OnStateExit();
 							}
@@ -327,7 +458,7 @@ public class FSMComponent : EntityComponent<BaseEntity>
 								FSMTransitionBase item2 = transition.transition;
 								if (item2 != null && (Object)(object)item2.Owner == (Object)null)
 								{
-									item2.Init(base.baseEntity);
+									item2.Init(baseEntity);
 								}
 								item2.OnStateExit();
 							}
@@ -360,7 +491,7 @@ public class FSMComponent : EntityComponent<BaseEntity>
 							FSMTransitionBase item3 = endTransition2.transition;
 							if (item3 != null && (Object)(object)item3.Owner == (Object)null)
 							{
-								item3.Init(base.baseEntity);
+								item3.Init(baseEntity);
 							}
 							item3?.OnStateEnter();
 						}
@@ -369,7 +500,7 @@ public class FSMComponent : EntityComponent<BaseEntity>
 							FSMTransitionBase item4 = transition2.transition;
 							if (item4 != null && (Object)(object)item4.Owner == (Object)null)
 							{
-								item4.Init(base.baseEntity);
+								item4.Init(baseEntity);
 							}
 							item4.OnStateEnter();
 						}
@@ -384,11 +515,86 @@ public class FSMComponent : EntityComponent<BaseEntity>
 			{
 				using (TimeWarning.New(CurrentState.Name))
 				{
-					EFSMStateStatus currentStateStatus = CurrentState.OnStateEnter(payload);
+					EFSMStateStatus eFSMStateStatus = CurrentState.OnStateEnter(payload);
 					payload.Dispose();
-					EvaluateEndTransitions(currentStateStatus);
+					if (eFSMStateStatus != EFSMStateStatus.Failure)
+					{
+						takenBy?.OnTransitionConfirmed(CurrentState);
+					}
+					EvaluateEndTransitions(eFSMStateStatus);
 				}
 			}
 		}
+	}
+
+	protected void RegisterDebugMoveTo(FSMStateBase attachTo)
+	{
+		if (attachTo != null)
+		{
+			debugMoveTo = new State_DebugMoveToPosition
+			{
+				Name = "DebugMoveTo"
+			};
+			debugMoveToTrans = new Trans_Triggerable();
+			attachTo.AddChild(debugMoveTo);
+			attachTo.AddTickTransition(debugMoveTo, debugMoveToTrans);
+		}
+	}
+
+	public bool DebugMoveTo(Vector3 worldPosition, RustNavMeshAgent.Speeds gait, out string error)
+	{
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		error = null;
+		if (debugMoveTo == null)
+		{
+			error = baseEntity.ShortPrefabName + "'s FSM has no debug move state registered";
+			return false;
+		}
+		if (CurrentState == null || !isRunning)
+		{
+			error = baseEntity.ShortPrefabName + "'s FSM is not running - it may be asleep, try ai.sleepwake 0";
+			return false;
+		}
+		RustNavMeshAgent rustNavMeshAgent = default;
+		if (!((Component)baseEntity).TryGetComponent<RustNavMeshAgent>(ref rustNavMeshAgent))
+		{
+			error = baseEntity.ShortPrefabName + " has no RustNavMeshAgent";
+			return false;
+		}
+		Matrix4x4 worldToNavMeshSpace = baseEntity.WorldToNavMeshSpace;
+		Vector3 positionWS = worldToNavMeshSpace.MultiplyPoint(worldPosition);
+		if (!rustNavMeshAgent.SamplePosition(positionWS, out var _, 5f))
+		{
+			error = $"No navmesh within {5f}m of that position";
+			return false;
+		}
+		debugMoveTo.destinationWS = worldPosition;
+		debugMoveTo.speed = gait;
+		if (!IsDebugMoving)
+		{
+			debugMoveToReturnState = CurrentState;
+		}
+		debugMoveTo.endTransitions.Clear();
+		debugMoveTo.AddEndTransition(debugMoveToReturnState);
+		debugMoveToTrans.Trigger();
+		ForceTickOnTheNextUpdate();
+		return true;
+	}
+
+	public bool DebugRelease()
+	{
+		if (!IsDebugMoving)
+		{
+			return false;
+		}
+		SetState(debugMoveToReturnState);
+		return true;
 	}
 }

@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class ItemModWearable : ItemMod
 {
+	public enum WearableEventType
+	{
+		Easter,
+		Halloween
+	}
+
 	public GameObjectRef entityPrefab = new GameObjectRef();
 
 	public GameObjectRef entityPrefabFemale = new GameObjectRef();
@@ -15,8 +21,8 @@ public class ItemModWearable : ItemMod
 
 	public UIBlackoutOverlay.blackoutType occlusionType = UIBlackoutOverlay.blackoutType.NONE;
 
-	[Tooltip("Muffles world audio for the local player while this is worn. Drives the HeavyHelmet mixer snapshot.")]
 	[Range(0f, 1f)]
+	[Tooltip("Muffles world audio for the local player while this is worn. Drives the head gear lowpass, layering over the active snapshot.")]
 	public float audioMuffleAmount;
 
 	public bool blocksAiming;
@@ -28,6 +34,8 @@ public class ItemModWearable : ItemMod
 	public bool blocksEquipping;
 
 	public float eggVision;
+
+	public WearableEventType eggVisionType;
 
 	public float weight;
 
@@ -91,10 +99,10 @@ public class ItemModWearable : ItemMod
 
 	public bool ProtectsWholeBody()
 	{
-		bool num = ProtectsArea(HitArea.Head);
-		bool flag = ProtectsArea(HitArea.Chest);
-		bool flag2 = ProtectsArea(HitArea.Leg);
-		return num & flag & flag2;
+		bool flag = ProtectsArea(HitArea.Head);
+		bool flag2 = ProtectsArea(HitArea.Chest);
+		bool flag3 = ProtectsArea(HitArea.Leg);
+		return flag & flag2 & flag3;
 	}
 
 	public bool HasProtections()
@@ -110,7 +118,7 @@ public class ItemModWearable : ItemMod
 		}
 		float num = protectionProperties.Get(damageType);
 		float num2 = 0f;
-		ItemModContainerArmorSlot itemModContainerArmorSlot = default(ItemModContainerArmorSlot);
+		ItemModContainerArmorSlot itemModContainerArmorSlot = default;
 		if (((Component)this).TryGetComponent<ItemModContainerArmorSlot>(ref itemModContainerArmorSlot))
 		{
 			num2 = itemModContainerArmorSlot.GetProtection(item, damageType);
@@ -133,7 +141,7 @@ public class ItemModWearable : ItemMod
 		{
 			protection.Add(protectionProperties, ConditionProtectionScale(item) * multiplier);
 		}
-		ItemModContainerArmorSlot itemModContainerArmorSlot = default(ItemModContainerArmorSlot);
+		ItemModContainerArmorSlot itemModContainerArmorSlot = default;
 		if (((Component)this).TryGetComponent<ItemModContainerArmorSlot>(ref itemModContainerArmorSlot))
 		{
 			itemModContainerArmorSlot.CollectProtection(item, protection, multiplier);
@@ -197,10 +205,10 @@ public class ItemModWearable : ItemMod
 		{
 			Vector3 vPos = ((Component)item.GetOwnerPlayer()).transform.position + new Vector3(0f, 1.8f, 0f);
 			Vector3 vVelocity = item.GetOwnerPlayer().GetInheritedDropVelocity() + Vector3.up * 3f;
-			Quaternion rotation = default(Quaternion);
+			Quaternion rotation = default;
 			BaseEntity baseEntity = item.Drop(vPos, vVelocity, rotation);
 			rotation = Random.rotation;
-			baseEntity.SetAngularVelocity(((Quaternion)(ref rotation)).eulerAngles * 5f);
+			baseEntity.SetAngularVelocity(rotation.eulerAngles * 5f);
 		}
 	}
 

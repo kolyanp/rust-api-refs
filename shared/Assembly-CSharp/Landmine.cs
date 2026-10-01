@@ -113,7 +113,7 @@ public class Landmine : BaseTrap
 
 	public override void ObjectEntered(GameObject obj)
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			if (!Armed())
 			{
@@ -157,11 +157,11 @@ public class Landmine : BaseTrap
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		base.health = float.PositiveInfinity;
+		health = float.PositiveInfinity;
 		Effect.server.Run(explosionEffect.resourcePath, PivotPoint(), ((Component)this).transform.up, null, broadcast: true);
 		DamageUtil.RadiusDamage(this, LookupPrefab(), CenterPoint(), minExplosionRadius, explosionRadius, damageTypes, 2263296, useLineOfSight: true);
 		SeismicSensor.Notify(CenterPoint(), vibrationLevel);
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			Kill();
 		}
@@ -191,8 +191,8 @@ public class Landmine : BaseTrap
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Disarm(RPCMessage rpc)
 	{
 		if ((ulong)rpc.player.userID == triggerPlayerID || !Armed() || Interface.CallHook("OnTrapDisarm", this, rpc.player) != null || !Triggered())

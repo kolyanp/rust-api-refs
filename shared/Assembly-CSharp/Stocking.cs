@@ -24,13 +24,13 @@ public class Stocking : LootContainer
 
 	public bool IsEmpty()
 	{
-		if (base.inventory == null)
+		if (inventory == null)
 		{
 			return false;
 		}
-		for (int num = base.inventory.itemList.Count - 1; num >= 0; num--)
+		for (int num = inventory.itemList.Count - 1; num >= 0; num--)
 		{
-			if (base.inventory.itemList[num] != null)
+			if (inventory.itemList[num] != null)
 			{
 				return false;
 			}
@@ -40,7 +40,7 @@ public class Stocking : LootContainer
 
 	public override void SpawnLoot()
 	{
-		if (base.inventory == null)
+		if (inventory == null)
 		{
 			Debug.Log((object)("CONTACT DEVELOPERS! Stocking::PopulateLoot has null inventory!!! " + ((Object)this).name));
 		}
@@ -62,9 +62,9 @@ public class Stocking : LootContainer
 		{
 			flagsUpdateScope.Set(Flags.On, b: false);
 		}
-		if (IsEmpty() && base.healthFraction <= 0.1f)
+		if (IsEmpty() && healthFraction <= 0.1f)
 		{
-			Hurt(base.health, DamageType.Generic, this, useProtection: false);
+			Hurt(health, DamageType.Generic, this, useProtection: false);
 		}
 	}
 }

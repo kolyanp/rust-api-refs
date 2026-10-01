@@ -115,10 +115,10 @@ public static class FDebug
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = new Vector3(((Bounds)(ref b)).max.x, y, ((Bounds)(ref b)).max.z) * scale;
-		Vector3 val2 = new Vector3(((Bounds)(ref b)).max.x, y, ((Bounds)(ref b)).min.z) * scale;
-		Vector3 val3 = new Vector3(((Bounds)(ref b)).min.x, y, ((Bounds)(ref b)).min.z) * scale;
-		Vector3 val4 = new Vector3(((Bounds)(ref b)).min.x, y, ((Bounds)(ref b)).max.z) * scale;
+		Vector3 val = new Vector3(b.max.x, y, b.max.z) * scale;
+		Vector3 val2 = new Vector3(b.max.x, y, b.min.z) * scale;
+		Vector3 val3 = new Vector3(b.min.x, y, b.min.z) * scale;
+		Vector3 val4 = new Vector3(b.min.x, y, b.max.z) * scale;
 		Debug.DrawLine(val, val2, c, duration);
 		Debug.DrawLine(val2, val3, c, duration);
 		Debug.DrawLine(val2, val3, c, duration);
@@ -218,19 +218,19 @@ public static class FDebug
 		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0208: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).min.y, ((Bounds)(ref b)).max.z) * scale;
-		Vector3 val2 = new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).min.y, ((Bounds)(ref b)).min.z) * scale;
-		Vector3 val3 = new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).min.y, ((Bounds)(ref b)).min.z) * scale;
-		Vector3 val4 = new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).min.y, ((Bounds)(ref b)).max.z) * scale;
+		Vector3 val = new Vector3(b.max.x, b.min.y, b.max.z) * scale;
+		Vector3 val2 = new Vector3(b.max.x, b.min.y, b.min.z) * scale;
+		Vector3 val3 = new Vector3(b.min.x, b.min.y, b.min.z) * scale;
+		Vector3 val4 = new Vector3(b.min.x, b.min.y, b.max.z) * scale;
 		Debug.DrawLine(val, val2, c, time);
 		Debug.DrawLine(val2, val3, c, time);
 		Debug.DrawLine(val2, val3, c, time);
 		Debug.DrawLine(val3, val4, c, time);
 		Debug.DrawLine(val4, val, c, time);
-		Vector3 val5 = new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).max.y, ((Bounds)(ref b)).max.z) * scale;
-		Vector3 val6 = new Vector3(((Bounds)(ref b)).max.x, ((Bounds)(ref b)).max.y, ((Bounds)(ref b)).min.z) * scale;
-		Vector3 val7 = new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).max.y, ((Bounds)(ref b)).min.z) * scale;
-		Vector3 val8 = new Vector3(((Bounds)(ref b)).min.x, ((Bounds)(ref b)).max.y, ((Bounds)(ref b)).max.z) * scale;
+		Vector3 val5 = new Vector3(b.max.x, b.max.y, b.max.z) * scale;
+		Vector3 val6 = new Vector3(b.max.x, b.max.y, b.min.z) * scale;
+		Vector3 val7 = new Vector3(b.min.x, b.max.y, b.min.z) * scale;
+		Vector3 val8 = new Vector3(b.min.x, b.max.y, b.max.z) * scale;
 		Debug.DrawLine(val5, val6, c, time);
 		Debug.DrawLine(val6, val7, c, time);
 		Debug.DrawLine(val6, val7, c, time);

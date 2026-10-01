@@ -30,7 +30,7 @@ public struct CachedTransform<T> where T : Component
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 			Matrix4x4 val = localToWorldMatrix;
-			return ((Matrix4x4)(ref val)).inverse;
+			return val.inverse;
 		}
 	}
 

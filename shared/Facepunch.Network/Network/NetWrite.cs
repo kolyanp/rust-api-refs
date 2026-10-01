@@ -13,7 +13,8 @@ namespace Network;
 
 public class NetWrite : Stream, IPooled
 {
-	private static MemoryStream stringBuffer = new MemoryStream();
+	[ThreadStatic]
+	private static MemoryStream stringBuffer;
 
 	private BaseNetwork peer;
 
@@ -79,10 +80,10 @@ public class NetWrite : Stream, IPooled
 	{
 		peer = null;
 		connections.Clear();
-		BufferStream obj = stream;
-		if (obj != null)
+		BufferStream val = stream;
+		if (val != null)
 		{
-			obj.Dispose();
+			val.Dispose();
 		}
 		stream = null;
 		serverTicks = 0L;
@@ -277,6 +278,10 @@ public class NetWrite : Stream, IPooled
 			BytesWithSize((MemoryStream)null, variableLength);
 			return;
 		}
+		if (stringBuffer == null)
+		{
+			stringBuffer = new MemoryStream(val.Length * 8);
+		}
 		if (stringBuffer.Capacity < val.Length * 8)
 		{
 			stringBuffer.Capacity = val.Length * 8;
@@ -317,8 +322,8 @@ public class NetWrite : Stream, IPooled
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		Vector3(((Ray)(ref obj)).origin);
-		Vector3(((Ray)(ref obj)).direction);
+		Vector3(obj.origin);
+		Vector3(obj.direction);
 	}
 
 	public void Color(in Color obj)
@@ -429,7 +434,7 @@ public class NetWrite : Stream, IPooled
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		ReadOnlySpan<byte> readOnlySpan = new ReadOnlySpan<byte>(buffer, offset, count);
 		RangeHandle range = stream.GetRange(count);
-		readOnlySpan.CopyTo(((RangeHandle)(ref range)).GetSpan());
+		readOnlySpan.CopyTo(range.GetSpan());
 	}
 
 	public override void Write(ReadOnlySpan<byte> span)
@@ -437,7 +442,7 @@ public class NetWrite : Stream, IPooled
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		RangeHandle range = stream.GetRange(span.Length);
-		span.CopyTo(((RangeHandle)(ref range)).GetSpan());
+		span.CopyTo(range.GetSpan());
 	}
 
 	public override void WriteByte(byte value)

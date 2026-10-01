@@ -446,7 +446,7 @@ public class Permission : Library
 				}
 				return new KeyValuePair<string, UserData>(((List<KeyValuePair<string, UserData>>)(object)val)[0].Key, ((List<KeyValuePair<string, UserData>>)(object)val)[0].Value);
 			}
-			return default(KeyValuePair<string, UserData>);
+			return default;
 		}
 		finally
 		{

@@ -32,6 +32,7 @@ public static class NativeArrayEx
 	public static void Expand<T>(this ref NativeArray<T> array, int newCapacity, NativeArrayOptions options = (NativeArrayOptions)1, bool copyContents = true, bool usePowerOfTwo = false) where T : struct
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
@@ -39,8 +40,7 @@ public static class NativeArrayEx
 		{
 			return;
 		}
-		NativeArray<T> val = default(NativeArray<T>);
-		val._002Ector(usePowerOfTwo ? Mathf.NextPowerOfTwo(newCapacity) : newCapacity, (Allocator)4, options);
+		NativeArray<T> val = new NativeArray<T>(usePowerOfTwo ? Mathf.NextPowerOfTwo(newCapacity) : newCapacity, (Allocator)4, options);
 		if (array.IsCreated)
 		{
 			if (copyContents)

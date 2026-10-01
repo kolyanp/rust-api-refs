@@ -13,11 +13,20 @@ public struct ItemStoreTakeover
 
 	public Phrase HeaderPhrase;
 
+	[NonSerialized]
 	public Sprite IconOverride;
 
+	public DynamicResourceRef<Sprite> DynamicIconOverride;
+
+	[NonSerialized]
 	public Sprite IconPortraitOverride;
 
+	public DynamicResourceRef<Sprite> DynamicIconPortraitOverride;
+
+	[NonSerialized]
 	public Sprite IconSquareOverride;
+
+	public DynamicResourceRef<Sprite> DynamicIconSquareOverride;
 
 	public string ImageURL;
 
@@ -29,7 +38,16 @@ public struct ItemStoreTakeover
 
 	public string IconSquareUrl;
 
+	public string IconBlurHash;
+
+	public string IconPortraitBlurHash;
+
+	public string IconSquareBlurHash;
+
+	[NonSerialized]
 	public UI_StoreItemOverlayPage PagePrefab;
+
+	public DynamicResourceRef<UI_StoreItemOverlayPage> DynamicPagePrefab;
 
 	public UI_StoreItemTile TilePrefabOverride;
 
@@ -58,10 +76,17 @@ public struct ItemStoreTakeover
 		IconOverride = null;
 		IconPortraitOverride = null;
 		IconSquareOverride = null;
+		DynamicIconOverride = null;
+		DynamicIconPortraitOverride = null;
+		DynamicIconSquareOverride = null;
 		IconUrl = null;
 		IconPortraitUrl = null;
 		IconSquareUrl = null;
+		IconBlurHash = null;
+		IconPortraitBlurHash = null;
+		IconSquareBlurHash = null;
 		PagePrefab = null;
+		DynamicPagePrefab = null;
 		TilePrefabOverride = null;
 		Item = null;
 	}
@@ -89,13 +114,25 @@ public struct ItemStoreTakeover
 		{
 			IconOverride = other.IconOverride;
 		}
+		if (other.DynamicIconOverride.IsValid())
+		{
+			DynamicIconOverride = other.DynamicIconOverride;
+		}
 		if ((Object)(object)other.IconPortraitOverride != (Object)null)
 		{
 			IconPortraitOverride = other.IconPortraitOverride;
 		}
+		if (other.DynamicIconPortraitOverride.IsValid())
+		{
+			DynamicIconPortraitOverride = other.DynamicIconPortraitOverride;
+		}
 		if ((Object)(object)other.IconSquareOverride != (Object)null)
 		{
 			IconSquareOverride = other.IconSquareOverride;
+		}
+		if (other.DynamicIconSquareOverride.IsValid())
+		{
+			DynamicIconSquareOverride = other.DynamicIconSquareOverride;
 		}
 		if (!string.IsNullOrEmpty(other.ImageURL))
 		{
@@ -108,18 +145,25 @@ public struct ItemStoreTakeover
 		if (!string.IsNullOrEmpty(other.IconUrl))
 		{
 			IconUrl = other.IconUrl;
+			IconBlurHash = other.IconBlurHash;
 		}
 		if (!string.IsNullOrEmpty(other.IconPortraitUrl))
 		{
 			IconPortraitUrl = other.IconPortraitUrl;
+			IconPortraitBlurHash = other.IconPortraitBlurHash;
 		}
 		if (!string.IsNullOrEmpty(other.IconSquareUrl))
 		{
 			IconSquareUrl = other.IconSquareUrl;
+			IconSquareBlurHash = other.IconSquareBlurHash;
 		}
 		if ((Object)(object)other.PagePrefab != (Object)null)
 		{
 			PagePrefab = other.PagePrefab;
+		}
+		if (other.DynamicPagePrefab.IsValid())
+		{
+			DynamicPagePrefab = other.DynamicPagePrefab;
 		}
 		if ((Object)(object)other.TilePrefabOverride != (Object)null)
 		{
@@ -159,27 +203,56 @@ public struct ItemStoreTakeover
 		return IconOverride;
 	}
 
-	public string GetBestIconUrlForRect(float width, float height)
+	public DynamicResourceRef<Sprite> GetBestIconRefForRect(float width, float height)
 	{
 		float num = width / height;
 		bool flag = num > 1.15f;
 		bool flag2 = num < 0.8f;
 		if (flag)
 		{
+			return DynamicIconOverride;
+		}
+		if (flag2)
+		{
+			if ((Object)(object)IconPortraitOverride != (Object)null)
+			{
+				return DynamicIconPortraitOverride;
+			}
+			return DynamicIconOverride;
+		}
+		if ((Object)(object)IconSquareOverride != (Object)null)
+		{
+			return DynamicIconSquareOverride;
+		}
+		return DynamicIconOverride;
+	}
+
+	public string GetBestIconUrlForRect(float width, float height, out string loadingBlurHash)
+	{
+		float num = width / height;
+		bool flag = num > 1.15f;
+		bool flag2 = num < 0.8f;
+		if (flag)
+		{
+			loadingBlurHash = IconBlurHash;
 			return IconUrl;
 		}
 		if (flag2)
 		{
 			if (!string.IsNullOrEmpty(IconPortraitUrl))
 			{
+				loadingBlurHash = IconPortraitBlurHash;
 				return IconPortraitUrl;
 			}
+			loadingBlurHash = IconBlurHash;
 			return IconUrl;
 		}
 		if (!string.IsNullOrEmpty(IconSquareUrl))
 		{
+			loadingBlurHash = IconSquareBlurHash;
 			return IconSquareUrl;
 		}
+		loadingBlurHash = IconBlurHash;
 		return IconUrl;
 	}
 }

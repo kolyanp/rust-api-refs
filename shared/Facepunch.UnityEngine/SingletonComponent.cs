@@ -16,7 +16,7 @@ public abstract class SingletonComponent<T> : SingletonComponent where T : MonoB
 	{
 		if ((Object)(object)Instance == (Object)(object)this)
 		{
-			Instance = default(T);
+			Instance = default;
 		}
 	}
 }

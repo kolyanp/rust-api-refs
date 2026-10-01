@@ -11,9 +11,9 @@ public class NpcZoneComponent : EntityComponent<BaseEntity>, IServerComponent
 	public override void InitShared()
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
-			zone = NpcZone.GetForPoint(base.baseEntity, base.baseEntity.CenterPoint());
+			zone = NpcZone.GetForPoint(baseEntity, baseEntity.CenterPoint());
 			base.InitShared();
 		}
 	}
@@ -34,7 +34,7 @@ public class NpcZoneComponent : EntityComponent<BaseEntity>, IServerComponent
 		{
 			return true;
 		}
-		return zone.IsPointInside(base.baseEntity, point);
+		return zone.IsPointInside(baseEntity, point);
 	}
 
 	public bool IsInSameZone(BaseEntity other)
@@ -44,7 +44,7 @@ public class NpcZoneComponent : EntityComponent<BaseEntity>, IServerComponent
 		{
 			return false;
 		}
-		NpcZoneComponent npcZoneComponent = default(NpcZoneComponent);
+		NpcZoneComponent npcZoneComponent = default;
 		if (((Component)other).TryGetComponent<NpcZoneComponent>(ref npcZoneComponent))
 		{
 			return (Object)(object)zone == (Object)(object)npcZoneComponent.zone;

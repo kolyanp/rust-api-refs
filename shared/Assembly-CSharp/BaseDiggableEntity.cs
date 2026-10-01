@@ -59,7 +59,7 @@ public class BaseDiggableEntity : BaseCombatEntity
 		}
 		ClientRPC(RpcTarget.NetworkGroup("RPC_OnDig"), RequiredDigCount - digsRemaining, RequiredDigCount);
 		digsRemaining--;
-		base.health = digsRemaining;
+		health = digsRemaining;
 		SendNetworkUpdate();
 		OnSingleDig(player);
 		if (digsRemaining <= 0)

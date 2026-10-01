@@ -46,7 +46,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 
 	public const Flags FLAG_HOPPERANIMATING = Flags.Reserved3;
 
-	private int originalLayer;
+	private int originalLayer = -1;
 
 	[NonSerialized]
 	public DropReasonEnum DropReason;
@@ -90,7 +90,13 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 
 	private float maxBoundsExtent;
 
-	private readonly Vector3 smallVerticalOffset;
+	private const float SETTLE_TRACE_START_HEIGHT = 0.5f;
+
+	private const float SETTLE_TRACE_DISTANCE = 4f;
+
+	private Action cachedSendSettledPosition;
+
+	private readonly Vector3 smallVerticalOffset = new Vector3(0f, 0.05f, 0f);
 
 	public static DroppedItemUnderwaterQueue underwaterStatusQueue = new DroppedItemUnderwaterQueue();
 
@@ -262,11 +268,11 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		Bounds val = childCollider.bounds;
-		Vector3 val2 = ((Bounds)(ref val)).center + smallVerticalOffset;
+		Vector3 val2 = val.center + smallVerticalOffset;
 		if (HasParent())
 		{
 			Matrix4x4 worldToLocalMatrix = ((Component)GetParentEntity()).transform.worldToLocalMatrix;
-			val2 = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyPoint3x4(val2);
+			val2 = worldToLocalMatrix.MultiplyPoint3x4(val2);
 		}
 		return val2;
 	}
@@ -363,8 +369,8 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 		Vector3 val = ((Component)this).transform.position;
 		Quaternion rotation = ((Component)this).transform.rotation;
 		SetParent(null);
-		RaycastHit val2 = default(RaycastHit);
-		if (Physics.Raycast(val + Vector3.up * 2f, Vector3.down, ref val2, 2f, 161546240) && val.y < ((RaycastHit)(ref val2)).point.y)
+		RaycastHit val2 = default;
+		if (Physics.Raycast(val + Vector3.up * 2f, Vector3.down, ref val2, 2f, 161546240) && val.y < val2.point.y)
 		{
 			val += Vector3.up * 1.5f;
 		}
@@ -389,10 +395,63 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 		flagsUpdateScope.Set(Flags.Reserved1, b: false);
 	}
 
+	public bool SettleOnGround(float traceDistance = 4f)
+	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)rB == (Object)null || (Object)(object)childCollider == (Object)null)
+		{
+			return false;
+		}
+		Ray ray = new Ray(((Component)this).transform.position + Vector3.up * 0.5f, Vector3.down);
+		if (!GamePhysics.TraceRealm(GamePhysics.Realm.Server, ray, 0f, out var hitInfo, 0.5f + traceDistance, 1218511105, (QueryTriggerInteraction)1, this))
+		{
+			return false;
+		}
+		float y = ((Component)this).transform.position.y;
+		Bounds val = childCollider.bounds;
+		float num = y - val.min.y;
+		((Component)this).transform.position = hitInfo.point + Vector3.up * num;
+		rB.linearVelocity = Vector3.zero;
+		rB.angularVelocity = Vector3.zero;
+		BecomeInactive();
+		hasLastPos = false;
+		CheckValidPosition();
+		InvalidateNetworkCache();
+		if (cachedSendSettledPosition == null)
+		{
+			cachedSendSettledPosition = SendSettledPosition;
+		}
+		Invoke(cachedSendSettledPosition, 0f);
+		return true;
+	}
+
+	private void SendSettledPosition()
+	{
+		InvalidateNetworkCache();
+		SendNetworkUpdate_Position();
+	}
+
 	private void SleepCheck()
 	{
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
@@ -414,17 +473,16 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 				float num;
 				if (!((Object)(object)childCollider != (Object)null))
 				{
-					num = Vector3Ex.Max(((Bounds)(ref bounds)).extents);
+					num = Vector3Ex.Max(bounds.extents);
 				}
 				else
 				{
 					Bounds val = childCollider.bounds;
-					num = Vector3Ex.Max(((Bounds)(ref val)).extents);
+					num = Vector3Ex.Max(val.extents);
 				}
 				maxBoundsExtent = num;
 			}
-			Ray ray = default(Ray);
-			((Ray)(ref ray))._002Ector(CenterPoint(), Vector3.down);
+			Ray ray = new Ray(CenterPoint(), Vector3.down);
 			if (!GamePhysics.TraceRealm(GamePhysics.Realm.Server, ray, 0f, out var _, maxBoundsExtent + 0.1f, -928830719, (QueryTriggerInteraction)1, this))
 			{
 				BecomeActive();
@@ -539,11 +597,11 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 			if (flag)
 			{
 				Matrix4x4 localToWorldMatrix = ((Component)GetParentEntity()).transform.localToWorldMatrix;
-				val = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(val);
-				val3 = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(val3);
+				val = localToWorldMatrix.MultiplyPoint3x4(val);
+				val3 = localToWorldMatrix.MultiplyPoint3x4(val3);
 			}
 			Vector3 val4 = val - val3;
-			Ray ray = new Ray(val3, ((Vector3)(ref val4)).normalized);
+			Ray ray = new Ray(val3, val4.normalized);
 			if (broadcast_debug_ddraw)
 			{
 				UnityEngine.DDraw.BroadcastSphere(((Component)this).transform.position, 0.1f, childCollider.enabled ? Color.green : Color.red, 30f, distanceFade: true, zTest: false);
@@ -552,7 +610,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 					UnityEngine.DDraw.BroadcastLine(val3, val3 + val4, Color.yellow, 30f, distanceFade: true, zTest: false);
 				}
 			}
-			if (hasLastPos && GamePhysics.TraceRealm(GamePhysics.Realm.Server, ray, 0f, out var hitInfo, ((Vector3)(ref val4)).magnitude, 1218511105, (QueryTriggerInteraction)1, this))
+			if (hasLastPos && GamePhysics.TraceRealm(GamePhysics.Realm.Server, ray, 0f, out var hitInfo, val4.magnitude, 1218511105, (QueryTriggerInteraction)1, this))
 			{
 				if (broadcast_debug_ddraw)
 				{
@@ -564,10 +622,10 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 				{
 					return;
 				}
-				if (flag && Object.op_Implicit((Object)(object)((RaycastHit)(ref hitInfo)).rigidbody))
+				if (flag && Object.op_Implicit((Object)(object)hitInfo.rigidbody))
 				{
 					BaseEntity a = GetParentEntity();
-					BaseEntity baseEntity2 = GameObjectEx.ToBaseEntity(((RaycastHit)(ref hitInfo)).collider);
+					BaseEntity baseEntity2 = GameObjectEx.ToBaseEntity(hitInfo.collider);
 					if (Object.op_Implicit((Object)(object)baseEntity2) && (GamePhysics.CompareEntity(a, baseEntity2) || GamePhysics.CompareEntity(a, baseEntity2.GetRootParentEntity())))
 					{
 						BecomeInactive();
@@ -640,7 +698,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 
 	private void OnParented()
 	{
-		if (!((Object)(object)childCollider == (Object)null) && base.isServer && !StuckInSomething)
+		if (!((Object)(object)childCollider == (Object)null) && isServer && !StuckInSomething)
 		{
 			hasLastPos = false;
 			if (cachedSleepCheck == null)
@@ -662,12 +720,12 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 		{
 			if (item != null && item.GetWorldModel().isValid)
 			{
-				val = base.gameManager.CreatePrefab(item.GetWorldModel().resourcePath, ((Component)this).transform);
+				val = gameManager.CreatePrefab(item.GetWorldModel().resourcePath, ((Component)this).transform);
 				val.transform.localScale = item.GetWorldModel().Get().transform.localScale;
 			}
 			else
 			{
-				val = base.gameManager.CreatePrefab(itemModel.resourcePath, ((Component)this).transform);
+				val = gameManager.CreatePrefab(itemModel.resourcePath, ((Component)this).transform);
 			}
 			val.transform.localPosition = Vector3.zero;
 			val.transform.localRotation = Quaternion.identity;
@@ -682,7 +740,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 				originalLayer = ((Component)childCollider).gameObject.layer;
 			}
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			rB = ((Component)this).gameObject.AddComponent<Rigidbody>();
 			SetupRigidbody();
@@ -703,7 +761,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 				}
 			}
 			Buoyancy component2 = val.GetComponent<Buoyancy>();
-			if ((Object)(object)component2 != (Object)null && base.isServer)
+			if ((Object)(object)component2 != (Object)null && isServer)
 			{
 				component2.rigidBody = rB;
 			}
@@ -725,7 +783,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 		{
 			BecomeActive();
 		}
-		if (base.isServer && (old & Flags.Reserved2) == Flags.Reserved2 != ((next & Flags.Reserved2) == Flags.Reserved2))
+		if (isServer && (old & Flags.Reserved2) == Flags.Reserved2 != ((next & Flags.Reserved2) == Flags.Reserved2))
 		{
 			UpdateUnderwaterDrag();
 		}
@@ -740,7 +798,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("DroppedItem.BecomeActive"))
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				if (!Object.op_Implicit((Object)(object)rB))
 				{
@@ -775,7 +833,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 	{
 		using (TimeWarning.New("DroppedItem.BecomeInactive"))
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				if (remove_rb_on_sleep)
 				{
@@ -879,8 +937,5 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		originalLayer = -1;
-		smallVerticalOffset = new Vector3(0f, 0.05f, 0f);
-		base._002Ector();
 	}
 }

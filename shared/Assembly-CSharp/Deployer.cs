@@ -112,19 +112,19 @@ public class Deployer : HeldEntity
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Deploy.CheckPlacement"))
 		{
-			RaycastHit val = default(RaycastHit);
+			RaycastHit val = default;
 			if (!Physics.Raycast(ray, ref val, fDistance, 1235288065))
 			{
 				return false;
 			}
 			DeployVolume[] volumes = PrefabAttribute.server.FindAll<DeployVolume>(deployable.prefabID);
-			Vector3 point = ((RaycastHit)(ref val)).point;
-			Quaternion deployedRotation = GetDeployedRotation(((RaycastHit)(ref val)).normal, ((Ray)(ref ray)).direction);
+			Vector3 point = val.point;
+			Quaternion deployedRotation = GetDeployedRotation(val.normal, ray.direction);
 			if (DeployVolume.Check(point, deployedRotation, volumes))
 			{
 				return false;
 			}
-			if (!IsPlacementAngleAcceptable(((RaycastHit)(ref val)).point, deployedRotation))
+			if (!IsPlacementAngleAcceptable(val.point, deployedRotation))
 			{
 				return false;
 			}
@@ -132,8 +132,8 @@ public class Deployer : HeldEntity
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void DoDeploy(RPCMessage msg)
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
@@ -297,13 +297,13 @@ public class Deployer : HeldEntity
 		}
 		else
 		{
-			RaycastHit val = default(RaycastHit);
+			RaycastHit val = default;
 			if (!CheckPlacement(deployable, ray, 8f) || !Physics.Raycast(ray, ref val, 8f, 1235288065))
 			{
 				return;
 			}
-			Vector3 point = ((RaycastHit)(ref val)).point;
-			Quaternion deployedRotation = GetDeployedRotation(((RaycastHit)(ref val)).normal, ((Ray)(ref ray)).direction);
+			Vector3 point = val.point;
+			Quaternion deployedRotation = GetDeployedRotation(val.normal, ray.direction);
 			Item ownerItem = GetOwnerItem();
 			ItemModDeployable modDeployable = GetModDeployable();
 			if (ownerPlayer.Distance(point) > 3f)

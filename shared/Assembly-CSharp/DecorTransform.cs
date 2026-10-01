@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class DecorTransform : DecorComponent
 {
-	public Vector3 Position;
+	public Vector3 Position = new Vector3(0f, 0f, 0f);
 
-	public Vector3 Rotation;
+	public Vector3 Rotation = new Vector3(0f, 0f, 0f);
 
-	public Vector3 Scale;
+	public Vector3 Scale = new Vector3(1f, 1f, 1f);
 
 	public override void Apply(ref Vector3 pos, ref Quaternion rot, ref Vector3 scale)
 	{
@@ -40,9 +40,5 @@ public class DecorTransform : DecorComponent
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		Position = new Vector3(0f, 0f, 0f);
-		Rotation = new Vector3(0f, 0f, 0f);
-		Scale = new Vector3(1f, 1f, 1f);
-		base._002Ector();
 	}
 }

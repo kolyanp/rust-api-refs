@@ -61,6 +61,7 @@ public class PlaceEntitiesOffshore : ProceduralComponent
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
@@ -72,8 +73,7 @@ public class PlaceEntitiesOffshore : ProceduralComponent
 			return;
 		}
 		GetTerrainSpawnBounds(float3.op_Implicit(TerrainMeta.Position), float3.op_Implicit(TerrainMeta.Size), in minDistanceFromTerrain, in maxDistanceFromTerrain, out var bounds);
-		NativeList<SpawnPoint> spawnPoints = default(NativeList<SpawnPoint>);
-		spawnPoints._002Ector(targetCount, AllocatorHandle.op_Implicit((Allocator)3));
+		NativeList<SpawnPoint> spawnPoints = new NativeList<SpawnPoint>(targetCount, AllocatorHandle.op_Implicit((Allocator)3));
 		try
 		{
 			GenerateSpawnPoints generateSpawnPoints = new GenerateSpawnPoints
@@ -85,9 +85,9 @@ public class PlaceEntitiesOffshore : ProceduralComponent
 				minDistanceFromOtherEntities = minDistanceFromOtherEntities
 			};
 			GenerateSpawnPoints generateSpawnPoints2 = generateSpawnPoints;
-			JobHandle val = default(JobHandle);
+			JobHandle val = default;
 			val = IJobExtensions.Schedule<GenerateSpawnPoints>(generateSpawnPoints2, val);
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			PlacePrefabs(in generateSpawnPoints.spawnPoints);
 		}
 		finally
@@ -108,7 +108,7 @@ public class PlaceEntitiesOffshore : ProceduralComponent
 		bounds.topOuterZ = terrainPosition.z + terrainSize.z + maxDistance;
 	}
 
-	private unsafe void PlacePrefabs(in NativeList<SpawnPoint> spawnPoints)
+	private void PlacePrefabs(in NativeList<SpawnPoint> spawnPoints)
 	{
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
@@ -121,11 +121,9 @@ public class PlaceEntitiesOffshore : ProceduralComponent
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Expected O, but got Unknown
-		int length = spawnPoints.Length;
-		Span<Vector3> span = new Span<Vector3>(stackalloc Vector3[length], length);
-		length = spawnPoints.Length;
-		Span<Quaternion> span2 = new Span<Quaternion>(stackalloc Quaternion[length], length);
+		//IL_00b2: Expected Obj, but got Unknown
+		Span<Vector3> span = stackalloc Vector3[spawnPoints.Length];
+		Span<Quaternion> span2 = stackalloc Quaternion[spawnPoints.Length];
 		for (int i = 0; i < spawnPoints.Length; i++)
 		{
 			span[i] = float3.op_Implicit(spawnPoints[i].position);

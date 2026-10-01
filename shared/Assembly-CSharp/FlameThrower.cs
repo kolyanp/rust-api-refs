@@ -196,7 +196,7 @@ public class FlameThrower : AttackEntity
 
 	public void ReduceAmmo(float firingTime)
 	{
-		if (base.UsingInfiniteAmmoCheat)
+		if (UsingInfiniteAmmoCheat)
 		{
 			return;
 		}
@@ -365,7 +365,7 @@ public class FlameThrower : AttackEntity
 	{
 		if (wantsOn)
 		{
-			if (!base.UsingInfiniteAmmoCheat)
+			if (!UsingInfiniteAmmoCheat)
 			{
 				ammo--;
 			}
@@ -400,8 +400,8 @@ public class FlameThrower : AttackEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void TogglePilotLight(RPCMessage msg)
 	{
 		PilotLightToggle_Shared();
@@ -461,38 +461,38 @@ public class FlameThrower : AttackEntity
 		ReduceAmmo(num);
 		SendNetworkUpdate();
 		Ray val = ownerPlayer.eyes.BodyRay();
-		Vector3 origin = ((Ray)(ref val)).origin;
-		RaycastHit val2 = default(RaycastHit);
-		bool num2 = Physics.SphereCast(val, 0.3f, ref val2, flameRange, 1218652417);
-		if (!num2)
+		Vector3 origin = val.origin;
+		RaycastHit val2 = default;
+		bool flag = Physics.SphereCast(val, 0.3f, ref val2, flameRange, 1218652417);
+		if (!flag)
 		{
-			((RaycastHit)(ref val2)).point = origin + ((Ray)(ref val)).direction * flameRange;
+			val2.point = origin + val.direction * flameRange;
 		}
-		float num3 = (ownerPlayer.IsNpc ? npcDamageScale : 1f);
+		float num2 = (ownerPlayer.IsNpc ? npcDamageScale : 1f);
 		float amount = damagePerSec[0].amount;
-		damagePerSec[0].amount = amount * num * num3;
-		int num4 = 2146305;
+		damagePerSec[0].amount = amount * num * num2;
+		int num3 = 2146305;
 		int layers = 133376;
 		if (!ownerPlayer.IsNpc)
 		{
-			num4 |= 0x800;
+			num3 |= 0x800;
 		}
-		DamageUtil.RadiusDamage(ownerPlayer, LookupPrefab(), ((RaycastHit)(ref val2)).point - ((Ray)(ref val)).direction * 0.1f, flameRadius * 0.5f, flameRadius, damagePerSec, num4, useLineOfSight: true, ignoreAI: false, ignoreAttackingPlayer: true, extendedLineOfSight: true);
+		DamageUtil.RadiusDamage(ownerPlayer, LookupPrefab(), val2.point - val.direction * 0.1f, flameRadius * 0.5f, flameRadius, damagePerSec, num3, useLineOfSight: true, ignoreAI: false, ignoreAttackingPlayer: true, extendedLineOfSight: true);
 		damagePerSec[0].amount = damagePerSec[0].amount * playerDamageMultiplier;
-		DamageUtil.RadiusDamage(ownerPlayer, LookupPrefab(), ((RaycastHit)(ref val2)).point - ((Ray)(ref val)).direction * 0.1f, flameRadius * 0.5f, flameRadius, damagePerSec, layers, useLineOfSight: true, ignoreAI: false, ignoreAttackingPlayer: true, extendedLineOfSight: true);
+		DamageUtil.RadiusDamage(ownerPlayer, LookupPrefab(), val2.point - val.direction * 0.1f, flameRadius * 0.5f, flameRadius, damagePerSec, layers, useLineOfSight: true, ignoreAI: false, ignoreAttackingPlayer: true, extendedLineOfSight: true);
 		damagePerSec[0].amount = amount;
-		if (num2 && Time.realtimeSinceStartup >= nextFlameTime && ((RaycastHit)(ref val2)).distance > 1.1f)
+		if (flag && Time.realtimeSinceStartup >= nextFlameTime && val2.distance > 1.1f)
 		{
 			nextFlameTime = Time.realtimeSinceStartup + (ownerPlayer.IsNpc ? 0.25f : 0.45f);
-			Vector3 val3 = ((RaycastHit)(ref val2)).point - ((Ray)(ref val)).direction * 0.25f;
+			Vector3 val3 = val2.point - val.direction * 0.25f;
 			Vector3 val4 = val3 + new Vector3(0f, 0.2f, 0f);
-			bool flag = !GamePhysics.CheckSphere(val3, 0.1f, 1084293377, (QueryTriggerInteraction)0);
-			if (!flag && GamePhysics.LineOfSight(val3, val4, 1084293377))
+			bool flag2 = !GamePhysics.CheckSphere(val3, 0.1f, 1084293377, (QueryTriggerInteraction)0);
+			if (!flag2 && GamePhysics.LineOfSight(val3, val4, 1084293377))
 			{
 				val3 = val4;
-				flag = !GamePhysics.CheckSphere(val3, 0.1f, 1084293377, (QueryTriggerInteraction)0);
+				flag2 = !GamePhysics.CheckSphere(val3, 0.1f, 1084293377, (QueryTriggerInteraction)0);
 			}
-			if (flag)
+			if (flag2)
 			{
 				BaseEntity baseEntity = GameManager.server.CreateEntity(fireballPrefab.resourcePath, val3);
 				if (Object.op_Implicit((Object)(object)baseEntity))
@@ -513,7 +513,7 @@ public class FlameThrower : AttackEntity
 			SetFlameState(wantsOn: false);
 		}
 		Item ownerItem = GetOwnerItem();
-		if (ownerItem != null && !base.UsingInfiniteAmmoCheat && !ownerPlayer.IsNpc)
+		if (ownerItem != null && !UsingInfiniteAmmoCheat && !ownerPlayer.IsNpc)
 		{
 			ownerItem.LoseCondition(num);
 		}

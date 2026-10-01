@@ -120,7 +120,7 @@ public class GameSetup : MonoBehaviour
 		TerrainMeta.InitNoTerrain();
 		ItemManager.Initialize();
 		Scene activeScene = SceneManager.GetActiveScene();
-		LevelManager.CurrentLevelName = ((Scene)(ref activeScene)).name;
+		LevelManager.CurrentLevelName = activeScene.name;
 		if (startServer)
 		{
 			string value = GameModeShortName(gameMode);

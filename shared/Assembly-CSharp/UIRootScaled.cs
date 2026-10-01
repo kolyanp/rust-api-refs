@@ -8,7 +8,7 @@ public class UIRootScaled : UIRoot
 
 	public bool OverrideReference;
 
-	public Vector2 TargetReference;
+	public Vector2 TargetReference = new Vector2(1280f, 720f);
 
 	public CanvasScaler scaler;
 
@@ -22,14 +22,15 @@ public class UIRootScaled : UIRoot
 
 	protected override void Refresh()
 	{
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(1280f / Graphics.uiscale, 720f / Graphics.uiscale);
+		Vector2 val = new Vector2(1280f / Graphics.uiscale, 720f / Graphics.uiscale);
 		if (OverrideReference)
 		{
-			((Vector2)(ref val))._002Ector(TargetReference.x / Graphics.uiscale, TargetReference.y / Graphics.uiscale);
+			val = new Vector2(TargetReference.x / Graphics.uiscale, TargetReference.y / Graphics.uiscale);
 		}
 		if (scaler.referenceResolution != val)
 		{
@@ -41,7 +42,5 @@ public class UIRootScaled : UIRoot
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		TargetReference = new Vector2(1280f, 720f);
-		base._002Ector();
 	}
 }

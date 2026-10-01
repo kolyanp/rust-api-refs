@@ -35,7 +35,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 		}
 		set
 		{
-			if (UnityEngine.UI.Extensions.SetPropertyUtility.SetClass(ref m_Sprite, value))
+			if (SetPropertyUtility.SetClass(ref m_Sprite, value))
 			{
 				GeneratedUVs();
 			}
@@ -51,7 +51,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 		}
 		set
 		{
-			if (UnityEngine.UI.Extensions.SetPropertyUtility.SetClass(ref m_OverrideSprite, value))
+			if (SetPropertyUtility.SetClass(ref m_OverrideSprite, value))
 			{
 				GeneratedUVs();
 			}
@@ -159,7 +159,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 			if ((Object)(object)activeSprite != (Object)null)
 			{
 				Vector4 border = activeSprite.border;
-				return ((Vector4)(ref border)).sqrMagnitude > 0f;
+				return border.sqrMagnitude > 0f;
 			}
 			return false;
 		}
@@ -217,7 +217,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 				return 0f;
 			}
 			Rect rect = overrideSprite.rect;
-			return ((Rect)(ref rect)).size.x / pixelsPerUnit;
+			return rect.size.x / pixelsPerUnit;
 		}
 	}
 
@@ -237,7 +237,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 				return 0f;
 			}
 			Rect rect = overrideSprite.rect;
-			return ((Rect)(ref rect)).size.y / pixelsPerUnit;
+			return rect.size.y / pixelsPerUnit;
 		}
 	}
 
@@ -265,7 +265,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		UIVertex[] array = (UIVertex[])(object)new UIVertex[4];
+		UIVertex[] array = new UIVertex[4];
 		for (int i = 0; i < vertices.Length; i++)
 		{
 			UIVertex simpleVert = UIVertex.simpleVert;
@@ -377,7 +377,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 
 	public virtual bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera)
 	{
-		//IL_0128: Expected O, but got Unknown
+		//IL_0128: Expected Obj, but got Unknown
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
@@ -391,6 +391,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
@@ -403,17 +404,16 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 		{
 			return true;
 		}
-		Vector2 local = default(Vector2);
+		Vector2 local = default;
 		RectTransformUtility.ScreenPointToLocalPointInRectangle(((Graphic)this).rectTransform, screenPoint, eventCamera, ref local);
 		Rect pixelAdjustedRect = ((Graphic)this).GetPixelAdjustedRect();
-		local.x += ((Graphic)this).rectTransform.pivot.x * ((Rect)(ref pixelAdjustedRect)).width;
-		local.y += ((Graphic)this).rectTransform.pivot.y * ((Rect)(ref pixelAdjustedRect)).height;
+		local.x += ((Graphic)this).rectTransform.pivot.x * pixelAdjustedRect.width;
+		local.y += ((Graphic)this).rectTransform.pivot.y * pixelAdjustedRect.height;
 		local = MapCoordinate(local, pixelAdjustedRect);
 		Rect textureRect = val.textureRect;
-		Vector2 val2 = default(Vector2);
-		((Vector2)(ref val2))._002Ector(local.x / ((Rect)(ref textureRect)).width, local.y / ((Rect)(ref textureRect)).height);
-		float num = Mathf.Lerp(((Rect)(ref textureRect)).x, ((Rect)(ref textureRect)).xMax, val2.x) / (float)((Texture)val.texture).width;
-		float num2 = Mathf.Lerp(((Rect)(ref textureRect)).y, ((Rect)(ref textureRect)).yMax, val2.y) / (float)((Texture)val.texture).height;
+		Vector2 val2 = new Vector2(local.x / textureRect.width, local.y / textureRect.height);
+		float num = Mathf.Lerp(textureRect.x, textureRect.xMax, val2.x) / (float)((Texture)val.texture).width;
+		float num2 = Mathf.Lerp(textureRect.y, textureRect.yMax, val2.y) / (float)((Texture)val.texture).height;
 		try
 		{
 			return val.texture.GetPixelBilinear(num, num2).a >= m_EventAlphaThreshold;
@@ -433,7 +433,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		_ = sprite.rect;
-		return new Vector2(local.x * ((Rect)(ref rect)).width, local.y * ((Rect)(ref rect)).height);
+		return new Vector2(local.x * rect.width, local.y * rect.height);
 	}
 
 	private Vector4 GetAdjustedBorders(Vector4 border, Rect rect)
@@ -445,18 +445,18 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		for (int i = 0; i <= 1; i++)
 		{
-			float num = ((Vector4)(ref border))[i] + ((Vector4)(ref border))[i + 2];
-			Vector2 size = ((Rect)(ref rect)).size;
-			if (((Vector2)(ref size))[i] < num && num != 0f)
+			float num = border[i] + border[i + 2];
+			Vector2 size = rect.size;
+			if (size[i] < num && num != 0f)
 			{
-				size = ((Rect)(ref rect)).size;
-				float num2 = ((Vector2)(ref size))[i] / num;
+				size = rect.size;
+				float num2 = size[i] / num;
 				ref Vector4 reference = ref border;
 				int num3 = i;
-				((Vector4)(ref reference))[num3] = ((Vector4)(ref reference))[num3] * num2;
+				reference[num3] *= num2;
 				reference = ref border;
 				num3 = i + 2;
-				((Vector4)(ref reference))[num3] = ((Vector4)(ref reference))[num3] * num2;
+				reference[num3] *= num2;
 			}
 		}
 		return border;

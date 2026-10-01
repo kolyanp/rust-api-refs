@@ -40,9 +40,9 @@ public class BaseLiquidVessel : AttackEntity
 
 	public float fillMlPerSec = 500f;
 
-	public static Phrase DifferentLiquidType;
+	public static Phrase DifferentLiquidType = new Phrase("fill_different_liquid_type", "You can't mix different liquids");
 
-	public static Phrase CannotHoldCrude;
+	public static Phrase CannotHoldCrude = new Phrase("fill_cannot_hold_crude", "You can't collect crude oil in this");
 
 	private float lastFillTime;
 
@@ -268,7 +268,7 @@ public class BaseLiquidVessel : AttackEntity
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -326,7 +326,7 @@ public class BaseLiquidVessel : AttackEntity
 
 	public void LoseWater(int amount)
 	{
-		if (!base.UsingInfiniteAmmoCheat)
+		if (!UsingInfiniteAmmoCheat)
 		{
 			Item contents = GetContents();
 			if (contents != null)
@@ -358,7 +358,7 @@ public class BaseLiquidVessel : AttackEntity
 				}
 				else
 				{
-					item.contents?.onItemAddedToStack?.Invoke(item3, amount);
+					item.contents?.onItemAddedToStack?.Invoke(item3, amount, null);
 				}
 			}
 			return;
@@ -375,7 +375,7 @@ public class BaseLiquidVessel : AttackEntity
 		{
 			item2.amount = num;
 		}
-		item.contents?.onItemAddedToStack?.Invoke(item2, amount);
+		item.contents?.onItemAddedToStack?.Invoke(item2, amount, null);
 		item2.MarkDirty();
 		SendNetworkUpdateImmediate();
 	}
@@ -470,8 +470,8 @@ public class BaseLiquidVessel : AttackEntity
 		nextFreeTime = Time.realtimeSinceStartup - 1f;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void DoDrink(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract())
@@ -489,7 +489,7 @@ public class BaseLiquidVessel : AttackEntity
 			if (!((Object)(object)component == (Object)null) && component.CanDoAction(item2, msg.player))
 			{
 				component.DoAction(item2, msg.player);
-				item.contents?.onItemRemovedFromStack?.Invoke(item2, 0);
+				item.contents?.onItemRemovedFromStack?.Invoke(item2, 0, msg.player);
 				break;
 			}
 		}
@@ -521,6 +521,7 @@ public class BaseLiquidVessel : AttackEntity
 	{
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
@@ -541,14 +542,13 @@ public class BaseLiquidVessel : AttackEntity
 		Item slot = item.contents.GetSlot(0);
 		if (slot != null && slot.amount > 0)
 		{
-			Ray ray = default(Ray);
-			((Ray)(ref ray))._002Ector(ownerPlayer.eyes.position, ownerPlayer.eyes.BodyForward());
+			Ray ray = new Ray(ownerPlayer.eyes.position, ownerPlayer.eyes.BodyForward());
 			float num = 1f;
 			if (GamePhysics.Trace(ray, 0f, out var hitInfo, num, 1084293377, (QueryTriggerInteraction)0))
 			{
-				num = Mathf.Clamp01(((RaycastHit)(ref hitInfo)).distance - 0.1f);
+				num = Mathf.Clamp01(hitInfo.distance - 0.1f);
 			}
-			Vector3 point = ((Ray)(ref ray)).GetPoint(num);
+			Vector3 point = ray.GetPoint(num);
 			WaterBall waterBall = GameManager.server.CreateEntity(thrownWaterObject.resourcePath, point, Quaternion.identity) as WaterBall;
 			if (Object.op_Implicit((Object)(object)waterBall))
 			{
@@ -559,14 +559,14 @@ public class BaseLiquidVessel : AttackEntity
 				waterBall.Spawn();
 			}
 			slot.UseItem(slot.amount);
-			item.contents?.onItemAddedRemoved?.Invoke(slot, arg2: false);
+			item.contents?.onItemAddedRemoved?.Invoke(slot, arg2: false, ownerPlayer);
 			slot.MarkDirty();
 			SendNetworkUpdateImmediate();
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void SendFilling(RPCMessage msg)
 	{
 		bool filling = msg.read.Bit();
@@ -602,11 +602,11 @@ public class BaseLiquidVessel : AttackEntity
 		{
 			return null;
 		}
-		RaycastHit hit = default(RaycastHit);
+		RaycastHit hit = default;
 		if (Physics.Raycast(ownerPlayer.eyes.HeadRay(), ref hit, 2f, 1237003025))
 		{
 			BaseEntity entity = RaycastHitEx.GetEntity(hit);
-			if (Object.op_Implicit((Object)(object)entity) && !((Component)((RaycastHit)(ref hit)).collider).gameObject.CompareTag("Not Player Usable") && !((Component)((RaycastHit)(ref hit)).collider).gameObject.CompareTag("Usable Primary"))
+			if (Object.op_Implicit((Object)(object)entity) && !((Component)hit.collider).gameObject.CompareTag("Not Player Usable") && !((Component)hit.collider).gameObject.CompareTag("Usable Primary"))
 			{
 				entity = entity.ToServer<BaseEntity>();
 				return ((Component)entity).GetComponent<LiquidContainer>();
@@ -618,10 +618,8 @@ public class BaseLiquidVessel : AttackEntity
 	static BaseLiquidVessel()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		DifferentLiquidType = new Phrase("fill_different_liquid_type", "You can't mix different liquids");
-		CannotHoldCrude = new Phrase("fill_cannot_hold_crude", "You can't collect crude oil in this");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

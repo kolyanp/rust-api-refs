@@ -10,6 +10,8 @@ using UnityEngine.Assertions;
 
 public class Mailbox : StorageContainer
 {
+	public const string SendMailAchievement = "SEND_MAIL";
+
 	public string ownerPanel;
 
 	public GameObjectRef mailDropSound;
@@ -91,7 +93,7 @@ public class Mailbox : StorageContainer
 	{
 		if (PlayerIsOwner(loot.GetCastedEntity()))
 		{
-			loot.AddContainer(base.inventory);
+			loot.AddContainer(inventory);
 		}
 		else
 		{
@@ -118,9 +120,9 @@ public class Mailbox : StorageContainer
 
 	private bool HasFreeSpace()
 	{
-		if (base.inventory != null)
+		if (inventory != null)
 		{
-			return !base.inventory.IsFull();
+			return !inventory.IsFull();
 		}
 		return false;
 	}
@@ -137,7 +139,7 @@ public class Mailbox : StorageContainer
 		}
 		if (IsFull())
 		{
-			base.inventory.GetSlot(mailInputSlot)?.Drop(GetDropPosition(), GetDropVelocity());
+			inventory.GetSlot(mailInputSlot)?.Drop(GetDropPosition(), GetDropVelocity());
 		}
 		base.PlayerStoppedLooting(player);
 		if (PlayerIsOwner(player))
@@ -161,29 +163,35 @@ public class Mailbox : StorageContainer
 
 	public void SubmitInputItems(BasePlayer fromPlayer)
 	{
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		for (int i = 0; i < InputContainer.capacity; i++)
 		{
 			Item slot = InputContainer.GetSlot(i);
-			if (slot == null || Interface.CallHook("OnItemSubmit", slot, this, fromPlayer) != null || !slot.MoveToContainer(base.inventory))
+			if (slot == null || Interface.CallHook("OnItemSubmit", slot, this, fromPlayer) != null || !slot.MoveToContainer(inventory))
 			{
 				continue;
 			}
 			Effect.server.Run(mailDropSound.resourcePath, GetDropPosition());
 			if ((Object)(object)fromPlayer != (Object)null && !PlayerIsOwner(fromPlayer))
 			{
-				using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-				flagsUpdateScope.Set(Flags.On, b: true);
+				using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+				{
+					flagsUpdateScope.Set(Flags.On, b: true);
+				}
+				if ((Object)(object)slot.info == (Object)(object)ItemManager.Items.Note)
+				{
+					fromPlayer.GiveAchievement("SEND_MAIL");
+				}
 			}
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		MarkFull(!HasFreeSpace());
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 	}
 
 	public void MarkFull(bool full)
@@ -220,7 +228,7 @@ public class Mailbox : StorageContainer
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.msg.mailbox != null && info.msg.mailbox.inventory != null)
+		if (isServer && info.msg.mailbox != null && info.msg.mailbox.inventory != null)
 		{
 			InputContainer.Load(info.msg.mailbox.inventory);
 		}
@@ -232,7 +240,7 @@ public class Mailbox : StorageContainer
 		if (InputContainer == null)
 		{
 			InputContainer = Pool.Get<ItemContainer>();
-			InputContainer.allowedContents = ((allowedContents == (ItemContainer.ContentsType)0) ? ItemContainer.ContentsType.Generic : allowedContents);
+			InputContainer.allowedContents = ((allowedContents == 0) ? ItemContainer.ContentsType.Generic : allowedContents);
 			InputContainer.SetOnlyAllowedItem(allowedItem);
 			InputContainer.entityOwner = this;
 			InputContainer.maxStackSize = maxStackSize;

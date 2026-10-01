@@ -50,70 +50,70 @@ public class BaseNavigator : BaseMonoBehaviour
 	[Header("General")]
 	public bool CanNavigateMounted;
 
-	public bool CanUseNavMesh;
+	public bool CanUseNavMesh = true;
 
-	public bool CanUseAStar;
+	public bool CanUseAStar = true;
 
 	public bool CanUseBaseNav;
 
 	public bool CanUseCustomNav;
 
-	public float StoppingDistance;
+	public float StoppingDistance = 0.5f;
 
-	public string DefaultArea;
+	public string DefaultArea = "Walkable";
 
 	public bool CanPathFindToChaseTargetIfNoMovePoint;
 
-	public int PathFindChaseLOSAttemptCount;
+	public int PathFindChaseLOSAttemptCount = 5;
 
-	public float PathFindChaseLOSDistanceMultiplier;
+	public float PathFindChaseLOSDistanceMultiplier = 1.5f;
 
 	[Header("Stuck Detection")]
 	public bool TriggerStuckEvent;
 
-	public float StuckDistance;
+	public float StuckDistance = 1f;
 
 	[Header("Speed")]
-	public float Speed;
+	public float Speed = 5f;
 
-	public float Acceleration;
+	public float Acceleration = 5f;
 
-	public float TurnSpeed;
+	public float TurnSpeed = 10f;
 
-	public NavigationSpeed MoveTowardsSpeed;
+	public NavigationSpeed MoveTowardsSpeed = NavigationSpeed.Normal;
 
 	public bool FaceMoveTowardsTarget;
 
 	[Header("Speed Fractions")]
-	public float SlowestSpeedFraction;
+	public float SlowestSpeedFraction = 0.16f;
 
-	public float SlowSpeedFraction;
+	public float SlowSpeedFraction = 0.3f;
 
-	public float NormalSpeedFraction;
+	public float NormalSpeedFraction = 0.5f;
 
-	public float FastSpeedFraction;
+	public float FastSpeedFraction = 1f;
 
 	public float LowHealthSpeedReductionTriggerFraction;
 
-	public float LowHealthMaxSpeedFraction;
+	public float LowHealthMaxSpeedFraction = 0.5f;
 
-	public float SwimmingSpeedMultiplier;
+	public float SwimmingSpeedMultiplier = 0.25f;
 
 	[Header("AIPoint Usage")]
-	public float BestMovementPointMaxDistance;
+	public float BestMovementPointMaxDistance = 10f;
 
-	public float BestCoverPointMaxDistance;
+	public float BestCoverPointMaxDistance = 20f;
 
-	public float BestRoamPointMaxDistance;
+	public float BestRoamPointMaxDistance = 20f;
 
-	public float MaxRoamDistanceFromHome;
+	public float MaxRoamDistanceFromHome = -1f;
 
 	[Header("Misc")]
-	public float FaceTargetChaseDistance;
+	public float FaceTargetChaseDistance = 10f;
 
 	public bool CanUseRandomMovePointIfNonFound;
 
-	public float MaxWaterDepth;
+	public float MaxWaterDepth = 0.75f;
 
 	public bool SpeedBasedAvoidancePriority;
 
@@ -124,21 +124,18 @@ public class BaseNavigator : BaseMonoBehaviour
 	private int defaultAreaMask;
 
 	[InspectorFlags]
-	public Enum biomePreference;
+	public Enum biomePreference = (Enum)12;
 
 	public bool UseBiomePreference;
 
 	[InspectorFlags]
-	public Enum topologyPreference;
+	public Enum topologyPreference = (Enum)96;
 
 	[InspectorFlags]
 	public Enum topologyPrevent;
 
 	[InspectorFlags]
 	public Enum biomeRequirement;
-
-	[CompilerGenerated]
-	private Vector3 _003CDestination_003Ek__BackingField;
 
 	public float stuckTimer;
 
@@ -154,7 +151,7 @@ public class BaseNavigator : BaseMonoBehaviour
 
 	protected IAIPathNode targetNode;
 
-	protected float currentSpeedFraction;
+	protected float currentSpeedFraction = 1f;
 
 	private float lastSetDestinationTime;
 
@@ -188,14 +185,14 @@ public class BaseNavigator : BaseMonoBehaviour
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CDestination_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CDestination_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -285,9 +282,9 @@ public class BaseNavigator : BaseMonoBehaviour
 			Agent.acceleration = Acceleration;
 			Agent.angularSpeed = TurnSpeed;
 		}
-		navMeshQueryFilter = default(NavMeshQueryFilter);
-		((NavMeshQueryFilter)(ref navMeshQueryFilter)).agentTypeID = Agent.agentTypeID;
-		((NavMeshQueryFilter)(ref navMeshQueryFilter)).areaMask = defaultAreaMask;
+		navMeshQueryFilter = default;
+		navMeshQueryFilter.agentTypeID = Agent.agentTypeID;
+		navMeshQueryFilter.areaMask = defaultAreaMask;
 		path = new RustNavMeshPath();
 		SetCurrentNavigationType(NavigationType.None);
 	}
@@ -365,10 +362,10 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		int num = 10551296;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(((Component)this).transform.position + Vector3.up * 0.5f, Vector3.down, ref val, 1000f, num))
 		{
-			BaseEntity.ServerPosition = ((RaycastHit)(ref val)).point;
+			BaseEntity.ServerPosition = val.point;
 		}
 	}
 
@@ -437,7 +434,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		bool result = true;
 		if (Agent.SamplePosition(target, out var hitWS, maxRange))
 		{
-			position = ((NavMeshHit)(ref hitWS)).position;
+			position = hitWS.position;
 		}
 		else
 		{
@@ -563,12 +560,12 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0280: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
 		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02dc: Unknown result type (might be due to invalid IL or missing references)
 		if (!AI.move)
 		{
 			return false;
@@ -674,7 +671,7 @@ public class BaseNavigator : BaseMonoBehaviour
 			bool flag;
 			if (AI.usecalculatepath)
 			{
-				flag = RustNavMeshHelpers.CalculatePath(((Component)this).transform.position, Destination, navMeshQueryFilter, path);
+				flag = RustNavMeshHelpers.CalculatePath(((Component)this).transform.position, Destination, navMeshQueryFilter, path, Agent.npcDoorsWillOpen);
 				if (flag)
 				{
 					if ((int)path.status != 0)
@@ -715,7 +712,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		if (Agent.SamplePosition(pos, out var hitWS, snapRange))
 		{
-			sampledPos = ((NavMeshHit)(ref hitWS)).position;
+			sampledPos = hitWS.position;
 			return true;
 		}
 		sampledPos = pos;
@@ -723,11 +720,11 @@ public class BaseNavigator : BaseMonoBehaviour
 		{
 			return false;
 		}
-		if (!Agent.SamplePosition(pos, out hitWS, 2f) || Vector3Ex.Distance2D(((NavMeshHit)(ref hitWS)).position, pos) > snapRange)
+		if (!Agent.SamplePosition(pos, out hitWS, 2f) || Vector3Ex.Distance2D(hitWS.position, pos) > snapRange)
 		{
 			return false;
 		}
-		sampledPos = ((NavMeshHit)(ref hitWS)).position;
+		sampledPos = hitWS.position;
 		return true;
 	}
 
@@ -748,7 +745,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		navMeshPos = location;
 		int num = 2097152;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(location + Vector3.up * navTypeHeightOffset, Vector3.down, ref val, navTypeDistance, num))
 		{
 			return NavigationType.Base;
@@ -968,7 +965,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		bool flag = ValidBounds.Test(BaseEntity, moveToPosition);
 		if ((Object)(object)BaseEntity != (Object)null && !flag && (Object)(object)((Component)this).transform != (Object)null && !BaseEntity.IsDestroyed)
 		{
-			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
+			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)moveToPosition/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
 			BaseEntity.Kill();
 			return false;
 		}
@@ -1087,7 +1084,7 @@ public class BaseNavigator : BaseMonoBehaviour
 			Vector3 val3 = BaseEntity.ServerPosition + Vector3.up * maxStepUpDistance;
 			Vector3 val4 = Vector3Ex.Direction(val2 + Vector3.up * maxStepUpDistance, BaseEntity.ServerPosition + Vector3.up * maxStepUpDistance);
 			float num2 = Vector3.Distance(val3, val2 + Vector3.up * maxStepUpDistance) + 0.25f;
-			RaycastHit val5 = default(RaycastHit);
+			RaycastHit val5 = default;
 			if (Physics.Raycast(val3, val4, ref val5, num2, num))
 			{
 				return;
@@ -1098,7 +1095,7 @@ public class BaseNavigator : BaseMonoBehaviour
 			{
 				return;
 			}
-			val7 = ((RaycastHit)(ref val5)).point;
+			val7 = val5.point;
 			if (val7.y - BaseEntity.ServerPosition.y > maxStepUpDistance)
 			{
 				return;
@@ -1193,12 +1190,12 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
 		OffMeshLinkData currentOffMeshLinkData = Agent.currentOffMeshLinkData;
-		if (!((OffMeshLinkData)(ref currentOffMeshLinkData)).valid || !((OffMeshLinkData)(ref currentOffMeshLinkData)).activated)
+		if (!currentOffMeshLinkData.valid || !currentOffMeshLinkData.activated)
 		{
 			return false;
 		}
-		Vector3 val = ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos - ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 val = currentOffMeshLinkData.endPos - currentOffMeshLinkData.startPos;
+		Vector3 normalized = val.normalized;
 		normalized.y = 0f;
 		Vector3 desiredVelocityWS = Agent.desiredVelocityWS;
 		desiredVelocityWS.y = 0f;
@@ -1207,18 +1204,18 @@ public class BaseNavigator : BaseMonoBehaviour
 			CompleteNavMeshLink();
 			return false;
 		}
-		currentNavMeshLinkName = ((object)((OffMeshLinkData)(ref currentOffMeshLinkData)).linkType/*cast due to constrained. prefix*/).ToString();
+		currentNavMeshLinkName = ((object)currentOffMeshLinkData.linkType/*cast due to constrained. prefix*/).ToString();
 		Vector3 val2 = (((Object)(object)BaseEntity != (Object)null) ? BaseEntity.ServerPosition : ((Component)this).transform.position);
-		val = val2 - ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos;
-		float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
-		val = val2 - ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos;
-		if (sqrMagnitude > ((Vector3)(ref val)).sqrMagnitude)
+		val = val2 - currentOffMeshLinkData.startPos;
+		float sqrMagnitude = val.sqrMagnitude;
+		val = val2 - currentOffMeshLinkData.endPos;
+		if (sqrMagnitude > val.sqrMagnitude)
 		{
-			currentNavMeshLinkEndPos = ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos;
+			currentNavMeshLinkEndPos = currentOffMeshLinkData.startPos;
 		}
 		else
 		{
-			currentNavMeshLinkEndPos = ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos;
+			currentNavMeshLinkEndPos = currentOffMeshLinkData.endPos;
 		}
 		traversingNavMeshLink = true;
 		Agent.ActivateCurrentOffMeshLink(activated: false);
@@ -1275,7 +1272,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = moveToPosition - currentNavMeshLinkEndPos;
-		if (((Vector3)(ref val)).sqrMagnitude < 0.01f)
+		if (val.sqrMagnitude < 0.01f)
 		{
 			moveToPosition = currentNavMeshLinkEndPos;
 			traversingNavMeshLink = false;
@@ -1379,9 +1376,9 @@ public class BaseNavigator : BaseMonoBehaviour
 		for (int i = 0; i < NavMesh.GetSettingsCount(); i++)
 		{
 			NavMeshBuildSettings settingsByIndex = NavMesh.GetSettingsByIndex(i);
-			if (name == NavMesh.GetSettingsNameFromID(((NavMeshBuildSettings)(ref settingsByIndex)).agentTypeID))
+			if (name == NavMesh.GetSettingsNameFromID(settingsByIndex.agentTypeID))
 			{
-				return ((NavMeshBuildSettings)(ref settingsByIndex)).agentTypeID;
+				return settingsByIndex.agentTypeID;
 			}
 		}
 		return -1;
@@ -1391,32 +1388,5 @@ public class BaseNavigator : BaseMonoBehaviour
 	{
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		CanUseNavMesh = true;
-		CanUseAStar = true;
-		StoppingDistance = 0.5f;
-		DefaultArea = "Walkable";
-		PathFindChaseLOSAttemptCount = 5;
-		PathFindChaseLOSDistanceMultiplier = 1.5f;
-		StuckDistance = 1f;
-		Speed = 5f;
-		Acceleration = 5f;
-		TurnSpeed = 10f;
-		MoveTowardsSpeed = NavigationSpeed.Normal;
-		SlowestSpeedFraction = 0.16f;
-		SlowSpeedFraction = 0.3f;
-		NormalSpeedFraction = 0.5f;
-		FastSpeedFraction = 1f;
-		LowHealthMaxSpeedFraction = 0.5f;
-		SwimmingSpeedMultiplier = 0.25f;
-		BestMovementPointMaxDistance = 10f;
-		BestCoverPointMaxDistance = 20f;
-		BestRoamPointMaxDistance = 20f;
-		MaxRoamDistanceFromHome = -1f;
-		FaceTargetChaseDistance = 10f;
-		MaxWaterDepth = 0.75f;
-		biomePreference = (Enum)12;
-		topologyPreference = (Enum)96;
-		currentSpeedFraction = 1f;
-		base._002Ector();
 	}
 }

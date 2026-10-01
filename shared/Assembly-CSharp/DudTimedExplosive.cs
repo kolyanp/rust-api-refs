@@ -146,7 +146,7 @@ public class DudTimedExplosive : TimedExplosive, IIgniteable, ISplashable
 		explodeTime = Time.realtimeSinceStartup + fuseLength;
 		SetFlagLocal(Flags.On, b: true);
 		SendNetworkUpdate();
-		CancelInvoke(base.KillMessage);
+		CancelInvoke(KillMessage);
 	}
 
 	public override void Explode()
@@ -180,9 +180,9 @@ public class DudTimedExplosive : TimedExplosive, IIgniteable, ISplashable
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = false;
 		EntityRef entityRef = parentEntity;
-		while (entityRef.IsValid(base.isServer) && !flag)
+		while (entityRef.IsValid(isServer) && !flag)
 		{
-			BaseEntity baseEntity = entityRef.Get(base.isServer);
+			BaseEntity baseEntity = entityRef.Get(isServer);
 			if (baseEntity.syncPosition)
 			{
 				flag = true;
@@ -203,8 +203,8 @@ public class DudTimedExplosive : TimedExplosive, IIgniteable, ISplashable
 			Effect.server.Run(fizzleEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
 		}
 		SendNetworkUpdate();
-		CancelInvoke(base.KillMessage);
-		Invoke(base.KillMessage, 1200f);
+		CancelInvoke(KillMessage);
+		Invoke(KillMessage, 1200f);
 	}
 
 	public override void Save(SaveInfo info)
@@ -231,7 +231,7 @@ public class DudTimedExplosive : TimedExplosive, IIgniteable, ISplashable
 
 	public bool WantsSplash(ItemDefinition splashType, int amount)
 	{
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			return HasFlag(Flags.On);
 		}

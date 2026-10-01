@@ -11,7 +11,7 @@ public abstract class FBasic_MaterialScriptBase : MonoBehaviour
 	protected Material GetRendererMaterial()
 	{
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c8: Expected O, but got Unknown
+		//IL_00c8: Expected Obj, but got Unknown
 		if (!Application.isPlaying && (Object)(object)ObjectRenderer != (Object)null && (Object)(object)ObjectRenderer.sharedMaterial != (Object)(object)RendererMaterial)
 		{
 			RendererMaterial = null;

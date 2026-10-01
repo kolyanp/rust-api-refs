@@ -181,20 +181,20 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0034: Expected O, but got Unknown
+			//IL_0034: Expected Obj, but got Unknown
 			//IL_016c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0172: Expected O, but got Unknown
+			//IL_0172: Expected Obj, but got Unknown
 			//IL_018f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0195: Expected O, but got Unknown
+			//IL_0195: Expected Obj, but got Unknown
 			//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01ae: Expected O, but got Unknown
-			CodeMatcher val = new CodeMatcher(instructions, generator).MatchStartForward((CodeMatch[])(object)new CodeMatch[1]
+			//IL_01ae: Expected Obj, but got Unknown
+			CodeMatcher val = new CodeMatcher(instructions, generator).MatchStartForward(new CodeMatch[1]
 			{
 				new CodeMatch((OpCode?)OpCodes.Ldsfld, (object)AccessTools.Field(typeof(BasePlayer), "invisPlayers"), (string)null)
-			}).ThrowIfInvalid("Could not find BasePlayer.invisPlayers in BaseNetworkable.GetConnectionsWithin").MatchStartForward((CodeMatch[])(object)new CodeMatch[1] { CodeMatch.Calls(AccessTools.PropertyGetter(typeof(Component), "transform")) })
+			}).ThrowIfInvalid("Could not find BasePlayer.invisPlayers in BaseNetworkable.GetConnectionsWithin").MatchStartForward(new CodeMatch[1] { CodeMatch.Calls(AccessTools.PropertyGetter(typeof(Component), "transform")) })
 				.ThrowIfInvalid("Could not find invis player transform access in BaseNetworkable.GetConnectionsWithin");
 			int pos = val.Pos;
-			val.MatchStartForward((CodeMatch[])(object)new CodeMatch[1] { CodeMatch.Calls(AccessTools.PropertyGetter(typeof(Vector3), "sqrMagnitude")) }).ThrowIfInvalid("Could not find invis player distance check in BaseNetworkable.GetConnectionsWithin");
+			val.MatchStartForward(new CodeMatch[1] { CodeMatch.Calls(AccessTools.PropertyGetter(typeof(Vector3), "sqrMagnitude")) }).ThrowIfInvalid("Could not find invis player distance check in BaseNetworkable.GetConnectionsWithin");
 			List<CodeInstruction> list = val.Instructions().ToList();
 			int index = pos - 1;
 			CodeInstruction val2 = list[index];
@@ -212,7 +212,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 			{
 				throw new InvalidOperationException("Could not find invis player loop continue label in BaseNetworkable.GetConnectionsWithin");
 			}
-			list.InsertRange(index, new _003C_003Ez__ReadOnlyArray<CodeInstruction>((CodeInstruction[])(object)new CodeInstruction[3]
+			list.InsertRange(index, new _003C_003Ez__ReadOnlyArray<CodeInstruction>(new CodeInstruction[3]
 			{
 				new CodeInstruction(val2.opcode, val2.operand),
 				new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(VanishModule), "IsValidInvisPlayerConnection", (Type[])null, (Type[])null)),
@@ -275,9 +275,9 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 
 	private static VanishModule Singleton;
 
-	private readonly Handler Handler;
+	private readonly Handler Handler = new Handler();
 
-	private Dictionary<ulong, Vector3> _vanishedPlayers;
+	private Dictionary<ulong, Vector3> _vanishedPlayers = new Dictionary<ulong, Vector3>(500);
 
 	private BasePlayer _lastLooter;
 
@@ -401,8 +401,8 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		BasePlayer val = (BasePlayer)(object)((initiator is BasePlayer) ? initiator : null);
 		if (val != null && hit.HitEntity.OwnerID != EncryptedValue<ulong>.op_Implicit(val.userID) && !base.ConfigInstance.CanDamageWhenVanished && _vanishedPlayers.ContainsKey(EncryptedValue<ulong>.op_Implicit(val.userID)))
 		{
-			BasePlayer obj = BasePlayer.FindByID(hit.HitEntity.OwnerID);
-			player.ChatMessage("You're vanished. You may not damage this entity owned by " + (((obj != null) ? obj.displayName : null) ?? hit.HitEntity.OwnerID.ToString()) + ".");
+			BasePlayer val2 = BasePlayer.FindByID(hit.HitEntity.OwnerID);
+			player.ChatMessage("You're vanished. You may not damage this entity owned by " + (((val2 != null) ? val2.displayName : null) ?? hit.HitEntity.OwnerID.ToString()) + ".");
 			return false;
 		}
 		return null;
@@ -454,7 +454,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		}
 	}
 
-	public unsafe void DoVanish(BasePlayer player, bool wants, bool withUI = true, bool toggleNoclip = true, bool ignorePermanentVanish = false)
+	public void DoVanish(BasePlayer player, bool wants, bool withUI = true, bool toggleNoclip = true, bool ignorePermanentVanish = false)
 	{
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
@@ -468,13 +468,14 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0495: Unknown result type (might be due to invalid IL or missing references)
-		//IL_049c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_050e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0517: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0270: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0277: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0552: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02dc: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)player == (Object)null)
 		{
@@ -582,6 +583,18 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		player.drownEffect = _drownEffect;
 		player.fallDamageEffect = _fallDamageEffect;
 		((BaseEntity)player).ForceUpdateTriggers(true, false, true);
+		BaseEntity parentEntity = ((BaseNetworkable)player).GetParentEntity();
+		if (Object.op_Implicit((Object)(object)parentEntity))
+		{
+			TriggerParent[] componentsInChildren = ((Component)parentEntity).GetComponentsInChildren<TriggerParent>();
+			foreach (TriggerParent val2 in componentsInChildren)
+			{
+				if (val2 != null)
+				{
+					val2.CheckAllParenting();
+				}
+			}
+		}
 		if (base.ConfigInstance.GutshotScreamOnUnvanish)
 		{
 			if (base.ConfigInstance.BroadcastVanishSounds)
@@ -593,11 +606,10 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				SendEffectTo(base.ConfigInstance.Effect.Unvanishing, player);
 			}
 		}
-		CUI val2 = default(CUI);
-		((CUI)(ref val2))._002Ector(Handler);
+		CUI val3 = new CUI(Handler);
 		try
 		{
-			((CUI)(ref val2)).Destroy("vanishui", player);
+			val3.Destroy("vanishui", player);
 			if (base.ConfigInstance.EnableLogs)
 			{
 				base.Puts((object)$"{player} unvanished at {((Component)player).transform.position}");
@@ -614,14 +626,14 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		}
 		finally
 		{
-			((IDisposable)(*(CUI*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val3/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 
 	private static void EnsureVanishComponent(BasePlayer player)
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Expected O, but got Unknown
+		//IL_001a: Expected Obj, but got Unknown
 		if (!((Object)(object)((Component)player).GetComponentInChildren<VanishedPlayer>() != (Object)null))
 		{
 			GameObject val = new GameObject("Vanish Collider");
@@ -681,21 +693,21 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		}
 	}
 
-	private unsafe void _drawUI(BasePlayer player)
+	private void _drawUI(BasePlayer player)
 	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-		CUI val = default(CUI);
-		((CUI)(ref val))._002Ector(Handler);
+		CUI val = new CUI(Handler);
 		try
 		{
-			CuiElementContainer val2 = ((CUI)(ref val)).CreateContainer("vanishui", "0 0 0 0", 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, false, false, (ClientPanels)5, "vanishui", true, 0f, (bool?)null);
+			CuiElementContainer val2 = val.CreateContainer("vanishui", "0 0 0 0", 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, false, false, (ClientPanels)5, "vanishui", true, 0f, (bool?)null);
 			if (!string.IsNullOrEmpty(base.ConfigInstance.InvisibleText))
 			{
 				float[] invisibleTextAnchorX = base.ConfigInstance.InvisibleTextAnchorX;
 				float[] invisibleTextAnchorY = base.ConfigInstance.InvisibleTextAnchorY;
-				((CUI)(ref val)).CreateText(val2, "vanishui", base.ConfigInstance.InvisibleTextColor, base.ConfigInstance.InvisibleText, base.ConfigInstance.InvisibleTextSize, invisibleTextAnchorX[0], invisibleTextAnchorX[1], invisibleTextAnchorY[0], invisibleTextAnchorY[1], 0f, 0f, 0f, 0f, base.ConfigInstance.InvisibleTextAnchor, (FontTypes)1, (VerticalWrapMode)1, 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, (bool?)null);
+				val.CreateText(val2, "vanishui", base.ConfigInstance.InvisibleTextColor, base.ConfigInstance.InvisibleText, base.ConfigInstance.InvisibleTextSize, invisibleTextAnchorX[0], invisibleTextAnchorX[1], invisibleTextAnchorY[0], invisibleTextAnchorY[1], 0f, 0f, 0f, 0f, base.ConfigInstance.InvisibleTextAnchor, (FontTypes)1, (VerticalWrapMode)1, 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, (bool?)null);
 			}
 			if (!string.IsNullOrEmpty(base.ConfigInstance.InvisibleIconUrl))
 			{
@@ -703,13 +715,13 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				float[] invisibleIconMaxAnchor = base.ConfigInstance.InvisibleIconMaxAnchor;
 				float[] invisibleIconMinOffset = base.ConfigInstance.InvisibleIconMinOffset;
 				float[] invisibleIconMaxOffset = base.ConfigInstance.InvisibleIconMaxOffset;
-				((CUI)(ref val)).CreateClientImage(val2, "vanishui", base.ConfigInstance.InvisibleIconUrl, base.ConfigInstance.InvisibleIconColor, (string)null, invisibleIconMinAnchor[0], invisibleIconMaxAnchor[0], invisibleIconMinAnchor[1], invisibleIconMaxAnchor[1], invisibleIconMinOffset[0], invisibleIconMaxOffset[0], invisibleIconMinOffset[1], invisibleIconMaxOffset[1], 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, (bool?)null);
+				val.CreateClientImage(val2, "vanishui", base.ConfigInstance.InvisibleIconUrl, base.ConfigInstance.InvisibleIconColor, (string)null, invisibleIconMinAnchor[0], invisibleIconMaxAnchor[0], invisibleIconMinAnchor[1], invisibleIconMaxAnchor[1], invisibleIconMinOffset[0], invisibleIconMaxOffset[0], invisibleIconMinOffset[1], invisibleIconMaxOffset[1], 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, (bool?)null);
 			}
-			((CUI)(ref val)).Send(val2, player);
+			val.Send(val2, player);
 		}
 		finally
 		{
-			((IDisposable)(*(CUI*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 
@@ -866,19 +878,17 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 	public VanishModule()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
-		//IL_0031: Expected O, but got Unknown
+		//IL_002c: Expected Obj, but got Unknown
+		//IL_0031: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Expected O, but got Unknown
-		//IL_0047: Expected O, but got Unknown
+		//IL_0042: Expected Obj, but got Unknown
+		//IL_0047: Expected Obj, but got Unknown
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Expected O, but got Unknown
-		Handler = new Handler();
-		_vanishedPlayers = new Dictionary<ulong, Vector3>(500);
+		//IL_0052: Expected Obj, but got Unknown
 		GameObjectRef val = new GameObjectRef();
 		((ResourceRef<GameObject>)val).guid = "28ad47c8e6d313742a7a2740674a25b5";
 		_drownEffect = val;

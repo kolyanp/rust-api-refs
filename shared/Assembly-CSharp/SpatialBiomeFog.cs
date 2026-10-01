@@ -9,35 +9,29 @@ public class SpatialBiomeFog : SingletonComponent<SpatialBiomeFog>
 
 	public ComputeShader StencilShader;
 
-	public Vector3i Resolution;
+	public Vector3i Resolution = new Vector3i(128, 128, 32);
 
 	public Texture NoiseTexture;
 
-	public float BiomeFogDensityScale;
+	public float BiomeFogDensityScale = 1f;
 
-	public bool DoVoxelBlur;
+	public bool DoVoxelBlur = true;
 
-	public int BlurPasses;
+	public int BlurPasses = 1;
 
-	public float BlurRadius;
+	public float BlurRadius = 1f;
 
-	public int NumDownsamples;
+	public int NumDownsamples = 4;
 
-	public float EnvBiomeFogDensity { get; set; }
+	public float EnvBiomeFogDensity { get; set; } = 1f;
 
 	public float UndergroundFogDensity { get; set; }
+
+	public float AtmosphereDensity { get; set; }
 
 	public SpatialBiomeFog()
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		Resolution = new Vector3i(128, 128, 32);
-		BiomeFogDensityScale = 1f;
-		DoVoxelBlur = true;
-		EnvBiomeFogDensity = 1f;
-		BlurPasses = 1;
-		BlurRadius = 1f;
-		NumDownsamples = 4;
-		base._002Ector();
 	}
 }

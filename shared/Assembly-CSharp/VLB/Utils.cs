@@ -105,7 +105,7 @@ public static class Utils
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		return ((Bounds)(ref self)).size.x * ((Bounds)(ref self)).size.y * ((Bounds)(ref self)).size.z;
+		return self.size.x * self.size.y * self.size.z;
 	}
 
 	public static float GetMaxArea2D(this Bounds self)
@@ -116,7 +116,7 @@ public static class Utils
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		return Mathf.Max(Mathf.Max(((Bounds)(ref self)).size.x * ((Bounds)(ref self)).size.y, ((Bounds)(ref self)).size.y * ((Bounds)(ref self)).size.z), ((Bounds)(ref self)).size.x * ((Bounds)(ref self)).size.z);
+		return Mathf.Max(Mathf.Max(self.size.x * self.size.y, self.size.y * self.size.z), self.size.x * self.size.z);
 	}
 
 	public static Color Opaque(this Color self)
@@ -176,7 +176,7 @@ public static class Utils
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3.Cross(normal, (Mathf.Abs(Vector3.Dot(normal, Vector3.forward)) < 0.999f) ? Vector3.forward : Vector3.up);
-		Vector3 val2 = ((Vector3)(ref val)).normalized * size;
+		Vector3 val2 = val.normalized * size;
 		Vector3 val3 = position + val2;
 		Vector3 val4 = position - val2;
 		val2 = Quaternion.AngleAxis(90f, normal) * val2;
@@ -197,7 +197,7 @@ public static class Utils
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		((Plane)(ref plane)).distance = ((Plane)(ref plane)).distance + Vector3.Dot(((Vector3)(ref translation)).normalized, ((Plane)(ref plane)).normal) * ((Vector3)(ref translation)).magnitude;
+		plane.distance += Vector3.Dot(translation.normalized, plane.normal) * translation.magnitude;
 		return plane;
 	}
 
@@ -205,8 +205,8 @@ public static class Utils
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normal = ((Plane)(ref plane)).normal;
-		return ((Vector3)(ref normal)).sqrMagnitude > 0.5f;
+		Vector3 normal = plane.normal;
+		return normal.sqrMagnitude > 0.5f;
 	}
 
 	public static Matrix4x4 SampleInMatrix(this Gradient self, int floatPackingPrecision)
@@ -216,11 +216,11 @@ public static class Utils
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		Matrix4x4 result = default(Matrix4x4);
+		Matrix4x4 result = default;
 		for (int i = 0; i < 16; i++)
 		{
 			Color color = self.Evaluate(Mathf.Clamp01((float)i / 15f));
-			((Matrix4x4)(ref result))[i] = PackToFloat(color, floatPackingPrecision);
+			result[i] = PackToFloat(color, floatPackingPrecision);
 		}
 		return result;
 	}
@@ -229,7 +229,7 @@ public static class Utils
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		Color[] array = (Color[])(object)new Color[samplesCount];
+		Color[] array = new Color[samplesCount];
 		for (int i = 0; i < samplesCount; i++)
 		{
 			array[i] = self.Evaluate(Mathf.Clamp01((float)i / (float)(samplesCount - 1)));

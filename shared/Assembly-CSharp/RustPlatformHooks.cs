@@ -6,6 +6,7 @@ using Facepunch.Rust;
 using Network;
 using Rust;
 using Rust.Platform.Common;
+using UnityEngine;
 
 public class RustPlatformHooks : IPlatformHooks
 {
@@ -17,8 +18,12 @@ public class RustPlatformHooks : IPlatformHooks
 	{
 		get
 		{
-			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 			if (Net.sv == null)
+			{
+				return null;
+			}
+			if ((Object)(object)SingletonComponent<ServerMgr>.Instance == (Object)null || !SingletonComponent<ServerMgr>.Instance.NetworkPortsConfigured)
 			{
 				return null;
 			}
@@ -27,11 +32,7 @@ public class RustPlatformHooks : IPlatformHooks
 			{
 				iPAddress = IPAddress.Parse(ConVar.Server.ip);
 			}
-			if (ConVar.Server.queryport <= 0 || ConVar.Server.queryport == ConVar.Server.port)
-			{
-				ConVar.Server.queryport = Math.Max(ConVar.Server.port, RCon.Port) + 1;
-			}
-			return new ServerParameters("rust", "Rust", 2633.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ConVar.Server.queryport);
+			return new ServerParameters("rust", "Rust", 2634.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ResolveQueryPort());
 		}
 	}
 
@@ -44,6 +45,15 @@ public class RustPlatformHooks : IPlatformHooks
 	{
 		SteamInventory.InvalidateWorkshopSkinCaches();
 		ItemManager.InvalidateWorkshopSkinCache();
+	}
+
+	private static int ResolveQueryPort()
+	{
+		if (ConVar.Server.queryport > 0 && ConVar.Server.queryport != ConVar.Server.port)
+		{
+			return ConVar.Server.queryport;
+		}
+		return Math.Max(ConVar.Server.port, RCon.Port) + 1;
 	}
 
 	public void AuthSessionValidated(ulong userId, ulong ownerUserId, AuthResponse response, string rawResponse)

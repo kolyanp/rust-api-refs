@@ -61,8 +61,8 @@ public class Lift : AnimatedBuildingBlock
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_UseLift(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && Interface.CallHook("OnLiftUse", this, rpc.player) == null && PlayerIsAtCabin(rpc.player))
@@ -81,7 +81,7 @@ public class Lift : AnimatedBuildingBlock
 			return false;
 		}
 		Bounds val = cabinTrigger.bounds;
-		return ((Bounds)(ref val)).SqrDistance(player.eyes.position) <= 9f;
+		return val.SqrDistance(player.eyes.position) <= 9f;
 	}
 
 	private bool ResolveCabinTrigger()
@@ -128,7 +128,7 @@ public class Lift : AnimatedBuildingBlock
 
 	protected override void OnAnimatorDisabled()
 	{
-		if (base.isServer && IsOpen())
+		if (isServer && IsOpen())
 		{
 			Invoke(MoveDown, resetDelay);
 		}

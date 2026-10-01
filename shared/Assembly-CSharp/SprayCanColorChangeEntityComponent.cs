@@ -25,7 +25,7 @@ public class SprayCanColorChangeEntityComponent : EntityComponent<BaseEntity>
 		{
 			return 0u;
 		}
-		if (!base.baseEntity.TryGetColorDataset(out var colorDataset))
+		if (!baseEntity.TryGetColorDataset(out var colorDataset))
 		{
 			return 0u;
 		}
@@ -44,7 +44,7 @@ public class SprayCanColorChangeEntityComponent : EntityComponent<BaseEntity>
 
 	public void Server_UpdateColor(uint newColorIndex)
 	{
-		if (newColorIndex != currentColorIndex && base.baseEntity.TryGetColorDataset(out var colorDataset))
+		if (newColorIndex != currentColorIndex && baseEntity.TryGetColorDataset(out var colorDataset))
 		{
 			int num = colorDataset.colorDataEntries.Length;
 			if (newColorIndex >= num)
@@ -52,7 +52,7 @@ public class SprayCanColorChangeEntityComponent : EntityComponent<BaseEntity>
 				newColorIndex = (uint)(num - 1);
 			}
 			currentColorIndex = newColorIndex;
-			base.baseEntity.SendNetworkUpdateImmediate();
+			baseEntity.SendNetworkUpdateImmediate();
 		}
 	}
 

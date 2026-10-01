@@ -3,11 +3,11 @@ public class MapMarkerPet : MapMarker
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.limitNetworking = true;
+		limitNetworking = true;
 	}
 
 	public override bool ShouldNetworkTo(BasePlayer player)
 	{
-		return (ulong)player.userID == base.OwnerID;
+		return (ulong)player.userID == OwnerID;
 	}
 }

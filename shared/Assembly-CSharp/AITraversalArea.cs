@@ -17,7 +17,7 @@ public class AITraversalArea : TriggerBase
 	public void OnValidate()
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		((Bounds)(ref movementArea)).center = ((Component)this).transform.position;
+		movementArea.center = ((Component)this).transform.position;
 	}
 
 	public override GameObject InterestedInObject(GameObject obj)
@@ -173,7 +173,7 @@ public class AITraversalArea : TriggerBase
 		Gizmos.DrawCube(entryPoint1.position + Vector3.up * 0.125f, new Vector3(0.5f, 0.25f, 0.5f));
 		Gizmos.DrawCube(entryPoint2.position + Vector3.up * 0.125f, new Vector3(0.5f, 0.25f, 0.5f));
 		Gizmos.color = new Color(0.2f, 1f, 0.2f, 0.5f);
-		Gizmos.DrawCube(((Bounds)(ref movementArea)).center, ((Bounds)(ref movementArea)).size);
+		Gizmos.DrawCube(movementArea.center, movementArea.size);
 		Gizmos.color = Color.magenta;
 		AITraversalWaitPoint[] array = waitPoints;
 		for (int i = 0; i < array.Length; i++)

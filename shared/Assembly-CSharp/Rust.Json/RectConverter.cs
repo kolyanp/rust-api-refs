@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Rust.Json;
@@ -11,28 +10,66 @@ public class RectConverter : JsonConverter<Rect>
 	{
 		writer.WriteStartObject();
 		writer.WritePropertyName("x");
-		writer.WriteValue(((Rect)(ref value)).x);
+		writer.WriteValue(value.x);
 		writer.WritePropertyName("y");
-		writer.WriteValue(((Rect)(ref value)).y);
+		writer.WriteValue(value.y);
 		writer.WritePropertyName("width");
-		writer.WriteValue(((Rect)(ref value)).width);
+		writer.WriteValue(value.width);
 		writer.WritePropertyName("height");
-		writer.WriteValue(((Rect)(ref value)).height);
+		writer.WriteValue(value.height);
 		writer.WriteEndObject();
 	}
 
 	public override Rect ReadJson(JsonReader reader, Type objectType, Rect existingValue, bool hasExistingValue, JsonSerializer serializer)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Invalid comparison between Unknown and I4
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		if ((int)reader.TokenType == 2)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Invalid comparison between Unknown and I4
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Invalid comparison between Unknown and I4
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		JsonToken tokenType = reader.TokenType;
+		if ((int)tokenType != 2)
 		{
-			JArray val = JArray.Load(reader);
-			return new Rect((float)val[0], (float)val[1], (float)val[2], (float)val[3]);
+			if ((int)tokenType == 11)
+			{
+				return default;
+			}
+			UnityJsonConverters.BeginObject(reader, "Rect");
+			float num = 0f;
+			float num2 = 0f;
+			float num3 = 0f;
+			float num4 = 0f;
+			string name;
+			while (UnityJsonConverters.NextProperty(reader, out name))
+			{
+				switch (name)
+				{
+				case "x":
+					num = UnityJsonConverters.Float(reader);
+					break;
+				case "y":
+					num2 = UnityJsonConverters.Float(reader);
+					break;
+				case "width":
+					num3 = UnityJsonConverters.Float(reader);
+					break;
+				case "height":
+					num4 = UnityJsonConverters.Float(reader);
+					break;
+				default:
+					reader.Skip();
+					break;
+				}
+			}
+			return new Rect(num, num2, num3, num4);
 		}
-		JObject token = JObject.Load(reader);
-		return new Rect(UnityJsonConverters.F((JToken)(object)token, "x"), UnityJsonConverters.F((JToken)(object)token, "y"), UnityJsonConverters.F((JToken)(object)token, "width"), UnityJsonConverters.F((JToken)(object)token, "height"));
+		Span<float> values = stackalloc float[4];
+		UnityJsonConverters.ReadFloats(reader, values);
+		return new Rect(values[0], values[1], values[2], values[3]);
 	}
 }

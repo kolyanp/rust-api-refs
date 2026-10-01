@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 public class CustomDoorManipulator : DoorManipulator
 {
-	public static Phrase pairAttemptPhrase;
+	public static Phrase pairAttemptPhrase = new Phrase("doorcontroller.unlock", "Door must be unlocked for pairing!");
 
 	private int inputOpenAmount;
 
@@ -126,8 +126,8 @@ public class CustomDoorManipulator : DoorManipulator
 		return null;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_DoPair(RPCMessage msg)
 	{
 		Door door = targetDoor;
@@ -156,7 +156,7 @@ public class CustomDoorManipulator : DoorManipulator
 		Door door = parent as Door;
 		if ((Object)(object)door != (Object)null)
 		{
-			Invoke(delegate
+			Invoke(() =>
 			{
 				PairDoorAttempt(door, deployedBy);
 			}, 0.25f);
@@ -228,13 +228,12 @@ public class CustomDoorManipulator : DoorManipulator
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		targetDoor = entityRef.Get(base.isServer) as Door;
+		targetDoor = entityRef.Get(isServer) as Door;
 	}
 
 	static CustomDoorManipulator()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		pairAttemptPhrase = new Phrase("doorcontroller.unlock", "Door must be unlocked for pairing!");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

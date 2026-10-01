@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -24,6 +26,9 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 
 	public string lootPanelName = "generic";
 
+	[Tooltip("Anchor the inserted item's world model is displayed under. Leave empty to display nothing.")]
+	public Transform passthroughItemAnchor;
+
 	[Header("Item Decay/Destroying")]
 	public float passthroughItemConditionLossPerSec = 1f;
 
@@ -43,7 +48,29 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 
 	private int lastDestroyedItemTimer;
 
-	private static readonly Phrase PullLockedError;
+	private static readonly Phrase PullLockedError = new Phrase("error.pull_locked", "Item is locked in!");
+
+	private int __sync_PassthroughItemId;
+
+	[Sync(Autosave = true)]
+	public int PassthroughItemId
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_PassthroughItemId;
+		}
+		[CompilerGenerated]
+		set
+		{
+			if (!IsSyncVarEqual(__sync_PassthroughItemId, value))
+			{
+				__sync_PassthroughItemId = value;
+				byte nameID = __GetWeaverID("PassthroughItemId");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -132,23 +159,13 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 
 	public virtual bool HasPassthroughItem()
 	{
-		if (inventory == null || inventory.itemList.Count <= 0)
-		{
-			return false;
-		}
-		if (!inventory.TryGetItemAtSlot(0, out var item))
-		{
-			return false;
-		}
-		if (!IsValidPassthroughItem(item))
-		{
-			return false;
-		}
-		if (passthroughItemConditionLossPerSec > 0f && item.hasCondition && item.conditionNormalized <= 0f)
-		{
-			return false;
-		}
-		return true;
+		Item item;
+		return GetPassthroughItem(out item);
+	}
+
+	private void RefreshCurrentPassthroughItemId()
+	{
+		PassthroughItemId = ((inventory != null && inventory.TryGetItemAtSlot(0, out var item) && IsValidPassthroughItem(item)) ? item.info.itemid : 0);
 	}
 
 	public bool IsValidPassthroughItem(Item item)
@@ -220,7 +237,7 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 			if (inventory.TryGetItemAtSlot(0, out var item))
 			{
 				item.UseItem();
-				OnItemAddedOrRemoved(item, added: false);
+				OnItemAddedOrRemoved(item, added: false, null);
 			}
 		}
 	}
@@ -242,6 +259,7 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 		{
 			InvokeRepeating(TickDestroyPassthroughItem, 1f, 1f);
 		}
+		RefreshCurrentPassthroughItemId();
 		base.ServerInit();
 	}
 
@@ -262,7 +280,7 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 		Debug.Assert(inventory == null, "Double init of inventory!");
 		inventory = Pool.Get<ItemContainer>();
 		inventory.entityOwner = this;
-		inventory.allowedContents = ((allowedContents == (ItemContainer.ContentsType)0) ? ItemContainer.ContentsType.Generic : allowedContents);
+		inventory.allowedContents = ((allowedContents == 0) ? ItemContainer.ContentsType.Generic : allowedContents);
 		inventory.SetOnlyAllowedItems(validPassthroughItems);
 		inventory.maxStackSize = maxStackSize;
 		inventory.ServerInitialize(null, numSlots);
@@ -311,8 +329,9 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 	{
 	}
 
-	public virtual void OnItemAddedOrRemoved(Item item, bool added)
+	public virtual void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
+		RefreshCurrentPassthroughItemId();
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Reserved1, HasPassthroughItem());
@@ -320,8 +339,8 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 		MarkDirty();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (inventory != null)
@@ -348,10 +367,129 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 		return new PlayerInventory.CanMoveFromResponse(!lockInventoryWhenItemPresent || (lockOnlyWithPower && !IsPowered()) || !HasPassthroughItem(), PullLockedError);
 	}
 
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		if (id == 0)
+		{
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: PassthroughItemId for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_PassthroughItemId);
+			return true;
+		}
+		return base.WriteSyncVar(id, writer);
+	}
+
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
+	{
+		if (id == 0)
+		{
+			try
+			{
+				_ = __sync_PassthroughItemId;
+				int _sync_PassthroughItemId = reader.Int32();
+				__sync_PassthroughItemId = _sync_PassthroughItemId;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		}
+		return base.OnSyncVar(id, reader, fromAutoSave);
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (propertyName == "PassthroughItemId")
+		{
+			return 0;
+		}
+		return byte.MaxValue;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
+		{
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
+		}
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_PassthroughItemId = 0;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		if (id == 0)
+		{
+			return true;
+		}
+		return base.ShouldInvalidateCache(id);
+	}
+
 	static ItemBasedFlowRestrictor()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		PullLockedError = new Phrase("error.pull_locked", "Item is locked in!");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

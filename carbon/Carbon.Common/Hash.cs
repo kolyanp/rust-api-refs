@@ -18,7 +18,7 @@ public class Hash<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValu
 			{
 				return (TValue)Activator.CreateInstance(typeof(TValue));
 			}
-			return default(TValue);
+			return default;
 		}
 		set
 		{

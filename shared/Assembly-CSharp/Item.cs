@@ -22,7 +22,8 @@ public class Item : IPooled
 		IsLocked = 8,
 		Cooking = 0x10,
 		Radioactive = 0x20,
-		Refrigerated = 0x40
+		Refrigerated = 0x40,
+		InRefrigeratedContainer = 0x80
 	}
 
 	private const string DefaultArmourBreakEffectPath = "assets/bundled/prefabs/fx/armor_break.prefab";
@@ -218,7 +219,7 @@ public class Item : IPooled
 		set
 		{
 			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0013: Expected O, but got Unknown
+			//IL_0013: Expected Obj, but got Unknown
 			if (instanceData == null)
 			{
 				instanceData = new InstanceData();
@@ -372,7 +373,7 @@ public class Item : IPooled
 				Effect.server.Run("assets/bundled/prefabs/fx/item_break.prefab", ownerPlayer, 0u, Vector3.zero, Vector3.zero);
 				ownerPlayer.ShowToast(GameTip.Styles.Error, PlayerInventoryErrors.ActiveItemBroken, false);
 			}
-			ItemModWearable itemModWearable = default(ItemModWearable);
+			ItemModWearable itemModWearable = default;
 			if (((Component)info).TryGetComponent<ItemModWearable>(ref itemModWearable) && ownerPlayer.inventory.containerWear.itemList.Contains(this))
 			{
 				if (itemModWearable.breakEffect.isValid)
@@ -414,7 +415,7 @@ public class Item : IPooled
 				}
 			}
 		}
-		ItemModEntity itemModEntity = default(ItemModEntity);
+		ItemModEntity itemModEntity = default;
 		if (((Component)info).TryGetComponent<ItemModEntity>(ref itemModEntity) && itemModEntity.destroyEntityWhenBroken)
 		{
 			baseEntity.Kill(BaseNetworkable.DestroyMode.Gib);
@@ -426,7 +427,7 @@ public class Item : IPooled
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		info = null;
-		uid = default(ItemId);
+		uid = default;
 		dirty = false;
 		amount = 1;
 		position = 0;
@@ -446,8 +447,8 @@ public class Item : IPooled
 			Pool.Free<ItemContainer>(ref contents);
 		}
 		parent = null;
-		heldEntity = default(EntityRef);
-		worldEnt = default(EntityRef);
+		heldEntity = default;
+		worldEnt = default;
 		onCycle = null;
 		OnDirty = null;
 		_condition = 0f;
@@ -535,6 +536,11 @@ public class Item : IPooled
 	public bool IsRefrigerated()
 	{
 		return HasFlag(Flag.Refrigerated);
+	}
+
+	public bool IsInRefrigeratedContainer()
+	{
+		return HasFlag(Flag.InRefrigeratedContainer);
 	}
 
 	public void MarkDirty()
@@ -662,11 +668,11 @@ public class Item : IPooled
 		}
 	}
 
-	public void RemoveFromContainer()
+	public void RemoveFromContainer(BasePlayer sourcePlayer = null)
 	{
 		if (parent != null)
 		{
-			SetParent(null);
+			SetParent(null, sourcePlayer);
 		}
 	}
 
@@ -720,7 +726,7 @@ public class Item : IPooled
 	{
 		if (!HasItemOwnership())
 		{
-			return default(ItemOwnershipShare);
+			return default;
 		}
 		ItemOwnershipShare itemOwnershipShare = ownershipShares[0];
 		itemOwnershipShare.amount--;
@@ -818,7 +824,7 @@ public class Item : IPooled
 		}
 	}
 
-	public void SetParent(ItemContainer target)
+	public void SetParent(ItemContainer target, BasePlayer sourcePlayer = null)
 	{
 		if (target == parent)
 		{
@@ -826,7 +832,7 @@ public class Item : IPooled
 		}
 		if (parent != null)
 		{
-			parent.Remove(this);
+			parent.Remove(this, sourcePlayer);
 			parent = null;
 		}
 		if (target == null)
@@ -836,7 +842,7 @@ public class Item : IPooled
 		else
 		{
 			parent = target;
-			if (!parent.Insert(this))
+			if (!parent.Insert(this, sourcePlayer))
 			{
 				Remove();
 				Debug.LogError((object)"Item.SetParent caused remove - this shouldn't ever happen");
@@ -988,10 +994,10 @@ public class Item : IPooled
 	{
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_058a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0590: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0597: Unknown result type (might be due to invalid IL or missing references)
-		//IL_059d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05d7: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("MoveToContainer"))
 		{
 			BasePlayer playerOwner = newcontainer.playerOwner;
@@ -1103,8 +1109,9 @@ public class Item : IPooled
 						if (slot2.instanceData != null && instanceData != null && Object.op_Implicit((Object)(object)((Component)info).GetComponent<ItemModFoodSpoiling>()))
 						{
 							slot2.instanceData.dataFloat = Mathf.Min(slot2.instanceData.dataFloat, instanceData.dataFloat);
+							slot2.instanceData.refrigeratedSeconds = Mathf.Min(slot2.instanceData.refrigeratedSeconds, instanceData.refrigeratedSeconds);
 						}
-						newcontainer.onItemAddedToStack?.Invoke(slot2, num2);
+						newcontainer.onItemAddedToStack?.Invoke(slot2, num2, sourcePlayer);
 						amount -= num2;
 						slot2.MarkDirty();
 						Interface.CallHook("OnItemStacked", slot2, this, newcontainer, num2);
@@ -1113,7 +1120,7 @@ public class Item : IPooled
 						if (amount <= 0)
 						{
 							RemoveFromWorld();
-							RemoveFromContainer();
+							RemoveFromContainer(sourcePlayer);
 							Remove();
 							return true;
 						}
@@ -1128,7 +1135,7 @@ public class Item : IPooled
 				{
 					ItemContainer itemContainer2 = parent;
 					int iTargetPos2 = position;
-					ItemContainer newcontainer2 = slot2.parent;
+					ItemContainer itemContainer3 = slot2.parent;
 					int num3 = slot2.position;
 					if (!slot2.CanMoveTo(sourcePlayer, itemContainer2, iTargetPos2))
 					{
@@ -1137,7 +1144,7 @@ public class Item : IPooled
 					if (itemContainer2.maxStackSize > 0 && slot2.amount > itemContainer2.maxStackSize)
 					{
 						Item item = slot2.SplitItem(slot2.amount - itemContainer2.maxStackSize);
-						if (item == null || !item.MoveToContainer(newcontainer2, -1, allowStack: false, ignoreStackLimit: false, sourcePlayer, allowSwap: false))
+						if (item == null || !item.MoveToContainer(itemContainer3, -1, allowStack: false, ignoreStackLimit: false, sourcePlayer, allowSwap: false))
 						{
 							slot2.amount += item.amount;
 							item.MigrateItemOwnership(slot2, item.amount);
@@ -1147,17 +1154,17 @@ public class Item : IPooled
 					}
 					BaseEntity entityOwner = GetEntityOwner();
 					BaseEntity entityOwner2 = slot2.GetEntityOwner();
-					RemoveFromContainer();
-					slot2.RemoveFromContainer();
+					RemoveFromContainer(sourcePlayer);
+					slot2.RemoveFromContainer(sourcePlayer);
 					RemoveConflictingSlots(newcontainer, entityOwner, sourcePlayer);
 					slot2.RemoveConflictingSlots(itemContainer2, entityOwner2, sourcePlayer);
 					if (!slot2.MoveToContainer(itemContainer2, iTargetPos2, allowStack: true, ignoreStackLimit: false, sourcePlayer) || !MoveToContainer(newcontainer, iTargetPos, allowStack: true, ignoreStackLimit: false, sourcePlayer))
 					{
-						RemoveFromContainer();
-						slot2.RemoveFromContainer();
-						SetParent(itemContainer2);
+						RemoveFromContainer(sourcePlayer);
+						slot2.RemoveFromContainer(sourcePlayer);
+						SetParent(itemContainer2, sourcePlayer);
 						position = iTargetPos2;
-						slot2.SetParent(newcontainer2);
+						slot2.SetParent(itemContainer3, sourcePlayer);
 						slot2.position = num3;
 						return true;
 					}
@@ -1169,7 +1176,7 @@ public class Item : IPooled
 			{
 				if (iTargetPos >= 0 && iTargetPos != position && !parent.SlotTaken(this, iTargetPos))
 				{
-					newcontainer.onItemPositionChanged?.Invoke(this, position, iTargetPos);
+					newcontainer.onItemPositionChanged?.Invoke(this, position, iTargetPos, sourcePlayer);
 					position = iTargetPos;
 					MarkDirty();
 					return true;
@@ -1195,11 +1202,11 @@ public class Item : IPooled
 				return false;
 			}
 			BaseEntity entityOwner3 = GetEntityOwner();
-			RemoveFromContainer();
+			RemoveFromContainer(sourcePlayer);
 			RemoveFromWorld();
 			RemoveConflictingSlots(newcontainer, entityOwner3, sourcePlayer);
 			position = iTargetPos;
-			SetParent(newcontainer);
+			SetParent(newcontainer, sourcePlayer);
 			return true;
 		}
 	}
@@ -1216,7 +1223,7 @@ public class Item : IPooled
 		{
 			if (item.DoItemSlotsConflict(this))
 			{
-				item.RemoveFromContainer();
+				item.RemoveFromContainer(sourcePlayer);
 				if (entityOwner is BasePlayer basePlayer)
 				{
 					basePlayer.GiveItem(item);
@@ -1283,8 +1290,8 @@ public class Item : IPooled
 		RemoveFromWorld();
 		if (info.AlignWorldModelOnDrop)
 		{
-			Quaternion val = Quaternion.LookRotation(((Vector3)(ref vVelocity)).normalized, Vector3.up);
-			rotation = Quaternion.Euler(0f, ((Quaternion)(ref val)).eulerAngles.y, 0f);
+			Quaternion val = Quaternion.LookRotation(vVelocity.normalized, Vector3.up);
+			rotation = Quaternion.Euler(0f, val.eulerAngles.y, 0f);
 			rotation = Quaternion.Euler(info.WorldModelDropOffset) * rotation;
 		}
 		BaseEntity baseEntity = null;
@@ -1313,8 +1320,22 @@ public class Item : IPooled
 		return baseEntity;
 	}
 
+	public BaseEntity DropAtRest(Vector3 vPos, Quaternion rotation = default(Quaternion))
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		BaseEntity baseEntity = Drop(vPos, Vector3.zero, rotation);
+		if (baseEntity is DroppedItem droppedItem)
+		{
+			droppedItem.SettleOnGround();
+		}
+		return baseEntity;
+	}
+
 	public BaseEntity DropAndTossUpwards(Vector3 vPos, float force = 2f)
 	{
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
@@ -1324,9 +1345,7 @@ public class Item : IPooled
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		float num = Random.value * MathF.PI * 2f;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(Mathf.Sin(num), 1f, Mathf.Cos(num));
-		return Drop(vPos + Vector3.up * 0.1f, val * force);
+		return Drop(vVelocity: new Vector3(Mathf.Sin(num), 1f, Mathf.Cos(num)) * force, vPos: vPos + Vector3.up * 0.1f);
 	}
 
 	public bool IsRemoved()
@@ -1359,10 +1378,10 @@ public class Item : IPooled
 	{
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		OnDirty = null;
-		if (isServer && ((ItemId)(ref uid)).IsValid && Net.sv != null)
+		if (isServer && uid.IsValid && Net.sv != null)
 		{
 			Net.sv.ReturnUID(uid.Value);
-			uid = default(ItemId);
+			uid = default;
 		}
 		if (contents != null)
 		{
@@ -1438,11 +1457,11 @@ public class Item : IPooled
 	public Item SplitItem(int split_Amount)
 	{
 		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Expected O, but got Unknown
+		//IL_00cb: Expected Obj, but got Unknown
 		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0196: Expected O, but got Unknown
+		//IL_0196: Expected Obj, but got Unknown
 		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0142: Expected O, but got Unknown
+		//IL_0142: Expected Obj, but got Unknown
 		Assert.IsTrue(split_Amount > 0, "split_Amount <= 0");
 		if (split_Amount <= 0)
 		{
@@ -1483,7 +1502,10 @@ public class Item : IPooled
 		{
 			item.instanceData = new InstanceData();
 			item.instanceData.dataFloat = instanceData.dataFloat;
+			item.instanceData.refrigeratedSeconds = instanceData.refrigeratedSeconds;
 			item.instanceData.ShouldPool = false;
+			item.SetFlag(Flag.Refrigerated, IsRefrigerated());
+			item.SetFlag(Flag.InRefrigeratedContainer, IsInRefrigeratedContainer());
 		}
 		MarkDirty();
 		return item;
@@ -1594,11 +1616,11 @@ public class Item : IPooled
 		{
 			return false;
 		}
-		if (instanceData != null && ((NetworkableId)(ref instanceData.subEntity)).IsValid && Object.op_Implicit((Object)(object)((Component)info).GetComponent<ItemModSign>()))
+		if (instanceData != null && instanceData.subEntity.IsValid && Object.op_Implicit((Object)(object)((Component)info).GetComponent<ItemModSign>()))
 		{
 			return false;
 		}
-		if (item.instanceData != null && ((NetworkableId)(ref item.instanceData.subEntity)).IsValid && Object.op_Implicit((Object)(object)((Component)item.info).GetComponent<ItemModSign>()))
+		if (item.instanceData != null && item.instanceData.subEntity.IsValid && Object.op_Implicit((Object)(object)((Component)item.info).GetComponent<ItemModSign>()))
 		{
 			return false;
 		}
@@ -1611,7 +1633,7 @@ public class Item : IPooled
 
 	public static bool BlockStackFoodItem(Item a, Item b)
 	{
-		ItemModFoodSpoiling itemModFoodSpoiling = default(ItemModFoodSpoiling);
+		ItemModFoodSpoiling itemModFoodSpoiling = default;
 		if (a.instanceData != null && b.instanceData != null && ((Component)a.info).TryGetComponent<ItemModFoodSpoiling>(ref itemModFoodSpoiling))
 		{
 			bool flag = false;
@@ -1774,14 +1796,14 @@ public class Item : IPooled
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		ItemModProjectile itemModProjectile = default(ItemModProjectile);
+		ItemModProjectile itemModProjectile = default;
 		if (((Component)info).TryGetComponent<ItemModProjectile>(ref itemModProjectile) && itemModProjectile.IsAmmo(ammoType))
 		{
 			return true;
 		}
 		if (contents != null)
 		{
-			ItemModContainer itemModContainer = default(ItemModContainer);
+			ItemModContainer itemModContainer = default;
 			if ((Object)(object)info != (Object)null && ((Component)info).TryGetComponent<ItemModContainer>(ref itemModContainer) && itemModContainer.blockAmmoSource)
 			{
 				return false;
@@ -1795,7 +1817,7 @@ public class Item : IPooled
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		ItemModProjectile itemModProjectile = default(ItemModProjectile);
+		ItemModProjectile itemModProjectile = default;
 		if (((Component)info).TryGetComponent<ItemModProjectile>(ref itemModProjectile) && itemModProjectile.IsAmmo(ammoType))
 		{
 			return this;
@@ -1812,7 +1834,7 @@ public class Item : IPooled
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		ItemModProjectile itemModProjectile = default(ItemModProjectile);
+		ItemModProjectile itemModProjectile = default;
 		if (((Component)info).TryGetComponent<ItemModProjectile>(ref itemModProjectile) && itemModProjectile.IsAmmo(ammoType))
 		{
 			list.Add(this);
@@ -1828,7 +1850,7 @@ public class Item : IPooled
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		int num = 0;
-		ItemModProjectile itemModProjectile = default(ItemModProjectile);
+		ItemModProjectile itemModProjectile = default;
 		if (((Component)info).TryGetComponent<ItemModProjectile>(ref itemModProjectile) && itemModProjectile.IsAmmo(ammoType))
 		{
 			num += amount;
@@ -1849,7 +1871,7 @@ public class Item : IPooled
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		int num = 0;
-		ItemModProjectile itemModProjectile = default(ItemModProjectile);
+		ItemModProjectile itemModProjectile = default;
 		if (((Component)info).TryGetComponent<ItemModProjectile>(ref itemModProjectile))
 		{
 			foreach (AmmoTypes ammoType in ammoTypes)
@@ -1870,11 +1892,11 @@ public class Item : IPooled
 		return num;
 	}
 
-	public unsafe override string ToString()
+	public override string ToString()
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		string[] obj = new string[6]
+		string[] array = new string[6]
 		{
 			"Item.",
 			info.shortname,
@@ -1884,8 +1906,8 @@ public class Item : IPooled
 			null
 		};
 		ItemId val = uid;
-		obj[5] = ((object)(*(ItemId*)(&val))/*cast due to constrained. prefix*/).ToString();
-		return string.Concat(obj);
+		array[5] = ((object)val/*cast due to constrained. prefix*/).ToString();
+		return string.Concat(array);
 	}
 
 	public Item FindItem(ItemId iUID)
@@ -1979,7 +2001,7 @@ public class Item : IPooled
 		}
 		val.ammoCount = 0;
 		NetworkableId val3 = heldEntity.uid;
-		if (((NetworkableId)(ref val3)).IsValid)
+		if (val3.IsValid)
 		{
 			BaseEntity baseEntity = GetHeldEntity();
 			if (baseEntity is BaseProjectile baseProjectile)

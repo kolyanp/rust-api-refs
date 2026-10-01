@@ -29,7 +29,7 @@ public class TechTreeDialog : UIDialog, IInventoryChanged
 
 	public RustText scrapCount;
 
-	private Vector2 startPos;
+	private Vector2 startPos = Vector2.zero;
 
 	public ScrollRectZoom zoom;
 
@@ -61,7 +61,5 @@ public class TechTreeDialog : UIDialog, IInventoryChanged
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		startPos = Vector2.zero;
-		base._002Ector();
 	}
 }

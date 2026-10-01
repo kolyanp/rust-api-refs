@@ -24,7 +24,7 @@ public sealed class TextureParameter : ParameterOverride<Texture>
 		}
 		if ((Object)(object)from != (Object)null && (Object)(object)to != (Object)null)
 		{
-			value = UnityEngine.Rendering.PostProcessing.TextureLerper.instance.Lerp(from, to, t);
+			value = TextureLerper.instance.Lerp(from, to, t);
 			return;
 		}
 		if (defaultState == TextureParameterDefault.Lut2D)
@@ -68,7 +68,7 @@ public sealed class TextureParameter : ParameterOverride<Texture>
 			}
 			else
 			{
-				value = UnityEngine.Rendering.PostProcessing.TextureLerper.instance.Lerp(from, to, t);
+				value = TextureLerper.instance.Lerp(from, to, t);
 			}
 			return;
 		}
@@ -78,11 +78,11 @@ public sealed class TextureParameter : ParameterOverride<Texture>
 		}
 		if ((Object)(object)from == (Object)null)
 		{
-			value = UnityEngine.Rendering.PostProcessing.TextureLerper.instance.Lerp(to, to2, 1f - t);
+			value = TextureLerper.instance.Lerp(to, to2, 1f - t);
 		}
 		else
 		{
-			value = UnityEngine.Rendering.PostProcessing.TextureLerper.instance.Lerp(from, to2, t);
+			value = TextureLerper.instance.Lerp(from, to2, t);
 		}
 	}
 }

@@ -77,9 +77,9 @@ public class State_CrocBreakFoundation : State_AttackWithTracking
 
 	protected override void DoDamage()
 	{
-		if (base.Senses.FindTarget(out var target) && target.ToNonNpcPlayer(out var player))
+		if (Senses.FindTarget(out var target) && target.ToNonNpcPlayer(out var player))
 		{
-			BuildingBlock buildingBlock = FindNearestTwigFoundationOnTargetBuilding(base.Agent, player);
+			BuildingBlock buildingBlock = FindNearestTwigFoundationOnTargetBuilding(Agent, player);
 			if ((Object)(object)buildingBlock == (Object)null)
 			{
 				base.DoDamage();

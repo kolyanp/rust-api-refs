@@ -133,7 +133,7 @@ public class NoteBindingCollection : ScriptableObject
 				return true;
 			}
 		}
-		data = default(NoteData);
+		data = default;
 		noteIndex = -1;
 		return false;
 	}

@@ -118,7 +118,7 @@ public class DoorManipulator : IOEntity
 		}
 		if (targetDoor.IsBusy())
 		{
-			Invoke(delegate
+			Invoke(() =>
 			{
 				DoAction(action);
 			}, 1f);

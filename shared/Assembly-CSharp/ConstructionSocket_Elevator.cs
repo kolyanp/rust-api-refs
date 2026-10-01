@@ -50,7 +50,7 @@ public class ConstructionSocket_Elevator : ConstructionSocket
 			return false;
 		}
 		Matrix4x4 val = Matrix4x4.TRS(position, rotation, Vector3.one);
-		Vector3 val2 = ((Matrix4x4)(ref val)).MultiplyPoint3x4(worldPosition);
+		Vector3 val2 = val.MultiplyPoint3x4(worldPosition);
 		return !GamePhysics.CheckOBB(new OBB(val2, new Vector3(2f, 0.5f, 2f), rotation), 2097152, (QueryTriggerInteraction)0);
 	}
 }

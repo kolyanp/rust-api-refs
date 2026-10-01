@@ -48,9 +48,9 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	private bool shouldBypassClippingChecks;
 
-	public static Phrase sprintPhrase;
+	public static Phrase sprintPhrase = new Phrase("sprint", "Sprint");
 
-	public static Phrase boostPhrase;
+	public static Phrase boostPhrase = new Phrase("boost", "Boost");
 
 	[Header("Bike")]
 	[SerializeField]
@@ -72,55 +72,55 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	public CarSettings carSettings;
 
 	[SerializeField]
-	public int engineKW;
+	public int engineKW = 59;
 
 	[SerializeField]
-	public float idleFuelPerSec;
+	public float idleFuelPerSec = 0.03f;
 
 	[SerializeField]
-	public float maxFuelPerSec;
-
-	[Range(0f, 1f)]
-	[SerializeField]
-	private float pitchStabP;
+	public float maxFuelPerSec = 0.15f;
 
 	[SerializeField]
 	[Range(0f, 1f)]
-	private float pitchStabD;
-
-	[Range(0f, 1f)]
-	[SerializeField]
-	private float twoWheelRollStabP;
+	private float pitchStabP = 0.01f;
 
 	[SerializeField]
 	[Range(0f, 1f)]
-	private float twoWheelRollStabD;
+	private float pitchStabD = 0.005f;
 
 	[SerializeField]
+	[Range(0f, 1f)]
+	private float twoWheelRollStabP = 100f;
+
+	[SerializeField]
+	[Range(0f, 1f)]
+	private float twoWheelRollStabD = 10f;
+
 	[Range(1f, 500f)]
-	private float manyWheelStabP;
+	[SerializeField]
+	private float manyWheelStabP = 40f;
 
 	[Range(1f, 100f)]
 	[SerializeField]
-	private float manyWheelStabD;
+	private float manyWheelStabD = 10f;
 
 	[Range(0f, 1f)]
 	[SerializeField]
-	public float airControlTorquePower;
+	public float airControlTorquePower = 0.04f;
 
-	public float sprintTime;
-
-	[SerializeField]
-	public float sprintRegenTime;
+	public float sprintTime = 5f;
 
 	[SerializeField]
-	public float sprintBoostPercent;
+	public float sprintRegenTime = 10f;
+
+	[SerializeField]
+	public float sprintBoostPercent = 0.3f;
 
 	[SerializeField]
 	private ProtectionProperties riderProtection;
 
 	[SerializeField]
-	private float hurtTriggerMinSpeed;
+	private float hurtTriggerMinSpeed = 1f;
 
 	[SerializeField]
 	private TriggerHurtNotChild hurtTriggerFront;
@@ -129,31 +129,31 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	private TriggerHurtNotChild hurtTriggerRear;
 
 	[SerializeField]
-	private float maxLeanSpeed;
+	private float maxLeanSpeed = 20f;
 
 	[SerializeField]
-	private float leftMaxLean;
+	private float leftMaxLean = 60f;
 
 	[SerializeField]
-	private float rightMaxLean;
+	private float rightMaxLean = 60f;
 
 	[SerializeField]
-	private float midairRotationForce;
+	private float midairRotationForce = 1f;
 
 	[SerializeField]
-	private Vector3 customInertiaTensor;
+	private Vector3 customInertiaTensor = new Vector3(85f, 60f, 40f);
 
 	public PoweredBy poweredBy;
 
+	[SerializeField]
 	[Range(0f, 1f)]
-	[SerializeField]
-	public float percentFood;
+	public float percentFood = 0.5f;
 
 	[SerializeField]
-	public float playerDamageThreshold;
+	public float playerDamageThreshold = 40f;
 
 	[SerializeField]
-	public float playerDeathThreshold;
+	public float playerDeathThreshold = 75f;
 
 	[SerializeField]
 	private bool hasBell;
@@ -220,28 +220,28 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	private Transform sidecarPhysicsHinge;
 
 	[ServerVar(Help = "How long before a bike loses all its health while outside")]
-	public static float outsideDecayMinutes;
+	public static float outsideDecayMinutes = 1440f;
 
 	[ServerVar(Help = "Pedal bike population active on the server (roadside spawns)", ShowInAdminUI = true)]
-	public static float pedalRoadsidePopulation;
+	public static float pedalRoadsidePopulation = 1f;
 
 	[SerializeField]
 	private Transform realSidecarCapsule;
 
 	[ServerVar(Help = "Pedal bike population in monuments", ShowInAdminUI = true)]
-	public static float pedalMonumentPopulation;
+	public static float pedalMonumentPopulation = 1f;
 
 	[SerializeField]
 	private Transform duplicateSidecarCapsule;
 
 	[ServerVar(Help = "Motorbike population in monuments", ShowInAdminUI = true)]
-	public static float motorbikeMonumentPopulation;
+	public static float motorbikeMonumentPopulation = 1f;
 
 	[ServerVar(Help = "Can bike crashes cause damage or death to the rider?")]
-	public static bool doPlayerDamage;
+	public static bool doPlayerDamage = true;
 
 	[ServerVar(Help = "Amount of collision damage on a bike required to ragdoll the player")]
-	public static float playerDamageRagdollTheshold;
+	public static float playerDamageRagdollTheshold = 10f;
 
 	private bool hasExtraWheel;
 
@@ -261,7 +261,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public const Flags Flag_IsBunnyhopping = Flags.Reserved10;
 
-	private float _mass;
+	private float _mass = -1f;
 
 	private float cachedFuelFraction;
 
@@ -401,7 +401,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.SteerAngle;
 			}
@@ -413,7 +413,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				float num = carPhysics.DriveWheelVelocity;
 				if (inBurnoutMode && ThrottleInput > 0.1f)
@@ -430,7 +430,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.DriveWheelSlip;
 			}
@@ -446,12 +446,12 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-			if (base.isServer)
+			if (isServer)
 			{
 				if (BaseNetworkable.UseParallelSaves)
 				{
 					Quaternion localRotMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in sidecarPhysicsHingeHandle);
-					return ((Quaternion)(ref localRotMT)).eulerAngles.z;
+					return localRotMT.eulerAngles.z;
 				}
 				return sidecarPhysicsHinge.localEulerAngles.z;
 			}
@@ -465,7 +465,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return rigidBody.mass;
 			}
@@ -541,7 +541,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public override void OnCollision(Collision collision, BaseEntity hitEntity)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			ProcessCollision(collision, sidecarRigidBody);
 		}
@@ -587,12 +587,12 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 				SprintPercentRemaining = Mathf.Clamp01(SprintPercentRemaining);
 			}
 			IsSprinting = flag;
-			bool num = rigidBody.IsSleeping();
-			if (!num)
+			bool flag3 = rigidBody.IsSleeping();
+			if (!flag3)
 			{
 				AwakeBikePhysicsTick(speed);
 			}
-			RigidbodyConstraints val = (RigidbodyConstraints)(num ? 64 : 0);
+			RigidbodyConstraints val = (RigidbodyConstraints)(flag3 ? 64 : 0);
 			if (rigidBody.constraints != val)
 			{
 				rigidBody.constraints = val;
@@ -636,7 +636,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 		{
 			return;
 		}
-		bool num = carPhysics.IsGrounded();
+		bool flag = carPhysics.IsGrounded();
 		if (snowmobileDrivingStyle)
 		{
 			if (!carPhysics.IsGrounded())
@@ -651,21 +651,21 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 			PDDirectionStab();
 			PDRollStab(speed);
 		}
-		float num2 = 0f;
-		if (!num)
+		float num = 0f;
+		if (!flag)
 		{
 			if (SprintInput && !DuckInput)
 			{
-				num2 = 0f - airControlTorquePower;
+				num = 0f - airControlTorquePower;
 			}
 			else if (DuckInput && !SprintInput)
 			{
-				num2 = airControlTorquePower;
+				num = airControlTorquePower;
 			}
 		}
-		if (num2 != 0f)
+		if (num != 0f)
 		{
-			rigidBody.AddRelativeTorque(num2, 0f, 0f, (ForceMode)2);
+			rigidBody.AddRelativeTorque(num, 0f, 0f, (ForceMode)2);
 		}
 		if (hasSidecar)
 		{
@@ -755,16 +755,16 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(((Component)this).transform.position, Vector3.down, ref val, 10f, 1218511105, (QueryTriggerInteraction)1))
 		{
-			Vector3 normal = ((RaycastHit)(ref val)).normal;
+			Vector3 normal = val.normal;
 			Vector3 right = ((Component)this).transform.right;
 			right.y = 0f;
 			normal = Vector3.ProjectOnPlane(normal, right);
 			float num = Vector3.Angle(normal, Vector3.up);
 			Vector3 angularVelocity = rigidBody.angularVelocity;
-			float num2 = ((Vector3)(ref angularVelocity)).magnitude * 57.29578f * manyWheelStabD / manyWheelStabP;
+			float num2 = angularVelocity.magnitude * 57.29578f * manyWheelStabD / manyWheelStabP;
 			if (num <= 45f)
 			{
 				Vector3 val2 = Vector3.Cross(Quaternion.AngleAxis(num2, rigidBody.angularVelocity) * ((Component)this).transform.up, normal) * manyWheelStabP * manyWheelStabP;
@@ -813,7 +813,17 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 		}
 		else
 		{
-			ThrottleInput = (flag ? 1f : (flag2 ? (-1f) : 0f));
+			Bike bike = this;
+			float throttleInput;
+			if (flag)
+			{
+				throttleInput = 1f;
+			}
+			else
+			{
+				throttleInput = (flag2 ? (-1f) : 0f);
+			}
+			bike.ThrottleInput = throttleInput;
 		}
 		SprintInput = inputState.IsDown(BUTTON.SPRINT);
 		DuckInput = inputState.IsDown(BUTTON.DUCK);
@@ -1029,9 +1039,9 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	{
 		if (HasDriver())
 		{
-			byte num = (byte)((ThrottleInput + 1f) * 7f);
-			byte b = (byte)(BrakeInput * 15f);
-			byte throttleAndBrake = (byte)(num + (b << 4));
+			byte b = (byte)((ThrottleInput + 1f) * 7f);
+			byte b2 = (byte)(BrakeInput * 15f);
+			byte throttleAndBrake = (byte)(b + (b2 << 4));
 			SendClientRPC(throttleAndBrake);
 		}
 	}
@@ -1154,13 +1164,13 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public float GetPerformanceFraction()
 	{
-		float num = Mathf.InverseLerp(0.25f, 0.5f, base.healthFraction);
+		float num = Mathf.InverseLerp(0.25f, 0.5f, healthFraction);
 		return Mathf.Lerp(0.5f, 1f, num);
 	}
 
 	public float GetFuelFraction()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return Mathf.Clamp01((float)engineController.FuelSystem.GetFuelAmount() / 100f);
 		}
@@ -1190,7 +1200,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 		{
 			return base.CreateFuelSystem();
 		}
-		return new HumanFuelSystem(base.isServer, this, percentFood);
+		return new HumanFuelSystem(isServer, this, percentFood);
 	}
 
 	private bool CanPlayerSeeMountPoint(BasePlayer player)
@@ -1213,45 +1223,13 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	{
 		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		engineKW = 59;
-		idleFuelPerSec = 0.03f;
-		maxFuelPerSec = 0.15f;
-		pitchStabP = 0.01f;
-		pitchStabD = 0.005f;
-		twoWheelRollStabP = 100f;
-		twoWheelRollStabD = 10f;
-		manyWheelStabP = 40f;
-		manyWheelStabD = 10f;
-		airControlTorquePower = 0.04f;
-		sprintTime = 5f;
-		sprintRegenTime = 10f;
-		sprintBoostPercent = 0.3f;
-		hurtTriggerMinSpeed = 1f;
-		maxLeanSpeed = 20f;
-		leftMaxLean = 60f;
-		rightMaxLean = 60f;
-		midairRotationForce = 1f;
-		customInertiaTensor = new Vector3(85f, 60f, 40f);
-		percentFood = 0.5f;
-		playerDamageThreshold = 40f;
-		playerDeathThreshold = 75f;
-		_mass = -1f;
-		base._002Ector();
 	}
 
 	static Bike()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		sprintPhrase = new Phrase("sprint", "Sprint");
-		boostPhrase = new Phrase("boost", "Boost");
-		outsideDecayMinutes = 1440f;
-		pedalRoadsidePopulation = 1f;
-		pedalMonumentPopulation = 1f;
-		motorbikeMonumentPopulation = 1f;
-		doPlayerDamage = true;
-		playerDamageRagdollTheshold = 10f;
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

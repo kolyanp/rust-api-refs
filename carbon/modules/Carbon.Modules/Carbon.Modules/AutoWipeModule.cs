@@ -52,8 +52,9 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 			other.Type = Type;
 		}
 
-		public unsafe void InitWorld(List<WipeMap> maps, long lastWipe)
+		public void InitWorld(List<WipeMap> maps, long lastWipe)
 		{
+			//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
 			//IL_012c: Unknown result type (might be due to invalid IL or missing references)
 			Community.Runtime.Core.CustomMapName = (string.IsNullOrEmpty(MapBrowserName) ? "-1" : MapBrowserName);
 			if (MapUrl == "POOL")
@@ -77,16 +78,15 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 				ServerSeed = Random.Range(1, int.MaxValue);
 			}
 			World.InitSeed(Server.seed = ServerSeed);
-			StringTable val = default(StringTable);
-			((StringTable)(ref val))._002Ector(new string[4] { "wipe_name", "seed", "size", "url" });
+			StringTable val = new StringTable(new string[4] { "wipe_name", "seed", "size", "url" });
 			try
 			{
-				((StringTable)(ref val)).AddRow(new object[4] { WipeName, ServerSeed, MapSize, MapUrl });
-				Logger.Warn((object)((StringTable)(ref val)).Write((FormatTypes)0));
+				val.AddRow(new object[4] { WipeName, ServerSeed, MapSize, MapUrl });
+				Logger.Warn((object)val.Write((FormatTypes)0));
 			}
 			finally
 			{
-				((IDisposable)(*(StringTable*)(&val))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
 
@@ -237,7 +237,7 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 					if (!string.IsNullOrEmpty(text))
 					{
 						Option server = Option.Server;
-						ConsoleSystem.Run(((Option)(ref server)).Quiet(), text, Array.Empty<object>());
+						ConsoleSystem.Run(server.Quiet(), text, Array.Empty<object>());
 					}
 				}
 			}
@@ -438,7 +438,7 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 				if (!string.IsNullOrEmpty(text))
 				{
 					Option server = Option.Server;
-					ConsoleSystem.Run(((Option)(ref server)).Quiet(), text, Array.Empty<object>());
+					ConsoleSystem.Run(server.Quiet(), text, Array.Empty<object>());
 				}
 			}
 		}
@@ -471,17 +471,17 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 
 	[ConsoleCommand("autowipe.wipes", "Prints all available wipes present in the Wipes config property.")]
 	[AuthLevel(2)]
-	private unsafe void print_wipes(Arg arg)
+	private void print_wipes(Arg arg)
 	{
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
-		StringTable val = default(StringTable);
-		((StringTable)(ref val))._002Ector(new string[9] { "#", "wipe name", "mapurl", "mapsize", "serverseed", "type", "temp", "nextwipe", "wipecommands" });
+		StringTable val = new StringTable(new string[9] { "#", "wipe name", "mapurl", "mapsize", "serverseed", "type", "temp", "nextwipe", "wipecommands" });
 		try
 		{
 			for (int i = 0; i < base.ConfigInstance.AvailableWipes.Count; i++)
 			{
 				Wipe wipe = base.ConfigInstance.AvailableWipes[i];
-				object[] obj = new object[9]
+				object[] array = new object[9]
 				{
 					i + 1,
 					wipe.WipeName,
@@ -494,14 +494,14 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 					null
 				};
 				string[] commands = wipe.Commands;
-				obj[8] = ((commands != null) ? StringArrayEx.ToString((IEnumerable<string>)commands, "->", (string)null) : null);
-				((StringTable)(ref val)).AddRow(obj);
+				array[8] = ((commands != null) ? StringArrayEx.ToString((IEnumerable<string>)commands, "->", (string)null) : null);
+				val.AddRow(array);
 			}
-			arg.ReplyWith(((StringTable)(ref val)).ToStringMinimal());
+			arg.ReplyWith(val.ToStringMinimal());
 		}
 		finally
 		{
-			((IDisposable)(*(StringTable*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 
@@ -552,28 +552,28 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 
 	[ConsoleCommand("autowipe.maps", "Prints all available map urls present in the MapPool config property.")]
 	[AuthLevel(2)]
-	private unsafe void print_maps(Arg arg)
+	private void print_maps(Arg arg)
 	{
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		StringTable val = default(StringTable);
-		((StringTable)(ref val))._002Ector(new string[3] { "", "map url", "temporary" });
+		StringTable val = new StringTable(new string[3] { "", "map url", "temporary" });
 		try
 		{
 			for (int i = 0; i < base.ConfigInstance.Maps.Count; i++)
 			{
 				WipeMap wipeMap = base.ConfigInstance.Maps[i];
-				((StringTable)(ref val)).AddRow(new object[3]
+				val.AddRow(new object[3]
 				{
 					i + 1,
 					wipeMap.Url,
 					wipeMap.Temp ? "temp" : "standard"
 				});
 			}
-			arg.ReplyWith(((StringTable)(ref val)).ToStringMinimal());
+			arg.ReplyWith(val.ToStringMinimal());
 		}
 		finally
 		{
-			((IDisposable)(*(StringTable*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 

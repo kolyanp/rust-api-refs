@@ -10,7 +10,7 @@ public class Trans_HasTarget : FSMTransitionBase
 		using (TimeWarning.New("Trans_HasTarget"))
 		{
 			BaseEntity target;
-			return base.Senses.FindTarget(out target);
+			return Senses.FindTarget(out target);
 		}
 	}
 }

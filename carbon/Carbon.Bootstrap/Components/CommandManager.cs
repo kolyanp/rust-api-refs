@@ -159,7 +159,7 @@ public sealed class CommandManager : CarbonBehaviour, ICommandManager
 		try
 		{
 			command.Callback?.Invoke(args);
-			if (!args.PrintOutput && args.IsRCon && !string.IsNullOrEmpty(args.Reply) && args.Tokenize<Arg>(out var value) && ((Option)(ref value.Option)).RconConnectionId != 0)
+			if (!args.PrintOutput && args.IsRCon && !string.IsNullOrEmpty(args.Reply) && args.Tokenize<Arg>(out var value) && value.Option.RconConnectionId != 0)
 			{
 				RCon.OnMessage(args.Reply, string.Empty, (LogType)3);
 			}
@@ -221,7 +221,7 @@ public sealed class CommandManager : CarbonBehaviour, ICommandManager
 		catch (Exception arg3)
 		{
 			bool flag = false;
-			if (!args.PrintOutput && args.IsRCon && args.Tokenize<Arg>(out var value4) && ((Option)(ref value4.Option)).RconConnectionId != 0)
+			if (!args.PrintOutput && args.IsRCon && args.Tokenize<Arg>(out var value4) && value4.Option.RconConnectionId != 0)
 			{
 				RCon.OnMessage($"Failed executing command '{command}': {arg3}", string.Empty, (LogType)3);
 				flag = true;

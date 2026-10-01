@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -20,24 +21,24 @@ public class MountedWeapon : StorageContainer
 	}
 
 	[ServerVar]
-	public static int antihack_level;
+	public static int antihack_level = 0;
 
 	[ServerVar]
-	public static float antihack_max_snap_degrees;
+	public static float antihack_max_snap_degrees = 35f;
 
 	[ServerVar]
-	public static float antihack_max_degrees_per_second_yaw;
+	public static float antihack_max_degrees_per_second_yaw = 720f;
 
 	[ServerVar]
-	public static float antihack_max_degrees_per_second_pitch;
+	public static float antihack_max_degrees_per_second_pitch = 720f;
 
 	[ReplicatedVar]
-	public static bool ENABLE_CLIENT_AUTHORITY;
+	public static bool ENABLE_CLIENT_AUTHORITY = true;
 
 	[ReplicatedVar]
-	public static bool DEBUG;
+	public static bool DEBUG = false;
 
-	private static readonly int Up;
+	private static readonly int Up = Animator.StringToHash("up");
 
 	[Header("Mounted Weapon")]
 	[SerializeField]
@@ -55,8 +56,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[SerializeField]
 	[ItemSelector]
+	[SerializeField]
 	private ItemDefinition _ammoItem;
 
 	[SerializeField]
@@ -81,15 +82,15 @@ public class MountedWeapon : StorageContainer
 	[ItemSelector]
 	public ItemDefinition AmmoDef;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Second Weapon")]
+	[SerializeField]
 	private ItemDefinition _weapon2;
 
 	[SerializeField]
 	private Transform _attachPoint2;
 
-	[Header("Mounted Weapon - Player General Animation")]
 	[SerializeField]
+	[Header("Mounted Weapon - Player General Animation")]
 	private int _turretAnimationType;
 
 	[SerializeField]
@@ -162,9 +163,9 @@ public class MountedWeapon : StorageContainer
 
 	public const Flags Flag_Lights = Flags.Reserved5;
 
-	private static readonly Phrase _ammoPhrase;
+	private static readonly Phrase _ammoPhrase = new Phrase("mountedweapon.reload.tip", "You need regular 5.56 ammo in your inventory to reload.");
 
-	private static readonly Phrase _ammoFullPhrase;
+	private static readonly Phrase _ammoFullPhrase = new Phrase("mountedweapon.reload.full.tip", "Can't reload. Ammo is already full!");
 
 	private Vector3 _defaultEyePosition;
 
@@ -469,7 +470,7 @@ public class MountedWeapon : StorageContainer
 		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		if (DEBUG && base.isServer)
+		if (DEBUG && isServer)
 		{
 			Vector3 val = ((Component)this).transform.position + Vector3.up * 3.5f;
 			UnityEngine.DDraw.BroadcastText(val, "SERVER\n" + $"WorldYaw:   {_worldYaw:F1}\n" + $"WorldPitch: {_worldPitch:F1}\n" + $"TargetYaw:  {_targetWorldYaw:F1}\n" + $"TargetPitch:{_targetWorldPitch:F1}", Color.yellow, 0f);
@@ -542,7 +543,7 @@ public class MountedWeapon : StorageContainer
 				float num = _walkAroundDistance;
 				Vector2 pitchClamp = _seat.GetPitchClamp();
 				float num2 = 0f;
-				if (base.isServer)
+				if (isServer)
 				{
 					num2 = _worldPitch;
 				}
@@ -563,7 +564,7 @@ public class MountedWeapon : StorageContainer
 		{
 			num5 = 110f;
 		}
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -601,7 +602,7 @@ public class MountedWeapon : StorageContainer
 		{
 			return;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			UpdateClient(force: true);
 			if (info.msg.mountedWeapon != null)
@@ -642,7 +643,7 @@ public class MountedWeapon : StorageContainer
 		_targetWorldPitch = worldPitch;
 		if (set)
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				_worldYaw = worldYaw;
 				_worldPitch = worldPitch;
@@ -659,7 +660,7 @@ public class MountedWeapon : StorageContainer
 		}
 		Transform transform = ((Component)this).transform;
 		Quaternion rotation = ((Component)this).transform.rotation;
-		transform.rotation = Quaternion.Euler(0f, ((Quaternion)(ref rotation)).eulerAngles.y, 0f);
+		transform.rotation = Quaternion.Euler(0f, rotation.eulerAngles.y, 0f);
 	}
 
 	private void GetZeroInWorldAngles(out float worldYaw, out float worldPitch)
@@ -719,7 +720,7 @@ public class MountedWeapon : StorageContainer
 
 	private HeldEntity GetWeaponEntity()
 	{
-		HeldEntity heldEntity = _attachedEntity.Get(base.isServer);
+		HeldEntity heldEntity = _attachedEntity.Get(isServer);
 		if (heldEntity.IsValid())
 		{
 			return heldEntity;
@@ -729,7 +730,7 @@ public class MountedWeapon : StorageContainer
 
 	private HeldEntity GetWeaponEntity2()
 	{
-		HeldEntity heldEntity = _attachedEntity2.Get(base.isServer);
+		HeldEntity heldEntity = _attachedEntity2.Get(isServer);
 		if (heldEntity.IsValid())
 		{
 			return heldEntity;
@@ -754,7 +755,7 @@ public class MountedWeapon : StorageContainer
 		float num = (_flipPitch ? (-1f) : 1f);
 		Vector3 val = Quaternion.Euler((0f - turretPitch) * num, turretYaw, 0f) * Vector3.forward;
 		Vector3 val2 = ((Component)this).transform.TransformDirection(val);
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		worldYaw = Mathf.Atan2(normalized.x, normalized.z) * 57.29578f;
 		worldPitch = (0f - Mathf.Asin(normalized.y)) * 57.29578f;
 	}
@@ -784,10 +785,10 @@ public class MountedWeapon : StorageContainer
 		Vector3 val = Quaternion.Euler(new Vector3(worldPitch, worldYaw, 0f)) * Vector3.forward;
 		Transform transform = ((Component)this).transform;
 		Quaternion val2 = ((Component)this).transform.rotation;
-		transform.rotation = Quaternion.Euler(0f, ((Quaternion)(ref val2)).eulerAngles.y, 0f);
+		transform.rotation = Quaternion.Euler(0f, val2.eulerAngles.y, 0f);
 		Vector3 val3 = ((Component)this).transform.InverseTransformDirection(val);
-		val2 = Quaternion.LookRotation(((Vector3)(ref val3)).normalized, ((Component)this).transform.up);
-		Vector3 eulerAngles = ((Quaternion)(ref val2)).eulerAngles;
+		val2 = Quaternion.LookRotation(val3.normalized, ((Component)this).transform.up);
+		Vector3 eulerAngles = val2.eulerAngles;
 		turretYaw = eulerAngles.y;
 		turretPitch = (0f - eulerAngles.x) * (_flipPitch ? (-1f) : 1f);
 		turretYaw = NormalizeAngle(turretYaw);
@@ -799,7 +800,7 @@ public class MountedWeapon : StorageContainer
 		float num = 25f;
 		WorldAngleToTurretAngle(_worldYaw, _worldPitch, out var turretYaw, out var _);
 		TurretAngleToWorldAngle(turretYaw, 0f, out var worldYaw, out var worldPitch);
-		if (base.isServer)
+		if (isServer)
 		{
 			_worldYaw = Mathf.MoveTowardsAngle(_worldYaw, worldYaw, Time.deltaTime * num);
 			_worldPitch = Mathf.MoveTowardsAngle(_worldPitch, worldPitch, Time.deltaTime * num);
@@ -842,7 +843,7 @@ public class MountedWeapon : StorageContainer
 		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
 		float num = 1.5f;
 		bool flag = false;
-		if (base.isServer)
+		if (isServer)
 		{
 			flag = HasServerAuthority && !asClient;
 		}
@@ -876,9 +877,9 @@ public class MountedWeapon : StorageContainer
 		}
 		else
 		{
-			Quaternion val = Quaternion.LookRotation(Ballistics.GetBulletHitPoint(new Ray(player.eyes.position + player.eyes.HeadForward() * 0.5f, player.eyes.HeadForward()), (BaseEntity)this) - ((Component)this).transform.position);
+			Quaternion val = Quaternion.LookRotation(Ballistics.GetBulletHitPoint(new Ray(player.eyes.position + player.eyes.HeadForward() * 0.5f, player.eyes.HeadForward()), this) - ((Component)this).transform.position);
 			Quaternion.Euler(currentPitch, currentYaw, 0f);
-			Vector3 eulerAngles = ((Quaternion)(ref val)).eulerAngles;
+			Vector3 eulerAngles = val.eulerAngles;
 			float y = eulerAngles.y;
 			float x = eulerAngles.x;
 			WorldAngleToTurretAngle(y, x, out var turretYaw2, out var turretPitch2);
@@ -897,7 +898,7 @@ public class MountedWeapon : StorageContainer
 				flag2 = true;
 			}
 		}
-		if (flag2 && !base.isClient)
+		if (flag2 && !isClient)
 		{
 			UpdateClient();
 		}
@@ -911,9 +912,9 @@ public class MountedWeapon : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
-		Invoke(delegate
+		Invoke(() =>
 		{
 			UpdateAttachedWeapon(_weapon, _attachPoint);
 			if (HasSecondWeapon)
@@ -927,7 +928,7 @@ public class MountedWeapon : StorageContainer
 		_worldYaw = worldYaw;
 		_worldPitch = worldPitch;
 		SetTargetAngles(_worldYaw, _worldPitch);
-		Invoke(delegate
+		Invoke(() =>
 		{
 			UpdateClient(force: true);
 		}, 1f);
@@ -1212,7 +1213,7 @@ public class MountedWeapon : StorageContainer
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		Snapshot = new ServersideMountedWeaponSnapshot
 		{
 			time = Time.realtimeSinceStartup - _startTime,
@@ -1304,7 +1305,7 @@ public class MountedWeapon : StorageContainer
 		if (HasSecondWeapon)
 		{
 			Vector3 val = (_attachPoint.position + _attachPoint2.position) / 2f + attachPoint.forward * 10f - attachPoint.position;
-			Quaternion val2 = Quaternion.LookRotation(((Vector3)(ref val)).normalized, ((Component)this).transform.up);
+			Quaternion val2 = Quaternion.LookRotation(val.normalized, ((Component)this).transform.up);
 			((Component)heldEntity).transform.localRotation = Quaternion.Inverse(attachPoint.rotation) * val2;
 		}
 		bool flag = (Object)(object)heldEntity != (Object)null;
@@ -1403,9 +1404,9 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(100uL)]
+	[RPC_Server]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
@@ -1486,7 +1487,7 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
@@ -1506,7 +1507,7 @@ public class MountedWeapon : StorageContainer
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: Snapshot for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: Snapshot for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			using (TimeWarning.New("Objects"))
 			{
@@ -1521,7 +1522,7 @@ public class MountedWeapon : StorageContainer
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: GunId for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: GunId for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<NetworkableId>(writer, __sync_GunId);
 			return true;
@@ -1529,7 +1530,7 @@ public class MountedWeapon : StorageContainer
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: Gun2Id for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: Gun2Id for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<NetworkableId>(writer, __sync_Gun2Id);
 			return true;
@@ -1537,7 +1538,7 @@ public class MountedWeapon : StorageContainer
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: IsReloading for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: IsReloading for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_IsReloading);
 			return true;
@@ -1545,7 +1546,7 @@ public class MountedWeapon : StorageContainer
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: IsEmpty for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: IsEmpty for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_IsEmpty);
 			return true;
@@ -1645,11 +1646,11 @@ public class MountedWeapon : StorageContainer
 	{
 		return propertyName switch
 		{
-			"Snapshot" => 0, 
-			"GunId" => 1, 
-			"Gun2Id" => 2, 
-			"IsReloading" => 3, 
-			"IsEmpty" => 4, 
+			"Snapshot" => (byte)0, 
+			"GunId" => (byte)1, 
+			"Gun2Id" => (byte)2, 
+			"IsReloading" => (byte)3, 
+			"IsEmpty" => (byte)4, 
 			_ => byte.MaxValue, 
 		};
 	}
@@ -1674,18 +1675,34 @@ public class MountedWeapon : StorageContainer
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -1708,8 +1725,8 @@ public class MountedWeapon : StorageContainer
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		base.ResetSyncVars();
 		__sync_Snapshot = null;
-		__sync_GunId = default(NetworkableId);
-		__sync_Gun2Id = default(NetworkableId);
+		__sync_GunId = default;
+		__sync_Gun2Id = default;
 		__sync_IsReloading = false;
 		__sync_IsEmpty = false;
 	}
@@ -1730,17 +1747,8 @@ public class MountedWeapon : StorageContainer
 	static MountedWeapon()
 	{
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Expected O, but got Unknown
+		//IL_0053: Expected Obj, but got Unknown
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Expected O, but got Unknown
-		antihack_level = 0;
-		antihack_max_snap_degrees = 35f;
-		antihack_max_degrees_per_second_yaw = 720f;
-		antihack_max_degrees_per_second_pitch = 720f;
-		ENABLE_CLIENT_AUTHORITY = true;
-		DEBUG = false;
-		Up = Animator.StringToHash("up");
-		_ammoPhrase = new Phrase("mountedweapon.reload.tip", "You need regular 5.56 ammo in your inventory to reload.");
-		_ammoFullPhrase = new Phrase("mountedweapon.reload.full.tip", "Can't reload. Ammo is already full!");
+		//IL_0067: Expected Obj, but got Unknown
 	}
 }

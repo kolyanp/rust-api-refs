@@ -28,9 +28,9 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 	}
 
 	[Header("Settings")]
-	public float moveSpeed;
+	public float moveSpeed = 2f;
 
-	public float stopThreshold;
+	public float stopThreshold = 0.2f;
 
 	[Header("Animation")]
 	public float ReductionAmount;
@@ -45,9 +45,9 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 
 	public ParticleSystemForceField AngerForceField;
 
-	private Vector3 pastPosition;
+	private Vector3 pastPosition = Vector3.one;
 
-	private Vector3 velocity;
+	private Vector3 velocity = Vector3.zero;
 
 	public const Flags IsAngry = Flags.Reserved12;
 
@@ -90,7 +90,7 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 
 	private TimeSince timeSinceEgress;
 
-	private Vector3 egressDirection;
+	private Vector3 egressDirection = Vector3.one;
 
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
@@ -114,7 +114,7 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 	public override void OnAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
@@ -133,7 +133,7 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 			flagsUpdateScope.Set(Flags.Reserved12, b: true);
 		}
 		timeSinceHadTarget = TimeSince.op_Implicit(0f);
-		InvokeRandomized(delegate
+		InvokeRandomized(() =>
 		{
 			((ObjectWorkQueue<BeeSwarmAI>)updateBeeSwarmThink).Add(this);
 		}, 0f, 1f, 0.05f);
@@ -360,15 +360,15 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 		{
 			float num = 5f;
 			Vector3 val = ((Component)this).transform.position - firePosition;
-			if (((Vector3)(ref val)).magnitude < num)
+			if (val.magnitude < num)
 			{
-				((Vector3)(ref val)).Normalize();
+				val.Normalize();
 				Transform transform = ((Component)this).transform;
 				transform.position += val * moveSpeed * Time.deltaTime;
 				return;
 			}
 		}
-		if (!(Mathf.Abs(((Vector3)(ref localTarget)).magnitude) <= stopThreshold))
+		if (!(Mathf.Abs(localTarget.magnitude) <= stopThreshold))
 		{
 			SteerToTarget(localTarget);
 		}
@@ -394,7 +394,7 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 		float num = Mathf.Clamp(localTarget.y, -1f, 1f);
 		float num2 = Mathf.Clamp(localTarget.x, -1f, 1f);
 		Vector3 val = ((Component)this).transform.forward + ((Component)this).transform.right * num2 + ((Component)this).transform.up * num;
-		((Vector3)(ref val)).Normalize();
+		val.Normalize();
 		Transform transform = ((Component)this).transform;
 		transform.position += val * moveSpeed * Time.deltaTime;
 	}
@@ -455,7 +455,7 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 					if (GamePhysics.LineOfSight(transform.position, p, 1218519041))
 					{
 						Vector3 val2 = ((Component)item).transform.position - transform.position;
-						float sqrMagnitude = ((Vector3)(ref val2)).sqrMagnitude;
+						float sqrMagnitude = val2.sqrMagnitude;
 						if (sqrMagnitude < num)
 						{
 							num = sqrMagnitude;
@@ -511,12 +511,12 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 
 	public int DoSplash(ItemDefinition splashType, int amount)
 	{
-		float num = base.health - 10f;
+		float num = health - 10f;
 		if (num > 0f)
 		{
 			Hurt(num);
 		}
-		if (base.health <= 10f)
+		if (health <= 10f)
 		{
 			StartDie();
 		}
@@ -531,11 +531,5 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		moveSpeed = 2f;
-		stopThreshold = 0.2f;
-		pastPosition = Vector3.one;
-		velocity = Vector3.zero;
-		egressDirection = Vector3.one;
-		base._002Ector();
 	}
 }

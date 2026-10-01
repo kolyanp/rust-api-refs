@@ -26,7 +26,7 @@ public struct EncryptedValue<TInner> where TInner : unmanaged
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static implicit operator EncryptedValue<TInner>(TInner value)
 	{
-		EncryptedValue<TInner> result = default(EncryptedValue<TInner>);
+		EncryptedValue<TInner> result = default;
 		result.Set(value);
 		return result;
 	}

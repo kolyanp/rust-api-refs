@@ -52,7 +52,7 @@ public static class PlayerNetworkingProfiler
 		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014a: Unknown result type (might be due to invalid IL or missing references)
 		int num = Math.Min(((Network.Server)(object)server).connections.Count, currentIndex + ConnectionsPerFrame);
-		RaknetStats val = default(RaknetStats);
+		RaknetStats val = default;
 		while (currentIndex < num)
 		{
 			Connection connection = ((Network.Server)(object)server).connections[currentIndex];

@@ -27,14 +27,14 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	public WaterCatcherCollectRate collectionRates;
 
-	public float maxItemToCreate;
+	public float maxItemToCreate = 10f;
 
 	[Header("Outside Test")]
-	public bool requireOutside;
+	public bool requireOutside = true;
 
-	public Vector3 rainTestPosition;
+	public Vector3 rainTestPosition = new Vector3(0f, 1f, 0f);
 
-	public float rainTestSize;
+	public float rainTestSize = 1f;
 
 	protected const float collectInterval = 60f;
 
@@ -60,7 +60,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 	[Header("Conditional Spawning Sounds")]
 	public GameObject soundEmitterObject;
 
-	public bool doConditionalSounds;
+	public bool doConditionalSounds = true;
 
 	public SoundDefinition startProductionSound;
 
@@ -84,7 +84,14 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 	[ServerVar(Help = "Debug flag to force enable conditional spawning for all water catchers, regardless of their individual settings.")]
 	public static bool ForceEnableConditionalSpawning = false;
 
+	[ServerVar(Saved = true, Help = "How long in seconds an oil pump runs after its oil switch is activated before it starts producing crude.")]
+	public static float OilProductionStartDelay = 900f;
+
 	private float currentOilRigMultiplier;
+
+	private TimeUntil oilProductionWarmUp;
+
+	private float savedOilProductionWarmUp = -1f;
 
 	private Action clearWaterMovedFlag;
 
@@ -151,7 +158,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		}
 		float num = ((overrideCollectInterval > 0f) ? overrideCollectInterval : 60f);
 		nextCollect = TimeUntil.op_Implicit(num + Random.Range(0f, num * 0.1f));
-		if (base.inventory == null || IsFull() || Interface.CallHook("OnWaterCollect", this) != null)
+		if (inventory == null || IsFull() || Interface.CallHook("OnWaterCollect", this) != null)
 		{
 			return;
 		}
@@ -171,11 +178,11 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	protected bool IsFull()
 	{
-		if (base.inventory.itemList.Count == 0)
+		if (inventory.itemList.Count == 0)
 		{
 			return false;
 		}
-		if (base.inventory.itemList[0].amount < base.inventory.maxStackSize)
+		if (inventory.itemList[0].amount < inventory.maxStackSize)
 		{
 			return false;
 		}
@@ -184,11 +191,11 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	protected bool hasResource()
 	{
-		if (base.inventory.itemList.Count == 0)
+		if (inventory.itemList.Count == 0)
 		{
 			return false;
 		}
-		return base.inventory.itemList[0].amount > 0;
+		return inventory.itemList[0].amount > 0;
 	}
 
 	public static bool TestIsOutside(Transform t, Vector3 testPositionOffset, float testSize, float testDistance)
@@ -200,17 +207,22 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		Matrix4x4 localToWorldMatrix = t.localToWorldMatrix;
-		return !Physics.SphereCast(new Ray(((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(testPositionOffset), Vector3.up), testSize, testDistance, 161546513);
+		return !Physics.SphereCast(new Ray(localToWorldMatrix.MultiplyPoint3x4(testPositionOffset), Vector3.up), testSize, testDistance, 161546513);
 	}
 
 	protected void AddResource(int iAmount)
 	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		if (!ForceEnableConditionalSpawning && conditionalSpawning && !HasFlag(Flags.Reserved3))
 		{
 			return;
 		}
 		if (requireOilSwitchActive)
 		{
+			if (TimeUntil.op_Implicit(oilProductionWarmUp) > 0f)
+			{
+				return;
+			}
 			iAmount = Mathf.RoundToInt((float)iAmount * currentOilRigMultiplier);
 		}
 		if (outputs.Length != 0)
@@ -234,7 +246,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 					liquidContainer.inventory.AddItem(itemToCreate, num, 0uL, limitStack);
 					if (lockInventory)
 					{
-						base.inventory.GetSlot(0)?.LockUnlock(bNewState: true);
+						inventory.GetSlot(0)?.LockUnlock(bNewState: true);
 					}
 					return;
 				}
@@ -243,7 +255,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		ItemContainer.LimitStack limitStack2 = ItemContainer.LimitStack.Existing;
 		if ((Object)(object)itemToCreate == (Object)(object)LiquidContainerCrude.CrudeItem)
 		{
-			Item slot = base.inventory.GetSlot(0);
+			Item slot = inventory.GetSlot(0);
 			if (slot != null && (Object)(object)slot.info == (Object)(object)LiquidContainerCrude.CrudeItem)
 			{
 				limitStack2 = ItemContainer.LimitStack.None;
@@ -259,10 +271,10 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 				return;
 			}
 		}
-		base.inventory.AddItem(itemToCreate, iAmount, 0uL, limitStack2);
+		inventory.AddItem(itemToCreate, iAmount, 0uL, limitStack2);
 		if (lockInventory)
 		{
-			base.inventory.GetSlot(0)?.LockUnlock(bNewState: true);
+			inventory.GetSlot(0)?.LockUnlock(bNewState: true);
 		}
 		UpdateOnFlag();
 	}
@@ -350,7 +362,15 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	public void OnOilSwitchToggled(float newValue)
 	{
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = currentOilRigMultiplier > 0f;
 		currentOilRigMultiplier = newValue;
+		if (newValue > 0f && !flag)
+		{
+			oilProductionWarmUp = TimeUntil.op_Implicit((savedOilProductionWarmUp >= 0f) ? savedOilProductionWarmUp : OilProductionStartDelay);
+			savedOilProductionWarmUp = -1f;
+		}
 		ToggleProducing(newValue > 0f);
 	}
 
@@ -389,15 +409,29 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		}
 	}
 
+	public override void Save(SaveInfo info)
+	{
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		base.Save(info);
+		if (info.forDisk && requireOilSwitchActive)
+		{
+			float num = TimeUntil.op_Implicit(oilProductionWarmUp);
+			info.msg.ioEntity.genericFloat1 = ((currentOilRigMultiplier > 0f) ? Mathf.Max(0f, num) : savedOilProductionWarmUp);
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.fromDisk && requireOilSwitchActive && info.msg.ioEntity != null)
+		{
+			savedOilProductionWarmUp = info.msg.ioEntity.genericFloat1;
+		}
+	}
+
 	public WaterCatcher()
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		maxItemToCreate = 10f;
-		requireOutside = true;
-		rainTestPosition = new Vector3(0f, 1f, 0f);
-		rainTestSize = 1f;
-		doConditionalSounds = true;
-		base._002Ector();
 	}
 }

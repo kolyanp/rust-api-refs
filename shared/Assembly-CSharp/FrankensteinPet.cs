@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 {
-	[ServerVar(Help = "How long before a Frankenstein Pet dies un controlled and not asleep on table")]
 	[Header("Frankenstein")]
+	[ServerVar(Help = "How long before a Frankenstein Pet dies un controlled and not asleep on table")]
 	public static float decayminutes = 180f;
 
 	[Header("Audio")]
@@ -33,7 +33,7 @@ public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			InvokeRandomized(TickDecay, Random.Range(30f, 60f), 60f, 6f);
 		}
@@ -42,17 +42,17 @@ public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 	public IEnumerator DelayEquipWeapon(ItemDefinition item, float delay)
 	{
 		yield return (object)new WaitForSeconds(delay);
-		if (!((Object)(object)base.inventory == (Object)null) && base.inventory.containerBelt != null && !((Object)(object)item == (Object)null))
+		if (!((Object)(object)inventory == (Object)null) && inventory.containerBelt != null && !((Object)(object)item == (Object)null))
 		{
-			base.inventory.GiveItem(ItemManager.Create(item, 1, 0uL, isServerSide: true, 0uL), base.inventory.containerBelt);
+			inventory.GiveItem(ItemManager.Create(item, 1, 0uL, isServerSide: true, 0uL), inventory.containerBelt);
 			EquipWeapon();
 		}
 	}
 
 	private void TickDecay()
 	{
-		BasePlayer basePlayer = BasePlayer.FindByID(base.OwnerID);
-		if ((!((Object)(object)basePlayer != (Object)null) || basePlayer.IsSleeping()) && !(base.healthFraction <= 0f) && !base.IsDestroyed)
+		BasePlayer basePlayer = BasePlayer.FindByID(OwnerID);
+		if ((!((Object)(object)basePlayer != (Object)null) || basePlayer.IsSleeping()) && !(healthFraction <= 0f) && !IsDestroyed)
 		{
 			float num = 1f / decayminutes;
 			float amount = MaxHealth() * num;
@@ -65,9 +65,9 @@ public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 		AttackEntity attackEntity = GetAttackEntity();
 		if (Object.op_Implicit((Object)(object)attackEntity))
 		{
-			return attackEntity.effectiveRange * (attackEntity.aiOnlyInRange ? 1f : 2f) * base.Brain.AttackRangeMultiplier;
+			return attackEntity.effectiveRange * (attackEntity.aiOnlyInRange ? 1f : 2f) * Brain.AttackRangeMultiplier;
 		}
-		return base.Brain.SenseRange;
+		return Brain.SenseRange;
 	}
 
 	public bool IsThreat(BaseEntity entity)
@@ -183,9 +183,9 @@ public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 		if (!((Object)(object)target == (Object)null))
 		{
 			Vector3 val = target.ServerPosition - ServerPosition;
-			if (((Vector3)(ref val)).magnitude > 0.001f)
+			if (val.magnitude > 0.001f)
 			{
-				ServerRotation = Quaternion.LookRotation(((Vector3)(ref val)).normalized);
+				ServerRotation = Quaternion.LookRotation(val.normalized);
 			}
 			target.Hurt(BaseAttackDamge, AttackDamageType, this);
 			SignalBroadcast(Signal.Attack);

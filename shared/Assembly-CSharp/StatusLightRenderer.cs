@@ -21,7 +21,7 @@ public class StatusLightRenderer : MonoBehaviour, IClientComponent
 	protected void Awake()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		propertyBlock = new MaterialPropertyBlock();
 		targetRenderer = ((Component)this).GetComponent<Renderer>();
 		targetLight = ((Component)this).GetComponent<Light>();

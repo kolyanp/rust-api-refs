@@ -21,5 +21,5 @@ public class ClientIOLine : BaseMonoBehaviour, INotifyLOD
 
 	public float[] slackLevels = new float[18];
 
-	public Vector3[] originalPositions = (Vector3[])(object)new Vector3[18];
+	public Vector3[] originalPositions = new Vector3[18];
 }

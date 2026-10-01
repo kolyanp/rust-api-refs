@@ -85,7 +85,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 
 	private float speedAngle;
 
-	private bool wasSleeping;
+	private bool wasSleeping = true;
 
 	private bool hasDriver;
 
@@ -93,7 +93,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 
 	private float steerLerpSpeed;
 
-	public float lastMovingTime;
+	public float lastMovingTime = float.MinValue;
 
 	private WheelFrictionCurve zeroFriction;
 
@@ -153,10 +153,8 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		wasSleeping = true;
-		lastMovingTime = float.MinValue;
-		WheelFrictionCurve val = default(WheelFrictionCurve);
-		((WheelFrictionCurve)(ref val)).stiffness = 0f;
+		WheelFrictionCurve val = default;
+		val.stiffness = 0f;
 		zeroFriction = val;
 		Transform transform2 = transform;
 		base._002Ector();
@@ -165,7 +163,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		this.transform = transform2;
 		this.rBody = rBody;
 		this.vehicleSettings = vehicleSettings;
-		timeSinceWaterCheck = default(TimeSince);
+		timeSinceWaterCheck = default;
 		timeSinceWaterCheck = TimeSince.op_Implicit(float.MaxValue);
 		prevLocalCOM = rBody.centerOfMass;
 		CarWheel[] wheels = car.GetWheels();
@@ -173,33 +171,33 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		for (int i = 0; i < wheelData.Length; i++)
 		{
 			wheelData[i] = AddWheel(wheels[i]);
+			ServerWheelData AddWheel(CarWheel wheel)
+			{
+				//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+				//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+				//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+				//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+				ServerWheelData serverWheelData = new ServerWheelData
+				{
+					wheelCollider = wheel.wheelCollider,
+					wheelColliderTransform = ((Component)wheel.wheelCollider).transform,
+					forceDistance = GetWheelForceDistance(wheel.wheelCollider),
+					wheel = wheel
+				};
+				serverWheelData.wheelCollider.sidewaysFriction = zeroFriction;
+				serverWheelData.wheelCollider.forwardFriction = zeroFriction;
+				Vector3 val2 = transform2.InverseTransformPoint(((Component)wheel.wheelCollider).transform.position);
+				serverWheelData.isFrontWheel = val2.z > 0f;
+				serverWheelData.isLeftWheel = val2.x < 0f;
+				return serverWheelData;
+			}
 		}
 		midWheelPos = car.GetWheelsMidPos();
 		wheelData[0].wheel.wheelCollider.ConfigureVehicleSubsteps(1000f, 1, 1);
 		lastMovingTime = Time.realtimeSinceStartup;
-		ServerWheelData AddWheel(CarWheel wheel)
-		{
-			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-			ServerWheelData obj = new ServerWheelData
-			{
-				wheelCollider = wheel.wheelCollider,
-				wheelColliderTransform = ((Component)wheel.wheelCollider).transform,
-				forceDistance = GetWheelForceDistance(wheel.wheelCollider),
-				wheel = wheel
-			};
-			obj.wheelCollider.sidewaysFriction = zeroFriction;
-			obj.wheelCollider.forwardFriction = zeroFriction;
-			Vector3 val2 = transform2.InverseTransformPoint(((Component)wheel.wheelCollider).transform.position);
-			obj.isFrontWheel = val2.z > 0f;
-			obj.isLeftWheel = val2.x < 0f;
-			return obj;
-		}
 	}
 
 	public void FixedUpdate(float dt, float speed)
@@ -252,7 +250,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 				if ((!wasSleeping || rBody.isKinematic) && !(num > 0.25f))
 				{
 					val = rBody.angularVelocity;
-					if (!(Mathf.Abs(((Vector3)(ref val)).magnitude) > 0.25f))
+					if (!(Mathf.Abs(val.magnitude) > 0.25f))
 					{
 						goto IL_011c;
 					}
@@ -392,7 +390,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 				if (!hasDriver)
 				{
 					val = rBody.linearVelocity;
-					if (((Vector3)(ref val)).magnitude < 2.5f && TimeSince.op_Implicit(car.timeSinceLastPush) > 2f)
+					if (val.magnitude < 2.5f && TimeSince.op_Implicit(car.timeSinceLastPush) > 2f)
 					{
 						num2 = ((car.OnSurface != VehicleTerrainHandler.Surface.Frictionless) ? 1 : 0);
 						goto IL_048d;
@@ -552,16 +550,16 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		wd.origin = wd.wheelColliderTransform.TransformPoint(wd.wheelCollider.center);
 		if (wd.isGrounded && GamePhysics.Trace(new Ray(wd.origin, -wd.wheelColliderTransform.up), 0f, out var hitInfo, wd.wheelCollider.suspensionDistance + wd.wheelCollider.radius, 1235321089, (QueryTriggerInteraction)1))
 		{
-			((WheelHit)(ref wd.hit)).point = ((RaycastHit)(ref hitInfo)).point;
-			((WheelHit)(ref wd.hit)).normal = ((RaycastHit)(ref hitInfo)).normal;
+			wd.hit.point = hitInfo.point;
+			wd.hit.normal = hitInfo.normal;
 		}
 		if (wd.isGrounded)
 		{
-			if (((WheelHit)(ref wd.hit)).force < 0f)
+			if (wd.hit.force < 0f)
 			{
-				((WheelHit)(ref wd.hit)).force = 0f;
+				wd.hit.force = 0f;
 			}
-			wd.downforce = ((WheelHit)(ref wd.hit)).force;
+			wd.downforce = wd.hit.force;
 		}
 		else
 		{
@@ -653,36 +651,36 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
 		if (!wd.isGrounded)
 		{
-			((WheelHit)(ref wd.hit)).point = wd.origin - wd.wheelColliderTransform.up * (wd.wheelCollider.suspensionDistance + wd.wheelCollider.radius);
-			((WheelHit)(ref wd.hit)).normal = wd.wheelColliderTransform.up;
-			((WheelHit)(ref wd.hit)).collider = null;
+			wd.hit.point = wd.origin - wd.wheelColliderTransform.up * (wd.wheelCollider.suspensionDistance + wd.wheelCollider.radius);
+			wd.hit.normal = wd.wheelColliderTransform.up;
+			wd.hit.collider = null;
 		}
-		Vector3 pointVelocity = rBody.GetPointVelocity(((WheelHit)(ref wd.hit)).point);
-		wd.velocity = pointVelocity - Vector3.Project(pointVelocity, ((WheelHit)(ref wd.hit)).normal);
-		wd.localVelocity.y = Vector3.Dot(((WheelHit)(ref wd.hit)).forwardDir, wd.velocity);
-		wd.localVelocity.x = Vector3.Dot(((WheelHit)(ref wd.hit)).sidewaysDir, wd.velocity);
+		Vector3 pointVelocity = rBody.GetPointVelocity(wd.hit.point);
+		wd.velocity = pointVelocity - Vector3.Project(pointVelocity, wd.hit.normal);
+		wd.localVelocity.y = Vector3.Dot(wd.hit.forwardDir, wd.velocity);
+		wd.localVelocity.x = Vector3.Dot(wd.hit.sidewaysDir, wd.velocity);
 		if (!wd.isGrounded)
 		{
 			wd.localRigForce = Vector2.zero;
 			return;
 		}
-		float num = Mathf.InverseLerp(1f, 0.25f, ((Vector3)(ref wd.velocity)).sqrMagnitude);
-		Vector2 val3 = default(Vector2);
+		float num = Mathf.InverseLerp(1f, 0.25f, wd.velocity.sqrMagnitude);
+		Vector2 val3 = default;
 		if (num > 0f)
 		{
-			float num2 = Vector3.Dot(Vector3.up, ((WheelHit)(ref wd.hit)).normal);
+			float num2 = Vector3.Dot(Vector3.up, wd.hit.normal);
 			Vector3 val2;
 			if (num2 > 1E-06f)
 			{
 				Vector3 val = Vector3.up * wd.downforce / num2;
-				val2 = val - Vector3.Project(val, ((WheelHit)(ref wd.hit)).normal);
+				val2 = val - Vector3.Project(val, wd.hit.normal);
 			}
 			else
 			{
 				val2 = Vector3.up * 100000f;
 			}
-			val3.y = Vector3.Dot(((WheelHit)(ref wd.hit)).forwardDir, val2);
-			val3.x = Vector3.Dot(((WheelHit)(ref wd.hit)).sidewaysDir, val2);
+			val3.y = Vector3.Dot(wd.hit.forwardDir, val2);
+			val3.x = Vector3.Dot(wd.hit.sidewaysDir, val2);
 			val3 *= num;
 		}
 		else
@@ -806,7 +804,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 			{
 				wd.tyreSlip.y = num17 * Mathf.Sign(wd.tyreSlip.y);
 			}
-			Vector2 val = (0f - num13) * ((Vector2)(ref wd.tyreSlip)).normalized;
+			Vector2 val = (0f - num13) * wd.tyreSlip.normalized;
 			val.x = Mathf.Abs(val.x) * 1.5f;
 			val.y = Mathf.Abs(val.y);
 			val.x *= wd.handbrakeGripCurrent;
@@ -943,14 +941,14 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		float magnitude = ((Vector2)(ref localVelocity)).magnitude;
+		float magnitude = localVelocity.magnitude;
 		if (magnitude > 0.01f)
 		{
 			float num = tyreSlip.x * localVelocity.x / magnitude;
 			float y = tyreSlip.y;
 			return Mathf.Sqrt(num * num + y * y);
 		}
-		return ((Vector2)(ref tyreSlip)).magnitude;
+		return tyreSlip.magnitude;
 	}
 
 	private void ApplyTyreForces(ServerWheelData wd)
@@ -970,10 +968,10 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		if (wd.isGrounded)
 		{
-			Vector3 val = ((WheelHit)(ref wd.hit)).forwardDir * wd.tyreForce.y;
-			Vector3 val2 = ((WheelHit)(ref wd.hit)).sidewaysDir * wd.tyreForce.x;
-			Vector3 sidewaysForceAppPoint = GetSidewaysForceAppPoint(wd, ((WheelHit)(ref wd.hit)).point);
-			rBody.AddForceAtPosition(val, ((WheelHit)(ref wd.hit)).point, (ForceMode)0);
+			Vector3 val = wd.hit.forwardDir * wd.tyreForce.y;
+			Vector3 val2 = wd.hit.sidewaysDir * wd.tyreForce.x;
+			Vector3 sidewaysForceAppPoint = GetSidewaysForceAppPoint(wd, wd.hit.point);
+			rBody.AddForceAtPosition(val, wd.hit.point, (ForceMode)0);
 			rBody.AddForceAtPosition(val2, sidewaysForceAppPoint, (ForceMode)0);
 		}
 	}

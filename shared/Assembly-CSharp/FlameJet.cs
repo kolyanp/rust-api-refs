@@ -22,7 +22,7 @@ public class FlameJet : MonoBehaviour
 
 	private Vector3[] lastWorldSegments;
 
-	private Vector3[] currentSegments = (Vector3[])(object)new Vector3[0];
+	private Vector3[] currentSegments = new Vector3[0];
 
 	public Color startColor;
 
@@ -42,7 +42,7 @@ public class FlameJet : MonoBehaviour
 		spacing = maxLength / (float)numSegments;
 		if (currentSegments.Length != numSegments)
 		{
-			currentSegments = (Vector3[])(object)new Vector3[numSegments];
+			currentSegments = new Vector3[numSegments];
 		}
 	}
 
@@ -77,6 +77,7 @@ public class FlameJet : MonoBehaviour
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
@@ -99,10 +100,9 @@ public class FlameJet : MonoBehaviour
 		line.SetColors(currentColor, endColor);
 		if (lastWorldSegments == null)
 		{
-			lastWorldSegments = (Vector3[])(object)new Vector3[numSegments];
+			lastWorldSegments = new Vector3[numSegments];
 		}
 		int num = currentSegments.Length;
-		Vector3 val3 = default(Vector3);
 		for (int i = 0; i < num; i++)
 		{
 			float num2 = 0f;
@@ -120,7 +120,7 @@ public class FlameJet : MonoBehaviour
 			{
 				num2 = (num3 = 0f);
 			}
-			((Vector3)(ref val3))._002Ector(num2, num3, (float)i * spacing);
+			Vector3 val3 = new Vector3(num2, num3, (float)i * spacing);
 			currentSegments[i] = val3;
 			lastWorldSegments[i] = ((Component)this).transform.TransformPoint(val3);
 		}

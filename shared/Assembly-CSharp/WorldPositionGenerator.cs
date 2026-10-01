@@ -8,22 +8,13 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rust/Missions/WorldPositionGenerator")]
 public class WorldPositionGenerator : ScriptableObject
 {
-	private struct InputValuesIdentifierData : IEquatable<InputValuesIdentifierData>
+	private struct InputValuesIdentifierData(Vector3 origin, float minDist, float maxDist) : IEquatable<InputValuesIdentifierData>
 	{
-		public Vector3 origin;
+		public Vector3 origin = origin;
 
-		public float minDist;
+		public float minDist = minDist;
 
-		public float maxDist;
-
-		public InputValuesIdentifierData(Vector3 origin, float minDist, float maxDist)
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			this.origin = origin;
-			this.minDist = minDist;
-			this.maxDist = maxDist;
-		}
+		public float maxDist = maxDist;
 
 		public bool Equals(InputValuesIdentifierData other)
 		{
@@ -113,6 +104,7 @@ public class WorldPositionGenerator : ScriptableObject
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
@@ -139,13 +131,12 @@ public class WorldPositionGenerator : ScriptableObject
 			Rect inclusion = new Rect(origin.x - maxDist, origin.z - maxDist, maxDist_2x, maxDist_2x);
 			Rect exclusion = new Rect(origin.x - minDist, origin.z - minDist, minDist_2x, minDist_2x);
 			blockedRects = Pool.Get<BufferList<Rect>>();
-			Rect val2 = default(Rect);
 			foreach (ListHashSet<Vector3> value2 in BaseMission.blockedPoints.Values)
 			{
 				for (int i = 0; i < value2.Count; i++)
 				{
 					Vector3 val = value2[i];
-					((Rect)(ref val2))._002Ector(val.x - 10f, val.z - 10f, 20f, 20f);
+					Rect val2 = new Rect(val.x - 10f, val.z - 10f, 20f, 20f);
 					blockedRects.Add(val2);
 				}
 			}
@@ -222,7 +213,7 @@ public class WorldPositionGenerator : ScriptableObject
 				if (child.Value != 0)
 				{
 					Rect elementRect2 = GetElementRect(child);
-					if (((Rect)(ref elementRect2)).Overlaps(inclusion) && (!((Rect)(ref exclusion)).Contains(((Rect)(ref elementRect2)).min) || !((Rect)(ref exclusion)).Contains(((Rect)(ref elementRect2)).max)))
+					if (elementRect2.Overlaps(inclusion) && (!exclusion.Contains(elementRect2.min) || !exclusion.Contains(elementRect2.max)))
 					{
 						elementsBuffer.Add(child);
 					}
@@ -279,7 +270,7 @@ public class WorldPositionGenerator : ScriptableObject
 					for (int k = 0; k < blockedRects.Count; k++)
 					{
 						Rect val4 = blockedRects[k];
-						if (((Rect)(ref val4)).Contains(((Rect)(ref rect)).min) && ((Rect)(ref val4)).Contains(((Rect)(ref rect)).max))
+						if (val4.Contains(rect.min) && val4.Contains(rect.max))
 						{
 							return false;
 						}
@@ -287,13 +278,13 @@ public class WorldPositionGenerator : ScriptableObject
 				}
 				if (CheckSphereRadius <= float.Epsilon)
 				{
-					reference = Vector3Ex.XZ3D(((Rect)(ref rect)).min + ((Rect)(ref rect)).size * new Vector2(Random.value, Random.value));
+					reference = Vector3Ex.XZ3D(rect.min + rect.size * new Vector2(Random.value, Random.value));
 				}
 				else
 				{
-					Vector3 val5 = Vector3Ex.XZ3D(((Rect)(ref rect)).center);
+					Vector3 val5 = Vector3Ex.XZ3D(rect.center);
 					val5.y = TerrainMeta.HeightMap.GetHeight(val5);
-					if (Physics.CheckSphere(val5, CheckSphereRadius, ((LayerMask)(ref CheckSphereMask)).value))
+					if (Physics.CheckSphere(val5, CheckSphereRadius, CheckSphereMask.value))
 					{
 						return false;
 					}
@@ -351,7 +342,7 @@ public class WorldPositionGenerator : ScriptableObject
 				res = Mathf.NextPowerOfTwo((int)((float)World.Size * 0.25f));
 				map = new byte[res * res];
 			}
-			Parallel.For(0, res, delegate(int z)
+			Parallel.For(0, res, (int z) =>
 			{
 				for (int i = 0; i < res; i++)
 				{

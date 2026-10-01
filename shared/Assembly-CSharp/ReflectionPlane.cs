@@ -9,7 +9,7 @@ public class ReflectionPlane : DecayEntity
 	private static readonly int _ReflectionLerpID = Shader.PropertyToID("_ReflectionLerp");
 
 	[Header("Reflection Plane")]
-	public LayerMask layerMask;
+	public LayerMask layerMask = LayerMask.op_Implicit(-1);
 
 	public float nearClip;
 
@@ -21,14 +21,11 @@ public class ReflectionPlane : DecayEntity
 
 	public float maxDistance;
 
-	public float fadeTime;
+	public float fadeTime = 0.25f;
 
 	public ReflectionPlane()
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		layerMask = LayerMask.op_Implicit(-1);
-		fadeTime = 0.25f;
-		base._002Ector();
 	}
 }

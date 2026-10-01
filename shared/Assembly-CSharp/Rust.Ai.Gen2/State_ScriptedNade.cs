@@ -37,12 +37,12 @@ public class State_ScriptedNade : FSMStateBase
 		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
 		currentHint = null;
-		if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
+		if (!Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		NpcZone npcZone = NpcZone.GetForPoint(Owner, lkp);
-		NpcZoneComponent npcZoneComponent = default(NpcZoneComponent);
+		NpcZoneComponent npcZoneComponent = default;
 		if (((Component)Owner).TryGetComponent<NpcZoneComponent>(ref npcZoneComponent) && (Object)(object)npcZoneComponent.zone != (Object)null)
 		{
 			if ((Object)(object)npcZone == (Object)null)
@@ -69,7 +69,7 @@ public class State_ScriptedNade : FSMStateBase
 			PooledList<NpcGrenadePositionHint> val2 = Pool.Get<PooledList<NpcGrenadePositionHint>>();
 			try
 			{
-				BoxCollider val3 = default(BoxCollider);
+				BoxCollider val3 = default;
 				foreach (NpcLevelScript item in (List<NpcLevelScript>)(object)val)
 				{
 					bool flag = false;
@@ -97,7 +97,7 @@ public class State_ScriptedNade : FSMStateBase
 				{
 					return EFSMStateStatus.Failure;
 				}
-				((List<NpcGrenadePositionHint>)(object)val2).Sort((Comparison<NpcGrenadePositionHint>)delegate(NpcGrenadePositionHint a, NpcGrenadePositionHint b)
+				((List<NpcGrenadePositionHint>)(object)val2).Sort((Comparison<NpcGrenadePositionHint>)((NpcGrenadePositionHint a, NpcGrenadePositionHint b) =>
 				{
 					//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 					//IL_000c: Unknown result type (might be due to invalid IL or missing references)
@@ -108,15 +108,15 @@ public class State_ScriptedNade : FSMStateBase
 					//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 					Vector3 val4 = ((Component)a).transform.position - lkp;
-					float sqrMagnitude = ((Vector3)(ref val4)).sqrMagnitude;
+					float sqrMagnitude = val4.sqrMagnitude;
 					val4 = ((Component)b).transform.position - lkp;
-					return sqrMagnitude.CompareTo(((Vector3)(ref val4)).sqrMagnitude);
-				});
+					return sqrMagnitude.CompareTo(val4.sqrMagnitude);
+				}));
 				float num = float.PositiveInfinity;
 				NpcGrenadePositionHint npcGrenadePositionHint2 = null;
 				foreach (NpcGrenadePositionHint item2 in (List<NpcGrenadePositionHint>)(object)val2)
 				{
-					if (base.Agent.CalculatePath(((Component)item2).transform.position, Path))
+					if (Agent.CalculatePath(((Component)item2).transform.position, Path))
 					{
 						float pathLength = Path.GetPathLength();
 						if (pathLength < num)
@@ -130,7 +130,7 @@ public class State_ScriptedNade : FSMStateBase
 				{
 					return EFSMStateStatus.Failure;
 				}
-				if (!base.Agent.SetDestinationWithParams(((Component)npcGrenadePositionHint2).transform.position, autoBraking: true, RustNavMeshAgent.Speeds.Run))
+				if (!Agent.SetDestinationWithParams(((Component)npcGrenadePositionHint2).transform.position, autoBraking: true, RustNavMeshAgent.Speeds.Run))
 				{
 					return EFSMStateStatus.Failure;
 				}
@@ -152,11 +152,11 @@ public class State_ScriptedNade : FSMStateBase
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		if (base.Agent.hasPath)
+		if (Agent.hasPath)
 		{
 			return EFSMStateStatus.None;
 		}
-		NpcGrenade npcGrenade = GameManager.server.CreateEntity(deployedGrenadePrefab.resourcePath, base.Senses.EyePosition, ((Component)Owner).transform.rotation) as NpcGrenade;
+		NpcGrenade npcGrenade = GameManager.server.CreateEntity(deployedGrenadePrefab.resourcePath, Senses.EyePosition, ((Component)Owner).transform.rotation) as NpcGrenade;
 		if ((Object)(object)npcGrenade == (Object)null)
 		{
 			return EFSMStateStatus.Failure;
@@ -164,11 +164,11 @@ public class State_ScriptedNade : FSMStateBase
 		npcGrenade.SetCreatorEntity(Owner);
 		npcGrenade.grenadeHint = currentHint;
 		npcGrenade.Spawn();
-		base.Blackboard.Add("ThrownScriptedNadeRecently", 60f);
+		Blackboard.Add("ThrownScriptedNadeRecently", 60f);
 		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
 		try
 		{
-			base.Senses.GetPerceivedAllies((List<BaseEntity>)(object)val);
+			Senses.GetPerceivedAllies((List<BaseEntity>)(object)val);
 			foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 			{
 				((Component)item).GetComponent<BlackboardComponent>().Add("ThrownScriptedNadeRecently", 60f);

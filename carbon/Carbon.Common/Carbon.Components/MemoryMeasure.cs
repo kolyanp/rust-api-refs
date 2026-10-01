@@ -10,7 +10,7 @@ public struct MemoryMeasure : IDisposable
 
 	public static MemoryMeasure New(string name, long threshold = 1024L, string warn = null, bool formatted = true)
 	{
-		return default(MemoryMeasure);
+		return default;
 	}
 
 	public void Dispose()

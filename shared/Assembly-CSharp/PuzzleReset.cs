@@ -45,13 +45,13 @@ public class PuzzleReset : FacepunchBehaviour
 
 	public bool radiationReset;
 
-	public static ListHashSet<PuzzleReset> AllResets;
+	public static ListHashSet<PuzzleReset> AllResets = new ListHashSet<PuzzleReset>();
 
 	private List<SpawnGroup> _cachedSpawnGroups;
 
 	private List<GameObject> _cachedResetObjects;
 
-	public static Phrase BlockedWarningPhrase;
+	public static Phrase BlockedWarningPhrase = new Phrase("monument.blocked.warning", "This monument is resetting, please leave the area!");
 
 	private AIInformationZone zone;
 
@@ -77,9 +77,9 @@ public class PuzzleReset : FacepunchBehaviour
 
 	private string lootedSpawnGroupName;
 
-	private static string TwoTierRadSpherePath;
+	private static string TwoTierRadSpherePath = "assets/prefabs/io/electric/generators/twotierradiationsphere.prefab";
 
-	private static string TwoTierRadBoxPath;
+	private static string TwoTierRadBoxPath = "assets/prefabs/io/electric/generators/twotierradiationbox.prefab";
 
 	private List<NetworkableId> danglingSpawnedInstances;
 
@@ -203,7 +203,7 @@ public class PuzzleReset : FacepunchBehaviour
 		}
 		if (info.msg.puzzleReset.resetPositions != null && info.msg.puzzleReset.resetPositions.Count > 0)
 		{
-			resetPositions = (Vector3[])(object)new Vector3[info.msg.puzzleReset.resetPositions.Count];
+			resetPositions = new Vector3[info.msg.puzzleReset.resetPositions.Count];
 			for (int i = 0; i < info.msg.puzzleReset.resetPositions.Count; i++)
 			{
 				resetPositions[i] = info.msg.puzzleReset.resetPositions[i];
@@ -265,12 +265,12 @@ public class PuzzleReset : FacepunchBehaviour
 				{
 					return !radiationZone.HasPlayersInRange();
 				}
-				bool num = AIZSleeping();
-				if (!num)
+				bool flag = AIZSleeping();
+				if (!flag)
 				{
 					TryDDrawAIZone();
 				}
-				return num;
+				return flag;
 			}
 			return !PlayersWithinDistance();
 		}
@@ -326,7 +326,7 @@ public class PuzzleReset : FacepunchBehaviour
 				if (item.IsAdmin)
 				{
 					OBB areaBox = aIZone.areaBox;
-					if (((OBB)(ref areaBox)).Contains(((Component)item).transform.position))
+					if (areaBox.Contains(((Component)item).transform.position))
 					{
 						item.SendConsoleCommand(DDrawCommand.Box(aIZone.areaBox.position, 10f, Color.green, aIZone.areaBox.extents * 2f, aIZone.areaBox.rotation, distanceFade: false));
 						item.SendConsoleCommand(DDrawCommand.Box(aIZone.areaBox.position, 10f, Color.yellow, ScaleSizeByConVar(aIZone.areaBox.extents * 2f), aIZone.areaBox.rotation, distanceFade: false));
@@ -528,8 +528,8 @@ public class PuzzleReset : FacepunchBehaviour
 		}
 		if (canUseRadiationReset)
 		{
-			bool num2 = !PassesResetCheck();
-			if (num2)
+			bool flag = !PassesResetCheck();
+			if (flag)
 			{
 				hasPlayerEnteredRange = true;
 			}
@@ -538,7 +538,7 @@ public class PuzzleReset : FacepunchBehaviour
 				num = 0f;
 			}
 			resetTimeElapsed += num;
-			if (num2)
+			if (flag)
 			{
 				timeSpentBlocked += num;
 				timeSpentBlockedWithRads += num;
@@ -563,12 +563,12 @@ public class PuzzleReset : FacepunchBehaviour
 			DoReset();
 			ResetTimeCounters();
 		}
-		float num3 = resetSpacing - resetTimeElapsed;
-		if (!canUseRadiationReset || (!(num3 < ConVar.Server.monumentPuzzleResetRadiationPreResetTime) && !ConVar.Server.monumentpuzzleresetradiationoverride))
+		float num2 = resetSpacing - resetTimeElapsed;
+		if (!canUseRadiationReset || (!(num2 < ConVar.Server.monumentPuzzleResetRadiationPreResetTime) && !ConVar.Server.monumentpuzzleresetradiationoverride))
 		{
 			return;
 		}
-		SetRadiusRadiationAmount(ConVar.Server.monumentpuzzleresetradiationoverride ? 0.95f : (1f - Mathf.Clamp01(num3 / ConVar.Server.monumentPuzzleResetRadiationPreResetTime)));
+		SetRadiusRadiationAmount(ConVar.Server.monumentpuzzleresetradiationoverride ? 0.95f : (1f - Mathf.Clamp01(num2 / ConVar.Server.monumentPuzzleResetRadiationPreResetTime)));
 		if (ConVar.Server.monumentPuzzleResetWarnings && (Object)(object)radiationZone != (Object)null)
 		{
 			PooledList<BasePlayer> val = Pool.Get<PooledList<BasePlayer>>();
@@ -651,18 +651,39 @@ public class PuzzleReset : FacepunchBehaviour
 	{
 		if (PlayersWithinDistance(includeSleepers: true))
 		{
-			RadiationSphere radiationSphere = default(RadiationSphere);
-			foreach (GameObject resetObject in GetResetObjects())
+			if (!HasLockedCrateBeenActivatedBeforeRestart())
 			{
-				if (resetObject.TryGetComponent<RadiationSphere>(ref radiationSphere))
-				{
-					radiationSphere.RestartRadiation();
-				}
+				return;
 			}
-			return;
+			{
+				RadiationSphere radiationSphere = default;
+				foreach (GameObject resetObject in GetResetObjects())
+				{
+					if (resetObject.TryGetComponent<RadiationSphere>(ref radiationSphere))
+					{
+						radiationSphere.RestartRadiation();
+					}
+				}
+				return;
+			}
 		}
 		DoReset(skipAlerts: true);
 		ResetTimer();
+	}
+
+	private bool HasLockedCrateBeenActivatedBeforeRestart()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		foreach (NetworkableId danglingSpawnedInstance in danglingSpawnedInstances)
+		{
+			if (BaseNetworkable.serverEntities.Find(danglingSpawnedInstance) is HackableLockedCrate hackableLockedCrate)
+			{
+				return hackableLockedCrate.IsBeingHacked() || hackableLockedCrate.IsFullyHacked() || hackableLockedCrate.HasBeenLooted();
+			}
+		}
+		return true;
 	}
 
 	public void DoReset(bool skipAlerts = false)
@@ -723,7 +744,7 @@ public class PuzzleReset : FacepunchBehaviour
 				spawnGroup.DelayedSpawn();
 			}
 		}
-		OilRigResetNotification oilRigResetNotification = default(OilRigResetNotification);
+		OilRigResetNotification oilRigResetNotification = default;
 		foreach (GameObject resetObject in GetResetObjects())
 		{
 			if ((!skipAlerts || !resetObject.TryGetComponent<OilRigResetNotification>(ref oilRigResetNotification)) && (Object)(object)resetObject != (Object)null)
@@ -899,7 +920,7 @@ public class PuzzleReset : FacepunchBehaviour
 		if (CheckSleepingAIZForPlayers)
 		{
 			OBB areaBox = GetAIZone().areaBox;
-			if (((OBB)(ref areaBox)).Contains(((Component)bp).transform.position))
+			if (areaBox.Contains(((Component)bp).transform.position))
 			{
 				return true;
 			}
@@ -993,10 +1014,6 @@ public class PuzzleReset : FacepunchBehaviour
 	static PuzzleReset()
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Expected O, but got Unknown
-		AllResets = new ListHashSet<PuzzleReset>();
-		BlockedWarningPhrase = new Phrase("monument.blocked.warning", "This monument is resetting, please leave the area!");
-		TwoTierRadSpherePath = "assets/prefabs/io/electric/generators/twotierradiationsphere.prefab";
-		TwoTierRadBoxPath = "assets/prefabs/io/electric/generators/twotierradiationbox.prefab";
+		//IL_001e: Expected Obj, but got Unknown
 	}
 }

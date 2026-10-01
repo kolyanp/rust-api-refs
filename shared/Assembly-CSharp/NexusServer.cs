@@ -116,7 +116,7 @@ public static class NexusServer
 
 	private const int CyclesBeforeSpawningFerry = 5;
 
-	private static readonly Dictionary<string, List<(string Zone, FerryStatus Status)>> FerryEntries;
+	private static readonly Dictionary<string, List<(string Zone, FerryStatus Status)>> FerryEntries = new Dictionary<string, List<(string, FerryStatus)>>(StringComparer.InvariantCultureIgnoreCase);
 
 	private static bool _updatingFerries;
 
@@ -130,9 +130,9 @@ public static class NexusServer
 
 	private const int MapRenderVersion = 5;
 
-	private static readonly HashSet<ulong> PlayerManifest;
+	private static readonly HashSet<ulong> PlayerManifest = new HashSet<ulong>();
 
-	private static readonly Dictionary<string, ZonePlayerManifest> ZonePlayerManifests;
+	private static readonly Dictionary<string, ZonePlayerManifest> ZonePlayerManifests = new Dictionary<string, ZonePlayerManifest>(StringComparer.InvariantCultureIgnoreCase);
 
 	private static RealTimeSince _lastPlayerManifestBroadcast;
 
@@ -140,11 +140,11 @@ public static class NexusServer
 
 	private static RealTimeSince _lastPlayerManifestRebuild;
 
-	private static readonly Dictionary<Uuid, PendingCall> PendingCalls;
+	private static readonly Dictionary<Uuid, PendingCall> PendingCalls = new Dictionary<Uuid, PendingCall>();
 
-	private static RealTimeSince _sinceLastRpcTimeoutCheck;
+	private static RealTimeSince _sinceLastRpcTimeoutCheck = RealTimeSince.op_Implicit(0f);
 
-	private static readonly Dictionary<string, ServerStatus> ZoneStatuses;
+	private static readonly Dictionary<string, ServerStatus> ZoneStatuses = new Dictionary<string, ServerStatus>(StringComparer.InvariantCultureIgnoreCase);
 
 	private static bool _isRefreshingZoneStatus;
 
@@ -154,9 +154,9 @@ public static class NexusServer
 
 	private const string CopyFromKey = "$copyFrom";
 
-	private static readonly Memoized<string, ulong> SteamIdToString;
+	private static readonly Memoized<string, ulong> SteamIdToString = new Memoized<string, ulong>((Func<ulong, string>)((ulong i) => i.ToString("G")));
 
-	private static readonly MemoryStream WriterStream;
+	private static readonly MemoryStream WriterStream = new MemoryStream();
 
 	private static NexusDB _database;
 
@@ -326,16 +326,16 @@ public static class NexusServer
 		{
 			return;
 		}
-		Request obj = Pool.Get<Request>();
-		obj.ferryStatus = Pool.Get<FerryStatusRequest>();
-		using (NexusRpcResult statusResponse = await BroadcastRpc(obj))
+		Request val = Pool.Get<Request>();
+		val.ferryStatus = Pool.Get<FerryStatusRequest>();
+		using (NexusRpcResult statusResponse = await BroadcastRpc(val))
 		{
 			UpdateFerryStatuses(statusResponse);
 		}
 		string zone = ZoneKey;
-		Variable val = default(Variable);
+		Variable val2 = default;
 		List<(string, FerryStatus)> value;
-		if (ZoneClient.TryGetZoneVariable("ferry", ref val) && (int)val.Type == 1 && TryParseFerrySchedule(zone, val.GetAsString(), out var schedule))
+		if (ZoneClient.TryGetZoneVariable("ferry", ref val2) && (int)val2.Type == 1 && TryParseFerrySchedule(zone, val2.GetAsString(), out var schedule))
 		{
 			if (FerryEntries.TryGetValue(zone, out var entries) && entries.Count > 1)
 			{
@@ -349,7 +349,7 @@ public static class NexusServer
 			{
 				_cyclesWithoutFerry = 0;
 				(string, FerryStatus) tuple2 = entries[0];
-				if (!tuple2.Item2.schedule.SequenceEqual<string>(schedule, StringComparer.InvariantCultureIgnoreCase))
+				if (!tuple2.Item2.schedule.SequenceEqual(schedule, StringComparer.InvariantCultureIgnoreCase))
 				{
 					await UpdateFerrySchedule(tuple2.Item1, tuple2.Item2.entityId, tuple2.Item2.timestamp, schedule);
 				}
@@ -513,8 +513,8 @@ public static class NexusServer
 		NexusFerry nexusFerry = (((Object)(object)val != (Object)null) ? val.GetComponent<NexusFerry>() : null);
 		if ((Object)(object)instance == (Object)null || (Object)(object)nexusFerry == (Object)null)
 		{
-			spawnBounds = default(OBB);
-			obstructionLayers = default(LayerMask);
+			spawnBounds = default;
+			obstructionLayers = default;
 			return false;
 		}
 		Transform docked = instance.Docked;
@@ -655,7 +655,7 @@ public static class NexusServer
 		{
 			return;
 		}
-		Variable val = default(Variable);
+		Variable val = default;
 		if (ZoneClient.TryGetNexusVariable("map.contactRadius", ref val) && (int)val.Type == 1 && float.TryParse(val.GetAsString(), out var result))
 		{
 			_zoneContactRadius = result;
@@ -825,12 +825,12 @@ public static class NexusServer
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		Bounds worldBounds = GetWorldBounds();
-		float num = Mathf.Max(((Bounds)(ref worldBounds)).extents.x, ((Bounds)(ref worldBounds)).extents.z) * 1.5f;
+		float num = Mathf.Max(worldBounds.extents.x, worldBounds.extents.z) * 1.5f;
 		float num2 = Vector2Ex.AngleFromTo(NexusExtensions.Position(ZoneClient.Zone), NexusExtensions.Position(otherZone));
 		Vector3 val = TerrainMeta.Center + Quaternion.Euler(0f, num2, 0f) * Vector3.right * num;
-		Vector3 val2 = Vector3Ex.WithY(((Bounds)(ref worldBounds)).ClosestPoint(val), TerrainMeta.Center.y);
+		Vector3 val2 = Vector3Ex.WithY(worldBounds.ClosestPoint(val), TerrainMeta.Center.y);
 		Vector3 val3 = TerrainMeta.Center - val2;
-		Quaternion item = Quaternion.LookRotation(((Vector3)(ref val3)).normalized);
+		Quaternion item = Quaternion.LookRotation(val3.normalized);
 		return (Vector3Ex.WithY(val2, WaterSystem.OceanLevel), item);
 	}
 
@@ -848,7 +848,7 @@ public static class NexusServer
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = (((Object)(object)SingletonComponent<ValidBounds>.Instance != (Object)null) ? ((Bounds)(ref SingletonComponent<ValidBounds>.Instance.worldBounds)).extents : (Vector3.one * float.MaxValue));
+		Vector3 val = (((Object)(object)SingletonComponent<ValidBounds>.Instance != (Object)null) ? SingletonComponent<ValidBounds>.Instance.worldBounds.extents : (Vector3.one * float.MaxValue));
 		val.x = Mathf.Min(val.x, (float)World.Size * 1.5f);
 		val.y = 0.01f;
 		val.z = Mathf.Min(val.z, (float)World.Size * 1.5f);
@@ -868,10 +868,10 @@ public static class NexusServer
 	{
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		NexusMessage val = default(NexusMessage);
+		NexusMessage val = default;
 		while (ZoneClient.TryReceiveMessage(ref val))
 		{
-			if (!((NexusMessage)(ref val)).IsBinary)
+			if (!val.IsBinary)
 			{
 				Debug.LogWarning((object)"Received a nexus message that's not binary, ignoring");
 				ZoneClient.AcknowledgeMessage(ref val);
@@ -881,7 +881,7 @@ public static class NexusServer
 			Packet val2;
 			try
 			{
-				asBinary = ((NexusMessage)(ref val)).AsBinary;
+				asBinary = val.AsBinary;
 				val2 = ReadPacket(asBinary);
 			}
 			catch (Exception ex)
@@ -890,7 +890,7 @@ public static class NexusServer
 				ZoneClient.AcknowledgeMessage(ref val);
 				continue;
 			}
-			bool num = !RequiresJournaling(val2) || _database.SeenJournaled(Uuid.op_Implicit(((NexusMessage)(ref val)).Id), asBinary);
+			bool num = !RequiresJournaling(val2) || _database.SeenJournaled(Uuid.op_Implicit(val.Id), asBinary);
 			ZoneClient.AcknowledgeMessage(ref val);
 			if (!num)
 			{
@@ -899,7 +899,7 @@ public static class NexusServer
 			}
 			else
 			{
-				HandleMessage(((NexusMessage)(ref val)).Id, val2);
+				HandleMessage(val.Id, val2);
 			}
 		}
 	}
@@ -987,8 +987,8 @@ public static class NexusServer
 			int valueOrDefault = (World.Config?.JsonString?.GetHashCode()).GetValueOrDefault();
 			string key = string.Format("{0}##{1}##{2}##{3}##{4}##{5}##{6}##{7}##{8}", new object[9]
 			{
-				2633,
-				288,
+				2634,
+				289,
 				World.Name,
 				World.Size,
 				World.Seed,
@@ -1021,7 +1021,7 @@ public static class NexusServer
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
-			if (packet.protocol != 288)
+			if (packet.protocol != 289)
 			{
 				Debug.LogWarning((object)"Received a nexus message with wrong protocol, ignoring");
 				return;
@@ -1066,7 +1066,7 @@ public static class NexusServer
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		Packet val = Pool.Get<Packet>();
-		val.protocol = 288u;
+		val.protocol = 289u;
 		val.sourceZone = ZoneClient.Zone.ZoneId;
 		val.request = request;
 		return SendPacket(id, val, toZoneKey, ttl);
@@ -1077,7 +1077,7 @@ public static class NexusServer
 		try
 		{
 			Packet val = Pool.Get<Packet>();
-			val.protocol = 288u;
+			val.protocol = 289u;
 			val.sourceZone = ZoneClient.Zone.ZoneId;
 			val.response = response;
 			await SendPacket(Uuid.Generate(), val, toZoneKey, ttl);
@@ -1150,12 +1150,12 @@ public static class NexusServer
 	{
 		try
 		{
-			Request obj = Pool.Get<Request>();
-			obj.isFireAndForget = true;
-			obj.playerManifest = Pool.Get<PlayerManifestRequest>();
-			obj.playerManifest.userIds = Pool.Get<List<ulong>>();
-			ServerPlayers.GetAll(obj.playerManifest.userIds);
-			await BroadcastRpc(obj);
+			Request val = Pool.Get<Request>();
+			val.isFireAndForget = true;
+			val.playerManifest = Pool.Get<PlayerManifestRequest>();
+			val.playerManifest.userIds = Pool.Get<List<ulong>>();
+			ServerPlayers.GetAll(val.playerManifest.userIds);
+			await BroadcastRpc(val);
 		}
 		catch (Exception ex)
 		{
@@ -1330,21 +1330,21 @@ public static class NexusServer
 		else
 		{
 			NexusZoneClient zoneClient = ZoneClient;
-			int? obj;
+			int? num2;
 			if (zoneClient == null)
 			{
-				obj = null;
+				num2 = null;
 			}
 			else
 			{
 				NexusDetails nexus = zoneClient.Nexus;
-				obj = ((nexus == null) ? ((int?)null) : nexus.Zones?.Count);
+				num2 = ((nexus == null) ? ((int?)null) : nexus.Zones?.Count);
 			}
-			int? num2 = obj;
-			num = num2.GetValueOrDefault() - 1;
+			int? num3 = num2;
+			num = num3.GetValueOrDefault() - 1;
 		}
-		int num3 = num;
-		if (value.Result.Responses.Count >= num3)
+		int num4 = num;
+		if (value.Result.Responses.Count >= num4)
 		{
 			PendingCalls.Remove(id);
 			value.Completion.TrySetResult(result: true);
@@ -1369,21 +1369,19 @@ public static class NexusServer
 		}
 		_sinceLastRpcTimeoutCheck = RealTimeSince.op_Implicit(0f);
 		List<(Uuid, PendingCall)> list = Pool.Get<List<(Uuid, PendingCall)>>();
-		foreach (KeyValuePair<Uuid, PendingCall> pendingCall in PendingCalls)
+		foreach (KeyValuePair<Uuid, PendingCall> pendingCall2 in PendingCalls)
 		{
-			Uuid key = pendingCall.Key;
-			PendingCall value = pendingCall.Value;
+			Uuid key = pendingCall2.Key;
+			PendingCall value = pendingCall2.Value;
 			if (RealTimeUntil.op_Implicit(value.TimeUntilTimeout) <= 0f)
 			{
 				list.Add((key, value));
 			}
 		}
-		foreach (var item3 in list)
+		foreach (var (key2, pendingCall) in list)
 		{
-			Uuid item = item3.Item1;
-			PendingCall item2 = item3.Item2;
-			PendingCalls.Remove(item);
-			item2.Completion.TrySetResult(result: false);
+			PendingCalls.Remove(key2);
+			pendingCall.Completion.TrySetResult(result: false);
 		}
 		Pool.FreeUnmanaged<(Uuid, PendingCall)>(ref list);
 	}
@@ -1401,9 +1399,9 @@ public static class NexusServer
 			{
 				_isRefreshingZoneStatus = true;
 				_lastZoneStatusRefresh = RealTimeSince.op_Implicit(0f);
-				Request obj = Pool.Get<Request>();
-				obj.ping = Pool.Get<PingRequest>();
-				using (NexusRpcResult nexusRpcResult = await BroadcastRpc(obj))
+				Request val = Pool.Get<Request>();
+				val.ping = Pool.Get<PingRequest>();
+				using (NexusRpcResult nexusRpcResult = await BroadcastRpc(val))
 				{
 					List<string> list = Pool.Get<List<string>>();
 					foreach (string key in ZoneStatuses.Keys)
@@ -1481,7 +1479,7 @@ public static class NexusServer
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		if (!Started)
 		{
-			status = default(ServerStatus);
+			status = default;
 			return false;
 		}
 		if (string.Equals(zone, ZoneKey, StringComparison.InvariantCultureIgnoreCase))
@@ -1541,14 +1539,14 @@ public static class NexusServer
 		transferEntityIds.Clear();
 		foreach (BaseNetworkable item in networkables)
 		{
-			if (item.net != null && ((NetworkableId)(ref item.net.ID)).IsValid)
+			if (item.net != null && item.net.ID.IsValid)
 			{
 				transferEntityIds.Add(item.net.ID);
 			}
 		}
 		foreach (BaseNetworkable item2 in networkables)
 		{
-			if (item2.net != null && ((NetworkableId)(ref item2.net.ID)).IsValid)
+			if (item2.net != null && item2.net.ID.IsValid)
 			{
 				transferEntityIds.Add(item2.net.ID);
 			}
@@ -1720,11 +1718,11 @@ public static class NexusServer
 				info.msg.parent = null;
 				if (info.msg.baseEntity != null)
 				{
-					Vector3 pos = default(Vector3);
-					Quaternion val2 = default(Quaternion);
+					Vector3 pos = default;
+					Quaternion val2 = default;
 					((Component)rootEntity).transform.GetPositionAndRotation(ref pos, ref val2);
 					info.msg.baseEntity.pos = pos;
-					info.msg.baseEntity.rot = ((Quaternion)(ref val2)).eulerAngles;
+					info.msg.baseEntity.rot = val2.eulerAngles;
 				}
 			}
 			serializedEntities.Add(info.msg);
@@ -1739,12 +1737,12 @@ public static class NexusServer
 		}
 		void ScanForAdditionalEntities(UidType type, ref ulong uid)
 		{
+			//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-			NetworkableId val2 = default(NetworkableId);
-			((NetworkableId)(ref val2))._002Ector(uid);
-			if ((int)type == 0 && ((NetworkableId)(ref val2)).IsValid && seenEntityIds.Add(val2))
+			NetworkableId val2 = new NetworkableId(uid);
+			if ((int)type == 0 && val2.IsValid && seenEntityIds.Add(val2))
 			{
 				BaseNetworkable baseNetworkable2 = BaseNetworkable.serverEntities.Find(val2);
 				if ((Object)(object)baseNetworkable2 != (Object)null)
@@ -1828,7 +1826,7 @@ public static class NexusServer
 		{
 			throw new Exception(error + " (" + string.Join(" -> ", stack) + ")");
 		}
-		JToken val = default(JToken);
+		JToken val = default;
 		if (!cfg.TryGetValue("$copyFrom", ref val))
 		{
 			return cfg;
@@ -1838,9 +1836,9 @@ public static class NexusServer
 			throw new Exception("Cannot get world config from nexus - zone '" + zoneKey + "' has a $copyFrom, but its value is not a string");
 		}
 		stack.Add(zoneKey);
-		JObject obj = MergeInto(GetWorldConfigImpl(val.ToObject<string>(), stack), cfg);
-		obj.Remove("$copyFrom");
-		return obj;
+		JObject val2 = MergeInto(GetWorldConfigImpl(val.ToObject<string>(), stack), cfg);
+		val2.Remove("$copyFrom");
+		return val2;
 	}
 
 	private static bool TryGetWorldConfigObject(string zoneKey, bool required, out JObject cfg, out string error)
@@ -1848,9 +1846,9 @@ public static class NexusServer
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Invalid comparison between Unknown and I4
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Expected O, but got Unknown
+		//IL_007b: Expected Obj, but got Unknown
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Expected O, but got Unknown
+		//IL_00ca: Expected Obj, but got Unknown
 		cfg = null;
 		NexusZoneClient zoneClient = ZoneClient;
 		object obj;
@@ -1885,12 +1883,12 @@ public static class NexusServer
 			error = null;
 			return true;
 		}
-		if ((int)((VariableData)(ref value)).Type != 1)
+		if ((int)value.Type != 1)
 		{
 			error = "Cannot get world config for nexus zone '" + zoneKey + "' - world.cfg variable is not a string";
 			return false;
 		}
-		if (string.IsNullOrWhiteSpace(((VariableData)(ref value)).Value))
+		if (string.IsNullOrWhiteSpace(value.Value))
 		{
 			if (required)
 			{
@@ -1903,13 +1901,13 @@ public static class NexusServer
 		}
 		try
 		{
-			cfg = JObject.Parse(((VariableData)(ref value)).Value);
+			cfg = JObject.Parse(value.Value);
 			error = null;
 			return true;
 		}
 		catch (Exception ex)
 		{
-			error = "Cannot get world config for nexus zone '" + zoneKey + "' - failed to parse: `" + ((VariableData)(ref value)).Value + "` (" + ex.Message + ")";
+			error = "Cannot get world config for nexus zone '" + zoneKey + "' - failed to parse: `" + value.Value + "` (" + ex.Message + ")";
 			return false;
 		}
 	}
@@ -1917,7 +1915,7 @@ public static class NexusServer
 	private static JObject MergeInto(JObject baseObject, JObject sourceObject)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Expected O, but got Unknown
+		//IL_0007: Expected Obj, but got Unknown
 		JObject val = new JObject(baseObject);
 		foreach (KeyValuePair<string, JToken> item in sourceObject)
 		{
@@ -1956,7 +1954,7 @@ public static class NexusServer
 		try
 		{
 			_database = new NexusDB();
-			_database.Open($"{ConVar.Server.rootFolder}/nexus.{288}.db");
+			_database.Open($"{ConVar.Server.rootFolder}/nexus.{289}.db");
 			_database.Initialize();
 		}
 		catch (Exception ex)
@@ -1966,17 +1964,17 @@ public static class NexusServer
 		}
 		ZoneClient = new NexusZoneClient((INexusLogger)(object)NexusServerLogger.Instance, Nexus.endpoint, Nexus.secretKey, Nexus.messageLockDuration);
 		NexusZoneClient zoneClient2 = ZoneClient;
-		object obj = _003C_003Ec._003C_003E9__109_0;
-		if (obj == null)
+		NexusErrorHandler val2 = _003C_003Ec._003C_003E9__109_0;
+		if (val2 == null)
 		{
-			NexusErrorHandler val2 = delegate(BaseNexusClient _, Exception ex3)
+			NexusErrorHandler val3 = (BaseNexusClient _, Exception ex3) =>
 			{
 				Debug.LogException(ex3);
 			};
-			_003C_003Ec._003C_003E9__109_0 = val2;
-			obj = (object)val2;
+			_003C_003Ec._003C_003E9__109_0 = val3;
+			val2 = val3;
 		}
-		((BaseNexusClient)zoneClient2).OnError += (NexusErrorHandler)obj;
+		((BaseNexusClient)zoneClient2).OnError += val2;
 		Task startTask = ((BaseNexusClient)ZoneClient).Start();
 		yield return (object)new WaitUntil((Func<bool>)(() => startTask.IsCompleted));
 		if (startTask.Exception != null)
@@ -1996,13 +1994,13 @@ public static class NexusServer
 			Debug.LogError((object)(string.IsNullOrWhiteSpace(Nexus.zoneController) ? "Zone controller was not specified (nexus.zoneController convar)" : ("Zone controller is not supported: " + Nexus.zoneController)));
 			yield break;
 		}
-		Variable cfgVariable = default(Variable);
+		Variable cfgVariable = default;
 		if (ZoneClient.TryGetNexusVariable("server.cfg", ref cfgVariable))
 		{
 			Debug.Log((object)"Running server.cfg from nexus variable");
 			RunConsoleConfig(cfgVariable);
 		}
-		Variable cfgVariable2 = default(Variable);
+		Variable cfgVariable2 = default;
 		if (ZoneClient.TryGetZoneVariable("server.cfg", ref cfgVariable2))
 		{
 			Debug.Log((object)"Running server.cfg from zone variable");
@@ -2030,13 +2028,13 @@ public static class NexusServer
 		}
 		Started = true;
 		FailedToStart = false;
-		static void RunConsoleConfig(Variable val3)
+		static void RunConsoleConfig(Variable val4)
 		{
 			//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000a: Invalid comparison between Unknown and I4
-			if (val3 != null && (int)val3.Type == 1)
+			if (val4 != null && (int)val4.Type == 1)
 			{
-				string asString = val3.GetAsString();
+				string asString = val4.GetAsString();
 				if (!string.IsNullOrWhiteSpace(asString))
 				{
 					ConsoleSystem.RunFile(ConsoleSystem.Option.Server, asString);
@@ -2141,13 +2139,5 @@ public static class NexusServer
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		FerryEntries = new Dictionary<string, List<(string, FerryStatus)>>(StringComparer.InvariantCultureIgnoreCase);
-		PlayerManifest = new HashSet<ulong>();
-		ZonePlayerManifests = new Dictionary<string, ZonePlayerManifest>(StringComparer.InvariantCultureIgnoreCase);
-		PendingCalls = new Dictionary<Uuid, PendingCall>();
-		_sinceLastRpcTimeoutCheck = RealTimeSince.op_Implicit(0f);
-		ZoneStatuses = new Dictionary<string, ServerStatus>(StringComparer.InvariantCultureIgnoreCase);
-		SteamIdToString = new Memoized<string, ulong>((Func<ulong, string>)((ulong i) => i.ToString("G")));
-		WriterStream = new MemoryStream();
 	}
 }

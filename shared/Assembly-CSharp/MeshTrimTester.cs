@@ -3,7 +3,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class MeshTrimTester : MonoBehaviour
 {
-	public MeshTrimSettings Settings;
+	public MeshTrimSettings Settings = MeshTrimSettings.Default;
 
 	public Mesh SourceMesh;
 
@@ -15,7 +15,5 @@ public class MeshTrimTester : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		Settings = MeshTrimSettings.Default;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

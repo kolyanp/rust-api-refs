@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class Plank : DecayEntity, global::IBoatBuildingPiece
+public class Plank : DecayEntity, IBoatBuildingPiece
 {
 	[Header("Plank")]
 	public TriggerParent ParentTrigger;
 
-	void global::IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
+	void IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
 	{
 		if (Object.op_Implicit((Object)(object)ParentTrigger))
 		{

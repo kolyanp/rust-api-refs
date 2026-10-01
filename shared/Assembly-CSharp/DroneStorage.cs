@@ -12,7 +12,7 @@ public class DroneStorage : StorageContainer
 
 	public float ThrownWeaponDelayMod = 1f;
 
-	private static readonly Phrase FailPhrase;
+	private static readonly Phrase FailPhrase = new Phrase("drone_storage.fail", "Drone is stuck, can't access inventory");
 
 	private const float DroneBoxOffset = 0.14f;
 
@@ -41,7 +41,7 @@ public class DroneStorage : StorageContainer
 		{
 			return false;
 		}
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (!Drone.HasFlag(Flags.Reserved3) && Drone.body.SweepTest(((Component)Drone).transform.up, ref val, 0.14f))
 		{
 			return false;
@@ -52,7 +52,7 @@ public class DroneStorage : StorageContainer
 	public override PlayerInventory.CanMoveFromResponse CanMoveFrom(BasePlayer player, Item item)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Drone.body.SweepTest(((Component)Drone).transform.up, ref val, 0.14f))
 		{
 			return PlayerInventory.CanMoveFromResponse.Failure(FailPhrase);
@@ -67,7 +67,7 @@ public class DroneStorage : StorageContainer
 		{
 			return false;
 		}
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Drone.body.SweepTest(((Component)Drone).transform.up, ref val, 0.14f))
 		{
 			player.ShowToast(GameTip.Styles.Error, FailPhrase, false);
@@ -76,13 +76,13 @@ public class DroneStorage : StorageContainer
 		return true;
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		base.OnItemAddedOrRemoved(item, added);
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (added && !Drone.HasFlag(Flags.Reserved2) && !Drone.HasFlag(Flags.Reserved3))
 		{
 			Rigidbody body = Drone.body;
@@ -101,19 +101,19 @@ public class DroneStorage : StorageContainer
 		bool flag = false;
 		if (TryGetHeldEntity(item, out var held) && held is ThrownWeapon weapon)
 		{
-			return TryServerWeaponDrop(base.inventory.GetSlot(0), weapon);
+			return TryServerWeaponDrop(inventory.GetSlot(0), weapon);
 		}
-		return TryServerItemDrop(base.inventory.GetSlot(0));
+		return TryServerItemDrop(inventory.GetSlot(0));
 	}
 
 	private bool TryGetItem(out Item item)
 	{
 		item = null;
-		if (base.inventory.IsEmpty())
+		if (inventory.IsEmpty())
 		{
 			return false;
 		}
-		item = base.inventory.GetSlot(0);
+		item = inventory.GetSlot(0);
 		if (item == null)
 		{
 			return false;
@@ -158,8 +158,8 @@ public class DroneStorage : StorageContainer
 		{
 			return false;
 		}
-		Vector3 eyePos = default(Vector3);
-		Quaternion val = default(Quaternion);
+		Vector3 eyePos = default;
+		Quaternion val = default;
 		AttachPoint.GetPositionAndRotation(ref eyePos, ref val);
 		Vector3 throwVelocityOverride = GetInheritedThrowVelocity(val * Vector3.down) + ReleaseVelocity;
 		BasePlayer owningPlayer = Drone.ToPlayer();
@@ -199,8 +199,8 @@ public class DroneStorage : StorageContainer
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 vPos = default(Vector3);
-		Quaternion val = default(Quaternion);
+		Vector3 vPos = default;
+		Quaternion val = default;
 		AttachPoint.GetPositionAndRotation(ref vPos, ref val);
 		BaseEntity ent = item.Drop(vPos, GetInheritedProjectileVelocity(val * Vector3.down) + ReleaseVelocity);
 		TempIgnoreParent(ent);
@@ -214,7 +214,7 @@ public class DroneStorage : StorageContainer
 			return;
 		}
 		GameObjectExtensions.SetIgnoreCollisions(((Component)ent).gameObject, ((Component)parentEntity.Get(serverside: true)).gameObject, true);
-		Invoke(delegate
+		Invoke(() =>
 		{
 			BaseEntity baseEntity = ent;
 			if (!((Object)(object)baseEntity == (Object)null))
@@ -231,7 +231,6 @@ public class DroneStorage : StorageContainer
 	static DroneStorage()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		FailPhrase = new Phrase("drone_storage.fail", "Drone is stuck, can't access inventory");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

@@ -20,7 +20,7 @@ public class MapMarker : BaseEntity
 
 	public override void InitShared()
 	{
-		if (base.isServer && !serverMapMarkers.Contains(this))
+		if (isServer && !serverMapMarkers.Contains(this))
 		{
 			serverMapMarkers.Add(this);
 		}
@@ -29,7 +29,7 @@ public class MapMarker : BaseEntity
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			serverMapMarkers.Remove(this);
 		}
@@ -47,12 +47,12 @@ public class MapMarker : BaseEntity
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		AppMarker obj = Pool.Get<AppMarker>();
-		Vector2 val = CompanionServer.Util.WorldToMap(((Component)this).transform.position);
-		obj.id = net.ID;
-		obj.type = appType;
-		obj.x = val.x;
-		obj.y = val.y;
-		return obj;
+		AppMarker val = Pool.Get<AppMarker>();
+		Vector2 val2 = CompanionServer.Util.WorldToMap(((Component)this).transform.position);
+		val.id = net.ID;
+		val.type = appType;
+		val.x = val2.x;
+		val.y = val2.y;
+		return val;
 	}
 }

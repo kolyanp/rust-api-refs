@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -23,8 +22,8 @@ public class State_MoveToBreakFoundation : FSMStateBase
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		location = default(Vector3);
-		if (!base.Senses.FindTarget(out var target) || !target.ToNonNpcPlayer(out var player))
+		location = default;
+		if (!Senses.FindTarget(out var target) || !target.ToNonNpcPlayer(out var player))
 		{
 			return false;
 		}
@@ -33,14 +32,14 @@ public class State_MoveToBreakFoundation : FSMStateBase
 		{
 			return false;
 		}
-		if (BaseNetworkableEx.Is<BuildingBlock>((Object)(object)State_CrocBreakFoundation.FindNearestTwigFoundationOnTargetBuilding(base.Agent, player), out BuildingBlock castedUnityObject) && base.Agent.SamplePosition(castedUnityObject.ClosestPoint(((Component)Owner).transform.position), out var hitWS, 10f))
+		if (BaseNetworkableEx.Is<BuildingBlock>((Object)(object)State_CrocBreakFoundation.FindNearestTwigFoundationOnTargetBuilding(Agent, player), out BuildingBlock castedUnityObject) && Agent.SamplePosition(castedUnityObject.ClosestPoint(((Component)Owner).transform.position), out var hitWS, 10f))
 		{
-			location = ((NavMeshHit)(ref hitWS)).position;
+			location = hitWS.position;
 			return true;
 		}
-		if (base.Agent.SamplePosition(position, out var hitWS2, 3f))
+		if (Agent.SamplePosition(position, out var hitWS2, 3f))
 		{
-			location = ((NavMeshHit)(ref hitWS2)).position;
+			location = hitWS2.position;
 			return true;
 		}
 		return false;
@@ -62,7 +61,7 @@ public class State_MoveToBreakFoundation : FSMStateBase
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target) || !target.ToNonNpcPlayer(out var _))
+		if (!Senses.FindTarget(out var target) || !target.ToNonNpcPlayer(out var _))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -70,13 +69,13 @@ public class State_MoveToBreakFoundation : FSMStateBase
 		{
 			return EFSMStateStatus.Failure;
 		}
-		Vector3 val = location + ((Bounds)(ref Owner.bounds)).extents.y * Vector3.up;
+		Vector3 val = location + Owner.bounds.extents.y * Vector3.up;
 		Vector3 val2 = target.CenterPoint() - val;
-		if (GamePhysics.Trace(new Ray(val, val2), 0f, out var _, ((Vector3)(ref val2)).magnitude, 1503731969, (QueryTriggerInteraction)0))
+		if (GamePhysics.Trace(new Ray(val, val2), 0f, out var _, val2.magnitude, 1503731969, (QueryTriggerInteraction)0))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Agent.SetDestinationWithParams(location, autoBraking: true, RustNavMeshAgent.Speeds.Run))
+		if (!Agent.SetDestinationWithParams(location, autoBraking: true, RustNavMeshAgent.Speeds.Run))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -85,7 +84,7 @@ public class State_MoveToBreakFoundation : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		if (!base.Agent.hasPath)
+		if (!Agent.hasPath)
 		{
 			return EFSMStateStatus.Success;
 		}

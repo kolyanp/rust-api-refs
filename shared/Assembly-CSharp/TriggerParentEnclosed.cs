@@ -56,20 +56,20 @@ public class TriggerParentEnclosed : TriggerParent
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		Bounds val = default(Bounds);
-		((Bounds)(ref val))._002Ector(boxCollider.center, boxCollider.size);
+		Bounds val = new Bounds(boxCollider.center, boxCollider.size);
 		if (padding > 0f)
 		{
-			((Bounds)(ref val)).Expand(padding);
+			val.Expand(padding);
 		}
-		OBB val2 = default(OBB);
-		((OBB)(ref val2))._002Ector(((Component)boxCollider).transform, val);
+		OBB val2 = new OBB(((Component)boxCollider).transform, val);
 		Vector3 val3 = ((intersectionMode == TriggerMode.TriggerPoint) ? ent.TriggerPoint() : ent.PivotPoint());
-		return ((OBB)(ref val2)).Contains(val3);
+		return val2.Contains(val3);
 	}
 }

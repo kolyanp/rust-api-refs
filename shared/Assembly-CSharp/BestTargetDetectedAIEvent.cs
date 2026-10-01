@@ -5,32 +5,32 @@ public class BestTargetDetectedAIEvent : BaseAIEvent
 	public BestTargetDetectedAIEvent()
 		: base(AIEventType.BestTargetDetected)
 	{
-		base.Rate = ExecuteRate.Normal;
+		Rate = ExecuteRate.Normal;
 	}
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
-		base.Result = base.Inverted;
-		if (!(base.Owner is IAIAttack iAIAttack))
+		Result = Inverted;
+		if (!(Owner is IAIAttack iAIAttack))
 		{
 			return;
 		}
 		BaseEntity bestTarget = iAIAttack.GetBestTarget();
-		if (base.Inverted)
+		if (Inverted)
 		{
-			if ((Object)(object)bestTarget == (Object)null && base.ShouldSetOutputEntityMemory)
+			if ((Object)(object)bestTarget == (Object)null && ShouldSetOutputEntityMemory)
 			{
-				memory.Entity.Remove(base.OutputEntityMemorySlot);
+				memory.Entity.Remove(OutputEntityMemorySlot);
 			}
-			base.Result = (Object)(object)bestTarget == (Object)null;
+			Result = (Object)(object)bestTarget == (Object)null;
 		}
 		else
 		{
-			if ((Object)(object)bestTarget != (Object)null && base.ShouldSetOutputEntityMemory)
+			if ((Object)(object)bestTarget != (Object)null && ShouldSetOutputEntityMemory)
 			{
-				memory.Entity.Set(bestTarget, base.OutputEntityMemorySlot);
+				memory.Entity.Set(bestTarget, OutputEntityMemorySlot);
 			}
-			base.Result = (Object)(object)bestTarget != (Object)null;
+			Result = (Object)(object)bestTarget != (Object)null;
 		}
 	}
 }

@@ -6,7 +6,7 @@ public class MagnetLiftable : EntityComponent<BaseEntity>
 
 	public bool scaleScrapResourcesByHealth;
 
-	public Vector3 shredDirection;
+	public Vector3 shredDirection = Vector3.forward;
 
 	public bool requireObjectOff;
 
@@ -21,7 +21,5 @@ public class MagnetLiftable : EntityComponent<BaseEntity>
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		shredDirection = Vector3.forward;
-		base._002Ector();
 	}
 }

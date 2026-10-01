@@ -46,68 +46,56 @@ public class BaseCombatEntity : BaseEntity
 
 	public static class PickupErrors
 	{
-		public static readonly Phrase ItemMustBeEmpty;
+		public static readonly Phrase ItemMustBeEmpty = new Phrase("pickuperror_itemmustbeempty", "{0} must be empty");
 
-		public static readonly Phrase ItemInventoryMustBeEmpty;
+		public static readonly Phrase ItemInventoryMustBeEmpty = new Phrase("pickuperror_iteminventorymustbeempty", "{0} inventory must be empty");
 
-		public static readonly Phrase ItemIsBeingUsed;
+		public static readonly Phrase ItemIsBeingUsed = new Phrase("pickuperrors_itemisbeingused", "{0} is being used");
 
-		public static readonly Phrase ItemHasCloser;
+		public static readonly Phrase ItemHasCloser = new Phrase("pickuperrors_itemhascloser", "{0} has closer");
 
-		public static readonly Phrase ItemHasLock;
+		public static readonly Phrase ItemHasLock = new Phrase("pickuperrors_itemhaslock", "{0} has lock");
 
-		public static readonly Phrase ItemHasStorageAdaptor;
+		public static readonly Phrase ItemHasStorageAdaptor = new Phrase("pickuperrors_itemhasstorageadaptor", "{0} has storage adaptor");
 
-		public static readonly Phrase ItemHasStorageMonitor;
+		public static readonly Phrase ItemHasStorageMonitor = new Phrase("pickuperrors_itemhasstoragemonitor", "{0} has storage monitor");
 
-		public static readonly Phrase ItemHasDecoration;
+		public static readonly Phrase ItemHasDecoration = new Phrase("pickuperrors_itemhasdecoration", "{0} has decoration");
 
-		public static readonly Phrase ItemHasAttachment;
+		public static readonly Phrase ItemHasAttachment = new Phrase("pickuperrors_itemhasattachment", "{0} has attachment");
 
-		public static readonly Phrase ItemIsOnline;
+		public static readonly Phrase ItemIsOnline = new Phrase("pickuperrors_itemisonline", "{0} is online");
 
-		public static readonly Phrase ItemIsArmed;
+		public static readonly Phrase ItemIsArmed = new Phrase("pickuperrors_itemisarmed", "{0} is armed");
 
-		public static readonly Phrase ItemIsOccupied;
+		public static readonly Phrase ItemIsOccupied = new Phrase("pickuperror_itemisoccupied", "{0} is occupied");
 
 		static PickupErrors()
 		{
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0014: Expected O, but got Unknown
+			//IL_0014: Expected Obj, but got Unknown
 			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0028: Expected O, but got Unknown
+			//IL_0028: Expected Obj, but got Unknown
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003c: Expected O, but got Unknown
+			//IL_003c: Expected Obj, but got Unknown
 			//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0050: Expected O, but got Unknown
+			//IL_0050: Expected Obj, but got Unknown
 			//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0064: Expected O, but got Unknown
+			//IL_0064: Expected Obj, but got Unknown
 			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0078: Expected O, but got Unknown
+			//IL_0078: Expected Obj, but got Unknown
 			//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008c: Expected O, but got Unknown
+			//IL_008c: Expected Obj, but got Unknown
 			//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a0: Expected O, but got Unknown
+			//IL_00a0: Expected Obj, but got Unknown
 			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b4: Expected O, but got Unknown
+			//IL_00b4: Expected Obj, but got Unknown
 			//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c8: Expected O, but got Unknown
+			//IL_00c8: Expected Obj, but got Unknown
 			//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00dc: Expected O, but got Unknown
+			//IL_00dc: Expected Obj, but got Unknown
 			//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f0: Expected O, but got Unknown
-			ItemMustBeEmpty = new Phrase("pickuperror_itemmustbeempty", "{0} must be empty");
-			ItemInventoryMustBeEmpty = new Phrase("pickuperror_iteminventorymustbeempty", "{0} inventory must be empty");
-			ItemIsBeingUsed = new Phrase("pickuperrors_itemisbeingused", "{0} is being used");
-			ItemHasCloser = new Phrase("pickuperrors_itemhascloser", "{0} has closer");
-			ItemHasLock = new Phrase("pickuperrors_itemhaslock", "{0} has lock");
-			ItemHasStorageAdaptor = new Phrase("pickuperrors_itemhasstorageadaptor", "{0} has storage adaptor");
-			ItemHasStorageMonitor = new Phrase("pickuperrors_itemhasstoragemonitor", "{0} has storage monitor");
-			ItemHasDecoration = new Phrase("pickuperrors_itemhasdecoration", "{0} has decoration");
-			ItemHasAttachment = new Phrase("pickuperrors_itemhasattachment", "{0} has attachment");
-			ItemIsOnline = new Phrase("pickuperrors_itemisonline", "{0} is online");
-			ItemIsArmed = new Phrase("pickuperrors_itemisarmed", "{0} is armed");
-			ItemIsOccupied = new Phrase("pickuperror_itemisoccupied", "{0} is occupied");
+			//IL_00f0: Expected Obj, but got Unknown
 		}
 	}
 
@@ -177,8 +165,8 @@ public class BaseCombatEntity : BaseEntity
 		Horror
 	}
 
-	[InspectorName("Spawn Corpse")]
 	[Header("Deployable Corpse")]
+	[InspectorName("Spawn Corpse")]
 	public bool spawnDeployableCorpseOnDeath;
 
 	[InspectorName("Corpse Prefab")]
@@ -191,9 +179,9 @@ public class BaseCombatEntity : BaseEntity
 
 	private const float MAX_HEALTH_REPAIR = 50f;
 
-	public static readonly Phrase RecentlyDamagedError;
+	public static readonly Phrase RecentlyDamagedError = new Phrase("error_recentlydamaged", "Recently damaged, repairable in {0} seconds");
 
-	public static readonly Phrase NotDamagedError;
+	public static readonly Phrase NotDamagedError = new Phrase("error_notdamaged", "Not damaged");
 
 	[NonSerialized]
 	public DamageType lastDamage;
@@ -210,9 +198,6 @@ public class BaseCombatEntity : BaseEntity
 	public DirectionProperties[] propDirection;
 
 	public float unHostileTime;
-
-	[CompilerGenerated]
-	private Vector3 _003CLastNoisePosition_003Ek__BackingField;
 
 	public float lastNoiseTime;
 
@@ -251,13 +236,10 @@ public class BaseCombatEntity : BaseEntity
 
 	public Faction faction;
 
-	private float clientLastAttackedTime;
+	private float clientLastAttackedTime = float.NegativeInfinity;
 
 	[NonSerialized]
 	public float lastAttackedTime = float.NegativeInfinity;
-
-	[CompilerGenerated]
-	private Vector3 _003CLastAttackedDir_003Ek__BackingField;
 
 	[NonSerialized]
 	public float lastDealtDamageTime = float.NegativeInfinity;
@@ -274,14 +256,14 @@ public class BaseCombatEntity : BaseEntity
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLastNoisePosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLastNoisePosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -289,7 +271,7 @@ public class BaseCombatEntity : BaseEntity
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return Time.time - lastAttackedTime;
 			}
@@ -303,14 +285,14 @@ public class BaseCombatEntity : BaseEntity
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLastAttackedDir_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLastAttackedDir_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -328,7 +310,7 @@ public class BaseCombatEntity : BaseEntity
 		{
 			float num = _health;
 			_health = Mathf.Clamp(value, 0f, MaxHealth());
-			if (base.isServer && _health != num)
+			if (isServer && _health != num)
 			{
 				OnHealthChanged(num, _health);
 			}
@@ -386,7 +368,7 @@ public class BaseCombatEntity : BaseEntity
 	{
 		if (ShouldDropDeployableCorpse(info))
 		{
-			DropDeployableCorpse(base.OwnerID);
+			DropDeployableCorpse(OwnerID);
 		}
 	}
 
@@ -435,11 +417,11 @@ public class BaseCombatEntity : BaseEntity
 					return false;
 				}
 			}
-			if ((Object)(object)lastAttackerEnt != (Object)null && lastAttackerEnt is BasePlayer basePlayer && ((ulong)basePlayer.userID == base.OwnerID || basePlayer.IsBuildingAuthed(((Component)this).transform.position, ((Component)this).transform.rotation, bounds)))
+			if ((Object)(object)lastAttackerEnt != (Object)null && lastAttackerEnt is BasePlayer basePlayer && ((ulong)basePlayer.userID == OwnerID || basePlayer.IsBuildingAuthed(((Component)this).transform.position, ((Component)this).transform.rotation, bounds)))
 			{
 				return false;
 			}
-			foreach (EntityComponentBase component in base.Components)
+			foreach (EntityComponentBase component in Components)
 			{
 				if (component is GroundWatch groundWatch)
 				{
@@ -450,7 +432,7 @@ public class BaseCombatEntity : BaseEntity
 							return false;
 						}
 						BasePlayer basePlayer2 = groundWatch.cachedGround.lastAttacker?.ToPlayer();
-						if ((Object)(object)basePlayer2 != (Object)null && ((ulong)basePlayer2.userID == base.OwnerID || basePlayer2.IsBuildingAuthed(((Component)this).transform.position, ((Component)this).transform.rotation, bounds)))
+						if ((Object)(object)basePlayer2 != (Object)null && ((ulong)basePlayer2.userID == OwnerID || basePlayer2.IsBuildingAuthed(((Component)this).transform.position, ((Component)this).transform.rotation, bounds)))
 						{
 							return false;
 						}
@@ -616,12 +598,12 @@ public class BaseCombatEntity : BaseEntity
 	{
 		if ((Object)(object)repair.itemTarget == (Object)null)
 		{
-			return default(EntityBuildCost);
+			return default;
 		}
 		ItemBlueprint itemBlueprint = ItemManager.FindBlueprint(repair.itemTarget);
 		if ((Object)(object)itemBlueprint == (Object)null)
 		{
-			return default(EntityBuildCost);
+			return default;
 		}
 		return new EntityBuildCost(itemBlueprint.GetIngredients(), itemBlueprint.amountToCreate);
 	}
@@ -839,7 +821,7 @@ public class BaseCombatEntity : BaseEntity
 		//IL_03f5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
-		Assert.IsTrue(base.isServer, "This should be called serverside only");
+		Assert.IsTrue(isServer, "This should be called serverside only");
 		if (IsDead() || IsTransferProtected() || RaidWindow.BlocksDamage(this, info))
 		{
 			return;
@@ -864,13 +846,13 @@ public class BaseCombatEntity : BaseEntity
 			info.damageTypes.Scale(DamageType.Blunt, ConVar.Server.meleedamage);
 			info.damageTypes.Scale(DamageType.Stab, ConVar.Server.meleedamage);
 			info.damageTypes.Scale(DamageType.Bleeding, ConVar.Server.bleedingdamage);
-			if (base.Components != null)
+			if (Components != null)
 			{
-				for (int j = 0; j < base.Components.Count; j++)
+				for (int j = 0; j < Components.Count; j++)
 				{
-					if (!((Object)(object)base.Components[j] == (Object)null))
+					if (!((Object)(object)Components[j] == (Object)null))
 					{
-						base.Components[j].Hurt(info);
+						Components[j].Hurt(info);
 					}
 				}
 			}
@@ -929,7 +911,7 @@ public class BaseCombatEntity : BaseEntity
 				if ((Object)(object)lastAttacker != (Object)null)
 				{
 					Vector3 val = ((Component)lastAttacker).transform.position - ((Component)this).transform.position;
-					LastAttackedDir = ((Vector3)(ref val)).normalized;
+					LastAttackedDir = val.normalized;
 				}
 			}
 			bool flag3 = Health() <= 0f;
@@ -998,12 +980,12 @@ public class BaseCombatEntity : BaseEntity
 			float num = info.damageTypes.types[i];
 			if (num != 0f)
 			{
-				string[] obj = new string[5] { text, " ", null, null, null };
+				string[] array = new string[5] { text, " ", null, null, null };
 				DamageType damageType = (DamageType)i;
-				obj[2] = damageType.ToString().PadRight(10);
-				obj[3] = num.ToString("0.00");
-				obj[4] = "\n";
-				text = string.Concat(obj);
+				array[2] = damageType.ToString().PadRight(10);
+				array[3] = num.ToString("0.00");
+				array[4] = "\n";
+				text = string.Concat(array);
 			}
 		}
 		string text2 = "<color=lightblue>Damage:</color>".PadRight(10) + info.damageTypes.Total().ToString("0.00") + "\n<color=lightblue>Health:</color>".PadRight(10) + health.ToString("0.00") + " / " + ((health - info.damageTypes.Total() <= 0f) ? "<color=red>" : "<color=green>") + (health - info.damageTypes.Total()).ToString("0.00") + "</color>" + "\n<color=lightblue>HitEnt:</color>".PadRight(10) + ((object)this)?.ToString() + "\n<color=lightblue>HitBone:</color>".PadRight(10) + info.boneName + "\n<color=lightblue>Attacker:</color>".PadRight(10) + ((object)info.Initiator)?.ToString() + "\n<color=lightblue>WeaponPrefab:</color>".PadRight(10) + ((object)info.WeaponPrefab)?.ToString() + "\n<color=lightblue>Damages:</color>\n" + text;
@@ -1029,11 +1011,11 @@ public class BaseCombatEntity : BaseEntity
 	public virtual void OnDied(HitInfo info)
 	{
 		bool flag = true;
-		if (base.Components != null)
+		if (Components != null)
 		{
-			for (int i = 0; i < base.Components.Count; i++)
+			for (int i = 0; i < Components.Count; i++)
 			{
-				if (!((Object)(object)base.Components[i] == (Object)null) && (!base.Components[i].OnDied(info) & flag))
+				if (!((Object)(object)Components[i] == (Object)null) && (!Components[i].OnDied(info) & flag))
 				{
 					flag = false;
 				}
@@ -1115,16 +1097,16 @@ public class BaseCombatEntity : BaseEntity
 		if ((Object)(object)baseEntity != (Object)null)
 		{
 			Vector3 worldVelocity = baseEntity.GetWorldVelocity();
-			if (((Vector3)(ref worldVelocity)).sqrMagnitude > 5f)
+			if (worldVelocity.sqrMagnitude > 5f)
 			{
 				val = WorldSpaceBounds();
-				StabilityEntity.UpdateSurroundingsQueue.NotifyNeighbours(((OBB)(ref val)).ToBounds());
+				StabilityEntity.UpdateSurroundingsQueue.NotifyNeighbours(val.ToBounds());
 				return;
 			}
 		}
 		StabilityEntity.UpdateSurroundingsQueue updateSurroundingsQueue = StabilityEntity.updateSurroundingsQueue;
 		val = WorldSpaceBounds();
-		((ObjectWorkQueue<Bounds>)updateSurroundingsQueue).Add(((OBB)(ref val)).ToBounds());
+		((ObjectWorkQueue<Bounds>)updateSurroundingsQueue).Add(val.ToBounds());
 	}
 
 	public void MakeNoise(Vector3 position, ActionVolume loudness)
@@ -1215,7 +1197,7 @@ public class BaseCombatEntity : BaseEntity
 		}
 		health = MaxHealth();
 		maxHealthOverride = 0f;
-		if (base.isServer)
+		if (isServer)
 		{
 			if ((Object)(object)baseCombatEntity != (Object)null)
 			{
@@ -1226,14 +1208,14 @@ public class BaseCombatEntity : BaseEntity
 			lastDealtDamageTime = float.NegativeInfinity;
 			lastAttacker = null;
 			lastDealtDamageTo = null;
-			LastAttackedDir = default(Vector3);
+			LastAttackedDir = default;
 		}
 	}
 
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer && !(this is PlayerBoat { KilledForEditMode: not false }))
+		if (isServer && !(this is PlayerBoat { KilledForEditMode: not false }))
 		{
 			UpdateSurroundingsOnDestroy();
 		}
@@ -1307,7 +1289,7 @@ public class BaseCombatEntity : BaseEntity
 
 	public override void Load(LoadInfo info)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			lifestate = LifeState.Alive;
 		}
@@ -1381,7 +1363,7 @@ public class BaseCombatEntity : BaseEntity
 			{
 				lastNotifyFrame = Time.frameCount;
 				bool flag = info.Weapon is BaseMelee;
-				if (base.isServer && (!flag || sendsMeleeHitNotification))
+				if (isServer && (!flag || sendsMeleeHitNotification))
 				{
 					bool arg = info.Initiator.net.connection == info.Predicted;
 					ClientRPC(RpcTarget.PlayerAndSpectators("HitNotify", info.Initiator as BasePlayer), arg);
@@ -1448,13 +1430,13 @@ public class BaseCombatEntity : BaseEntity
 	{
 		using (TimeWarning.New("BaseCombatEntity.OnAttacked"))
 		{
-			if (base.Components != null)
+			if (Components != null)
 			{
-				for (int i = 0; i < base.Components.Count; i++)
+				for (int i = 0; i < Components.Count; i++)
 				{
-					if (!((Object)(object)base.Components[i] == (Object)null))
+					if (!((Object)(object)Components[i] == (Object)null))
 					{
-						base.Components[i].OnAttacked(info);
+						Components[i].OnAttacked(info);
 					}
 				}
 			}
@@ -1462,7 +1444,7 @@ public class BaseCombatEntity : BaseEntity
 			{
 				DoHitNotify(info);
 			}
-			if (base.isServer)
+			if (isServer)
 			{
 				Hurt(info);
 			}
@@ -1473,10 +1455,8 @@ public class BaseCombatEntity : BaseEntity
 	static BaseCombatEntity()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		RecentlyDamagedError = new Phrase("error_recentlydamaged", "Recently damaged, repairable in {0} seconds");
-		NotDamagedError = new Phrase("error_notdamaged", "Not damaged");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

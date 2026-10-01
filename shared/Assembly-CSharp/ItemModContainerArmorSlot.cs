@@ -110,7 +110,7 @@ public class ItemModContainerArmorSlot : ItemModContainer
 			return 0f;
 		}
 		float num = 0f;
-		ItemModArmorInsert itemModArmorInsert = default(ItemModArmorInsert);
+		ItemModArmorInsert itemModArmorInsert = default;
 		foreach (Item item2 in item.contents.itemList)
 		{
 			if (((Component)item2.info).TryGetComponent<ItemModArmorInsert>(ref itemModArmorInsert))
@@ -136,7 +136,7 @@ public class ItemModContainerArmorSlot : ItemModContainer
 			return 0f;
 		}
 		float num = 0f;
-		ItemModArmorInsert itemModArmorInsert = default(ItemModArmorInsert);
+		ItemModArmorInsert itemModArmorInsert = default;
 		foreach (Item item2 in item.contents.itemList)
 		{
 			if (((Component)item2.info).TryGetComponent<ItemModArmorInsert>(ref itemModArmorInsert))
@@ -153,7 +153,7 @@ public class ItemModContainerArmorSlot : ItemModContainer
 		{
 			return;
 		}
-		ItemModArmorInsert itemModArmorInsert = default(ItemModArmorInsert);
+		ItemModArmorInsert itemModArmorInsert = default;
 		foreach (Item item2 in item.contents.itemList)
 		{
 			if (((Component)item2.info).TryGetComponent<ItemModArmorInsert>(ref itemModArmorInsert) && !(itemModArmorInsert.protectionProperties == null))

@@ -26,7 +26,7 @@ public struct GatherHitColliderIndicesJob : IJob
 			for (int j = 0; j < ResultsPerQuery; j++)
 			{
 				ColliderHit val = Hits[num2 + j];
-				if (((ColliderHit)(ref val)).instanceID == 0)
+				if (val.instanceID == 0)
 				{
 					break;
 				}

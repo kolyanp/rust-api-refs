@@ -77,7 +77,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return rigidBody.mass;
 			}
@@ -99,7 +99,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				if (inEditableLocation)
 				{
@@ -142,7 +142,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 		if (Inventory != null)
 		{
 			ItemContainerId uID = Inventory.UID;
-			if (!((ItemContainerId)(ref uID)).IsValid)
+			if (!uID.IsValid)
 			{
 				Inventory.GiveUIDs();
 			}
@@ -170,9 +170,21 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 
 	public bool CouldBeEdited()
 	{
-		if (!AnyMounted())
+		if (!AnyMounted() && !AnyNPCMounted())
 		{
 			return !IsDead();
+		}
+		return false;
+	}
+
+	private bool AnyNPCMounted()
+	{
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
+		{
+			if ((Object)(object)attachedModuleEntity.NPCMountable != (Object)null && attachedModuleEntity.NPCMountable.AnyMounted)
+			{
+				return true;
+			}
 		}
 		return false;
 	}
@@ -218,8 +230,8 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 		}
 		if (HasDriver())
 		{
-			Vector3 velocity = base.Velocity;
-			if (((Vector3)(ref velocity)).magnitude >= 2f)
+			Vector3 velocity = Velocity;
+			if (velocity.magnitude >= 2f)
 			{
 				return false;
 			}
@@ -269,12 +281,12 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 			Debug.LogError((object)(((object)this).GetType().Name + ": Can't add module: " + failureReason));
 			return false;
 		}
-		bool num = Inventory.TryAddModuleItem(moduleItem, socketIndex);
-		if (!num)
+		bool flag = Inventory.TryAddModuleItem(moduleItem, socketIndex);
+		if (!flag)
 		{
 			Debug.LogError((object)(((object)this).GetType().Name + ": Couldn't add new item!"));
 		}
-		return num;
+		return flag;
 	}
 
 	public bool TryAddModule(Item moduleItem)
@@ -295,7 +307,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 
 	public bool ModuleCanBeAdded(Item moduleItem, int socketIndex, out string failureReason)
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			failureReason = "Can only add modules on server";
 			return false;
@@ -460,7 +472,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			Vector3 val = ((Component)this).transform.InverseTransformPoint(moduleWorldPos) + moduleCOM;
 			if (TotalMass == 0f)
@@ -490,7 +502,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			float num = TotalMass - moduleMass;
 			Vector3 val = ((Component)this).transform.InverseTransformPoint(moduleWorldPos) + moduleCOM;
@@ -555,7 +567,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 		BaseVehicleModule module = childEntity as BaseVehicleModule;
 		if (module != null)
 		{
-			Action action = delegate
+			Action action = () =>
 			{
 				ModuleEntityAdded(module);
 			};
@@ -586,7 +598,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 		{
 			return;
 		}
-		if (base.isServer && ((Object)(object)this == (Object)null || IsDead() || base.IsDestroyed))
+		if (isServer && ((Object)(object)this == (Object)null || IsDead() || IsDestroyed))
 		{
 			if ((Object)(object)addedModule != (Object)null && !addedModule.IsDestroyed)
 			{
@@ -595,7 +607,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 			return;
 		}
 		int index = -1;
-		if (base.isServer && addedModule.AssociatedItemInstance != null)
+		if (isServer && addedModule.AssociatedItemInstance != null)
 		{
 			index = addedModule.AssociatedItemInstance.position;
 		}
@@ -616,7 +628,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 		AttachedModuleEntities.Add(addedModule);
 		addedModule.ModuleAdded(this, index);
 		AddMass(addedModule.Mass, addedModule.CentreOfMass, ((Component)addedModule).transform.position);
-		if (base.isServer && !Inventory.TrySyncModuleInventory(addedModule, index))
+		if (isServer && !Inventory.TrySyncModuleInventory(addedModule, index))
 		{
 			Debug.LogError((object)$"{((object)this).GetType().Name}: Unable to add module {((Object)addedModule).name} to socket ({index}). Destroying it.", (Object)(object)((Component)this).gameObject);
 			addedModule.Kill();
@@ -624,7 +636,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 			return;
 		}
 		RefreshModulesExcept(addedModule);
-		if (base.isServer)
+		if (isServer)
 		{
 			UpdateMountFlags();
 		}
@@ -634,7 +646,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 	{
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		if (base.IsDestroyed)
+		if (IsDestroyed)
 		{
 			return;
 		}
@@ -649,7 +661,7 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 			AttachedModuleEntities.Remove(removedModule);
 			removedModule.ModuleRemoved();
 			RefreshModulesExcept(removedModule);
-			if (base.isServer)
+			if (isServer)
 			{
 				UpdateMountFlags();
 			}

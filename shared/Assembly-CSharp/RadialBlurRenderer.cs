@@ -37,22 +37,22 @@ public class RadialBlurRenderer : PostProcessEffectRenderer<RadialBlur>
 		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
 		CommandBuffer command = context.command;
 		command.BeginSample("RadialBlur");
-		if (Mathf.Approximately((float)base.settings.start, 1f) && Mathf.Approximately((float)base.settings.amount, 0f))
+		if (Mathf.Approximately((float)settings.start, 1f) && Mathf.Approximately((float)settings.amount, 0f))
 		{
 			RuntimeUtilities.BlitFullscreenTriangle(command, context.source, context.destination);
 		}
 		else
 		{
 			PropertySheet propertySheet = context.propertySheets.Get(shader);
-			propertySheet.properties.SetVector(paramsID, new Vector4(base.settings.center.value.x, base.settings.center.value.y, (float)base.settings.start, (float)base.settings.amount));
-			int num = context.width >> (int)base.settings.downsample;
-			int num2 = context.height >> (int)base.settings.downsample;
-			int num3 = (int)base.settings.iterations / 2;
-			int num4 = (int)base.settings.iterations % 2;
+			propertySheet.properties.SetVector(paramsID, new Vector4(settings.center.value.x, settings.center.value.y, (float)settings.start, (float)settings.amount));
+			int num = context.width >> (int)settings.downsample;
+			int num2 = context.height >> (int)settings.downsample;
+			int num3 = (int)settings.iterations / 2;
+			int num4 = (int)settings.iterations % 2;
 			command.GetTemporaryRT(rt1ID, num, num2, 0, (FilterMode)1, context.sourceFormat, (RenderTextureReadWrite)0);
 			command.GetTemporaryRT(rt2ID, num, num2, 0, (FilterMode)1, context.sourceFormat, (RenderTextureReadWrite)0);
 			command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(rt1ID), propertySheet, 0);
-			if ((int)base.settings.iterations > 1)
+			if ((int)settings.iterations > 1)
 			{
 				for (int i = 0; i < num3; i++)
 				{

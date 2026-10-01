@@ -146,7 +146,7 @@ public class GeometryBuffers
 			TriangleBuffer.EnsureCapacity(TriangleIndex + 1, preserveData: true);
 			IsDirty = true;
 		}
-		int iterationCount = Instancing.InstancingUtil.GetIterationCount(Mathf.Max(num3, vertexCount), 1024);
+		int iterationCount = InstancingUtil.GetIterationCount(Mathf.Max(num3, vertexCount), 1024);
 		copyMeshShader.Dispatch(num2, iterationCount, 1, 1);
 		vertexBuffer.Dispose();
 		indexBuffer.Dispose();
@@ -171,9 +171,9 @@ public class GeometryBuffers
 			SubMeshDescriptor subMesh = mesh.GetSubMesh(i);
 			MultidrawMeshInfo multidrawMeshInfo = new MultidrawMeshInfo
 			{
-				IndexStart = TriangleIndex + ((SubMeshDescriptor)(ref subMesh)).indexStart,
-				VertexStart = VertexIndex + ((SubMeshDescriptor)(ref subMesh)).baseVertex,
-				VertexCount = ((SubMeshDescriptor)(ref subMesh)).vertexCount
+				IndexStart = TriangleIndex + subMesh.indexStart,
+				VertexStart = VertexIndex + subMesh.baseVertex,
+				VertexCount = subMesh.vertexCount
 			};
 			array[i] = multidrawMeshInfo;
 		}
@@ -182,6 +182,7 @@ public class GeometryBuffers
 
 	private void CopyMeshViaCPU(Mesh mesh)
 	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0255: Unknown result type (might be due to invalid IL or missing references)
@@ -241,11 +242,10 @@ public class GeometryBuffers
 		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020e: Unknown result type (might be due to invalid IL or missing references)
 		MeshCache.Data data = MeshCache.Get(mesh);
-		NativeArray<VertexData> data2 = default(NativeArray<VertexData>);
-		data2._002Ector(data.vertices.Length, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<VertexData> data2 = new NativeArray<VertexData>(data.vertices.Length, (Allocator)2, (NativeArrayOptions)1);
 		for (int i = 0; i < data2.Length; i++)
 		{
-			VertexData vertexData = default(VertexData);
+			VertexData vertexData = default;
 			Vector3 val = data.vertices[i];
 			Vector2 val2 = (mesh.HasVertexAttribute((VertexAttribute)4) ? data.uv[i] : Vector2.zero);
 			Vector2 val3 = (mesh.HasVertexAttribute((VertexAttribute)5) ? data.uv2[i] : Vector2.zero);
@@ -253,7 +253,7 @@ public class GeometryBuffers
 			Vector2 val5 = (mesh.HasVertexAttribute((VertexAttribute)7) ? data.uv4[i] : Vector2.zero);
 			Vector3 val6 = (mesh.HasVertexAttribute((VertexAttribute)1) ? data.normals[i] : Vector3.zero);
 			Vector4 val7 = (mesh.HasVertexAttribute((VertexAttribute)2) ? data.tangents[i] : Vector4.zero);
-			Color32 val8 = (Color32)(mesh.HasVertexAttribute((VertexAttribute)3) ? data.colors32[i] : new Color32((byte)0, (byte)0, (byte)0, (byte)0));
+			Color32 val8 = (mesh.HasVertexAttribute((VertexAttribute)3) ? data.colors32[i] : new Color32((byte)0, (byte)0, (byte)0, (byte)0));
 			vertexData.Position = new float4(val.x, val.y, val.z, 1f);
 			vertexData.UV01 = new float4(val2.x, val2.y, val3.x, val3.y);
 			vertexData.UV23 = new float4(val4.x, val4.y, val5.x, val5.y);

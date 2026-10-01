@@ -170,7 +170,7 @@ public class BearTrap : BaseTrap
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (!base.isServer && animator.isInitialized)
+		if (!isServer && animator.isInitialized)
 		{
 			animator.SetBool("armed", Armed());
 		}

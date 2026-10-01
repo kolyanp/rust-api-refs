@@ -29,7 +29,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public float nextToggleTime;
 
-	public Vector3 spawnOrigin;
+	public Vector3 spawnOrigin = Vector3.zero;
 
 	public float lastExtensionArmState;
 
@@ -37,11 +37,11 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public float lastYawState;
 
-	public bool handbrakeOn;
+	public bool handbrakeOn = true;
 
 	public float nextSelfHealTime;
 
-	public Vector3 lastDamagePos;
+	public Vector3 lastDamagePos = Vector3.zero;
 
 	public float lastDrivenTime;
 
@@ -51,13 +51,13 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public VehicleTerrainHandler serverTerrainHandler;
 
-	private Vector3 customInertiaTensor;
+	private Vector3 customInertiaTensor = new Vector3(25000f, 11000f, 19000f);
 
 	public float extensionArmState;
 
 	public float raiseArmState;
 
-	public float yawState;
+	public float yawState = 1f;
 
 	[Header("Magnet Crane")]
 	public Animator animator;
@@ -66,13 +66,13 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 	private Transform COM;
 
 	[SerializeField]
-	public float arm1Speed;
+	public float arm1Speed = 0.01f;
 
 	[SerializeField]
-	public float arm2Speed;
+	public float arm2Speed = 0.01f;
 
 	[SerializeField]
-	public float turnYawSpeed;
+	public float turnYawSpeed = 0.01f;
 
 	[SerializeField]
 	public BaseMagnet Magnet;
@@ -129,7 +129,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 	public TriggerHurtEx magnetDamage;
 
 	[SerializeField]
-	public int engineKW;
+	public int engineKW = 250;
 
 	[SerializeField]
 	private CarWheel[] wheels;
@@ -146,21 +146,21 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 	[SerializeField]
 	private EmissionToggle lightToggle;
 
-	public static readonly Phrase ReturnMessage;
+	public static readonly Phrase ReturnMessage = new Phrase("junkyardcrane.return", "Return to the Junkyard. Excessive damage will occur.");
 
 	private const Flags Flag_ArmMovement = Flags.Reserved8;
 
 	private const Flags Flag_BaseMovementInput = Flags.Reserved10;
 
-	private static int leftTreadParam;
+	private static int leftTreadParam = Animator.StringToHash("left tread movement");
 
-	private static int rightTreadParam;
+	private static int rightTreadParam = Animator.StringToHash("right tread movement");
 
-	private static int yawParam;
+	private static int yawParam = Animator.StringToHash("Yaw");
 
-	private static int arm1Param;
+	private static int arm1Param = Animator.StringToHash("Arm_01");
 
-	private static int arm2Param;
+	private static int arm2Param = Animator.StringToHash("Arm_02");
 
 	public VehicleTerrainHandler.Surface OnSurface
 	{
@@ -257,37 +257,37 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 		}
 		else if (engineController.IsOn)
 		{
-			bool num = inputState.IsDown(BUTTON.SPRINT);
+			bool flag = inputState.IsDown(BUTTON.SPRINT);
 			if (inputState.IsDown(BUTTON.RELOAD) && Time.realtimeSinceStartup > nextToggleTime)
 			{
 				Magnet.SetMagnetEnabled(!Magnet.IsMagnetOn(), player);
 				nextToggleTime = Time.realtimeSinceStartup + 0.5f;
 			}
-			if (num)
+			if (flag)
 			{
 				float speed = GetSpeed();
-				float num2 = 0f;
+				float num = 0f;
 				if (inputState.IsDown(BUTTON.FORWARD))
 				{
-					num2 = 1f;
+					num = 1f;
 				}
 				else if (inputState.IsDown(BUTTON.BACKWARD))
 				{
-					num2 = -1f;
+					num = -1f;
 				}
-				if (speed > 1f && num2 < 0f)
+				if (speed > 1f && num < 0f)
 				{
 					throttleInput = 0f;
-					brakeInput = 0f - num2;
+					brakeInput = 0f - num;
 				}
-				else if (speed < -1f && num2 > 0f)
+				else if (speed < -1f && num > 0f)
 				{
 					throttleInput = 0f;
-					brakeInput = num2;
+					brakeInput = num;
 				}
 				else
 				{
-					throttleInput = num2;
+					throttleInput = num;
 					brakeInput = 0f;
 				}
 				if (inputState.IsDown(BUTTON.RIGHT))
@@ -311,10 +311,10 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 				}
 				else if (inputState.IsDown(BUTTON.DUCK))
 				{
-					float num3 = animator.GetFloat(yawParam);
-					if (num3 > 0.01f && num3 < 0.99f)
+					float num2 = animator.GetFloat(yawParam);
+					if (num2 > 0.01f && num2 < 0.99f)
 					{
-						yawInput = ((num3 <= 0.5f) ? (-1f) : 1f);
+						yawInput = ((num2 <= 0.5f) ? (-1f) : 1f);
 					}
 				}
 				if (inputState.IsDown(BUTTON.FORWARD))
@@ -452,7 +452,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 						return;
 					}
 				}
-				else if (base.healthFraction < 1f && realtimeSinceStartup > nextSelfHealTime && base.SecondsSinceAttacked > 600f)
+				else if (healthFraction < 1f && realtimeSinceStartup > nextSelfHealTime && SecondsSinceAttacked > 600f)
 				{
 					Heal(1000f);
 				}
@@ -514,9 +514,9 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 		info.msg.crane.arm2 = raiseArmState;
 		info.msg.crane.yaw = yawState;
 		info.msg.crane.time = GetNetworkTime(in info.cachedTime);
-		byte num = (byte)((carPhysics.TankThrottleLeft + 1f) * 7f);
-		byte b = (byte)((carPhysics.TankThrottleRight + 1f) * 7f);
-		byte treadInput = (byte)(num + (b << 4));
+		byte b = (byte)((carPhysics.TankThrottleLeft + 1f) * 7f);
+		byte b2 = (byte)((carPhysics.TankThrottleRight + 1f) * 7f);
+		byte treadInput = (byte)(b + (b2 << 4));
 		info.msg.crane.treadInput = treadInput;
 	}
 
@@ -527,7 +527,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public void LateUpdate()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			if (HasDriver() && IsColliding())
 			{
@@ -551,25 +551,25 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 	public override void OnAttacked(HitInfo info)
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			BasePlayer driver = GetDriver();
 			if ((Object)(object)driver != (Object)null && info.damageTypes.Has(DamageType.Bullet))
 			{
-				Capsule val = default(Capsule);
-				((Capsule)(ref val))._002Ector(((Component)driverCollision).transform.position, driverCollision.radius, driverCollision.height);
+				Capsule val = new Capsule(((Component)driverCollision).transform.position, driverCollision.radius, driverCollision.height);
 				float num = Vector3.Distance(info.PointStart, info.PointEnd);
-				Ray val2 = default(Ray);
-				((Ray)(ref val2))._002Ector(info.PointStart, Vector3Ex.Direction(info.PointEnd, info.PointStart));
-				RaycastHit val3 = default(RaycastHit);
-				if (((Capsule)(ref val)).Trace(val2, ref val3, 0.05f, num * 1.2f))
+				Ray val2 = new Ray(info.PointStart, Vector3Ex.Direction(info.PointEnd, info.PointStart));
+				RaycastHit val3 = default;
+				if (val.Trace(val2, ref val3, 0.05f, num * 1.2f))
 				{
 					driver.Hurt(info.damageTypes.Total() * 0.15f, DamageType.Bullet, info.Initiator);
 				}
@@ -663,7 +663,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public override float GetThrottleInput()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return throttleInput;
 		}
@@ -672,7 +672,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public override float GetBrakeInput()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if (handbrakeOn)
 			{
@@ -686,7 +686,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.msg.crane != null && base.isServer)
+		if (info.msg.crane != null && isServer)
 		{
 			yawState = info.msg.crane.yaw;
 			extensionArmState = info.msg.crane.arm1;
@@ -720,27 +720,11 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		spawnOrigin = Vector3.zero;
-		handbrakeOn = true;
-		lastDamagePos = Vector3.zero;
-		customInertiaTensor = new Vector3(25000f, 11000f, 19000f);
-		yawState = 1f;
-		arm1Speed = 0.01f;
-		arm2Speed = 0.01f;
-		turnYawSpeed = 0.01f;
-		engineKW = 250;
-		base._002Ector();
 	}
 
 	static MagnetCrane()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		ReturnMessage = new Phrase("junkyardcrane.return", "Return to the Junkyard. Excessive damage will occur.");
-		leftTreadParam = Animator.StringToHash("left tread movement");
-		rightTreadParam = Animator.StringToHash("right tread movement");
-		yawParam = Animator.StringToHash("Yaw");
-		arm1Param = Animator.StringToHash("Arm_01");
-		arm2Param = Animator.StringToHash("Arm_02");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

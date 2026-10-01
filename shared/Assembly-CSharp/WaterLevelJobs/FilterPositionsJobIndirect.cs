@@ -26,7 +26,7 @@ public struct FilterPositionsJobIndirect : IJob
 		for (int i = 0; i < Indices.Length; i++)
 		{
 			int num = Indices[i];
-			if (((Bounds)(ref DeepSeaBounds)).Contains(Positions[num]))
+			if (DeepSeaBounds.Contains(Positions[num]))
 			{
 				DeepSeaIndices.AddNoResize(num);
 			}

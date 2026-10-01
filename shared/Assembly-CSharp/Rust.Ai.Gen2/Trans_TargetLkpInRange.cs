@@ -14,7 +14,7 @@ public class Trans_TargetLkpInRange : FSMTransitionBase
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Trans_TargetLkpInRange"))
 		{
-			if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, Predict))
+			if (!Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, Predict))
 			{
 				return false;
 			}

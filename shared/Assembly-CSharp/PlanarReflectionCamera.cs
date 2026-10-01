@@ -4,15 +4,15 @@ public class PlanarReflectionCamera : MonoBehaviour
 {
 	public static PlanarReflectionCamera instance;
 
-	public float updateRate;
+	public float updateRate = 1f;
 
-	public float nearClipPlane;
+	public float nearClipPlane = 0.3f;
 
-	public float farClipPlane;
+	public float farClipPlane = 25f;
 
-	public Color fogColor;
+	public Color fogColor = Color.white;
 
-	public float fogDensity;
+	public float fogDensity = 0.1f;
 
 	public Mesh waterPlaneMesh;
 
@@ -22,11 +22,5 @@ public class PlanarReflectionCamera : MonoBehaviour
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		updateRate = 1f;
-		nearClipPlane = 0.3f;
-		farClipPlane = 25f;
-		fogColor = Color.white;
-		fogDensity = 0.1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

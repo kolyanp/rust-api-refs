@@ -41,9 +41,9 @@ public static class BuoyancyForceAccumulationBurst
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void Compute_000058FA_0024PostfixBurstDelegate(in NativeArray<InstanceInput> instances, in NativeArray<float3> allPositions3D, in NativeArray<float> pointShoreDistance, in NativeArray<WaterLevel.WaterInfo> pointWaterInfo, in NativeArray<float> pointSize, in NativeArray<float> pointBuoyancyForce, in NativeArray<float> pointRandomOffset, in NativeArray<float> pointWaveFrequency, in NativeArray<float> pointWaveScale, in NativeArray<float3> pointFlowDirection, float time, ref NativeArray<InstanceOutput> results);
+	internal delegate void Compute_00005CB1_0024PostfixBurstDelegate(in NativeArray<InstanceInput> instances, in NativeArray<float3> allPositions3D, in NativeArray<float> pointShoreDistance, in NativeArray<WaterLevel.WaterInfo> pointWaterInfo, in NativeArray<float> pointSize, in NativeArray<float> pointBuoyancyForce, in NativeArray<float> pointRandomOffset, in NativeArray<float> pointWaveFrequency, in NativeArray<float> pointWaveScale, in NativeArray<float3> pointFlowDirection, float time, ref NativeArray<InstanceOutput> results);
 
-	internal static class Compute_000058FA_0024BurstDirectCall
+	internal static class Compute_00005CB1_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -54,7 +54,7 @@ public static class BuoyancyForceAccumulationBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<Compute_000058FA_0024PostfixBurstDelegate>((Compute_000058FA_0024PostfixBurstDelegate)Compute).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<Compute_00005CB1_0024PostfixBurstDelegate>((Compute_00005CB1_0024PostfixBurstDelegate)Compute).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -81,11 +81,11 @@ public static class BuoyancyForceAccumulationBurst
 		}
 	}
 
+	[MonoPInvokeCallback(typeof(Compute_00005CB1_0024PostfixBurstDelegate))]
 	[BurstCompile]
-	[MonoPInvokeCallback(typeof(Compute_000058FA_0024PostfixBurstDelegate))]
 	public static void Compute(in NativeArray<InstanceInput> instances, in NativeArray<float3> allPositions3D, in NativeArray<float> pointShoreDistance, in NativeArray<WaterLevel.WaterInfo> pointWaterInfo, in NativeArray<float> pointSize, in NativeArray<float> pointBuoyancyForce, in NativeArray<float> pointRandomOffset, in NativeArray<float> pointWaveFrequency, in NativeArray<float> pointWaveScale, in NativeArray<float3> pointFlowDirection, float time, ref NativeArray<InstanceOutput> results)
 	{
-		Compute_000058FA_0024BurstDirectCall.Invoke(in instances, in allPositions3D, in pointShoreDistance, in pointWaterInfo, in pointSize, in pointBuoyancyForce, in pointRandomOffset, in pointWaveFrequency, in pointWaveScale, in pointFlowDirection, time, ref results);
+		Compute_00005CB1_0024BurstDirectCall.Invoke(in instances, in allPositions3D, in pointShoreDistance, in pointWaterInfo, in pointSize, in pointBuoyancyForce, in pointRandomOffset, in pointWaveFrequency, in pointWaveScale, in pointFlowDirection, time, ref results);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,6 +124,7 @@ public static class BuoyancyForceAccumulationBurst
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
@@ -146,7 +147,6 @@ public static class BuoyancyForceAccumulationBurst
 		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0259: Unknown result type (might be due to invalid IL or missing references)
-		float3 val4 = default(float3);
 		for (int i = 0; i < instances.Length; i++)
 		{
 			InstanceInput instanceInput = instances[i];
@@ -190,7 +190,7 @@ public static class BuoyancyForceAccumulationBurst
 				{
 					num11 *= instanceInput.rigidBodyMass;
 				}
-				((float3)(ref val4))._002Ector(0f, num10 * num9 * num11, 0f);
+				float3 val4 = new float3(0f, num10 * num9 * num11, 0f);
 				if (!waterInfo.artificalWater && !instanceInput.flowForceDisabled && (waterInfo.topology & 0x10000) == 0)
 				{
 					float num12 = math.abs(pointShoreDistance[num2]);
@@ -199,7 +199,7 @@ public static class BuoyancyForceAccumulationBurst
 					{
 						num13 = math.pow(num13, 0.5f);
 						float3 val5 = pointFlowDirection[num2];
-						float2 xz = ((float3)(ref val5)).xz;
+						float2 xz = val5.xz;
 						float num14 = num11 * 0.025f * num13 * instanceInput.flowMovementScale;
 						val4.x += xz.x * num14;
 						val4.z += xz.y * num14;

@@ -37,11 +37,11 @@ public class AverageVelocity
 		float num = Time.time - time;
 		if (!(num < 0.1f))
 		{
-			if (((Vector3)(ref pos)).sqrMagnitude > 0f)
+			if (pos.sqrMagnitude > 0f)
 			{
 				Vector3 val = newPos - pos;
 				averageVelocity = val * (1f / num);
-				averageSpeed = ((Vector3)(ref averageVelocity)).magnitude;
+				averageSpeed = averageVelocity.magnitude;
 			}
 			time = Time.time;
 			pos = newPos;

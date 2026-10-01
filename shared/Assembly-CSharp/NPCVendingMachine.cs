@@ -98,8 +98,6 @@ public class NPCVendingMachine : VendingMachine
 
 	private bool preserveSalesData;
 
-	private static ItemDefinition _scrapItem = null;
-
 	private TimeSince lastHourCheck;
 
 	public NPCVendingOrder vendingOrders;
@@ -145,18 +143,6 @@ public class NPCVendingMachine : VendingMachine
 	}
 
 	public static float IntervalSeconds => Mathf.Clamp(ScaledByWipeUpdateFrequency, 0.5f, 72f) * 60f * 60f;
-
-	public static ItemDefinition ScrapItem
-	{
-		get
-		{
-			if ((Object)(object)_scrapItem == (Object)null)
-			{
-				_scrapItem = ItemManager.FindItemDefinition("scrap");
-			}
-			return _scrapItem;
-		}
-	}
 
 	private bool CanApplyDynamicPricing
 	{
@@ -309,7 +295,7 @@ public class NPCVendingMachine : VendingMachine
 			allSalesData = new SalesData[count];
 			for (int i = 0; i < count; i++)
 			{
-				bool flag = sellOrders.sellOrders[i].itemToSellID == ScrapItem.itemid;
+				bool flag = sellOrders.sellOrders[i].itemToSellID == ItemManager.Items.Scrap.itemid;
 				allSalesData[i] = new SalesData
 				{
 					IsForReceivedCurrency = flag,
@@ -333,7 +319,7 @@ public class NPCVendingMachine : VendingMachine
 		{
 			return 1f;
 		}
-		if (forOrder.currencyID != ScrapItem.itemid)
+		if (forOrder.currencyID != ItemManager.Items.Scrap.itemid)
 		{
 			return 1f;
 		}
@@ -354,7 +340,7 @@ public class NPCVendingMachine : VendingMachine
 		{
 			return 1f;
 		}
-		if (forOrder.itemToSellID != ScrapItem.itemid)
+		if (forOrder.itemToSellID != ItemManager.Items.Scrap.itemid)
 		{
 			return 1f;
 		}
@@ -477,7 +463,7 @@ public class NPCVendingMachine : VendingMachine
 	{
 		if (Interface.CallHook("OnTakeCurrencyItem", this, takenCurrencyItem) == null)
 		{
-			takenCurrencyItem.MoveToContainer(base.inventory);
+			takenCurrencyItem.MoveToContainer(inventory);
 			takenCurrencyItem.RemoveFromContainer();
 			takenCurrencyItem.Remove();
 		}
@@ -563,7 +549,7 @@ public class NPCVendingMachine : VendingMachine
 		}
 		if ((Object)(object)vendingOrders == (Object)null)
 		{
-			if (!(parentEntity.Get(base.isServer) is RentableShop))
+			if (!(parentEntity.Get(isServer) is RentableShop))
 			{
 				Debug.LogError((object)"No vending orders!");
 			}
@@ -571,11 +557,11 @@ public class NPCVendingMachine : VendingMachine
 		}
 		int count = sellOrders.sellOrders.Count;
 		ClearSellOrders();
-		base.inventory.Clear();
+		inventory.Clear();
 		ItemManager.DoRemoves();
 		if (numSlots == 0)
 		{
-			base.inventory.capacity = 128;
+			inventory.capacity = 128;
 		}
 		if (vendingOrders.orders.Length <= 7)
 		{
@@ -632,7 +618,7 @@ public class NPCVendingMachine : VendingMachine
 
 	public void Refill()
 	{
-		if ((Object)(object)vendingOrders == (Object)null || vendingOrders.orders == null || base.inventory == null)
+		if ((Object)(object)vendingOrders == (Object)null || vendingOrders.orders == null || inventory == null)
 		{
 			return;
 		}
@@ -648,7 +634,7 @@ public class NPCVendingMachine : VendingMachine
 				continue;
 			}
 			int num = 0;
-			num = ((!entry.sellItemAsBP) ? Mathf.FloorToInt((float)(base.inventory.GetAmount(entry.sellItem.itemid) / entry.sellItemAmount)) : Mathf.FloorToInt((float)(base.inventory.GetAmount(base.blueprintBaseDef.itemid, entry.sellItem.itemid) / entry.sellItemAmount)));
+			num = ((!entry.sellItemAsBP) ? Mathf.FloorToInt((float)(inventory.GetAmount(entry.sellItem.itemid) / entry.sellItemAmount)) : Mathf.FloorToInt((float)(inventory.GetAmount(blueprintBaseDef.itemid, entry.sellItem.itemid) / entry.sellItemAmount)));
 			int num2 = Mathf.Min(GetMaxStock(entry.maxStock) - num, entry.refillAmount) * entry.sellItemAmount;
 			if (num2 > 0)
 			{
@@ -656,14 +642,14 @@ public class NPCVendingMachine : VendingMachine
 				Item item = null;
 				if (entry.sellItemAsBP)
 				{
-					item = ItemManager.Create(base.blueprintBaseDef, num2, 0uL, isServerSide: true, 0uL);
+					item = ItemManager.Create(blueprintBaseDef, num2, 0uL, isServerSide: true, 0uL);
 					item.blueprintTarget = entry.sellItem.itemid;
 				}
 				else
 				{
 					item = ItemManager.Create(entry.sellItem, num2, 0uL, isServerSide: true, 0uL);
 				}
-				if (!item.MoveToContainer(base.inventory))
+				if (!item.MoveToContainer(inventory))
 				{
 					item.Remove();
 				}
@@ -687,14 +673,14 @@ public class NPCVendingMachine : VendingMachine
 		{
 			for (int i = 0; i < maxStock2; i++)
 			{
-				Item item = ItemManager.CreateByItemID(base.blueprintBaseDef.itemid, 1, 0uL, 0uL);
+				Item item = ItemManager.CreateByItemID(blueprintBaseDef.itemid, 1, 0uL, 0uL);
 				item.blueprintTarget = itemID;
-				base.inventory.Insert(item);
+				inventory.Insert(item);
 			}
 		}
 		else
 		{
-			base.inventory.AddItem(ItemManager.FindItemDefinition(itemID), amountToSell * maxStock2, 0uL);
+			inventory.AddItem(ItemManager.FindItemDefinition(itemID), amountToSell * maxStock2, 0uL);
 		}
 		transactionActive = false;
 		RefreshSellOrderStockLevel();

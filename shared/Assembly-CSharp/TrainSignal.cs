@@ -66,7 +66,7 @@ public class TrainSignal : BaseEntity
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isClient)
+		if (isClient)
 		{
 			if ((next & Flags.Reserved1) == Flags.Reserved1)
 			{
@@ -90,7 +90,7 @@ public class TrainSignal : BaseEntity
 			return;
 		}
 		lightState = newState;
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -130,7 +130,7 @@ public class TrainSignal : BaseEntity
 			float prevSplineDist = ourSplineDist;
 			Vector3 askerForward = -((Component)this).transform.forward;
 			TrainTrackSpline.MoveRequest.SplineAction onSpline = ProcessSplineSection;
-			TrainTrackSpline.MoveResult moveResult = trainTrackSpline.MoveAlongSpline(prevSplineDist, askerForward, 500f, default(TrainTrackSpline.TrackRequest), onSpline);
+			TrainTrackSpline.MoveResult moveResult = trainTrackSpline.MoveAlongSpline(prevSplineDist, askerForward, 500f, default, onSpline);
 			if (!testFX)
 			{
 				RefreshLightState();

@@ -37,7 +37,7 @@ public class MeshRendererBatch : MeshBatch
 	public void SetupColor(Color color)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
+		//IL_0011: Expected Obj, but got Unknown
 		if (propertyBlock == null)
 		{
 			propertyBlock = new MaterialPropertyBlock();

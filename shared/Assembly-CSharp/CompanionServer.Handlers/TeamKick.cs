@@ -7,24 +7,24 @@ public class TeamKick : BasePlayerHandler<AppTeamKick>
 {
 	public override ValueTask Execute()
 	{
-		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(base.UserId);
+		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(UserId);
 		if (playerTeam == null)
 		{
 			SendError("no_team");
-			return default(ValueTask);
+			return default;
 		}
-		if (base.Proto.steamId != base.UserId && playerTeam.teamLeader != base.UserId)
+		if (Proto.steamId != UserId && playerTeam.teamLeader != UserId)
 		{
 			SendError("access_denied");
-			return default(ValueTask);
+			return default;
 		}
-		if (!playerTeam.members.Contains(base.Proto.steamId))
+		if (!playerTeam.members.Contains(Proto.steamId))
 		{
 			SendError("not_found");
-			return default(ValueTask);
+			return default;
 		}
-		playerTeam.RemovePlayer(base.Proto.steamId);
+		playerTeam.RemovePlayer(Proto.steamId);
 		SendSuccess();
-		return default(ValueTask);
+		return default;
 	}
 }

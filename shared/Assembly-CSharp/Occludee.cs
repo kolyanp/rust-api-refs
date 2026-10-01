@@ -61,13 +61,13 @@ public class Occludee : MonoBehaviour
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		Bounds bounds = collider.bounds;
-		center = ((Bounds)(ref bounds)).center;
+		center = bounds.center;
 		bounds = collider.bounds;
-		float x = ((Bounds)(ref bounds)).extents.x;
+		float x = bounds.extents.x;
 		bounds = collider.bounds;
-		float num = Mathf.Max(x, ((Bounds)(ref bounds)).extents.y);
+		float num = Mathf.Max(x, bounds.extents.y);
 		bounds = collider.bounds;
-		radius = Mathf.Max(num, ((Bounds)(ref bounds)).extents.z);
+		radius = Mathf.Max(num, bounds.extents.z);
 		occludeeId = OcclusionCulling.RegisterOccludee(center, radius, renderer.enabled, minTimeVisible, isStatic, ((Component)this).gameObject.layer, OnVisibilityChanged);
 		if (occludeeId < 0)
 		{

@@ -64,10 +64,10 @@ public class Wolf2FSM : FSMComponent
 	public override void InitShared()
 	{
 		//IL_014a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0154: Expected O, but got Unknown
+		//IL_0154: Expected Obj, but got Unknown
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0180: Expected O, but got Unknown
-		if (base.baseEntity.isServer)
+		//IL_0180: Expected Obj, but got Unknown
+		if (baseEntity.isServer)
 		{
 			State_Nothing state_Nothing = new State_Nothing
 			{
@@ -108,15 +108,15 @@ public class Wolf2FSM : FSMComponent
 			DeathTrans = new Trans_Triggerable_HitInfo();
 			HurtTrans = new Trans_Triggerable_HitInfo();
 			Trans_Triggerable FireMeleeTrans = new Trans_Triggerable();
-			((Component)base.baseEntity).GetComponent<SenseComponent>().onFireMelee.AddListener((UnityAction)delegate
+			((Component)baseEntity).GetComponent<SenseComponent>().onFireMelee.AddListener((UnityAction)(() =>
 			{
 				FireMeleeTrans.Trigger();
-			});
+			}));
 			Trans_Triggerable EncounterEndTrans = new Trans_Triggerable();
-			((Component)base.baseEntity).GetComponent<NPCEncounterTimer>().onShouldGiveUp.AddListener((UnityAction)delegate
+			((Component)baseEntity).GetComponent<NPCEncounterTimer>().onShouldGiveUp.AddListener((UnityAction)(() =>
 			{
 				EncounterEndTrans.Trigger();
-			});
+			}));
 			BarkTrans = new Trans_Triggerable();
 			AllyGotHurtNearby = new Trans_Triggerable();
 			HowlTrans = new Trans_Triggerable();
@@ -343,6 +343,7 @@ public class Wolf2FSM : FSMComponent
 					Range = reacCircle.radius + 5f
 				})
 				.AddEndTransition(fastApproach)), attackUnreachable.AddFailureTransition(flee).AddEndTransition(flee, new Trans_TargetIsNearFire()).AddEndTransition(fSMStateBase)), dead);
+			RegisterDebugMoveTo(state_Nothing3);
 			SetState(state_Nothing);
 			SetFsmActive(newActive: true);
 		}
@@ -353,7 +354,7 @@ public class Wolf2FSM : FSMComponent
 		if (((Component)this).GetComponent<SenseComponent>().CanTarget(hitInfo.Initiator) && (hitInfo.Initiator.IsNonNpcPlayer() || !(Random.value > 0.5f)))
 		{
 			HurtTrans.Trigger(hitInfo);
-			if (base.CurrentState != hurt && base.CurrentState != dead)
+			if (CurrentState != hurt && CurrentState != dead)
 			{
 				ForceTickOnTheNextUpdate();
 			}

@@ -29,7 +29,7 @@ public class RoadBradleys : TriggeredEvent
 		}
 	}
 
-	public unsafe override void RunEvent()
+	public override void RunEvent()
 	{
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
@@ -57,7 +57,7 @@ public class RoadBradleys : TriggeredEvent
 			}
 			else
 			{
-				Debug.Log((object)("Failed to spawn bradley at: " + ((object)(*(Vector3*)(&zero))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("Failed to spawn bradley at: " + ((object)zero/*cast due to constrained. prefix*/).ToString()));
 			}
 		}
 		StaticBradleyCount = spawnedAPCs.Count;

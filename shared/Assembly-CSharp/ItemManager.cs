@@ -25,6 +25,8 @@ public class ItemManager
 		public ItemDefinition MasterKey = FindItemDefinition("apartment.master_key");
 
 		public ItemDefinition Fertilizer = FindItemDefinition("fertilizer");
+
+		public ItemDefinition Note = FindItemDefinition("note");
 	}
 
 	private struct ItemRemove
@@ -221,9 +223,9 @@ public class ItemManager
 			{
 				((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
 			}
-			ListHashSet<ItemDefinition> obj = val;
+			ListHashSet<ItemDefinition> val3 = val;
 			val = val2;
-			val2 = obj;
+			val2 = val3;
 			val2.Clear();
 		}
 		IGrouping<int, KeyValuePair<ItemDefinition, int>>[] array = (from x in dictionary
@@ -265,12 +267,12 @@ public class ItemManager
 				item4.ApartmentTaxPerStack = GetRarityTaxPerStack(rarity);
 			}
 		}
-		static float GetRarityTaxPerStack(Rarity val3)
+		static float GetRarityTaxPerStack(Rarity val4)
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0014: Expected I4, but got Unknown
-			return (val3 - 2) switch
+			return (val4 - 2) switch
 			{
 				0 => 3f, 
 				1 => 8f, 

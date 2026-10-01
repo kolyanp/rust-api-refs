@@ -4,8 +4,8 @@ using UnityEngine.Sprites;
 
 namespace UnityEngine.UI.Extensions;
 
-[AddComponentMenu("UI/Extensions/Primitives/UILineRendererList")]
 [RequireComponent(typeof(RectTransform))]
+[AddComponentMenu("UI/Extensions/Primitives/UILineRendererList")]
 public class UILineRendererList : UIPrimitiveBase
 {
 	private enum SegmentType
@@ -59,8 +59,8 @@ public class UILineRendererList : UIPrimitiveBase
 
 	private static Vector2[] fullUvs;
 
-	[Tooltip("Points to draw lines between\n Can be improved using the Resolution Option")]
 	[SerializeField]
+	[Tooltip("Points to draw lines between\n Can be improved using the Resolution Option")]
 	internal List<Vector2> m_points;
 
 	[Tooltip("Thickness of the line")]
@@ -206,16 +206,20 @@ public class UILineRendererList : UIPrimitiveBase
 		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0233: Unknown result type (might be due to invalid IL or missing references)
 		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0250: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0277: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
@@ -294,12 +298,12 @@ public class UILineRendererList : UIPrimitiveBase
 		if (BezierMode == BezierType.Catenary && pointsToDraw.Count == 2)
 		{
 			CableCurve cableCurve = new CableCurve(pointsToDraw);
-			cableCurve.slack = base.Resoloution;
+			cableCurve.slack = Resoloution;
 			cableCurve.steps = BezierSegmentsPerCurve;
 			pointsToDraw.Clear();
 			pointsToDraw.AddRange(cableCurve.Points());
 		}
-		if (base.ImproveResolution != ResolutionMode.None)
+		if (ImproveResolution != ResolutionMode.None)
 		{
 			pointsToDraw = IncreaseResolution(pointsToDraw);
 		}
@@ -308,7 +312,7 @@ public class UILineRendererList : UIPrimitiveBase
 		if (relativeSize)
 		{
 			rect = ((Graphic)this).rectTransform.rect;
-			num = ((Rect)(ref rect)).width;
+			num = rect.width;
 		}
 		else
 		{
@@ -319,7 +323,7 @@ public class UILineRendererList : UIPrimitiveBase
 		if (relativeSize)
 		{
 			rect = ((Graphic)this).rectTransform.rect;
-			num3 = ((Rect)(ref rect)).height;
+			num3 = rect.height;
 		}
 		else
 		{
@@ -335,8 +339,8 @@ public class UILineRendererList : UIPrimitiveBase
 			{
 				Vector2 val = pointsToDraw[i - 1];
 				Vector2 val2 = pointsToDraw[i];
-				((Vector2)(ref val))._002Ector(val.x * num2 + num5, val.y * num4 + num6);
-				((Vector2)(ref val2))._002Ector(val2.x * num2 + num5, val2.y * num4 + num6);
+				val = new Vector2(val.x * num2 + num5, val.y * num4 + num6);
+				val2 = new Vector2(val2.x * num2 + num5, val2.y * num4 + num6);
 				if (lineCaps)
 				{
 					list.Add(CreateLineCap(val, val2, SegmentType.Start));
@@ -354,8 +358,8 @@ public class UILineRendererList : UIPrimitiveBase
 			{
 				Vector2 val3 = pointsToDraw[j - 1];
 				Vector2 val4 = pointsToDraw[j];
-				((Vector2)(ref val3))._002Ector(val3.x * num2 + num5, val3.y * num4 + num6);
-				((Vector2)(ref val4))._002Ector(val4.x * num2 + num5, val4.y * num4 + num6);
+				val3 = new Vector2(val3.x * num2 + num5, val3.y * num4 + num6);
+				val4 = new Vector2(val4.x * num2 + num5, val4.y * num4 + num6);
 				if (lineCaps && j == 1)
 				{
 					list.Add(CreateLineCap(val3, val4, SegmentType.Start));
@@ -374,14 +378,14 @@ public class UILineRendererList : UIPrimitiveBase
 				Vector3 val5 = list[k][1].position - list[k][2].position;
 				Vector3 val6 = list[k + 1][2].position - list[k + 1][1].position;
 				float num7 = Vector2.Angle(Vector2.op_Implicit(val5), Vector2.op_Implicit(val6)) * (MathF.PI / 180f);
-				float num8 = Mathf.Sign(Vector3.Cross(((Vector3)(ref val5)).normalized, ((Vector3)(ref val6)).normalized).z);
+				float num8 = Mathf.Sign(Vector3.Cross(val5.normalized, val6.normalized).z);
 				float num9 = lineThickness / (2f * Mathf.Tan(num7 / 2f));
-				Vector3 position = list[k][2].position - ((Vector3)(ref val5)).normalized * num9 * num8;
-				Vector3 position2 = list[k][3].position + ((Vector3)(ref val5)).normalized * num9 * num8;
+				Vector3 position = list[k][2].position - val5.normalized * num9 * num8;
+				Vector3 position2 = list[k][3].position + val5.normalized * num9 * num8;
 				JoinType joinType = LineJoins;
 				if (joinType == JoinType.Miter)
 				{
-					if (num9 < ((Vector3)(ref val5)).magnitude / 2f && num9 < ((Vector3)(ref val6)).magnitude / 2f && num7 > MathF.PI / 12f)
+					if (num9 < val5.magnitude / 2f && num9 < val6.magnitude / 2f && num7 > MathF.PI / 12f)
 					{
 						list[k][2].position = position;
 						list[k][3].position = position2;
@@ -395,7 +399,7 @@ public class UILineRendererList : UIPrimitiveBase
 				}
 				if (joinType == JoinType.Bevel)
 				{
-					if (num9 < ((Vector3)(ref val5)).magnitude / 2f && num9 < ((Vector3)(ref val6)).magnitude / 2f && num7 > MathF.PI / 6f)
+					if (num9 < val5.magnitude / 2f && num9 < val6.magnitude / 2f && num7 > MathF.PI / 6f)
 					{
 						if (num8 < 0f)
 						{
@@ -408,7 +412,7 @@ public class UILineRendererList : UIPrimitiveBase
 							list[k + 1][0].position = position2;
 						}
 					}
-					UIVertex[] array = (UIVertex[])(object)new UIVertex[4]
+					UIVertex[] array = new UIVertex[4]
 					{
 						list[k][2],
 						list[k][3],
@@ -469,13 +473,13 @@ public class UILineRendererList : UIPrimitiveBase
 		case SegmentType.Start:
 		{
 			val = end - start;
-			Vector2 start2 = start - ((Vector2)(ref val)).normalized * lineThickness / 2f;
+			Vector2 start2 = start - val.normalized * lineThickness / 2f;
 			return CreateLineSegment(start2, start, SegmentType.Start);
 		}
 		case SegmentType.End:
 		{
 			val = end - start;
-			Vector2 end2 = end + ((Vector2)(ref val)).normalized * lineThickness / 2f;
+			Vector2 end2 = end + val.normalized * lineThickness / 2f;
 			return CreateLineSegment(end, end2, SegmentType.End);
 		}
 		default:
@@ -545,17 +549,17 @@ public class UILineRendererList : UIPrimitiveBase
 		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 val = new Vector2(start.y - end.y, end.x - start.x);
-		Vector2 val2 = ((Vector2)(ref val)).normalized * lineThickness / 2f;
+		Vector2 val2 = val.normalized * lineThickness / 2f;
 		Vector2 val3 = start - val2;
 		Vector2 val4 = start + val2;
 		Vector2 val5 = end + val2;
 		Vector2 val6 = end - val2;
 		return type switch
 		{
-			SegmentType.Start => SetVbo((Vector2[])(object)new Vector2[4] { val3, val4, val5, val6 }, startUvs), 
-			SegmentType.End => SetVbo((Vector2[])(object)new Vector2[4] { val3, val4, val5, val6 }, endUvs), 
-			SegmentType.Full => SetVbo((Vector2[])(object)new Vector2[4] { val3, val4, val5, val6 }, fullUvs), 
-			_ => SetVbo((Vector2[])(object)new Vector2[4] { val3, val4, val5, val6 }, middleUvs), 
+			SegmentType.Start => SetVbo(new Vector2[4] { val3, val4, val5, val6 }, startUvs), 
+			SegmentType.End => SetVbo(new Vector2[4] { val3, val4, val5, val6 }, endUvs), 
+			SegmentType.Full => SetVbo(new Vector2[4] { val3, val4, val5, val6 }, fullUvs), 
+			_ => SetVbo(new Vector2[4] { val3, val4, val5, val6 }, middleUvs), 
 		};
 	}
 
@@ -645,10 +649,10 @@ public class UILineRendererList : UIPrimitiveBase
 		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
 		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)base.activeSprite != (Object)null)
+		if ((Object)(object)activeSprite != (Object)null)
 		{
-			Vector4 outerUV = DataUtility.GetOuterUV(base.activeSprite);
-			Vector4 innerUV = DataUtility.GetInnerUV(base.activeSprite);
+			Vector4 outerUV = DataUtility.GetOuterUV(activeSprite);
+			Vector4 innerUV = DataUtility.GetInnerUV(activeSprite);
 			UV_TOP_LEFT = new Vector2(outerUV.x, outerUV.y);
 			UV_BOTTOM_LEFT = new Vector2(outerUV.x, outerUV.w);
 			UV_TOP_CENTER_LEFT = new Vector2(innerUV.x, innerUV.y);
@@ -669,10 +673,10 @@ public class UILineRendererList : UIPrimitiveBase
 			UV_TOP_RIGHT = new Vector2(1f, 0f);
 			UV_BOTTOM_RIGHT = Vector2.one;
 		}
-		startUvs = (Vector2[])(object)new Vector2[4] { UV_TOP_LEFT, UV_BOTTOM_LEFT, UV_BOTTOM_CENTER_LEFT, UV_TOP_CENTER_LEFT };
-		middleUvs = (Vector2[])(object)new Vector2[4] { UV_TOP_CENTER_LEFT, UV_BOTTOM_CENTER_LEFT, UV_BOTTOM_CENTER_RIGHT, UV_TOP_CENTER_RIGHT };
-		endUvs = (Vector2[])(object)new Vector2[4] { UV_TOP_CENTER_RIGHT, UV_BOTTOM_CENTER_RIGHT, UV_BOTTOM_RIGHT, UV_TOP_RIGHT };
-		fullUvs = (Vector2[])(object)new Vector2[4] { UV_TOP_LEFT, UV_BOTTOM_LEFT, UV_BOTTOM_RIGHT, UV_TOP_RIGHT };
+		startUvs = new Vector2[4] { UV_TOP_LEFT, UV_BOTTOM_LEFT, UV_BOTTOM_CENTER_LEFT, UV_TOP_CENTER_LEFT };
+		middleUvs = new Vector2[4] { UV_TOP_CENTER_LEFT, UV_BOTTOM_CENTER_LEFT, UV_BOTTOM_CENTER_RIGHT, UV_TOP_CENTER_RIGHT };
+		endUvs = new Vector2[4] { UV_TOP_CENTER_RIGHT, UV_BOTTOM_CENTER_RIGHT, UV_BOTTOM_RIGHT, UV_TOP_RIGHT };
+		fullUvs = new Vector2[4] { UV_TOP_LEFT, UV_BOTTOM_LEFT, UV_BOTTOM_RIGHT, UV_TOP_RIGHT };
 	}
 
 	protected override void ResolutionToNativeSize(float distance)
@@ -681,12 +685,12 @@ public class UILineRendererList : UIPrimitiveBase
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		if (base.UseNativeSize)
+		if (UseNativeSize)
 		{
-			Rect rect = base.activeSprite.rect;
-			m_Resolution = distance / (((Rect)(ref rect)).width / base.pixelsPerUnit);
-			rect = base.activeSprite.rect;
-			lineThickness = ((Rect)(ref rect)).height / base.pixelsPerUnit;
+			Rect rect = activeSprite.rect;
+			m_Resolution = distance / (rect.width / pixelsPerUnit);
+			rect = activeSprite.rect;
+			lineThickness = rect.height / pixelsPerUnit;
 		}
 	}
 }

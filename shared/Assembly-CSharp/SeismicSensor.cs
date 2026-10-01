@@ -88,7 +88,7 @@ public class SeismicSensor : IOEntity
 			SeismicSensor seismicSensor = resultBuffer[i] as SeismicSensor;
 			Vector3 position2 = ((Component)seismicSensor).transform.position;
 			Vector3 val = position - position2;
-			float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+			float sqrMagnitude = val.sqrMagnitude;
 			float num = (float)seismicSensor.range + 0.5f;
 			if (sqrMagnitude < num * num)
 			{
@@ -154,8 +154,8 @@ public class SeismicSensor : IOEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetRange(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -203,7 +203,7 @@ public class SeismicSensor : IOEntity
 		if (info.msg.ioEntity != null)
 		{
 			range = info.msg.ioEntity.genericInt1;
-			if (info.fromDisk && base.isServer)
+			if (info.fromDisk && isServer)
 			{
 				SetVibrationLevel(0);
 			}

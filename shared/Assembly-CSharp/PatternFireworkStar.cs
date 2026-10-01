@@ -32,7 +32,7 @@ public class PatternFireworkStar : MonoBehaviour, IClientComponent
 			if (!((Object)(object)val == (Object)null))
 			{
 				MainModule main = val.main;
-				((MainModule)(ref main)).startColor = new MinMaxGradient(color);
+				main.startColor = new MinMaxGradient(color);
 			}
 		}
 	}

@@ -20,9 +20,9 @@ public class LAM_BasicPoseAdjust : LegsAnimatorControlModuleBase
 		List<LegsAnimator.Leg> list = new List<LegsAnimator.Leg>();
 		if (helper.customStringList == null || helper.customStringList.Count == 0)
 		{
-			for (int i = 0; i < base.LA.Legs.Count; i++)
+			for (int i = 0; i < LA.Legs.Count; i++)
 			{
-				list.Add(base.LA.Legs[i]);
+				list.Add(LA.Legs[i]);
 			}
 		}
 		else
@@ -31,7 +31,7 @@ public class LAM_BasicPoseAdjust : LegsAnimatorControlModuleBase
 			{
 				if (helper.customStringList[j] == "1")
 				{
-					list.Add(base.LA.Legs[j]);
+					list.Add(LA.Legs[j]);
 				}
 			}
 		}
@@ -63,11 +63,11 @@ public class LAM_BasicPoseAdjust : LegsAnimatorControlModuleBase
 		{
 			return;
 		}
-		float effectBlend = base.EffectBlend;
+		float effectBlend = EffectBlend;
 		for (int i = 0; i < legs.Length; i++)
 		{
 			LegsAnimator.Leg leg = legs[i];
-			Vector3 val = base.LA.ToRootLocalSpace(leg._AnimatorEndBonePos);
+			Vector3 val = LA.ToRootLocalSpace(leg._AnimatorEndBonePos);
 			Vector3 val2 = val;
 			val2.x *= _AdjustPowerX.GetFloat();
 			val2.z *= _AdjustPowerZ.GetFloat();
@@ -75,7 +75,7 @@ public class LAM_BasicPoseAdjust : LegsAnimatorControlModuleBase
 			{
 				val2 = Vector3.LerpUnclamped(val, val2, effectBlend);
 			}
-			leg.OverrideAnimatorAnklePosition(base.LA.RootToWorldSpace(val2));
+			leg.OverrideAnimatorAnklePosition(LA.RootToWorldSpace(val2));
 		}
 	}
 }

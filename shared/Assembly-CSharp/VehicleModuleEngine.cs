@@ -76,9 +76,9 @@ public class VehicleModuleEngine : VehicleModuleStorage
 	{
 		get
 		{
-			if ((Object)(object)base.Car != (Object)null)
+			if ((Object)(object)Car != (Object)null)
 			{
-				return base.Car.CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.On;
+				return Car.CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.On;
 			}
 			return false;
 		}
@@ -139,8 +139,8 @@ public class VehicleModuleEngine : VehicleModuleStorage
 		{
 			return 0f;
 		}
-		float num = Mathf.Lerp(0f, 0.25f, base.healthFraction);
-		float num2 = ((base.healthFraction != 0f) ? (statBoostPercent * 0.75f) : 0f);
+		float num = Mathf.Lerp(0f, 0.25f, healthFraction);
+		float num2 = ((healthFraction != 0f) ? (statBoostPercent * 0.75f) : 0f);
 		return num + num2;
 	}
 
@@ -161,18 +161,18 @@ public class VehicleModuleEngine : VehicleModuleStorage
 
 	public override void VehicleFixedUpdate()
 	{
-		if (!isSpawned || !base.IsOnAVehicle)
+		if (!isSpawned || !IsOnAVehicle)
 		{
 			return;
 		}
 		using (TimeWarning.New("VehicleModuleEngine.VehicleFixedUpdate"))
 		{
 			base.VehicleFixedUpdate();
-			if (base.Vehicle.IsMovingOrOn && !((Object)(object)base.Car == (Object)null) && base.Car.CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.On && IsUsable)
+			if (Vehicle.IsMovingOrOn && !((Object)(object)Car == (Object)null) && Car.CurEngineState == VehicleEngineController<GroundVehicle>.EngineState.On && IsUsable)
 			{
-				float num = Mathf.Lerp(engine.idleFuelPerSec, engine.maxFuelPerSec, Mathf.Abs(base.Car.GetThrottleInput()));
+				float num = Mathf.Lerp(engine.idleFuelPerSec, engine.maxFuelPerSec, Mathf.Abs(Car.GetThrottleInput()));
 				num /= PerformanceFractionFuelEconomy;
-				base.Car.TickFuel(num);
+				Car.TickFuel(num);
 			}
 		}
 	}
@@ -202,7 +202,7 @@ public class VehicleModuleEngine : VehicleModuleStorage
 	public override void OnHealthChanged(float oldValue, float newValue)
 	{
 		base.OnHealthChanged(oldValue, newValue);
-		if (base.isServer)
+		if (isServer)
 		{
 			RefreshPerformanceStats(GetContainer() as EngineStorage);
 		}

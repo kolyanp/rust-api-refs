@@ -192,7 +192,7 @@ public static class ServerOcclusion
 					flag &= AntiHack.IsInsideMesh(pos);
 					if (flag)
 					{
-						GameObject gameObject = ((Component)((RaycastHit)(ref AntiHack.isInsideRayHit)).collider).gameObject;
+						GameObject gameObject = ((Component)AntiHack.isInsideRayHit.collider).gameObject;
 						flag &= gameObject.HasCustomTag(GameObjectTag.AllowBarricadePlacement);
 					}
 				}
@@ -225,7 +225,7 @@ public static class ServerOcclusion
 
 	public const int CacheVersion = 3;
 
-	public static int MaxY;
+	public static int MaxY = 200;
 
 	public static int ChunkCountX;
 
@@ -245,7 +245,7 @@ public static class ServerOcclusion
 
 	public static float AxisZ;
 
-	public static LimitDictionary<(int, int), bool> OcclusionCache;
+	public static LimitDictionary<(int, int), bool> OcclusionCache = new LimitDictionary<(int, int), bool>(32768);
 
 	public static NativeArray<NativeBitArray> OcclusionSubGridBlocked;
 
@@ -255,15 +255,27 @@ public static class ServerOcclusion
 
 	public const int OcclusionChunkResolution = 8;
 
-	public static Dictionary<Network.Visibility.Group, Group> Occludees;
+	public static Dictionary<Network.Visibility.Group, Group> Occludees = new Dictionary<Network.Visibility.Group, Group>();
 
-	public static readonly Vector3[] GridOffsets;
+	public static readonly Vector3[] GridOffsets = new Vector3[2]
+	{
+		new Vector3(0f, 0f, 0f),
+		new Vector3(0f, 1f, 0f)
+	};
 
-	public static readonly (int, int, int)[] neighbours;
+	public static readonly (int, int, int)[] neighbours = new (int, int, int)[6]
+	{
+		(1, 0, 0),
+		(-1, 0, 0),
+		(0, 1, 0),
+		(0, -1, 0),
+		(0, 0, 1),
+		(0, 0, -1)
+	};
 
-	public static bool OcclusionEnabled { get; set; }
+	public static bool OcclusionEnabled { get; set; } = true;
 
-	public static bool OcclusionIncludeRocks { get; set; }
+	public static bool OcclusionIncludeRocks { get; set; } = true;
 
 	public static float OcclusionPollRate => 2f;
 
@@ -305,7 +317,7 @@ public static class ServerOcclusion
 		{
 			return new Grid(grid, grid2, grid3);
 		}
-		return default(Grid);
+		return default;
 	}
 
 	public static int GetSubGrid(float position, float axis)
@@ -325,7 +337,7 @@ public static class ServerOcclusion
 		{
 			return new SubGrid(subGrid, subGrid2, subGrid3);
 		}
-		return default(SubGrid);
+		return default;
 	}
 
 	public static bool IsBlocked(int x, int y, int z)
@@ -338,11 +350,11 @@ public static class ServerOcclusion
 		int y2 = Math.DivRem(y, 8, out var result2);
 		int z2 = Math.DivRem(z, 8, out var result3);
 		int gridIndex = GetGridIndex(x2, y2, z2);
-		NativeBitArray val = (NativeBitArray)(IsValidGrid(x2, y2, z2) ? OcclusionSubGridBlocked[gridIndex] : default(NativeBitArray));
+		NativeBitArray val = (IsValidGrid(x2, y2, z2) ? OcclusionSubGridBlocked[gridIndex] : default(NativeBitArray));
 		int num = result3 * 8 * 8 + result2 * 8 + result;
-		if (((NativeBitArray)(ref val)).IsCreated)
+		if (val.IsCreated)
 		{
-			return ((NativeBitArray)(ref val)).IsSet(num);
+			return val.IsSet(num);
 		}
 		return false;
 	}
@@ -495,9 +507,9 @@ public static class ServerOcclusion
 			for (int i = 0; i < OcclusionSubGridBlocked.Length; i++)
 			{
 				NativeBitArray val = OcclusionSubGridBlocked[i];
-				if (((NativeBitArray)(ref val)).IsCreated)
+				if (val.IsCreated)
 				{
-					((NativeBitArray)(ref val)).Dispose();
+					val.Dispose();
 				}
 			}
 			OcclusionSubGridBlocked.Dispose();
@@ -527,14 +539,14 @@ public static class ServerOcclusion
 				while (enumerator.MoveNext())
 				{
 					NativeBitArray current = enumerator.Current;
-					if (!((NativeBitArray)(ref current)).IsCreated)
+					if (!current.IsCreated)
 					{
 						binaryWriter.Write(0);
 						continue;
 					}
-					binaryWriter.Write(((NativeBitArray)(ref current)).Length);
-					byte[] array = new byte[(((NativeBitArray)(ref current)).Length + 7) / 8];
-					((NativeBitArray)(ref current)).AsNativeArray<byte>().CopyTo(array);
+					binaryWriter.Write(current.Length);
+					byte[] array = new byte[(current.Length + 7) / 8];
+					current.AsNativeArray<byte>().CopyTo(array);
 					binaryWriter.Write(array);
 				}
 			}
@@ -586,7 +598,7 @@ public static class ServerOcclusion
 						byte[] array = binaryReader.ReadBytes((num2 + 7) / 8);
 						OcclusionSubGridBlocked[i] = new NativeBitArray(num2, AllocatorHandle.op_Implicit((Allocator)4), (NativeArrayOptions)1);
 						NativeBitArray val = OcclusionSubGridBlocked[i];
-						((NativeBitArray)(ref val)).AsNativeArray<byte>().CopyFrom(array);
+						val.AsNativeArray<byte>().CopyFrom(array);
 					}
 				}
 				Debug.Log((object)$"Loaded {num} occlusion sub-chunks from file - took {stopwatch.Elapsed.TotalMilliseconds / 1000.0} seconds");
@@ -618,6 +630,7 @@ public static class ServerOcclusion
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
@@ -625,12 +638,11 @@ public static class ServerOcclusion
 		Vector3 val2 = arg.GetVector3(1) + PlayerEyes.EyeOffset;
 		SubGrid subGrid = GetSubGrid(val);
 		SubGrid subGrid2 = GetSubGrid(val2);
-		if (subGrid.Equals(default(SubGrid)) || subGrid2.Equals(default(SubGrid)))
+		if (subGrid.Equals(default) || subGrid2.Equals(default))
 		{
 			return "Path not blocked due to one of positions being outside of grid";
 		}
-		NativeList<(int3, Color)> cells = default(NativeList<(int3, Color)>);
-		cells._002Ector(AllocatorHandle.op_Implicit((Allocator)2));
+		NativeList<(int3, Color)> cells = new NativeList<(int3, Color)>(AllocatorHandle.op_Implicit((Allocator)2));
 		bool flag = DebugPath(val, val2, cells);
 		cells.Dispose();
 		return $"Grid 1: {subGrid}, Grid 2: {subGrid2}\nPath blocked: {flag}";
@@ -830,6 +842,7 @@ public static class ServerOcclusion
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
 		SubGrid subGrid = GetSubGrid(p1);
@@ -841,9 +854,11 @@ public static class ServerOcclusion
 			SubChunkCount = new int3(SubChunkCountX, SubChunkCountY, SubChunkCountZ)
 		};
 		int3 val = new int3(subGrid.x, subGrid.y, subGrid.z);
-		int3 to = default(int3);
-		((int3)(ref to))._002Ector(subGrid2.x, subGrid2.y, subGrid2.z);
-		return Algorithm.Gather(blockedGridThreshold: ConVar.AntiHack.server_occlusion_blocked_grid_threshold, neighbourThreshold: ConVar.AntiHack.server_occlusion_neighbour_threshold, useNeighbourThresholds: ConVar.AntiHack.server_occlusion_use_neighbour_thresholds, from: val, to: to, gridDef: in gridDef, cells: cells);
+		int3 to = new int3(subGrid2.x, subGrid2.y, subGrid2.z);
+		int server_occlusion_blocked_grid_threshold = ConVar.AntiHack.server_occlusion_blocked_grid_threshold;
+		int server_occlusion_neighbour_threshold = ConVar.AntiHack.server_occlusion_neighbour_threshold;
+		bool server_occlusion_use_neighbour_thresholds = ConVar.AntiHack.server_occlusion_use_neighbour_thresholds;
+		return Algorithm.Gather(val, to, in gridDef, server_occlusion_blocked_grid_threshold, server_occlusion_neighbour_threshold, server_occlusion_use_neighbour_thresholds, cells);
 	}
 
 	public static bool GetCachedVisibility(SubGrid from, SubGrid to, out bool isVisible)
@@ -879,20 +894,20 @@ public static class ServerOcclusion
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.Start();
 		int num = ChunkCountX * ChunkCountY * ChunkCountZ;
 		OcclusionSubGridBlocked = new NativeArray<NativeBitArray>(num, (Allocator)4, (NativeArrayOptions)1);
 		Debug.Log((object)$"Preparing Occlusion Grid ({SubChunkCountX}, {SubChunkCountY}, {SubChunkCountZ})");
-		NativeList<int> cellsToCheck = default(NativeList<int>);
-		cellsToCheck._002Ector(1024, AllocatorHandle.op_Implicit((Allocator)3));
+		NativeList<int> cellsToCheck = new NativeList<int>(1024, AllocatorHandle.op_Implicit((Allocator)3));
 		GenerateOcclusionBroadPhase(cellsToCheck, num);
 		int num2 = (cellsToCheck.Length + 128 - 1) / 128;
-		NativeList<SubGrid> subGridCells = default(NativeList<SubGrid>);
-		subGridCells._002Ector(65536, AllocatorHandle.op_Implicit((Allocator)3));
+		NativeList<SubGrid> subGridCells = new NativeList<SubGrid>(65536, AllocatorHandle.op_Implicit((Allocator)3));
 		Debug.Log((object)$"Processing {num2} batches({cellsToCheck.Length} broadphase cells total)...");
 		for (int i = 0; i < num2; i++)
 		{
@@ -927,8 +942,13 @@ public static class ServerOcclusion
 
 	private static void GenerateOcclusionBroadPhase(NativeList<int> cellsToCheck, int chunkTotalCount)
 	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
@@ -939,22 +959,17 @@ public static class ServerOcclusion
 		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		NativeArray<Vector3> val = default(NativeArray<Vector3>);
-		val._002Ector(chunkTotalCount, (Allocator)3, (NativeArrayOptions)0);
-		NativeArray<Vector3> val2 = default(NativeArray<Vector3>);
-		val2._002Ector(chunkTotalCount, (Allocator)3, (NativeArrayOptions)0);
-		NativeArray<int> val3 = default(NativeArray<int>);
-		val3._002Ector(chunkTotalCount, (Allocator)3, (NativeArrayOptions)0);
-		Vector3 val4 = default(Vector3);
-		((Vector3)(ref val4))._002Ector(8f, 8f, 8f);
+		NativeArray<Vector3> val = new NativeArray<Vector3>(chunkTotalCount, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<Vector3> val2 = new NativeArray<Vector3>(chunkTotalCount, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<int> val3 = new NativeArray<int>(chunkTotalCount, (Allocator)3, (NativeArrayOptions)0);
+		Vector3 val4 = new Vector3(8f, 8f, 8f);
 		for (int i = 0; i < chunkTotalCount; i++)
 		{
 			val[i] = Grid.FromIndex(i).GetCenterPoint();
 			val2[i] = val4;
 			val3[i] = 8388608;
 		}
-		NativeArray<bool> results = default(NativeArray<bool>);
-		results._002Ector(chunkTotalCount, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<bool> results = new NativeArray<bool>(chunkTotalCount, (Allocator)3, (NativeArrayOptions)0);
 		GamePhysics.CheckBounds(val.AsReadOnly(), val2.AsReadOnly(), val3.AsReadOnly(), results, (QueryTriggerInteraction)1, GamePhysics.MasksToValidate.Terrain);
 		val3.Dispose();
 		val2.Dispose();
@@ -962,20 +977,20 @@ public static class ServerOcclusion
 		for (int j = 0; j < results.Length; j++)
 		{
 			Grid grid = Grid.FromIndex(j);
-			bool num = results[j];
-			bool flag = false;
+			bool flag = results[j];
+			bool flag2 = false;
 			if (grid.y < ChunkCountY - 1)
 			{
 				int index = new Grid(grid.x, grid.y + 1, grid.z).GetIndex();
-				flag = results[index];
+				flag2 = results[index];
 			}
 			NativeBitArray val5 = OcclusionSubGridBlocked[j];
-			if (((NativeBitArray)(ref val5)).IsCreated)
+			if (val5.IsCreated)
 			{
 				val5 = OcclusionSubGridBlocked[j];
-				((NativeBitArray)(ref val5)).Dispose();
+				val5.Dispose();
 			}
-			if (num | flag)
+			if (flag | flag2)
 			{
 				OcclusionSubGridBlocked[j] = new NativeBitArray(512, AllocatorHandle.op_Implicit((Allocator)4), (NativeArrayOptions)1);
 				cellsToCheck.Add(ref j);
@@ -986,6 +1001,8 @@ public static class ServerOcclusion
 
 	private static void GenerateOcclusionNarrowPhase(NativeList<SubGrid> subGridCells)
 	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
@@ -1000,10 +1017,12 @@ public static class ServerOcclusion
 		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0229: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0235: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
@@ -1014,14 +1033,12 @@ public static class ServerOcclusion
 		//IL_035d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
 		int num = GridOffsets.Length;
-		NativeArray<Vector3> posi = default(NativeArray<Vector3>);
-		posi._002Ector(subGridCells.Length * num, (Allocator)3, (NativeArrayOptions)0);
-		NativeArray<Vector3> val = default(NativeArray<Vector3>);
-		val._002Ector(GridOffsets, (Allocator)3);
+		NativeArray<Vector3> posi = new NativeArray<Vector3>(subGridCells.Length * num, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<Vector3> val = new NativeArray<Vector3>(GridOffsets, (Allocator)3);
 		NativeBitArray val3;
 		if (!subGridCells.IsEmpty)
 		{
-			CalculateSubGridSamplePointsJob obj = new CalculateSubGridSamplePointsJob
+			CalculateSubGridSamplePointsJob calculateSubGridSamplePointsJob = new CalculateSubGridSamplePointsJob
 			{
 				Posi = posi,
 				SubGridCells = subGridCells.AsReadOnly(),
@@ -1030,11 +1047,10 @@ public static class ServerOcclusion
 			};
 			int batchSize = ThreadUtils.GetBatchSize(subGridCells.Length);
 			int length = subGridCells.Length;
-			JobHandle val2 = default(JobHandle);
-			val2 = IJobForExtensions.ScheduleParallel<CalculateSubGridSamplePointsJob>(obj, length, batchSize, val2);
-			((JobHandle)(ref val2)).Complete();
-			NativeArray<bool> results = default(NativeArray<bool>);
-			results._002Ector(posi.Length, (Allocator)3, (NativeArrayOptions)0);
+			JobHandle val2 = default;
+			val2 = IJobForExtensions.ScheduleParallel<CalculateSubGridSamplePointsJob>(calculateSubGridSamplePointsJob, length, batchSize, val2);
+			val2.Complete();
+			NativeArray<bool> results = new NativeArray<bool>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
 			AntiHack.TestInsideTerrain(posi.AsReadOnly(), results);
 			int num2 = 0;
 			for (int i = 0; i < subGridCells.Length; i++)
@@ -1054,7 +1070,7 @@ public static class ServerOcclusion
 					int gridIndex = GetGridIndex(x, y, z);
 					int num4 = result3 * 8 * 8 + result2 * 8 + result;
 					val3 = OcclusionSubGridBlocked[gridIndex];
-					((NativeBitArray)(ref val3)).Set(num4, true);
+					val3.Set(num4, true);
 				}
 				else
 				{
@@ -1072,8 +1088,7 @@ public static class ServerOcclusion
 		if (OcclusionIncludeRocks && !subGridCells.IsEmpty)
 		{
 			NativeArray<Vector3> subArray = posi.GetSubArray(0, subGridCells.Length * num);
-			NativeArray<RaycastHit> hits = default(NativeArray<RaycastHit>);
-			hits._002Ector(subArray.Length, (Allocator)3, (NativeArrayOptions)0);
+			NativeArray<RaycastHit> hits = new NativeArray<RaycastHit>(subArray.Length, (Allocator)3, (NativeArrayOptions)0);
 			AntiHack.AreInsideMesh(subArray.AsReadOnly(), hits);
 			Span<int> span = stackalloc int[num];
 			int num6 = 0;
@@ -1083,7 +1098,7 @@ public static class ServerOcclusion
 				for (int m = 0; m < num; m++)
 				{
 					RaycastHit val4 = hits[l * num + m];
-					int colliderInstanceID = ((RaycastHit)(ref val4)).colliderInstanceID;
+					int colliderInstanceID = val4.colliderInstanceID;
 					flag2 &= colliderInstanceID != 0;
 					if (!flag2)
 					{
@@ -1100,7 +1115,7 @@ public static class ServerOcclusion
 					}
 					if (!flag3)
 					{
-						GameObject gameObject = ((Component)((RaycastHit)(ref val4)).collider).gameObject;
+						GameObject gameObject = ((Component)val4.collider).gameObject;
 						flag2 &= gameObject.HasCustomTag(GameObjectTag.AllowBarricadePlacement);
 						if (!flag2)
 						{
@@ -1119,7 +1134,7 @@ public static class ServerOcclusion
 					int gridIndex2 = GetGridIndex(x2, y2, z2);
 					int num7 = result6 * 8 * 8 + result5 * 8 + result4;
 					val3 = OcclusionSubGridBlocked[gridIndex2];
-					((NativeBitArray)(ref val3)).Set(num7, true);
+					val3.Set(num7, true);
 				}
 			}
 			hits.Dispose();
@@ -1134,24 +1149,5 @@ public static class ServerOcclusion
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		MaxY = 200;
-		OcclusionCache = new LimitDictionary<(int, int), bool>(32768);
-		OcclusionEnabled = true;
-		OcclusionIncludeRocks = true;
-		Occludees = new Dictionary<Network.Visibility.Group, Group>();
-		GridOffsets = (Vector3[])(object)new Vector3[2]
-		{
-			new Vector3(0f, 0f, 0f),
-			new Vector3(0f, 1f, 0f)
-		};
-		neighbours = new(int, int, int)[6]
-		{
-			(1, 0, 0),
-			(-1, 0, 0),
-			(0, 1, 0),
-			(0, -1, 0),
-			(0, 0, 1),
-			(0, 0, -1)
-		};
 	}
 }

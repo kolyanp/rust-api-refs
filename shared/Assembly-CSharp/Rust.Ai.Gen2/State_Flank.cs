@@ -35,24 +35,24 @@ public class State_Flank : FSMStateBase
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
+		if (!Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		NavVector3 positionNS = base.Agent.WorldToNavSpace(lkp);
-		if (!base.Agent.SamplePosition(positionNS, out var hitNS, 3.5f))
+		NavVector3 positionNS = Agent.WorldToNavSpace(lkp);
+		if (!Agent.SamplePosition(positionNS, out var hitNS, 3.5f))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Agent.CalculatePath(hitNS.position, PathToLkp) || (int)PathToLkp.status != 0)
+		if (!Agent.CalculatePath(hitNS.position, PathToLkp) || (int)PathToLkp.status != 0)
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!NPCFlankSpot.Find(base.Agent, hitNS.position, PathToLkp, PathToFlank, PathFromFlankToEnemy))
+		if (!NPCFlankSpot.Find(Agent, hitNS.position, PathToLkp, PathToFlank, PathFromFlankToEnemy))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Agent.SetPath(PathToFlank))
+		if (!Agent.SetPath(PathToFlank))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -60,7 +60,7 @@ public class State_Flank : FSMStateBase
 		{
 			ClientAnim.IsCrouching = true;
 		}
-		base.Agent.speed = base.Agent.GetSpeedForGait(speed);
+		Agent.speed = Agent.GetSpeedForGait(speed);
 		isOnSecondPath = false;
 		BarkComponent.PlayVoicelineFromCategory(ENPCVoicelineCategory.Flank);
 		return base.OnStateEnter(payload);
@@ -68,18 +68,18 @@ public class State_Flank : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		if (!base.Agent.hasPath)
+		if (!Agent.hasPath)
 		{
 			if (isOnSecondPath)
 			{
 				return EFSMStateStatus.Success;
 			}
 			isOnSecondPath = true;
-			if (!base.Senses.FindTarget(out var _))
+			if (!Senses.FindTarget(out var _))
 			{
 				return EFSMStateStatus.Failure;
 			}
-			if (!base.Agent.SetPath(PathFromFlankToEnemy))
+			if (!Agent.SetPath(PathFromFlankToEnemy))
 			{
 				return EFSMStateStatus.Failure;
 			}
@@ -90,7 +90,7 @@ public class State_Flank : FSMStateBase
 	public override void OnStateExit()
 	{
 		ClientAnim.IsCrouching = false;
-		base.Agent.ResetPath();
+		Agent.ResetPath();
 		base.OnStateExit();
 	}
 

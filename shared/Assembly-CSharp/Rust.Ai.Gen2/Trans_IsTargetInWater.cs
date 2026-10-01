@@ -9,7 +9,7 @@ public class Trans_IsTargetInWater : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_IsTargetInWater"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return false;
 			}
@@ -17,7 +17,7 @@ public class Trans_IsTargetInWater : FSMTransitionBase
 			{
 				return false;
 			}
-			if (!base.Senses.GetVisibilityStatus(target, out var status))
+			if (!Senses.GetVisibilityStatus(target, out var status))
 			{
 				return false;
 			}

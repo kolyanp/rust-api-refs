@@ -21,7 +21,7 @@ public class DropBox : Mailbox
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 forward = ((Component)this).transform.forward;
 		Vector3 val = ((Component)player).transform.position - ((Component)this).transform.position;
-		float num = Vector3.Dot(forward, ((Vector3)(ref val)).normalized);
+		float num = Vector3.Dot(forward, val.normalized);
 		bool flag = GamePhysics.LineOfSight(player.eyes.position, EyePoint.position, 2162688);
 		return (num <= 0f) & flag;
 	}
@@ -36,7 +36,7 @@ public class DropBox : Mailbox
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 forward = ((Component)this).transform.forward;
 		Vector3 val = ((Component)player).transform.position - ((Component)this).transform.position;
-		return Vector3.Dot(forward, ((Vector3)(ref val)).normalized) >= 0.7f;
+		return Vector3.Dot(forward, val.normalized) >= 0.7f;
 	}
 
 	public override bool SupportsChildDeployables()

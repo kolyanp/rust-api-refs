@@ -74,17 +74,17 @@ public sealed class PostProcessManager
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		int value = ((LayerMask)(ref layer.volumeLayer)).value;
+		int value = layer.volumeLayer.value;
 		Transform volumeTrigger = layer.volumeTrigger;
 		bool flag = (Object)(object)volumeTrigger == (Object)null;
 		Vector3 val = (flag ? Vector3.zero : volumeTrigger.position);
-		OBB val2 = default(OBB);
 		foreach (PostProcessVolume item in GrabVolumes(LayerMask.op_Implicit(value)))
 		{
 			if ((skipDisabled && !((Behaviour)item).enabled) || (Object)(object)item.profileRef == (Object)null || (skipZeroWeight && item.weight <= 0f))
@@ -97,9 +97,9 @@ public sealed class PostProcessManager
 			}
 			else if (!flag)
 			{
-				((OBB)(ref val2))._002Ector(((Component)item).transform, item.bounds);
-				Vector3 val3 = (((OBB)(ref val2)).ClosestPoint(val) - val) / 2f;
-				float sqrMagnitude = ((Vector3)(ref val3)).sqrMagnitude;
+				OBB val2 = new OBB(((Component)item).transform, item.bounds);
+				Vector3 val3 = (val2.ClosestPoint(val) - val) / 2f;
+				float sqrMagnitude = val3.sqrMagnitude;
 				float num = item.blendDistance * item.blendDistance;
 				if (sqrMagnitude <= num)
 				{
@@ -238,6 +238,7 @@ public sealed class PostProcessManager
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
@@ -245,11 +246,10 @@ public sealed class PostProcessManager
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
 		ReplaceData(postProcessLayer);
-		int value = ((LayerMask)(ref postProcessLayer.volumeLayer)).value;
+		int value = postProcessLayer.volumeLayer.value;
 		Transform volumeTrigger = postProcessLayer.volumeTrigger;
 		bool flag = (Object)(object)volumeTrigger == (Object)null;
 		Vector3 val = (flag ? Vector3.zero : volumeTrigger.position);
-		OBB val2 = default(OBB);
 		foreach (PostProcessVolume item in GrabVolumes(LayerMask.op_Implicit(value)))
 		{
 			if (!((Behaviour)item).enabled || (Object)(object)item.profileRef == (Object)null || item.weight <= 0f)
@@ -267,9 +267,9 @@ public sealed class PostProcessManager
 				{
 					continue;
 				}
-				((OBB)(ref val2))._002Ector(((Component)item).transform, item.bounds);
-				Vector3 val3 = (((OBB)(ref val2)).ClosestPoint(val) - val) / 2f;
-				float sqrMagnitude = ((Vector3)(ref val3)).sqrMagnitude;
+				OBB val2 = new OBB(((Component)item).transform, item.bounds);
+				Vector3 val3 = (val2.ClosestPoint(val) - val) / 2f;
+				float sqrMagnitude = val3.sqrMagnitude;
 				float num = item.blendDistance * item.blendDistance;
 				if (!(sqrMagnitude > num))
 				{

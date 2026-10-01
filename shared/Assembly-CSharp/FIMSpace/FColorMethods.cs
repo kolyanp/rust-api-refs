@@ -102,7 +102,7 @@ public static class FColorMethods
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		return FColorMethods.ColorToHex(new Color32((byte)(color.r * 255f), (byte)(color.g * 255f), (byte)(color.b * 255f), (byte)(color.a * 255f)), addHash);
+		return ColorToHex(new Color32((byte)(color.r * 255f), (byte)(color.g * 255f), (byte)(color.b * 255f), (byte)(color.a * 255f)), addHash);
 	}
 
 	public static void LerpMaterialColor(this Material mat, string property, Color targetColor, float deltaMultiplier = 8f)

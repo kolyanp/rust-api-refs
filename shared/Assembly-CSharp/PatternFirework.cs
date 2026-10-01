@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -84,9 +85,9 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		ShellFuseLength = FuseLength.Medium;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void StartOpenDesigner(RPCMessage rpc)
 	{
 		if (PlayerCanModify(rpc.player))
@@ -128,6 +129,7 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 				star.color = new Color(Mathf.Clamp01(star.color.r), Mathf.Clamp01(star.color.g), Mathf.Clamp01(star.color.b), 1f);
 			}
 			val.editedBy = rpc.player.userID;
+			Facepunch.Rust.Analytics.Azure.OnUGCCreated(rpc.player, this, "firework_pattern", val.stars.Count);
 		}
 		Design design = Design;
 		if (design != null)
@@ -139,9 +141,9 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		SendNetworkUpdateImmediate();
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void SetShellFuseLength(RPCMessage rpc)
 	{
 		if (PlayerCanModify(rpc.player))

@@ -128,7 +128,7 @@ public class RFReceiver : IOEntity, IRFObject
 
 	public void RFSignalUpdate(bool on)
 	{
-		if (!base.IsDestroyed && IsOn() != on && !(!IsPowered() & on))
+		if (!IsDestroyed && IsOn() != on && !(!IsPowered() & on))
 		{
 			SetFlagLocal(Flags.On, on);
 			SendNetworkUpdate_Flags();
@@ -178,8 +178,8 @@ public class RFReceiver : IOEntity, IRFObject
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void ServerSetFrequency(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanBuild())
@@ -202,8 +202,8 @@ public class RFReceiver : IOEntity, IRFObject
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	public void SERVER_RequestOpenPanel(RPCMessage msg)
 	{
@@ -229,7 +229,7 @@ public class RFReceiver : IOEntity, IRFObject
 		if (info.msg.ioEntity != null)
 		{
 			frequency = info.msg.ioEntity.genericInt1;
-			if (info.fromDisk && base.isServer)
+			if (info.fromDisk && isServer)
 			{
 				RFSignalUpdate(on: false);
 			}

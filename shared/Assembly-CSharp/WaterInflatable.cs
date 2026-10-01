@@ -13,15 +13,15 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public Transform centerOfMass;
 
-	public float forwardPushForce;
+	public float forwardPushForce = 5f;
 
-	public float rearPushForce;
+	public float rearPushForce = 5f;
 
-	public float rotationForce;
+	public float rotationForce = 5f;
 
-	public float maxSpeed;
+	public float maxSpeed = 3f;
 
-	public float maxPaddleFrequency;
+	public float maxPaddleFrequency = 0.5f;
 
 	public SoundDefinition paddleSfx;
 
@@ -31,7 +31,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public BlendedSoundLoops waterLoops;
 
-	public float waterSoundSpeedDivisor;
+	public float waterSoundSpeedDivisor = 1f;
 
 	public float additiveDownhillVelocity;
 
@@ -41,11 +41,11 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public GameObjectRef footSplashEffect;
 
-	public float animationLerpSpeed;
+	public float animationLerpSpeed = 1f;
 
 	public Transform smoothedEyePosition;
 
-	public float smoothedEyeSpeed;
+	public float smoothedEyeSpeed = 1f;
 
 	public Buoyancy buoyancy;
 
@@ -54,11 +54,11 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 	public GameObjectRef mountEffect;
 
 	[Range(0f, 1f)]
-	public float handSplashOffset;
+	public float handSplashOffset = 1f;
 
-	public float velocitySplashMultiplier;
+	public float velocitySplashMultiplier = 4f;
 
-	public Vector3 modifyEyeOffset;
+	public Vector3 modifyEyeOffset = Vector3.zero;
 
 	[Range(0f, 1f)]
 	public float inheritVelocityMultiplier;
@@ -67,11 +67,11 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public ParticleSystem[] movingParticleSystems;
 
-	public float movingParticlesThreshold;
+	public float movingParticlesThreshold = 0.0005f;
 
 	public Transform headSpaceCheckPosition;
 
-	public float headSpaceCheckRadius;
+	public float headSpaceCheckRadius = 0.4f;
 
 	private TimeSince landFacingCheck;
 
@@ -83,7 +83,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	private bool isInPool;
 
-	private Vector3 lastPos;
+	private Vector3 lastPos = Vector3.zero;
 
 	private Vector3 lastClipCheckPosition;
 
@@ -128,7 +128,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 		if ((Object)(object)deployedBy != (Object)null)
 		{
 			Vector3 estimatedVelocity = deployedBy.estimatedVelocity;
-			float num = Vector3.Dot(((Component)this).transform.forward, ((Vector3)(ref estimatedVelocity)).normalized);
+			float num = Vector3.Dot(((Component)this).transform.forward, estimatedVelocity.normalized);
 			Vector3 val = Vector3.Lerp(Vector3.zero, estimatedVelocity, Mathf.Clamp(num, 0f, 1f));
 			val *= inheritVelocityMultiplier;
 			rigidBody.AddForce(val, (ForceMode)2);
@@ -159,7 +159,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 			}
 			prevSleeping = flag;
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			if (((Vector3)(ref linearVelocity)).magnitude > maxSpeed)
+			if (linearVelocity.magnitude > maxSpeed)
 			{
 				rigidBody.linearVelocity = Vector3.ClampMagnitude(rigidBody.linearVelocity, maxSpeed);
 			}
@@ -275,7 +275,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 				if (inputState.IsDown(BUTTON.FORWARD))
 				{
 					Vector3 linearVelocity = rigidBody.linearVelocity;
-					if (((Vector3)(ref linearVelocity)).magnitude < maxSpeed)
+					if (linearVelocity.magnitude < maxSpeed)
 					{
 						rigidBody.AddForce(((Component)this).transform.forward * forwardPushForce, (ForceMode)1);
 					}
@@ -314,7 +314,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 					rigidBody.AddForce(num * Time.fixedDeltaTime * ((Component)this).transform.forward, (ForceMode)5);
 				}
 				Vector3 linearVelocity2 = rigidBody.linearVelocity;
-				rigidBody.linearVelocity = Vector3.Lerp(linearVelocity2, ((Component)this).transform.forward * ((Vector3)(ref linearVelocity2)).magnitude, 0.4f);
+				rigidBody.linearVelocity = Vector3.Lerp(linearVelocity2, ((Component)this).transform.forward * linearVelocity2.magnitude, 0.4f);
 			}
 			if (driftTowardsIsland && TimeSince.op_Implicit(landFacingCheck) > 2f && !isInPool)
 			{
@@ -368,7 +368,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public override float WaterFactorForPlayer(BasePlayer player, out WaterLevel.WaterInfo info)
 	{
-		info = default(WaterLevel.WaterInfo);
+		info = default;
 		return 0f;
 	}
 
@@ -407,7 +407,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public void OnObjects(TriggerNotify trigger)
 	{
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -431,20 +431,5 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		forwardPushForce = 5f;
-		rearPushForce = 5f;
-		rotationForce = 5f;
-		maxSpeed = 3f;
-		maxPaddleFrequency = 0.5f;
-		waterSoundSpeedDivisor = 1f;
-		animationLerpSpeed = 1f;
-		smoothedEyeSpeed = 1f;
-		handSplashOffset = 1f;
-		velocitySplashMultiplier = 4f;
-		modifyEyeOffset = Vector3.zero;
-		movingParticlesThreshold = 0.0005f;
-		headSpaceCheckRadius = 0.4f;
-		lastPos = Vector3.zero;
-		base._002Ector();
 	}
 }

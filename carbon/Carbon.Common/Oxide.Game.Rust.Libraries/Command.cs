@@ -23,7 +23,7 @@ public class Command : Library
 
 	private Func<API.Commands.Command, API.Commands.Command.Args, bool> OnPlayerExecute(bool isChat)
 	{
-		return delegate(API.Commands.Command cmd, API.Commands.Command.Args args)
+		return (API.Commands.Command cmd, API.Commands.Command.Args args) =>
 		{
 			if (args is PlayerArgs playerArgs && playerArgs != null)
 			{
@@ -126,7 +126,7 @@ public class Command : Library
 		{
 			Name = command,
 			Reference = plugin,
-			Callback = delegate(API.Commands.Command.Args arg)
+			Callback = (API.Commands.Command.Args arg) =>
 			{
 				if (arg is PlayerArgs playerArgs)
 				{
@@ -176,7 +176,7 @@ public class Command : Library
 
 	public void AddChatCommand(string command, BaseHookable plugin, MethodInfo methodInfo, string help = null, object reference = null, string[] permissions = null, string[] groups = null, int authLevel = -1, int cooldown = 0, bool isHidden = false, bool @protected = false, bool silent = false, bool doCooldownPenalty = false)
 	{
-		AddChatCommand(command, plugin, delegate(BasePlayer player, string cmd, string[] args)
+		AddChatCommand(command, plugin, (BasePlayer player, string cmd, string[] args) =>
 		{
 			//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
@@ -210,12 +210,12 @@ public class Command : Library
 						val = (Arg)((uninitializedObject is Arg) ? uninitializedObject : null);
 						if ((Object)(object)player != (Object)null)
 						{
-							option = ((Option)(ref option)).FromConnection(((BaseNetworkable)player).net.connection);
+							option = option.FromConnection(((BaseNetworkable)player).net.connection);
 						}
-						((Option)(ref option)).FromRcon = FromRcon;
+						option.FromRcon = FromRcon;
 						val.Option = option;
 						val.FullString = StringView.op_Implicit(text);
-						val.Args = args.Select(delegate(string x)
+						val.Args = args.Select((string x) =>
 						{
 							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 							return StringView.op_Implicit(x);
@@ -270,7 +270,7 @@ public class Command : Library
 		{
 			Name = command,
 			Reference = plugin,
-			Callback = delegate(API.Commands.Command.Args arg)
+			Callback = (API.Commands.Command.Args arg) =>
 			{
 				if (arg is PlayerArgs playerArgs)
 				{
@@ -304,7 +304,7 @@ public class Command : Library
 		{
 			Name = command,
 			Reference = plugin,
-			Callback = delegate(API.Commands.Command.Args arg)
+			Callback = (API.Commands.Command.Args arg) =>
 			{
 				callback?.Invoke(null, command, arg.Arguments.ToStringArray());
 			},
@@ -331,7 +331,7 @@ public class Command : Library
 
 	public void AddConsoleCommand(string command, BaseHookable plugin, MethodInfo methodInfo, string help = null, object reference = null, string[] permissions = null, string[] groups = null, int authLevel = -1, int cooldown = 0, bool isHidden = false, bool @protected = false, bool silent = false, bool doCooldownPenalty = false)
 	{
-		AddConsoleCommand(command, plugin, delegate(BasePlayer player, string cmd, string[] args)
+		AddConsoleCommand(command, plugin, (BasePlayer player, string cmd, string[] args) =>
 		{
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
@@ -352,7 +352,7 @@ public class Command : Library
 				Arg val = (Arg)((uninitializedObject is Arg) ? uninitializedObject : null);
 				if ((Object)(object)player != (Object)null)
 				{
-					option = ((Option)(ref option)).FromConnection(((BaseNetworkable)player).net.connection);
+					option = option.FromConnection(((BaseNetworkable)player).net.connection);
 				}
 				val.Option = option;
 				val.FullString = StringView.op_Implicit(text);
@@ -420,7 +420,7 @@ public class Command : Library
 					if (HookCaller.CallStaticHook(39952195u, val) == null && HookCaller.CallStaticHook(2535152661u, val) == null)
 					{
 						methodInfo?.Invoke(plugin, array);
-						if (!string.IsNullOrEmpty(val.Reply) && ((Option)(ref option)).PrintOutput)
+						if (!string.IsNullOrEmpty(val.Reply) && option.PrintOutput)
 						{
 							if ((Object)(object)player != (Object)null)
 							{
@@ -463,13 +463,13 @@ public class Command : Library
 		{
 			Name = command,
 			Reference = plugin,
-			Callback = delegate(API.Commands.Command.Args args)
+			Callback = (API.Commands.Command.Args args) =>
 			{
 				if (args.Tokenize<Arg>(out var value))
 				{
 					callback?.Invoke(value);
 					args.Reply = value.Reply;
-					args.PrintOutput = ((Option)(ref value.Option)).PrintOutput;
+					args.PrintOutput = value.Option.PrintOutput;
 				}
 			},
 			Help = help,
@@ -494,11 +494,11 @@ public class Command : Library
 		{
 			Name = command,
 			Reference = plugin,
-			Callback = delegate(API.Commands.Command.Args args)
+			Callback = (API.Commands.Command.Args args) =>
 			{
 				if (args.Tokenize<Arg>(out var value))
 				{
-					args.PrintOutput = ((Option)(ref value.Option)).PrintOutput;
+					args.PrintOutput = value.Option.PrintOutput;
 					callback?.Invoke(value);
 					args.Reply = value.Reply;
 				}

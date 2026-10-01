@@ -49,7 +49,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 		private float score;
 
-		private float lastActiveTime;
+		private float lastActiveTime = Time.realtimeSinceStartup;
 
 		private const float isStaleTime = 5f;
 
@@ -95,8 +95,6 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-			lastActiveTime = Time.realtimeSinceStartup;
-			base._002Ector();
 			if ((Object)(object)parent == (Object)null)
 			{
 				this.centre = centre;
@@ -135,7 +133,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 			Vector3 val = point - Centre;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			normalized.y = 0f;
 			return Centre + normalized * Radius;
 		}
@@ -154,13 +152,13 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		DEATH
 	}
 
-	public List<targetinfo> _targetList;
+	public List<targetinfo> _targetList = new List<targetinfo>();
 
-	private HashSet<BasePlayer> _targetSet;
+	private HashSet<BasePlayer> _targetSet = new HashSet<BasePlayer>();
 
-	public List<DangerZone> dangerZones;
+	public List<DangerZone> dangerZones = new List<DangerZone>();
 
-	public List<DangerZone> noGoZones;
+	public List<DangerZone> noGoZones = new List<DangerZone>();
 
 	private const int max_zones = 20;
 
@@ -178,9 +176,9 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public float moveSpeed;
 
-	public float maxSpeed;
+	public float maxSpeed = 25f;
 
-	public float courseAdjustLerpTime;
+	public float courseAdjustLerpTime = 2f;
 
 	public Quaternion targetRotation;
 
@@ -188,21 +186,21 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public Vector3 targetWindVec;
 
-	public float windForce;
+	public float windForce = 5f;
 
-	public float windFrequency;
+	public float windFrequency = 1f;
 
 	public float targetThrottleSpeed;
 
 	public float throttleSpeed;
 
-	public float maxRotationSpeed;
+	public float maxRotationSpeed = 90f;
 
 	public float rotationSpeed;
 
-	public float terrainPushForce;
+	public float terrainPushForce = 100f;
 
-	public float obstaclePushForce;
+	public float obstaclePushForce = 100f;
 
 	public HelicopterTurret leftGun;
 
@@ -214,7 +212,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public aiState _currentState;
 
-	public float oceanDepthTargetCutoff;
+	public float oceanDepthTargetCutoff = 3f;
 
 	public AIHelicopterAnimation anim;
 
@@ -226,7 +224,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	private bool aimDoorSide;
 
-	private Vector3 pushVec;
+	private Vector3 pushVec = Vector3.zero;
 
 	private Vector3 _lastPos;
 
@@ -267,7 +265,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	private const float FleeDistance = 130f;
 
-	private float destination_min_dist;
+	private float destination_min_dist = 2f;
 
 	private float currentOrbitDistance;
 
@@ -277,13 +275,13 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	private float orbitStartTime;
 
-	public float maxOrbitDuration;
+	public float maxOrbitDuration = 30f;
 
 	private bool breakingOrbit;
 
 	private int orbitPointsReached;
 
-	private float timeBetweenRocketsOrbit;
+	private float timeBetweenRocketsOrbit = 0.5f;
 
 	private bool didGetToDesination;
 
@@ -299,9 +297,9 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public float lastRocketTime;
 
-	public float timeBetweenRockets;
+	public float timeBetweenRockets = 0.2f;
 
-	public int numRocketsLeft;
+	public int numRocketsLeft = 12;
 
 	public const int maxRockets = 12;
 
@@ -316,7 +314,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public const float strafe_firing_range = 150f;
 
-	private float get_out_of_strafe_distance;
+	private float get_out_of_strafe_distance = 15f;
 
 	private bool passNapalm;
 
@@ -327,10 +325,10 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 	private bool useNapalm;
 
 	[NonSerialized]
-	public float lastNapalmTime;
+	public float lastNapalmTime = float.NegativeInfinity;
 
 	[NonSerialized]
-	public float lastStrafeTime;
+	public float lastStrafeTime = float.NegativeInfinity;
 
 	private float _lastThinkTime;
 
@@ -614,8 +612,8 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			Vector3 val = ((Component)this).transform.position - Vector3.up * 6f;
 			float num = Vector3.Distance(position, val);
 			Vector3 val2 = position - val;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
-			if (GamePhysics.Trace(new Ray(val + normalized * 5f, normalized), 0f, out var hitInfo, num * 1.1f, 1218652417, (QueryTriggerInteraction)0) && (Object)(object)GameObjectEx.ToBaseEntity(((Component)((RaycastHit)(ref hitInfo)).collider).gameObject) == (Object)(object)ply)
+			Vector3 normalized = val2.normalized;
+			if (GamePhysics.Trace(new Ray(val + normalized * 5f, normalized), 0f, out var hitInfo, num * 1.1f, 1218652417, (QueryTriggerInteraction)0) && (Object)(object)GameObjectEx.ToBaseEntity(((Component)hitInfo.collider).gameObject) == (Object)(object)ply)
 			{
 				return true;
 			}
@@ -866,7 +864,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			float y = 200f;
 			Vector3 val = Vector3Ex.Range(-1f, 1f);
 			val.y = 0f;
-			((Vector3)(ref val)).Normalize();
+			val.Normalize();
 			val *= x * 20f;
 			val.y = y;
 			ExitCurrentState();
@@ -906,7 +904,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		Vector3 position = ((Component)this).transform.position;
 		position.y = 0f;
 		Vector3 val2 = val - position;
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		if (!(normalized != Vector3.zero))
 		{
 			return Quaternion.identity;
@@ -992,7 +990,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 lastMoveDir = _lastMoveDir;
 		Vector3 val = destination - ((Component)this).transform.position;
-		Vector3 val2 = (_lastMoveDir = Vector3.Lerp(lastMoveDir, ((Vector3)(ref val)).normalized, Time.deltaTime / courseAdjustLerpTime));
+		Vector3 val2 = (_lastMoveDir = Vector3.Lerp(lastMoveDir, val.normalized, Time.deltaTime / courseAdjustLerpTime));
 		throttleSpeed = Mathf.Lerp(throttleSpeed, targetThrottleSpeed, Time.deltaTime / 3f);
 		float num = throttleSpeed * maxSpeed;
 		TerrainPushback();
@@ -1061,25 +1059,25 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			int mask = LayerMask.GetMask(new string[3] { "Terrain", "World", "Construction" });
 			Vector3 val = ((Component)this).transform.position + new Vector3(0f, 2f, 0f);
 			Vector3 val2 = destination - val;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			float num = Vector3.Distance(destination, ((Component)this).transform.position);
 			Ray val3 = new Ray(val, normalized);
 			float num2 = 5f;
 			float num3 = Mathf.Min(100f, num);
 			Vector3 val4 = Vector3.zero;
-			RaycastHit val5 = default(RaycastHit);
+			RaycastHit val5 = default;
 			if (Physics.SphereCast(val3, num2, ref val5, num3 - num2 * 0.5f, mask))
 			{
-				float num4 = 1f - ((RaycastHit)(ref val5)).distance / num3;
+				float num4 = 1f - val5.distance / num3;
 				float num5 = terrainPushForce * num4;
 				val4 = Vector3.up * num5;
 			}
 			Ray val6 = new Ray(val, _lastMoveDir);
 			float num6 = Mathf.Min(10f, num);
-			RaycastHit val7 = default(RaycastHit);
+			RaycastHit val7 = default;
 			if (Physics.SphereCast(val6, num2, ref val7, num6 - num2 * 0.5f, mask))
 			{
-				float num7 = 1f - ((RaycastHit)(ref val7)).distance / num6;
+				float num7 = 1f - val7.distance / num6;
 				float num8 = obstaclePushForce * num7;
 				val4 += _lastMoveDir * num8 * -1f;
 				val4 += Vector3.up * num8;
@@ -1089,7 +1087,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			float num9 = 10f;
 			if (GamePhysics.Trace(ray, num2, out var hitInfo, num9 - num2 * 0.5f, mask2, (QueryTriggerInteraction)0))
 			{
-				float num10 = 1f - ((RaycastHit)(ref hitInfo)).distance / num9;
+				float num10 = 1f - hitInfo.distance / num9;
 				float num11 = obstaclePushForce * num10;
 				val4 += Vector3.up * num11;
 			}
@@ -1140,7 +1138,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			Vector3 aimTarget = _aimTarget;
 			aimTarget.y = 0f;
 			Vector3 val = aimTarget - position;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			Vector3 val2 = Vector3.Cross(normalized, Vector3.up);
 			float num = Vector3.Angle(normalized, ((Component)this).transform.right);
 			float num2 = Vector3.Angle(normalized, -((Component)this).transform.right);
@@ -1254,15 +1252,15 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		if (!isRetiring && IsAlive() && _currentState != aiState.FLEE)
 		{
 			BasePlayer basePlayer = info.Initiator as BasePlayer;
-			bool num = ValidRocketTarget(basePlayer);
-			bool flag = num && CanStrafe();
-			bool flag2 = !num && CanUseNapalm();
-			float num2 = Time.realtimeSinceStartup - lastDamageTime;
+			bool flag = ValidRocketTarget(basePlayer);
+			bool flag2 = flag && CanStrafe();
+			bool flag3 = !flag && CanUseNapalm();
+			float num = Time.realtimeSinceStartup - lastDamageTime;
 			lastDamageTime = Time.realtimeSinceStartup;
-			if (num2 < timeSinceDamagedThreshold && (Object)(object)basePlayer != (Object)null && (flag | flag2))
+			if (num < timeSinceDamagedThreshold && (Object)(object)basePlayer != (Object)null && (flag2 | flag3))
 			{
 				ExitCurrentState();
-				State_Strafe_Enter(basePlayer, flag2);
+				State_Strafe_Enter(basePlayer, flag3);
 			}
 		}
 	}
@@ -1336,19 +1334,19 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		}
 		Vector3 position = (left ? helicopterBase.left_gun_muzzle.transform : helicopterBase.right_gun_muzzle.transform).position;
 		Vector3 val = targetPos - position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		position += normalized * 2f;
 		Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(aimCone, normalized);
 		if (GamePhysics.Trace(new Ray(position, modifiedAimConeDirection), 0f, out var hitInfo, 300f, 1220225809, (QueryTriggerInteraction)0))
 		{
-			targetPos = ((RaycastHit)(ref hitInfo)).point;
-			if (Object.op_Implicit((Object)(object)((RaycastHit)(ref hitInfo)).collider))
+			targetPos = hitInfo.point;
+			if (Object.op_Implicit((Object)(object)hitInfo.collider))
 			{
 				BaseEntity entity = RaycastHitEx.GetEntity(hitInfo);
 				if (Object.op_Implicit((Object)(object)entity) && (Object)(object)entity != (Object)(object)helicopterBase)
 				{
 					BaseCombatEntity baseCombatEntity = entity as BaseCombatEntity;
-					HitInfo info = new HitInfo(helicopterBase, entity, DamageType.Bullet, helicopterBase.bulletDamage * ConVar.PatrolHelicopter.bulletDamageScale, ((RaycastHit)(ref hitInfo)).point);
+					HitInfo info = new HitInfo(helicopterBase, entity, DamageType.Bullet, helicopterBase.bulletDamage * ConVar.PatrolHelicopter.bulletDamageScale, hitInfo.point);
 					if (Object.op_Implicit((Object)(object)baseCombatEntity))
 					{
 						baseCombatEntity.OnAttacked(info);
@@ -1356,7 +1354,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 						{
 							Effect.server.ImpactEffect(new HitInfo
 							{
-								HitPositionWorld = ((RaycastHit)(ref hitInfo)).point - modifiedAimConeDirection * 0.25f,
+								HitPositionWorld = hitInfo.point - modifiedAimConeDirection * 0.25f,
 								HitNormalWorld = -modifiedAimConeDirection,
 								HitMaterial = StringPool.Get("Flesh")
 							});
@@ -1413,7 +1411,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = destination - ((Component)this).transform.position;
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	public float GetMoveSpeed()
@@ -1460,6 +1458,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public void State_Death_Think(float timePassed)
 	{
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
@@ -1476,8 +1475,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		float num = Time.realtimeSinceStartup * 0.25f;
 		float num2 = Mathf.Sin(MathF.PI * 2f * num) * 10f;
 		float num3 = Mathf.Cos(MathF.PI * 2f * num) * 10f;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(num2, 0f, num3);
+		Vector3 val = new Vector3(num2, 0f, num3);
 		SetAimTarget(((Component)this).transform.position + val, isDoorSide: true);
 		if (((Component)this).transform.position.y - WaterSystem.OceanLevel <= 0f)
 		{
@@ -1502,7 +1500,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		_currentState = aiState.DEATH;
 		if (collisions == null)
 		{
-			collisions = (Collider[])(object)new Collider[10];
+			collisions = new Collider[10];
 		}
 		MonumentInfo monumentInfo = null;
 		if (monument_crash)
@@ -1520,7 +1518,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		position.y = TerrainMeta.HeightMap.GetHeight(position) + 200f;
 		if (TransformUtil.GetGroundInfo(position, out var hitOut, 300f, LayerMask.op_Implicit(1235288065)))
 		{
-			position.y = ((RaycastHit)(ref hitOut)).point.y;
+			position.y = hitOut.point.y;
 		}
 		position.y += GetPlaneHeight();
 		SetTargetDestination(position, 25f);
@@ -1685,14 +1683,14 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		if ((Object)(object)closeMonument != (Object)null)
 		{
 			val = ((Component)closeMonument).transform.position - ((Component)this).transform.position;
-			normalized = ((Vector3)(ref val)).normalized;
+			normalized = val.normalized;
 			normalized.y = 0f;
 		}
 		else
 		{
 			Vector2 insideUnitCircle = Random.insideUnitCircle;
 			val = new Vector3(insideUnitCircle.x, 0f, insideUnitCircle.y);
-			normalized = ((Vector3)(ref val)).normalized;
+			normalized = val.normalized;
 		}
 		Vector3 val2 = ((Component)this).transform.position + normalized * 130f;
 		val2.y = GetPlaneHeight();
@@ -1773,6 +1771,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public Vector3 GetOrbitPosition(float rate)
 	{
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
@@ -1780,8 +1779,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		float num = Mathf.Sin(rate) * currentOrbitDistance;
 		float num2 = Mathf.Cos(rate) * currentOrbitDistance;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(num, 0f, num2);
+		Vector3 val = new Vector3(num, 0f, num2);
 		Vector3 result = interestZoneOrigin + val;
 		float y = Mathf.Max(interestZoneOrigin.y, GetPlaneHeight());
 		result.y = y;
@@ -2023,7 +2021,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		if (restrictedPatrolSize)
 		{
 			Vector3 val2 = val - ((Component)this).transform.position;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			normalized.y = 0f;
 			Vector3 result = ((Component)this).transform.position + normalized * Random.Range(65f, 130f);
 			result.y = GetPlaneHeight();
@@ -2131,7 +2129,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 					val.y = TerrainMeta.HeightMap.GetHeight(val) + 200f;
 					if (TransformUtil.GetGroundInfo(val, out var hitOut, 300f, LayerMask.op_Implicit(1235288065)))
 					{
-						val.y = ((RaycastHit)(ref hitOut)).point.y;
+						val.y = hitOut.point.y;
 					}
 					val.y += 45f;
 				}
@@ -2240,7 +2238,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		float planeHeight = GetPlaneHeight();
 		Vector3 val = Vector3Ex.Range(-0.7f, 0.7f);
 		val.y = 0f;
-		((Vector3)(ref val)).Normalize();
+		val.Normalize();
 		val *= x * Random.Range(0f, 0.75f);
 		val.y = planeHeight;
 		return val;
@@ -2372,7 +2370,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		}
 		Vector3 position = ((Component)this).transform.position;
 		Vector3 val = targetPos - ((Component)this).transform.position;
-		return !Physics.Raycast(position, ((Vector3)(ref val)).normalized, num, LayerMask.GetMask(new string[2] { "Terrain", "World" }));
+		return !Physics.Raycast(position, val.normalized, num, LayerMask.GetMask(new string[2] { "Terrain", "World" }));
 	}
 
 	public bool ValidRocketTarget(BasePlayer ply)
@@ -2463,7 +2461,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		Transform val = (flag ? helicopterBase.rocket_tube_left.transform : helicopterBase.rocket_tube_right.transform);
 		Vector3 val2 = val.position + val.forward * 1f;
 		Vector3 val3 = targetPos - val2;
-		Vector3 val4 = ((Vector3)(ref val3)).normalized;
+		Vector3 val4 = val3.normalized;
 		if (num > 0f)
 		{
 			val4 = AimConeUtil.GetModifiedAimConeDirection(num, val4);
@@ -2610,7 +2608,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 onUnitSphere = Random.onUnitSphere;
 		onUnitSphere.y = 0f;
-		((Vector3)(ref onUnitSphere)).Normalize();
+		onUnitSphere.Normalize();
 		maxRange = Mathf.Max(minRange, maxRange);
 		Vector3 origin2 = origin + onUnitSphere * Random.Range(minRange, maxRange);
 		return GetAppropriatePosition(origin2, minHeight, maxHeight);
@@ -2622,19 +2620,19 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		float num = 100f;
-		Ray val = default(Ray);
-		((Ray)(ref val))._002Ector(origin + new Vector3(0f, num, 0f), Vector3.down);
+		Ray val = new Ray(origin + new Vector3(0f, num, 0f), Vector3.down);
 		float num2 = 5f;
 		int mask = LayerMask.GetMask(new string[4] { "Terrain", "World", "Construction", "Water" });
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (Physics.SphereCast(val, num2, ref val2, num * 2f - num2, mask))
 		{
-			origin = ((RaycastHit)(ref val2)).point;
+			origin = val2.point;
 		}
 		origin.y += Random.Range(minHeight, maxHeight);
 		return origin;
@@ -2666,27 +2664,5 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 	{
 		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		_targetList = new List<targetinfo>();
-		_targetSet = new HashSet<BasePlayer>();
-		dangerZones = new List<DangerZone>();
-		noGoZones = new List<DangerZone>();
-		maxSpeed = 25f;
-		courseAdjustLerpTime = 2f;
-		windForce = 5f;
-		windFrequency = 1f;
-		maxRotationSpeed = 90f;
-		terrainPushForce = 100f;
-		obstaclePushForce = 100f;
-		oceanDepthTargetCutoff = 3f;
-		pushVec = Vector3.zero;
-		destination_min_dist = 2f;
-		maxOrbitDuration = 30f;
-		timeBetweenRocketsOrbit = 0.5f;
-		timeBetweenRockets = 0.2f;
-		numRocketsLeft = 12;
-		get_out_of_strafe_distance = 15f;
-		lastNapalmTime = float.NegativeInfinity;
-		lastStrafeTime = float.NegativeInfinity;
-		base._002Ector();
 	}
 }

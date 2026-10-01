@@ -111,12 +111,12 @@ public static class WaterLevel
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("WaterLevel.Factor"))
 		{
-			if (((Bounds)(ref bounds)).size == Vector3.zero)
+			if (bounds.size == Vector3.zero)
 			{
-				((Bounds)(ref bounds)).size = new Vector3(0.1f, 0.1f, 0.1f);
+				bounds.size = new Vector3(0.1f, 0.1f, 0.1f);
 			}
 			WaterInfo waterInfo = GetWaterInfo(bounds, waves, volumes, forEntity);
-			return waterInfo.isValid ? Mathf.InverseLerp(((Bounds)(ref bounds)).min.y, ((Bounds)(ref bounds)).max.y, waterInfo.surfaceLevel) : 0f;
+			return waterInfo.isValid ? Mathf.InverseLerp(bounds.min.y, bounds.max.y, waterInfo.surfaceLevel) : 0f;
 		}
 	}
 
@@ -127,15 +127,15 @@ public static class WaterLevel
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		if (((Bounds)(ref bounds)).size == Vector3.zero)
+		if (bounds.size == Vector3.zero)
 		{
-			((Bounds)(ref bounds)).size = new Vector3(0.1f, 0.1f, 0.1f);
+			bounds.size = new Vector3(0.1f, 0.1f, 0.1f);
 		}
 		if (!info.isValid)
 		{
 			return 0f;
 		}
-		return Mathf.InverseLerp(((Bounds)(ref bounds)).min.y, ((Bounds)(ref bounds)).max.y, info.surfaceLevel);
+		return Mathf.InverseLerp(bounds.min.y, bounds.max.y, info.surfaceLevel);
 	}
 
 	public static bool Test(Vector3 pos, bool waves, bool volumes, BaseEntity forEntity = null)
@@ -244,7 +244,7 @@ public static class WaterLevel
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("WaterLevel.GetWaterInfo"))
 		{
-			WaterInfo result = default(WaterInfo);
+			WaterInfo result = default;
 			if (pos.y > waterHeight)
 			{
 				return GetWaterInfoFromVolumes(pos, forEntity);
@@ -260,12 +260,12 @@ public static class WaterLevel
 			{
 				return result;
 			}
-			RaycastHit val = default(RaycastHit);
+			RaycastHit val = default;
 			if (flag2 && Physics.Raycast(pos, Vector3.up, ref val, 5f, 16, (QueryTriggerInteraction)2))
 			{
 				float num2 = waterHeight;
-				Bounds bounds = ((RaycastHit)(ref val)).collider.bounds;
-				waterHeight = Mathf.Min(num2, ((Bounds)(ref bounds)).max.y);
+				Bounds bounds = val.collider.bounds;
+				waterHeight = Mathf.Min(num2, bounds.max.y);
 			}
 			result.isValid = true;
 			result.currentDepth = Mathf.Max(0f, waterHeight - pos.y);
@@ -288,7 +288,7 @@ public static class WaterLevel
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("WaterLevel.GetWaterInfo"))
 		{
-			WaterInfo result = default(WaterInfo);
+			WaterInfo result = default;
 			float num = GetWaterLevel(pos, waves);
 			float num2 = ((Object.op_Implicit((Object)(object)TerrainMeta.HeightMap) && TerrainMeta.HeightMap.isInitialized) ? TerrainMeta.HeightMap.GetHeight(pos) : 0f);
 			result.isValid = true;
@@ -337,15 +337,15 @@ public static class WaterLevel
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("WaterLevel.GetWaterInfo"))
 		{
-			WaterInfo result = default(WaterInfo);
-			float num = GetWaterLevel(((Bounds)(ref bounds)).center, waves);
-			float num2 = (Object.op_Implicit((Object)(object)TerrainMeta.HeightMap) ? TerrainMeta.HeightMap.GetHeight(((Bounds)(ref bounds)).center) : 0f);
+			WaterInfo result = default;
+			float num = GetWaterLevel(bounds.center, waves);
+			float num2 = (Object.op_Implicit((Object)(object)TerrainMeta.HeightMap) ? TerrainMeta.HeightMap.GetHeight(bounds.center) : 0f);
 			result.isValid = true;
-			if (((Bounds)(ref bounds)).min.y > num)
+			if (bounds.min.y > num)
 			{
 				result.isValid = false;
 			}
-			else if (((Bounds)(ref bounds)).max.y < num2 - 1f)
+			else if (bounds.max.y < num2 - 1f)
 			{
 				result.isValid = false;
 			}
@@ -362,7 +362,7 @@ public static class WaterLevel
 				result.isValid = false;
 				num = -1000f;
 			}
-			result.currentDepth = Mathf.Max(0f, num - ((Bounds)(ref bounds)).min.y);
+			result.currentDepth = Mathf.Max(0f, num - bounds.min.y);
 			result.overallDepth = Mathf.Max(0f, num - num2);
 			result.surfaceLevel = num;
 			result.terrainHeight = num2;
@@ -947,30 +947,6 @@ public static class WaterLevel
 		}
 	}
 
-	public static WaterInfo GetWaterInfo(Camera cam, bool waves, bool volumes, BaseEntity forEntity = null)
-	{
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		using (TimeWarning.New("WaterLevel.GetWaterInfo"))
-		{
-			waves = waves && (Object)(object)WaterSystem.Instance != (Object)null;
-			float num = WaterSystem.OceanLevel;
-			if (waves)
-			{
-				num += WaterSystem.Instance.GetOceanSimulation(((Component)cam).transform.position).MinLevel();
-			}
-			if (((Component)cam).transform.position.y < num - 1f)
-			{
-				return GetWaterInfo(((Component)cam).transform.position, waves, volumes, forEntity);
-			}
-			return GetWaterInfo(((Component)cam).transform.position - Vector3.up, waves, volumes, forEntity);
-		}
-	}
-
 	public static float GetWaterLevel(Vector3 pos, bool waves)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
@@ -1009,12 +985,12 @@ public static class WaterLevel
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (!Physics.Raycast(Vector3Ex.WithY(pos, TerrainMeta.Max.y), Vector3.down, ref val, TerrainMeta.Size.y, 16, (QueryTriggerInteraction)2))
 		{
 			return WaterSystem.OceanLevel;
 		}
-		return ((RaycastHit)(ref val)).point.y;
+		return val.point.y;
 	}
 
 	public static void GetWaterLevels(ReadOnly<Vector3> positions, ReadOnly<int> indices, bool waves, NativeArray<float> heights)
@@ -1218,8 +1194,8 @@ public static class WaterLevel
 					};
 					IJobExtensions.RunByRef<ToUVJobIndirect>(ref toUVJobIndirect);
 					toUVJobIndirect.Indices = deepSeaIndices.AsReadOnly();
-					toUVJobIndirect.TerrainPos = Vector2.op_Implicit(((Bounds)(ref DeepSeaManager.DeepSeaBounds)).min);
-					toUVJobIndirect.TerrainOneOverSize = new Vector2(1f / ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size.x, 1f / ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size.z);
+					toUVJobIndirect.TerrainPos = Vector2.op_Implicit(DeepSeaManager.DeepSeaBounds.min);
+					toUVJobIndirect.TerrainOneOverSize = new Vector2(1f / DeepSeaManager.DeepSeaBounds.size.x, 1f / DeepSeaManager.DeepSeaBounds.size.z);
 					IJobExtensions.RunByRef<ToUVJobIndirect>(ref toUVJobIndirect);
 					if (Object.op_Implicit((Object)(object)TerrainMeta.WaterMap))
 					{
@@ -1391,7 +1367,7 @@ public static class WaterLevel
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		WaterInfo info = default(WaterInfo);
+		WaterInfo info = default;
 		if ((Object)(object)forEntity == (Object)null)
 		{
 			List<WaterVolume> list = Pool.Get<List<WaterVolume>>();
@@ -1414,7 +1390,7 @@ public static class WaterLevel
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		WaterInfo info = default(WaterInfo);
+		WaterInfo info = default;
 		if ((Object)(object)forEntity == (Object)null)
 		{
 			List<WaterVolume> list = Pool.Get<List<WaterVolume>>();
@@ -1442,7 +1418,7 @@ public static class WaterLevel
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		WaterInfo info = default(WaterInfo);
+		WaterInfo info = default;
 		if ((Object)(object)forEntity == (Object)null)
 		{
 			List<WaterVolume> list = Pool.Get<List<WaterVolume>>();

@@ -15,6 +15,7 @@ using Oxide.Core;
 using ProtoBuf;
 using Rust;
 using Rust.Ai;
+using Rust.Ai.Gen2;
 using Rust.Ai.Gen2.Nav;
 using SilentOrbit.ProtocolBuffers;
 using UnityEngine;
@@ -26,6 +27,8 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 	public class SaveExtraData
 	{
 		public string WipeId;
+
+		public string[] DiscoveredLivestockSpecials;
 	}
 
 	[CompilerGenerated]
@@ -233,18 +236,19 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		DebugEx.Log("\tdone.", (StackTraceLogType)0);
 	}
 
-	public unsafe static bool Load(string strFilename = "", bool allowOutOfDateSaves = false)
+	public static bool Load(string strFilename = "", bool allowOutOfDateSaves = false)
 	{
-		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041a: Unknown result type (might be due to invalid IL or missing references)
 		SaveCreatedTime = DateTime.UtcNow;
+		LivestockAnimal.LoadDiscoveredSpecials(null);
 		try
 		{
 			if (strFilename == "")
@@ -272,17 +276,20 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 					Debug.LogWarning((object)"Invalid save (missing header)");
 					return false;
 				}
+				SaveExtraData saveExtraData = null;
 				if (binaryReader.PeekChar() == 74)
 				{
 					binaryReader.ReadChar();
-					WipeId = JsonConvert.DeserializeObject<SaveExtraData>(binaryReader.ReadString()).WipeId;
+					saveExtraData = JsonConvert.DeserializeObject<SaveExtraData>(binaryReader.ReadString());
+					WipeId = saveExtraData.WipeId;
 				}
+				LivestockAnimal.LoadDiscoveredSpecials(saveExtraData?.DiscoveredLivestockSpecials);
 				if (binaryReader.PeekChar() == 68)
 				{
 					binaryReader.ReadChar();
 					SaveCreatedTime = Epoch.ToDateTime((long)binaryReader.ReadInt32());
 				}
-				if (binaryReader.ReadUInt32() != 288)
+				if (binaryReader.ReadUInt32() != 289)
 				{
 					if (allowOutOfDateSaves)
 					{
@@ -319,15 +326,15 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 							entData.Dispose();
 							continue;
 						}
-						if (((NetworkableId)(ref entData.baseNetworkable.uid)).IsValid && hashSet.Contains(entData.baseNetworkable.uid))
+						if (entData.baseNetworkable.uid.IsValid && hashSet.Contains(entData.baseNetworkable.uid))
 						{
-							string[] obj = new string[5] { "Skipping entity ", null, null, null, null };
+							string[] array = new string[5] { "Skipping entity ", null, null, null, null };
 							NetworkableId uid = entData.baseNetworkable.uid;
-							obj[1] = ((object)(*(NetworkableId*)(&uid))/*cast due to constrained. prefix*/).ToString();
-							obj[2] = " ";
-							obj[3] = StringPool.Get(entData.baseNetworkable.prefabID);
-							obj[4] = " - uid is used multiple times";
-							Debug.LogWarning((object)string.Concat(obj));
+							array[1] = ((object)uid/*cast due to constrained. prefix*/).ToString();
+							array[2] = " ";
+							array[3] = StringPool.Get(entData.baseNetworkable.prefabID);
+							array[4] = " - uid is used multiple times";
+							Debug.LogWarning((object)string.Concat(array));
 							entData.Dispose();
 							continue;
 						}
@@ -344,7 +351,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 								((List<ulong>)(object)val).Add(entData.basePlayer.userid);
 							}
 						}
-						if (((NetworkableId)(ref entData.baseNetworkable.uid)).IsValid)
+						if (entData.baseNetworkable.uid.IsValid)
 						{
 							hashSet.Add(entData.baseNetworkable.uid);
 						}
@@ -373,10 +380,10 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 			}
 			DebugEx.Log("\tdone.", (StackTraceLogType)0);
 			DebugEx.Log("Spawning " + dictionary.Count + " entities from save", (StackTraceLogType)0);
-			object obj2 = Interface.CallHook("OnSaveLoad", dictionary);
-			if (obj2 is bool)
+			object obj = Interface.CallHook("OnSaveLoad", dictionary);
+			if (obj is bool)
 			{
-				return (bool)obj2;
+				return (bool)obj;
 			}
 			BaseNetworkable.LoadInfo info = new BaseNetworkable.LoadInfo
 			{
@@ -597,6 +604,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		Stopwatch timerCache = new Stopwatch();
 		Stopwatch timerWrite = new Stopwatch();
 		Stopwatch timerDisk = new Stopwatch();
+		Stopwatch timerNavmesh = new Stopwatch();
 		SaveBuffer.Position = 0L;
 		SaveBuffer.SetLength(0L);
 		InitializeWipeId();
@@ -629,7 +637,20 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		timerWrite.Stop();
 		if (!AI.useUnityNavmesh && !AiManager.nav_disable && Object.op_Implicit((Object)(object)RustNavigation.Instance) && ((Behaviour)RustNavigation.Instance).enabled)
 		{
-			RustNavigation.Instance.Save(Path.ChangeExtension(strFilename, ".navmesh"));
+			timerNavmesh.Start();
+			try
+			{
+				if (AndWait)
+				{
+					RustNavigation.Instance.JoinSaveAndLandParkedTiles();
+				}
+				RustNavigation.Instance.BeginSave(Path.ChangeExtension(strFilename, ".navmesh"));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			timerNavmesh.Stop();
 		}
 		if (!AndWait)
 		{
@@ -655,9 +676,9 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 					SaveBuffer.Position = 0L;
 					SaveBuffer.CopyTo(destination);
 				}
-				catch (Exception ex)
+				catch (Exception ex2)
 				{
-					Debug.LogError((object)("Couldn't write save file! We got an exception: " + ex));
+					Debug.LogError((object)("Couldn't write save file! We got an exception: " + ex2));
 					if (File.Exists(text))
 					{
 						File.Delete(text);
@@ -667,23 +688,31 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 				File.Copy(text, strFilename, overwrite: true);
 				File.Delete(text);
 			}
-			catch (Exception ex2)
+			catch (Exception ex3)
 			{
-				Debug.LogError((object)("Error when saving to disk: " + ex2));
+				Debug.LogError((object)("Error when saving to disk: " + ex3));
 				yield break;
 			}
 		}
 		timerDisk.Stop();
-		Debug.LogFormat("Saved {0} ents, cache({1}), write({2}), disk({3}).", new object[4]
+		if (AndWait && (Object)(object)RustNavigation.Instance != (Object)null)
+		{
+			timerNavmesh.Start();
+			RustNavigation.Instance.JoinSave();
+			timerNavmesh.Stop();
+		}
+		Debug.LogFormat("Saved {0} ents, cache({1}), write({2}), disk({3}), navmesh({4}).", new object[5]
 		{
 			iEnts.ToString("N0"),
 			timerCache.Elapsed.TotalSeconds.ToString("0.00"),
 			timerWrite.Elapsed.TotalSeconds.ToString("0.00"),
-			timerDisk.Elapsed.TotalSeconds.ToString("0.00")
+			timerDisk.Elapsed.TotalSeconds.ToString("0.00"),
+			timerNavmesh.Elapsed.TotalSeconds.ToString("0.00")
 		});
 		PerformanceLogging.server?.SetTiming("save.cache", timerCache.Elapsed);
 		PerformanceLogging.server?.SetTiming("save.write", timerWrite.Elapsed);
 		PerformanceLogging.server?.SetTiming("save.disk", timerDisk.Elapsed);
+		PerformanceLogging.server?.SetTiming("save.navmesh", timerNavmesh.Elapsed);
 		NexusServer.PostGameSaved();
 	}
 
@@ -872,11 +901,12 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		writer.Write((sbyte)82);
 		SaveExtraData saveExtraData = new SaveExtraData();
 		saveExtraData.WipeId = WipeId;
+		saveExtraData.DiscoveredLivestockSpecials = LivestockAnimal.DiscoveredSpecialNames();
 		writer.Write((sbyte)74);
 		writer.Write(JsonConvert.SerializeObject((object)saveExtraData));
 		writer.Write((sbyte)68);
 		writer.Write(Epoch.FromDateTime(SaveCreatedTime));
-		writer.Write(288u);
+		writer.Write(289u);
 	}
 
 	private static int WriteEntities(BinaryWriter writer)

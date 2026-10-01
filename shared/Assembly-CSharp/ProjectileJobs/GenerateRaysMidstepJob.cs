@@ -28,7 +28,7 @@ internal struct GenerateRaysMidstepJob : IJobParallelForTransform
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		if (((TransformAccess)(ref transform)).isValid && Indices.Contains(index))
+		if (transform.isValid && Indices.Contains(index))
 		{
 			RayGenBatchData data = Data[index];
 			Vector3 position = PositionData[index];

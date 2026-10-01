@@ -7,19 +7,27 @@ public class FlameExplosive : TimedExplosive
 
 	public bool blockCreateUnderwater;
 
-	public float numToCreate;
+	public float numToCreate = 10f;
 
-	public float minVelocity;
+	public float minVelocity = 2f;
 
-	public float maxVelocity;
+	public float maxVelocity = 5f;
 
-	public float spreadAngle;
+	public float spreadAngle = 90f;
 
 	public bool forceUpForExplosion;
 
-	public AnimationCurve velocityCurve;
+	public AnimationCurve velocityCurve = new AnimationCurve(new Keyframe[2]
+	{
+		new Keyframe(0f, 1f),
+		new Keyframe(1f, 1f)
+	});
 
-	public AnimationCurve spreadCurve;
+	public AnimationCurve spreadCurve = new AnimationCurve(new Keyframe[2]
+	{
+		new Keyframe(0f, 1f),
+		new Keyframe(1f, 1f)
+	});
 
 	public override void Explode()
 	{
@@ -50,7 +58,7 @@ public class FlameExplosive : TimedExplosive
 		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -78,7 +86,7 @@ public class FlameExplosive : TimedExplosive
 				baseEntity.creatorEntity = (((Object)(object)creatorEntity == (Object)null) ? baseEntity : creatorEntity);
 				baseEntity.Spawn();
 				Interface.CallHook("OnFlameExplosion", this, component);
-				Vector3 val2 = ((Vector3)(ref modifiedAimConeDirection)).normalized * Random.Range(minVelocity, maxVelocity) * velocityCurve.Evaluate(num * Random.Range(1f, 1.1f));
+				Vector3 val2 = modifiedAimConeDirection.normalized * Random.Range(minVelocity, maxVelocity) * velocityCurve.Evaluate(num * Random.Range(1f, 1.1f));
 				FireBall component2 = ((Component)baseEntity).GetComponent<FireBall>();
 				if ((Object)(object)component2 != (Object)null)
 				{
@@ -97,8 +105,8 @@ public class FlameExplosive : TimedExplosive
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		hitNormal = ((RaycastHit)(ref info)).normal;
-		FlameExplode(((RaycastHit)(ref info)).normal);
+		hitNormal = info.normal;
+		FlameExplode(info.normal);
 	}
 
 	public FlameExplosive()
@@ -108,27 +116,12 @@ public class FlameExplosive : TimedExplosive
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Expected O, but got Unknown
+		//IL_0069: Expected Obj, but got Unknown
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Expected O, but got Unknown
-		numToCreate = 10f;
-		minVelocity = 2f;
-		maxVelocity = 5f;
-		spreadAngle = 90f;
-		velocityCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 1f),
-			new Keyframe(1f, 1f)
-		});
-		spreadCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 1f),
-			new Keyframe(1f, 1f)
-		});
-		base._002Ector();
+		//IL_00a6: Expected Obj, but got Unknown
 	}
 }

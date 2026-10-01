@@ -98,10 +98,10 @@ public class NetRead : Stream, IPooled
 	{
 		connection = null;
 		repeatedElementLimit = -1;
-		BufferStream obj = stream;
-		if (obj != null)
+		BufferStream val = stream;
+		if (val != null)
 		{
-			obj.Dispose();
+			val.Dispose();
 		}
 		stream = null;
 	}
@@ -194,7 +194,7 @@ public class NetRead : Stream, IPooled
 			return string.Empty;
 		}
 		RangeHandle range = stream.GetRange(num);
-		ArraySegment<byte> segment = ((RangeHandle)(ref range)).GetSegment();
+		ArraySegment<byte> segment = range.GetSegment();
 		return Encoding.UTF8.GetString(segment.Array, segment.Offset, segment.Count);
 	}
 
@@ -284,12 +284,12 @@ public class NetRead : Stream, IPooled
 		uint num = (variableLength ? VarUInt32() : UInt32());
 		if (num == 0)
 		{
-			return default(ArraySegment<byte>);
+			return default;
 		}
 		int num2 = (int)Position;
 		if (num > maxSize || num2 + num > stream.Length)
 		{
-			return default(ArraySegment<byte>);
+			return default;
 		}
 		ArraySegment<byte> result = stream.GetBuffer().Slice(num2, (int)num);
 		stream.Skip((int)num);
@@ -412,7 +412,7 @@ public class NetRead : Stream, IPooled
 	}
 
 	[PoolAnalyzerGetWrapper]
-	public unsafe T Proto<T>(T proto = null) where T : class, IProto<T>, new()
+	public T Proto<T>(T proto = null) where T : class, IProto<T>, new()
 	{
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
@@ -437,12 +437,12 @@ public class NetRead : Stream, IPooled
 		}
 		finally
 		{
-			((IDisposable)(*(RepeatedElementLimitScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 
 	[PoolAnalyzerGetWrapper]
-	public unsafe T ProtoDelta<T>(T proto) where T : class, IProto<T>, new()
+	public T ProtoDelta<T>(T proto) where T : class, IProto<T>, new()
 	{
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
@@ -465,7 +465,7 @@ public class NetRead : Stream, IPooled
 		}
 		finally
 		{
-			((IDisposable)(*(RepeatedElementLimitScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 
@@ -515,7 +515,7 @@ public class NetRead : Stream, IPooled
 			count = stream.Length - stream.Position;
 		}
 		RangeHandle range = stream.GetRange(count);
-		((RangeHandle)(ref range)).GetSpan().CopyTo(new Span<byte>(buffer, offset, count));
+		range.GetSpan().CopyTo(new Span<byte>(buffer, offset, count));
 		return count;
 	}
 

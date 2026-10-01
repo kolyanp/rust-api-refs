@@ -12,9 +12,9 @@ public class LAM_SlopePusher : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _pushBackV;
 
-	private Vector3 offsetV;
+	private Vector3 offsetV = Vector3.zero;
 
-	private Vector3 _Sd_offsetV;
+	private Vector3 _Sd_offsetV = Vector3.zero;
 
 	public override void OnInit(LegsAnimator.LegsAnimatorCustomModuleHelper helper)
 	{
@@ -67,34 +67,34 @@ public class LAM_SlopePusher : LegsAnimatorControlModuleBase
 		Vector3 val = Vector3.zero;
 		if (leg.A_WasAligning)
 		{
-			float num = base.LA.ScaleReferenceNoScale * 0.25f * _thresV.GetFloat();
+			float num = LA.ScaleReferenceNoScale * 0.25f * _thresV.GetFloat();
 			if (leg.groundHitRootSpacePos.y > num)
 			{
 				float num2 = Mathf.InverseLerp(5f, 50f, leg.raycastSlopeAngle);
 				float num3 = (leg.groundHitRootSpacePos.y - num) / (num * 1.5f);
 				Vector2 val2 = new Vector2(leg.groundHitRootSpacePos.x, leg.groundHitRootSpacePos.z);
-				Vector2 normalized = ((Vector2)(ref val2)).normalized;
+				Vector2 normalized = val2.normalized;
 				val -= new Vector3(normalized.x, -0.033f, normalized.y) * (num3 * num) * _powerV.GetFloat() * 2f * num2;
 			}
-			if (_pushBackV.GetFloat() > 0f && base.LA.DesiredMovementDirection != Vector3.zero)
+			if (_pushBackV.GetFloat() > 0f && LA.DesiredMovementDirection != Vector3.zero)
 			{
 				float num4 = _powerV.GetFloat();
 				if (num4 <= 0f)
 				{
 					num4 = 1f;
 				}
-				Vector3 normalized2 = ((Vector3)(ref val)).normalized;
-				Vector3 desiredMovementDirection = base.LA.DesiredMovementDirection;
-				float num5 = 0f - Vector3.Dot(normalized2, ((Vector3)(ref desiredMovementDirection)).normalized);
+				Vector3 normalized2 = val.normalized;
+				Vector3 desiredMovementDirection = LA.DesiredMovementDirection;
+				float num5 = 0f - Vector3.Dot(normalized2, desiredMovementDirection.normalized);
 				if (num5 < 0f)
 				{
 					val *= Mathf.Max(-1f, num5 * 2f) * (_pushBackV.GetFloat() / num4);
 				}
 			}
 		}
-		offsetV = Vector3.SmoothDamp(offsetV, val, ref _Sd_offsetV, 0.2f - _rapidV.GetFloat() * 0.199f, 1000000f, base.LA.DeltaTime);
-		LegsAnimator lA = base.LA;
-		lA._Hips_Modules_ExtraWOffset += base.LA.RootToWorldSpaceVec(offsetV);
+		offsetV = Vector3.SmoothDamp(offsetV, val, ref _Sd_offsetV, 0.2f - _rapidV.GetFloat() * 0.199f, 1000000f, LA.DeltaTime);
+		LegsAnimator lA = LA;
+		lA._Hips_Modules_ExtraWOffset += LA.RootToWorldSpaceVec(offsetV);
 	}
 
 	public LAM_SlopePusher()
@@ -103,8 +103,5 @@ public class LAM_SlopePusher : LegsAnimatorControlModuleBase
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		offsetV = Vector3.zero;
-		_Sd_offsetV = Vector3.zero;
-		base._002Ector();
 	}
 }

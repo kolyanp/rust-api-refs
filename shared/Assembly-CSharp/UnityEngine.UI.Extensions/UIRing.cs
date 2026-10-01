@@ -10,8 +10,8 @@ public class UIRing : UIPrimitiveBase
 
 	public float outerRadius = 32f;
 
-	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
 	[Range(0f, 1000f)]
+	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
 	public int ArcSteps = 100;
 
 	private List<int> indices = new List<int>();
@@ -29,6 +29,7 @@ public class UIRing : UIPrimitiveBase
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
@@ -58,8 +59,7 @@ public class UIRing : UIPrimitiveBase
 		simpleVert.color = Color32.op_Implicit(((Graphic)this).color);
 		simpleVert.position = Vector2.op_Implicit(new Vector2(num2 * num5, num2 * num6));
 		vertices.Add(simpleVert);
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(num * num5, num * num6);
+		Vector2 val = new Vector2(num * num5, num * num6);
 		simpleVert.position = Vector2.op_Implicit(val);
 		vertices.Add(simpleVert);
 		for (int i = 1; i <= ArcSteps; i++)

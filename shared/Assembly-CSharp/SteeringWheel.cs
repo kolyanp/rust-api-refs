@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -8,11 +9,11 @@ using Rust;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
+public class SteeringWheel : BaseMountable, IBoatBuildingPiece
 {
-	public static Phrase TipPhrase;
+	public static Phrase TipPhrase = new Phrase("boat_steeringwheel_tip", "Interact with the steering wheel to code lock your boat.");
 
-	public static Phrase MountedTipPhrase;
+	public static Phrase MountedTipPhrase = new Phrase("boat_steeringwheel_tip_mounted", "Look at the center of the wheel for options when mounted.");
 
 	[Header("Steering Wheel")]
 	public GameObjectRef PrivPrefab;
@@ -337,6 +338,47 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 				}
 				return true;
 			}
+			if (rpc == 3305106830u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - RPC_RequestNewCode"));
+				}
+				using (TimeWarning.New("RPC_RequestNewCode"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.IsVisible.Test(3305106830u, "RPC_RequestNewCode", this, player, 3f))
+						{
+							return true;
+						}
+						if (!RPC_Server.MaxDistance.Test(3305106830u, "RPC_RequestNewCode", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg8 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							RPC_RequestNewCode(msg8);
+						}
+					}
+					catch (Exception ex7)
+					{
+						Debug.LogException(ex7);
+						player.Kick("RPC Error in RPC_RequestNewCode");
+					}
+				}
+				return true;
+			}
 			if (rpc == 2818660542u && (Object)(object)player != (Object)null)
 			{
 				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
@@ -357,18 +399,18 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg8 = new RPCMessage
+							RPCMessage msg9 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							RPC_TryMountWithKeycode(msg8);
+							RPC_TryMountWithKeycode(msg9);
 						}
 					}
-					catch (Exception ex7)
+					catch (Exception ex8)
 					{
-						Debug.LogException(ex7);
+						Debug.LogException(ex8);
 						player.Kick("RPC Error in RPC_TryMountWithKeycode");
 					}
 				}
@@ -418,7 +460,7 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		base.InitShared();
 		if (BoatLock == null)
 		{
-			BoatLock = new PlayerBoatLock(this, base.isServer);
+			BoatLock = new PlayerBoatLock(this, isServer);
 		}
 	}
 
@@ -503,7 +545,7 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -544,6 +586,22 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 			{
 				AuthPlayer(player);
 				WantsMount(player);
+			}
+		}
+	}
+
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	public void RPC_RequestNewCode(RPCMessage msg)
+	{
+		if (BoatLock.HasALock)
+		{
+			BasePlayer player = msg.player;
+			if (!((Object)(object)player == (Object)null) && player.CanInteract() && IsAuthed(player) && !((Object)(object)GetMounted() != (Object)(object)player))
+			{
+				string newCode = msg.read.String();
+				BoatLock.TryChangeCode(newCode, player);
 			}
 		}
 	}
@@ -612,9 +670,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestFinishBuilding(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -630,9 +688,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestFinishBuildingFromWheel(RPCMessage msg)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -660,13 +718,13 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 			player.GiveItem(item, GiveItemReason.PickedUp);
 			if (finishBuildingEffect.isValid)
 			{
-				Effect.server.Run(finishBuildingEffect.resourcePath, this, 0u, default(Vector3), default(Vector3), null, false, null, 0, Effect.Type.Generic);
+				Effect.server.Run(finishBuildingEffect.resourcePath, this, 0u, default, default, null, false, null, 0, Effect.Type.Generic);
 			}
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestEditBoat(RPCMessage msg)
 	{
@@ -718,10 +776,10 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(float) })]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(15uL)]
+	[RPC_Server.InputValidation(new Type[] { typeof(float) })]
 	public void ReceiveClientRotation(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && !((Object)(object)GetMounted() != (Object)(object)msg.player) && !((Object)(object)ParentBoat == (Object)null))
@@ -746,7 +804,7 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	void global::IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
+	void IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
 	{
 		ParentBoat = boat;
 	}
@@ -760,7 +818,7 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		return false;
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -769,7 +827,7 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: ServerSteeringRotation for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: ServerSteeringRotation for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_ServerSteeringRotation);
 			return true;
@@ -821,18 +879,34 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -867,10 +941,8 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 	static SteeringWheel()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		TipPhrase = new Phrase("boat_steeringwheel_tip", "Interact with the steering wheel to code lock your boat.");
-		MountedTipPhrase = new Phrase("boat_steeringwheel_tip_mounted", "Look at the center of the wheel for options when mounted.");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

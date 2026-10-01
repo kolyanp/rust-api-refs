@@ -440,7 +440,7 @@ public class Database
 		int type = Interop.sqlite3_column_type(stmHandle, i);
 		if (type == 5)
 		{
-			return default(T);
+			return default;
 		}
 		if (typeof(T) == typeof(uint))
 		{
@@ -523,7 +523,7 @@ public class Database
 			IntPtr intPtr = Interop.sqlite3_column_blob(stmHandle, i);
 			if (intPtr == IntPtr.Zero)
 			{
-				return default(T);
+				return default;
 			}
 			if (Interop.sqlite3_column_bytes(stmHandle, i) != sizeof(Guid))
 			{
@@ -541,7 +541,7 @@ public class Database
 			IntPtr intPtr2 = Interop.sqlite3_column_blob(stmHandle, i);
 			if (intPtr2 == IntPtr.Zero)
 			{
-				return default(T);
+				return default;
 			}
 			int num = Interop.sqlite3_column_bytes(stmHandle, i);
 			if (num == 0)
@@ -586,7 +586,7 @@ public class Database
 		{
 			Complete(stmHandle);
 		}
-		return default(T);
+		return default;
 	}
 
 	protected T? ExecuteAndReadQueryResult<T>(IntPtr stmHandle, Func<IntPtr, T> rowReader) where T : struct

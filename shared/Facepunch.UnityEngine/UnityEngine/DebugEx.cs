@@ -126,7 +126,7 @@ public static class DebugEx
 		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = centre - size / 2f;
 		Vector3 val2 = centre + size / 2f;
-		Vector3[] array = (Vector3[])(object)new Vector3[8]
+		Vector3[] array = new Vector3[8]
 		{
 			new Vector3(val.x, val.y, val.z),
 			new Vector3(val2.x, val.y, val.z),

@@ -121,7 +121,7 @@ public class BakeBallsToUV3FromUV2Islands : MonoBehaviour
 		Vector2[] array = val.uv3;
 		if (array == null || array.Length != vertices.Length)
 		{
-			array = (Vector2[])(object)new Vector2[vertices.Length];
+			array = new Vector2[vertices.Length];
 		}
 		foreach (KeyValuePair<int, List<int>> item4 in dictionary)
 		{

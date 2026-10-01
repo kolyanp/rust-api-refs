@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Rust.Json;
@@ -11,15 +11,15 @@ public class GradientConverter : JsonConverter<Gradient>
 	{
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010c: Expected I4, but got Unknown
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Expected I4, but got Unknown
 		if (value == null)
 		{
 			writer.WriteNull();
@@ -33,7 +33,7 @@ public class GradientConverter : JsonConverter<Gradient>
 		{
 			writer.WriteStartObject();
 			writer.WritePropertyName("color");
-			serializer.Serialize(writer, (object)val.color);
+			UnityJsonConverters.WriteColor(writer, val.color);
 			writer.WritePropertyName("time");
 			writer.WriteValue(val.time);
 			writer.WriteEndObject();
@@ -59,53 +59,170 @@ public class GradientConverter : JsonConverter<Gradient>
 
 	public override Gradient ReadJson(JsonReader reader, Type objectType, Gradient existingValue, bool hasExistingValue, JsonSerializer serializer)
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0008: Invalid comparison between Unknown and I4
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0132: Expected O, but got Unknown
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		if ((int)reader.TokenType == 11)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Expected Obj, but got Unknown
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		if (!UnityJsonConverters.BeginObject(reader, "Gradient"))
 		{
 			return null;
 		}
-		JObject val = JObject.Load(reader);
 		GradientColorKey[] array = Array.Empty<GradientColorKey>();
-		JToken obj = val["colorKeys"];
-		JArray val2 = (JArray)(object)((obj is JArray) ? obj : null);
-		if (val2 != null)
+		GradientAlphaKey[] array2 = Array.Empty<GradientAlphaKey>();
+		GradientMode mode = (GradientMode)0;
+		string name;
+		while (UnityJsonConverters.NextProperty(reader, out name))
 		{
-			array = (GradientColorKey[])(object)new GradientColorKey[((JContainer)val2).Count];
-			for (int i = 0; i < ((JContainer)val2).Count; i++)
+			switch (name)
 			{
-				GradientColorKey[] array2 = array;
-				int num = i;
-				JToken obj2 = val2[i][(object)"color"];
-				array2[num] = new GradientColorKey((obj2 != null) ? obj2.ToObject<Color>(serializer) : Color.white, UnityJsonConverters.F(val2[i], "time"));
+			case "colorKeys":
+				array = ReadColorKeys(reader);
+				break;
+			case "alphaKeys":
+				array2 = ReadAlphaKeys(reader);
+				break;
+			case "mode":
+				mode = (GradientMode)UnityJsonConverters.Int(reader);
+				break;
+			default:
+				reader.Skip();
+				break;
 			}
 		}
-		GradientAlphaKey[] array3 = Array.Empty<GradientAlphaKey>();
-		JToken obj3 = val["alphaKeys"];
-		JArray val3 = (JArray)(object)((obj3 is JArray) ? obj3 : null);
-		if (val3 != null)
+		Gradient val = new Gradient
 		{
-			array3 = (GradientAlphaKey[])(object)new GradientAlphaKey[((JContainer)val3).Count];
-			for (int j = 0; j < ((JContainer)val3).Count; j++)
-			{
-				array3[j] = new GradientAlphaKey(UnityJsonConverters.F(val3[j], "alpha", 1f), UnityJsonConverters.F(val3[j], "time"));
-			}
-		}
-		Gradient val4 = new Gradient
-		{
-			mode = (GradientMode)UnityJsonConverters.I((JToken)(object)val, "mode")
+			mode = mode
 		};
-		val4.SetKeys(array, array3);
-		return val4;
+		val.SetKeys(array, array2);
+		return val;
+	}
+
+	private static bool BeginKeys(JsonReader reader)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Invalid comparison between Unknown and I4
+		if (!UnityJsonConverters.NextValue(reader))
+		{
+			return false;
+		}
+		if ((int)reader.TokenType != 2)
+		{
+			reader.Skip();
+			return false;
+		}
+		return true;
+	}
+
+	private static void BeginKey(JsonReader reader, string typeName)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Invalid comparison between Unknown and I4
+		if ((int)reader.TokenType != 1)
+		{
+			throw UnityJsonConverters.Unexpected(reader, typeName);
+		}
+	}
+
+	private static GradientColorKey[] ReadColorKeys(JsonReader reader)
+	{
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Invalid comparison between Unknown and I4
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		if (!BeginKeys(reader))
+		{
+			return Array.Empty<GradientColorKey>();
+		}
+		List<GradientColorKey> list = null;
+		while (reader.Read() && (int)reader.TokenType != 14)
+		{
+			BeginKey(reader, "GradientColorKey");
+			Color val = Color.white;
+			float num = 0f;
+			string name;
+			while (UnityJsonConverters.NextProperty(reader, out name))
+			{
+				if (!(name == "color"))
+				{
+					if (name == "time")
+					{
+						num = UnityJsonConverters.Float(reader);
+					}
+					else
+					{
+						reader.Skip();
+					}
+				}
+				else
+				{
+					val = (UnityJsonConverters.NextValue(reader) ? UnityJsonConverters.ReadColor(reader) : Color.white);
+				}
+			}
+			if (list == null)
+			{
+				list = new List<GradientColorKey>();
+			}
+			list.Add(new GradientColorKey(val, num));
+		}
+		if (list != null)
+		{
+			return list.ToArray();
+		}
+		return Array.Empty<GradientColorKey>();
+	}
+
+	private static GradientAlphaKey[] ReadAlphaKeys(JsonReader reader)
+	{
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Invalid comparison between Unknown and I4
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		if (!BeginKeys(reader))
+		{
+			return Array.Empty<GradientAlphaKey>();
+		}
+		List<GradientAlphaKey> list = null;
+		while (reader.Read() && (int)reader.TokenType != 14)
+		{
+			BeginKey(reader, "GradientAlphaKey");
+			float num = 1f;
+			float num2 = 0f;
+			string name;
+			while (UnityJsonConverters.NextProperty(reader, out name))
+			{
+				if (!(name == "alpha"))
+				{
+					if (name == "time")
+					{
+						num2 = UnityJsonConverters.Float(reader);
+					}
+					else
+					{
+						reader.Skip();
+					}
+				}
+				else
+				{
+					num = UnityJsonConverters.Float(reader, 1f);
+				}
+			}
+			if (list == null)
+			{
+				list = new List<GradientAlphaKey>();
+			}
+			list.Add(new GradientAlphaKey(num, num2));
+		}
+		if (list != null)
+		{
+			return list.ToArray();
+		}
+		return Array.Empty<GradientAlphaKey>();
 	}
 }

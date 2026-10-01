@@ -1,8 +1,7 @@
-using System;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Rust/Skins/Inventory Item")]
-public class SteamInventoryItem : ScriptableObject
+public class SteamInventoryItem : SteamInventoryAsset
 {
 	public enum Category
 	{
@@ -30,26 +29,10 @@ public class SteamInventoryItem : ScriptableObject
 		CrateUncraftable
 	}
 
-	public int id;
-
-	public Sprite icon;
-
-	public Phrase displayName;
-
-	public Phrase displayDescription;
-
-	[Tooltip("Images to show on the Steam store page for this item. Should all be square and hosted on https://files.facepunch.com/")]
-	public string[] storeImages = Array.Empty<string>();
-
 	[Header("Steam Inventory")]
 	public Category category;
 
 	public SubCategory subcategory;
-
-	public SteamInventoryCategory steamCategory;
-
-	[Tooltip("If true then this item will be placed under the Limited tab, otherwise it goes under General.")]
-	public bool isLimitedTimeOffer = true;
 
 	[Tooltip("Stop this item being broken down into cloth etc")]
 	public bool PreventBreakingDown;

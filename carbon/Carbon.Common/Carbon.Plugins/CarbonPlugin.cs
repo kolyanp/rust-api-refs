@@ -47,12 +47,12 @@ public class CarbonPlugin : RustPlugin
 		if (cooldownInstance == null)
 		{
 			List<CooldownInstance> list = value;
-			CooldownInstance obj = new CooldownInstance
+			CooldownInstance cooldownInstance2 = new CooldownInstance
 			{
 				Command = command
 			};
-			cooldownInstance = obj;
-			list.Add(obj);
+			cooldownInstance = cooldownInstance2;
+			list.Add(cooldownInstance2);
 		}
 		TimeSpan timeSpan = DateTime.Now - cooldownInstance.LastCall;
 		if (timeSpan.TotalMilliseconds >= (double)time)

@@ -12,8 +12,8 @@ public class IndividualSpawner : BaseMonoBehaviour, IServerComponent, ISpawnPoin
 
 	public LayerMask customBoundsCheckMask;
 
-	[SerializeField]
 	[Tooltip("Simply spawns the entity once. No respawning. Entity can be saved if desired.")]
+	[SerializeField]
 	public bool oneTimeSpawner;
 
 	internal bool isSpawnerActive = true;
@@ -70,7 +70,7 @@ public class IndividualSpawner : BaseMonoBehaviour, IServerComponent, ISpawnPoin
 		{
 			Gizmos.color = Color.yellow;
 			Gizmos.matrix = ((Component)this).transform.localToWorldMatrix;
-			Gizmos.DrawCube(((Bounds)(ref result)).center, ((Bounds)(ref result)).size);
+			Gizmos.DrawCube(result.center, result.size);
 		}
 	}
 
@@ -184,7 +184,7 @@ public class IndividualSpawner : BaseMonoBehaviour, IServerComponent, ISpawnPoin
 				}
 			}
 		}
-		result = default(Bounds);
+		result = default;
 		return false;
 	}
 }

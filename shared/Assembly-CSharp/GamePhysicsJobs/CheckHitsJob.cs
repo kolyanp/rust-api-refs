@@ -23,7 +23,7 @@ public struct CheckHitsJob : IJob
 			ref NativeArray<bool> results = ref Results;
 			int num = i;
 			ColliderHit val = Hits[i];
-			results[num] = ((ColliderHit)(ref val)).instanceID != 0;
+			results[num] = val.instanceID != 0;
 		}
 	}
 }

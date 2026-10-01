@@ -35,33 +35,91 @@ public class ElevatorStatic : Elevator
 
 	public ElevatorFloorNumber FloorNumberDisplay;
 
-	public static Phrase Phrase_Basement;
+	public static Phrase Phrase_Basement = new Phrase("elevator_floor_option_basement", "Basement");
 
-	public static Phrase Phrase_Elevator;
+	public static Phrase Phrase_Elevator = new Phrase("elevator_floor_option_elevator", "Elevator");
 
-	public static Phrase Phrase_Lobby;
+	public static Phrase Phrase_Lobby = new Phrase("elevator_floor_option_lobby", "Lobby");
 
-	public static Phrase Phrase_Penthouse;
+	public static Phrase Phrase_Penthouse = new Phrase("elevator_floor_option_penthouse", "Penthouse");
 
-	public static Phrase Phrase_GroundFloor;
+	public static Phrase Phrase_GroundFloor = new Phrase("elevator_floor_option_ground", "Ground Floor");
 
-	public static Phrase Phrase_Floor1;
+	public static Phrase Phrase_Floor1 = new Phrase("elevator_floor_option_1", "Floor 1");
 
-	public static Phrase Phrase_Floor2;
+	public static Phrase Phrase_Floor2 = new Phrase("elevator_floor_option_2", "Floor 2");
 
-	public static Phrase Phrase_Floor3;
+	public static Phrase Phrase_Floor3 = new Phrase("elevator_floor_option_3", "Floor 3");
 
-	public static Phrase Phrase_Floor4;
+	public static Phrase Phrase_Floor4 = new Phrase("elevator_floor_option_4", "Floor 4");
 
-	public static Phrase Phrase_Floor5;
+	public static Phrase Phrase_Floor5 = new Phrase("elevator_floor_option_5", "Floor 5");
 
-	public static Phrase Phrase_Floor6;
+	public static Phrase Phrase_Floor6 = new Phrase("elevator_floor_option_6", "Floor 6");
 
-	public static Phrase Phrase_Floor7;
+	public static Phrase Phrase_Floor7 = new Phrase("elevator_floor_option_7", "Floor 7");
 
-	public static Phrase Phrase_Floor8;
+	public static Phrase Phrase_Floor8 = new Phrase("elevator_floor_option_8", "Floor 8");
 
-	public static Dictionary<ElevatorFloorNumber, (string icon, Phrase phrase)> IconLookup;
+	public static Dictionary<ElevatorFloorNumber, (string icon, Phrase phrase)> IconLookup = new Dictionary<ElevatorFloorNumber, (string, Phrase)>
+	{
+		{
+			ElevatorFloorNumber.None,
+			("elevator", Phrase_Elevator)
+		},
+		{
+			ElevatorFloorNumber.Basement,
+			("elevator_b", Phrase_Basement)
+		},
+		{
+			ElevatorFloorNumber.Lobby,
+			("elevator_l", Phrase_Lobby)
+		},
+		{
+			ElevatorFloorNumber.Penthouse,
+			("elevator_p", Phrase_Penthouse)
+		},
+		{
+			ElevatorFloorNumber.Floor2,
+			("elevator_2", Phrase_Floor2)
+		},
+		{
+			ElevatorFloorNumber.Floor3,
+			("elevator_3", Phrase_Floor3)
+		},
+		{
+			ElevatorFloorNumber.Floor4,
+			("elevator_4", Phrase_Floor4)
+		},
+		{
+			ElevatorFloorNumber.Floor5,
+			("elevator_5", Phrase_Floor5)
+		},
+		{
+			ElevatorFloorNumber.Floor6,
+			("elevator_6", Phrase_Floor6)
+		},
+		{
+			ElevatorFloorNumber.Floor7,
+			("elevator_7", Phrase_Floor7)
+		},
+		{
+			ElevatorFloorNumber.Floor8,
+			("elevator_8", Phrase_Floor8)
+		},
+		{
+			ElevatorFloorNumber.Floor1,
+			("elevator_1", Phrase_Floor1)
+		},
+		{
+			ElevatorFloorNumber.Floor0,
+			("elevator_0", Phrase_Lobby)
+		},
+		{
+			ElevatorFloorNumber.FloorMinus1,
+			("elevator_minus1", Phrase_Basement)
+		}
+	};
 
 	public override bool IsStatic => true;
 
@@ -101,7 +159,7 @@ public class ElevatorStatic : Elevator
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.IsTop)
+		if (!IsTop)
 		{
 			return;
 		}
@@ -111,9 +169,9 @@ public class ElevatorStatic : Elevator
 		foreach (RaycastHit item in list)
 		{
 			RaycastHit current = item;
-			if ((Object)(object)((RaycastHit)(ref current)).transform.parent != (Object)null)
+			if ((Object)(object)current.transform.parent != (Object)null)
 			{
-				ElevatorStatic component = ((Component)((RaycastHit)(ref current)).transform.parent).GetComponent<ElevatorStatic>();
+				ElevatorStatic component = ((Component)current.transform.parent).GetComponent<ElevatorStatic>();
 				if (!((Object)(object)component == (Object)null) && !((Object)(object)component == (Object)(object)this) && !component.isClient && !component.IsDestroyed)
 				{
 					floorPositions.Add(component);
@@ -122,7 +180,7 @@ public class ElevatorStatic : Elevator
 		}
 		Pool.FreeUnmanaged<RaycastHit>(ref list);
 		floorPositions.Reverse();
-		base.Floor = floorPositions.Count;
+		Floor = floorPositions.Count;
 		for (int i = 0; i < floorPositions.Count; i++)
 		{
 			floorPositions[i].SetFloorDetails(i, this);
@@ -138,14 +196,14 @@ public class ElevatorStatic : Elevator
 	public override void PostMapEntitySpawn()
 	{
 		base.PostMapEntitySpawn();
-		UpdateChildEntities(base.IsTop);
+		UpdateChildEntities(IsTop);
 	}
 
 	public override bool IsValidFloor(int targetFloor)
 	{
 		if (targetFloor >= 0)
 		{
-			return targetFloor <= base.Floor;
+			return targetFloor <= Floor;
 		}
 		return false;
 	}
@@ -160,7 +218,7 @@ public class ElevatorStatic : Elevator
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		if (targetFloor == base.Floor)
+		if (targetFloor == Floor)
 		{
 			return ((Component)this).transform.position + Vector3.up * 1f;
 		}
@@ -172,24 +230,24 @@ public class ElevatorStatic : Elevator
 	public void SetFloorDetails(int floor, ElevatorStatic owner)
 	{
 		ownerElevator = owner;
-		base.Floor = floor;
+		Floor = floor;
 	}
 
 	public override void CallElevator()
 	{
 		if ((Object)(object)ownerElevator != (Object)null)
 		{
-			ownerElevator.RequestMoveLiftTo(base.Floor, out var _, this);
+			ownerElevator.RequestMoveLiftTo(Floor, out var _, this);
 		}
-		else if (base.IsTop)
+		else if (IsTop)
 		{
-			RequestMoveLiftTo(base.Floor, out var _, this);
+			RequestMoveLiftTo(Floor, out var _, this);
 		}
 	}
 
 	public ElevatorStatic ElevatorAtFloor(int floor)
 	{
-		if (floor == base.Floor)
+		if (floor == Floor)
 		{
 			return this;
 		}
@@ -291,14 +349,17 @@ public class ElevatorStatic : Elevator
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		if (base.IsTop)
+		if (IsTop)
 		{
 			info.msg.elevator.floorList = Pool.Get<List<NetworkableId>>();
 			foreach (ElevatorStatic floorPosition in floorPositions)
 			{
-				info.msg.elevator.floorList.Add(floorPosition.net.ID);
+				if (floorPosition.IsValid())
+				{
+					info.msg.elevator.floorList.Add(floorPosition.net.ID);
+				}
 			}
 		}
 		info.msg.elevator.floorDisplay = (int)FloorNumberDisplay;
@@ -307,102 +368,30 @@ public class ElevatorStatic : Elevator
 	static ElevatorStatic()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
+		//IL_0050: Expected Obj, but got Unknown
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Expected O, but got Unknown
+		//IL_0064: Expected Obj, but got Unknown
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Expected O, but got Unknown
+		//IL_0078: Expected Obj, but got Unknown
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Expected O, but got Unknown
+		//IL_008c: Expected Obj, but got Unknown
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a0: Expected O, but got Unknown
+		//IL_00a0: Expected Obj, but got Unknown
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Expected O, but got Unknown
+		//IL_00b4: Expected Obj, but got Unknown
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c8: Expected O, but got Unknown
+		//IL_00c8: Expected Obj, but got Unknown
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Expected O, but got Unknown
+		//IL_00dc: Expected Obj, but got Unknown
 		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f0: Expected O, but got Unknown
+		//IL_00f0: Expected Obj, but got Unknown
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0104: Expected O, but got Unknown
-		Phrase_Basement = new Phrase("elevator_floor_option_basement", "Basement");
-		Phrase_Elevator = new Phrase("elevator_floor_option_elevator", "Elevator");
-		Phrase_Lobby = new Phrase("elevator_floor_option_lobby", "Lobby");
-		Phrase_Penthouse = new Phrase("elevator_floor_option_penthouse", "Penthouse");
-		Phrase_GroundFloor = new Phrase("elevator_floor_option_ground", "Ground Floor");
-		Phrase_Floor1 = new Phrase("elevator_floor_option_1", "Floor 1");
-		Phrase_Floor2 = new Phrase("elevator_floor_option_2", "Floor 2");
-		Phrase_Floor3 = new Phrase("elevator_floor_option_3", "Floor 3");
-		Phrase_Floor4 = new Phrase("elevator_floor_option_4", "Floor 4");
-		Phrase_Floor5 = new Phrase("elevator_floor_option_5", "Floor 5");
-		Phrase_Floor6 = new Phrase("elevator_floor_option_6", "Floor 6");
-		Phrase_Floor7 = new Phrase("elevator_floor_option_7", "Floor 7");
-		Phrase_Floor8 = new Phrase("elevator_floor_option_8", "Floor 8");
-		IconLookup = new Dictionary<ElevatorFloorNumber, (string, Phrase)>
-		{
-			{
-				ElevatorFloorNumber.None,
-				("elevator", Phrase_Elevator)
-			},
-			{
-				ElevatorFloorNumber.Basement,
-				("elevator_b", Phrase_Basement)
-			},
-			{
-				ElevatorFloorNumber.Lobby,
-				("elevator_l", Phrase_Lobby)
-			},
-			{
-				ElevatorFloorNumber.Penthouse,
-				("elevator_p", Phrase_Penthouse)
-			},
-			{
-				ElevatorFloorNumber.Floor2,
-				("elevator_2", Phrase_Floor2)
-			},
-			{
-				ElevatorFloorNumber.Floor3,
-				("elevator_3", Phrase_Floor3)
-			},
-			{
-				ElevatorFloorNumber.Floor4,
-				("elevator_4", Phrase_Floor4)
-			},
-			{
-				ElevatorFloorNumber.Floor5,
-				("elevator_5", Phrase_Floor5)
-			},
-			{
-				ElevatorFloorNumber.Floor6,
-				("elevator_6", Phrase_Floor6)
-			},
-			{
-				ElevatorFloorNumber.Floor7,
-				("elevator_7", Phrase_Floor7)
-			},
-			{
-				ElevatorFloorNumber.Floor8,
-				("elevator_8", Phrase_Floor8)
-			},
-			{
-				ElevatorFloorNumber.Floor1,
-				("elevator_1", Phrase_Floor1)
-			},
-			{
-				ElevatorFloorNumber.Floor0,
-				("elevator_0", Phrase_Lobby)
-			},
-			{
-				ElevatorFloorNumber.FloorMinus1,
-				("elevator_minus1", Phrase_Basement)
-			}
-		};
+		//IL_0104: Expected Obj, but got Unknown
 	}
 }

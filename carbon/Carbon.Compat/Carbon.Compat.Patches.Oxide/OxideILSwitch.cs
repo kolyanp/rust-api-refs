@@ -51,16 +51,16 @@ public class OxideILSwitch : BaseOxidePatch
 		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017a: Expected O, but got Unknown
+		//IL_017a: Expected Obj, but got Unknown
 		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0226: Invalid comparison between Unknown and I4
 		//IL_0458: Unknown result type (might be due to invalid IL or missing references)
 		//IL_047b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0480: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0486: Expected O, but got Unknown
+		//IL_0486: Expected Obj, but got Unknown
 		//IL_0488: Unknown result type (might be due to invalid IL or missing references)
 		//IL_048d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0493: Expected O, but got Unknown
+		//IL_0493: Expected Obj, but got Unknown
 		//IL_0344: Unknown result type (might be due to invalid IL or missing references)
 		//IL_034b: Invalid comparison between Unknown and I4
 		//IL_0522: Unknown result type (might be due to invalid IL or missing references)
@@ -70,16 +70,16 @@ public class OxideILSwitch : BaseOxidePatch
 		//IL_0627: Unknown result type (might be due to invalid IL or missing references)
 		//IL_064f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0654: Unknown result type (might be due to invalid IL or missing references)
-		//IL_065a: Expected O, but got Unknown
+		//IL_065a: Expected Obj, but got Unknown
 		//IL_065c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0661: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0667: Expected O, but got Unknown
+		//IL_0667: Expected Obj, but got Unknown
 		//IL_0669: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0679: Unknown result type (might be due to invalid IL or missing references)
-		//IL_067f: Expected O, but got Unknown
+		//IL_067f: Expected Obj, but got Unknown
 		//IL_0681: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0691: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0697: Expected O, but got Unknown
+		//IL_0697: Expected Obj, but got Unknown
 		foreach (TypeDefinition allType in assembly.GetAllTypes())
 		{
 			bool flag = allType.IsBaseType((ITypeDefOrRef x) => x.Name == "RustPlugin" && ((AssemblyDescriptor)((ITypeDescriptor)(object)x).DefinitionAssembly()).Name == "Carbon.Common");
@@ -171,7 +171,7 @@ public class OxideILSwitch : BaseOxidePatch
 							{
 								val2.OpCode = CilOpCodes.Pop;
 								val2.Operand = null;
-								val.Instructions.InsertRange(num, (IEnumerable<CilInstruction>)(object)new CilInstruction[2]
+								val.Instructions.InsertRange(num, (IEnumerable<CilInstruction>)new CilInstruction[2]
 								{
 									new CilInstruction(CilOpCodes.Pop),
 									new CilInstruction(CilOpCodes.Pop)
@@ -213,7 +213,7 @@ public class OxideILSwitch : BaseOxidePatch
 								{
 									val2.OpCode = CilOpCodes.Pop;
 									val2.Operand = null;
-									val.Instructions.InsertRange(++num, (IEnumerable<CilInstruction>)(object)new CilInstruction[4]
+									val.Instructions.InsertRange(++num, (IEnumerable<CilInstruction>)new CilInstruction[4]
 									{
 										new CilInstruction(CilOpCodes.Pop),
 										new CilInstruction(CilOpCodes.Ldarg_0),

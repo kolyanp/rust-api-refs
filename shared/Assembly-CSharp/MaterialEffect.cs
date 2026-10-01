@@ -79,6 +79,7 @@ public class MaterialEffect : ScriptableObject
 		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
@@ -95,18 +96,17 @@ public class MaterialEffect : ScriptableObject
 		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
 		if (!GamePhysics.Trace(ray, 0f, out var hitInfo, length, mask, (QueryTriggerInteraction)0))
 		{
-			Effect.client.Run(DefaultEffect.resourcePath, ((Ray)(ref ray)).origin, ((Ray)(ref ray)).direction * -1f, forward);
+			Effect.client.Run(DefaultEffect.resourcePath, ray.origin, ray.direction * -1f, forward);
 			if ((Object)(object)DefaultSoundDefinition != (Object)null)
 			{
-				PlaySound(DefaultSoundDefinition, ((RaycastHit)(ref hitInfo)).point, speed);
+				PlaySound(DefaultSoundDefinition, hitInfo.point, speed);
 			}
 			return;
 		}
-		WaterLevel.WaterInfo waterInfo = WaterLevel.GetWaterInfo(((Ray)(ref ray)).origin, waves: true, volumes: false);
+		WaterLevel.WaterInfo waterInfo = WaterLevel.GetWaterInfo(ray.origin, waves: true, volumes: false);
 		if (waterInfo.isValid)
 		{
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(((Ray)(ref ray)).origin.x, waterInfo.surfaceLevel, ((Ray)(ref ray)).origin.z);
+			Vector3 val = new Vector3(ray.origin.x, waterInfo.surfaceLevel, ray.origin.z);
 			Entry waterEntry = GetWaterEntry();
 			if (submergedWaterDepth > 0f && waterInfo.currentDepth >= submergedWaterDepth)
 			{
@@ -126,22 +126,22 @@ public class MaterialEffect : ScriptableObject
 			}
 			return;
 		}
-		PhysicsMaterial materialAt = ColliderEx.GetMaterialAt(((RaycastHit)(ref hitInfo)).collider, ((RaycastHit)(ref hitInfo)).point);
+		PhysicsMaterial materialAt = ColliderEx.GetMaterialAt(hitInfo.collider, hitInfo.point);
 		Entry entryFromMaterial = GetEntryFromMaterial(materialAt);
 		if (entryFromMaterial == null)
 		{
-			Effect.client.Run(DefaultEffect.resourcePath, ((RaycastHit)(ref hitInfo)).point, ((RaycastHit)(ref hitInfo)).normal, forward);
+			Effect.client.Run(DefaultEffect.resourcePath, hitInfo.point, hitInfo.normal, forward);
 			if ((Object)(object)DefaultSoundDefinition != (Object)null)
 			{
-				PlaySound(DefaultSoundDefinition, ((RaycastHit)(ref hitInfo)).point, speed);
+				PlaySound(DefaultSoundDefinition, hitInfo.point, speed);
 			}
 		}
 		else
 		{
-			Effect.client.Run(entryFromMaterial.Effect.resourcePath, ((RaycastHit)(ref hitInfo)).point, ((RaycastHit)(ref hitInfo)).normal, forward);
+			Effect.client.Run(entryFromMaterial.Effect.resourcePath, hitInfo.point, hitInfo.normal, forward);
 			if ((Object)(object)entryFromMaterial.SoundDefinition != (Object)null)
 			{
-				PlaySound(entryFromMaterial.SoundDefinition, ((RaycastHit)(ref hitInfo)).point, speed);
+				PlaySound(entryFromMaterial.SoundDefinition, hitInfo.point, speed);
 			}
 		}
 	}

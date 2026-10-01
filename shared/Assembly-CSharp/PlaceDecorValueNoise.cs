@@ -27,6 +27,7 @@ public class PlaceDecorValueNoise : ProceduralComponent
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
@@ -78,7 +79,6 @@ public class PlaceDecorValueNoise : ProceduralComponent
 		float offset = Cluster.Offset;
 		float frequency = Cluster.Frequency * 0.01f;
 		float amplitude = Cluster.Amplitude;
-		Vector3 pos = default(Vector3);
 		for (int i = 0; i < num; i++)
 		{
 			float num6 = SeedRandom.Range(ref seed, x, num2);
@@ -91,7 +91,7 @@ public class PlaceDecorValueNoise : ProceduralComponent
 			if (((FilterMode & SpawnFilterMode.PivotPoint) == 0 || !(factor <= 0f)) && !((offset + Noise.Turbulence(num4 + num6, num5 + num7, octaves, frequency, amplitude)) * factor * factor < num8))
 			{
 				float height = heightMap.GetHeight(normX, normZ);
-				((Vector3)(ref pos))._002Ector(num6, height, num7);
+				Vector3 pos = new Vector3(num6, height, num7);
 				Quaternion rot = random.Object.transform.localRotation;
 				Vector3 scale = random.Object.transform.localScale;
 				random.ApplyDecorComponents(ref pos, ref rot, ref scale);

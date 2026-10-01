@@ -29,6 +29,7 @@ public class PlaceMonument : ProceduralComponent
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
@@ -71,10 +72,9 @@ public class PlaceMonument : ProceduralComponent
 		float z = position.z;
 		float num = position.x + size.x;
 		float num2 = position.z + size.z;
-		SpawnInfo spawnInfo = default(SpawnInfo);
+		SpawnInfo spawnInfo = default;
 		int num3 = int.MinValue;
 		Prefab<MonumentInfo> prefab = Prefab.Load<MonumentInfo>(Monument.resourceID, (GameManager)null, (PrefabAttribute.Library)null);
-		Vector3 pos = default(Vector3);
 		for (int i = 0; i < 10000; i++)
 		{
 			float num4 = SeedRandom.Range(ref seed, x, num);
@@ -88,7 +88,7 @@ public class PlaceMonument : ProceduralComponent
 				continue;
 			}
 			float height = heightMap.GetHeight(normX, normZ);
-			((Vector3)(ref pos))._002Ector(num4, height, num5);
+			Vector3 pos = new Vector3(num4, height, num5);
 			Quaternion rot = prefab.Object.transform.localRotation;
 			Vector3 scale = prefab.Object.transform.localScale;
 			prefab.ApplyDecorComponents(ref pos, ref rot, ref scale);

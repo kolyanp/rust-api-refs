@@ -24,6 +24,7 @@ public class MonumentNode : MonoBehaviour
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
@@ -41,8 +42,7 @@ public class MonumentNode : MonoBehaviour
 		{
 			Prefab<MonumentInfo> random = ArrayEx.GetRandom(array, ref seed);
 			float height = TerrainMeta.HeightMap.GetHeight(((Component)this).transform.position);
-			Vector3 pos = default(Vector3);
-			((Vector3)(ref pos))._002Ector(((Component)this).transform.position.x, height, ((Component)this).transform.position.z);
+			Vector3 pos = new Vector3(((Component)this).transform.position.x, height, ((Component)this).transform.position.z);
 			Quaternion rot = random.Object.transform.localRotation;
 			Vector3 scale = random.Object.transform.localScale;
 			random.ApplyDecorComponents(ref pos, ref rot, ref scale);

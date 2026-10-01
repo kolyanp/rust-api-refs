@@ -48,12 +48,12 @@ public class TerrainBlendMap : TerrainMap<byte>
 	public void GenerateTextures()
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Expected O, but got Unknown
+		//IL_0027: Expected Obj, but got Unknown
 		BlendTexture = new Texture2D(res, res, (TextureFormat)1, true, true);
 		((Object)BlendTexture).name = "BlendTexture";
 		((Texture)BlendTexture).wrapMode = (TextureWrapMode)1;
-		Color32[] col = (Color32[])(object)new Color32[res * res];
-		Parallel.For(0, res, delegate(int z)
+		Color32[] col = new Color32[res * res];
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
@@ -138,7 +138,7 @@ public class TerrainBlendMap : TerrainMap<byte>
 
 	public void SetAlpha(float normX, float normZ, float a, float opacity, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			lerp *= opacity;
 			if (lerp > 0f)

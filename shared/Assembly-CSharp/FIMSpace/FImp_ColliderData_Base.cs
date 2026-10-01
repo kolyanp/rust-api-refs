@@ -15,11 +15,11 @@ public abstract class FImp_ColliderData_Base
 
 	public bool Is2D;
 
-	protected Vector3 previousPosition;
+	protected Vector3 previousPosition = Vector3.zero;
 
-	protected Quaternion previousRotation;
+	protected Quaternion previousRotation = Quaternion.identity;
 
-	protected Vector3 previousScale;
+	protected Vector3 previousScale = Vector3.one;
 
 	public Transform Transform { get; protected set; }
 
@@ -150,9 +150,5 @@ public abstract class FImp_ColliderData_Base
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		previousPosition = Vector3.zero;
-		previousRotation = Quaternion.identity;
-		previousScale = Vector3.one;
-		base._002Ector();
 	}
 }

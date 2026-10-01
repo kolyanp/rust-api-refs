@@ -27,7 +27,7 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Error clearing " + base.File, ex);
+				Logger.Error("Error clearing " + File, ex);
 			}
 		}
 
@@ -39,7 +39,7 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Error disposing " + base.File, ex);
+				Logger.Error("Error disposing " + File, ex);
 			}
 		}
 
@@ -47,8 +47,8 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 		{
 			try
 			{
-				ModLoader.GetCompilationResult(base.File, clear: true);
-				if (!OsEx.File.Exists(base.File))
+				ModLoader.GetCompilationResult(File, clear: true);
+				if (!OsEx.File.Exists(File))
 				{
 					Dispose();
 					return;
@@ -60,15 +60,15 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 					Process = this,
 					BypassFileNameChecks = true
 				};
-				using (ZipArchive zipArchive = ZipFile.OpenRead(base.File))
+				using (ZipArchive zipArchive = ZipFile.OpenRead(File))
 				{
 					foreach (ZipArchiveEntry entry in zipArchive.Entries)
 					{
 						using StreamReader streamReader = new StreamReader(entry.Open());
 						Loader.Sources.Add(new BaseSource
 						{
-							ContextFilePath = base.File,
-							ContextFileName = Path.GetFileName(base.File),
+							ContextFilePath = File,
+							ContextFileName = Path.GetFileName(File),
 							FilePath = entry.FullName,
 							FileName = entry.Name,
 							Content = streamReader.ReadToEnd()
@@ -79,7 +79,7 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 			}
 			catch (Exception arg)
 			{
-				Logger.Warn($"Failed processing {Path.GetFileNameWithoutExtension(base.File)}:\n{arg}");
+				Logger.Warn($"Failed processing {Path.GetFileNameWithoutExtension(File)}:\n{arg}");
 			}
 		}
 	}
@@ -112,14 +112,14 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 
 	public override void Start()
 	{
-		base.BlacklistPattern = new string[2] { "backups", "debug" };
-		base.IncludeSubdirectories = Community.Runtime.Config.Watchers.ScriptWatcherOption == SearchOption.AllDirectories;
+		BlacklistPattern = new string[2] { "backups", "debug" };
+		IncludeSubdirectories = Community.Runtime.Config.Watchers.ScriptWatcherOption == SearchOption.AllDirectories;
 		base.Start();
 	}
 
 	public bool AllPendingScriptsComplete()
 	{
-		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in base.InstanceBuffer)
+		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in InstanceBuffer)
 		{
 			if (item.Value is ZipScript { Loader: not null } zipScript && !zipScript.Loader.HasFinished)
 			{
@@ -131,7 +131,7 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 
 	public bool AllNonRequiresScriptsComplete()
 	{
-		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in base.InstanceBuffer)
+		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in InstanceBuffer)
 		{
 			if (item.Value is ZipScript { Loader: not null } zipScript && !zipScript.Loader.HasRequires && !zipScript.Loader.HasFinished)
 			{
@@ -143,7 +143,7 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 
 	public bool AllExtensionsComplete()
 	{
-		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in base.InstanceBuffer)
+		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in InstanceBuffer)
 		{
 			if (item.Value is ZipScript { Loader: not null } zipScript && !zipScript.Loader.IsExtension && !zipScript.Loader.HasFinished)
 			{

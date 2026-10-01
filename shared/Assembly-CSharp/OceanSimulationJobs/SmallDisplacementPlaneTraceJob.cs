@@ -18,12 +18,12 @@ internal struct SmallDisplacementPlaneTraceJob : IJobParallelForDefer
 
 	public ReadOnly<float> MaxDists;
 
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<bool> HitResults;
 
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<Vector3> HitPositions;
 
 	public void Execute(int indicesIndex)
@@ -41,11 +41,11 @@ internal struct SmallDisplacementPlaneTraceJob : IJobParallelForDefer
 		float num2 = MaxDists[num];
 		bool flag = false;
 		Vector3 val2 = Vector3.zero;
-		float num3 = default(float);
-		if (((Plane)(ref SeaPlane)).Raycast(val, ref num3) && num3 < num2)
+		float num3 = default;
+		if (SeaPlane.Raycast(val, ref num3) && num3 < num2)
 		{
 			flag = true;
-			val2 = ((Ray)(ref val)).GetPoint(num3);
+			val2 = val.GetPoint(num3);
 		}
 		HitResults[num] = flag;
 		HitPositions[num] = val2;

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -17,7 +16,7 @@ public class WaterBaseNavGenTest : MonoBehaviour
 		dungeonNavmesh.NavmeshResolutionModifier = 0.3f;
 		dungeonNavmesh.NavMeshCollectGeometry = (NavMeshCollectGeometry)1;
 		dungeonNavmesh.LayerMask = LayerMask.op_Implicit(65537);
-		co = dungeonNavmesh.UpdateNavMeshAndWait((IEnumerable<GameObject>)(object)new GameObject[1] { ((Component)this).gameObject });
+		co = dungeonNavmesh.UpdateNavMeshAndWait(new GameObject[1] { ((Component)this).gameObject });
 		((MonoBehaviour)this).StartCoroutine(co);
 	}
 }

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -16,7 +15,7 @@ public class TabToggle : MonoBehaviour
 	public void Awake()
 	{
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Expected O, but got Unknown
+		//IL_005e: Expected Obj, but got Unknown
 		if (!Object.op_Implicit((Object)(object)TabHolder))
 		{
 			return;
@@ -26,10 +25,10 @@ public class TabToggle : MonoBehaviour
 			Button c = ((Component)TabHolder.GetChild(i)).GetComponent<Button>();
 			if (Object.op_Implicit((Object)(object)c))
 			{
-				((UnityEvent)c.onClick).AddListener((UnityAction)delegate
+				((UnityEvent)c.onClick).AddListener((UnityAction)(() =>
 				{
 					SwitchTo(c);
-				});
+				}));
 			}
 		}
 	}
@@ -72,10 +71,10 @@ public class TabToggle : MonoBehaviour
 		{
 			return;
 		}
-		CanvasGroup canvasGroup = default(CanvasGroup);
+		CanvasGroup canvasGroup = default;
 		if (FadeOut && go.TryGetComponent<CanvasGroup>(ref canvasGroup))
 		{
-			LeanTween.alphaCanvas(canvasGroup, 0f, 0.1f).setOnComplete((Action)delegate
+			LeanTween.alphaCanvas(canvasGroup, 0f, 0.1f).setOnComplete(() =>
 			{
 				go.SetActive(false);
 			});
@@ -90,7 +89,7 @@ public class TabToggle : MonoBehaviour
 	{
 		if (!go.activeSelf)
 		{
-			CanvasGroup val = default(CanvasGroup);
+			CanvasGroup val = default;
 			if (FadeIn && go.TryGetComponent<CanvasGroup>(ref val))
 			{
 				val.alpha = 0f;

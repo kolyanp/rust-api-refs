@@ -23,7 +23,7 @@ internal sealed class Dithering
 		float value2 = Random.value;
 		Texture2D val = blueNoise[m_NoiseTextureIndex];
 		PropertySheet uberSheet = context.uberSheet;
-		uberSheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.DitheringTex, (Texture)(object)val);
-		uberSheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Dithering_Coords, new Vector4((float)context.screenWidth / (float)((Texture)val).width, (float)context.screenHeight / (float)((Texture)val).height, value, value2));
+		uberSheet.properties.SetTexture(ShaderIDs.DitheringTex, (Texture)(object)val);
+		uberSheet.properties.SetVector(ShaderIDs.Dithering_Coords, new Vector4((float)context.screenWidth / (float)((Texture)val).width, (float)context.screenHeight / (float)((Texture)val).height, value, value2));
 	}
 }

@@ -15,6 +15,7 @@ using Facepunch.Rust;
 using Network;
 using Network.Relay;
 using Rust;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 namespace ConVar;
@@ -315,6 +316,9 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "Maximum percent chance added to base wounded/incapacitated recovery chance, based on the player's food and water level", Saved = true)]
 	public static float woundedmaxfoodandwaterbonus = 0.25f;
 
+	[ServerVar(Help = "Wounded/incapacitated recovery chance for a player carrying a full extra bar of calories above the normal cap, scaled down by how overfed they actually are", Saved = true)]
+	public static float woundedmaxoverfedchance = 1f;
+
 	[ServerVar(Help = "Minimum initial health given when a player dies and moves to crawling wounded state", Saved = false)]
 	public static int crawlingminimumhealth = 7;
 
@@ -332,6 +336,9 @@ public class Server : ConsoleSystem
 
 	[ReplicatedVar]
 	public static int max_sleeping_bags = 15;
+
+	[ServerVar(Help = "When a deployable is upgraded in place (e.g. stacking sandbags) the new tier keeps the damaged health fraction of the one it replaced instead of spawning at full health")]
+	public static bool upgrade_keeps_health = true;
 
 	[ReplicatedVar]
 	public static bool bag_quota_item_amount = true;
@@ -541,6 +548,9 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "If two spoiled food items are both above this threshold then we will allow them to be stacked")]
 	public static float normalisedFoodSpoilTimeStackThreshold = 0.9f;
 
+	[ReplicatedVar(Help = "Hours milk has to spend in a refrigerated container before it can be skimmed. Items already chilled won't notice a change until their next network update")]
+	public static float creamSeparationHours = 4f;
+
 	[ServerVar(Help = "Whether to run local avoidance for chickens, disabling might get a slight performance improvement but chickens will clip", Saved = true, ShowInAdminUI = true)]
 	public static bool farmChickenLocalAvoidance = true;
 
@@ -674,7 +684,7 @@ public class Server : ConsoleSystem
 	public static int UsePlayerUpdateJobs = 3;
 
 	[ServerVar(Help = "UsePlayerUpdateJobs 4 related - how many players to gather occlusion pairs for per task")]
-	public static int OcclusionGatherBatchPlayerCount = 64;
+	public static int OcclusionGatherBatchPlayerCount = 16;
 
 	[ServerVar(Help = "UsePlayerUpdateJobs 2 related - how many snapshot messages to batch into 1 task")]
 	public static int SnapshotTaskBatchCount = 64;
@@ -684,9 +694,6 @@ public class Server : ConsoleSystem
 
 	[ServerVar(Help = "UsePlayerUpdateJobs 4 related - affects how many players get batched into 1 task by counting the size of their network queues. Higher number - less tasks")]
 	public static int ParallelNetworkQueueBatchSize = 16;
-
-	[CompilerGenerated]
-	private static Era _003CEra_003Ek__BackingField;
 
 	[ServerVar(Help = "(Generated) Setting this to true assigns a new random value to the world generation seed; useful for wipe scripts that want a fresh random map each time")]
 	public static bool randomize_seed
@@ -1129,14 +1136,14 @@ public class Server : ConsoleSystem
 		get
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-			return _003CEra_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			_003CEra_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -1157,8 +1164,8 @@ public class Server : ConsoleSystem
 			}
 			else
 			{
-				GameObject obj2 = gameModePrefab.Get();
-				obj = ((obj2 != null) ? obj2.GetComponent<BaseGameMode>() : null);
+				GameObject val = gameModePrefab.Get();
+				obj = ((val != null) ? val.GetComponent<BaseGameMode>() : null);
 			}
 			BaseGameMode baseGameMode = (BaseGameMode)obj;
 			if (baseGameMode.shortname == gamemode)
@@ -1380,6 +1387,10 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "Backup server folder")]
 	public static void backup()
 	{
+		if ((Object)(object)RustNavigation.Instance != (Object)null)
+		{
+			RustNavigation.Instance.JoinSave();
+		}
 		DirectoryEx.Backup(backupFolder, backupFolder1, backupFolder2, backupFolder3);
 		DirectoryEx.CopyAll(rootFolder, backupFolder);
 	}
@@ -1516,7 +1527,7 @@ public class Server : ConsoleSystem
 		bool json = arg.HasArg("--json");
 		bool isAdmin = arg.IsAdmin;
 		ulong requestingUser = arg.Connection?.userid ?? 0;
-		return combat.Get(count, default(NetworkableId), json, isAdmin, requestingUser);
+		return combat.Get(count, default, json, isAdmin, requestingUser);
 	}
 
 	[ServerAllVar(Help = "Get the player combat log, only showing outgoing damage")]
@@ -1584,7 +1595,7 @@ public class Server : ConsoleSystem
 		if (!((Object)(object)basePlayer == (Object)null))
 		{
 			Quaternion rotation = ((Component)basePlayer).transform.rotation;
-			return ((object)((Quaternion)(ref rotation)).eulerAngles/*cast due to constrained. prefix*/).ToString();
+			return ((object)rotation.eulerAngles/*cast due to constrained. prefix*/).ToString();
 		}
 		return "invalid player";
 	}
@@ -1604,7 +1615,7 @@ public class Server : ConsoleSystem
 		if (!((Object)(object)basePlayer == (Object)null))
 		{
 			Quaternion rotation = basePlayer.eyes.rotation;
-			return ((object)((Quaternion)(ref rotation)).eulerAngles/*cast due to constrained. prefix*/).ToString();
+			return ((object)rotation.eulerAngles/*cast due to constrained. prefix*/).ToString();
 		}
 		return "invalid player";
 	}
@@ -1701,7 +1712,7 @@ public class Server : ConsoleSystem
 			{
 				val.AddRow(new string[3]
 				{
-					((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
+					((object)item.net.ID/*cast due to constrained. prefix*/).ToString(),
 					((object)((Component)item).transform.position/*cast due to constrained. prefix*/).ToString(),
 					StringExtensions.QuoteSafe(item.shopName)
 				});
@@ -1729,7 +1740,7 @@ public class Server : ConsoleSystem
 			{
 				val.AddRow(new string[3]
 				{
-					((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
+					((object)item.net.ID/*cast due to constrained. prefix*/).ToString(),
 					((object)((Component)item).transform.position/*cast due to constrained. prefix*/).ToString(),
 					item.authorizedPlayers.Count.ToString()
 				});
@@ -2105,7 +2116,7 @@ public class Server : ConsoleSystem
 			{
 				foreach (string text in options)
 				{
-					if (inputValues.Contains<string>(text, StringComparer.InvariantCultureIgnoreCase))
+					if (inputValues.Contains(text, StringComparer.InvariantCultureIgnoreCase))
 					{
 						outputValues.Add(text);
 						break;

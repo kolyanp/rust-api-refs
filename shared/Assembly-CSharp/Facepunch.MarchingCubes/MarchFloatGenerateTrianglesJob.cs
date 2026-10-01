@@ -26,8 +26,9 @@ internal struct MarchFloatGenerateTrianglesJob : IJobParallelForBatch
 	public int batchSize;
 
 	[SkipLocalsInit]
-	public unsafe void Execute(int startIndex, int count)
+	public void Execute(int startIndex, int count)
 	{
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
@@ -66,15 +67,14 @@ internal struct MarchFloatGenerateTrianglesJob : IJobParallelForBatch
 		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
 		int num = startIndex / batchSize;
-		((Writer)(ref edgeStream)).PatchMinMaxRange(num);
-		((Writer)(ref edgeStream)).BeginForEachIndex(num);
-		Span<int3> corners = new Span<int3>(stackalloc int3[8], 8);
+		edgeStream.PatchMinMaxRange(num);
+		edgeStream.BeginForEachIndex(num);
+		Span<int3> corners = stackalloc int3[8];
 		Span<int> cornerIndices = stackalloc int[8];
 		Span<float> cornerSamples = stackalloc float[8];
-		int3 val = default(int3);
 		for (int i = startIndex; i < startIndex + count; i++)
 		{
-			((int3)(ref val))._002Ector(i % sampler.Width, i % sampler.WidthHeight / sampler.Width, i / sampler.WidthHeight);
+			int3 val = new int3(i % sampler.Width, i % sampler.WidthHeight / sampler.Width, i / sampler.WidthHeight);
 			if (math.any(val > sampler.Bounds - new int3(2)))
 			{
 				continue;
@@ -112,16 +112,16 @@ internal struct MarchFloatGenerateTrianglesJob : IJobParallelForBatch
 				}
 				int edge = MarchingCubeLookup.triTableFlat[num4 + k + 1];
 				int edge2 = MarchingCubeLookup.triTableFlat[num4 + k + 2];
-				((Writer)(ref edgeStream)).Write<Facepunch.MarchingCubes.EdgeKey>(MakeEdge(num5, corners, cornerSamples, cornerIndices));
-				((Writer)(ref edgeStream)).Write<Facepunch.MarchingCubes.EdgeKey>(MakeEdge(edge, corners, cornerSamples, cornerIndices));
-				((Writer)(ref edgeStream)).Write<Facepunch.MarchingCubes.EdgeKey>(MakeEdge(edge2, corners, cornerSamples, cornerIndices));
+				edgeStream.Write<EdgeKey>(MakeEdge(num5, corners, cornerSamples, cornerIndices));
+				edgeStream.Write<EdgeKey>(MakeEdge(edge, corners, cornerSamples, cornerIndices));
+				edgeStream.Write<EdgeKey>(MakeEdge(edge2, corners, cornerSamples, cornerIndices));
 			}
 		}
-		((Writer)(ref edgeStream)).EndForEachIndex();
+		edgeStream.EndForEachIndex();
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private Facepunch.MarchingCubes.EdgeKey MakeEdge(int edge, Span<int3> corners, Span<float> cornerSamples, Span<int> cornerIndices)
+	private EdgeKey MakeEdge(int edge, Span<int3> corners, Span<float> cornerSamples, Span<int> cornerIndices)
 	{
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
@@ -130,12 +130,12 @@ internal struct MarchFloatGenerateTrianglesJob : IJobParallelForBatch
 		int num2 = MarchingCubeLookup.cornerIndexBFromEdge[edge];
 		int num3 = cornerIndices[num];
 		int num4 = cornerIndices[num2];
-		bool num5 = num3 < num4;
-		int index = (num5 ? num : num2);
-		int index2 = (num5 ? num2 : num);
-		int num6 = (num5 ? num3 : num4);
-		int num7 = MarchingCubeLookup.axisFromEdge[edge];
-		int edgeId = 3 * num6 + num7;
-		return new Facepunch.MarchingCubes.EdgeKey(corners[index], corners[index2], cornerSamples[index], cornerSamples[index2], iso, vertexOffset, scale, edgeId);
+		bool flag = num3 < num4;
+		int index = (flag ? num : num2);
+		int index2 = (flag ? num2 : num);
+		int num5 = (flag ? num3 : num4);
+		int num6 = MarchingCubeLookup.axisFromEdge[edge];
+		int edgeId = 3 * num5 + num6;
+		return new EdgeKey(corners[index], corners[index2], cornerSamples[index], cornerSamples[index2], iso, vertexOffset, scale, edgeId);
 	}
 }

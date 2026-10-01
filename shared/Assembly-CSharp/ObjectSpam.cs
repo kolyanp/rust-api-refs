@@ -15,9 +15,9 @@ public class ObjectSpam : MonoBehaviour
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		for (int i = 0; i < amount; i++)
 		{
-			GameObject obj = Object.Instantiate<GameObject>(source);
-			obj.transform.position = ((Component)this).transform.position + Vector3Ex.Range(0f - radius, radius);
-			((Object)obj).hideFlags = (HideFlags)3;
+			GameObject val = Object.Instantiate<GameObject>(source);
+			val.transform.position = ((Component)this).transform.position + Vector3Ex.Range(0f - radius, radius);
+			((Object)val).hideFlags = (HideFlags)3;
 		}
 	}
 }

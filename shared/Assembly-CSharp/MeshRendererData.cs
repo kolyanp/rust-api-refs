@@ -236,6 +236,7 @@ public class MeshRendererData
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
@@ -251,7 +252,6 @@ public class MeshRendererData
 		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0313: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02e0: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val4 = default(Vector3);
 		for (int i = 0; i < ((List<MeshRendererInstance>)(object)meshGroup).Count; i++)
 		{
 			MeshRendererInstance instance = ((List<MeshRendererInstance>)(object)meshGroup)[i];
@@ -265,9 +265,9 @@ public class MeshRendererData
 					triangles.Add(Pool.Get<List<int>>());
 				}
 				SubMeshDescriptor val2 = data.submeshes[j];
-				int num2 = vertices.Count - ((SubMeshDescriptor)(ref val2)).firstVertex;
-				int indexCount = ((SubMeshDescriptor)(ref val2)).indexCount;
-				int vertexCount = ((SubMeshDescriptor)(ref val2)).vertexCount;
+				int num2 = vertices.Count - val2.firstVertex;
+				int indexCount = val2.indexCount;
+				int vertexCount = val2.vertexCount;
 				int num3 = ((data.normals.Length != 0) ? vertexCount : 0);
 				int num4 = ((data.tangents.Length != 0) ? vertexCount : 0);
 				int num5 = ((data.colors32.Length != 0) ? vertexCount : 0);
@@ -276,23 +276,23 @@ public class MeshRendererData
 				List<int> list = triangles[j];
 				for (int k = 0; k < indexCount; k++)
 				{
-					int num8 = data.triangles[k + ((SubMeshDescriptor)(ref val2)).indexStart];
+					int num8 = data.triangles[k + val2.indexStart];
 					list.Add(num2 + num8);
 				}
 				for (int l = 0; l < vertexCount; l++)
 				{
-					vertices.Add(((Matrix4x4)(ref val)).MultiplyPoint3x4(data.vertices[l + ((SubMeshDescriptor)(ref val2)).firstVertex]));
+					vertices.Add(val.MultiplyPoint3x4(data.vertices[l + val2.firstVertex]));
 					positions.Add(Vector4.op_Implicit(instance.position));
 				}
 				for (int m = 0; m < num3; m++)
 				{
-					normals.Add(((Matrix4x4)(ref val)).MultiplyVector(data.normals[m + ((SubMeshDescriptor)(ref val2)).firstVertex]));
+					normals.Add(val.MultiplyVector(data.normals[m + val2.firstVertex]));
 				}
 				for (int n = 0; n < num4; n++)
 				{
-					Vector4 val3 = data.tangents[n + ((SubMeshDescriptor)(ref val2)).firstVertex];
-					((Vector3)(ref val4))._002Ector(val3.x, val3.y, val3.z);
-					Vector3 val5 = ((Matrix4x4)(ref val)).MultiplyVector(val4);
+					Vector4 val3 = data.tangents[n + val2.firstVertex];
+					Vector3 val4 = new Vector3(val3.x, val3.y, val3.z);
+					Vector3 val5 = val.MultiplyVector(val4);
 					tangents.Add(new Vector4(val5.x, val5.y, val5.z, val3.w));
 				}
 				if (data.colors32.Length == 0)
@@ -306,7 +306,7 @@ public class MeshRendererData
 				{
 					for (int num10 = 0; num10 < num5; num10++)
 					{
-						colors32.Add(data.colors32[num10 + ((SubMeshDescriptor)(ref val2)).firstVertex]);
+						colors32.Add(data.colors32[num10 + val2.firstVertex]);
 					}
 				}
 				if (data.uv.Length == 0)
@@ -320,7 +320,7 @@ public class MeshRendererData
 				{
 					for (int num12 = 0; num12 < num6; num12++)
 					{
-						uv.Add(data.uv[num12 + ((SubMeshDescriptor)(ref val2)).firstVertex]);
+						uv.Add(data.uv[num12 + val2.firstVertex]);
 					}
 				}
 				if (data.uv2.Length == 0)
@@ -334,7 +334,7 @@ public class MeshRendererData
 				{
 					for (int num14 = 0; num14 < num7; num14++)
 					{
-						uv2.Add(data.uv2[num14 + ((SubMeshDescriptor)(ref val2)).firstVertex]);
+						uv2.Add(data.uv2[num14 + val2.firstVertex]);
 					}
 				}
 			}

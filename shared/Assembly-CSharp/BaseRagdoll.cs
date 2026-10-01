@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class BaseRagdoll : BaseMountable
 {
-	[Header("Ragdolling")]
 	[SerializeField]
+	[Header("Ragdolling")]
 	private Ragdoll Ragdoll;
 
 	[SerializeField]
@@ -68,7 +68,7 @@ public class BaseRagdoll : BaseMountable
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.temporaryRagdoll = Pool.Get<TemporaryRagdoll>();
-		if (parentPlayer.IsValid(base.isServer))
+		if (parentPlayer.IsValid(isServer))
 		{
 			info.msg.temporaryRagdoll.parentID = parentPlayer.uid;
 			info.msg.temporaryRagdoll.mountPose = (int)mountPose;
@@ -99,12 +99,12 @@ public class BaseRagdoll : BaseMountable
 		player.SetPlayerFlag(BasePlayer.PlayerFlags.Ragdolling, b: false);
 		PlayerEyes eyes = player.eyes;
 		Quaternion rotation = player.eyes.rotation;
-		eyes.rotation = Quaternion.Euler(Vector3Ex.WithX(((Quaternion)(ref rotation)).eulerAngles, 0f));
+		eyes.rotation = Quaternion.Euler(Vector3Ex.WithX(rotation.eulerAngles, 0f));
 		if (dieOnImpact)
 		{
 			KillPlayerImpact(player, doRadiusDamage: true);
 		}
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			Kill();
 		}
@@ -164,10 +164,10 @@ public class BaseRagdoll : BaseMountable
 			}
 			AdjustForClipping();
 			Vector3 val = rigidBody.linearVelocity;
-			if (!(((Vector3)(ref val)).magnitude > 2f))
+			if (!(val.magnitude > 2f))
 			{
 				val = rigidBody.angularVelocity;
-				if (!(((Vector3)(ref val)).magnitude > 2f))
+				if (!(val.magnitude > 2f))
 				{
 					goto IL_0074;
 				}
@@ -264,7 +264,7 @@ public class BaseRagdoll : BaseMountable
 			Vector3 end2 = (lastPelvisPoint = Ragdoll.primaryBody.position);
 			BasePlayer basePlayer = parentPlayer.Get(serverside: true);
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			bool flag = ((Vector3)(ref linearVelocity)).sqrMagnitude > 3f;
+			bool flag = linearVelocity.sqrMagnitude > 3f;
 			bool flag2 = false;
 			bool flag3 = false;
 			List<RaycastHit> hits = Pool.Get<List<RaycastHit>>();
@@ -326,7 +326,7 @@ public class BaseRagdoll : BaseMountable
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		bool result = false;
 		Vector3 val = end - start;
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		if (magnitude < Mathf.Epsilon)
 		{
 			return false;
@@ -399,14 +399,22 @@ public class BaseRagdoll : BaseMountable
 		}
 		float x = ((Component)bp).transform.eulerAngles.x;
 		Quaternion bodyRotation = bp.eyes.bodyRotation;
-		Quaternion val = Quaternion.Euler(x, ((Quaternion)(ref bodyRotation)).eulerAngles.y, ((Component)bp).transform.eulerAngles.z);
+		Quaternion val = Quaternion.Euler(x, bodyRotation.eulerAngles.y, ((Component)bp).transform.eulerAngles.z);
 		((Component)this).transform.SetPositionAndRotation(((Component)bp).transform.position, val);
 		lastTransformPos = ((Component)this).transform.position;
 		Ragdoll.ServerInit();
 		rigidBody.linearDamping = 0f;
 		rigidBody.angularDamping = 0f;
 		inTheAir = true;
-		Vector3 val2 = ((velocityOverride != Vector3.zero) ? velocityOverride : (bp.isMounted ? bp.GetMountVelocity() : bp.estimatedVelocity));
+		Vector3 val2;
+		if (velocityOverride != Vector3.zero)
+		{
+			val2 = velocityOverride;
+		}
+		else
+		{
+			val2 = (bp.isMounted ? bp.GetMountVelocity() : bp.estimatedVelocity);
+		}
 		rigidBody.AddForce(val2, (ForceMode)1);
 		lastRagdollRbPosRot = new List<(Vector3, Quaternion)>(Ragdoll.rigidbodies.Count);
 		foreach (Rigidbody rigidbody in Ragdoll.rigidbodies)
@@ -423,7 +431,7 @@ public class BaseRagdoll : BaseMountable
 		{
 			spinDampening = 1f;
 			Vector3 zero = Vector3.zero;
-			((Vector3)(ref zero))[Random.Range(0, 3)] = 1f;
+			zero[Random.Range(0, 3)] = 1f;
 			ragdollSpinDirection = zero * 0.8f;
 		}
 		if (Object.op_Implicit((Object)(object)initiator))
@@ -460,7 +468,7 @@ public class BaseRagdoll : BaseMountable
 			mounted.SetPlayerFlag(BasePlayer.PlayerFlags.Ragdolling, b: false);
 		}
 		DismountAllPlayers();
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			Kill();
 		}
@@ -479,7 +487,7 @@ public class BaseRagdoll : BaseMountable
 	protected void ProcessCollision(Collision collision, BaseEntity hitEntity, Rigidbody ourRigidbody)
 	{
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient || collision == null || (Object)(object)collision.gameObject == (Object)null || (Object)(object)collision.gameObject == (Object)null)
+		if (isClient || collision == null || (Object)(object)collision.gameObject == (Object)null || (Object)(object)collision.gameObject == (Object)null)
 		{
 			return;
 		}
@@ -527,7 +535,7 @@ public class BaseRagdoll : BaseMountable
 		{
 			DamageUtil.RadiusDamage(mounted, initiator, ((Component)mounted).transform.position, 1f, 3.5f, impactDamage, 133120, useLineOfSight: true, ignoreAI: false, ignoreAttackingPlayer: false, extendedLineOfSight: false, null, removeWallpaper: false, includeBoatBuildingPieces: true, mounted);
 		}
-		Invoke(delegate
+		Invoke(() =>
 		{
 			StopRagdolling();
 			mounted.Hurt(new HitInfo(initiator, mounted, DamageType.Blunt, 1000f));
@@ -536,7 +544,7 @@ public class BaseRagdoll : BaseMountable
 
 	public override void OnCollision(Collision collision, BaseEntity hitEntity)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			ProcessCollision(collision, hitEntity, rigidBody);
 		}

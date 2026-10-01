@@ -41,7 +41,7 @@ public class LineCoverGroup : CoverGroup
 		float num = Vector3.Angle(dir1, dir2);
 		float num2 = radius / Mathf.Sin(num * 0.5f * (MathF.PI / 180f));
 		Vector3 val = dir1 + dir2;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		return corner + normalized * num2;
 	}
 
@@ -89,11 +89,11 @@ public class LineCoverGroup : CoverGroup
 		bool flag = Vector3.Cross(b - a, from - a).y < 0f;
 		Vector3 circleInscribedInCorner = GetCircleInscribedInCorner(a, a - from, b - a, 0.5f);
 		Quaternion val = Quaternion.LookRotation(from - a);
-		float y = ((Quaternion)(ref val)).eulerAngles.y;
+		float y = val.eulerAngles.y;
 		Cover item = new Cover(circleInscribedInCorner, y, flag ? Cover.Peeks.Left : Cover.Peeks.Right);
 		Vector3 circleInscribedInCorner2 = GetCircleInscribedInCorner(b, b - from, a - b, 0.5f);
 		val = Quaternion.LookRotation(from - b);
-		float y2 = ((Quaternion)(ref val)).eulerAngles.y;
+		float y2 = val.eulerAngles.y;
 		Cover item2 = new Cover(circleInscribedInCorner2, y2, (!flag) ? Cover.Peeks.Left : Cover.Peeks.Right);
 		return (item, item2);
 	}
@@ -116,6 +116,7 @@ public class LineCoverGroup : CoverGroup
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
@@ -142,9 +143,8 @@ public class LineCoverGroup : CoverGroup
 		Vector3 val = (rotate90 ? transform.right : transform.forward);
 		Vector3 val2 = Vector3Ex.NormalizeXZ(threatLocation - transform.position);
 		Vector3 val3 = Vector3.Project(val2, val);
-		val = ((Vector3)(ref val3)).normalized;
-		Vector3 val4 = default(Vector3);
-		((Vector3)(ref val4))._002Ector(val.z, 0f, 0f - val.x);
+		val = val3.normalized;
+		Vector3 val4 = new Vector3(val.z, 0f, 0f - val.x);
 		if (Vector3.Dot(val, val2) < 0.5f)
 		{
 			return false;

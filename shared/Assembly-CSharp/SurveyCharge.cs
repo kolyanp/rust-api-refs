@@ -52,43 +52,43 @@ public class SurveyCharge : TimedExplosive
 		{
 			return;
 		}
-		Vector3 point = ((RaycastHit)(ref hitOut)).point;
-		_ = ((RaycastHit)(ref hitOut)).normal;
+		Vector3 point = hitOut.point;
+		_ = hitOut.normal;
 		List<SurveyCrater> list = Pool.Get<List<SurveyCrater>>();
 		Vis.Entities(((Component)this).transform.position, 10f, list, 1, (QueryTriggerInteraction)2);
-		bool num = list.Count > 0;
+		bool flag = list.Count > 0;
 		Pool.FreeUnmanaged<SurveyCrater>(ref list);
-		if (num)
+		if (flag)
 		{
 			return;
 		}
-		bool flag = false;
 		bool flag2 = false;
+		bool flag3 = false;
 		foreach (ResourceDepositManager.ResourceDeposit.ResourceDepositEntry resource in orCreate._resources)
 		{
 			if (resource.spawnType == ResourceDepositManager.ResourceDeposit.surveySpawnType.ITEM && !resource.isLiquid && resource.amount >= 1000)
 			{
-				int num2 = Mathf.Clamp(Mathf.CeilToInt(2.5f / resource.workNeeded * 10f), 0, 5);
+				int num = Mathf.Clamp(Mathf.CeilToInt(2.5f / resource.workNeeded * 10f), 0, 5);
 				int iAmount = 1;
-				flag = true;
+				flag2 = true;
 				if (resource.isLiquid)
 				{
-					flag2 = true;
+					flag3 = true;
 				}
-				for (int i = 0; i < num2; i++)
+				for (int i = 0; i < num; i++)
 				{
 					Item item = ItemManager.Create(resource.type, iAmount, 0uL, isServerSide: true, 0uL);
 					Interface.CallHook("OnSurveyGather", this, item);
 					Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(20f, Vector3.up);
 					BaseEntity baseEntity = item.Drop(((Component)this).transform.position + Vector3.up * 1f, GetInheritedDropVelocity() + modifiedAimConeDirection * Random.Range(5f, 10f), Random.rotation);
 					Quaternion rotation = Random.rotation;
-					baseEntity.SetAngularVelocity(((Quaternion)(ref rotation)).eulerAngles * 5f);
+					baseEntity.SetAngularVelocity(rotation.eulerAngles * 5f);
 				}
 			}
 		}
-		if (flag)
+		if (flag2)
 		{
-			string strPrefab = (flag2 ? craterPrefab_Oil.resourcePath : craterPrefab.resourcePath);
+			string strPrefab = (flag3 ? craterPrefab_Oil.resourcePath : craterPrefab.resourcePath);
 			BaseEntity baseEntity2 = GameManager.server.CreateEntity(strPrefab, point, Quaternion.identity);
 			if (Object.op_Implicit((Object)(object)baseEntity2))
 			{

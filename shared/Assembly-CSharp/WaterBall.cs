@@ -24,7 +24,7 @@ public class WaterBall : BaseEntity
 	public void Extinguish()
 	{
 		CancelInvoke(Extinguish);
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			Kill();
 		}
@@ -33,7 +33,7 @@ public class WaterBall : BaseEntity
 	public void FixedUpdate()
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer && (Object)(object)myRigidBody != (Object)null)
+		if (isServer && (Object)(object)myRigidBody != (Object)null)
 		{
 			myRigidBody.AddForce(Physics.gravity, (ForceMode)5);
 		}
@@ -132,14 +132,14 @@ public class WaterBall : BaseEntity
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient && !myRigidBody.isKinematic)
+		if (!isClient && !myRigidBody.isKinematic)
 		{
 			float num = 2.5f;
 			Vector3 position = ((Component)this).transform.position;
 			float num2 = num * 0.75f;
 			if (GamePhysics.Trace(new Ray(position, Vector3.up), 0.05f, out var hitInfo, num2, 1084293377, (QueryTriggerInteraction)0))
 			{
-				num2 = ((RaycastHit)(ref hitInfo)).distance;
+				num2 = hitInfo.distance;
 			}
 			DoSplash(position + new Vector3(0f, num2, 0f), num, liquidType, waterAmount);
 			Effect.server.Run(waterExplosion.resourcePath, position, Vector3.up);

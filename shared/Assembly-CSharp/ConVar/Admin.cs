@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Facepunch;
 using Facepunch.Extend;
@@ -57,8 +56,8 @@ public class Admin : ConsoleSystem
 		public ulong TeamID;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct PlayerIDInfo
 	{
 		public string SteamID;
@@ -128,8 +127,8 @@ public class Admin : ConsoleSystem
 		public string Help;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerUGCInfo(IUGCBrowserEntity fromEntity)
 	{
 		public ulong entityId = fromEntity.UgcEntity.net.ID.Value;
@@ -182,7 +181,7 @@ public class Admin : ConsoleSystem
 		if (!flag && text.Length == 0)
 		{
 			text2 = text2 + "hostname: " + Server.hostname + "\n";
-			text2 = text2 + "version : " + 2633 + " secure (secure mode enabled, connected to Steam3)\n";
+			text2 = text2 + "version : " + 2634 + " secure (secure mode enabled, connected to Steam3)\n";
 			text2 = text2 + "map     : " + Server.level + "\n";
 			text2 += string.Format("players : {0} ({1} max) ({2} queued) ({3} joining)\n\n", new object[4]
 			{
@@ -458,7 +457,7 @@ public class Admin : ConsoleSystem
 		}
 		int foundAmount = 0;
 		StringBuilder sb = new StringBuilder();
-		RunInRadius(radius, ply, delegate(BaseCombatEntity entity)
+		RunInRadius(radius, ply, (BaseCombatEntity entity) =>
 		{
 			if (entity.isServer && entity is IItemContainerEntity itemContainerEntity)
 			{
@@ -539,7 +538,7 @@ public class Admin : ConsoleSystem
 		}
 		int foundAmount = 0;
 		StringBuilder sb = new StringBuilder();
-		RunInRadius(radius, basePlayer, delegate(BaseCombatEntity entity)
+		RunInRadius(radius, basePlayer, (BaseCombatEntity entity) =>
 		{
 			if (entity.isServer && entity is IItemContainerEntity itemContainerEntity)
 			{
@@ -644,7 +643,7 @@ public class Admin : ConsoleSystem
 			arg.ReplyWith("Format is 'clear_wallpaper_radius {radius}'");
 			return;
 		}
-		RunInRadius(arg.GetFloat(0), ArgEx.Player(arg), delegate(BuildingBlock block)
+		RunInRadius(arg.GetFloat(0), ArgEx.Player(arg), (BuildingBlock block) =>
 		{
 			if (block.HasWallpaper())
 			{
@@ -844,7 +843,7 @@ public class Admin : ConsoleSystem
 			arg.ReplyWith("Invalid skin");
 			return;
 		}
-		RunInRadius(radius, basePlayer, delegate(BuildingBlock block)
+		RunInRadius(radius, basePlayer, (BuildingBlock block) =>
 		{
 			bool flag2 = block.HasWallpaper();
 			bool flag3 = flag2;
@@ -944,7 +943,7 @@ public class Admin : ConsoleSystem
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cd: Expected O, but got Unknown
+		//IL_00cd: Expected Obj, but got Unknown
 		BasePlayer basePlayer = ArgEx.Player(arg);
 		if ((Object)(object)basePlayer == (Object)null)
 		{
@@ -952,7 +951,7 @@ public class Admin : ConsoleSystem
 			return;
 		}
 		Item activeItem = basePlayer.GetActiveItem();
-		ItemModDeployable itemModDeployable = default(ItemModDeployable);
+		ItemModDeployable itemModDeployable = default;
 		if (activeItem == null || !((Component)activeItem.info).TryGetComponent<ItemModDeployable>(ref itemModDeployable) || (Object)(object)itemModDeployable.entityPrefab.Get().GetComponent<GrowableEntity>() == (Object)null)
 		{
 			arg.ReplyWith("Not holding a growable item");
@@ -1552,11 +1551,11 @@ public class Admin : ConsoleSystem
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		list.RemoveAll((BasePlayer p) => p.Distance2D((BaseEntity)fromPlayer) > range);
-		list.Sort((BasePlayer player, BasePlayer basePlayer) => (!(player.Distance2D((BaseEntity)fromPlayer) < basePlayer.Distance2D((BaseEntity)fromPlayer))) ? 1 : (-1));
+		list.RemoveAll((BasePlayer p) => p.Distance((BaseEntity)fromPlayer) > range);
+		list.Sort((BasePlayer player, BasePlayer basePlayer) => (!(player.Distance((BaseEntity)fromPlayer) < basePlayer.Distance((BaseEntity)fromPlayer))) ? 1 : (-1));
 		foreach (BasePlayer item in list)
 		{
-			text += $"{item.userID.Get()}:{item.displayName}:{item.Distance2D((BaseEntity)fromPlayer)}m\n";
+			text += $"{item.userID.Get()}:{item.displayName}:{item.Distance((BaseEntity)fromPlayer)}m\n";
 			num++;
 		}
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
@@ -1595,11 +1594,11 @@ public class Admin : ConsoleSystem
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		list.RemoveAll((BasePlayer p) => p.Distance2D((BaseEntity)fromPlayer) > range);
-		list.Sort((BasePlayer player, BasePlayer basePlayer) => (!(player.Distance2D((BaseEntity)fromPlayer) < basePlayer.Distance2D((BaseEntity)fromPlayer))) ? 1 : (-1));
+		list.RemoveAll((BasePlayer p) => p.Distance((BaseEntity)fromPlayer) > range);
+		list.Sort((BasePlayer player, BasePlayer basePlayer) => (!(player.Distance((BaseEntity)fromPlayer) < basePlayer.Distance((BaseEntity)fromPlayer))) ? 1 : (-1));
 		foreach (BasePlayer item in list)
 		{
-			text += $"{item.userID.Get()}:{item.displayName}:{item.Distance2D((BaseEntity)fromPlayer)}m\n";
+			text += $"{item.userID.Get()}:{item.displayName}:{item.Distance((BaseEntity)fromPlayer)}m\n";
 			num++;
 		}
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
@@ -1634,11 +1633,11 @@ public class Admin : ConsoleSystem
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		list.RemoveAll((BasePlayer p) => p.Distance2D((BaseEntity)targetPlayer) > range);
-		list.Sort((BasePlayer player, BasePlayer basePlayer) => (!(player.Distance2D((BaseEntity)targetPlayer) < basePlayer.Distance2D((BaseEntity)targetPlayer))) ? 1 : (-1));
+		list.RemoveAll((BasePlayer p) => p.Distance((BaseEntity)targetPlayer) > range);
+		list.Sort((BasePlayer player, BasePlayer basePlayer) => (!(player.Distance((BaseEntity)targetPlayer) < basePlayer.Distance((BaseEntity)targetPlayer))) ? 1 : (-1));
 		foreach (BasePlayer item in list)
 		{
-			text += $"{item.userID.Get()}:{item.displayName}:{item.Distance2D((BaseEntity)targetPlayer)}m\n";
+			text += $"{item.userID.Get()}:{item.displayName}:{item.Distance((BaseEntity)targetPlayer)}m\n";
 			num++;
 		}
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
@@ -1759,7 +1758,7 @@ public class Admin : ConsoleSystem
 			int num3 = 0;
 			foreach (ModularCar item in allCarsList)
 			{
-				string text = ((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString();
+				string text = ((object)item.net.ID/*cast due to constrained. prefix*/).ToString();
 				string text2 = item.TotalSockets.ToString();
 				string text3 = item.NumAttachedModules.ToString();
 				string text4;
@@ -2090,6 +2089,61 @@ public class Admin : ConsoleSystem
 		return true;
 	}
 
+	[ServerVar(Help = "Clears the lock flag on every code lock and key lock within a radius of the calling player, so a base can be walked without its codes. Radius defaults to 20 metres")]
+	public static void unlockradius(Arg arg)
+	{
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("unlockradius works from the calling player's position, so it cannot run from the server console");
+			return;
+		}
+		float num = arg.GetFloat(0, 20f);
+		float num2 = num * num;
+		Vector3 position = ((Component)basePlayer).transform.position;
+		int num3 = 0;
+		int num4 = 0;
+		Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BaseLock baseLock = enumerator.Current as BaseLock;
+				if ((Object)(object)baseLock == (Object)null || baseLock.IsDestroyed)
+				{
+					continue;
+				}
+				Vector3 val = ((Component)baseLock).transform.position - position;
+				if (val.sqrMagnitude > num2)
+				{
+					continue;
+				}
+				num3++;
+				if (baseLock.HasFlag(BaseEntity.Flags.Locked))
+				{
+					using (BaseEntity.FlagsUpdateScope flagsUpdateScope = baseLock.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate))
+					{
+						flagsUpdateScope.Set(BaseEntity.Flags.Locked, b: false);
+					}
+					num4++;
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+		arg.ReplyWith($"Unlocked {num4} of {num3} locks within {num}m");
+	}
+
 	[ServerVar(Help = "(Generated) Runs an admin command (kill, lock, unlock, etc.) on a specific entity by network ID; blocks operation on players and point entities")]
 	public static void entid(Arg arg)
 	{
@@ -2106,6 +2160,7 @@ public class Admin : ConsoleSystem
 		//IL_0801: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0803: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0805: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0831: Unknown result type (might be due to invalid IL or missing references)
 		//IL_084b: Unknown result type (might be due to invalid IL or missing references)
 		BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(ArgEx.GetEntityID(arg, 1)) as BaseEntity;
@@ -2186,7 +2241,7 @@ public class Admin : ConsoleSystem
 			break;
 		}
 		case "repair":
-			RunInRadius(arg.GetFloat(2), baseEntity, delegate(BaseCombatEntity entity)
+			RunInRadius(arg.GetFloat(2), baseEntity, (BaseCombatEntity entity) =>
 			{
 				if (entity.repair.enabled)
 				{
@@ -2292,22 +2347,22 @@ public class Admin : ConsoleSystem
 				arg.ReplyWith("Reset scale");
 				break;
 			}
-			Vector3 val = Vector3.one;
+			Vector3 one = Vector3.one;
 			if (float.TryParse(text3, out var result2))
 			{
-				((Vector3)(ref val))._002Ector(result2, result2, result2);
+				one = new Vector3(result2, result2, result2);
 			}
 			else
 			{
-				val = Vector3Ex.Parse(text3);
-				if (val == Vector3.zero)
+				one = Vector3Ex.Parse(text3);
+				if (one == Vector3.zero)
 				{
 					arg.ReplyWith(text3 + " is not a valid scale");
 					break;
 				}
 			}
 			baseEntity.networkEntityScale = true;
-			((Component)baseEntity).transform.localScale = val;
+			((Component)baseEntity).transform.localScale = one;
 			baseEntity.SendNetworkUpdate();
 			arg.ReplyWith($"Set scale to {((Component)baseEntity).transform.localScale}");
 			break;
@@ -2532,7 +2587,7 @@ public class Admin : ConsoleSystem
 			return $"'{entity}' is not a building block";
 		}
 		int total = 0;
-		RunInRadius(radius, entity, delegate(BuildingBlock block)
+		RunInRadius(radius, entity, (BuildingBlock block) =>
 		{
 			BuildingGrade.Enum grade = block.grade;
 			if (targetGrade > BuildingGrade.Enum.None && targetGrade < BuildingGrade.Enum.Count)
@@ -2594,7 +2649,7 @@ public class Admin : ConsoleSystem
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		bool showAddress = arg.Connection == null || arg.Connection.authLevel >= 2;
-		List<PlayerInfo> list = ((IEnumerable<BasePlayer>)BasePlayer.activePlayerList).Select(delegate(BasePlayer x)
+		List<PlayerInfo> list = ((IEnumerable<BasePlayer>)BasePlayer.activePlayerList).Select((BasePlayer x) =>
 		{
 			//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
@@ -2693,7 +2748,7 @@ public class Admin : ConsoleSystem
 			NetworkOut = (int)((Net.sv != null) ? Net.sv.GetStat(null, BaseNetwork.StatTypeLong.BytesSent_LastSecond) : 0),
 			Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 			SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(),
-			Version = 2633,
+			Version = 2634,
 			Protocol = Protocol.printable
 		};
 	}
@@ -2771,7 +2826,7 @@ public class Admin : ConsoleSystem
 		Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
 		try
 		{
-			IUGCBrowserEntity iUGCBrowserEntity = default(IUGCBrowserEntity);
+			IUGCBrowserEntity iUGCBrowserEntity = default;
 			while (enumerator.MoveNext())
 			{
 				BaseNetworkable current = enumerator.Current;
@@ -2887,7 +2942,7 @@ public class Admin : ConsoleSystem
 		if ((Object)(object)baseNetworkable != (Object)null)
 		{
 			FileStorage.server.RemoveAllByEntity(entityID);
-			IUGCBrowserEntity iUGCBrowserEntity = default(IUGCBrowserEntity);
+			IUGCBrowserEntity iUGCBrowserEntity = default;
 			if (((Component)baseNetworkable).TryGetComponent<IUGCBrowserEntity>(ref iUGCBrowserEntity))
 			{
 				iUGCBrowserEntity.ClearContent();
@@ -2931,7 +2986,7 @@ public class Admin : ConsoleSystem
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		NetworkableId entityID = ArgEx.GetEntityID(arg, 0);
 		BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(entityID);
-		IUGCBrowserEntity iUGCBrowserEntity = default(IUGCBrowserEntity);
+		IUGCBrowserEntity iUGCBrowserEntity = default;
 		if ((Object)(object)baseNetworkable != (Object)null && ((Component)baseNetworkable).TryGetComponent<IUGCBrowserEntity>(ref iUGCBrowserEntity))
 		{
 			iUGCBrowserEntity.ClearContent();
@@ -2961,7 +3016,7 @@ public class Admin : ConsoleSystem
 		Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
 		try
 		{
-			IUGCBrowserEntity iUGCBrowserEntity = default(IUGCBrowserEntity);
+			IUGCBrowserEntity iUGCBrowserEntity = default;
 			while (enumerator.MoveNext())
 			{
 				BaseNetworkable current = enumerator.Current;
@@ -2989,7 +3044,7 @@ public class Admin : ConsoleSystem
 		Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
 		try
 		{
-			IUGCBrowserEntity iUGCBrowserEntity = default(IUGCBrowserEntity);
+			IUGCBrowserEntity iUGCBrowserEntity = default;
 			while (enumerator.MoveNext())
 			{
 				if (((Component)enumerator.Current).TryGetComponent<IUGCBrowserEntity>(ref iUGCBrowserEntity) && iUGCBrowserEntity.ContentType == UGCType.VendingMachine && StringEx.Contains(iUGCBrowserEntity.ContentString, text, CompareOptions.IgnoreCase | CompareOptions.IgnoreSymbols))
@@ -3017,7 +3072,7 @@ public class Admin : ConsoleSystem
 		Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
 		try
 		{
-			IUGCBrowserEntity iUGCBrowserEntity = default(IUGCBrowserEntity);
+			IUGCBrowserEntity iUGCBrowserEntity = default;
 			while (enumerator.MoveNext())
 			{
 				if (((Component)enumerator.Current).TryGetComponent<IUGCBrowserEntity>(ref iUGCBrowserEntity) && iUGCBrowserEntity.EditingHistory.Contains(num))
@@ -3045,7 +3100,7 @@ public class Admin : ConsoleSystem
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		NetworkableId entityID = ArgEx.GetEntityID(arg, 0);
 		BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(entityID);
-		IUGCBrowserEntity iUGCBrowserEntity = default(IUGCBrowserEntity);
+		IUGCBrowserEntity iUGCBrowserEntity = default;
 		if ((Object)(object)baseNetworkable != (Object)null && ((Component)baseNetworkable).TryGetComponent<IUGCBrowserEntity>(ref iUGCBrowserEntity) && (Object)(object)iUGCBrowserEntity.UgcEntity != (Object)null)
 		{
 			ServerUGCInfo serverUGCInfo = new ServerUGCInfo(iUGCBrowserEntity);
@@ -3092,7 +3147,7 @@ public class Admin : ConsoleSystem
 				{
 					item.TargetEntity.ShortPrefabName,
 					((object)((Component)item.TargetEntity).transform.position/*cast due to constrained. prefix*/).ToString(),
-					((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.TargetEntity.net.ID)/*cast due to constrained. prefix*/).ToString(),
+					((object)item.TargetEntity.net.ID/*cast due to constrained. prefix*/).ToString(),
 					item.AssociationType.ToString()
 				});
 			}
@@ -3148,7 +3203,7 @@ public class Admin : ConsoleSystem
 				{
 					item.TargetEntity.ShortPrefabName,
 					((object)((Component)item.TargetEntity).transform.position/*cast due to constrained. prefix*/).ToString(),
-					((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.TargetEntity.net.ID)/*cast due to constrained. prefix*/).ToString()
+					((object)item.TargetEntity.net.ID/*cast due to constrained. prefix*/).ToString()
 				});
 			}
 			Pool.FreeUnmanaged<EntityAssociation>(ref list);

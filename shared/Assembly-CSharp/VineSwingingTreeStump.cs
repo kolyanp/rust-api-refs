@@ -53,7 +53,7 @@ public class VineSwingingTreeStump : BaseEntity
 				Invoke(RespawnTreeInvoke, 10f);
 				return false;
 			}
-			VineSwingingTree obj = base.gameManager.CreateEntity(gameObjectRef.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation) as VineSwingingTree;
+			VineSwingingTree obj = gameManager.CreateEntity(gameObjectRef.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation) as VineSwingingTree;
 			obj.Spawn();
 			obj.NotifyNearbyTreesSpawned();
 			Kill();
@@ -68,6 +68,7 @@ public class VineSwingingTreeStump : BaseEntity
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
@@ -80,7 +81,6 @@ public class VineSwingingTreeStump : BaseEntity
 		try
 		{
 			PreventBuildingVolume.GetComponents<Collider>((List<Collider>)(object)val);
-			Vector3 val4 = default(Vector3);
 			foreach (Collider item in (List<Collider>)(object)val)
 			{
 				BoxCollider val2 = (BoxCollider)(object)((item is BoxCollider) ? item : null);
@@ -95,7 +95,7 @@ public class VineSwingingTreeStump : BaseEntity
 				CapsuleCollider val3 = (CapsuleCollider)(object)((item is CapsuleCollider) ? item : null);
 				if (val3 != null)
 				{
-					((Vector3)(ref val4))._002Ector(0f, val3.height * 0.5f, 0f);
+					Vector3 val4 = new Vector3(0f, val3.height * 0.5f, 0f);
 					if (GamePhysics.CheckCapsule(((Component)item).transform.TransformPoint(val3.center + val4), ((Component)item).transform.TransformPoint(val3.center - val4), val3.radius, 131072, (QueryTriggerInteraction)0))
 					{
 						return false;

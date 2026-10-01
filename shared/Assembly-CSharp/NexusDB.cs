@@ -47,7 +47,7 @@ public class NexusDB : Database
 	public bool Seen(Guid id)
 	{
 		Execute("INSERT INTO seen(id) VALUES(?) ON CONFLICT DO NOTHING", id);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool SeenJournaled(Guid id, byte[] data)
@@ -57,7 +57,7 @@ public class NexusDB : Database
 		try
 		{
 			Execute("INSERT INTO seen(id) VALUES(?) ON CONFLICT DO NOTHING", id);
-			if (base.AffectedRows <= 0)
+			if (AffectedRows <= 0)
 			{
 				Commit();
 				return false;
@@ -137,11 +137,11 @@ public class NexusDB : Database
 	public List<NetworkableId> ReadTransferred()
 	{
 		IntPtr stmHandle = Prepare("SELECT id FROM transferred");
-		return ExecuteAndReadQueryResults(stmHandle, (Func<IntPtr, NetworkableId>)delegate(IntPtr h)
+		return ExecuteAndReadQueryResults(stmHandle, (Func<IntPtr, NetworkableId>)((IntPtr h) =>
 		{
 			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 			return new NetworkableId((ulong)Database.GetColumnValue<uint>(h, 0));
-		}).ToList();
+		})).ToList();
 	}
 
 	public void ClearTransferred()

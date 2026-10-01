@@ -260,12 +260,12 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		SpinResult2 = info.msg.slotMachine.newResult2;
 		SpinResult3 = info.msg.slotMachine.newResult3;
 		CurrentMultiplier = info.msg.slotMachine.multiplier;
-		if (base.isServer)
+		if (isServer)
 		{
 			SpinTime = info.msg.slotMachine.spinTime;
 		}
 		StorageInstance.uid = info.msg.slotMachine.storageID;
-		if (info.fromDisk && base.isServer)
+		if (info.fromDisk && isServer)
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
@@ -303,7 +303,7 @@ public class SlotMachine : BaseMountable, INotifyLOD
 
 	internal override void DoServerDestroy()
 	{
-		SlotMachineStorage slotMachineStorage = StorageInstance.Get(base.isServer) as SlotMachineStorage;
+		SlotMachineStorage slotMachineStorage = StorageInstance.Get(isServer) as SlotMachineStorage;
 		if (slotMachineStorage.IsValid())
 		{
 			slotMachineStorage.DropItems();
@@ -313,7 +313,7 @@ public class SlotMachine : BaseMountable, INotifyLOD
 
 	private int GetBettingAmount()
 	{
-		SlotMachineStorage component = ((Component)StorageInstance.Get(base.isServer)).GetComponent<SlotMachineStorage>();
+		SlotMachineStorage component = ((Component)StorageInstance.Get(isServer)).GetComponent<SlotMachineStorage>();
 		if ((Object)(object)component == (Object)null)
 		{
 			return 0;
@@ -329,7 +329,7 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		{
 			return;
 		}
-		SlotMachineStorage component = ((Component)StorageInstance.Get(base.isServer)).GetComponent<SlotMachineStorage>();
+		SlotMachineStorage component = ((Component)StorageInstance.Get(isServer)).GetComponent<SlotMachineStorage>();
 		int num = (int)PayoutSettings.SpinCost.amount * CurrentMultiplier;
 		if (GetBettingAmount() < num || (Object)(object)rpc.player == (Object)null)
 		{
@@ -371,9 +371,9 @@ public class SlotMachine : BaseMountable, INotifyLOD
 	private void RPC_Deposit(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
-		if (!((Object)(object)player == (Object)null) && !HasFlag(Flags.Reserved2) && StorageInstance.IsValid(base.isServer))
+		if (!((Object)(object)player == (Object)null) && !HasFlag(Flags.Reserved2) && StorageInstance.IsValid(isServer))
 		{
-			((Component)StorageInstance.Get(base.isServer)).GetComponent<StorageContainer>().PlayerOpenLoot(player, "", doPositionChecks: false);
+			((Component)StorageInstance.Get(isServer)).GetComponent<StorageContainer>().PlayerOpenLoot(player, "", doPositionChecks: false);
 		}
 	}
 
@@ -491,9 +491,9 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void Server_RequestMultiplierChange(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player != (Object)(object)GetMounted()) && !HasFlag(Flags.Reserved2))
@@ -512,7 +512,7 @@ public class SlotMachine : BaseMountable, INotifyLOD
 
 	private bool CalculatePayout(out SlotMachinePayoutSettings.PayoutInfo info, out int bonus)
 	{
-		info = default(SlotMachinePayoutSettings.PayoutInfo);
+		info = default;
 		bonus = 0;
 		SlotMachinePayoutSettings.IndividualPayouts[] facePayouts = PayoutSettings.FacePayouts;
 		for (int i = 0; i < facePayouts.Length; i++)

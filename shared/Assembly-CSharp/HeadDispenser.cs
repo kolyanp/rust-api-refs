@@ -14,7 +14,7 @@ public class HeadDispenser : EntityComponent<BaseEntity>
 
 	public void DispenseHead(HitInfo info, BaseCorpse corpse)
 	{
-		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		if (hasDispensed || !(info.Weapon is BaseMelee baseMelee) || !baseMelee.gathering.ProduceHeadItem)
 		{
 			return;
@@ -29,16 +29,7 @@ public class HeadDispenser : EntityComponent<BaseEntity>
 			if ((Object)(object)associatedEntity != (Object)null && (Object)(object)baseEntity != (Object)null)
 			{
 				associatedEntity.SetupSourceId(baseEntity.prefabID);
-				if (corpse is PlayerCorpse playerCorpse)
-				{
-					associatedEntity.SetupPlayerId(playerCorpse.playerName, playerCorpse.playerSteamID);
-					associatedEntity.AssignClothing(playerCorpse.containers[1]);
-				}
-				else if (corpse is HorseCorpse horseCorpse)
-				{
-					associatedEntity.AssignHorseBreed(horseCorpse.breedIndex);
-				}
-				else if ((Object)(object)OverrideClothing != (Object)null)
+				if ((!((Object)(object)corpse != (Object)null) || !corpse.FillHeadData(associatedEntity)) && (Object)(object)OverrideClothing != (Object)null)
 				{
 					associatedEntity.AssignClothing(OverrideClothing);
 				}

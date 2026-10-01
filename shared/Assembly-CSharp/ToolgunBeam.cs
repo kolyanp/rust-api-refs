@@ -4,11 +4,11 @@ public class ToolgunBeam : MonoBehaviour
 {
 	public LineRenderer electricalBeam;
 
-	public float scrollSpeed;
+	public float scrollSpeed = -8f;
 
-	private Color fadeColor;
+	private Color fadeColor = new Color(1f, 1f, 1f, 1f);
 
-	public float fadeSpeed;
+	public float fadeSpeed = 4f;
 
 	public void Update()
 	{
@@ -30,9 +30,5 @@ public class ToolgunBeam : MonoBehaviour
 	{
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		scrollSpeed = -8f;
-		fadeColor = new Color(1f, 1f, 1f, 1f);
-		fadeSpeed = 4f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

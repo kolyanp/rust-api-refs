@@ -152,7 +152,7 @@ public class WallpaperPlanner : Planner
 	public override Deployable GetDeployable(NetworkableId entityId)
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		if (((NetworkableId)(ref entityId)).IsValid)
+		if (entityId.IsValid)
 		{
 			BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(entityId) as BaseEntity;
 			return Settings.GetDeployable(baseEntity as BuildingBlock);
@@ -264,10 +264,10 @@ public class WallpaperPlanner : Planner
 		list.amount.Add((int)placementPrice.amount);
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsActiveItem]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromOwner]
 	private void SERVER_ChangeWallpaperToolSkin(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -295,8 +295,8 @@ public class WallpaperPlanner : Planner
 	}
 
 	[RPC_Server.FromOwner]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server]
 	public void SERVER_SwitchMode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

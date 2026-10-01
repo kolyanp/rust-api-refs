@@ -9,11 +9,11 @@ using UnityEngine;
 
 public class NexusDockTerminal : BaseEntity
 {
-	public static readonly Phrase ScheduleSoonPhrase;
+	public static readonly Phrase ScheduleSoonPhrase = new Phrase("nexus.dock.schedule.soon", "{0} - Now");
 
-	public static readonly Phrase ScheduleMinutesPhrase;
+	public static readonly Phrase ScheduleMinutesPhrase = new Phrase("nexus.dock.schedule.minutes", "{0} - {1} min");
 
-	public static readonly Phrase ScheduleUnknownPhrase;
+	public static readonly Phrase ScheduleUnknownPhrase = new Phrase("nexus.dock.schedule.unknown", "{0} - Unknown");
 
 	public float TravelTime = 90f;
 
@@ -21,12 +21,12 @@ public class NexusDockTerminal : BaseEntity
 
 	private List<ScheduleEntry> _scheduleEntries;
 
-	private static readonly HashSet<string> SeenFerries;
+	private static readonly HashSet<string> SeenFerries = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			InvokeRandomized(UpdateFerrySchedule, 0f, 10f, 5f);
 		}
@@ -102,7 +102,7 @@ public class NexusDockTerminal : BaseEntity
 		string zoneKey = NexusServer.ZoneKey;
 		foreach (NexusZoneDetails zone in NexusServer.Zones)
 		{
-			if (SeenFerries.Contains(zone.Key) || !((Dictionary<string, VariableData>)(object)zone.Variables).TryGetValue("ferry", out VariableData value) || (int)((VariableData)(ref value)).Type != 1 || string.IsNullOrWhiteSpace(((VariableData)(ref value)).Value) || !((VariableData)(ref value)).Value.Contains(zoneKey, StringComparison.InvariantCultureIgnoreCase) || !NexusUtil.TryParseFerrySchedule(zone.Key, ((VariableData)(ref value)).Value, out var entries) || List.FindIndex<string>((IReadOnlyList<string>)entries, zoneKey, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase) < 0)
+			if (SeenFerries.Contains(zone.Key) || !((Dictionary<string, VariableData>)(object)zone.Variables).TryGetValue("ferry", out VariableData value) || (int)value.Type != 1 || string.IsNullOrWhiteSpace(value.Value) || !value.Value.Contains(zoneKey, StringComparison.InvariantCultureIgnoreCase) || !NexusUtil.TryParseFerrySchedule(zone.Key, value.Value, out var entries) || List.FindIndex<string>((IReadOnlyList<string>)entries, zoneKey, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase) < 0)
 			{
 				continue;
 			}
@@ -142,7 +142,7 @@ public class NexusDockTerminal : BaseEntity
 			SeenFerries.Add(zone.Key);
 		}
 		SeenFerries.Clear();
-		estimates.Sort(delegate((string NextZone, float? Estimate) a, (string NextZone, float? Estimate) b)
+		estimates.Sort(((string NextZone, float? Estimate) a, (string NextZone, float? Estimate) b) =>
 		{
 			int num2 = StringComparer.InvariantCultureIgnoreCase.Compare(a.NextZone, b.NextZone);
 			if (num2 != 0)
@@ -250,14 +250,10 @@ public class NexusDockTerminal : BaseEntity
 	static NexusDockTerminal()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
-		ScheduleSoonPhrase = new Phrase("nexus.dock.schedule.soon", "{0} - Now");
-		ScheduleMinutesPhrase = new Phrase("nexus.dock.schedule.minutes", "{0} - {1} min");
-		ScheduleUnknownPhrase = new Phrase("nexus.dock.schedule.unknown", "{0} - Unknown");
-		SeenFerries = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+		//IL_003c: Expected Obj, but got Unknown
 	}
 }

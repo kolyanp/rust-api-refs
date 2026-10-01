@@ -24,21 +24,21 @@ public class State_EatFood : FSMStateBase
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindFood(out var food))
+		if (!Senses.FindFood(out var food))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		Vector3 val = ((Component)food).transform.position - ((Component)Owner).transform.position;
 		val.y = 0f;
 		((Component)Owner).transform.rotation = Quaternion.LookRotation(val);
-		base.Senses.timeToForgetSightings.Value = 5f;
-		animState = base.AnimPlayer.PlayServerAndTakeFromPool(Animation);
+		Senses.timeToForgetSightings.Value = 5f;
+		animState = AnimPlayer.PlayServerAndTakeFromPool(Animation);
 		return base.OnStateEnter(payload);
 	}
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		if (!base.Senses.FindFood(out var food))
+		if (!Senses.FindFood(out var food))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -49,11 +49,11 @@ public class State_EatFood : FSMStateBase
 				baseCorpse.Hurt(2.5f);
 				if (baseCorpse.IsDead())
 				{
-					base.Senses.ClearTarget();
+					Senses.ClearTarget();
 					return EFSMStateStatus.Success;
 				}
-				base.AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
-				animState = base.AnimPlayer.PlayServerAndTakeFromPool(Animation);
+				AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
+				animState = AnimPlayer.PlayServerAndTakeFromPool(Animation);
 			}
 			else if (food is DroppedItem droppedItem)
 			{
@@ -62,12 +62,12 @@ public class State_EatFood : FSMStateBase
 				{
 					droppedItem.DestroyItem();
 					droppedItem.Kill();
-					base.Senses.ClearTarget();
+					Senses.ClearTarget();
 					return EFSMStateStatus.Success;
 				}
 				droppedItem.item.MarkDirty();
-				base.AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
-				animState = base.AnimPlayer.PlayServerAndTakeFromPool(Animation);
+				AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
+				animState = AnimPlayer.PlayServerAndTakeFromPool(Animation);
 			}
 		}
 		return base.OnStateUpdate(deltaTime);
@@ -75,7 +75,7 @@ public class State_EatFood : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.Senses.timeToForgetSightings.Reset();
-		base.AnimPlayer.StopServerAndReturnToPool(ref animState);
+		Senses.timeToForgetSightings.Reset();
+		AnimPlayer.StopServerAndReturnToPool(ref animState);
 	}
 }

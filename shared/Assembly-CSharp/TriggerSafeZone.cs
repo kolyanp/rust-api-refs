@@ -23,7 +23,7 @@ public class TriggerSafeZone : TriggerBase
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		base.Awake();
 		triggerCollider = ((Component)this).GetComponent<Collider>();
-		base.InterestLayers = LayerMask.op_Implicit(LayerMask.op_Implicit(base.InterestLayers) | 0x200);
+		InterestLayers = LayerMask.op_Implicit(LayerMask.op_Implicit(InterestLayers) | 0x200);
 	}
 
 	protected void OnEnable()
@@ -116,19 +116,20 @@ public class TriggerSafeZone : TriggerBase
 		if (val != null)
 		{
 			val2 = bounds;
-			return Vector3.Distance(((OBB)(ref val2)).ClosestPoint(((Component)val).transform.position), ((Component)val).transform.position) < val.radius;
+			return Vector3.Distance(val2.ClosestPoint(((Component)val).transform.position), ((Component)val).transform.position) < val.radius;
 		}
 		BoxCollider val3 = (BoxCollider)(object)((trigger is BoxCollider) ? trigger : null);
 		if (val3 != null)
 		{
 			val2 = bounds;
-			return ((OBB)(ref val2)).Intersects(new OBB(((Component)trigger).transform, new Bounds(val3.center, val3.size)));
+			return val2.Intersects(new OBB(((Component)trigger).transform, new Bounds(val3.center, val3.size)));
 		}
 		throw new NotSupportedException("Unsupported safezone collider type: " + ((object)trigger).GetType().Name);
 	}
 
 	public static bool IsBoundsInsideSafeZone(OBB worldSpaceBound, bool checkCombatZones = true)
 	{
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(serverside: true);
 		if ((Object)(object)activeGameMode != (Object)null && !activeGameMode.safeZone)
 		{
@@ -143,17 +144,22 @@ public class TriggerSafeZone : TriggerBase
 				break;
 			}
 		}
-		if (flag & checkCombatZones)
+		if ((flag & checkCombatZones) && IsBoundsInsideCombatZone(worldSpaceBound))
 		{
-			foreach (TriggerSafeZoneOverride allHostileZone in TriggerSafeZoneOverride.allHostileZones)
-			{
-				if (allHostileZone.IsCombatActive && CheckIntersects(in worldSpaceBound, allHostileZone.triggerCollider))
-				{
-					flag = false;
-					break;
-				}
-			}
+			flag = false;
 		}
 		return flag;
+	}
+
+	public static bool IsBoundsInsideCombatZone(OBB worldSpaceBound)
+	{
+		foreach (TriggerSafeZoneOverride allHostileZone in TriggerSafeZoneOverride.allHostileZones)
+		{
+			if (allHostileZone.IsCombatActive && CheckIntersects(in worldSpaceBound, allHostileZone.triggerCollider))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

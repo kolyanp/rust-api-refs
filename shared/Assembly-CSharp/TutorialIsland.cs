@@ -20,7 +20,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		public bool Contains(Vector3 pos)
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			return ((OBB)(ref WorldBounds)).Contains(pos);
+			return WorldBounds.Contains(pos);
 		}
 	}
 
@@ -45,7 +45,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 	public BaseMission FinalMission;
 
 	[Range(0f, 24f)]
-	public float TimeOfDay;
+	public float TimeOfDay = 18f;
 
 	public ItemDefinition rockDefinition;
 
@@ -56,28 +56,28 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 
 	private TutorialBuildTarget[] buildTargets;
 
-	public static Phrase NoTutorialIslandsAvailablePhrase;
+	public static Phrase NoTutorialIslandsAvailablePhrase = new Phrase("no_tutorial_islands_available", "No Tutorial Islands are currently available, please try again later...");
 
-	public static Phrase TutorialIslandStartCooldown;
+	public static Phrase TutorialIslandStartCooldown = new Phrase("tutorial_island_start_cooldown", "Please wait {0} seconds before starting the tutorial again");
 
-	public static ListHashSet<IslandBounds> BoundsListServer;
+	public static ListHashSet<IslandBounds> BoundsListServer = new ListHashSet<IslandBounds>();
 
-	public static float TutorialBoundsSize;
-
-	[ServerVar(Saved = true)]
-	public static bool SpawnTutorialIslandForNewPlayer;
-
-	private static ListHashSet<TutorialIsland> ActiveIslandsServer;
+	public static float TutorialBoundsSize = 400f;
 
 	[ServerVar(Saved = true)]
-	public static bool EnforceTrespassChecks;
+	public static bool SpawnTutorialIslandForNewPlayer = true;
+
+	private static ListHashSet<TutorialIsland> ActiveIslandsServer = new ListHashSet<TutorialIsland>();
+
+	[ServerVar(Saved = true)]
+	public static bool EnforceTrespassChecks = true;
 
 	[ServerVar(Help = "Will place the tutorial as close as possible to this pos, only for debugging")]
-	public static Vector3 OverrideTutorialLocation;
+	public static Vector3 OverrideTutorialLocation = Vector3.zero;
 
 	private const string TutorialIslandAssetPath = "assets/prefabs/missions/tutorialisland/tutorialisland.prefab";
 
-	private static float _tutorialWorldStart;
+	private static float _tutorialWorldStart = 0f;
 
 	public static Bounds WorldBoundsMinusTutorialIslands;
 
@@ -91,9 +91,9 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 
 	private bool readyToStartConversation;
 
-	private float tickRate;
+	private float tickRate = 1f;
 
-	private Vector3 kayakAnchorPoint;
+	private Vector3 kayakAnchorPoint = Vector3.zero;
 
 	private Kayak kayakToAnchor;
 
@@ -174,6 +174,9 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 
 	public static void GenerateIslandSpawnPoints(bool loadingSave = false)
 	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
@@ -196,18 +199,15 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		{
 			return;
 		}
-		Vector3 cellSize = default(Vector3);
-		((Vector3)(ref cellSize))._002Ector(400f, 0f, 400f);
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(0f - ValidBounds.GetMaximumPointTutorial(), 0f, 0f - ValidBounds.GetMaximumPointTutorial());
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(ValidBounds.GetMaximumPointTutorial(), 0f, ValidBounds.GetMaximumPointTutorial());
+		Vector3 cellSize = new Vector3(400f, 0f, 400f);
+		Vector3 val = new Vector3(0f - ValidBounds.GetMaximumPointTutorial(), 0f, 0f - ValidBounds.GetMaximumPointTutorial());
+		Vector3 val2 = new Vector3(ValidBounds.GetMaximumPointTutorial(), 0f, ValidBounds.GetMaximumPointTutorial());
 		islandSpawnLocations = new List<Vector3>();
 		TutorialIslandSpawner.GetEdgeSpawnPoints(islandSpawnLocations, val, val2 - val, cellSize, 1, out WorldBoundsMinusTutorialIslands);
 		for (int i = 0; i < islandSpawnLocations.Count; i++)
 		{
 			OBB val3 = new OBB(islandSpawnLocations[i], Quaternion.identity, new Bounds(new Vector3(0f, 25f, 0f), new Vector3(400f, 80f, 400f)));
-			Bounds val4 = ((OBB)(ref val3)).ToBounds();
+			Bounds val4 = val3.ToBounds();
 			if (DeepSeaManager.IsInsideDeepSea(val4))
 			{
 				islandSpawnLocations.RemoveAt(i);
@@ -241,10 +241,10 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		return DeepSeaManager.GetEntrancePortalDirection() switch
 		{
 			CardinalDirection.None => false, 
-			CardinalDirection.North => ((Bounds)(ref bounds)).center.z >= 0f, 
-			CardinalDirection.South => ((Bounds)(ref bounds)).center.z <= 0f, 
-			CardinalDirection.East => ((Bounds)(ref bounds)).center.x >= 0f, 
-			CardinalDirection.West => ((Bounds)(ref bounds)).center.x <= 0f, 
+			CardinalDirection.North => bounds.center.z >= 0f, 
+			CardinalDirection.South => bounds.center.z <= 0f, 
+			CardinalDirection.East => bounds.center.x >= 0f, 
+			CardinalDirection.West => bounds.center.x <= 0f, 
 			_ => false, 
 		};
 	}
@@ -391,7 +391,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		Group tutorialGroup = GetTutorialGroup(spawnLocationIndex);
 		OBB val = new OBB(worldPos, worldRot, new Bounds(new Vector3(0f, 25f, 0f), new Vector3(400f, 80f, 400f)));
-		tutorialGroup.bounds = ((OBB)(ref val)).ToBounds();
+		tutorialGroup.bounds = val.ToBounds();
 		tutorialGroup.restricted = true;
 		return tutorialGroup;
 	}
@@ -476,7 +476,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 
 	private void StartInitialConversation()
 	{
-		BasePlayer basePlayer = ForPlayer.Get(base.isServer);
+		BasePlayer basePlayer = ForPlayer.Get(isServer);
 		if ((Object)(object)basePlayer != (Object)null && (basePlayer.IsSleeping() || basePlayer.IsDucked()))
 		{
 			Invoke(StartInitialConversation, 0.1f);
@@ -488,7 +488,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		}
 		else
 		{
-			StartTutorialNPC.Server_BeginTalking(ForPlayer.Get(base.isServer));
+			StartTutorialNPC.Server_BeginTalking(ForPlayer.Get(isServer));
 		}
 	}
 
@@ -634,7 +634,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		val.attackerName = "scientistnpc_full_any";
 		if (basePlayer.IsGod())
 		{
-			basePlayer.net.connection.info.Set("global.god", "0");
+			basePlayer.ServerSetGod(wants: false);
 		}
 		basePlayer.SetOverrideDeathBlow(val);
 		basePlayer.Hurt(9999f);
@@ -694,7 +694,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		BasePlayer basePlayer = ForPlayer.Get(base.isServer);
+		BasePlayer basePlayer = ForPlayer.Get(isServer);
 		tutorialDuration += tickRate;
 		if ((Object)(object)basePlayer == (Object)null)
 		{
@@ -773,7 +773,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 			}
 		}
 		Vector3 val = note.worldPosition - KayakPoint.position;
-		if (((Vector3)(ref val)).sqrMagnitude < 10f)
+		if (val.sqrMagnitude < 10f)
 		{
 			return true;
 		}
@@ -817,6 +817,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		if (islandSpawnLocations == null)
@@ -829,12 +830,11 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 			return;
 		}
 		float duration = arg.GetFloat(0, 60f);
-		OBB val = default(OBB);
 		foreach (Vector3 islandSpawnLocation in islandSpawnLocations)
 		{
 			UnityEngine.DDraw.Sphere(basePlayer, islandSpawnLocation, 5f, Color.yellow, duration);
-			((OBB)(ref val))._002Ector(islandSpawnLocation, Quaternion.identity, new Bounds(new Vector3(0f, 25f, 0f), new Vector3(400f, 80f, 400f)));
-			UnityEngine.DDraw.Bounds(basePlayer, ((OBB)(ref val)).ToBounds(), Color.yellow, duration);
+			OBB val = new OBB(islandSpawnLocation, Quaternion.identity, new Bounds(new Vector3(0f, 25f, 0f), new Vector3(400f, 80f, 400f)));
+			UnityEngine.DDraw.Bounds(basePlayer, val.ToBounds(), Color.yellow, duration);
 		}
 	}
 
@@ -858,7 +858,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 			SpawnLocationIndex = tutorialIsland.spawnLocationIndex;
 			disconnectedDuration = tutorialIsland.disconnectDuration;
 			tutorialDuration = tutorialIsland.tutorialDuration;
-			if (base.isServer && info.fromDisk)
+			if (isServer && info.fromDisk)
 			{
 				AddIslandFromSave(this);
 			}
@@ -902,7 +902,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer && ActiveIslandsServer.Contains(this))
+		if (isServer && ActiveIslandsServer.Contains(this))
 		{
 			RemoveIslandBounds(GetTutorialGroupId(SpawnLocationIndex), isServer: true);
 			ActiveIslandsServer.Remove(this);
@@ -954,28 +954,15 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		TimeOfDay = 18f;
-		tickRate = 1f;
-		kayakAnchorPoint = Vector3.zero;
-		base._002Ector();
 	}
 
 	static TutorialIsland()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		NoTutorialIslandsAvailablePhrase = new Phrase("no_tutorial_islands_available", "No Tutorial Islands are currently available, please try again later...");
-		TutorialIslandStartCooldown = new Phrase("tutorial_island_start_cooldown", "Please wait {0} seconds before starting the tutorial again");
-		BoundsListServer = new ListHashSet<IslandBounds>();
-		TutorialBoundsSize = 400f;
-		SpawnTutorialIslandForNewPlayer = true;
-		ActiveIslandsServer = new ListHashSet<TutorialIsland>();
-		EnforceTrespassChecks = true;
-		OverrideTutorialLocation = Vector3.zero;
-		_tutorialWorldStart = 0f;
 	}
 }

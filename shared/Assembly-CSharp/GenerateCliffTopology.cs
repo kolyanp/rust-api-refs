@@ -59,14 +59,14 @@ public class GenerateCliffTopology : ProceduralComponent
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		NativeArray<int> map = TerrainMeta.TopologyMap.dst;
 		int res = TerrainMeta.TopologyMap.res;
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			for (int i = 0; i < res; i++)
 			{
 				Process(i, z, KeepExisting);
 			}
 		});
-		ImageProcessing.Dilate2D(map, res, res, 4194306, 1, delegate(int x, int y)
+		ImageProcessing.Dilate2D(map, res, res, 4194306, 1, (int x, int y) =>
 		{
 			if ((map[x * res + y] & 2) == 0)
 			{

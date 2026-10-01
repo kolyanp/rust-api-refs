@@ -29,7 +29,7 @@ public abstract class Monitor
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Expected O, but got Unknown
+		//IL_006d: Expected Obj, but got Unknown
 		if ((Object)(object)output == (Object)null || !output.IsCreated() || ((Texture)output).width != width || ((Texture)output).height != height)
 		{
 			RuntimeUtilities.Destroy((Object)(object)output);

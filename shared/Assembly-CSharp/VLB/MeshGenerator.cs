@@ -25,7 +25,7 @@ public static class MeshGenerator
 	public static Mesh GenerateConeZ_Radius(float lengthZ, float radiusStart, float radiusEnd, int numSides, int numSegments, bool cap)
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
@@ -43,6 +43,7 @@ public static class MeshGenerator
 		//IL_028e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0472: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0492: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0497: Unknown result type (might be due to invalid IL or missing references)
 		//IL_049d: Unknown result type (might be due to invalid IL or missing references)
 		Debug.Assert(lengthZ > 0f);
 		Debug.Assert(radiusStart >= 0f);
@@ -58,7 +59,7 @@ public static class MeshGenerator
 		{
 			num2 += numSides + 1;
 		}
-		Vector3[] array = (Vector3[])(object)new Vector3[num2];
+		Vector3[] array = new Vector3[num2];
 		for (int i = 0; i < numSides; i++)
 		{
 			float num3 = MathF.PI * 2f * (float)i / (float)numSides;
@@ -93,12 +94,12 @@ public static class MeshGenerator
 		}
 		else
 		{
-			Vector3[] array2 = (Vector3[])(object)new Vector3[array.Length * 2];
+			Vector3[] array2 = new Vector3[array.Length * 2];
 			array.CopyTo(array2, 0);
 			array.CopyTo(array2, array.Length);
 			val.vertices = array2;
 		}
-		Vector2[] array3 = (Vector2[])(object)new Vector2[num2];
+		Vector2[] array3 = new Vector2[num2];
 		int num12 = 0;
 		for (int l = 0; l < num; l++)
 		{
@@ -118,7 +119,7 @@ public static class MeshGenerator
 		}
 		else
 		{
-			Vector2[] array4 = (Vector2[])(object)new Vector2[array3.Length * 2];
+			Vector2[] array4 = new Vector2[array3.Length * 2];
 			array3.CopyTo(array4, 0);
 			array3.CopyTo(array4, array3.Length);
 			for (int n = 0; n < array3.Length; n++)
@@ -182,8 +183,7 @@ public static class MeshGenerator
 			}
 			val.triangles = array6;
 		}
-		Bounds bounds = default(Bounds);
-		((Bounds)(ref bounds))._002Ector(new Vector3(0f, 0f, lengthZ * 0.5f), new Vector3(Mathf.Max(radiusStart, radiusEnd) * 2f, Mathf.Max(radiusStart, radiusEnd) * 2f, lengthZ));
+		Bounds bounds = new Bounds(new Vector3(0f, 0f, lengthZ * 0.5f), new Vector3(Mathf.Max(radiusStart, radiusEnd) * 2f, Mathf.Max(radiusStart, radiusEnd) * 2f, lengthZ));
 		val.bounds = bounds;
 		Debug.Assert(val.vertexCount == GetVertexCount(numSides, numSegments, flag));
 		Debug.Assert(val.triangles.Length == GetIndicesCount(numSides, numSegments, flag));

@@ -14,7 +14,7 @@ public class SliderCookie : MonoBehaviour
 	public void OnEnable()
 	{
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		RustSlider val = default(RustSlider);
+		RustSlider val = default;
 		if (!((Component)this).TryGetComponent<RustSlider>(ref val))
 		{
 			return;
@@ -35,7 +35,7 @@ public class SliderCookie : MonoBehaviour
 
 	public void OnDisable()
 	{
-		RustSlider val = default(RustSlider);
+		RustSlider val = default;
 		if (!Application.isQuitting && ((Component)this).TryGetComponent<RustSlider>(ref val))
 		{
 			((UnityEvent<float>)(object)val.OnChanged).RemoveListener((UnityAction<float>)OnSliderChanged);

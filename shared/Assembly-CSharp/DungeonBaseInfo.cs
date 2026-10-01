@@ -14,7 +14,7 @@ public class DungeonBaseInfo : LandmarkInfo
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((Component)this).transform.position - position;
-		return ((Vector3)(ref val)).magnitude;
+		return val.magnitude;
 	}
 
 	public float SqrDistance(Vector3 position)
@@ -24,7 +24,7 @@ public class DungeonBaseInfo : LandmarkInfo
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((Component)this).transform.position - position;
-		return ((Vector3)(ref val)).sqrMagnitude;
+		return val.sqrMagnitude;
 	}
 
 	public void Add(DungeonBaseLink link)
@@ -52,7 +52,7 @@ public class DungeonBaseInfo : LandmarkInfo
 			dungeonBaseFloor = new DungeonBaseFloor();
 			dungeonBaseFloor.Links.Add(link);
 			Floors.Add(dungeonBaseFloor);
-			Floors.Sort(delegate(DungeonBaseFloor l, DungeonBaseFloor r)
+			Floors.Sort((DungeonBaseFloor l, DungeonBaseFloor r) =>
 			{
 				//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 				//IL_001b: Unknown result type (might be due to invalid IL or missing references)

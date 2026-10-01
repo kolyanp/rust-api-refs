@@ -83,7 +83,7 @@ public class LAM_FadeLegOnAnimator : LegsAnimatorControlModuleBase
 
 	public override void OnInit(LegsAnimator.LegsAnimatorCustomModuleHelper helper)
 	{
-		if ((Object)(object)base.LA.Mecanim == (Object)null)
+		if ((Object)(object)LA.Mecanim == (Object)null)
 		{
 			Debug.Log((object)"[Legs Animator] Fade On Animation Module: Not found animator reference in legs animator Extra/Control!");
 			helper.Enabled = false;
@@ -134,7 +134,7 @@ public class LAM_FadeLegOnAnimator : LegsAnimatorControlModuleBase
 		{
 			if (helper.customStringList[k] == "1")
 			{
-				list.Add(base.LA.Legs[k]);
+				list.Add(LA.Legs[k]);
 			}
 		}
 		if (list.Count == 0)
@@ -148,9 +148,9 @@ public class LAM_FadeLegOnAnimator : LegsAnimatorControlModuleBase
 		{
 			_layerV.SetValue(0);
 		}
-		if (_layerV.GetInt() > base.LA.Mecanim.layerCount - 1)
+		if (_layerV.GetInt() > LA.Mecanim.layerCount - 1)
 		{
-			_layerV.SetValue(base.LA.Mecanim.layerCount - 1);
+			_layerV.SetValue(LA.Mecanim.layerCount - 1);
 		}
 		_layerMode = helper.RequestVariable("Mode", 0);
 		_layerSkip = helper.RequestVariable("Skip", "");
@@ -165,7 +165,7 @@ public class LAM_FadeLegOnAnimator : LegsAnimatorControlModuleBase
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		Animator mecanim = base.LA.Mecanim;
+		Animator mecanim = LA.Mecanim;
 		if ((Object)(object)mecanim == (Object)null)
 		{
 			return;
@@ -196,7 +196,7 @@ public class LAM_FadeLegOnAnimator : LegsAnimatorControlModuleBase
 		bool flag = false;
 		for (int i = 0; i < stateHashes.Count; i++)
 		{
-			if (((AnimatorStateInfo)(ref val)).shortNameHash == stateHashes[i])
+			if (val.shortNameHash == stateHashes[i])
 			{
 				flag = true;
 				break;
@@ -206,7 +206,7 @@ public class LAM_FadeLegOnAnimator : LegsAnimatorControlModuleBase
 		{
 			for (int j = 0; j < tagHashes.Count; j++)
 			{
-				if (((AnimatorStateInfo)(ref val)).tagHash == tagHashes[j])
+				if (val.tagHash == tagHashes[j])
 				{
 					flag = true;
 					break;
@@ -216,11 +216,11 @@ public class LAM_FadeLegOnAnimator : LegsAnimatorControlModuleBase
 		float num6 = 0.3f - _fadeSpeedV.GetFloat() * 0.299f;
 		if (flag)
 		{
-			enabledMultiplier = Mathf.SmoothDamp(enabledMultiplier, -0.001f, ref sd_eneMul, num6 * 0.9f, 100000f, base.LA.DeltaTime);
+			enabledMultiplier = Mathf.SmoothDamp(enabledMultiplier, -0.001f, ref sd_eneMul, num6 * 0.9f, 100000f, LA.DeltaTime);
 		}
 		else
 		{
-			enabledMultiplier = Mathf.SmoothDamp(enabledMultiplier, 1.01f, ref sd_eneMul, num6, 100000f, base.LA.DeltaTime);
+			enabledMultiplier = Mathf.SmoothDamp(enabledMultiplier, 1.01f, ref sd_eneMul, num6, 100000f, LA.DeltaTime);
 		}
 		enabledMultiplier = Mathf.Clamp01(enabledMultiplier);
 		for (int k = 0; k < legs.Length; k++)
@@ -230,7 +230,7 @@ public class LAM_FadeLegOnAnimator : LegsAnimatorControlModuleBase
 		}
 		if (_idleGlueV.GetBool() && enabledMultiplier < 0.5f)
 		{
-			base.LA._glueModeExecuted = LegsAnimator.EGlueMode.Idle;
+			LA._glueModeExecuted = LegsAnimator.EGlueMode.Idle;
 		}
 	}
 }

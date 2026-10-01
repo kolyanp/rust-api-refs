@@ -32,18 +32,18 @@ public static class PerformanceMetrics
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Expected O, but got Unknown
-		object obj = _003C_003Ec._003C_003E9__10_0;
-		if (obj == null)
+		//IL_001f: Expected Obj, but got Unknown
+		UnityAction val = _003C_003Ec._003C_003E9__10_0;
+		if (val == null)
 		{
-			UnityAction val = delegate
+			UnityAction val2 = () =>
 			{
 				OnBeforeRender?.Invoke();
 			};
-			_003C_003Ec._003C_003E9__10_0 = val;
-			obj = (object)val;
+			_003C_003Ec._003C_003E9__10_0 = val2;
+			val = val2;
 		}
-		Application.onBeforeRender += (UnityAction)obj;
+		Application.onBeforeRender += val;
 		AddStopwatch(PerformanceSample.PreCull, ref OnBeforeRender, ref CameraUpdateHook.RustCamera_PreRender);
 		AddStopwatch(PerformanceSample.Update, ref PreUpdateHook.OnUpdate, ref PostUpdateHook.OnUpdate);
 		AddStopwatch(PerformanceSample.LateUpdate, ref PreUpdateHook.OnLateUpdate, ref PostUpdateHook.OnLateUpdate);
@@ -57,33 +57,33 @@ public static class PerformanceMetrics
 	private static void AddCPUTimeStopwatch()
 	{
 		Stopwatch watch = new Stopwatch();
-		PreUpdateHook.StartOfFrame = (Action)Delegate.Combine(PreUpdateHook.StartOfFrame, (Action)delegate
+		PreUpdateHook.StartOfFrame = (Action)Delegate.Combine(PreUpdateHook.StartOfFrame, (Action)(() =>
 		{
 			PerformancePerSecond = PerformancePerSecond.Add(current);
 			LastFrame = current;
-			current = default(PerformanceSamplePoint);
+			current = default;
 			watch.Restart();
 			current.CpuUpdateCount++;
-		});
-		PostUpdateHook.EndOfFrame = (Action)Delegate.Combine(PostUpdateHook.EndOfFrame, (Action)delegate
+		}));
+		PostUpdateHook.EndOfFrame = (Action)Delegate.Combine(PostUpdateHook.EndOfFrame, (Action)(() =>
 		{
 			current.TotalCPU += watch.Elapsed;
-		});
+		}));
 	}
 
 	private static void AddStopwatch(PerformanceSample sample, ref Action pre, ref Action post)
 	{
 		Stopwatch watch = new Stopwatch();
 		bool active = false;
-		pre = (Action)Delegate.Combine(pre, (Action)delegate
+		pre = (Action)Delegate.Combine(pre, (Action)(() =>
 		{
 			if (!active)
 			{
 				active = true;
 				watch.Restart();
 			}
-		});
-		post = (Action)Delegate.Combine(post, (Action)delegate
+		}));
+		post = (Action)Delegate.Combine(post, (Action)(() =>
 		{
 			if (active)
 			{
@@ -120,6 +120,6 @@ public static class PerformanceMetrics
 					break;
 				}
 			}
-		});
+		}));
 	}
 }

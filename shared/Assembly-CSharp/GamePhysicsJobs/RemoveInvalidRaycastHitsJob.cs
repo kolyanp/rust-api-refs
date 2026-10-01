@@ -33,7 +33,7 @@ public struct RemoveInvalidRaycastHitsJob : IJob
 			for (int j = num2; j < num3; j++)
 			{
 				val = Hits[j];
-				if (((RaycastHit)(ref val)).normal == Vector3.zero)
+				if (val.normal == Vector3.zero)
 				{
 					break;
 				}
@@ -44,7 +44,7 @@ public struct RemoveInvalidRaycastHitsJob : IJob
 			}
 			if (num4 < num3)
 			{
-				val = (Hits[num4] = default(RaycastHit));
+				val = (Hits[num4] = default);
 			}
 		}
 	}

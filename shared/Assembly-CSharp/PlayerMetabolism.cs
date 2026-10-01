@@ -100,17 +100,17 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 
 	public override bool ServerUpdate(BaseCombatEntity ownerEntity, float delta)
 	{
-		bool num = base.ServerUpdate(ownerEntity, delta);
+		bool flag = base.ServerUpdate(ownerEntity, delta);
 		Interface.CallHook("OnPlayerMetabolize", this, ownerEntity, delta);
-		bool flag = num;
-		if ((flag || isDirty || _needsFullSnapshot) && owner.IsConnected)
+		bool flag2 = flag;
+		if ((flag2 || isDirty || _needsFullSnapshot) && owner.IsConnected)
 		{
 			using (TimeWarning.New("PlayerMetabolism.ServerUpdate"))
 			{
 				SendChanges();
 			}
 		}
-		return flag;
+		return flag2;
 	}
 
 	private ushort GetChangedMask()
@@ -243,13 +243,14 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 
 	protected override void RunMetabolism(BaseCombatEntity ownerEntity, float delta)
 	{
-		//IL_04e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_051c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0505: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0522: Unknown result type (might be due to invalid IL or missing references)
 		if (Interface.CallHook("OnRunPlayerMetabolism", this, ownerEntity, delta) != null)
 		{
 			return;
 		}
+		RefreshCalorieCapacity();
 		if (owner.IsConnected)
 		{
 			BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(serverside: true);
@@ -470,7 +471,7 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 		PlayerMetabolism val = (flag ? Save() : SaveDelta(changedMask));
 		try
 		{
-			base.baseEntity.ClientRPC(RpcTarget.FromFlags(RpcTarget.RpcTargetFlags.All, "UpdateMetabolism", base.baseEntity), val);
+			baseEntity.ClientRPC(RpcTarget.FromFlags(RpcTarget.RpcTargetFlags.All, "UpdateMetabolism", baseEntity), val);
 		}
 		finally
 		{
@@ -484,7 +485,7 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 		PlayerMetabolism val = Save();
 		try
 		{
-			base.baseEntity.ClientRPC(RpcTarget.FromFlags(RpcTarget.RpcTargetFlags.Spectators, "UpdateMetabolism", base.baseEntity), val);
+			baseEntity.ClientRPC(RpcTarget.FromFlags(RpcTarget.RpcTargetFlags.Spectators, "UpdateMetabolism", baseEntity), val);
 		}
 		finally
 		{
@@ -497,9 +498,25 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 		MetabolismAttribute metabolismAttribute = FindAttribute(type);
 		if (metabolismAttribute != null)
 		{
+			if (type == MetabolismAttribute.Type.Calories)
+			{
+				RefreshCalorieCapacity();
+			}
 			metabolismAttribute.Add(amount);
 			isDirty = true;
 		}
+	}
+
+	public void RefreshCalorieCapacity()
+	{
+		calories.bonusMax = GetMaxCalories() - calories.max;
+	}
+
+	public float GetMaxCalories()
+	{
+		PlayerModifiers playerModifiers = (((Object)(object)owner != (Object)null) ? owner.modifiers : null);
+		float num = (((Object)(object)playerModifiers != (Object)null) ? (calories.max * playerModifiers.GetValue(Modifier.ModifierType.Hunger_Capacity)) : 0f);
+		return calories.max + Mathf.Max(num, calories.value - calories.max);
 	}
 
 	public bool CanConsume()

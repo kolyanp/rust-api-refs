@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using ConVar;
@@ -50,8 +49,6 @@ public class RustCore : CSPlugin
 	internal static string ipPattern = ":{1}[0-9]{1}\\d*";
 
 	private static readonly DateTime Eoy = new DateTime(2026, 12, 31);
-
-	private static readonly DateTime OctoberForceWipe = new DateTime(2026, 10, 1);
 
 	internal static IEnumerable<string> RestrictedCommands => new string[4] { "ownerid", "moderatorid", "removeowner", "removemoderator" };
 
@@ -626,9 +623,9 @@ public class RustCore : CSPlugin
 	public RustCore()
 	{
 		Extension = Interface.Oxide.GetExtension<RustExtension>();
-		base.Title = "Rust";
-		base.Author = Extension.Author;
-		base.Version = Extension.Version;
+		Title = "Rust";
+		Author = Extension.Author;
+		Version = Extension.Version;
 	}
 
 	private bool PermissionsLoaded(IPlayer player)
@@ -644,7 +641,7 @@ public class RustCore : CSPlugin
 	[HookMethod("Init")]
 	private void Init()
 	{
-		RemoteLogger.SetTag("game", base.Title.ToLower());
+		RemoteLogger.SetTag("game", Title.ToLower());
 		RemoteLogger.SetTag("game version", Server.Version);
 		AddCovalenceCommand(new string[3] { "oxide.plugins", "o.plugins", "plugins" }, "PluginsCommand", "oxide.plugins");
 		AddCovalenceCommand(new string[3] { "oxide.load", "o.load", "plugin.load" }, "LoadCommand", "oxide.load");
@@ -811,7 +808,7 @@ public class RustCore : CSPlugin
 					{
 						return current;
 					}
-					if (current.net?.connection != null && ((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref current.net.ID)/*cast due to constrained. prefix*/).Equals((object?)nameOrIdOrIp))
+					if (current.net?.connection != null && ((object)current.net.ID/*cast due to constrained. prefix*/).Equals((object?)nameOrIdOrIp))
 					{
 						return current;
 					}
@@ -997,11 +994,11 @@ public class RustCore : CSPlugin
 	[HookMethod("IOnBaseCombatEntityHurt")]
 	private object IOnBaseCombatEntityHurt(BaseCombatEntity entity, HitInfo hitInfo)
 	{
-		if (!(entity is BasePlayer))
+		if (entity is BasePlayer || entity is LivestockAnimal)
 		{
-			return Interface.CallHook("OnEntityTakeDamage", entity, hitInfo);
+			return null;
 		}
-		return null;
+		return Interface.CallHook("OnEntityTakeDamage", entity, hitInfo);
 	}
 
 	[HookMethod("IOnNpcTarget")]
@@ -1168,9 +1165,9 @@ public class RustCore : CSPlugin
 	}
 
 	[HookMethod("IOnPlayerBanned")]
-	private unsafe void IOnPlayerBanned(Connection connection, AuthResponse status)
+	private void IOnPlayerBanned(Connection connection, AuthResponse status)
 	{
-		Interface.CallHook("OnPlayerBanned", connection, ((object)(*(AuthResponse*)(&status))/*cast due to constrained. prefix*/).ToString());
+		Interface.CallHook("OnPlayerBanned", connection, ((object)status/*cast due to constrained. prefix*/).ToString());
 	}
 
 	[HookMethod("IOnPlayerChat")]
@@ -1454,11 +1451,5 @@ public class RustCore : CSPlugin
 			return true;
 		}
 		return null;
-	}
-
-	[HookMethod("OnOvenCook")]
-	private object OnOvenCook(Composter composter, Item fuel)
-	{
-		return Interface.Oxide.CallDeprecatedHook("OnComposterUpdate", "OnOvenCook(Composter composter, Item fuel)", OctoberForceWipe, composter);
 	}
 }

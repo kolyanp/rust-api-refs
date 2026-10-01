@@ -4,15 +4,15 @@ using UnityEngine.UI;
 
 public class UIClans : SingletonComponent<UIClans>
 {
-	public static readonly Phrase LeaveConfirmation;
+	public static readonly Phrase LeaveConfirmation = new Phrase("clan.confirmation.leave", "Are you sure you want to leave your clan?");
 
-	public static readonly Phrase GetInvitationsFailure;
+	public static readonly Phrase GetInvitationsFailure = (Phrase)(object)new TokenisedPhrase("clan.get_invitations.fail", "Failed to load your clan invitations from the server.");
 
-	public static readonly Phrase GetClanFailure;
+	public static readonly Phrase GetClanFailure = (Phrase)(object)new TokenisedPhrase("clan.get_clan.fail", "Failed to load your clan from the server.");
 
-	public static readonly Phrase LeaveFailure;
+	public static readonly Phrase LeaveFailure = (Phrase)(object)new TokenisedPhrase("clan.leave.fail", "Failed to leave your clan.");
 
-	public static readonly Phrase LeaveNoOtherLeader;
+	public static readonly Phrase LeaveNoOtherLeader = (Phrase)(object)new TokenisedPhrase("clan.leave.no_other_leader", "As a clan leader, you cannot leave your clan unless it is empty or you promote another member to the leader role.");
 
 	public Canvas Canvas;
 
@@ -90,11 +90,6 @@ public class UIClans : SingletonComponent<UIClans>
 	static UIClans()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		LeaveConfirmation = new Phrase("clan.confirmation.leave", "Are you sure you want to leave your clan?");
-		GetInvitationsFailure = (Phrase)(object)new TokenisedPhrase("clan.get_invitations.fail", "Failed to load your clan invitations from the server.");
-		GetClanFailure = (Phrase)(object)new TokenisedPhrase("clan.get_clan.fail", "Failed to load your clan from the server.");
-		LeaveFailure = (Phrase)(object)new TokenisedPhrase("clan.leave.fail", "Failed to leave your clan.");
-		LeaveNoOtherLeader = (Phrase)(object)new TokenisedPhrase("clan.leave.no_other_leader", "As a clan leader, you cannot leave your clan unless it is empty or you promote another member to the leader role.");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

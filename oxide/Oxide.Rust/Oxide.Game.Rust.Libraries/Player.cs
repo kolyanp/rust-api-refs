@@ -184,7 +184,7 @@ public class Player : Library
 		{
 			player.syncPosition = false;
 			player._limitedNetworking = true;
-			Interface.Oxide.NextTick(delegate
+			Interface.Oxide.NextTick(() =>
 			{
 				player.syncPosition = true;
 				player._limitedNetworking = false;

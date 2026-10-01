@@ -31,10 +31,10 @@ internal struct GenerateRaysJob : IJobParallelForTransform
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		if (((TransformAccess)(ref transform)).isValid && Indices.Contains(index))
+		if (transform.isValid && Indices.Contains(index))
 		{
 			RayGenBatchData data = Data[index];
-			Vector3 val = (PositionData[index] = ((TransformAccess)(ref transform)).position);
+			Vector3 val = (PositionData[index] = transform.position);
 			Vector3 position2 = val;
 			Out[index] = RayGenUtil.GenerateRayGenOutput(transform, in data, position2, Time, DeltaTime, IsClientDemo);
 		}

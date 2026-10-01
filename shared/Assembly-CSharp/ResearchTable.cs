@@ -91,7 +91,7 @@ public class ResearchTable : StorageContainer
 	{
 		if (item.info.shortname == "scrap")
 		{
-			Item slot = base.inventory.GetSlot(1);
+			Item slot = inventory.GetSlot(1);
 			if (slot == null)
 			{
 				return 1;
@@ -220,7 +220,7 @@ public class ResearchTable : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.inventory.canAcceptItem = ItemFilter;
+		inventory.canAcceptItem = ItemFilter;
 	}
 
 	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
@@ -234,12 +234,12 @@ public class ResearchTable : StorageContainer
 
 	public Item GetTargetItem()
 	{
-		return base.inventory.GetSlot(0);
+		return inventory.GetSlot(0);
 	}
 
 	public Item GetScrapItem()
 	{
-		Item slot = base.inventory.GetSlot(1);
+		Item slot = inventory.GetSlot(1);
 		if (slot == null || (Object)(object)slot.info != (Object)(object)researchResource)
 		{
 			return null;
@@ -254,7 +254,7 @@ public class ResearchTable : StorageContainer
 		{
 			Invoke(ResearchAttemptFinished, researchDuration);
 		}
-		base.inventory.SetLocked(isLocked: false);
+		inventory.SetLocked(isLocked: false);
 	}
 
 	public override bool PlayerOpenLoot(BasePlayer player, string panelToOpen = "", bool doPositionChecks = true)
@@ -287,7 +287,7 @@ public class ResearchTable : StorageContainer
 			targetItem.CollectedForCrafting(player);
 			researchFinishedTime = Time.realtimeSinceStartup + researchDuration;
 			Invoke(ResearchAttemptFinished, researchDuration);
-			base.inventory.SetLocked(isLocked: true);
+			inventory.SetLocked(isLocked: true);
 			int scrapCost = ScrapForResearch(targetItem);
 			Facepunch.Rust.Analytics.Azure.OnResearchStarted(player, this, targetItem, scrapCost);
 			SetFlagLocal(Flags.On, b: true);
@@ -303,12 +303,12 @@ public class ResearchTable : StorageContainer
 
 	public void ResearchAttemptFinished()
 	{
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
 		Item targetItem = GetTargetItem();
 		Item scrapItem = GetScrapItem();
 		if (targetItem != null && scrapItem != null)
@@ -323,7 +323,7 @@ public class ResearchTable : StorageContainer
 			{
 				if (scrapItem.amount == num)
 				{
-					base.inventory.Remove(scrapItem);
+					inventory.Remove(scrapItem);
 					scrapItem.RemoveFromContainer();
 					scrapItem.Remove();
 				}
@@ -331,15 +331,15 @@ public class ResearchTable : StorageContainer
 				{
 					scrapItem.UseItem(num);
 				}
-				base.inventory.Remove(targetItem);
+				inventory.Remove(targetItem);
 				targetItem.Remove();
 				Item item = ItemManager.Create(ItemManager.blueprintBaseDef, 1, 0uL, isServerSide: true, 0uL);
-				if ((Object)(object)base.LastLootedByPlayer != (Object)null)
+				if ((Object)(object)LastLootedByPlayer != (Object)null)
 				{
-					item.SetItemOwnership(base.LastLootedByPlayer, ItemOwnershipPhrases.ResearchTable);
+					item.SetItemOwnership(LastLootedByPlayer, ItemOwnershipPhrases.ResearchTable);
 				}
 				item.blueprintTarget = (((Object)(object)targetItem.info.isRedirectOf != (Object)null) ? targetItem.info.isRedirectOf.itemid : targetItem.info.itemid);
-				if (!item.MoveToContainer(base.inventory, 0))
+				if (!item.MoveToContainer(inventory, 0))
 				{
 					item.Drop(GetDropPosition(), GetDropVelocity());
 				}
@@ -363,7 +363,7 @@ public class ResearchTable : StorageContainer
 
 	public void EndResearch()
 	{
-		base.inventory.SetLocked(isLocked: false);
+		inventory.SetLocked(isLocked: false);
 		SetFlagLocal(Flags.On, b: false);
 		researchFinishedTime = 0f;
 		SendNetworkUpdate();

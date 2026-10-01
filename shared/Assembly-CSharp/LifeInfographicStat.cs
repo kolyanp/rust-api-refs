@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,9 +42,6 @@ public class LifeInfographicStat : MonoBehaviour
 
 	public DataType dataSource;
 
-	[Header("Generic Stats")]
-	public string genericStatKey;
-
 	[Header("Weapon Info")]
 	public string targetWeaponName;
 
@@ -52,4 +50,7 @@ public class LifeInfographicStat : MonoBehaviour
 	public TextMeshProUGUI targetText;
 
 	public Image StatImage;
+
+	[NonSerialized]
+	public string genericStatKey;
 }

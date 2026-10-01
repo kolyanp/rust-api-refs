@@ -179,14 +179,14 @@ public class Profile : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Starts recording a Unity Profiler binary log to a timestamped file in the profile/ folder; requires ENABLE_PROFILER build flag")]
 	[ServerVar(Help = "(Generated) Starts recording a Unity Profiler binary log to a timestamped file in the profile/ folder; requires ENABLE_PROFILER build flag")]
+	[ClientVar(Help = "(Generated) Starts recording a Unity Profiler binary log to a timestamped file in the profile/ folder; requires ENABLE_PROFILER build flag")]
 	public static void start(Arg arg)
 	{
 	}
 
-	[ClientVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
 	[ServerVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
+	[ClientVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
 	public static void stop(Arg arg)
 	{
 	}
@@ -221,13 +221,13 @@ public class Profile : ConsoleSystem
 			{
 				Chat.Broadcast("Server taking a perf snapshot", "SERVER", "#eee", 0uL);
 			}
-			ServerProfiler.RecordNextFrames(frames, delegate(IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState)
+			ServerProfiler.RecordNextFrames(frames, (IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState) =>
 			{
 				if (!Quiet)
 				{
 					Chat.Broadcast("Snapshot taken", "SERVER", "#eee", 0uL);
 				}
-				Task.Run(delegate
+				Task.Run(() =>
 				{
 					try
 					{
@@ -248,7 +248,7 @@ public class Profile : ConsoleSystem
 			return;
 		}
 		Chat.Broadcast($"Server will be taking a perf snapshot, expect stutters in {delay} seconds", "SERVER", "#eee", 0uL);
-		delayedTakeSnapshot = delegate
+		delayedTakeSnapshot = () =>
 		{
 			delay--;
 			if (delay > 10 && delay % 5 == 0)
@@ -261,10 +261,10 @@ public class Profile : ConsoleSystem
 			}
 			if (delay == 0)
 			{
-				ServerProfiler.RecordNextFrames(frames, delegate(IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState)
+				ServerProfiler.RecordNextFrames(frames, (IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState) =>
 				{
 					Chat.Broadcast("Snapshot taken", "SERVER", "#eee", 0uL);
-					Task.Run(delegate
+					Task.Run(() =>
 					{
 						try
 						{
@@ -311,13 +311,13 @@ public class Profile : ConsoleSystem
 		{
 			Chat.Broadcast("Server taking a perf snapshot, there might be stutters", "SERVER", "#eee", 0uL);
 		}
-		ServerProfiler.RecordIntoBuffer(mainThreadCap, workerThreadCap, delegate(IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState)
+		ServerProfiler.RecordIntoBuffer(mainThreadCap, workerThreadCap, (IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState) =>
 		{
 			if (!Quiet)
 			{
 				Chat.Broadcast("Snapshot taken", "SERVER", "#eee", 0uL);
 			}
-			Task.Run(delegate
+			Task.Run(() =>
 			{
 				try
 				{
@@ -357,9 +357,9 @@ public class Profile : ConsoleSystem
 		ServerProfiler.Native.SetContinuousProfilerNotifySettings(ServerProfiler.NotifyMetric.WorkerAllocCount, notifyOnWorkerAllocCount);
 		ServerProfiler.Native.SetContinuousProfilerNotifySettings(ServerProfiler.NotifyMetric.WorkerMem, notifyOnWorkerMemKB * 1024);
 		string name = arg.GetString(0, "Allocs");
-		ServerProfiler.StartContinuousRecording((byte)arg.GetInt(1, 16), delegate(IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState)
+		ServerProfiler.StartContinuousRecording((byte)arg.GetInt(1, 16), (IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState) =>
 		{
-			Task.Run(delegate
+			Task.Run(() =>
 			{
 				if (ProfileExporter.JSON.Export(name, profiles, memState))
 				{

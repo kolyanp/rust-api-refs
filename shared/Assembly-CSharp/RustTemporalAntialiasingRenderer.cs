@@ -8,13 +8,13 @@ public sealed class RustTemporalAntialiasingRenderer : PostProcessEffectRenderer
 
 	private static readonly int historyTextureId = Shader.PropertyToID("_HistoryTex");
 
-	private static readonly int jitterTexelOffsetId = Shader.PropertyToID("_JitterTexelOffset");
+	private static readonly int jitterUVOffsetId = Shader.PropertyToID("_JitterUVOffset");
 
 	public readonly Jitter JitterSettings = new Jitter();
 
-	private RenderTexture[] historyTextures = (RenderTexture[])(object)new RenderTexture[2];
+	private RenderTexture[] historyTextures = new RenderTexture[2];
 
-	private readonly RenderTargetIdentifier[] multipleRenderTargets = (RenderTargetIdentifier[])(object)new RenderTargetIdentifier[2];
+	private readonly RenderTargetIdentifier[] multipleRenderTargets = new RenderTargetIdentifier[2];
 
 	private int pingPongValue;
 
@@ -44,7 +44,7 @@ public sealed class RustTemporalAntialiasingRenderer : PostProcessEffectRenderer
 	{
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Expected O, but got Unknown
+		//IL_0048: Expected Obj, but got Unknown
 		if ((Object)(object)texture == (Object)null || ((Texture)texture).width != context.width || ((Texture)texture).height != context.height)
 		{
 			if (texture != null)
@@ -96,7 +96,7 @@ public sealed class RustTemporalAntialiasingRenderer : PostProcessEffectRenderer
 		multipleRenderTargets[0] = context.destination;
 		multipleRenderTargets[1] = RenderTargetIdentifier.op_Implicit((Texture)(object)val);
 		command.BeginSample("RustTemporalAntiAliasing");
-		command.SetGlobalVector(jitterTexelOffsetId, Vector4.op_Implicit(JitterSettings.TexelOffset));
+		command.SetGlobalVector(jitterUVOffsetId, Vector4.op_Implicit(JitterSettings.TexelOffset));
 		command.SetGlobalTexture(historyTextureId, RenderTargetIdentifier.op_Implicit((Texture)(object)val2));
 		command.BlitFullscreenTriangle(context.source, multipleRenderTargets, RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), propertySheet, 0);
 		command.EndSample("RustTemporalAntiAliasing");

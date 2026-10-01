@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
 namespace Instancing;
@@ -32,7 +31,7 @@ public struct MeshOverrideData : IEquatable<MeshOverrideData>
 
 	public override int GetHashCode()
 	{
-		return ((object)Unsafe.As<float4, float4>(ref Color)/*cast due to constrained. prefix*/).GetHashCode();
+		return ((object)Color/*cast due to constrained. prefix*/).GetHashCode();
 	}
 
 	public static bool operator ==(MeshOverrideData left, MeshOverrideData right)

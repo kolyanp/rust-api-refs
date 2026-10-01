@@ -33,14 +33,14 @@ public class AIHorseInputProvider : IHorseInputProvider
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = playerTransform.position - ((Component)horse).transform.position;
 		val.y = 0f;
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		if (horse.GetSpeed() > 2f)
 		{
 			return -1f;
 		}
 		if (magnitude > stoppingDistance)
 		{
-			return Mathf.Clamp(((Component)horse).transform.InverseTransformDirection(((Vector3)(ref val)).normalized).z, 0f, 1f);
+			return Mathf.Clamp(((Component)horse).transform.InverseTransformDirection(val.normalized).z, 0f, 1f);
 		}
 		return 0f;
 	}
@@ -64,9 +64,9 @@ public class AIHorseInputProvider : IHorseInputProvider
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = playerTransform.position - ((Component)horse).transform.position;
 		val.y = 0f;
-		if (((Vector3)(ref val)).magnitude > stoppingDistance - 2f)
+		if (val.magnitude > stoppingDistance - 2f)
 		{
-			Vector3 val2 = Vector3.Cross(((Component)horse).transform.forward, ((Vector3)(ref val)).normalized);
+			Vector3 val2 = Vector3.Cross(((Component)horse).transform.forward, val.normalized);
 			int num = 0;
 			if (val2.y > 0.4f)
 			{

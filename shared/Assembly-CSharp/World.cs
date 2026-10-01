@@ -113,7 +113,7 @@ public static class World
 			{
 				return $"{Name}_{Url.MurmurHashUnsigned()}.map";
 			}
-			return Name.Replace(" ", "").ToLower() + "." + Size + "." + Seed + "." + 288 + ".map";
+			return Name.Replace(" ", "").ToLower() + "." + Size + "." + Seed + "." + 289 + ".map";
 		}
 	}
 
@@ -137,9 +137,9 @@ public static class World
 			}
 			if (CanLoadFromUrl())
 			{
-				return Name + "." + 288 + ".sav";
+				return Name + "." + 289 + ".sav";
 			}
-			return Name.Replace(" ", "").ToLower() + "." + Size + "." + Seed + "." + 288 + ".sav";
+			return Name.Replace(" ", "").ToLower() + "." + Size + "." + Seed + "." + 289 + ".sav";
 		}
 	}
 
@@ -189,7 +189,7 @@ public static class World
 			return;
 		}
 		Regex regex1 = new Regex("proceduralmap\\.[0-9]+\\.[0-9]+\\.[0-9]+(_occlusion)*\\.(map|dat)");
-		Regex regex2 = new Regex("\\.[0-9]+\\.[0-9]+\\." + 288 + "+(_occlusion)*\\.(map|dat)");
+		Regex regex2 = new Regex("\\.[0-9]+\\.[0-9]+\\." + 289 + "+(_occlusion)*\\.(map|dat)");
 		foreach (string item in new string[2] { "*.map", "*.dat" }.SelectMany((string ext) => from path in Directory.GetFiles(MapFolderName, ext)
 			where regex1.IsMatch(path) && !regex2.IsMatch(path)
 			select path))
@@ -226,7 +226,7 @@ public static class World
 
 	private static string SeedIdentifier()
 	{
-		return SystemInfo.deviceUniqueIdentifier + "_" + 288 + "_" + Server.identity;
+		return SystemInfo.deviceUniqueIdentifier + "_" + 289 + "_" + Server.identity;
 	}
 
 	public static void InitSalt(int salt)
@@ -310,7 +310,7 @@ public static class World
 		Serialization.AddPrefab(category, prefab.ID, position, rotation, scale);
 		if (!Cached)
 		{
-			rotation = Quaternion.Euler(((Quaternion)(ref rotation)).eulerAngles);
+			rotation = Quaternion.Euler(rotation.eulerAngles);
 			SpawnPrefab(category, prefab, position, rotation, scale);
 		}
 	}
@@ -334,7 +334,7 @@ public static class World
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Expected O, but got Unknown
+		//IL_00d0: Expected Obj, but got Unknown
 		return new PathData
 		{
 			name = src.Name,
@@ -387,7 +387,7 @@ public static class World
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		Vector3[] array = (Vector3[])(object)new Vector3[src.Count];
+		Vector3[] array = new Vector3[src.Count];
 		for (int i = 0; i < array.Length; i++)
 		{
 			VectorData val = src[i];
@@ -448,7 +448,7 @@ public static class World
 		AssetBundleBackend assetBundleBackend = (AssetBundleBackend)(object)((backend is AssetBundleBackend) ? backend : null);
 		if (assetBundleBackend != null)
 		{
-			HashSet<string> hashSet = Serialization.world.prefabs.Select((PrefabData p) => StringPool.Get(p.id)).ToHashSet<string>(StringComparer.OrdinalIgnoreCase);
+			HashSet<string> hashSet = Serialization.world.prefabs.Select((PrefabData p) => StringPool.Get(p.id)).ToHashSet(StringComparer.OrdinalIgnoreCase);
 			Dictionary<string, HashSet<string>> requiredAssetScenesForPrefabs = assetBundleBackend.GetRequiredAssetScenesForPrefabs((IEnumerable<string>)hashSet);
 			List<string> requiredAssetScenes = requiredAssetScenesForPrefabs.Keys.ToList();
 			IEnumerator loading = assetBundleBackend.LoadAssetScenes(requiredAssetScenes);
@@ -515,7 +515,7 @@ public static class World
 			if (prefabBounds.HasValue)
 			{
 				Bounds value = prefabBounds.Value;
-				if (!((Bounds)(ref value)).Contains(VectorData.op_Implicit(val.position)))
+				if (!value.Contains(VectorData.op_Implicit(val.position)))
 				{
 					continue;
 				}

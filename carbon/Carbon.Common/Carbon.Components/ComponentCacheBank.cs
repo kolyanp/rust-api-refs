@@ -38,7 +38,7 @@ public class ComponentCacheBank<T> : Dictionary<GameObject, List<T>>, IComponent
 		}
 		if (!go.TryGetComponent<T>(ref val))
 		{
-			return default(T);
+			return default;
 		}
 		value.Add(val);
 		return val;
@@ -50,7 +50,7 @@ public class ComponentCacheBank<T> : Dictionary<GameObject, List<T>>, IComponent
 		{
 			return false;
 		}
-		int num = value.RemoveAll(delegate(T x)
+		int num = value.RemoveAll((T x) =>
 		{
 			if (destroy)
 			{

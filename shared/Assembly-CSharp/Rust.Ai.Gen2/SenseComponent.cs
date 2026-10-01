@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Oxide.Core;
 using UnityEngine;
@@ -149,6 +150,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			Reset();
 		}
 
+		[PoolAnalyzerGetWrapper]
 		public static VisibilityStatus GetFromPool(BaseEntity baseEntity, BaseEntity targetEntity, bool isVisible, float deltaTime, float clarityGainSpeed, Vector3? lastKnownPositionOverride = null, float? minClarity = null)
 		{
 			VisibilityStatus visibilityStatus = Pool.Get<VisibilityStatus>();
@@ -276,9 +278,9 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 					position = player.eyes.position;
 				}
 				Vector3 val3 = ((Component)baseEntity).transform.position - position;
-				float num2 = Mathf.Acos(Vector3.Dot(val2, ((Vector3)(ref val3)).normalized)) * 57.29578f * 2f;
-				bool num3 = num2 < AI.watchedAngle;
-				if (num3)
+				float num2 = Mathf.Acos(Vector3.Dot(val2, val3.normalized)) * 57.29578f * 2f;
+				bool flag2 = num2 < AI.watchedAngle;
+				if (flag2)
 				{
 					timeNotWatched = 0f;
 					timeWatched += deltaTime;
@@ -288,7 +290,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 					timeWatched = 0f;
 					timeNotWatched += deltaTime;
 				}
-				if (num3 && (Object)(object)player != (Object)null && player.modelState.aiming && num2 < AI.aimedAtAngle && !(player.GetHeldEntity() is BaseMelee { canScareAiWhenAimed: false }))
+				if (flag2 && (Object)(object)player != (Object)null && player.modelState.aiming && num2 < AI.aimedAtAngle && !(player.GetHeldEntity() is BaseMelee { canScareAiWhenAimed: false }))
 				{
 					timeNotAimedAt = 0f;
 					timeAimedAt += deltaTime;
@@ -334,24 +336,24 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 	}
 
 	[SerializeField]
-	private Vector3 LongRangeVisionRectangle;
+	private Vector3 LongRangeVisionRectangle = new Vector3(6f, 30f, 60f);
 
 	[SerializeField]
-	private Cone ShortRangeVisionCone;
+	private Cone ShortRangeVisionCone = new Cone(100f, 30f);
 
 	[SerializeField]
-	private float touchDistance;
+	private float touchDistance = 6f;
 
 	[SerializeField]
-	private float noiseRangeMultiplier;
+	private float noiseRangeMultiplier = 1f;
 
 	[SerializeField]
-	private float hearingRange;
+	private float hearingRange = 50f;
 
 	[SerializeField]
 	private NPCTeam team;
 
-	public ResettableFloat timeToForgetSightings;
+	public ResettableFloat timeToForgetSightings = new ResettableFloat(30f);
 
 	private const float timeToForgetNoises = 5f;
 
@@ -367,11 +369,17 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 
 	private double nextRefreshTime;
 
+	private ISenseObserver observer;
+
+	private bool observerResolved;
+
 	private double spawnTime;
 
-	private Dictionary<BaseEntity, double> _alliesWeAreAwareOf;
+	private Dictionary<BaseEntity, double> _alliesWeAreAwareOf = new Dictionary<BaseEntity, double>(3);
 
-	private Dictionary<BaseEntity, VisibilityStatus> entitiesWeAreAwareOf;
+	private Dictionary<BaseEntity, VisibilityStatus> entitiesWeAreAwareOf = new Dictionary<BaseEntity, VisibilityStatus>(8);
+
+	private Dictionary<BaseEntity, double> recentAttackers = new Dictionary<BaseEntity, double>(2);
 
 	private BaseEntity Target;
 
@@ -401,34 +409,40 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 	};
 
-	private HashSet<NpcNoiseEvent> noises;
+	private HashSet<NpcNoiseEvent> noises = new HashSet<NpcNoiseEvent>();
 
 	[SerializeField]
-	private float foodDetectionRange;
+	private float foodDetectionRange = 30f;
 
 	private BaseEntity _nearestFood;
 
+	private HashSet<BaseEntity> ignoredFood = new HashSet<BaseEntity>();
+
 	[SerializeField]
-	private float fireDetectionRange;
+	private float fireDetectionRange = 20f;
 
 	[NonSerialized]
-	public UnityEvent onFireMelee;
+	public UnityEvent onFireMelee = new UnityEvent();
 
 	private BaseEntity _nearestFire;
 
 	private double? lastMeleeTime;
 
 	[SerializeField]
-	private float TargetingCooldown;
+	private float TargetingCooldown = 5f;
 
 	[SerializeField]
-	private float SwitchTargetToFocusAggressorCooldown;
+	private float SwitchTargetToFocusAggressorCooldown = 5f;
 
-	private LockState lockState;
+	private LockState lockState = new LockState();
 
 	private double? lastTargetTime;
 
 	private double? lastTimeSwitchedTargetToFocusAggressor;
+
+	public float SenseRadius => LongRangeVisionRectangle.z;
+
+	public NPCTeam Team => team;
 
 	public float RefreshInterval
 	{
@@ -486,11 +500,24 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			return EyePosition - ((Component)base.baseEntity).transform.position;
+			return EyePosition - ((Component)baseEntity).transform.position;
 		}
 	}
 
-	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)base.baseEntity).GetComponent<RustNavMeshAgent>());
+	private ISenseObserver Observer
+	{
+		get
+		{
+			if (!observerResolved)
+			{
+				observerResolved = true;
+				observer = baseEntity as ISenseObserver;
+			}
+			return observer;
+		}
+	}
+
+	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)baseEntity).GetComponent<RustNavMeshAgent>());
 
 	public Vector3 EyePosition
 	{
@@ -511,21 +538,21 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 			using (TimeWarning.New("SenseComponent:ClientEyePosition"))
 			{
-				if (!BaseNetworkableEx.Is<ScientistNPC2>((Object)(object)base.baseEntity, out ScientistNPC2 _))
+				if (!BaseNetworkableEx.Is<ScientistNPC2>((Object)(object)baseEntity, out ScientistNPC2 _))
 				{
-					return base.baseEntity.CenterPoint();
+					return baseEntity.CenterPoint();
 				}
 				Vector3 val = PlayerEyes.EyeOffset;
-				if (base.baseEntity.HasFlag(BaseEntity.Flags.Reserved5))
+				if (baseEntity.HasFlag(BaseEntity.Flags.Reserved5))
 				{
 					val += PlayerEyes.DuckOffset;
 				}
-				return ((Component)base.baseEntity).transform.position + val;
+				return ((Component)baseEntity).transform.position + val;
 			}
 		}
 	}
 
-	private bool IsInCombat => base.baseEntity.HasFlag(BaseEntity.Flags.Reserved3);
+	private bool IsInCombat => baseEntity.HasFlag(BaseEntity.Flags.Reserved3);
 
 	private bool ChangedTargetRecently
 	{
@@ -636,7 +663,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			}
 			return entityPosition + (player.eyes.position - ((Component)player).transform.position);
 		}
-		return entityPosition + ((Bounds)(ref entity.bounds)).size.y * Vector3.up;
+		return entityPosition + entity.bounds.size.y * Vector3.up;
 	}
 
 	public bool FindTargetLKP(out Vector3 lkp, bool applyHeightOffset = false, bool predict = false, bool ignoreCrouch = true)
@@ -749,7 +776,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Trace"))
 		{
-			return GamePhysics.Trace(new Ray(source, direction), 0f, out hitInfo, ((Vector3)(ref direction)).magnitude, layerMask, (QueryTriggerInteraction)0);
+			return GamePhysics.Trace(new Ray(source, direction), 0f, out hitInfo, direction.magnitude, layerMask, (QueryTriggerInteraction)0);
 		}
 	}
 
@@ -853,17 +880,17 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		using (TimeWarning.New("SenseComponent:GetEyeTransform"))
 		{
 			Vector3 eyePosition = EyePosition;
-			Quaternion val = ((Component)base.baseEntity).transform.rotation;
-			if (FindTargetLKP(out var lkp, applyHeightOffset: true, predict: false, ignoreCrouch: false) && !Agent.overrideDirectionWS.HasValue && (!BaseNetworkableEx.Is<ScientistNPC2>((Object)(object)base.baseEntity, out ScientistNPC2 _) || !Agent.IsSprinting))
+			Quaternion val = ((Component)baseEntity).transform.rotation;
+			if (FindTargetLKP(out var lkp, applyHeightOffset: true, predict: false, ignoreCrouch: false) && !Agent.overrideDirectionWS.HasValue && (!BaseNetworkableEx.Is<ScientistNPC2>((Object)(object)baseEntity, out ScientistNPC2 _) || !Agent.IsSprinting))
 			{
 				val = Quaternion.LookRotation(lkp - eyePosition, Vector3.up);
 				float maxAngle = 90f;
-				if (Vector3.Dot(val * Vector3.forward, ((Component)base.baseEntity).transform.forward) < 0f - lookBehindDotThreshold)
+				if (Vector3.Dot(val * Vector3.forward, ((Component)baseEntity).transform.forward) < 0f - lookBehindDotThreshold)
 				{
-					Vector3 val2 = lkp - ((Component)base.baseEntity).transform.position;
-					maxAngle = ((!(((Vector3)(ref val2)).sqrMagnitude > lookDistanceThresholdSq)) ? 70f : 0f);
+					Vector3 val2 = lkp - ((Component)baseEntity).transform.position;
+					maxAngle = ((!(val2.sqrMagnitude > lookDistanceThresholdSq)) ? 70f : 0f);
 				}
-				val = Clamp(((Component)base.baseEntity).transform.rotation, val, maxAngle);
+				val = Clamp(((Component)baseEntity).transform.rotation, val, maxAngle);
 			}
 			return Matrix4x4.TRS(eyePosition, val, Vector3.one);
 		}
@@ -899,7 +926,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 				{
 					TrySetTarget(initiator, bypassCooldown: false);
 				}
-				else if ((Object)(object)Target != (Object)(object)initiator && !SwitchedTargetToFocusAggressorRecently && Vector3.Distance(((Component)base.baseEntity).transform.position, ((Component)initiator).transform.position) < 50f && TrySetTarget(initiator))
+				else if ((Object)(object)Target != (Object)(object)initiator && !SwitchedTargetToFocusAggressorRecently && Vector3.Distance(((Component)baseEntity).transform.position, ((Component)initiator).transform.position) < 50f && TrySetTarget(initiator))
 				{
 					lastTimeSwitchedTargetToFocusAggressor = Time.timeAsDouble;
 				}
@@ -920,7 +947,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 		else
 		{
-			VisibilityStatus fromPool = VisibilityStatus.GetFromPool(base.baseEntity, entity, isVisible: false, 0.01f, 0f, entityPositionGuess, 1f);
+			VisibilityStatus fromPool = VisibilityStatus.GetFromPool(baseEntity, entity, isVisible: false, 0.01f, 0f, entityPositionGuess, 1f);
 			entitiesWeAreAwareOf.Add(entity, fromPool);
 		}
 	}
@@ -946,23 +973,28 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 				try
 				{
 					GetModifiedSenses(null, out var _, out var _, out var _, out var modLongVisionRectangle);
-					BaseEntity.Query.Server.GetPlayersAndBrainsInSphere(((Component)base.baseEntity).transform.position, modLongVisionRectangle.z, (List<BaseEntity>)(object)val, BaseEntity.Query.DistanceCheckType.None);
+					BaseEntity.Query.Server.GetPlayersAndBrainsInSphere(((Component)baseEntity).transform.position, modLongVisionRectangle.z, (List<BaseEntity>)(object)val, BaseEntity.Query.DistanceCheckType.None);
 					foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 					{
-						if (!((Object)(object)item == (Object)(object)base.baseEntity))
+						if ((Object)(object)item == (Object)(object)baseEntity)
 						{
-							if (item.IsNonNpcPlayer())
+							continue;
+						}
+						if (item.IsNonNpcPlayer())
+						{
+							HasPlayerInVicinity = true;
+							if (Observer != null && item is BasePlayer player)
 							{
-								HasPlayerInVicinity = true;
+								Observer.OnPlayerSensed(player, deltaTime);
 							}
-							if (InSameTeam(item) && !_alliesWeAreAwareOf.ContainsKey(item))
-							{
-								_alliesWeAreAwareOf.Add(item, timeAsDouble);
-							}
-							if (CanTarget(item))
-							{
-								UpdateEntityVisibility(item, deltaTime);
-							}
+						}
+						if (InSameTeam(item) && !_alliesWeAreAwareOf.ContainsKey(item))
+						{
+							_alliesWeAreAwareOf.Add(item, timeAsDouble);
+						}
+						if (CanTarget(item))
+						{
+							UpdateEntityVisibility(item, deltaTime);
 						}
 					}
 				}
@@ -991,7 +1023,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 							}
 							Forget(item2);
 						}
-						else if (!value.IsVisible && value.timeNotVisible > timeToForgetSightings.Value)
+						else if (!value.IsVisible && value.timeNotVisible > timeToForgetSightings.Value && !HurtUsRecently(item2))
 						{
 							if (Target.IsValid() && (Object)(object)Target == (Object)(object)item2)
 							{
@@ -1021,6 +1053,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			TickHearing(deltaTime);
 			TickFoodDetection(deltaTime);
 			TickFireDetection(deltaTime);
+			ForgetOldAttackers();
 			TickTargeting(deltaTime);
 			nextRefreshTime = Time.timeAsDouble + (double)RefreshInterval;
 		}
@@ -1068,7 +1101,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 		else if (player.IsDucked())
 		{
-			modTouchDistance = ((Bounds)(ref base.baseEntity.bounds)).extents.z * 1.5f;
+			modTouchDistance = baseEntity.bounds.extents.z * 1.5f;
 			modHalfAngle = ShortRangeVisionCone.halfAngle * 0.85f;
 			modShortVisionRange = ShortRangeVisionCone.range * 0.5f;
 			modLongVisionRectangle = Vector3.Scale(LongRangeVisionRectangle, new Vector3(3f, 0.5f, 0.5f));
@@ -1118,15 +1151,15 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		using (TimeWarning.New("IsInAnyRange"))
 		{
 			Matrix4x4 eyeTransform = GetEyeTransform();
-			Vector3 position = ((Matrix4x4)(ref eyeTransform)).GetPosition();
+			Vector3 position = eyeTransform.GetPosition();
 			eyeTransform = GetEyeTransform();
-			Vector3 val = ((Matrix4x4)(ref eyeTransform)).rotation * Vector3.forward;
+			Vector3 val = eyeTransform.rotation * Vector3.forward;
 			Vector3 entityLineOfSightTestPoint = GetEntityLineOfSightTestPoint(entity, ignoreCrouch: false);
 			Vector3 val2 = entityLineOfSightTestPoint - position;
-			float magnitude = ((Vector3)(ref val2)).magnitude;
+			float magnitude = val2.magnitude;
 			GetModifiedSenses(entity, out var modTouchDistance, out var modHalfAngle, out var modShortVisionRange, out var modLongVisionRectangle);
 			clarity = 0f;
-			float num = Vector3.Angle(val, ((Vector3)(ref val2)).normalized);
+			float num = Vector3.Angle(val, val2.normalized);
 			if (magnitude < 1.2f)
 			{
 				clarity = 999f;
@@ -1222,8 +1255,8 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = Vector3.Cross(((Vector3)(ref lineDir)).normalized, point - lineStart);
-		return ((Vector3)(ref val)).magnitude;
+		Vector3 val = Vector3.Cross(lineDir.normalized, point - lineStart);
+		return val.magnitude;
 	}
 
 	private static float DistToLineXZ(Vector3 lineStart, Vector3 lineDir, Vector3 point)
@@ -1273,7 +1306,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 		else if (flag)
 		{
-			VisibilityStatus fromPool = VisibilityStatus.GetFromPool(base.baseEntity, entity, isVisible: true, deltaTime, clarity);
+			VisibilityStatus fromPool = VisibilityStatus.GetFromPool(baseEntity, entity, isVisible: true, deltaTime, clarity);
 			entitiesWeAreAwareOf.Add(entity, fromPool);
 			entitiesUpdatedThisFrame.Add(entity);
 		}
@@ -1281,11 +1314,79 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 
 	public bool InSameTeam(BaseEntity other)
 	{
-		if (team != null && BaseNetworkableEx.Is<SenseComponent>((Object)(object)((Component)other).GetComponent<SenseComponent>(), out SenseComponent castedUnityObject) && team == castedUnityObject.team)
+		SenseComponent senseComponent = default;
+		if (team != null && ((Component)other).TryGetComponent<SenseComponent>(ref senseComponent))
 		{
-			return true;
+			return team == senseComponent.team;
 		}
-		return base.baseEntity.InSameNpcTeam(other);
+		return false;
+	}
+
+	public NPCStance StanceToward(BaseEntity entity)
+	{
+		if (team == null)
+		{
+			return NPCStance.Ignore;
+		}
+		NPCStance nPCStance = NPCStance.Ignore;
+		SenseComponent senseComponent = default;
+		if (entity.IsNonNpcPlayer())
+		{
+			nPCStance = team.players;
+		}
+		else if (((Component)entity).TryGetComponent<SenseComponent>(ref senseComponent))
+		{
+			nPCStance = team.StanceToward(senseComponent.team);
+		}
+		if (nPCStance == NPCStance.Ignore && HurtUsRecently(entity))
+		{
+			return team.attackers;
+		}
+		return nPCStance;
+	}
+
+	public void NoteAttacker(BaseEntity attacker)
+	{
+		if (attacker.IsValid() && !((Object)(object)attacker == (Object)(object)baseEntity) && !InSameTeam(attacker))
+		{
+			recentAttackers[attacker] = Time.timeAsDouble;
+		}
+	}
+
+	private bool HurtUsRecently(BaseEntity entity)
+	{
+		if (recentAttackers.TryGetValue(entity, out var value))
+		{
+			return Time.timeAsDouble - value < (double)timeToForgetSightings.Value;
+		}
+		return false;
+	}
+
+	private void ForgetOldAttackers()
+	{
+		if (recentAttackers.Count == 0)
+		{
+			return;
+		}
+		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
+		try
+		{
+			foreach (var (baseEntity2, num2) in recentAttackers)
+			{
+				if (!baseEntity2.IsValid() || Time.timeAsDouble - num2 >= (double)timeToForgetSightings.Value)
+				{
+					((List<BaseEntity>)(object)val).Add(baseEntity2);
+				}
+			}
+			foreach (BaseEntity item in (List<BaseEntity>)(object)val)
+			{
+				recentAttackers.Remove(item);
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	private static Quaternion Clamp(Quaternion originalForward, Quaternion targetRotation, float maxAngle)
@@ -1310,7 +1411,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SenseComponent:TickHearing"))
 		{
 			if (noiseRangeMultiplier > 0f)
@@ -1318,20 +1419,25 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 				PooledList<NpcNoiseEvent> val = Pool.Get<PooledList<NpcNoiseEvent>>();
 				try
 				{
-					SingletonComponent<NpcNoiseManager>.Instance.GetNoisesAround(((Component)base.baseEntity).transform.position, hearingRange, (List<NpcNoiseEvent>)(object)val);
+					SingletonComponent<NpcNoiseManager>.Instance.GetNoisesAround(((Component)baseEntity).transform.position, hearingRange, (List<NpcNoiseEvent>)(object)val);
 					foreach (NpcNoiseEvent item in (List<NpcNoiseEvent>)(object)val)
 					{
-						if (!noises.Contains(item) && !((Object)(object)item.Initiator == (Object)(object)base.baseEntity) && CanTarget(item.Initiator) && !(Time.timeAsDouble - item.EventTime > 5.0))
+						if (noises.Contains(item) || (Object)(object)item.Initiator == (Object)(object)baseEntity || !CanTarget(item.Initiator) || Time.timeAsDouble - item.EventTime > 5.0)
 						{
-							if (!noiseRadii.TryGetValue(item.Intensity, out var value))
+							continue;
+						}
+						if (!noiseRadii.TryGetValue(item.Intensity, out var value))
+						{
+							Debug.LogError((object)$"Unknown noise intensity: {item.Intensity}");
+						}
+						else if (!(Vector3.Distance(item.NoisePosition, ((Component)baseEntity).transform.position) > Mathf.Min(value * noiseRangeMultiplier, hearingRange)))
+						{
+							noises.Add(item);
+							if (baseEntity is ISimpleHearingReceiver simpleHearingReceiver)
 							{
-								Debug.LogError((object)$"Unknown noise intensity: {item.Intensity}");
+								simpleHearingReceiver.OnHeardNoise(item);
 							}
-							else if (!(Vector3.Distance(item.NoisePosition, ((Component)base.baseEntity).transform.position) > Mathf.Min(value * noiseRangeMultiplier, hearingRange)))
-							{
-								noises.Add(item);
-								SimulateSighting(item.Initiator, item.GuessedInitiatorPosition);
-							}
+							SimulateSighting(item.Initiator, item.GuessedInitiatorPosition);
 						}
 					}
 				}
@@ -1379,7 +1485,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 				mostRelevantNoise = npcNoiseEvent.Value;
 				return true;
 			}
-			mostRelevantNoise = default(NpcNoiseEvent);
+			mostRelevantNoise = default;
 			return false;
 		}
 	}
@@ -1387,6 +1493,15 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 	public void ForgetAllNoises()
 	{
 		noises.Clear();
+	}
+
+	public void IgnoreFood(BaseEntity food)
+	{
+		ignoredFood.Add(food);
+		if ((Object)(object)_nearestFood == (Object)(object)food)
+		{
+			_nearestFood = null;
+		}
 	}
 
 	public bool FindFood(out BaseEntity food)
@@ -1403,11 +1518,11 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 	private void TickFoodDetection(float deltaTime)
 	{
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SenseComponent:TickFoodDetection"))
 		{
 			_nearestFood = null;
@@ -1420,22 +1535,14 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
 			try
 			{
-				SingletonComponent<NpcFoodManager>.Instance.GetFoodAround(((Component)base.baseEntity).transform.position, foodDetectionRange, (List<BaseEntity>)(object)val);
-				RustNavMeshAgent component = ((Component)base.baseEntity).GetComponent<RustNavMeshAgent>();
+				SingletonComponent<NpcFoodManager>.Instance.GetFoodAround(((Component)baseEntity).transform.position, foodDetectionRange, (List<BaseEntity>)(object)val);
+				ForgetVanishedIgnoredFood();
+				RustNavMeshAgent component = ((Component)baseEntity).GetComponent<RustNavMeshAgent>();
 				foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 				{
-					if (!NpcFoodManager.IsFoodImmobile(item) || (item is BaseCorpse baseCorpse && BaseNetworkableEx.Is<HeadDispenser>((Object)(object)((Component)baseCorpse).GetComponent<HeadDispenser>(), out HeadDispenser castedUnityObject) && BaseNetworkableEx.Is<BaseEntity>((Object)(object)castedUnityObject.SourceEntity.GetEntity(), out BaseEntity castedUnityObject2) && castedUnityObject2.InSameNpcTeam(base.baseEntity)))
-					{
-						continue;
-					}
-					if (!component.IsPositionOnNavmesh(((Component)item).transform.position, out var _))
-					{
-						SingletonComponent<NpcFoodManager>.Instance.Remove(item);
-						continue;
-					}
-					Vector3 val2 = ((Component)item).transform.position - ((Component)base.baseEntity).transform.position;
-					float sqrMagnitude = ((Vector3)(ref val2)).sqrMagnitude;
-					if (sqrMagnitude < num2 && sqrMagnitude < num)
+					Vector3 val2 = ((Component)item).transform.position - ((Component)baseEntity).transform.position;
+					float sqrMagnitude = val2.sqrMagnitude;
+					if (!(sqrMagnitude >= num2) && !(sqrMagnitude >= num) && NpcFoodManager.IsFoodImmobile(item) && !ignoredFood.Contains(item) && (!(item is BaseCorpse baseCorpse) || !BaseNetworkableEx.Is<HeadDispenser>((Object)(object)((Component)baseCorpse).GetComponent<HeadDispenser>(), out HeadDispenser castedUnityObject) || !BaseNetworkableEx.Is<BaseEntity>((Object)(object)castedUnityObject.SourceEntity.GetEntity(), out BaseEntity castedUnityObject2) || !InSameTeam(castedUnityObject2)) && component.IsPositionOnNavmesh(((Component)item).transform.position, out var _))
 					{
 						_nearestFood = item;
 						num2 = sqrMagnitude;
@@ -1446,6 +1553,33 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			{
 				((IDisposable)val)?.Dispose();
 			}
+		}
+	}
+
+	private void ForgetVanishedIgnoredFood()
+	{
+		if (ignoredFood.Count == 0)
+		{
+			return;
+		}
+		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
+		try
+		{
+			foreach (BaseEntity item in ignoredFood)
+			{
+				if (!item.IsValid() || item.IsDestroyed)
+				{
+					((List<BaseEntity>)(object)val).Add(item);
+				}
+			}
+			foreach (BaseEntity item2 in (List<BaseEntity>)(object)val)
+			{
+				ignoredFood.Remove(item2);
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 
@@ -1487,7 +1621,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 				foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 				{
 					Vector3 val2 = ((Component)item).transform.position - ((Component)base.baseEntity).transform.position;
-					float sqrMagnitude = ((Vector3)(ref val2)).sqrMagnitude;
+					float sqrMagnitude = val2.sqrMagnitude;
 					if (sqrMagnitude < num2 && sqrMagnitude < num)
 					{
 						baseEntity = item;
@@ -1542,7 +1676,11 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		{
 			return false;
 		}
-		if (InSameTeam(entity))
+		if (StanceToward(entity) == NPCStance.Ignore)
+		{
+			return false;
+		}
+		if (entity.IsNpc && entity.InSafeZone())
 		{
 			return false;
 		}
@@ -1561,6 +1699,10 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		if (obj is bool)
 		{
 			return (bool)obj;
+		}
+		if (Observer != null && Observer.RefusesToTarget(entity))
+		{
+			return false;
 		}
 		return true;
 	}
@@ -1705,23 +1847,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Expected O, but got Unknown
-		LongRangeVisionRectangle = new Vector3(6f, 30f, 60f);
-		ShortRangeVisionCone = new Cone(100f, 30f);
-		touchDistance = 6f;
-		noiseRangeMultiplier = 1f;
-		hearingRange = 50f;
-		timeToForgetSightings = new ResettableFloat(30f);
-		_alliesWeAreAwareOf = new Dictionary<BaseEntity, double>(3);
-		entitiesWeAreAwareOf = new Dictionary<BaseEntity, VisibilityStatus>(8);
-		noises = new HashSet<NpcNoiseEvent>();
-		foodDetectionRange = 30f;
-		fireDetectionRange = 20f;
-		onFireMelee = new UnityEvent();
-		TargetingCooldown = 5f;
-		SwitchTargetToFocusAggressorCooldown = 5f;
-		lockState = new LockState();
-		base._002Ector();
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Expected Obj, but got Unknown
 	}
 }

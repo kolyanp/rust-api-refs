@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class BasePathFinder
 {
-	private static Vector3[] preferedTopologySamples = (Vector3[])(object)new Vector3[4];
+	private static Vector3[] preferedTopologySamples = new Vector3[4];
 
-	private static Vector3[] topologySamples = (Vector3[])(object)new Vector3[4];
+	private static Vector3[] topologySamples = new Vector3[4];
 
 	private Vector3 chosenPosition;
 

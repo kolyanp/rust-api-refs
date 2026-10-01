@@ -30,7 +30,7 @@ public struct SortHitsJob<CompT> : IJobFor where CompT : unmanaged, IComparer<Ra
 		for (int i = 0; i < MaxHitsPerRay; i++)
 		{
 			RaycastHit val = Hits[num2 + i];
-			if (((RaycastHit)(ref val)).normal == Vector3.zero)
+			if (val.normal == Vector3.zero)
 			{
 				break;
 			}

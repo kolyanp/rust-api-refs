@@ -99,8 +99,8 @@ public class MeshGridManager
 			{
 				Bounds gridBounds = GetGridBounds(i);
 				gridJobData.CanBeDistanceCulled = true;
-				gridJobData.MinBounds = float3.op_Implicit(((Bounds)(ref gridBounds)).min);
-				gridJobData.MaxBounds = float3.op_Implicit(((Bounds)(ref gridBounds)).max);
+				gridJobData.MinBounds = float3.op_Implicit(gridBounds.min);
+				gridJobData.MaxBounds = float3.op_Implicit(gridBounds.max);
 			}
 		}
 	}

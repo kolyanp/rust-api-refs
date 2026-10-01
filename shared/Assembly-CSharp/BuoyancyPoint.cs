@@ -22,7 +22,7 @@ public class BuoyancyPoint : MonoBehaviour
 	[NonSerialized]
 	public float nexSplashTime;
 
-	private static readonly Color gizmoColour;
+	private static readonly Color gizmoColour = new Color(1f, 0f, 0f, 0.25f);
 
 	public void Start()
 	{
@@ -41,6 +41,5 @@ public class BuoyancyPoint : MonoBehaviour
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		gizmoColour = new Color(1f, 0f, 0f, 0.25f);
 	}
 }

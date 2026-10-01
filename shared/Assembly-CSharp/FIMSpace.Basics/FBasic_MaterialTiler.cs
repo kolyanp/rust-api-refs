@@ -6,12 +6,12 @@ public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 {
 	[Header("When you scale object change")]
 	[Header("something in script to apply")]
-	[Tooltip("Texture identificator in shader")]
 	[Space(10f)]
-	public string TextureProperty;
+	[Tooltip("Texture identificator in shader")]
+	public string TextureProperty = "_MainTex";
 
 	[Tooltip("How much tiles should be multiplied according to gameObject's scale")]
-	public Vector2 ScaleValues;
+	public Vector2 ScaleValues = new Vector2(1f, 1f);
 
 	[Tooltip("When scale on Y should be same as X")]
 	public bool EqualDimensions;
@@ -47,8 +47,5 @@ public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		TextureProperty = "_MainTex";
-		ScaleValues = new Vector2(1f, 1f);
-		base._002Ector();
 	}
 }

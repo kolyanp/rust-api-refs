@@ -34,6 +34,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
 			//IL_011a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0120: Unknown result type (might be due to invalid IL or missing references)
@@ -59,6 +60,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01db: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
@@ -109,44 +111,42 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 					Pool.FreeUnmanaged<BoatBuildingBlock>(ref list);
 					return;
 				}
-				Bounds val = new Bounds(((Component)list[0]).transform.localPosition, ((Bounds)(ref list[0].bounds)).size);
-				Vector3 val2 = default(Vector3);
-				Quaternion val3 = default(Quaternion);
-				OBB val4 = default(OBB);
+				Bounds val = new Bounds(((Component)list[0]).transform.localPosition, list[0].bounds.size);
+				Vector3 val2 = default;
+				Quaternion val3 = default;
 				for (int i = 1; i < list.Count; i++)
 				{
 					((Component)list[i]).transform.GetLocalPositionAndRotation(ref val2, ref val3);
-					((OBB)(ref val4))._002Ector(val2, val3, list[i].bounds);
-					((OBB)(ref val4)).BoundsEncapsulate(ref val);
+					OBB val4 = new OBB(val2, val3, list[i].bounds);
+					val4.BoundsEncapsulate(ref val);
 				}
 				OBB bounds = new OBB(((Component)boat).transform, val);
 				Vector3 forward = ((Component)boat).transform.forward;
-				JobHandle val5 = default(JobHandle);
+				JobHandle val5 = default;
 				List<NativeList<SpherecastCommand>> list2 = Pool.Get<List<NativeList<SpherecastCommand>>>();
 				List<NativeArray<RaycastHit>> list3 = Pool.Get<List<NativeArray<RaycastHit>>>();
 				List<Plane> list4 = Pool.Get<List<Plane>>();
 				List<float> list5 = Pool.Get<List<float>>();
-				Plane val8 = default(Plane);
 				for (int j = 0; j < dragByDirectionOfTravel.Length; j++)
 				{
 					Vector3 val6 = -(Quaternion.Euler(0f, (float)(j * directionIncrements), 0f) * forward);
 					float num = ExtentInDirXZ(-val6);
 					Vector3 val7 = bounds.position + Vector3Ex.WithY(-val6 * (num + 5f), bounds.position.y);
-					((Plane)(ref val8))._002Ector(val6, val7);
+					Plane val8 = new Plane(val6, val7);
 					val5 = JobHandle.CombineDependencies(val5, SchedulePlaneProjection(val8, val7, bounds, out var commands, out var hits, out var step));
 					list2.Add(commands);
 					list3.Add(hits);
 					list4.Add(val8);
 					list5.Add(step);
 				}
-				((JobHandle)(ref val5)).Complete();
-				val5 = default(JobHandle);
+				val5.Complete();
+				val5 = default;
 				for (int k = 0; k < list2.Count; k++)
 				{
 					GamePhysics.VerifySpheres(list3[k], list2[k].AsArray(), 24);
 					val5 = JobHandle.CombineDependencies(val5, GamePhysics.SortDeferred(list3[k], list2[k].Length, 24));
 				}
-				((JobHandle)(ref val5)).Complete();
+				val5.Complete();
 				for (int l = 0; l < list2.Count; l++)
 				{
 					dragByDirectionOfTravel[l] = GetDragFromHits(list2[l].AsArray(), list3[l], list4[l], list5[l]);
@@ -171,9 +171,9 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 					//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 					Vector3 val9 = Vector3Extensions.XZ(bounds.right, 0f);
-					float num2 = Mathf.Abs(Vector3.Dot(dir, ((Vector3)(ref val9)).normalized)) * bounds.extents.x;
+					float num2 = Mathf.Abs(Vector3.Dot(dir, val9.normalized)) * bounds.extents.x;
 					val9 = Vector3Extensions.XZ(bounds.forward, 0f);
-					return num2 + Mathf.Abs(Vector3.Dot(dir, ((Vector3)(ref val9)).normalized)) * bounds.extents.z;
+					return num2 + Mathf.Abs(Vector3.Dot(dir, val9.normalized)) * bounds.extents.z;
 				}
 			}
 		}
@@ -211,6 +211,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0119: Unknown result type (might be due to invalid IL or missing references)
 			//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_012a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
@@ -229,9 +230,9 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 			using (TimeWarning.New("SchedulePlaneProjection"))
 			{
-				Vector3 normal = ((Plane)(ref plane)).normal;
+				Vector3 normal = plane.normal;
 				Vector3 val = Vector3.Cross(Vector3.up, normal);
-				Vector3 normalized = ((Vector3)(ref val)).normalized;
+				Vector3 normalized = val.normalized;
 				float num = float.MaxValue;
 				float num2 = float.MinValue;
 				for (int i = -1; i <= 1; i += 2)
@@ -258,14 +259,13 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 				float num4 = num2 - num;
 				step = num4 / 16f;
 				int num5 = 0;
-				SpherecastCommand val4 = default(SpherecastCommand);
 				for (float num6 = num; num6 <= num2; num6 += step)
 				{
 					if (num5 >= 16)
 					{
 						break;
 					}
-					((SpherecastCommand)(ref val4))._002Ector(planePoint + normalized * num6, step * 0.5f, normal, val3, Vector3Ex.Max(worldBounds.extents) * 3f);
+					SpherecastCommand val4 = new SpherecastCommand(planePoint + normalized * num6, step * 0.5f, normal, val3, Vector3Ex.Max(worldBounds.extents) * 3f);
 					num5++;
 					commands.Add(ref val4);
 				}
@@ -293,7 +293,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 						RaycastHit hit = hits[j];
 						if (RaycastHitEx.GetEntity(hit) is BoatBuildingBlock { Hull: not false } boatBuildingBlock && (Object)(object)boatBuildingBlock.GetParentEntity() == (Object)(object)boat)
 						{
-							float num3 = Vector3.Dot(((RaycastHit)(ref hit)).normal, -((Plane)(ref plane)).normal) * step;
+							float num3 = Vector3.Dot(hit.normal, -plane.normal) * step;
 							num += num3;
 							break;
 						}
@@ -321,8 +321,8 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 				return 1f;
 			}
 			Matrix4x4 localToWorldMatrix = t.localToWorldMatrix;
-			Vector3 val = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyVector(Vector3.forward);
-			Vector3 val2 = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyVector(Vector3.up);
+			Vector3 val = localToWorldMatrix.MultiplyVector(Vector3.forward);
+			Vector3 val2 = localToWorldMatrix.MultiplyVector(Vector3.up);
 			Vector3 linearVelocity = r.linearVelocity;
 			float num = Vector3.SignedAngle(val, linearVelocity, val2);
 			if (num < 0f)
@@ -401,40 +401,40 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	public ParticleSystemContainer wakeEffect;
 
 	[ServerVar(Help = "(Generated) Duration in seconds after entering the deep sea zone that a player boat has before its engine is powered down")]
-	public static float DeepSeaTransitionPowerDownGraceDuration;
+	public static float DeepSeaTransitionPowerDownGraceDuration = 10f;
 
 	[ServerVar(Help = "(Generated) When enabled, player boat engines are powered down when no players are aboard; prevents runaway unmanned boats")]
-	public static bool PowerdownOnNoPlayers;
+	public static bool PowerdownOnNoPlayers = true;
 
 	[ServerVar(Help = "When enabled, deployables on boats send immediate network updates when orphaned during edit mode to prevent looping sounds from being killed")]
-	public static bool OrphanSendImmediate;
+	public static bool OrphanSendImmediate = true;
 
 	[ServerVar(Help = "(Generated) Interval in seconds between checks to determine whether any players are still aboard the boat")]
-	public static float AboardPlayerCheckInterval;
+	public static float AboardPlayerCheckInterval = 2f;
 
 	[ServerVar(Help = "(Generated) Time in seconds after a boat is anchored before it becomes eligible for shore drift; default 21600s (6 hours)")]
-	public static float AnchoredDriftDelaySeconds;
+	public static float AnchoredDriftDelaySeconds = 21600f;
 
 	[ServerVar(Help = "0 - 1")]
-	public static float SailPositionInfluence;
+	public static float SailPositionInfluence = 0.1f;
 
 	[ServerVar(Help = "0 - 1")]
-	public static float EnginePositionInfluences;
+	public static float EnginePositionInfluences = 0.05f;
 
 	[ServerVar(Help = "(Generated) Maximum angle in degrees from vertical at which building blocks can be placed on a player boat; default 30 degrees")]
-	public static float PlacementUpThreshold;
+	public static float PlacementUpThreshold = 30f;
 
 	[ServerVar]
 	[Help("How long until player boat corpses despawn")]
-	public static float corpseseconds;
+	public static float corpseseconds = 1800f;
 
 	[ServerVar(Help = "How long before a boat loses all its health while outside")]
-	public static float decayminutes;
+	public static float decayminutes = 720f;
 
 	[ServerVar(Help = "How long until decay begins after the boat was last used")]
-	public static float decaystartdelayminutes;
+	public static float decaystartdelayminutes = 1440f;
 
-	public static float CannonHitSlowdownMultiplier;
+	public static float CannonHitSlowdownMultiplier = 0f;
 
 	private bool cachedPlayersAboard;
 
@@ -471,29 +471,29 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	private DragByAngle dragByAngle;
 
 	[ServerVar]
-	public static float DragByAngle_MinDrag;
+	public static float DragByAngle_MinDrag = 0.65f;
 
 	[ServerVar]
-	public static float DragByAngle_MaxDrag;
+	public static float DragByAngle_MaxDrag = 2.2f;
 
 	[ServerVar]
-	public static float DragByAngle_MinContrib;
+	public static float DragByAngle_MinContrib = 5f;
 
 	[ServerVar]
-	public static float DragByAngle_MaxContrib;
+	public static float DragByAngle_MaxContrib = 50f;
 
 	[ServerVar]
-	public static float DragByAngle_Exponent;
+	public static float DragByAngle_Exponent = 0.4f;
 
 	public const Flags Flag_DestructibleWreck = Flags.Reserved18;
 
-	public static Phrase tooFastToEditErrorPhrase;
+	public static Phrase tooFastToEditErrorPhrase = new Phrase("playerboat_too_fast_to_edit", "The boat is moving too fast to edit.");
 
-	public static Phrase recentlyDamagedCantEditPhrase;
+	public static Phrase recentlyDamagedCantEditPhrase = new Phrase("playerboat_recently_damaged_cant_edit", "The boat has recently been damaged and can't be edited.");
 
-	public static Phrase onDeployEditCoolDownPhrase;
+	public static Phrase onDeployEditCoolDownPhrase = new Phrase("playerboat_cooldown_phrase", "Deploy & Edit is on cooldown.");
 
-	public static Phrase invalidDeployLocationPhrase;
+	public static Phrase invalidDeployLocationPhrase = new Phrase("playerboat_invalid_deploy_location_phrase", "Unable to deploy & edit in this location.");
 
 	public ItemDefinition BoatBuildingStationItem;
 
@@ -507,25 +507,28 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	public List<ItemAmount> DynamicBuildCost = new List<ItemAmount>();
 
 	[ReplicatedVar]
-	public static bool EditEnabled;
+	public static bool EditEnabled = true;
+
+	[ReplicatedVar(Help = "Allow Deploy & Edit anywhere in the ocean, bypassing location checks.")]
+	public static bool DeployAndEditAnywhere = false;
 
 	[ReplicatedVar]
-	public static bool FinishEditingEnabled;
+	public static bool FinishEditingEnabled = true;
 
 	[ReplicatedVar]
-	public static bool HammerRepairEnabled;
+	public static bool HammerRepairEnabled = true;
 
 	[ReplicatedVar]
-	public static int MaxBlockCount;
+	public static int MaxBlockCount = 180;
 
 	[ReplicatedVar]
-	public static int MaxDeployableCount;
+	public static int MaxDeployableCount = 120;
 
 	[ReplicatedVar]
-	public static bool DestructibleWrecksEnabled;
+	public static bool DestructibleWrecksEnabled = true;
 
 	[ReplicatedVar]
-	public static bool UseDestructibleWreckStability;
+	public static bool UseDestructibleWreckStability = true;
 
 	[Header("Player Boat")]
 	public float MaxEditVelocity = 2f;
@@ -541,7 +544,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	public const Flags Flag_Dying = Flags.Broken;
 
 	[ReplicatedVar]
-	public static float VelocityMax;
+	public static float VelocityMax = 15f;
 
 	public CachedBoatParts<BoatBuildingBlock> BoatBuildingBlocks = new CachedBoatParts<BoatBuildingBlock>();
 
@@ -785,12 +788,12 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.playerBoat = Pool.Get<PlayerBoat>();
-		info.msg.playerBoat.size = ((Bounds)(ref bounds)).size;
+		info.msg.playerBoat.size = bounds.size;
 		info.msg.playerBoat.lastEditLocalPos = lastEditLocalPos;
 		info.msg.playerBoat.lastEditLocalRot = lastEditLocalRot;
 		if (info.forDisk)
 		{
-			info.msg.playerBoat.timeSinceLastUsed = ((TimeSince)(ref timeSinceLastUsed)).PassedSince(info.cachedTime.Time);
+			info.msg.playerBoat.timeSinceLastUsed = timeSinceLastUsed.PassedSince(info.cachedTime.Time);
 		}
 	}
 
@@ -803,11 +806,11 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		base.PostServerLoad();
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
-		if (base.health <= 0f || HasFlag(Flags.Broken))
+		if (health <= 0f || HasFlag(Flags.Broken))
 		{
 			Kill();
 			return;
@@ -845,12 +848,12 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	private void CheckForPlayersAboard()
 	{
-		bool flag = cachedPlayersAboard;
-		cachedPlayersAboard = AnyPlayersOnBoat();
 		if (Time.time < powerDownGraceExpireTimestamp)
 		{
-			cachedPlayersAboard = flag;
+			return;
 		}
+		bool flag = cachedPlayersAboard;
+		cachedPlayersAboard = AnyPlayersOnBoat();
 		if (flag != cachedPlayersAboard)
 		{
 			if (cachedPlayersAboard)
@@ -862,6 +865,29 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 				OnNoPlayersAboard();
 			}
 		}
+		if (!cachedPlayersAboard && PowerdownOnNoPlayers && NeedsPowerDown())
+		{
+			PowerDown();
+		}
+	}
+
+	private bool NeedsPowerDown()
+	{
+		foreach (Sail item in Sails.Cached)
+		{
+			if ((Object)(object)item != (Object)null && !item.Raising && (item.Lowered || item.Lowering))
+			{
+				return true;
+			}
+		}
+		foreach (SmallEngine item2 in Engines.Cached)
+		{
+			if ((Object)(object)item2 != (Object)null && item2.IsOn())
+			{
+				return true;
+			}
+		}
+		return steering != 0f;
 	}
 
 	private void OnPlayersAboard()
@@ -871,7 +897,6 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	private void OnNoPlayersAboard()
 	{
-		PowerDown();
 		approxTimestampNoPlayersAboard = Time.realtimeSinceStartup;
 	}
 
@@ -904,7 +929,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		lastEditLocalPos = Quaternion.Inverse(((Component)this).transform.rotation) * (((Component)bbs).transform.position - ((Component)this).transform.position);
 		Quaternion val = Quaternion.Inverse(((Component)this).transform.rotation) * ((Component)bbs).transform.rotation;
-		lastEditLocalRot = ((Quaternion)(ref val)).eulerAngles;
+		lastEditLocalRot = val.eulerAngles;
 	}
 
 	public bool DeployAndEdit(BasePlayer player)
@@ -1001,7 +1026,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	{
 		foreach (BaseEntity child in children)
 		{
-			if (child is global::IBoatBuildingPiece boatBuildingPiece)
+			if (child is IBoatBuildingPiece boatBuildingPiece)
 			{
 				boatBuildingPiece.OnAddedToBoat(this);
 			}
@@ -1014,7 +1039,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		List<BoatBuildingBlock> cached = BoatBuildingBlocks.Cached;
 		float num = 0f;
 		float num2 = 0f;
-		float num3 = base.health;
+		float num3 = health;
 		foreach (BoatBuildingBlock item in cached)
 		{
 			item.SendNetworkUpdateOnHealthChanged = false;
@@ -1356,8 +1381,8 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		Vector3 forward = ((Component)this).transform.forward;
 		Vector3 right = ((Component)this).transform.right;
 		Vector3 position = ((Component)this).transform.position;
-		float num = ((Bounds)(ref bounds)).size.x / 2f;
-		float num2 = ((Bounds)(ref bounds)).size.z / 2f;
+		float num = bounds.size.x / 2f;
+		float num2 = bounds.size.z / 2f;
 		List<Vector3> list = Pool.Get<List<Vector3>>();
 		list.Add(position + forward * num2);
 		list.Add(position + forward * num2 + right * num);
@@ -1398,7 +1423,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	{
 		if (EngineOn() && !IsFlipped())
 		{
-			return base.healthFraction > 0f;
+			return healthFraction > 0f;
 		}
 		return false;
 	}
@@ -1438,7 +1463,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		{
 			UpdateBuoyancy();
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			bool flag = ((Vector3)(ref linearVelocity)).magnitude > AntiHackVelocity();
+			bool flag = linearVelocity.magnitude > AntiHackVelocity();
 			if (EngineOn() && !Anchored)
 			{
 				bool reversing = false;
@@ -1450,16 +1475,16 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 					Vector3 val = accumTorque + accumTorque2;
 					float num = 13f;
 					float num2 = 1f;
-					if (((Vector3)(ref accumulatedForce)).magnitude > 0.1f)
+					if (accumulatedForce.magnitude > 0.1f)
 					{
 						float mass = rigidBody.mass;
 						Vector3 val2 = accumulatedForce / mass;
 						Vector3 val3 = accumulatedForce;
-						if (((Vector3)(ref val2)).sqrMagnitude > num * num)
+						if (val2.sqrMagnitude > num * num)
 						{
-							accumulatedForce = ((Vector3)(ref accumulatedForce)).normalized * (mass * num);
+							accumulatedForce = accumulatedForce.normalized * (mass * num);
 						}
-						num2 = ((Vector3)(ref accumulatedForce)).sqrMagnitude / ((Vector3)(ref val3)).sqrMagnitude;
+						num2 = accumulatedForce.sqrMagnitude / val3.sqrMagnitude;
 						HandleCannonAttackSlowdown(ref accumulatedForce);
 						rigidBody.AddForce(accumulatedForce, (ForceMode)0);
 						if (Vector3.Dot(accumulatedForce, ((Component)this).transform.forward) <= 0f)
@@ -1480,9 +1505,9 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			rigidBody.linearDamping = desiredDrag.Get(force: false);
 			if (flag)
 			{
-				Rigidbody obj = rigidBody;
+				Rigidbody val4 = rigidBody;
 				linearVelocity = rigidBody.linearVelocity;
-				obj.linearVelocity = ((Vector3)(ref linearVelocity)).normalized * AntiHackVelocity();
+				val4.linearVelocity = linearVelocity.normalized * AntiHackVelocity();
 			}
 		}
 	}
@@ -1694,7 +1719,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			float num = (reversing ? 1f : (-1f)) * steering * steeringScale;
 			float num2 = Mathf.Clamp(Vector3.Dot(rigidBody.linearVelocity, ((Component)this).transform.forward) / AntiHackVelocity(), 0.6f, 1f);
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			if (((Vector3)(ref linearVelocity)).sqrMagnitude < 0.1f)
+			if (linearVelocity.sqrMagnitude < 0.1f)
 			{
 				num2 = 0.3f;
 			}
@@ -1774,7 +1799,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 					{
 						num *= item.ReverseMod;
 					}
-					Vector3 val6 = (((Plane)(ref val2)).GetSide(val5) ? val4 : val3) * num;
+					Vector3 val6 = (val2.GetSide(val5) ? val4 : val3) * num;
 					accumForce += val6;
 					accumTorque += Vector3.Cross(val5 - val, val6);
 				}
@@ -1812,9 +1837,9 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		}
 		List<BasePlayer> list = Pool.Get<List<BasePlayer>>();
 		GetPlayersOnBoat(list);
-		bool num = list.Count > 0;
+		bool flag = list.Count > 0;
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
-		if (!num)
+		if (!flag)
 		{
 			return base.AnyPlayersOnBoat();
 		}
@@ -2023,7 +2048,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			EnterCorpseState();
 			if (sinkEffect.isValid)
 			{
-				Effect.server.Run(sinkEffect.resourcePath, this, 0u, default(Vector3), default(Vector3), null, false, null, 0, Effect.Type.Generic);
+				Effect.server.Run(sinkEffect.resourcePath, this, 0u, default, default, null, false, null, 0, Effect.Type.Generic);
 			}
 		}
 	}
@@ -2089,20 +2114,20 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		{
 			return;
 		}
-		float num = base.health;
+		float num = health;
 		ProtectionProperties protectionProperties2 = baseProtection;
 		baseProtection = protectionProperties;
 		Hurt(hitInfo);
 		baseProtection = protectionProperties2;
 		if (damagedEntity is BoatBuildingBlock boatBuildingBlock)
 		{
-			float amount = base.health - num;
+			float amount = health - num;
 			boatBuildingBlock.RecordDamageTaken(amount);
 		}
 		if (hitInfo.damageTypes.Has(DamageType.Cannon))
 		{
 			timeSinceLastCannonAttack = TimeSince.op_Implicit(0f);
-			if (Rust.GameInfo.HasAchievements && Object.op_Implicit((Object)(object)hitInfo.InitiatorPlayer))
+			if (GameInfo.HasAchievements && Object.op_Implicit((Object)(object)hitInfo.InitiatorPlayer))
 			{
 				hitInfo.InitiatorPlayer.GiveAchievement("BOAT_CANNON_HIT");
 			}
@@ -2139,7 +2164,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 				}
 			}
 		}
-		return BasePlayer.FindByID(base.OwnerID);
+		return BasePlayer.FindByID(OwnerID);
 	}
 
 	public float GetDamageMultiplier(BaseEntity ent)
@@ -2328,7 +2353,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		for (int num2 = Deployables.Cached.Count - 1; num2 >= 0; num2--)
 		{
 			BaseEntity baseEntity = Deployables.Cached[num2];
-			if (!((Object)(object)baseEntity == (Object)null) && !((Object)(object)((Component)baseEntity).gameObject == (Object)null) && !(baseEntity is global::IBoatBuildingPiece))
+			if (!((Object)(object)baseEntity == (Object)null) && !((Object)(object)((Component)baseEntity).gameObject == (Object)null) && !(baseEntity is IBoatBuildingPiece))
 			{
 				MeshCollider[] componentsInChildren = ((Component)baseEntity).gameObject.GetComponentsInChildren<MeshCollider>();
 				for (int i = 0; i < componentsInChildren.Length; i++)
@@ -2378,6 +2403,11 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
 	}
 
+	public void Tests_CheckForPlayersAboard()
+	{
+		CheckForPlayersAboard();
+	}
+
 	public SteeringWheel GetSteeringWheel()
 	{
 		foreach (SteeringWheel item in SteeringWheels.Cached)
@@ -2401,7 +2431,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	public override float AntiHackVelocity()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return adjustedVelocityMax.Get(force: false);
 		}
@@ -2466,6 +2496,36 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		return null;
 	}
 
+	public static bool IsPartOfPlayerBoat(BaseEntity entity)
+	{
+		BaseEntity entity2 = null;
+		while (entity != null)
+		{
+			if (entity is PlayerBoat || entity is BoatBuildingBlock || entity is IBoatBuildingPiece)
+			{
+				return true;
+			}
+			entity2 = entity;
+			entity = (entity.parentEntity.IsSet() ? entity.GetParentEntity() : null);
+		}
+		return IsBuiltOntoAnUnfinishedBoat(entity2);
+	}
+
+	private static bool IsBuiltOntoAnUnfinishedBoat(BaseEntity entity)
+	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		if (!(entity is DecayEntity decayEntity) || decayEntity is BuildingBlock || decayEntity.buildingID == 0)
+		{
+			return false;
+		}
+		BuildingManager.Building building = decayEntity.GetBuilding();
+		if (building == null || building.buildingBlocks.Count == 0 || !(building.buildingBlocks[0] is BoatBuildingBlock))
+		{
+			return false;
+		}
+		return (Object)(object)BoatBuildingStation.GetStationOverlappingPosition(((Component)entity).transform.position, entity.isServer, 1.5f) != (Object)null;
+	}
+
 	public override void Load(LoadInfo info)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
@@ -2477,7 +2537,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		base.Load(info);
 		lastEditLocalPos = info.msg.playerBoat.lastEditLocalPos;
 		lastEditLocalRot = info.msg.playerBoat.lastEditLocalRot;
-		if (base.isServer)
+		if (isServer)
 		{
 			rigidBody.isKinematic = true;
 			if (info.fromDisk)
@@ -2516,7 +2576,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	{
 		base.OnChildAdded(child);
 		CacheChild(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (ShouldDestroyOnDeath(child))
 			{
@@ -2536,12 +2596,12 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	protected override void OnChildRemoved(BaseEntity child)
 	{
 		base.OnChildRemoved(child);
-		if (base.isServer && KilledForEditMode)
+		if (isServer && KilledForEditMode)
 		{
 			return;
 		}
 		UnCacheChild(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (ShouldDestroyOnDeath(child))
 			{
@@ -2654,10 +2714,10 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		{
 			return false;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			if (((Vector3)(ref linearVelocity)).magnitude >= MaxEditVelocity)
+			if (linearVelocity.magnitude >= MaxEditVelocity)
 			{
 				if (sendErrorToasts)
 				{
@@ -2668,7 +2728,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		}
 		if (IsOnDamagedCoolDown())
 		{
-			if (base.isServer & sendErrorToasts)
+			if (isServer & sendErrorToasts)
 			{
 				player.ShowToast(GameTip.Styles.Error, recentlyDamagedCantEditPhrase, false);
 			}
@@ -2683,9 +2743,9 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	public bool IsOnDamagedCoolDown()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
-			if (base.SecondsSinceAttacked <= GetDamageRepairCooldown())
+			if (SecondsSinceAttacked <= GetDamageRepairCooldown())
 			{
 				return Time.time - boatSpawnTime > GetDamageRepairCooldown();
 			}
@@ -2771,7 +2831,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		}
 		if (!pusher.isMounted)
 		{
-			return base.healthFraction > 0f;
+			return healthFraction > 0f;
 		}
 		return false;
 	}
@@ -2791,9 +2851,9 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		outPosition = Vector3.zero;
 		outRotation = Quaternion.identity;
 		if (!EditEnabled)
@@ -2820,7 +2880,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		{
 			return false;
 		}
-		if (DeepSeaManager.IsInsideDeepSea(((Component)this).transform.position))
+		if (!DeployAndEditAnywhere && DeepSeaManager.IsInsideDeepSea(((Component)this).transform.position))
 		{
 			return false;
 		}
@@ -2835,7 +2895,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		if (checkDeploy)
 		{
 			GetDeployAndEditPositionRotation(out outPosition, out outRotation);
-			if (!ContainerCorpse.IsValidPointForEntity(BoatBuildingStationPrefab.resourceID, outPosition, outRotation, this, -1, ignoreChildrenOfEntity: true))
+			if (!DeployAndEditAnywhere && !ContainerCorpse.IsValidPointForEntity(BoatBuildingStationPrefab.resourceID, outPosition, outRotation, this, -1, ignoreChildrenOfEntity: true))
 			{
 				if (sendErrorToasts && (Object)(object)player != (Object)null)
 				{
@@ -2884,7 +2944,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	protected void OnCollisionEnter(Collision collision)
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			ProcessCollision(collision);
 		}
@@ -2892,7 +2952,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	private void ProcessCollision(Collision collision)
 	{
-		if (!base.isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null))
+		if (!isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null))
 		{
 			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(collision.gameObject);
 			if (Interface.CallHook("OnPlayerBoatCollide", this, baseEntity, collision) == null && (Object)(object)baseEntity != (Object)null && !baseEntity.isClient && baseEntity is IDestroyableOnPlayerBoatCollision destroyableOnPlayerBoatCollision && destroyableOnPlayerBoatCollision.ShouldBeDestroyedBy(this))
@@ -2910,41 +2970,12 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	static PlayerBoat()
 	{
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Expected O, but got Unknown
+		//IL_00b6: Expected Obj, but got Unknown
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Expected O, but got Unknown
+		//IL_00ca: Expected Obj, but got Unknown
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Expected O, but got Unknown
+		//IL_00de: Expected Obj, but got Unknown
 		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f2: Expected O, but got Unknown
-		DeepSeaTransitionPowerDownGraceDuration = 10f;
-		PowerdownOnNoPlayers = true;
-		OrphanSendImmediate = true;
-		AboardPlayerCheckInterval = 2f;
-		AnchoredDriftDelaySeconds = 21600f;
-		SailPositionInfluence = 0.1f;
-		EnginePositionInfluences = 0.05f;
-		PlacementUpThreshold = 30f;
-		corpseseconds = 1800f;
-		decayminutes = 720f;
-		decaystartdelayminutes = 1440f;
-		CannonHitSlowdownMultiplier = 0f;
-		DragByAngle_MinDrag = 0.65f;
-		DragByAngle_MaxDrag = 2.2f;
-		DragByAngle_MinContrib = 5f;
-		DragByAngle_MaxContrib = 50f;
-		DragByAngle_Exponent = 0.4f;
-		tooFastToEditErrorPhrase = new Phrase("playerboat_too_fast_to_edit", "The boat is moving too fast to edit.");
-		recentlyDamagedCantEditPhrase = new Phrase("playerboat_recently_damaged_cant_edit", "The boat has recently been damaged and can't be edited.");
-		onDeployEditCoolDownPhrase = new Phrase("playerboat_cooldown_phrase", "Deploy & Edit is on cooldown.");
-		invalidDeployLocationPhrase = new Phrase("playerboat_invalid_deploy_location_phrase", "Unable to deploy & edit in this location.");
-		EditEnabled = true;
-		FinishEditingEnabled = true;
-		HammerRepairEnabled = true;
-		MaxBlockCount = 180;
-		MaxDeployableCount = 120;
-		DestructibleWrecksEnabled = true;
-		UseDestructibleWreckStability = true;
-		VelocityMax = 15f;
+		//IL_00f2: Expected Obj, but got Unknown
 	}
 }

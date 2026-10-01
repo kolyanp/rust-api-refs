@@ -37,14 +37,15 @@ public class UIGoldenRatioRenderer : UILineRenderer
 		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
 		_points.Clear();
 		_rects.Clear();
 		float num = (1f + Mathf.Sqrt(5f)) / 2f;
 		Rect pixelRect = ((Graphic)this).canvas.pixelRect;
-		canvasWidth = (int)((Rect)(ref pixelRect)).width;
+		canvasWidth = (int)pixelRect.width;
 		pixelRect = ((Graphic)this).canvas.pixelRect;
-		canvasHeight = (int)((Rect)(ref pixelRect)).height;
+		canvasHeight = (int)pixelRect.height;
 		Orientations orientation;
 		float num2;
 		float num3;
@@ -92,10 +93,9 @@ public class UIGoldenRatioRenderer : UILineRenderer
 			float num9 = Mathf.Atan2(num7, num6);
 			float num10 = MathF.PI / 50f;
 			float num11 = 1f - 1f / num / 25f * 0.78f;
-			Vector2 item = default(Vector2);
 			while (num8 > 32f)
 			{
-				((Vector2)(ref item))._002Ector(val2.x + num8 * Mathf.Cos(num9), (float)canvasHeight - (val2.y + num8 * Mathf.Sin(num9)));
+				Vector2 item = new Vector2(val2.x + num8 * Mathf.Cos(num9), (float)canvasHeight - (val2.y + num8 * Mathf.Sin(num9)));
 				_points.Add(item);
 				num9 += num10;
 				num8 *= num11;
@@ -164,10 +164,10 @@ public class UIGoldenRatioRenderer : UILineRenderer
 		foreach (Rect rect in _rects)
 		{
 			Rect current = rect;
-			DrawRect(vh, new Rect(((Rect)(ref current)).x, ((Rect)(ref current)).y - lineThickness2 * 0.5f, ((Rect)(ref current)).width, lineThickness2));
-			DrawRect(vh, new Rect(((Rect)(ref current)).x - lineThickness2 * 0.5f, ((Rect)(ref current)).y, lineThickness2, ((Rect)(ref current)).height));
-			DrawRect(vh, new Rect(((Rect)(ref current)).x, ((Rect)(ref current)).y + ((Rect)(ref current)).height - lineThickness2 * 0.5f, ((Rect)(ref current)).width, lineThickness2));
-			DrawRect(vh, new Rect(((Rect)(ref current)).x + ((Rect)(ref current)).width - lineThickness2 * 0.5f, ((Rect)(ref current)).y, lineThickness2, ((Rect)(ref current)).height));
+			DrawRect(vh, new Rect(current.x, current.y - lineThickness2 * 0.5f, current.width, lineThickness2));
+			DrawRect(vh, new Rect(current.x - lineThickness2 * 0.5f, current.y, lineThickness2, current.height));
+			DrawRect(vh, new Rect(current.x, current.y + current.height - lineThickness2 * 0.5f, current.width, lineThickness2));
+			DrawRect(vh, new Rect(current.x + current.width - lineThickness2 * 0.5f, current.y, lineThickness2, current.height));
 		}
 	}
 
@@ -194,21 +194,21 @@ public class UIGoldenRatioRenderer : UILineRenderer
 		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
-		Vector2[] array = (Vector2[])(object)new Vector2[4]
+		Vector2[] array = new Vector2[4]
 		{
-			new Vector2(((Rect)(ref rect)).x, ((Rect)(ref rect)).y),
-			new Vector2(((Rect)(ref rect)).x + ((Rect)(ref rect)).width, ((Rect)(ref rect)).y),
-			new Vector2(((Rect)(ref rect)).x + ((Rect)(ref rect)).width, ((Rect)(ref rect)).y + ((Rect)(ref rect)).height),
-			new Vector2(((Rect)(ref rect)).x, ((Rect)(ref rect)).y + ((Rect)(ref rect)).height)
+			new Vector2(rect.x, rect.y),
+			new Vector2(rect.x + rect.width, rect.y),
+			new Vector2(rect.x + rect.width, rect.y + rect.height),
+			new Vector2(rect.x, rect.y + rect.height)
 		};
-		UIVertex[] array2 = (UIVertex[])(object)new UIVertex[4];
+		UIVertex[] array2 = new UIVertex[4];
 		for (int i = 0; i < array2.Length; i++)
 		{
 			UIVertex simpleVert = UIVertex.simpleVert;
 			simpleVert.color = Color32.op_Implicit(((Graphic)this).color);
 			Vector2 val = array[i];
 			Rect pixelRect = ((Graphic)this).canvas.pixelRect;
-			simpleVert.position = Vector2.op_Implicit(Vector2Ex.WithY(val, ((Rect)(ref pixelRect)).height - array[i].y));
+			simpleVert.position = Vector2.op_Implicit(Vector2Ex.WithY(val, pixelRect.height - array[i].y));
 			array2[i] = simpleVert;
 		}
 		vh.AddUIVertexQuad(array2);

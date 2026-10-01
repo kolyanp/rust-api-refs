@@ -5,7 +5,15 @@ public static class HexGridLayout
 {
 	private const float Sqrt3 = 1.7320508f;
 
-	public static readonly Vector2Int[] NeighbourDirs;
+	public static readonly Vector2Int[] NeighbourDirs = new Vector2Int[6]
+	{
+		new Vector2Int(0, 1),
+		new Vector2Int(-1, 1),
+		new Vector2Int(-1, 0),
+		new Vector2Int(0, -1),
+		new Vector2Int(1, -1),
+		new Vector2Int(1, 0)
+	};
 
 	private static int QBias(float radius)
 	{
@@ -114,14 +122,5 @@ public static class HexGridLayout
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		NeighbourDirs = (Vector2Int[])(object)new Vector2Int[6]
-		{
-			new Vector2Int(0, 1),
-			new Vector2Int(-1, 1),
-			new Vector2Int(-1, 0),
-			new Vector2Int(0, -1),
-			new Vector2Int(1, -1),
-			new Vector2Int(1, 0)
-		};
 	}
 }

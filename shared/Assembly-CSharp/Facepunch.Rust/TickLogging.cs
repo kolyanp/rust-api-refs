@@ -30,7 +30,15 @@ public class TickLogging
 		BuildInfo current = BuildInfo.Current;
 		bool num = (current.Scm.Branch != null && current.Scm.Branch == "experimental/release") || current.Scm.Branch == "release";
 		bool isEditor = Application.isEditor;
-		string text = ((num && !isEditor) ? "release" : (isEditor ? "editor" : "staging"));
+		string text;
+		if (num && !isEditor)
+		{
+			text = "release";
+		}
+		else
+		{
+			text = (isEditor ? "editor" : "staging");
+		}
 		return "player_ticks_" + text;
 	}
 

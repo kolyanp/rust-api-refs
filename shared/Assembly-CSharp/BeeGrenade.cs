@@ -83,9 +83,9 @@ public class BeeGrenade : TimedExplosive
 		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
 		if (beeSwarmPrefab.isValid && !WaterLevel.Test(((Component)this).transform.position, waves: true, volumes: true, this))
 		{
-			RaycastHit val4 = default(RaycastHit);
-			RaycastHit val6 = default(RaycastHit);
-			RaycastHit val7 = default(RaycastHit);
+			RaycastHit val4 = default;
+			RaycastHit val6 = default;
+			RaycastHit val7 = default;
 			for (int i = 0; i < Mathf.Max(1, beeSwarmAmount); i++)
 			{
 				Vector3 val = ((Component)this).transform.position;
@@ -96,32 +96,32 @@ public class BeeGrenade : TimedExplosive
 					Vector3 val3 = ((Component)this).transform.position + new Vector3(val2.x, 0f, val2.y);
 					if (Physics.Linecast(((Component)this).transform.position, val3, ref val4, -928830719))
 					{
-						Vector3 point = ((RaycastHit)(ref val4)).point;
+						Vector3 point = val4.point;
 						val5 = ((Component)this).transform.position - point;
-						Vector3 normalized = ((Vector3)(ref val5)).normalized;
+						Vector3 normalized = val5.normalized;
 						val = point + normalized * 1.5f;
 					}
 					else
 					{
 						val5 = ((Component)this).transform.position - ((Component)this).transform.position;
-						Vector3 normalized2 = ((Vector3)(ref val5)).normalized;
+						Vector3 normalized2 = val5.normalized;
 						val = val3;
 						val += normalized2 * 0.5f;
 					}
 				}
 				if (Physics.Raycast(new Ray(val + Vector3.up * 0.5f, Vector3.down), ref val6, 2f, -928830719))
 				{
-					val.y = ((RaycastHit)(ref val6)).point.y;
+					val.y = val6.point.y;
 				}
 				val += Vector3.up * 1.5f;
 				if (Physics.Linecast(((Component)this).transform.position, val, ref val7, -928830719))
 				{
-					val = ((RaycastHit)(ref val7)).point;
+					val = val7.point;
 				}
 				if ((Object)(object)creatorPlayer != (Object)null)
 				{
 					val5 = ((Component)creatorPlayer).transform.position - ((Component)this).transform.position;
-					Vector3 normalized3 = ((Vector3)(ref val5)).normalized;
+					Vector3 normalized3 = val5.normalized;
 					val += normalized3;
 				}
 				BaseEntity baseEntity = GameManager.server.CreateEntity(beeSwarmPrefab.resourcePath, val, Quaternion.identity);

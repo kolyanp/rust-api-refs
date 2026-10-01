@@ -1,4 +1,6 @@
+using Facepunch.Flexbox;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Rust.UI.MainMenu;
 
@@ -14,18 +16,31 @@ public class UI_CountrySelection : UI_Window
 
 	public StyleAsset buttonDarkStyle;
 
-	public RustText selectedCountryText;
+	public RustText detectedCountryText;
+
+	public GameObject detectedCountryLoading;
 
 	public RustButton autoDetectToggle;
 
-	public RustButton changeCountryButton;
+	public GameObject autoDetectOverlay;
 
-	private static readonly Phrase automaticPhrase;
+	public RustButton[] continentTabs;
+
+	public ScrollRect countryScroll;
+
+	public FlexTransition resultsTransition;
+
+	public RustText emptyResultsText;
+
+	private static readonly Phrase automaticPhrase = new Phrase("countryselect.automaticdetect", "Automatically detect country");
+
+	private static readonly Phrase autoOverlayPhrase = new Phrase("countryselect.auto", "Auto");
 
 	static UI_CountrySelection()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		automaticPhrase = new Phrase("countryselect.automatic", "Automatic");
+		//IL_0014: Expected Obj, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

@@ -4,7 +4,7 @@ public class TriggerPlayerMovePos : TriggerBase, IServerComponent
 {
 	public BoxCollider triggerCollider;
 
-	public Vector3 relativeMoveVector;
+	public Vector3 relativeMoveVector = Vector3.up;
 
 	public bool shouldPauseMarkHostile;
 
@@ -84,7 +84,7 @@ public class TriggerPlayerMovePos : TriggerBase, IServerComponent
 				}
 				Transform transform = ((Component)entityContent).transform;
 				Bounds bounds = ((Collider)triggerCollider).bounds;
-				transform.position = ((Bounds)(ref bounds)).center + relativeMoveVector;
+				transform.position = bounds.center + relativeMoveVector;
 			}
 		}
 	}
@@ -119,7 +119,5 @@ public class TriggerPlayerMovePos : TriggerBase, IServerComponent
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		relativeMoveVector = Vector3.up;
-		base._002Ector();
 	}
 }

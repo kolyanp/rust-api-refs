@@ -9,10 +9,10 @@ namespace Rust.Ai.Gen2;
 [SoftRequireComponent(typeof(SenseComponent))]
 public class NPCEncounterTimer : EntityComponent<BaseEntity>, IServerComponent
 {
-	public float giveUpDurationSeconds;
+	public float giveUpDurationSeconds = 120f;
 
 	[NonSerialized]
-	public UnityEvent onShouldGiveUp;
+	public UnityEvent onShouldGiveUp = new UnityEvent();
 
 	private const float fireTimeMultiplier = 4f;
 
@@ -43,7 +43,7 @@ public class NPCEncounterTimer : EntityComponent<BaseEntity>, IServerComponent
 		}
 	}
 
-	private SenseComponent Senses => _senseComponent ?? (_senseComponent = ((Component)base.baseEntity).GetComponent<SenseComponent>());
+	private SenseComponent Senses => _senseComponent ?? (_senseComponent = ((Component)baseEntity).GetComponent<SenseComponent>());
 
 	public void Tick()
 	{
@@ -64,7 +64,7 @@ public class NPCEncounterTimer : EntityComponent<BaseEntity>, IServerComponent
 			{
 				return;
 			}
-			if (base.baseEntity is BaseCombatEntity { SecondsSinceAttacked: <5f })
+			if (baseEntity is BaseCombatEntity { SecondsSinceAttacked: <5f })
 			{
 				StartTimer();
 				PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
@@ -86,7 +86,7 @@ public class NPCEncounterTimer : EntityComponent<BaseEntity>, IServerComponent
 			{
 				num2 = 12f;
 			}
-			else if (Trans_TargetIsNearFire.Test(base.baseEntity, Senses))
+			else if (Trans_TargetIsNearFire.Test(baseEntity, Senses))
 			{
 				num2 = 4f;
 			}
@@ -129,9 +129,6 @@ public class NPCEncounterTimer : EntityComponent<BaseEntity>, IServerComponent
 	public NPCEncounterTimer()
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected O, but got Unknown
-		giveUpDurationSeconds = 120f;
-		onShouldGiveUp = new UnityEvent();
-		base._002Ector();
+		//IL_0016: Expected Obj, but got Unknown
 	}
 }

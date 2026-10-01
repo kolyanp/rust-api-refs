@@ -1230,7 +1230,7 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
+	[ClientVar(AllowRunFromServer = true, Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
 	[ServerVar(Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
 	public static void load(Arg args)
 	{
@@ -1268,8 +1268,8 @@ public class Weather : ConsoleSystem
 	{
 	}
 
-	[ClientVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
 	[ServerVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
+	[ClientVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
 	public static void load_cloud_config(Arg args)
 	{
 		if (!Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -1330,8 +1330,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
+	[ClientVar(AllowRunFromServer = true, Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
 	[ServerVar(Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
-	[ClientVar(Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
 	public static void reset(Arg args)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))

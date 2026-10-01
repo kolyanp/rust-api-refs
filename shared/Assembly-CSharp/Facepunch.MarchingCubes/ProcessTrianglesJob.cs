@@ -20,11 +20,12 @@ internal struct ProcessTrianglesJob : IJob
 
 	public unsafe void Execute()
 	{
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		vertices.Clear();
 		indices.Clear();
-		int num = ((Reader)(ref edgeStream)).Count();
+		int num = edgeStream.Count();
 		if (indices.Capacity < num)
 		{
 			indices.SetCapacity(num);
@@ -33,23 +34,22 @@ internal struct ProcessTrianglesJob : IJob
 		{
 			vertices.SetCapacity(num);
 		}
-		NativeArray<int> val = default(NativeArray<int>);
-		val._002Ector(edgeArraySize, (Allocator)2, (NativeArrayOptions)0);
+		NativeArray<int> val = new NativeArray<int>(edgeArraySize, (Allocator)2, (NativeArrayOptions)0);
 		UnsafeUtility.MemSet(NativeArrayUnsafeUtility.GetUnsafePtr<int>(val), byte.MaxValue, (long)val.Length * 4L);
 		int generatedVertices = 0;
-		for (int i = 0; i < ((Reader)(ref edgeStream)).ForEachCount; i++)
+		for (int i = 0; i < edgeStream.ForEachCount; i++)
 		{
-			((Reader)(ref edgeStream)).BeginForEachIndex(i);
-			while (((Reader)(ref edgeStream)).RemainingItemCount > 0)
+			edgeStream.BeginForEachIndex(i);
+			while (edgeStream.RemainingItemCount > 0)
 			{
-				ProcessEdge(in ((Reader)(ref edgeStream)).Read<Facepunch.MarchingCubes.EdgeKey>(), val, ref generatedVertices);
+				ProcessEdge(in edgeStream.Read<EdgeKey>(), val, ref generatedVertices);
 			}
-			((Reader)(ref edgeStream)).EndForEachIndex();
+			edgeStream.EndForEachIndex();
 		}
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void ProcessEdge(in Facepunch.MarchingCubes.EdgeKey edge, NativeArray<int> vertexByEdge, ref int generatedVertices)
+	private void ProcessEdge(in EdgeKey edge, NativeArray<int> vertexByEdge, ref int generatedVertices)
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		int num = vertexByEdge[edge.edgeId];

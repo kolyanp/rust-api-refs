@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using API.Commands;
 using API.Events;
@@ -82,7 +83,7 @@ public static class ModLoader
 			RustPlugin rustPlugin = FindPlugin(GetRollbackTypeName());
 			if (rustPlugin == null)
 			{
-				InitializePlugin(RollbackType, out var plugin, Community.Runtime.Plugins, delegate(RustPlugin rustPlugin2)
+				InitializePlugin(RollbackType, out var plugin, Community.Runtime.Plugins, (RustPlugin rustPlugin2) =>
 				{
 					Logger.Warn("Rollback for plugin '" + rustPlugin2.ToPrettyString() + "' due to compilation failure");
 				}, precompiled: true);
@@ -163,6 +164,7 @@ public static class ModLoader
 			{
 				Index[plugin.Name] = plugin;
 			}
+			HookSubscriberIndex.Invalidate();
 			return this;
 		}
 
@@ -177,6 +179,7 @@ public static class ModLoader
 			{
 				Index.Remove(plugin.Name);
 			}
+			HookSubscriberIndex.Invalidate();
 			return this;
 		}
 
@@ -227,6 +230,7 @@ public static class ModLoader
 				return false;
 			}
 			RemoveAt(num);
+			HookSubscriberIndex.Invalidate();
 			return true;
 		}
 
@@ -236,7 +240,7 @@ public static class ModLoader
 			{
 				return null;
 			}
-			for (int i = 0; i < base.Count; i++)
+			for (int i = 0; i < Count; i++)
 			{
 				RustPlugin rustPlugin = base[i].FindPlugin(name);
 				if (rustPlugin != null)
@@ -285,6 +289,9 @@ public static class ModLoader
 
 	public static Dictionary<string, CompilationResult> FailedCompilations;
 
+	[CompilerGenerated]
+	private static bool FirstLoadSinceStartup__BackingField;
+
 	internal const string CARBON_PLUGIN = "CarbonPlugin";
 
 	internal const string RUST_PLUGIN = "RustPlugin";
@@ -297,7 +304,19 @@ public static class ModLoader
 
 	internal static List<string> PostBatchFailedRequirees { get; }
 
-	internal static bool FirstLoadSinceStartup { get; set; }
+	internal static bool FirstLoadSinceStartup
+	{
+		[CompilerGenerated]
+		get
+		{
+			return FirstLoadSinceStartup__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			FirstLoadSinceStartup__BackingField = value;
+		}
+	}
 
 	public static CompilationResult GetCompilationResult(string file, bool clear = false)
 	{
@@ -317,6 +336,7 @@ public static class ModLoader
 		if (!Packages.Contains(package))
 		{
 			Packages.Add(package);
+			HookSubscriberIndex.Invalidate();
 		}
 	}
 
@@ -329,7 +349,7 @@ public static class ModLoader
 				return package;
 			}
 		}
-		return default(Package);
+		return default;
 	}
 
 	public static RustPlugin FindPlugin(string name)
@@ -356,8 +376,8 @@ public static class ModLoader
 		TypeDictionaryCache = new Dictionary<string, Type>();
 		PendingRequirees = new Dictionary<string, List<string>>();
 		PostBatchFailedRequirees = new List<string>();
-		FirstLoadSinceStartup = true;
-		Community.Runtime.Events.Subscribe(CarbonEvent.OnServerInitialized, delegate
+		FirstLoadSinceStartup__BackingField = true;
+		Community.Runtime.Events.Subscribe(CarbonEvent.OnServerInitialized, (EventArgs _) =>
 		{
 			OnPluginProcessFinished();
 		});
@@ -808,7 +828,7 @@ public static class ModLoader
 								{
 									Name = (flag ? (prefix + "." + rConCommandAttribute.Name) : rConCommandAttribute.Name),
 									Reference = hookable,
-									Callback = delegate(API.Commands.Command.Args arg)
+									Callback = (API.Commands.Command.Args arg) =>
 									{
 										object[] array21 = HookCaller.Caller.AllocateBuffer(parameterCount);
 										if (array21.Length >= 1)
@@ -835,7 +855,7 @@ public static class ModLoader
 								Community.Runtime.CommandManager.RegisterCommand(command, out var _);
 								continue;
 							}
-							Community.Runtime.Core.cmd.AddConsoleCommand(Community.Protect(flag ? (prefix + "." + protectedCommandAttribute.Name) : protectedCommandAttribute.Name), hookable, delegate(Arg arg)
+							Community.Runtime.Core.cmd.AddConsoleCommand(Community.Protect(flag ? (prefix + "." + protectedCommandAttribute.Name) : protectedCommandAttribute.Name), hookable, (Arg arg) =>
 							{
 								object[] array21 = HookCaller.Caller.AllocateBuffer(parameterCount);
 								if (array21.Length >= 1)
@@ -845,7 +865,7 @@ public static class ModLoader
 								try
 								{
 									object obj11 = method.Invoke(hookable, array21);
-									if (obj11 != null && ((Option)(ref arg.Option)).PrintOutput)
+									if (obj11 != null && arg.Option.PrintOutput)
 									{
 										Logger.Log(obj11);
 									}
@@ -858,7 +878,7 @@ public static class ModLoader
 							}, protectedCommandAttribute.Help, method, array3, array5, authLevel, cooldown, isHidden: true, @protected: false, silent: true, doCooldownPenalty);
 							continue;
 						}
-						Community.Runtime.Core.cmd.AddConsoleCommand(flag ? (prefix + "." + consoleCommandAttribute.Name) : consoleCommandAttribute.Name, hookable, delegate(Arg arg)
+						Community.Runtime.Core.cmd.AddConsoleCommand(flag ? (prefix + "." + consoleCommandAttribute.Name) : consoleCommandAttribute.Name, hookable, (Arg arg) =>
 						{
 							object[] array21 = HookCaller.Caller.AllocateBuffer(parameterCount);
 							if (array21.Length >= 1)
@@ -868,7 +888,7 @@ public static class ModLoader
 							try
 							{
 								object obj11 = method.Invoke(hookable, array21);
-								if (obj11 != null && ((Option)(ref arg.Option)).PrintOutput)
+								if (obj11 != null && arg.Option.PrintOutput)
 								{
 									Logger.Log(obj11);
 								}
@@ -1007,7 +1027,7 @@ public static class ModLoader
 			Oxide.Game.Rust.Libraries.Command cmd = Community.Runtime.Core.cmd;
 			string command3 = (flag ? (prefix + "." + cmdVar.Name) : cmdVar.Name);
 			BaseHookable plugin = hookable;
-			Func<Arg, bool> callback = delegate(Arg args)
+			Func<Arg, bool> callback = (Arg args) =>
 			{
 				object value = field.GetValue(hookable);
 				if (args != null && args.HasArgs(1))
@@ -1151,7 +1171,7 @@ public static class ModLoader
 			Oxide.Game.Rust.Libraries.Command cmd2 = Community.Runtime.Core.cmd;
 			string command4 = (flag ? (prefix + "." + cmdVar2.Name) : cmdVar2.Name);
 			BaseHookable plugin2 = hookable;
-			Func<Arg, bool> callback2 = delegate(Arg args)
+			Func<Arg, bool> callback2 = (Arg args) =>
 			{
 				object value = property.GetValue(hookable);
 				if (args != null && args.HasArgs(1))

@@ -8,8 +8,6 @@ public class NoticeArea : SingletonComponent<NoticeArea>
 
 	public GameObjectRef itemPickupPrefab;
 
-	public GameObjectRef itemPickupCondensedText;
-
 	public GameObjectRef itemDroppedPrefab;
 
 	public AnimationCurve pickupSizeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);

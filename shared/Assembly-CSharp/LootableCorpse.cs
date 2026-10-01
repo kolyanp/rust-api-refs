@@ -29,7 +29,7 @@ public class LootableCorpse : BaseCorpse, LootPanel.IHasLootPanel, IInventoryPro
 	{
 		get
 		{
-			return NameHelper.Get(playerSteamID, _playerName, base.isClient);
+			return NameHelper.Get(playerSteamID, _playerName, isClient);
 		}
 		set
 		{
@@ -196,11 +196,11 @@ public class LootableCorpse : BaseCorpse, LootPanel.IHasLootPanel, IInventoryPro
 
 	private void SetupLootableHeadDispenser(BaseEntity fromEntity)
 	{
-		HeadDispenser headDispenser = default(HeadDispenser);
+		HeadDispenser headDispenser = default;
 		if (((Component)this).gameObject.TryGetComponent<HeadDispenser>(ref headDispenser))
 		{
 			GameObject val = GameManager.server.FindPrefab(fromEntity.prefabID);
-			BasePlayer overrideEntity = default(BasePlayer);
+			BasePlayer overrideEntity = default;
 			if ((Object)(object)val != (Object)null && val.TryGetComponent<BasePlayer>(ref overrideEntity))
 			{
 				headDispenser.overrideEntity = overrideEntity;
@@ -261,8 +261,8 @@ public class LootableCorpse : BaseCorpse, LootPanel.IHasLootPanel, IInventoryPro
 		return num;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_LootCorpse(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;

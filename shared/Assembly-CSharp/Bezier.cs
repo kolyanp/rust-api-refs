@@ -15,7 +15,7 @@ public static class Bezier
 		ApplyLineSlack(positions, slackLevels, ref result2, tesselationLevel, referenceTransform);
 		if (result.Length >= 2 && result.Length != result2.Count)
 		{
-			result = (Vector3[])(object)new Vector3[result2.Count];
+			result = new Vector3[result2.Count];
 		}
 		result2.CopyTo(result);
 		Pool.FreeUnmanaged<Vector3>(ref result2);

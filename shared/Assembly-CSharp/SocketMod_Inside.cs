@@ -90,13 +90,13 @@ public class SocketMod_Inside : SocketMod
 			float num = 20f;
 			int num2 = 0;
 			bool flag = true;
-			RaycastHit val2 = default(RaycastHit);
+			RaycastHit val2 = default;
 			for (int i = 0; i < dirs.Length; i++)
 			{
 				Vector3 val = rotation * dirs[i];
 				if (Physics.Raycast(new Ray(pos, val), ref val2, num - 0.5f, layerMask))
 				{
-					if (GameObjectEx.IsOnLayers(((Component)((RaycastHit)(ref val2)).collider).gameObject, layerMask))
+					if (GameObjectEx.IsOnLayers(((Component)val2.collider).gameObject, layerMask))
 					{
 						num2++;
 					}
@@ -150,21 +150,21 @@ public class SocketMod_Inside : SocketMod
 		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
 		Vector3[] array = new Vector3[8];
 		Vector3 val = new Vector3(1f, 1f, 0f);
-		array[0] = ((Vector3)(ref val)).normalized;
+		array[0] = val.normalized;
 		val = new Vector3(0f, -1f, 0f);
-		array[1] = ((Vector3)(ref val)).normalized;
+		array[1] = val.normalized;
 		val = new Vector3(0f, 1f, 1f);
-		array[2] = ((Vector3)(ref val)).normalized;
+		array[2] = val.normalized;
 		val = new Vector3(-1f, 1f, 0f);
-		array[3] = ((Vector3)(ref val)).normalized;
+		array[3] = val.normalized;
 		val = new Vector3(0f, 0f, 1f);
-		array[4] = ((Vector3)(ref val)).normalized;
+		array[4] = val.normalized;
 		val = new Vector3(0f, 1f, 0f);
-		array[5] = ((Vector3)(ref val)).normalized;
+		array[5] = val.normalized;
 		val = new Vector3(1f, 0f, 0.5f);
-		array[6] = ((Vector3)(ref val)).normalized;
+		array[6] = val.normalized;
 		val = new Vector3(-1f, 0f, 0.5f);
-		array[7] = ((Vector3)(ref val)).normalized;
-		outsideLookupDirs = (Vector3[])(object)array;
+		array[7] = val.normalized;
+		outsideLookupDirs = array;
 	}
 }

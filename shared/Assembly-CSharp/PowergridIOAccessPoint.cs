@@ -99,22 +99,7 @@ public class PowergridIOAccessPoint : IOEntity, IPowergridEntity
 
 	public override int GetCurrentEnergy()
 	{
-		if ((Object)(object)PointEntity<PowergridManager>.ServerInstance == (Object)null)
-		{
-			return 0;
-		}
-		if (PowergridStageConfig.instance == null)
-		{
-			return 0;
-		}
-		int num = PointEntity<PowergridManager>.ServerInstance.Server_GetPowerPlantInsertedFuses();
-		if (num <= 0)
-		{
-			return 0;
-		}
-		int num2 = PointEntity<PowergridManager>.ServerInstance.Server_GetFuseSocketsCount();
-		float num3 = ((num2 > 1) ? Mathf.Clamp01((float)(num - 1) / (float)(num2 - 1)) : 0f);
-		return (int)Mathf.Lerp((float)Powergrid.powerlineBasePowerOutput, (float)Powergrid.powerlineMaxPowerOutput, num3);
+		return PowergridManager.Server_GetCurrentPowerlineEnergy();
 	}
 
 	public override bool GetHasPower(int inputAmount, int inputSlot)

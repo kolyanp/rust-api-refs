@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -219,20 +220,20 @@ public class BoatAI : BaseEntity
 			{
 				worldDirection = _macroTarget - ((Component)boatAI).transform.position;
 				worldDirection.y = 0f;
-				if (((Vector3)(ref worldDirection)).sqrMagnitude > 100f)
+				if (worldDirection.sqrMagnitude > 100f)
 				{
-					((Vector3)(ref worldDirection)).Normalize();
+					worldDirection.Normalize();
 					boatAI.AddContextInterest(ctx, worldDirection, 0.3f);
 				}
 			}
 			boatAI.AddContextInterest(ctx, val, 0.15f, 2);
 			if (_isInDeepsea && (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null)
 			{
-				Vector3 val2 = ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).center - ((Component)boatAI).transform.position;
+				Vector3 val2 = DeepSeaManager.DeepSeaBounds.center - ((Component)boatAI).transform.position;
 				val2.y = 0f;
-				if (((Vector3)(ref val2)).magnitude > 3000f)
+				if (val2.magnitude > 3000f)
 				{
-					Vector3 normalized = ((Vector3)(ref val2)).normalized;
+					Vector3 normalized = val2.normalized;
 					Vector3 worldDirection2 = Vector3.Lerp(val, normalized, 0.75f);
 					boatAI.AddContextInterest(ctx, worldDirection2, 0.5f, 0);
 				}
@@ -241,9 +242,9 @@ public class BoatAI : BaseEntity
 			{
 				Vector3 val3 = boatAI.ProtectionCenter - ((Component)boatAI).transform.position;
 				val3.y = 0f;
-				if (((Vector3)(ref val3)).magnitude > 20f)
+				if (val3.magnitude > 20f)
 				{
-					Vector3 normalized2 = ((Vector3)(ref val3)).normalized;
+					Vector3 normalized2 = val3.normalized;
 					Vector3 worldDirection3 = Vector3.Lerp(val, normalized2, 0.75f);
 					boatAI.AddContextInterest(ctx, worldDirection3, 0.5f, 0);
 				}
@@ -296,8 +297,8 @@ public class BoatAI : BaseEntity
 				return;
 			}
 			Bounds deepSeaBounds = DeepSeaManager.DeepSeaBounds;
-			Vector3 min = ((Bounds)(ref deepSeaBounds)).min;
-			Vector3 max = ((Bounds)(ref deepSeaBounds)).max;
+			Vector3 min = deepSeaBounds.min;
+			Vector3 max = deepSeaBounds.max;
 			_macroTarget = new Vector3(Random.Range(min.x, max.x), ((Component)boatAI).transform.position.y, Random.Range(min.z, max.z));
 		}
 
@@ -350,7 +351,7 @@ public class BoatAI : BaseEntity
 					return;
 				}
 				Vector3 val = activeTarget.Position.Value - ((Component)boatAI._boat).transform.position;
-				Vector3 normalized = ((Vector3)(ref val)).normalized;
+				Vector3 normalized = val.normalized;
 				normalized.y = 0f;
 				boatAI.AddContextInterest(ctx, normalized, 1f, 5);
 			}
@@ -434,20 +435,20 @@ public class BoatAI : BaseEntity
 				}
 				Vector3 position2 = ((Component)playerTarget.Player).transform.position;
 				Vector3 val = position2 - ((Component)boatAI._boat).transform.position;
-				Vector3 normalized = ((Vector3)(ref val)).normalized;
+				Vector3 normalized = val.normalized;
 				Vector3 val2 = position2 + normalized * 15f;
 				Vector3 val3 = Vector3.Cross(Vector3.up, normalized);
-				Vector3 normalized2 = ((Vector3)(ref val3)).normalized;
+				Vector3 normalized2 = val3.normalized;
 				Vector3 val4 = ((Vector3.Dot(((Component)boatAI._boat).transform.forward, normalized2) > 0f) ? normalized2 : (-normalized2)) * 25f;
 				Vector3 val5 = val2 + val4;
 				Vector3 val6 = val5 - ((Component)boatAI._boat).transform.position;
-				Vector3 normalized3 = ((Vector3)(ref val6)).normalized;
+				Vector3 normalized3 = val6.normalized;
 				normalized3.y = 0f;
 				boatAI.AddContextInterest(ctx, normalized3, 1f, 2);
 				float num = Vector3Ex.Distance2D(((Component)boatAI._boat).transform.position, val5);
 				if (_beenClose)
 				{
-					if (Vector3.Dot(((Component)boatAI._boat).transform.forward, ((Vector3)(ref val)).normalized) < 0f)
+					if (Vector3.Dot(((Component)boatAI._boat).transform.forward, val.normalized) < 0f)
 					{
 						boatAI.SwitchState(boatAI._seekState);
 					}
@@ -515,7 +516,7 @@ public class BoatAI : BaseEntity
 			else if (playerTarget.Position.HasValue)
 			{
 				Vector3 val = playerTarget.Position.Value - ((Component)boatAI._boat).transform.position;
-				Vector3 normalized = ((Vector3)(ref val)).normalized;
+				Vector3 normalized = val.normalized;
 				normalized.y = 0f;
 				boatAI.AddContextInterest(ctx, normalized, 1f, 0);
 				if (Vector3Ex.Distance2D(((Component)boatAI._boat).transform.position, playerTarget.Position.Value) < 2f && Vector3.Dot(((Component)boatAI._boat).transform.forward, val) < 0f)
@@ -591,7 +592,7 @@ public class BoatAI : BaseEntity
 				currentOrbitTargetPoint = GetPointOnCircle(boatAI.ProtectionCenter, 80f, radAngle);
 			}
 			Vector3 val = currentOrbitTargetPoint - ((Component)boatAI).transform.position;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			boatAI.AddContextInterest(ctx, normalized, 0.5f, 2);
 		}
 
@@ -767,11 +768,8 @@ public class BoatAI : BaseEntity
 
 	private const int CONTEXT_RESOLUTION = 8;
 
-	[CompilerGenerated]
-	private Vector3 _003CProtectionCenter_003Ek__BackingField;
-
-	[SerializeField]
 	[Header("Boat AI - Scientists")]
+	[SerializeField]
 	private bool _autoFillWithScientists;
 
 	[SerializeField]
@@ -807,8 +805,8 @@ public class BoatAI : BaseEntity
 
 	public const string DeepSeaPTBoatPath = "assets/content/vehicles/boats/ptboat/ptboat.deepsea.prefab";
 
-	[SerializeField]
 	[Header("Boat AI")]
+	[SerializeField]
 	private BaseBoat _boat;
 
 	[Header("Boat AI - General")]
@@ -831,8 +829,8 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _awarenessDistance;
 
-	[Header("Boat AI - Debug")]
 	[SerializeField]
+	[Header("Boat AI - Debug")]
 	private Transform _debugMoveTo;
 
 	[ServerVar(Help = "(Generated) When enabled, draws DDraw visualisations of boat AI steering, avoidance, and pathfinding state")]
@@ -929,14 +927,14 @@ public class BoatAI : BaseEntity
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CProtectionCenter_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CProtectionCenter_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -1003,6 +1001,7 @@ public class BoatAI : BaseEntity
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
@@ -1010,8 +1009,7 @@ public class BoatAI : BaseEntity
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 position = ((Component)_boat).transform.position;
-		QueryParameters val = default(QueryParameters);
-		((QueryParameters)(ref val))._002Ector(1218781441, false, (QueryTriggerInteraction)0, false);
+		QueryParameters val = new QueryParameters(1218781441, false, (QueryTriggerInteraction)0, false);
 		for (int i = 0; i < _contextMap.Count; i++)
 		{
 			Vector3 val2 = _contextMap[i];
@@ -1043,20 +1041,20 @@ public class BoatAI : BaseEntity
 			for (int j = 0; j < 8; j++)
 			{
 				RaycastHit val = hits[num + j];
-				if ((Object)(object)((RaycastHit)(ref val)).collider == (Object)null || (ColliderEx.IsOnLayer(((RaycastHit)(ref val)).collider, (Layer)18) && !((Component)((RaycastHit)(ref val)).collider).CompareTag("BoatAIAvoid")))
+				if ((Object)(object)val.collider == (Object)null || (ColliderEx.IsOnLayer(val.collider, (Layer)18) && !((Component)val.collider).CompareTag("BoatAIAvoid")))
 				{
 					continue;
 				}
 				BaseEntity entity = RaycastHitEx.GetEntity(val);
-				if ((Object)(object)entity == (Object)(object)this || (Object)(object)((Component)((RaycastHit)(ref val)).collider).transform.root == (Object)(object)((Component)_boat).transform || (Check.EntityValid(entity) && Check.EntityIsClient(entity)))
+				if ((Object)(object)entity == (Object)(object)this || (Object)(object)((Component)val.collider).transform.root == (Object)(object)((Component)_boat).transform || (Check.EntityValid(entity) && Check.EntityIsClient(entity)))
 				{
 					continue;
 				}
 				if (hit.HasValue)
 				{
-					float distance = ((RaycastHit)(ref val)).distance;
+					float distance = val.distance;
 					value = hit.Value;
-					if (!(distance < ((RaycastHit)(ref value)).distance))
+					if (!(distance < value.distance))
 					{
 						continue;
 					}
@@ -1075,13 +1073,13 @@ public class BoatAI : BaseEntity
 			if (_closestObstacle.HasValue)
 			{
 				value = hit.Value;
-				if (!(((RaycastHit)(ref value)).distance < _closestObstacle.Value))
+				if (!(value.distance < _closestObstacle.Value))
 				{
 					continue;
 				}
 			}
 			value = hit.Value;
-			_closestObstacle = ((RaycastHit)(ref value)).distance;
+			_closestObstacle = value.distance;
 		}
 	}
 
@@ -1090,6 +1088,7 @@ public class BoatAI : BaseEntity
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
@@ -1110,8 +1109,7 @@ public class BoatAI : BaseEntity
 				{
 					feelers = new FeelerResult[count];
 				}
-				NativeArray<RaycastCommand> val = default(NativeArray<RaycastCommand>);
-				val._002Ector(count, (Allocator)3, (NativeArrayOptions)1);
+				NativeArray<RaycastCommand> val = new NativeArray<RaycastCommand>(count, (Allocator)3, (NativeArrayOptions)1);
 				try
 				{
 					FillRaycastCommands(val);
@@ -1138,7 +1136,7 @@ public class BoatAI : BaseEntity
 				if (feelerResult.hit.HasValue)
 				{
 					RaycastHit value = feelerResult.hit.Value;
-					float strength = Mathf.Clamp01(1f - ((RaycastHit)(ref value)).distance / _awarenessDistance);
+					float strength = Mathf.Clamp01(1f - value.distance / _awarenessDistance);
 					AddContextDanger(ctx, feelerResult.direction, strength, 0);
 				}
 			}
@@ -1247,7 +1245,7 @@ public class BoatAI : BaseEntity
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normalized = ((Vector3)(ref worldDirection)).normalized;
+		Vector3 normalized = worldDirection.normalized;
 		normalized.y = 0f;
 		int result = 0;
 		float num = float.NegativeInfinity;
@@ -1653,7 +1651,7 @@ public class BoatAI : BaseEntity
 			if (Vector3Ex.Distance2D(((Component)this).transform.position, val) > 30f)
 			{
 				Vector3 val2 = val - ((Component)this).transform.position;
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
+				Vector3 normalized = val2.normalized;
 				normalized.y = 0f;
 				AddContextInterest(ctx, normalized, 0.25f);
 			}
@@ -1795,7 +1793,7 @@ public class BoatAI : BaseEntity
 			Vector3 val2 = new Vector3(pos.x, 0f, pos.y);
 			Vector3 val3 = rot * Vector3.forward;
 			Vector3 val4 = rot * Vector3.right;
-			Vector3[] obj = new Vector3[3]
+			Vector3[] array = new Vector3[3]
 			{
 				val3 * 10f,
 				-val3 * 5f - val4 * 7.5f,
@@ -1803,8 +1801,8 @@ public class BoatAI : BaseEntity
 			};
 			int nextGroupId = BoatAICoordination.GetNextGroupId();
 			bool flag = false;
-			Vector3[] array = (Vector3[])(object)obj;
-			foreach (Vector3 val5 in array)
+			Vector3[] array2 = array;
+			foreach (Vector3 val5 in array2)
 			{
 				Vector3 val6 = val2;
 				val6.y = 0f;
@@ -1863,7 +1861,7 @@ public class BoatAI : BaseEntity
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		position = default(Vector2);
+		position = default;
 		int layerMask = 1218652417;
 		int i = 0;
 		float num = Random.Range(0f, MathF.PI * 2f);
@@ -1884,7 +1882,7 @@ public class BoatAI : BaseEntity
 	{
 		if (!((Object)(object)boat == (Object)null) && !_setupRan)
 		{
-			Invoke(delegate
+			Invoke(() =>
 			{
 				SetupInternal(boat);
 			}, 1f);
@@ -1937,7 +1935,7 @@ public class BoatAI : BaseEntity
 
 	public override void Save(SaveInfo info)
 	{
-		if (!base.isClient && (!info.forDisk || LoadMode != AILoadMode.KillAi))
+		if (!isClient && (!info.forDisk || LoadMode != AILoadMode.KillAi))
 		{
 			base.Save(info);
 		}
@@ -2199,17 +2197,17 @@ public class BoatAI : BaseEntity
 			{
 				_currentState?.Update(_bufferContext, this, delta);
 				Vector3 bestContextDirection = GetBestContextDirection();
-				Vector3 targetPosition = ((Component)_boat).transform.position + ((Vector3)(ref bestContextDirection)).normalized * 10f;
+				Vector3 targetPosition = ((Component)_boat).transform.position + bestContextDirection.normalized * 10f;
 				float steerToTarget = GetSteerToTarget(targetPosition);
 				steering = steerToTarget;
-				float num = Vector3.Dot(((Component)_boat).transform.forward, ((Vector3)(ref bestContextDirection)).normalized);
-				float magnitude = ((Vector3)(ref bestContextDirection)).magnitude;
+				float num = Vector3.Dot(((Component)_boat).transform.forward, bestContextDirection.normalized);
+				float magnitude = bestContextDirection.magnitude;
 				Vector3 position = ((Component)_boat).transform.position;
 				Vector3 val = position - _lastPos;
 				_lastPos = position;
 				val.y = 0f;
-				float num2 = ((Vector3)(ref val)).magnitude / Mathf.Max(delta, 0.001f);
-				if (((Vector3)(ref bestContextDirection)).sqrMagnitude > Mathf.Epsilon && num2 < 0.6f)
+				float num2 = val.magnitude / Mathf.Max(delta, 0.001f);
+				if (bestContextDirection.sqrMagnitude > Mathf.Epsilon && num2 < 0.6f)
 				{
 					_stuckTimer += delta;
 				}
@@ -2264,7 +2262,7 @@ public class BoatAI : BaseEntity
 				if (ActiveTarget != null && ActiveTarget.IsValid(this))
 				{
 					Vector3 val2 = ActiveTarget.Position.Value - ((Component)_boat).transform.position;
-					Vector3 normalized = ((Vector3)(ref val2)).normalized;
+					Vector3 normalized = val2.normalized;
 					normalized.y = 0f;
 					UnityEngine.DDraw.BroadcastLine(((Component)_boat).transform.position, ((Component)_boat).transform.position + normalized * 10f, Color.magenta, 0.05f, distanceFade: false, zTest: false);
 					UnityEngine.DDraw.BroadcastLine(((Component)_boat).transform.position, ActiveTarget.Position.Value, Color.white, 0.05f, distanceFade: false);
@@ -2477,7 +2475,7 @@ public class BoatAI : BaseEntity
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -2492,7 +2490,7 @@ public class BoatAI : BaseEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: GroupId for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: GroupId for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_GroupId);
 			return true;
@@ -2500,7 +2498,7 @@ public class BoatAI : BaseEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: BoatID for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: BoatID for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<NetworkableId>(writer, __sync_BoatID);
 			return true;
@@ -2508,7 +2506,7 @@ public class BoatAI : BaseEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: LoadModeSync for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: LoadModeSync for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_LoadModeSync);
 			return true;
@@ -2571,9 +2569,9 @@ public class BoatAI : BaseEntity
 	{
 		return propertyName switch
 		{
-			"GroupId" => 0, 
-			"BoatID" => 1, 
-			"LoadModeSync" => 2, 
+			"GroupId" => (byte)0, 
+			"BoatID" => (byte)1, 
+			"LoadModeSync" => (byte)2, 
 			_ => byte.MaxValue, 
 		};
 	}
@@ -2598,18 +2596,34 @@ public class BoatAI : BaseEntity
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -2631,7 +2645,7 @@ public class BoatAI : BaseEntity
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		base.ResetSyncVars();
 		__sync_GroupId = 0;
-		__sync_BoatID = default(NetworkableId);
+		__sync_BoatID = default;
 		__sync_LoadModeSync = 0;
 	}
 

@@ -37,7 +37,7 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 
 	public float damageTaken;
 
-	public ParticleSystem[] CardinalSplashFx = (ParticleSystem[])(object)new ParticleSystem[0];
+	public ParticleSystem[] CardinalSplashFx = new ParticleSystem[0];
 
 	public GameObject WaterDisplacement;
 
@@ -123,19 +123,19 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		OBB val = WorldSpaceBounds();
-		if (!((OBB)(ref otherOBB)).Contains(((OBB)(ref val)).GetPoint(-1f, 0f, -1f)))
+		if (!otherOBB.Contains(val.GetPoint(-1f, 0f, -1f)))
 		{
 			return false;
 		}
-		if (!((OBB)(ref otherOBB)).Contains(((OBB)(ref val)).GetPoint(1f, 0f, -1f)))
+		if (!otherOBB.Contains(val.GetPoint(1f, 0f, -1f)))
 		{
 			return false;
 		}
-		if (!((OBB)(ref otherOBB)).Contains(((OBB)(ref val)).GetPoint(1f, 0f, 1f)))
+		if (!otherOBB.Contains(val.GetPoint(1f, 0f, 1f)))
 		{
 			return false;
 		}
-		if (!((OBB)(ref otherOBB)).Contains(((OBB)(ref val)).GetPoint(-1f, 0f, 1f)))
+		if (!otherOBB.Contains(val.GetPoint(-1f, 0f, 1f)))
 		{
 			return false;
 		}
@@ -171,7 +171,7 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 
 	public override bool Interactable()
 	{
-		return (Object)(object)parentEntity.Get(base.isServer) == (Object)null;
+		return (Object)(object)parentEntity.Get(isServer) == (Object)null;
 	}
 
 	public void SwitchToVehicle(bool loading)
@@ -189,7 +189,7 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		BaseEntity baseEntity = parentEntity.Get(base.isServer);
+		BaseEntity baseEntity = parentEntity.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity is PlayerBoat playerBoat)
 		{
 			playerBoat.OnSubChildAdded(child);
@@ -199,7 +199,7 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.fromDisk && !PlayerBoat.IsChildOfFinishedPlayerBoat(this))
+		if (isServer && info.fromDisk && !PlayerBoat.IsChildOfFinishedPlayerBoat(this))
 		{
 			DisableParentTrigger();
 		}
@@ -235,7 +235,7 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 		{
 			return;
 		}
-		Invoke(delegate
+		Invoke(() =>
 		{
 			if (!(parentEntity.Get(serverside: true) is PlayerBoat playerBoat2) || !Object.op_Implicit((Object)(object)playerBoat2))
 			{
@@ -286,7 +286,7 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 			{
 				parentTriggers.Add(boatConstructionSkin.parentTrigger);
 			}
-			BoatConstructionSkin boatConstructionSkin2 = default(BoatConstructionSkin);
+			BoatConstructionSkin boatConstructionSkin2 = default;
 			foreach (GameObject conditional in boatConstructionSkin.conditionals)
 			{
 				if (conditional.TryGetComponent<BoatConstructionSkin>(ref boatConstructionSkin2) && Object.op_Implicit((Object)(object)boatConstructionSkin2.parentTrigger))
@@ -418,7 +418,7 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 
 	public override void OnHealthChanged(float oldvalue, float newvalue)
 	{
-		if (base.isServer && Mathf.RoundToInt(oldvalue) != Mathf.RoundToInt(newvalue) && SendNetworkUpdateOnHealthChanged)
+		if (isServer && Mathf.RoundToInt(oldvalue) != Mathf.RoundToInt(newvalue) && SendNetworkUpdateOnHealthChanged)
 		{
 			SendNetworkUpdate(BasePlayer.NetworkQueue.UpdateDistance);
 		}
@@ -430,9 +430,9 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 		{
 			return false;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
-			if (base.OwnerID == (ulong)player.userID)
+			if (OwnerID == (ulong)player.userID)
 			{
 				return true;
 			}

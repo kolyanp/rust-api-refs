@@ -33,7 +33,7 @@ public static class Integrations
 
 		public bool AnyTestsFailedFatally()
 		{
-			for (int i = 0; i < base.Count; i++)
+			for (int i = 0; i < Count; i++)
 			{
 				Test test = base[i];
 				if (test.HasFailedFatally())
@@ -196,7 +196,7 @@ public static class Integrations
 		{
 			SetStatus(StatusTypes.None);
 			_exceptions.Clear();
-			SetDuration(default(TimeSpan));
+			SetDuration(default);
 		}
 
 		public bool HasFailedFatally()

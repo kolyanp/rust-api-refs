@@ -63,21 +63,21 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 		if (IsAlreadyInstalled)
 		{
 			Debug.LogError((object)"Carbon.Profiler was already set up once! To use an updated version of the profiler, a reboot is required!");
-			_runner.Invoke((Action)delegate
+			_runner.Invoke((Action)(() =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				ConsoleSystem.Run(Option.Server, "harmony.unload Carbon.Profiler", Array.Empty<object>());
-			}, 0.1f);
+			}), 0.1f);
 			return;
 		}
 		if (IsCarbonInstalled)
 		{
 			Debug.LogWarning((object)"Carbon is installed! Remove the Carbon.Profiler HarmonyMod since the profiler is already built in.");
-			Runner.Invoke((Action)delegate
+			Runner.Invoke((Action)(() =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				ConsoleSystem.Run(Option.Server, "harmony.unload Carbon.Profiler", Array.Empty<object>());
-			}, 0.1f);
+			}), 0.1f);
 			return;
 		}
 		if (IsOxideInstalled)
@@ -112,7 +112,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 		}
 		commands.Clear();
 		commands.AddRange(originalCommands);
-		AddCommand("carbon", "profile", delegate(Arg arg)
+		AddCommand("carbon", "profile", (Arg arg) =>
 		{
 			if (!MonoProfiler.Enabled)
 			{
@@ -158,7 +158,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				}
 				else
 				{
-					MonoProfiler.ToggleProfilingTimed(num, profilerArgs, delegate
+					MonoProfiler.ToggleProfilingTimed(num, profilerArgs, (MonoProfiler.ProfilerArgs args) =>
 					{
 						ProfileSample.Resample();
 						MonoProfiler.Clear();
@@ -166,7 +166,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				}
 			}
 		}, "Toggles the current state of the Carbon.Profiler", "[duration] [-cm] [-am] [-t] [-c] [-gc]");
-		AddCommand("carbon", "abort_profile", delegate(Arg arg)
+		AddCommand("carbon", "abort_profile", (Arg arg) =>
 		{
 			if (!MonoProfiler.IsRecording)
 			{
@@ -178,7 +178,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				ProfileSample.Clear();
 			}
 		}, "Stops a current profile from running");
-		AddCommand("carbon", "export_profile", delegate(Arg arg)
+		AddCommand("carbon", "export_profile", (Arg arg) =>
 		{
 			if (MonoProfiler.IsRecording)
 			{
@@ -203,11 +203,11 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				}
 			}
 		}, "Exports to disk the most recent profile", "-c=CSV, -j=JSON, -t=Table, -p=ProtoBuf [default]");
-		AddCommand("carbon", "tracked", delegate(Arg arg)
+		AddCommand("carbon", "tracked", (Arg arg) =>
 		{
 			arg.ReplyWith($"Tracked Assemblies ({MonoProfilerConfig.Instance.Assemblies.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Assemblies.Select((string x) => "- " + x)) + "\n" + $"Tracked Plugins ({MonoProfilerConfig.Instance.Plugins.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Plugins.Select((string x) => "- " + x)) + "\n" + $"Tracked Modules ({MonoProfilerConfig.Instance.Modules.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Modules.Select((string x) => "- " + x)) + "\n" + $"Tracked Extensions ({MonoProfilerConfig.Instance.Extensions.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Extensions.Select((string x) => "- " + x)) + "\nUse wildcard (*) to include all.");
 		}, "All tracking lists present in the config which are used by the Mono profiler for tracking");
-		AddCommand("carbon", "track", delegate(Arg arg)
+		AddCommand("carbon", "track", (Arg arg) =>
 		{
 			if (!arg.HasArgs(2))
 			{
@@ -240,7 +240,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				}
 			}
 		}, "Adds an object to be tracked. Reloading the plugin will start tracking. Restarting required for assemblies, modules and extensions", "[assembly|plugin|module|ext] [value]");
-		AddCommand("carbon", "untrack", delegate(Arg arg)
+		AddCommand("carbon", "untrack", (Arg arg) =>
 		{
 			if (!arg.HasArgs(2))
 			{
@@ -273,7 +273,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				}
 			}
 		}, "Removes a plugin from being tracked. Reloading the plugin will remove it from being tracked. Restarting required for assemblies, modules and extensions", "[assembly|plugin|module|ext] [value]");
-		AddCommand("carbon", "profiler_version", delegate(Arg arg)
+		AddCommand("carbon", "profiler_version", (Arg arg) =>
 		{
 			TextTable val = Pool.Get<TextTable>();
 			val.Clear();
@@ -289,16 +289,16 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 			Pool.FreeUnsafe<TextTable>(ref val);
 			arg.ReplyWith(text);
 		}, "Prints the version of Carbon profiler");
-		AddCommand("carbon", "update_profiler", delegate(Arg arg)
+		AddCommand("carbon", "update_profiler", (Arg arg) =>
 		{
-			SelfUpdate.Api(delegate(JArray data)
+			SelfUpdate.Api((JArray data) =>
 			{
 				JToken val = ((IEnumerable<JToken>)data).FirstOrDefault((JToken x) => x[(object)"name"].ToObject<string>().Equals("profiler_build"));
 				Version version = new Version(((val != null) ? val[(object)"version"].ToObject<string>() : null) + ".0");
 				if (!SelfUpdate.CurrentVersion.Equals(version))
 				{
 					Debug.Log((object)$"Carbon.Profiler is out of date! (current {SelfUpdate.CurrentVersion}, newer {version})");
-					SelfUpdate.Update(delegate
+					SelfUpdate.Update(() =>
 					{
 						Debug.Log((object)"Updated successfully.");
 					});
@@ -321,7 +321,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0056: Expected O, but got Unknown
+			//IL_0056: Expected Obj, but got Unknown
 			Command val = new Command
 			{
 				Name = name,
@@ -410,8 +410,8 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 
 	static HarmonyProfiler()
 	{
-		GameObject obj = GameObject.Find("Profiler Runner");
-		_runner = ((obj != null) ? obj.GetComponent<FacepunchBehaviour>() : null);
+		GameObject val = GameObject.Find("Profiler Runner");
+		_runner = ((val != null) ? val.GetComponent<FacepunchBehaviour>() : null);
 		IsCarbonInstalled = Type.GetType("Carbon.Community,Carbon.Common") != null;
 		IsOxideInstalled = Type.GetType("Oxide.Core.Interface,Oxide.Core") != null;
 		IsAlreadyInstalled = (Object)(object)_runner != (Object)null;

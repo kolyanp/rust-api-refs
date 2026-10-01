@@ -6,7 +6,7 @@ public static class LinqEx
 	public static int MaxIndex<T>(this IEnumerable<T> sequence) where T : IComparable<T>
 	{
 		int num = -1;
-		T other = default(T);
+		T other = default;
 		int num2 = 0;
 		foreach (T item in sequence)
 		{

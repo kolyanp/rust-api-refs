@@ -56,7 +56,6 @@ public static class AntiHack
 		public GroupedLog(string playerName, AntiHackType antiHackType, string message, Vector3 pos)
 		{
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-			base._002Ector();
 			SetInitial(playerName, antiHackType, message, pos);
 		}
 
@@ -175,7 +174,7 @@ public static class AntiHack
 
 	private const int player_mask = 131072;
 
-	private static Collider[] buffer = (Collider[])(object)new Collider[4];
+	private static Collider[] buffer = new Collider[4];
 
 	private static Dictionary<ulong, int> kicks = new Dictionary<ulong, int>();
 
@@ -245,7 +244,7 @@ public static class AntiHack
 
 	public static RaycastHit isInsideRayHit;
 
-	private static RaycastHit[] isInsideMeshRaycastHits = (RaycastHit[])(object)new RaycastHit[64];
+	private static RaycastHit[] isInsideMeshRaycastHits = new RaycastHit[64];
 
 	public static bool TestNoClipping(BasePlayer ply, Vector3 oldPos, Vector3 newPos, float radius, float backtracking, out Collider col, bool overlapVehicleLayer = false, BaseEntity ignoreEntity = null, bool forceCast = false, bool ignoreChildrenOfIgnoreEntity = false, bool skipVehicles = false)
 	{
@@ -266,6 +265,7 @@ public static class AntiHack
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
@@ -280,12 +280,11 @@ public static class AntiHack
 			num &= -134225921;
 		}
 		Vector3 val = newPos - oldPos;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = oldPos - normalized * backtracking;
 		val = newPos - val2;
-		float magnitude = ((Vector3)(ref val)).magnitude;
-		Ray val3 = default(Ray);
-		((Ray)(ref val3))._002Ector(val2, normalized);
+		float magnitude = val.magnitude;
+		Ray val3 = new Ray(val2, normalized);
 		if (GamePhysics.CheckCapsule(oldPos, newPos, radius, num, (QueryTriggerInteraction)1))
 		{
 			List<Collider> list = Pool.Get<List<Collider>>();
@@ -307,13 +306,13 @@ public static class AntiHack
 			{
 				if (!recheckTerrain && (Object)(object)ignoreEntity == (Object)null)
 				{
-					RaycastHit val5 = default(RaycastHit);
+					RaycastHit val5 = default;
 					bool result = Physics.Raycast(val3, ref val5, magnitude + radius, num, (QueryTriggerInteraction)1) || Physics.SphereCast(val3, radius, ref val5, magnitude, num, (QueryTriggerInteraction)1);
-					col = ((RaycastHit)(ref val5)).collider;
+					col = val5.collider;
 					return result;
 				}
 				bool result2 = GamePhysics.Trace(val3, 0f, out var hitInfo, magnitude + radius, num, (QueryTriggerInteraction)1, ignoreEntity) || GamePhysics.Trace(val3, radius, out hitInfo, magnitude, num, (QueryTriggerInteraction)1, ignoreEntity);
-				col = ((RaycastHit)(ref hitInfo)).collider;
+				col = hitInfo.collider;
 				return result2;
 			}
 		}
@@ -450,9 +449,11 @@ public static class AntiHack
 		//IL_04bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04e4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ec: Unknown result type (might be due to invalid IL or missing references)
 		//IL_05cd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_05de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_05df: Unknown result type (might be due to invalid IL or missing references)
@@ -470,6 +471,7 @@ public static class AntiHack
 		//IL_0625: Unknown result type (might be due to invalid IL or missing references)
 		//IL_062a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_062c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_063a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_092a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_092f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0937: Unknown result type (might be due to invalid IL or missing references)
@@ -491,6 +493,7 @@ public static class AntiHack
 		//IL_08b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_08b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_08bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_08d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_06c6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_06d7: Unknown result type (might be due to invalid IL or missing references)
@@ -517,7 +520,7 @@ public static class AntiHack
 			IJobExtensions.RunByRef<FillJob<float>>(ref fillJob);
 			NativeArrayEx.Expand(ref TerrainIgnoreVolumeHits, fromPos.Length, (NativeArrayOptions)0, copyContents: false);
 			JobHandle val = GamePhysics.CheckCapsules(fromPos, toPos, PlayerRadii.AsReadOnly(), LayerMasks.AsReadOnly(), TerrainIgnoreVolumeHits, (QueryTriggerInteraction)1, GamePhysics.MasksToValidate.Terrain);
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			NativeListEx.Expand(ref ToOverlapIndices, fromPos.Length, copyContents: false);
 			GatherHitIndicesJob gatherHitIndicesJob = new GatherHitIndicesJob
 			{
@@ -563,7 +566,7 @@ public static class AntiHack
 			int defaultMaxResultsPerQuery = GamePhysics.DefaultMaxResultsPerQuery;
 			ColliderHits.Expand<ColliderHit>(ToOverlapLayerMasks.Length * defaultMaxResultsPerQuery, (NativeArrayOptions)0, false, false);
 			val = GamePhysics.OverlapCapsules(ToOverlapFrom.AsReadOnly(), ToOverlapTo.AsReadOnly(), PlayerRadii.GetSubArray(0, ToOverlapLayerMasks.Length).AsReadOnly(), ToOverlapLayerMasks.AsReadOnly(), ColliderHits, defaultMaxResultsPerQuery, (QueryTriggerInteraction)1, GamePhysics.MasksToValidate.Terrain);
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			NativeListEx.Expand(ref TraceIndices, ToOverlapIndices.Length, copyContents: false);
 			TraceRays.Expand<RaycastCommand>(ToOverlapIndices.Length, false);
 			NativeListEx.Expand(ref RaycastIndices, ToOverlapIndices.Length, copyContents: false);
@@ -572,8 +575,6 @@ public static class AntiHack
 			using (TimeWarning.New("FilterOverlapResults"))
 			{
 				bool flag = false;
-				QueryParameters val8 = default(QueryParameters);
-				RaycastCommand val9 = default(RaycastCommand);
 				for (int i = 0; i < ToOverlapIndices.Length; i++)
 				{
 					int num2 = ToOverlapIndices[i];
@@ -597,11 +598,11 @@ public static class AntiHack
 					{
 						int num4 = i * defaultMaxResultsPerQuery + j;
 						ColliderHit val3 = ColliderHits[num4];
-						if (((ColliderHit)(ref val3)).instanceID == 0)
+						if (val3.instanceID == 0)
 						{
 							break;
 						}
-						Collider collider = ((ColliderHit)(ref val3)).collider;
+						Collider collider = val3.collider;
 						if (IsColliderBlocking(collider, ply, force, castVehicleLayer, null, ignoreChildrenOfIgnoreEntity: false, ref recheck, ref recheckTerrain))
 						{
 							flag = true;
@@ -620,14 +621,14 @@ public static class AntiHack
 						Vector3 val4 = ToOverlapFrom[i];
 						Vector3 val5 = ToOverlapTo[i];
 						Vector3 val6 = val5 - val4;
-						Vector3 normalized = ((Vector3)(ref val6)).normalized;
+						Vector3 normalized = val6.normalized;
 						Vector3 val7 = val4 - normalized * noclip_backtracking;
 						val6 = val5 - val7;
-						float magnitude = ((Vector3)(ref val6)).magnitude;
+						float magnitude = val6.magnitude;
 						new Ray(val7, normalized);
 						int num5 = ToOverlapLayerMasks[i];
-						((QueryParameters)(ref val8))._002Ector(num5, false, (QueryTriggerInteraction)1, false);
-						((RaycastCommand)(ref val9))._002Ector(val7, normalized, val8, magnitude + num);
+						QueryParameters val8 = new QueryParameters(num5, false, (QueryTriggerInteraction)1, false);
+						RaycastCommand val9 = new RaycastCommand(val7, normalized, val8, magnitude + num);
 						if (recheckTerrain)
 						{
 							TraceIndices.AddNoResize(num2);
@@ -649,14 +650,13 @@ public static class AntiHack
 				{
 					int num6 = 0;
 					TraceSpheres.Expand<SpherecastCommand>(TraceIndices.Length, false);
-					SpherecastCommand val11 = default(SpherecastCommand);
 					for (int k = 0; k < TraceIndices.Length; k++)
 					{
 						if (!RecordNoclip(RaycastHits[k * defaultMaxResultsPerQuery], TraceIndices[k], batches, foundIndices, foundColls))
 						{
 							TraceIndices[num6++] = TraceIndices[k];
 							RaycastCommand val10 = TraceRays[k];
-							((SpherecastCommand)(ref val11))._002Ector(((RaycastCommand)(ref val10)).from, num, ((RaycastCommand)(ref val10)).direction, val10.queryParameters, ((RaycastCommand)(ref val10)).distance - num);
+							SpherecastCommand val11 = new SpherecastCommand(val10.from, num, val10.direction, val10.queryParameters, val10.distance - num);
 							TraceSpheres.Add(ref val11);
 						}
 					}
@@ -705,19 +705,18 @@ public static class AntiHack
 					RaycastHits.Expand<RaycastHit>(RaycastIndices.Length, (NativeArrayOptions)0, false, false);
 					NativeArray<RaycastCommand> val12 = RaycastRays.AsArray();
 					NativeArray<RaycastHit> raycastHits = RaycastHits;
-					val = default(JobHandle);
+					val = default;
 					JobHandle val13 = RaycastCommand.ScheduleBatch(val12, raycastHits, 1, val);
-					((JobHandle)(ref val13)).Complete();
+					val13.Complete();
 					int num11 = 0;
 					RaycastSpheres.Expand<SpherecastCommand>(RaycastIndices.Length, false);
-					SpherecastCommand val15 = default(SpherecastCommand);
 					for (int n = 0; n < RaycastIndices.Length; n++)
 					{
 						if (!RecordNoclip(RaycastHits[n], RaycastIndices[n], batches, foundIndices, foundColls))
 						{
 							RaycastIndices[num11++] = RaycastIndices[n];
 							RaycastCommand val14 = RaycastRays[n];
-							((SpherecastCommand)(ref val15))._002Ector(((RaycastCommand)(ref val14)).from, num, ((RaycastCommand)(ref val14)).direction, val14.queryParameters, ((RaycastCommand)(ref val14)).distance - num);
+							SpherecastCommand val15 = new SpherecastCommand(val14.from, num, val14.direction, val14.queryParameters, val14.distance - num);
 							RaycastSpheres.AddNoResize(val15);
 						}
 					}
@@ -732,9 +731,9 @@ public static class AntiHack
 			{
 				NativeArray<SpherecastCommand> val16 = RaycastSpheres.AsArray();
 				NativeArray<RaycastHit> raycastHits2 = RaycastHits;
-				val = default(JobHandle);
+				val = default;
 				JobHandle val17 = SpherecastCommand.ScheduleBatch(val16, raycastHits2, 1, val);
-				((JobHandle)(ref val17)).Complete();
+				val17.Complete();
 				for (int num12 = 0; num12 < RaycastIndices.Length; num12++)
 				{
 					RecordNoclip(RaycastHits[num12], RaycastIndices[num12], batches, foundIndices, foundColls);
@@ -743,18 +742,18 @@ public static class AntiHack
 		}
 		static bool RecordNoclip(RaycastHit hit, int queryIndex, ReadOnly<Batch> val18, NativeList<int> val19, Span<Collider> span)
 		{
-			bool num13 = ((RaycastHit)(ref hit)).colliderInstanceID != 0;
-			if (num13)
+			bool flag2 = hit.colliderInstanceID != 0;
+			if (flag2)
 			{
-				int num14 = QueryToBatchMap[queryIndex];
-				int playerIndex2 = val18[num14].PlayerIndex;
+				int num13 = QueryToBatchMap[queryIndex];
+				int playerIndex2 = val18[num13].PlayerIndex;
 				if (span[playerIndex2] == null)
 				{
 					val19.Add(ref playerIndex2);
-					span[playerIndex2] = ((RaycastHit)(ref hit)).collider;
+					span[playerIndex2] = hit.collider;
 				}
 			}
-			return num13;
+			return flag2;
 		}
 	}
 
@@ -981,14 +980,14 @@ public static class AntiHack
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		NativeArrayEx.Expand(ref PlayerStates, cache.Capacity, (NativeArrayOptions)1);
-		PlayerStates[index] = default(PlayerState);
+		PlayerStates[index] = default;
 		NativeArrayEx.Expand(ref PlayerNoclipStates, cache.Capacity, (NativeArrayOptions)1);
-		PlayerNoclipStates[index] = default(PlayerNoclipState);
+		PlayerNoclipStates[index] = default;
 		NativeArrayEx.Expand(ref PlayerSpeedhackStates, cache.Capacity, (NativeArrayOptions)1);
-		PlayerSpeedhackStates[index] = default(PlayerSpeedhackState);
+		PlayerSpeedhackStates[index] = default;
 		NativeArrayEx.Expand(ref PlayerFlyhackStates, cache.Capacity, (NativeArrayOptions)1);
 		ref PlayerFlyhackState reference = ref NativeArray<PlayerFlyhackState>.op_Implicit(ref PlayerFlyhackStates)[index];
-		reference = default(PlayerFlyhackState);
+		reference = default;
 		reference.LastGroundedPosition = ((Component)player).transform.position;
 	}
 
@@ -1042,6 +1041,7 @@ public static class AntiHack
 		//IL_02b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_037b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0380: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
@@ -1063,6 +1063,7 @@ public static class AntiHack
 		//IL_0451: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0456: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0458: Unknown result type (might be due to invalid IL or missing references)
+		//IL_048f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0523: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0528: Unknown result type (might be due to invalid IL or missing references)
 		//IL_049a: Unknown result type (might be due to invalid IL or missing references)
@@ -1212,8 +1213,7 @@ public static class AntiHack
 			InvalidIndices.Clear();
 			if (ValidIndexAccum1.Length > 0)
 			{
-				NativeArray<bool> results2 = default(NativeArray<bool>);
-				results2._002Ector(ValidIndexAccum1.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<bool> results2 = new NativeArray<bool>(ValidIndexAccum1.Length, (Allocator)3, (NativeArrayOptions)0);
 				try
 				{
 					AreSpeeding(in playerStates, PlayerSpeedhackStates, ValidIndexAccum1.AsReadOnly(), results2);
@@ -1273,8 +1273,7 @@ public static class AntiHack
 			InvalidIndices.Clear();
 			if (ValidIndexAccum1.Length > 0)
 			{
-				NativeArray<bool> results3 = default(NativeArray<bool>);
-				results3._002Ector(ValidIndexAccum1.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<bool> results3 = new NativeArray<bool>(ValidIndexAccum1.Length, (Allocator)3, (NativeArrayOptions)0);
 				try
 				{
 					AreFlying(in playerStates, PlayerStates.AsReadOnly(), PlayerFlyhackStates, ValidIndexAccum1.AsReadOnly(), results3);
@@ -1327,10 +1326,10 @@ public static class AntiHack
 						}
 						else if (Vector3.Distance(lastGroundedPosition, ((Component)basePlayer).transform.position) <= 10f)
 						{
-							bool num3 = TestNoClipping(basePlayer, ((Component)basePlayer).transform.position, lastGroundedPosition, BasePlayer.NoClipRadius(ConVar.AntiHack.noclip_margin), ConVar.AntiHack.noclip_backtracking, out var _);
+							bool flag = TestNoClipping(basePlayer, ((Component)basePlayer).transform.position, lastGroundedPosition, BasePlayer.NoClipRadius(ConVar.AntiHack.noclip_margin), ConVar.AntiHack.noclip_backtracking, out var _);
 							Vector3 val = lastGroundedPosition + new Vector3(0f, BasePlayer.GetRadius(), 0f);
 							Vector3 val2 = lastGroundedPosition + new Vector3(0f, basePlayer.GetHeight() - BasePlayer.GetRadius(), 0f);
-							if (!num3 && !Physics.CheckCapsule(val, val2, BasePlayer.GetRadius(), 1537286401))
+							if (!flag && !Physics.CheckCapsule(val, val2, BasePlayer.GetRadius(), 1537286401))
 							{
 								basePlayer.MovePosition(lastGroundedPosition);
 								basePlayer.ClientRPC(RpcTarget.Player("ForcePositionTo", basePlayer), ((Component)basePlayer).transform.position);
@@ -1425,7 +1424,7 @@ public static class AntiHack
 					{
 						flag = true;
 						AddViolation(basePlayer, AntiHackType.InsideGeometry, ConVar.AntiHack.terrain_penalty);
-						Log(basePlayer, AntiHackType.InsideGeometry, "Seems to be clipped inside " + ((Object)((RaycastHit)(ref isInsideRayHit)).collider).name);
+						Log(basePlayer, AntiHackType.InsideGeometry, "Seems to be clipped inside " + ((Object)isInsideRayHit.collider).name);
 					}
 					if (flag && ConVar.AntiHack.terrain_kill)
 					{
@@ -1460,21 +1459,29 @@ public static class AntiHack
 
 	public static bool IsInsideTerrain(BasePlayer ply)
 	{
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		if (ply.IsInTutorial || DeepSeaManager.IsInsideDeepSea((BaseNetworkable)ply))
 		{
 			return false;
 		}
-		return TestInsideTerrain(((Component)ply).transform.position);
+		float num = 0f;
+		if (ply.isMounted && ply.GetMounted() is BaseVehicleSeat { offsetInsideTerrainCheck: not false })
+		{
+			num += ConVar.AntiHack.terrain_vehicle_seat_padding;
+		}
+		return TestInsideTerrain(((Component)ply).transform.position + new Vector3(0f, num, 0f));
 	}
 
 	public static bool TestInsideTerrain(Vector3 pos)
 	{
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("AntiHack.TestInsideTerrain"))
 		{
 			if (!TerrainMeta.TerrainRenderer)
@@ -1504,6 +1511,7 @@ public static class AntiHack
 			{
 				return false;
 			}
+			Debug.Log((object)$"player pos: {pos.y} meshHeight:{num} terrainHeight: {height}");
 			return true;
 		}
 	}
@@ -1547,6 +1555,7 @@ public static class AntiHack
 		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
 		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
@@ -1571,7 +1580,7 @@ public static class AntiHack
 			JobHandle.ScheduleBatchedJobs();
 			NativeArray<float> heights2 = new NativeArray<float>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
 			TerrainMeta.SampleTerrainMeshHeights(posi, heights2);
-			((JobHandle)(ref heights)).Complete();
+			heights.Complete();
 			NativeList<int> indicesToCheck = new NativeList<int>(posi.Length, AllocatorHandle.op_Implicit((Allocator)3));
 			NativeArray<Vector3> posiToCheck = new NativeArray<Vector3>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
 			NativeArray<float> radiiToCheck = new NativeArray<float>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
@@ -1594,8 +1603,7 @@ public static class AntiHack
 			{
 				NativeArray<Vector3> subArray = posiToCheck.GetSubArray(0, indicesToCheck.Length);
 				NativeArray<float> subArray2 = radiiToCheck.GetSubArray(0, indicesToCheck.Length);
-				NativeArray<bool> results3 = default(NativeArray<bool>);
-				results3._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<bool> results3 = new NativeArray<bool>(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
 				TerrainMeta.Collision.GetIgnore(subArray.AsReadOnly(), subArray2.AsReadOnly(), results3);
 				ScatterInvertedBool scatterInvertedBool = new ScatterInvertedBool
 				{
@@ -1637,7 +1645,7 @@ public static class AntiHack
 			if (Physics.Raycast(pos, Vector3.up, ref isInsideRayHit, ConVar.AntiHack.mesh_inside_check_distance, 65536))
 			{
 				Physics.queriesHitBackfaces = queriesHitBackfaces;
-				return Vector3.Dot(Vector3.up, ((RaycastHit)(ref isInsideRayHit)).normal) > 0f;
+				return Vector3.Dot(Vector3.up, isInsideRayHit.normal) > 0f;
 			}
 			Physics.queriesHitBackfaces = queriesHitBackfaces;
 			return false;
@@ -1647,17 +1655,17 @@ public static class AntiHack
 		Physics.queriesHitBackfaces = queriesHitBackfaces;
 		SortHitsByDistance(isInsideMeshRaycastHits, num);
 		Collider val = null;
-		ColliderInfo colliderInfo = default(ColliderInfo);
+		ColliderInfo colliderInfo = default;
 		for (int i = 0; i < num; i++)
 		{
 			RaycastHit val2 = isInsideMeshRaycastHits[i];
-			if (((Component)((RaycastHit)(ref val2)).collider).TryGetComponent<ColliderInfo>(ref colliderInfo) && colliderInfo.HasFlag(ColliderInfo.Flags.AllowBuildInsideMesh))
+			if (((Component)val2.collider).TryGetComponent<ColliderInfo>(ref colliderInfo) && colliderInfo.HasFlag(ColliderInfo.Flags.AllowBuildInsideMesh))
 			{
 				continue;
 			}
-			if (Vector3.Dot(Vector3.up, ((RaycastHit)(ref val2)).normal) > 0f)
+			if (Vector3.Dot(Vector3.up, val2.normal) > 0f)
 			{
-				if ((Object)(object)val != (Object)(object)((RaycastHit)(ref val2)).collider)
+				if ((Object)(object)val != (Object)(object)val2.collider)
 				{
 					isInsideRayHit = val2;
 					return true;
@@ -1665,7 +1673,7 @@ public static class AntiHack
 			}
 			else
 			{
-				val = ((RaycastHit)(ref val2)).collider;
+				val = val2.collider;
 			}
 		}
 		return false;
@@ -1673,6 +1681,7 @@ public static class AntiHack
 
 	public static void AreInsideMesh(ReadOnly<Vector3> posi, NativeArray<bool> results)
 	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
@@ -1681,6 +1690,7 @@ public static class AntiHack
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
@@ -1703,9 +1713,8 @@ public static class AntiHack
 			}
 			return;
 		}
-		NativeArray<RaycastCommand> val = default(NativeArray<RaycastCommand>);
-		val._002Ector(posi.Length, (Allocator)3, (NativeArrayOptions)0);
-		GenerateInsideMeshCommandsJob obj = new GenerateInsideMeshCommandsJob
+		NativeArray<RaycastCommand> val = new NativeArray<RaycastCommand>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
+		GenerateInsideMeshCommandsJob generateInsideMeshCommandsJob = new GenerateInsideMeshCommandsJob
 		{
 			Commands = val,
 			Posi = posi,
@@ -1713,32 +1722,32 @@ public static class AntiHack
 		};
 		int batchSize = ThreadUtils.GetBatchSize(posi.Length);
 		int length = posi.Length;
-		JobHandle val2 = default(JobHandle);
-		val2 = IJobForExtensions.ScheduleParallel<GenerateInsideMeshCommandsJob>(obj, length, batchSize, val2);
-		((JobHandle)(ref val2)).Complete();
-		NativeArray<RaycastHit> val3 = default(NativeArray<RaycastHit>);
-		val3._002Ector(posi.Length, (Allocator)3, (NativeArrayOptions)0);
+		JobHandle val2 = default;
+		val2 = IJobForExtensions.ScheduleParallel<GenerateInsideMeshCommandsJob>(generateInsideMeshCommandsJob, length, batchSize, val2);
+		val2.Complete();
+		NativeArray<RaycastHit> val3 = new NativeArray<RaycastHit>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
 		int batchSize2 = ThreadUtils.GetBatchSize(val.Length);
 		NativeArray<RaycastCommand> val4 = val;
 		NativeArray<RaycastHit> val5 = val3;
-		val2 = default(JobHandle);
+		val2 = default;
 		JobHandle val6 = RaycastCommand.ScheduleBatch(val4, val5, batchSize2, val2);
-		((JobHandle)(ref val6)).Complete();
+		val6.Complete();
 		val.Dispose();
-		CheckInsideMeshHitsJob obj2 = new CheckInsideMeshHitsJob
+		CheckInsideMeshHitsJob checkInsideMeshHitsJob = new CheckInsideMeshHitsJob
 		{
 			Results = results,
 			Hits = val3.AsReadOnly()
 		};
 		int length2 = posi.Length;
-		val2 = default(JobHandle);
-		val2 = IJobForExtensions.ScheduleParallel<CheckInsideMeshHitsJob>(obj2, length2, batchSize, val2);
-		((JobHandle)(ref val2)).Complete();
+		val2 = default;
+		val2 = IJobForExtensions.ScheduleParallel<CheckInsideMeshHitsJob>(checkInsideMeshHitsJob, length2, batchSize, val2);
+		val2.Complete();
 		val3.Dispose();
 	}
 
 	public static void AreInsideMesh(ReadOnly<Vector3> posi, NativeArray<RaycastHit> hits)
 	{
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
@@ -1765,13 +1774,12 @@ public static class AntiHack
 		{
 			for (int i = 0; i < hits.Length; i++)
 			{
-				hits[i] = default(RaycastHit);
+				hits[i] = default;
 			}
 			return;
 		}
-		NativeArray<RaycastCommand> val = default(NativeArray<RaycastCommand>);
-		val._002Ector(posi.Length, (Allocator)3, (NativeArrayOptions)0);
-		GenerateInsideMeshCommandsJob obj = new GenerateInsideMeshCommandsJob
+		NativeArray<RaycastCommand> val = new NativeArray<RaycastCommand>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
+		GenerateInsideMeshCommandsJob generateInsideMeshCommandsJob = new GenerateInsideMeshCommandsJob
 		{
 			Commands = val,
 			Posi = posi,
@@ -1779,24 +1787,24 @@ public static class AntiHack
 		};
 		int batchSize = ThreadUtils.GetBatchSize(posi.Length);
 		int length = posi.Length;
-		JobHandle val2 = default(JobHandle);
-		val2 = IJobForExtensions.ScheduleParallel<GenerateInsideMeshCommandsJob>(obj, length, batchSize, val2);
-		((JobHandle)(ref val2)).Complete();
+		JobHandle val2 = default;
+		val2 = IJobForExtensions.ScheduleParallel<GenerateInsideMeshCommandsJob>(generateInsideMeshCommandsJob, length, batchSize, val2);
+		val2.Complete();
 		int batchSize2 = ThreadUtils.GetBatchSize(val.Length);
 		NativeArray<RaycastCommand> val3 = val;
 		NativeArray<RaycastHit> val4 = hits;
-		val2 = default(JobHandle);
+		val2 = default;
 		JobHandle val5 = RaycastCommand.ScheduleBatch(val3, val4, batchSize2, val2);
-		((JobHandle)(ref val5)).Complete();
+		val5.Complete();
 		val.Dispose();
-		FilterInsideMeshHitsJob obj2 = new FilterInsideMeshHitsJob
+		FilterInsideMeshHitsJob filterInsideMeshHitsJob = new FilterInsideMeshHitsJob
 		{
 			Hits = hits
 		};
 		int length2 = posi.Length;
-		val2 = default(JobHandle);
-		val2 = IJobForExtensions.ScheduleParallel<FilterInsideMeshHitsJob>(obj2, length2, batchSize, val2);
-		((JobHandle)(ref val2)).Complete();
+		val2 = default;
+		val2 = IJobForExtensions.ScheduleParallel<FilterInsideMeshHitsJob>(filterInsideMeshHitsJob, length2, batchSize, val2);
+		val2.Complete();
 	}
 
 	private static void SortHitsByDistance(RaycastHit[] hits, int maxLength)
@@ -1812,7 +1820,7 @@ public static class AntiHack
 			int num = i;
 			for (int j = i + 1; j < maxLength; j++)
 			{
-				if (((RaycastHit)(ref hits[j])).distance < ((RaycastHit)(ref hits[num])).distance)
+				if (hits[j].distance < hits[num].distance)
 				{
 					num = j;
 				}
@@ -2130,7 +2138,7 @@ public static class AntiHack
 				Indices = indices
 			};
 			int length = indices.Length;
-			JobHandle val = default(JobHandle);
+			JobHandle val = default;
 			JobHandle val2 = IJobForExtensions.ScheduleByRef<ProgressSpeedingStatesJob>(ref progressSpeedingStatesJob, length, val);
 			if (ConVar.AntiHack.speedhack_protection == 0)
 			{
@@ -2140,7 +2148,7 @@ public static class AntiHack
 					Values = results
 				};
 				val = IJobExtensions.ScheduleByRef<FillJob<bool>>(ref fillJob, val2);
-				((JobHandle)(ref val)).Complete();
+				val.Complete();
 				return;
 			}
 			ReadOnlySpan<BasePlayer> objects = playerStates.PlayerCache.Objects;
@@ -2163,7 +2171,7 @@ public static class AntiHack
 				Indices = indices
 			};
 			int length2 = indices.Length;
-			val = default(JobHandle);
+			val = default;
 			JobHandle val4 = IJobForExtensions.ScheduleByRef<TransformStartEndTicksJob>(ref transformStartEndTicksJob, length2, val);
 			val3.Dispose(val4);
 			NativeArray<RDC> val5 = new NativeArray<RDC>(objects.Length, (Allocator)3, (NativeArrayOptions)0);
@@ -2179,7 +2187,7 @@ public static class AntiHack
 					Indices = indices
 				};
 				int length3 = indices.Length;
-				val = default(JobHandle);
+				val = default;
 				val6 = IJobForExtensions.ScheduleByRef<CalculateRDCsJob>(ref calculateRDCsJob, length3, val);
 			}
 			else
@@ -2194,7 +2202,7 @@ public static class AntiHack
 						Crawling = 0f
 					}
 				};
-				val = default(JobHandle);
+				val = default;
 				val6 = IJobExtensions.ScheduleByRef<FillJob<RDC>>(ref fillJob2, val);
 			}
 			NativeArray<float> speed = new NativeArray<float>(indices.Length, (Allocator)3, (NativeArrayOptions)0);
@@ -2269,7 +2277,7 @@ public static class AntiHack
 			JobHandle val12 = JobHandle.CombineDependencies(val2, val11);
 			JobHandle val13 = IJobForExtensions.ScheduleByRef<TestAreSpeedingJob>(ref testAreSpeedingJob, indices.Length, val12);
 			distAndBudget.Dispose(val13);
-			((JobHandle)(ref val13)).Complete();
+			val13.Complete();
 		}
 	}
 
@@ -2283,6 +2291,8 @@ public static class AntiHack
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
@@ -2332,8 +2342,7 @@ public static class AntiHack
 			return;
 		}
 		ReadOnlySpan<BasePlayer> objects = playerStates.PlayerCache.Objects;
-		NativeArray<Matrix4x4> val = default(NativeArray<Matrix4x4>);
-		val._002Ector(indices.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<Matrix4x4> val = new NativeArray<Matrix4x4>(indices.Length, (Allocator)3, (NativeArrayOptions)0);
 		for (int i = 0; i < indices.Length; i++)
 		{
 			int index = indices[i];
@@ -2341,8 +2350,7 @@ public static class AntiHack
 			bool flag = (Object)(object)((Component)basePlayer).transform.parent == (Object)null;
 			val[i] = (flag ? Matrix4x4.zero : ((Component)basePlayer).transform.parent.localToWorldMatrix);
 		}
-		NativeArray<FlyingBatch> batches = default(NativeArray<FlyingBatch>);
-		batches._002Ector(indices.Length, (Allocator)3, (NativeArrayOptions)1);
+		NativeArray<FlyingBatch> batches = new NativeArray<FlyingBatch>(indices.Length, (Allocator)3, (NativeArrayOptions)1);
 		try
 		{
 			NativeList<Vector3> val2 = new NativeList<Vector3>(indices.Length * ConVar.AntiHack.flyhack_maxsteps, AllocatorHandle.op_Implicit((Allocator)3));
@@ -2397,6 +2405,11 @@ public static class AntiHack
 
 	public static void TestAreFlying(in BasePlayer.PlayerServerStates.ReadOnly playerStates, ReadOnly<Vector3> oldPoses, ReadOnly<Vector3> newPoses, ReadOnly<Vector3> checkPoses, ReadOnly<PlayerState> ahStates, NativeArray<PlayerFlyhackState> flyStates, ReadOnly<FlyingBatch> flyingBatches, bool verifyGrounded, ReadOnly<int> indices, NativeArray<bool> results)
 	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
@@ -2420,6 +2433,7 @@ public static class AntiHack
 		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
@@ -2537,16 +2551,11 @@ public static class AntiHack
 		//IL_067a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04c3: Unknown result type (might be due to invalid IL or missing references)
 		int defaultMaxResultsPerQuery = GamePhysics.DefaultMaxResultsPerQuery;
-		NativeArray<Vector3> results2 = default(NativeArray<Vector3>);
-		results2._002Ector(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
-		NativeArray<Vector3> results3 = default(NativeArray<Vector3>);
-		results3._002Ector(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
-		NativeArray<float> values = default(NativeArray<float>);
-		values._002Ector(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
-		NativeArray<int> values2 = default(NativeArray<int>);
-		values2._002Ector(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
-		NativeArray<ColliderHit> hits = default(NativeArray<ColliderHit>);
-		hits._002Ector(checkPoses.Length * defaultMaxResultsPerQuery, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<Vector3> results2 = new NativeArray<Vector3>(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<Vector3> results3 = new NativeArray<Vector3>(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<float> values = new NativeArray<float>(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<int> values2 = new NativeArray<int>(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<ColliderHit> hits = new NativeArray<ColliderHit>(checkPoses.Length * defaultMaxResultsPerQuery, (Allocator)3, (NativeArrayOptions)0);
 		AddVectorJob addVectorJob = new AddVectorJob
 		{
 			Inputs = checkPoses,
@@ -2574,8 +2583,7 @@ public static class AntiHack
 		};
 		IJobExtensions.RunByRef<FillJob<int>>(ref fillJob2);
 		JobHandle val = GamePhysics.OverlapCapsules(results2.AsReadOnly(), results3.AsReadOnly(), values.AsReadOnly(), values2.AsReadOnly(), hits, defaultMaxResultsPerQuery, (QueryTriggerInteraction)1, GamePhysics.MasksToValidate.None);
-		NativeArray<Vector3> results4 = default(NativeArray<Vector3>);
-		results4._002Ector(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<Vector3> results4 = new NativeArray<Vector3>(checkPoses.Length, (Allocator)3, (NativeArrayOptions)0);
 		try
 		{
 			AddVectorJob addVectorJob3 = new AddVectorJob
@@ -2635,7 +2643,7 @@ public static class AntiHack
 										TypeToTest = EnvironmentType.Elevator
 									};
 									IJobExtensions.RunByRef<CheckAnyEnvironmentTypeInGroupJob>(ref checkAnyEnvironmentTypeInGroupJob);
-									((JobHandle)(ref val)).Complete();
+									val.Complete();
 									NativeList<int> results9 = new NativeList<int>(results2.Length * defaultMaxResultsPerQuery, AllocatorHandle.op_Implicit((Allocator)3));
 									try
 									{
@@ -2677,7 +2685,7 @@ public static class AntiHack
 												ref PlayerFlyhackState reference = ref span[flyingBatch.PlayerIndex];
 												reference.IsOnPlayer = false;
 												ColliderHit val3 = hits[results9[i]];
-												Collider collider = ((ColliderHit)(ref val3)).collider;
+												Collider collider = val3.collider;
 												if ((0x20000 & (1 << ((Component)collider).gameObject.layer)) != 0)
 												{
 													BasePlayer basePlayer2 = GameObjectEx.ToBaseEntity(collider) as BasePlayer;
@@ -2824,9 +2832,9 @@ public static class AntiHack
 				return false;
 			}
 		}
-		if (IsInsideMesh(deployPos) && IsInsideMesh(((Ray)(ref target.ray)).origin))
+		if (IsInsideMesh(deployPos) && IsInsideMesh(target.ray.origin))
 		{
-			LogToConsoleBatched(target.player, AntiHackType.InsideGeometry, "Tried to build while clipped inside " + ((Object)((RaycastHit)(ref isInsideRayHit)).collider).name, 25f);
+			LogToConsoleBatched(target.player, AntiHackType.InsideGeometry, "Tried to build while clipped inside " + ((Object)isInsideRayHit.collider).name, 25f);
 			if (ConVar.AntiHack.build_inside_check > 1)
 			{
 				return true;
@@ -2907,9 +2915,9 @@ public static class AntiHack
 		Debug.LogWarning((object)(((object)ply)?.ToString() + " " + type.ToString() + ": " + message + " at " + ((object)((Component)ply).transform.position/*cast due to constrained. prefix*/).ToString()));
 	}
 
-	private unsafe static void LogToConsole(string plyName, AntiHackType type, string message, Vector3 pos)
+	private static void LogToConsole(string plyName, AntiHackType type, string message, Vector3 pos)
 	{
-		Debug.LogWarning((object)(plyName + " " + type.ToString() + ": " + message + " at " + ((object)(*(Vector3*)(&pos))/*cast due to constrained. prefix*/).ToString()));
+		Debug.LogWarning((object)(plyName + " " + type.ToString() + ": " + message + " at " + ((object)pos/*cast due to constrained. prefix*/).ToString()));
 	}
 
 	private static void LogToEAC(BasePlayer ply, AntiHackType type, string message)

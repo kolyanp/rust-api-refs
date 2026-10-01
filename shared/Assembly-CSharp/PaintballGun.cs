@@ -1,6 +1,7 @@
 using System;
 using ConVar;
 using Network;
+using ProtoBuf;
 using Rust;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -103,8 +104,32 @@ public class PaintballGun : BaseProjectile
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsActiveItem]
+	public override void OnHeldChanged()
+	{
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Expected Obj, but got Unknown
+		base.OnHeldChanged();
+		if (!HasFlag(Flags.Reserved4) || !TryGetOwnerPlayer(out var ownerPlayer))
+		{
+			return;
+		}
+		currentPaintballColor = ownerPlayer.server_paintballColor;
+		Item item = GetItem();
+		if (item != null)
+		{
+			if (item.instanceData == null)
+			{
+				item.instanceData = new InstanceData();
+				item.instanceData.ShouldPool = false;
+			}
+			item.instanceData.dataInt = currentPaintballColor;
+			item.MarkDirty();
+		}
+		ClientRPC(RpcTarget.NetworkGroup("ClientRPC_ReceivePaintballColorChanged"), currentPaintballColor);
+	}
+
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void Server_PaintballColorChanged(RPCMessage msg)
 	{
 		if (PaintballColorLookup.instance == null)

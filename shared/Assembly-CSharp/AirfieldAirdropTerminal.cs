@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Facepunch;
 using Facepunch.Extend;
+using Facepunch.Rust;
 using UnityEngine;
 
 public class AirfieldAirdropTerminal : ChargeUpIOEntity
@@ -90,6 +91,7 @@ public class AirfieldAirdropTerminal : ChargeUpIOEntity
 			{
 				eventScheduleDynamicTickrate.tickRate = tickRate;
 			}
+			Analytics.Azure.OnAirfieldAirdropTickRate(on, tickRate);
 		}
 	}
 

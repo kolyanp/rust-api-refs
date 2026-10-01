@@ -276,10 +276,10 @@ public class BaseMetalDetector : HeldEntity
 		inRangeValidSources.Clear();
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.FromOwner]
 	private void RPC_RequestFlag(RPCMessage rpc)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -300,8 +300,8 @@ public class BaseMetalDetector : HeldEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(6uL)]
 	public void SV_SetSweetspotScanning(RPCMessage msg)
 	{
@@ -335,10 +335,10 @@ public class BaseMetalDetector : HeldEntity
 			return ((Component)this).transform.position;
 		}
 		Vector3 val = ((Component)ownerPlayer).transform.position + ownerPlayer.eyes.MovementForward() * 0.3f;
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (Physics.Raycast(val + Vector3.up * 0.5f, Vector3.down, ref val2, 1.5f, 8388608))
 		{
-			return ((RaycastHit)(ref val2)).point;
+			return val2.point;
 		}
 		return val;
 	}

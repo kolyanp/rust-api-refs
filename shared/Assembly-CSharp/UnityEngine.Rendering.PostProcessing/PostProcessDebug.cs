@@ -1,7 +1,7 @@
 namespace UnityEngine.Rendering.PostProcessing;
 
-[AddComponentMenu("Rendering/Post-process Debug", 1002)]
 [ExecuteAlways]
+[AddComponentMenu("Rendering/Post-process Debug", 1002)]
 public sealed class PostProcessDebug : MonoBehaviour
 {
 	public PostProcessLayer postProcessLayer;
@@ -26,7 +26,7 @@ public sealed class PostProcessDebug : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected O, but got Unknown
+		//IL_0016: Expected Obj, but got Unknown
 		m_CmdAfterEverything = new CommandBuffer
 		{
 			name = "Post-processing Debug Overlay"
@@ -103,11 +103,11 @@ public sealed class PostProcessDebug : MonoBehaviour
 
 	private void OnGUI()
 	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)postProcessLayer == (Object)null) && ((Behaviour)postProcessLayer).enabled)
 		{
 			RenderTexture.active = null;
-			Rect rect = default(Rect);
-			((Rect)(ref rect))._002Ector(5f, 5f, 0f, 0f);
+			Rect rect = new Rect(5f, 5f, 0f, 0f);
 			PostProcessDebugLayer debugLayer = postProcessLayer.debugLayer;
 			DrawMonitor(ref rect, debugLayer.lightMeter, lightMeter);
 			DrawMonitor(ref rect, debugLayer.histogram, histogram);
@@ -121,10 +121,10 @@ public sealed class PostProcessDebug : MonoBehaviour
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		if (enabled && !((Object)(object)monitor.output == (Object)null))
 		{
-			((Rect)(ref rect)).width = ((Texture)monitor.output).width;
-			((Rect)(ref rect)).height = ((Texture)monitor.output).height;
+			rect.width = ((Texture)monitor.output).width;
+			rect.height = ((Texture)monitor.output).height;
 			GUI.DrawTexture(rect, (Texture)(object)monitor.output);
-			((Rect)(ref rect)).x = ((Rect)(ref rect)).x + ((float)((Texture)monitor.output).width + 5f);
+			rect.x += (float)((Texture)monitor.output).width + 5f;
 		}
 	}
 }

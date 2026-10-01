@@ -9,7 +9,7 @@ public class FXAAPostEffectsBase : MonoBehaviour
 	public Material CheckShaderAndCreateMaterial(Shader s, Material m2Create)
 	{
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Expected O, but got Unknown
+		//IL_0098: Expected Obj, but got Unknown
 		if (!Object.op_Implicit((Object)(object)s))
 		{
 			Debug.Log((object)("Missing shader in " + ((object)this).ToString()));
@@ -38,7 +38,7 @@ public class FXAAPostEffectsBase : MonoBehaviour
 	private Material CreateMaterial(Shader s, Material m2Create)
 	{
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Expected O, but got Unknown
+		//IL_0051: Expected Obj, but got Unknown
 		if (!Object.op_Implicit((Object)(object)s))
 		{
 			Debug.Log((object)("Missing shader in " + ((object)this).ToString()));

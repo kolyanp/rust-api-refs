@@ -20,13 +20,13 @@ public class DistanceField
 
 		public void Execute()
 		{
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 			int num = size + 2;
-			NativeArray<int> val = default(NativeArray<int>);
-			val._002Ector(num * num, (Allocator)2, (NativeArrayOptions)1);
-			NativeArray<int> val2 = default(NativeArray<int>);
-			val2._002Ector(num * num, (Allocator)2, (NativeArrayOptions)1);
-			NativeArray<float> val3 = default(NativeArray<float>);
-			val3._002Ector(num * num, (Allocator)2, (NativeArrayOptions)1);
+			NativeArray<int> val = new NativeArray<int>(num * num, (Allocator)2, (NativeArrayOptions)1);
+			NativeArray<int> val2 = new NativeArray<int>(num * num, (Allocator)2, (NativeArrayOptions)1);
+			NativeArray<float> val3 = new NativeArray<float>(num * num, (Allocator)2, (NativeArrayOptions)1);
 			int i = 0;
 			int num2 = 0;
 			for (; i < num; i++)
@@ -238,7 +238,7 @@ public class DistanceField
 			float num12 = num9 + 2f * num10 + num11 - (num4 + 2f * num5 + num6);
 			float num13 = num6 + 2f * num8 + num11 - (num4 + 2f * num7 + num9);
 			Vector2 val = new Vector2(0f - num12, 0f - num13);
-			Vector2 normalized = ((Vector2)(ref val)).normalized;
+			Vector2 normalized = val.normalized;
 			vectorField[index] = new Vector4(normalized.x, normalized.y, num3, 0f);
 		}
 	}
@@ -337,8 +337,8 @@ public class DistanceField
 
 		public void Execute()
 		{
-			NativeArray<float> val = default(NativeArray<float>);
-			val._002Ector(size * size, (Allocator)2, (NativeArrayOptions)1);
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			NativeArray<float> val = new NativeArray<float>(size * size, (Allocator)2, (NativeArrayOptions)1);
 			int num = size - 1;
 			for (int i = 0; i < steps; i++)
 			{
@@ -666,7 +666,7 @@ public class DistanceField
 				float num10 = num7 + 2f * num8 + num9 - (num2 + 2f * num3 + num4);
 				float num11 = num4 + 2f * num6 + num9 - (num2 + 2f * num5 + num7);
 				Vector2 val = new Vector2(0f - num10, 0f - num11);
-				Vector2 normalized = ((Vector2)(ref val)).normalized;
+				Vector2 normalized = val.normalized;
 				vectorField[j * size + i] = new Vector4(normalized.x, normalized.y, num, 0f);
 			}
 		}
@@ -684,6 +684,7 @@ public class DistanceField
 
 	public static JobHandle ApplyGaussianBlurNative(int size, NativeArray<float> distanceField, int steps = 1, JobHandle inputDeps = default(JobHandle))
 	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -706,8 +707,7 @@ public class DistanceField
 		{
 			return inputDeps;
 		}
-		NativeArray<float> dst = default(NativeArray<float>);
-		dst._002Ector(size * size, (Allocator)3, (NativeArrayOptions)1);
+		NativeArray<float> dst = new NativeArray<float>(size * size, (Allocator)3, (NativeArrayOptions)1);
 		for (int i = 0; i < steps; i++)
 		{
 			BlurHorizontalJob jobData = new BlurHorizontalJob

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Facepunch;
 using ProtoBuf;
@@ -107,7 +106,7 @@ public class Player : ConsoleSystem
 			string strCommand = string.Empty;
 			if (basePlayer.IsAdmin || basePlayer.IsDeveloper)
 			{
-				strCommand = arg.cmd.FullName + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<StringView, StringView>(ref arg.FullString)/*cast due to constrained. prefix*/).ToString() + " " + basePlayer.UserIDString;
+				strCommand = arg.cmd.FullName + " " + ((object)arg.FullString/*cast due to constrained. prefix*/).ToString() + " " + basePlayer.UserIDString;
 			}
 			else if (Server.cinematic)
 			{
@@ -124,8 +123,8 @@ public class Player : ConsoleSystem
 		}
 	}
 
-	[ClientVar(AllowRunFromServer = true)]
 	[ServerUserVar]
+	[ClientVar(AllowRunFromServer = true)]
 	public static void cinematic_stop(Arg arg)
 	{
 		if (!arg.IsServerside)
@@ -138,7 +137,7 @@ public class Player : ConsoleSystem
 			string strCommand = string.Empty;
 			if (basePlayer.IsAdmin || basePlayer.IsDeveloper)
 			{
-				strCommand = arg.cmd.FullName + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<StringView, StringView>(ref arg.FullString)/*cast due to constrained. prefix*/).ToString() + " " + basePlayer.UserIDString;
+				strCommand = arg.cmd.FullName + " " + ((object)arg.FullString/*cast due to constrained. prefix*/).ToString() + " " + basePlayer.UserIDString;
 			}
 			else if (Server.cinematic)
 			{
@@ -168,7 +167,7 @@ public class Player : ConsoleSystem
 			{
 				basePlayer = ArgEx.Player(arg);
 			}
-			basePlayer.UpdateActiveItem(default(ItemId));
+			basePlayer.UpdateActiveItem(default);
 			basePlayer.SignalBroadcast(BaseEntity.Signal.Gesture, arg2);
 		}
 	}
@@ -218,7 +217,7 @@ public class Player : ConsoleSystem
 		{
 			basePlayer2 = BasePlayer.FindBot(uInt);
 		}
-		RaycastHit hit = default(RaycastHit);
+		RaycastHit hit = default;
 		if (!Object.op_Implicit((Object)(object)basePlayer2) || !Physics.Raycast(basePlayer.eyes.position, basePlayer.eyes.HeadForward(), ref hit, 5f, 10496, (QueryTriggerInteraction)1))
 		{
 			return;
@@ -626,10 +625,18 @@ public class Player : ConsoleSystem
 			return;
 		}
 		string text = arg.GetString(0);
-		ItemDefinition itemDefinition = ((text == "salt") ? WaterTypes.SaltWaterItemDef : ((!(text == "rads")) ? WaterTypes.WaterItemDef : WaterTypes.RadioactiveWaterItemDef));
+		ItemDefinition itemDefinition;
+		if (text == "salt")
+		{
+			itemDefinition = WaterTypes.SaltWaterItemDef;
+		}
+		else
+		{
+			itemDefinition = ((!(text == "rads")) ? WaterTypes.WaterItemDef : WaterTypes.RadioactiveWaterItemDef);
+		}
 		ItemDefinition itemDefinition2 = itemDefinition;
 		int num = 0;
-		ItemModContainer itemModContainer = default(ItemModContainer);
+		ItemModContainer itemModContainer = default;
 		for (int i = 0; i < PlayerBelt.MaxBeltSlots; i++)
 		{
 			Item itemInSlot = basePlayer.Belt.GetItemInSlot(i);
@@ -750,7 +757,7 @@ public class Player : ConsoleSystem
 		{
 			return spawnEntityFromName.Error;
 		}
-		BaseCombatEntity baseCombatEntity = default(BaseCombatEntity);
+		BaseCombatEntity baseCombatEntity = default;
 		if (GameManager.server.FindPrefab(spawnEntityFromName.PrefabName).TryGetComponent<BaseCombatEntity>(ref baseCombatEntity))
 		{
 			Item item = ItemManager.CreateByName("head.bag", 1, 0uL);

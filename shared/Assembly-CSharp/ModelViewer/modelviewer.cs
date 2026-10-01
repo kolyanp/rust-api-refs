@@ -37,7 +37,7 @@ public class modelviewer : MonoBehaviour, IEditorComponent
 
 	public RustText aspectRatioLabel;
 
-	private Vector3 startpos;
+	private Vector3 startpos = new Vector3(0f, 130f, 60f);
 
 	public Camera maincamera;
 
@@ -103,7 +103,5 @@ public class modelviewer : MonoBehaviour, IEditorComponent
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		startpos = new Vector3(0f, 130f, 60f);
-		((MonoBehaviour)this)._002Ector();
 	}
 }

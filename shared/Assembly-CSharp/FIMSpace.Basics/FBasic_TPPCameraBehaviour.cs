@@ -9,40 +9,40 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 	public Transform ToFollow;
 
 	[Header("Offset in position in reference to target transform (focus point)")]
-	public Vector3 FollowingOffset;
+	public Vector3 FollowingOffset = new Vector3(0f, 1.5f, 0f);
 
 	[Header("Offset in position in reference to camera orientation")]
-	public Vector3 FollowingOffsetDirection;
+	public Vector3 FollowingOffsetDirection = new Vector3(0f, 0f, 0f);
 
 	[Header("Clamp values for zoom of camera")]
-	public Vector2 DistanceRanges;
+	public Vector2 DistanceRanges = new Vector2(5f, 10f);
 
 	private float targetDistance;
 
 	private float animatedDistance;
 
-	public Vector2 RotationRanges;
+	public Vector2 RotationRanges = new Vector2(-5f, 60f);
 
-	private Vector2 targetSphericRotation;
+	private Vector2 targetSphericRotation = new Vector2(0f, 0f);
 
-	private Vector2 animatedSphericRotation;
+	private Vector2 animatedSphericRotation = new Vector2(0f, 0f);
 
 	[Space(10f)]
 	[Tooltip("Sensitivity value for rotating camera around following object")]
-	public float RotationSensitivity;
+	public float RotationSensitivity = 10f;
 
 	[Range(0.1f, 1f)]
 	[Header("If you want camera rotation to be smooth")]
-	public float RotationSpeed;
+	public float RotationSpeed = 1f;
 
-	[Range(0f, 1f)]
 	[Header("If you want camera to follow target with some smoothness")]
-	public float HardFollowValue;
+	[Range(0f, 1f)]
+	public float HardFollowValue = 1f;
 
 	[Header("If you want to hold cursor (cursor switch on TAB)")]
-	public bool LockCursor;
+	public bool LockCursor = true;
 
-	private bool rotateCamera;
+	private bool rotateCamera = true;
 
 	private RaycastHit sightObstacleHit;
 
@@ -52,7 +52,7 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 	private Vector3 targetPosition;
 
 	[Header("How far forward raycast should check collision for camera")]
-	public float CollisionOffset;
+	public float CollisionOffset = 1f;
 
 	public EFUpdateClock UpdateClock;
 
@@ -129,7 +129,7 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 
 	private void ZoomCalculations()
 	{
-		if (!Object.op_Implicit((Object)(object)((RaycastHit)(ref sightObstacleHit)).transform))
+		if (!Object.op_Implicit((Object)(object)sightObstacleHit.transform))
 		{
 			targetDistance = Mathf.Clamp(targetDistance, DistanceRanges.x, DistanceRanges.y);
 		}
@@ -191,6 +191,7 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
@@ -211,11 +212,10 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((Component)ToFollow).transform.position + FollowingOffset + ((Component)this).transform.TransformVector(FollowingOffsetDirection);
 		Quaternion val2 = Quaternion.Euler(targetSphericRotation.y, targetSphericRotation.x, 0f);
-		Ray val3 = default(Ray);
-		((Ray)(ref val3))._002Ector(val, val2 * -Vector3.forward);
+		Ray val3 = new Ray(val, val2 * -Vector3.forward);
 		if (Physics.Raycast(val3, ref sightObstacleHit, targetDistance + CollisionOffset, LayerMask.op_Implicit(SightLayerMask), (QueryTriggerInteraction)1))
 		{
-			((Component)this).transform.position = ((RaycastHit)(ref sightObstacleHit)).point - ((Ray)(ref val3)).direction * CollisionOffset;
+			((Component)this).transform.position = sightObstacleHit.point - val3.direction * CollisionOffset;
 			return;
 		}
 		Vector3 val4 = ((Component)this).transform.rotation * -Vector3.forward * animatedDistance;
@@ -282,18 +282,5 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		FollowingOffset = new Vector3(0f, 1.5f, 0f);
-		FollowingOffsetDirection = new Vector3(0f, 0f, 0f);
-		DistanceRanges = new Vector2(5f, 10f);
-		RotationRanges = new Vector2(-5f, 60f);
-		targetSphericRotation = new Vector2(0f, 0f);
-		animatedSphericRotation = new Vector2(0f, 0f);
-		RotationSensitivity = 10f;
-		RotationSpeed = 1f;
-		HardFollowValue = 1f;
-		LockCursor = true;
-		rotateCamera = true;
-		CollisionOffset = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

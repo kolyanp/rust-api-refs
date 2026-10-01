@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class RFManager
 {
-	private static readonly Dictionary<int, HashSet<IRFObject>> _listeners;
+	private static readonly Dictionary<int, HashSet<IRFObject>> _listeners = new Dictionary<int, HashSet<IRFObject>>();
 
-	private static readonly Dictionary<int, HashSet<IRFObject>> _broadcasters;
+	private static readonly Dictionary<int, HashSet<IRFObject>> _broadcasters = new Dictionary<int, HashSet<IRFObject>>();
 
-	private static readonly Dictionary<int, bool> _isFrequencyBroadcasting;
+	private static readonly Dictionary<int, bool> _isFrequencyBroadcasting = new Dictionary<int, bool>();
 
-	public static int minFreq;
+	public static int minFreq = 1;
 
-	public static int maxFreq;
+	public static int maxFreq = 999999;
 
-	private static int reserveRangeMin;
+	private static int reserveRangeMin = 4760;
 
-	private static int reserveRangeMax;
+	private static int reserveRangeMax = 4790;
 
-	public static Phrase reservedFrequencyPhrase;
+	public static Phrase reservedFrequencyPhrase = new Phrase("rf.reservedfrequency", "Channels {0} to {1} are restricted");
 
 	public static int ClampFrequency(int freq)
 	{
@@ -162,14 +162,6 @@ public class RFManager
 	static RFManager()
 	{
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Expected O, but got Unknown
-		_listeners = new Dictionary<int, HashSet<IRFObject>>();
-		_broadcasters = new Dictionary<int, HashSet<IRFObject>>();
-		_isFrequencyBroadcasting = new Dictionary<int, bool>();
-		minFreq = 1;
-		maxFreq = 999999;
-		reserveRangeMin = 4760;
-		reserveRangeMax = 4790;
-		reservedFrequencyPhrase = new Phrase("rf.reservedfrequency", "Channels {0} to {1} are restricted");
+		//IL_0056: Expected Obj, but got Unknown
 	}
 }

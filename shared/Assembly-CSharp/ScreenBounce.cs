@@ -10,7 +10,7 @@ public class ScreenBounce : BaseScreenShake
 
 	private float bounceTime;
 
-	private Vector3 bounceVelocity;
+	private Vector3 bounceVelocity = Vector3.zero;
 
 	public override void Setup()
 	{
@@ -65,7 +65,5 @@ public class ScreenBounce : BaseScreenShake
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		bounceVelocity = Vector3.zero;
-		base._002Ector();
 	}
 }

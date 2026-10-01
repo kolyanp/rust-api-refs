@@ -7,15 +7,15 @@ public class CheckSubscription : BaseEntityHandler<AppEmpty>
 {
 	public override ValueTask Execute()
 	{
-		if (base.Entity is ISubscribable subscribable)
+		if (Entity is ISubscribable subscribable)
 		{
-			bool value = subscribable.HasSubscription(base.UserId);
+			bool value = subscribable.HasSubscription(UserId);
 			SendFlag(value);
 		}
 		else
 		{
 			SendError("wrong_type");
 		}
-		return default(ValueTask);
+		return default;
 	}
 }

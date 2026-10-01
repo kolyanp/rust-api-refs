@@ -227,7 +227,7 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 	public void UpdateIdentifier(string newID, bool clientSend = false)
 	{
 		_ = rcIdentifier;
-		if (base.isServer)
+		if (isServer)
 		{
 			if (!IDInUse(newID))
 			{
@@ -239,7 +239,7 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 
 	public virtual void RCSetup()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			InstallControllable(this);
 		}
@@ -247,7 +247,7 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 
 	public virtual void RCShutdown()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			RemoveControllable(this);
 		}
@@ -275,8 +275,8 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 		return true;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_SetID(RPCMessage msg)
 	{
 		string oldID = msg.read.String();
@@ -305,10 +305,10 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

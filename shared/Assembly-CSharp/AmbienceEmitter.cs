@@ -23,12 +23,6 @@ public class AmbienceEmitter : MonoBehaviour, IClientComponent, IComparable<Ambi
 
 	public float crossfadeTime = 2f;
 
-	[CompilerGenerated]
-	private Enum _003CcurrentTopology_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Enum _003CcurrentBiome_003Ek__BackingField;
-
 	public Dictionary<AmbienceDefinition, float> nextStingTime = new Dictionary<AmbienceDefinition, float>();
 
 	public float deactivateTime = float.PositiveInfinity;
@@ -43,14 +37,14 @@ public class AmbienceEmitter : MonoBehaviour, IClientComponent, IComparable<Ambi
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CcurrentTopology_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CcurrentTopology_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -60,14 +54,14 @@ public class AmbienceEmitter : MonoBehaviour, IClientComponent, IComparable<Ambi
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CcurrentBiome_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CcurrentBiome_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 

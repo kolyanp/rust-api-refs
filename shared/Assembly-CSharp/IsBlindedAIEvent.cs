@@ -3,19 +3,19 @@ public class IsBlindedAIEvent : BaseAIEvent
 	public IsBlindedAIEvent()
 		: base(AIEventType.IsBlinded)
 	{
-		base.Rate = ExecuteRate.Fast;
+		Rate = ExecuteRate.Fast;
 	}
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
 		bool flag = senses.brain.Blinded();
-		if (base.Inverted)
+		if (Inverted)
 		{
-			base.Result = !flag;
+			Result = !flag;
 		}
 		else
 		{
-			base.Result = flag;
+			Result = flag;
 		}
 	}
 }

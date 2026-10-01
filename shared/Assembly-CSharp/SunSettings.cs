@@ -39,7 +39,7 @@ public class SunSettings : MonoBehaviour, IClientComponent
 		{
 			int num = mainLightColorId;
 			Color color = light.color;
-			Shader.SetGlobalColor(num, ((Color)(ref color)).linear * light.intensity);
+			Shader.SetGlobalColor(num, color.linear * light.intensity);
 			Shader.SetGlobalVector(mainLightDirectionId, Vector4.op_Implicit(((Component)light).transform.forward));
 		}
 	}

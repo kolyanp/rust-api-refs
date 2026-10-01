@@ -33,7 +33,7 @@ public class State_FleeFire : State_Flee
 	{
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		if (base.Senses.FindTargetPosition(out var targetPosition) && Time.timeAsDouble - timeOfLastExecution > 1.0 && Vector3.Distance(((Component)Owner).transform.position, targetPosition) > desiredDistance)
+		if (Senses.FindTargetPosition(out var targetPosition) && Time.timeAsDouble - timeOfLastExecution > 1.0 && Vector3.Distance(((Component)Owner).transform.position, targetPosition) > desiredDistance)
 		{
 			return EFSMStateStatus.Success;
 		}

@@ -34,7 +34,7 @@ public class TerrainGenerator : SingletonComponent<TerrainGenerator>
 	public GameObject CreateTerrain(int heightmapResolution, int alphamapResolution)
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Expected O, but got Unknown
+		//IL_0012: Expected Obj, but got Unknown
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)

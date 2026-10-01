@@ -6,7 +6,24 @@ namespace Facepunch.Extend;
 
 public static class CameraEx
 {
-	public static void FocusOnRenderer(this Camera cam, GameObject obj, Vector3 lookDirection, Vector3 Up, int layerMask = -1, float distanceModifier = 0f)
+	public static bool IsLowerLod(GameObject obj)
+	{
+		string name = ((Object)obj).name;
+		for (int i = 1; i <= 4; i++)
+		{
+			if (name.EndsWith("lod0" + i, StringComparison.InvariantCultureIgnoreCase))
+			{
+				return true;
+			}
+			if (name.EndsWith("lod" + i, StringComparison.InvariantCultureIgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static Bounds CalculateRendererBounds(GameObject obj, int layerMask = -1)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -19,63 +36,71 @@ public static class CameraEx
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0222: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0227: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0239: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 position = obj.transform.position;
 		Quaternion rotation = obj.transform.rotation;
 		obj.transform.SetPositionAndRotation(Vector3.one, Quaternion.identity);
 		obj.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-		Bounds bounds = default(Bounds);
-		((Bounds)(ref bounds))._002Ector(Vector3.zero, Vector3.one * 0.01f);
+		Bounds result = new Bounds(Vector3.zero, Vector3.one * 0.01f);
 		bool flag = true;
 		Renderer[] componentsInChildren = obj.GetComponentsInChildren<Renderer>();
 		foreach (Renderer val in componentsInChildren)
 		{
-			if (val.enabled && ((Component)val).gameObject.activeInHierarchy && !(val is ParticleSystemRenderer) && !((Object)((Component)val).gameObject).name.EndsWith("lod01", StringComparison.InvariantCultureIgnoreCase) && !((Object)((Component)val).gameObject).name.EndsWith("lod02", StringComparison.InvariantCultureIgnoreCase) && !((Object)((Component)val).gameObject).name.EndsWith("lod03", StringComparison.InvariantCultureIgnoreCase) && !((Object)((Component)val).gameObject).name.EndsWith("lod04", StringComparison.InvariantCultureIgnoreCase) && !((Object)((Component)val).gameObject).name.EndsWith("lod1", StringComparison.InvariantCultureIgnoreCase) && !((Object)((Component)val).gameObject).name.EndsWith("lod2", StringComparison.InvariantCultureIgnoreCase) && !((Object)((Component)val).gameObject).name.EndsWith("lod3", StringComparison.InvariantCultureIgnoreCase) && !((Object)((Component)val).gameObject).name.EndsWith("lod4", StringComparison.InvariantCultureIgnoreCase) && (layerMask & (1 << ((Component)val).gameObject.layer)) != 0)
+			if (val.enabled && ((Component)val).gameObject.activeInHierarchy && !(val is ParticleSystemRenderer) && !IsLowerLod(((Component)val).gameObject) && (layerMask & (1 << ((Component)val).gameObject.layer)) != 0)
 			{
 				if (flag)
 				{
-					bounds = val.bounds;
+					result = val.bounds;
 					flag = false;
 				}
 				else
 				{
-					((Bounds)(ref bounds)).Encapsulate(val.bounds);
+					result.Encapsulate(val.bounds);
 				}
 			}
 		}
-		Vector3 size = ((Bounds)(ref bounds)).size;
-		float num = ((Vector3)(ref size)).magnitude * 0.33f / Mathf.Tan(cam.fieldOfView * 0.5f * ((float)Math.PI / 180f));
-		Matrix4x4 val2 = obj.transform.worldToLocalMatrix;
-		Vector3 val3 = ((Matrix4x4)(ref val2)).MultiplyPoint(((Bounds)(ref bounds)).center);
 		obj.transform.SetPositionAndRotation(position, rotation);
-		val2 = obj.transform.localToWorldMatrix;
-		val3 = ((Matrix4x4)(ref val2)).MultiplyPoint(val3);
-		((Component)cam).transform.position = val3 + obj.transform.TransformDirection(((Vector3)(ref lookDirection)).normalized) * (num + distanceModifier);
-		((Component)cam).transform.LookAt(val3, obj.transform.TransformDirection(((Vector3)(ref Up)).normalized));
+		return result;
+	}
+
+	public static float DistanceToFrame(Bounds bounds, float fieldOfView)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 size = bounds.size;
+		return size.magnitude * 0.33f / Mathf.Tan(fieldOfView * 0.5f * ((float)Math.PI / 180f));
+	}
+
+	public static void FocusOnRenderer(this Camera cam, GameObject obj, Vector3 lookDirection, Vector3 Up, int layerMask = -1, float distanceModifier = 0f)
+	{
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		Bounds bounds = CalculateRendererBounds(obj, layerMask);
+		float num = DistanceToFrame(bounds, cam.fieldOfView);
+		Matrix4x4 localToWorldMatrix = obj.transform.localToWorldMatrix;
+		Vector3 val = localToWorldMatrix.MultiplyPoint(bounds.center);
+		((Component)cam).transform.position = val + obj.transform.TransformDirection(lookDirection.normalized) * (num + distanceModifier);
+		((Component)cam).transform.LookAt(val, obj.transform.TransformDirection(Up.normalized));
 	}
 
 	public static void SavePNG(string path, Texture2D texture)
@@ -104,14 +129,14 @@ public static class CameraEx
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Expected O, but got Unknown
+		//IL_0041: Expected Obj, but got Unknown
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0144: Expected O, but got Unknown
+		//IL_0144: Expected Obj, but got Unknown
 		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
@@ -137,10 +162,10 @@ public static class CameraEx
 		if (transparent)
 		{
 			cam.clearFlags = (CameraClearFlags)3;
-			cam.backgroundColor = (Color)(((_003F?)background) ?? new Color(0f, 0f, 0f, 0f));
+			cam.backgroundColor = background ?? new Color(0f, 0f, 0f, 0f);
 		}
 		RenderTexture.active = temporary;
-		GL.Clear(true, true, (Color)(((_003F?)background) ?? new Color(0f, 0f, 0f, 0f)));
+		GL.Clear(true, true, background ?? new Color(0f, 0f, 0f, 0f));
 		GL.sRGBWrite = true;
 		cam.Render();
 		RenderTexture.active = null;

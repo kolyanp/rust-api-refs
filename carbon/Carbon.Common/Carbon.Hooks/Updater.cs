@@ -26,7 +26,7 @@ public sealed class Updater
 		bool success = false;
 		try
 		{
-			IReadOnlyList<string> readOnlyList = new global::_003C_003Ez__ReadOnlyArray<string>(new string[2] { "carbon/managed/hooks/Carbon.Hooks.Community.dll", "carbon/managed/hooks/Carbon.Hooks.Oxide.dll" });
+			IReadOnlyList<string> readOnlyList = new _003C_003Ez__ReadOnlyArray<string>(new string[2] { "carbon/managed/hooks/Carbon.Hooks.Community.dll", "carbon/managed/hooks/Carbon.Hooks.Oxide.dll" });
 			List<Task<bool>> list = new List<Task<bool>>();
 			foreach (string item in readOnlyList)
 			{
@@ -66,7 +66,7 @@ public sealed class Updater
 
 	private static void FireAndForget(Task task)
 	{
-		task.ContinueWith(delegate(Task t)
+		task.ContinueWith((Task t) =>
 		{
 			Logger.Error("Hook update task failed", t.Exception);
 		}, TaskContinuationOptions.OnlyOnFaulted);

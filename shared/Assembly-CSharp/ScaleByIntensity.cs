@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class ScaleByIntensity : MonoBehaviour
 {
-	public Vector3 initialScale;
+	public Vector3 initialScale = Vector3.zero;
 
 	public Light intensitySource;
 
-	public float maxIntensity;
+	public float maxIntensity = 1f;
 
 	private void Start()
 	{
@@ -28,8 +28,5 @@ public class ScaleByIntensity : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		initialScale = Vector3.zero;
-		maxIntensity = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

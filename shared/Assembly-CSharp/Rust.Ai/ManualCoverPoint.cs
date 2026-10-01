@@ -58,18 +58,18 @@ public class ManualCoverPoint : FacepunchBehaviour
 		Volume = volume;
 		if (IsDynamic)
 		{
-			CoverPoint obj = new CoverPoint(Volume, Score)
+			CoverPoint coverPoint = new CoverPoint(Volume, Score)
 			{
 				IsDynamic = true,
 				SourceTransform = ((Component)this).transform,
 				NormalCoverType = NormalCoverType
 			};
 			Transform transform = ((Component)this).transform;
-			obj.Position = ((transform != null) ? transform.position : Vector3.zero);
-			return obj;
+			coverPoint.Position = ((transform != null) ? transform.position : Vector3.zero);
+			return coverPoint;
 		}
 		Vector3 val = ((Component)this).transform.rotation * Normal;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		return new CoverPoint(Volume, Score)
 		{
 			IsDynamic = false,

@@ -22,7 +22,7 @@ public class SearchLight : IOEntity
 
 	public SoundPlayer turnLoop;
 
-	public bool needsBuildingPrivilegeToUse;
+	public bool needsBuildingPrivilegeToUse = true;
 
 	[SerializeField]
 	private GameObject lightParent;
@@ -51,7 +51,7 @@ public class SearchLight : IOEntity
 	[SerializeField]
 	private AnimationCurve lightLerpCurve;
 
-	public Vector3 aimDir;
+	public Vector3 aimDir = Vector3.zero;
 
 	[ClientVar(ClientAdmin = true)]
 	public static bool debugVolumetrics;
@@ -113,7 +113,7 @@ public class SearchLight : IOEntity
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer && (old & Flags.Reserved8) != Flags.Reserved8 && (next & Flags.Reserved8) == Flags.Reserved8 && IsFlickering())
+		if (isServer && (old & Flags.Reserved8) != Flags.Reserved8 && (next & Flags.Reserved8) == Flags.Reserved8 && IsFlickering())
 		{
 			Hurt(25f);
 		}
@@ -126,7 +126,7 @@ public class SearchLight : IOEntity
 
 	public void Update()
 	{
-		if (base.isServer && IsMounted())
+		if (isServer && IsMounted())
 		{
 			MountedUpdate();
 		}
@@ -188,7 +188,7 @@ public class SearchLight : IOEntity
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		Transform transform = ((Component)this).transform;
 		Vector3 val = worldPos - eyePoint.transform.position;
-		aimDir = transform.InverseTransformDirection(((Vector3)(ref val)).normalized);
+		aimDir = transform.InverseTransformDirection(val.normalized);
 	}
 
 	public bool IsMounted()
@@ -196,8 +196,8 @@ public class SearchLight : IOEntity
 		return (Object)(object)mountedPlayer != (Object)null;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_UseLight(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -248,8 +248,5 @@ public class SearchLight : IOEntity
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		needsBuildingPrivilegeToUse = true;
-		aimDir = Vector3.zero;
-		base._002Ector();
 	}
 }

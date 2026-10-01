@@ -12,6 +12,9 @@ public class UIDialogueChoice : MonoBehaviour
 	public BaseMission DisplayingMission;
 
 	[NonSerialized]
+	public NetworkableId DisplayingAnimal;
+
+	[NonSerialized]
 	public int SpeechResponseIndex;
 
 	public void SetMissionIconActive(bool isActive)
@@ -26,6 +29,8 @@ public class UIDialogueChoice : MonoBehaviour
 
 	private void OnDisable()
 	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		DisplayingMission = null;
+		DisplayingAnimal = default;
 	}
 }

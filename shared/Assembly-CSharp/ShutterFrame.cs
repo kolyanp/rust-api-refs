@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -13,19 +14,19 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 {
 	[Tooltip("Tiling for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
 	[Header("Shutter Frame")]
-	public Vector2 shutterDefaultTiling;
+	public Vector2 shutterDefaultTiling = new Vector2(1.15f, 1f);
 
 	[Tooltip("Offsets for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
-	public Vector2 shutterDefaultOffset;
+	public Vector2 shutterDefaultOffset = new Vector2(-0.07f, -0.2f);
 
 	[Tooltip("UV -> V Offsets for the shutter when open and closed respectively")]
-	public Vector2 shutterUVOffsets;
+	public Vector2 shutterUVOffsets = new Vector2(0f, -0.48f);
 
 	public List<Renderer> shutterRenderers;
 
-	public float shutterMoveSpeed;
+	public float shutterMoveSpeed = 1f;
 
-	public AnimationCurve shutterMovementCurve;
+	public AnimationCurve shutterMovementCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
 	public GameObjectRef IoEntity;
 
@@ -133,7 +134,7 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 		}
 		if (IsLocked())
 		{
-			return (ulong)player.userID == base.OwnerID;
+			return (ulong)player.userID == OwnerID;
 		}
 		return true;
 	}
@@ -162,7 +163,7 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 
 	public void OnFlagToggled(bool state)
 	{
-		if (base.isServer && IsShutterOpen != !state)
+		if (isServer && IsShutterOpen != !state)
 		{
 			IsShutterOpen = !state;
 		}
@@ -188,7 +189,7 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 		info.msg.simpleUID.uid = spawnedIo.uid;
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -197,7 +198,7 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: IsShutterOpen for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: IsShutterOpen for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_IsShutterOpen);
 			return true;
@@ -249,18 +250,34 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -300,11 +317,5 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		shutterDefaultTiling = new Vector2(1.15f, 1f);
-		shutterDefaultOffset = new Vector2(-0.07f, -0.2f);
-		shutterUVOffsets = new Vector2(0f, -0.48f);
-		shutterMoveSpeed = 1f;
-		shutterMovementCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-		base._002Ector();
 	}
 }

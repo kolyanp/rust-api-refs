@@ -30,6 +30,8 @@ public class UI_Window : BaseMonoBehaviour
 
 	protected bool _opened;
 
+	private bool _visible;
+
 	public event Action OnOpen;
 
 	public event Action OnClose;
@@ -142,5 +144,19 @@ public class UI_Window : BaseMonoBehaviour
 		{
 			((Behaviour)_flex).enabled = state;
 		}
+		UIBlurCanvasesBehind uIBlurCanvasesBehind = default;
+		if (((Component)this).TryGetComponent<UIBlurCanvasesBehind>(ref uIBlurCanvasesBehind))
+		{
+			((Behaviour)uIBlurCanvasesBehind).enabled = state;
+		}
+		if (_visible != state)
+		{
+			_visible = state;
+			OnVisibilityChanged(state);
+		}
+	}
+
+	public virtual void OnVisibilityChanged(bool newState)
+	{
 	}
 }

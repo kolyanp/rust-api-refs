@@ -172,7 +172,7 @@ public class GunTrap : StorageContainer
 				}
 				Vector3 position = basePlayer.eyes.position;
 				Vector3 val = GetEyePosition() - basePlayer.eyes.position;
-				GamePhysics.TraceAll(new Ray(position, ((Vector3)(ref val)).normalized), 0f, list, 9f, 1218519297, (QueryTriggerInteraction)0);
+				GamePhysics.TraceAll(new Ray(position, val.normalized), 0f, list, 9f, 1218519297, (QueryTriggerInteraction)0);
 				for (int i = 0; i < list.Count; i++)
 				{
 					BaseEntity entity = RaycastHitEx.GetEntity(list[i]);
@@ -269,21 +269,21 @@ public class GunTrap : StorageContainer
 				}
 				if ((Object)(object)(entity as BaseCombatEntity) != (Object)null)
 				{
-					HitInfo info = new HitInfo(this, entity, DamageType.Bullet, damageAmount, ((RaycastHit)(ref hit)).point);
+					HitInfo info = new HitInfo(this, entity, DamageType.Bullet, damageAmount, hit.point);
 					entity.OnAttacked(info);
 					if (entity is BasePlayer || entity is BaseNpc)
 					{
 						Effect.server.ImpactEffect(new HitInfo
 						{
-							HitPositionWorld = ((RaycastHit)(ref hit)).point,
-							HitNormalWorld = -((RaycastHit)(ref hit)).normal,
+							HitPositionWorld = hit.point,
+							HitNormalWorld = -hit.normal,
 							HitMaterial = StringPool.Get("Flesh")
 						});
 					}
 				}
 				if (!((Object)(object)entity != (Object)null) || entity.ShouldBlockProjectiles())
 				{
-					arg = ((RaycastHit)(ref hit)).point;
+					arg = hit.point;
 					break;
 				}
 			}
@@ -296,7 +296,7 @@ public class GunTrap : StorageContainer
 
 	public bool CanFire()
 	{
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			if ((Object)(object)item.info == (Object)(object)ammoType && item.amount > 0)
 			{
@@ -308,7 +308,7 @@ public class GunTrap : StorageContainer
 
 	public bool UseAmmo()
 	{
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			if ((Object)(object)item.info == (Object)(object)ammoType && item.amount > 0)
 			{

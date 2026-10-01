@@ -126,13 +126,13 @@ public class ItemModSwap : ItemMod
 
 	private void GiveOutItem(Item item, BasePlayer player, ItemContainer container)
 	{
-		if (!item.MoveToContainer(container))
-		{
-			player.GiveItem(item);
-		}
 		if (sendPlayerPickupNotification)
 		{
 			player.Command("note.inv", item.info.itemid, item.amount);
+		}
+		if (!item.MoveToContainer(container))
+		{
+			player.GiveItem(item);
 		}
 	}
 

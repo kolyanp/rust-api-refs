@@ -7,33 +7,22 @@ using ConVar;
 using Facepunch;
 using Facepunch.Extend;
 using Network;
+using Terminal;
 using UnityEngine;
-using Windows;
 
 public class ServerConsole : SingletonComponent<ServerConsole>
 {
-	private struct ConsoleMessage
+	private struct ConsoleMessage(string message, string stackTrace, LogType type)
 	{
-		public string Message;
+		public string Message = message;
 
-		public string StackTrace;
+		public string StackTrace = stackTrace;
 
-		public LogType Type;
+		public LogType Type = type;
 
-		public ConsoleColor? Color;
+		public ConsoleColor? Color = null;
 
-		public List<string> StatusUpdate;
-
-		public ConsoleMessage(string message, string stackTrace, LogType type)
-		{
-			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-			Message = message;
-			StackTrace = stackTrace;
-			Type = type;
-			StatusUpdate = null;
-			Color = null;
-		}
+		public List<string> StatusUpdate = null;
 	}
 
 	public ConsoleWindow console;
@@ -81,21 +70,21 @@ public class ServerConsole : SingletonComponent<ServerConsole>
 		}
 		console = new ConsoleWindow();
 		input = new ConsoleInput();
-		console.Initialize();
+		if (!console.Initialize())
+		{
+			((Behaviour)this).enabled = false;
+			return;
+		}
 		input.OnInputText += OnInputText;
 		Output.OnMessage += HandleLog;
-		input.ClearLine(System.Console.WindowHeight);
-		for (int i = 0; i < System.Console.WindowHeight; i++)
-		{
-			System.Console.WriteLine("");
-		}
+		input.Initialize();
 		if (logThreadCancellation != null)
 		{
 			logThreadCancellation.Cancel();
 			logThreadCancellation.Dispose();
 		}
 		logThreadCancellation = new CancellationTokenSource();
-		Task.Run(async delegate
+		Task.Run(async () =>
 		{
 			await LogThread(logThreadCancellation.Token);
 		});
@@ -113,6 +102,7 @@ public class ServerConsole : SingletonComponent<ServerConsole>
 		if (input != null)
 		{
 			input.OnInputText -= OnInputText;
+			input.Shutdown();
 		}
 		console?.Shutdown();
 	}
@@ -168,23 +158,16 @@ public class ServerConsole : SingletonComponent<ServerConsole>
 						}
 						if (!flag)
 						{
-							input.ClearLine(input.statusText.Length + 1);
+							input.PrepareForLogOutput();
 							flag = true;
 						}
 						PrintMessage(result.Message, result.Type, result.Color);
 					}
-					if (System.Console.CursorTop == System.Console.BufferHeight - 1)
-					{
-						System.Console.WriteLine();
-					}
 					if (flag)
 					{
-						input.RedrawInputLine(clear: false);
+						input.RedrawInputLine();
 					}
-					System.Console.CursorVisible = false;
 					input.RedrawStatusText();
-					System.Console.CursorVisible = true;
-					input.FixBottomOfBuffer();
 				}
 				input?.Update();
 			}
@@ -198,28 +181,21 @@ public class ServerConsole : SingletonComponent<ServerConsole>
 
 	private void PrintMessage(string message, LogType type, ConsoleColor? colorOverride)
 	{
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Invalid comparison between Unknown and I4
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Invalid comparison between Unknown and I4
-		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Invalid comparison between Unknown and I4
-		if (message == null || message.StartsWith("[CHAT]") || message.StartsWith("[TEAM CHAT]") || message.StartsWith("[CARDS CHAT]"))
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Invalid comparison between Unknown and I4
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Invalid comparison between Unknown and I4
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Invalid comparison between Unknown and I4
+		if (message == null || ConsoleWindow.StdoutCarriesLog || message.StartsWith("[CHAT]") || message.StartsWith("[TEAM CHAT]") || message.StartsWith("[CARDS CHAT]"))
 		{
 			return;
 		}
-		ConsoleColor foregroundColor = System.Console.ForegroundColor;
+		ConsoleColor color = ConsoleColor.Gray;
 		if (colorOverride.HasValue)
 		{
-			try
-			{
-				System.Console.ForegroundColor = colorOverride.Value;
-			}
-			catch
-			{
-				System.Console.ForegroundColor = ConsoleColor.Gray;
-			}
+			color = colorOverride.Value;
 		}
 		else if ((int)type == 2)
 		{
@@ -227,29 +203,19 @@ public class ServerConsole : SingletonComponent<ServerConsole>
 			{
 				return;
 			}
-			System.Console.ForegroundColor = ConsoleColor.Yellow;
+			color = ConsoleColor.Yellow;
 		}
-		else if ((int)type == 0)
+		else if ((int)type == 0 || (int)type == 4 || (int)type == 1)
 		{
-			System.Console.ForegroundColor = ConsoleColor.Red;
-		}
-		else if ((int)type == 4)
-		{
-			System.Console.ForegroundColor = ConsoleColor.Red;
-		}
-		else if ((int)type == 1)
-		{
-			System.Console.ForegroundColor = ConsoleColor.Red;
-		}
-		else
-		{
-			System.Console.ForegroundColor = ConsoleColor.Gray;
+			color = ConsoleColor.Red;
 		}
 		if (input != null)
 		{
-			System.Console.WriteLine(message);
+			System.Console.Write(ConsoleInput.Foreground(color));
+			System.Console.Write(message);
+			System.Console.Write("\u001b[0m");
+			System.Console.WriteLine();
 		}
-		System.Console.ForegroundColor = foregroundColor;
 	}
 
 	private void Update()

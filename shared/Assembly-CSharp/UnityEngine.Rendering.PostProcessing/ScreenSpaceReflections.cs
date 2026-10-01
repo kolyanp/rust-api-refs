@@ -3,7 +3,7 @@ using System;
 namespace UnityEngine.Rendering.PostProcessing;
 
 [Serializable]
-[PostProcess(typeof(UnityEngine.Rendering.PostProcessing.ScreenSpaceReflectionsRenderer), "Unity/Screen-space reflections", true)]
+[PostProcess(typeof(ScreenSpaceReflectionsRenderer), "Unity/Screen-space reflections", true)]
 public sealed class ScreenSpaceReflections : PostProcessEffectSettings
 {
 	[Tooltip("Choose a quality preset, or use \"Custom\" to create your own custom preset. Don't use a preset higher than \"Medium\" if you desire good performance on consoles.")]
@@ -12,8 +12,8 @@ public sealed class ScreenSpaceReflections : PostProcessEffectSettings
 		value = ScreenSpaceReflectionPreset.Medium
 	};
 
-	[Range(0f, 256f)]
 	[Tooltip("Maximum number of steps in the raymarching pass. Higher values mean more reflections.")]
+	[Range(0f, 256f)]
 	public IntParameter maximumIterationCount = new IntParameter
 	{
 		value = 16

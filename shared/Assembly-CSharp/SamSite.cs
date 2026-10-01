@@ -62,19 +62,19 @@ public class SamSite : ContainerIOEntity
 
 	public Transform eyePoint;
 
-	public float gearEpislonDegrees;
+	public float gearEpislonDegrees = 20f;
 
-	public float turnSpeed;
+	public float turnSpeed = 1f;
 
-	public float clientLerpSpeed;
+	public float clientLerpSpeed = 1f;
 
-	public Vector3 currentAimDir;
+	public Vector3 currentAimDir = Vector3.forward;
 
-	public Vector3 targetAimDir;
+	public Vector3 targetAimDir = Vector3.forward;
 
-	public float vehicleScanRadius;
+	public float vehicleScanRadius = 350f;
 
-	public float missileScanRadius;
+	public float missileScanRadius = 500f;
 
 	public GameObjectRef projectileTest;
 
@@ -94,21 +94,21 @@ public class SamSite : ContainerIOEntity
 
 	public SoundDefinition yawMovementLoopDef;
 
-	public float yawGainLerp;
+	public float yawGainLerp = 8f;
 
-	public float yawGainMovementSpeedMult;
+	public float yawGainMovementSpeedMult = 0.1f;
 
 	public SoundDefinition pitchMovementLoopDef;
 
-	public float pitchGainLerp;
+	public float pitchGainLerp = 10f;
 
-	public float pitchGainMovementSpeedMult;
+	public float pitchGainMovementSpeedMult = 0.5f;
 
-	public int lowAmmoThreshold;
+	public int lowAmmoThreshold = 5;
 
-	public Flags Flag_TargetMode;
+	public Flags Flag_TargetMode = Flags.Reserved9;
 
-	public Flags Flag_ManuallySetMode;
+	public Flags Flag_ManuallySetMode = Flags.Reserved10;
 
 	public static SamTargetType targetTypeUnknown;
 
@@ -219,13 +219,13 @@ public class SamSite : ContainerIOEntity
 
 	public void SetTarget(ISamSiteTarget target)
 	{
-		bool num = currentTarget != target;
+		bool flag = currentTarget != target;
 		currentTarget = target;
 		if (!ObjectEx.IsUnityNull(target))
 		{
 			mostRecentTargetType = target.SAMTargetType;
 		}
-		if (num)
+		if (flag)
 		{
 			MarkIODirty();
 		}
@@ -258,13 +258,13 @@ public class SamSite : ContainerIOEntity
 		ClearTarget();
 		InvokeRandomized(TargetScan, 1f, 3f, 0.2f);
 		currentAimDir = ((Component)this).transform.forward;
-		if (base.inventory != null && !staticRespawn)
+		if (inventory != null && !staticRespawn)
 		{
-			base.inventory.onItemAddedRemoved = OnItemAddedRemoved;
+			inventory.onItemAddedRemoved = OnItemAddedRemoved;
 		}
 	}
 
-	public void OnItemAddedRemoved(Item arg1, bool arg2)
+	private void OnItemAddedRemoved(Item arg1, bool arg2, BasePlayer sourcePlayer)
 	{
 		EnsureAmmoLoaded();
 		if (IsPowered())
@@ -294,7 +294,7 @@ public class SamSite : ContainerIOEntity
 	public void SelfHeal()
 	{
 		lifestate = LifeState.Alive;
-		base.health = startHealth;
+		health = startHealth;
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.Reserved1, b: false);
 	}
@@ -316,11 +316,11 @@ public class SamSite : ContainerIOEntity
 		{
 			ClearTarget();
 			Quaternion val = Quaternion.LookRotation(currentAimDir, Vector3.up);
-			val = Quaternion.Euler(0f, ((Quaternion)(ref val)).eulerAngles.y, 0f);
+			val = Quaternion.Euler(0f, val.eulerAngles.y, 0f);
 			currentAimDir = val * Vector3.forward;
 			Invoke(SelfHeal, staticrepairseconds);
 			lifestate = LifeState.Dead;
-			base.health = 0f;
+			health = 0f;
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope.Set(Flags.Reserved1, b: true);
 			return;
@@ -397,31 +397,31 @@ public class SamSite : ContainerIOEntity
 			num3 = Vector3.Distance(val3, ((Component)eyePoint).transform.position) / num;
 			val3 = val2 + currentTarget.GetWorldVelocity() * num3;
 			Vector3 val4 = currentTarget.GetWorldVelocity();
-			if (((Vector3)(ref val4)).magnitude > 0.1f && currentTarget.SAMTargetType.applyAimError)
+			if (val4.magnitude > 0.1f && currentTarget.SAMTargetType.applyAimError)
 			{
 				float num4 = Mathf.Sin(Time.time * 3f) * (1f + num3 * 0.5f);
 				Vector3 val5 = val3;
 				val4 = currentTarget.GetWorldVelocity();
-				val3 = val5 + ((Vector3)(ref val4)).normalized * num4;
+				val3 = val5 + val4.normalized * num4;
 			}
 			val4 = val3 - ((Component)eyePoint).transform.position;
-			currentAimDir = ((Vector3)(ref val4)).normalized;
+			currentAimDir = val4.normalized;
 			if (num2 > currentTarget.SAMTargetType.scanRadius)
 			{
 				ClearTarget();
 			}
 		}
 		Quaternion val6 = Quaternion.LookRotation(currentAimDir, ((Component)this).transform.up);
-		Vector3 eulerAngles = ((Quaternion)(ref val6)).eulerAngles;
+		Vector3 eulerAngles = val6.eulerAngles;
 		eulerAngles = BaseMountable.ConvertVector(eulerAngles);
 		float num5 = Mathf.InverseLerp(0f, 90f, 0f - eulerAngles.x);
 		float num6 = Mathf.Lerp(15f, -75f, num5);
 		Quaternion localRotation = Quaternion.Euler(0f, eulerAngles.y, 0f);
 		yaw.transform.localRotation = localRotation;
 		Quaternion localRotation2 = pitch.transform.localRotation;
-		float x = ((Quaternion)(ref localRotation2)).eulerAngles.x;
+		float x = localRotation2.eulerAngles.x;
 		localRotation2 = pitch.transform.localRotation;
-		Quaternion localRotation3 = Quaternion.Euler(x, ((Quaternion)(ref localRotation2)).eulerAngles.y, num6);
+		Quaternion localRotation3 = Quaternion.Euler(x, localRotation2.eulerAngles.y, num6);
 		pitch.transform.localRotation = localRotation3;
 		if (currentAimDir != val)
 		{
@@ -496,7 +496,7 @@ public class SamSite : ContainerIOEntity
 		}
 		if (!staticRespawn)
 		{
-			int num = ((ammoItem != null && ammoItem.parent == base.inventory) ? ammoItem.amount : 0);
+			int num = ((ammoItem != null && ammoItem.parent == inventory) ? ammoItem.amount : 0);
 			bool flag = lastAmmoCount < lowAmmoThreshold;
 			bool flag2 = num < lowAmmoThreshold;
 			if (num != lastAmmoCount && flag != flag2)
@@ -557,7 +557,7 @@ public class SamSite : ContainerIOEntity
 		{
 			if (ammoItem != null && ammoItem.amount > 0)
 			{
-				return ammoItem.parent == base.inventory;
+				return ammoItem.parent == inventory;
 			}
 			return false;
 		}
@@ -570,9 +570,9 @@ public class SamSite : ContainerIOEntity
 		{
 			return;
 		}
-		for (int i = 0; i < base.inventory.itemList.Count; i++)
+		for (int i = 0; i < inventory.itemList.Count; i++)
 		{
-			Item item = base.inventory.itemList[i];
+			Item item = inventory.itemList[i];
 			if (item != null && item.info.itemid == ammoType.itemid && item.amount > 0)
 			{
 				ammoItem = item;
@@ -701,7 +701,7 @@ public class SamSite : ContainerIOEntity
 			}
 			return result;
 		case 1:
-			if (ammoItem == null || ammoItem.amount >= lowAmmoThreshold || ammoItem.parent != base.inventory)
+			if (ammoItem == null || ammoItem.amount >= lowAmmoThreshold || ammoItem.parent != inventory)
 			{
 				return 0;
 			}
@@ -717,9 +717,9 @@ public class SamSite : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	private void ToggleDefenderMode(RPCMessage msg)
 	{
 		if (staticRespawn)
@@ -774,20 +774,5 @@ public class SamSite : ContainerIOEntity
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		gearEpislonDegrees = 20f;
-		turnSpeed = 1f;
-		clientLerpSpeed = 1f;
-		currentAimDir = Vector3.forward;
-		targetAimDir = Vector3.forward;
-		vehicleScanRadius = 350f;
-		missileScanRadius = 500f;
-		yawGainLerp = 8f;
-		yawGainMovementSpeedMult = 0.1f;
-		pitchGainLerp = 10f;
-		pitchGainMovementSpeedMult = 0.5f;
-		lowAmmoThreshold = 5;
-		Flag_TargetMode = Flags.Reserved9;
-		Flag_ManuallySetMode = Flags.Reserved10;
-		base._002Ector();
 	}
 }

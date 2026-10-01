@@ -243,6 +243,7 @@ public class MeshData
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
@@ -254,7 +255,6 @@ public class MeshData
 		//IL_019b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val3 = default(Vector3);
 		for (int i = 0; i < ((List<MeshInstance>)(object)meshGroup).Count; i++)
 		{
 			MeshInstance meshInstance = ((List<MeshInstance>)(object)meshGroup)[i];
@@ -266,18 +266,18 @@ public class MeshData
 			}
 			for (int k = 0; k < meshInstance.data.vertices.Length; k++)
 			{
-				vertices.Add(((Matrix4x4)(ref val)).MultiplyPoint3x4(meshInstance.data.vertices[k]));
+				vertices.Add(val.MultiplyPoint3x4(meshInstance.data.vertices[k]));
 				positions.Add(Vector4.op_Implicit(meshInstance.position));
 			}
 			for (int l = 0; l < meshInstance.data.normals.Length; l++)
 			{
-				normals.Add(((Matrix4x4)(ref val)).MultiplyVector(meshInstance.data.normals[l]));
+				normals.Add(val.MultiplyVector(meshInstance.data.normals[l]));
 			}
 			for (int m = 0; m < meshInstance.data.tangents.Length; m++)
 			{
 				Vector4 val2 = meshInstance.data.tangents[m];
-				((Vector3)(ref val3))._002Ector(val2.x, val2.y, val2.z);
-				Vector3 val4 = ((Matrix4x4)(ref val)).MultiplyVector(val3);
+				Vector3 val3 = new Vector3(val2.x, val2.y, val2.z);
+				Vector3 val4 = val.MultiplyVector(val3);
 				tangents.Add(new Vector4(val4.x, val4.y, val4.z, val2.w));
 			}
 			for (int n = 0; n < meshInstance.data.colors32.Length; n++)

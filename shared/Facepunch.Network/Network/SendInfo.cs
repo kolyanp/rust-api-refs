@@ -16,7 +16,7 @@ public struct SendInfo
 
 	public SendInfo(List<Connection> connections)
 	{
-		this = default(SendInfo);
+		this = default;
 		channel = 0;
 		method = SendMethod.Reliable;
 		priority = Priority.Normal;
@@ -25,7 +25,7 @@ public struct SendInfo
 
 	public SendInfo(Connection connection)
 	{
-		this = default(SendInfo);
+		this = default;
 		channel = 0;
 		method = SendMethod.Reliable;
 		priority = Priority.Normal;

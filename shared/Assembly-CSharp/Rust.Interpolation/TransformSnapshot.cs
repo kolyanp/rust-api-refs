@@ -47,6 +47,6 @@ public struct TransformSnapshot : ISnapshot<TransformSnapshot>
 
 	public TransformSnapshot GetNew()
 	{
-		return default(TransformSnapshot);
+		return default;
 	}
 }

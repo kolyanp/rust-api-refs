@@ -20,6 +20,6 @@ public class Time : BasePlayerHandler<AppEmpty>
 		AppResponse val2 = Pool.Get<AppResponse>();
 		val2.time = val;
 		Send(val2);
-		return default(ValueTask);
+		return default;
 	}
 }

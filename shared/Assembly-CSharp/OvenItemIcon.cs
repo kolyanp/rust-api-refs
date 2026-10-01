@@ -24,9 +24,9 @@ public class OvenItemIcon : MonoBehaviour
 
 	public OvenSlotType SlotType;
 
-	public Phrase EmptyPhrase;
+	public Phrase EmptyPhrase = new Phrase("empty", "empty");
 
-	public List<OvenSlotConfig> SlotConfigs;
+	public List<OvenSlotConfig> SlotConfigs = new List<OvenSlotConfig>();
 
 	public float DisabledAlphaScale;
 
@@ -69,9 +69,6 @@ public class OvenItemIcon : MonoBehaviour
 	public OvenItemIcon()
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Expected O, but got Unknown
-		EmptyPhrase = new Phrase("empty", "empty");
-		SlotConfigs = new List<OvenSlotConfig>();
-		((MonoBehaviour)this)._002Ector();
+		//IL_0015: Expected Obj, but got Unknown
 	}
 }

@@ -34,25 +34,25 @@ public class AdminData
 
 	public bool HidePluginIcons;
 
-	public bool DisableUMod;
+	public bool DisableUMod = true;
 
 	public bool Maximize;
 
-	public bool BackgroundBlur;
+	public bool BackgroundBlur = true;
 
-	public float BackgroundOpacity;
+	public float BackgroundOpacity = 0.75f;
 
-	public float BackgroundImageOpacity;
+	public float BackgroundImageOpacity = 0.75f;
 
-	public string BackgroundImage;
+	public string BackgroundImage = "https://cdn.carbonmod.gg/content/carbon-background.png";
 
-	public Vector2 BackgroundImageYAnchor;
+	public Vector2 BackgroundImageYAnchor = new Vector2(0.15f, 1f);
 
-	public float BackgroundColumnOpacity;
+	public float BackgroundColumnOpacity = 0.5f;
 
-	public DataColors Colors;
+	public DataColors Colors = new DataColors();
 
-	public Dictionary<string, bool> TabsHiddenStatus;
+	public Dictionary<string, bool> TabsHiddenStatus = new Dictionary<string, bool>();
 
 	public bool IsTabHidden(string id)
 	{
@@ -69,15 +69,5 @@ public class AdminData
 	{
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		DisableUMod = true;
-		BackgroundBlur = true;
-		BackgroundOpacity = 0.75f;
-		BackgroundImageOpacity = 0.75f;
-		BackgroundImage = "https://cdn.carbonmod.gg/content/carbon-background.png";
-		BackgroundImageYAnchor = new Vector2(0.15f, 1f);
-		BackgroundColumnOpacity = 0.5f;
-		Colors = new DataColors();
-		TabsHiddenStatus = new Dictionary<string, bool>();
-		base._002Ector();
 	}
 }

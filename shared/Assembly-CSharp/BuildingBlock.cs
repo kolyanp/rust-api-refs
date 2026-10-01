@@ -56,11 +56,11 @@ public class BuildingBlock : StabilityEntity
 
 	private MeshCollider placeholderCollider;
 
-	public static UpdateSkinWorkQueue updateSkinQueueServer;
+	public static UpdateSkinWorkQueue updateSkinQueueServer = new UpdateSkinWorkQueue();
 
-	public static readonly Phrase RotateTitle;
+	public static readonly Phrase RotateTitle = new Phrase("rotate", "Rotate");
 
-	public static readonly Phrase RotateDesc;
+	public static readonly Phrase RotateDesc = new Phrase("rotate_building_desc", "Rotate or flip this block to face a different direction");
 
 	private bool globalNetworkCooldown;
 
@@ -103,13 +103,13 @@ public class BuildingBlock : StabilityEntity
 		{
 			if (blockDefinition == null)
 			{
-				Debug.LogWarning((object)$"blockDefinition is null for {base.ShortPrefabName} {grade} {skinID}");
+				Debug.LogWarning((object)$"blockDefinition is null for {ShortPrefabName} {grade} {skinID}");
 				return null;
 			}
 			ConstructionGrade constructionGrade = blockDefinition.GetGrade(grade, skinID);
 			if (constructionGrade == null)
 			{
-				Debug.LogWarning((object)$"currentGrade is null for {base.ShortPrefabName} {grade} {skinID}");
+				Debug.LogWarning((object)$"currentGrade is null for {ShortPrefabName} {grade} {skinID}");
 				return null;
 			}
 			return constructionGrade;
@@ -246,7 +246,7 @@ public class BuildingBlock : StabilityEntity
 		if (state != modelState)
 		{
 			modelState = state;
-			if (base.isServer)
+			if (isServer)
 			{
 				GlobalNetworkHandler.server?.TrySendNetworkUpdate(this);
 			}
@@ -372,7 +372,7 @@ public class BuildingBlock : StabilityEntity
 
 	public void SetHealthToMax()
 	{
-		base.health = MaxHealth();
+		health = MaxHealth();
 	}
 
 	[RPC_Server]
@@ -413,9 +413,9 @@ public class BuildingBlock : StabilityEntity
 			{
 				return;
 			}
-			if (base.SecondsSinceAttacked < 30f)
+			if (SecondsSinceAttacked < 30f)
 			{
-				msg.player.ShowToast(GameTip.Styles.Error, ConstructionErrors.CantUpgradeRecentlyDamaged, false, (30f - base.SecondsSinceAttacked).ToString("N0"));
+				msg.player.ShowToast(GameTip.Styles.Error, ConstructionErrors.CantUpgradeRecentlyDamaged, false, (30f - SecondsSinceAttacked).ToString("N0"));
 				return;
 			}
 			if (!constructionGrade.gradeBase.alwaysUnlock && constructionGrade.gradeBase.skin != 0L && !msg.player.blueprints.steamInventory.HasItem((int)constructionGrade.gradeBase.skin))
@@ -536,7 +536,7 @@ public class BuildingBlock : StabilityEntity
 		{
 			return;
 		}
-		if (cachedStability <= 0f || base.isServer)
+		if (cachedStability <= 0f || isServer)
 		{
 			ChangeSkin();
 			return;
@@ -598,7 +598,7 @@ public class BuildingBlock : StabilityEntity
 
 	protected void ChangeSkin()
 	{
-		if (base.IsDestroyed)
+		if (IsDestroyed)
 		{
 			return;
 		}
@@ -643,9 +643,9 @@ public class BuildingBlock : StabilityEntity
 			{
 				DestroySkin();
 			}
-			GameObject val = base.gameManager.CreatePrefab(prefab.resourcePath, ((Component)this).transform);
+			GameObject val = gameManager.CreatePrefab(prefab.resourcePath, ((Component)this).transform);
 			currentSkin = val.GetComponent<ConstructionSkin>();
-			if ((Object)(object)currentSkin != (Object)null && base.isServer && !Application.isLoading)
+			if ((Object)(object)currentSkin != (Object)null && isServer && !Application.isLoading)
 			{
 				customColour = currentSkin.GetStartingDetailColour(playerCustomColourToApply);
 			}
@@ -653,7 +653,7 @@ public class BuildingBlock : StabilityEntity
 			SetModel(component);
 			Assert.IsTrue((Object)(object)model == (Object)(object)component, "Didn't manage to set model successfully!");
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			SetConditionalModel(currentSkin.DetermineConditionalModelState(this));
 		}
@@ -665,13 +665,13 @@ public class BuildingBlock : StabilityEntity
 		{
 			currentSkin.Refresh(this);
 			OnSkinRefresh();
-			if (base.isServer & flag2)
+			if (isServer & flag2)
 			{
 				CheckForPipes();
 			}
 			forceSkinRefresh = false;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			if (flag)
 			{
@@ -680,6 +680,10 @@ public class BuildingBlock : StabilityEntity
 			if (flag2)
 			{
 				SendNetworkUpdate();
+			}
+			if (IsFullySpawned() && !Application.isLoading && (flag | flag2))
+			{
+				QueueNavmeshRebuild();
 			}
 			timePlaced = GetNetworkTime();
 		}
@@ -706,7 +710,7 @@ public class BuildingBlock : StabilityEntity
 		}
 		List<ColliderInfo_Pipe> list = Pool.Get<List<ColliderInfo_Pipe>>();
 		Bounds val = bounds;
-		((Bounds)(ref val)).extents = ((Bounds)(ref val)).extents * 0.97f;
+		val.extents *= 0.97f;
 		Vis.Components<ColliderInfo_Pipe>((OBB)(((Object)(object)AlternativePipeBounds != (Object)null) ? AlternativePipeBounds.GetObb() : new OBB(((Component)this).transform, val)), list, 536870912, (QueryTriggerInteraction)2);
 		foreach (ColliderInfo_Pipe item in list)
 		{
@@ -739,7 +743,7 @@ public class BuildingBlock : StabilityEntity
 	public override void OnHealthChanged(float oldvalue, float newvalue)
 	{
 		base.OnHealthChanged(oldvalue, newvalue);
-		if (base.isServer && Mathf.RoundToInt(oldvalue) != Mathf.RoundToInt(newvalue))
+		if (isServer && Mathf.RoundToInt(oldvalue) != Mathf.RoundToInt(newvalue))
 		{
 			SendNetworkUpdate(BasePlayer.NetworkQueue.UpdateDistance);
 		}
@@ -811,8 +815,8 @@ public class BuildingBlock : StabilityEntity
 		return !player.IsBuildingBlocked(((Component)this).transform.position, ((Component)this).transform.rotation, bounds);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void DoRotation(RPCMessage msg)
 	{
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
@@ -926,7 +930,7 @@ public class BuildingBlock : StabilityEntity
 
 	public override void ServerInit()
 	{
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		blockDefinition = PrefabAttribute.server.Find<Construction>(prefabID);
 		if (blockDefinition == null)
 		{
@@ -934,6 +938,11 @@ public class BuildingBlock : StabilityEntity
 		}
 		base.ServerInit();
 		UpdateSkin();
+		if (!Application.isLoadingSave && faces != null)
+		{
+			GetEntityLinks();
+			RefreshFaces();
+		}
 		if (HasFlag(Flags.Reserved1) || !Application.isLoadingSave)
 		{
 			StartBeingRotatable();
@@ -1078,7 +1087,7 @@ public class BuildingBlock : StabilityEntity
 			wallpaperHealth2 = 100f;
 			wallpaperRotation2 = rotation;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			SetConditionalModel(currentSkin.DetermineConditionalModelState(this));
 			SendNetworkUpdateImmediate();
@@ -1103,7 +1112,7 @@ public class BuildingBlock : StabilityEntity
 				wallpaperRotation2 = 0f;
 				break;
 			}
-			if (base.isServer)
+			if (isServer)
 			{
 				SetConditionalModel(currentSkin.DetermineConditionalModelState(this));
 				SendNetworkUpdateImmediate();
@@ -1207,7 +1216,7 @@ public class BuildingBlock : StabilityEntity
 		{
 			if (array[num] is SocketMod_Inside socketMod_Inside)
 			{
-				Construction.Placement place = new Construction.Placement(default(Construction.Target));
+				Construction.Placement place = new Construction.Placement(default);
 				place.position = ((Component)this).transform.position + ((Component)this).transform.rotation * socket_Base.localPosition;
 				place.rotation = ((Component)this).transform.rotation * socket_Base.localRotation;
 				if (!socketMod_Inside.DoCheck(ref place))
@@ -1295,9 +1304,9 @@ public class BuildingBlock : StabilityEntity
 		Vector3 val3 = ((Component)this).transform.position + ((Component)this).transform.rotation * val2;
 		bool flag = false;
 		Ray val4 = player.eyes.HeadRay();
-		Vector3 val5 = val3 - ((Ray)(ref val4)).origin;
+		Vector3 val5 = val3 - val4.origin;
 		val4 = player.eyes.HeadRay();
-		if (!Physics.Raycast(new Ray(((Ray)(ref val4)).origin, ((Vector3)(ref val5)).normalized), ((Vector3)(ref val5)).magnitude, 136314880))
+		if (!Physics.Raycast(new Ray(val4.origin, val5.normalized), val5.magnitude, 136314880))
 		{
 			flag = true;
 		}
@@ -1309,7 +1318,7 @@ public class BuildingBlock : StabilityEntity
 				Vector3 val7 = ((Component)this).transform.position + ((Component)this).transform.rotation * socket_Base.localPosition;
 				Quaternion val8 = ((Component)this).transform.rotation * socket_Base.localRotation;
 				Vector3 val9 = val7 + val8 * val6 - center;
-				if (!Physics.Raycast(center, val9, ((Vector3)(ref val9)).magnitude, 136314880))
+				if (!Physics.Raycast(center, val9, val9.magnitude, 136314880))
 				{
 					flag = true;
 					break;
@@ -1375,7 +1384,7 @@ public class BuildingBlock : StabilityEntity
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			RefreshNeighbours(linkToNeighbours: false);
 		}
@@ -1439,9 +1448,9 @@ public class BuildingBlock : StabilityEntity
 	static BuildingBlock()
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Expected O, but got Unknown
+		//IL_001e: Expected Obj, but got Unknown
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Expected O, but got Unknown
+		//IL_0032: Expected Obj, but got Unknown
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
@@ -1462,20 +1471,17 @@ public class BuildingBlock : StabilityEntity
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		updateSkinQueueServer = new UpdateSkinWorkQueue();
-		RotateTitle = new Phrase("rotate", "Rotate");
-		RotateDesc = new Phrase("rotate_building_desc", "Rotate or flip this block to face a different direction");
 		Vector3[] array = new Vector3[5];
 		Vector3 val = new Vector3(0f, 1f, 0f);
-		array[0] = ((Vector3)(ref val)).normalized;
+		array[0] = val.normalized;
 		val = new Vector3(1f, 1f, 0f);
-		array[1] = ((Vector3)(ref val)).normalized;
+		array[1] = val.normalized;
 		val = new Vector3(-1f, 1f, 0f);
-		array[2] = ((Vector3)(ref val)).normalized;
+		array[2] = val.normalized;
 		val = new Vector3(0f, 1f, 1f);
-		array[3] = ((Vector3)(ref val)).normalized;
+		array[3] = val.normalized;
 		val = new Vector3(0f, 1f, -1f);
-		array[4] = ((Vector3)(ref val)).normalized;
-		outsideLookupOffsets = (Vector3[])(object)array;
+		array[4] = val.normalized;
+		outsideLookupOffsets = array;
 	}
 }

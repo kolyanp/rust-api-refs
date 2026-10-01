@@ -59,14 +59,14 @@ public class CornerSocket : Socket_Base
 		}
 		Matrix4x4 val = Matrix4x4.TRS(position, rotation, Vector3.one);
 		Matrix4x4 val2 = Matrix4x4.TRS(socketPosition, socketRotation, Vector3.one);
-		Vector3 val3 = ((Matrix4x4)(ref val)).MultiplyVector(worldRotation * Vector3.forward);
-		Vector3 val4 = ((Matrix4x4)(ref val2)).MultiplyVector(socket.worldRotation * Vector3.forward);
+		Vector3 val3 = val.MultiplyVector(worldRotation * Vector3.forward);
+		Vector3 val4 = val2.MultiplyVector(socket.worldRotation * Vector3.forward);
 		if (Vector3.Angle(val3, val4) > 2f)
 		{
 			return false;
 		}
 		OBB selectBounds = GetSelectBounds(position, rotation);
 		OBB selectBounds2 = socket.GetSelectBounds(socketPosition, socketRotation);
-		return ((OBB)(ref selectBounds)).Intersects(selectBounds2);
+		return selectBounds.Intersects(selectBounds2);
 	}
 }

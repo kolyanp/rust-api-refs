@@ -11,7 +11,9 @@ public class TerrainMargin
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
@@ -55,10 +57,8 @@ public class TerrainMargin
 		Material marginMaterial = TerrainMeta.Config.MarginMaterial;
 		Vector3 center = TerrainMeta.Center;
 		Vector3 size = TerrainMeta.Size;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(size.x, 0f, 0f);
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(0f, 0f, size.z);
+		Vector3 val = new Vector3(size.x, 0f, 0f);
+		Vector3 val2 = new Vector3(0f, 0f, size.z);
 		center.y = TerrainMeta.HeightMap.GetHeight(0, 0);
 		Create(center - val2, size, marginMaterial);
 		Create(center - val2 - val, size, marginMaterial);
@@ -75,12 +75,12 @@ public class TerrainMargin
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		GameObject obj = GameObject.CreatePrimitive((PrimitiveType)4);
-		((Object)obj).name = "TerrainMargin";
-		obj.layer = 16;
-		obj.transform.position = position;
-		obj.transform.localScale = size * 0.1f;
-		Object.Destroy((Object)(object)obj.GetComponent<MeshRenderer>());
-		Object.Destroy((Object)(object)obj.GetComponent<MeshFilter>());
+		GameObject val = GameObject.CreatePrimitive((PrimitiveType)4);
+		((Object)val).name = "TerrainMargin";
+		val.layer = 16;
+		val.transform.position = position;
+		val.transform.localScale = size * 0.1f;
+		Object.Destroy((Object)(object)val.GetComponent<MeshRenderer>());
+		Object.Destroy((Object)(object)val.GetComponent<MeshFilter>());
 	}
 }

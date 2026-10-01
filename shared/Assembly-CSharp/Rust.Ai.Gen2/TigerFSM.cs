@@ -64,10 +64,10 @@ public class TigerFSM : FSMComponent
 	public override void InitShared()
 	{
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Expected O, but got Unknown
+		//IL_00d3: Expected Obj, but got Unknown
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ff: Expected O, but got Unknown
-		if (base.baseEntity.isServer)
+		//IL_00ff: Expected Obj, but got Unknown
+		if (baseEntity.isServer)
 		{
 			State_Nothing state_Nothing = new State_Nothing
 			{
@@ -95,48 +95,48 @@ public class TigerFSM : FSMComponent
 			HurtTrans = new Trans_Triggerable_HitInfo();
 			StaggerTrans = new Trans_Triggerable_HitInfo();
 			Trans_Triggerable FireMeleeTrans = new Trans_Triggerable();
-			((Component)base.baseEntity).GetComponent<SenseComponent>().onFireMelee.AddListener((UnityAction)delegate
+			((Component)baseEntity).GetComponent<SenseComponent>().onFireMelee.AddListener((UnityAction)(() =>
 			{
 				FireMeleeTrans.Trigger();
-			});
+			}));
 			Trans_Triggerable EncounterEndTrans = new Trans_Triggerable();
-			((Component)base.baseEntity).GetComponent<NPCEncounterTimer>().onShouldGiveUp.AddListener((UnityAction)delegate
+			((Component)baseEntity).GetComponent<NPCEncounterTimer>().onShouldGiveUp.AddListener((UnityAction)(() =>
 			{
 				EncounterEndTrans.Trigger();
-			});
-			State_Nothing obj = new State_Nothing
+			}));
+			State_Nothing state_Nothing2 = new State_Nothing
 			{
 				Name = "Root"
 			};
-			State_Nothing state_Nothing2 = new State_Nothing
+			State_Nothing state_Nothing3 = new State_Nothing
 			{
 				Name = "Alive"
 			};
-			State_Nothing state_Nothing3 = new State_Nothing
+			State_Nothing state_Nothing4 = new State_Nothing
 			{
 				Name = "OnNavmesh"
 			};
-			State_Nothing state_Nothing4 = new State_Nothing
+			State_Nothing state_Nothing5 = new State_Nothing
 			{
 				Name = "Food"
 			};
-			State_Nothing state_Nothing5 = new State_Nothing
+			State_Nothing state_Nothing6 = new State_Nothing
 			{
 				Name = "Roaming"
 			};
-			State_Nothing state_Nothing6 = new State_Nothing
+			State_Nothing state_Nothing7 = new State_Nothing
 			{
 				Name = "Has target"
 			};
-			State_Nothing state_Nothing7 = new State_Nothing
+			State_Nothing state_Nothing8 = new State_Nothing
 			{
 				Name = "Ready to strike"
 			};
-			State_Nothing state_Nothing8 = new State_Nothing
+			State_Nothing state_Nothing9 = new State_Nothing
 			{
 				Name = "Not hurt"
 			};
-			State_Nothing state_Nothing9 = new State_Nothing
+			State_Nothing state_Nothing10 = new State_Nothing
 			{
 				Name = "Random post idle wait"
 			};
@@ -166,18 +166,18 @@ public class TigerFSM : FSMComponent
 				requireAiming = true,
 				minTime = 0.5f
 			};
-			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(roam, new Trans_IsNavmeshReady()) + (state_Nothing3.AddTickTransition(state_Nothing, ~new Trans_IsNavmeshReady()) + (state_Nothing8.AddTickTransition(hurt, StaggerTrans) + (state_Nothing5.AddTickTransition(approach, new Trans_HasTarget()).AddTickTransition(approachFood, new Trans_SeesFood()) + roam.AddEndTransition(sleep, new Trans_RandomChance
+			_ = state_Nothing2 + (state_Nothing3.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(roam, new Trans_IsNavmeshReady()) + (state_Nothing4.AddTickTransition(state_Nothing, ~new Trans_IsNavmeshReady()) + (state_Nothing9.AddTickTransition(hurt, StaggerTrans) + (state_Nothing6.AddTickTransition(approach, new Trans_HasTarget()).AddTickTransition(approachFood, new Trans_SeesFood()) + roam.AddEndTransition(sleep, new Trans_RandomChance
 			{
 				Chance = 0.25f
-			}).AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(randomIdle) + sleep.AddEndTransition(roam) + randomIdle.AddEndTransition(state_Nothing9) + state_Nothing9.AddTickTransition(roam, new Trans_ElapsedTimeRandomized
+			}).AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(randomIdle) + sleep.AddEndTransition(roam) + randomIdle.AddEndTransition(state_Nothing10) + state_Nothing10.AddTickTransition(roam, new Trans_ElapsedTimeRandomized
 			{
 				MinDuration = 0.0,
 				MaxDuration = 3.0
-			})) + (state_Nothing6.AddTickTransition(roam, new Trans_HasTarget
+			})) + (state_Nothing7.AddTickTransition(roam, new Trans_HasTarget
 			{
 				Inverted = true
 			}).AddTickTransition(permaFlee, EncounterEndTrans).AddTickTransition(permaFlee, new Trans_TargetIsInSafeZone())
-				.AddTickTransition(permaFlee, new Trans_IsInWater_Slow() | new Trans_IsTargetInWater()) + (state_Nothing7.AddTickTransition(growlFire, transition).AddTickTransition(approachFood, new Trans_SeesFood() & ~new Trans_HasBlackboardBool
+				.AddTickTransition(permaFlee, new Trans_IsInWater_Slow() | new Trans_IsTargetInWater()) + (state_Nothing8.AddTickTransition(growlFire, transition).AddTickTransition(approachFood, new Trans_SeesFood() & ~new Trans_HasBlackboardBool
 			{
 				Key = "TriedToApproachUnreachableFood"
 			}).AddTickTransition(charge, new Trans_TargetInRange
@@ -242,7 +242,7 @@ public class TigerFSM : FSMComponent
 			}).AddTickTransition(permaFlee, FireMeleeTrans).AddTickTransition(approach, new Trans_CanReachTarget_Slow())
 				.AddFailureTransition(permaFlee)
 				.AddEndTransition(attackUnreachable) + state_MoveToLastReachablePointNearTarget2.AddTickTransition(permaFlee, FireMeleeTrans).AddTickTransition(charge, new Trans_CanReachTarget_Slow()).AddFailureTransition(permaFlee)
-				.AddEndTransition(attackUnreachable) + flee.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(approach)) + (state_Nothing4.AddTickTransition(growlFire, transition).AddTickTransition(flee, trans_Or2) + approachFood.AddTickTransition(roam, ~new Trans_SeesFood()).AddTickTransition(charge, new Trans_TargetInRange
+				.AddEndTransition(attackUnreachable) + flee.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(approach)) + (state_Nothing5.AddTickTransition(growlFire, transition).AddTickTransition(flee, trans_Or2) + approachFood.AddTickTransition(roam, ~new Trans_SeesFood()).AddTickTransition(charge, new Trans_TargetInRange
 			{
 				Range = 10f
 			}).AddFailureTransition(roam)
@@ -268,6 +268,7 @@ public class TigerFSM : FSMComponent
 			{
 				Key = "HitDuringCharge"
 			}).AddEndTransition(flee)) + dead;
+			RegisterDebugMoveTo(state_Nothing3);
 			SetState(state_Nothing);
 			SetFsmActive(newActive: true);
 		}
@@ -280,15 +281,15 @@ public class TigerFSM : FSMComponent
 			return;
 		}
 		((Component)this).GetComponent<RootMotionPlayer>().PlayServerAdditive(hurt.WeakHitAdditive);
-		if (base.CurrentState == roar || base.CurrentState == charge || base.CurrentState == attack || base.CurrentState == attackUnreachable)
+		if (CurrentState == roar || CurrentState == charge || CurrentState == attack || CurrentState == attackUnreachable)
 		{
 			((Component)this).GetComponent<BlackboardComponent>().Add("HitDuringCharge");
 		}
 		HurtTrans.Trigger(hitInfo);
-		if (hurt.ShouldStagger(base.baseEntity, hitInfo))
+		if (hurt.ShouldStagger(baseEntity, hitInfo))
 		{
 			StaggerTrans.Trigger(hitInfo);
-			if (base.CurrentState != hurt && base.CurrentState != dead)
+			if (CurrentState != hurt && CurrentState != dead)
 			{
 				ForceTickOnTheNextUpdate();
 			}

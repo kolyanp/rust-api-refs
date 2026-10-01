@@ -49,7 +49,7 @@ public static class RuntimeUtilities
 		{
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0026: Expected O, but got Unknown
+			//IL_0026: Expected Obj, but got Unknown
 			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)m_WhiteTexture == (Object)null)
 			{
@@ -70,7 +70,7 @@ public static class RuntimeUtilities
 		{
 			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0027: Expected O, but got Unknown
+			//IL_0027: Expected Obj, but got Unknown
 			//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)m_WhiteTexture3D == (Object)null)
@@ -79,7 +79,7 @@ public static class RuntimeUtilities
 				{
 					name = "White Texture 3D"
 				};
-				m_WhiteTexture3D.SetPixels((Color[])(object)new Color[1] { Color.white });
+				m_WhiteTexture3D.SetPixels(new Color[1] { Color.white });
 				m_WhiteTexture3D.Apply();
 			}
 			return m_WhiteTexture3D;
@@ -92,7 +92,7 @@ public static class RuntimeUtilities
 		{
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0026: Expected O, but got Unknown
+			//IL_0026: Expected Obj, but got Unknown
 			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)m_BlackTexture == (Object)null)
 			{
@@ -113,7 +113,7 @@ public static class RuntimeUtilities
 		{
 			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0027: Expected O, but got Unknown
+			//IL_0027: Expected Obj, but got Unknown
 			//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)m_BlackTexture3D == (Object)null)
@@ -122,7 +122,7 @@ public static class RuntimeUtilities
 				{
 					name = "Black Texture 3D"
 				};
-				m_BlackTexture3D.SetPixels((Color[])(object)new Color[1] { Color.black });
+				m_BlackTexture3D.SetPixels(new Color[1] { Color.black });
 				m_BlackTexture3D.Apply();
 			}
 			return m_BlackTexture3D;
@@ -135,7 +135,7 @@ public static class RuntimeUtilities
 		{
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0026: Expected O, but got Unknown
+			//IL_0026: Expected Obj, but got Unknown
 			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)m_TransparentTexture == (Object)null)
 			{
@@ -156,7 +156,7 @@ public static class RuntimeUtilities
 		{
 			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0027: Expected O, but got Unknown
+			//IL_0027: Expected Obj, but got Unknown
 			//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)m_TransparentTexture3D == (Object)null)
@@ -165,7 +165,7 @@ public static class RuntimeUtilities
 				{
 					name = "Transparent Texture 3D"
 				};
-				m_TransparentTexture3D.SetPixels((Color[])(object)new Color[1] { Color.clear });
+				m_TransparentTexture3D.SetPixels(new Color[1] { Color.clear });
 				m_TransparentTexture3D.Apply();
 			}
 			return m_TransparentTexture3D;
@@ -178,7 +178,7 @@ public static class RuntimeUtilities
 		{
 			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0028: Expected O, but got Unknown
+			//IL_0028: Expected Obj, but got Unknown
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0076: Unknown result type (might be due to invalid IL or missing references)
@@ -209,7 +209,7 @@ public static class RuntimeUtilities
 			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0049: Expected O, but got Unknown
+			//IL_0049: Expected Obj, but got Unknown
 			if ((Object)(object)s_CopyStdMaterial != (Object)null)
 			{
 				return s_CopyStdMaterial;
@@ -231,7 +231,7 @@ public static class RuntimeUtilities
 			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0049: Expected O, but got Unknown
+			//IL_0049: Expected Obj, but got Unknown
 			if ((Object)(object)s_CopyStdFromDoubleWideMaterial != (Object)null)
 			{
 				return s_CopyStdFromDoubleWideMaterial;
@@ -253,7 +253,7 @@ public static class RuntimeUtilities
 			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0049: Expected O, but got Unknown
+			//IL_0049: Expected Obj, but got Unknown
 			if ((Object)(object)s_CopyMaterial != (Object)null)
 			{
 				return s_CopyMaterial;
@@ -275,7 +275,7 @@ public static class RuntimeUtilities
 			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0049: Expected O, but got Unknown
+			//IL_0049: Expected Obj, but got Unknown
 			if ((Object)(object)s_CopyFromTexArrayMaterial != (Object)null)
 			{
 				return s_CopyFromTexArrayMaterial;
@@ -387,7 +387,7 @@ public static class RuntimeUtilities
 		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ec: Expected O, but got Unknown
+		//IL_00ec: Expected Obj, but got Unknown
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
@@ -395,7 +395,7 @@ public static class RuntimeUtilities
 		{
 			int num = size * size;
 			int num2 = size;
-			Color[] array = (Color[])(object)new Color[num * num2];
+			Color[] array = new Color[num * num2];
 			float num3 = 1f / ((float)size - 1f);
 			for (int i = 0; i < size; i++)
 			{
@@ -457,7 +457,7 @@ public static class RuntimeUtilities
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		cmd.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.MainTex, source);
+		cmd.SetGlobalTexture(ShaderIDs.MainTex, source);
 		SetRenderTargetWithLoadStoreAction(cmd, destination, (RenderBufferLoadAction)((!viewport.HasValue) ? 2 : 0), (RenderBufferStoreAction)0);
 		if (viewport.HasValue)
 		{
@@ -481,9 +481,9 @@ public static class RuntimeUtilities
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		cmd.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.MainTex, source);
-		bool num = (int)loadAction == 1;
-		if (num)
+		cmd.SetGlobalTexture(ShaderIDs.MainTex, source);
+		bool flag = (int)loadAction == 1;
+		if (flag)
 		{
 			loadAction = (RenderBufferLoadAction)2;
 		}
@@ -492,7 +492,7 @@ public static class RuntimeUtilities
 		{
 			cmd.SetViewport(viewport.Value);
 		}
-		if (num)
+		if (flag)
 		{
 			cmd.ClearRenderTarget(true, true, Color.clear);
 		}
@@ -508,32 +508,32 @@ public static class RuntimeUtilities
 
 	public static void BlitFullscreenTriangleFromDoubleWide(this CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination, Material material, int pass, int eye)
 	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		Vector4 val = default(Vector4);
-		((Vector4)(ref val))._002Ector(0.5f, 1f, 0f, 0f);
+		Vector4 val = new Vector4(0.5f, 1f, 0f, 0f);
 		if (eye == 1)
 		{
 			val.z = 0.5f;
 		}
-		cmd.SetGlobalVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.UVScaleOffset, val);
+		cmd.SetGlobalVector(ShaderIDs.UVScaleOffset, val);
 		BuiltinBlit(cmd, source, destination, material, pass);
 	}
 
 	public static void BlitFullscreenTriangleToDoubleWide(this CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination, PropertySheet propertySheet, int pass, int eye)
 	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		Vector4 val = default(Vector4);
-		((Vector4)(ref val))._002Ector(0.5f, 1f, -0.5f, 0f);
+		Vector4 val = new Vector4(0.5f, 1f, -0.5f, 0f);
 		if (eye == 1)
 		{
 			val.z = 0.5f;
 		}
 		propertySheet.EnableKeyword("STEREO_DOUBLEWIDE_TARGET");
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.PosScaleOffset, val);
+		propertySheet.properties.SetVector(ShaderIDs.PosScaleOffset, val);
 		cmd.BlitFullscreenTriangle(source, destination, propertySheet, 0);
 	}
 
@@ -543,8 +543,8 @@ public static class RuntimeUtilities
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		cmd.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.MainTex, source);
-		cmd.SetGlobalFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthSlice, (float)depthSlice);
+		cmd.SetGlobalTexture(ShaderIDs.MainTex, source);
+		cmd.SetGlobalFloat(ShaderIDs.DepthSlice, (float)depthSlice);
 		SetRenderTargetWithLoadStoreAction(cmd, destination, (RenderBufferLoadAction)2, (RenderBufferStoreAction)0);
 		if (clear)
 		{
@@ -559,8 +559,8 @@ public static class RuntimeUtilities
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		cmd.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.MainTex, source);
-		cmd.SetGlobalFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthSlice, (float)depthSlice);
+		cmd.SetGlobalTexture(ShaderIDs.MainTex, source);
+		cmd.SetGlobalFloat(ShaderIDs.DepthSlice, (float)depthSlice);
 		cmd.SetRenderTarget(destination, 0, (CubemapFace)(-1), -1);
 		if (clear)
 		{
@@ -583,7 +583,7 @@ public static class RuntimeUtilities
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		cmd.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.MainTex, source);
+		cmd.SetGlobalTexture(ShaderIDs.MainTex, source);
 		RenderBufferLoadAction val = (RenderBufferLoadAction)((!viewport.HasValue) ? 2 : 0);
 		if (clear)
 		{
@@ -608,7 +608,7 @@ public static class RuntimeUtilities
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		cmd.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.MainTex, source);
+		cmd.SetGlobalTexture(ShaderIDs.MainTex, source);
 		cmd.SetRenderTarget(destinations, depth);
 		if (viewport.HasValue)
 		{
@@ -768,7 +768,7 @@ public static class RuntimeUtilities
 	{
 		Queue<Transform> queue = new Queue<Transform>();
 		Scene activeScene = SceneManager.GetActiveScene();
-		GameObject[] rootGameObjects = ((Scene)(ref activeScene)).GetRootGameObjects();
+		GameObject[] rootGameObjects = activeScene.GetRootGameObjects();
 		GameObject[] array = rootGameObjects;
 		foreach (GameObject val in array)
 		{
@@ -822,9 +822,9 @@ public static class RuntimeUtilities
 		offset.y *= num / (0.5f * (float)camera.pixelHeight);
 		Matrix4x4 projectionMatrix = camera.projectionMatrix;
 		ref Matrix4x4 reference = ref projectionMatrix;
-		((Matrix4x4)(ref reference))[0, 2] = ((Matrix4x4)(ref reference))[0, 2] + offset.x / num2;
+		reference[0, 2] = reference[0, 2] + offset.x / num2;
 		reference = ref projectionMatrix;
-		((Matrix4x4)(ref reference))[1, 2] = ((Matrix4x4)(ref reference))[1, 2] + offset.y / num;
+		reference[1, 2] = reference[1, 2] + offset.y / num;
 		return projectionMatrix;
 	}
 
@@ -856,17 +856,17 @@ public static class RuntimeUtilities
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		FrustumPlanes decomposeProjection = ((Matrix4x4)(ref origProj)).decomposeProjection;
+		FrustumPlanes decomposeProjection = origProj.decomposeProjection;
 		float num = Math.Abs(decomposeProjection.top) + Math.Abs(decomposeProjection.bottom);
 		float num2 = Math.Abs(decomposeProjection.left) + Math.Abs(decomposeProjection.right);
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(jitter.x * num2 / (float)context.screenWidth, jitter.y * num / (float)context.screenHeight);
+		Vector2 val = new Vector2(jitter.x * num2 / (float)context.screenWidth, jitter.y * num / (float)context.screenHeight);
 		decomposeProjection.left += val.x;
 		decomposeProjection.right += val.x;
 		decomposeProjection.top += val.y;
@@ -878,7 +878,7 @@ public static class RuntimeUtilities
 	{
 		if (m_AssemblyTypes == null)
 		{
-			m_AssemblyTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(delegate(Assembly t)
+			m_AssemblyTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany((Assembly t) =>
 			{
 				Type[] result = new Type[0];
 				try

@@ -13,7 +13,7 @@ using SilentOrbit.ProtocolBuffers;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, global::IAIDesign, IAIGroupable, IAIEventListener
+public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, IAIDesign, IAIGroupable, IAIEventListener
 {
 	public class BaseAttackState : BasicAIState
 	{
@@ -22,7 +22,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		public BaseAttackState()
 			: base(AIState.Attack)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
@@ -133,7 +133,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		public BaseChaseState()
 			: base(AIState.Chase)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
@@ -265,12 +265,12 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 			{
 				return false;
 			}
-			bool num = brain.Navigator.SetDestination(result, BaseNavigator.NavigationSpeed.Fast);
-			if (!num)
+			bool flag = brain.Navigator.SetDestination(result, BaseNavigator.NavigationSpeed.Fast);
+			if (!flag)
 			{
 				Stop();
 			}
-			return num;
+			return flag;
 		}
 	}
 
@@ -610,7 +610,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 				lastDestinationTime = Time.time;
 				Vector3 insideUnitSphere = Random.insideUnitSphere;
 				insideUnitSphere.y = 0f;
-				((Vector3)(ref insideUnitSphere)).Normalize();
+				insideUnitSphere.Normalize();
 				Vector3 destination = (((Object)(object)bestRoamPoint == (Object)null) ? ((Component)entity).transform.position : (((Component)bestRoamPoint).transform.position + insideUnitSphere * bestRoamPoint.radius));
 				SetDestination(destination);
 				nextRoamPositionTime = -1f;
@@ -734,6 +734,10 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		}
 	}
 
+	public const string animalDebugMoveDesign = "animal.controltest";
+
+	public const string petDebugMoveDesign = "pet.movetopoint";
+
 	public bool SendClientCurrentState;
 
 	public bool UseQueuedMovementUpdates;
@@ -819,6 +823,21 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 
 	protected float unblindTime;
 
+	public bool SupportsDebugMove => FindDebugMoveDesignIndex() >= 0;
+
+	public bool IsDebugMoving
+	{
+		get
+		{
+			int num = FindDebugMoveDesignIndex();
+			if (num >= 0)
+			{
+				return loadedDesignIndex == num;
+			}
+			return false;
+		}
+	}
+
 	public BasicAIState CurrentState { get; set; }
 
 	public AIThinkMode ThinkMode { get; set; } = AIThinkMode.Interval;
@@ -845,7 +864,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 
 	public BaseNavigator Navigator { get; set; }
 
-	public unsafe override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
@@ -974,13 +993,82 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 					}
 					finally
 					{
-						((IDisposable)(*(FieldOperationLimitSuspensionScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+						((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 					}
 				}
 				return true;
 			}
 		}
 		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public bool DebugMoveTo(Vector3 worldPosition, BaseNavigator.NavigationSpeed speed, out string error)
+	{
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		error = null;
+		string shortPrefabName = baseEntity.ShortPrefabName;
+		int num = FindDebugMoveDesignIndex();
+		if (num < 0)
+		{
+			error = shortPrefabName + "'s brain lists neither 'animal.controltest' nor 'pet.movetopoint' in its Designs";
+			return false;
+		}
+		if (!HasState(AIState.MoveToPoint))
+		{
+			error = shortPrefabName + "'s brain has no MoveToPoint state";
+			return false;
+		}
+		if (Events == null)
+		{
+			error = shortPrefabName + "'s brain has no event memory - is UseAIDesign set on the prefab?";
+			return false;
+		}
+		if (!AI.move)
+		{
+			error = "ai.move is false so the navigator will refuse to path - run ai.move 1 first";
+			return false;
+		}
+		SetDebugMoveSpeed(speed);
+		Events.Memory.Position.Set(worldPosition, 6);
+		if (loadedDesignIndex == num)
+		{
+			return true;
+		}
+		if (!LoadAIDesignAtIndex(num))
+		{
+			error = "Failed to load '" + Designs[num].Filename + "' for " + shortPrefabName + " - is cfg/ai/" + Designs[num].Filename + " present?";
+			return false;
+		}
+		return true;
+	}
+
+	public bool DebugRelease()
+	{
+		if (!IsDebugMoving)
+		{
+			return false;
+		}
+		return LoadDefaultAIDesign();
+	}
+
+	protected virtual void SetDebugMoveSpeed(BaseNavigator.NavigationSpeed speed)
+	{
+	}
+
+	private int FindDebugMoveDesignIndex()
+	{
+		if (Designs == null)
+		{
+			return -1;
+		}
+		for (int i = 0; i < Designs.Count; i++)
+		{
+			if (!(Designs[i] == null) && (Designs[i].Filename == "animal.controltest" || Designs[i].Filename == "pet.movetopoint"))
+			{
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	public bool IsPet()
@@ -1020,10 +1108,10 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		if (ray.HasValue)
 		{
 			int num = 10551296;
-			RaycastHit val = default(RaycastHit);
+			RaycastHit val = default;
 			if (Physics.Raycast(ray.Value, ref val, 75f, num))
 			{
-				Events.Memory.Position.Set(((RaycastHit)(ref val)).point, 6);
+				Events.Memory.Position.Set(val.point, 6);
 			}
 			else
 			{
@@ -1076,7 +1164,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		ThinkMode = mode;
 	}
 
-	bool global::IAIDesign.CanPlayerDesignAI(BasePlayer player)
+	bool IAIDesign.CanPlayerDesignAI(BasePlayer player)
 	{
 		return PlayerCanDesignAI(player);
 	}
@@ -1106,10 +1194,10 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		return true;
 	}
 
-	[BaseEntity.RPC_Server.MaxDistance(3f)]
-	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
-	[BaseEntity.RPC_Server.IsVisible(3f)]
 	[BaseEntity.RPC_Server]
+	[BaseEntity.RPC_Server.IsVisible(3f)]
+	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
+	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	private void RequestAIDesign(BaseEntity.RPCMessage msg)
 	{
 		if (UseAIDesign && !((Object)(object)msg.player == (Object)null) && AIDesign != null && PlayerCanDesignAI(msg.player))
@@ -1121,11 +1209,11 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		}
 	}
 
+	[BaseEntity.RPC_Server.IsVisible(3f)]
+	[BaseEntity.RPC_Server]
+	[BaseEntity.RPC_Server.IgnoreProtoFieldOperationLimit]
 	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
-	[BaseEntity.RPC_Server.IgnoreProtoFieldOperationLimit]
-	[BaseEntity.RPC_Server]
-	[BaseEntity.RPC_Server.IsVisible(3f)]
 	private void SubmitAIDesign(BaseEntity.RPCMessage msg)
 	{
 		if (!UseAIDesign || (Object)(object)msg.player == (Object)null || !PlayerCanDesignAI(msg.player))
@@ -1164,7 +1252,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 				}
 				foreach (EntityComponentBase item in components)
 				{
-					if (item is global::IAIDesign iAIDesign)
+					if (item is IAIDesign iAIDesign)
 					{
 						iAIDesign.LoadAIDesign(val, null);
 						break;
@@ -1178,13 +1266,13 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		}
 	}
 
-	void global::IAIDesign.StopDesigning()
+	void IAIDesign.StopDesigning()
 	{
 		ClearDesigningPlayer();
 	}
 
 	[PoolAnalyzerNonCaching]
-	void global::IAIDesign.LoadAIDesign(AIDesign design, BasePlayer player)
+	void IAIDesign.LoadAIDesign(AIDesign design, BasePlayer player)
 	{
 		LoadAIDesign(design, player, loadedDesignIndex);
 	}
@@ -1239,7 +1327,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		{
 			return false;
 		}
-		AIDesign.Load(design, base.baseEntity);
+		AIDesign.Load(design, baseEntity);
 		AIStateContainer defaultStateContainer = AIDesign.GetDefaultStateContainer();
 		if (defaultStateContainer != null)
 		{
@@ -1521,12 +1609,12 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		{
 			return false;
 		}
-		bool num = SwitchToState(states[newState], stateContainerID);
-		if (num)
+		bool flag = SwitchToState(states[newState], stateContainerID);
+		if (flag)
 		{
 			OnStateChanged();
 		}
-		return num;
+		return flag;
 	}
 
 	private bool SwitchToState(BasicAIState newState, int stateContainerID = -1)
@@ -1580,7 +1668,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 	{
 		if (UseAIDesign && AIDesign != null)
 		{
-			Events.Init(this, AIDesign.GetStateContainerByID(stateContainerID), base.baseEntity, Senses);
+			Events.Init(this, AIDesign.GetStateContainerByID(stateContainerID), baseEntity, Senses);
 		}
 	}
 

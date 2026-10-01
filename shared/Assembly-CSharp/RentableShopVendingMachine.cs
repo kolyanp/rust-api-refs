@@ -358,7 +358,7 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		base.ServerInit();
 		if (BannedItemsList != null)
 		{
-			base.inventory.SetBlacklist(BannedItemsList.Items);
+			inventory.SetBlacklist(BannedItemsList.Items);
 		}
 	}
 
@@ -366,8 +366,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(12f)]
+	[RPC_Server]
 	public void RPC_AddSellOrderRelaxedDistance(RPCMessage msg)
 	{
 		RPC_AddSellOrder(msg);
@@ -380,8 +380,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		base.RPC_UpdateShopName(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
 	private void RPC_BuyItem(RPCMessage msg)
 	{
 		BuyItem(msg);
@@ -394,22 +394,22 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		SV_RequestLongTermData(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server]
 	private void RPC_RequestPurchaseData(RPCMessage msg)
 	{
 		SV_RequestPurchaseData(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server]
 	private void RPC_DeleteSellOrderDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteSellOrder(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
 	private void RPC_DeleteAllSellOrdersDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteAllSellOrders(msg);
@@ -421,9 +421,9 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		if (!takenCurrencyItem.MoveToContainer(base.inventory))
+		if (!takenCurrencyItem.MoveToContainer(inventory))
 		{
-			takenCurrencyItem.Drop(base.inventory.dropPosition, Vector3.zero);
+			takenCurrencyItem.Drop(inventory.dropPosition, Vector3.zero);
 		}
 	}
 

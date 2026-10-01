@@ -66,7 +66,7 @@ public class WorldSetup : SingletonComponent<WorldSetup>
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0183: Expected O, but got Unknown
+		//IL_0183: Expected Obj, but got Unknown
 		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
 		base.Awake();
 		Prefab[] array = Prefab.Load("assets/bundled/prefabs/world", null, null, useProbabilities: false, useWorldConfig: false);
@@ -96,7 +96,7 @@ public class WorldSetup : SingletonComponent<WorldSetup>
 			{
 				World.Procedural = false;
 				terrainMeta = terrain.GetComponent<TerrainMeta>();
-				Terrain val = default(Terrain);
+				Terrain val = default;
 				if (!terrainMeta.terrainRenderer.HasTerrain && terrain.TryGetComponent<Terrain>(ref val))
 				{
 					terrainMeta.terrainRenderer.SetTerrain(val);
@@ -460,13 +460,13 @@ public class WorldSetup : SingletonComponent<WorldSetup>
 		if (val != null)
 		{
 			List<string> unloadableScenes = AssetSceneManifest.Current.UnloadableScenes;
-			yield return val.UnloadAssetScenes(unloadableScenes, (Action<string, Dictionary<string, GameObject>>)delegate(string sceneName, Dictionary<string, GameObject> prefabs)
+			yield return val.UnloadAssetScenes(unloadableScenes, (Action<string, Dictionary<string, GameObject>>)((string sceneName, Dictionary<string, GameObject> prefabs) =>
 			{
 				foreach (var (item, _) in prefabs)
 				{
 					invalidAssets.Add(item);
 				}
-			});
+			}));
 		}
 		foreach (string item2 in invalidAssets)
 		{

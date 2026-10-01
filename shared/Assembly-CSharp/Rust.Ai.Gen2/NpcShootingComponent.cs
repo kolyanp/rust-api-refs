@@ -12,10 +12,10 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 	public ItemDefinition weaponItemDefinition;
 
 	[SerializeField]
-	private Vector3 offset;
+	private Vector3 offset = new Vector3(0.25f, 1.4f, 0.71f);
 
 	[SerializeField]
-	private float damageModifier;
+	private float damageModifier = 1f;
 
 	private const float spreadWhenAccurate = 0.1f;
 
@@ -44,11 +44,11 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		}
 	}
 
-	public bool AllowShooting { get; set; }
+	public bool AllowShooting { get; set; } = true;
 
-	public bool AllowBeingAccurate { get; set; }
+	public bool AllowBeingAccurate { get; set; } = true;
 
-	public bool OnlyShootIfTargetIsVisible { get; set; }
+	public bool OnlyShootIfTargetIsVisible { get; set; } = true;
 
 	public override void ServerInitPostNetworkGroupAssign()
 	{
@@ -58,7 +58,7 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		weapon = component as AttackEntity;
 		weapon.limitNetworking = false;
 		weapon.SetHeld(bHeld: true);
-		weapon.SetParent(base.baseEntity, StringPool.Get(weapon.handBone));
+		weapon.SetParent(baseEntity, StringPool.Get(weapon.handBone));
 		weapon.TopUpAmmo();
 		if (BaseNetworkableEx.Is<BaseProjectile>((Object)(object)weapon, out BaseProjectile _) && item.contents != null)
 		{
@@ -72,10 +72,10 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 				weapon.SetLightsOn(isOn: true);
 			}
 		}
-		weapon.EnableSaving(base.baseEntity.enableSaving);
+		weapon.EnableSaving(baseEntity.enableSaving);
 		foreach (BaseEntity child in weapon.children)
 		{
-			child.EnableSaving(base.baseEntity.enableSaving);
+			child.EnableSaving(baseEntity.enableSaving);
 		}
 	}
 
@@ -84,9 +84,9 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		base.DestroyShared();
 		if ((Object)(object)weapon != (Object)null && !weapon.IsDestroyed)
 		{
-			if (AI.logIssues && (Object)(object)weapon.GetParentEntity() != (Object)(object)base.baseEntity)
+			if (AI.logIssues && (Object)(object)weapon.GetParentEntity() != (Object)(object)baseEntity)
 			{
-				Debug.LogError((object)$"Weapon {weapon} of {base.baseEntity} was not parented to the entity.", (Object)(object)weapon);
+				Debug.LogError((object)$"Weapon {weapon} of {baseEntity} was not parented to the entity.", (Object)(object)weapon);
 			}
 			weapon.Kill();
 			weapon = null;
@@ -145,15 +145,15 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		//IL_0367: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02ef: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f1: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.baseEntity.isServer)
+		if (!baseEntity.isServer)
 		{
 			return;
 		}
-		if ((Object)(object)weapon.GetParentEntity() != (Object)(object)base.baseEntity && AI.logIssues)
+		if ((Object)(object)weapon.GetParentEntity() != (Object)(object)baseEntity && AI.logIssues)
 		{
-			Debug.LogError((object)$"Weapon {weapon} of {base.baseEntity} was not parented to the entity.", (Object)(object)weapon);
+			Debug.LogError((object)$"Weapon {weapon} of {baseEntity} was not parented to the entity.", (Object)(object)weapon);
 		}
-		if ((BaseNetworkableEx.Is<BaseCombatEntity>((Object)(object)base.baseEntity, out BaseCombatEntity castedUnityObject) && castedUnityObject.IsDead()) || IsReloading())
+		if ((BaseNetworkableEx.Is<BaseCombatEntity>((Object)(object)baseEntity, out BaseCombatEntity castedUnityObject) && castedUnityObject.IsDead()) || IsReloading())
 		{
 			return;
 		}
@@ -199,13 +199,13 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 				}
 				bool flag = status.IsVisible && status.IsAware;
 				bool flag2 = !OnlyShootIfTargetIsVisible && status.timeNotVisible <= 5f;
-				if ((!flag && !flag2) || Vector3.Angle(((Component)base.baseEntity).transform.forward, Vector3Ex.WithY(lkp - ((Component)base.baseEntity).transform.position, 0f)) > 5f)
+				if ((!flag && !flag2) || Vector3.Angle(((Component)baseEntity).transform.forward, Vector3Ex.WithY(lkp - ((Component)baseEntity).transform.position, 0f)) > 5f)
 				{
 					return;
 				}
 				Vector3 entityPointToShootAt = GetEntityPointToShootAt(target, lkp);
 				Vector3 val = entityPointToShootAt;
-				float num = Mathx.RemapValClamped(Vector3.Distance(((Component)base.baseEntity).transform.position, lkp), 0f, weapon.effectiveRange, 0f, 1f);
+				float num = Mathx.RemapValClamped(Vector3.Distance(((Component)baseEntity).transform.position, lkp), 0f, weapon.effectiveRange, 0f, 1f);
 				bool flag3 = false;
 				if (flag)
 				{
@@ -214,7 +214,7 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 					flag3 = CheckIfShouldMiss(target, num, lkp);
 					if (flag3)
 					{
-						Vector3 extents = ((Bounds)(ref target.bounds)).extents;
+						Vector3 extents = target.bounds.extents;
 						num2 += extents.x;
 						num3 += extents.y;
 					}
@@ -235,10 +235,10 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 				}
 				Matrix4x4 value = Matrix4x4.TRS(muzzleEstimatedPositionOnServer, Quaternion.LookRotation(val - muzzleEstimatedPositionOnServer), Vector3.one);
 				weapon.ServerUse(new HeldEntityServerUseParams(damageModifier, 1f, value, useBulletThickness: false, useProtectionForNPCs: true));
-				base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_Attack"));
+				baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_Attack"));
 				if (status.IsAware && status.IsVisible)
 				{
-					SingletonComponent<NpcNoiseManager>.Instance.OnNpcWeaponShot(base.baseEntity, target, val);
+					SingletonComponent<NpcNoiseManager>.Instance.OnNpcWeaponShot(baseEntity, target, val);
 				}
 				if (ShouldReload(weapon))
 				{
@@ -278,7 +278,23 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 			return false;
 		}
 		target.ToNonNpcPlayer(out var player);
-		float num = (((Object)(object)player != (Object)null && ((player.IsRunning() && Vector3.Angle(player.estimatedVelocity, ((Component)base.baseEntity).transform.position - groundLkp) < 30f) || player.estimatedSpeed < 1f)) ? 1f : (((Object)(object)player != (Object)null && player.IsRunning()) ? 0.5f : ((distanceRatio < 0.5f) ? 1f : ((!(distanceRatio < 1f)) ? 0.5f : 0.75f))));
+		float num;
+		if ((Object)(object)player != (Object)null && ((player.IsRunning() && Vector3.Angle(player.estimatedVelocity, ((Component)baseEntity).transform.position - groundLkp) < 30f) || player.estimatedSpeed < 1f))
+		{
+			num = 1f;
+		}
+		else if ((Object)(object)player != (Object)null && player.IsRunning())
+		{
+			num = 0.5f;
+		}
+		else if (distanceRatio < 0.5f)
+		{
+			num = 1f;
+		}
+		else
+		{
+			num = ((!(distanceRatio < 1f)) ? 0.5f : 0.75f);
+		}
 		return Random.value > num;
 	}
 
@@ -350,7 +366,7 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 	private void Reload()
 	{
 		weapon.ServerReload();
-		base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_Reload"));
+		baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_Reload"));
 	}
 
 	private Vector3 CalculateSpreadOffset(Vector3 targetPos, float spreadX = 0.1f, float spreadY = 0.1f)
@@ -385,16 +401,16 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = targetPos - EyePosition;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = Vector3.up;
 		if (Mathf.Abs(Vector3.Dot(normalized, Vector3.up)) > 0.99f)
 		{
 			val2 = Vector3.right;
 		}
 		val = Vector3.Cross(normalized, val2);
-		Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+		Vector3 normalized2 = val.normalized;
 		val = Vector3.Cross(normalized2, normalized);
-		Vector3 normalized3 = ((Vector3)(ref val)).normalized;
+		Vector3 normalized3 = val.normalized;
 		float num = Random.Range(0f, MathF.PI * 2f);
 		return normalized2 * Mathf.Cos(num) * spreadX + normalized3 * Mathf.Sin(num) * spreadY;
 	}
@@ -406,7 +422,7 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		return entityGroundPos + ((Bounds)(ref entity.bounds)).extents.y * Vector3.up;
+		return entityGroundPos + entity.bounds.extents.y * Vector3.up;
 	}
 
 	public Vector3 GetMuzzleEstimatedPositionOnServer(Vector3 targetGroundPos, bool noZ = false)
@@ -432,24 +448,18 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		Quaternion val = Quaternion.LookRotation(targetGroundPos - ((Component)base.baseEntity).transform.position);
+		Quaternion val = Quaternion.LookRotation(targetGroundPos - ((Component)baseEntity).transform.position);
 		if (noZ)
 		{
-			return ((Component)base.baseEntity).transform.TransformPoint(Vector3Ex.WithZ(offset, 0f));
+			return ((Component)baseEntity).transform.TransformPoint(Vector3Ex.WithZ(offset, 0f));
 		}
-		Quaternion val2 = Quaternion.Inverse(((Component)base.baseEntity).transform.rotation) * val;
-		return ((Component)base.baseEntity).transform.TransformPoint(val2 * Vector3Ex.WithXY(offset, 0f, 0f) + Vector3Ex.WithZ(offset, 0f));
+		Quaternion val2 = Quaternion.Inverse(((Component)baseEntity).transform.rotation) * val;
+		return ((Component)baseEntity).transform.TransformPoint(val2 * Vector3Ex.WithXY(offset, 0f, 0f) + Vector3Ex.WithZ(offset, 0f));
 	}
 
 	public NpcShootingComponent()
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		offset = new Vector3(0.25f, 1.4f, 0.71f);
-		damageModifier = 1f;
-		AllowShooting = true;
-		AllowBeingAccurate = true;
-		OnlyShootIfTargetIsVisible = true;
-		base._002Ector();
 	}
 }

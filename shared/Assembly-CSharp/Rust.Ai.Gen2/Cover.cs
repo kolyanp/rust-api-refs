@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -106,7 +105,7 @@ public struct Cover : IEquatable<Cover>
 		{
 			Vector3 peekLocation = GetPeekLocation(peek);
 			Vector3 val = target - peekLocation;
-			float magnitude = ((Vector3)(ref val)).magnitude;
+			float magnitude = val.magnitude;
 			Vector3 val2 = val / magnitude;
 			RaycastHit hitInfo;
 			return GamePhysics.Trace(new Ray(peekLocation, val2), 0f, out hitInfo, magnitude, 1486954497, (QueryTriggerInteraction)1);
@@ -119,6 +118,7 @@ public struct Cover : IEquatable<Cover>
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
@@ -135,8 +135,7 @@ public struct Cover : IEquatable<Cover>
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 forward = GetForward();
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(forward.z, 0f, 0f - forward.x);
+		Vector3 val = new Vector3(forward.z, 0f, 0f - forward.x);
 		Vector3 val2 = position + PlayerEyes.EyeOffset;
 		if ((peek & Peeks.Right) == Peeks.Right)
 		{
@@ -181,7 +180,7 @@ public struct Cover : IEquatable<Cover>
 
 	public override int GetHashCode()
 	{
-		return ((object)Unsafe.As<Vector3, Vector3>(ref position)/*cast due to constrained. prefix*/).GetHashCode();
+		return ((object)position/*cast due to constrained. prefix*/).GetHashCode();
 	}
 
 	public static bool operator ==(Cover left, Cover right)

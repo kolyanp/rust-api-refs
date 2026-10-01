@@ -57,6 +57,7 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 	{
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
@@ -76,8 +77,7 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 		index = TilesX - 1;
 		Vector3 zero = Vector3.zero;
 		StartFrameOffset -= StartFrameOffset / count * count;
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(1f / (float)TilesX, 1f / (float)TilesY);
+		Vector2 val = new Vector2(1f / (float)TilesX, 1f / (float)TilesY);
 		if ((Object)(object)currentRenderer != (Object)null)
 		{
 			instanceMaterial = currentRenderer.material;
@@ -145,6 +145,7 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 
 	private void UpdateFrame()
 	{
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
 		allCount++;
 		index++;
@@ -158,8 +159,7 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 			allCount = 0;
 			animationStoped = true;
 		}
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector((float)index / (float)TilesX - (float)(index / TilesX), 1f - (float)(index / TilesX) / (float)TilesY);
+		Vector2 val = new Vector2((float)index / (float)TilesX - (float)(index / TilesX), 1f - (float)(index / TilesX) / (float)TilesY);
 		if ((Object)(object)currentRenderer != (Object)null)
 		{
 			instanceMaterial.SetTextureOffset("_MainTex", val);
@@ -172,6 +172,7 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 
 	private void Update()
 	{
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		if (IsInterpolateFrames)
 		{
@@ -181,8 +182,7 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 			{
 				num = index;
 			}
-			Vector4 val = default(Vector4);
-			((Vector4)(ref val))._002Ector(1f / (float)TilesX, 1f / (float)TilesY, (float)num / (float)TilesX - (float)(num / TilesX), 1f - (float)(num / TilesX) / (float)TilesY);
+			Vector4 val = new Vector4(1f / (float)TilesX, 1f / (float)TilesY, (float)num / (float)TilesX - (float)(num / TilesX), 1f - (float)(num / TilesX) / (float)TilesY);
 			if ((Object)(object)currentRenderer != (Object)null)
 			{
 				instanceMaterial.SetVector("_MainTex_NextFrame", val);

@@ -45,7 +45,7 @@ public static class ImageEffectHelper
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Expected O, but got Unknown
+		//IL_0022: Expected Obj, but got Unknown
 		if ((Object)(object)s == (Object)null || !s.isSupported)
 		{
 			return null;

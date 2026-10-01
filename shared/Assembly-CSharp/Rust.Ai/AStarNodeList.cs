@@ -24,7 +24,7 @@ public class AStarNodeList : List<AStarNode>
 
 	public bool Contains(IAIPathNode n)
 	{
-		for (int i = 0; i < base.Count; i++)
+		for (int i = 0; i < Count; i++)
 		{
 			AStarNode aStarNode = base[i];
 			if (aStarNode != null && aStarNode.Node.Equals(n))
@@ -37,7 +37,7 @@ public class AStarNodeList : List<AStarNode>
 
 	public AStarNode GetAStarNodeOf(IAIPathNode n)
 	{
-		for (int i = 0; i < base.Count; i++)
+		for (int i = 0; i < Count; i++)
 		{
 			AStarNode aStarNode = base[i];
 			if (aStarNode != null && aStarNode.Node.Equals(n))

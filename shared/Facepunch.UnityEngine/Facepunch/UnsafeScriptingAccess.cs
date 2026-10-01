@@ -35,21 +35,21 @@ public struct UnsafeScriptingAccess : IDisposable
 			public void OnCompleted(Action continuation)
 			{
 				//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-				Awaiter val = default(Awaiter);
-				((Awaiter)(ref val)).OnCompleted(continuation);
+				Awaiter val = default;
+				val.OnCompleted(continuation);
 			}
 
 			public void UnsafeOnCompleted(Action continuation)
 			{
 				//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-				Awaiter val = default(Awaiter);
-				((Awaiter)(ref val)).UnsafeOnCompleted(continuation);
+				Awaiter val = default;
+				val.UnsafeOnCompleted(continuation);
 			}
 		}
 
 		public Awaiter GetAwaiter()
 		{
-			return default(Awaiter);
+			return default;
 		}
 	}
 
@@ -121,7 +121,7 @@ public struct UnsafeScriptingAccess : IDisposable
 		{
 			SetThreadScriptExecutionEnabled(isEnabled: true);
 		}
-		return default(UnsafeScriptingAccess);
+		return default;
 	}
 
 	void IDisposable.Dispose()
@@ -134,6 +134,6 @@ public struct UnsafeScriptingAccess : IDisposable
 
 	public static MaybeSwitchToThreadPool SwitchToMultithreading()
 	{
-		return default(MaybeSwitchToThreadPool);
+		return default;
 	}
 }

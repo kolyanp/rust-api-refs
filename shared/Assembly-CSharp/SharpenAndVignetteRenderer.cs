@@ -26,19 +26,19 @@ public class SharpenAndVignetteRenderer : PostProcessEffectRenderer<SharpenAndVi
 		command.BeginSample("SharpenAndVignette");
 		PropertySheet propertySheet = context.propertySheets.Get(sharpenAndVigenetteShader);
 		propertySheet.properties.Clear();
-		bool value = base.settings.applySharpen.value;
-		bool value2 = base.settings.applyVignette.value;
+		bool value = settings.applySharpen.value;
+		bool value2 = settings.applyVignette.value;
 		if (value)
 		{
 			propertySheet.properties.SetFloat("_px", 1f / (float)Screen.width);
 			propertySheet.properties.SetFloat("_py", 1f / (float)Screen.height);
-			propertySheet.properties.SetFloat("_strength", base.settings.strength.value);
-			propertySheet.properties.SetFloat("_clamp", base.settings.clamp.value);
+			propertySheet.properties.SetFloat("_strength", settings.strength.value);
+			propertySheet.properties.SetFloat("_clamp", settings.clamp.value);
 		}
 		if (value2)
 		{
-			propertySheet.properties.SetFloat("_sharpness", base.settings.sharpness.value * 0.01f);
-			propertySheet.properties.SetFloat("_darkness", base.settings.darkness.value * 0.02f);
+			propertySheet.properties.SetFloat("_sharpness", settings.sharpness.value * 0.01f);
+			propertySheet.properties.SetFloat("_darkness", settings.darkness.value * 0.02f);
 		}
 		if (value && !value2)
 		{

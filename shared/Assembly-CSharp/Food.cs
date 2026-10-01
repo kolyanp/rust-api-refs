@@ -7,6 +7,8 @@ using UnityEngine.Assertions;
 
 public class Food : BaseMelee
 {
+	public const string HitPlayerWithPieAchievement = "PIE_HIT_PLAYER";
+
 	public FoodViewModel.FoodVisualConfig VisualConfig;
 
 	public List<GameObject> VisualRoots;
@@ -59,7 +61,7 @@ public class Food : BaseMelee
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void Consume()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if (HasAttackCooldown())
 			{

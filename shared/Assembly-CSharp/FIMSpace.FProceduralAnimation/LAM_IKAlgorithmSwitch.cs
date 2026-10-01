@@ -18,9 +18,9 @@ public class LAM_IKAlgorithmSwitch : LegsAnimatorControlModuleBase
 	{
 		base.OnInit(helper);
 		playmodeIKProcessors = new List<AxisLockableIK>();
-		for (int i = 0; i < base.LegsAnim.Legs.Count; i++)
+		for (int i = 0; i < LegsAnim.Legs.Count; i++)
 		{
-			LegsAnimator.Leg leg = base.LegsAnim.Legs[i];
+			LegsAnimator.Leg leg = LegsAnim.Legs[i];
 			AxisLockableIK axisLockableIK = new AxisLockableIK();
 			playmodeIKProcessors.Add(axisLockableIK);
 			leg.AssignCustomIKProcessor(axisLockableIK);

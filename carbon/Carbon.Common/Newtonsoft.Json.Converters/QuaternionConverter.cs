@@ -32,11 +32,11 @@ public class QuaternionConverter : JsonConverter
 		writer.WritePropertyName("eulerAngles");
 		writer.WriteStartObject();
 		writer.WritePropertyName("x");
-		writer.WriteValue(((Quaternion)(ref val)).eulerAngles.x);
+		writer.WriteValue(val.eulerAngles.x);
 		writer.WritePropertyName("y");
-		writer.WriteValue(((Quaternion)(ref val)).eulerAngles.y);
+		writer.WriteValue(val.eulerAngles.y);
 		writer.WritePropertyName("z");
-		writer.WriteValue(((Quaternion)(ref val)).eulerAngles.z);
+		writer.WriteValue(val.eulerAngles.z);
 		writer.WriteEndObject();
 		writer.WriteEndObject();
 	}
@@ -53,7 +53,7 @@ public class QuaternionConverter : JsonConverter
 		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
 		JObject val = JObject.Load(reader);
 		List<JProperty> source = val.Properties().ToList();
-		Quaternion val2 = default(Quaternion);
+		Quaternion val2 = default;
 		if (source.Any((JProperty p) => p.Name == "w"))
 		{
 			val2.w = (float)val["w"];
@@ -73,7 +73,7 @@ public class QuaternionConverter : JsonConverter
 		if (source.Any((JProperty p) => p.Name == "eulerAngles"))
 		{
 			JToken val3 = val["eulerAngles"];
-			((Quaternion)(ref val2)).eulerAngles = new Vector3((float)val3[(object)"x"], (float)val3[(object)"y"], (float)val3[(object)"z"]);
+			val2.eulerAngles = new Vector3((float)val3[(object)"x"], (float)val3[(object)"y"], (float)val3[(object)"z"]);
 		}
 		return val2;
 	}

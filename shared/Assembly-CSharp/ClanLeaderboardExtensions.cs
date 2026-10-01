@@ -16,9 +16,9 @@ public static class ClanLeaderboardExtensions
 		{
 			list.Add(ToProto(item));
 		}
-		ClanLeaderboard obj = Pool.Get<ClanLeaderboard>();
-		obj.entries = list;
-		return obj;
+		ClanLeaderboard val = Pool.Get<ClanLeaderboard>();
+		val.entries = list;
+		return val;
 	}
 
 	[PoolAnalyzerGetWrapper]
@@ -27,10 +27,10 @@ public static class ClanLeaderboardExtensions
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		Entry obj = Pool.Get<Entry>();
-		obj.clanId = entry.ClanId;
-		obj.name = entry.Name;
-		obj.score = entry.Score;
-		return obj;
+		Entry val = Pool.Get<Entry>();
+		val.clanId = entry.ClanId;
+		val.name = entry.Name;
+		val.score = entry.Score;
+		return val;
 	}
 }

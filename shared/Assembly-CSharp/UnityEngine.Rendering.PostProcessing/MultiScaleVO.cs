@@ -5,7 +5,7 @@ namespace UnityEngine.Rendering.PostProcessing;
 
 [Serializable]
 [Preserve]
-internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbientOcclusionMethod
+internal sealed class MultiScaleVO : IAmbientOcclusionMethod
 {
 	internal enum MipLevel
 	{
@@ -26,15 +26,29 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		DebugOverlay
 	}
 
-	private readonly float[] m_SampleThickness;
+	private readonly float[] m_SampleThickness = new float[12]
+	{
+		Mathf.Sqrt(0.96f),
+		Mathf.Sqrt(0.84f),
+		Mathf.Sqrt(0.64f),
+		Mathf.Sqrt(0.35999995f),
+		Mathf.Sqrt(0.91999996f),
+		Mathf.Sqrt(0.79999995f),
+		Mathf.Sqrt(0.59999996f),
+		Mathf.Sqrt(0.31999993f),
+		Mathf.Sqrt(0.67999995f),
+		Mathf.Sqrt(0.47999996f),
+		Mathf.Sqrt(0.19999993f),
+		Mathf.Sqrt(0.27999997f)
+	};
 
-	private readonly float[] m_InvThicknessTable;
+	private readonly float[] m_InvThicknessTable = new float[12];
 
-	private readonly float[] m_SampleWeightTable;
+	private readonly float[] m_SampleWeightTable = new float[12];
 
-	private readonly int[] m_Widths;
+	private readonly int[] m_Widths = new int[7];
 
-	private readonly int[] m_Heights;
+	private readonly int[] m_Heights = new int[7];
 
 	private AmbientOcclusion m_Settings;
 
@@ -44,7 +58,11 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 
 	private RenderTexture m_AmbientOnlyAO;
 
-	private readonly RenderTargetIdentifier[] m_MRT;
+	private readonly RenderTargetIdentifier[] m_MRT = new RenderTargetIdentifier[2]
+	{
+		RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)10),
+		RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)2)
+	};
 
 	public MultiScaleVO(AmbientOcclusion settings)
 	{
@@ -52,31 +70,6 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-		m_SampleThickness = new float[12]
-		{
-			Mathf.Sqrt(0.96f),
-			Mathf.Sqrt(0.84f),
-			Mathf.Sqrt(0.64f),
-			Mathf.Sqrt(0.35999995f),
-			Mathf.Sqrt(0.91999996f),
-			Mathf.Sqrt(0.79999995f),
-			Mathf.Sqrt(0.59999996f),
-			Mathf.Sqrt(0.31999993f),
-			Mathf.Sqrt(0.67999995f),
-			Mathf.Sqrt(0.47999996f),
-			Mathf.Sqrt(0.19999993f),
-			Mathf.Sqrt(0.27999997f)
-		};
-		m_InvThicknessTable = new float[12];
-		m_SampleWeightTable = new float[12];
-		m_Widths = new int[7];
-		m_Heights = new int[7];
-		m_MRT = (RenderTargetIdentifier[])(object)new RenderTargetIdentifier[2]
-		{
-			RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)10),
-			RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)2)
-		};
-		base._002Ector();
 		m_Settings = settings;
 	}
 
@@ -95,17 +88,17 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		RenderTextureDescriptor val = default(RenderTextureDescriptor);
-		((RenderTextureDescriptor)(ref val)).width = m_Widths[(int)size];
-		((RenderTextureDescriptor)(ref val)).height = m_Heights[(int)size];
-		((RenderTextureDescriptor)(ref val)).colorFormat = format;
-		((RenderTextureDescriptor)(ref val)).depthBufferBits = 0;
-		((RenderTextureDescriptor)(ref val)).volumeDepth = 1;
-		((RenderTextureDescriptor)(ref val)).autoGenerateMips = false;
-		((RenderTextureDescriptor)(ref val)).msaaSamples = 1;
-		((RenderTextureDescriptor)(ref val)).enableRandomWrite = uav;
-		((RenderTextureDescriptor)(ref val)).dimension = (TextureDimension)2;
-		((RenderTextureDescriptor)(ref val)).sRGB = false;
+		RenderTextureDescriptor val = default;
+		val.width = m_Widths[(int)size];
+		val.height = m_Heights[(int)size];
+		val.colorFormat = format;
+		val.depthBufferBits = 0;
+		val.volumeDepth = 1;
+		val.autoGenerateMips = false;
+		val.msaaSamples = 1;
+		val.enableRandomWrite = uav;
+		val.dimension = (TextureDimension)2;
+		val.sRGB = false;
 		cmd.GetTemporaryRT(id, val, (FilterMode)0);
 	}
 
@@ -114,17 +107,17 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		RenderTextureDescriptor val = default(RenderTextureDescriptor);
-		((RenderTextureDescriptor)(ref val)).width = m_Widths[(int)size];
-		((RenderTextureDescriptor)(ref val)).height = m_Heights[(int)size];
-		((RenderTextureDescriptor)(ref val)).colorFormat = format;
-		((RenderTextureDescriptor)(ref val)).depthBufferBits = 0;
-		((RenderTextureDescriptor)(ref val)).volumeDepth = 16;
-		((RenderTextureDescriptor)(ref val)).autoGenerateMips = false;
-		((RenderTextureDescriptor)(ref val)).msaaSamples = 1;
-		((RenderTextureDescriptor)(ref val)).enableRandomWrite = uav;
-		((RenderTextureDescriptor)(ref val)).dimension = (TextureDimension)5;
-		((RenderTextureDescriptor)(ref val)).sRGB = false;
+		RenderTextureDescriptor val = default;
+		val.width = m_Widths[(int)size];
+		val.height = m_Heights[(int)size];
+		val.colorFormat = format;
+		val.depthBufferBits = 0;
+		val.volumeDepth = 16;
+		val.autoGenerateMips = false;
+		val.msaaSamples = 1;
+		val.enableRandomWrite = uav;
+		val.dimension = (TextureDimension)5;
+		val.sRGB = false;
 		cmd.GetTemporaryRT(id, val, (FilterMode)0);
 	}
 
@@ -150,7 +143,7 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		Matrix4x4 projectionMatrix = camera.projectionMatrix;
-		return 1f / ((Matrix4x4)(ref projectionMatrix))[0, 0];
+		return 1f / projectionMatrix[0, 0];
 	}
 
 	private Vector2 GetSize(MipLevel mip)
@@ -198,14 +191,14 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		PushAllocCommands(cmd, isMSAA);
 		PushDownsampleCommands(cmd, camera, depthMap, isMSAA);
 		float tanHalfFovH = CalculateTanHalfFovHeight(camera);
-		PushRenderCommands(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth1, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion1, GetSizeArray(MipLevel.L3), tanHalfFovH, isMSAA);
-		PushRenderCommands(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth2, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion2, GetSizeArray(MipLevel.L4), tanHalfFovH, isMSAA);
-		PushRenderCommands(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth3, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion3, GetSizeArray(MipLevel.L5), tanHalfFovH, isMSAA);
-		PushRenderCommands(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth4, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion4, GetSizeArray(MipLevel.L6), tanHalfFovH, isMSAA);
-		PushUpsampleCommands(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth4, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion4, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth3, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion3, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined3), Vector2.op_Implicit(GetSize(MipLevel.L4)), GetSize(MipLevel.L3), isMSAA);
-		PushUpsampleCommands(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth3, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined3, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth2, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion2, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined2), Vector2.op_Implicit(GetSize(MipLevel.L3)), GetSize(MipLevel.L2), isMSAA);
-		PushUpsampleCommands(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth2, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined2, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth1, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion1, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined1), Vector2.op_Implicit(GetSize(MipLevel.L2)), GetSize(MipLevel.L1), isMSAA);
-		PushUpsampleCommands(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth1, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined1, UnityEngine.Rendering.PostProcessing.ShaderIDs.LinearDepth, null, destination, Vector2.op_Implicit(GetSize(MipLevel.L1)), GetSize(MipLevel.Original), isMSAA, invert);
+		PushRenderCommands(cmd, ShaderIDs.TiledDepth1, ShaderIDs.Occlusion1, GetSizeArray(MipLevel.L3), tanHalfFovH, isMSAA);
+		PushRenderCommands(cmd, ShaderIDs.TiledDepth2, ShaderIDs.Occlusion2, GetSizeArray(MipLevel.L4), tanHalfFovH, isMSAA);
+		PushRenderCommands(cmd, ShaderIDs.TiledDepth3, ShaderIDs.Occlusion3, GetSizeArray(MipLevel.L5), tanHalfFovH, isMSAA);
+		PushRenderCommands(cmd, ShaderIDs.TiledDepth4, ShaderIDs.Occlusion4, GetSizeArray(MipLevel.L6), tanHalfFovH, isMSAA);
+		PushUpsampleCommands(cmd, ShaderIDs.LowDepth4, ShaderIDs.Occlusion4, ShaderIDs.LowDepth3, ShaderIDs.Occlusion3, RenderTargetIdentifier.op_Implicit(ShaderIDs.Combined3), Vector2.op_Implicit(GetSize(MipLevel.L4)), GetSize(MipLevel.L3), isMSAA);
+		PushUpsampleCommands(cmd, ShaderIDs.LowDepth3, ShaderIDs.Combined3, ShaderIDs.LowDepth2, ShaderIDs.Occlusion2, RenderTargetIdentifier.op_Implicit(ShaderIDs.Combined2), Vector2.op_Implicit(GetSize(MipLevel.L3)), GetSize(MipLevel.L2), isMSAA);
+		PushUpsampleCommands(cmd, ShaderIDs.LowDepth2, ShaderIDs.Combined2, ShaderIDs.LowDepth1, ShaderIDs.Occlusion1, RenderTargetIdentifier.op_Implicit(ShaderIDs.Combined1), Vector2.op_Implicit(GetSize(MipLevel.L2)), GetSize(MipLevel.L1), isMSAA);
+		PushUpsampleCommands(cmd, ShaderIDs.LowDepth1, ShaderIDs.Combined1, ShaderIDs.LinearDepth, null, destination, Vector2.op_Implicit(GetSize(MipLevel.L1)), GetSize(MipLevel.Original), isMSAA, invert);
 		PushReleaseCommands(cmd);
 	}
 
@@ -213,41 +206,41 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 	{
 		if (isMSAA)
 		{
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LinearDepth, MipLevel.Original, (RenderTextureFormat)13, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth1, MipLevel.L1, (RenderTextureFormat)12, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth2, MipLevel.L2, (RenderTextureFormat)12, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth3, MipLevel.L3, (RenderTextureFormat)12, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth4, MipLevel.L4, (RenderTextureFormat)12, uav: true);
-			AllocArray(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth1, MipLevel.L3, (RenderTextureFormat)13, uav: true);
-			AllocArray(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth2, MipLevel.L4, (RenderTextureFormat)13, uav: true);
-			AllocArray(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth3, MipLevel.L5, (RenderTextureFormat)13, uav: true);
-			AllocArray(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth4, MipLevel.L6, (RenderTextureFormat)13, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion1, MipLevel.L1, (RenderTextureFormat)25, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion2, MipLevel.L2, (RenderTextureFormat)25, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion3, MipLevel.L3, (RenderTextureFormat)25, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion4, MipLevel.L4, (RenderTextureFormat)25, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined1, MipLevel.L1, (RenderTextureFormat)25, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined2, MipLevel.L2, (RenderTextureFormat)25, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined3, MipLevel.L3, (RenderTextureFormat)25, uav: true);
+			Alloc(cmd, ShaderIDs.LinearDepth, MipLevel.Original, (RenderTextureFormat)13, uav: true);
+			Alloc(cmd, ShaderIDs.LowDepth1, MipLevel.L1, (RenderTextureFormat)12, uav: true);
+			Alloc(cmd, ShaderIDs.LowDepth2, MipLevel.L2, (RenderTextureFormat)12, uav: true);
+			Alloc(cmd, ShaderIDs.LowDepth3, MipLevel.L3, (RenderTextureFormat)12, uav: true);
+			Alloc(cmd, ShaderIDs.LowDepth4, MipLevel.L4, (RenderTextureFormat)12, uav: true);
+			AllocArray(cmd, ShaderIDs.TiledDepth1, MipLevel.L3, (RenderTextureFormat)13, uav: true);
+			AllocArray(cmd, ShaderIDs.TiledDepth2, MipLevel.L4, (RenderTextureFormat)13, uav: true);
+			AllocArray(cmd, ShaderIDs.TiledDepth3, MipLevel.L5, (RenderTextureFormat)13, uav: true);
+			AllocArray(cmd, ShaderIDs.TiledDepth4, MipLevel.L6, (RenderTextureFormat)13, uav: true);
+			Alloc(cmd, ShaderIDs.Occlusion1, MipLevel.L1, (RenderTextureFormat)25, uav: true);
+			Alloc(cmd, ShaderIDs.Occlusion2, MipLevel.L2, (RenderTextureFormat)25, uav: true);
+			Alloc(cmd, ShaderIDs.Occlusion3, MipLevel.L3, (RenderTextureFormat)25, uav: true);
+			Alloc(cmd, ShaderIDs.Occlusion4, MipLevel.L4, (RenderTextureFormat)25, uav: true);
+			Alloc(cmd, ShaderIDs.Combined1, MipLevel.L1, (RenderTextureFormat)25, uav: true);
+			Alloc(cmd, ShaderIDs.Combined2, MipLevel.L2, (RenderTextureFormat)25, uav: true);
+			Alloc(cmd, ShaderIDs.Combined3, MipLevel.L3, (RenderTextureFormat)25, uav: true);
 		}
 		else
 		{
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LinearDepth, MipLevel.Original, (RenderTextureFormat)15, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth1, MipLevel.L1, (RenderTextureFormat)14, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth2, MipLevel.L2, (RenderTextureFormat)14, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth3, MipLevel.L3, (RenderTextureFormat)14, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth4, MipLevel.L4, (RenderTextureFormat)14, uav: true);
-			AllocArray(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth1, MipLevel.L3, (RenderTextureFormat)15, uav: true);
-			AllocArray(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth2, MipLevel.L4, (RenderTextureFormat)15, uav: true);
-			AllocArray(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth3, MipLevel.L5, (RenderTextureFormat)15, uav: true);
-			AllocArray(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth4, MipLevel.L6, (RenderTextureFormat)15, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion1, MipLevel.L1, (RenderTextureFormat)16, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion2, MipLevel.L2, (RenderTextureFormat)16, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion3, MipLevel.L3, (RenderTextureFormat)16, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion4, MipLevel.L4, (RenderTextureFormat)16, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined1, MipLevel.L1, (RenderTextureFormat)16, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined2, MipLevel.L2, (RenderTextureFormat)16, uav: true);
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined3, MipLevel.L3, (RenderTextureFormat)16, uav: true);
+			Alloc(cmd, ShaderIDs.LinearDepth, MipLevel.Original, (RenderTextureFormat)15, uav: true);
+			Alloc(cmd, ShaderIDs.LowDepth1, MipLevel.L1, (RenderTextureFormat)14, uav: true);
+			Alloc(cmd, ShaderIDs.LowDepth2, MipLevel.L2, (RenderTextureFormat)14, uav: true);
+			Alloc(cmd, ShaderIDs.LowDepth3, MipLevel.L3, (RenderTextureFormat)14, uav: true);
+			Alloc(cmd, ShaderIDs.LowDepth4, MipLevel.L4, (RenderTextureFormat)14, uav: true);
+			AllocArray(cmd, ShaderIDs.TiledDepth1, MipLevel.L3, (RenderTextureFormat)15, uav: true);
+			AllocArray(cmd, ShaderIDs.TiledDepth2, MipLevel.L4, (RenderTextureFormat)15, uav: true);
+			AllocArray(cmd, ShaderIDs.TiledDepth3, MipLevel.L5, (RenderTextureFormat)15, uav: true);
+			AllocArray(cmd, ShaderIDs.TiledDepth4, MipLevel.L6, (RenderTextureFormat)15, uav: true);
+			Alloc(cmd, ShaderIDs.Occlusion1, MipLevel.L1, (RenderTextureFormat)16, uav: true);
+			Alloc(cmd, ShaderIDs.Occlusion2, MipLevel.L2, (RenderTextureFormat)16, uav: true);
+			Alloc(cmd, ShaderIDs.Occlusion3, MipLevel.L3, (RenderTextureFormat)16, uav: true);
+			Alloc(cmd, ShaderIDs.Occlusion4, MipLevel.L4, (RenderTextureFormat)16, uav: true);
+			Alloc(cmd, ShaderIDs.Combined1, MipLevel.L1, (RenderTextureFormat)16, uav: true);
+			Alloc(cmd, ShaderIDs.Combined2, MipLevel.L2, (RenderTextureFormat)16, uav: true);
+			Alloc(cmd, ShaderIDs.Combined3, MipLevel.L3, (RenderTextureFormat)16, uav: true);
 		}
 	}
 
@@ -257,6 +250,7 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
@@ -272,15 +266,15 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = false;
-		RenderTargetIdentifier val = default(RenderTargetIdentifier);
+		RenderTargetIdentifier val;
 		if (depthMap.HasValue)
 		{
 			val = depthMap.Value;
 		}
 		else if (!RuntimeUtilities.IsResolvedDepthAvailable(camera))
 		{
-			Alloc(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthCopy, MipLevel.Original, (RenderTextureFormat)14, uav: false);
-			((RenderTargetIdentifier)(ref val))._002Ector(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthCopy);
+			Alloc(cmd, ShaderIDs.DepthCopy, MipLevel.Original, (RenderTextureFormat)14, uav: false);
+			val = new RenderTargetIdentifier(ShaderIDs.DepthCopy);
 			cmd.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), val, m_PropertySheet, 0);
 			flag = true;
 		}
@@ -290,25 +284,25 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		}
 		ComputeShader multiScaleAODownsample = m_Resources.computeShaders.multiScaleAODownsample1;
 		int num = multiScaleAODownsample.FindKernel(isMSAA ? "MultiScaleVODownsample1_MSAA" : "MultiScaleVODownsample1");
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "LinearZ", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.LinearDepth));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS2x", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth1));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS4x", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth2));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS2xAtlas", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth1));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS4xAtlas", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth2));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "LinearZ", RenderTargetIdentifier.op_Implicit(ShaderIDs.LinearDepth));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS2x", RenderTargetIdentifier.op_Implicit(ShaderIDs.LowDepth1));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS4x", RenderTargetIdentifier.op_Implicit(ShaderIDs.LowDepth2));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS2xAtlas", RenderTargetIdentifier.op_Implicit(ShaderIDs.TiledDepth1));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS4xAtlas", RenderTargetIdentifier.op_Implicit(ShaderIDs.TiledDepth2));
 		cmd.SetComputeVectorParam(multiScaleAODownsample, "ZBufferParams", CalculateZBufferParams(camera));
 		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "Depth", val);
 		cmd.DispatchCompute(multiScaleAODownsample, num, m_Widths[4], m_Heights[4], 1);
 		if (flag)
 		{
-			Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthCopy);
+			Release(cmd, ShaderIDs.DepthCopy);
 		}
 		multiScaleAODownsample = m_Resources.computeShaders.multiScaleAODownsample2;
 		num = (isMSAA ? multiScaleAODownsample.FindKernel("MultiScaleVODownsample2_MSAA") : multiScaleAODownsample.FindKernel("MultiScaleVODownsample2"));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS4x", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth2));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS8x", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth3));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS16x", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth4));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS8xAtlas", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth3));
-		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS16xAtlas", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth4));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS4x", RenderTargetIdentifier.op_Implicit(ShaderIDs.LowDepth2));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS8x", RenderTargetIdentifier.op_Implicit(ShaderIDs.LowDepth3));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS16x", RenderTargetIdentifier.op_Implicit(ShaderIDs.LowDepth4));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS8xAtlas", RenderTargetIdentifier.op_Implicit(ShaderIDs.TiledDepth3));
+		cmd.SetComputeTextureParam(multiScaleAODownsample, num, "DS16xAtlas", RenderTargetIdentifier.op_Implicit(ShaderIDs.TiledDepth4));
 		cmd.DispatchCompute(multiScaleAODownsample, num, m_Widths[6], m_Heights[6], 1);
 	}
 
@@ -371,9 +365,9 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		cmd.SetComputeVectorParam(multiScaleAORender, "AdditionalParams", Vector4.op_Implicit(new Vector2(-1f / m_Settings.thicknessModifier.value, m_Settings.intensity.value)));
 		cmd.SetComputeTextureParam(multiScaleAORender, num5, "DepthTex", RenderTargetIdentifier.op_Implicit(source));
 		cmd.SetComputeTextureParam(multiScaleAORender, num5, "Occlusion", RenderTargetIdentifier.op_Implicit(destination));
-		uint num6 = default(uint);
-		uint num7 = default(uint);
-		uint num8 = default(uint);
+		uint num6 = default;
+		uint num7 = default;
+		uint num8 = default;
 		multiScaleAORender.GetKernelThreadGroupSizes(num5, ref num6, ref num7, ref num8);
 		cmd.DispatchCompute(multiScaleAORender, num5, ((int)sourceSize.x + (int)num6 - 1) / (int)num6, ((int)sourceSize.y + (int)num7 - 1) / (int)num7, ((int)sourceSize.z + (int)num8 - 1) / (int)num8);
 	}
@@ -423,22 +417,22 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 
 	private void PushReleaseCommands(CommandBuffer cmd)
 	{
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LinearDepth);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth1);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth2);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth3);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.LowDepth4);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth1);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth2);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth3);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.TiledDepth4);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion1);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion2);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion3);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Occlusion4);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined1);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined2);
-		Release(cmd, UnityEngine.Rendering.PostProcessing.ShaderIDs.Combined3);
+		Release(cmd, ShaderIDs.LinearDepth);
+		Release(cmd, ShaderIDs.LowDepth1);
+		Release(cmd, ShaderIDs.LowDepth2);
+		Release(cmd, ShaderIDs.LowDepth3);
+		Release(cmd, ShaderIDs.LowDepth4);
+		Release(cmd, ShaderIDs.TiledDepth1);
+		Release(cmd, ShaderIDs.TiledDepth2);
+		Release(cmd, ShaderIDs.TiledDepth3);
+		Release(cmd, ShaderIDs.TiledDepth4);
+		Release(cmd, ShaderIDs.Occlusion1);
+		Release(cmd, ShaderIDs.Occlusion2);
+		Release(cmd, ShaderIDs.Occlusion3);
+		Release(cmd, ShaderIDs.Occlusion4);
+		Release(cmd, ShaderIDs.Combined1);
+		Release(cmd, ShaderIDs.Combined2);
+		Release(cmd, ShaderIDs.Combined3);
 	}
 
 	private void PreparePropertySheet(PostProcessRenderContext context)
@@ -449,7 +443,7 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		PropertySheet propertySheet = context.propertySheets.Get(m_Resources.shaders.multiScaleAO);
 		propertySheet.ClearKeywords();
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.AOColor, Color.op_Implicit(Color.white - m_Settings.color.value));
+		propertySheet.properties.SetVector(ShaderIDs.AOColor, Color.op_Implicit(Color.white - m_Settings.color.value));
 		m_PropertySheet = propertySheet;
 	}
 
@@ -459,7 +453,7 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Expected O, but got Unknown
+		//IL_007d: Expected Obj, but got Unknown
 		if ((Object)(object)m_AmbientOnlyAO == (Object)null || !m_AmbientOnlyAO.IsCreated() || ((Texture)m_AmbientOnlyAO).width != context.width || ((Texture)m_AmbientOnlyAO).height != context.height)
 		{
 			RuntimeUtilities.Destroy((Object)(object)m_AmbientOnlyAO);
@@ -500,11 +494,11 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		if ((int)context.camera.actualRenderingPath == 1 && RenderSettings.fog)
 		{
 			m_PropertySheet.EnableKeyword("APPLY_FORWARD_FOG");
-			m_PropertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.FogParams, Vector4.op_Implicit(new Vector3(RenderSettings.fogDensity, RenderSettings.fogStartDistance, RenderSettings.fogEndDistance)));
+			m_PropertySheet.properties.SetVector(ShaderIDs.FogParams, Vector4.op_Implicit(new Vector3(RenderSettings.fogDensity, RenderSettings.fogStartDistance, RenderSettings.fogEndDistance)));
 		}
 		GenerateAOMap(command, context.camera, RenderTargetIdentifier.op_Implicit((Texture)(object)m_AmbientOnlyAO), null, invert: false, isMSAA: false);
 		PushDebug(context);
-		command.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.MSVOcclusionTexture, RenderTargetIdentifier.op_Implicit((Texture)(object)m_AmbientOnlyAO));
+		command.SetGlobalTexture(ShaderIDs.MSVOcclusionTexture, RenderTargetIdentifier.op_Implicit((Texture)(object)m_AmbientOnlyAO));
 		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)2), m_PropertySheet, 2, (RenderBufferLoadAction)0);
 		command.EndSample("Ambient Occlusion");
 	}
@@ -529,7 +523,7 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		CommandBuffer command = context.command;
 		command.BeginSample("Ambient Occlusion Composite");
-		command.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.MSVOcclusionTexture, RenderTargetIdentifier.op_Implicit((Texture)(object)m_AmbientOnlyAO));
+		command.SetGlobalTexture(ShaderIDs.MSVOcclusionTexture, RenderTargetIdentifier.op_Implicit((Texture)(object)m_AmbientOnlyAO));
 		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), m_MRT, RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)2), m_PropertySheet, 1);
 		command.EndSample("Ambient Occlusion Composite");
 	}

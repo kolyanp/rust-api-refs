@@ -68,7 +68,7 @@ public class VolumeClouds : SingletonComponent<VolumeClouds>
 		COUNT
 	}
 
-	public bool UseRandomOffsets;
+	public bool UseRandomOffsets = true;
 
 	public VolumeCloudsConfig DefaultConfig;
 
@@ -279,7 +279,7 @@ public class VolumeClouds : SingletonComponent<VolumeClouds>
 
 	public ComputeShader AtmosphericScatteringShader;
 
-	public Quality QualityLevel;
+	public Quality QualityLevel = Quality.High;
 
 	private bool _cloudsEnabled;
 
@@ -290,21 +290,21 @@ public class VolumeClouds : SingletonComponent<VolumeClouds>
 
 	public Texture BlueNoise;
 
-	public float WeatherTextureScale;
+	public float WeatherTextureScale = 0.15f;
 
-	public float CirrusWeatherTextureScale;
+	public float CirrusWeatherTextureScale = 0.15f;
 
-	public float DetailNoiseScale;
+	public float DetailNoiseScale = 1.3f;
 
-	public float MipDistance;
+	public float MipDistance = 25000f;
 
-	public float GroundRadius;
+	public float GroundRadius = 60000f;
 
 	public bool SunColorApplyContrast;
 
 	public bool SunColorApplyFogginess;
 
-	public Vector2i AtmosphericScatteringResolution;
+	public Vector2i AtmosphericScatteringResolution = new Vector2i(128, 128);
 
 	public bool CloudsShouldBeEnabled
 	{
@@ -319,6 +319,8 @@ public class VolumeClouds : SingletonComponent<VolumeClouds>
 	}
 
 	public bool CloudsEnabled => _cloudsEnabled;
+
+	public static bool RenderingIcon { get; set; } = true;
 
 	private void FetchShaderPropertyIDs()
 	{
@@ -355,14 +357,5 @@ public class VolumeClouds : SingletonComponent<VolumeClouds>
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		UseRandomOffsets = true;
-		QualityLevel = Quality.High;
-		WeatherTextureScale = 0.15f;
-		CirrusWeatherTextureScale = 0.15f;
-		DetailNoiseScale = 1.3f;
-		MipDistance = 25000f;
-		GroundRadius = 60000f;
-		AtmosphericScatteringResolution = new Vector2i(128, 128);
-		base._002Ector();
 	}
 }

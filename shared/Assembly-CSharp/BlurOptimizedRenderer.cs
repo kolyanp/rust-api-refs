@@ -34,11 +34,11 @@ public class BlurOptimizedRenderer : PostProcessEffectRenderer<BlurOptimized>
 		//IL_021e: Unknown result type (might be due to invalid IL or missing references)
 		CommandBuffer command = context.command;
 		command.BeginSample("BlurOptimized");
-		int value = base.settings.downsample.value;
-		float value2 = base.settings.fadeToBlurDistance.value;
-		float value3 = base.settings.blurSize.value;
-		int value4 = base.settings.blurIterations.value;
-		BlurType value5 = base.settings.blurType.value;
+		int value = settings.downsample.value;
+		float value2 = settings.fadeToBlurDistance.value;
+		float value3 = settings.blurSize.value;
+		int value4 = settings.blurIterations.value;
+		BlurType value5 = settings.blurType.value;
 		float num = 1f / (1f * (float)(1 << value));
 		float num2 = 1f / Mathf.Clamp(value2, 0.001f, 10000f);
 		PropertySheet propertySheet = context.propertySheets.Get(blurShader);

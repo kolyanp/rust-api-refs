@@ -13,7 +13,7 @@ public class Trans_IsFlankedByTarget : FSMTransitionBase
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		base.OnStateEnter();
 		previousLkp = null;
-		if (base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: true))
+		if (Senses.FindTargetLKP(out var lkp, applyHeightOffset: true))
 		{
 			previousLkp = lkp;
 		}
@@ -32,7 +32,7 @@ public class Trans_IsFlankedByTarget : FSMTransitionBase
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Trans_IsFlankedByTarget"))
 		{
-			if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: true))
+			if (!Senses.FindTargetLKP(out var lkp, applyHeightOffset: true))
 			{
 				return false;
 			}

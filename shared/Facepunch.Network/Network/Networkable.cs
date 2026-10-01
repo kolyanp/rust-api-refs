@@ -29,7 +29,7 @@ public class Networkable : IPooled
 
 	[StructLayout(LayoutKind.Auto)]
 	[CompilerGenerated]
-	private struct _003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed : IAsyncStateMachine
+	private struct _003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C37_0_003Ed : IAsyncStateMachine
 	{
 		public int _003C_003E1__state;
 
@@ -61,32 +61,32 @@ public class Networkable : IPooled
 				if (num != 0)
 				{
 					SwitchToThreadPoolAwaitable val = UniTask.SwitchToThreadPool();
-					val2 = ((SwitchToThreadPoolAwaitable)(ref val)).GetAwaiter();
-					if (!((Awaiter)(ref val2)).IsCompleted)
+					val2 = val.GetAwaiter();
+					if (!val2.IsCompleted)
 					{
 						num = (_003C_003E1__state = 0);
 						_003C_003Eu__1 = val2;
-						((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<Awaiter, _003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed>(ref val2, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<Awaiter, _003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C37_0_003Ed>(ref val2, ref this);
 						return;
 					}
 				}
 				else
 				{
 					val2 = _003C_003Eu__1;
-					_003C_003Eu__1 = default(Awaiter);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 				}
-				((Awaiter)(ref val2)).GetResult();
-				_003CUpdateSubscriptions_003Eg__ProcessBatch_007C36_1(state, batchIndex, batchSize);
+				val2.GetResult();
+				_003CUpdateSubscriptions_003Eg__ProcessBatch_007C37_1(state, batchIndex, batchSize);
 			}
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -98,7 +98,7 @@ public class Networkable : IPooled
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -117,6 +117,8 @@ public class Networkable : IPooled
 	public Subscriber subscriber;
 
 	public NetworkHandler handler;
+
+	public ListHashSet<Group> roomGroups;
 
 	public bool updateSubscriptions;
 
@@ -145,7 +147,7 @@ public class Networkable : IPooled
 	public void Destroy()
 	{
 		CloseSubscriber();
-		if (((NetworkableId)(ref ID)).IsValid)
+		if (ID.IsValid)
 		{
 			SwitchGroup(null);
 			if (sv != null)
@@ -158,10 +160,11 @@ public class Networkable : IPooled
 	public void EnterPool()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		ID = default(NetworkableId);
+		ID = default;
 		connection = null;
 		group = null;
 		secondaryGroup = null;
+		roomGroups = null;
 		sv = null;
 		cl = null;
 		handler = null;
@@ -572,20 +575,20 @@ public class Networkable : IPooled
 			}
 			Pool.FreeUnmanaged<Group>(ref val);
 		}
-		[AsyncStateMachine(typeof(_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed))]
+		[AsyncStateMachine(typeof(_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C37_0_003Ed))]
 		static UniTask ProcessBatchAsync(UpdateSubs_AsyncState state, int batchIndex, int batchSize)
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed obj = default(_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed);
+			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C37_0_003Ed obj = default;
 			obj._003C_003Et__builder = AsyncUniTaskMethodBuilder.Create();
 			obj.state = state;
 			obj.batchIndex = batchIndex;
 			obj.batchSize = batchSize;
 			obj._003C_003E1__state = -1;
-			((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed>(ref obj);
-			return ((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+			obj._003C_003Et__builder.Start<_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C37_0_003Ed>(ref obj);
+			return obj._003C_003Et__builder.Task;
 		}
 		static void WaitAndIntegrate(UpdateSubs_AsyncState state, List<UniTask> tasks, NativeArray<int> removeLimits2, NativeArray<int> addLimits2)
 		{
@@ -607,7 +610,7 @@ public class Networkable : IPooled
 					foreach (UniTask task in tasks)
 					{
 						UniTask current = task;
-						flag |= !UniTaskStatusExtensions.IsCompleted(((UniTask)(ref current)).Status);
+						flag |= !UniTaskStatusExtensions.IsCompleted(current.Status);
 					}
 					for (int l = 0; l < state.Networkables.Count; l++)
 					{
@@ -621,15 +624,15 @@ public class Networkable : IPooled
 				foreach (UniTask task2 in tasks)
 				{
 					UniTask current2 = task2;
-					Awaiter awaiter = ((UniTask)(ref current2)).GetAwaiter();
-					((Awaiter)(ref awaiter)).GetResult();
+					Awaiter awaiter = current2.GetAwaiter();
+					awaiter.GetResult();
 				}
 			}
 		}
 	}
 
 	[CompilerGenerated]
-	internal static void _003CUpdateSubscriptions_003Eg__ProcessBatch_007C36_1(UpdateSubs_AsyncState state, int batchIndex, int batchSize)
+	internal static void _003CUpdateSubscriptions_003Eg__ProcessBatch_007C37_1(UpdateSubs_AsyncState state, int batchIndex, int batchSize)
 	{
 		int num = batchIndex * batchSize;
 		int num2 = Mathf.Min(batchSize, state.Networkables.Count - num);

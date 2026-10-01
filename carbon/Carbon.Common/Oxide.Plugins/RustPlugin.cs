@@ -77,16 +77,16 @@ public class RustPlugin : Plugin
 	public virtual void Setup(string name, string author, VersionNumber version, string description)
 	{
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-		base.Name = GetType().Name;
-		base.Title = name.Replace(":", string.Empty);
+		Name = GetType().Name;
+		Title = name.Replace(":", string.Empty);
 		Version = version;
-		base.Author = author;
-		base.Description = description;
+		Author = author;
+		Description = description;
 		permission = Interface.Oxide.Permission;
 		cmd = new Command();
 		server = new Server();
-		base.Manager = new PluginManager();
-		plugins = new Oxide.Core.Libraries.Plugins(base.Manager);
+		Manager = new PluginManager();
+		plugins = new Oxide.Core.Libraries.Plugins(Manager);
 		timer = new PluginTimers(this);
 		lang = new Lang(this);
 		mod = Interface.Oxide;
@@ -95,7 +95,7 @@ public class RustPlugin : Plugin
 		persistence = new GameObject("Script_" + name).AddComponent<Persistence>();
 		Object.DontDestroyOnLoad((Object)(object)((Component)persistence).gameObject);
 		covalence = new Covalence();
-		base.HookableType = GetType();
+		HookableType = GetType();
 	}
 
 	public override void Dispose()
@@ -127,17 +127,17 @@ public class RustPlugin : Plugin
 				}
 			}
 		}
-		return default(T);
+		return default;
 	}
 
 	public void Puts(object message)
 	{
-		Logger.Log($"[{base.Title}] {message}");
+		Logger.Log($"[{Title}] {message}");
 	}
 
 	public void Puts(object message, params object[] args)
 	{
-		Logger.Log($"[{base.Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}");
+		Logger.Log($"[{Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}");
 	}
 
 	public void Puts(string message, params object[] args)
@@ -147,57 +147,57 @@ public class RustPlugin : Plugin
 
 	public void Log(object message)
 	{
-		Logger.Log($"[{base.Title}] {message}");
+		Logger.Log($"[{Title}] {message}");
 	}
 
 	public void Log(object message, params object[] args)
 	{
-		Logger.Log($"[{base.Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}");
+		Logger.Log($"[{Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}");
 	}
 
 	public void LogWarning(object message)
 	{
-		Logger.Warn($"[{base.Title}] {message}");
+		Logger.Warn($"[{Title}] {message}");
 	}
 
 	public void LogWarning(object message, params object[] args)
 	{
-		Logger.Warn($"[{base.Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}");
+		Logger.Warn($"[{Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}");
 	}
 
 	public void LogError(object message, Exception ex)
 	{
-		Logger.Error($"[{base.Title}] {message}", ex);
+		Logger.Error($"[{Title}] {message}", ex);
 	}
 
 	public void LogError(object message, Exception ex, params object[] args)
 	{
-		Logger.Error($"[{base.Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}", ex);
+		Logger.Error($"[{Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}", ex);
 	}
 
 	public void LogError(object message)
 	{
-		Logger.Error($"[{base.Title}] {message}");
+		Logger.Error($"[{Title}] {message}");
 	}
 
 	public void LogError(object message, params object[] args)
 	{
-		Logger.Error($"[{base.Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}");
+		Logger.Error($"[{Title}] {((args == null || args.Length == 0) ? message : string.Format(message?.ToString() ?? string.Empty, args))}");
 	}
 
 	public void PrintWarning(object format, params object[] args)
 	{
-		Logger.Warn($"[{base.Title}] {((args == null || args.Length == 0) ? format : string.Format(format?.ToString() ?? string.Empty, args))}");
+		Logger.Warn($"[{Title}] {((args == null || args.Length == 0) ? format : string.Format(format?.ToString() ?? string.Empty, args))}");
 	}
 
 	public void PrintError(object format, params object[] args)
 	{
-		Logger.Error($"[{base.Title}] {((args == null || args.Length == 0) ? format : string.Format(format?.ToString() ?? string.Empty, args))}");
+		Logger.Error($"[{Title}] {((args == null || args.Length == 0) ? format : string.Format(format?.ToString() ?? string.Empty, args))}");
 	}
 
 	public void RaiseError(object message)
 	{
-		Logger.Error($"[{base.Title}] {message}");
+		Logger.Error($"[{Title}] {message}");
 	}
 
 	protected void LogToFile(string filename, string text, Plugin plugin = null, bool timeStamp = true, bool anotherBool = false)
@@ -266,7 +266,7 @@ public class RustPlugin : Plugin
 
 	public override string ToPrettyString()
 	{
-		return $"{base.Title} v{Version} by {base.Author}";
+		return $"{Title} v{Version} by {Author}";
 	}
 
 	protected void PrintWarning(object message)

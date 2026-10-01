@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Rust.Json;
@@ -28,15 +27,38 @@ public class RectOffsetConverter : JsonConverter<RectOffset>
 
 	public override RectOffset ReadJson(JsonReader reader, Type objectType, RectOffset existingValue, bool hasExistingValue, JsonSerializer serializer)
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0008: Invalid comparison between Unknown and I4
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Expected O, but got Unknown
-		if ((int)reader.TokenType == 11)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Expected Obj, but got Unknown
+		if (!UnityJsonConverters.BeginObject(reader, "RectOffset"))
 		{
 			return null;
 		}
-		JObject token = JObject.Load(reader);
-		return new RectOffset(UnityJsonConverters.I((JToken)(object)token, "left"), UnityJsonConverters.I((JToken)(object)token, "right"), UnityJsonConverters.I((JToken)(object)token, "top"), UnityJsonConverters.I((JToken)(object)token, "bottom"));
+		int num = 0;
+		int num2 = 0;
+		int num3 = 0;
+		int num4 = 0;
+		string name;
+		while (UnityJsonConverters.NextProperty(reader, out name))
+		{
+			switch (name)
+			{
+			case "left":
+				num = UnityJsonConverters.Int(reader);
+				break;
+			case "right":
+				num2 = UnityJsonConverters.Int(reader);
+				break;
+			case "top":
+				num3 = UnityJsonConverters.Int(reader);
+				break;
+			case "bottom":
+				num4 = UnityJsonConverters.Int(reader);
+				break;
+			default:
+				reader.Skip();
+				break;
+			}
+		}
+		return new RectOffset(num, num2, num3, num4);
 	}
 }

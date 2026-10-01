@@ -38,9 +38,10 @@ public sealed class VectorscopeMonitor : Monitor
 	internal override void Render(PostProcessRenderContext context)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Expected O, but got Unknown
+		//IL_004b: Expected Obj, but got Unknown
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Expected O, but got Unknown
+		//IL_0073: Expected Obj, but got Unknown
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
@@ -63,20 +64,19 @@ public sealed class VectorscopeMonitor : Monitor
 		ComputeShader vectorscope = context.resources.computeShaders.vectorscope;
 		CommandBuffer command = context.command;
 		command.BeginSample("Vectorscope");
-		Vector4 val = default(Vector4);
-		((Vector4)(ref val))._002Ector((float)(context.width / 2), (float)(context.height / 2), (float)size, (float)(RuntimeUtilities.isLinearColorSpace ? 1 : 0));
+		Vector4 val = new Vector4((float)(context.width / 2), (float)(context.height / 2), (float)size, (float)(RuntimeUtilities.isLinearColorSpace ? 1 : 0));
 		int num2 = vectorscope.FindKernel("KVectorscopeClear");
 		command.SetComputeBufferParam(vectorscope, num2, "_VectorscopeBuffer", m_Data);
 		command.SetComputeVectorParam(vectorscope, "_Params", val);
 		command.DispatchCompute(vectorscope, num2, Mathf.CeilToInt((float)size / 16f), Mathf.CeilToInt((float)size / 16f), 1);
 		num2 = vectorscope.FindKernel("KVectorscopeGather");
 		command.SetComputeBufferParam(vectorscope, num2, "_VectorscopeBuffer", m_Data);
-		command.SetComputeTextureParam(vectorscope, num2, "_Source", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.HalfResFinalCopy));
+		command.SetComputeTextureParam(vectorscope, num2, "_Source", RenderTargetIdentifier.op_Implicit(ShaderIDs.HalfResFinalCopy));
 		command.DispatchCompute(vectorscope, num2, Mathf.CeilToInt(val.x / 16f), Mathf.CeilToInt(val.y / 16f), 1);
 		PropertySheet propertySheet = context.propertySheets.Get(context.resources.shaders.vectorscope);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Params, new Vector4((float)size, (float)size, exposure, 0f));
-		propertySheet.properties.SetBuffer(UnityEngine.Rendering.PostProcessing.ShaderIDs.VectorscopeBuffer, m_Data);
-		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), RenderTargetIdentifier.op_Implicit((Texture)(object)base.output), propertySheet, 0);
+		propertySheet.properties.SetVector(ShaderIDs.Params, new Vector4((float)size, (float)size, exposure, 0f));
+		propertySheet.properties.SetBuffer(ShaderIDs.VectorscopeBuffer, m_Data);
+		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), RenderTargetIdentifier.op_Implicit((Texture)(object)output), propertySheet, 0);
 		command.EndSample("Vectorscope");
 	}
 }

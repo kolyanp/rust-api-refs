@@ -17,18 +17,18 @@ public class SocketMod_BoatBuildingBlock : SocketMod_BuildingBlock
 
 	private BoatBuildFailReason lastFailReason;
 
-	protected override Phrase ErrorPhrase => (Phrase)(lastFailReason switch
+	protected override Phrase ErrorPhrase => lastFailReason switch
 	{
 		BoatBuildFailReason.NotOnHull => ConstructionErrors.RequiresHull, 
 		BoatBuildFailReason.CannotBePlacedOnBoat => ConstructionErrors.CannotPlaceOnBoat, 
 		_ => ConstructionErrors.MustPlaceOnBoat, 
-	});
+	};
 
 	protected override bool GetContained(Vector3 pos)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		bool flag = Contained(pos, sphereRadius, ((LayerMask)(ref layerMask)).value, queryTriggers, RequireHull, RequireNoParentBoat, out lastFailReason);
+		bool flag = Contained(pos, sphereRadius, layerMask.value, queryTriggers, RequireHull, RequireNoParentBoat, out lastFailReason);
 		if (flag && !wantsCollide)
 		{
 			lastFailReason = BoatBuildFailReason.CannotBePlacedOnBoat;

@@ -76,7 +76,7 @@ public class StaticRespawnArea : SleepingBag
 		Transform val = spawnAreas[Random.Range(0, spawnAreas.Length)];
 		pos = ((Component)val).transform.position + spawnOffset;
 		Quaternion rotation = ((Component)val).transform.rotation;
-		rot = Quaternion.Euler(0f, ((Quaternion)(ref rotation)).eulerAngles.y, 0f);
+		rot = Quaternion.Euler(0f, rotation.eulerAngles.y, 0f);
 	}
 
 	public override void SetUnlockTime(float newTime)

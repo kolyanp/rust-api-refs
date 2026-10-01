@@ -6,31 +6,31 @@ public class LightEx : UpdateBehaviour, IClientComponent
 {
 	public bool alterColor;
 
-	public float colorTimeScale;
+	public float colorTimeScale = 1f;
 
-	public Color colorA;
+	public Color colorA = Color.red;
 
-	public Color colorB;
+	public Color colorB = Color.yellow;
 
-	public AnimationCurve blendCurve;
+	public AnimationCurve blendCurve = new AnimationCurve();
 
-	public bool loopColor;
+	public bool loopColor = true;
 
 	public bool alterIntensity;
 
-	public float intensityTimeScale;
+	public float intensityTimeScale = 1f;
 
-	public AnimationCurve intenseCurve;
+	public AnimationCurve intenseCurve = new AnimationCurve();
 
-	public float intensityCurveScale;
+	public float intensityCurveScale = 3f;
 
-	public bool loopIntensity;
+	public bool loopIntensity = true;
 
 	public bool randomOffset;
 
-	public float randomIntensityStartScale;
+	public float randomIntensityStartScale = -1f;
 
-	public List<Light> syncLights;
+	public List<Light> syncLights = new List<Light>(0);
 
 	protected void OnValidate()
 	{
@@ -49,20 +49,8 @@ public class LightEx : UpdateBehaviour, IClientComponent
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
+		//IL_002c: Expected Obj, but got Unknown
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Expected O, but got Unknown
-		colorTimeScale = 1f;
-		colorA = Color.red;
-		colorB = Color.yellow;
-		blendCurve = new AnimationCurve();
-		loopColor = true;
-		intensityTimeScale = 1f;
-		intenseCurve = new AnimationCurve();
-		intensityCurveScale = 3f;
-		loopIntensity = true;
-		randomIntensityStartScale = -1f;
-		syncLights = new List<Light>(0);
-		base._002Ector();
+		//IL_0049: Expected Obj, but got Unknown
 	}
 }

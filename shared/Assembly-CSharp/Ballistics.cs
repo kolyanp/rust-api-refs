@@ -3,24 +3,13 @@ using UnityEngine;
 
 public static class Ballistics
 {
-	private struct TheoreticalProjectile
+	private struct TheoreticalProjectile(Vector3 pos, Vector3 forward, float gravity)
 	{
-		public Vector3 pos;
+		public Vector3 pos = pos;
 
-		public Vector3 forward;
+		public Vector3 forward = forward;
 
-		public float gravity;
-
-		public TheoreticalProjectile(Vector3 pos, Vector3 forward, float gravity)
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			this.pos = pos;
-			this.forward = forward;
-			this.gravity = gravity;
-		}
+		public float gravity = gravity;
 	}
 
 	public static Vector3 GetAimToTarget(Vector3 origin, Vector3 target, float speed, float maxAngle, float idealGravity, out float requiredGravity)
@@ -66,7 +55,7 @@ public static class Ballistics
 			num4 = maxAngle;
 			requiredGravity = ProjectileDistToGravity(Mathf.Max(num, minRange), y, num4, speed);
 		}
-		((Vector3)(ref val)).Normalize();
+		val.Normalize();
 		val.y = 0f;
 		Vector3 val2 = Vector3.Cross(val, Vector3.up);
 		val = Quaternion.AngleAxis(num4, val2) * val;
@@ -111,9 +100,9 @@ public static class Ballistics
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		if (GamePhysics.Trace(aimRay, 0f, out var hitInfo, 300f, 1220225809, (QueryTriggerInteraction)0, ignoreEntity))
 		{
-			return ((RaycastHit)(ref hitInfo)).point;
+			return hitInfo.point;
 		}
-		return ((Ray)(ref aimRay)).origin + ((Ray)(ref aimRay)).direction * 300f;
+		return aimRay.origin + aimRay.direction * 300f;
 	}
 
 	private static bool NextRayHitSomething(ref TheoreticalProjectile projectile, float dt, BaseNetworkable owner)
@@ -128,6 +117,7 @@ public static class Ballistics
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
@@ -146,17 +136,16 @@ public static class Ballistics
 		float num = Vector3Ex.MagnitudeXZ(projectile.forward) * dt;
 		float num2 = projectile.forward.y * dt + gravity * dt * dt * 0.5f;
 		Vector2 val = Vector3Ex.XZ2D(projectile.forward);
-		Vector2 val2 = ((Vector2)(ref val)).normalized * num;
-		Vector3 val3 = default(Vector3);
-		((Vector3)(ref val3))._002Ector(val2.x, num2, val2.y);
+		Vector2 val2 = val.normalized * num;
+		Vector3 val3 = new Vector3(val2.x, num2, val2.y);
 		ref Vector3 pos2 = ref projectile.pos;
 		pos2 += val3;
 		float y = projectile.forward.y + gravity * dt;
 		projectile.forward.y = y;
-		RaycastHit hit = default(RaycastHit);
+		RaycastHit hit = default;
 		if (Physics.Linecast(pos, projectile.pos, ref hit, 1084293393, (QueryTriggerInteraction)1))
 		{
-			projectile.pos = ((RaycastHit)(ref hit)).point;
+			projectile.pos = hit.point;
 			BaseEntity entity = RaycastHitEx.GetEntity(hit);
 			int num3;
 			if ((Object)(object)entity != (Object)null)

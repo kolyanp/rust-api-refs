@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -99,7 +100,7 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 		if (info.msg.paintedItem != null)
 		{
 			_currentImageCrc = info.msg.paintedItem.imageCrc;
-			if (base.isServer)
+			if (isServer)
 			{
 				lastEditedBy = info.msg.paintedItem.editedBy;
 			}
@@ -124,7 +125,7 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)msg.player == (Object)null || (ulong)msg.player.userID != base.OwnerID)
+		if ((Object)(object)msg.player == (Object)null || (ulong)msg.player.userID != OwnerID)
 		{
 			return;
 		}
@@ -161,6 +162,7 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 				FileStorage.server.RemoveExact(_currentImageCrc, FileStorage.Type.png, net.ID, 0u);
 			}
 			_currentImageCrc = FileStorage.server.Store(array, FileStorage.Type.png, net.ID);
+			Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, this, "painted_item", array.Length);
 			if (_currentImageCrc != currentImageCrc)
 			{
 				item.LoseCondition(0.25f);

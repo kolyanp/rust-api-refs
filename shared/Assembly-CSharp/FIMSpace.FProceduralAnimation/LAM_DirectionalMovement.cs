@@ -11,49 +11,49 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 	[Serializable]
 	public class AnglesSetup
 	{
-		public Vector3 AnglesOn0;
+		public Vector3 AnglesOn0 = new Vector3(0f, 0f, 0f);
 
 		[Tooltip(" Hips rotations on reaching 45 angle movement")]
-		public Vector3 AnglesOn45;
+		public Vector3 AnglesOn45 = new Vector3(-10f, 14f, -5f);
 
 		[Tooltip(" Hips rotations on reaching 90 angle movement")]
-		public Vector3 AnglesOn90;
+		public Vector3 AnglesOn90 = new Vector3(-7f, 40f, -3f);
 
 		[Tooltip(" Hips rotations on reaching 135 angle movement")]
-		public Vector3 AnglesOn135;
+		public Vector3 AnglesOn135 = new Vector3(-8f, -25f, -4f);
 
 		[Tooltip(" Hips rotations on reaching 180 angle movement")]
-		public Vector3 AnglesOn180;
+		public Vector3 AnglesOn180 = new Vector3(-20f, 0f, 0f);
 
 		[Space(8f)]
-		public Vector3 HipsOffsetOn0;
+		public Vector3 HipsOffsetOn0 = new Vector3(0f, 0f, 0f);
 
 		[Tooltip(" Hips position offset on reaching 45 angle movement")]
-		public Vector3 HipsOffsetOn45;
+		public Vector3 HipsOffsetOn45 = new Vector3(-0.05f, 0f, -0.05f);
 
 		[Tooltip(" Hips position offset on reaching 90 angle movement")]
-		public Vector3 HipsOffsetOn90;
+		public Vector3 HipsOffsetOn90 = new Vector3(-0.1f, 0f, 0.05f);
 
 		[Tooltip(" Hips position offset on reaching 135 angle movement")]
-		public Vector3 HipsOffsetOn135;
+		public Vector3 HipsOffsetOn135 = new Vector3(-0.1f, 0f, 0.1f);
 
 		[Tooltip(" Hips position offset on reaching 180 angle movement")]
-		public Vector3 HipsOffsetOn180;
+		public Vector3 HipsOffsetOn180 = new Vector3(0f, 0.05f, 0.2f);
 
 		[Space(8f)]
-		public Vector3 IKsOffsetOn0;
+		public Vector3 IKsOffsetOn0 = new Vector3(0f, 0f, 0f);
 
 		[Tooltip(" Foot IK position offset on reaching 45 angle movement (x on left leg goes negative)")]
-		public Vector3 IKsOffsetOn45;
+		public Vector3 IKsOffsetOn45 = new Vector3(0f, 0f, -0.04f);
 
 		[Tooltip(" Foot IK position offset on reaching 90 angle movement (x on left leg goes negative)")]
-		public Vector3 IKsOffsetOn90;
+		public Vector3 IKsOffsetOn90 = new Vector3(0f, 0f, -0.08f);
 
 		[Tooltip(" Foot IK position offset on reaching 135 angle movement (x on left leg goes negative)")]
-		public Vector3 IKsOffsetOn135;
+		public Vector3 IKsOffsetOn135 = new Vector3(0f, 0f, 0.08f);
 
 		[Tooltip(" Foot IK position offset on reaching 180 angle movement (x on left leg goes negative)")]
-		public Vector3 IKsOffsetOn180;
+		public Vector3 IKsOffsetOn180 = new Vector3(0f, 0f, 0f);
 
 		public AnglesSetup()
 		{
@@ -87,22 +87,6 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 			//IL_0167: Unknown result type (might be due to invalid IL or missing references)
 			//IL_017c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0181: Unknown result type (might be due to invalid IL or missing references)
-			AnglesOn0 = new Vector3(0f, 0f, 0f);
-			AnglesOn45 = new Vector3(-10f, 14f, -5f);
-			AnglesOn90 = new Vector3(-7f, 40f, -3f);
-			AnglesOn135 = new Vector3(-8f, -25f, -4f);
-			AnglesOn180 = new Vector3(-20f, 0f, 0f);
-			HipsOffsetOn0 = new Vector3(0f, 0f, 0f);
-			HipsOffsetOn45 = new Vector3(-0.05f, 0f, -0.05f);
-			HipsOffsetOn90 = new Vector3(-0.1f, 0f, 0.05f);
-			HipsOffsetOn135 = new Vector3(-0.1f, 0f, 0.1f);
-			HipsOffsetOn180 = new Vector3(0f, 0.05f, 0.2f);
-			IKsOffsetOn0 = new Vector3(0f, 0f, 0f);
-			IKsOffsetOn45 = new Vector3(0f, 0f, -0.04f);
-			IKsOffsetOn90 = new Vector3(0f, 0f, -0.08f);
-			IKsOffsetOn135 = new Vector3(0f, 0f, 0.08f);
-			IKsOffsetOn180 = new Vector3(0f, 0f, 0f);
-			base._002Ector();
 		}
 	}
 
@@ -114,12 +98,9 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 
 		internal LegRedirectHelper oppositeHelper;
 
-		[CompilerGenerated]
-		private Vector3 _003CLastComputedWorldSpaceLegPos_003Ek__BackingField;
+		private Vector3 computedPosLocal = Vector3.zero;
 
-		private Vector3 computedPosLocal;
-
-		private Quaternion _footRedirCache;
+		private Quaternion _footRedirCache = Quaternion.identity;
 
 		private LegsAnimator LA => parent.LA;
 
@@ -129,14 +110,14 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003CLastComputedWorldSpaceLegPos_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003CLastComputedWorldSpaceLegPos_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -150,9 +131,6 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-			computedPosLocal = Vector3.zero;
-			_footRedirCache = Quaternion.identity;
-			base._002Ector();
 			this.parent = parent;
 			this.leg = leg;
 			LastComputedWorldSpaceLegPos = leg.BoneEnd.position;
@@ -291,15 +269,15 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _play_offInAir;
 
-	private int _hash_xDir;
+	private int _hash_xDir = -1;
 
-	private int _hash_zDir;
+	private int _hash_zDir = -1;
 
-	private Vector3 _calc_WorldDir;
+	private Vector3 _calc_WorldDir = Vector3.zero;
 
-	private Vector3 _calc_LocalDir;
+	private Vector3 _calc_LocalDir = Vector3.zero;
 
-	private Quaternion _calc_LocalRotDir;
+	private Quaternion _calc_LocalRotDir = Quaternion.identity;
 
 	private float _localTargetAngle;
 
@@ -329,15 +307,15 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 
 	private float _var_fixFeet;
 
-	private Vector3 _calc_hipsPositionOffsets;
+	private Vector3 _calc_hipsPositionOffsets = Vector3.zero;
 
-	private Vector3 _calc_hipsRotationOffsets;
+	private Vector3 _calc_hipsRotationOffsets = Vector3.zero;
 
-	private Vector3 _calc_hipsStretchOffset;
+	private Vector3 _calc_hipsStretchOffset = Vector3.zero;
 
-	private Vector3 _sd_hipsStretchOff;
+	private Vector3 _sd_hipsStretchOff = Vector3.zero;
 
-	private Vector3 _calc_ikOff;
+	private Vector3 _calc_ikOff = Vector3.zero;
 
 	private List<LegRedirectHelper> legRedirectHelpers;
 
@@ -345,27 +323,27 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 	public Transform SpineBone;
 
 	[NonSerialized]
-	public Vector3 User_MultiplyHipsOffsets;
+	public Vector3 User_MultiplyHipsOffsets = Vector3.one;
 
 	[FPD_Header("Angles setup to drive procedural animation", 6f, 4f, 2)]
 	public AnglesSetup Animation360Angles;
 
 	[NonSerialized]
-	public float User_StretchRotatorAnglePower;
+	public float User_StretchRotatorAnglePower = 30f;
 
 	[NonSerialized]
-	public float User_StretchPositionMultiplier;
+	public float User_StretchPositionMultiplier = 1f;
 
-	private float _mainBlend;
+	private float _mainBlend = 1f;
 
 	private bool _wasUpdated;
 
-	private Vector3 overridingDirection;
+	private Vector3 overridingDirection = Vector3.zero;
 
 	private bool useOverridingDirection;
 
 	[NonSerialized]
-	public float overrideDirectionFadeSpeed;
+	public float overrideDirectionFadeSpeed = 6f;
 
 	private float overrideDirectionBlend;
 
@@ -415,41 +393,41 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		_play_reAdj = ReAdjVar;
 		_wasUpdated = false;
 		legRedirectHelpers = new List<LegRedirectHelper>();
-		for (int i = 0; i < base.LA.Legs.Count; i++)
+		for (int i = 0; i < LA.Legs.Count; i++)
 		{
-			LegRedirectHelper item = new LegRedirectHelper(this, base.LA.Legs[i]);
+			LegRedirectHelper item = new LegRedirectHelper(this, LA.Legs[i]);
 			legRedirectHelpers.Add(item);
 		}
-		for (int j = 0; j < base.LA.Legs.Count; j++)
+		for (int j = 0; j < LA.Legs.Count; j++)
 		{
-			if (base.LA.Legs[j].OppositeLegIndex >= 0)
+			if (LA.Legs[j].OppositeLegIndex >= 0)
 			{
-				legRedirectHelpers[j].oppositeHelper = legRedirectHelpers[base.LA.Legs[j].OppositeLegIndex];
+				legRedirectHelpers[j].oppositeHelper = legRedirectHelpers[LA.Legs[j].OppositeLegIndex];
 			}
 		}
-		if ((Object)(object)SpineBone == (Object)null && base.LA.Hips.childCount > 0)
+		if ((Object)(object)SpineBone == (Object)null && LA.Hips.childCount > 0)
 		{
-			if (base.LA.Hips.childCount == 1)
+			if (LA.Hips.childCount == 1)
 			{
-				SpineBone = base.LA.Hips.GetChild(0);
+				SpineBone = LA.Hips.GetChild(0);
 			}
 			else
 			{
-				for (int k = 0; k < base.LA.Hips.childCount; k++)
+				for (int k = 0; k < LA.Hips.childCount; k++)
 				{
-					if (((Object)base.LA.Hips.GetChild(k)).name.ToLower().Contains("spin"))
+					if (((Object)LA.Hips.GetChild(k)).name.ToLower().Contains("spin"))
 					{
-						SpineBone = base.LA.Hips.GetChild(k);
+						SpineBone = LA.Hips.GetChild(k);
 						break;
 					}
 				}
 				if ((Object)(object)SpineBone == (Object)null)
 				{
-					SpineBone = base.LA.Hips.GetChild(0);
+					SpineBone = LA.Hips.GetChild(0);
 				}
 			}
 		}
-		if (Object.op_Implicit((Object)(object)base.LA.Mecanim))
+		if (Object.op_Implicit((Object)(object)LA.Mecanim))
 		{
 			LegsAnimator.Variable xDirAnimVarVar = XDirAnimVarVar;
 			if (!string.IsNullOrWhiteSpace(xDirAnimVarVar.GetString()))
@@ -484,10 +462,10 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
 		//IL_049e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04a3: Unknown result type (might be due to invalid IL or missing references)
-		_mainBlend = base.LA._MainBlend * base.ModuleBlend;
+		_mainBlend = LA._MainBlend * ModuleBlend;
 		if (_play_offInAir.GetBool())
 		{
-			_mainBlend *= base.LA.IsGroundedBlend;
+			_mainBlend *= LA.IsGroundedBlend;
 		}
 		float num = _play_TrDur.GetFloat();
 		if (_mainBlend < 0.001f)
@@ -502,7 +480,7 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 			}
 			else
 			{
-				overrideDirectionBlend = Mathf.MoveTowards(overrideDirectionBlend, 1f, base.Owner.DeltaTime * overrideDirectionFadeSpeed);
+				overrideDirectionBlend = Mathf.MoveTowards(overrideDirectionBlend, 1f, Owner.DeltaTime * overrideDirectionFadeSpeed);
 			}
 		}
 		else if (overrideDirectionFadeSpeed < 0.0001f)
@@ -511,19 +489,19 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		}
 		else
 		{
-			overrideDirectionBlend = Mathf.MoveTowards(overrideDirectionBlend, 0f, base.Owner.DeltaTime * overrideDirectionFadeSpeed);
+			overrideDirectionBlend = Mathf.MoveTowards(overrideDirectionBlend, 0f, Owner.DeltaTime * overrideDirectionFadeSpeed);
 		}
 		Vector3 calc_WorldDir;
 		if (_hash_zDir != -1)
 		{
-			Vector3 val = new Vector3(base.LA.Mecanim.GetFloat(_hash_xDir), 0f, base.LA.Mecanim.GetFloat(_hash_zDir));
-			calc_WorldDir = ((Vector3)(ref val)).normalized;
+			Vector3 val = new Vector3(LA.Mecanim.GetFloat(_hash_xDir), 0f, LA.Mecanim.GetFloat(_hash_zDir));
+			calc_WorldDir = val.normalized;
 		}
 		else
 		{
-			calc_WorldDir = base.LA.DesiredMovementDirection;
+			calc_WorldDir = LA.DesiredMovementDirection;
 			calc_WorldDir.y = 0f;
-			if (((Vector3)(ref calc_WorldDir)).magnitude < 0.1f)
+			if (calc_WorldDir.magnitude < 0.1f)
 			{
 				calc_WorldDir = Vector3.zero;
 			}
@@ -540,17 +518,17 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 				_calc_WorldDir = Vector3.Slerp(_calc_WorldDir, overridingDirection, overrideDirectionBlend);
 			}
 		}
-		_calc_LocalDir = base.LA.ToRootLocalSpaceVec(_calc_WorldDir);
+		_calc_LocalDir = LA.ToRootLocalSpaceVec(_calc_WorldDir);
 		_var_raiseLimit = _play_LimitRaise.GetFloat();
 		_var_fixFeet = _play_FixFeet.GetFloat();
-		if (((Vector3)(ref _calc_LocalDir)).sqrMagnitude < 1E-05f)
+		if (_calc_LocalDir.sqrMagnitude < 1E-05f)
 		{
 			_localTargetAngle = 0f;
 		}
 		_localTargetAngle = FEngineering.GetAngleRad(_calc_LocalDir.x, _calc_LocalDir.z);
 		float num2 = ((!(num <= 0f)) ? (3f * Mathf.Lerp(5f, 0.5f, num / 0.6f)) : 1000f);
-		_calc_deltaSpeed = base.LA.DeltaTime * num2;
-		_calc_deltaSpeedSlow = base.LA.DeltaTime * (num2 * 0.6f);
+		_calc_deltaSpeed = LA.DeltaTime * num2;
+		_calc_deltaSpeedSlow = LA.DeltaTime * (num2 * 0.6f);
 		_calc_smoothedTargetAngle = Mathf.LerpAngle(_calc_smoothedTargetAngle, _localTargetAngle, _calc_deltaSpeedSlow);
 		_calc_angleDiffFactor = Mathf.InverseLerp(0.0001f, 0.25f, Mathf.Abs((_localTargetAngle - _calc_smoothedTargetAngle) / MathF.PI));
 		_localTargetAngle *= 57.29578f;
@@ -624,11 +602,11 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 			return;
 		}
 		float smoother = _play_Smoother.GetFloat() + 1f;
-		for (int i = 0; i < base.LA.Legs.Count; i++)
+		for (int i = 0; i < LA.Legs.Count; i++)
 		{
-			LegsAnimator.Leg leg = base.LA.Legs[i];
+			LegsAnimator.Leg leg = LA.Legs[i];
 			Vector3 animatorEndBonePos = leg._AnimatorEndBonePos;
-			Vector3 localPos = base.LA.ToRootLocalSpace(animatorEndBonePos);
+			Vector3 localPos = LA.ToRootLocalSpace(animatorEndBonePos);
 			LegRedirectHelper legRedirectHelper = legRedirectHelpers[leg.PlaymodeIndex];
 			legRedirectHelper.ComputeIKOffset(localPos, smoother);
 			Vector3 val = legRedirectHelper.LastComputedWorldSpaceLegPos;
@@ -637,15 +615,15 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 				val = Vector3.LerpUnclamped(animatorEndBonePos, val, _mainBlend);
 			}
 			Vector3 calc_ikOff = _calc_ikOff;
-			if (base.LA.Legs[i].Side == LegsAnimator.ELegSide.Left)
+			if (LA.Legs[i].Side == LegsAnimator.ELegSide.Left)
 			{
 				calc_ikOff.x = 0f - calc_ikOff.x;
 			}
-			else if (base.LA.Legs[i].Side == LegsAnimator.ELegSide.Right)
+			else if (LA.Legs[i].Side == LegsAnimator.ELegSide.Right)
 			{
 				calc_ikOff.z = 0f - calc_ikOff.z;
 			}
-			calc_ikOff = base.LA.RootToWorldSpaceVec(calc_ikOff);
+			calc_ikOff = LA.RootToWorldSpaceVec(calc_ikOff);
 			val += calc_ikOff;
 			leg.OverrideAnimatorAnklePosition(val);
 		}
@@ -817,15 +795,15 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		float num10 = 0f;
 		num10 = ((!(num5 > 135f)) ? Mathf.InverseLerp(90f, 135f, num5) : Mathf.InverseLerp(180f, 135f, num5));
 		num10 = Mathf.Lerp(1f, -0.5f, num10);
-		for (int i = 0; i < base.LA.Legs.Count; i++)
+		for (int i = 0; i < LA.Legs.Count; i++)
 		{
-			LegsAnimator.Leg leg = base.LA.Legs[i];
+			LegsAnimator.Leg leg = LA.Legs[i];
 			if (num2 > 0f)
 			{
 				float num11 = num7;
 				float num12 = 1f - num2;
 				num12 = num12 * num12 * num12;
-				Quaternion target = Quaternion.AngleAxis(num11 * (1f - num12) * 0.8f * _mainBlend, base.LA.BaseTransform.up);
+				Quaternion target = Quaternion.AngleAxis(num11 * (1f - num12) * 0.8f * _mainBlend, LA.BaseTransform.up);
 				target = legRedirectHelpers[i].FootRedirectSmoother(target);
 				leg.OverrideFinalIKRot(target * leg.GetFinalIKRot());
 			}
@@ -860,10 +838,10 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 				{
 					num9 += num13;
 				}
-				Vector3 vec = leg._PreviousFinalIKPos - base.LA.BaseTransform.position;
-				vec = base.LA.ToRootLocalSpaceVec(vec);
+				Vector3 vec = leg._PreviousFinalIKPos - LA.BaseTransform.position;
+				vec = LA.ToRootLocalSpaceVec(vec);
 				vec.y *= -0.8f;
-				vec = base.LA.RootToWorldSpaceVec(vec);
+				vec = LA.RootToWorldSpaceVec(vec);
 				val += vec * (num13 * 1f);
 			}
 		}
@@ -911,7 +889,7 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 			val3 *= 0.7f * num;
 			val2 = Vector3.Scale(val2, User_MultiplyHipsOffsets);
 		}
-		val4 *= num * _mainBlend * base.LA.ScaleReference;
+		val4 *= num * _mainBlend * LA.ScaleReference;
 		_calc_ikOff = val4;
 		float num14 = 0.25f + num4 * 0.75f;
 		_calc_lStretch = Mathf.Lerp(_calc_lStretch, num8, _calc_deltaSpeed);
@@ -933,23 +911,23 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		{
 			num15 = 0f;
 		}
-		Quaternion val6 = Quaternion.AngleAxis(_calc_hipsRotationOffsets.y * _mainBlend, base.LA.BaseTransform.up);
-		val6 *= Quaternion.AngleAxis(_calc_hipsRotationOffsets.z * _mainBlend, base.LA.BaseTransform.forward);
-		val6 *= Quaternion.AngleAxis(_calc_hipsRotationOffsets.x * _mainBlend, base.LA.BaseTransform.right);
-		base.LA.Hips.rotation = val6 * base.LA.Hips.rotation;
+		Quaternion val6 = Quaternion.AngleAxis(_calc_hipsRotationOffsets.y * _mainBlend, LA.BaseTransform.up);
+		val6 *= Quaternion.AngleAxis(_calc_hipsRotationOffsets.z * _mainBlend, LA.BaseTransform.forward);
+		val6 *= Quaternion.AngleAxis(_calc_hipsRotationOffsets.x * _mainBlend, LA.BaseTransform.right);
+		LA.Hips.rotation = val6 * LA.Hips.rotation;
 		if (num15 > 0f)
 		{
 			SpineBone.rotation = Quaternion.Slerp(SpineBone.rotation, val5, Mathf.Lerp(1f, num15, _mainBlend));
 		}
-		_calc_hipsStretchOffset = Vector3.SmoothDamp(_calc_hipsStretchOffset, num6 * val, ref _sd_hipsStretchOff, 0.2f + 0.3f * _play_TrDur.GetFloat(), 100000f, base.LA.DeltaTime);
-		Vector3 val7 = base.LA.RootToWorldSpaceVec(_calc_hipsPositionOffsets * 0.5f * base.LA.ScaleReference) * _mainBlend;
-		LegsAnimator lA = base.LA;
+		_calc_hipsStretchOffset = Vector3.SmoothDamp(_calc_hipsStretchOffset, num6 * val, ref _sd_hipsStretchOff, 0.2f + 0.3f * _play_TrDur.GetFloat(), 100000f, LA.DeltaTime);
+		Vector3 val7 = LA.RootToWorldSpaceVec(_calc_hipsPositionOffsets * 0.5f * LA.ScaleReference) * _mainBlend;
+		LegsAnimator lA = LA;
 		lA._Hips_Modules_ExtraWOffset += val7 + _calc_hipsStretchOffset * num4 * _mainBlend;
 		if (_play_reAdj.GetBool())
 		{
-			for (int j = 0; j < base.LA.Legs.Count; j++)
+			for (int j = 0; j < LA.Legs.Count; j++)
 			{
-				base.LA.Legs[j].OverrideFinalIKPos(base.LA.Legs[j].GetFinalIKPos() - val7);
+				LA.Legs[j].OverrideFinalIKPos(LA.Legs[j].GetFinalIKPos() - val7);
 			}
 		}
 	}
@@ -967,12 +945,12 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		if (!(_mainBlend < 0.001f) && _wasUpdated && _var_fixFeet > 0f)
 		{
-			for (int i = 0; i < base.LA.Legs.Count; i++)
+			for (int i = 0; i < LA.Legs.Count; i++)
 			{
-				LegsAnimator.Leg leg = base.LA.Legs[i];
+				LegsAnimator.Leg leg = LA.Legs[i];
 				Quaternion rotation = leg.IKProcessor.EndIKBone.transform.rotation;
 				Quaternion val = leg.IKProcessor.EndIKBone.transform.parent.rotation * leg.IKProcessor.EndIKBone.InitialLocalRotation;
-				val = Quaternion.LerpUnclamped(rotation, val, (1f - leg.A_AligningHelperBlend) * _var_fixFeet * base.LA.IsMovingBlend * _calc_toNegativeXProgress);
+				val = Quaternion.LerpUnclamped(rotation, val, (1f - leg.A_AligningHelperBlend) * _var_fixFeet * LA.IsMovingBlend * _calc_toNegativeXProgress);
 				leg.IKProcessor.EndIKBone.transform.rotation = val;
 			}
 		}
@@ -1032,22 +1010,5 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		_hash_xDir = -1;
-		_hash_zDir = -1;
-		_calc_WorldDir = Vector3.zero;
-		_calc_LocalDir = Vector3.zero;
-		_calc_LocalRotDir = Quaternion.identity;
-		_calc_hipsPositionOffsets = Vector3.zero;
-		_calc_hipsRotationOffsets = Vector3.zero;
-		_calc_hipsStretchOffset = Vector3.zero;
-		_sd_hipsStretchOff = Vector3.zero;
-		_calc_ikOff = Vector3.zero;
-		User_MultiplyHipsOffsets = Vector3.one;
-		User_StretchRotatorAnglePower = 30f;
-		User_StretchPositionMultiplier = 1f;
-		_mainBlend = 1f;
-		overridingDirection = Vector3.zero;
-		overrideDirectionFadeSpeed = 6f;
-		base._002Ector();
 	}
 }

@@ -21,7 +21,7 @@ public struct Analytics
 {
 	public static readonly Dictionary<string, object> Metrics = new Dictionary<string, object>();
 
-	public static Analytics Singleton = default(Analytics);
+	public static Analytics Singleton = default;
 
 	public static bool Enabled => Community.Runtime.Analytics.Enabled;
 

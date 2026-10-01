@@ -12,7 +12,7 @@ namespace Carbon.Components;
 
 public class ClientEntity : IDisposable
 {
-	internal List<Connection> watchers;
+	internal List<Connection> watchers = new List<Connection>();
 
 	internal NetworkableId _parentId;
 
@@ -141,7 +141,7 @@ public class ClientEntity : IDisposable
 		return new ClientEntity(proto, num, netId, group)
 		{
 			Position = position,
-			Rotation = ((Quaternion)(ref rotation)).eulerAngles
+			Rotation = rotation.eulerAngles
 		};
 	}
 
@@ -167,14 +167,12 @@ public class ClientEntity : IDisposable
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Expected O, but got Unknown
+		//IL_003b: Expected Obj, but got Unknown
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Expected O, but got Unknown
+		//IL_0055: Expected Obj, but got Unknown
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		watchers = new List<Connection>();
-		base._002Ector();
-		Proto = (Entity)(((object)proto) ?? ((object)new Entity()));
+		Proto = proto ?? new Entity();
 		Entity proto2 = Proto;
 		if (proto2.baseNetworkable == null)
 		{
@@ -353,7 +351,7 @@ public class ClientEntity : IDisposable
 			val.Vector3(ref Proto.baseEntity.rot);
 			val.Float(Time.time);
 			NetworkableId parentID = ParentID;
-			if (((NetworkableId)(ref parentID)).IsValid)
+			if (parentID.IsValid)
 			{
 				val.EntityID(ParentID);
 			}

@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ServerBrowser_TagModifierButton : RustButton
 {
-	[Header("Tag Modifier Button")]
 	[SerializeField]
+	[Header("Tag Modifier Button")]
 	private string _serverTag;
 
 	[SerializeField]
@@ -44,7 +44,7 @@ public class UI_ServerBrowser_TagModifierButton : RustButton
 				LeanTween.cancel(_countTween.id);
 			}
 			int.TryParse(((TMP_Text)_countText).text, out var result);
-			_countTween = LeanTween.value(((Component)this).gameObject, (float)result, (float)count, 0.2f).setEaseOutQuad().setOnUpdate(delegate(float val)
+			_countTween = LeanTween.value(((Component)this).gameObject, (float)result, (float)count, 0.2f).setEaseOutQuad().setOnUpdate((float val) =>
 			{
 				int num = Mathf.RoundToInt(val);
 				((TMP_Text)_countText).text = num.ToString();

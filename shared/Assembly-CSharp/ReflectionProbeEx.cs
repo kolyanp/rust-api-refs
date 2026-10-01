@@ -25,7 +25,7 @@ public class ReflectionProbeEx : MonoBehaviour
 
 	private struct CubemapFaceMatrices
 	{
-		public Matrix4x4 worldToView;
+		public Matrix4x4 worldToView = Matrix4x4.identity;
 
 		public Matrix4x4 viewToWorld;
 
@@ -35,17 +35,16 @@ public class ReflectionProbeEx : MonoBehaviour
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-			worldToView = Matrix4x4.identity;
-			((Matrix4x4)(ref worldToView))[0, 0] = ((Vector3)(ref x))[0];
-			((Matrix4x4)(ref worldToView))[0, 1] = ((Vector3)(ref x))[1];
-			((Matrix4x4)(ref worldToView))[0, 2] = ((Vector3)(ref x))[2];
-			((Matrix4x4)(ref worldToView))[1, 0] = ((Vector3)(ref y))[0];
-			((Matrix4x4)(ref worldToView))[1, 1] = ((Vector3)(ref y))[1];
-			((Matrix4x4)(ref worldToView))[1, 2] = ((Vector3)(ref y))[2];
-			((Matrix4x4)(ref worldToView))[2, 0] = ((Vector3)(ref z))[0];
-			((Matrix4x4)(ref worldToView))[2, 1] = ((Vector3)(ref z))[1];
-			((Matrix4x4)(ref worldToView))[2, 2] = ((Vector3)(ref z))[2];
-			viewToWorld = ((Matrix4x4)(ref worldToView)).inverse;
+			worldToView[0, 0] = x[0];
+			worldToView[0, 1] = x[1];
+			worldToView[0, 2] = x[2];
+			worldToView[1, 0] = y[0];
+			worldToView[1, 1] = y[1];
+			worldToView[1, 2] = y[2];
+			worldToView[2, 0] = z[0];
+			worldToView[2, 1] = z[1];
+			worldToView[2, 2] = z[2];
+			viewToWorld = worldToView.inverse;
 		}
 	}
 
@@ -71,42 +70,82 @@ public class ReflectionProbeEx : MonoBehaviour
 
 	private Mesh skyboxMesh;
 
-	private static float[] octaVerts;
+	private static float[] octaVerts = new float[72]
+	{
+		0f, 1f, 0f, 0f, 0f, -1f, 1f, 0f, 0f, 0f,
+		1f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 1f,
+		0f, 0f, 0f, 1f, -1f, 0f, 0f, 0f, 1f, 0f,
+		-1f, 0f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 1f,
+		0f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 0f, 0f,
+		1f, 1f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 0f,
+		0f, 0f, 1f, 0f, -1f, 0f, 0f, 0f, -1f, -1f,
+		0f, 0f
+	};
 
-	private static readonly CubemapFaceMatrices[] cubemapFaceMatrices;
+	private static readonly CubemapFaceMatrices[] cubemapFaceMatrices = new CubemapFaceMatrices[6]
+	{
+		new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f), new Vector3(-1f, 0f, 0f)),
+		new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f), new Vector3(1f, 0f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, 1f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, -1f)),
+		new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, 1f))
+	};
 
-	private static readonly CubemapFaceMatrices[] cubemapFaceMatricesD3D11;
+	private static readonly CubemapFaceMatrices[] cubemapFaceMatricesD3D11 = new CubemapFaceMatrices[6]
+	{
+		new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, 1f, 0f), new Vector3(-1f, 0f, 0f)),
+		new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f), new Vector3(1f, 0f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, -1f)),
+		new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, 1f))
+	};
 
-	private static readonly CubemapFaceMatrices[] shadowCubemapFaceMatrices;
+	private static readonly CubemapFaceMatrices[] shadowCubemapFaceMatrices = new CubemapFaceMatrices[6]
+	{
+		new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f), new Vector3(-1f, 0f, 0f)),
+		new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f), new Vector3(1f, 0f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f)),
+		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, 1f)),
+		new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, -1f))
+	};
 
 	private CubemapFaceMatrices[] platformCubemapFaceMatrices;
 
-	private static readonly int[] tab32;
+	private static readonly int[] tab32 = new int[32]
+	{
+		0, 9, 1, 10, 13, 21, 2, 29, 11, 14,
+		16, 18, 22, 25, 3, 30, 8, 12, 20, 28,
+		15, 17, 24, 7, 19, 27, 23, 6, 26, 5,
+		4, 31
+	};
 
-	public ReflectionProbeRefreshMode refreshMode;
+	public ReflectionProbeRefreshMode refreshMode = (ReflectionProbeRefreshMode)1;
 
 	public bool timeSlicing;
 
-	public int resolution;
+	public int resolution = 128;
 
 	[InspectorName("HDR")]
-	public bool hdr;
+	public bool hdr = true;
 
 	public float shadowDistance;
 
-	public ReflectionProbeClearFlags clearFlags;
+	public ReflectionProbeClearFlags clearFlags = (ReflectionProbeClearFlags)1;
 
-	public Color background;
+	public Color background = new Color(0.192f, 0.301f, 0.474f);
 
-	public float nearClip;
+	public float nearClip = 0.3f;
 
-	public float farClip;
+	public float farClip = 1000f;
 
 	public Transform attachToTarget;
 
 	public Light directionalLight;
 
-	public float textureMipBias;
+	public float textureMipBias = 2f;
 
 	public bool highPrecision;
 
@@ -114,11 +153,11 @@ public class ReflectionProbeEx : MonoBehaviour
 
 	public ConvolutionQuality convolutionQuality;
 
-	public List<RenderListEntry> staticRenderList;
+	public List<RenderListEntry> staticRenderList = new List<RenderListEntry>();
 
 	public Cubemap reflectionCubemap;
 
-	public float reflectionIntensity;
+	public float reflectionIntensity = 1f;
 
 	private void CreateMeshes()
 	{
@@ -149,7 +188,7 @@ public class ReflectionProbeEx : MonoBehaviour
 	private static Mesh CreateBlitMesh()
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0006: Expected O, but got Unknown
+		//IL_0006: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
@@ -167,14 +206,14 @@ public class ReflectionProbeEx : MonoBehaviour
 		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
 		Mesh val = new Mesh();
-		val.vertices = (Vector3[])(object)new Vector3[4]
+		val.vertices = new Vector3[4]
 		{
 			new Vector3(-1f, -1f, 0f),
 			new Vector3(-1f, 1f, 0f),
 			new Vector3(1f, 1f, 0f),
 			new Vector3(1f, -1f, 0f)
 		};
-		val.uv = (Vector2[])(object)new Vector2[4]
+		val.uv = new Vector2[4]
 		{
 			new Vector2(0f, 0f),
 			new Vector2(0f, 1f),
@@ -188,6 +227,7 @@ public class ReflectionProbeEx : MonoBehaviour
 	private static CubemapSkyboxVertex SubDivVert(CubemapSkyboxVertex v1, CubemapSkyboxVertex v2)
 	{
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
@@ -198,10 +238,9 @@ public class ReflectionProbeEx : MonoBehaviour
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = new Vector3(v1.x, v1.y, v1.z);
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(v2.x, v2.y, v2.z);
+		Vector3 val2 = new Vector3(v2.x, v2.y, v2.z);
 		Vector3 val3 = Vector3.Normalize(Vector3.Lerp(val, val2, 0.5f));
-		CubemapSkyboxVertex result = default(CubemapSkyboxVertex);
+		CubemapSkyboxVertex result = default;
 		result.x = (result.tu = val3.x);
 		result.y = (result.tv = val3.y);
 		result.z = (result.tw = val3.z);
@@ -230,6 +269,8 @@ public class ReflectionProbeEx : MonoBehaviour
 
 	private static void SubdivideYOnly(List<CubemapSkyboxVertex> destArray, CubemapSkyboxVertex v1, CubemapSkyboxVertex v2, CubemapSkyboxVertex v3)
 	{
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
@@ -271,10 +312,8 @@ public class ReflectionProbeEx : MonoBehaviour
 		destArray.Add(cubemapSkyboxVertex);
 		destArray.Add(item);
 		destArray.Add(item2);
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(item2.x - cubemapSkyboxVertex2.x, item2.y - cubemapSkyboxVertex2.y, item2.z - cubemapSkyboxVertex2.z);
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(item.x - cubemapSkyboxVertex3.x, item.y - cubemapSkyboxVertex3.y, item.z - cubemapSkyboxVertex3.z);
+		Vector3 val = new Vector3(item2.x - cubemapSkyboxVertex2.x, item2.y - cubemapSkyboxVertex2.y, item2.z - cubemapSkyboxVertex2.z);
+		Vector3 val2 = new Vector3(item.x - cubemapSkyboxVertex3.x, item.y - cubemapSkyboxVertex3.y, item.z - cubemapSkyboxVertex3.z);
 		if (val.x * val.x + val.y * val.y + val.z * val.z > val2.x * val2.x + val2.y * val2.y + val2.z * val2.z)
 		{
 			destArray.Add(item);
@@ -306,7 +345,7 @@ public class ReflectionProbeEx : MonoBehaviour
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0242: Expected O, but got Unknown
+		//IL_0242: Expected Obj, but got Unknown
 		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
 		//IL_029b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02bd: Unknown result type (might be due to invalid IL or missing references)
@@ -315,7 +354,7 @@ public class ReflectionProbeEx : MonoBehaviour
 		List<CubemapSkyboxVertex> list = new List<CubemapSkyboxVertex>();
 		for (int i = 0; i < 24; i++)
 		{
-			CubemapSkyboxVertex item = default(CubemapSkyboxVertex);
+			CubemapSkyboxVertex item = default;
 			Vector3 val = Vector3.Normalize(new Vector3(octaVerts[i * 3], octaVerts[i * 3 + 1], octaVerts[i * 3 + 2]));
 			item.x = (item.tu = val.x);
 			item.y = (item.tv = val.y);
@@ -358,8 +397,8 @@ public class ReflectionProbeEx : MonoBehaviour
 			}
 		}
 		Mesh val2 = new Mesh();
-		Vector3[] array = (Vector3[])(object)new Vector3[list.Count];
-		Vector2[] array2 = (Vector2[])(object)new Vector2[list.Count];
+		Vector3[] array = new Vector3[list.Count];
+		Vector2[] array2 = new Vector2[list.Count];
 		int[] array3 = new int[list.Count];
 		for (int n = 0; n < list.Count; n++)
 		{
@@ -441,7 +480,7 @@ public class ReflectionProbeEx : MonoBehaviour
 	private void SafeCreateMaterial(ref Material mat, Shader shader)
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Expected O, but got Unknown
+		//IL_0012: Expected Obj, but got Unknown
 		if ((Object)(object)mat == (Object)null)
 		{
 			mat = new Material(shader);
@@ -462,7 +501,7 @@ public class ReflectionProbeEx : MonoBehaviour
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Expected O, but got Unknown
+		//IL_0031: Expected Obj, but got Unknown
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Invalid comparison between Unknown and I4
@@ -491,7 +530,7 @@ public class ReflectionProbeEx : MonoBehaviour
 	private void SafeCreateCB(ref CommandBuffer cb, string name)
 	{
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		if (cb == null)
 		{
 			cb = new CommandBuffer();
@@ -504,7 +543,7 @@ public class ReflectionProbeEx : MonoBehaviour
 		if ((Object)(object)obj != (Object)null)
 		{
 			Object.DestroyImmediate((Object)(object)obj);
-			obj = default(T);
+			obj = default;
 		}
 	}
 
@@ -513,7 +552,7 @@ public class ReflectionProbeEx : MonoBehaviour
 		if (obj != null)
 		{
 			obj.Dispose();
-			obj = default(T);
+			obj = default;
 		}
 	}
 
@@ -523,17 +562,6 @@ public class ReflectionProbeEx : MonoBehaviour
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		refreshMode = (ReflectionProbeRefreshMode)1;
-		resolution = 128;
-		hdr = true;
-		clearFlags = (ReflectionProbeClearFlags)1;
-		background = new Color(0.192f, 0.301f, 0.474f);
-		nearClip = 0.3f;
-		farClip = 1000f;
-		textureMipBias = 2f;
-		staticRenderList = new List<RenderListEntry>();
-		reflectionIntensity = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 
 	static ReflectionProbeEx()
@@ -592,50 +620,5 @@ public class ReflectionProbeEx : MonoBehaviour
 		//IL_050c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0520: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0534: Unknown result type (might be due to invalid IL or missing references)
-		octaVerts = new float[72]
-		{
-			0f, 1f, 0f, 0f, 0f, -1f, 1f, 0f, 0f, 0f,
-			1f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 1f,
-			0f, 0f, 0f, 1f, -1f, 0f, 0f, 0f, 1f, 0f,
-			-1f, 0f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 1f,
-			0f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 0f, 0f,
-			1f, 1f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 0f,
-			0f, 0f, 1f, 0f, -1f, 0f, 0f, 0f, -1f, -1f,
-			0f, 0f
-		};
-		cubemapFaceMatrices = new CubemapFaceMatrices[6]
-		{
-			new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f), new Vector3(-1f, 0f, 0f)),
-			new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f), new Vector3(1f, 0f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, 1f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, -1f)),
-			new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, 1f))
-		};
-		cubemapFaceMatricesD3D11 = new CubemapFaceMatrices[6]
-		{
-			new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, 1f, 0f), new Vector3(-1f, 0f, 0f)),
-			new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f), new Vector3(1f, 0f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, -1f)),
-			new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, 1f))
-		};
-		shadowCubemapFaceMatrices = new CubemapFaceMatrices[6]
-		{
-			new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f), new Vector3(-1f, 0f, 0f)),
-			new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f), new Vector3(1f, 0f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f)),
-			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, 1f)),
-			new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, -1f))
-		};
-		tab32 = new int[32]
-		{
-			0, 9, 1, 10, 13, 21, 2, 29, 11, 14,
-			16, 18, 22, 25, 3, 30, 8, 12, 20, 28,
-			15, 17, 24, 7, 19, 27, 23, 6, 26, 5,
-			4, 31
-		};
 	}
 }

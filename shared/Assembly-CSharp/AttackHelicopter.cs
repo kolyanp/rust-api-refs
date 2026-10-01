@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -33,7 +35,7 @@ public class AttackHelicopter : PlayerHelicopter
 			fire1 = false;
 			fire2 = false;
 			reload = false;
-			eyeRay = default(Ray);
+			eyeRay = default;
 		}
 	}
 
@@ -101,7 +103,7 @@ public class AttackHelicopter : PlayerHelicopter
 	public Transform rightFlareLaunchPos;
 
 	[SerializeField]
-	public float flareLaunchVel;
+	public float flareLaunchVel = 10f;
 
 	[Header("Heli Pilot Lights")]
 	[SerializeField]
@@ -123,9 +125,9 @@ public class AttackHelicopter : PlayerHelicopter
 	private Renderer flareLightGreen;
 
 	[Header("Heli Turret")]
-	public Vector2 turretPitchClamp;
+	public Vector2 turretPitchClamp = new Vector2(-15f, 70f);
 
-	public Vector2 turretYawClamp;
+	public Vector2 turretYawClamp = new Vector2(-90f, 90f);
 
 	public const Flags IN_GUNNER_VIEW_FLAG = Flags.Reserved9;
 
@@ -135,19 +137,41 @@ public class AttackHelicopter : PlayerHelicopter
 
 	protected static int altGaugeIndex = Animator.StringToHash("altFraction");
 
-	protected int altShakeIndex;
+	protected int altShakeIndex = -1;
 
 	public EntityRef<AttackHelicopterTurret> turretInstance;
 
 	public EntityRef<AttackHelicopterRockets> rocketsInstance;
 
-	public GunnerInputState gunnerInputState;
+	public GunnerInputState gunnerInputState = new GunnerInputState();
 
 	public TimeSince timeSinceLastGunnerInput;
 
 	public TimeSince timeSinceFailedWeaponFireRPC;
 
 	public TimeSince timeSinceFailedFlareRPC;
+
+	private int __sync_DetachedPanelsSync;
+
+	[Sync(Autosave = true)]
+	public int DetachedPanelsSync
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_DetachedPanelsSync;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			if (!IsSyncVarEqual(__sync_DetachedPanelsSync, value))
+			{
+				__sync_DetachedPanelsSync = value;
+				byte nameID = __GetWeaverID("DetachedPanelsSync");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
 
 	public bool HasSafeZoneFlag => HasFlag(Flags.Reserved10);
 
@@ -386,7 +410,7 @@ public class AttackHelicopter : PlayerHelicopter
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -441,7 +465,7 @@ public class AttackHelicopter : PlayerHelicopter
 
 	public AttackHelicopterTurret GetTurret()
 	{
-		AttackHelicopterTurret attackHelicopterTurret = turretInstance.Get(base.isServer);
+		AttackHelicopterTurret attackHelicopterTurret = turretInstance.Get(isServer);
 		if (attackHelicopterTurret.IsValid())
 		{
 			return attackHelicopterTurret;
@@ -451,7 +475,7 @@ public class AttackHelicopter : PlayerHelicopter
 
 	public AttackHelicopterRockets GetRockets()
 	{
-		AttackHelicopterRockets attackHelicopterRockets = rocketsInstance.Get(base.isServer);
+		AttackHelicopterRockets attackHelicopterRockets = rocketsInstance.Get(isServer);
 		if (attackHelicopterRockets.IsValid())
 		{
 			return attackHelicopterRockets;
@@ -466,9 +490,9 @@ public class AttackHelicopter : PlayerHelicopter
 		{
 			return;
 		}
-		bool num = inputState.IsDown(BUTTON.FIRE_PRIMARY);
-		bool flag = inputState.WasJustPressed(BUTTON.FIRE_SECONDARY);
-		if (num)
+		bool flag = inputState.IsDown(BUTTON.FIRE_PRIMARY);
+		bool flag2 = inputState.WasJustPressed(BUTTON.FIRE_SECONDARY);
+		if (flag)
 		{
 			AttackHelicopterRockets rockets = GetRockets();
 			if (rockets.TryFireRocket(player))
@@ -480,7 +504,7 @@ public class AttackHelicopter : PlayerHelicopter
 				WeaponFireFailed(rockets.GetRocketAmount(), player);
 			}
 		}
-		if (flag && !GetRockets().TryFireFlare())
+		if (flag2 && !GetRockets().TryFireFlare())
 		{
 			FlareFireFailed(player);
 		}
@@ -503,8 +527,8 @@ public class AttackHelicopter : PlayerHelicopter
 		gunnerInputState.fire1 = inputState.IsDown(BUTTON.FIRE_PRIMARY);
 		gunnerInputState.fire2 = inputState.IsDown(BUTTON.FIRE_SECONDARY);
 		gunnerInputState.reload = inputState.IsDown(BUTTON.RELOAD);
-		((Ray)(ref gunnerInputState.eyeRay)).direction = Quaternion.Euler(inputState.current.aimAngles) * Vector3.forward;
-		((Ray)(ref gunnerInputState.eyeRay)).origin = player.eyes.position + ((Ray)(ref gunnerInputState.eyeRay)).direction * 0.5f;
+		gunnerInputState.eyeRay.direction = Quaternion.Euler(inputState.current.aimAngles) * Vector3.forward;
+		gunnerInputState.eyeRay.origin = player.eyes.position + gunnerInputState.eyeRay.direction * 0.5f;
 		if (IsOn() && GunnerIsInGunnerView)
 		{
 			AttackHelicopterTurret turret = GetTurret();
@@ -627,13 +651,13 @@ public class AttackHelicopter : PlayerHelicopter
 	{
 		if (vehicle.vehiclesdroploot)
 		{
-			if (turretInstance.IsValid(base.isServer))
+			if (turretInstance.IsValid(isServer))
 			{
-				turretInstance.Get(base.isServer).DropItems();
+				turretInstance.Get(isServer).DropItems();
 			}
-			if (rocketsInstance.IsValid(base.isServer))
+			if (rocketsInstance.IsValid(isServer))
 			{
-				rocketsInstance.Get(base.isServer).DropItems();
+				rocketsInstance.Get(isServer).DropItems();
 			}
 		}
 		base.DoServerDestroy();
@@ -781,8 +805,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -801,8 +825,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -814,8 +838,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: true);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_CloseGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -827,8 +851,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetRocketAmmoType(RPCMessage msg)
 	{
 		if (!((Object)(object)GetDriver() != (Object)(object)msg.player))
@@ -838,8 +862,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_TriggerRocketReload(RPCMessage msg)
 	{
 		if (!((Object)(object)GetDriver() != (Object)(object)msg.player))
@@ -863,12 +887,26 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
+	public override void Hurt(HitInfo info)
+	{
+		if ((Object)(object)healthThresholdToggle != (Object)null)
+		{
+			healthThresholdToggle.NoteDamage(info, ((Component)this).transform);
+		}
+		base.Hurt(info);
+	}
+
 	public override void OnHealthChanged(float oldvalue, float newvalue)
 	{
 		base.OnHealthChanged(oldvalue, newvalue);
 		if ((Object)(object)healthThresholdToggle != (Object)null)
 		{
-			healthThresholdToggle.UpdateHealth(base.healthFraction);
+			if (newvalue > oldvalue)
+			{
+				healthThresholdToggle.NoteHealing((newvalue - oldvalue) / MaxHealth());
+			}
+			DetachedPanelsSync = healthThresholdToggle.UpdateDetachedMask(DetachedPanelsSync, healthFraction);
+			healthThresholdToggle.ApplyMask(DetachedPanelsSync);
 		}
 	}
 
@@ -877,8 +915,129 @@ public class AttackHelicopter : PlayerHelicopter
 		base.PostServerLoad();
 		if ((Object)(object)healthThresholdToggle != (Object)null)
 		{
-			healthThresholdToggle.UpdateHealth(base.healthFraction);
+			DetachedPanelsSync = healthThresholdToggle.UpdateDetachedMask(DetachedPanelsSync, healthFraction);
+			healthThresholdToggle.ApplyMask(DetachedPanelsSync);
 		}
+	}
+
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		if (id == 0)
+		{
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: DetachedPanelsSync for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_DetachedPanelsSync);
+			return true;
+		}
+		return base.WriteSyncVar(id, writer);
+	}
+
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
+	{
+		if (id == 0)
+		{
+			try
+			{
+				_ = __sync_DetachedPanelsSync;
+				int _sync_DetachedPanelsSync = reader.Int32();
+				__sync_DetachedPanelsSync = _sync_DetachedPanelsSync;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		}
+		return base.OnSyncVar(id, reader, fromAutoSave);
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (propertyName == "DetachedPanelsSync")
+		{
+			return 0;
+		}
+		return byte.MaxValue;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
+		{
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
+		}
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_DetachedPanelsSync = 0;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		if (id == 0)
+		{
+			return true;
+		}
+		return base.ShouldInvalidateCache(id);
 	}
 
 	public AttackHelicopter()
@@ -887,11 +1046,5 @@ public class AttackHelicopter : PlayerHelicopter
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		flareLaunchVel = 10f;
-		turretPitchClamp = new Vector2(-15f, 70f);
-		turretYawClamp = new Vector2(-90f, 90f);
-		altShakeIndex = -1;
-		gunnerInputState = new GunnerInputState();
-		base._002Ector();
 	}
 }

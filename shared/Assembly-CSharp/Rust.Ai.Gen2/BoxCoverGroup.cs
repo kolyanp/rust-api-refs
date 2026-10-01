@@ -8,11 +8,11 @@ namespace Rust.Ai.Gen2;
 public class BoxCoverGroup : CoverGroup
 {
 	[SerializeField]
-	private Vector3 size;
+	private Vector3 size = new Vector3(5f, 1.5f, 1f);
 
 	private OBB obb;
 
-	private static readonly (int x, int z)[] boxCorners = new(int, int)[4]
+	private static readonly (int x, int z)[] boxCorners = new (int, int)[4]
 	{
 		(1, 1),
 		(1, -1),
@@ -100,15 +100,15 @@ public class BoxCoverGroup : CoverGroup
 		if ((Object)(object)component != (Object)null)
 		{
 			Bounds bounds = component.bounds;
-			obb = new OBB(gameObject.transform.position + ((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).size, gameObject.transform.rotation);
+			obb = new OBB(gameObject.transform.position + bounds.center, bounds.size, gameObject.transform.rotation);
 		}
 		else if ((Object)(object)componentInChildren != (Object)null)
 		{
 			Vector3 position = gameObject.transform.position;
 			Bounds localBounds = ((Renderer)componentInChildren).localBounds;
-			Vector3 val = position + ((Bounds)(ref localBounds)).center * ((Component)componentInChildren).transform.lossyScale.x;
+			Vector3 val = position + localBounds.center * ((Component)componentInChildren).transform.lossyScale.x;
 			localBounds = ((Renderer)componentInChildren).localBounds;
-			obb = new OBB(val, ((Bounds)(ref localBounds)).size * ((Component)componentInChildren).transform.lossyScale.x, gameObject.transform.rotation);
+			obb = new OBB(val, localBounds.size * ((Component)componentInChildren).transform.lossyScale.x, gameObject.transform.rotation);
 		}
 		else
 		{
@@ -119,10 +119,10 @@ public class BoxCoverGroup : CoverGroup
 		{
 			(int, int) tuple = boxCorners[i];
 			(int, int) tuple2 = boxCorners[(i + 1) % boxCorners.Length];
-			Vector3 point = ((OBB)(ref obb)).GetPoint((float)tuple.Item1, -1f, (float)tuple.Item2);
-			Vector3 point2 = ((OBB)(ref obb)).GetPoint((float)tuple2.Item1, -1f, (float)tuple2.Item2);
+			Vector3 point = obb.GetPoint((float)tuple.Item1, -1f, (float)tuple.Item2);
+			Vector3 point2 = obb.GetPoint((float)tuple2.Item1, -1f, (float)tuple2.Item2);
 			Vector3 val2 = point2 - point;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			point += normalized * 0.875f;
 			point2 -= normalized * 0.875f;
 			int num = Mathf.FloorToInt(Vector3.Distance(point, point2) / 1f);
@@ -149,7 +149,7 @@ public class BoxCoverGroup : CoverGroup
 					Vector3 val3 = Vector3.Lerp(point, point2, (float)(j / (num - 1)));
 					Vector3 val4 = val3;
 					val2 = Vector3.Cross(normalized, Vector3.up);
-					val3 = val4 + ((Vector3)(ref val2)).normalized * 0.5f;
+					val3 = val4 + val2.normalized * 0.5f;
 					Cover item = new Cover(val3, Mathf.Atan2(point2.x - point.x, point2.z - point.z) * 57.29578f + 90f, peeks);
 					covers.Add(item);
 				}
@@ -167,7 +167,5 @@ public class BoxCoverGroup : CoverGroup
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		size = new Vector3(5f, 1.5f, 1f);
-		base._002Ector();
 	}
 }

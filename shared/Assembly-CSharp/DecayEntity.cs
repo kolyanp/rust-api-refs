@@ -28,25 +28,28 @@ public class DecayEntity : BaseCombatEntity
 		public bool canBeDemolished;
 	}
 
-	public static readonly Phrase CancelTitle;
+	public static readonly Phrase CancelTitle = new Phrase("cancel", "Cancel");
 
-	public static readonly Phrase CancelDesc;
+	public static readonly Phrase CancelDesc = new Phrase("cancel_desc", "");
 
-	public static readonly Phrase DemolishTitle;
+	public static readonly Phrase DemolishTitle = new Phrase("demolish", "Demolish");
 
-	public static readonly Phrase DemolishDesc;
+	public static readonly Phrase DemolishDesc = new Phrase("demolish_desc", "Slowly and automatically dismantle this block");
 
 	[ServerVar(Help = "(Generated) Time window in seconds after placement during which a player can demolish their own building block; default 600s (10 minutes)")]
-	public static int demolish_seconds;
+	public static int demolish_seconds = 600;
 
 	public const Flags DemolishFlag = Flags.Reserved2;
 
 	[Header("Demolish")]
 	public bool canBeDemolished;
 
+	[Tooltip("Always keep this entity visible to players outside the base.")]
+	public bool ignoreRoomOcclusion;
+
 	public GameObjectRef debrisPrefab;
 
-	public Vector3 debrisRotationOffset;
+	public Vector3 debrisRotationOffset = Vector3.zero;
 
 	public DebrisPosition[] DebrisPositions;
 
@@ -62,7 +65,7 @@ public class DecayEntity : BaseCombatEntity
 	public Upkeep upkeep;
 
 	[ServerVar(Help = "(Generated) When enabled, logs detailed debug output for building privilege (tool cupboard auth) checks during decay calculations")]
-	public static bool DebugGetPrivilege;
+	public static bool DebugGetPrivilege = false;
 
 	public Decay decay;
 
@@ -70,7 +73,7 @@ public class DecayEntity : BaseCombatEntity
 
 	public float lastDecayTick;
 
-	public float decayVariance;
+	public float decayVariance = 1f;
 
 	public virtual bool IsDemolishSupported => canBeDemolished;
 
@@ -193,8 +196,8 @@ public class DecayEntity : BaseCombatEntity
 		return player.IsBuildingAuthed(((Component)this).transform.position, ((Component)this).transform.rotation, bounds);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void DoDemolish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanDemolish(msg.player) && Interface.CallHook("OnStructureDemolish", this, msg.player, false) == null)
@@ -279,7 +282,7 @@ public class DecayEntity : BaseCombatEntity
 	{
 		base.ResetState();
 		buildingID = 0u;
-		if (base.isServer)
+		if (isServer)
 		{
 			decayTimer = 0f;
 		}
@@ -287,7 +290,7 @@ public class DecayEntity : BaseCombatEntity
 
 	public void AttachToBuilding(uint id)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			BuildingManager.server.Remove(this);
 			buildingID = id;
@@ -298,7 +301,7 @@ public class DecayEntity : BaseCombatEntity
 
 	public BuildingManager.Building GetBuilding()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return BuildingManager.server.GetBuilding(buildingID);
 		}
@@ -334,7 +337,7 @@ public class DecayEntity : BaseCombatEntity
 			}
 			if (building.IsABoatBuilding())
 			{
-				BoatBuildingStation stationOverlappingPosition = BoatBuildingStation.GetStationOverlappingPosition(((Component)this).transform.position, base.isServer);
+				BoatBuildingStation stationOverlappingPosition = BoatBuildingStation.GetStationOverlappingPosition(((Component)this).transform.position, isServer);
 				if ((Object)(object)stationOverlappingPosition != (Object)null)
 				{
 					SteeringWheel steeringWheel = stationOverlappingPosition.GetSteeringWheel();
@@ -468,33 +471,38 @@ public class DecayEntity : BaseCombatEntity
 		}
 	}
 
+	public override bool SupportsRoomOcclusion()
+	{
+		return !ignoreRoomOcclusion;
+	}
+
 	public override void PostInitShared()
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		base.PostInitShared();
-		if (base.isServer && !AI.useUnityNavmesh)
+		if (isServer)
 		{
-			RustNavigation instance = RustNavigation.Instance;
-			OBB val = WorldSpaceBounds();
-			instance.RebuildTilesInBounds(((OBB)(ref val)).ToBounds());
+			QueueNavmeshRebuild();
 		}
 	}
 
 	public override void DoServerDestroy()
 	{
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		base.DoServerDestroy();
 		BuildingManager.server.Remove(this);
 		BuildingManager.server.CheckSplit(this);
+		QueueNavmeshRebuild();
+	}
+
+	protected void QueueNavmeshRebuild()
+	{
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		if (!AI.useUnityNavmesh)
 		{
 			RustNavigation instance = RustNavigation.Instance;
 			OBB val = WorldSpaceBounds();
-			instance.RebuildTilesInBounds(((OBB)(ref val)).ToBounds());
+			instance.RebuildTilesInBounds(val.ToBounds());
 		}
 	}
 
@@ -638,7 +646,7 @@ public class DecayEntity : BaseCombatEntity
 			}
 			if (upkeepTimer < 1f)
 			{
-				if (base.healthFraction < 1f && GetEntityHealScale() > 0f && base.SecondsSinceAttacked > 600f && Interface.CallHook("OnDecayHeal", this) == null)
+				if (healthFraction < 1f && GetEntityHealScale() > 0f && SecondsSinceAttacked > 600f && Interface.CallHook("OnDecayHeal", this) == null)
 				{
 					float num2 = decayDeltaTime / GetEntityDecayDuration() * GetEntityHealScale();
 					Heal(MaxHealth() * num2);
@@ -737,11 +745,11 @@ public class DecayEntity : BaseCombatEntity
 			return;
 		}
 		Vector3 val = ((Component)this).transform.TransformPoint(localPos);
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (dropToTerrain && Physics.Raycast(val, Vector3.down, ref val2, 6f, 8388608))
 		{
-			float num = val.y - ((RaycastHit)(ref val2)).point.y;
-			val.y = ((RaycastHit)(ref val2)).point.y;
+			float num = val.y - val2.point.y;
+			val.y = val2.point.y;
 			localPos.y -= num;
 		}
 		List<DebrisEntity> list = Pool.Get<List<DebrisEntity>>();
@@ -801,26 +809,17 @@ public class DecayEntity : BaseCombatEntity
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		debrisRotationOffset = Vector3.zero;
-		decayVariance = 1f;
-		base._002Ector();
 	}
 
 	static DecayEntity()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
-		CancelTitle = new Phrase("cancel", "Cancel");
-		CancelDesc = new Phrase("cancel_desc", "");
-		DemolishTitle = new Phrase("demolish", "Demolish");
-		DemolishDesc = new Phrase("demolish_desc", "Slowly and automatically dismantle this block");
-		demolish_seconds = 600;
-		DebugGetPrivilege = false;
+		//IL_0050: Expected Obj, but got Unknown
 	}
 }

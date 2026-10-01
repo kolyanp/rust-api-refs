@@ -60,7 +60,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 
 		public void CreateTimeout()
 		{
-			_timeout = Community.Runtime.Core.timer.In(Singleton.ConfigInstance.TimeoutPerUrl * (float)ImageUrls.Count, delegate
+			_timeout = Community.Runtime.Core.timer.In(Singleton.ConfigInstance.TimeoutPerUrl * (float)ImageUrls.Count, () =>
 			{
 				if (IsDone)
 				{
@@ -100,7 +100,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 			Client.Headers.Add("User-Agent", Community.Runtime.Analytics.UserAgent);
 			Client.Credentials = CredentialCache.DefaultCredentials;
 			Client.Proxy = null;
-			Client.DownloadDataCompleted += delegate(object _, DownloadDataCompletedEventArgs e)
+			Client.DownloadDataCompleted += (object _, DownloadDataCompletedEventArgs e) =>
 			{
 				if (e.Error == null)
 				{
@@ -241,7 +241,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 			{
 				Save();
 			}
-			if (base.ConfigInstance.LoadDefaultImagesOnStartup)
+			if (ConfigInstance.LoadDefaultImagesOnStartup)
 			{
 				LoadDefaultImages();
 			}
@@ -342,7 +342,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 			return;
 		}
 		int urlCount = urls.Count();
-		QueueBatch(@override, delegate(List<ImageQueueResult> results)
+		QueueBatch(@override, (List<ImageQueueResult> results) =>
 		{
 			//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 			foreach (ImageQueueResult item in results.Where((ImageQueueResult result) => result.Data != null && result.Data.Length != 0))
@@ -404,7 +404,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 		{
 			Logger.Error("Failed processing queue batch", ex);
 		}
-		((MonoBehaviour)Community.Runtime.Core.persistence).StartCoroutine(RunQueue(imageQueue, delegate(List<ImageQueueResult> results)
+		((MonoBehaviour)Community.Runtime.Core.persistence).StartCoroutine(RunQueue(imageQueue, (List<ImageQueueResult> results) =>
 		{
 			//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 			try
@@ -617,11 +617,11 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 	public uint GetQRCode(string text, int pixels = 20, bool transparent = false, bool quietZones = true, bool whiteMode = false)
 	{
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Expected O, but got Unknown
+		//IL_004e: Expected Obj, but got Unknown
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Expected O, but got Unknown
+		//IL_0040: Expected Obj, but got Unknown
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Expected O, but got Unknown
+		//IL_0063: Expected Obj, but got Unknown
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		if (_protoData.Map.TryGetValue($"qr_{Community.Protect(text)}_{pixels}_0", out var value))
 		{
@@ -641,7 +641,19 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 				QRCode val4 = new QRCode(val3);
 				try
 				{
-					Bitmap graphic = val4.GetGraphic(pixels, whiteMode ? Color.White : Color.Black, transparent ? Color.Transparent : (whiteMode ? Color.Black : Color.White), quietZones);
+					_003F val5 = val4;
+					int num = pixels;
+					Color color = (whiteMode ? Color.White : Color.Black);
+					Color color2;
+					if (transparent)
+					{
+						color2 = Color.Transparent;
+					}
+					else
+					{
+						color2 = (whiteMode ? Color.Black : Color.White);
+					}
+					Bitmap graphic = ((QRCode)val5).GetGraphic(num, color, color2, quietZones);
 					using MemoryStream memoryStream = new MemoryStream();
 					((Image)graphic).Save((Stream)memoryStream, ImageFormat.Png);
 					((Image)graphic).Dispose();

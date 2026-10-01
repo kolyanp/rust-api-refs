@@ -20,16 +20,16 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 	public GameObject ToDuplicate;
 
 	[Tooltip("How many copies in which axis")]
-	public Vector3 DuplicatesCount;
+	public Vector3 DuplicatesCount = new Vector3(3f, 1f, 3f);
 
 	[Tooltip("How far from each other should be created copies")]
-	public Vector3 Offsets;
+	public Vector3 Offsets = new Vector3(3f, 0f, 3f);
 
-	public Vector3 Randomize;
+	public Vector3 Randomize = new Vector3(0f, 0f, 0f);
 
-	public Vector3 RandomRotate;
+	public Vector3 RandomRotate = new Vector3(0f, 0f, 0f);
 
-	public Vector3 RandomScale;
+	public Vector3 RandomScale = new Vector3(0f, 0f, 0f);
 
 	public int Seed;
 
@@ -39,7 +39,7 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 	[Tooltip("Duplicates will be created when entered playmode")]
 	public bool DuplicateAtStart;
 
-	public float GizmosSize;
+	public float GizmosSize = 1f;
 
 	public FEDuplicateDirection DuplicationType;
 
@@ -83,6 +83,7 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0315: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0321: Unknown result type (might be due to invalid IL or missing references)
@@ -113,7 +114,7 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 		Vector3 val = ((DuplicationOrigin != FEDuplicateOrigin.FromComponent) ? ToDuplicate.transform.position : ((Component)this).transform.position);
 		if (DuplicationType == FEDuplicateDirection.GoIterative)
 		{
-			RaycastHit val4 = default(RaycastHit);
+			RaycastHit val4 = default;
 			for (int i = 0; (float)i < DuplicatesCount.x; i++)
 			{
 				for (int j = 0; (float)j < DuplicatesCount.y; j++)
@@ -137,9 +138,9 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 						if (PlaceOnGround)
 						{
 							Physics.Raycast(val3.transform.position + Vector3.up * 100f, Vector3.down, ref val4, 200f);
-							if (Object.op_Implicit((Object)(object)((RaycastHit)(ref val4)).transform))
+							if (Object.op_Implicit((Object)(object)val4.transform))
 							{
-								val3.transform.position = ((RaycastHit)(ref val4)).point;
+								val3.transform.position = val4.point;
 							}
 						}
 					}
@@ -152,8 +153,7 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 			{
 				return;
 			}
-			Vector3 val5 = default(Vector3);
-			RaycastHit val8 = default(RaycastHit);
+			RaycastHit val8 = default;
 			for (int l = 0; (float)l < DuplicatesCount.x; l++)
 			{
 				for (int m = 0; (float)m < DuplicatesCount.y; m++)
@@ -175,7 +175,7 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 						{
 							num3 = -1f;
 						}
-						((Vector3)(ref val5))._002Ector((float)l, (float)m, (float)n);
+						Vector3 val5 = new Vector3((float)l, (float)m, (float)n);
 						if (l == 0)
 						{
 							val5.x = 0.5f;
@@ -201,9 +201,9 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 						if (PlaceOnGround)
 						{
 							Physics.Raycast(val7.transform.position + Vector3.up * 100f, Vector3.down, ref val8, 200f);
-							if (Object.op_Implicit((Object)(object)((RaycastHit)(ref val8)).transform))
+							if (Object.op_Implicit((Object)(object)val8.transform))
 							{
-								val7.transform.position = ((RaycastHit)(ref val8)).point;
+								val7.transform.position = val8.point;
 							}
 						}
 					}
@@ -227,6 +227,7 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
@@ -268,7 +269,6 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 			{
 				return;
 			}
-			Vector3 val3 = default(Vector3);
 			for (int l = 0; (float)l < DuplicatesCount.x; l++)
 			{
 				for (int m = 0; (float)m < DuplicatesCount.y; m++)
@@ -290,7 +290,7 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 						{
 							num3 = -1f;
 						}
-						((Vector3)(ref val3))._002Ector((float)l, (float)m, (float)n);
+						Vector3 val3 = new Vector3((float)l, (float)m, (float)n);
 						if (l == 0)
 						{
 							val3.x = 0.5f;
@@ -339,12 +339,5 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		DuplicatesCount = new Vector3(3f, 1f, 3f);
-		Offsets = new Vector3(3f, 0f, 3f);
-		Randomize = new Vector3(0f, 0f, 0f);
-		RandomRotate = new Vector3(0f, 0f, 0f);
-		RandomScale = new Vector3(0f, 0f, 0f);
-		GizmosSize = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

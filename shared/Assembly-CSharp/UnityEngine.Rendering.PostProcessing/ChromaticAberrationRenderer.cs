@@ -17,14 +17,14 @@ internal sealed class ChromaticAberrationRenderer : PostProcessEffectRenderer<Ch
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Expected O, but got Unknown
+		//IL_0065: Expected Obj, but got Unknown
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		Texture val = base.settings.spectralLut.value;
+		Texture val = settings.spectralLut.value;
 		if ((Object)(object)val == (Object)null)
 		{
 			if ((Object)(object)m_InternalSpectralLut == (Object)null)
@@ -37,7 +37,7 @@ internal sealed class ChromaticAberrationRenderer : PostProcessEffectRenderer<Ch
 					anisoLevel = 0,
 					hideFlags = (HideFlags)52
 				};
-				m_InternalSpectralLut.SetPixels((Color[])(object)new Color[3]
+				m_InternalSpectralLut.SetPixels(new Color[3]
 				{
 					new Color(1f, 0f, 0f),
 					new Color(0f, 1f, 0f),
@@ -48,10 +48,10 @@ internal sealed class ChromaticAberrationRenderer : PostProcessEffectRenderer<Ch
 			val = (Texture)(object)m_InternalSpectralLut;
 		}
 		PropertySheet uberSheet = context.uberSheet;
-		bool flag = (bool)base.settings.fastMode || (int)SystemInfo.graphicsDeviceType == 8;
+		bool flag = (bool)settings.fastMode || (int)SystemInfo.graphicsDeviceType == 8;
 		uberSheet.EnableKeyword(flag ? "CHROMATIC_ABERRATION_LOW" : "CHROMATIC_ABERRATION");
-		uberSheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.ChromaticAberration_Amount, (float)base.settings.intensity * 0.05f);
-		uberSheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.ChromaticAberration_SpectralLut, val);
+		uberSheet.properties.SetFloat(ShaderIDs.ChromaticAberration_Amount, (float)settings.intensity * 0.05f);
+		uberSheet.properties.SetTexture(ShaderIDs.ChromaticAberration_SpectralLut, val);
 	}
 
 	public override void Release()

@@ -12,7 +12,7 @@ public static class ParallelEx
 		for (int i = 0; i < tasks.Length; i++)
 		{
 			int threadId = i;
-			tasks[i] = Task.Run(delegate
+			tasks[i] = Task.Run(() =>
 			{
 				action(threadId, tasks.Length);
 			});

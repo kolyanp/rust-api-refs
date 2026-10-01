@@ -151,14 +151,14 @@ public class ModularVehicleInventory : IDisposable
 			Item item = ItemManager.Create(moduleEntity.AssociatedItemDef, 1, 0uL, isServerSide: true, 0uL);
 			item.condition = moduleEntity.health;
 			moduleEntity.AssociatedItemInstance = item;
-			bool num = TryAddModuleItem(item, firstSocketIndex);
-			if (num)
+			bool flag = TryAddModuleItem(item, firstSocketIndex);
+			if (flag)
 			{
 				vehicle.SetUpModule(moduleEntity, item);
-				return num;
+				return flag;
 			}
 			item.Remove();
-			return num;
+			return flag;
 		}
 		return true;
 	}
@@ -199,7 +199,7 @@ public class ModularVehicleInventory : IDisposable
 		return itemContainer;
 	}
 
-	private void OnSocketInventoryAddRemove(Item moduleItem, bool added)
+	private void OnSocketInventoryAddRemove(Item moduleItem, bool added, BasePlayer sourcePlayer)
 	{
 		if (added)
 		{

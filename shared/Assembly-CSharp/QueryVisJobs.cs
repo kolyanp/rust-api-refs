@@ -37,12 +37,12 @@ public static class QueryVisJobs
 			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-			if (((TransformAccess)(ref transform)).isValid)
+			if (transform.isValid)
 			{
 				Vector3 val = cameraPosition;
-				Vector3 position = ((TransformAccess)(ref transform)).position;
+				Vector3 position = transform.position;
 				Vector3 val2 = position - val;
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
+				Vector3 normalized = val2.normalized;
 				float num = Vector3.Distance(val, position);
 				commands[index] = new RaycastCommand(val, normalized, queryParameters, num);
 			}
@@ -63,8 +63,8 @@ public static class QueryVisJobs
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-			bool flag = ((TransformAccess)(ref transform)).position.y - 0.5f >= waterLevelHeight;
-			bool flag2 = ((TransformAccess)(ref transform)).position.y + 0.5f < waterLevelHeight;
+			bool flag = transform.position.y - 0.5f >= waterLevelHeight;
+			bool flag2 = transform.position.y + 0.5f < waterLevelHeight;
 			blockedByWaterLevel[index] = (flag2 && cameraAboveWater) || (flag && !cameraAboveWater);
 		}
 	}

@@ -43,7 +43,7 @@ public class Entity : ConsoleSystem
 			NetworkableId val2;
 			if (!((Object)(object)entity != (Object)null) || entity.net == null)
 			{
-				val = default(NetworkableId);
+				val = default;
 				val2 = val;
 			}
 			else
@@ -55,7 +55,7 @@ public class Entity : ConsoleSystem
 			NetworkableId val3;
 			if (!((Object)(object)baseEntity != (Object)null))
 			{
-				val = default(NetworkableId);
+				val = default;
 				val3 = val;
 			}
 			else
@@ -66,7 +66,7 @@ public class Entity : ConsoleSystem
 			if ((Object)(object)baseEntity != (Object)null)
 			{
 				val = baseEntity.parentEntity.uid;
-				if (((NetworkableId)(ref val)).IsValid)
+				if (val.IsValid)
 				{
 					if ((Object)(object)baseEntity2 == (Object)null)
 					{
@@ -143,7 +143,7 @@ public class Entity : ConsoleSystem
 					EntityInfo arg = new EntityInfo(current);
 					if (filter(arg))
 					{
-						string[] obj = new string[11]
+						string[] array = new string[11]
 						{
 							"sv",
 							arg.entityID.Value.ToString(),
@@ -158,12 +158,12 @@ public class Entity : ConsoleSystem
 							null
 						};
 						Quaternion val = ((Component)arg.entity).transform.rotation;
-						obj[7] = ((object)((Quaternion)(ref val)).eulerAngles/*cast due to constrained. prefix*/).ToString();
+						array[7] = ((object)val.eulerAngles/*cast due to constrained. prefix*/).ToString();
 						val = ((Component)arg.entity).transform.localRotation;
-						obj[8] = ((object)((Quaternion)(ref val)).eulerAngles/*cast due to constrained. prefix*/).ToString();
-						obj[9] = arg.status;
-						obj[10] = arg.entity.InvokeString();
-						table.AddRow(obj);
+						array[8] = ((object)val.eulerAngles/*cast due to constrained. prefix*/).ToString();
+						array[9] = arg.status;
+						array[10] = arg.entity.InvokeString();
+						table.AddRow(array);
 					}
 				}
 			}
@@ -191,8 +191,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
 	[ClientVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
+	[ServerVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
 	public static void find_id(Arg args)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -203,7 +203,7 @@ public class Entity : ConsoleSystem
 		TextTable val = Pool.Get<TextTable>();
 		try
 		{
-			GetEntityTable(val, delegate(EntityInfo info)
+			GetEntityTable(val, (EntityInfo info) =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -217,8 +217,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
 	[ClientVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
+	[ServerVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
 	public static void find_group(Arg args)
 	{
 		uint filter = args.GetUInt(0);
@@ -246,7 +246,7 @@ public class Entity : ConsoleSystem
 		TextTable val = Pool.Get<TextTable>();
 		try
 		{
-			GetEntityTable(val, delegate(EntityInfo info)
+			GetEntityTable(val, (EntityInfo info) =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -290,7 +290,7 @@ public class Entity : ConsoleSystem
 		TextTable val = Pool.Get<TextTable>();
 		try
 		{
-			GetEntityTable(val, delegate(EntityInfo info)
+			GetEntityTable(val, (EntityInfo info) =>
 			{
 				//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 				//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -304,8 +304,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists all networked entities owned by the calling player (matched by network ID) in a formatted table; admin-only on client")]
 	[ClientVar(Help = "(Generated) Lists all networked entities owned by the calling player (matched by network ID) in a formatted table; admin-only on client")]
+	[ServerVar(Help = "(Generated) Lists all networked entities owned by the calling player (matched by network ID) in a formatted table; admin-only on client")]
 	public static void find_self(Arg args)
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
@@ -319,7 +319,7 @@ public class Entity : ConsoleSystem
 		TextTable val = Pool.Get<TextTable>();
 		try
 		{
-			GetEntityTable(val, delegate(EntityInfo info)
+			GetEntityTable(val, (EntityInfo info) =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -334,7 +334,7 @@ public class Entity : ConsoleSystem
 	}
 
 	[ServerVar(Help = "(Generated) Toggles the debug info overlay for an entity by net ID, showing position, velocity, health, and network state in the world")]
-	public unsafe static void debug_toggle(Arg args)
+	public static void debug_toggle(Arg args)
 	{
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
@@ -344,7 +344,7 @@ public class Entity : ConsoleSystem
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		NetworkableId entityID = ArgEx.GetEntityID(args, 0);
-		if (!((NetworkableId)(ref entityID)).IsValid)
+		if (!entityID.IsValid)
 		{
 			return;
 		}
@@ -360,7 +360,7 @@ public class Entity : ConsoleSystem
 				baseEntity.OnDebugStart();
 			}
 			NetworkableId iD = baseEntity.net.ID;
-			args.ReplyWith("Debugging for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString() + " " + (baseEntity.IsDebugging() ? "enabled" : "disabled"));
+			args.ReplyWith("Debugging for " + ((object)iD/*cast due to constrained. prefix*/).ToString() + " " + (baseEntity.IsDebugging() ? "enabled" : "disabled"));
 		}
 	}
 
@@ -373,7 +373,7 @@ public class Entity : ConsoleSystem
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		NetworkableId entityID = ArgEx.GetEntityID(args, 0);
-		if (((NetworkableId)(ref entityID)).IsValid)
+		if (entityID.IsValid)
 		{
 			BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(entityID) as BaseEntity;
 			if (!((Object)(object)baseEntity == (Object)null))
@@ -421,7 +421,7 @@ public class Entity : ConsoleSystem
 	}
 
 	[ServerVar(Name = "spawn", Help = "(Generated) Spawns a server entity by prefab name at a given world position and direction; returns the spawned entity net ID")]
-	public unsafe static string svspawn(string name, Vector3 pos, Vector3 dir, int forceUp = 1)
+	public static string svspawn(string name, Vector3 pos, Vector3 dir, int forceUp = 1)
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
@@ -455,7 +455,7 @@ public class Entity : ConsoleSystem
 			if (flag)
 			{
 				Quaternion val = Quaternion.LookRotation(dir, Vector3.up);
-				basePlayer.OverrideViewAngles(((Quaternion)(ref val)).eulerAngles);
+				basePlayer.OverrideViewAngles(val.eulerAngles);
 			}
 			else
 			{
@@ -463,14 +463,14 @@ public class Entity : ConsoleSystem
 			}
 		}
 		baseEntity.Spawn();
-		EntityParentSettings entityParentSettings = default(EntityParentSettings);
+		EntityParentSettings entityParentSettings = default;
 		if (((Component)baseEntity).TryGetComponent<EntityParentSettings>(ref entityParentSettings))
 		{
 			entityParentSettings.TryDetachChildren(baseEntity);
 		}
 		baseEntity.UpdateNetworkGroup();
 		Debug.Log((object)$"{arg} spawned \"{baseEntity}\" at {pos}");
-		return "spawned " + ((object)baseEntity)?.ToString() + " at " + ((object)(*(Vector3*)(&pos))/*cast due to constrained. prefix*/).ToString();
+		return "spawned " + ((object)baseEntity)?.ToString() + " at " + ((object)pos/*cast due to constrained. prefix*/).ToString();
 	}
 
 	private static string UnknownVendorMessage(string name)
@@ -511,14 +511,14 @@ public class Entity : ConsoleSystem
 			return "spawnvendor has to be run by a player - it spawns the vendor wherever you're looking";
 		}
 		Ray val = basePlayer.eyes.HeadRay();
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (!Physics.Raycast(val, ref val2, 100f, 1218652417, (QueryTriggerInteraction)1))
 		{
 			return "Nothing to place the vendor on - look at the ground and try again";
 		}
-		Vector3 point = ((RaycastHit)(ref val2)).point;
-		Vector3 val3 = -Vector3Ex.XZ3D(((Ray)(ref val)).direction);
-		Quaternion rot = Quaternion.LookRotation((((Vector3)(ref val3)).sqrMagnitude > 0.001f) ? val3 : Vector3.forward, Vector3.up);
+		Vector3 point = val2.point;
+		Vector3 val3 = -Vector3Ex.XZ3D(val.direction);
+		Quaternion rot = Quaternion.LookRotation((val3.sqrMagnitude > 0.001f) ? val3 : Vector3.forward, Vector3.up);
 		InvisibleVendingMachine invisibleVendingMachine = SpawnVendorEntity<InvisibleVendingMachine>(value.VendingMachinePrefab, point, rot);
 		if ((Object)(object)invisibleVendingMachine == (Object)null)
 		{
@@ -558,10 +558,10 @@ public class Entity : ConsoleSystem
 		}
 		if (val is BasePlayer basePlayer)
 		{
-			basePlayer.OverrideViewAngles(((Quaternion)(ref rot)).eulerAngles);
+			basePlayer.OverrideViewAngles(rot.eulerAngles);
 		}
 		val.Spawn();
-		EntityParentSettings entityParentSettings = default(EntityParentSettings);
+		EntityParentSettings entityParentSettings = default;
 		if (((Component)val).TryGetComponent<EntityParentSettings>(ref entityParentSettings))
 		{
 			entityParentSettings.TryDetachChildren(val);
@@ -571,7 +571,7 @@ public class Entity : ConsoleSystem
 	}
 
 	[ServerVar(Name = "spawnitem", Help = "(Generated) Spawns a dropped item entity server-side by item short name at a given world position")]
-	public unsafe static string svspawnitem(string name, Vector3 pos)
+	public static string svspawnitem(string name, Vector3 pos)
 	{
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
@@ -609,7 +609,7 @@ public class Entity : ConsoleSystem
 		item?.SetItemOwnership(basePlayer, ItemOwnershipPhrases.SpawnedPhrase);
 		BaseEntity arg = item.CreateWorldObject(pos);
 		Debug.Log((object)$"{basePlayer} spawned \"{arg}\" at {pos} (via spawnitem)");
-		return "spawned " + item?.ToString() + " at " + ((object)(*(Vector3*)(&pos))/*cast due to constrained. prefix*/).ToString();
+		return "spawned " + item?.ToString() + " at " + ((object)pos/*cast due to constrained. prefix*/).ToString();
 	}
 
 	[ServerVar(Name = "spawngrid", Help = "(Generated) Spawns a grid of server entities by prefab name centred at a position; useful for stress-testing entity counts")]
@@ -636,13 +636,13 @@ public class Entity : ConsoleSystem
 			return spawnEntityFromName.Error;
 		}
 		Quaternion rotation = ((Component)basePlayer).transform.rotation;
-		((Quaternion)(ref rotation)).eulerAngles = new Vector3(0f, ((Quaternion)(ref rotation)).eulerAngles.y, 0f);
+		rotation.eulerAngles = new Vector3(0f, rotation.eulerAngles.y, 0f);
 		Matrix4x4 val = Matrix4x4.TRS(((Component)basePlayer).transform.position, ((Component)basePlayer).transform.rotation, Vector3.one);
 		for (int i = 0; i < width; i++)
 		{
 			for (int j = 0; j < height; j++)
 			{
-				Vector3 pos = ((Matrix4x4)(ref val)).MultiplyPoint(new Vector3((float)i * spacing, 0f, (float)j * spacing));
+				Vector3 pos = val.MultiplyPoint(new Vector3((float)i * spacing, 0f, (float)j * spacing));
 				BaseEntity baseEntity = GameManager.server.CreateEntity(spawnEntityFromName.PrefabName, pos, rotation);
 				if ((Object)(object)baseEntity == (Object)null)
 				{
@@ -768,26 +768,37 @@ public class Entity : ConsoleSystem
 	[ServerVar(Help = "Destroy all entities created by provided users (separate users by space)")]
 	public static int DeleteBy(Arg arg)
 	{
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		if (!arg.HasArgs())
 		{
 			return 0;
 		}
-		List<ulong> list = Pool.Get<List<ulong>>();
-		StringView[] args = arg.Args;
-		for (int i = 0; i < args.Length; i++)
-		{
-			if (ulong.TryParse(StringView.op_Implicit(args[i]), out var result))
-			{
-				list.Add(result);
-			}
-		}
-		int result2 = DeleteBy(list);
-		Pool.FreeUnmanaged<ulong>(ref list);
-		return result2;
+		List<ulong> ids = Pool.Get<List<ulong>>();
+		ParseUserIds(arg, ids);
+		int result = DeleteBy(ids);
+		Pool.FreeUnmanaged<ulong>(ref ids);
+		return result;
 	}
 
 	private static int DeleteBy(List<ulong> ids)
+	{
+		return CountBy(ids, destroy: true);
+	}
+
+	[ServerVar(Help = "Count all entities created by provided users (separate users by space)")]
+	public static int CountBy(Arg arg)
+	{
+		if (!arg.HasArgs())
+		{
+			return 0;
+		}
+		List<ulong> ids = Pool.Get<List<ulong>>();
+		ParseUserIds(arg, ids);
+		int result = CountBy(ids, destroy: false);
+		Pool.FreeUnmanaged<ulong>(ref ids);
+		return result;
+	}
+
+	private static int CountBy(List<ulong> ids, bool destroy)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
@@ -813,7 +824,10 @@ public class Entity : ConsoleSystem
 				}
 				if (flag)
 				{
-					baseEntity.Invoke(baseEntity.KillMessage, (float)num * 0.2f);
+					if (destroy)
+					{
+						baseEntity.Invoke(baseEntity.KillMessage, (float)num * 0.2f);
+					}
 					num++;
 				}
 			}
@@ -822,6 +836,19 @@ public class Entity : ConsoleSystem
 		finally
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+	}
+
+	private static void ParseUserIds(Arg arg, List<ulong> ids)
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		StringView[] args = arg.Args;
+		for (int i = 0; i < args.Length; i++)
+		{
+			if (ulong.TryParse(StringView.op_Implicit(args[i]), out var result))
+			{
+				ids.Add(result);
+			}
 		}
 	}
 

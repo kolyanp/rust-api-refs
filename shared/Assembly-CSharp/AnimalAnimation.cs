@@ -23,5 +23,8 @@ public class AnimalAnimation : MonoBehaviour, IClientComponent
 
 	public string OverrideBaseFolder;
 
+	[Tooltip("Optional. Redirects the SoundDefinitions animation events pass in, so a variant can reuse the adult's clips with its own sounds")]
+	public SoundRemapping SoundRemapping;
+
 	public float RequiredCameraDistanceForSfx;
 }

@@ -26,6 +26,14 @@ public class ItemModConsumable : MonoBehaviour
 
 	public string steamStatIncrementWhenEaten;
 
+	[Header("Biofuel")]
+	[Tooltip("Replaces the calories used by the biofuel generator, zero stops it accepting this item")]
+	public bool overrideBiofuelCalories;
+
+	[Min(0f)]
+	public float biofuelCalories;
+
+	[Space]
 	public List<ConsumableEffect> effects = new List<ConsumableEffect>();
 
 	public List<ModifierDefintion> modifiers = new List<ModifierDefintion>();
@@ -40,5 +48,14 @@ public class ItemModConsumable : MonoBehaviour
 			}
 		}
 		return 0f;
+	}
+
+	public float GetBiofuelCalories()
+	{
+		if (!overrideBiofuelCalories)
+		{
+			return GetIfType(MetabolismAttribute.Type.Calories);
+		}
+		return biofuelCalories;
 	}
 }

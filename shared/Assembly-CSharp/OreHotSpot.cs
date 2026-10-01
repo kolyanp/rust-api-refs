@@ -25,7 +25,7 @@ public class OreHotSpot : BaseCombatEntity, ILOD
 	public override void OnAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (!base.isClient && Object.op_Implicit((Object)(object)owner))
+		if (!isClient && Object.op_Implicit((Object)(object)owner))
 		{
 			owner.OnAttacked(info);
 		}

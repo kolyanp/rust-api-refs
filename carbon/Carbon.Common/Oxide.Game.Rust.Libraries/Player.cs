@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Carbon;
 using Network;
 using Oxide.Core.Libraries;
 using Oxide.Core.Libraries.Covalence;
+using Rust;
 using UnityEngine;
 
 namespace Oxide.Game.Rust.Libraries;
@@ -169,15 +171,45 @@ public class Player : Library
 	public void Rename(BasePlayer player, string name)
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		name = (string.IsNullOrEmpty(name.Trim()) ? player.displayName : name);
 		SingletonComponent<ServerMgr>.Instance.persistance.SetPlayerName(EncryptedValue<ulong>.op_Implicit(player.userID), name);
-		((BaseNetworkable)player).net.connection.username = name;
+		Networkable net = ((BaseNetworkable)player).net;
+		if (((net != null) ? net.connection : null) != null)
+		{
+			((BaseNetworkable)player).net.connection.username = name;
+		}
 		player.displayName = name;
 		((BaseEntity)player)._name = name;
 		((BaseNetworkable)player).SendNetworkUpdateImmediate();
 		permission.UpdateNickname(player.UserIDString, name);
-		Teleport(player, ((Component)player).transform.position);
+		RefreshForOtherClients(player);
+	}
+
+	internal static void RefreshForOtherClients(BasePlayer player)
+	{
+		if (Application.isLoading || Application.isLoadingSave || ((BaseNetworkable)player).IsDestroyed || !((BaseNetworkable)player).isSpawned || ((BaseNetworkable)player).net?.group == BaseNetworkable.LimboNetworkGroup)
+		{
+			return;
+		}
+		List<Connection> subscribers = ((BaseNetworkable)player).GetSubscribers();
+		if (subscribers == null)
+		{
+			return;
+		}
+		for (int i = 0; i < subscribers.Count; i++)
+		{
+			Connection val = subscribers[i];
+			if (val.connected)
+			{
+				MonoBehaviour player2 = val.player;
+				BasePlayer val2 = (BasePlayer)(object)((player2 is BasePlayer) ? player2 : null);
+				if (val2 != null && !((Object)(object)val2 == (Object)null) && !((Object)(object)val2 == (Object)(object)player) && ((BaseNetworkable)player).ShouldNetworkTo(val2))
+				{
+					((BaseEntity)player).DestroyOnClient(val);
+					((BaseNetworkable)player).SendAsSnapshotWithChildren(val2, true);
+				}
+			}
+		}
 	}
 
 	public void Teleport(BasePlayer player, Vector3 destination)
@@ -211,7 +243,7 @@ public class Player : Library
 	public void Teleport(BasePlayer player, float x, float y, float z)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		this.Teleport(player, new Vector3(x, y, z));
+		Teleport(player, new Vector3(x, y, z));
 	}
 
 	public void Unban(ulong id)

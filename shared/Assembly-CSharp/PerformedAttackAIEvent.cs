@@ -9,7 +9,7 @@ public class PerformedAttackAIEvent : BaseAIEvent
 	public PerformedAttackAIEvent()
 		: base(AIEventType.PerformedAttack)
 	{
-		base.Rate = ExecuteRate.Fast;
+		Rate = ExecuteRate.Fast;
 	}
 
 	public override void Reset()
@@ -20,8 +20,8 @@ public class PerformedAttackAIEvent : BaseAIEvent
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
-		base.Result = false;
-		combatEntity = memory.Entity.Get(base.InputEntityMemorySlot) as BaseCombatEntity;
+		Result = false;
+		combatEntity = memory.Entity.Get(InputEntityMemorySlot) as BaseCombatEntity;
 		float num = lastExecuteTime;
 		lastExecuteTime = Time.time;
 		if ((Object)(object)combatEntity == (Object)null)
@@ -35,18 +35,18 @@ public class PerformedAttackAIEvent : BaseAIEvent
 				return;
 			}
 			BasePlayer basePlayer = combatEntity as BasePlayer;
-			if (!((Object)(object)basePlayer != (Object)null) || ((!((Object)(object)basePlayer == (Object)(object)memory.Entity.Get(5)) || !((Object)(object)basePlayer.lastDealtDamageTo == (Object)(object)base.Owner)) && (!((Object)(object)basePlayer == (Object)(object)memory.Entity.Get(5)) || (((Component)basePlayer.lastDealtDamageTo).gameObject.layer != 21 && ((Component)basePlayer.lastDealtDamageTo).gameObject.layer != 8))))
+			if (!((Object)(object)basePlayer != (Object)null) || ((!((Object)(object)basePlayer == (Object)(object)memory.Entity.Get(5)) || !((Object)(object)basePlayer.lastDealtDamageTo == (Object)(object)Owner)) && (!((Object)(object)basePlayer == (Object)(object)memory.Entity.Get(5)) || (((Component)basePlayer.lastDealtDamageTo).gameObject.layer != 21 && ((Component)basePlayer.lastDealtDamageTo).gameObject.layer != 8))))
 			{
-				if (base.ShouldSetOutputEntityMemory)
+				if (ShouldSetOutputEntityMemory)
 				{
-					memory.Entity.Set(combatEntity.lastDealtDamageTo, base.OutputEntityMemorySlot);
+					memory.Entity.Set(combatEntity.lastDealtDamageTo, OutputEntityMemorySlot);
 				}
-				base.Result = !base.Inverted;
+				Result = !Inverted;
 			}
 		}
 		else
 		{
-			base.Result = base.Inverted;
+			Result = Inverted;
 		}
 	}
 }

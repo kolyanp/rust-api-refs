@@ -58,7 +58,7 @@ public class Patches
 		public static void Prefix(object manager, object __instance)
 		{
 			Type type = __instance.GetType();
-			HarmonyProfiler.Runner.Invoke((Action)delegate
+			HarmonyProfiler.Runner.Invoke((Action)(() =>
 			{
 				string fileNameWithoutExtension = Path.GetFileNameWithoutExtension((string)type.GetProperty("Filename").GetValue(__instance));
 				if (!string.IsNullOrEmpty(fileNameWithoutExtension))
@@ -66,7 +66,7 @@ public class Patches
 					MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Extension, type.Assembly, fileNameWithoutExtension);
 					Debug.Log((object)("MonoProfiler.TryStartProfileFor Extension: " + fileNameWithoutExtension));
 				}
-			}, 0.1f);
+			}), 0.1f);
 		}
 	}
 }

@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class LeanTween : MonoBehaviour
 {
-	public static bool throwErrors;
+	public static bool throwErrors = true;
 
-	public static float tau;
+	public static float tau = (float)Math.PI * 2f;
 
-	public static float PI_DIV2;
+	public static float PI_DIV2 = (float)Math.PI / 2f;
 
 	private static LTSeq[] sequences;
 
@@ -21,23 +21,23 @@ public class LeanTween : MonoBehaviour
 
 	private static LTDescr tween;
 
-	private static int tweenMaxSearch;
+	private static int tweenMaxSearch = -1;
 
-	private static int maxTweens;
+	private static int maxTweens = 4096;
 
-	private static int maxSequences;
+	private static int maxSequences = 4096;
 
-	private static int frameRendered;
+	private static int frameRendered = -1;
 
 	private static GameObject _tweenEmpty;
 
-	public static float dtEstimated;
+	public static float dtEstimated = -1f;
 
 	public static float dtManual;
 
 	public static float dtActual;
 
-	private static uint global_counter;
+	private static uint global_counter = 0u;
 
 	private static int i;
 
@@ -45,13 +45,30 @@ public class LeanTween : MonoBehaviour
 
 	private static int finishedCnt;
 
-	public static AnimationCurve punch;
+	public static AnimationCurve punch = new AnimationCurve(new Keyframe[9]
+	{
+		new Keyframe(0f, 0f),
+		new Keyframe(0.112586f, 0.9976035f),
+		new Keyframe(0.3120486f, -0.1720615f),
+		new Keyframe(0.4316337f, 0.07030682f),
+		new Keyframe(0.5524869f, -0.03141804f),
+		new Keyframe(0.6549395f, 0.003909959f),
+		new Keyframe(0.770987f, -0.009817753f),
+		new Keyframe(0.8838775f, 0.001939224f),
+		new Keyframe(1f, 0f)
+	});
 
-	public static AnimationCurve shake;
+	public static AnimationCurve shake = new AnimationCurve(new Keyframe[4]
+	{
+		new Keyframe(0f, 0f),
+		new Keyframe(0.25f, 1f),
+		new Keyframe(0.75f, -1f),
+		new Keyframe(1f, 0f)
+	});
 
 	private static int maxTweenReached;
 
-	public static int startSearch;
+	public static int startSearch = 0;
 
 	public static LTDescr d;
 
@@ -59,13 +76,13 @@ public class LeanTween : MonoBehaviour
 
 	private static GameObject[] goListeners;
 
-	private static int eventsMaxSearch;
+	private static int eventsMaxSearch = 0;
 
-	public static int EVENTS_MAX;
+	public static int EVENTS_MAX = 10;
 
-	public static int LISTENERS_MAX;
+	public static int LISTENERS_MAX = 10;
 
-	private static int INIT_LISTENERS_MAX;
+	private static int INIT_LISTENERS_MAX = LISTENERS_MAX;
 
 	public static int maxSearch => tweenMaxSearch;
 
@@ -109,7 +126,7 @@ public class LeanTween : MonoBehaviour
 	public static void init(int maxSimultaneousTweens, int maxSimultaneousSequences)
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Expected O, but got Unknown
+		//IL_0047: Expected Obj, but got Unknown
 		if (tweens == null)
 		{
 			maxTweens = maxSimultaneousTweens;
@@ -165,7 +182,7 @@ public class LeanTween : MonoBehaviour
 
 	private static void onLevelWasLoaded54(Scene scene, LoadSceneMode mode)
 	{
-		internalOnLevelWasLoaded(((Scene)(ref scene)).buildIndex);
+		internalOnLevelWasLoaded(scene.buildIndex);
 	}
 
 	private static void internalOnLevelWasLoaded(int lvl)
@@ -254,7 +271,7 @@ public class LeanTween : MonoBehaviour
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		Vector3[] array = (Vector3[])(object)new Vector3[a.Length];
+		Vector3[] array = new Vector3[a.Length];
 		for (i = 0; i < a.Length; i++)
 		{
 			array[i] = a[i] + b;
@@ -687,7 +704,7 @@ public class LeanTween : MonoBehaviour
 				Gizmos.DrawLine(val, val5);
 				float num4 = num;
 				Vector3 val6 = val5 - val;
-				num = num4 + ((Vector3)(ref val6)).magnitude;
+				num = num4 + val6.magnitude;
 				if (num > 1f)
 				{
 					num--;
@@ -695,7 +712,7 @@ public class LeanTween : MonoBehaviour
 					arrowTransform.LookAt(val, Vector3.forward);
 					Vector3 val7 = arrowTransform.TransformDirection(Vector3.right);
 					Vector3 val8 = val - val5;
-					val8 = ((Vector3)(ref val8)).normalized;
+					val8 = val8.normalized;
 					Gizmos.DrawLine(val5, val5 + (val7 + val8) * arrowSize);
 					val7 = arrowTransform.TransformDirection(-Vector3.right);
 					Gizmos.DrawLine(val5, val5 + (val7 + val8) * arrowSize);
@@ -1699,18 +1716,18 @@ public class LeanTween : MonoBehaviour
 	{
 		val /= 1f;
 		end -= start;
-		if (val < 0.36363637f)
+		if (val < 372f / 1023f)
 		{
 			return end * (7.5625f * val * val) + start;
 		}
-		if (val < 0.72727275f)
+		if (val < 744f / 1023f)
 		{
-			val -= 0.54545456f;
+			val -= 558f / 1023f;
 			return end * (7.5625f * val * val + 0.75f) + start;
 		}
-		if ((double)val < 0.9090909090909091)
+		if ((double)val < 930.0 / 1023.0)
 		{
-			val -= 0.8181818f;
+			val -= 837f / 1023f;
 			return end * (7.5625f * val * val + 0.9375f) + start;
 		}
 		val -= 21f / 22f;
@@ -1872,7 +1889,7 @@ public class LeanTween : MonoBehaviour
 		{
 			INIT_LISTENERS_MAX = LISTENERS_MAX;
 			eventListeners = new Action<LTEvent>[EVENTS_MAX * LISTENERS_MAX];
-			goListeners = (GameObject[])(object)new GameObject[EVENTS_MAX * LISTENERS_MAX];
+			goListeners = new GameObject[EVENTS_MAX * LISTENERS_MAX];
 		}
 		for (i = 0; i < INIT_LISTENERS_MAX; i++)
 		{
@@ -1968,7 +1985,7 @@ public class LeanTween : MonoBehaviour
 		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0121: Expected O, but got Unknown
+		//IL_0121: Expected Obj, but got Unknown
 		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
@@ -1978,39 +1995,6 @@ public class LeanTween : MonoBehaviour
 		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0189: Expected O, but got Unknown
-		throwErrors = true;
-		tau = (float)Math.PI * 2f;
-		PI_DIV2 = (float)Math.PI / 2f;
-		tweenMaxSearch = -1;
-		maxTweens = 4096;
-		maxSequences = 4096;
-		frameRendered = -1;
-		dtEstimated = -1f;
-		global_counter = 0u;
-		punch = new AnimationCurve((Keyframe[])(object)new Keyframe[9]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(0.112586f, 0.9976035f),
-			new Keyframe(0.3120486f, -0.1720615f),
-			new Keyframe(0.4316337f, 0.07030682f),
-			new Keyframe(0.5524869f, -0.03141804f),
-			new Keyframe(0.6549395f, 0.003909959f),
-			new Keyframe(0.770987f, -0.009817753f),
-			new Keyframe(0.8838775f, 0.001939224f),
-			new Keyframe(1f, 0f)
-		});
-		shake = new AnimationCurve((Keyframe[])(object)new Keyframe[4]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(0.25f, 1f),
-			new Keyframe(0.75f, -1f),
-			new Keyframe(1f, 0f)
-		});
-		startSearch = 0;
-		eventsMaxSearch = 0;
-		EVENTS_MAX = 10;
-		LISTENERS_MAX = 10;
-		INIT_LISTENERS_MAX = LISTENERS_MAX;
+		//IL_0189: Expected Obj, but got Unknown
 	}
 }

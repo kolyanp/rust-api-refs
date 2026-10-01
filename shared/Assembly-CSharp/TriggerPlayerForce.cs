@@ -120,10 +120,10 @@ public class TriggerPlayerForce : TriggerBase, IServerComponent
 		else
 		{
 			Bounds bounds = triggerCollider.bounds;
-			val = position - ((Bounds)(ref bounds)).center;
-			((Vector3)(ref val)).Normalize();
+			val = position - bounds.center;
+			val.Normalize();
 			val.y = 0.2f;
-			((Vector3)(ref val)).Normalize();
+			val.Normalize();
 		}
 		return val * pushVelocity;
 	}

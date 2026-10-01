@@ -127,7 +127,7 @@ public class GenerateRoadRing : ProceduralComponent
 				if (item3.path == null)
 				{
 					Vector2 val = new Vector2((float)(item3.position.x - point.x), (float)(item3.position.y - point.y));
-					float num6 = ((Vector2)(ref val)).magnitude;
+					float num6 = val.magnitude;
 					if (item3.prev.path == null)
 					{
 						num6 *= 1.5f;

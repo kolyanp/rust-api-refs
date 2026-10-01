@@ -3,33 +3,19 @@ using UnityEngine;
 
 namespace Rust.Ai.Gen2;
 
-public readonly struct NpcNoiseEvent : IEquatable<NpcNoiseEvent>
+public readonly struct NpcNoiseEvent(int id, BaseEntity initiator, Vector3 position, Vector3 initiatorPosition, NpcNoiseIntensity intensity, double eventTime) : IEquatable<NpcNoiseEvent>
 {
-	public readonly int Id;
+	public readonly int Id = id;
 
-	public readonly BaseEntity Initiator;
+	public readonly BaseEntity Initiator = initiator;
 
-	public readonly Vector3 NoisePosition;
+	public readonly Vector3 NoisePosition = position;
 
-	public readonly Vector3 GuessedInitiatorPosition;
+	public readonly Vector3 GuessedInitiatorPosition = initiatorPosition;
 
-	public readonly NpcNoiseIntensity Intensity;
+	public readonly NpcNoiseIntensity Intensity = intensity;
 
-	public readonly double EventTime;
-
-	public NpcNoiseEvent(int id, BaseEntity initiator, Vector3 position, Vector3 initiatorPosition, NpcNoiseIntensity intensity, double eventTime)
-	{
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		Id = id;
-		Initiator = initiator;
-		NoisePosition = position;
-		GuessedInitiatorPosition = initiatorPosition;
-		Intensity = intensity;
-		EventTime = eventTime;
-	}
+	public readonly double EventTime = eventTime;
 
 	public bool Equals(NpcNoiseEvent other)
 	{
@@ -38,9 +24,9 @@ public readonly struct NpcNoiseEvent : IEquatable<NpcNoiseEvent>
 		if (Id == other.Id)
 		{
 			double eventTime = EventTime;
-			if (eventTime.Equals(other.EventTime) && (Object)(object)Initiator == (Object)(object)other.Initiator && Intensity == other.Intensity && ((Vector3)(ref NoisePosition)).Equals(other.NoisePosition))
+			if (eventTime.Equals(other.EventTime) && (Object)(object)Initiator == (Object)(object)other.Initiator && Intensity == other.Intensity && NoisePosition.Equals(other.NoisePosition))
 			{
-				return ((Vector3)(ref GuessedInitiatorPosition)).Equals(other.GuessedInitiatorPosition);
+				return GuessedInitiatorPosition.Equals(other.GuessedInitiatorPosition);
 			}
 		}
 		return false;

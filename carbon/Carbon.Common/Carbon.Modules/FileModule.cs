@@ -181,7 +181,7 @@ public class FileModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			OnExtraInfo = onExtraInfo,
 			Handler = new CUI.Handler()
 		};
-		NextFrame(delegate
+		NextFrame(() =>
 		{
 			file.ChangeDirectory(directory);
 			file.Draw(player);
@@ -250,7 +250,7 @@ public class FileModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			updatePool.Add(cui.UpdateText($"filedeletetext{index}", "0 1 0 0.4", "CONFIRM", 8, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1));
 			updatePool.Send(ap.Player);
 			file.DeletingFile = path;
-			Community.Runtime.Core.timer.In(0.75f, delegate
+			Community.Runtime.Core.timer.In(0.75f, () =>
 			{
 				using CUI cui2 = new CUI(Handler);
 				using CUI.Handler.UpdatePool updatePool2 = cui2.UpdatePool();

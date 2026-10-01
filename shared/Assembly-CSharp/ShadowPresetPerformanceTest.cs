@@ -63,7 +63,7 @@ public static class ShadowPresetPerformanceTest
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		FrameTiming[] array = (FrameTiming[])(object)new FrameTiming[100];
+		FrameTiming[] array = new FrameTiming[100];
 		FrameTimingManager.CaptureFrameTimings();
 		FrameTimingManager.GetLatestTimings(100u, array);
 		TestResultAverages result = new TestResultAverages

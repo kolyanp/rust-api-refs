@@ -13,7 +13,7 @@ public class Category_TechTree
 	public class TechTree_Workbench
 	{
 		[Patch("OnTechTreeNodeUnlock", "OnTechTreeNodeUnlock", "Workbench", "RPC_TechTreeUnlock", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("7e7ab3672f2c40b9b6cfb2ef5836cf19")]
+		[Identifier("4d6cf1642edc4b7487b179bf1ca0f384")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Workbench", false)]
 		[Parameter("local5", "TechTreeData+NodeInstance", false)]
@@ -21,7 +21,7 @@ public class Category_TechTree
 		[Return(typeof(void))]
 		[Category("TechTree")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class TechTree_Workbench_7e7ab3672f2c40b9b6cfb2ef5836cf19 : Patch
+		public class TechTree_Workbench_4d6cf1642edc4b7487b179bf1ca0f384 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -57,7 +57,7 @@ public class Category_TechTree
 		}
 
 		[Patch("OnTechTreeNodeUnlocked", "OnTechTreeNodeUnlocked", "Workbench", "RPC_TechTreeUnlock", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("89dae90988994953ab602daa8b9b6862")]
+		[Identifier("70434102f8474063ae04001afdbc4442")]
 		[Dependencies(new string[] { "OnTechTreeNodeUnlock" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Workbench", false)]
@@ -67,7 +67,7 @@ public class Category_TechTree
 		[Return(typeof(void), Discarded = true)]
 		[Category("TechTree")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class TechTree_Workbench_89dae90988994953ab602daa8b9b6862 : Patch
+		public class TechTree_Workbench_70434102f8474063ae04001afdbc4442 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

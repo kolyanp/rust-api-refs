@@ -43,7 +43,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public Transform buoyancyPoint;
 
-	public float liftAmount;
+	public float liftAmount = 10f;
 
 	public Transform windSock;
 
@@ -51,7 +51,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public Transform[] AltitudeNeedles;
 
-	public float AltitudeNeedleSpeed;
+	public float AltitudeNeedleSpeed = 5f;
 
 	public GameObject staticBalloonDeflated;
 
@@ -66,14 +66,14 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 	public GameObject parentTrigger;
 
 	[Tooltip("Turning off the engine for this long will prevent homing missiles from locking on")]
-	public float engineOffTimeToPreventHomingTarget;
+	public float engineOffTimeToPreventHomingTarget = 4f;
 
 	public float inflationLevel;
 
 	[Header("Fuel")]
 	public GameObjectRef fuelStoragePrefab;
 
-	public float fuelPerSec;
+	public float fuelPerSec = 0.25f;
 
 	[Header("Storage")]
 	public GameObjectRef storageUnitPrefab;
@@ -100,9 +100,9 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public float NextUpgradeTime;
 
-	public float windForce;
+	public float windForce = 30000f;
 
-	public Vector3 currentWindVec;
+	public Vector3 currentWindVec = Vector3.zero;
 
 	public Bounds collapsedBounds;
 
@@ -118,7 +118,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 	[ServerVar]
 	public static float minimumAltitudeTerrain = 25f;
 
-	public Vector3 lastFailedDecayPosition;
+	public Vector3 lastFailedDecayPosition = Vector3.zero;
 
 	public float currentBuoyancy;
 
@@ -128,7 +128,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public bool grounded;
 
-	public float spawnTime;
+	public float spawnTime = -1f;
 
 	public float safeAreaRadius;
 
@@ -140,7 +140,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public SamSite.SamTargetType SAMTargetType => SamSite.targetTypeVehicle;
 
-	public bool IsClient => base.isClient;
+	public bool IsClient => isClient;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -256,7 +256,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public override void InitShared()
 	{
-		fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		fuelSystem = new EntityFuelSystem(isServer, fuelStoragePrefab, children);
 	}
 
 	public override void Load(LoadInfo info)
@@ -285,7 +285,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public bool CanModifyEquipment()
 	{
-		if (base.isServer && Time.time < NextUpgradeTime)
+		if (isServer && Time.time < NextUpgradeTime)
 		{
 			return false;
 		}
@@ -337,13 +337,13 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		return HasFlag(Flags.Locked);
 	}
 
-	private void UpdateEquipmentHealthToggles()
+	private void UpdateEquipmentHealthToggles(float healedHealthFraction = 0f)
 	{
 		foreach (BaseEntity child in children)
 		{
-			if (child is HotAirBalloonEquipment hotAirBalloonEquipment && (Object)(object)hotAirBalloonEquipment.healthThresholdToggle != (Object)null)
+			if (child is HotAirBalloonEquipment hotAirBalloonEquipment)
 			{
-				hotAirBalloonEquipment.healthThresholdToggle.UpdateHealth(base.healthFraction);
+				hotAirBalloonEquipment.UpdateArmorPanels(healthFraction, healedHealthFraction);
 			}
 		}
 	}
@@ -357,31 +357,48 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		base.OnAttacked(info);
 	}
 
+	public override void Hurt(HitInfo info)
+	{
+		foreach (BaseEntity child in children)
+		{
+			if (child is HotAirBalloonEquipment hotAirBalloonEquipment)
+			{
+				hotAirBalloonEquipment.NoteBalloonDamage(info, ((Component)this).transform);
+			}
+		}
+		base.Hurt(info);
+	}
+
 	public override void OnHealthChanged(float oldvalue, float newvalue)
 	{
 		base.OnHealthChanged(oldvalue, newvalue);
-		UpdateEquipmentHealthToggles();
+		float healedHealthFraction = ((newvalue > oldvalue) ? ((newvalue - oldvalue) / MaxHealth()) : 0f);
+		UpdateEquipmentHealthToggles(healedHealthFraction);
 	}
 
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer)
+		if (!isServer)
 		{
-			if (isSpawned)
+			return;
+		}
+		if (isSpawned)
+		{
+			fuelSystem.CheckNewChild(child);
+		}
+		if (child.prefabID == storageUnitPrefab.GetEntity().prefabID)
+		{
+			storageUnitInstance.Set((StorageContainer)child);
+			_ = storageUnitInstance.Get(serverside: true).inventory;
+		}
+		bool isLoadingSave = Application.isLoadingSave;
+		HotAirBalloonEquipment hotAirBalloonEquipment = child as HotAirBalloonEquipment;
+		if ((Object)(object)hotAirBalloonEquipment != (Object)null)
+		{
+			hotAirBalloonEquipment.Added(this, isLoadingSave);
+			if (!isLoadingSave)
 			{
-				fuelSystem.CheckNewChild(child);
-			}
-			if (child.prefabID == storageUnitPrefab.GetEntity().prefabID)
-			{
-				storageUnitInstance.Set((StorageContainer)child);
-				_ = storageUnitInstance.Get(serverside: true).inventory;
-			}
-			bool isLoadingSave = Application.isLoadingSave;
-			HotAirBalloonEquipment hotAirBalloonEquipment = child as HotAirBalloonEquipment;
-			if ((Object)(object)hotAirBalloonEquipment != (Object)null)
-			{
-				hotAirBalloonEquipment.Added(this, isLoadingSave);
 				UpdateEquipmentHealthToggles();
 			}
 		}
@@ -390,7 +407,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 	protected override void OnChildRemoved(BaseEntity child)
 	{
 		base.OnChildRemoved(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			HotAirBalloonEquipment hotAirBalloonEquipment = child as HotAirBalloonEquipment;
 			if ((Object)(object)hotAirBalloonEquipment != (Object)null)
@@ -402,9 +419,9 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	internal override void DoServerDestroy()
 	{
-		if (vehicle.vehiclesdroploot && storageUnitInstance.IsValid(base.isServer))
+		if (vehicle.vehiclesdroploot && storageUnitInstance.IsValid(isServer))
 		{
-			storageUnitInstance.Get(base.isServer).DropItems();
+			storageUnitInstance.Get(isServer).DropItems();
 		}
 		SeekerTarget.SetSeekerTarget(this, SeekerTarget.SeekerStrength.OFF);
 		base.DoServerDestroy();
@@ -482,7 +499,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		base.Save(info);
 		info.msg.hotAirBalloon = Pool.Get<HotAirBalloon>();
 		info.msg.hotAirBalloon.inflationAmount = inflationLevel;
-		info.msg.hotAirBalloon.sinceLastBlast = ((TimeSince)(ref sinceLastBlast)).PassedSince(info.cachedTime.Time);
+		info.msg.hotAirBalloon.sinceLastBlast = sinceLastBlast.PassedSince(info.cachedTime.Time);
 		if (info.forDisk && Object.op_Implicit((Object)(object)myRigidbody))
 		{
 			info.msg.hotAirBalloon.velocity = myRigidbody.linearVelocity;
@@ -526,7 +543,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		if (base.healthFraction == 0f)
+		if (healthFraction == 0f)
 		{
 			return;
 		}
@@ -555,8 +572,8 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void EngineSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnHotAirBalloonToggle", this, msg.player) != null)
@@ -603,7 +620,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer)
+		if (isServer)
 		{
 			CheckGlobal(next);
 			if ((Object)(object)myRigidbody != (Object)null)
@@ -673,7 +690,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		//IL_056f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0595: Unknown result type (might be due to invalid IL or missing references)
 		//IL_059b: Unknown result type (might be due to invalid IL or missing references)
-		if (!isSpawned || base.isClient || IsTransferProtected())
+		if (!isSpawned || isClient || IsTransferProtected())
 		{
 			return;
 		}
@@ -748,7 +765,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		{
 			currentBuoyancy -= Time.fixedDeltaTime * 0.1f;
 		}
-		currentBuoyancy = Mathf.Clamp(currentBuoyancy, 0f, 0.8f + 0.2f * base.healthFraction);
+		currentBuoyancy = Mathf.Clamp(currentBuoyancy, 0f, 0.8f + 0.2f * healthFraction);
 		if (inflationLevel > 0f)
 		{
 			float num2 = Mathf.Max(minimumAltitudeTerrain, TerrainMeta.HeightMap.GetHeight(((Component)this).transform.position));
@@ -757,19 +774,19 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 			myRigidbody.AddForceAtPosition(Vector3.up * (0f - Physics.gravity.y) * myRigidbody.mass * 0.5f * inflationLevel, buoyancyPoint.position, (ForceMode)0);
 			myRigidbody.AddForceAtPosition(Vector3.up * liftAmount * currentBuoyancy * num3, buoyancyPoint.position, (ForceMode)0);
 			Vector3 windAtPos = GetWindAtPos(buoyancyPoint.position);
-			_ = ((Vector3)(ref windAtPos)).magnitude;
+			_ = windAtPos.magnitude;
 			float num4 = 1f;
 			float waterOrTerrainSurface = WaterLevel.GetWaterOrTerrainSurface(buoyancyPoint.position, waves: false, volumes: false);
 			float num5 = Mathf.InverseLerp(waterOrTerrainSurface + 20f, waterOrTerrainSurface + 60f, buoyancyPoint.position.y);
 			float num6 = 1f;
-			RaycastHit val3 = default(RaycastHit);
+			RaycastHit val3 = default;
 			if (Physics.SphereCast(new Ray(((Component)this).transform.position + Vector3.up * 2f, Vector3.down), 1.5f, ref val3, 5f, 1218511105))
 			{
-				num6 = Mathf.Clamp01(((RaycastHit)(ref val3)).distance / 5f);
+				num6 = Mathf.Clamp01(val3.distance / 5f);
 			}
 			num4 *= num5 * num3 * num6;
-			num4 *= 0.2f + 0.8f * base.healthFraction;
-			Vector3 val4 = ((Vector3)(ref windAtPos)).normalized * num4 * windForce;
+			num4 *= 0.2f + 0.8f * healthFraction;
+			Vector3 val4 = windAtPos.normalized * num4 * windForce;
 			currentWindVec = Vector3.Lerp(currentWindVec, val4, Time.fixedDeltaTime * 0.25f);
 			myRigidbody.AddForceAtPosition(val4 * 0.1f, buoyancyPoint.position, (ForceMode)0);
 			myRigidbody.AddForce(val4 * 0.9f, (ForceMode)0);
@@ -835,9 +852,9 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		if ((Object)(object)owner != (Object)null)
 		{
 			creatorEntity = owner;
-			base.OwnerID = owner.userID;
+			OwnerID = owner.userID;
 			bool b = true;
-			BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(base.isServer);
+			BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(isServer);
 			if ((Object)(object)activeGameMode != (Object)null && !activeGameMode.safeZone)
 			{
 				b = false;
@@ -914,12 +931,12 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 	public Vector3 GetWindAtPos(Vector3 pos)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		float num = pos.y * 6f;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(Mathf.Sin(num * (MathF.PI / 180f)), 0f, Mathf.Cos(num * (MathF.PI / 180f)));
-		return ((Vector3)(ref val)).normalized * 1f;
+		Vector3 val = new Vector3(Mathf.Sin(num * (MathF.PI / 180f)), 0f, Mathf.Cos(num * (MathF.PI / 180f)));
+		return val.normalized * 1f;
 	}
 
 	public bool PlayerHasEquipmentItem(BasePlayer player, int tokenItemID)
@@ -938,7 +955,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		{
 			return maxHealthOverride;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			return base.MaxHealth();
 		}
@@ -1044,14 +1061,5 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		liftAmount = 10f;
-		AltitudeNeedleSpeed = 5f;
-		engineOffTimeToPreventHomingTarget = 4f;
-		fuelPerSec = 0.25f;
-		windForce = 30000f;
-		currentWindVec = Vector3.zero;
-		lastFailedDecayPosition = Vector3.zero;
-		spawnTime = -1f;
-		base._002Ector();
 	}
 }

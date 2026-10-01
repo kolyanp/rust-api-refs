@@ -21,7 +21,7 @@ public class TerrainAtlasSet : ScriptableObject
 		{
 			if (maps == null)
 			{
-				maps = (Texture2D[])(object)new Texture2D[8];
+				maps = new Texture2D[8];
 			}
 			else if (maps.Length != 8)
 			{
@@ -116,7 +116,7 @@ public class TerrainAtlasSet : ScriptableObject
 		}
 		if (defaultValues == null)
 		{
-			defaultValues = (Color[])(object)new Color[3]
+			defaultValues = new Color[3]
 			{
 				new Color(1f, 1f, 1f, 0.5f),
 				new Color(0.5f, 0.5f, 1f, 0f),

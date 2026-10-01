@@ -40,9 +40,13 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public VisualGroup visualGroup;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private VehicleLight[] lights;
+
+	[SerializeField]
+	[HideInInspector]
+	private NPCMountable npcMountable;
 
 	public LODLevel[] lodRenderers;
 
@@ -50,12 +54,12 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	[HideInInspector]
 	private List<ConditionalObject> conditionals;
 
-	[Header("Trigger Parent")]
 	[SerializeField]
+	[Header("Trigger Parent")]
 	private TriggerParent[] triggerParents;
 
-	[Header("Sliding Components")]
 	[SerializeField]
+	[Header("Sliding Components")]
 	private VehicleModuleSlidingComponent[] slidingComponents;
 
 	[SerializeField]
@@ -70,6 +74,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	private bool prevRefreshVehicleIsLockable;
 
 	public bool PropagateDamage { get; private set; } = true;
+
+	public NPCMountable NPCMountable => npcMountable;
 
 	public BaseModularVehicle Vehicle { get; private set; }
 
@@ -186,7 +192,7 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	public override void OnHealthChanged(float oldValue, float newValue)
 	{
 		base.OnHealthChanged(oldValue, newValue);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -243,8 +249,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	{
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Use(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -316,6 +322,7 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 		damageRenderer = ((Component)this).GetComponent<DamageRenderer>();
 		RefreshParameters();
 		lights = ((Component)this).GetComponentsInChildren<VehicleLight>();
+		npcMountable = ((Component)this).GetComponent<NPCMountable>();
 	}
 
 	public override bool SupportsChildDeployables()
@@ -360,7 +367,7 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 		Vehicle = vehicle;
 		FirstSocketIndex = firstSocketIndex;
 		TimeSinceAddedToVehicle = TimeSince.op_Implicit(0f);
-		if (base.isServer)
+		if (isServer)
 		{
 			TriggerParent[] array = triggerParents;
 			for (int i = 0; i < array.Length; i++)
@@ -376,7 +383,7 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	{
 		Vehicle = null;
 		FirstSocketIndex = -1;
-		if (base.isServer)
+		if (isServer)
 		{
 			TriggerParent[] array = triggerParents;
 			for (int i = 0; i < array.Length; i++)
@@ -412,7 +419,7 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public virtual void OnEngineStateChanged(VehicleEngineController<GroundVehicle>.EngineState oldState, VehicleEngineController<GroundVehicle>.EngineState newState)
 	{
-		if (!base.isServer || newState != VehicleEngineController<GroundVehicle>.EngineState.Off)
+		if (!isServer || newState != VehicleEngineController<GroundVehicle>.EngineState.Off)
 		{
 			return;
 		}
@@ -472,7 +479,7 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public void RefreshConditionals(bool canGib)
 	{
-		if (base.IsDestroyed || !IsOnAVehicle || !Vehicle.HasInited)
+		if (IsDestroyed || !IsOnAVehicle || !Vehicle.HasInited)
 		{
 			return;
 		}
@@ -499,7 +506,7 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 		bool flag = true;
 		if (conditional.restrictOnHealth)
 		{
-			flag = ((!Mathf.Approximately(conditional.healthRestrictionMin, conditional.healthRestrictionMax)) ? (base.healthFraction > conditional.healthRestrictionMin && base.healthFraction <= conditional.healthRestrictionMax) : Mathf.Approximately(base.healthFraction, conditional.healthRestrictionMin));
+			flag = ((!Mathf.Approximately(conditional.healthRestrictionMin, conditional.healthRestrictionMax)) ? (healthFraction > conditional.healthRestrictionMin && healthFraction <= conditional.healthRestrictionMax) : Mathf.Approximately(healthFraction, conditional.healthRestrictionMin));
 			if (!canGib)
 			{
 			}

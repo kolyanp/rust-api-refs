@@ -152,7 +152,7 @@ public class HelicopterTurret : MonoBehaviour
 		Vector3 positionForEntity = GetPositionForEntity(potentialtarget);
 		Vector3 position = muzzleTransform.position;
 		Vector3 val = positionForEntity - position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		return Vector3.Angle(left ? (-((Component)_heliAI).transform.right) : ((Component)_heliAI).transform.right, normalized);
 	}
 
@@ -197,8 +197,8 @@ public class HelicopterTurret : MonoBehaviour
 			bool flag = false;
 			float num = Vector3.Distance(position, muzzleTransform.position);
 			Vector3 val = position - muzzleTransform.position;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
-			if (num < maxTargetRange && InFiringArc(_target) && GamePhysics.Trace(new Ray(muzzleTransform.position + normalized * 6f, normalized), 0f, out var hitInfo, num * 1.1f, 1218652417, (QueryTriggerInteraction)0) && (Object)(object)GameObjectEx.ToBaseEntity(((Component)((RaycastHit)(ref hitInfo)).collider).gameObject) == (Object)(object)_target)
+			Vector3 normalized = val.normalized;
+			if (num < maxTargetRange && InFiringArc(_target) && GamePhysics.Trace(new Ray(muzzleTransform.position + normalized * 6f, normalized), 0f, out var hitInfo, num * 1.1f, 1218652417, (QueryTriggerInteraction)0) && (Object)(object)GameObjectEx.ToBaseEntity(((Component)hitInfo.collider).gameObject) == (Object)(object)_target)
 			{
 				flag = true;
 			}

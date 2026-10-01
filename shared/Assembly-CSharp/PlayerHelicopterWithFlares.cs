@@ -27,7 +27,7 @@ public class PlayerHelicopterWithFlares : PlayerHelicopter, ICanFireHelicopterFl
 
 	public BaseEntity flareEntity => this;
 
-	public HelicopterFlares FlaresInstance => flaresInstance.Get(base.isServer);
+	public HelicopterFlares FlaresInstance => flaresInstance.Get(isServer);
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -102,7 +102,7 @@ public class PlayerHelicopterWithFlares : PlayerHelicopter, ICanFireHelicopterFl
 
 	public HelicopterFlares GetFlares()
 	{
-		HelicopterFlares helicopterFlares = flaresInstance.Get(base.isServer);
+		HelicopterFlares helicopterFlares = flaresInstance.Get(isServer);
 		if (helicopterFlares.IsValid())
 		{
 			return helicopterFlares;
@@ -147,9 +147,9 @@ public class PlayerHelicopterWithFlares : PlayerHelicopter, ICanFireHelicopterFl
 
 	internal override void DoServerDestroy()
 	{
-		if (vehicle.vehiclesdroploot && flaresInstance.IsValid(base.isServer))
+		if (vehicle.vehiclesdroploot && flaresInstance.IsValid(isServer))
 		{
-			flaresInstance.Get(base.isServer).DropItems();
+			flaresInstance.Get(isServer).DropItems();
 		}
 		base.DoServerDestroy();
 	}

@@ -23,11 +23,12 @@ public static class ParticleSystemEx
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = enable;
 		EmissionModule emission = ps.emission;
-		if (enable != ((EmissionModule)(ref emission)).enabled)
+		if (flag != emission.enabled)
 		{
 			EmissionModule emission2 = ps.emission;
-			((EmissionModule)(ref emission2)).enabled = enable;
+			emission2.enabled = enable;
 		}
 	}
 }

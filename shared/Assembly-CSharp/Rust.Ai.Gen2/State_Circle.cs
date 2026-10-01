@@ -20,7 +20,7 @@ public class State_Circle : FSMStateBase
 	{
 		if ((Object)(object)payload.entity != (Object)null)
 		{
-			base.Senses.TrySetTarget(payload.entity);
+			Senses.TrySetTarget(payload.entity);
 		}
 		radiusOffset = Random.Range(-1f, 1f);
 		clockWise = Random.value > 0.5f;
@@ -29,13 +29,13 @@ public class State_Circle : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.Agent.ResetPath();
+		Agent.ResetPath();
 		base.OnStateExit();
 	}
 
 	protected virtual bool GetCircleOrigin(out Vector3 origin)
 	{
-		return base.Senses.FindTargetPosition(out origin);
+		return Senses.FindTargetPosition(out origin);
 	}
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
@@ -63,14 +63,14 @@ public class State_Circle : FSMStateBase
 		}
 		float num = radius + radiusOffset;
 		Quaternion val = Quaternion.LookRotation(((Component)Owner).transform.position - origin);
-		float num2 = (((Quaternion)(ref val)).eulerAngles.y + 5f * (float)(clockWise ? 1 : (-1))) * (MathF.PI / 180f);
+		float num2 = (val.eulerAngles.y + 5f * (float)(clockWise ? 1 : (-1))) * (MathF.PI / 180f);
 		Vector3 val2 = origin + new Vector3(Mathf.Sin(num2), 0f, Mathf.Cos(num2)) * num;
 		val2.y = Mathf.Lerp(origin.y, ((Component)Owner).transform.position.y, Mathf.InverseLerp(0f, Vector3.Distance(origin, ((Component)Owner).transform.position), num));
-		if (base.Agent.Raycast(val2, out var _))
+		if (Agent.Raycast(val2, out var _))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Agent.SetDestinationWithParams(base.Agent.WorldToNavSpace(val2), autoBraking: false, speed))
+		if (!Agent.SetDestinationWithParams(Agent.WorldToNavSpace(val2), autoBraking: false, speed))
 		{
 			return EFSMStateStatus.Failure;
 		}

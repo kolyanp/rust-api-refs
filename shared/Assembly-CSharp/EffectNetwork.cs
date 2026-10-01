@@ -44,7 +44,7 @@ public static class EffectNetwork
 				netWrite2.Send(new SendInfo(effect.targets));
 				return;
 			}
-			if (((NetworkableId)(ref ((EffectData)effect).entity)).IsValid)
+			if (((EffectData)effect).entity.IsValid)
 			{
 				BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(((EffectData)effect).entity) as BaseEntity;
 				if (!baseEntity.IsValid())

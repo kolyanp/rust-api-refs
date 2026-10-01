@@ -2,6 +2,7 @@ using System;
 using Facepunch;
 using Oxide.Core;
 using ProtoBuf;
+using Rust;
 using UnityEngine;
 
 public class HitchTrough : StorageContainer
@@ -49,8 +50,48 @@ public class HitchTrough : StorageContainer
 
 	public float caloriesToDecaySeconds = 36f;
 
+	[Header("Water")]
+	[Tooltip("The liquid container spawned into the water end of the trough. It owns the water, the trough owns the food.")]
+	public GameObjectRef waterStoragePrefab;
+
+	[Tooltip("Where the water container sits, in the trough's local space.")]
+	public Transform waterStorageAnchor;
+
+	private LiquidContainer waterStorage;
+
+	public LiquidContainer WaterStorage => waterStorage;
+
+	public override bool SupportsChildDeployables()
+	{
+		return true;
+	}
+
+	protected override bool CanCompletePickup(BasePlayer player)
+	{
+		foreach (BaseEntity child in children)
+		{
+			if (!(child is LiquidContainer))
+			{
+				pickupErrorToFormat = (format: PickupErrors.ItemHasAttachment, arg0: pickup.itemTarget.displayName);
+				return false;
+			}
+		}
+		return base.CanCompletePickup(player);
+	}
+
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		bool flag = false;
+		if (!Application.isLoadingSave && !flag)
+		{
+			SpawnWaterStorage(load: false);
+		}
+	}
+
 	public override void PostServerLoad()
 	{
+		SpawnWaterStorage(load: true);
 		HitchSpot[] array = hitchSpots;
 		foreach (HitchSpot hitchSpot in array)
 		{
@@ -58,9 +99,62 @@ public class HitchTrough : StorageContainer
 		}
 	}
 
+	private void SpawnWaterStorage(bool load)
+	{
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		if (load)
+		{
+			foreach (BaseEntity child in children)
+			{
+				if (child is LiquidContainer liquidContainer)
+				{
+					waterStorage = liquidContainer;
+					return;
+				}
+			}
+		}
+		if (!((Object)(object)waterStorage != (Object)null))
+		{
+			waterStorage = GameManager.server.CreateEntity(waterStoragePrefab.resourcePath, waterStorageAnchor.localPosition, waterStorageAnchor.localRotation) as LiquidContainer;
+			if ((Object)(object)waterStorage == (Object)null)
+			{
+				Debug.LogError((object)$"Could not create the water container for {this}", (Object)(object)((Component)this).gameObject);
+				return;
+			}
+			waterStorage.SetParent(this);
+			waterStorage.Spawn();
+		}
+	}
+
+	public Item GetWaterItem()
+	{
+		if (!((Object)(object)waterStorage != (Object)null))
+		{
+			return null;
+		}
+		return waterStorage.GetLiquidItem();
+	}
+
+	public bool HasWater()
+	{
+		return GetWaterItem() != null;
+	}
+
+	public bool TryConsumeWater(int amount)
+	{
+		Item waterItem = GetWaterItem();
+		if (waterItem == null || waterItem.amount < amount)
+		{
+			return false;
+		}
+		waterItem.UseItem(amount);
+		return true;
+	}
+
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			UnHitchAll();
 		}
@@ -69,7 +163,7 @@ public class HitchTrough : StorageContainer
 
 	public Item GetFoodItem()
 	{
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			if (item.info.category == ItemCategory.Food && Object.op_Implicit((Object)(object)((Component)item.info).GetComponent<ItemModConsumable>()))
 			{
@@ -77,6 +171,24 @@ public class HitchTrough : StorageContainer
 			}
 		}
 		return null;
+	}
+
+	public Item GetLivestockFoodItem()
+	{
+		ItemModConsumable itemModConsumable = default;
+		foreach (Item item in inventory.itemList)
+		{
+			if (((Component)item.info).TryGetComponent<ItemModConsumable>(ref itemModConsumable) && itemModConsumable.chickenCoopFood)
+			{
+				return item;
+			}
+		}
+		return null;
+	}
+
+	public bool HasLivestockFood()
+	{
+		return GetLivestockFoodItem() != null;
 	}
 
 	public bool HasSpace()
@@ -150,7 +262,7 @@ public class HitchTrough : StorageContainer
 		HitchSpot[] array = hitchSpots;
 		foreach (HitchSpot hitchSpot in array)
 		{
-			if (hitchSpot.GetHitchable(base.isServer) == hitchable)
+			if (hitchSpot.GetHitchable(isServer) == hitchable)
 			{
 				if (Interface.CallHook("OnHorseUnhitch", hitchable, hitchSpot) != null)
 				{

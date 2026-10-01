@@ -166,8 +166,8 @@ public class PowerCounter : IOEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void ToggleDisplayMode(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -275,7 +275,7 @@ public class PowerCounter : IOEntity
 		base.Load(info);
 		if (info.msg.ioEntity != null)
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				counterNumber = info.msg.ioEntity.genericInt1;
 			}

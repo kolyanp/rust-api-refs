@@ -45,9 +45,9 @@ public struct SelectNearestNHitsJob : IJob
 			for (int j = 0; j < SelectCount; j++)
 			{
 				RaycastHit val = Hits[i * HitsPerBatch + j];
-				if (((RaycastHit)(ref val)).normal == Vector3.zero)
+				if (val.normal == Vector3.zero)
 				{
-					Results[i * SelectCount + j] = default(RaycastHit);
+					Results[i * SelectCount + j] = default;
 					break;
 				}
 				Results[i * SelectCount + j] = val;

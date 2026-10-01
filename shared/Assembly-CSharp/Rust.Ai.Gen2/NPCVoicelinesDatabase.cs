@@ -17,7 +17,7 @@ public class NPCVoicelinesDatabase : BaseScriptableObject
 		{
 			if (index < 0 || index >= voicelines.Count)
 			{
-				voiceline = default(NPCVoiceline);
+				voiceline = default;
 				if (AI.logIssues)
 				{
 					Debug.LogWarning((object)$"NPCVoicelinesDatabase.FindAudioClip - index out of range: {index} / {voicelines.Count}");

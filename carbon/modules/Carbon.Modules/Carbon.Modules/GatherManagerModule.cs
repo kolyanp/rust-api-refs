@@ -104,7 +104,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 		{
 			val3.DistributeItems(reciever, ((Component)entity).transform.position);
 		}
-		base.NextFrame((Action)delegate
+		base.NextFrame((Action)(() =>
 		{
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			_processedEntities.Remove(entityId);
@@ -112,7 +112,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 			{
 				((BaseNetworkable)entity).Kill((DestroyMode)0, true);
 			}
-		});
+		}));
 		return false;
 	}
 

@@ -2,9 +2,22 @@ using UnityEngine;
 
 public class BaseVehicleMountPoint : BaseMountable
 {
-	[Header("BaseVehicleMountPoint")]
 	[Tooltip("Only Set this if you definitely need a VehicleFixedUpdate tick on the seat for some reason")]
+	[Header("BaseVehicleMountPoint")]
 	public bool RequiresVehicleFixedUpdateOnSeat;
+
+	public override bool AllowDuckToggle
+	{
+		get
+		{
+			BaseVehicle baseVehicle = VehicleParent();
+			if ((Object)(object)baseVehicle == (Object)null)
+			{
+				return base.AllowDuckToggle;
+			}
+			return baseVehicle.AllowDuckToggle;
+		}
+	}
 
 	public override bool DirectlyMountable()
 	{
@@ -35,7 +48,7 @@ public class BaseVehicleMountPoint : BaseMountable
 		BaseVehicle baseVehicle = VehicleParent();
 		if ((Object)(object)baseVehicle == (Object)null)
 		{
-			info = default(WaterLevel.WaterInfo);
+			info = default;
 			return 0f;
 		}
 		return baseVehicle.WaterFactorForPlayer(player, out info);

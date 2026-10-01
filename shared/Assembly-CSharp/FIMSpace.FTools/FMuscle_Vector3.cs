@@ -11,9 +11,6 @@ public class FMuscle_Vector3
 	[HideInInspector]
 	public Vector3 DesiredPosition;
 
-	[CompilerGenerated]
-	private Vector3 _003CProceduralPosition_003Ek__BackingField;
-
 	private FMuscle_Float x;
 
 	private FMuscle_Float y;
@@ -38,14 +35,14 @@ public class FMuscle_Vector3
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CProceduralPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CProceduralPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 

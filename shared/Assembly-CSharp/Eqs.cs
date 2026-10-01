@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Development.Attributes;
 using Rust.Ai.Gen2;
 using Rust.Ai.Gen2.Nav;
 using UnityEngine;
@@ -28,6 +29,9 @@ public static class Eqs
 		}
 	}
 
+	public const int ReachAttempts = 3;
+
+	[PoolAnalyzerNonCaching]
 	public static bool SampleNavigablePositions(RustNavMeshAgent agent, NavVector3 center, List<NavVector3> sampledPositions, float outerRadius, float innerRadius, int numPoints, bool preValidate = true)
 	{
 		using (TimeWarning.New("SampleNavigablePositions"))
@@ -49,6 +53,32 @@ public static class Eqs
 		}
 	}
 
+	[PoolAnalyzerNonCaching]
+	public static T NearestBeyond<T>(List<T> candidates, Vector3 from, float beyondSqr, out float distanceSqr) where T : BaseEntity
+	{
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		T result = null;
+		distanceSqr = float.MaxValue;
+		foreach (T candidate in candidates)
+		{
+			if (!((Object)(object)candidate == (Object)null) && !candidate.IsDestroyed)
+			{
+				Vector3 val = ((Component)candidate).transform.position - from;
+				float sqrMagnitude = val.sqrMagnitude;
+				if (!(sqrMagnitude <= beyondSqr) && !(sqrMagnitude >= distanceSqr))
+				{
+					result = candidate;
+					distanceSqr = sqrMagnitude;
+				}
+			}
+		}
+		return result;
+	}
+
+	[PoolAnalyzerNonCaching]
 	public static void SamplePositionsInDonutShape(NavVector3 center, List<NavVector3> sampledPositions, float radius = 10f, int itemsPerRing = 8)
 	{
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
@@ -68,6 +98,7 @@ public static class Eqs
 		}
 	}
 
+	[PoolAnalyzerNonCaching]
 	public static void SamplePositionsInMultiDonutShape(NavVector3 center, List<NavVector3> sampledPositions, float outerRadius = 10f, float innerRadius = 10f, int numRings = 1, int itemsPerRing = 8)
 	{
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)

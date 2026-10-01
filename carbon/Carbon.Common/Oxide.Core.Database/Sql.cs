@@ -183,7 +183,7 @@ public class Sql
 
 	public static string ProcessParams(string sql, object[] argsSrc, List<object> argsDest)
 	{
-		return RxParams.Replace(sql, delegate(Match m)
+		return RxParams.Replace(sql, (Match m) =>
 		{
 			string text = m.Value.Substring(1);
 			object obj = null;

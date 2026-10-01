@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class SelectedItem : SingletonComponent<SelectedItem>, IInventoryChanged
 {
-	public static readonly Phrase DropTitle;
+	public static readonly Phrase DropTitle = new Phrase("drop", "Drop");
 
-	public static readonly Phrase DropDesc;
+	public static readonly Phrase DropDesc = new Phrase("drop_desc", "");
 
-	public static readonly Phrase ChangeAccessoryTitle;
+	public static readonly Phrase ChangeAccessoryTitle = new Phrase("changeAccessory", "Change Accessory");
 
-	public static readonly Phrase ChangeAccessoryDesc;
+	public static readonly Phrase ChangeAccessoryDesc = new Phrase("changeAccessoryDesc", "");
 
 	public Image icon;
 
@@ -40,16 +40,12 @@ public class SelectedItem : SingletonComponent<SelectedItem>, IInventoryChanged
 	static SelectedItem()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
-		DropTitle = new Phrase("drop", "Drop");
-		DropDesc = new Phrase("drop_desc", "");
-		ChangeAccessoryTitle = new Phrase("changeAccessory", "Change Accessory");
-		ChangeAccessoryDesc = new Phrase("changeAccessoryDesc", "");
+		//IL_0050: Expected Obj, but got Unknown
 	}
 }

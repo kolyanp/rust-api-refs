@@ -55,7 +55,7 @@ public class MySql : Library, IDatabaseProvider
 		public bool Handle()
 		{
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004c: Expected O, but got Unknown
+			//IL_004c: Expected Obj, but got Unknown
 			List<Dictionary<string, object>> list = null;
 			int nonQueryResult = 0;
 			long lastInsertRowId = 0L;
@@ -112,7 +112,7 @@ public class MySql : Library, IDatabaseProvider
 				Logger.Error(text, ex);
 				Cleanup();
 			}
-			Interface.Oxide.NextTick(delegate
+			Interface.Oxide.NextTick(() =>
 			{
 				Connection?.Plugin?.TrackStart();
 				try
@@ -215,7 +215,7 @@ public class MySql : Library, IDatabaseProvider
 	public Connection OpenDb(string conStr, Plugin plugin, bool persistent = false)
 	{
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Expected O, but got Unknown
+		//IL_0085: Expected Obj, but got Unknown
 		if (!_connections.TryGetValue(plugin?.Name ?? "null", out var value))
 		{
 			Dictionary<string, Connection> dictionary = (_connections[plugin?.Name ?? "null"] = new Dictionary<string, Connection>());
@@ -228,12 +228,12 @@ public class MySql : Library, IDatabaseProvider
 		}
 		else
 		{
-			Connection obj = new Connection(conStr, persistent)
+			Connection connection = new Connection(conStr, persistent)
 			{
 				Plugin = plugin,
 				Con = (DbConnection)new MySqlConnection(conStr)
 			};
-			value2 = (value[conStr] = obj);
+			value2 = (value[conStr] = connection);
 		}
 		return value2;
 	}

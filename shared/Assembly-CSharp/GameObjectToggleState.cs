@@ -20,7 +20,7 @@ public class GameObjectToggleState : StateMachineBehaviour
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		((StateMachineBehaviour)this).OnStateUpdate(animator, stateInfo, layerIndex);
-		bool flag = (UseCurve ? (CurveRange.Evaluate(((AnimatorStateInfo)(ref stateInfo)).normalizedTime) > 0f) : (((AnimatorStateInfo)(ref stateInfo)).normalizedTime > ValidNormalisedRange.x && ((AnimatorStateInfo)(ref stateInfo)).normalizedTime < ValidNormalisedRange.y));
+		bool flag = (UseCurve ? (CurveRange.Evaluate(stateInfo.normalizedTime) > 0f) : (stateInfo.normalizedTime > ValidNormalisedRange.x && stateInfo.normalizedTime < ValidNormalisedRange.y));
 		Model model = ((Component)animator).gameObject.GetComponent<Model>();
 		if ((Object)(object)model == (Object)null)
 		{

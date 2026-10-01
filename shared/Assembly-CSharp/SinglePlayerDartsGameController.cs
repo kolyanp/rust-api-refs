@@ -174,10 +174,10 @@ public class SinglePlayerDartsGameController : IDartsGameController, IDisposable
 		while (Board.Leaderboard.Count > 5)
 		{
 			int index = Board.Leaderboard.Count - 1;
-			DartsGameLeaderboardEntry obj = Board.Leaderboard[index];
-			if (obj != null)
+			DartsGameLeaderboardEntry val2 = Board.Leaderboard[index];
+			if (val2 != null)
 			{
-				obj.ResetToPool();
+				val2.ResetToPool();
 			}
 			Board.Leaderboard.RemoveAt(index);
 		}

@@ -87,11 +87,11 @@ public class SolarPanel : IOEntity
 			{
 				num3 = 0f;
 			}
-			num = Mathf.FloorToInt((float)maximalPowerOutput * num3 * base.healthFraction);
+			num = Mathf.FloorToInt((float)maximalPowerOutput * num3 * healthFraction);
 		}
-		bool num4 = currentEnergy != num;
+		bool flag = currentEnergy != num;
 		currentEnergy = num;
-		if (num4 && Interface.CallHook("OnSolarPanelSunUpdate", this, num) == null)
+		if (flag && Interface.CallHook("OnSolarPanelSunUpdate", this, num) == null)
 		{
 			MarkDirty();
 		}

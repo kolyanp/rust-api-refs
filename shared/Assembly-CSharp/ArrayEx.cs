@@ -17,7 +17,7 @@ public static class ArrayEx
 	{
 		if (array == null || array.Length == 0)
 		{
-			return default(T);
+			return default;
 		}
 		return array[Random.Range(0, array.Length)];
 	}
@@ -26,7 +26,7 @@ public static class ArrayEx
 	{
 		if (array == null || array.Length == 0)
 		{
-			return default(T);
+			return default;
 		}
 		return array[SeedRandom.Range(ref seed, 0, array.Length)];
 	}
@@ -35,7 +35,7 @@ public static class ArrayEx
 	{
 		if (array == null || array.Length == 0)
 		{
-			return default(T);
+			return default;
 		}
 		return array[SeedRandom.Range(ref seed, 0, array.Length)];
 	}

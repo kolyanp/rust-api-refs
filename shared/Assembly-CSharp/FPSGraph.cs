@@ -6,7 +6,7 @@ public class FPSGraph : Graph
 	public void Refresh()
 	{
 		((Behaviour)this).enabled = FPS.graph > 0;
-		((Rect)(ref Area)).width = (Resolution = Mathf.Clamp(FPS.graph, 0, Screen.width));
+		Area.width = (Resolution = Mathf.Clamp(FPS.graph, 0, Screen.width));
 	}
 
 	protected void OnEnable()

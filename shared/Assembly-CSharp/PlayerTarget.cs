@@ -51,7 +51,7 @@ public sealed class PlayerTarget : IAITarget
 			}
 			Vector3 val = ((!_player.HasParent()) ? ((Component)_player).transform.position : ((Component)_player.GetParentEntity()).transform.position);
 			Vector3 val2 = _boat.position - val;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			return (!StayClose) ? (val + normalized * 55f) : (val + normalized * 15f);
 		}
 	}

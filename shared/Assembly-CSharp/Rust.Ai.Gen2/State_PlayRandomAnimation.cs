@@ -12,7 +12,10 @@ public class State_PlayRandomAnimation : State_PlayAnimationBase
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		EFSMStateStatus result = base.OnStateEnter(payload);
-		animState = base.AnimPlayer.PlayServerAndTakeFromPool(ArrayEx.GetRandom(animations));
+		if (animations.Length != 0)
+		{
+			animState = AnimPlayer.PlayServerAndTakeFromPool(ArrayEx.GetRandom(animations));
+		}
 		return result;
 	}
 }

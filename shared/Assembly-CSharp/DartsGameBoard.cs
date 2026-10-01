@@ -59,9 +59,13 @@ public class DartsGameBoard : BaseCombatEntity
 
 	public List<DartsGameLeaderboardEntry> Leaderboard;
 
-	public static readonly int[] ScoreSlices;
+	public static readonly int[] ScoreSlices = new int[20]
+	{
+		6, 13, 4, 18, 1, 20, 5, 12, 9, 14,
+		11, 8, 16, 7, 19, 3, 17, 2, 15, 10
+	};
 
-	public static readonly int BullScore;
+	public static readonly int BullScore = 25;
 
 	private bool _disposed;
 
@@ -78,7 +82,7 @@ public class DartsGameBoard : BaseCombatEntity
 	[HideInInspector]
 	public DartsGameReticle Reticle;
 
-	private static Vector3 DartSyncResetPosition;
+	private static Vector3 DartSyncResetPosition = Vector3.one * -999f;
 
 	private int lastUsedDart;
 
@@ -116,7 +120,7 @@ public class DartsGameBoard : BaseCombatEntity
 		{
 			if ((Object)(object)dgm == (Object)null)
 			{
-				dgm = mountableRef.Get(base.isServer);
+				dgm = mountableRef.Get(isServer);
 			}
 			return dgm;
 		}
@@ -473,7 +477,7 @@ public class DartsGameBoard : BaseCombatEntity
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		DartsGameMountable entity = default(DartsGameMountable);
+		DartsGameMountable entity = default;
 		if (((Component)child).TryGetComponent<DartsGameMountable>(ref entity))
 		{
 			mountableRef.Set(entity);
@@ -642,8 +646,8 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_UpdateThrowTimer(RPCMessage msg)
 	{
 		float timeTaken = msg.read.Float();
@@ -688,18 +692,19 @@ public class DartsGameBoard : BaseCombatEntity
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = center.InverseTransformPoint(worldPosition);
-		((Vector3)(ref val))._002Ector(0f - val.x, val.y, 0f);
+		val = new Vector3(0f - val.x, val.y, 0f);
 		float num = Mathf.Atan2(val.y, val.x) * 57.29578f + angleOffset;
 		if (num < 0f)
 		{
 			num += 360f;
 		}
 		int num2 = Mathf.RoundToInt(num / 18f) % 20;
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		DartsDebug(string.Format("[DartsGameBoard] Scoring dart hit. Local Position: {0}, Angle: {1}, Distance: {2}, Slice Index: {3}", new object[4] { val, num, magnitude, num2 }));
 		if (magnitude <= bullseyeRadius)
 		{
@@ -763,7 +768,7 @@ public class DartsGameBoard : BaseCombatEntity
 	{
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
@@ -780,7 +785,7 @@ public class DartsGameBoard : BaseCombatEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: dartPosition0 for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: dartPosition0 for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<Vector3>(writer, __sync_dartPosition0);
 			return true;
@@ -788,7 +793,7 @@ public class DartsGameBoard : BaseCombatEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: dartPosition1 for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: dartPosition1 for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<Vector3>(writer, __sync_dartPosition1);
 			return true;
@@ -796,7 +801,7 @@ public class DartsGameBoard : BaseCombatEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: dartPosition2 for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: dartPosition2 for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<Vector3>(writer, __sync_dartPosition2);
 			return true;
@@ -869,9 +874,9 @@ public class DartsGameBoard : BaseCombatEntity
 	{
 		return propertyName switch
 		{
-			"dartPosition0" => 0, 
-			"dartPosition1" => 1, 
-			"dartPosition2" => 2, 
+			"dartPosition0" => (byte)0, 
+			"dartPosition1" => (byte)1, 
+			"dartPosition2" => (byte)2, 
 			_ => byte.MaxValue, 
 		};
 	}
@@ -902,9 +907,9 @@ public class DartsGameBoard : BaseCombatEntity
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		base.ResetSyncVars();
-		__sync_dartPosition0 = default(Vector3);
-		__sync_dartPosition1 = default(Vector3);
-		__sync_dartPosition2 = default(Vector3);
+		__sync_dartPosition0 = default;
+		__sync_dartPosition1 = default;
+		__sync_dartPosition2 = default;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)
@@ -923,12 +928,5 @@ public class DartsGameBoard : BaseCombatEntity
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		ScoreSlices = new int[20]
-		{
-			6, 13, 4, 18, 1, 20, 5, 12, 9, 14,
-			11, 8, 16, 7, 19, 3, 17, 2, 15, 10
-		};
-		BullScore = 25;
-		DartSyncResetPosition = Vector3.one * -999f;
 	}
 }

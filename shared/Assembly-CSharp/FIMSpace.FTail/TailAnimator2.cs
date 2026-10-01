@@ -9,93 +9,81 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FTail;
 
-[DefaultExecutionOrder(-4)]
-[HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
 [AddComponentMenu("FImpossible Creations/Tail Animator 2")]
+[HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
+[DefaultExecutionOrder(-4)]
 public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	[Serializable]
 	public class TailSegment
 	{
-		public Vector3 ProceduralPosition;
+		public Vector3 ProceduralPosition = Vector3.zero;
 
-		public Vector3 ProceduralPositionWeightBlended;
+		public Vector3 ProceduralPositionWeightBlended = Vector3.zero;
 
-		public Quaternion TrueTargetRotation;
+		public Quaternion TrueTargetRotation = Quaternion.identity;
 
-		public Quaternion PosRefRotation;
+		public Quaternion PosRefRotation = Quaternion.identity;
 
-		public Quaternion PreviousPosReferenceRotation;
+		public Quaternion PreviousPosReferenceRotation = Quaternion.identity;
 
 		public Vector3 PreviousPosition;
 
-		public float BlendValue;
+		public float BlendValue = 1f;
 
 		public Vector3 BoneDimensionsScaled;
 
 		public float BoneLengthScaled;
 
-		public Vector3 InitialLocalPosition;
+		public Vector3 InitialLocalPosition = Vector3.zero;
 
-		public Vector3 InitialLocalPositionInRoot;
+		public Vector3 InitialLocalPositionInRoot = Vector3.zero;
 
-		public Quaternion InitialLocalRotationInRoot;
+		public Quaternion InitialLocalRotationInRoot = Quaternion.identity;
 
-		public Vector3 LocalOffset;
+		public Vector3 LocalOffset = Vector3.zero;
 
-		public Quaternion InitialLocalRotation;
+		public Quaternion InitialLocalRotation = Quaternion.identity;
 
-		public float ColliderRadius;
+		public float ColliderRadius = 1f;
 
 		public bool CollisionContactFlag;
 
-		public float CollisionContactRelevancy;
+		public float CollisionContactRelevancy = -1f;
 
 		public Collision collisionContacts;
 
-		public Vector3 VelocityHelper;
+		public Vector3 VelocityHelper = Vector3.zero;
 
-		public Quaternion QVelocityHelper;
+		public Quaternion QVelocityHelper = Quaternion.identity;
 
-		public Vector3 PreviousPush;
+		public Vector3 PreviousPush = Vector3.zero;
 
-		public Quaternion Curving;
+		public Quaternion Curving = Quaternion.identity;
 
-		public Vector3 Gravity;
+		public Vector3 Gravity = Vector3.zero;
 
-		public Vector3 GravityLookOffset;
+		public Vector3 GravityLookOffset = Vector3.zero;
 
-		public float LengthMultiplier;
+		public float LengthMultiplier = 1f;
 
-		public float PositionSpeed;
+		public float PositionSpeed = 1f;
 
-		public float RotationSpeed;
+		public float RotationSpeed = 1f;
 
 		public float Springiness;
 
-		public float Slithery;
+		public float Slithery = 1f;
 
-		public float Curling;
+		public float Curling = 0.5f;
 
-		public float Slippery;
+		public float Slippery = 1f;
 
 		public Quaternion LastKeyframeLocalRotation;
 
 		public Vector3 LastKeyframeLocalPosition;
 
-		[CompilerGenerated]
-		private Vector3 _003CLastFinalPosition_003Ek__BackingField;
-
-		[CompilerGenerated]
-		private Quaternion _003CLastFinalRotation_003Ek__BackingField;
-
-		[CompilerGenerated]
-		private Vector3 _003CDeflection_003Ek__BackingField;
-
 		private float deflectionSmoothVelo;
-
-		[CompilerGenerated]
-		private Vector3 _003CDeflectionWorldPosition_003Ek__BackingField;
 
 		public TailSegment ParentBone { get; private set; }
 
@@ -119,14 +107,14 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003CLastFinalPosition_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003CLastFinalPosition_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -136,14 +124,14 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003CLastFinalRotation_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003CLastFinalRotation_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -155,14 +143,14 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003CDeflection_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003CDeflection_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -174,14 +162,14 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003CDeflectionWorldPosition_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003CDeflectionWorldPosition_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -228,32 +216,6 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_012c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0131: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0142: Unknown result type (might be due to invalid IL or missing references)
-			ProceduralPosition = Vector3.zero;
-			ProceduralPositionWeightBlended = Vector3.zero;
-			TrueTargetRotation = Quaternion.identity;
-			PosRefRotation = Quaternion.identity;
-			PreviousPosReferenceRotation = Quaternion.identity;
-			BlendValue = 1f;
-			InitialLocalPosition = Vector3.zero;
-			InitialLocalPositionInRoot = Vector3.zero;
-			InitialLocalRotationInRoot = Quaternion.identity;
-			LocalOffset = Vector3.zero;
-			InitialLocalRotation = Quaternion.identity;
-			ColliderRadius = 1f;
-			CollisionContactRelevancy = -1f;
-			VelocityHelper = Vector3.zero;
-			QVelocityHelper = Quaternion.identity;
-			PreviousPush = Vector3.zero;
-			Curving = Quaternion.identity;
-			Gravity = Vector3.zero;
-			GravityLookOffset = Vector3.zero;
-			LengthMultiplier = 1f;
-			PositionSpeed = 1f;
-			RotationSpeed = 1f;
-			Slithery = 1f;
-			Curling = 0.5f;
-			Slippery = 1f;
-			base._002Ector();
 			Index = -1;
 			Curving = Quaternion.identity;
 			Gravity = Vector3.zero;
@@ -265,6 +227,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		}
 
 		public TailSegment(Transform transform)
+			: this()
 		{
 			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
@@ -278,7 +241,6 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-			this._002Ector();
 			if (!((Object)(object)transform == (Object)null))
 			{
 				this.transform = transform;
@@ -293,6 +255,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		}
 
 		public TailSegment(TailSegment copyFrom)
+			: this(copyFrom.transform)
 		{
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
@@ -308,7 +271,6 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-			this._002Ector(copyFrom.transform);
 			transform = copyFrom.transform;
 			Index = copyFrom.Index;
 			IndexOverlLength = copyFrom.IndexOverlLength;
@@ -352,7 +314,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 			ParentBone = parent;
 			Vector3 val = ProceduralPosition - ParentBone.ProceduralPosition;
-			BoneLength = ((Vector3)(ref val)).magnitude;
+			BoneLength = val.magnitude;
 		}
 
 		public void SetChildRef(TailSegment child)
@@ -486,7 +448,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_010c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 			Vector3 val = LastKeyframeLocalPosition - ParentBone.transform.InverseTransformVector(ProceduralPosition - ParentBone.ProceduralPosition);
-			DeflectionFactor = Vector3.Dot(((Vector3)(ref LastKeyframeLocalPosition)).normalized, ((Vector3)(ref val)).normalized);
+			DeflectionFactor = Vector3.Dot(LastKeyframeLocalPosition.normalized, val.normalized);
 			if (DeflectionFactor < zeroWhenLower)
 			{
 				if (smoothTime <= Mathf.Epsilon)
@@ -741,7 +703,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public bool UseCollision;
 
 	[Tooltip("How collision should be detected, world gives you collision on all world colliders but with more use of cpu (using unity's rigidbodies), 'Selective' gives you possibility to detect collision on selected colliders without using Rigidbodies, it also gives smoother motion (deactivated colliders will still detect collision, unless its game object is disabled)")]
-	public ECollisionSpace CollisionSpace;
+	public ECollisionSpace CollisionSpace = ECollisionSpace.Selective_Fast;
 
 	public ECollisionMode CollisionMode;
 
@@ -752,9 +714,9 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public bool DynamicWorldCollidersInclusion;
 
 	[Tooltip("Radius of trigger collider for dynamic inclusion of colliders")]
-	public float InclusionRadius;
+	public float InclusionRadius = 1f;
 
-	public bool IgnoreMeshColliders;
+	public bool IgnoreMeshColliders = true;
 
 	public List<Collider> IncludedColliders;
 
@@ -770,32 +732,32 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public bool CollideWithOtherTails;
 
 	[Tooltip("Collision with colliders even if they're disabled (but game object must be enabled)\nHelpful to setup character limbs collisions without need to create new Layer")]
-	public bool CollideWithDisabledColliders;
+	public bool CollideWithDisabledColliders = true;
 
 	[Range(0f, 1f)]
-	public float CollisionSlippery;
+	public float CollisionSlippery = 1f;
 
-	[Range(0f, 1f)]
 	[Tooltip("If tail colliding objects should fit to colliders (0) or be reflect from them (Reflecting Only with 'Slithery' parameter greater than ~0.2)")]
+	[Range(0f, 1f)]
 	public float ReflectCollision;
 
-	public AnimationCurve CollidersScaleCurve;
+	public AnimationCurve CollidersScaleCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
 
-	public float CollidersScaleMul;
+	public float CollidersScaleMul = 6.5f;
 
 	[Range(0f, 1f)]
-	public float CollisionsAutoCurve;
+	public float CollisionsAutoCurve = 0.5f;
 
 	public List<Collider> IgnoredColliders;
 
 	public List<Collider2D> IgnoredColliders2D;
 
-	public bool CollidersSameLayer;
+	public bool CollidersSameLayer = true;
 
 	[Tooltip("If you add rigidbodies to each tail segment's collider, collision will work on everything but it will be less optimal, you don't have to add here rigidbodies but then you must have not kinematic rigidbodies on objects segments can collide")]
-	public bool CollidersAddRigidbody;
+	public bool CollidersAddRigidbody = true;
 
-	public float RigidbodyMass;
+	public float RigidbodyMass = 1f;
 
 	[FPD_Layers]
 	public int CollidersLayer;
@@ -803,54 +765,54 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public bool UseSlitheryCurve;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1.2f, 0.1f, 0.8f, 1f, 0.9f)]
-	public AnimationCurve SlitheryCurve;
+	public AnimationCurve SlitheryCurve = AnimationCurve.EaseInOut(0f, 0.75f, 1f, 1f);
 
-	private float lastSlithery;
+	private float lastSlithery = -1f;
 
 	private Keyframe[] lastSlitheryCurvKeys;
 
 	public bool UseCurlingCurve;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.65f, 0.4f, 1f, 0.9f)]
-	public AnimationCurve CurlingCurve;
+	public AnimationCurve CurlingCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 0.3f);
 
-	private float lastCurling;
+	private float lastCurling = -1f;
 
 	private Keyframe[] lastCurlingCurvKeys;
 
 	public bool UseSpringCurve;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.9f, 0.7f, 0.2f, 0.9f)]
-	public AnimationCurve SpringCurve;
+	public AnimationCurve SpringCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 0f);
 
-	private float lastSpringiness;
+	private float lastSpringiness = -1f;
 
 	private Keyframe[] lastSpringCurvKeys;
 
 	public bool UseSlipperyCurve;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.2f, 0.9f, 0.6f, 0.9f)]
-	public AnimationCurve SlipperyCurve;
+	public AnimationCurve SlipperyCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 1f);
 
-	private float lastSlippery;
+	private float lastSlippery = -1f;
 
 	private Keyframe[] lastSlipperyCurvKeys;
 
 	public bool UsePosSpeedCurve;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.2f, 1f, 0.3f, 0.9f)]
-	public AnimationCurve PosCurve;
+	public AnimationCurve PosCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 1f);
 
-	private float lastPosSpeeds;
+	private float lastPosSpeeds = -1f;
 
 	private Keyframe[] lastPosCurvKeys;
 
 	public bool UseRotSpeedCurve;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.7f, 0.7f, 0.7f, 0.9f)]
-	public AnimationCurve RotCurve;
+	public AnimationCurve RotCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0.9f);
 
-	private float lastRotSpeeds;
+	private float lastRotSpeeds = -1f;
 
 	private Keyframe[] lastRotCurvKeys;
 
@@ -858,9 +820,9 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public bool UsePartialBlend;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.2f, 0.5f, 0.85f, 1f)]
-	public AnimationCurve BlendCurve;
+	public AnimationCurve BlendCurve = AnimationCurve.EaseInOut(0f, 0.95f, 1f, 0.45f);
 
-	private float lastTailAnimatorAmount;
+	private float lastTailAnimatorAmount = -1f;
 
 	private Keyframe[] lastBlendCurvKeys;
 
@@ -876,18 +838,18 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Target object to follow by IK")]
 	public Transform IKTarget;
 
-	public bool IKAutoWeights;
+	public bool IKAutoWeights = true;
 
 	[Range(0f, 1f)]
-	public float IKBaseReactionWeight;
+	public float IKBaseReactionWeight = 0.65f;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.2f, 0.5f, 0.85f, 1f)]
-	public AnimationCurve IKReactionWeightCurve;
+	public AnimationCurve IKReactionWeightCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0.25f);
 
-	public bool IKAutoAngleLimits;
+	public bool IKAutoAngleLimits = true;
 
 	[FPD_Suffix(0f, 181f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
-	public float IKAutoAngleLimit;
+	public float IKAutoAngleLimit = 40f;
 
 	[Tooltip("If ik process should work referencing to previously computed CCDIK pose (can be more precise but need more adjusting in weights and angle limits)")]
 	public bool IKContinousSolve;
@@ -895,27 +857,27 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Inverting ik iteration order to generate different pose results - more straight towards target")]
 	public bool IkInvertOrder;
 
-	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
-	public float IKBlend;
+	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
+	public float IKBlend = 1f;
 
 	[Tooltip("If syncing with animator then applying motion of keyframe animation for IK")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
-	public float IKAnimatorBlend;
+	public float IKAnimatorBlend = 0.5f;
 
 	[Tooltip("How much iterations should do CCDIK algorithm in one frame")]
 	[Range(1f, 32f)]
-	public int IKReactionQuality;
+	public int IKReactionQuality = 2;
 
-	[Tooltip("Smoothing reactions in CCD IK algorithm")]
 	[Range(0f, 1f)]
+	[Tooltip("Smoothing reactions in CCD IK algorithm")]
 	public float IKSmoothing;
 
 	[Range(0f, 1.5f)]
 	public float IKStretchToTarget;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.9f, 0.4f, 0.5f, 1f)]
-	public AnimationCurve IKStretchCurve;
+	public AnimationCurve IKStretchCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
 	public List<IKBoneSettings> IKLimitSettings;
 
@@ -932,31 +894,31 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	private bool _pp_initialized;
 
 	[Tooltip("Rotation offset for tail (just first (root) bone is rotated)")]
-	public Quaternion RotationOffset;
+	public Quaternion RotationOffset = Quaternion.identity;
 
 	[Tooltip("Rotate each segment a bit to create curving effect")]
-	public Quaternion Curving;
+	public Quaternion Curving = Quaternion.identity;
 
 	[Tooltip("Spread curving rotation offset weight over tail segments")]
 	public bool UseCurvingCurve;
 
 	[FPD_FixedCurveWindow(0f, -1f, 1f, 1f, 0.75f, 0.75f, 0.75f, 0.85f)]
-	public AnimationCurve CurvCurve;
+	public AnimationCurve CurvCurve = AnimationCurve.EaseInOut(0f, 0.75f, 1f, 1f);
 
-	private Quaternion lastCurving;
+	private Quaternion lastCurving = Quaternion.identity;
 
 	private Keyframe[] lastCurvingKeys;
 
 	[Tooltip("Make tail longer or shorter")]
-	public float LengthMultiplier;
+	public float LengthMultiplier = 1f;
 
 	[Tooltip("Spread length multiplier weight over tail segments")]
 	public bool UseLengthMulCurve;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 3f, 0f, 1f, 1f, 1f)]
-	public AnimationCurve LengthMulCurve;
+	public AnimationCurve LengthMulCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 1f);
 
-	private float lastLengthMul;
+	private float lastLengthMul = 1f;
 
 	private Keyframe[] lastLengthKeys;
 
@@ -965,17 +927,17 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
 	[Tooltip("Spread gravity weight over tail segments")]
-	public AnimationCurve GravityCurve;
+	public AnimationCurve GravityCurve = AnimationCurve.EaseInOut(0f, 0.65f, 1f, 1f);
 
 	[Tooltip("Simulate gravity weight for tail logics")]
-	public Vector3 Gravity;
+	public Vector3 Gravity = Vector3.zero;
 
-	private Vector3 lastGravity;
+	private Vector3 lastGravity = Vector3.zero;
 
 	private Keyframe[] lastGravityKeys;
 
 	[Tooltip("Using auto waving option to give floating effect")]
-	public bool UseWaving;
+	public bool UseWaving = true;
 
 	[Tooltip("Adding some variation to waving animation")]
 	public bool CosinusAdd;
@@ -984,41 +946,38 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public float FixedCycle;
 
 	[Tooltip("How frequent swings should be")]
-	public float WavingSpeed;
+	public float WavingSpeed = 3f;
 
 	[Tooltip("How big swings should be")]
-	public float WavingRange;
+	public float WavingRange = 0.8f;
 
 	[Tooltip("What rotation axis should be used in auto waving")]
-	public Vector3 WavingAxis;
-
-	[CompilerGenerated]
-	private Quaternion _003CWavingRotationOffset_003Ek__BackingField;
+	public Vector3 WavingAxis = new Vector3(1f, 1f, 1f);
 
 	[Tooltip("Type of waving animation algorithm, it can be simple trigonometric wave or animation based on noises (advanced)")]
-	public FEWavingType WavingType;
+	public FEWavingType WavingType = FEWavingType.Advanced;
 
 	[Tooltip("Offsetting perlin noise to generate different variation of tail rotations")]
-	public float AlternateWave;
+	public float AlternateWave = 1f;
 
 	private float _waving_waveTime;
 
 	private float _waving_cosTime;
 
-	private Vector3 _waving_sustain;
+	private Vector3 _waving_sustain = Vector3.zero;
 
 	public bool UseWind;
 
 	[FPD_Suffix(0f, 2.5f, FPD_SuffixAttribute.SuffixMode.PercentageUnclamped, "%", true, 0)]
-	public float WindEffectPower;
+	public float WindEffectPower = 1f;
 
 	[FPD_Suffix(0f, 2.5f, FPD_SuffixAttribute.SuffixMode.PercentageUnclamped, "%", true, 0)]
-	public float WindTurbulencePower;
+	public float WindTurbulencePower = 1f;
 
 	[FPD_Suffix(0f, 1.5f, FPD_SuffixAttribute.SuffixMode.PercentageUnclamped, "%", true, 0)]
-	public float WindWorldNoisePower;
+	public float WindWorldNoisePower = 0.5f;
 
-	public Vector3 WindEffect;
+	public Vector3 WindEffect = Vector3.zero;
 
 	public List<TailSegment> TailSegments;
 
@@ -1028,9 +987,9 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[SerializeField]
 	private TailSegment GhostChild;
 
-	private Vector3 _limiting_limitPosition;
+	private Vector3 _limiting_limitPosition = Vector3.zero;
 
-	private Vector3 _limiting_influenceOffset;
+	private Vector3 _limiting_influenceOffset = Vector3.zero;
 
 	private float _limiting_stretchingHelperTooLong;
 
@@ -1042,11 +1001,11 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Quaternion _limiting_angle_newLocal;
 
-	private Vector3 _tc_segmentGravityOffset;
+	private Vector3 _tc_segmentGravityOffset = Vector3.zero;
 
-	private Vector3 _tc_segmentGravityToParentDir;
+	private Vector3 _tc_segmentGravityToParentDir = Vector3.zero;
 
-	private Vector3 _tc_preGravOff;
+	private Vector3 _tc_preGravOff = Vector3.zero;
 
 	[Tooltip("If you want to use max distance fade option to smoothly disable tail animator when object is going far away from camera")]
 	public bool UseMaxDistance;
@@ -1058,7 +1017,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public Transform _distanceFrom_Auto;
 
 	[Tooltip("Max distance to main camera / target object to smoothly turn off tail animator.")]
-	public float MaximumDistance;
+	public float MaximumDistance = 35f;
 
 	[Tooltip("If object in range should be detected only when is nearer than 'MaxDistance' to avoid stuttery enabled - disable switching")]
 	[Range(0f, 1f)]
@@ -1072,7 +1031,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	[Range(0.25f, 2f)]
 	[Tooltip("Disable fade duration in seconds")]
-	public float FadeDuration;
+	public float FadeDuration = 0.75f;
 
 	private bool maxDistanceExceed;
 
@@ -1080,25 +1039,25 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool wasCameraSearch;
 
-	private float distanceWeight;
+	private float distanceWeight = 1f;
 
 	private int _tc_startI;
 
-	private int _tc_startII;
+	private int _tc_startII = 1;
 
 	private TailSegment _tc_rootBone;
 
-	private Quaternion _tc_lookRot;
+	private Quaternion _tc_lookRot = Quaternion.identity;
 
-	private Quaternion _tc_targetParentRot;
+	private Quaternion _tc_targetParentRot = Quaternion.identity;
 
-	private Quaternion _tc_startBoneRotOffset;
+	private Quaternion _tc_startBoneRotOffset = Quaternion.identity;
 
-	private float _tc_tangle;
+	private float _tc_tangle = 1f;
 
-	private float _sg_springVelo;
+	private float _sg_springVelo = 0.5f;
 
-	private float _sg_curly;
+	private float _sg_curly = 0.5f;
 
 	private Vector3 _sg_push;
 
@@ -1110,23 +1069,23 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Quaternion _sg_orientation;
 
-	private float _sg_slitFactor;
+	private float _sg_slitFactor = 0.5f;
 
-	private bool wasDisabled;
+	private bool wasDisabled = true;
 
-	private float justDelta;
+	private float justDelta = 0.016f;
 
-	private float secPeriodDelta;
+	private float secPeriodDelta = 0.5f;
 
-	private float deltaForLerps;
+	private float deltaForLerps = 0.016f;
 
-	private float rateDelta;
+	private float rateDelta = 0.016f;
 
 	protected float collectedDelta;
 
-	protected int framesToSimulate;
+	protected int framesToSimulate = 1;
 
-	protected int previousframesToSimulate;
+	protected int previousframesToSimulate = 1;
 
 	private bool updateTailAnimator;
 
@@ -1136,27 +1095,27 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool lateFixedIsRunning;
 
-	private bool fixedAllow;
+	private bool fixedAllow = true;
 
 	[Range(0f, 1f)]
 	[Tooltip("Making tail segment deflection influence back segments")]
 	public float Deflection;
 
 	[FPD_Suffix(1f, 89f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
-	public float DeflectionStartAngle;
+	public float DeflectionStartAngle = 10f;
 
 	[Range(0f, 1f)]
 	public float DeflectionSmooth;
 
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.65f, 0.4f, 1f, 0.9f)]
-	public AnimationCurve DeflectionFalloff;
+	public AnimationCurve DeflectionFalloff = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
 	[Tooltip("Deflection can be triggered every time tail is waving but you not always would want this feature be enabled (different behaviour of tail motion)")]
-	public bool DeflectOnlyCollisions;
+	public bool DeflectOnlyCollisions = true;
 
 	private List<TailSegment> _defl_source;
 
-	private float _defl_treshold;
+	private float _defl_treshold = 0.01f;
 
 	private bool _forceDisable;
 
@@ -1166,7 +1125,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	public ETailFeaturesCategory _Editor_FeaturesCategory;
 
-	public bool DrawGizmos;
+	public bool DrawGizmos = true;
 
 	[Tooltip("First bone of tail motion chain")]
 	public Transform StartBone;
@@ -1175,11 +1134,11 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public Transform EndBone;
 
 	[Tooltip("Adjusting end point for end tail bone motion")]
-	public Vector3 EndBoneJointOffset;
+	public Vector3 EndBoneJointOffset = Vector3.zero;
 
 	public List<Transform> _TransformsGhostChain;
 
-	public int _GhostChainInitCount;
+	public int _GhostChainInitCount = -1;
 
 	protected bool initialized;
 
@@ -1195,9 +1154,9 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Simulating tail motion at initiation to prevent jiggle start")]
 	public bool Prewarm;
 
-	internal float OverrideWeight;
+	internal float OverrideWeight = 1f;
 
-	protected float conditionalWeight;
+	protected float conditionalWeight = 1f;
 
 	protected bool collisionInitialized;
 
@@ -1211,11 +1170,11 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	[Range(0f, 1.2f)]
 	[Tooltip("Blending Slithery - smooth & soft tentacle like movement (value = 1)\nwith more stiff & springy motion (value = 0)\n\n0: Stiff somewhat like tree branch\n1: Soft like squid tentacle / Animal tail")]
-	public float Slithery;
+	public float Slithery = 1f;
 
 	[Range(0f, 1f)]
 	[Tooltip("How curly motion should be applied to tail segments")]
-	public float Curling;
+	public float Curling = 0.5f;
 
 	[Range(0f, 1f)]
 	[Tooltip("Elastic spring effect making motion more 'meaty'")]
@@ -1223,73 +1182,73 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	[Tooltip("If you want to limit stretching/gumminess of position motion when object moves fast. Recommended adjust to go with it under 0.3 value.\nValue = 1: Unlimited stretching")]
 	[Range(0f, 1f)]
-	public float MaxStretching;
+	public float MaxStretching = 0.375f;
 
-	[Tooltip("Limiting max rotation angle for each tail segment")]
 	[FPD_Suffix(1f, 181f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
-	public float AngleLimit;
+	[Tooltip("Limiting max rotation angle for each tail segment")]
+	public float AngleLimit = 181f;
 
 	[Tooltip("If you need specific axis to be limited.\nLeave unchanged to limit all axes.")]
-	public Vector3 AngleLimitAxis;
+	public Vector3 AngleLimitAxis = Vector3.zero;
 
 	[Tooltip("If you want limit axes symmetrically leave this parameter unchanged, if you want limit one direction of axis more than reversed, tweak this parameter")]
-	public Vector2 LimitAxisRange;
+	public Vector2 LimitAxisRange = Vector2.zero;
 
+	[Range(0f, 1f)]
 	[Tooltip("If limiting shouldn't be too rapidly performed")]
-	[Range(0f, 1f)]
-	public float LimitSmoothing;
+	public float LimitSmoothing = 0.5f;
 
-	[Tooltip("If your object moves very fast making tail influenced by speed too much then you can controll it with this parameter")]
 	[FPD_Suffix(0f, 1.5f, FPD_SuffixAttribute.SuffixMode.PercentageUnclamped, "%", true, 0)]
-	public float MotionInfluence;
+	[Tooltip("If your object moves very fast making tail influenced by speed too much then you can controll it with this parameter")]
+	public float MotionInfluence = 1f;
 
-	[Tooltip("Additional Y influence controll useful when your character is jumping (works only when MotionInfluence value is other than 100%)")]
 	[Range(0f, 1f)]
-	public float MotionInfluenceInY;
+	[Tooltip("Additional Y influence controll useful when your character is jumping (works only when MotionInfluence value is other than 100%)")]
+	public float MotionInfluenceInY = 1f;
 
 	[Tooltip("If first bone of chain should also be affected with whole chain")]
-	public bool IncludeParent;
+	public bool IncludeParent = true;
 
 	[Tooltip("By basic algorithm of Tail Animator different sized tails with different number of bones would animate with different bending thanks to this toggle every setup bends in very similar amount.\n\nShort tails will bend more and longer oner with bigger amount of bones less with this option enabled.")]
 	[Range(0f, 1f)]
 	public float UnifyBendiness;
 
+	[Range(0f, 1f)]
 	[Tooltip("Reaction Speed is defining how fast tail segments will return to target position, it gives animation more underwater/floaty feeling if it's lower")]
-	[Range(0f, 1f)]
-	public float ReactionSpeed;
+	public float ReactionSpeed = 0.9f;
 
-	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
 	[Range(0f, 1f)]
+	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
 	public float Sustain;
 
 	[Tooltip("Rotation speed is defining how fast tail segments will return to target rotation, it gives animation more lazy feeling if it's lower")]
 	[Range(0f, 1f)]
-	public float RotationRelevancy;
+	public float RotationRelevancy = 1f;
 
 	[Tooltip("Smoothing motion values change over time style to be applied for 'Reaction Speed' and 'Rotation Relevancy' parameters")]
-	public EAnimationStyle SmoothingStyle;
+	public EAnimationStyle SmoothingStyle = EAnimationStyle.Accelerating;
 
 	[Tooltip("Slowmo or speedup tail animation reaction")]
-	public float TimeScale;
+	public float TimeScale = 1f;
 
 	[Tooltip("Delta time type to be used by algorithm")]
-	public EFDeltaType DeltaType;
+	public EFDeltaType DeltaType = EFDeltaType.SafeDelta;
 
 	[Tooltip("Useful when you use other components to affect bones hierarchy and you want this component to follow other component's changes\n\nIt can be really useful when working with 'Spine Animator'")]
-	public bool UpdateAsLast;
+	public bool UpdateAsLast = true;
 
 	[Tooltip("Checking if keyframed animation has some empty keyframes which could cause unwanted twisting errors")]
-	public bool DetectZeroKeyframes;
+	public bool DetectZeroKeyframes = true;
 
 	[Tooltip("Initializing Tail Animator after first frames of game to not initialize with model's T-Pose but after playing some other animation")]
-	public bool StartAfterTPose;
+	public bool StartAfterTPose = true;
 
 	[Tooltip("If you want Tail Animator to stop computing when choosed animator is not enabled")]
 	public Animator OptimizeWithAnimator;
 
-	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	[Tooltip("Blend Source Animation (keyframed / unanimated) and Tail Animator")]
-	public float TailAnimatorAmount;
+	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
+	public float TailAnimatorAmount = 1f;
 
 	[Tooltip("Removing transforms hierachy structure to optimize Unity's calculations on Matrixes.\nIt can give very big boost in performance for long tails but it can't work with animated models!")]
 	public bool DetachChildren;
@@ -1304,8 +1263,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Making tail animate also roll rotation like it was done in Tail Animator V1 ! Use Rotation Relevancy Parameter (set lower than 0.5) !")]
 	public bool AnimateRoll;
 
-	[Range(0f, 1f)]
 	[Tooltip("Overriding keyframe animation with just Tail Animator option (keyframe animation treated as t-pose bones rotations)")]
+	[Range(0f, 1f)]
 	public float OverrideKeyframeAnimation;
 
 	private Transform _baseTransform;
@@ -1318,14 +1277,14 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CWavingRotationOffset_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CWavingRotationOffset_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -1525,7 +1484,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 					val.radius = GetColliderSphereRadiusFor(_TransformsGhostChain, j);
 					val.direction = 2;
 					Vector3 val2 = _TransformsGhostChain[j].position - _TransformsGhostChain[j + 1].position;
-					val.height = ((Vector3)(ref val2)).magnitude * 2f - val.radius;
+					val.height = val2.magnitude * 2f - val.radius;
 					val.center = _TransformsGhostChain[j].InverseTransformPoint(Vector3.Lerp(_TransformsGhostChain[j].position, _TransformsGhostChain[j + 1].position, 0.5f));
 					TailSegments[j].ColliderRadius = val.radius;
 					TailSegments[j].CollisionHelper = tailCollisionHelper;
@@ -2719,7 +2678,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 					if (_TransformsGhostChain.Count > 1)
 					{
 						val = _TransformsGhostChain[0].position - _TransformsGhostChain[1].position;
-						if (((Vector3)(ref val)).magnitude == 0f)
+						if (val.magnitude == 0f)
 						{
 							val = ((Component)this).transform.position - _TransformsGhostChain[1].position;
 						}
@@ -2728,11 +2687,11 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 					{
 						val = tailSegment2.transform.position - _TransformsGhostChain[0].position;
 					}
-					if (((Vector3)(ref val)).magnitude == 0f)
+					if (val.magnitude == 0f)
 					{
 						val = ((Component)this).transform.position - _TransformsGhostChain[0].position;
 					}
-					if (((Vector3)(ref val)).magnitude == 0f)
+					if (val.magnitude == 0f)
 					{
 						val = ((Component)this).transform.forward;
 					}
@@ -2756,7 +2715,22 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 					transform = tailSegment2.transform.GetChild(0);
 				}
 				GhostChild = new TailSegment(transform);
-				Vector3 val2 = ((!FEngineering.VIsZero(EndBoneJointOffset)) ? tailSegment2.transform.TransformVector(EndBoneJointOffset) : (Object.op_Implicit((Object)(object)tailSegment2.transform.parent) ? (tailSegment2.transform.position - tailSegment2.transform.parent.position) : ((tailSegment2.transform.childCount <= 0) ? (tailSegment2.transform.TransformDirection(Vector3.forward) * 0.05f) : (tailSegment2.transform.GetChild(0).position - tailSegment2.transform.position))));
+				Vector3 val2;
+				if (FEngineering.VIsZero(EndBoneJointOffset))
+				{
+					if (Object.op_Implicit((Object)(object)tailSegment2.transform.parent))
+					{
+						val2 = tailSegment2.transform.position - tailSegment2.transform.parent.position;
+					}
+					else
+					{
+						val2 = ((tailSegment2.transform.childCount <= 0) ? (tailSegment2.transform.TransformDirection(Vector3.forward) * 0.05f) : (tailSegment2.transform.GetChild(0).position - tailSegment2.transform.position));
+					}
+				}
+				else
+				{
+					val2 = tailSegment2.transform.TransformVector(EndBoneJointOffset);
+				}
 				GhostChild.ProceduralPosition = tailSegment2.transform.position + val2;
 				GhostChild.ProceduralPositionWeightBlended = GhostChild.ProceduralPosition;
 				GhostChild.PreviousPosition = GhostChild.ProceduralPosition;
@@ -2927,7 +2901,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = bone.ParentBone.ProceduralPosition - bone.ProceduralPosition;
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		if (!(magnitude > 0f))
 		{
 			return;
@@ -2941,7 +2915,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 				bone.ProceduralPosition = _limiting_limitPosition;
 				return;
 			}
-			_limiting_limitPosition = bone.ParentBone.ProceduralPosition - ((Vector3)(ref val)).normalized * num;
+			_limiting_limitPosition = bone.ParentBone.ProceduralPosition - val.normalized * num;
 			float num2 = Mathf.InverseLerp(magnitude, 0f, num) + _limiting_stretchingHelperTooLong;
 			if (num2 > 0.999f)
 			{
@@ -3031,20 +3005,20 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		_limiting_angle_ToTargetRot = Quaternion.FromToRotation(child.ParentBone.transform.TransformDirection(child.LastKeyframeLocalPosition), targetPos - child.ParentBone.ProceduralPosition) * child.ParentBone.transform.rotation;
 		_limiting_angle_targetInLocal = FEngineering.QToLocal(child.ParentBone.transform.rotation, _limiting_angle_ToTargetRot);
 		float num2 = 0f;
-		if (((Vector3)(ref AngleLimitAxis)).sqrMagnitude == 0f)
+		if (AngleLimitAxis.sqrMagnitude == 0f)
 		{
 			num2 = Quaternion.Angle(_limiting_angle_targetInLocal, child.LastKeyframeLocalRotation);
 		}
 		else
 		{
-			((Vector3)(ref AngleLimitAxis)).Normalize();
+			AngleLimitAxis.Normalize();
 			Vector3 val;
 			if (LimitAxisRange.x == LimitAxisRange.y)
 			{
-				val = Vector3.Scale(((Quaternion)(ref child.InitialLocalRotation)).eulerAngles, AngleLimitAxis);
-				float magnitude = ((Vector3)(ref val)).magnitude;
-				val = Vector3.Scale(((Quaternion)(ref _limiting_angle_targetInLocal)).eulerAngles, AngleLimitAxis);
-				num2 = Mathf.DeltaAngle(magnitude, ((Vector3)(ref val)).magnitude);
+				val = Vector3.Scale(child.InitialLocalRotation.eulerAngles, AngleLimitAxis);
+				float magnitude = val.magnitude;
+				val = Vector3.Scale(_limiting_angle_targetInLocal.eulerAngles, AngleLimitAxis);
+				num2 = Mathf.DeltaAngle(magnitude, val.magnitude);
 				if (num2 < 0f)
 				{
 					num2 = 0f - num2;
@@ -3052,10 +3026,10 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			}
 			else
 			{
-				val = Vector3.Scale(((Quaternion)(ref child.InitialLocalRotation)).eulerAngles, AngleLimitAxis);
-				float magnitude2 = ((Vector3)(ref val)).magnitude;
-				val = Vector3.Scale(((Quaternion)(ref _limiting_angle_targetInLocal)).eulerAngles, AngleLimitAxis);
-				num2 = Mathf.DeltaAngle(magnitude2, ((Vector3)(ref val)).magnitude);
+				val = Vector3.Scale(child.InitialLocalRotation.eulerAngles, AngleLimitAxis);
+				float magnitude2 = val.magnitude;
+				val = Vector3.Scale(_limiting_angle_targetInLocal.eulerAngles, AngleLimitAxis);
+				num2 = Mathf.DeltaAngle(magnitude2, val.magnitude);
 				if (num2 > LimitAxisRange.x && num2 < LimitAxisRange.y)
 				{
 					num2 = 0f;
@@ -3159,7 +3133,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		_tc_segmentGravityOffset = (bone.Gravity + WindEffect) * bone.BoneLengthScaled;
 		_tc_segmentGravityToParentDir = bone.ProceduralPosition - bone.ParentBone.ProceduralPosition;
 		Vector3 val = _tc_segmentGravityToParentDir + _tc_segmentGravityOffset;
-		_tc_preGravOff = ((Vector3)(ref val)).normalized * ((Vector3)(ref _tc_segmentGravityToParentDir)).magnitude;
+		_tc_preGravOff = val.normalized * _tc_segmentGravityToParentDir.magnitude;
 		bone.ProceduralPosition = bone.ParentBone.ProceduralPosition + _tc_preGravOff;
 	}
 
@@ -3587,7 +3561,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		child.BoneDimensionsScaled = Vector3.Scale(child.ParentBone.transform.lossyScale * child.LengthMultiplier, child.LastKeyframeLocalPosition);
-		child.BoneLengthScaled = ((Vector3)(ref child.BoneDimensionsScaled)).magnitude;
+		child.BoneLengthScaled = child.BoneDimensionsScaled.magnitude;
 	}
 
 	private void TailSegment_PrepareMotionParameters(TailSegment child)
@@ -3973,7 +3947,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 				while (tailSegment != GhostChild)
 				{
 					tailSegment.BoneDimensionsScaled = Vector3.Scale(tailSegment.ParentBone.transform.lossyScale * tailSegment.LengthMultiplier, tailSegment.LastKeyframeLocalPosition);
-					tailSegment.BoneLengthScaled = ((Vector3)(ref tailSegment.BoneDimensionsScaled)).magnitude;
+					tailSegment.BoneLengthScaled = tailSegment.BoneDimensionsScaled.magnitude;
 					TailSegment_PrepareBoneLength(tailSegment);
 					TailSegment_PrepareMotionParameters(tailSegment);
 					TailSegment_PrepareVelocity(tailSegment);
@@ -3985,7 +3959,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 				while (tailSegment != GhostChild)
 				{
 					tailSegment.BoneDimensionsScaled = Vector3.Scale(tailSegment.ParentBone.transform.lossyScale * tailSegment.LengthMultiplier, tailSegment.InitialLocalPosition);
-					tailSegment.BoneLengthScaled = ((Vector3)(ref tailSegment.BoneDimensionsScaled)).magnitude;
+					tailSegment.BoneLengthScaled = tailSegment.BoneDimensionsScaled.magnitude;
 					TailSegment_PrepareMotionParameters(tailSegment);
 					TailSegment_PrepareVelocity(tailSegment);
 					tailSegment = tailSegment.ChildBone;
@@ -4361,21 +4335,21 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		Keyframe[] keys = a.keys;
 		for (int i = 0; i < keys.Length; i++)
 		{
-			if (((Keyframe)(ref keys[i])).time < timeStart)
+			if (keys[i].time < timeStart)
 			{
-				((Keyframe)(ref keys[i])).time = timeStart;
+				keys[i].time = timeStart;
 			}
-			else if (((Keyframe)(ref keys[i])).time > timeEnd)
+			else if (keys[i].time > timeEnd)
 			{
-				((Keyframe)(ref keys[i])).time = timeEnd;
+				keys[i].time = timeEnd;
 			}
-			if (((Keyframe)(ref keys[i])).value < lowest)
+			if (keys[i].value < lowest)
 			{
-				((Keyframe)(ref keys[i])).value = lowest;
+				keys[i].value = lowest;
 			}
-			else if (((Keyframe)(ref keys[i])).value > highest)
+			else if (keys[i].value > highest)
 			{
-				((Keyframe)(ref keys[i])).value = highest;
+				keys[i].value = highest;
 			}
 		}
 		a.keys = keys;
@@ -4495,7 +4469,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 				float num3 = Mathf.InverseLerp(num2, (float)_defl_source[i].Index, (float)child.Index);
 				Vector3 val = _defl_source[i].DeflectionWorldPosition - child.ParentBone.ProceduralPosition;
 				Vector3 proceduralPosition = child.ParentBone.ProceduralPosition;
-				proceduralPosition += ((Vector3)(ref val)).normalized * child.BoneLengthScaled;
+				proceduralPosition += val.normalized * child.BoneLengthScaled;
 				child.ProceduralPosition = Vector3.LerpUnclamped(child.ProceduralPosition, proceduralPosition, Deflection * DeflectionFalloff.Evaluate(num3) * _defl_source[i].DeflectionSmooth);
 			}
 		}
@@ -4675,17 +4649,17 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private void Reset()
 	{
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Expected O, but got Unknown
-		Keyframe val = default(Keyframe);
-		((Keyframe)(ref val))._002Ector(0f, 0f, 0.1f, 0.1f, 0f, 0.5f);
-		Keyframe val2 = default(Keyframe);
-		((Keyframe)(ref val2))._002Ector(1f, 1f, 5f, 0f, 0.1f, 0f);
-		DeflectionFalloff = new AnimationCurve((Keyframe[])(object)new Keyframe[2] { val, val2 });
+		//IL_006b: Expected Obj, but got Unknown
+		Keyframe val = new Keyframe(0f, 0f, 0.1f, 0.1f, 0f, 0.5f);
+		Keyframe val2 = new Keyframe(1f, 1f, 5f, 0f, 0.1f, 0f);
+		DeflectionFalloff = new AnimationCurve(new Keyframe[2] { val, val2 });
 	}
 
 	private void Tick()
@@ -4896,113 +4870,5 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		//IL_04d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04e4: Unknown result type (might be due to invalid IL or missing references)
-		CollisionSpace = ECollisionSpace.Selective_Fast;
-		InclusionRadius = 1f;
-		IgnoreMeshColliders = true;
-		CollideWithDisabledColliders = true;
-		CollisionSlippery = 1f;
-		CollidersScaleCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
-		CollidersScaleMul = 6.5f;
-		CollisionsAutoCurve = 0.5f;
-		CollidersSameLayer = true;
-		CollidersAddRigidbody = true;
-		RigidbodyMass = 1f;
-		SlitheryCurve = AnimationCurve.EaseInOut(0f, 0.75f, 1f, 1f);
-		lastSlithery = -1f;
-		CurlingCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 0.3f);
-		lastCurling = -1f;
-		SpringCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 0f);
-		lastSpringiness = -1f;
-		SlipperyCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 1f);
-		lastSlippery = -1f;
-		PosCurve = AnimationCurve.EaseInOut(0f, 0.7f, 1f, 1f);
-		lastPosSpeeds = -1f;
-		RotCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0.9f);
-		lastRotSpeeds = -1f;
-		BlendCurve = AnimationCurve.EaseInOut(0f, 0.95f, 1f, 0.45f);
-		lastTailAnimatorAmount = -1f;
-		IKAutoWeights = true;
-		IKBaseReactionWeight = 0.65f;
-		IKReactionWeightCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0.25f);
-		IKAutoAngleLimits = true;
-		IKAutoAngleLimit = 40f;
-		IKBlend = 1f;
-		IKAnimatorBlend = 0.5f;
-		IKReactionQuality = 2;
-		IKStretchCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-		RotationOffset = Quaternion.identity;
-		Curving = Quaternion.identity;
-		CurvCurve = AnimationCurve.EaseInOut(0f, 0.75f, 1f, 1f);
-		lastCurving = Quaternion.identity;
-		LengthMultiplier = 1f;
-		LengthMulCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 1f);
-		lastLengthMul = 1f;
-		GravityCurve = AnimationCurve.EaseInOut(0f, 0.65f, 1f, 1f);
-		Gravity = Vector3.zero;
-		lastGravity = Vector3.zero;
-		UseWaving = true;
-		WavingSpeed = 3f;
-		WavingRange = 0.8f;
-		WavingAxis = new Vector3(1f, 1f, 1f);
-		WavingType = FEWavingType.Advanced;
-		AlternateWave = 1f;
-		_waving_sustain = Vector3.zero;
-		WindEffectPower = 1f;
-		WindTurbulencePower = 1f;
-		WindWorldNoisePower = 0.5f;
-		WindEffect = Vector3.zero;
-		_limiting_limitPosition = Vector3.zero;
-		_limiting_influenceOffset = Vector3.zero;
-		_tc_segmentGravityOffset = Vector3.zero;
-		_tc_segmentGravityToParentDir = Vector3.zero;
-		_tc_preGravOff = Vector3.zero;
-		MaximumDistance = 35f;
-		FadeDuration = 0.75f;
-		distanceWeight = 1f;
-		_tc_startII = 1;
-		_tc_lookRot = Quaternion.identity;
-		_tc_targetParentRot = Quaternion.identity;
-		_tc_startBoneRotOffset = Quaternion.identity;
-		_tc_tangle = 1f;
-		_sg_springVelo = 0.5f;
-		_sg_curly = 0.5f;
-		_sg_slitFactor = 0.5f;
-		wasDisabled = true;
-		justDelta = 0.016f;
-		secPeriodDelta = 0.5f;
-		deltaForLerps = 0.016f;
-		rateDelta = 0.016f;
-		framesToSimulate = 1;
-		previousframesToSimulate = 1;
-		fixedAllow = true;
-		DeflectionStartAngle = 10f;
-		DeflectionFalloff = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-		DeflectOnlyCollisions = true;
-		_defl_treshold = 0.01f;
-		DrawGizmos = true;
-		EndBoneJointOffset = Vector3.zero;
-		_GhostChainInitCount = -1;
-		OverrideWeight = 1f;
-		conditionalWeight = 1f;
-		Slithery = 1f;
-		Curling = 0.5f;
-		MaxStretching = 0.375f;
-		AngleLimit = 181f;
-		AngleLimitAxis = Vector3.zero;
-		LimitAxisRange = Vector2.zero;
-		LimitSmoothing = 0.5f;
-		MotionInfluence = 1f;
-		MotionInfluenceInY = 1f;
-		IncludeParent = true;
-		ReactionSpeed = 0.9f;
-		RotationRelevancy = 1f;
-		SmoothingStyle = EAnimationStyle.Accelerating;
-		TimeScale = 1f;
-		DeltaType = EFDeltaType.SafeDelta;
-		UpdateAsLast = true;
-		DetectZeroKeyframes = true;
-		StartAfterTPose = true;
-		TailAnimatorAmount = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

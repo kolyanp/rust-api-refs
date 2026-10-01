@@ -37,6 +37,10 @@ public abstract class FSMTransitionBase
 	{
 	}
 
+	public virtual void OnTransitionConfirmed(FSMStateBase entered)
+	{
+	}
+
 	public bool Evaluate(ref FSMPayload payload)
 	{
 		if (!Inverted)

@@ -12,7 +12,7 @@ public class SendMessageToEntityOnAnimationFinish : StateMachineBehaviour
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		if (0f + repeatRate > Time.time || animator.IsInTransition(layerIndex) || ((AnimatorStateInfo)(ref stateInfo)).normalizedTime < 1f)
+		if (0f + repeatRate > Time.time || animator.IsInTransition(layerIndex) || stateInfo.normalizedTime < 1f)
 		{
 			return;
 		}
@@ -25,7 +25,7 @@ public class SendMessageToEntityOnAnimationFinish : StateMachineBehaviour
 					return;
 				}
 				AnimatorStateInfo currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(i);
-				if (((AnimatorStateInfo)(ref currentAnimatorStateInfo)).speed > 0f && ((AnimatorStateInfo)(ref currentAnimatorStateInfo)).normalizedTime < 1f)
+				if (currentAnimatorStateInfo.speed > 0f && currentAnimatorStateInfo.normalizedTime < 1f)
 				{
 					return;
 				}

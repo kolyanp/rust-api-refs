@@ -15,9 +15,9 @@ public class Tooltip : BaseMonoBehaviour, IClientComponent, ILocalize
 
 	public Phrase phrase;
 
-	[Space(10f)]
 	[Header("Additional Settings - Delay")]
 	[Tooltip("Delay timing before the tooltip appears. Short is 0.15 seconds, Long is 0.5 seconds.")]
+	[Space(10f)]
 	public DelayType delayBeforeAppearing;
 
 	[Space(10f)]
@@ -38,7 +38,7 @@ public class Tooltip : BaseMonoBehaviour, IClientComponent, ILocalize
 	public float offsetPercent;
 
 	[Tooltip("How far to spawn from the objects position")]
-	public Vector2 offset;
+	public Vector2 offset = new Vector2(8f, 8f);
 
 	private object[] localizationArguments;
 
@@ -62,7 +62,5 @@ public class Tooltip : BaseMonoBehaviour, IClientComponent, ILocalize
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		offset = new Vector2(8f, 8f);
-		base._002Ector();
 	}
 }

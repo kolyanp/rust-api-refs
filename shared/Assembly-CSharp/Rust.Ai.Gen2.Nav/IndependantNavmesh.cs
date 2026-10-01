@@ -9,7 +9,7 @@ namespace Rust.Ai.Gen2.Nav;
 
 public class IndependantNavmesh : MonoBehaviour, IServerComponent
 {
-	public Vector3 size;
+	public Vector3 size = Vector3.one * 50f;
 
 	public bool canMove;
 
@@ -25,6 +25,8 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 	private Bounds lastBounds;
 
 	public RustNavmesh Navmesh { get; private set; }
+
+	public static bool AnyRegistered => navmeshLookup.Count > 0;
 
 	public Matrix4x4 WorldToNavMatrix
 	{
@@ -65,7 +67,7 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 				return Matrix4x4.identity;
 			}
 			Matrix4x4 worldToNavMatrix = WorldToNavMatrix;
-			return ((Matrix4x4)(ref worldToNavMatrix)).inverse;
+			return worldToNavMatrix.inverse;
 		}
 	}
 
@@ -132,6 +134,7 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
 			return;
@@ -152,6 +155,7 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		navmeshLookup.Remove(this);
 		lastBounds = GetBounds();
 		navmeshLookup.Add(lastBounds, this);
+		RustNavDoorGates.ReassertInBounds(lastBounds);
 	}
 
 	public void RebuildTilesInBounds(Bounds bounds, bool synchronous = false)
@@ -167,10 +171,12 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 			{
 				RustNavigation.LogError("Rebuilding single tiles of moving navmesh is not supported.");
 			}
+			return;
 		}
-		else
+		Navmesh.RebuildTilesInBounds(bounds, canMove || synchronous);
+		if (synchronous)
 		{
-			Navmesh.RebuildTilesInBounds(bounds, canMove || synchronous);
+			RustNavDoorGates.FlushTileReasserts();
 		}
 	}
 
@@ -189,8 +195,8 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 			return new NavVector3(worldPoint);
 		}
 		Matrix4x4 worldToLocalMatrix = ((Component)this).transform.worldToLocalMatrix;
-		Vector3 val = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyPoint3x4(worldPoint);
-		return new NavVector3(((Matrix4x4)(ref buildTimeTransform)).MultiplyPoint3x4(val));
+		Vector3 val = worldToLocalMatrix.MultiplyPoint3x4(worldPoint);
+		return new NavVector3(buildTimeTransform.MultiplyPoint3x4(val));
 	}
 
 	public Vector3 TransformPointFromNavSpaceToWorldSpace(NavVector3 navSpacePoint)
@@ -209,10 +215,10 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		{
 			return navSpacePoint.Value;
 		}
-		Matrix4x4 val = ((Matrix4x4)(ref buildTimeTransform)).inverse;
-		Vector3 val2 = ((Matrix4x4)(ref val)).MultiplyPoint3x4(navSpacePoint.Value);
+		Matrix4x4 val = buildTimeTransform.inverse;
+		Vector3 val2 = val.MultiplyPoint3x4(navSpacePoint.Value);
 		val = ((Component)this).transform.localToWorldMatrix;
-		return ((Matrix4x4)(ref val)).MultiplyPoint3x4(val2);
+		return val.MultiplyPoint3x4(val2);
 	}
 
 	public Vector3 TransformDirectionFromNavSpaceToWorldSpace(NavVector3 navSpaceDirection)
@@ -231,10 +237,10 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		{
 			return navSpaceDirection.Value;
 		}
-		Matrix4x4 val = ((Matrix4x4)(ref buildTimeTransform)).inverse;
-		Vector3 val2 = ((Matrix4x4)(ref val)).MultiplyVector(navSpaceDirection.Value);
+		Matrix4x4 val = buildTimeTransform.inverse;
+		Vector3 val2 = val.MultiplyVector(navSpaceDirection.Value);
 		val = ((Component)this).transform.localToWorldMatrix;
-		return ((Matrix4x4)(ref val)).MultiplyVector(val2);
+		return val.MultiplyVector(val2);
 	}
 
 	public NavVector3 TransformDirectionFromWorldSpaceToNavSpace(Vector3 worldSpaceDirection)
@@ -252,13 +258,14 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 			return new NavVector3(worldSpaceDirection);
 		}
 		Matrix4x4 worldToLocalMatrix = ((Component)this).transform.worldToLocalMatrix;
-		Vector3 val = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyVector(worldSpaceDirection);
-		return new NavVector3(((Matrix4x4)(ref buildTimeTransform)).MultiplyVector(val));
+		Vector3 val = worldToLocalMatrix.MultiplyVector(worldSpaceDirection);
+		return new NavVector3(buildTimeTransform.MultiplyVector(val));
 	}
 
 	public bool FillDebugDrawProto(NavMeshData navMeshData, Bounds bounds)
 	{
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
@@ -275,16 +282,15 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		{
 			return false;
 		}
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(bounds);
+		OBB val = new OBB(bounds);
 		if (!canMove)
 		{
-			Navmesh.FillDebugDrawProto(navMeshData, ((OBB)(ref val)).ToBounds());
+			Navmesh.FillDebugDrawProto(navMeshData, val.ToBounds());
 			return true;
 		}
 		Matrix4x4 worldToNavMatrix = WorldToNavMatrix;
-		((OBB)(ref val)).Transform(((Matrix4x4)(ref worldToNavMatrix)).GetPosition(), ((Matrix4x4)(ref worldToNavMatrix)).lossyScale, ((Matrix4x4)(ref worldToNavMatrix)).rotation);
-		Navmesh.FillDebugDrawProto(navMeshData, ((OBB)(ref val)).ToBounds(), ((Matrix4x4)(ref worldToNavMatrix)).inverse);
+		val.Transform(worldToNavMatrix.GetPosition(), worldToNavMatrix.lossyScale, worldToNavMatrix.rotation);
+		Navmesh.FillDebugDrawProto(navMeshData, val.ToBounds(), worldToNavMatrix.inverse);
 		return true;
 	}
 
@@ -309,7 +315,7 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 				if (item.Navmesh != null && item.Navmesh.IsValid())
 				{
 					Bounds bounds = item.GetBounds();
-					if (((Bounds)(ref bounds)).Contains(worldPosition))
+					if (bounds.Contains(worldPosition))
 					{
 						return item;
 					}
@@ -354,7 +360,7 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		OBB val = new OBB(((Component)this).transform.position, size, ((Component)this).transform.rotation);
-		return ((OBB)(ref val)).ToBounds();
+		return val.ToBounds();
 	}
 
 	public IndependantNavmesh()
@@ -362,7 +368,5 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		size = Vector3.one * 50f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

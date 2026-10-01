@@ -109,10 +109,10 @@ public class BaseLauncher : BaseProjectile
 			val = AimConeUtil.GetModifiedAimConeDirection(num, val);
 		}
 		float num2 = 1f;
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (Physics.Raycast(position, val, ref val2, num2, 1237003025))
 		{
-			num2 = ((RaycastHit)(ref val2)).distance - 0.1f;
+			num2 = val2.distance - 0.1f;
 		}
 		BaseEntity baseEntity = GameManager.server.CreateEntity(component.GetOverrideProjectile(this).resourcePath, position + val * num2);
 		if (!((Object)(object)baseEntity == (Object)null))
@@ -178,17 +178,17 @@ public class BaseLauncher : BaseProjectile
 		}
 		if (reloadFinished && HasReloadCooldown())
 		{
-			AntiHack.Log(player, AntiHackType.ProjectileHack, "Reloading (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ProjectileHack, "Reloading (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "reload_cooldown");
 			return;
 		}
 		reloadStarted = false;
 		reloadFinished = false;
-		if (!base.UsingInfiniteAmmoCheat)
+		if (!UsingInfiniteAmmoCheat)
 		{
 			if (primaryMagazine.contents <= 0)
 			{
-				AntiHack.Log(player, AntiHackType.ProjectileHack, "Launch magazine empty (" + base.ShortPrefabName + ")");
+				AntiHack.Log(player, AntiHackType.ProjectileHack, "Launch magazine empty (" + ShortPrefabName + ")");
 				player.stats.combat.LogInvalid(player, this, "magazine_empty_launch");
 				return;
 			}
@@ -197,14 +197,14 @@ public class BaseLauncher : BaseProjectile
 		SignalBroadcast(Signal.Attack, string.Empty, player.net.connection);
 		Vector3 val = msg.read.Vector3();
 		Vector3 val2 = msg.read.Vector3();
-		Vector3 val3 = ((Vector3)(ref val2)).normalized;
-		bool num = msg.read.Bit();
+		Vector3 val3 = val2.normalized;
+		bool flag = msg.read.Bit();
 		BaseEntity mounted = player.GetParentEntity();
 		if ((Object)(object)mounted == (Object)null)
 		{
 			mounted = player.GetMounted();
 		}
-		if (num)
+		if (flag)
 		{
 			if ((Object)(object)mounted != (Object)null)
 			{
@@ -224,22 +224,22 @@ public class BaseLauncher : BaseProjectile
 		ItemModProjectile component = ((Component)primaryMagazine.ammoType).GetComponent<ItemModProjectile>();
 		if (!Object.op_Implicit((Object)(object)component))
 		{
-			AntiHack.Log(player, AntiHackType.ProjectileHack, "Item mod not found (" + base.ShortPrefabName + ")");
+			AntiHack.Log(player, AntiHackType.ProjectileHack, "Item mod not found (" + ShortPrefabName + ")");
 			player.stats.combat.LogInvalid(player, this, "mod_missing");
 			return;
 		}
-		float num2 = GetAimCone() + component.projectileSpread;
-		if (num2 > 0f)
+		float num = GetAimCone() + component.projectileSpread;
+		if (num > 0f)
 		{
-			val3 = AimConeUtil.GetModifiedAimConeDirection(num2, val3);
+			val3 = AimConeUtil.GetModifiedAimConeDirection(num, val3);
 		}
-		float num3 = 1f;
-		RaycastHit val4 = default(RaycastHit);
-		if (Physics.Raycast(val, val3, ref val4, num3, 1237003025))
+		float num2 = 1f;
+		RaycastHit val4 = default;
+		if (Physics.Raycast(val, val3, ref val4, num2, 1237003025))
 		{
-			num3 = ((RaycastHit)(ref val4)).distance - 0.1f;
+			num2 = val4.distance - 0.1f;
 		}
-		BaseEntity baseEntity = GameManager.server.CreateEntity(component.GetOverrideProjectile(this).resourcePath, val + val3 * num3);
+		BaseEntity baseEntity = GameManager.server.CreateEntity(component.GetOverrideProjectile(this).resourcePath, val + val3 * num2);
 		if ((Object)(object)baseEntity == (Object)null)
 		{
 			return;
@@ -258,7 +258,7 @@ public class BaseLauncher : BaseProjectile
 		Item ownerItem = GetOwnerItem();
 		if (ownerItem != null)
 		{
-			if (!base.UsingInfiniteAmmoCheat)
+			if (!UsingInfiniteAmmoCheat)
 			{
 				ownerItem.LoseCondition(Random.Range(1f, 2f));
 			}

@@ -7,12 +7,6 @@ namespace Oxide.Game.Rust.Cui;
 
 public class CuiContentSizeFitterComponent : ICuiComponent, ICuiEnableable
 {
-	[CompilerGenerated]
-	private FitMode _003CHorizontalFit_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private FitMode _003CVerticalFit_003Ek__BackingField;
-
 	public string Type => "UnityEngine.UI.ContentSizeFitter";
 
 	[JsonConverter(typeof(StringEnumConverter))]
@@ -23,14 +17,14 @@ public class CuiContentSizeFitterComponent : ICuiComponent, ICuiEnableable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CHorizontalFit_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CHorizontalFit_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -42,14 +36,14 @@ public class CuiContentSizeFitterComponent : ICuiComponent, ICuiEnableable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CVerticalFit_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CVerticalFit_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 

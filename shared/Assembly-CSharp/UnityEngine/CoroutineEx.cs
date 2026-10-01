@@ -8,16 +8,16 @@ namespace UnityEngine;
 
 public static class CoroutineEx
 {
-	public static WaitForEndOfFrame waitForEndOfFrame;
+	public static WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
 
-	public static WaitForFixedUpdate waitForFixedUpdate;
+	public static WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
 
-	private static Dictionary<float, WaitForSeconds> waitForSecondsBuffer;
+	private static Dictionary<float, WaitForSeconds> waitForSecondsBuffer = new Dictionary<float, WaitForSeconds>();
 
 	public static WaitForSeconds waitForSeconds(float seconds)
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected O, but got Unknown
+		//IL_0016: Expected Obj, but got Unknown
 		if (!waitForSecondsBuffer.TryGetValue(seconds, out var value))
 		{
 			value = new WaitForSeconds(seconds);
@@ -28,9 +28,9 @@ public static class CoroutineEx
 
 	public static WaitForSecondsRealtimeEx waitForSecondsRealtime(float seconds)
 	{
-		WaitForSecondsRealtimeEx obj = Pool.Get<WaitForSecondsRealtimeEx>();
-		obj.WaitTime = seconds;
-		return obj;
+		WaitForSecondsRealtimeEx val = Pool.Get<WaitForSecondsRealtimeEx>();
+		val.WaitTime = seconds;
+		return val;
 	}
 
 	public static IEnumerator Combine(params IEnumerator[] coroutines)
@@ -72,11 +72,8 @@ public static class CoroutineEx
 	static CoroutineEx()
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Expected O, but got Unknown
+		//IL_000a: Expected Obj, but got Unknown
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		waitForEndOfFrame = new WaitForEndOfFrame();
-		waitForFixedUpdate = new WaitForFixedUpdate();
-		waitForSecondsBuffer = new Dictionary<float, WaitForSeconds>();
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

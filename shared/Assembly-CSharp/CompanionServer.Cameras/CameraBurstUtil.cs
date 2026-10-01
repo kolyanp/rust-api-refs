@@ -23,7 +23,7 @@ internal static class CameraBurstUtil
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static int GetColliderId(this RaycastHit hit)
 	{
-		return ((RaycastHit)(ref hit)).colliderInstanceID;
+		return hit.colliderInstanceID;
 	}
 
 	public unsafe static Collider GetCollider(int colliderInstanceId)

@@ -57,10 +57,10 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 	public void Open(BasePlayer player, Action<DateTime> onDatePicked)
 	{
 		AdminModule.PlayerSession playerSession = Admin.GetPlayerSession(player);
-		if (!base.ModuleConfiguration.Enabled)
+		if (!ModuleConfiguration.Enabled)
 		{
 			string empty = string.Empty;
-			onDatePicked?.Invoke(default(DateTime));
+			onDatePicked?.Invoke(default);
 		}
 		else
 		{

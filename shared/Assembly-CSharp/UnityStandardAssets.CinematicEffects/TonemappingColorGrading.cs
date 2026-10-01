@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects;
 
-[ExecuteInEditMode]
 [AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 [ImageEffectAllowedInSceneView]
+[ExecuteInEditMode]
 public class TonemappingColorGrading : MonoBehaviour
 {
 	[AttributeUsage(AttributeTargets.Field)]
@@ -40,14 +40,12 @@ public class TonemappingColorGrading : MonoBehaviour
 
 	public class Curve : PropertyAttribute
 	{
-		public Color color;
+		public Color color = Color.white;
 
 		public Curve()
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			color = Color.white;
-			((PropertyAttribute)this)._002Ector();
 		}
 
 		public Curve(float r, float g, float b, float a)
@@ -56,8 +54,6 @@ public class TonemappingColorGrading : MonoBehaviour
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-			color = Color.white;
-			((PropertyAttribute)this)._002Ector();
 			color = new Color(r, g, b, a);
 		}
 	}
@@ -114,8 +110,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 		public Tonemapper tonemapper;
 
-		[Tooltip("Adjusts the overall exposure of the scene.")]
 		[Min(0f)]
+		[Tooltip("Adjusts the overall exposure of the scene.")]
 		public float exposure;
 
 		[Tooltip("Custom tonemapping curve.")]
@@ -162,8 +158,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Custom lookup texture (strip format, e.g. 256x16).")]
 		public Texture texture;
 
-		[Tooltip("Blending factor.")]
 		[Range(0f, 1f)]
+		[Tooltip("Blending factor.")]
 		public float contribution;
 
 		public static LUTSettings defaultSettings => new LUTSettings
@@ -209,12 +205,12 @@ public class TonemappingColorGrading : MonoBehaviour
 	[Serializable]
 	public struct BasicsSettings
 	{
-		[Range(-2f, 2f)]
 		[Tooltip("Sets the white balance to a custom color temperature.")]
+		[Range(-2f, 2f)]
 		public float temperatureShift;
 
-		[Range(-2f, 2f)]
 		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
+		[Range(-2f, 2f)]
 		public float tint;
 
 		[Space]
@@ -222,8 +218,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Range(-0.5f, 0.5f)]
 		public float hue;
 
-		[Range(0f, 2f)]
 		[Tooltip("Pushes the intensity of all colors.")]
+		[Range(0f, 2f)]
 		public float saturation;
 
 		[Tooltip("Adjusts the saturation so that clipping is minimized as colors approach full saturation.")]
@@ -234,17 +230,17 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Brightens or darkens all colors.")]
 		public float value;
 
-		[Space]
 		[Range(0f, 2f)]
 		[Tooltip("Expands or shrinks the overall range of tonal values.")]
+		[Space]
 		public float contrast;
 
-		[Range(0.01f, 5f)]
 		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
+		[Range(0.01f, 5f)]
 		public float gain;
 
-		[Range(0.01f, 5f)]
 		[Tooltip("Applies a pow function to the source.")]
+		[Range(0.01f, 5f)]
 		public float gamma;
 
 		public static BasicsSettings defaultSettings => new BasicsSettings
@@ -281,7 +277,7 @@ public class TonemappingColorGrading : MonoBehaviour
 				return new ChannelMixerSettings
 				{
 					currentChannel = 0,
-					channels = (Vector3[])(object)new Vector3[3]
+					channels = new Vector3[3]
 					{
 						new Vector3(1f, 0f, 0f),
 						new Vector3(0f, 1f, 0f),
@@ -324,8 +320,8 @@ public class TonemappingColorGrading : MonoBehaviour
 				//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004c: Expected O, but got Unknown
-				return new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+				//IL_004c: Expected Obj, but got Unknown
+				return new AnimationCurve(new Keyframe[2]
 				{
 					new Keyframe(0f, 0f, 1f, 1f),
 					new Keyframe(1f, 1f, 1f, 1f)
@@ -348,20 +344,20 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Internal LUT precision. \"Normal\" is 256x16, \"High\" is 1024x32. Prefer \"Normal\" on mobile devices.")]
 		public ColorGradingPrecision precision;
 
-		[Space]
 		[ColorWheelGroup]
+		[Space]
 		public ColorWheelsSettings colorWheels;
 
-		[Space]
 		[IndentedGroup]
+		[Space]
 		public BasicsSettings basics;
 
 		[ChannelMixer]
 		[Space]
 		public ChannelMixerSettings channelMixer;
 
-		[IndentedGroup]
 		[Space]
+		[IndentedGroup]
 		public CurvesSettings curves;
 
 		[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
@@ -389,20 +385,20 @@ public class TonemappingColorGrading : MonoBehaviour
 		}
 	}
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private EyeAdaptationSettings m_EyeAdaptation = EyeAdaptationSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private TonemappingSettings m_Tonemapping = TonemappingSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private ColorGradingSettings m_ColorGrading = ColorGradingSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private LUTSettings m_Lut = LUTSettings.defaultSettings;
 
 	[SerializeField]

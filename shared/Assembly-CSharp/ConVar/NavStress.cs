@@ -7,7 +7,6 @@ using System.Text;
 using Rust.Ai.Gen2;
 using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace ConVar;
 
@@ -162,26 +161,26 @@ public class NavStress : ConsoleSystem
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0308: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0331: Unknown result type (might be due to invalid IL or missing references)
-		//IL_039d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_035e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0222: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0309: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0332: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_035f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
 		if (!EnsureReady(arg, needEnv: false, needDummies: false))
 		{
 			return;
@@ -189,15 +188,15 @@ public class NavStress : ConsoleSystem
 		ClearEnvironment();
 		fieldCenter = new Vector3(arg.GetFloat(0, -140f), 0f, arg.GetFloat(1, 140f));
 		fieldHalfExtent = arg.GetFloat(2, 50f);
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (!Physics.Raycast(fieldCenter + Vector3.up * 500f, Vector3.down, ref val, 2000f, LayerMask.GetMask(new string[3] { "World", "Terrain", "Default" })))
 		{
 			arg.ReplyWith($"no ground under field center {fieldCenter}, pick another spot");
 			return;
 		}
-		groundY = ((RaycastHit)(ref val)).point.y;
+		groundY = val.point.y;
 		fieldCenter.y = groundY;
-		if (!RustNavMeshHelpers.SamplePosition(fieldCenter + Vector3.up, out var hitWS, 10f, -1) || Mathf.Abs(((NavMeshHit)(ref hitWS)).position.y - groundY) > 3f)
+		if (!RustNavMeshHelpers.SamplePosition(fieldCenter + Vector3.up, out var hitWS, 10f, -1) || Mathf.Abs(hitWS.position.y - groundY) > 3f)
 		{
 			arg.ReplyWith($"no navmesh near ground at field center {fieldCenter} (ground y {groundY:F1})");
 			return;
@@ -264,7 +263,7 @@ public class NavStress : ConsoleSystem
 
 	private static IEnumerator FinishUnityEnvBuild()
 	{
-		yield return SingletonComponent<DynamicNavMesh>.Instance.UpdateNavMeshAndWait();
+		yield return SingletonComponent<DynamicNavMesh>.Instance.RebuildNavMeshAndWait();
 		GatherDestinationPools();
 		envBuilt = groundPoints.Count > 50;
 		lastEnvReport = string.Format("navstress env built at {0} halfExtent {1} (unity): {2} objects, {3} ground points, {4} island points{5}", new object[6]
@@ -281,10 +280,11 @@ public class NavStress : ConsoleSystem
 
 	private static void RebuildBoundsAnyBackend(Bounds bounds)
 	{
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		if (AI.useUnityNavmesh)
 		{
-			SingletonComponent<DynamicNavMesh>.Instance.UpdateNavMeshAsync();
+			EnsureDriver();
+			((MonoBehaviour)driver).StartCoroutine(SingletonComponent<DynamicNavMesh>.Instance.RebuildNavMeshAndWait());
 		}
 		else
 		{
@@ -294,17 +294,20 @@ public class NavStress : ConsoleSystem
 
 	private static void RebuildFieldTiles()
 	{
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		if (AI.useUnityNavmesh)
 		{
-			SingletonComponent<DynamicNavMesh>.Instance.UpdateNavMeshAsync();
-			return;
+			EnsureDriver();
+			((MonoBehaviour)driver).StartCoroutine(SingletonComponent<DynamicNavMesh>.Instance.RebuildNavMeshAndWait());
 		}
-		Bounds rebuildBounds = default(Bounds);
-		((Bounds)(ref rebuildBounds))._002Ector(fieldCenter, new Vector3(fieldHalfExtent * 2f + 40f, 80f, fieldHalfExtent * 2f + 40f));
-		RustNavigation.Instance.RebuildTilesInBounds(rebuildBounds, synchronous: true);
+		else
+		{
+			Bounds rebuildBounds = new Bounds(fieldCenter, new Vector3(fieldHalfExtent * 2f + 40f, 80f, fieldHalfExtent * 2f + 40f));
+			RustNavigation.Instance.RebuildTilesInBounds(rebuildBounds, synchronous: true);
+		}
 	}
 
 	private static void GatherDestinationPools()
@@ -314,17 +317,17 @@ public class NavStress : ConsoleSystem
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
 		groundPoints.Clear();
 		islandPoints.Clear();
 		State state = Random.state;
@@ -335,9 +338,9 @@ public class NavStress : ConsoleSystem
 			{
 				break;
 			}
-			if (RustNavMeshHelpers.SamplePosition(fieldCenter + new Vector3(Random.Range(0f - fieldHalfExtent, fieldHalfExtent), 0f, Random.Range(0f - fieldHalfExtent, fieldHalfExtent)), out var hitWS, 4f, -1) && !(Mathf.Abs(((NavMeshHit)(ref hitWS)).position.y - groundY) > 1.5f))
+			if (RustNavMeshHelpers.SamplePosition(fieldCenter + new Vector3(Random.Range(0f - fieldHalfExtent, fieldHalfExtent), 0f, Random.Range(0f - fieldHalfExtent, fieldHalfExtent)), out var hitWS, 4f, -1) && !(Mathf.Abs(hitWS.position.y - groundY) > 1.5f))
 			{
-				groundPoints.Add(((NavMeshHit)(ref hitWS)).position);
+				groundPoints.Add(hitWS.position);
 			}
 		}
 		for (int j = 0; j < envObjects.Count; j++)
@@ -353,9 +356,9 @@ public class NavStress : ConsoleSystem
 				{
 					break;
 				}
-				if (RustNavMeshHelpers.SamplePosition(val.transform.position + Vector3.up * 0.3f + new Vector3(Random.Range(-4f, 4f), 0f, Random.Range(-4f, 4f)), out var hitWS2, 3f, -1) && !(((NavMeshHit)(ref hitWS2)).position.y < groundY + 8f))
+				if (RustNavMeshHelpers.SamplePosition(val.transform.position + Vector3.up * 0.3f + new Vector3(Random.Range(-4f, 4f), 0f, Random.Range(-4f, 4f)), out var hitWS2, 3f, -1) && !(hitWS2.position.y < groundY + 8f))
 				{
-					islandPoints.Add(((NavMeshHit)(ref hitWS2)).position);
+					islandPoints.Add(hitWS2.position);
 				}
 			}
 		}
@@ -383,8 +386,8 @@ public class NavStress : ConsoleSystem
 		bool flag2 = arg.GetBool(3);
 		State state = Random.state;
 		Random.InitState(777);
-		FSMComponent fSMComponent = default(FSMComponent);
-		RustNavMeshAgent rustNavMeshAgent = default(RustNavMeshAgent);
+		FSMComponent fSMComponent = default;
+		RustNavMeshAgent rustNavMeshAgent = default;
 		for (int i = 0; i < num; i++)
 		{
 			Vector3 pos = groundPoints[Random.Range(0, groundPoints.Count)];
@@ -553,9 +556,9 @@ public class NavStress : ConsoleSystem
 	public static void clear(Arg arg)
 	{
 		ClearDummies();
-		bool num = envBuilt;
+		bool flag = envBuilt;
 		ClearEnvironment();
-		if (num && (AI.useUnityNavmesh || ((Object)(object)RustNavigation.Instance != (Object)null && RustNavigation.Instance.IsDefaultNavmeshBuilt())))
+		if (flag && (AI.useUnityNavmesh || ((Object)(object)RustNavigation.Instance != (Object)null && RustNavigation.Instance.IsDefaultNavmeshBuilt())))
 		{
 			Physics.SyncTransforms();
 			RebuildFieldTiles();
@@ -592,6 +595,7 @@ public class NavStress : ConsoleSystem
 		groundPoints.Clear();
 		islandPoints.Clear();
 		envBuilt = false;
+		lastEnvReport = "no env built yet";
 		rebuildStormInterval = 0f;
 	}
 
@@ -620,31 +624,31 @@ public class NavStress : ConsoleSystem
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0229: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0204: Unknown result type (might be due to invalid IL or missing references)
 		//IL_022e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0254: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0233: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0259: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0302: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0263: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0304: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0312: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0317: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
@@ -711,7 +715,7 @@ public class NavStress : ConsoleSystem
 				if (RustNavMeshHelpers.SamplePosition(dummyState.chaseTarget, out var hitWS, 4f, -1))
 				{
 					NavStressStats.setDestinationCalls++;
-					if (!rustNavMeshAgent.SetDestinationWithParams(((NavMeshHit)(ref hitWS)).position, autoBraking: true, RustNavMeshAgent.Speeds.Sprint))
+					if (!rustNavMeshAgent.SetDestinationWithParams(hitWS.position, autoBraking: true, RustNavMeshAgent.Speeds.Sprint))
 					{
 						NavStressStats.setDestinationFails++;
 					}
@@ -761,12 +765,12 @@ public class NavStress : ConsoleSystem
 		Vector3 secondEnd = SnapToNavmesh(fieldCenter + new Vector3(-35f, 0f, 30f));
 		BaseEntity baseEntity = GameManager.server.CreateEntity("assets/rust.ai/agents/wolf/wolf2.prefab", start, Quaternion.identity);
 		baseEntity.Spawn();
-		FSMComponent fSMComponent = default(FSMComponent);
+		FSMComponent fSMComponent = default;
 		if (((Component)baseEntity).TryGetComponent<FSMComponent>(ref fSMComponent))
 		{
 			fSMComponent.SetFsmActive(newActive: false);
 		}
-		RustNavMeshAgent agent = default(RustNavMeshAgent);
+		RustNavMeshAgent agent = default;
 		((Component)baseEntity).TryGetComponent<RustNavMeshAgent>(ref agent);
 		ConfigureAgent(agent, "steering");
 		agent.canSwim = false;
@@ -837,11 +841,11 @@ public class NavStress : ConsoleSystem
 	private static Vector3 SnapToNavmesh(Vector3 posWS)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		if (RustNavMeshHelpers.SamplePosition(posWS, out var hitWS, 6f, -1))
 		{
-			return ((NavMeshHit)(ref hitWS)).position;
+			return hitWS.position;
 		}
 		return posWS;
 	}
@@ -893,7 +897,7 @@ public class NavStress : ConsoleSystem
 				nextSet = Time.time + 0.1f;
 				if (RustNavMeshHelpers.SamplePosition(target, out var hitWS, 4f, -1))
 				{
-					agent.SetDestinationWithParams(((NavMeshHit)(ref hitWS)).position, autoBraking: true, RustNavMeshAgent.Speeds.Sprint);
+					agent.SetDestinationWithParams(hitWS.position, autoBraking: true, RustNavMeshAgent.Speeds.Sprint);
 				}
 			}
 			leg.samples.Add(SampleOf(agent, startTime));
@@ -1133,8 +1137,8 @@ public class NavStress : ConsoleSystem
 		ClearDummies();
 		State state = Random.state;
 		Random.InitState(777);
-		FSMComponent fSMComponent = default(FSMComponent);
-		RustNavMeshAgent rustNavMeshAgent = default(RustNavMeshAgent);
+		FSMComponent fSMComponent = default;
+		RustNavMeshAgent rustNavMeshAgent = default;
 		for (int i = 0; i < count; i++)
 		{
 			Vector3 pos = groundPoints[Random.Range(0, groundPoints.Count)];
@@ -1207,13 +1211,23 @@ public class NavStress : ConsoleSystem
 	{
 		RepairField();
 		KillForeignAgents();
-		SpawnForBench(agentCount);
-		yield return CoroutineEx.waitForSeconds(1f);
 		List<string> names = new List<string>();
 		List<double> means = new List<double>();
 		List<string> details = new List<string>();
 		for (int s = 0; s < 6; s++)
 		{
+			if (s == 4 && islandPoints.Count == 0)
+			{
+				details.Add("wander-unreach25 skipped: no unreachable island destinations");
+				continue;
+			}
+			if (s == 5 && AI.useUnityNavmesh)
+			{
+				details.Add("wander-storm skipped: tile rebuild storm is only implemented for RustNav");
+				continue;
+			}
+			SpawnForBench(agentCount);
+			yield return CoroutineEx.waitForSeconds(1f);
 			string name;
 			switch (s)
 			{
@@ -1260,13 +1274,14 @@ public class NavStress : ConsoleSystem
 		SetAllIdle();
 		double num = 0.0;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine($"===== navstress bench, {dummyAgents.Count} agents =====");
+		stringBuilder.AppendLine(string.Format("===== navstress bench, {0} agents, {1} =====", dummyAgents.Count, AI.useUnityNavmesh ? "Unity" : "RustNav"));
+		stringBuilder.AppendLine("Managed tick plus driver only. Excludes native Unity navigation and RustNavigation.Tick.");
 		for (int i = 0; i < names.Count; i++)
 		{
 			num += means[i];
 			stringBuilder.AppendLine($"{names[i],-18} {means[i] * 1000.0,8:F1} us/frame");
 		}
-		stringBuilder.AppendLine($"SUITE TOTAL {num * 1000.0:F1} us/frame");
+		stringBuilder.AppendLine($"MANAGED SUITE INDEX {num * 1000.0:F1} us/frame summed across {names.Count} scenarios");
 		stringBuilder.AppendLine("---- details ----");
 		for (int j = 0; j < details.Count; j++)
 		{

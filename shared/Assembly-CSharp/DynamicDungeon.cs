@@ -13,7 +13,7 @@ public class DynamicDungeon : BaseEntity, IMissionEntityListener
 
 	public MonumentNavMesh monumentNavMesh;
 
-	private static List<DynamicDungeon> _dungeons;
+	private static List<DynamicDungeon> _dungeons = new List<DynamicDungeon>();
 
 	public GameObjectRef portalPrefab;
 
@@ -27,11 +27,11 @@ public class DynamicDungeon : BaseEntity, IMissionEntityListener
 
 	public Door doorInstance;
 
-	public static Vector3 nextDungeonPos;
+	public static Vector3 nextDungeonPos = Vector3.zero;
 
-	public static Vector3 dungeonStartPoint;
+	public static Vector3 dungeonStartPoint = Vector3.zero;
 
-	public static float dungeonSpacing;
+	public static float dungeonSpacing = 50f;
 
 	public SpawnGroup[] spawnGroups;
 
@@ -91,7 +91,7 @@ public class DynamicDungeon : BaseEntity, IMissionEntityListener
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			SpawnGroup[] array = spawnGroups;
 			for (int i = 0; i < array.Length; i++)
@@ -134,7 +134,7 @@ public class DynamicDungeon : BaseEntity, IMissionEntityListener
 	private void MergeAIZones()
 	{
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Expected O, but got Unknown
+		//IL_004e: Expected Obj, but got Unknown
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		if (!AutoMergeAIZones)
 		{
@@ -179,9 +179,5 @@ public class DynamicDungeon : BaseEntity, IMissionEntityListener
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		_dungeons = new List<DynamicDungeon>();
-		nextDungeonPos = Vector3.zero;
-		dungeonStartPoint = Vector3.zero;
-		dungeonSpacing = 50f;
 	}
 }

@@ -159,11 +159,11 @@ public class Cannon : BallistaGun
 		Vector3 val = checkTransform.up * 0.6f;
 		Vector3 val2 = middleGroundCheck.position + val;
 		Vector3 val3 = checkTransform.position + val;
-		bool num = !Physics.Linecast(val2, val3, 1503731969);
-		bool? flag = null;
-		if (num)
+		bool flag = !Physics.Linecast(val2, val3, 1503731969);
+		bool? flag2 = null;
+		if (flag)
 		{
-			return flag ?? base.HasGround(checkTransform);
+			return flag2 ?? base.HasGround(checkTransform);
 		}
 		return false;
 	}
@@ -199,11 +199,11 @@ public class Cannon : BallistaGun
 		return false;
 	}
 
-	[UsedImplicitly]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
+	[UsedImplicitly]
 	public virtual void RequestLightFuse(RPCMessage msg)
 	{
 		if (!IsFireRPCInvalid(msg, msg.player, out var _, out var _) && CanLightFuse())
@@ -238,7 +238,7 @@ public class Cannon : BallistaGun
 		{
 			flagsUpdateScope.Set(Flags.Reserved6, b: true);
 		}
-		Invoke(delegate
+		Invoke(() =>
 		{
 			using FlagsUpdateScope flagsUpdateScope2 = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			if (IsFireRPCInvalid(msg, msg.player, out var _, out var _))

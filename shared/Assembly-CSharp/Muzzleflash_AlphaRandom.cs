@@ -4,11 +4,11 @@ public class Muzzleflash_AlphaRandom : MonoBehaviour
 {
 	public ParticleSystem[] muzzleflashParticles;
 
-	private Gradient grad;
+	private Gradient grad = new Gradient();
 
-	private GradientColorKey[] gck;
+	private GradientColorKey[] gck = new GradientColorKey[3];
 
-	private GradientAlphaKey[] gak;
+	private GradientAlphaKey[] gak = new GradientAlphaKey[3];
 
 	private void Start()
 	{
@@ -48,17 +48,13 @@ public class Muzzleflash_AlphaRandom : MonoBehaviour
 				continue;
 			}
 			ColorOverLifetimeModule colorOverLifetime = val.colorOverLifetime;
-			((ColorOverLifetimeModule)(ref colorOverLifetime)).color = MinMaxGradient.op_Implicit(grad);
+			colorOverLifetime.color = MinMaxGradient.op_Implicit(grad);
 		}
 	}
 
 	public Muzzleflash_AlphaRandom()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
-		grad = new Gradient();
-		gck = (GradientColorKey[])(object)new GradientColorKey[3];
-		gak = (GradientAlphaKey[])(object)new GradientAlphaKey[3];
-		((MonoBehaviour)this)._002Ector();
+		//IL_000b: Expected Obj, but got Unknown
 	}
 }

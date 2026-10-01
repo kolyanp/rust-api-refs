@@ -19,7 +19,7 @@ public class HitboxDefinition : MonoBehaviour
 	public PhysicsMaterial physicMaterial;
 
 	[SerializeField]
-	private Vector3 scale;
+	private Vector3 scale = Vector3.one;
 
 	public Vector3 Scale
 	{
@@ -172,7 +172,5 @@ public class HitboxDefinition : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		scale = Vector3.one;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

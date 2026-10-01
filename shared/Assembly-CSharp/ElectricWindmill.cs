@@ -36,12 +36,12 @@ public class ElectricWindmill : IOEntity
 
 	public Vector3 GetWindAimDir(float time)
 	{
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		float num = time / 3600f * 360f;
 		int num2 = 10;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(Mathf.Sin(num * (MathF.PI / 180f)) * (float)num2, 0f, Mathf.Cos(num * (MathF.PI / 180f)) * (float)num2);
-		return ((Vector3)(ref val)).normalized;
+		Vector3 val = new Vector3(Mathf.Sin(num * (MathF.PI / 180f)) * (float)num2, 0f, Mathf.Cos(num * (MathF.PI / 180f)) * (float)num2);
+		return val.normalized;
 	}
 
 	public override int ConsumptionAmount()
@@ -62,7 +62,7 @@ public class ElectricWindmill : IOEntity
 		InvokeRandomized(WindUpdate, 1f, 20f, 2f);
 		if (GamePhysics.Trace(new Ray(((Component)this).transform.position, Vector3.down), 0f, out var hitInfo, 10f, 8454144, (QueryTriggerInteraction)1, this))
 		{
-			cachedHeight = ((Component)this).transform.position.y - ((RaycastHit)(ref hitInfo)).point.y;
+			cachedHeight = ((Component)this).transform.position.y - hitInfo.point.y;
 		}
 		else
 		{
@@ -107,9 +107,9 @@ public class ElectricWindmill : IOEntity
 		{
 			serverWindSpeed = (AmIVisible() ? GetWindSpeedScale() : 0f);
 			int num = Mathf.FloorToInt((float)maxPowerGeneration * serverWindSpeed);
-			bool num2 = currentEnergy != num;
+			bool flag = currentEnergy != num;
 			currentEnergy = num;
-			if (num2)
+			if (flag)
 			{
 				MarkDirty();
 			}

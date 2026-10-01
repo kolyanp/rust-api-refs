@@ -63,7 +63,7 @@ public class HarborCraneStatic : HarborCrane
 		}
 		info.msg.harborCrane.depth = val.x;
 		info.msg.harborCrane.height = val.y;
-		info.msg.harborCrane.yaw = ((Quaternion)(ref val2)).eulerAngles.z;
+		info.msg.harborCrane.yaw = val2.eulerAngles.z;
 	}
 
 	private void SetArmPos(float angle, float height, float depth)

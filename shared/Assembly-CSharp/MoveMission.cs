@@ -23,7 +23,7 @@ public class MoveMission : BaseMission
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 onUnitSphere = Random.onUnitSphere;
 		onUnitSphere.y = 0f;
-		((Vector3)(ref onUnitSphere)).Normalize();
+		onUnitSphere.Normalize();
 		Vector3 val = ((Component)assignee).transform.position + onUnitSphere * Random.Range(minDistForMovePoint, maxDistForMovePoint);
 		val.y = WaterLevel.GetWaterOrTerrainSurface(val, waves: false, volumes: false);
 		instance.objectiveStatuses[0].worldLocation = val;

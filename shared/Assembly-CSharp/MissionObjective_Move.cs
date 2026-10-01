@@ -7,8 +7,8 @@ public class MissionObjective_Move : MissionObjective
 	[BaseMission.PositionGenerator.PositionPoint]
 	public string positionName = "default";
 
-	[Tooltip("Distance threshold to player for objective to complete.")]
 	[InspectorName("Distance For Completion (m)")]
+	[Tooltip("Distance threshold to player for objective to complete.")]
 	public float distForCompletion = 3f;
 
 	[Tooltip("If true, this objective will no longer be marked as completed if the objective criteria are no longer met.")]
@@ -18,8 +18,8 @@ public class MissionObjective_Move : MissionObjective
 	[Tooltip("If \"Can Be Reset\" is true, then distance ")]
 	public float distanceForReset = 3f;
 
-	[Tooltip("If true, disregards distance on the y-plane.")]
 	[FormerlySerializedAs("use2D")]
+	[Tooltip("If true, disregards distance on the y-plane.")]
 	public bool use2DDistance;
 
 	[Tooltip("If set, player must be mounted on this mountable for objective to complete.")]
@@ -29,8 +29,8 @@ public class MissionObjective_Move : MissionObjective
 	[InspectorName("Should Ping (Tutorial Only)")]
 	public bool shouldPing;
 
-	[SerializeField]
 	[Tooltip("Ping type for when shouldPing is enabled.")]
+	[SerializeField]
 	private BasePlayer.PingType pingType = BasePlayer.PingType.GoTo;
 
 	private float sqrDistanceForCompletion;

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Facepunch;
 using Rust.UI;
 using UnityEngine;
@@ -21,40 +20,28 @@ public class MonumentMarker : MonoBehaviour
 	{
 		if (info.displayPhrase.IsValid())
 		{
-			this.text.SetPhrase(info.displayPhrase, Array.Empty<object>());
+			text.SetPhrase(info.displayPhrase, Array.Empty<object>());
 		}
 		else
 		{
-			string text = GetFallbackName(((Component)info).transform.root);
-			this.text.SetText(text, false, false);
+			string fallbackName = info.GetFallbackName();
+			text.SetText(fallbackName, false, false);
 		}
 		if ((Object)(object)imageBackground != (Object)null)
 		{
 			if ((Object)(object)info.mapIcon != (Object)null)
 			{
 				image.sprite = info.mapIcon;
-				ComponentExtensions.SetActive<RustText>(this.text, false);
+				ComponentExtensions.SetActive<RustText>(text, false);
 				ComponentExtensions.SetActive<Image>(imageBackground, true);
 			}
 			else
 			{
-				ComponentExtensions.SetActive<RustText>(this.text, true);
+				ComponentExtensions.SetActive<RustText>(text, true);
 				ComponentExtensions.SetActive<Image>(imageBackground, false);
 			}
 		}
 		SetNightMode(nightMode: false);
-		static string GetFallbackName(Transform t)
-		{
-			GameObject gameObject = ((Component)t).gameObject;
-			foreach (var (result, hashSet2) in World.SpawnedPrefabs)
-			{
-				if (hashSet2.Contains(gameObject))
-				{
-					return result;
-				}
-			}
-			return ((Object)t).name;
-		}
 	}
 
 	public void SetNightMode(bool nightMode)

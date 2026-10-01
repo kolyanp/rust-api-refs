@@ -4,23 +4,18 @@ namespace Carbon.Components;
 
 public class LuiCanvasGroupComp : LuiCompBase
 {
-	public float alpha;
+	public float alpha = -1f;
 
-	public bool blocksRaycasts;
+	public bool blocksRaycasts = true;
 
-	public bool interactable;
+	public bool interactable = true;
 
-	public Vector2 fade;
+	public Vector2 fade = LUI.defaultFade;
 
 	public LuiCanvasGroupComp()
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		alpha = -1f;
-		blocksRaycasts = true;
-		interactable = true;
-		fade = LUI.defaultFade;
-		base._002Ector();
 		type = LuiCompType.CanvasGroup;
 	}
 }

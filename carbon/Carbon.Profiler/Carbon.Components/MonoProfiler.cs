@@ -52,7 +52,7 @@ public static class MonoProfiler
 
 	public class AssemblyOutput : List<AssemblyRecord>
 	{
-		public bool AnyValidRecords => base.Count > 0;
+		public bool AnyValidRecords => Count > 0;
 
 		public AssemblyOutput Compare(AssemblyOutput other)
 		{
@@ -147,7 +147,7 @@ public static class MonoProfiler
 	{
 		public bool Disabled;
 
-		public bool AnyValidRecords => base.Count > 0;
+		public bool AnyValidRecords => Count > 0;
 
 		public CallOutput Compare(CallOutput other)
 		{
@@ -374,7 +374,7 @@ public static class MonoProfiler
 
 		public GCRecord Compare(GCRecord other)
 		{
-			GCRecord result = default(GCRecord);
+			GCRecord result = default;
 			result.calls = Sample.CompareValue(calls, other.calls);
 			result.total_time = Sample.CompareValue(total_time, other.total_time);
 			result.comparison.isCompared = true;
@@ -712,7 +712,7 @@ public static class MonoProfiler
 				Assemblies = new AssemblyOutput(),
 				Calls = new CallOutput(),
 				Memory = new MemoryOutput(),
-				GC = default(GCRecord)
+				GC = default
 			};
 		}
 
@@ -745,7 +745,7 @@ public static class MonoProfiler
 			FromDisk = false;
 			IsCompared = false;
 			Duration = DurationTime.TotalSeconds;
-			Comparison = default(SampleComparison);
+			Comparison = default;
 			Assemblies.AddRange(AssemblyRecords);
 			Calls.AddRange(CallRecords);
 			Memory.AddRange(MemoryRecords);
@@ -756,7 +756,7 @@ public static class MonoProfiler
 		{
 			IsCompared = false;
 			Duration = 0.0;
-			Comparison = default(SampleComparison);
+			Comparison = default;
 			FromDisk = false;
 			if (Assemblies == null)
 			{
@@ -773,7 +773,7 @@ public static class MonoProfiler
 			Assemblies.Clear();
 			Calls.Clear();
 			Memory.Clear();
-			GC = default(GCRecord);
+			GC = default;
 		}
 
 		public string ToTable()
@@ -993,7 +993,7 @@ public static class MonoProfiler
 			return this;
 			static void Recurse(TimelineRecording recording)
 			{
-				ToggleProfilingTimed(recording.Rate, recording.Args, delegate
+				ToggleProfilingTimed(recording.Rate, recording.Args, (ProfilerArgs _) =>
 				{
 					Sample obj = recording.Record(AssemblyRecords, CallRecords, MemoryRecords, GCStats);
 					recording.OnSample?.Invoke(obj);
@@ -1162,7 +1162,7 @@ public static class MonoProfiler
 		{
 			data->Capacity = (int)length;
 		}
-		T item = default(T);
+		T item = default;
 		while (cb(iter, out item))
 		{
 			data->Add(item);
@@ -1174,8 +1174,8 @@ public static class MonoProfiler
 		AssemblyRecords.Clear();
 		CallRecords.Clear();
 		MemoryRecords.Clear();
-		DurationTime = default(TimeSpan);
-		GCStats = default(GCRecord);
+		DurationTime = default;
+		GCStats = default;
 	}
 
 	public static void ToggleProfilingTimed(float duration, ProfilerArgs args = ProfilerArgs.CallMemory | ProfilerArgs.AdvancedMemory | ProfilerArgs.Timings | ProfilerArgs.Calls | ProfilerArgs.GCEvents, Action<ProfilerArgs> onTimerEnded = null, bool logging = true)
@@ -1205,7 +1205,7 @@ public static class MonoProfiler
 			{
 				Debug.LogWarning((object)("[MonoProfiler] Profiling duration " + NumberExtensions.FormatSeconds((long)duration) + ".."));
 			}
-			HarmonyProfiler.Runner.Invoke(_profileTimer = delegate
+			HarmonyProfiler.Runner.Invoke(_profileTimer = () =>
 			{
 				if (IsRecording)
 				{
@@ -1221,7 +1221,7 @@ public static class MonoProfiler
 		}
 		else if (IsRecording & logging)
 		{
-			HarmonyProfiler.Runner.Invoke(_profileWarningTimer = delegate
+			HarmonyProfiler.Runner.Invoke(_profileWarningTimer = () =>
 			{
 				Debug.LogWarning((object)$" Reminder: You've been profiling for {CurrentDurationTime.TotalSeconds}s");
 			}, 300f);
@@ -1256,13 +1256,13 @@ public static class MonoProfiler
 		List<AssemblyRecord> assemblyRecords = AssemblyRecords;
 		List<CallRecord> callRecords = CallRecords;
 		List<MemoryRecord> memoryRecords = MemoryRecords;
-		GCRecord gCStats = default(GCRecord);
+		GCRecord gCStats = default;
 		if (IsRecording)
 		{
 			_dataProcessTimer = Pool.Get<Stopwatch>();
 			_dataProcessTimer.Start();
 		}
-		bool flag = default(bool);
+		bool flag = default;
 		ProfilerResultCode profilerResultCode = profiler_toggle(args, &flag, &gCStats, &assemblyRecords, &callRecords, &memoryRecords);
 		if (profilerResultCode == ProfilerResultCode.Aborted)
 		{
@@ -1324,7 +1324,7 @@ public static class MonoProfiler
 
 	private unsafe static void MapAssemblyRecords(List<AssemblyRecord> records)
 	{
-		string text = default(string);
+		string text = default;
 		for (int i = 0; i < records.Count; i++)
 		{
 			AssemblyRecord value = records[i];
@@ -1355,7 +1355,7 @@ public static class MonoProfiler
 
 	private unsafe static void MapMemoryRecords(List<MemoryRecord> records)
 	{
-		string text = default(string);
+		string text = default;
 		for (int i = 0; i < records.Count; i++)
 		{
 			MemoryRecord value = records[i];
@@ -1401,7 +1401,7 @@ public static class MonoProfiler
 	private unsafe static void MapCallRecords(List<CallRecord> records)
 	{
 		Dictionary<string, CallRecord> dictionary = Pool.Get<Dictionary<string, CallRecord>>();
-		string text = default(string);
+		string text = default;
 		for (int i = 0; i < records.Count; i++)
 		{
 			CallRecord value = records[i];

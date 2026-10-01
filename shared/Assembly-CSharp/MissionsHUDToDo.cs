@@ -5,11 +5,11 @@ using UnityEngine.Serialization;
 
 public class MissionsHUDToDo : BaseMonoBehaviour
 {
-	private static readonly Memoized<string, (float Current, float Target)> FormatProgres = new Memoized<string, (float, float)>((Func<(float, float), string>)delegate((float Current, float Target) d)
+	private static readonly Memoized<string, (float Current, float Target)> FormatProgres = new Memoized<string, (float, float)>((Func<(float, float), string>)(((float Current, float Target) d) =>
 	{
 		float num = Mathf.Min(d.Current, d.Target);
 		return $" ({num:0.#}/{d.Target:0.#})";
-	});
+	}));
 
 	public RustText text;
 

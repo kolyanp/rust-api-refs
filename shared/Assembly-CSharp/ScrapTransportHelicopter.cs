@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class ScrapTransportHelicopter : PlayerHelicopterWithFlares, TriggerHurtNotChild.IHurtTriggerUser
 {
-	[Header("Scrap Transport Helicopter Specific")]
 	[SerializeField]
+	[Header("Scrap Transport Helicopter Specific")]
 	private Transform searchlightEye;
 
 	[SerializeField]
 	private BoxCollider parentTriggerCollider;
 
-	[Header("Damage Effects")]
 	[SerializeField]
+	[Header("Damage Effects")]
 	private ParticleSystemContainer tailDamageLight;
 
 	[SerializeField]
@@ -63,7 +63,7 @@ public class ScrapTransportHelicopter : PlayerHelicopterWithFlares, TriggerHurtN
 
 	public override void OnHealthChanged(float oldvalue, float newvalue)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			Invoke(DelayedNetworking, 0.15f);
 		}
@@ -77,7 +77,7 @@ public class ScrapTransportHelicopter : PlayerHelicopterWithFlares, TriggerHurtN
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (!Rust.GameInfo.HasAchievements || !base.isServer || (old & Flags.On) == Flags.On || (next & Flags.On) != Flags.On || !((Object)(object)GetDriver() != (Object)null))
+		if (!GameInfo.HasAchievements || !isServer || (old & Flags.On) == Flags.On || (next & Flags.On) != Flags.On || !((Object)(object)GetDriver() != (Object)null))
 		{
 			return;
 		}

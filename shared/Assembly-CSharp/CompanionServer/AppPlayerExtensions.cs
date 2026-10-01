@@ -14,37 +14,37 @@ public static class AppPlayerExtensions
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		AppTeamInfo obj = Pool.Get<AppTeamInfo>();
-		obj.members = Pool.Get<List<Member>>();
-		Member val = Pool.Get<Member>();
+		AppTeamInfo val = Pool.Get<AppTeamInfo>();
+		val.members = Pool.Get<List<Member>>();
+		Member val2 = Pool.Get<Member>();
 		if ((Object)(object)player != (Object)null)
 		{
-			Vector2 val2 = Util.WorldToMap(((Component)player).transform.position);
-			val.steamId = player.userID;
-			val.name = player.displayName ?? "";
-			val.x = val2.x;
-			val.y = val2.y;
-			val.isOnline = player.IsConnected;
-			val.spawnTime = player.lifeStory?.timeBorn ?? 0;
-			val.isAlive = player.IsAlive();
-			val.deathTime = player.previousLifeStory?.timeDied ?? 0;
+			Vector2 val3 = Util.WorldToMap(((Component)player).transform.position);
+			val2.steamId = player.userID;
+			val2.name = player.displayName ?? "";
+			val2.x = val3.x;
+			val2.y = val3.y;
+			val2.isOnline = player.IsConnected;
+			val2.spawnTime = player.lifeStory?.timeBorn ?? 0;
+			val2.isAlive = player.IsAlive();
+			val2.deathTime = player.previousLifeStory?.timeDied ?? 0;
 		}
 		else
 		{
-			val.steamId = steamId;
-			val.name = SingletonComponent<ServerMgr>.Instance.persistance.GetPlayerName(steamId) ?? "";
-			val.x = 0f;
-			val.y = 0f;
-			val.isOnline = false;
-			val.spawnTime = 0u;
-			val.isAlive = false;
-			val.deathTime = 0u;
+			val2.steamId = steamId;
+			val2.name = SingletonComponent<ServerMgr>.Instance.persistance.GetPlayerName(steamId) ?? "";
+			val2.x = 0f;
+			val2.y = 0f;
+			val2.isOnline = false;
+			val2.spawnTime = 0u;
+			val2.isAlive = false;
+			val2.deathTime = 0u;
 		}
-		obj.members.Add(val);
-		obj.leaderSteamId = 0uL;
-		obj.mapNotes = GetMapNotes(val.steamId, personalNotes: true);
-		obj.leaderMapNotes = Pool.Get<List<Note>>();
-		return obj;
+		val.members.Add(val2);
+		val.leaderSteamId = 0uL;
+		val.mapNotes = GetMapNotes(val2.steamId, personalNotes: true);
+		val.leaderMapNotes = Pool.Get<List<Note>>();
+		return val;
 	}
 
 	public static AppTeamInfo GetAppTeamInfo(this RelationshipManager.PlayerTeam team, ulong requesterSteamId)

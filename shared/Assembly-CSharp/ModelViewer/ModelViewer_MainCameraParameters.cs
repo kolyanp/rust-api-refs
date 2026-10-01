@@ -24,46 +24,46 @@ public class ModelViewer_MainCameraParameters
 	}
 
 	[Header("Control")]
-	public float orbitSpeed;
+	public float orbitSpeed = 4f;
 
-	public float mouseZoomSpeed;
+	public float mouseZoomSpeed = 1.2f;
 
-	public float scrollZoomSpeed;
+	public float scrollZoomSpeed = 0.1f;
 
-	public float panSpeed;
+	public float panSpeed = 0.1f;
 
-	public float moveSpeed;
+	public float moveSpeed = 0.05f;
 
 	public float followLag;
 
-	[Header("Lens")]
 	[Header("                ")]
+	[Header("Lens")]
 	[Range(0.01f, 360f)]
-	public float fieldOfView;
+	public float fieldOfView = 15f;
 
-	public float nearPlane;
+	public float nearPlane = 0.05f;
 
-	public float farPlane;
+	public float farPlane = 2500f;
 
 	public OverlayType overlayType;
 
 	[Range(0.01f, 100f)]
-	public float Aspect;
+	public float Aspect = 4f;
 
 	[Range(0.01f, 100f)]
-	public float Ratio;
+	public float Ratio = 3f;
 
 	[Header("Focus")]
 	[Header("                ")]
 	public bool depthOfField;
 
-	public float focalLength;
+	public float focalLength = 3f;
 
-	public float focalSize;
+	public float focalSize = 0.1f;
 
-	public float apeture;
+	public float apeture = 80f;
 
-	public float maxBlurSize;
+	public float maxBlurSize = 7f;
 
 	public bool debugMode;
 
@@ -80,11 +80,11 @@ public class ModelViewer_MainCameraParameters
 	[Range(0f, 1f)]
 	public float chromaticAbberation;
 
-	[Header("Post Effects")]
 	[Header("                ")]
-	public TonemappingMode ToneMapping;
+	[Header("Post Effects")]
+	public TonemappingMode ToneMapping = TonemappingMode.Neutral;
 
-	public float Exposure;
+	public float Exposure = 2.34f;
 
 	[Range(-100f, 100f)]
 	public float Contrast;
@@ -100,26 +100,26 @@ public class ModelViewer_MainCameraParameters
 
 	[Header("                ")]
 	[Header("God Rays")]
-	public bool GodRays;
+	public bool GodRays = true;
 
 	[Header("                ")]
 	[Header("Bloom")]
-	public float Brightness;
+	public float Brightness = 0.15f;
 
-	public float Threshold;
+	public float Threshold = 1f;
 
 	[Range(0f, 1f)]
-	public float SoftKnee;
+	public float SoftKnee = 0.5f;
 
 	public float Clamp;
 
 	[Range(0f, 10f)]
-	public float Diffusion;
+	public float Diffusion = 8f;
 
 	[Range(0f, 1f)]
-	public float AnamorphicRatio;
+	public float AnamorphicRatio = 0.55f;
 
-	public Color Color;
+	public Color Color = Color.white;
 
 	[Header("Vignette")]
 	[Header("                ")]
@@ -129,47 +129,20 @@ public class ModelViewer_MainCameraParameters
 
 	[Header("Grain")]
 	[Header("                ")]
-	public bool Coloured;
+	public bool Coloured = true;
 
 	[Range(0f, 1f)]
 	public float Intensity;
 
 	[Range(0.3f, 3f)]
-	public float Size;
+	public float Size = 1f;
 
 	[Range(0f, 1f)]
-	public float luminanceContribution;
+	public float luminanceContribution = 0.8f;
 
 	public ModelViewer_MainCameraParameters()
 	{
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
-		orbitSpeed = 4f;
-		mouseZoomSpeed = 1.2f;
-		scrollZoomSpeed = 0.1f;
-		panSpeed = 0.1f;
-		moveSpeed = 0.05f;
-		fieldOfView = 15f;
-		nearPlane = 0.05f;
-		farPlane = 2500f;
-		Aspect = 4f;
-		Ratio = 3f;
-		focalLength = 3f;
-		focalSize = 0.1f;
-		apeture = 80f;
-		maxBlurSize = 7f;
-		ToneMapping = TonemappingMode.Neutral;
-		Exposure = 2.34f;
-		GodRays = true;
-		Brightness = 0.15f;
-		Threshold = 1f;
-		SoftKnee = 0.5f;
-		Diffusion = 8f;
-		AnamorphicRatio = 0.55f;
-		Color = Color.white;
-		Coloured = true;
-		Size = 1f;
-		luminanceContribution = 0.8f;
-		base._002Ector();
 	}
 }

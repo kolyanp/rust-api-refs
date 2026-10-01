@@ -8,7 +8,7 @@ public class UI_PartyInviteModal : SingletonComponent<UI_PartyInviteModal>
 
 	public RustButton AcceptButton;
 
-	public static Phrase InvitePhrase;
+	public static Phrase InvitePhrase = new Phrase("party.invite", "{0} has invited you to a party");
 
 	private ulong pendingLobbyId;
 
@@ -50,7 +50,6 @@ public class UI_PartyInviteModal : SingletonComponent<UI_PartyInviteModal>
 	static UI_PartyInviteModal()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		InvitePhrase = new Phrase("party.invite", "{0} has invited you to a party");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

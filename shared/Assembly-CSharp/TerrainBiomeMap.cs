@@ -78,14 +78,14 @@ public class TerrainBiomeMap : TerrainMap<byte>
 	public void GenerateTextures()
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Expected O, but got Unknown
+		//IL_0027: Expected Obj, but got Unknown
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		BiomeTexture = new Texture2D(res, res, (TextureFormat)4, true, true);
 		((Object)BiomeTexture).name = "BiomeTexture";
 		((Texture)BiomeTexture).wrapMode = (TextureWrapMode)1;
 		NativeArray<Color32> col = BiomeTexture.GetPixelData<Color32>(0);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
 			for (int i = 0; i < res; i++)

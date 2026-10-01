@@ -6,9 +6,6 @@ using UnityEngine;
 
 public class BuriedItem : IPooled
 {
-	[CompilerGenerated]
-	private Vector2 _003CLocation_003Ek__BackingField;
-
 	public int? ItemId { get; private set; }
 
 	public ulong UID { get; private set; }
@@ -25,14 +22,14 @@ public class BuriedItem : IPooled
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLocation_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLocation_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 

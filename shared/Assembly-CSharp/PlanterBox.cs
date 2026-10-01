@@ -105,9 +105,9 @@ public class PlanterBox : StorageContainer, ISplashable
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
-		base.inventory.SetOnlyAllowedItem(allowedItem);
-		ItemContainer itemContainer = base.inventory;
+		inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
+		inventory.SetOnlyAllowedItem(allowedItem);
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(InventoryItemFilter));
 		SetupTimeCaches();
 		Sprinkler.SplashableGrid.RegisterEntity(this);
@@ -169,9 +169,9 @@ public class PlanterBox : StorageContainer, ISplashable
 		InvokeRandomized(CalculateRainFactor, 20f, 30f, 15f);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (added && ItemIsFertilizer(item))
 		{
 			FertilizeGrowables();
@@ -255,9 +255,9 @@ public class PlanterBox : StorageContainer, ISplashable
 	public int GetFertilizerCount()
 	{
 		int num = 0;
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot != null && ItemIsFertilizer(slot))
 			{
 				num += slot.amount;
@@ -268,9 +268,9 @@ public class PlanterBox : StorageContainer, ISplashable
 
 	public bool ConsumeFertilizer()
 	{
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot != null && ItemIsFertilizer(slot))
 			{
 				int num = Mathf.Min(1, slot.amount);
@@ -295,7 +295,7 @@ public class PlanterBox : StorageContainer, ISplashable
 
 	public bool WantsSplash(ItemDefinition splashType, int amount)
 	{
-		if (base.IsDestroyed)
+		if (IsDestroyed)
 		{
 			return false;
 		}
@@ -470,7 +470,7 @@ public class PlanterBox : StorageContainer, ISplashable
 
 	public void OnPlantInserted(GrowableEntity entity, BasePlayer byPlayer)
 	{
-		if (!Rust.GameInfo.HasAchievements)
+		if (!GameInfo.HasAchievements)
 		{
 			return;
 		}
@@ -489,8 +489,8 @@ public class PlanterBox : StorageContainer, ISplashable
 		Pool.FreeUnmanaged<uint>(ref list);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_RequestSaturationUpdate(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player != (Object)null)

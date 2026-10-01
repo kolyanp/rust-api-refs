@@ -47,7 +47,7 @@ public class BuriedItems : PointEntity
 	public void Register(Item item, Vector3 worldPosition)
 	{
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		if (item != null && ((ItemId)(ref item.uid)).IsValid && item.info.allowBurying && Random.NextDouble() <= (double)buryItemChance && itemExpiryTracking.Count < maxBuriedItems)
+		if (item != null && item.uid.IsValid && item.info.allowBurying && Random.NextDouble() <= (double)buryItemChance && itemExpiryTracking.Count < maxBuriedItems)
 		{
 			TimeSpan timeSpan = TimeSpan.FromSeconds(expiryTime);
 			long num = DateTimeOffset.UtcNow.Add(timeSpan).ToUnixTimeMilliseconds();

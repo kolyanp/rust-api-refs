@@ -24,11 +24,11 @@ public class SimpleLight : IOEntity
 	public override void IOStateChanged(int inputAmount, int inputSlot)
 	{
 		base.IOStateChanged(inputAmount, inputSlot);
-		bool num = IsOn();
-		bool flag = IsPowered();
-		if (num != flag)
+		bool flag = IsOn();
+		bool flag2 = IsPowered();
+		if (flag != flag2)
 		{
-			SetFlagLocal(Flags.On, flag);
+			SetFlagLocal(Flags.On, flag2);
 			SendNetworkUpdate_Flags();
 		}
 	}

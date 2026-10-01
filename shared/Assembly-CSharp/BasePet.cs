@@ -13,8 +13,8 @@ public class BasePet : NPCPlayer, IThinker
 	[ServerVar]
 	public static bool onlyQueueBaseNavMovements = true;
 
-	[Help("How many miliseconds to budget for processing pet movements per frame")]
 	[ServerVar]
+	[Help("How many miliseconds to budget for processing pet movements per frame")]
 	public static float movementupdatebudgetms = 1f;
 
 	public float BaseAttackRate = 2f;
@@ -86,7 +86,7 @@ public class BasePet : NPCPlayer, IThinker
 	{
 		base.ServerInit();
 		Brain = ((Component)this).GetComponent<PetBrain>();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			AIThinkManager.AddPet(this);
 		}
@@ -101,7 +101,7 @@ public class BasePet : NPCPlayer, IThinker
 			_mapMarkerInstance.Kill();
 		}
 		BaseEntity baseEntity = GameManager.server.CreateEntity(mapMarkerPrefab?.resourcePath, Vector3.zero, Quaternion.identity);
-		baseEntity.OwnerID = base.OwnerID;
+		baseEntity.OwnerID = OwnerID;
 		baseEntity.Spawn();
 		baseEntity.SetParent(this);
 		_mapMarkerInstance = baseEntity;
@@ -133,13 +133,13 @@ public class BasePet : NPCPlayer, IThinker
 
 	public void ApplyPetStatModifiers()
 	{
-		if ((Object)(object)base.inventory == (Object)null)
+		if ((Object)(object)inventory == (Object)null)
 		{
 			return;
 		}
-		for (int i = 0; i < base.inventory.containerWear.capacity; i++)
+		for (int i = 0; i < inventory.containerWear.capacity; i++)
 		{
-			Item slot = base.inventory.containerWear.GetSlot(i);
+			Item slot = inventory.containerWear.GetSlot(i);
 			if (slot != null)
 			{
 				ItemModPetStats component = ((Component)slot.info).GetComponent<ItemModPetStats>();

@@ -48,9 +48,9 @@ public class MLRSRocket : TimedExplosive, SamSite.ISamSiteTarget
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		Explode(rayOrigin);
-		if (Physics.Raycast(((RaycastHit)(ref info)).point + Vector3.up, Vector3.down, 4f, 1084293393, (QueryTriggerInteraction)1))
+		if (Physics.Raycast(info.point + Vector3.up, Vector3.down, 4f, 1084293393, (QueryTriggerInteraction)1))
 		{
-			Effect.server.Run(explosionGroundFXPrefab.resourcePath, ((RaycastHit)(ref info)).point, Vector3.up, null, broadcast: true);
+			Effect.server.Run(explosionGroundFXPrefab.resourcePath, info.point, Vector3.up, null, broadcast: true);
 		}
 	}
 
@@ -58,13 +58,13 @@ public class MLRSRocket : TimedExplosive, SamSite.ISamSiteTarget
 	{
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		BaseEntity baseEntity = mapMarkerInstanceRef.Get(base.isServer);
+		BaseEntity baseEntity = mapMarkerInstanceRef.Get(isServer);
 		if (baseEntity.IsValid())
 		{
 			baseEntity.Kill();
 		}
 		BaseEntity baseEntity2 = GameManager.server.CreateEntity(mapMarkerPrefab?.resourcePath, ((Component)this).transform.position, Quaternion.identity);
-		baseEntity2.OwnerID = base.OwnerID;
+		baseEntity2.OwnerID = OwnerID;
 		baseEntity2.Spawn();
 		baseEntity2.SetParent(this, worldPositionStays: true);
 		mapMarkerInstanceRef.Set(baseEntity2);

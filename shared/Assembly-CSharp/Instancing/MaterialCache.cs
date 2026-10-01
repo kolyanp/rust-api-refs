@@ -10,7 +10,7 @@ public class MaterialCache
 	public Material EnableProceduralInstancing(Material material)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Expected O, but got Unknown
+		//IL_0019: Expected Obj, but got Unknown
 		if (modifiedMaterials.TryGetValue(material, out var value))
 		{
 			return value;

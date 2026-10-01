@@ -9,33 +9,33 @@ using UnityEngine.Rendering;
 public class UnderwaterEffectVolumeComponent : VolumeComponent, IPostProcessComponent
 {
 	[Header("Wiggle")]
-	public BoolParameter wiggle;
+	public BoolParameter wiggle = new BoolParameter(true, false);
 
-	public FloatParameter speed;
+	public FloatParameter speed = new FloatParameter(1f, false);
 
-	public FloatParameter scale;
+	public FloatParameter scale = new FloatParameter(12f, false);
 
 	[Header("Water Line")]
-	public ColorParameter waterLineColor;
+	public ColorParameter waterLineColor = new ColorParameter(Color.white, false);
 
-	public IntParameter waterLineBlurIterations;
+	public IntParameter waterLineBlurIterations = new IntParameter(1, false);
 
-	public FloatParameter waterLineBlurSize;
+	public FloatParameter waterLineBlurSize = new FloatParameter(0f, false);
 
-	[Header("Blur")]
 	[Range(0f, 2f)]
-	public IntParameter downsample;
+	[Header("Blur")]
+	public IntParameter downsample = new IntParameter(0, false);
 
 	[Range(1f, 4f)]
-	public IntParameter blurIterations;
+	public IntParameter blurIterations = new IntParameter(1, false);
 
 	[Range(0f, 10f)]
-	public FloatParameter blurSize;
+	public FloatParameter blurSize = new FloatParameter(0f, false);
 
-	public FloatParameter fadeToBlurDistance;
+	public FloatParameter fadeToBlurDistance = new FloatParameter(0f, false);
 
 	[Header("General")]
-	public BoolParameter effectActive;
+	public BoolParameter effectActive = new BoolParameter(false, false);
 
 	public bool IsActive()
 	{
@@ -49,39 +49,27 @@ public class UnderwaterEffectVolumeComponent : VolumeComponent, IPostProcessComp
 	public UnderwaterEffectVolumeComponent()
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000d: Expected O, but got Unknown
+		//IL_000d: Expected Obj, but got Unknown
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Expected O, but got Unknown
+		//IL_001e: Expected Obj, but got Unknown
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Expected O, but got Unknown
+		//IL_002f: Expected Obj, but got Unknown
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Expected O, but got Unknown
+		//IL_0040: Expected Obj, but got Unknown
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Expected O, but got Unknown
+		//IL_004d: Expected Obj, but got Unknown
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Expected O, but got Unknown
+		//IL_005e: Expected Obj, but got Unknown
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Expected O, but got Unknown
+		//IL_006b: Expected Obj, but got Unknown
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Expected O, but got Unknown
+		//IL_0078: Expected Obj, but got Unknown
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Expected O, but got Unknown
+		//IL_0089: Expected Obj, but got Unknown
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Expected O, but got Unknown
+		//IL_009a: Expected Obj, but got Unknown
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Expected O, but got Unknown
-		wiggle = new BoolParameter(true, false);
-		speed = new FloatParameter(1f, false);
-		scale = new FloatParameter(12f, false);
-		waterLineColor = new ColorParameter(Color.white, false);
-		waterLineBlurIterations = new IntParameter(1, false);
-		waterLineBlurSize = new FloatParameter(0f, false);
-		downsample = new IntParameter(0, false);
-		blurIterations = new IntParameter(1, false);
-		blurSize = new FloatParameter(0f, false);
-		fadeToBlurDistance = new FloatParameter(0f, false);
-		effectActive = new BoolParameter(false, false);
-		((VolumeComponent)this)._002Ector();
+		//IL_00a7: Expected Obj, but got Unknown
 	}
 }

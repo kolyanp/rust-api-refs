@@ -16,7 +16,7 @@ public class UnityHookHandler : SingletonComponent<UnityHookHandler>
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Expected O, but got Unknown
+		//IL_0024: Expected Obj, but got Unknown
 		GameObject val = new GameObject("UnityHookHandler");
 		val.AddComponent<UnityHookHandler>();
 		val.AddComponent<PreUpdateHook>();

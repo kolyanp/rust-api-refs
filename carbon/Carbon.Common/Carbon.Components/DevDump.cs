@@ -21,7 +21,7 @@ public class DevDump : IPooled
 
 	public void Export(float duration, string path, Action onComplete = null)
 	{
-		MonoProfiler.ToggleProfilingTimed(duration, MonoProfiler.ProfilerArgs.CallMemory | MonoProfiler.ProfilerArgs.AdvancedMemory | MonoProfiler.ProfilerArgs.Timings | MonoProfiler.ProfilerArgs.Calls | MonoProfiler.ProfilerArgs.GCEvents, delegate
+		MonoProfiler.ToggleProfilingTimed(duration, MonoProfiler.ProfilerArgs.CallMemory | MonoProfiler.ProfilerArgs.AdvancedMemory | MonoProfiler.ProfilerArgs.Timings | MonoProfiler.ProfilerArgs.Calls | MonoProfiler.ProfilerArgs.GCEvents, (MonoProfiler.ProfilerArgs args) =>
 		{
 			sample.Resample();
 			Export(path);

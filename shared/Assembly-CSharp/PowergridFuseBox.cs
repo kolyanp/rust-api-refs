@@ -16,6 +16,8 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 		public UnityEvent onStageReached;
 	}
 
+	public const string InsertFuseAchievement = "POWERPLANT_HEAVY_FUSE";
+
 	[Header("Powergrid Fuse Box")]
 	public ItemDefinition[] validPassthroughItems;
 
@@ -44,9 +46,9 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 
 	public SoundDefinition fuseExpendedSound;
 
-	public static readonly Phrase CannotRemoveFusePhrase;
+	public static readonly Phrase CannotRemoveFusePhrase = new Phrase("fusebox.cannotremove", "Fuses can only be removed via an item swap");
 
-	public static readonly Phrase CannotSwapFusePhrase;
+	public static readonly Phrase CannotSwapFusePhrase = new Phrase("fusebox.cannotswap", "A replacement fuse must be of higher condition");
 
 	private ItemContainer inventory;
 
@@ -253,7 +255,7 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (inventory != null)
 			{
@@ -267,7 +269,7 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 		}
 	}
 
-	public void OnItemAddedOrRemoved(Item item, bool added)
+	public void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		if (!IsValidPassthroughItem(item))
 		{
@@ -283,23 +285,28 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 		}
 		if (added)
 		{
-			PowergridManager.Server_OnFuseInsertedIntoFuseBox(this, item, LastLootedByPlayer);
+			PowergridManager.Server_OnFuseInsertedIntoFuseBox(this, item, sourcePlayer);
 		}
 		else
 		{
 			PowergridManager.Server_OnFuseRemovedFromFuseBox(item);
 		}
-		if (Application.isServerStarted)
+		if (!Application.isServerStarted)
 		{
-			SendNetworkUpdate();
-			if (added && (Object)(object)LastLootedByPlayer != (Object)null && LastLootedByPlayer.serverClan != null)
+			return;
+		}
+		SendNetworkUpdate();
+		if (added && (Object)(object)sourcePlayer != (Object)null)
+		{
+			sourcePlayer.GiveAchievement("POWERPLANT_HEAVY_FUSE");
+			if (sourcePlayer.serverClan != null)
 			{
-				LastLootedByPlayer.AddClanScore((ClanScoreEventType)13);
+				sourcePlayer.AddClanScore((ClanScoreEventType)13);
 			}
 		}
 	}
 
-	public void OnItemPositionChanged(Item item, int oldPosition, int newPosition)
+	public void OnItemPositionChanged(Item item, int oldPosition, int newPosition, BasePlayer sourcePlayer)
 	{
 		if (!IsValidPassthroughItem(item))
 		{
@@ -322,8 +329,8 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 		ClientRPC(RpcTarget.NetworkGroup("ClientRPC_OnPowergridStageChanged"), PointEntity<PowergridManager>.ServerInstance.CurrentStage);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (inventory != null)
@@ -343,7 +350,7 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.msg.storageBox == null || !base.isServer)
+		if (info.msg.storageBox == null || !isServer)
 		{
 			return;
 		}
@@ -369,10 +376,8 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 	static PowergridFuseBox()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		CannotRemoveFusePhrase = new Phrase("fusebox.cannotremove", "Fuses can only be removed via an item swap");
-		CannotSwapFusePhrase = new Phrase("fusebox.cannotswap", "A replacement fuse must be of higher condition");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

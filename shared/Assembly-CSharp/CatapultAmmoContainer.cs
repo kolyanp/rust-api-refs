@@ -6,9 +6,9 @@ public class CatapultAmmoContainer : StorageContainer
 	[NonSerialized]
 	public Catapult catapult;
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		catapult.UpdateLoadedAmmo(item, added);
 	}
 

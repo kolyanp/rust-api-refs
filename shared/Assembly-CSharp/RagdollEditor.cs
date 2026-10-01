@@ -122,16 +122,16 @@ public class RagdollEditor : SingletonComponent<RagdollEditor>
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(((Component)this).transform.position, ((Component)this).transform.forward, ref val, 100f))
 		{
-			grabbedRigid = ((Component)((RaycastHit)(ref val)).collider).GetComponent<Rigidbody>();
+			grabbedRigid = ((Component)val.collider).GetComponent<Rigidbody>();
 			if (!((Object)(object)grabbedRigid == (Object)null))
 			{
 				Matrix4x4 worldToLocalMatrix = ((Component)grabbedRigid).transform.worldToLocalMatrix;
-				grabPos = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyPoint(((RaycastHit)(ref val)).point);
+				grabPos = worldToLocalMatrix.MultiplyPoint(val.point);
 				worldToLocalMatrix = ((Component)this).transform.worldToLocalMatrix;
-				grabOffset = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyPoint(((RaycastHit)(ref val)).point);
+				grabOffset = worldToLocalMatrix.MultiplyPoint(val.point);
 			}
 		}
 	}

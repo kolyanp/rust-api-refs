@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using API.Analytics;
 using Carbon.Base;
@@ -321,11 +320,11 @@ public static class WebControlPanel
 			posY = entity.ServerPosition.y;
 			posZ = entity.ServerPosition.z;
 			Quaternion serverRotation = entity.ServerRotation;
-			rotX = ((Quaternion)(ref serverRotation)).eulerAngles.x;
+			rotX = serverRotation.eulerAngles.x;
 			serverRotation = entity.ServerRotation;
-			rotY = ((Quaternion)(ref serverRotation)).eulerAngles.y;
+			rotY = serverRotation.eulerAngles.y;
 			serverRotation = entity.ServerRotation;
-			rotZ = ((Quaternion)(ref serverRotation)).eulerAngles.z;
+			rotZ = serverRotation.eulerAngles.z;
 		}
 
 		public void Serialize(BridgeWrite write)
@@ -400,17 +399,17 @@ public static class WebControlPanel
 			name = ((Object)entity).name;
 			shortName = ((BaseNetworkable)entity).ShortPrefabName;
 			id = ((BaseNetworkable)entity).prefabID;
-			flags = ((object)Unsafe.As<Flags, Flags>(ref entity.flags)/*cast due to constrained. prefix*/).ToString().Split(',');
+			flags = ((object)entity.flags/*cast due to constrained. prefix*/).ToString().Split(',');
 			type = ((object)entity).GetType().Name;
 			posX = entity.ServerPosition.x;
 			posY = entity.ServerPosition.y;
 			posZ = entity.ServerPosition.z;
 			Quaternion serverRotation = entity.ServerRotation;
-			rotX = ((Quaternion)(ref serverRotation)).eulerAngles.x;
+			rotX = serverRotation.eulerAngles.x;
 			serverRotation = entity.ServerRotation;
-			rotY = ((Quaternion)(ref serverRotation)).eulerAngles.y;
+			rotY = serverRotation.eulerAngles.y;
 			serverRotation = entity.ServerRotation;
-			rotZ = ((Quaternion)(ref serverRotation)).eulerAngles.z;
+			rotZ = serverRotation.eulerAngles.z;
 			owner = entity.OwnerID;
 			skin = entity.skinID;
 			parent = ((BaseNetworkable)entity).GetParentEntity();
@@ -500,7 +499,7 @@ public static class WebControlPanel
 			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 			if (!value.Contains(":"))
 			{
-				return default(EntitySearchRange);
+				return default;
 			}
 			string[] array = value.Split(':');
 			string[] array2 = array[0].Split(' ');
@@ -562,9 +561,9 @@ public static class WebControlPanel
 		public static MapInfo Get(float scale)
 		{
 			scale = scale.Clamp(0.1f, 1f);
-			int num = default(int);
-			int num2 = default(int);
-			Color val = default(Color);
+			int num = default;
+			int num2 = default;
+			Color val = default;
 			MapInfo result = new MapInfo
 			{
 				imageData = MapImageRenderer.Render(ref num, ref num2, ref val, scale, false, true, 0),
@@ -861,48 +860,31 @@ public static class WebControlPanel
 		}
 	}
 
-	public struct PlayerInfo
+	public struct PlayerInfo(BasePlayer player)
 	{
-		private ulong steamId;
+		private ulong steamId = EncryptedValue<ulong>.op_Implicit(player.userID);
 
-		private ulong ownerSteamId;
+		private ulong ownerSteamId = ((BaseEntity)player).OwnerID;
 
-		private string displayName;
+		private string displayName = player.displayName;
 
-		private int ping;
+		private int ping = (player.IsConnected ? Net.sv.GetAveragePing(player.Connection) : (-1));
 
-		private string address;
+		private string address = (player.IsConnected ? player.Connection.ipaddress : string.Empty);
 
-		private ulong entityId;
+		private ulong entityId = ((BaseNetworkable)player).net.ID.Value;
 
-		private int connectedSeconds;
+		private int connectedSeconds = player.secondsConnected;
 
-		private float violationLevel;
+		private float violationLevel = player.ViolationLevel;
 
-		private int currentLevel;
+		private int currentLevel = 0;
 
-		private int unspentXp;
+		private int unspentXp = 0;
 
-		private float health;
+		private float health = ((BaseCombatEntity)player).health;
 
-		private TeamInfo team;
-
-		public PlayerInfo(BasePlayer player)
-		{
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			steamId = EncryptedValue<ulong>.op_Implicit(player.userID);
-			ownerSteamId = ((BaseEntity)player).OwnerID;
-			displayName = player.displayName;
-			ping = (player.IsConnected ? Net.sv.GetAveragePing(player.Connection) : (-1));
-			address = (player.IsConnected ? player.Connection.ipaddress : string.Empty);
-			entityId = ((BaseNetworkable)player).net.ID.Value;
-			connectedSeconds = player.secondsConnected;
-			violationLevel = player.ViolationLevel;
-			currentLevel = 0;
-			unspentXp = 0;
-			health = ((BaseCombatEntity)player).health;
-			team = new TeamInfo(player.Team);
-		}
+		private TeamInfo team = new TeamInfo(player.Team);
 
 		public void Serialize(BridgeWrite write, bool excludeIps)
 		{
@@ -1102,7 +1084,7 @@ public static class WebControlPanel
 		{
 			if (!Community.IsServerInitialized)
 			{
-				return default(ServerInfoOutput);
+				return default;
 			}
 			return new ServerInfoOutput
 			{
@@ -1124,7 +1106,7 @@ public static class WebControlPanel
 				NetworkOut = (int)((Net.sv != null) ? ((BaseNetwork)Net.sv).GetStat((Connection)null, (StatTypeLong)1) : 0),
 				Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 				SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(CultureInfo.CurrentCulture),
-				Version = 2633,
+				Version = 2634,
 				Protocol = Protocol.printable
 			};
 		}
@@ -1419,13 +1401,13 @@ public static class WebControlPanel
 
 	private static ItemContainer FindContainer(int id, BasePlayer player)
 	{
-		return (ItemContainer)(id switch
+		return id switch
 		{
 			0 => player.inventory.containerMain, 
 			1 => player.inventory.containerBelt, 
 			2 => player.inventory.containerWear, 
-			_ => null, 
-		});
+			_ => (ItemContainer)null, 
+		};
 	}
 
 	private static string CompressStringToBase64(string data)
@@ -1475,12 +1457,12 @@ public static class WebControlPanel
 			foreach (ChatEntry item in (List<ChatEntry>)(object)val)
 			{
 				ChatEntry current = item;
-				NetworkWriteEx.WriteObject<int>((NetWrite)(object)bridgeWrite, (int)((ChatEntry)(ref current)).Channel);
-				NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, ((ChatEntry)(ref current)).Message);
-				NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, ((ChatEntry)(ref current)).UserId);
-				NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, ((ChatEntry)(ref current)).Username);
-				NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, ((ChatEntry)(ref current)).Color);
-				NetworkWriteEx.WriteObject<int>((NetWrite)(object)bridgeWrite, ((ChatEntry)(ref current)).Time);
+				NetworkWriteEx.WriteObject<int>((NetWrite)(object)bridgeWrite, (int)current.Channel);
+				NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, current.Message);
+				NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, current.UserId);
+				NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, current.Username);
+				NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, current.Color);
+				NetworkWriteEx.WriteObject<int>((NetWrite)(object)bridgeWrite, current.Time);
 			}
 			SendRpcResponse(read.Connection, bridgeWrite);
 		}
@@ -1506,13 +1488,13 @@ public static class WebControlPanel
 			text4,
 			"<color=" + text3 + ">" + text + "</color>: " + text2
 		});
-		ChatEntry val = default(ChatEntry);
-		((ChatEntry)(ref val)).Channel = (ChatChannel)0;
-		((ChatEntry)(ref val)).Message = text2;
-		((ChatEntry)(ref val)).UserId = text4;
-		((ChatEntry)(ref val)).Username = text;
-		((ChatEntry)(ref val)).Color = text3;
-		((ChatEntry)(ref val)).Time = Epoch.Current;
+		ChatEntry val = default;
+		val.Channel = (ChatChannel)0;
+		val.Message = text2;
+		val.UserId = text4;
+		val.Username = text;
+		val.Color = text3;
+		val.Time = Epoch.Current;
 		Chat.Record(val);
 	}
 
@@ -1594,7 +1576,7 @@ public static class WebControlPanel
 		string text = ((NetRead)read).String(256, false);
 		BridgeConnection connection = read.Connection;
 		Option val = Option.Server;
-		string text2 = ConsoleSystem.Run(((Option)(ref val)).Quiet(), text, Array.Empty<object>());
+		string text2 = ConsoleSystem.Run(val.Quiet(), text, Array.Empty<object>());
 		if (!string.IsNullOrEmpty(text2))
 		{
 			connection.Reply(text2);
@@ -1725,12 +1707,12 @@ public static class WebControlPanel
 	private static void RPC_EntityDetails(BridgeRead read)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		BaseNetworkable obj = BaseNetworkable.serverEntities.Find(new NetworkableId(((NetRead)read).UInt64()));
-		BaseEntity val = (BaseEntity)(object)((obj is BaseEntity) ? obj : null);
-		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)val))
+		BaseNetworkable val = BaseNetworkable.serverEntities.Find(new NetworkableId(((NetRead)read).UInt64()));
+		BaseEntity val2 = (BaseEntity)(object)((val is BaseEntity) ? val : null);
+		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)val2))
 		{
 			BridgeWrite write = StartRpcResponse();
-			new DetailedEntityInfo(val).Serialize(write);
+			new DetailedEntityInfo(val2).Serialize(write);
 			SendRpcResponse(read.Connection, write);
 		}
 	}
@@ -1744,35 +1726,35 @@ public static class WebControlPanel
 		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 		JObject val = JObject.Parse(((NetRead)read).String(((NetRead)read).Int32(), false));
-		BaseNetworkable obj = BaseNetworkable.serverEntities.Find(new NetworkableId(val["NetId"].ToObject<ulong>()));
-		BaseEntity val2 = (BaseEntity)(object)((obj is BaseEntity) ? obj : null);
-		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)val2))
+		BaseNetworkable val2 = BaseNetworkable.serverEntities.Find(new NetworkableId(val["NetId"].ToObject<ulong>()));
+		BaseEntity val3 = (BaseEntity)(object)((val2 is BaseEntity) ? val2 : null);
+		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)val3))
 		{
-			val2.OwnerID = val["Owner"].ToObject<ulong>();
-			val2.skinID = val["Skin"].ToObject<ulong>();
-			val2.ServerPosition = new Vector3(val["PosX"].ToObject<float>(), val["PosY"].ToObject<float>(), val["PosZ"].ToObject<float>());
-			val2.ServerRotation = Quaternion.Euler(new Vector3(val["RotX"].ToObject<float>(), val["RotY"].ToObject<float>(), val["RotZ"].ToObject<float>()));
-			BasePlayer val3 = (BasePlayer)(object)((val2 is BasePlayer) ? val2 : null);
-			if (val3 != null)
+			val3.OwnerID = val["Owner"].ToObject<ulong>();
+			val3.skinID = val["Skin"].ToObject<ulong>();
+			val3.ServerPosition = new Vector3(val["PosX"].ToObject<float>(), val["PosY"].ToObject<float>(), val["PosZ"].ToObject<float>());
+			val3.ServerRotation = Quaternion.Euler(new Vector3(val["RotX"].ToObject<float>(), val["RotY"].ToObject<float>(), val["RotZ"].ToObject<float>()));
+			BasePlayer val4 = (BasePlayer)(object)((val3 is BasePlayer) ? val3 : null);
+			if (val4 != null)
 			{
-				JToken val4 = val["PlayerEntity"];
-				((BaseMetabolism<BasePlayer>)(object)val3.metabolism).hydration.max = val4[(object)"MaxThirst"].ToObject<float>();
-				((BaseMetabolism<BasePlayer>)(object)val3.metabolism).hydration.value = val4[(object)"Thirst"].ToObject<float>();
-				((BaseMetabolism<BasePlayer>)(object)val3.metabolism).calories.max = val4[(object)"MaxHunger"].ToObject<float>();
-				((BaseMetabolism<BasePlayer>)(object)val3.metabolism).calories.value = val4[(object)"Hunger"].ToObject<float>();
-				val3.metabolism.radiation_poison.max = val4[(object)"MaxRads"].ToObject<float>();
-				val3.metabolism.radiation_poison.value = val4[(object)"Rads"].ToObject<float>();
-				val3.metabolism.bleeding.max = val4[(object)"MaxBleed"].ToObject<float>();
-				val3.metabolism.bleeding.value = val4[(object)"Bleed"].ToObject<float>();
+				JToken val5 = val["PlayerEntity"];
+				((BaseMetabolism<BasePlayer>)(object)val4.metabolism).hydration.max = val5[(object)"MaxThirst"].ToObject<float>();
+				((BaseMetabolism<BasePlayer>)(object)val4.metabolism).hydration.value = val5[(object)"Thirst"].ToObject<float>();
+				((BaseMetabolism<BasePlayer>)(object)val4.metabolism).calories.max = val5[(object)"MaxHunger"].ToObject<float>();
+				((BaseMetabolism<BasePlayer>)(object)val4.metabolism).calories.value = val5[(object)"Hunger"].ToObject<float>();
+				val4.metabolism.radiation_poison.max = val5[(object)"MaxRads"].ToObject<float>();
+				val4.metabolism.radiation_poison.value = val5[(object)"Rads"].ToObject<float>();
+				val4.metabolism.bleeding.max = val5[(object)"MaxBleed"].ToObject<float>();
+				val4.metabolism.bleeding.value = val5[(object)"Bleed"].ToObject<float>();
 			}
-			BaseCombatEntity val5 = (BaseCombatEntity)(object)((val2 is BaseCombatEntity) ? val2 : null);
-			if (val5 != null)
+			BaseCombatEntity val6 = (BaseCombatEntity)(object)((val3 is BaseCombatEntity) ? val3 : null);
+			if (val6 != null)
 			{
-				JToken val6 = val["CombatEntity"];
-				val5.SetMaxHealth(val6[(object)"MaxHealth"].ToObject<float>());
-				val5.SetHealth(val6[(object)"Health"].ToObject<float>());
+				JToken val7 = val["CombatEntity"];
+				val6.SetMaxHealth(val7[(object)"MaxHealth"].ToObject<float>());
+				val6.SetHealth(val7[(object)"Health"].ToObject<float>());
 			}
-			((BaseNetworkable)val2).SendNetworkUpdate((NetworkQueue)0);
+			((BaseNetworkable)val3).SendNetworkUpdate((NetworkQueue)0);
 		}
 	}
 
@@ -1781,18 +1763,18 @@ public static class WebControlPanel
 	private static void RPC_EntityKill(BridgeRead read)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		BaseNetworkable obj = BaseNetworkable.serverEntities.Find(new NetworkableId(((NetRead)read).UInt64()));
-		BaseEntity val = (BaseEntity)(object)((obj is BaseEntity) ? obj : null);
-		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)val))
+		BaseNetworkable val = BaseNetworkable.serverEntities.Find(new NetworkableId(((NetRead)read).UInt64()));
+		BaseEntity val2 = (BaseEntity)(object)((val is BaseEntity) ? val : null);
+		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)val2))
 		{
-			BasePlayer val2 = (BasePlayer)(object)((val is BasePlayer) ? val : null);
-			if (val2 != null)
+			BasePlayer val3 = (BasePlayer)(object)((val2 is BasePlayer) ? val2 : null);
+			if (val3 != null)
 			{
-				((BaseCombatEntity)val2).Hurt(((BaseEntity)val2).MaxHealth() + 1f);
+				((BaseCombatEntity)val3).Hurt(((BaseEntity)val3).MaxHealth() + 1f);
 			}
 			else
 			{
-				((BaseNetworkable)val).AdminKill();
+				((BaseNetworkable)val2).AdminKill();
 			}
 		}
 	}
@@ -1908,22 +1890,22 @@ public static class WebControlPanel
 					case MapEntity.Types.ActivePlayers:
 						if (flag)
 						{
-							BaseNetworkable obj2 = values[j];
-							BasePlayer val3 = (BasePlayer)(object)((obj2 is BasePlayer) ? obj2 : null);
-							if (val3 != null && val3.IsConnected && val3.userID.IsSteamId())
+							BaseNetworkable val4 = values[j];
+							BasePlayer val5 = (BasePlayer)(object)((val4 is BasePlayer) ? val4 : null);
+							if (val5 != null && val5.IsConnected && val5.userID.IsSteamId())
 							{
-								((List<MapEntity>)(object)val).Add(new MapEntity((BaseEntity)(object)val3, types));
+								((List<MapEntity>)(object)val).Add(new MapEntity((BaseEntity)(object)val5, types));
 							}
 						}
 						break;
 					case MapEntity.Types.SleepingPlayers:
 						if (flag)
 						{
-							BaseNetworkable obj = values[j];
-							BasePlayer val2 = (BasePlayer)(object)((obj is BasePlayer) ? obj : null);
-							if (val2 != null && !val2.IsConnected && val2.userID.IsSteamId())
+							BaseNetworkable val2 = values[j];
+							BasePlayer val3 = (BasePlayer)(object)((val2 is BasePlayer) ? val2 : null);
+							if (val3 != null && !val3.IsConnected && val3.userID.IsSteamId())
 							{
-								((List<MapEntity>)(object)val).Add(new MapEntity((BaseEntity)(object)val2, types));
+								((List<MapEntity>)(object)val).Add(new MapEntity((BaseEntity)(object)val3, types));
 							}
 						}
 						break;
@@ -2482,7 +2464,7 @@ public static class WebControlPanel
 		{
 			flags = MonoProfiler.ProfilerArgs.CallMemory | MonoProfiler.ProfilerArgs.AdvancedMemory | MonoProfiler.ProfilerArgs.Timings | MonoProfiler.ProfilerArgs.Calls | MonoProfiler.ProfilerArgs.GCEvents;
 		}
-		Community.Runtime.Core.NextFrame(delegate
+		Community.Runtime.Core.NextFrame(() =>
 		{
 			if (MonoProfiler.IsRecording)
 			{

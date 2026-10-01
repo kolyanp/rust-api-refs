@@ -87,8 +87,8 @@ public class EasterBasket : AttackEntity
 		GetAmmo()?.UseItem();
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void ThrowEgg(RPCMessage msg)
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
@@ -138,14 +138,14 @@ public class EasterBasket : AttackEntity
 			UseAmmo();
 			Vector3 val = msg.read.Vector3();
 			Vector3 val2 = msg.read.Vector3();
-			Vector3 val3 = ((Vector3)(ref val2)).normalized;
-			bool num = msg.read.Bit();
+			Vector3 val3 = val2.normalized;
+			bool flag = msg.read.Bit();
 			BaseEntity mounted = player.GetParentEntity();
 			if ((Object)(object)mounted == (Object)null)
 			{
 				mounted = player.GetMounted();
 			}
-			if (num)
+			if (flag)
 			{
 				if ((Object)(object)mounted != (Object)null)
 				{
@@ -162,18 +162,18 @@ public class EasterBasket : AttackEntity
 			{
 				return;
 			}
-			float num2 = 2f;
-			if (num2 > 0f)
+			float num = 2f;
+			if (num > 0f)
 			{
-				val3 = AimConeUtil.GetModifiedAimConeDirection(num2, val3);
+				val3 = AimConeUtil.GetModifiedAimConeDirection(num, val3);
 			}
-			float num3 = 1f;
-			RaycastHit val4 = default(RaycastHit);
-			if (Physics.Raycast(val, val3, ref val4, num3, 1237003025))
+			float num2 = 1f;
+			RaycastHit val4 = default;
+			if (Physics.Raycast(val, val3, ref val4, num2, 1237003025))
 			{
-				num3 = ((RaycastHit)(ref val4)).distance - 0.1f;
+				num2 = val4.distance - 0.1f;
 			}
-			BaseEntity baseEntity = GameManager.server.CreateEntity(eggProjectile.resourcePath, val + val3 * num3);
+			BaseEntity baseEntity = GameManager.server.CreateEntity(eggProjectile.resourcePath, val + val3 * num2);
 			if (!((Object)(object)baseEntity == (Object)null))
 			{
 				baseEntity.creatorEntity = player;

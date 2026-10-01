@@ -60,7 +60,7 @@ public class BowWeapon : ArrowWeapon
 		using (TimeWarning.New("BowWeapon.OnHeldChanged"))
 		{
 			base.OnHeldChanged();
-			if (!base.isServer)
+			if (!isServer)
 			{
 				return;
 			}
@@ -74,7 +74,7 @@ public class BowWeapon : ArrowWeapon
 			{
 				return;
 			}
-			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
 			flagsUpdateScope.Set(Flags.OnFire, b: false);
 		}
 	}
@@ -84,7 +84,7 @@ public class BowWeapon : ArrowWeapon
 		using (TimeWarning.New("BowWeapon.UpdateFireFlag"))
 		{
 			BasePlayer ownerPlayer = GetOwnerPlayer();
-			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags))
 			{
 				if (!ObjectEx.IsUnityNull(ownerPlayer))
 				{

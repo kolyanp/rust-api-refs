@@ -213,15 +213,15 @@ public class CameraRenderer : IPooled
 		}
 		Matrix4x4 transf = rc.GetEyesMatrix();
 		_fieldOfView = verticalFov / Mathf.Clamp(rc.GetFovScale(), 1f, 8f);
-		_renderRotation = ((Matrix4x4)(ref transf)).rotation;
+		_renderRotation = transf.rotation;
 		if (rayJitter > 0f)
 		{
 			float num = 2f * Mathf.Tan(MathF.PI / 360f * _fieldOfView);
 			float num2 = 57.29578f * num / (float)height;
 			float num3 = Random.Range(0f - rayJitter, rayJitter) * num2;
 			float num4 = Random.Range(0f - rayJitter, rayJitter) * num2;
-			Quaternion val = ((Matrix4x4)(ref transf)).rotation * Quaternion.Euler(num3, num4, 0f);
-			transf = Matrix4x4.TRS(((Matrix4x4)(ref transf)).GetPosition(), val, Vector3.one);
+			Quaternion val = transf.rotation * Quaternion.Euler(num3, num4, 0f);
+			transf = Matrix4x4.TRS(transf.GetPosition(), val, Vector3.one);
 		}
 		_renderTransform = transf;
 		_sampleCount = Mathf.Clamp(samplesPerRender, 1, Mathf.Min(width * height, maxSampleCount));
@@ -328,9 +328,9 @@ public class CameraRenderer : IPooled
 				}
 				float distance = (_cachedViewer.IsValid() ? Mathf.Clamp01(Vector3.Distance(((Component)_cachedViewer).transform.position, ((Component)entity).transform.position) / rc.MaxRange) : 0f);
 				Matrix4x4 renderTransform = _renderTransform;
-				Vector3 position = ((Matrix4x4)(ref renderTransform)).GetPosition();
-				Quaternion rotation = ((Matrix4x4)(ref renderTransform)).rotation;
-				Matrix4x4 inverse = ((Matrix4x4)(ref renderTransform)).inverse;
+				Vector3 position = renderTransform.GetPosition();
+				Quaternion rotation = renderTransform.rotation;
+				Matrix4x4 inverse = renderTransform.inverse;
 				NetworkableId iD = entity.net.ID;
 				AppBroadcast val = Pool.Get<AppBroadcast>();
 				try
@@ -343,8 +343,8 @@ public class CameraRenderer : IPooled
 					val.cameraRays.entities = Pool.Get<List<Entity>>();
 					val.cameraRays.timeOfDay = (((Object)(object)TOD_Sky.Instance != (Object)null) ? TOD_Sky.Instance.LerpValue : 1f);
 					val.cameraRays.cameraPosition = position;
-					val.cameraRays.cameraRotation = ((Quaternion)(ref _renderRotation)).eulerAngles * (MathF.PI / 180f);
-					val.cameraRays.sampleRotation = ((Quaternion)(ref rotation)).eulerAngles * (MathF.PI / 180f);
+					val.cameraRays.cameraRotation = _renderRotation.eulerAngles * (MathF.PI / 180f);
+					val.cameraRays.sampleRotation = rotation.eulerAngles * (MathF.PI / 180f);
 					foreach (BaseEntity value in _colliderToEntity.Values)
 					{
 						if (!value.IsValid())
@@ -372,10 +372,10 @@ public class CameraRenderer : IPooled
 						Entity val2 = Pool.Get<Entity>();
 						val2.type = (EntityType)((value is TreeEntity) ? 1 : 2);
 						val2.entityId = ObscureEntityId(value.net.ID);
-						val2.position = ((Matrix4x4)(ref inverse)).MultiplyPoint3x4(position2);
+						val2.position = inverse.MultiplyPoint3x4(position2);
 						Quaternion val3 = Quaternion.Inverse(((Component)value).transform.rotation) * rotation;
-						val2.rotation = ((Quaternion)(ref val3)).eulerAngles * (MathF.PI / 180f);
-						val2.size = Vector3.Scale(((Bounds)(ref value.bounds)).size, ((Component)value).transform.localScale);
+						val2.rotation = val3.eulerAngles * (MathF.PI / 180f);
+						val2.size = Vector3.Scale(value.bounds.size, ((Component)value).transform.localScale);
 						val2.name = name;
 						val.cameraRays.entities.Add(val2);
 					}
@@ -436,7 +436,7 @@ public class CameraRenderer : IPooled
 			{
 				break;
 			}
-			Collider collider = CompanionServer.Cameras.CameraBurstUtil.GetCollider(foundColliderId);
+			Collider collider = CameraBurstUtil.GetCollider(foundColliderId);
 			if ((Object)(object)collider == (Object)null)
 			{
 				continue;

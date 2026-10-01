@@ -37,7 +37,7 @@ public class DeployableSiegeExplosive : BaseCombatEntity, IIgniteable, ISplashab
 
 	public override void Hurt(HitInfo info)
 	{
-		if (!base.isClient && !HasFlag(Flags.Reserved1))
+		if (!isClient && !HasFlag(Flags.Reserved1))
 		{
 			info.damageTypes.ScaleAll(0f);
 			base.Hurt(info);
@@ -73,13 +73,13 @@ public class DeployableSiegeExplosive : BaseCombatEntity, IIgniteable, ISplashab
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		if (ExplosionEffect.isValid)
 		{
-			Vector3 val = default(Vector3);
-			Quaternion rot = default(Quaternion);
+			Vector3 val = default;
+			Quaternion rot = default;
 			ExplosionSpawnPoint.GetPositionAndRotation(ref val, ref rot);
 			BaseEntity baseEntity = GameManager.server.CreateEntity(ExplosionEffect.resourcePath, val, rot);
 			ServerProjectile component = ((Component)baseEntity).GetComponent<ServerProjectile>();
 			baseEntity.Spawn();
-			TimedExplosive timedExplosive = default(TimedExplosive);
+			TimedExplosive timedExplosive = default;
 			if (((Component)component).TryGetComponent<TimedExplosive>(ref timedExplosive))
 			{
 				timedExplosive.creatorEntity = creatorEntity;

@@ -56,7 +56,7 @@ public class Projectile : ListComponent<Projectile>
 
 	public float drag;
 
-	public float gravityModifier;
+	public float gravityModifier = 1f;
 
 	public float thickness;
 
@@ -73,7 +73,7 @@ public class Projectile : ListComponent<Projectile>
 	public bool remainInWorld;
 
 	[Range(0f, 1f)]
-	public float stickProbability;
+	public float stickProbability = 1f;
 
 	[Range(0f, 1f)]
 	public float breakProbability;
@@ -84,53 +84,53 @@ public class Projectile : ListComponent<Projectile>
 	[Range(0f, 1f)]
 	public float ricochetChance;
 
-	public float penetrationPower;
+	public float penetrationPower = 1f;
 
-	public bool canRefract;
+	public bool canRefract = true;
 
 	public bool penetratesVehicles;
 
 	[Range(0f, 1f)]
-	public float waterIntegrityLoss;
+	public float waterIntegrityLoss = 0.1f;
 
 	[Header("Damage")]
 	public DamageProperties damageProperties;
 
 	[Horizontal(2, -1)]
-	public MinMax damageDistances;
+	public MinMax damageDistances = new MinMax(10f, 100f);
 
 	[Horizontal(2, -1)]
-	public MinMax damageMultipliers;
+	public MinMax damageMultipliers = new MinMax(1f, 0.8f);
 
-	public List<DamageTypeEntry> damageTypes;
+	public List<DamageTypeEntry> damageTypes = new List<DamageTypeEntry>();
 
 	[Header("Rendering")]
 	public ScaleRenderer rendererToScale;
 
 	public ScaleRenderer firstPersonRenderer;
 
-	public bool createDecals;
+	public bool createDecals = true;
 
-	[Header("Effects")]
 	[FormerlySerializedAs("doDefaultHitEffects")]
-	public bool doHitEffects;
+	[Header("Effects")]
+	public bool doHitEffects = true;
 
 	[Header("Audio")]
 	public SoundDefinition flybySound;
 
-	public float flybySoundDistance;
+	public float flybySoundDistance = 7f;
 
 	public SoundDefinition closeFlybySound;
 
-	public float closeFlybyDistance;
+	public float closeFlybyDistance = 3f;
 
 	[Header("Tumble")]
 	public float tumbleSpeed;
 
-	public Vector3 tumbleAxis;
+	public Vector3 tumbleAxis = Vector3.right;
 
 	[Header("Clientside Custom Impact Effects")]
-	public bool playDefaultHitEffects;
+	public bool playDefaultHitEffects = true;
 
 	public CustomEffectData clientEffectData;
 
@@ -169,13 +169,13 @@ public class Projectile : ListComponent<Projectile>
 	public bool clientsideAttack;
 
 	[NonSerialized]
-	public float integrity;
+	public float integrity = 1f;
 
 	[NonSerialized]
-	public float maxDistance;
+	public float maxDistance = float.PositiveInfinity;
 
 	[NonSerialized]
-	public Modifier modifier;
+	public Modifier modifier = Modifier.Default;
 
 	[NonSerialized]
 	public bool invisible;
@@ -273,23 +273,5 @@ public class Projectile : ListComponent<Projectile>
 	{
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		gravityModifier = 1f;
-		stickProbability = 1f;
-		penetrationPower = 1f;
-		canRefract = true;
-		waterIntegrityLoss = 0.1f;
-		damageDistances = new MinMax(10f, 100f);
-		damageMultipliers = new MinMax(1f, 0.8f);
-		damageTypes = new List<DamageTypeEntry>();
-		createDecals = true;
-		doHitEffects = true;
-		flybySoundDistance = 7f;
-		closeFlybyDistance = 3f;
-		tumbleAxis = Vector3.right;
-		playDefaultHitEffects = true;
-		integrity = 1f;
-		maxDistance = float.PositiveInfinity;
-		modifier = Modifier.Default;
-		base._002Ector();
 	}
 }

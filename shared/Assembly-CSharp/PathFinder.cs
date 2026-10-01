@@ -162,7 +162,7 @@ public class PathFinder
 		int num2 = costmap.GetLength(0) - 1;
 		int num3 = 0;
 		int num4 = costmap.GetLength(1) - 1;
-		IntrusiveMinHeap<Node> val = default(IntrusiveMinHeap<Node>);
+		IntrusiveMinHeap<Node> val = default;
 		int num5 = Cost(start);
 		if (num5 != int.MaxValue)
 		{
@@ -242,7 +242,7 @@ public class PathFinder
 		int num2 = costmap.GetLength(0) - 1;
 		int num3 = 0;
 		int num4 = costmap.GetLength(1) - 1;
-		IntrusiveMinHeap<Node> val = default(IntrusiveMinHeap<Node>);
+		IntrusiveMinHeap<Node> val = default;
 		foreach (Point start in startList)
 		{
 			int num5 = Cost(start);
@@ -319,7 +319,7 @@ public class PathFinder
 		{
 			return null;
 		}
-		IntrusiveMinHeap<Node> val = default(IntrusiveMinHeap<Node>);
+		IntrusiveMinHeap<Node> val = default;
 		int num5 = 1;
 		int heuristic = Heuristic(start);
 		val.Add(new Node(start, num5, heuristic));

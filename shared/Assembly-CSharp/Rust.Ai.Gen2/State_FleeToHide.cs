@@ -22,8 +22,8 @@ public class State_FleeToHide : State_Flee
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		base.Blackboard.Remove("HitDuringCharge");
-		if (!base.Senses.FindTargetPosition(out var targetPosition))
+		Blackboard.Remove("HitDuringCharge");
+		if (!Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Success;
 		}
@@ -51,12 +51,12 @@ public class State_FleeToHide : State_Flee
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTargetPosition(out var targetPosition))
+		if (!Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Success;
 		}
 		Vector3 val = ((Component)Owner).transform.position - targetPosition;
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		Vector3 val2 = ((Component)Owner).transform.forward;
 		float num = 15f;
 		if (magnitude > 6f)
@@ -65,12 +65,12 @@ public class State_FleeToHide : State_Flee
 			num = 55f;
 		}
 		val2 = Quaternion.AngleAxis(num * (clockWise ? 1f : (-1f)), Vector3.up) * val2;
-		NavVector3 nextPosition = base.Agent.nextPosition;
-		NavVector3 aNS = base.Agent.WorldToNavDirection(val2);
+		NavVector3 nextPosition = Agent.nextPosition;
+		NavVector3 aNS = Agent.WorldToNavDirection(val2);
 		PooledList<NavVector3> val3 = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val3, distance, distance, 8);
+			bool flag = Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val3, distance, distance, 8);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
@@ -86,13 +86,13 @@ public class State_FleeToHide : State_Flee
 					NavVector3 navVector = item2;
 					if (!flag)
 					{
-						if (!base.Agent.SamplePosition(item2, out var hitNS, 10f))
+						if (!Agent.SamplePosition(item2, out var hitNS, 10f))
 						{
 							continue;
 						}
 						navVector = hitNS.position;
 					}
-					if ((base.Agent.canSwim || !base.Agent.IsInWater(navVector)) && base.Agent.SetDestinationWithParams(navVector, autoBraking: false, speed))
+					if ((Agent.canSwim || !Agent.IsInWater(navVector)) && Agent.SetDestinationWithParams(navVector, autoBraking: false, speed))
 					{
 						return EFSMStateStatus.None;
 					}

@@ -10,7 +10,7 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 
 	public void Reset()
 	{
-		PersistantPlayer persistantPlayerInfo = base.baseEntity.PersistantPlayerInfo;
+		PersistantPlayer persistantPlayerInfo = baseEntity.PersistantPlayerInfo;
 		if (persistantPlayerInfo.unlockedItems != null)
 		{
 			persistantPlayerInfo.unlockedItems.Clear();
@@ -19,13 +19,13 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 		{
 			persistantPlayerInfo.unlockedItems = Pool.Get<List<int>>();
 		}
-		base.baseEntity.PersistantPlayerInfo = persistantPlayerInfo;
-		base.baseEntity.SendNetworkUpdate();
+		baseEntity.PersistantPlayerInfo = persistantPlayerInfo;
+		baseEntity.SendNetworkUpdate();
 	}
 
 	public void UnlockAll()
 	{
-		PersistantPlayer persistantPlayerInfo = base.baseEntity.PersistantPlayerInfo;
+		PersistantPlayer persistantPlayerInfo = baseEntity.PersistantPlayerInfo;
 		foreach (ItemBlueprint bp in ItemManager.bpList)
 		{
 			if (bp.userCraftable && !bp.defaultBlueprint && !persistantPlayerInfo.unlockedItems.Contains(bp.targetItem.itemid))
@@ -33,14 +33,14 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 				persistantPlayerInfo.unlockedItems.Add(bp.targetItem.itemid);
 			}
 		}
-		base.baseEntity.PersistantPlayerInfo = persistantPlayerInfo;
-		base.baseEntity.SendNetworkUpdateImmediate();
-		base.baseEntity.ClientRPC(RpcTarget.Player("UnlockedBlueprint", base.baseEntity), 0);
+		baseEntity.PersistantPlayerInfo = persistantPlayerInfo;
+		baseEntity.SendNetworkUpdateImmediate();
+		baseEntity.ClientRPC(RpcTarget.Player("UnlockedBlueprint", baseEntity), 0);
 	}
 
 	public bool IsUnlocked(ItemDefinition itemDef)
 	{
-		PersistantPlayer persistantPlayerInfo = base.baseEntity.PersistantPlayerInfo;
+		PersistantPlayer persistantPlayerInfo = baseEntity.PersistantPlayerInfo;
 		if (persistantPlayerInfo.unlockedItems != null)
 		{
 			return persistantPlayerInfo.unlockedItems.Contains(itemDef.itemid);
@@ -50,20 +50,20 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 
 	public void Unlock(ItemDefinition itemDef)
 	{
-		PersistantPlayer persistantPlayerInfo = base.baseEntity.PersistantPlayerInfo;
+		PersistantPlayer persistantPlayerInfo = baseEntity.PersistantPlayerInfo;
 		if (!persistantPlayerInfo.unlockedItems.Contains(itemDef.itemid))
 		{
 			persistantPlayerInfo.unlockedItems.Add(itemDef.itemid);
-			base.baseEntity.PersistantPlayerInfo = persistantPlayerInfo;
-			base.baseEntity.SendNetworkUpdateImmediate();
-			base.baseEntity.ClientRPC(RpcTarget.Player("UnlockedBlueprint", base.baseEntity), itemDef.itemid);
-			base.baseEntity.stats.Add("blueprint_studied", 1, (Stats)5);
+			baseEntity.PersistantPlayerInfo = persistantPlayerInfo;
+			baseEntity.SendNetworkUpdateImmediate();
+			baseEntity.ClientRPC(RpcTarget.Player("UnlockedBlueprint", baseEntity), itemDef.itemid);
+			baseEntity.stats.Add("blueprint_studied", 1, (Stats)5);
 		}
 	}
 
 	public void UnlockList(List<ItemDefinition> itemDefList)
 	{
-		PersistantPlayer persistantPlayerInfo = base.baseEntity.PersistantPlayerInfo;
+		PersistantPlayer persistantPlayerInfo = baseEntity.PersistantPlayerInfo;
 		foreach (ItemDefinition itemDef in itemDefList)
 		{
 			if (!persistantPlayerInfo.unlockedItems.Contains(itemDef.itemid))
@@ -71,15 +71,15 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 				persistantPlayerInfo.unlockedItems.Add(itemDef.itemid);
 			}
 		}
-		base.baseEntity.PersistantPlayerInfo = persistantPlayerInfo;
-		base.baseEntity.SendNetworkUpdateImmediate();
-		base.baseEntity.ClientRPC(RpcTarget.Player("UnlockedBlueprint", base.baseEntity));
-		base.baseEntity.stats.Add("blueprint_studied", itemDefList.Count, (Stats)5);
+		baseEntity.PersistantPlayerInfo = persistantPlayerInfo;
+		baseEntity.SendNetworkUpdateImmediate();
+		baseEntity.ClientRPC(RpcTarget.Player("UnlockedBlueprint", baseEntity));
+		baseEntity.stats.Add("blueprint_studied", itemDefList.Count, (Stats)5);
 	}
 
 	public bool HasUnlocked(ItemDefinition targetItem)
 	{
-		if (base.baseEntity.IsCraftingTutorialBlocked(targetItem, out var forceUnlock))
+		if (baseEntity.IsCraftingTutorialBlocked(targetItem, out var forceUnlock))
 		{
 			return false;
 		}
@@ -146,7 +146,7 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 				return true;
 			}
 		}
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
 			return IsUnlocked(targetItem);
 		}
@@ -163,15 +163,15 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 		{
 			return false;
 		}
-		if (!base.baseEntity.DefaultSkinAccess)
+		if (!baseEntity.DefaultSkinAccess)
 		{
-			if (!base.baseEntity.AllSkinsUnlocked)
+			if (!baseEntity.AllSkinsUnlocked)
 			{
 				return targetItem.steamDlc.bypassLicenseCheck;
 			}
 			return true;
 		}
-		if (targetItem.steamDlc.HasLicense(base.baseEntity))
+		if (targetItem.steamDlc.HasLicense(baseEntity))
 		{
 			return true;
 		}
@@ -194,7 +194,7 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 		{
 			return false;
 		}
-		if (base.baseEntity.currentCraftLevel < (float)itemDefinition.Blueprint.GetWorkbenchLevel())
+		if (baseEntity.currentCraftLevel < (float)itemDefinition.Blueprint.GetWorkbenchLevel())
 		{
 			return false;
 		}

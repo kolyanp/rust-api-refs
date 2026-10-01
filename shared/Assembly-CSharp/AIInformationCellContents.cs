@@ -16,7 +16,7 @@ public class AIInformationCellContents<T> where T : AIPoint
 		T[] componentsInChildren = root.GetComponentsInChildren<T>(true);
 		foreach (T val in componentsInChildren)
 		{
-			if (((Bounds)(ref cellBounds)).Contains(((Component)val).gameObject.transform.position))
+			if (cellBounds.Contains(((Component)val).gameObject.transform.position))
 			{
 				Add(val);
 			}

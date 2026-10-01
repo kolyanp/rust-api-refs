@@ -142,7 +142,7 @@ public class KeyLock : BaseLock
 		{
 			return false;
 		}
-		if ((ulong)player.userID == base.OwnerID)
+		if ((ulong)player.userID == OwnerID)
 		{
 			return true;
 		}
@@ -203,9 +203,9 @@ public class KeyLock : BaseLock
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		if (base.OwnerID == 0L && Object.op_Implicit((Object)(object)GetParentEntity()))
+		if (OwnerID == 0L && Object.op_Implicit((Object)(object)GetParentEntity()))
 		{
-			base.OwnerID = GetParentEntity().OwnerID;
+			OwnerID = GetParentEntity().OwnerID;
 		}
 	}
 
@@ -281,8 +281,8 @@ public class KeyLock : BaseLock
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void RPC_CreateKey(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract() || (IsLocked() && !HasLockPermission(rpc.player)))

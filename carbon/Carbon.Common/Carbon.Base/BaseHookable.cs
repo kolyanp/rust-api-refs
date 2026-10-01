@@ -23,7 +23,7 @@ public class BaseHookable : Integrations.ITestable
 	{
 		public void Reset()
 		{
-			foreach (CachedHook item in base.Values.SelectMany((CachedHookInstance value) => value.Hooks))
+			foreach (CachedHook item in Values.SelectMany((CachedHookInstance value) => value.Hooks))
 			{
 				item.Reset();
 			}
@@ -31,7 +31,7 @@ public class BaseHookable : Integrations.ITestable
 
 		public void EnableDebugging(bool wants)
 		{
-			foreach (CachedHook item in base.Values.SelectMany((CachedHookInstance value) => value.Hooks))
+			foreach (CachedHook item in Values.SelectMany((CachedHookInstance value) => value.Hooks))
 			{
 				item.EnableDebugging(wants);
 			}
@@ -101,7 +101,7 @@ public class BaseHookable : Integrations.ITestable
 			Exceptions = 0;
 			LagSpikes = 0;
 			TimesFired = 0;
-			HookTime = default(TimeSpan);
+			HookTime = default;
 			MemoryUsage = 0.0;
 		}
 
@@ -275,8 +275,8 @@ public class BaseHookable : Integrations.ITestable
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
-		//IL_0031: Expected O, but got Unknown
+		//IL_002c: Expected Obj, but got Unknown
+		//IL_0031: Expected Obj, but got Unknown
 		if (_harmonyInstanceCache.TryGetValue(order, out var value))
 		{
 			return value;
@@ -338,8 +338,8 @@ public class BaseHookable : Integrations.ITestable
 			}
 			try
 			{
-				PatchClassProcessor obj = harmonyInstance.CreateClassProcessor(type);
-				List<MethodInfo> list = ((obj != null) ? obj.Patch() : null);
+				PatchClassProcessor val = harmonyInstance.CreateClassProcessor(type);
+				List<MethodInfo> list = ((val != null) ? val.Patch() : null);
 				if (list == null || list.Count == 0)
 				{
 					if (!customAttribute.Silent)
@@ -514,6 +514,7 @@ public class BaseHookable : Integrations.ITestable
 		}
 		HasBuiltHookCache = true;
 		InternalCallHook(0u, null);
+		HookSubscriberIndex.Invalidate();
 	}
 
 	public virtual object InternalCallHook(uint hook, object[] args)
@@ -585,7 +586,7 @@ public class BaseHookable : Integrations.ITestable
 		{
 			return (T)(object)((this is T) ? this : null);
 		}
-		return default(T);
+		return default;
 	}
 
 	public override string ToString()

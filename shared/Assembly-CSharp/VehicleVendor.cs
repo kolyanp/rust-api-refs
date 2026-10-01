@@ -10,11 +10,11 @@ public class VehicleVendor : NPCTalking
 
 	public VehicleSpawner GetVehicleSpawner()
 	{
-		if (!spawnerRef.IsValid(base.isServer))
+		if (!spawnerRef.IsValid(isServer))
 		{
 			return null;
 		}
-		return ((Component)spawnerRef.Get(base.isServer)).GetComponent<VehicleSpawner>();
+		return ((Component)spawnerRef.Get(isServer)).GetComponent<VehicleSpawner>();
 	}
 
 	public override void UpdateFlags()
@@ -24,6 +24,16 @@ public class VehicleVendor : NPCTalking
 		bool b = (Object)(object)vehicleSpawner != (Object)null && vehicleSpawner.IsPadOccupied();
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.Reserved1, b);
+	}
+
+	public bool Conversation_IsPadUsable()
+	{
+		VehicleSpawner vehicleSpawner = GetVehicleSpawner();
+		if (!((Object)(object)vehicleSpawner == (Object)null))
+		{
+			return vehicleSpawner.IsPadUsable();
+		}
+		return true;
 	}
 
 	public override void ServerInit()

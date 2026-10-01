@@ -78,11 +78,11 @@ public class DataFileSystem
 	public void ForEachObject<T>(string name, Action<T> callback)
 	{
 		string folder = DynamicConfigFile.SanitizeName(name);
-		foreach (DynamicConfigFile item in _datafiles.Where(delegate(KeyValuePair<string, DynamicConfigFile> d)
+		foreach (DynamicConfigFile item in _datafiles.Where((KeyValuePair<string, DynamicConfigFile> d) =>
 		{
 			KeyValuePair<string, DynamicConfigFile> keyValuePair = d;
 			return keyValuePair.Key.StartsWith(folder);
-		}).Select(delegate(KeyValuePair<string, DynamicConfigFile> a)
+		}).Select((KeyValuePair<string, DynamicConfigFile> a) =>
 		{
 			KeyValuePair<string, DynamicConfigFile> keyValuePair = a;
 			return keyValuePair.Value;

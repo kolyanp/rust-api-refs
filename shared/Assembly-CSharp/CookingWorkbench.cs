@@ -7,9 +7,6 @@ public class CookingWorkbench : MixingTable
 
 	public Transform SubOvenPosition;
 
-	[Tooltip("The recipes that will set the OvenCooking flag (to play the oven effects)")]
-	public ItemDefinition[] ovenCookingFlagItems;
-
 	public const Flags OvenCooking = Flags.Reserved9;
 
 	public const Flags MixingTea = Flags.Reserved10;
@@ -17,27 +14,26 @@ public class CookingWorkbench : MixingTable
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (!base.isServer || (next & Flags.On) == Flags.On == ((old & Flags.On) == Flags.On))
+		if (!isServer || (next & Flags.On) == Flags.On == ((old & Flags.On) == Flags.On))
 		{
 			return;
 		}
-		string text = (((Object)(object)currentRecipe != (Object)null) ? currentRecipe.ProducedItem.shortname : currentProductionItem?.shortname);
-		if (string.IsNullOrEmpty(text))
+		ItemDefinition itemDefinition = (((Object)(object)currentRecipe != (Object)null) ? currentRecipe.ProducedItem : currentProductionItem);
+		if ((Object)(object)itemDefinition == (Object)null)
 		{
 			return;
 		}
 		bool flag = GetChildBbq().IsOn();
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		ItemDefinition[] array = ovenCookingFlagItems;
-		for (int i = 0; i < array.Length; i++)
+		ItemModCookingWorkbench itemModCookingWorkbench = default;
+		if ((Object)(object)itemDefinition != (Object)null && ((Component)itemDefinition).TryGetComponent<ItemModCookingWorkbench>(ref itemModCookingWorkbench))
 		{
-			if (array[i].shortname == text)
-			{
-				flagsUpdateScope.Set(Flags.Reserved9, ((next & Flags.On) == Flags.On) | flag);
-				return;
-			}
+			flagsUpdateScope.Set(Flags.Reserved9, ((next & Flags.On) == Flags.On) | flag);
 		}
-		flagsUpdateScope.Set(Flags.Reserved10, (next & Flags.On) == Flags.On);
+		else
+		{
+			flagsUpdateScope.Set(Flags.Reserved10, (next & Flags.On) == Flags.On);
+		}
 	}
 
 	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
@@ -54,11 +50,11 @@ public class CookingWorkbench : MixingTable
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)GetChildBbq() != (Object)null) && SubOvenPrefab.isValid)
 		{
-			BaseEntity baseEntity = base.gameManager.CreateEntity(SubOvenPrefab.resourcePath, SubOvenPosition.position, SubOvenPosition.rotation);
+			BaseEntity baseEntity = gameManager.CreateEntity(SubOvenPrefab.resourcePath, SubOvenPosition.position, SubOvenPosition.rotation);
 			baseEntity.SetParent(this, worldPositionStays: true);
 			((Component)baseEntity).transform.localPosition = SubOvenPosition.localPosition;
 			((Component)baseEntity).transform.localRotation = SubOvenPosition.localRotation;
-			baseEntity.OwnerID = base.OwnerID;
+			baseEntity.OwnerID = OwnerID;
 			baseEntity.Spawn();
 		}
 	}

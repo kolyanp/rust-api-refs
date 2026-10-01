@@ -27,9 +27,9 @@ public struct ApplyMaxHeightsJobIndirect : IJob
 		for (int i = 0; i < Indices.Length; i++)
 		{
 			int num = Indices[i];
-			bool num2 = Heights[num] < WaterLevels[num];
-			bool flag = (Topologies[num] & 0x180) != 0;
-			if (num2 & flag)
+			bool flag = Heights[num] < WaterLevels[num];
+			bool flag2 = (Topologies[num] & 0x180) != 0;
+			if (flag & flag2)
 			{
 				Heights[num] = Math.Max(Heights[num], OceanLevel);
 			}

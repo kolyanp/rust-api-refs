@@ -59,7 +59,7 @@ public class Spawnable : MonoBehaviour, IServerComponent
 		else if (Application.isLoading && !Application.isLoadingSave)
 		{
 			BaseEntity component = ((Component)this).GetComponent<BaseEntity>();
-			SpawnPointInstance spawnPointInstance = default(SpawnPointInstance);
+			SpawnPointInstance spawnPointInstance = default;
 			if ((Object)(object)component != (Object)null && component.enableSaving && !component.syncPosition && (!((Component)this).TryGetComponent<SpawnPointInstance>(ref spawnPointInstance) || !spawnPointInstance.blockSpawnHandlerRespawns))
 			{
 				SingletonComponent<SpawnHandler>.Instance.AddRespawn(new SpawnIndividual(component.prefabID, SpawnPosition, SpawnRotation));

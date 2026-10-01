@@ -47,14 +47,14 @@ public static class OxideCompat
 			}
 			try
 			{
-				ModLoader.InitializePlugin(type, out var plugin, value, (oxideExt == null) ? null : ((Action<RustPlugin>)delegate(RustPlugin rustPlugin)
+				ModLoader.InitializePlugin(type, out var plugin, value, (oxideExt == null) ? null : ((Action<RustPlugin>)((RustPlugin rustPlugin) =>
 				{
 					rustPlugin.Version = oxideExt.Version;
 					if (rustPlugin.Author == "Carbon.Compat" && !string.IsNullOrWhiteSpace(oxideExt.Author))
 					{
 						rustPlugin.Author = oxideExt.Author;
 					}
-				}), precompiled: true);
+				})), precompiled: true);
 				plugin.IsCorePlugin = true;
 				plugin.IsExtension = true;
 			}
@@ -98,11 +98,11 @@ public static class OxideCompat
 	static OxideCompat()
 	{
 		modPackages = new Dictionary<Assembly, ModLoader.Package>();
-		Community.Runtime.Events.Subscribe(CarbonEvent.PluginLoaded, delegate(EventArgs args)
+		Community.Runtime.Events.Subscribe(CarbonEvent.PluginLoaded, (EventArgs args) =>
 		{
 			HandlePluginIO(loaded: true, (CarbonEventArgs)args);
 		});
-		Community.Runtime.Events.Subscribe(CarbonEvent.PluginUnloaded, delegate(EventArgs args)
+		Community.Runtime.Events.Subscribe(CarbonEvent.PluginUnloaded, (EventArgs args) =>
 		{
 			HandlePluginIO(loaded: false, (CarbonEventArgs)args);
 		});

@@ -8,8 +8,8 @@ namespace AntiHackJobs;
 [BurstCompile]
 public struct TransformStartEndTicksJob : IJobFor
 {
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<Vector3> Starts;
 
 	[NativeDisableParallelForRestriction]
@@ -34,9 +34,9 @@ public struct TransformStartEndTicksJob : IJobFor
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
 		int num = Indices[jobInd];
 		Matrix4x4 val = Matrices[jobInd];
-		bool flag = ((Matrix4x4)(ref val))[15] == 0f;
+		bool flag = val[15] == 0f;
 		TickInterpolatorCache.PlayerTickIterator playerTickIterator = TickInterpolatorCache.GetPlayerTickIterator(TickCache, num);
-		Starts[num] = (flag ? playerTickIterator.StartPoint : ((Matrix4x4)(ref val)).MultiplyPoint3x4(playerTickIterator.StartPoint));
-		Ends[num] = (flag ? playerTickIterator.EndPoint : ((Matrix4x4)(ref val)).MultiplyPoint3x4(playerTickIterator.EndPoint));
+		Starts[num] = (flag ? playerTickIterator.StartPoint : val.MultiplyPoint3x4(playerTickIterator.StartPoint));
+		Ends[num] = (flag ? playerTickIterator.EndPoint : val.MultiplyPoint3x4(playerTickIterator.EndPoint));
 	}
 }

@@ -8,17 +8,17 @@ public class Build
 
 		public static readonly string Author = "raul";
 
-		public static readonly string Comment = "Merge branch 'main' into production";
+		public static readonly string Comment = "Merge branch 'rust_beta/release' into production";
 
-		public static readonly string Date = "2026-09-06 15:39:42 +0200";
+		public static readonly string Date = "2026-10-01 18:53:35 +0200";
 
 		public static readonly string Tag = "production_build";
 
-		public static readonly string HashShort = "21063e8";
+		public static readonly string HashShort = "c74c4ca";
 
-		public static readonly string HashLong = "21063e8490adf412101bcc7d1cfe9d6280f61e80";
+		public static readonly string HashLong = "c74c4ca8d0f7a9c8e8a431b077c0b3010f476e44";
 
-		public static readonly string Url = "https://github.com/CarbonCommunity/Carbon/commit/21063e8490adf412101bcc7d1cfe9d6280f61e80";
+		public static readonly string Url = "https://github.com/CarbonCommunity/Carbon/commit/c74c4ca8d0f7a9c8e8a431b077c0b3010f476e44";
 	}
 
 	public static bool IsDebug => false;

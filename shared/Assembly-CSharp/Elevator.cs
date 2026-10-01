@@ -103,7 +103,7 @@ public class Elevator : IOEntity, IFlagNotify
 
 	public virtual void CallElevator()
 	{
-		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
+		EntityLinkBroadcast((Elevator elevatorEnt) =>
 		{
 			if (elevatorEnt.IsTop && Interface.CallHook("OnElevatorCall", this, elevatorEnt) == null)
 			{
@@ -170,11 +170,11 @@ public class Elevator : IOEntity, IFlagNotify
 			OpenDoorsAtFloor(num);
 			return false;
 		}
-		if (!liftEntity.IsValid(base.isServer))
+		if (!liftEntity.IsValid(isServer))
 		{
 			return false;
 		}
-		ElevatorLift elevatorLift = liftEntity.Get(base.isServer);
+		ElevatorLift elevatorLift = liftEntity.Get(isServer);
 		if (!elevatorLift.CanMove())
 		{
 			return false;
@@ -202,7 +202,7 @@ public class Elevator : IOEntity, IFlagNotify
 		}
 		Invoke(ClearBusy, timeToTravel + LiftEndMoveDelay);
 		elevatorLift.NotifyNewFloor(targetFloor, Floor);
-		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
+		EntityLinkBroadcast((Elevator elevatorEnt) =>
 		{
 			using FlagsUpdateScope flagsUpdateScope3 = elevatorEnt.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope3.Set(Flags.Busy, b: true);
@@ -244,14 +244,14 @@ public class Elevator : IOEntity, IFlagNotify
 		{
 			flagsUpdateScope.Set(Flags.Busy, b: false);
 		}
-		if (liftEntity.IsValid(base.isServer))
+		if (liftEntity.IsValid(isServer))
 		{
-			ElevatorLift elevatorLift = liftEntity.Get(base.isServer);
+			ElevatorLift elevatorLift = liftEntity.Get(isServer);
 			elevatorLift.ToggleHurtTrigger(state: false);
 			using FlagsUpdateScope flagsUpdateScope2 = elevatorLift.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope2.Set(Flags.Busy, b: false);
 		}
-		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
+		EntityLinkBroadcast((Elevator elevatorEnt) =>
 		{
 			using FlagsUpdateScope flagsUpdateScope3 = elevatorEnt.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope3.Set(Flags.Busy, b: false);
@@ -287,20 +287,20 @@ public class Elevator : IOEntity, IFlagNotify
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		if (isTop)
 		{
-			if (!liftEntity.IsValid(base.isServer))
+			if (!liftEntity.IsValid(isServer))
 			{
 				FindExistingLiftChild();
 			}
-			if (!liftEntity.IsValid(base.isServer))
+			if (!liftEntity.IsValid(isServer))
 			{
 				ElevatorLift elevatorLift = GameManager.server.CreateEntity(LiftEntityPrefab.resourcePath, GetWorldSpaceFloorPosition(Floor), LiftRoot.rotation) as ElevatorLift;
 				elevatorLift.SetOwnerElevator(this);
 				elevatorLift.Spawn();
 				liftEntity.Set(elevatorLift);
 			}
-			if (liftEntity.IsValid(base.isServer))
+			if (liftEntity.IsValid(isServer))
 			{
-				ElevatorLift elevatorLift2 = liftEntity.Get(base.isServer);
+				ElevatorLift elevatorLift2 = liftEntity.Get(isServer);
 				if ((Object)(object)elevatorLift2.GetParentEntity() == (Object)(object)this)
 				{
 					elevatorLift2.SetParent(null, worldPositionStays: true);
@@ -310,9 +310,9 @@ public class Elevator : IOEntity, IFlagNotify
 				flagsUpdateScope.Set(Flags.Reserved5, IsPowered() || IsStatic);
 			}
 		}
-		else if (liftEntity.IsValid(base.isServer))
+		else if (liftEntity.IsValid(isServer))
 		{
-			liftEntity.Get(base.isServer).Kill();
+			liftEntity.Get(isServer).Kill();
 			liftEntity.Set(null);
 		}
 	}
@@ -341,11 +341,11 @@ public class Elevator : IOEntity, IFlagNotify
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		if (!liftEntity.IsValid(base.isServer))
+		if (!liftEntity.IsValid(isServer))
 		{
 			return 0;
 		}
-		Vector3 position = ((Component)liftEntity.Get(base.isServer)).transform.position;
+		Vector3 position = ((Component)liftEntity.Get(isServer)).transform.position;
 		int result = -1;
 		float num = float.MaxValue;
 		for (int i = 0; i <= Floor; i++)
@@ -414,14 +414,14 @@ public class Elevator : IOEntity, IFlagNotify
 	private void RefreshPowerStatus()
 	{
 		bool anyHasPower = false;
-		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
+		EntityLinkBroadcast((Elevator elevatorEnt) =>
 		{
 			if (elevatorEnt.HasPowerInput())
 			{
 				anyHasPower = true;
 			}
 		}, (ConstructionSocket socket) => socket.socketType == ConstructionSocket.Type.Elevator);
-		EntityLinkBroadcast(delegate(Elevator elevatorEnt)
+		EntityLinkBroadcast((Elevator elevatorEnt) =>
 		{
 			using FlagsUpdateScope flagsUpdateScope = elevatorEnt.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope.Set(Flags.Reserved8, anyHasPower);
@@ -453,11 +453,11 @@ public class Elevator : IOEntity, IFlagNotify
 
 	public void NotifyLiftEntityDoorsOpen(bool state)
 	{
-		if (!liftEntity.IsValid(base.isServer))
+		if (!liftEntity.IsValid(isServer))
 		{
 			return;
 		}
-		foreach (BaseEntity child in liftEntity.Get(base.isServer).children)
+		foreach (BaseEntity child in liftEntity.Get(isServer).children)
 		{
 			if (child is Door door)
 			{
@@ -473,32 +473,32 @@ public class Elevator : IOEntity, IFlagNotify
 	internal override void DoServerDestroy()
 	{
 		base.DoServerDestroy();
-		if ((Object)(object)liftEntity.Get(base.isServer) != (Object)null)
+		if ((Object)(object)liftEntity.Get(isServer) != (Object)null)
 		{
-			liftEntity.Get(base.isServer).Kill();
+			liftEntity.Get(isServer).Kill();
 		}
 	}
 
 	public override void OnDied(HitInfo info)
 	{
 		base.OnDied(info);
-		if ((Object)(object)liftEntity.Get(base.isServer) != (Object)null)
+		if ((Object)(object)liftEntity.Get(isServer) != (Object)null)
 		{
-			liftEntity.Get(base.isServer).Kill(DestroyMode.Gib);
+			liftEntity.Get(isServer).Kill(DestroyMode.Gib);
 		}
 	}
 
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (!Application.isLoading && base.isServer && (old & Flags.Reserved1) == Flags.Reserved1 != ((next & Flags.Reserved1) == Flags.Reserved1))
+		if (!Application.isLoading && isServer && (old & Flags.Reserved1) == Flags.Reserved1 != ((next & Flags.Reserved1) == Flags.Reserved1))
 		{
 			UpdateChildEntities((next & Flags.Reserved1) == Flags.Reserved1);
 			SendNetworkUpdate();
 		}
-		if (base.isServer)
+		if (isServer)
 		{
-			ElevatorLift elevatorLift = liftEntity.Get(base.isServer);
+			ElevatorLift elevatorLift = liftEntity.Get(isServer);
 			if ((Object)(object)elevatorLift != (Object)null)
 			{
 				using FlagsUpdateScope flagsUpdateScope = elevatorLift.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);

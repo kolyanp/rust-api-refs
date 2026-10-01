@@ -99,8 +99,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Animators.Counts.Enabled.txt", stringBuilder3.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
 	public static void dumpEntities(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -124,7 +124,7 @@ public class DiagnosticsConSys : ConsoleSystem
 			while (enumerator.MoveNext())
 			{
 				BaseNetworkable current = enumerator.Current;
-				stringBuilder.AppendFormat("{1}\t{0}", current.PrefabName, ((NetworkableId)(((_003F?)current.net?.ID) ?? default(NetworkableId))).Value);
+				stringBuilder.AppendFormat("{1}\t{0}", current.PrefabName, (current.net?.ID ?? default(NetworkableId)).Value);
 				stringBuilder.AppendLine();
 			}
 		}
@@ -234,8 +234,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "Network.Server.txt", stringBuilder.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
 	public static void dumpObjects(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -373,7 +373,7 @@ public class DiagnosticsConSys : ConsoleSystem
 				item.Count(),
 				item.Count((Rigidbody x) => !x.IsSleeping()),
 				item.Count((Rigidbody x) => x.isKinematic),
-				item.Count(delegate(Rigidbody x)
+				item.Count((Rigidbody x) =>
 				{
 					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0007: Invalid comparison between Unknown and I4
@@ -426,12 +426,12 @@ public class DiagnosticsConSys : ConsoleSystem
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		Scene sceneAt = SceneManager.GetSceneAt(sceneIndex);
-		Transform[] array = (from x in ((Scene)(ref sceneAt)).GetRootGameObjects()
+		Transform[] array = (from x in sceneAt.GetRootGameObjects()
 			select x.transform).ToArray();
-		string sceneFolderName = $"{sceneIndex}_{((Scene)(ref sceneAt)).name}";
+		string sceneFolderName = $"{sceneIndex}_{sceneAt.name}";
 		SceneDumpOutput sceneDumpOutput = DumpSceneGameObjects(targetFolder, sceneFolderName, array);
 		sceneDumpOutput.Roots = array;
-		sceneDumpOutput.SceneName = ((Scene)(ref sceneAt)).name;
+		sceneDumpOutput.SceneName = sceneAt.name;
 		sceneDumpOutput.SceneIndex = sceneIndex;
 		return sceneDumpOutput;
 	}
@@ -497,25 +497,25 @@ public class DiagnosticsConSys : ConsoleSystem
 		{
 			Component[] componentsInChildren = val.GetComponentsInChildren<Component>(true);
 			int transformCount = Enumerable.Count(componentsInChildren, (Component x) => x is Transform);
-			PrefabContainer obj = new PrefabContainer
+			PrefabContainer prefabContainer = new PrefabContainer
 			{
 				Prefab = val,
 				TransformPlusComponentCount = componentsInChildren.Length,
 				TransformCount = transformCount
 			};
 			Scene scene = val.scene;
-			object sceneName;
-			if (!((Scene)(ref scene)).IsValid())
+			string sceneName;
+			if (!scene.IsValid())
 			{
 				sceneName = "INVALID";
 			}
 			else
 			{
 				scene = val.scene;
-				sceneName = ((Scene)(ref scene)).name;
+				sceneName = scene.name;
 			}
-			obj.SceneName = (string)sceneName;
-			list.Add(obj);
+			prefabContainer.SceneName = sceneName;
+			list.Add(prefabContainer);
 		}
 		int num = list.Sum((PrefabContainer x) => x.TransformCount);
 		int num2 = list.Sum((PrefabContainer x) => x.TransformPlusComponentCount);
@@ -789,7 +789,7 @@ public class DiagnosticsConSys : ConsoleSystem
 		int num = 0;
 		foreach (World.SpawnTiming spawnTiming in World.GetSpawnTimings())
 		{
-			object[] obj = new object[6]
+			object[] array = new object[6]
 			{
 				num,
 				spawnTiming.prefab.Name,
@@ -799,11 +799,11 @@ public class DiagnosticsConSys : ConsoleSystem
 				null
 			};
 			TimeSpan time = spawnTiming.time;
-			obj[2] = time.Ticks * EventRecord.NSPerTick;
-			obj[3] = spawnTiming.category;
-			obj[4] = spawnTiming.position;
-			obj[5] = spawnTiming.rotation;
-			stringBuilder.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}", obj));
+			array[2] = time.Ticks * EventRecord.NSPerTick;
+			array[3] = spawnTiming.category;
+			array[4] = spawnTiming.position;
+			array[5] = spawnTiming.rotation;
+			stringBuilder.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}", array));
 			num++;
 		}
 		WriteTextToFile(targetFolder + "World.Spawn.csv", stringBuilder.ToString());
@@ -839,8 +839,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		args.ReplyWith("Dumped system information to: " + targetFolder + "System.Info.txt");
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
 	[ServerVar(Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
 	public static void dumppreprocess(Arg args)
 	{
 		string targetFolder = GetTargetFolder();

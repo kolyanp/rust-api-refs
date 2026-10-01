@@ -18,10 +18,10 @@ public class NPCDoorTriggerBox : MonoBehaviour
 		door = d;
 		((Component)this).transform.SetParent(((Component)door).transform, false);
 		((Component)this).gameObject.layer = 18;
-		BoxCollider obj = ((Component)this).gameObject.AddComponent<BoxCollider>();
-		((Collider)obj).isTrigger = true;
-		obj.center = Vector3.zero;
-		obj.size = Vector3.one * AI.npc_door_trigger_size;
+		BoxCollider val = ((Component)this).gameObject.AddComponent<BoxCollider>();
+		((Collider)val).isTrigger = true;
+		val.center = Vector3.zero;
+		val.size = Vector3.one * AI.npc_door_trigger_size;
 		AllDoors.Add(((Component)this).transform.position, this);
 	}
 

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using ConVar;
@@ -12,6 +11,7 @@ using Epic.OnlineServices.Version;
 using Network;
 using ProtoBuf;
 using Rust;
+using Rust.Ai.Gen2;
 using UnityEngine;
 
 namespace Facepunch.Rust;
@@ -61,7 +61,7 @@ public static class Analytics
 
 			public void EnterPool()
 			{
-				Key = default(PendingItemsKey);
+				Key = default;
 				amount = 0;
 				category = null;
 			}
@@ -96,7 +96,7 @@ public static class Analytics
 
 			public override int GetHashCode()
 			{
-				return ((((17 * 23 + Item.GetHashCode()) * 31 + Consumed.GetHashCode()) * 37 + Entity.GetHashCode()) * 47 + Category.GetHashCode()) * 53 + ((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref EntityId)/*cast due to constrained. prefix*/).GetHashCode();
+				return ((((17 * 23 + Item.GetHashCode()) * 31 + Consumed.GetHashCode()) * 37 + Entity.GetHashCode()) * 47 + Category.GetHashCode()) * 53 + ((object)EntityId/*cast due to constrained. prefix*/).GetHashCode();
 			}
 		}
 
@@ -122,8 +122,8 @@ public static class Analytics
 				//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 				UserId = null;
-				Position = default(Vector3);
-				Direction = default(Vector3);
+				Position = default;
+				Direction = default;
 				Hotbar.Clear();
 				Worn.Clear();
 				ActiveItem = null;
@@ -362,7 +362,11 @@ public static class Analytics
 
 			public const string CarOpenEditing = "car_open_editing";
 
+			public const string AirfieldAirdropTickRate = "airfield_airdrop_tick_rate";
+
 			public const string AirfieldChinookCall = "airfield_chinook_call";
+
+			public const string SatelliteSelected = "satellite_selected";
 
 			public const string SatelliteLockTrajectory = "satellite_lock_trajectory";
 
@@ -373,6 +377,22 @@ public static class Analytics
 			public const string WaterTreatmentPlantEnabled = "water_treatment_plant_enabled";
 
 			public const string OilRigFuelSwitchStarted = "oil_rig_fuel_switch_started";
+
+			public const string ItemModMenuAction = "item_mod_menu_action";
+
+			public const string LivestockSale = "livestock_sale";
+
+			public const string LivestockAcquired = "livestock_acquired";
+
+			public const string LivestockBirth = "livestock_birth";
+
+			public const string LivestockSheepSheared = "livestock_sheep_sheared";
+
+			public const string LivestockCowMilked = "livestock_cow_milked";
+
+			public const string LivestockCowMilkSkimmed = "livestock_cow_milk_skimmed";
+
+			public const string UGCCreated = "ugc_created";
 		}
 
 		private struct SimpleItemAmount(Item item)
@@ -384,6 +404,13 @@ public static class Analytics
 			public ulong Skin = item.skin;
 
 			public float Condition = item.conditionNormalized;
+		}
+
+		private struct SimpleItemDefinitionAmount(ItemDefinition item, int amount)
+		{
+			public string ItemName = item.shortname;
+
+			public int Amount = amount;
 		}
 
 		private struct FiredProjectileKey(ulong userId, int projectileId) : IEquatable<FiredProjectileKey>
@@ -584,14 +611,14 @@ public static class Analytics
 
 		public static Dictionary<string, string> GetApplicationData()
 		{
-			Dictionary<string, string> obj = new Dictionary<string, string> { ["unity"] = Application.unityVersion ?? "editor" };
+			Dictionary<string, string> dictionary = new Dictionary<string, string> { ["unity"] = Application.unityVersion ?? "editor" };
 			BuildInfo current = BuildInfo.Current;
-			obj["changeset"] = ((current != null) ? current.Scm.ChangeId : null) ?? "editor";
+			dictionary["changeset"] = ((current != null) ? current.Scm.ChangeId : null) ?? "editor";
 			BuildInfo current2 = BuildInfo.Current;
-			obj["branch"] = ((current2 != null) ? current2.Scm.Branch : null) ?? "editor";
-			obj["network_version"] = 2633.ToString();
-			obj["eos_sdk"] = ((object)VersionInterface.GetVersion())?.ToString() ?? "disabled";
-			return obj;
+			dictionary["branch"] = ((current2 != null) ? current2.Scm.Branch : null) ?? "editor";
+			dictionary["network_version"] = 2634.ToString();
+			dictionary["eos_sdk"] = ((object)VersionInterface.GetVersion())?.ToString() ?? "disabled";
+			return dictionary;
 		}
 
 		public static bool ShouldLogRPC(string rpc)
@@ -765,7 +792,7 @@ public static class Analytics
 				Category = category,
 				Item = itemName,
 				Consumed = consumed,
-				EntityId = (NetworkableId)(perEntity ? entity.net.ID : default(NetworkableId))
+				EntityId = (perEntity ? entity.net.ID : default(NetworkableId))
 			};
 			if (!pendingItems.TryGetValue(key, out var value))
 			{
@@ -806,7 +833,7 @@ public static class Analytics
 						playerAggregate.UserId = current.UserIDString;
 						playerAggregate.Position = ((Component)current).transform.position;
 						Quaternion bodyRotation = current.eyes.bodyRotation;
-						playerAggregate.Direction = ((Quaternion)(ref bodyRotation)).eulerAngles;
+						playerAggregate.Direction = bodyRotation.eulerAngles;
 						foreach (Item item in current.inventory.containerBelt.itemList)
 						{
 							playerAggregate.Hotbar.Add(item.info.shortname);
@@ -935,8 +962,8 @@ public static class Analytics
 					.AddField("ip_convar", Net.sv.ip)
 					.AddField("port_convar", Net.sv.port)
 					.AddField("net_protocol", Net.sv.ProtocolId)
-					.AddField("protocol_network", 2633)
-					.AddField("protocol_save", 288);
+					.AddField("protocol_network", 2634)
+					.AddField("protocol_save", 289);
 				BuildInfo current = BuildInfo.Current;
 				EventRecord eventRecord2 = eventRecord.AddField("changeset", ((current != null) ? current.Scm.ChangeId : null) ?? "0").AddField("unity_version", Application.unityVersion);
 				BuildInfo current2 = BuildInfo.Current;
@@ -976,7 +1003,7 @@ public static class Analytics
 				{
 					return;
 				}
-				SubmitPoint(EventRecord.New("item_definitions").AddObject("items", ItemManager.itemDictionary.Select((KeyValuePair<int, ItemDefinition> x) => x.Value).Select(delegate(ItemDefinition x)
+				SubmitPoint(EventRecord.New("item_definitions").AddObject("items", ItemManager.itemDictionary.Select((KeyValuePair<int, ItemDefinition> x) => x.Value).Select((ItemDefinition x) =>
 				{
 					//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 					return new
@@ -1692,7 +1719,7 @@ public static class Analytics
 					.AddField("message", message);
 				if (BuildInfo.Current != null)
 				{
-					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2633);
+					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2634);
 				}
 				switch (type)
 				{
@@ -2115,7 +2142,7 @@ public static class Analytics
 				EventRecord eventRecord = EventRecord.New("explosive_launch").AddField("player", (BaseNetworkable)player).AddField("explosive", (BaseNetworkable)explosive)
 					.AddField("explosive_velocity", explosive.GetWorldVelocity());
 				Vector3 worldVelocity = explosive.GetWorldVelocity();
-				EventRecord eventRecord2 = eventRecord.AddField("explosive_direction", ((Vector3)(ref worldVelocity)).normalized);
+				EventRecord eventRecord2 = eventRecord.AddField("explosive_direction", worldVelocity.normalized);
 				if ((Object)(object)launcher != (Object)null)
 				{
 					eventRecord2.AddField("launcher", (BaseNetworkable)launcher);
@@ -3092,9 +3119,9 @@ public static class Analytics
 					AIInformationZone aIZone = reset.GetAIZone();
 					if ((Object)(object)aIZone != (Object)null)
 					{
-						eventRecord.AddField("zone_size", ((Bounds)(ref aIZone.bounds)).size);
-						Vector3 size = ((Bounds)(ref aIZone.bounds)).size;
-						eventRecord.AddField("zone_size_magnitude", ((Vector3)(ref size)).magnitude);
+						eventRecord.AddField("zone_size", aIZone.bounds.size);
+						Vector3 size = aIZone.bounds.size;
+						eventRecord.AddField("zone_size_magnitude", size.magnitude);
 					}
 					MonumentInfo monumentInfo = (from x in spawnGroups
 						where (Object)(object)x != (Object)null
@@ -3371,7 +3398,7 @@ public static class Analytics
 			}
 		}
 
-		public unsafe static void OnClanScoreEvent(IClan clan, ClanScoreEvent entry)
+		public static void OnClanScoreEvent(IClan clan, ClanScoreEvent entry)
 		{
 			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0071: Unknown result type (might be due to invalid IL or missing references)
@@ -3382,7 +3409,7 @@ public static class Analytics
 			try
 			{
 				SubmitPoint(EventRecord.New("clan_score_event").AddField("player_steamid", entry.SteamId.ToString()).AddField("clan_id", clan.ClanId)
-					.AddField("event_type", ((object)(*(ClanScoreEventType*)(&entry.Type))/*cast due to constrained. prefix*/).ToString())
+					.AddField("event_type", ((object)entry.Type/*cast due to constrained. prefix*/).ToString())
 					.AddField("event_score", entry.Score)
 					.AddField("event_multiplier", entry.Multiplier));
 			}
@@ -3416,7 +3443,7 @@ public static class Analytics
 			}
 			try
 			{
-				SubmitPoint(EventRecord.New("power_grid_fuse_inserted").AddField("player_steamid", (BaseNetworkable)player).AddField("fuses_inserted", fuses));
+				SubmitPoint(EventRecord.New("power_grid_fuse_inserted").AddField("player_steamid", player.UserIDString).AddField("fuses_inserted", fuses));
 			}
 			catch (Exception ex)
 			{
@@ -3440,6 +3467,22 @@ public static class Analytics
 			}
 		}
 
+		public static void OnAirfieldAirdropTickRate(bool on, float tickRate)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("airfield_airdrop_tick_rate").AddField("on", on).AddField("tick_rate", tickRate));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
 		public static void OnAirfieldChinookCall()
 		{
 			if (!GameplayAnalytics)
@@ -3449,6 +3492,22 @@ public static class Analytics
 			try
 			{
 				SubmitPoint(EventRecord.New("airfield_chinook_call"));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnSatelliteSelected(BasePlayer player)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("satellite_selected").AddField("player_steamid", player.UserIDString));
 			}
 			catch (Exception ex)
 			{
@@ -3524,7 +3583,7 @@ public static class Analytics
 			}
 		}
 
-		public static void OnOilRigFuelSwitchStarted(BasePlayer player)
+		public static void OnOilRigFuelSwitchStarted(BasePlayer player, BaseEntity baseEntity)
 		{
 			if (!GameplayAnalytics)
 			{
@@ -3532,7 +3591,157 @@ public static class Analytics
 			}
 			try
 			{
-				SubmitPoint(EventRecord.New("oil_rig_fuel_switch_started").AddField("player", (BaseNetworkable)player));
+				SubmitPoint(EventRecord.New("oil_rig_fuel_switch_started").AddField("player", (BaseNetworkable)player).AddField("monument", GetMonument(baseEntity)));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnItemModMenuAction(BasePlayer player, string itemAction, Item item)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("item_mod_menu_action").AddField("player", (BaseNetworkable)player).AddField("item_action", itemAction)
+					.AddField("item", item));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnLivestockSale(BasePlayer player, LivestockVendor.SaleKind saleKind, LivestockVendor.Offer offer, int negotiationRejections)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			PooledList<SimpleItemDefinitionAmount> val = Pool.Get<PooledList<SimpleItemDefinitionAmount>>();
+			try
+			{
+				LivestockVendor.OfferItem[] items = offer.items;
+				for (int i = 0; i < items.Length; i++)
+				{
+					LivestockVendor.OfferItem offerItem = items[i];
+					((List<SimpleItemDefinitionAmount>)(object)val).Add(new SimpleItemDefinitionAmount(offerItem.item, offerItem.amount));
+				}
+				SubmitPoint(EventRecord.New("livestock_sale").AddField("player_steamid", player.UserIDString).AddField("sale_type", saleKind.ToString())
+					.AddField("sale_amount", offer.lotAmount)
+					.AddObject("offer_items", val)
+					.AddField("negotiation_rejections", negotiationRejections));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+
+		public static void OnLivestockAcquired(ulong playerSteamId, BaseEntity livestock, LivestockAnimal.FamiliarityReason familiarityReason)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("livestock_acquired").AddField("player_steamid", playerSteamId).AddField("livestock", (BaseNetworkable)livestock)
+					.AddField("acquisition_reason", familiarityReason.ToString()));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnLivestockBirth(string associationMethod, BaseEntity livestock, HashSet<ulong> playerSteamIds)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("livestock_birth").AddField("association_method", associationMethod).AddField("livestock", (BaseNetworkable)livestock)
+					.AddObject("player_steamids", playerSteamIds));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnLivestockBirth(string associationMethod, BaseEntity livestock, ulong? playerSteamId = null)
+		{
+			PooledHashSet<ulong> val = Pool.Get<PooledHashSet<ulong>>();
+			try
+			{
+				if (playerSteamId.HasValue)
+				{
+					((HashSet<ulong>)(object)val).Add(playerSteamId.Value);
+				}
+				OnLivestockBirth(associationMethod, livestock, (HashSet<ulong>)(object)val);
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+
+		public static void OnLivestockSheepSheared(BasePlayer player, BaseEntity livestock)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("livestock_sheep_sheared").AddField("player_steamid", player.UserIDString).AddField("livestock", (BaseNetworkable)livestock));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnLivestockCowMilked(BasePlayer player, BaseEntity livestock, int amount)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("livestock_cow_milked").AddField("player_steamid", player.UserIDString).AddField("livestock", (BaseNetworkable)livestock)
+					.AddField("amount", amount));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnUGCCreated(BasePlayer player, BaseNetworkable entity, string contentType, int contentLength, int frame = 0)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("ugc_created").AddField("player", (BaseNetworkable)player).AddField("entity", entity)
+					.AddField("content_type", contentType)
+					.AddField("content_length", contentLength)
+					.AddField("frame", frame));
 			}
 			catch (Exception ex)
 			{
@@ -3555,10 +3764,10 @@ public static class Analytics
 	[ConsoleVar(Clientside = true, Serverside = true, ServerAdmin = true)]
 	public static bool Log;
 
-	public static string ClientAnalyticsUrl { get; set; } = "https://rust-api.facepunch.com/api/public/analytics/rust/client";
+	public static string ClientAnalyticsUrl { get; set; } = "https://gw.facepunch.com/analytics/rust/client";
 
 	[RconVar(Name = "server_analytics_url")]
-	public static string ServerAnalyticsUrl { get; set; } = "https://rust-api.facepunch.com/api/public/analytics/rust/server";
+	public static string ServerAnalyticsUrl { get; set; } = "https://gw.facepunch.com/analytics/rust/server";
 
 	[RconVar(Name = "analytics_header", Saved = true, Help = "Header key of secret when uploading analytics")]
 	public static string AnalyticsHeader { get; set; } = "X-API-KEY";

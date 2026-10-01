@@ -191,14 +191,14 @@ public class RepairBench : StorageContainer
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0764: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0769: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0765: Unknown result type (might be due to invalid IL or missing references)
+		//IL_076a: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		int inventoryId = msg.read.Int32();
 		ItemId val = ((msg.read.Unread > 0) ? new ItemId(msg.read.UInt64()) : default(ItemId));
-		bool isValid = ((ItemId)(ref val)).IsValid;
+		bool isValid = val.IsValid;
 		bool flag = !isValid || Time.realtimeSinceStartup > nextSkinChangeAudioTime;
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || Interface.CallHook("OnItemSkinChange", inventoryId, slot, this, player) != null || (isValid && slot.uid != val))
 		{
 			return;
@@ -309,7 +309,7 @@ public class RepairBench : StorageContainer
 			slot.ownershipShares = null;
 			slot.Remove();
 			ItemManager.DoRemoves();
-			item.MoveToContainer(base.inventory, 0, allowStack: false);
+			item.MoveToContainer(inventory, 0, allowStack: false);
 			item.maxCondition = maxCondition;
 			item.condition = condition;
 			item.amount = amount;
@@ -389,11 +389,11 @@ public class RepairBench : StorageContainer
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RepairItem(RPCMessage msg)
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot != null)
 		{
 			BasePlayer player = msg.player;

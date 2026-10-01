@@ -96,7 +96,7 @@ public class StashContainer : StorageContainer
 		if (Vector3.Distance(((Component)this).transform.position, ((Component)ply).transform.position) <= uncoverRange)
 		{
 			Vector3 val = ((Component)this).transform.position - ply.eyes.position;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			if (Vector3.Dot(ply.eyes.BodyForward(), normalized) > 0.95f)
 			{
 				return true;
@@ -138,14 +138,14 @@ public class StashContainer : StorageContainer
 
 	private void RemoveFromNetworkRange()
 	{
-		base.limitNetworking = true;
+		limitNetworking = true;
 	}
 
 	private void ReturnToNetworkRange()
 	{
-		if (base.limitNetworking)
+		if (limitNetworking)
 		{
-			base.limitNetworking = false;
+			limitNetworking = false;
 			SendNetworkUpdateImmediate();
 		}
 		CancelInvoke(RemoveFromNetworkRange);
@@ -167,7 +167,7 @@ public class StashContainer : StorageContainer
 		}
 		lastToggleTime = Time.realtimeSinceStartup;
 		Invoke(Decay, 259200f);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -177,7 +177,7 @@ public class StashContainer : StorageContainer
 
 	public void DisableNetworking()
 	{
-		base.limitNetworking = true;
+		limitNetworking = true;
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.Disabled, b: true);
 	}
@@ -207,8 +207,8 @@ public class StashContainer : StorageContainer
 		SetHidden(!IsHidden());
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_HideStash(RPCMessage rpc)
 	{
 		if (Interface.CallHook("CanHideStash", rpc.player, this) == null)
@@ -222,11 +222,11 @@ public class StashContainer : StorageContainer
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		bool num = (old & Flags.Reserved5) == Flags.Reserved5;
-		bool flag = (next & Flags.Reserved5) == Flags.Reserved5;
-		if (num != flag)
+		bool flag = (old & Flags.Reserved5) == Flags.Reserved5;
+		bool flag2 = (next & Flags.Reserved5) == Flags.Reserved5;
+		if (flag != flag2)
 		{
-			float to = (flag ? burriedOffset : raisedOffset);
+			float to = (flag2 ? burriedOffset : raisedOffset);
 			LeanTween.cancel(((Component)visuals).gameObject);
 			LeanTween.moveLocalY(((Component)visuals).gameObject, to, 1f);
 		}

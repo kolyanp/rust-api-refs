@@ -10,13 +10,13 @@ public class LAM_StepFurther : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _mulV;
 
-	private Vector3 customVelo;
+	private Vector3 customVelo = Vector3.zero;
 
-	private Vector3 velo;
+	private Vector3 velo = Vector3.zero;
 
-	private Vector3 finalVelo;
+	private Vector3 finalVelo = Vector3.zero;
 
-	private Vector3 _sd_velo;
+	private Vector3 _sd_velo = Vector3.zero;
 
 	private Vector3 lastPos;
 
@@ -39,7 +39,7 @@ public class LAM_StepFurther : LegsAnimatorControlModuleBase
 		_powerV = helper.RequestVariable("Predict Forward Offset", 0.1f);
 		_hipsV = helper.RequestVariable("Predict Forward Hips Offset", 0f);
 		_mulV = helper.RequestVariable("Extra Multiplier", 1f);
-		lastPos = ((Component)base.LA).transform.position;
+		lastPos = ((Component)LA).transform.position;
 	}
 
 	public override void OnPreLateUpdate(LegsAnimator.LegsAnimatorCustomModuleHelper helper)
@@ -74,12 +74,28 @@ public class LAM_StepFurther : LegsAnimatorControlModuleBase
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 vec = (UsingCustomVelo ? base.LA.ToRootLocalSpaceVec(customVelo) : ((Object.op_Implicit((Object)(object)base.LA.Rigidbody) && !base.LA.Rigidbody.isKinematic) ? base.LA.ToRootLocalSpaceVec(base.LA.Rigidbody.linearVelocity) : (base.LA.usingCustomDesiredMovementDirection ? base.LA.ToRootLocalSpaceVec(base.LA.DesiredMovementDirection * base.LA.IsMovingBlend) : ((!(base.LA.DeltaTime > 0f)) ? Vector3.zero : base.LA.ToRootLocalSpaceVec((base.LegsAnim.BaseTransform.position - lastPos) / base.LA.DeltaTime)))));
-		lastPos = base.LegsAnim.BaseTransform.position;
+		Vector3 vec;
+		if (UsingCustomVelo)
+		{
+			vec = LA.ToRootLocalSpaceVec(customVelo);
+		}
+		else if (Object.op_Implicit((Object)(object)LA.Rigidbody) && !LA.Rigidbody.isKinematic)
+		{
+			vec = LA.ToRootLocalSpaceVec(LA.Rigidbody.linearVelocity);
+		}
+		else if (LA.usingCustomDesiredMovementDirection)
+		{
+			vec = LA.ToRootLocalSpaceVec(LA.DesiredMovementDirection * LA.IsMovingBlend);
+		}
+		else
+		{
+			vec = ((!(LA.DeltaTime > 0f)) ? Vector3.zero : LA.ToRootLocalSpaceVec((LegsAnim.BaseTransform.position - lastPos) / LA.DeltaTime));
+		}
+		lastPos = LegsAnim.BaseTransform.position;
 		vec.y = 0f;
-		vec = base.LA.RootToWorldSpaceVec(vec);
-		velo = Vector3.SmoothDamp(velo, vec, ref _sd_velo, 0.1f, 1000000f, base.LA.DeltaTime);
-		finalVelo = velo * (_powerV.GetFloat() * _mulV.GetFloat() * base.EffectBlend);
+		vec = LA.RootToWorldSpaceVec(vec);
+		velo = Vector3.SmoothDamp(velo, vec, ref _sd_velo, 0.1f, 1000000f, LA.DeltaTime);
+		finalVelo = velo * (_powerV.GetFloat() * _mulV.GetFloat() * EffectBlend);
 	}
 
 	public override void Leg_LatePreRaycastingUpdate(LegsAnimator.LegsAnimatorCustomModuleHelper helper, LegsAnimator.Leg leg)
@@ -99,8 +115,8 @@ public class LAM_StepFurther : LegsAnimatorControlModuleBase
 		}
 		if (leg.PlaymodeIndex == 0 && _hipsV.GetFloat() > 0f)
 		{
-			LegsAnimator lA = base.LA;
-			lA._Hips_Modules_ExtraWOffset += velo * (_hipsV.GetFloat() * base.EffectBlend);
+			LegsAnimator lA = LA;
+			lA._Hips_Modules_ExtraWOffset += velo * (_hipsV.GetFloat() * EffectBlend);
 		}
 	}
 
@@ -114,10 +130,5 @@ public class LAM_StepFurther : LegsAnimatorControlModuleBase
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		customVelo = Vector3.zero;
-		velo = Vector3.zero;
-		finalVelo = Vector3.zero;
-		_sd_velo = Vector3.zero;
-		base._002Ector();
 	}
 }

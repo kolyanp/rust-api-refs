@@ -8,9 +8,9 @@ public readonly struct NavVector3 : IEquatable<NavVector3>
 {
 	public readonly Vector3 Value;
 
-	public static readonly NavVector3 zero;
+	public static readonly NavVector3 zero = new NavVector3(Vector3.zero);
 
-	public static readonly NavVector3 up;
+	public static readonly NavVector3 up = new NavVector3(Vector3.up);
 
 	public float x => Value.x;
 
@@ -23,11 +23,11 @@ public readonly struct NavVector3 : IEquatable<NavVector3>
 		get
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			return new NavVector3(((Vector3)(ref Value)).normalized);
+			return new NavVector3(Value.normalized);
 		}
 	}
 
-	public float magnitude => ((Vector3)(ref Value)).magnitude;
+	public float magnitude => Value.magnitude;
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public NavVector3(Vector3 positionNS)
@@ -124,7 +124,7 @@ public readonly struct NavVector3 : IEquatable<NavVector3>
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = toNS.Value - fromNS.Value;
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	public static float Dot(NavVector3 aNS, NavVector3 bNS)
@@ -162,7 +162,7 @@ public readonly struct NavVector3 : IEquatable<NavVector3>
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = new Vector3(Value.x, 0f, Value.z);
-		return new NavVector3(((Vector3)(ref val)).normalized);
+		return new NavVector3(val.normalized);
 	}
 
 	public static float SqrDistance(NavVector3 aNS, NavVector3 bNS)
@@ -172,7 +172,7 @@ public readonly struct NavVector3 : IEquatable<NavVector3>
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = aNS.Value - bNS.Value;
-		return ((Vector3)(ref val)).sqrMagnitude;
+		return val.sqrMagnitude;
 	}
 
 	public static NavVector3 Lerp(NavVector3 aNS, NavVector3 bNS, float t)
@@ -209,7 +209,7 @@ public readonly struct NavVector3 : IEquatable<NavVector3>
 	public bool Equals(NavVector3 other)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		return ((Vector3)(ref Value)).Equals(other.Value);
+		return Value.Equals(other.Value);
 	}
 
 	public override bool Equals(object obj)
@@ -223,7 +223,7 @@ public readonly struct NavVector3 : IEquatable<NavVector3>
 
 	public override int GetHashCode()
 	{
-		return ((object)Unsafe.As<Vector3, Vector3>(ref Value)/*cast due to constrained. prefix*/).GetHashCode();
+		return ((object)Value/*cast due to constrained. prefix*/).GetHashCode();
 	}
 
 	public override string ToString()
@@ -236,7 +236,5 @@ public readonly struct NavVector3 : IEquatable<NavVector3>
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		zero = new NavVector3(Vector3.zero);
-		up = new NavVector3(Vector3.up);
 	}
 }

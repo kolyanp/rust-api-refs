@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DeployVolumeEntityBoundsReverse : DeployVolume
 {
-	public Bounds bounds;
+	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
 
 	public int layer;
 
@@ -20,16 +20,16 @@ public class DeployVolumeEntityBoundsReverse : DeployVolume
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		position += rotation * ((Bounds)(ref bounds)).center;
-		OBB test = default(OBB);
-		((OBB)(ref test))._002Ector(position, ((Bounds)(ref bounds)).size, rotation);
+		position += rotation * bounds.center;
+		OBB test = new OBB(position, bounds.size, rotation);
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
-		Vis.Entities(position, ((Vector3)(ref test.extents)).magnitude, list, LayerMask.op_Implicit(layers) & mask, (QueryTriggerInteraction)2);
+		Vis.Entities(position, test.extents.magnitude, list, LayerMask.op_Implicit(layers) & mask, (QueryTriggerInteraction)2);
 		foreach (BaseEntity item in list)
 		{
 			DeployVolume[] array = PrefabAttribute.server.FindAll<DeployVolume>(item.prefabID);
@@ -80,7 +80,5 @@ public class DeployVolumeEntityBoundsReverse : DeployVolume
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		bounds = new Bounds(Vector3.zero, Vector3.one);
-		base._002Ector();
 	}
 }

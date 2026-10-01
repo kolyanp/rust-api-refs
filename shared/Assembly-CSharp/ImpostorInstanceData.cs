@@ -6,9 +6,7 @@ public class ImpostorInstanceData
 
 	public int BatchIndex;
 
-	private int hash;
-
-	private Vector4 positionAndScale;
+	private Vector4 positionAndScale = Vector4.zero;
 
 	public Renderer Renderer { get; private set; }
 
@@ -22,12 +20,9 @@ public class ImpostorInstanceData
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		positionAndScale = Vector4.zero;
-		base._002Ector();
 		Renderer = renderer;
 		Mesh = mesh;
 		Material = material;
-		hash = GenerateHashCode();
 		Update();
 	}
 
@@ -41,33 +36,10 @@ public class ImpostorInstanceData
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		positionAndScale = Vector4.zero;
-		base._002Ector();
 		positionAndScale = new Vector4(position.x, position.y, position.z, scale.x);
 		Mesh = mesh;
 		Material = material;
-		hash = GenerateHashCode();
 		Update();
-	}
-
-	private int GenerateHashCode()
-	{
-		return ((17 * 31 + ((object)Material).GetHashCode()) * 31 + ((object)Mesh).GetHashCode()) * 31 + DeepSea.GetHashCode();
-	}
-
-	public override bool Equals(object obj)
-	{
-		ImpostorInstanceData impostorInstanceData = obj as ImpostorInstanceData;
-		if ((Object)(object)impostorInstanceData.Material == (Object)(object)Material && (Object)(object)impostorInstanceData.Mesh == (Object)(object)Mesh)
-		{
-			return impostorInstanceData.DeepSea == DeepSea;
-		}
-		return false;
-	}
-
-	public override int GetHashCode()
-	{
-		return hash;
 	}
 
 	public Vector4 PositionAndScale()
@@ -102,7 +74,8 @@ public class ImpostorInstanceData
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		Vector4 val = PositionAndScale();
 		if (Batch != null)
@@ -110,8 +83,8 @@ public class ImpostorInstanceData
 			Batch.Positions[BatchIndex] = val;
 			Batch.IsDirty = true;
 		}
-		Vector3 position = default(Vector3);
-		((Vector3)(ref position))._002Ector(val.x, val.y, val.z);
+		Vector3 position = new Vector3(val.x, val.y, val.z);
+		_ = DeepSea;
 		DeepSea = DeepSeaManager.IsInsideDeepSea(position);
 	}
 }

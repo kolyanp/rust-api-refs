@@ -19,7 +19,7 @@ internal sealed class AutoExposureRenderer : PostProcessEffectRenderer<AutoExpos
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			m_AutoExposurePool[i] = (RenderTexture[])(object)new RenderTexture[2];
+			m_AutoExposurePool[i] = new RenderTexture[2];
 			m_AutoExposurePingPong[i] = 0;
 		}
 	}
@@ -28,7 +28,7 @@ internal sealed class AutoExposureRenderer : PostProcessEffectRenderer<AutoExpos
 	{
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Expected O, but got Unknown
+		//IL_003e: Expected Obj, but got Unknown
 		if ((Object)(object)m_AutoExposurePool[eye][id] == (Object)null || !m_AutoExposurePool[eye][id].IsCreated())
 		{
 			m_AutoExposurePool[eye][id] = new RenderTexture(1, 1, 0, (RenderTextureFormat)14)
@@ -53,22 +53,22 @@ internal sealed class AutoExposureRenderer : PostProcessEffectRenderer<AutoExpos
 		command.BeginSample("AutoExposureLookup");
 		CheckTexture(context.xrActiveEye, 0);
 		CheckTexture(context.xrActiveEye, 1);
-		float x = base.settings.filtering.value.x;
-		float y = base.settings.filtering.value.y;
+		float x = settings.filtering.value.x;
+		float y = settings.filtering.value.y;
 		y = Mathf.Clamp(y, 1.01f, 99f);
 		x = Mathf.Clamp(x, 1f, y - 0.01f);
-		float value = base.settings.minLuminance.value;
-		float value2 = base.settings.maxLuminance.value;
-		base.settings.minLuminance.value = Mathf.Min(value, value2);
-		base.settings.maxLuminance.value = Mathf.Max(value, value2);
+		float value = settings.minLuminance.value;
+		float value2 = settings.maxLuminance.value;
+		settings.minLuminance.value = Mathf.Min(value, value2);
+		settings.maxLuminance.value = Mathf.Max(value, value2);
 		bool num = m_ResetHistory || !Application.isPlaying;
 		string text = null;
-		text = ((!num && base.settings.eyeAdaptation.value != EyeAdaptation.Fixed) ? "KAutoExposureAvgLuminance_progressive" : "KAutoExposureAvgLuminance_fixed");
+		text = ((!num && settings.eyeAdaptation.value != EyeAdaptation.Fixed) ? "KAutoExposureAvgLuminance_progressive" : "KAutoExposureAvgLuminance_fixed");
 		ComputeShader autoExposure = context.resources.computeShaders.autoExposure;
 		int num2 = autoExposure.FindKernel(text);
 		command.SetComputeBufferParam(autoExposure, num2, "_HistogramBuffer", context.logHistogram.data);
-		command.SetComputeVectorParam(autoExposure, "_Params1", new Vector4(x * 0.01f, y * 0.01f, RuntimeUtilities.Exp2(base.settings.minLuminance.value), RuntimeUtilities.Exp2(base.settings.maxLuminance.value)));
-		command.SetComputeVectorParam(autoExposure, "_Params2", new Vector4(base.settings.speedDown.value, base.settings.speedUp.value, base.settings.keyValue.value, Time.deltaTime));
+		command.SetComputeVectorParam(autoExposure, "_Params1", new Vector4(x * 0.01f, y * 0.01f, RuntimeUtilities.Exp2(settings.minLuminance.value), RuntimeUtilities.Exp2(settings.maxLuminance.value)));
+		command.SetComputeVectorParam(autoExposure, "_Params2", new Vector4(settings.speedDown.value, settings.speedUp.value, settings.keyValue.value, Time.deltaTime));
 		command.SetComputeVectorParam(autoExposure, "_ScaleOffsetRes", context.logHistogram.GetHistogramScaleOffsetRes(context));
 		if (num)
 		{
@@ -91,7 +91,7 @@ internal sealed class AutoExposureRenderer : PostProcessEffectRenderer<AutoExpos
 		}
 		command.EndSample("AutoExposureLookup");
 		context.autoExposureTexture = (Texture)(object)m_CurrentAutoExposure;
-		context.autoExposure = base.settings;
+		context.autoExposure = settings;
 	}
 
 	public override void Release()

@@ -28,11 +28,11 @@ public class BuildingPrivilegeRetro : BuildingPrivlidge
 
 	public GameObjectRef[] doubleBoxPrefabs;
 
-	public int boxesAmount;
+	public int boxesAmount = 12;
 
 	public Transform boxesParent;
 
-	public Vector3 boxSpacing;
+	public Vector3 boxSpacing = new Vector3(0.33f, 0.3f, 0.3f);
 
 	public ToolSetting[] toolSettings;
 
@@ -57,7 +57,7 @@ public class BuildingPrivilegeRetro : BuildingPrivlidge
 		info.msg.buildingPrivilegeRetro.tools = Pool.Get<List<BuildingPrivilegeRetroTool>>();
 		for (int i = 24; i <= 28; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			BuildingPrivilegeRetroTool val = Pool.Get<BuildingPrivilegeRetroTool>();
 			if (slot != null)
 			{
@@ -76,9 +76,9 @@ public class BuildingPrivilegeRetro : BuildingPrivlidge
 
 	private float GetResourceProportion(int id)
 	{
-		int amount = base.inventory.GetAmount(id);
+		int amount = inventory.GetAmount(id);
 		float num = ItemManager.FindItemDefinition(id).stackable;
-		return (float)amount / ((float)(base.inventory.capacity - 5) * num);
+		return (float)amount / ((float)(inventory.capacity - 5) * num);
 	}
 
 	public override void Load(LoadInfo info)
@@ -91,8 +91,5 @@ public class BuildingPrivilegeRetro : BuildingPrivlidge
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		boxesAmount = 12;
-		boxSpacing = new Vector3(0.33f, 0.3f, 0.3f);
-		base._002Ector();
 	}
 }

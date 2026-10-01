@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Rust.Json;
@@ -28,15 +27,53 @@ public class Color32Converter : JsonConverter<Color32>
 	public override Color32 ReadJson(JsonReader reader, Type objectType, Color32 existingValue, bool hasExistingValue, JsonSerializer serializer)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Invalid comparison between Unknown and I4
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		if ((int)reader.TokenType == 2)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Invalid comparison between Unknown and I4
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Invalid comparison between Unknown and I4
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		JsonToken tokenType = reader.TokenType;
+		if ((int)tokenType != 2)
 		{
-			JArray val = JArray.Load(reader);
-			return new Color32((byte)(int)val[0], (byte)(int)val[1], (byte)(int)val[2], (((JContainer)val).Count > 3) ? ((byte)(int)val[3]) : byte.MaxValue);
+			if ((int)tokenType == 11)
+			{
+				return default;
+			}
+			UnityJsonConverters.BeginObject(reader, "Color32");
+			int num = 0;
+			int num2 = 0;
+			int num3 = 0;
+			int num4 = 255;
+			string name;
+			while (UnityJsonConverters.NextProperty(reader, out name))
+			{
+				switch (name)
+				{
+				case "r":
+					num = UnityJsonConverters.Int(reader);
+					break;
+				case "g":
+					num2 = UnityJsonConverters.Int(reader);
+					break;
+				case "b":
+					num3 = UnityJsonConverters.Int(reader);
+					break;
+				case "a":
+					num4 = UnityJsonConverters.Int(reader, 255);
+					break;
+				default:
+					reader.Skip();
+					break;
+				}
+			}
+			return new Color32((byte)num, (byte)num2, (byte)num3, (byte)num4);
 		}
-		JObject token = JObject.Load(reader);
-		return new Color32((byte)UnityJsonConverters.I((JToken)(object)token, "r"), (byte)UnityJsonConverters.I((JToken)(object)token, "g"), (byte)UnityJsonConverters.I((JToken)(object)token, "b"), (byte)UnityJsonConverters.I((JToken)(object)token, "a", 255));
+		Span<int> values = stackalloc int[4];
+		int num5 = UnityJsonConverters.ReadInts(reader, values);
+		return new Color32((byte)values[0], (byte)values[1], (byte)values[2], (num5 > 3) ? ((byte)values[3]) : byte.MaxValue);
 	}
 }

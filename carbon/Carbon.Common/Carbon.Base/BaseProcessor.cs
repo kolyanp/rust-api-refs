@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using API.Assembly;
 using Carbon.Contracts;
 using Carbon.Extensions;
@@ -63,9 +62,6 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 		}
 	}
 
-	[CompilerGenerated]
-	private bool _003CIncludeSubdirectories_003Ek__BackingField;
-
 	internal WaitForSeconds _wfsInstance;
 
 	internal readonly Dictionary<string, IBaseProcessor.IProcess> _runtimeCache = new Dictionary<string, IBaseProcessor.IProcess>(128);
@@ -104,14 +100,10 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 
 	public bool IncludeSubdirectories
 	{
-		[CompilerGenerated]
-		get
-		{
-			return _003CIncludeSubdirectories_003Ek__BackingField;
-		}
+		get;
 		set
 		{
-			_003CIncludeSubdirectories_003Ek__BackingField = value;
+			field = value;
 			FileSystemWatcher watcher = Watcher;
 			if (watcher != null)
 			{
@@ -491,7 +483,7 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 		{
 			return (T)value;
 		}
-		return default(T);
+		return default;
 	}
 
 	public virtual void Clear(string id, IBaseProcessor.IProcess process)
@@ -666,7 +658,7 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 	public void RefreshRate()
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
+		//IL_0011: Expected Obj, but got Unknown
 		_wfsInstance = new WaitForSeconds(Rate);
 	}
 

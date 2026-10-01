@@ -45,7 +45,7 @@ public class ImpostorBatch : IPooled
 	void IPooled.LeavePool()
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Expected O, but got Unknown
+		//IL_0040: Expected Obj, but got Unknown
 		Positions = Pool.Get<FPNativeList<Vector4>>();
 		args = Pool.Get<FPNativeList<uint>>();
 		args.Resize(5);
@@ -93,7 +93,7 @@ public class ImpostorBatch : IPooled
 	public void UpdateBuffers()
 	{
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Expected O, but got Unknown
+		//IL_0055: Expected Obj, but got Unknown
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		if (IsDirty)

@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class Socket_Free : Socket_Base
 {
-	public Vector3 idealPlacementNormal;
+	public Vector3 idealPlacementNormal = Vector3.up;
 
-	public bool useTargetNormal;
+	public bool useTargetNormal = true;
 
 	public bool snapToTargetProvidedRotations;
 
 	[Tooltip("Allows for rolling the rotation of the deployable depending on distance. If you don't want the deployable to be able to rotate on it's Z axis, disable this.")]
-	public bool blendAimAngle;
+	public bool blendAimAngle = true;
 
 	public override bool TestTarget(Construction.Target target)
 	{
@@ -89,8 +89,8 @@ public class Socket_Free : Socket_Base
 			Vector3 val = idealPlacementNormal;
 			if (blendAimAngle || Mathf.Abs(target.normal.y) > 0.98f)
 			{
-				val2 = target.position - ((Ray)(ref target.ray)).origin;
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
+				val2 = target.position - target.ray.origin;
+				Vector3 normalized = val2.normalized;
 				float num = Mathf.Abs(Vector3.Dot(normalized, normal));
 				val = Vector3.Lerp(normalized, idealPlacementNormal, num);
 			}
@@ -98,8 +98,8 @@ public class Socket_Free : Socket_Base
 		}
 		else
 		{
-			val2 = target.position - ((Ray)(ref target.ray)).origin;
-			Vector3 normalized2 = ((Vector3)(ref val2)).normalized;
+			val2 = target.position - target.ray.origin;
+			Vector3 normalized2 = val2.normalized;
 			normalized2.y = 0f;
 			identity = Quaternion.LookRotation(normalized2, idealPlacementNormal) * Quaternion.Euler(target.rotation);
 		}
@@ -132,7 +132,7 @@ public class Socket_Free : Socket_Base
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = placementWorldPos - playerWorldPos;
 		val = Vector3.ProjectOnPlane(val, targetTransform.up);
-		((Vector3)(ref val)).Normalize();
+		val.Normalize();
 		Quaternion val2 = Quaternion.LookRotation(SnapToBestTargetLocalCardinal(val, targetTransform, cachedLocalDirs), targetTransform.up);
 		return Quaternion.AngleAxis(yOffsetDegrees, targetTransform.up) * val2;
 	}
@@ -159,9 +159,9 @@ public class Socket_Free : Socket_Base
 		for (int i = 0; i < cachedLocalDirs.Count; i++)
 		{
 			Vector3 val2 = Vector3.ProjectOnPlane(target.TransformDirection(cachedLocalDirs[i]), target.up);
-			if (!(((Vector3)(ref val2)).sqrMagnitude < 0.0001f))
+			if (!(val2.sqrMagnitude < 0.0001f))
 			{
-				((Vector3)(ref val2)).Normalize();
+				val2.Normalize();
 				float num3 = Vector3.Dot(desiredWorldForward, val2);
 				float num4 = Mathf.Abs(num3);
 				if (num4 > num)
@@ -183,9 +183,5 @@ public class Socket_Free : Socket_Base
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		idealPlacementNormal = Vector3.up;
-		useTargetNormal = true;
-		blendAimAngle = true;
-		base._002Ector();
 	}
 }

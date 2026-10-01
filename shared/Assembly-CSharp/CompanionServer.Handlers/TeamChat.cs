@@ -9,11 +9,11 @@ public class TeamChat : BasePlayerHandler<AppEmpty>
 {
 	public override ValueTask Execute()
 	{
-		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(base.UserId);
+		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(UserId);
 		if (playerTeam == null)
 		{
 			SendError("no_team");
-			return default(ValueTask);
+			return default;
 		}
 		AppResponse val = Pool.Get<AppResponse>();
 		val.teamChat = Pool.Get<AppTeamChat>();
@@ -33,6 +33,6 @@ public class TeamChat : BasePlayerHandler<AppEmpty>
 			}
 		}
 		Send(val);
-		return default(ValueTask);
+		return default;
 	}
 }

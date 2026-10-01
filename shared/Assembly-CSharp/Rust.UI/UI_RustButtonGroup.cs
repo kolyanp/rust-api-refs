@@ -81,7 +81,7 @@ public class UI_RustButtonGroup : MonoBehaviour
 	public virtual void SetupButtons()
 	{
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Expected O, but got Unknown
+		//IL_00b4: Expected Obj, but got Unknown
 		if (_buttons.Count <= 0)
 		{
 			Debug.LogError((object)"No Buttons found in group.");
@@ -102,14 +102,14 @@ public class UI_RustButtonGroup : MonoBehaviour
 			{
 				continue;
 			}
-			button.OnToggleEnabled.AddListener((UnityAction)delegate
+			button.OnToggleEnabled.AddListener((UnityAction)(() =>
 			{
 				if (!_allowToggleOff)
 				{
 					button.PreventToggleOff = true;
 				}
 				UnpressSiblings(button);
-			});
+			}));
 		}
 	}
 

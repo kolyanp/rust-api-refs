@@ -10,7 +10,7 @@ public class ChristmasTree : StorageContainer
 		{
 			return false;
 		}
-		foreach (Item item2 in base.inventory.itemList)
+		foreach (Item item2 in inventory.itemList)
 		{
 			if ((Object)(object)item2.info == (Object)(object)item.info)
 			{
@@ -20,7 +20,7 @@ public class ChristmasTree : StorageContainer
 		return base.ItemFilter(player, item, targetSlot);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		ItemModXMasTreeDecoration component = ((Component)item.info).GetComponent<ItemModXMasTreeDecoration>();
 		if ((Object)(object)component != (Object)null)
@@ -28,6 +28,6 @@ public class ChristmasTree : StorageContainer
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope.Set((Flags)component.flagsToChange, added);
 		}
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 	}
 }

@@ -146,9 +146,9 @@ public class MixingTable : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
-		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
+		inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 		RecipeDictionary.CacheRecipes(Recipes);
 	}
 
@@ -182,10 +182,10 @@ public class MixingTable : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void SV_FillInventoryForRecipe(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null)
@@ -210,8 +210,8 @@ public class MixingTable : StorageContainer
 		{
 			return;
 		}
-		Recipe matchingInventoryRecipe = GetMatchingInventoryRecipe(base.inventory);
-		ItemContainer tableContainer = (((Object)(object)matchingInventoryRecipe != (Object)(object)recipe) ? base.inventory : null);
+		Recipe matchingInventoryRecipe = GetMatchingInventoryRecipe(inventory);
+		ItemContainer tableContainer = (((Object)(object)matchingInventoryRecipe != (Object)(object)recipe) ? inventory : null);
 		if (!CanPlayerAffordRecipe(player, recipe, tableContainer, amount))
 		{
 			return;
@@ -225,7 +225,7 @@ public class MixingTable : StorageContainer
 		for (int i = 0; i < ingredients.Length; i++)
 		{
 			Recipe.RecipeIngredient recipeIngredient = ingredients[i];
-			int num2 = base.inventory.GetSlot(num)?.amount ?? 0;
+			int num2 = inventory.GetSlot(num)?.amount ?? 0;
 			int ingredientCount = recipeIngredient.GetIngredientCount(recipe.ProducedItem);
 			int num3 = ingredientCount * amount;
 			int num4 = Mathf.Clamp(recipeIngredient.Ingredient.stackable - num2, 0, recipeIngredient.Ingredient.stackable);
@@ -256,7 +256,7 @@ public class MixingTable : StorageContainer
 				{
 					foreach (Item item in (List<Item>)(object)val)
 					{
-						if (!item.MoveToContainer(base.inventory, num))
+						if (!item.MoveToContainer(inventory, num))
 						{
 							player.inventory.GiveItem(item);
 						}
@@ -288,13 +288,13 @@ public class MixingTable : StorageContainer
 		{
 			return;
 		}
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot != null && !slot.MoveToContainer(player.inventory.containerMain) && !slot.MoveToContainer(player.inventory.containerBelt))
 			{
-				Vector3 vPos = (dropFromEyeLevel ? player.GetDropPosition() : base.inventory.dropPosition);
-				Vector3 vVelocity = (dropFromEyeLevel ? player.GetDropVelocity() : base.inventory.dropVelocity);
+				Vector3 vPos = (dropFromEyeLevel ? player.GetDropPosition() : inventory.dropPosition);
+				Vector3 vVelocity = (dropFromEyeLevel ? player.GetDropVelocity() : inventory.dropVelocity);
 				slot.Drop(vPos, vVelocity);
 			}
 		}
@@ -330,12 +330,12 @@ public class MixingTable : StorageContainer
 			return;
 		}
 		MixStartingPlayer = player;
-		List<Item> orderedContainerItems = GetOrderedContainerItems(base.inventory, out var itemsAreContiguous);
+		List<Item> orderedContainerItems = GetOrderedContainerItems(inventory, out var itemsAreContiguous);
 		currentRecipe = RecipeDictionary.GetMatchingRecipeAndQuantity(Recipes, orderedContainerItems, out var quantity);
 		currentQuantity = quantity;
 		if (!((Object)(object)currentRecipe == (Object)null) && itemsAreContiguous && (!currentRecipe.RequiresBlueprint || !((Object)(object)currentRecipe.ProducedItem != (Object)null) || player.blueprints.HasUnlocked(currentRecipe.ProducedItem)))
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				lastTickTimestamp = Time.realtimeSinceStartup;
 			}
@@ -378,7 +378,7 @@ public class MixingTable : StorageContainer
 			StopMixing();
 			return;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			lastTickTimestamp = Time.realtimeSinceStartup;
 			RemainingMixTime--;
@@ -401,9 +401,9 @@ public class MixingTable : StorageContainer
 
 	private void ConsumeInventory(Recipe recipe, int quantity)
 	{
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item item = base.inventory.GetSlot(i);
+			Item item = inventory.GetSlot(i);
 			if (item != null)
 			{
 				if (GetItemWaterAmount(item) > 0)
@@ -431,9 +431,9 @@ public class MixingTable : StorageContainer
 		{
 			return;
 		}
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot == null)
 			{
 				break;
@@ -444,16 +444,16 @@ public class MixingTable : StorageContainer
 				Item item = slot.SplitItem(num);
 				if (!item.MoveToContainer(player.inventory.containerMain) && !item.MoveToContainer(player.inventory.containerBelt))
 				{
-					item.Drop(base.inventory.dropPosition, base.inventory.dropVelocity);
+					item.Drop(inventory.dropPosition, inventory.dropVelocity);
 				}
 			}
 		}
 		ItemManager.DoRemoves();
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (!added && item.info.itemid == pendingItemId)
 		{
 			pendingItemId = 0;
@@ -484,9 +484,9 @@ public class MixingTable : StorageContainer
 				item.SetItemOwnership(MixStartingPlayer, ItemOwnershipPhrases.MixingTable);
 			}
 			Facepunch.Rust.Analytics.Azure.OnCraftItem(item.info.shortname, item.amount, MixStartingPlayer, this, inSafezone: false, 0uL);
-			if (!item.MoveToContainer(base.inventory))
+			if (!item.MoveToContainer(inventory))
 			{
-				item.Drop(base.inventory.dropPosition, base.inventory.dropVelocity);
+				item.Drop(inventory.dropPosition, inventory.dropVelocity);
 			}
 			num -= num3;
 			if (num <= 0)

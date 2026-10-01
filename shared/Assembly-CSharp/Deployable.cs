@@ -7,18 +7,18 @@ public class Deployable : PrefabAttribute
 
 	public Mesh guideMesh;
 
-	public Vector3 guideMeshScale;
+	public Vector3 guideMeshScale = Vector3.one;
 
 	public bool overrideRotation;
 
-	public Vector3 guideMeshOrientation;
+	public Vector3 guideMeshOrientation = Vector3.zero;
 
-	public Vector3 guideMeshPositionOffset;
+	public Vector3 guideMeshPositionOffset = Vector3.zero;
 
 	[Tooltip("Moves the deploy guide towards the camera by 0.05 units, to avoid clipping. Sometimes you want that off to avoid that little offset in betweenthe deploy guide position and the actual position the deployable is going to spawn at.")]
-	public bool moveGuideTowardsCamera;
+	public bool moveGuideTowardsCamera = true;
 
-	public bool guideLights;
+	public bool guideLights = true;
 
 	public bool wantsInstanceData;
 
@@ -31,6 +31,9 @@ public class Deployable : PrefabAttribute
 	public BaseEntity.Slot slot;
 
 	public GameObjectRef placeEffect;
+
+	[Tooltip("Deployable that replaces this one, at the same position and rotation, when the same item is deployed onto it. Leave empty if this is the final tier.")]
+	public GameObjectRef upgradesTo;
 
 	[Tooltip("Only required if the guideMesh is in a significantly different position or there are multiple meshes")]
 	public Transform[] guideTargets;
@@ -75,11 +78,5 @@ public class Deployable : PrefabAttribute
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		guideMeshScale = Vector3.one;
-		guideMeshOrientation = Vector3.zero;
-		guideMeshPositionOffset = Vector3.zero;
-		moveGuideTowardsCamera = true;
-		guideLights = true;
-		base._002Ector();
 	}
 }

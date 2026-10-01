@@ -129,7 +129,6 @@ public class NativeMeshSimplifier : IDisposable
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		_vertices = new NativeList<Vertex>(AllocatorHandle.op_Implicit((Allocator)4));
 		_triangles = new NativeList<Triangle>(AllocatorHandle.op_Implicit((Allocator)4));
 		_refs = new NativeList<Ref>(AllocatorHandle.op_Implicit((Allocator)4));
@@ -176,14 +175,14 @@ public class NativeMeshSimplifier : IDisposable
 		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		inputDeps = IJobExtensions.Schedule<Facepunch.NativeMeshSimplification.PopulateArraysJob>(new Facepunch.NativeMeshSimplification.PopulateArraysJob
+		inputDeps = IJobExtensions.Schedule<PopulateArraysJob>(new PopulateArraysJob
 		{
 			VerticesIn = verticesIn,
 			VerticesOut = _vertices,
 			IndicesIn = indicesIn,
 			TrianglesOut = _triangles
 		}, inputDeps);
-		inputDeps = IJobExtensions.Schedule<Facepunch.NativeMeshSimplification.SimplifyMeshJob>(new Facepunch.NativeMeshSimplification.SimplifyMeshJob
+		inputDeps = IJobExtensions.Schedule<SimplifyMeshJob>(new SimplifyMeshJob
 		{
 			MaxIterations = 128,
 			Aggressiveness = 7,
@@ -192,7 +191,7 @@ public class NativeMeshSimplifier : IDisposable
 			Triangles = _triangles,
 			Refs = _refs
 		}, inputDeps);
-		inputDeps = IJobExtensions.Schedule<Facepunch.NativeMeshSimplification.CopyBackJob>(new Facepunch.NativeMeshSimplification.CopyBackJob
+		inputDeps = IJobExtensions.Schedule<CopyBackJob>(new CopyBackJob
 		{
 			DstVertices = verticesOut,
 			DstIndices = indicesOut,

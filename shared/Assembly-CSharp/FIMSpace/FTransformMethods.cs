@@ -88,7 +88,7 @@ public static class FTransformMethods
 				return component;
 			}
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T FindComponentInAllParents<T>(Transform transformToSearchIn) where T : Component
@@ -104,10 +104,10 @@ public static class FTransformMethods
 			parent = parent.parent;
 			if ((Object)(object)parent == (Object)null)
 			{
-				return default(T);
+				return default;
 			}
 		}
-		return default(T);
+		return default;
 	}
 
 	public static void ChangeActiveChildrenInside(Transform parentOfThem, bool active)

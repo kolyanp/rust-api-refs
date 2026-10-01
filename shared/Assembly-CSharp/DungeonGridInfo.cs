@@ -21,7 +21,7 @@ public class DungeonGridInfo : LandmarkInfo
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((Component)this).transform.position - position;
-		return ((Vector3)(ref val)).magnitude;
+		return val.magnitude;
 	}
 
 	public float SqrDistance(Vector3 position)
@@ -31,7 +31,7 @@ public class DungeonGridInfo : LandmarkInfo
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((Component)this).transform.position - position;
-		return ((Vector3)(ref val)).sqrMagnitude;
+		return val.sqrMagnitude;
 	}
 
 	public bool IsValidSpawnPosition(Vector3 position)

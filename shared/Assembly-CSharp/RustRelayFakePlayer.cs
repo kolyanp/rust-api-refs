@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Network;
 using Network.Relay;
@@ -183,7 +182,7 @@ public static class RustRelayFakePlayer
 		if ((Object)(object)player != (Object)null)
 		{
 			stringBuilder.AppendLine($"  Player destroyed: {player.IsDestroyed}");
-			stringBuilder.AppendLine("  Player net id: " + (((object)Unsafe.As<NetworkableId, NetworkableId>(ref player.net?.ID)/*cast due to constrained. prefix*/).ToString() ?? "null"));
+			stringBuilder.AppendLine("  Player net id: " + (((object)player.net?.ID/*cast due to constrained. prefix*/).ToString() ?? "null"));
 			stringBuilder.AppendLine($"  Player user id: {player.userID}");
 			stringBuilder.AppendLine("  Player display name: " + player.displayName);
 			stringBuilder.AppendLine($"  Player invisible: {player.isInvisible}");

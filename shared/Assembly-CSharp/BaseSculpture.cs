@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.MarchingCubes;
+using Facepunch.Rust;
 using Network;
 using ProtoBuf;
 using Rust;
@@ -37,7 +39,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	private DamageType carvingDamageType;
 
 	[SerializeField]
-	private Vector3Int gridResolution;
+	private Vector3Int gridResolution = new Vector3Int(32, 32, 32);
 
 	[SerializeField]
 	private Vector3 gridOffset;
@@ -54,8 +56,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	[SerializeField]
 	private CapsuleCollider playerPushCollider;
 
-	[SerializeField]
 	[Header("Mesh Painting")]
+	[SerializeField]
 	private GameObjectRef meshPaintDialogueRef;
 
 	[SerializeField]
@@ -82,7 +84,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	public UGCType ContentType => UGCType.Sculpt;
 
-	public List<ulong> EditingHistory => new List<ulong> { base.OwnerID };
+	public List<ulong> EditingHistory => new List<ulong> { OwnerID };
 
 	public BaseNetworkable UgcEntity => this;
 
@@ -166,18 +168,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	bool IMarchingCubesTarget.WantsConvexCollider => UseConvexColliders;
 
-	int IMarchingCubesTarget.LodMeshCount
-	{
-		get
-		{
-			Mesh[] array = generationLodMeshes;
-			if (array == null)
-			{
-				return 0;
-			}
-			return array.Length;
-		}
-	}
+	int IMarchingCubesTarget.LodMeshCount => generationLodMeshes?.Length ?? 0;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -338,8 +329,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		flagsUpdateScope.Set(Flags.Locked, b: true);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SV_UnlockSculpture(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || !CanUpdateSculpture(msg.player, ignoreLock: true))
@@ -380,8 +371,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		ServerUpdateProcessQueue.Clear();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
 	private void SV_SendSculptureUpdate(RPCMessage msg)
 	{
@@ -396,6 +387,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 			{
 				SDFSet.Chunks[0].CopyFromByteArray(val.data);
 				MarkServerSculptureDirty();
+				Analytics.Azure.OnUGCCreated(msg.player, this, "sculpture", size);
 			}
 		}
 		finally
@@ -448,10 +440,10 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 			Vector3 localScale = ((Component)playerPushCollider).transform.localScale;
 			float num = maxYLayer;
 			Vector3Int val = GridResolution;
-			localScale.y = num / (float)((Vector3Int)(ref val)).y;
+			localScale.y = num / (float)val.y;
 			((Component)playerPushCollider).transform.localScale = localScale;
-			MeshCollider obj = sharedMeshCollider;
-			((Collider)obj).excludeLayers = LayerMask.op_Implicit(LayerMask.op_Implicit(((Collider)obj).excludeLayers) | 0x1000);
+			MeshCollider val2 = sharedMeshCollider;
+			((Collider)val2).excludeLayers = LayerMask.op_Implicit(LayerMask.op_Implicit(((Collider)val2).excludeLayers) | 0x1000);
 			playerPushTrigger.pushVelocity = 5f;
 			if (resetBlockExcludeLayersAction == null)
 			{
@@ -475,7 +467,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	{
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		base.OnPickedUpPreItemMove(createdItem, player);
-		ItemModSculpture itemModSculpture = default(ItemModSculpture);
+		ItemModSculpture itemModSculpture = default;
 		if (crc != 0 && ((Component)createdItem.info).TryGetComponent<ItemModSculpture>(ref itemModSculpture))
 		{
 			itemModSculpture.OnSculpturePickUp(net.ID, crc, createdItem);
@@ -718,6 +710,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
@@ -745,18 +738,17 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		//IL_0246: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
 		Bounds chunkBoundsSetSpace = SDFSet.Chunks[0].ChunkBoundsSetSpace;
-		float3 val = float3.op_Implicit(((Bounds)(ref chunkBoundsSetSpace)).center);
-		float3 val2 = float3.op_Implicit(((Bounds)(ref chunkBoundsSetSpace)).extents);
-		float3 val3 = float3.op_Implicit(((Bounds)(ref chunkBoundsSetSpace)).min);
+		float3 val = float3.op_Implicit(chunkBoundsSetSpace.center);
+		float3 val2 = float3.op_Implicit(chunkBoundsSetSpace.extents);
+		float3 val3 = float3.op_Implicit(chunkBoundsSetSpace.min);
 		float num = math.cmin(val2);
 		SDFSet.ClearAllMods();
-		float num2 = ((Bounds)(ref chunkBoundsSetSpace)).size.y - 10f;
+		float num2 = chunkBoundsSetSpace.size.y - 10f;
 		SDFSet.AddAABBMod(new float3(val.x, val3.y + 10f + num2, val.z), new float3(val2.x * 2f, num2, val2.z * 2f), isAdditive: false);
 		int num3 = Random.Range(6, 12);
-		float3 blockSpacePos = default(float3);
 		for (int i = 0; i < num3; i++)
 		{
-			((float3)(ref blockSpacePos))._002Ector(val.x + Random.Range(-0.7f, 0.7f) * val2.x, val3.y + Random.Range(2f, 10f + val2.y * 0.5f), val.z + Random.Range(-0.7f, 0.7f) * val2.z);
+			float3 blockSpacePos = new float3(val.x + Random.Range(-0.7f, 0.7f) * val2.x, val3.y + Random.Range(2f, 10f + val2.y * 0.5f), val.z + Random.Range(-0.7f, 0.7f) * val2.z);
 			float3 val4 = new float3(Random.Range(0.15f, 0.4f), Random.Range(0.15f, 0.4f), Random.Range(0.15f, 0.4f)) * num;
 			quaternion rotation = quaternion.op_Implicit(Random.rotationUniform);
 			float smoothing = SDFSet.SmoothingForRadius(Random.value, math.cmin(val4));
@@ -829,7 +821,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 					{
 						val2.AddRow(new string[4]
 						{
-							((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item2.net.ID)/*cast due to constrained. prefix*/).ToString(),
+							((object)item2.net.ID/*cast due to constrained. prefix*/).ToString(),
 							item2.crc.ToString(),
 							item2.__sync_crc.ToString(),
 							(item2.crc == item2.__sync_crc).ToString()
@@ -872,12 +864,12 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Expected O, but got Unknown
+		//IL_002b: Expected Obj, but got Unknown
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Expected O, but got Unknown
+		//IL_0053: Expected Obj, but got Unknown
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 		base.InitShared();
@@ -892,14 +884,14 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 			name = ((Object)this).name + "_collision",
 			bounds = gridBounds
 		};
-		if (base.isClient)
+		if (isClient)
 		{
 			targetMesh.sharedMesh = generationMesh;
 			InitLodMeshes();
 		}
 		sharedMeshCollider.sharedMesh = generationCollisionMesh;
 		SDFSet.Init();
-		SDFSet.AddChunk(int3.zero, new int3(((Vector3Int)(ref gridResolution)).x, ((Vector3Int)(ref gridResolution)).y, ((Vector3Int)(ref gridResolution)).z));
+		SDFSet.AddChunk(int3.zero, new int3(gridResolution.x, gridResolution.y, gridResolution.z));
 	}
 
 	private void InitLodMeshes()
@@ -910,7 +902,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Expected O, but got Unknown
+		//IL_00a6: Expected Obj, but got Unknown
 		if ((Object)(object)meshLOD == (Object)null || meshLOD.States == null || meshLOD.States.Length == 0)
 		{
 			return;
@@ -920,7 +912,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		if (num > 0)
 		{
 			Bounds gridBounds = GridBounds;
-			generationLodMeshes = (Mesh[])(object)new Mesh[num];
+			generationLodMeshes = new Mesh[num];
 			for (int i = 0; i < num; i++)
 			{
 				generationLodMeshes[i] = new Mesh
@@ -988,7 +980,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		Debug.Assert(set.Chunks.Count == 1);
 		set.ClearChunks();
 		set.ClearAllMods();
-		set.AddAABBMod(float3.op_Implicit(((Bounds)(ref set.Chunks[0].ChunkBoundsSetSpace)).center), float3.op_Implicit(((Bounds)(ref set.Chunks[0].ChunkBoundsSetSpace)).extents * 2f), isAdditive: true);
+		set.AddAABBMod(float3.op_Implicit(set.Chunks[0].ChunkBoundsSetSpace.center), float3.op_Implicit(set.Chunks[0].ChunkBoundsSetSpace.extents * 2f), isAdditive: true);
 		set.ScheduleRegenerateAllChunks();
 	}
 
@@ -1029,7 +1021,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BaseSculpture.OnSyncVar_crc"))
 		{
-			if (base.isServer && !oldValue.HasValue)
+			if (isServer && !oldValue.HasValue)
 			{
 				byte[] array = FileStorage.server.Get(newValue, FileStorage.Type.sculpt, net.ID);
 				if (array == null || array.Length == 0)
@@ -1046,7 +1038,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -1055,7 +1047,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: crc for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: crc for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_crc);
 			return true;
@@ -1111,18 +1103,34 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -1158,7 +1166,5 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		gridResolution = new Vector3Int(32, 32, 32);
-		base._002Ector();
 	}
 }

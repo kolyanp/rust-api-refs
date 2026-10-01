@@ -12,9 +12,9 @@ public static class NpcPushHelper
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		SenseComponent senseComponent = default(SenseComponent);
-		NpcZoneComponent npcZoneComponent = default(NpcZoneComponent);
-		Scientist2FSM scientist2FSM = default(Scientist2FSM);
+		SenseComponent senseComponent = default;
+		NpcZoneComponent npcZoneComponent = default;
+		Scientist2FSM scientist2FSM = default;
 		if (((Component)coordinator).TryGetComponent<SenseComponent>(ref senseComponent) && ((Component)coordinator).TryGetComponent<NpcZoneComponent>(ref npcZoneComponent) && senseComponent.FindTarget(out var target) && senseComponent.FindLKP(target, out var lkp) && FindBestPartner(((Component)coordinator).transform.position, senseComponent, npcZoneComponent, out var bestPartner, maxDistance) && ((Component)bestPartner).TryGetComponent<Scientist2FSM>(ref scientist2FSM))
 		{
 			scientist2FSM.RushPositionTrans.Trigger(new FSMPayload
@@ -22,7 +22,7 @@ public static class NpcPushHelper
 				entity = target,
 				position = lkp
 			});
-			NpcBarkComponent npcBarkComponent = default(NpcBarkComponent);
+			NpcBarkComponent npcBarkComponent = default;
 			if (AI.npcBarksEnabled && ((Component)coordinator).TryGetComponent<NpcBarkComponent>(ref npcBarkComponent))
 			{
 				npcBarkComponent.PlayVoicelineFromCategory(ENPCVoicelineCategory.Push, bestPartner);

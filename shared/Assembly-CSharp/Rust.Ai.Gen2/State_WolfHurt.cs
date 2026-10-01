@@ -12,7 +12,7 @@ public class State_WolfHurt : State_Hurt
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		EFSMStateStatus result = base.OnStateEnter(payload);
-		if (!base.Senses.FindTarget(out var target))
+		if (!Senses.FindTarget(out var target))
 		{
 			if (AI.logIssues)
 			{
@@ -23,7 +23,7 @@ public class State_WolfHurt : State_Hurt
 		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
 		try
 		{
-			base.Senses.GetInitialAllies((List<BaseEntity>)(object)val);
+			Senses.GetInitialAllies((List<BaseEntity>)(object)val);
 			foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 			{
 				((Component)item).GetComponent<Wolf2FSM>().Intimidate(target);

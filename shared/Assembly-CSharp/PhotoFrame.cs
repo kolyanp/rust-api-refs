@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -73,13 +75,13 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 			NetworkableId easelId = EaselId;
-			if (!((NetworkableId)(ref easelId)).IsValid)
+			if (!easelId.IsValid)
 			{
 				return null;
 			}
 			if ((Object)(object)_cachedParentEasel == (Object)null)
 			{
-				_cachedParentEasel = new EntityRef<EaselDeployable>(EaselId).Get(base.isServer);
+				_cachedParentEasel = new EntityRef<EaselDeployable>(EaselId).Get(isServer);
 			}
 			return _cachedParentEasel;
 		}
@@ -248,7 +250,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		}
 		if (IsLocked())
 		{
-			return (ulong)player.userID == base.OwnerID;
+			return (ulong)player.userID == OwnerID;
 		}
 		return true;
 	}
@@ -271,8 +273,8 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		return CanUpdateSign(player);
 	}
 
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void UpdateSign(RPCMessage msg)
 	{
@@ -285,6 +287,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 			{
 				FileStorage.server.RemoveAllByEntity(net.ID);
 				_overlayTextureCrc = FileStorage.server.Store(array, FileStorage.Type.png, net.ID);
+				Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, this, "photo_frame", array.Length);
 				LogEdit(msg.player);
 				SendNetworkUpdate();
 				Interface.CallHook("OnSignUpdated", this, msg.player);
@@ -300,7 +303,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		{
 			SetFlagLocal(Flags.Locked, b: true);
 			SendNetworkUpdate();
-			base.OwnerID = msg.player.userID;
+			OwnerID = msg.player.userID;
 			Interface.CallHook("OnSignLocked", this, msg.player);
 		}
 	}
@@ -347,7 +350,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 			_photoEntity.uid = info.msg.photoFrame.photoEntityId;
 			_overlayTextureCrc = info.msg.photoFrame.overlayImageCrc;
 		}
-		if (!base.isServer || info.msg.photoFrame == null)
+		if (!isServer || info.msg.photoFrame == null)
 		{
 			return;
 		}
@@ -396,18 +399,18 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		base.OnItemAddedOrRemoved(item, added);
-		Item item2 = ((base.inventory.itemList.Count > 0) ? base.inventory.itemList[0] : null);
-		NetworkableId val = (NetworkableId)((item2 != null && item2.IsValid()) ? item2.instanceData.subEntity : default(NetworkableId));
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
+		Item item2 = ((inventory.itemList.Count > 0) ? inventory.itemList[0] : null);
+		NetworkableId val = ((item2 != null && item2.IsValid()) ? item2.instanceData.subEntity : default(NetworkableId));
 		if (val != _photoEntity.uid)
 		{
 			_photoEntity.uid = val;
@@ -423,7 +426,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 
 	public void SaveSignageToItem(Item createdItem)
 	{
-		ItemModSign itemModSign = default(ItemModSign);
+		ItemModSign itemModSign = default;
 		if (_overlayTextureCrc != 0 && ((Component)createdItem.info).TryGetComponent<ItemModSign>(ref itemModSign))
 		{
 			itemModSign.OnSignPickedUp(this, this, createdItem);
@@ -434,7 +437,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);
 		AddToEasel(parent);
-		ItemModSign itemModSign = default(ItemModSign);
+		ItemModSign itemModSign = default;
 		if (((Component)fromItem.info).TryGetComponent<ItemModSign>(ref itemModSign))
 		{
 			SignContent associatedEntity = ItemModAssociatedEntity<SignContent>.GetAssociatedEntity(fromItem);
@@ -482,7 +485,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		{
 			parentEasel.RemovePainting(this);
 		}
-		EaselId = default(NetworkableId);
+		EaselId = default;
 	}
 
 	public void AddToEasel(BaseEntity parent)
@@ -502,7 +505,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		NetworkableId uid = _photoEntity.uid;
-		if (((NetworkableId)(ref uid)).IsValid)
+		if (uid.IsValid)
 		{
 			pickupErrorToFormat = (format: PickupErrors.ItemMustBeEmpty, arg0: pickup.itemTarget.displayName);
 			return false;
@@ -510,12 +513,12 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		if (base.CanCompletePickup(player))
 		{
 			uid = _photoEntity.uid;
-			return !((NetworkableId)(ref uid)).IsValid;
+			return !uid.IsValid;
 		}
 		return false;
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -525,7 +528,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: EaselId for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: EaselId for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<NetworkableId>(writer, __sync_EaselId);
 			return true;
@@ -582,18 +585,34 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -614,7 +633,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		base.ResetSyncVars();
-		__sync_EaselId = default(NetworkableId);
+		__sync_EaselId = default;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)

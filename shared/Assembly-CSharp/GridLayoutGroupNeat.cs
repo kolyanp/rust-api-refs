@@ -8,7 +8,7 @@ public class GridLayoutGroupNeat : GridLayoutGroup
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		Rect rect = ((LayoutGroup)this).rectTransform.rect;
-		float num = ((Rect)(ref rect)).x + (float)(((LayoutGroup)this).padding.left + ((LayoutGroup)this).padding.right) * 0.5f;
+		float num = rect.x + (float)(((LayoutGroup)this).padding.left + ((LayoutGroup)this).padding.right) * 0.5f;
 		float num2 = Mathf.Floor(num / cellSize);
 		return num / num2 - base.m_Spacing.x;
 	}

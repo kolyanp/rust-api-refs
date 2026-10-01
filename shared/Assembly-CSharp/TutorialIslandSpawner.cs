@@ -28,7 +28,7 @@ public static class TutorialIslandSpawner
 			GetEdgeSpawnPoints(positions, start, bounds, cellSize, i);
 		}
 		worldBoundsMinusTutorialIslands = new Bounds(start + bounds / 2f, bounds - cellSize * 2f * (float)loopCount);
-		((Bounds)(ref worldBoundsMinusTutorialIslands)).size = new Vector3(((Bounds)(ref worldBoundsMinusTutorialIslands)).size.x, 1000f, ((Bounds)(ref worldBoundsMinusTutorialIslands)).size.z);
+		worldBoundsMinusTutorialIslands.size = new Vector3(worldBoundsMinusTutorialIslands.size.x, 1000f, worldBoundsMinusTutorialIslands.size.z);
 	}
 
 	private static void GetEdgeSpawnPoints(List<Vector3> points, Vector3 start, Vector3 bounds, Vector3 cellSize, int curLoop)

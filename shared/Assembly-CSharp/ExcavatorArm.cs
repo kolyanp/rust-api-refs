@@ -166,7 +166,7 @@ public class ExcavatorArm : BaseEntity
 	public void FixedUpdate()
 	{
 		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient)
+		if (!isClient)
 		{
 			bool flag = IsMining() && IsPowered();
 			float num = (flag ? 1f : 0f);
@@ -269,8 +269,8 @@ public class ExcavatorArm : BaseEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_SetResourceTarget(RPCMessage msg)
 	{
 		string text = msg.read.String();
@@ -298,8 +298,8 @@ public class ExcavatorArm : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_StopMining(RPCMessage msg)
 	{
 	}

@@ -6,7 +6,7 @@ public class TrainCarFuelHatches : MonoBehaviour
 	private TrainCar owner;
 
 	[SerializeField]
-	private float animSpeed;
+	private float animSpeed = 1f;
 
 	[SerializeField]
 	private Transform hatch1Col;
@@ -36,7 +36,7 @@ public class TrainCarFuelHatches : MonoBehaviour
 	[SerializeField]
 	private SoundDefinition hatchCloseSoundDef;
 
-	private Vector3 _angles;
+	private Vector3 _angles = Vector3.zero;
 
 	private float _hatchLerp;
 
@@ -133,8 +133,5 @@ public class TrainCarFuelHatches : MonoBehaviour
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		animSpeed = 1f;
-		_angles = Vector3.zero;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

@@ -53,10 +53,10 @@ public class CeilingLight : IOEntity
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			float num = 3f * (info.damageTypes.Total() / 50f);
-			NetworkableId arg = (NetworkableId)(((Object)(object)info.Initiator != (Object)null && info.Initiator is BasePlayer && !info.IsPredicting) ? info.Initiator.net.ID : default(NetworkableId));
+			NetworkableId arg = (((Object)(object)info.Initiator != (Object)null && info.Initiator is BasePlayer && !info.IsPredicting) ? info.Initiator.net.ID : default(NetworkableId));
 			ClientRPC(RpcTarget.NetworkGroup("ClientPhysPush"), arg, info.attackNormal * num, info.HitPositionWorld);
 			MarkRecentlyHit();
 		}
@@ -72,13 +72,13 @@ public class CeilingLight : IOEntity
 	public override void IOStateChanged(int inputAmount, int inputSlot)
 	{
 		base.IOStateChanged(inputAmount, inputSlot);
-		bool num = IsOn();
-		bool flag = IsPowered();
-		if (num != flag)
+		bool flag = IsOn();
+		bool flag2 = IsPowered();
+		if (flag != flag2)
 		{
-			SetFlagLocal(Flags.On, flag);
+			SetFlagLocal(Flags.On, flag2);
 			SendNetworkUpdate_Flags();
-			if (flag)
+			if (flag2)
 			{
 				LightsOn();
 			}
@@ -97,11 +97,11 @@ public class CeilingLight : IOEntity
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			if (info.damageTypes.Has(DamageType.Explosion))
 			{
-				ClientRPC(RpcTarget.NetworkGroup("ClientPhysPush"), default(NetworkableId), info.attackNormal * 3f * (info.damageTypes.Total() / 50f), info.HitPositionWorld);
+				ClientRPC(RpcTarget.NetworkGroup("ClientPhysPush"), default, info.attackNormal * 3f * (info.damageTypes.Total() / 50f), info.HitPositionWorld);
 				MarkRecentlyHit();
 			}
 			base.Hurt(info);

@@ -13,11 +13,11 @@ public class UIPaintableImage : MonoBehaviour
 
 	public RawImage image;
 
-	public int texSize;
+	public int texSize = 64;
 
-	public Color clearColor;
+	public Color clearColor = Color.clear;
 
-	public FilterMode filterMode;
+	public FilterMode filterMode = (FilterMode)1;
 
 	public bool mipmaps;
 
@@ -37,9 +37,5 @@ public class UIPaintableImage : MonoBehaviour
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		texSize = 64;
-		clearColor = Color.clear;
-		filterMode = (FilterMode)1;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

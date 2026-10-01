@@ -10,16 +10,16 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 	public class CCDIKBone : FIK_IKBoneBase
 	{
 		[Range(0f, 180f)]
-		public float AngleLimit;
+		public float AngleLimit = 45f;
 
 		[Range(0f, 180f)]
-		public float TwistAngleLimit;
+		public float TwistAngleLimit = 5f;
 
 		public Vector3 ForwardOrientation;
 
-		public float FrameWorldLength;
+		public float FrameWorldLength = 1f;
 
-		public Vector2 HingeLimits;
+		public Vector2 HingeLimits = Vector2.zero;
 
 		public Quaternion PreviousHingeRotation;
 
@@ -34,21 +34,17 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		public CCDIKBone IKChild { get; private set; }
 
 		public CCDIKBone(Transform t)
+			: base(t)
 		{
 			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-			AngleLimit = 45f;
-			TwistAngleLimit = 5f;
-			FrameWorldLength = 1f;
-			HingeLimits = Vector2.zero;
-			base._002Ector(t);
 		}
 
 		public void Init(CCDIKBone child, CCDIKBone parent)
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-			LastIKLocPosition = base.transform.localPosition;
+			LastIKLocPosition = transform.localPosition;
 			IKParent = parent;
 			if (child != null)
 			{
@@ -87,7 +83,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-			Quaternion val = Quaternion.Inverse(LastKeyLocalRotation) * base.transform.localRotation;
+			Quaternion val = Quaternion.Inverse(LastKeyLocalRotation) * transform.localRotation;
 			Quaternion val2 = val;
 			if (FEngineering.VIsZero(Vector2.op_Implicit(HingeLimits)))
 			{
@@ -106,7 +102,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 			}
 			if (!FEngineering.QIsSame(val2, val))
 			{
-				base.transform.localRotation = LastKeyLocalRotation * val2;
+				transform.localRotation = LastKeyLocalRotation * val2;
 			}
 		}
 
@@ -142,6 +138,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 
 		private Quaternion LimitZ(Quaternion currentRotation)
 		{
+			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -162,8 +159,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 			//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 			//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(ForwardOrientation.y, ForwardOrientation.z, ForwardOrientation.x);
+			Vector3 val = new Vector3(ForwardOrientation.y, ForwardOrientation.z, ForwardOrientation.x);
 			Vector3 val2 = currentRotation * ForwardOrientation;
 			Vector3 val3 = val;
 			Vector3.OrthoNormalize(ref val2, ref val3);
@@ -192,6 +188,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
@@ -206,8 +203,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 			//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 			Quaternion val = Quaternion.FromToRotation(rotation * ForwardOrientation, ForwardOrientation) * rotation * Quaternion.Inverse(PreviousHingeRotation);
 			float num = Quaternion.Angle(Quaternion.identity, val);
-			Vector3 val2 = default(Vector3);
-			((Vector3)(ref val2))._002Ector(ForwardOrientation.z, ForwardOrientation.x, ForwardOrientation.y);
+			Vector3 val2 = new Vector3(ForwardOrientation.z, ForwardOrientation.x, ForwardOrientation.y);
 			Vector3 val3 = Vector3.Cross(val2, ForwardOrientation);
 			if (Vector3.Dot(val * val2, val3) > 0f)
 			{
@@ -221,13 +217,13 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 
 	public CCDIKBone[] IKBones;
 
-	public bool ContinousSolving;
+	public bool ContinousSolving = true;
 
 	[Range(0f, 1f)]
-	public float SyncWithAnimator;
+	public float SyncWithAnimator = 1f;
 
 	[Range(1f, 12f)]
-	public int ReactionQuality;
+	public int ReactionQuality = 2;
 
 	[Range(0f, 1f)]
 	public float Smoothing;
@@ -235,7 +231,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 	[Range(0f, 1.5f)]
 	public float StretchToTarget;
 
-	public AnimationCurve StretchCurve;
+	public AnimationCurve StretchCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
 	public bool Use2D;
 
@@ -253,21 +249,16 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		ContinousSolving = true;
-		SyncWithAnimator = 1f;
-		ReactionQuality = 2;
-		StretchCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-		base._002Ector();
 		IKBones = new CCDIKBone[bonesChain.Length];
 		FIK_IKBoneBase[] bones = new CCDIKBone[IKBones.Length];
-		base.Bones = bones;
+		Bones = bones;
 		for (int i = 0; i < bonesChain.Length; i++)
 		{
 			IKBones[i] = new CCDIKBone(bonesChain[i]);
-			base.Bones[i] = IKBones[i];
+			Bones[i] = IKBones[i];
 		}
-		IKTargetPosition = base.EndBone.transform.position;
-		IKTargetRotation = base.EndBone.transform.rotation;
+		IKTargetPosition = EndBone.transform.position;
+		IKTargetRotation = EndBone.transform.rotation;
 	}
 
 	public override void Init(Transform root)
@@ -286,12 +277,12 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		if (base.Initialized)
+		if (Initialized)
 		{
 			return;
 		}
-		base.fullLength = 0f;
-		for (int i = 0; i < base.Bones.Length; i++)
+		fullLength = 0f;
+		for (int i = 0; i < Bones.Length; i++)
 		{
 			CCDIKBone cCDIKBone = IKBones[i];
 			CCDIKBone child = null;
@@ -300,14 +291,14 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 			{
 				parent = IKBones[i - 1];
 			}
-			if (i < base.Bones.Length - 1)
+			if (i < Bones.Length - 1)
 			{
 				child = IKBones[i + 1];
 			}
-			if (i < base.Bones.Length - 1)
+			if (i < Bones.Length - 1)
 			{
 				IKBones[i].Init(child, parent);
-				base.fullLength += cCDIKBone.BoneLength;
+				fullLength += cCDIKBone.BoneLength;
 				cCDIKBone.ForwardOrientation = Quaternion.Inverse(cCDIKBone.transform.rotation) * (IKBones[i + 1].transform.position - cCDIKBone.transform.position);
 			}
 			else
@@ -316,7 +307,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 				cCDIKBone.ForwardOrientation = Quaternion.Inverse(cCDIKBone.transform.rotation) * (IKBones[IKBones.Length - 1].transform.position - IKBones[0].transform.position);
 			}
 		}
-		base.Initialized = true;
+		Initialized = true;
 	}
 
 	public override void Update()
@@ -457,7 +448,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		//IL_029b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02a4: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Initialized || IKWeight <= 0f)
+		if (!Initialized || IKWeight <= 0f)
 		{
 			return;
 		}
@@ -489,7 +480,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		{
 			val = GetGoalPivotOffset();
 		}
-		for (int i = 0; i < ReactionQuality && (i < 1 || ((Vector3)(ref val)).sqrMagnitude != 0f || !(Smoothing > 0f) || !(GetVelocityDifference() < Smoothing * Smoothing)); i++)
+		for (int i = 0; i < ReactionQuality && (i < 1 || val.sqrMagnitude != 0f || !(Smoothing > 0f) || !(GetVelocityDifference() < Smoothing * Smoothing)); i++)
 		{
 			LastLocalDirection = RefreshLocalDirection();
 			Vector3 val2 = IKTargetPosition + val;
@@ -503,7 +494,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 						float num = cCDIKBone.MotionWeight * IKWeight;
 						if (num > 0f)
 						{
-							Quaternion val3 = Quaternion.FromToRotation(base.Bones[base.Bones.Length - 1].transform.position - cCDIKBone.transform.position, val2 - cCDIKBone.transform.position) * cCDIKBone.transform.rotation;
+							Quaternion val3 = Quaternion.FromToRotation(Bones[Bones.Length - 1].transform.position - cCDIKBone.transform.position, val2 - cCDIKBone.transform.position) * cCDIKBone.transform.rotation;
 							if (num < 1f)
 							{
 								cCDIKBone.transform.rotation = Quaternion.Lerp(cCDIKBone.transform.rotation, val3, num);
@@ -528,7 +519,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 					float num2 = cCDIKBone.MotionWeight * IKWeight;
 					if (num2 > 0f)
 					{
-						Quaternion val4 = Quaternion.FromToRotation(base.Bones[base.Bones.Length - 1].transform.position - cCDIKBone.transform.position, val2 - cCDIKBone.transform.position) * cCDIKBone.transform.rotation;
+						Quaternion val4 = Quaternion.FromToRotation(Bones[Bones.Length - 1].transform.position - cCDIKBone.transform.position, val2 - cCDIKBone.transform.position) * cCDIKBone.transform.rotation;
 						if (num2 < 1f)
 						{
 							cCDIKBone.transform.rotation = Quaternion.Lerp(cCDIKBone.transform.rotation, val4, num2);
@@ -548,7 +539,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 					float num3 = cCDIKBone.MotionWeight * IKWeight;
 					if (num3 > 0f)
 					{
-						Vector3 val5 = base.Bones[base.Bones.Length - 1].transform.position - cCDIKBone.transform.position;
+						Vector3 val5 = Bones[Bones.Length - 1].transform.position - cCDIKBone.transform.position;
 						Vector3 val6 = val2 - cCDIKBone.transform.position;
 						cCDIKBone.transform.rotation = Quaternion.AngleAxis(Mathf.DeltaAngle(Mathf.Atan2(val5.x, val5.y) * 57.29578f, Mathf.Atan2(val6.x, val6.y) * 57.29578f) * num3, Vector3.back) * cCDIKBone.transform.rotation;
 					}
@@ -567,7 +558,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 				float num4 = cCDIKBone.MotionWeight * IKWeight;
 				if (num4 > 0f)
 				{
-					Vector3 val7 = base.Bones[base.Bones.Length - 1].transform.position - cCDIKBone.transform.position;
+					Vector3 val7 = Bones[Bones.Length - 1].transform.position - cCDIKBone.transform.position;
 					Vector3 val8 = val2 - cCDIKBone.transform.position;
 					cCDIKBone.transform.rotation = Quaternion.AngleAxis(Mathf.DeltaAngle(Mathf.Atan2(val7.x, val7.y) * 57.29578f, Mathf.Atan2(val8.x, val8.y) * 57.29578f) * num4, Vector3.back) * cCDIKBone.transform.rotation;
 				}
@@ -577,7 +568,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		if (StretchToTarget > 0f)
 		{
 			Vector3 val9 = IKTargetPosition - EndIKBone.transform.position;
-			float num5 = ((Vector3)(ref val9)).magnitude;
+			float num5 = val9.magnitude;
 			ActiveLength = Mathf.Epsilon;
 			cCDIKBone = IKBones[0];
 			int num6 = 0;
@@ -585,11 +576,11 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 			while (cCDIKBone.IKChild != null && !(num5 <= 0f))
 			{
 				Vector3 val10 = IKTargetPosition - cCDIKBone.transform.position;
-				Vector3 normalized = ((Vector3)(ref val10)).normalized;
+				Vector3 normalized = val10.normalized;
 				Vector3 position = cCDIKBone.transform.position;
 				Vector3 position2 = cCDIKBone.IKChild.transform.position;
 				Vector3 val11 = position2 - position;
-				Vector3 normalized2 = ((Vector3)(ref val11)).normalized;
+				Vector3 normalized2 = val11.normalized;
 				float num8 = Vector3.Dot(normalized2, normalized);
 				if (num8 > 0f)
 				{
@@ -631,6 +622,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
@@ -646,9 +638,8 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 			return Vector3.zero;
 		}
 		Vector3 val = IKTargetPosition - IKBones[0].transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(normalized.y, normalized.z, normalized.x);
+		Vector3 normalized = val.normalized;
+		Vector3 val2 = new Vector3(normalized.y, normalized.z, normalized.x);
 		if (IKBones[IKBones.Length - 2].AngleLimit < 180f || IKBones[IKBones.Length - 2].TwistAngleLimit < 180f)
 		{
 			val2 = IKBones[IKBones.Length - 2].transform.rotation * IKBones[IKBones.Length - 2].ForwardOrientation;
@@ -670,14 +661,14 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Initialized)
+		if (!Initialized)
 		{
 			return false;
 		}
-		Vector3 val = base.Bones[base.Bones.Length - 1].transform.position - base.Bones[0].transform.position;
-		Vector3 val2 = IKTargetPosition - base.Bones[0].transform.position;
-		float magnitude = ((Vector3)(ref val)).magnitude;
-		float magnitude2 = ((Vector3)(ref val2)).magnitude;
+		Vector3 val = Bones[Bones.Length - 1].transform.position - Bones[0].transform.position;
+		Vector3 val2 = IKTargetPosition - Bones[0].transform.position;
+		float magnitude = val.magnitude;
+		float magnitude2 = val2.magnitude;
 		if (magnitude2 == 0f)
 		{
 			return false;
@@ -690,7 +681,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		{
 			return false;
 		}
-		if (magnitude < base.fullLength - base.Bones[base.Bones.Length - 2].BoneLength * 0.1f)
+		if (magnitude < fullLength - Bones[Bones.Length - 2].BoneLength * 0.1f)
 		{
 			return false;
 		}
@@ -713,7 +704,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		LocalDirection = base.Bones[0].transform.InverseTransformDirection(base.Bones[base.Bones.Length - 1].transform.position - base.Bones[0].transform.position);
+		LocalDirection = Bones[0].transform.InverseTransformDirection(Bones[Bones.Length - 1].transform.position - Bones[0].transform.position);
 		return LocalDirection;
 	}
 
@@ -752,19 +743,19 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 
 	public void AutoWeightBones(float baseValue = 1f)
 	{
-		float num = baseValue / ((float)base.Bones.Length * 1.3f);
+		float num = baseValue / ((float)Bones.Length * 1.3f);
 		if (Invert)
 		{
-			for (int i = 0; i < base.Bones.Length; i++)
+			for (int i = 0; i < Bones.Length; i++)
 			{
-				base.Bones[i].MotionWeight = 1f - (baseValue - num * (float)i);
+				Bones[i].MotionWeight = 1f - (baseValue - num * (float)i);
 			}
 		}
 		else
 		{
-			for (int j = 0; j < base.Bones.Length; j++)
+			for (int j = 0; j < Bones.Length; j++)
 			{
-				base.Bones[j].MotionWeight = baseValue - num * (float)j;
+				Bones[j].MotionWeight = baseValue - num * (float)j;
 			}
 		}
 	}
@@ -773,16 +764,16 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 	{
 		if (Invert)
 		{
-			for (int i = 0; i < base.Bones.Length; i++)
+			for (int i = 0; i < Bones.Length; i++)
 			{
-				base.Bones[i].MotionWeight = Mathf.Clamp(1f - weightCurve.Evaluate((float)i / (float)base.Bones.Length), 0f, 1f);
+				Bones[i].MotionWeight = Mathf.Clamp(1f - weightCurve.Evaluate((float)i / (float)Bones.Length), 0f, 1f);
 			}
 		}
 		else
 		{
-			for (int j = 0; j < base.Bones.Length; j++)
+			for (int j = 0; j < Bones.Length; j++)
 			{
-				base.Bones[j].MotionWeight = Mathf.Clamp(weightCurve.Evaluate((float)j / (float)base.Bones.Length), 0f, 1f);
+				Bones[j].MotionWeight = Mathf.Clamp(weightCurve.Evaluate((float)j / (float)Bones.Length), 0f, 1f);
 			}
 		}
 	}

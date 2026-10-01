@@ -53,7 +53,7 @@ public class CardPlayerDataBlackjack : CardPlayerData
 
 	public override void LeaveCurrentRound(bool clearBets, bool leftRoundEarly)
 	{
-		if (base.HasUserInCurrentRound)
+		if (HasUserInCurrentRound)
 		{
 			if (clearBets)
 			{
@@ -67,7 +67,7 @@ public class CardPlayerDataBlackjack : CardPlayerData
 	public override void LeaveGame()
 	{
 		base.LeaveGame();
-		if (base.HasUserInGame)
+		if (HasUserInGame)
 		{
 			SplitCards.Clear();
 		}
@@ -80,7 +80,7 @@ public class CardPlayerDataBlackjack : CardPlayerData
 		val.splitCards = Pool.Get<List<int>>();
 		foreach (PlayingCard splitCard in SplitCards)
 		{
-			val.splitCards.Add(base.SendCardDetails ? splitCard.GetIndex() : (-1));
+			val.splitCards.Add(SendCardDetails ? splitCard.GetIndex() : (-1));
 		}
 		val.splitBetThisRound = splitBetThisRound;
 		val.insuranceBetThisRound = insuranceBetThisRound;

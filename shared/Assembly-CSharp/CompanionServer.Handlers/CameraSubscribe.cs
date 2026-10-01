@@ -15,65 +15,65 @@ public class CameraSubscribe : BasePlayerHandler<AppCameraSubscribe>
 		if (!CameraRenderer.enabled)
 		{
 			SendError("not_enabled");
-			return default(ValueTask);
+			return default;
 		}
 		CameraRendererManager instance = SingletonComponent<CameraRendererManager>.Instance;
 		if ((Object)(object)instance == (Object)null)
 		{
 			SendError("server_error");
-			return default(ValueTask);
+			return default;
 		}
-		if (string.IsNullOrEmpty(base.Proto.cameraId))
+		if (string.IsNullOrEmpty(Proto.cameraId))
 		{
-			base.Client.EndViewing();
+			Client.EndViewing();
 			SendError("invalid_id");
-			return default(ValueTask);
+			return default;
 		}
-		bool flag = CameraRenderer.developerPermissions && DeveloperList.Contains(base.UserId);
-		if (!base.Player.IsValid())
+		bool flag = CameraRenderer.developerPermissions && DeveloperList.Contains(UserId);
+		if (!Player.IsValid())
 		{
-			base.Client.EndViewing();
+			Client.EndViewing();
 			SendError("no_player");
-			return default(ValueTask);
+			return default;
 		}
-		if (!flag && base.Player.IsConnected)
+		if (!flag && Player.IsConnected)
 		{
-			base.Client.EndViewing();
+			Client.EndViewing();
 			SendError("player_online");
-			return default(ValueTask);
+			return default;
 		}
-		IRemoteControllable remoteControllable = RemoteControlEntity.FindByID(base.Proto.cameraId);
-		if (remoteControllable == null || !remoteControllable.CanControl(base.UserId))
+		IRemoteControllable remoteControllable = RemoteControlEntity.FindByID(Proto.cameraId);
+		if (remoteControllable == null || !remoteControllable.CanControl(UserId))
 		{
-			base.Client.EndViewing();
+			Client.EndViewing();
 			SendError("not_found");
-			return default(ValueTask);
+			return default;
 		}
 		if (!flag && remoteControllable is CCTV_RC cCTV_RC && cCTV_RC.IsStatic())
 		{
-			base.Client.EndViewing();
+			Client.EndViewing();
 			SendError("access_denied");
-			return default(ValueTask);
+			return default;
 		}
 		BaseEntity ent = remoteControllable.GetEnt();
 		if (!ent.IsValid())
 		{
-			base.Client.EndViewing();
+			Client.EndViewing();
 			SendError("not_found");
-			return default(ValueTask);
+			return default;
 		}
-		float num = Vector3.Distance(((Component)base.Player).transform.position, ((Component)ent).transform.position);
+		float num = Vector3.Distance(((Component)Player).transform.position, ((Component)ent).transform.position);
 		if (!flag && num >= remoteControllable.MaxRange)
 		{
-			base.Client.EndViewing();
+			Client.EndViewing();
 			SendError("not_found");
-			return default(ValueTask);
+			return default;
 		}
-		if (!base.Client.BeginViewing(remoteControllable))
+		if (!Client.BeginViewing(remoteControllable))
 		{
-			base.Client.EndViewing();
+			Client.EndViewing();
 			SendError("not_found");
-			return default(ValueTask);
+			return default;
 		}
 		instance.StartRendering(remoteControllable);
 		AppResponse val = Pool.Get<AppResponse>();
@@ -82,9 +82,9 @@ public class CameraSubscribe : BasePlayerHandler<AppCameraSubscribe>
 		val2.height = CameraRenderer.height;
 		val2.nearPlane = CameraRenderer.nearPlane;
 		val2.farPlane = CameraRenderer.farPlane;
-		val2.controlFlags = (int)(base.Client.IsControllingCamera ? remoteControllable.RequiredControls : RemoteControllableControls.None);
+		val2.controlFlags = (int)(Client.IsControllingCamera ? remoteControllable.RequiredControls : RemoteControllableControls.None);
 		val.cameraSubscribeInfo = val2;
 		Send(val);
-		return default(ValueTask);
+		return default;
 	}
 }

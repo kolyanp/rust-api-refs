@@ -81,9 +81,9 @@ public class LootSpawn : ScriptableObject
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		bool num = era != ConVar.Server.Era;
-		bool flag = lastGameModeFilterApplied != BaseGameMode.GetActiveGameModeId(serverside: true);
-		if (!num && !flag && allowedSubSpawn != null)
+		bool flag = era != ConVar.Server.Era;
+		bool flag2 = lastGameModeFilterApplied != BaseGameMode.GetActiveGameModeId(serverside: true);
+		if (!flag && !flag2 && allowedSubSpawn != null)
 		{
 			return;
 		}
@@ -100,7 +100,7 @@ public class LootSpawn : ScriptableObject
 		}
 		else
 		{
-			allowedSubSpawn = subSpawn.Where(delegate(Entry x)
+			allowedSubSpawn = subSpawn.Where((Entry x) =>
 			{
 				//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 				return x.category.HasAnySpawns() && (x.restrictedEras == null || x.restrictedEras.Length == 0 || Array.IndexOf(x.restrictedEras, ConVar.Server.Era) != -1);

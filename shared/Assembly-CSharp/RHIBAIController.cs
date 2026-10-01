@@ -82,7 +82,7 @@ public class RHIBAIController : FacepunchBehaviour
 		bool flag = true;
 		int num11 = 1;
 		float num12 = 20f;
-		Vector3[] array = (Vector3[])(object)new Vector3[5]
+		Vector3[] array = new Vector3[5]
 		{
 			new Vector3(0f, 0f, 0f),
 			new Vector3(num12, 0f, 0f),
@@ -90,7 +90,7 @@ public class RHIBAIController : FacepunchBehaviour
 			new Vector3(0f, 0f, num12),
 			new Vector3(0f, 0f, 0f - num12)
 		};
-		RaycastHit val9 = default(RaycastHit);
+		RaycastHit val9 = default;
 		while (flag)
 		{
 			Debug.Log((object)("Loop # :" + num11));
@@ -105,7 +105,7 @@ public class RHIBAIController : FacepunchBehaviour
 				Vector3 val3 = nodes[index];
 				Vector3 val4 = val;
 				Vector3 val5 = Vector3.zero - val;
-				Vector3 normalized = ((Vector3)(ref val5)).normalized;
+				Vector3 normalized = val5.normalized;
 				Vector3 val6 = val + normalized * num7;
 				if (Vector3.Distance(val6, val2) > num8 || Vector3.Distance(val6, val3) > num8)
 				{
@@ -123,7 +123,7 @@ public class RHIBAIController : FacepunchBehaviour
 					if (val7 != Vector3.zero)
 					{
 						val5 = val7 - val4;
-						val8 = ((Vector3)(ref val5)).normalized;
+						val8 = val5.normalized;
 					}
 					if (Physics.Raycast(val4, val8, ref val9, num9, 1218511105))
 					{
@@ -151,12 +151,12 @@ public class RHIBAIController : FacepunchBehaviour
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (!Physics.Raycast(pos, Vector3.down, ref val, 100f, 8388608))
 		{
 			return 100f;
 		}
-		return ((RaycastHit)(ref val)).distance;
+		return val.distance;
 	}
 
 	public void OnDrawGizmosSelected()

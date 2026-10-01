@@ -26,8 +26,8 @@ public class DoubleVisionRenderer : PostProcessEffectRenderer<DoubleVision>
 		command.BeginSample("DoubleVision");
 		PropertySheet propertySheet = context.propertySheets.Get(doubleVisionShader);
 		propertySheet.properties.Clear();
-		propertySheet.properties.SetVector(displaceProperty, Vector4.op_Implicit(base.settings.displace.value));
-		propertySheet.properties.SetFloat(amountProperty, base.settings.amount.value);
+		propertySheet.properties.SetVector(displaceProperty, Vector4.op_Implicit(settings.displace.value));
+		propertySheet.properties.SetFloat(amountProperty, settings.amount.value);
 		command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 0);
 		command.EndSample("DoubleVision");
 	}

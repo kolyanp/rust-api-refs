@@ -7,9 +7,9 @@ public class CustomGestureWidget : MonoBehaviour, IClientComponent
 
 	public Image GestureIcon;
 
-	public Color HighlightedColor;
+	public Color HighlightedColor = Color.red;
 
-	public Color NeutralColor;
+	public Color NeutralColor = Color.white;
 
 	public CustomGestureWidget()
 	{
@@ -17,8 +17,5 @@ public class CustomGestureWidget : MonoBehaviour, IClientComponent
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		HighlightedColor = Color.red;
-		NeutralColor = Color.white;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

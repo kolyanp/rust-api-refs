@@ -69,10 +69,10 @@ public static class RenderInfo
 				Enabled = (renderer.enabled && ((Component)renderer).gameObject.activeInHierarchy)
 			};
 			Bounds bounds = renderer.bounds;
-			Vector3 size = ((Bounds)(ref bounds)).size;
-			result.Size = ((Vector3)(ref size)).magnitude;
+			Vector3 size = bounds.size;
+			result.Size = size.magnitude;
 			bounds = renderer.bounds;
-			result.Distance = Vector3.Distance(((Bounds)(ref bounds)).center, ((Component)Camera.main).transform.position);
+			result.Distance = Vector3.Distance(bounds.center, ((Component)Camera.main).transform.position);
 			result.MaterialCount = renderer.sharedMaterials.Length;
 			result.RenderType = ((object)renderer).GetType().Name;
 			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((Component)renderer).gameObject);

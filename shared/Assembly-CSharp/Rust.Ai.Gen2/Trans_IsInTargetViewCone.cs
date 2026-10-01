@@ -10,7 +10,7 @@ public class Trans_IsInTargetViewCone : FSMTransitionBase
 
 	protected override bool EvaluateInternal(ref FSMPayload payload)
 	{
-		return IsInTargetViewCone(base.Senses, angle);
+		return IsInTargetViewCone(Senses, angle);
 	}
 
 	public static bool IsInTargetViewCone(SenseComponent senses, float testAngle)
@@ -31,9 +31,9 @@ public class Trans_IsInTargetViewCone : FSMTransitionBase
 			return false;
 		}
 		Vector3 val = ((Component)senses.GetBaseEntity()).transform.position - ((Component)target).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		val = (target.ToNonNpcPlayer(out var player) ? player.eyes.BodyForward() : ((Component)target).transform.forward);
-		return Vector3.Dot(((Vector3)(ref val)).normalized, normalized) > Mathf.Cos(testAngle * (MathF.PI / 180f));
+		return Vector3.Dot(val.normalized, normalized) > Mathf.Cos(testAngle * (MathF.PI / 180f));
 	}
 
 	public override string ToString()

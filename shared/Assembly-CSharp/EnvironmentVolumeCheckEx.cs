@@ -23,17 +23,17 @@ public static class EnvironmentVolumeCheckEx
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		if (anchors.Length == 0)
 		{
 			return true;
 		}
-		OBB obb = default(OBB);
 		foreach (EnvironmentVolumeCheck environmentVolumeCheck in anchors)
 		{
 			Vector3 val = environmentVolumeCheck.worldPosition + environmentVolumeCheck.worldRotation * environmentVolumeCheck.Center;
 			Vector3 val2 = rot * Vector3.Scale(val, scale);
-			((OBB)(ref obb))._002Ector(pos + val2, Vector3.Scale(environmentVolumeCheck.Size, scale), rot);
+			OBB obb = new OBB(pos + val2, Vector3.Scale(environmentVolumeCheck.Size, scale), rot);
 			if (!environmentVolumeCheck.Check(obb))
 			{
 				return false;

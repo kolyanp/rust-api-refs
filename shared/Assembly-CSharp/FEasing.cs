@@ -162,7 +162,7 @@ public static class FEasing
 	{
 		return easingFunction switch
 		{
-			EFease.EaseInCubic => EaseInCubic, 
+			EFease.EaseInCubic => (Function)EaseInCubic, 
 			EFease.EaseOutCubic => EaseOutCubic, 
 			EFease.EaseInOutCubic => EaseInOutCubic, 
 			EFease.EaseInElastic => EaseInElastic, 

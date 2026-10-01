@@ -14,17 +14,17 @@ public class OrientableLight : SimpleLight
 
 	public Transform pitch;
 
-	public bool pivotAutoAdjust;
+	public bool pivotAutoAdjust = true;
 
 	[Space]
-	public Vector2 pitchClamp;
+	public Vector2 pitchClamp = new Vector2(-50f, 50f);
 
-	public Vector2 yawClamp;
+	public Vector2 yawClamp = new Vector2(-50f, 50f);
 
 	[Space]
-	public float serverLerpSpeed;
+	public float serverLerpSpeed = 15f;
 
-	public float clientLerpSpeed;
+	public float clientLerpSpeed = 10f;
 
 	[Space]
 	public GameObjectRef reorientEffect;
@@ -39,7 +39,7 @@ public class OrientableLight : SimpleLight
 
 	private float lastYawAmount;
 
-	public static Phrase TipPhrase;
+	public static Phrase TipPhrase = new Phrase("gametip_spotlight", "Use a hammer to adjust the spotlight direction");
 
 	private bool IsFacingDown => HasFlag(Flags.Reserved18);
 
@@ -109,7 +109,7 @@ public class OrientableLight : SimpleLight
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			Quaternion val = Quaternion.Euler(pitchAmount, 0f, 0f);
 			Quaternion val2 = Quaternion.Euler(0f, yawAmount, 0f);
@@ -161,7 +161,7 @@ public class OrientableLight : SimpleLight
 
 	public void ServerTick()
 	{
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			UpdateRotation(Time.deltaTime);
 		}
@@ -175,9 +175,9 @@ public class OrientableLight : SimpleLight
 		ClientRPC(RpcTarget.Player("CLIENT_OnDeployed", deployedBy));
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void SERVER_SetDir(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -213,12 +213,12 @@ public class OrientableLight : SimpleLight
 		{
 			Vector3 val = Vector3Ex.Direction(player.eyes.position, ((Component)yaw).transform.position);
 			Ray val2 = player.eyes.HeadRay();
-			Vector3 normWorld = ((Ray)(ref val2)).direction;
-			Vector3 normalized = ((Vector3)(ref normWorld)).normalized;
+			Vector3 normWorld = val2.direction;
+			Vector3 normalized = normWorld.normalized;
 			normWorld = Vector3.Lerp(val, normalized, 0.3f);
-			Vector3 normalized2 = ((Vector3)(ref normWorld)).normalized;
+			Vector3 normalized2 = normWorld.normalized;
 			Quaternion val3 = Quaternion.LookRotation(Quaternion.Inverse(pivotOrigin.rotation) * normalized2);
-			Vector3 val4 = BaseMountable.ConvertVector(((Quaternion)(ref val3)).eulerAngles);
+			Vector3 val4 = BaseMountable.ConvertVector(val3.eulerAngles);
 			float num = val4.x;
 			float num2 = val4.y;
 			if (!IsFacingDown)
@@ -232,7 +232,7 @@ public class OrientableLight : SimpleLight
 			{
 				string resourcePath = reorientEffect.resourcePath;
 				Vector3 position = ((Component)this).transform.position;
-				normWorld = default(Vector3);
+				normWorld = default;
 				Effect.server.Run(resourcePath, position, normWorld);
 			}
 			TryScheduleServerTick();
@@ -245,7 +245,7 @@ public class OrientableLight : SimpleLight
 		if (lastPitchAmount != pitchAmount || lastYawAmount != yawAmount)
 		{
 			InvokeRepeating(ServerTick, 0f, 0f);
-			Invoke(delegate
+			Invoke(() =>
 			{
 				CancelInvoke(ServerTick);
 			}, 5f);
@@ -269,7 +269,7 @@ public class OrientableLight : SimpleLight
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.msg.rcEntity != null && base.isServer)
+		if (info.msg.rcEntity != null && isServer)
 		{
 			pitchAmount = info.msg.rcEntity.aim.x;
 			yawAmount = info.msg.rcEntity.aim.y;
@@ -282,18 +282,11 @@ public class OrientableLight : SimpleLight
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		pivotAutoAdjust = true;
-		pitchClamp = new Vector2(-50f, 50f);
-		yawClamp = new Vector2(-50f, 50f);
-		serverLerpSpeed = 15f;
-		clientLerpSpeed = 10f;
-		base._002Ector();
 	}
 
 	static OrientableLight()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		TipPhrase = new Phrase("gametip_spotlight", "Use a hammer to adjust the spotlight direction");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

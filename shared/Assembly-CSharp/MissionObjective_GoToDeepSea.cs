@@ -31,7 +31,7 @@ public class MissionObjective_GoToDeepSea : MissionObjective
 			Debug.LogError((object)("Mission instance for " + ((Object)instance.GetMission()).name + " failed to retrieve server instance for DeepSeaManager"), (Object)(object)instance.GetMission());
 			return;
 		}
-		SetObjectiveWorldLocation(index, instance, ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).center);
+		SetObjectiveWorldLocation(index, instance, DeepSeaManager.DeepSeaBounds.center);
 		playerFor.MissionsDirty();
 	}
 

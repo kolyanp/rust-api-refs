@@ -34,6 +34,9 @@ public class ChangeSignText : UIDialog
 
 	public Light previewLight;
 
+	[Tooltip("Cubemap source for neutral lighting. Only its texture and intensity are read - the probe is never rendered")]
+	public ReflectionProbe neutralLightingProbe;
+
 	public Vector3 homeRotation;
 
 	public RectTransform toolsContainer;

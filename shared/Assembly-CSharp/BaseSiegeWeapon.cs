@@ -46,8 +46,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 	[Header("Towing")]
 	public Transform towAnchor;
 
-	[SerializeField]
 	[Header("Pulling")]
+	[SerializeField]
 	private List<ModifierDefintion> pullingPlayerModifiers;
 
 	public const Flags Flag_IsPulled = Flags.Reserved12;
@@ -88,7 +88,7 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return rigidBody.mass;
 			}
@@ -188,7 +188,7 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 
 	private void DecayTick()
 	{
-		if (base.IsDestroyed)
+		if (IsDestroyed)
 		{
 			return;
 		}
@@ -268,7 +268,7 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 
 	public virtual float GetPerformanceFraction()
 	{
-		float num = Mathf.InverseLerp(0.25f, 0.5f, base.healthFraction);
+		float num = Mathf.InverseLerp(0.25f, 0.5f, healthFraction);
 		return Mathf.Lerp(0.5f, 1f, num);
 	}
 
@@ -397,13 +397,13 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 		}
 		Vector3 val2 = ((Component)pullingPlayer).transform.position - lastPlayerPosition;
 		lastPlayerPosition = ((Component)pullingPlayer).transform.position;
-		if (((Vector3)(ref val2)).magnitude > playerMovementThreshold)
+		if (val2.magnitude > playerMovementThreshold)
 		{
 			Vector3 val3 = rigidBody.linearVelocity;
-			if (((Vector3)(ref val3)).magnitude < 1.5f)
+			if (val3.magnitude < 1.5f)
 			{
 				val3 = position - val;
-				Vector3 normalized = ((Vector3)(ref val3)).normalized;
+				Vector3 normalized = val3.normalized;
 				float mass = rigidBody.mass;
 				rigidBody.AddForceAtPosition(normalized * mass, val, (ForceMode)0);
 			}
@@ -417,7 +417,7 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 
 	public override float GetBrakeInput()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if (!IsTowing)
 			{
@@ -490,7 +490,7 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.fromDisk)
+		if (isServer && info.fromDisk)
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{

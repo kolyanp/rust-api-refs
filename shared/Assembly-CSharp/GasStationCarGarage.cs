@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -120,8 +121,8 @@ public class GasStationCarGarage : ModularCarGarage
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_ToggleLiftHeight(RPCMessage msg)
 	{
 		bool flag = msg.read.Bool();
@@ -138,11 +139,11 @@ public class GasStationCarGarage : ModularCarGarage
 		{
 			timeSinceStartMove = TimeSince.op_Implicit(0f);
 			isMoving = true;
-			if (base.isServer)
+			if (isServer)
 			{
 				InvokeRepeatingFixedTime(ProcessLiftMovement);
 			}
-			else if (base.isClient)
+			else if (isClient)
 			{
 				InvokeRepeating(ProcessLiftMovement, 0f, 0f);
 			}
@@ -193,19 +194,19 @@ public class GasStationCarGarage : ModularCarGarage
 		{
 			liftTransform.position = val2;
 			isMoving = false;
-			base.GetVehicleLiftPos.hasChanged = true;
-			if (base.isServer)
+			GetVehicleLiftPos.hasChanged = true;
+			if (isServer)
 			{
 				CancelInvokeFixedTime(ProcessLiftMovement);
 			}
-			if (base.isClient)
+			if (isClient)
 			{
 				CancelInvoke(ProcessLiftMovement);
 			}
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -214,7 +215,7 @@ public class GasStationCarGarage : ModularCarGarage
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: isLiftUp for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: isLiftUp for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_isLiftUp);
 			return true;
@@ -266,18 +267,34 @@ public class GasStationCarGarage : ModularCarGarage
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}

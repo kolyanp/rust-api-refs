@@ -15,8 +15,8 @@ public static class FTail_Skinning
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		Vector3[] array = (Vector3[])(object)new Vector3[bonesCoords.Length];
-		Quaternion[] array2 = (Quaternion[])(object)new Quaternion[bonesCoords.Length];
+		Vector3[] array = new Vector3[bonesCoords.Length];
+		Quaternion[] array2 = new Quaternion[bonesCoords.Length];
 		for (int i = 0; i < bonesCoords.Length; i++)
 		{
 			array[i] = bonesCoords[0].parent.InverseTransformPoint(bonesCoords[i].position);
@@ -45,7 +45,7 @@ public static class FTail_Skinning
 		}
 		int vertexCount = baseMesh.vertexCount;
 		FTail_SkinningVertexData[] array = new FTail_SkinningVertexData[vertexCount];
-		Vector3[] array2 = (Vector3[])(object)new Vector3[bonesPos.Length];
+		Vector3[] array2 = new Vector3[bonesPos.Length];
 		for (int i = 0; i < bonesPos.Length - 1; i++)
 		{
 			array2[i] = bonesPos[i + 1] - bonesPos[i];
@@ -71,8 +71,8 @@ public static class FTail_Skinning
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		Vector3[] array = (Vector3[])(object)new Vector3[bonesStructure.Length];
-		Quaternion[] array2 = (Quaternion[])(object)new Quaternion[bonesStructure.Length];
+		Vector3[] array = new Vector3[bonesStructure.Length];
+		Quaternion[] array2 = new Quaternion[bonesStructure.Length];
 		for (int i = 0; i < bonesStructure.Length; i++)
 		{
 			array[i] = skinParent.InverseTransformPoint(bonesStructure[i].position);
@@ -119,8 +119,8 @@ public static class FTail_Skinning
 		((Object)val).name = ((Object)baseMesh).name + " [FSKINNED]";
 		Transform transform = new GameObject(((Object)baseMesh).name + " [FSKINNED]").transform;
 		SkinnedMeshRenderer val2 = ((Component)transform).gameObject.AddComponent<SkinnedMeshRenderer>();
-		Transform[] array = (Transform[])(object)new Transform[bonesPositions.Length];
-		Matrix4x4[] array2 = (Matrix4x4[])(object)new Matrix4x4[bonesPositions.Length];
+		Transform[] array = new Transform[bonesPositions.Length];
+		Matrix4x4[] array2 = new Matrix4x4[bonesPositions.Length];
 		string text = ((((Object)baseMesh).name.Length >= 6) ? ((Object)baseMesh).name.Substring(0, 5) : ((Object)baseMesh).name);
 		for (int i = 0; i < bonesPositions.Length; i++)
 		{
@@ -137,10 +137,10 @@ public static class FTail_Skinning
 			((Component)array[i]).transform.rotation = bonesRotations[i];
 			array2[i] = array[i].worldToLocalMatrix * transform.localToWorldMatrix;
 		}
-		BoneWeight[] array3 = (BoneWeight[])(object)new BoneWeight[val.vertexCount];
+		BoneWeight[] array3 = new BoneWeight[val.vertexCount];
 		for (int j = 0; j < array3.Length; j++)
 		{
-			array3[j] = default(BoneWeight);
+			array3[j] = default;
 		}
 		for (int k = 0; k < vertData.Length; k++)
 		{
@@ -171,16 +171,16 @@ public static class FTail_Skinning
 		switch (bone)
 		{
 		case 1:
-			((BoneWeight)(ref weight)).boneIndex1 = index;
+			weight.boneIndex1 = index;
 			break;
 		case 2:
-			((BoneWeight)(ref weight)).boneIndex2 = index;
+			weight.boneIndex2 = index;
 			break;
 		case 3:
-			((BoneWeight)(ref weight)).boneIndex3 = index;
+			weight.boneIndex3 = index;
 			break;
 		default:
-			((BoneWeight)(ref weight)).boneIndex0 = index;
+			weight.boneIndex0 = index;
 			break;
 		}
 		return weight;
@@ -192,16 +192,16 @@ public static class FTail_Skinning
 		switch (bone)
 		{
 		case 1:
-			((BoneWeight)(ref weight)).weight1 = value;
+			weight.weight1 = value;
 			break;
 		case 2:
-			((BoneWeight)(ref weight)).weight2 = value;
+			weight.weight2 = value;
 			break;
 		case 3:
-			((BoneWeight)(ref weight)).weight3 = value;
+			weight.weight3 = value;
 			break;
 		default:
-			((BoneWeight)(ref weight)).weight0 = value;
+			weight.weight0 = value;
 			break;
 		}
 		return weight;

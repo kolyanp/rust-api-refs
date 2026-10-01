@@ -21,13 +21,12 @@ public class JsonContext
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Expected O, but got Unknown
+		//IL_0056: Expected Obj, but got Unknown
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Expected O, but got Unknown
-		base._002Ector();
+		//IL_0080: Expected Obj, but got Unknown
 		sb = new StringBuilder(65536);
 		sw = new StringWriter(sb, CultureInfo.InvariantCulture);
 		jw = new JsonTextWriter((TextWriter)sw)

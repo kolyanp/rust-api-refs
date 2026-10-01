@@ -26,7 +26,7 @@ public class RuntimePath : IAIPath
 		foreach (IAIPathNode iAIPathNode in nodes)
 		{
 			Vector3 val = point - iAIPathNode.Position;
-			float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+			float sqrMagnitude = val.sqrMagnitude;
 			if (sqrMagnitude < num)
 			{
 				num = sqrMagnitude;
@@ -48,7 +48,7 @@ public class RuntimePath : IAIPath
 		foreach (IAIPathNode iAIPathNode in nodes)
 		{
 			Vector3 val = Vector3Ex.XZ(point) - Vector3Ex.XZ(iAIPathNode.Position);
-			if (((Vector3)(ref val)).sqrMagnitude <= dist * dist)
+			if (val.sqrMagnitude <= dist * dist)
 			{
 				nearNodes.Add(iAIPathNode);
 			}
@@ -67,7 +67,7 @@ public class RuntimePath : IAIPath
 		{
 			iAIPathInterestNode = interestNodes[Random.Range(0, interestNodes.Count)];
 			Vector3 val = iAIPathInterestNode.Position - from;
-			if (!(((Vector3)(ref val)).sqrMagnitude < dist * dist))
+			if (!(val.sqrMagnitude < dist * dist))
 			{
 				break;
 			}

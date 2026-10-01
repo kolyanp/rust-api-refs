@@ -8,9 +8,9 @@ public class PlatformEntity : BaseEntity
 
 	private const float radius = 10f;
 
-	private Vector3 targetPosition;
+	private Vector3 targetPosition = Vector3.zero;
 
-	private Quaternion targetRotation;
+	private Quaternion targetRotation = Quaternion.identity;
 
 	protected void FixedUpdate()
 	{
@@ -39,7 +39,7 @@ public class PlatformEntity : BaseEntity
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient)
+		if (!isClient)
 		{
 			if (targetPosition == Vector3.zero || Vector3.Distance(((Component)this).transform.position, targetPosition) < 0.01f)
 			{
@@ -63,8 +63,5 @@ public class PlatformEntity : BaseEntity
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		targetPosition = Vector3.zero;
-		targetRotation = Quaternion.identity;
-		base._002Ector();
 	}
 }

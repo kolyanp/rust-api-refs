@@ -58,13 +58,13 @@ public static class FGenerators
 		}
 	}
 
-	private static Random random;
+	private static Random random = new Random();
 
-	public static string lastPath;
+	public static string lastPath = "";
 
 	private static float _editorUiScaling;
 
-	public static readonly Color Color_Remove;
+	public static readonly Color Color_Remove = new Color(1f, 0.825f, 0.825f, 1f);
 
 	public static Random GlobalRandomInstance => random;
 
@@ -362,7 +362,7 @@ public static class FGenerators
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		return default(Rect);
+		return default;
 	}
 
 	public static void ResetCoords(this Transform t)
@@ -556,8 +556,5 @@ public static class FGenerators
 	{
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		random = new Random();
-		lastPath = "";
-		Color_Remove = new Color(1f, 0.825f, 0.825f, 1f);
 	}
 }

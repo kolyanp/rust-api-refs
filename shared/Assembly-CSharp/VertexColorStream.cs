@@ -194,7 +194,7 @@ public class VertexColorStream : MonoBehaviour
 	public void rebuild()
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Expected O, but got Unknown
+		//IL_0019: Expected Obj, but got Unknown
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
 		if (!Object.op_Implicit((Object)(object)((Component)this).GetComponent<MeshFilter>()))

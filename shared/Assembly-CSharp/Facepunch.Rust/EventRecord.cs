@@ -330,7 +330,7 @@ public class EventRecord : IPooled
 
 	public void EnterPool()
 	{
-		Timestamp = default(DateTime);
+		Timestamp = default;
 		EventType = null;
 		IsServer = false;
 		foreach (EventRecordField datum in Data)
@@ -370,7 +370,15 @@ public class EventRecord : IPooled
 		BuildInfo current = BuildInfo.Current;
 		bool num = (current.Scm.Branch != null && current.Scm.Branch == "experimental/release") || current.Scm.Branch == "release";
 		bool isEditor = Application.isEditor;
-		string value = ((num && !isEditor) ? "release" : (isEditor ? "editor" : "staging"));
+		string value;
+		if (num && !isEditor)
+		{
+			value = "release";
+		}
+		else
+		{
+			value = (isEditor ? "editor" : "staging");
+		}
 		eventRecord.AddField("environment", value);
 		eventRecord.IsServer = isServer;
 		if (isServer && SaveRestore.WipeId != null)
@@ -655,7 +663,7 @@ public class EventRecord : IPooled
 				Pool.FreeUnmanaged<string>(ref list);
 			}
 		}
-		if (entity is DroppedItem droppedItem && droppedItem.DroppedTime != default(DateTime) && droppedItem.DroppedTime >= DateTime.UnixEpoch)
+		if (entity is DroppedItem { DroppedTime: var droppedTime } droppedItem && droppedTime != default(DateTime) && droppedItem.DroppedTime >= DateTime.UnixEpoch)
 		{
 			string userWipeId2 = SingletonComponent<ServerMgr>.Instance.persistance.GetUserWipeId(droppedItem.DroppedBy);
 			AddField("dropped_at", ((DateTimeOffset)droppedItem.DroppedTime).ToUnixTimeMilliseconds());
@@ -684,7 +692,7 @@ public class EventRecord : IPooled
 		Transform transform = ((Component)entity).transform;
 		AddField(key, "_pos", transform.position);
 		Quaternion rotation = transform.rotation;
-		AddField(key, "_rot", ((Quaternion)(ref rotation)).eulerAngles);
+		AddField(key, "_rot", rotation.eulerAngles);
 		AddField(key, "_id", entity.net.ID.Value);
 		return this;
 	}
@@ -706,7 +714,7 @@ public class EventRecord : IPooled
 			Transform transform = ((Component)ent).transform;
 			AddField(key, "_pos", transform.position);
 			Quaternion rotation = transform.rotation;
-			AddField(key, "_rot", ((Quaternion)(ref rotation)).eulerAngles);
+			AddField(key, "_rot", rotation.eulerAngles);
 		}
 		return this;
 	}
@@ -752,63 +760,63 @@ public class EventRecord : IPooled
 		{
 			if (flag)
 			{
-				((Utf8ValueStringBuilder)(ref writer)).Append(',');
+				writer.Append(',');
 			}
 			else
 			{
 				flag = true;
 			}
-			((Utf8ValueStringBuilder)(ref writer)).Append('"');
+			writer.Append('"');
 			datum.Serialize(ref writer, AnalyticsDocumentMode.CSV);
-			((Utf8ValueStringBuilder)(ref writer)).Append('"');
+			writer.Append('"');
 		}
 	}
 
 	public void SerializeAsJson(ref Utf8ValueStringBuilder writer, bool useDataObject = true)
 	{
-		((Utf8ValueStringBuilder)(ref writer)).Append("{\"Timestamp\":\"");
-		((Utf8ValueStringBuilder)(ref writer)).Append(Timestamp, StandardFormats.DateTime_ISO);
+		writer.Append("{\"Timestamp\":\"");
+		writer.Append(Timestamp, StandardFormats.DateTime_ISO);
 		bool flag = false;
 		if (useDataObject)
 		{
-			((Utf8ValueStringBuilder)(ref writer)).Append("\",\"Data\":{");
+			writer.Append("\",\"Data\":{");
 		}
 		else
 		{
-			((Utf8ValueStringBuilder)(ref writer)).Append("\"");
+			writer.Append("\"");
 			flag = true;
 		}
 		foreach (EventRecordField datum in Data)
 		{
 			if (flag)
 			{
-				((Utf8ValueStringBuilder)(ref writer)).Append(',');
+				writer.Append(',');
 			}
 			else
 			{
 				flag = true;
 			}
-			((Utf8ValueStringBuilder)(ref writer)).Append("\"");
-			((Utf8ValueStringBuilder)(ref writer)).Append(datum.Key1);
+			writer.Append("\"");
+			writer.Append(datum.Key1);
 			if (datum.Key2 != null)
 			{
-				((Utf8ValueStringBuilder)(ref writer)).Append(datum.Key2);
+				writer.Append(datum.Key2);
 			}
-			((Utf8ValueStringBuilder)(ref writer)).Append("\":");
+			writer.Append("\":");
 			if (!datum.IsObject)
 			{
-				((Utf8ValueStringBuilder)(ref writer)).Append('"');
+				writer.Append('"');
 			}
 			datum.Serialize(ref writer, AnalyticsDocumentMode.JSON);
 			if (!datum.IsObject)
 			{
-				((Utf8ValueStringBuilder)(ref writer)).Append("\"");
+				writer.Append("\"");
 			}
 		}
 		if (useDataObject)
 		{
-			((Utf8ValueStringBuilder)(ref writer)).Append('}');
+			writer.Append('}');
 		}
-		((Utf8ValueStringBuilder)(ref writer)).Append('}');
+		writer.Append('}');
 	}
 }

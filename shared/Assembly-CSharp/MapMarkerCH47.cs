@@ -21,7 +21,7 @@ public class MapMarkerCH47 : MapMarker
 		}
 		Vector3 forward = ((Component)forEntity).transform.forward;
 		forward.y = 0f;
-		((Vector3)(ref forward)).Normalize();
+		forward.Normalize();
 		return Mathf.Atan2(forward.x, 0f - forward.z) * 57.29578f + 180f;
 	}
 

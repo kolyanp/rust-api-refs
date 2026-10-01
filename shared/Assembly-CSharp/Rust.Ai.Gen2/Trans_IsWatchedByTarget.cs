@@ -13,11 +13,11 @@ public class Trans_IsWatchedByTarget : FSMTransitionBase
 
 	protected override bool EvaluateInternal(ref FSMPayload payload)
 	{
-		if (!base.Senses.FindTarget(out var target))
+		if (!Senses.FindTarget(out var target))
 		{
 			return false;
 		}
-		if (!base.Senses.GetVisibilityStatus(target, out var status))
+		if (!Senses.GetVisibilityStatus(target, out var status))
 		{
 			return false;
 		}

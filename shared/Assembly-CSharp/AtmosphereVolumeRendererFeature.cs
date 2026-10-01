@@ -4,11 +4,11 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AtmosphereVolumeRendererFeature")]
 public class AtmosphereVolumeRendererFeature : RustRendererFeature
 {
-	public FogMode Mode;
+	public FogMode Mode = (FogMode)3;
 
-	public bool DistanceFog;
+	public bool DistanceFog = true;
 
-	public bool HeightFog;
+	public bool HeightFog = true;
 
 	public Shader fogVolumeShader;
 
@@ -33,9 +33,5 @@ public class AtmosphereVolumeRendererFeature : RustRendererFeature
 	public AtmosphereVolumeRendererFeature()
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		Mode = (FogMode)3;
-		DistanceFog = true;
-		HeightFog = true;
-		((RustRendererFeature)this)._002Ector();
 	}
 }

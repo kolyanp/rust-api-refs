@@ -53,7 +53,6 @@ public class LTBezier
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		this.a = a;
 		aa = -a + 3f * (b - c) + d;
 		bb = 3f * (a + c) - 6f * b;
@@ -68,7 +67,7 @@ public class LTBezier
 			Vector3 val2 = bezierPoint((float)i * precision);
 			float num2 = num;
 			Vector3 val3 = val - val2;
-			num = num2 + ((Vector3)(ref val3)).magnitude;
+			num = num2 + val3.magnitude;
 			arcLengths[i] = num;
 			val = val2;
 		}

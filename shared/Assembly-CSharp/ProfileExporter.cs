@@ -167,7 +167,7 @@ public static class ProfileExporter
 		public static bool Export(string filename, IList<ServerProfiler.Profile> profiles, ServerProfiler.MemoryState memState, bool skipToStackStart = true)
 		{
 			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0070: Expected O, but got Unknown
+			//IL_0070: Expected Obj, but got Unknown
 			try
 			{
 				Debug.Log((object)"Starting JSON snapshot generation...");
@@ -730,7 +730,7 @@ public static class ProfileExporter
 
 			public static SectionBlock New(Section section, MemoryStream stream)
 			{
-				SectionBlock result = default(SectionBlock);
+				SectionBlock result = default;
 				result.stream = stream;
 				result.startPos = stream.Position;
 				result.Begin(section);
@@ -851,7 +851,7 @@ public static class ProfileExporter
 
 	private unsafe static void Preprocess(IList<ServerProfiler.Profile> profiles, out MainThreadInfo mainInfo, out uint totalBytes, bool skipToStackStart)
 	{
-		mainInfo = default(MainThreadInfo);
+		mainInfo = default;
 		totalBytes = 0u;
 		uint num = 0u;
 		foreach (ServerProfiler.Profile profile in profiles)

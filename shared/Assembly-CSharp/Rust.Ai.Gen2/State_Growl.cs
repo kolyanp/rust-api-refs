@@ -9,7 +9,7 @@ public class State_Growl : State_PlayAnimationRM
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		base.Blackboard.Increment("AlreadyGrowled");
+		Blackboard.Increment("AlreadyGrowled");
 		return base.OnStateEnter(payload);
 	}
 }

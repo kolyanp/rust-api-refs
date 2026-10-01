@@ -20,7 +20,7 @@ public class SphereEntity : BaseEntity
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (info.msg.sphereEntity != null)
 			{
@@ -44,7 +44,7 @@ public class SphereEntity : BaseEntity
 
 	public void Update()
 	{
-		if (currentRadius != lerpRadius && base.isServer)
+		if (currentRadius != lerpRadius && isServer)
 		{
 			currentRadius = Mathf.MoveTowards(currentRadius, lerpRadius, Time.deltaTime * lerpSpeed);
 			UpdateScale();

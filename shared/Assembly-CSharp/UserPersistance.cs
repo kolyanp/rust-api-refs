@@ -35,15 +35,15 @@ public class UserPersistance : IDisposable
 		string text = strFolder + "/player.blueprints.";
 		if ((Object)(object)activeGameMode != (Object)null && activeGameMode.wipeBpsOnProtocol)
 		{
-			text = text + 288 + ".";
+			text = text + 289 + ".";
 		}
-		blueprints.Open(text + 17 + ".db");
+		blueprints.Open(text + 18 + ".db");
 		if (!blueprints.TableExists("data"))
 		{
 			blueprints.Execute("CREATE TABLE data ( userid TEXT PRIMARY KEY, info BLOB, updated INTEGER )");
 		}
 		deaths = new Database();
-		deaths.Open(strFolder + "/player.deaths." + 17 + ".db");
+		deaths.Open(strFolder + "/player.deaths." + 18 + ".db");
 		if (!deaths.TableExists("data"))
 		{
 			deaths.Execute("CREATE TABLE data ( userid TEXT, born INTEGER, died INTEGER, info BLOB )");
@@ -51,7 +51,7 @@ public class UserPersistance : IDisposable
 			deaths.Execute("CREATE INDEX IF NOT EXISTS diedindex ON data ( died )");
 		}
 		identities = new Database();
-		identities.Open(strFolder + "/player.identities." + 17 + ".db");
+		identities.Open(strFolder + "/player.identities." + 18 + ".db");
 		if (!identities.TableExists("data"))
 		{
 			identities.Execute("CREATE TABLE data ( userid INT PRIMARY KEY, username TEXT )");
@@ -67,7 +67,7 @@ public class UserPersistance : IDisposable
 			tokens.Execute("ALTER TABLE data ADD COLUMN locked BOOLEAN DEFAULT 0");
 		}
 		playerState = new Database();
-		playerState.Open(strFolder + "/player.states." + 288 + ".db");
+		playerState.Open(strFolder + "/player.states." + 289 + ".db");
 		if (!playerState.TableExists("data"))
 		{
 			playerState.Execute("CREATE TABLE data ( userid INT PRIMARY KEY, state BLOB )");
@@ -127,7 +127,7 @@ public class UserPersistance : IDisposable
 		{
 			byte[] array = null;
 			NexusPlayer player;
-			Variable val = default(Variable);
+			Variable val = default;
 			if (!NexusServer.Started)
 			{
 				array = blueprints.Query<byte[], ulong>("SELECT info FROM data WHERE userid = ?", playerID);
@@ -205,9 +205,9 @@ public class UserPersistance : IDisposable
 				{
 					return null;
 				}
-				PlayerLifeStory obj = PlayerLifeStory.Deserialize(array);
-				obj.ShouldPool = false;
-				return obj;
+				PlayerLifeStory val = PlayerLifeStory.Deserialize(array);
+				val.ShouldPool = false;
+				return val;
 			}
 			catch (Exception ex)
 			{
@@ -270,7 +270,7 @@ public class UserPersistance : IDisposable
 		}
 		using (TimeWarning.New("GetOrGenerateAppToken"))
 		{
-			(int, bool) tuple = default((int, bool));
+			(int, bool) tuple = default;
 			if (tokenCache.TryGetValue(playerID, ref tuple))
 			{
 				locked = tuple.Item2;

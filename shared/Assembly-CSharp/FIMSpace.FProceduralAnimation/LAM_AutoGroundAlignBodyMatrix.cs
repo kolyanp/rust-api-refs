@@ -31,8 +31,8 @@ public class LAM_AutoGroundAlignBodyMatrix : LegsAnimatorControlModuleBase
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		animatedAverageNormal = base.LA.Up;
-		lastOrientation = base.LA.BaseTransform.rotation;
+		animatedAverageNormal = LA.Up;
+		lastOrientation = LA.BaseTransform.rotation;
 		_blendV = helper.RequestVariable("Matrix Blend", 1f);
 		_rotateV = helper.RequestVariable("Rotate Hips", 1f);
 		_alignSpdV = helper.RequestVariable("Aligning Speed", 0.7f);
@@ -48,12 +48,12 @@ public class LAM_AutoGroundAlignBodyMatrix : LegsAnimatorControlModuleBase
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		_blend = base.EffectBlend;
+		_blend = EffectBlend;
 		if (leg.RaycastHitted)
 		{
 			Vector3 val = averageNormal;
 			RaycastHit lastGroundHit = leg.LastGroundHit;
-			averageNormal = val + ((RaycastHit)(ref lastGroundHit)).normal;
+			averageNormal = val + lastGroundHit.normal;
 		}
 	}
 
@@ -79,8 +79,8 @@ public class LAM_AutoGroundAlignBodyMatrix : LegsAnimatorControlModuleBase
 		{
 			val = Quaternion.SlerpUnclamped(Quaternion.identity, lastOrientation, num);
 		}
-		Matrix4x4 mx = Matrix4x4.TRS(base.LA.BaseTransform.position, val * base.LA.BaseTransform.rotation, base.LA.BaseTransform.lossyScale);
-		base.LA.User_OverwriteCastMatrix(mx);
+		Matrix4x4 mx = Matrix4x4.TRS(LA.BaseTransform.position, val * LA.BaseTransform.rotation, LA.BaseTransform.lossyScale);
+		LA.User_OverwriteCastMatrix(mx);
 	}
 
 	public override void OnAfterAnimatorCaptureUpdate(LegsAnimator.LegsAnimatorCustomModuleHelper helper)
@@ -128,7 +128,7 @@ public class LAM_AutoGroundAlignBodyMatrix : LegsAnimatorControlModuleBase
 		float num = _blend * _rotateV.GetFloat();
 		if (!(num < 0.001f))
 		{
-			Vector3 eulerAngles = ((Quaternion)(ref lastOrientation)).eulerAngles;
+			Vector3 eulerAngles = lastOrientation.eulerAngles;
 			eulerAngles.x = LAM_DirectionalMovement.FormatAngleToPM180(eulerAngles.x);
 			eulerAngles.y = LAM_DirectionalMovement.FormatAngleToPM180(eulerAngles.y);
 			eulerAngles.z = LAM_DirectionalMovement.FormatAngleToPM180(eulerAngles.z);
@@ -136,17 +136,17 @@ public class LAM_AutoGroundAlignBodyMatrix : LegsAnimatorControlModuleBase
 			identity *= Quaternion.AngleAxis(eulerAngles.x * num, Vector3.right);
 			identity *= Quaternion.AngleAxis(eulerAngles.y * num, Vector3.up);
 			identity *= Quaternion.AngleAxis(eulerAngles.z * num, Vector3.forward);
-			LegsAnimator lA = base.LA;
+			LegsAnimator lA = LA;
 			lA._LastHipsRotationOffsetOutsideInfo *= identity;
-			if (Object.op_Implicit((Object)(object)base.LA.SpineBone))
+			if (Object.op_Implicit((Object)(object)LA.SpineBone))
 			{
-				Quaternion rotation = base.LA.SpineBone.rotation;
-				base.LA.HipsSetup.bone.rotation = identity * base.LA.HipsSetup.bone.rotation;
-				base.LA.SpineBone.rotation = Quaternion.Slerp(base.LA.SpineBone.rotation, rotation, _alignDownV.GetFloat());
+				Quaternion rotation = LA.SpineBone.rotation;
+				LA.HipsSetup.bone.rotation = identity * LA.HipsSetup.bone.rotation;
+				LA.SpineBone.rotation = Quaternion.Slerp(LA.SpineBone.rotation, rotation, _alignDownV.GetFloat());
 			}
 			else
 			{
-				base.LA.HipsSetup.bone.rotation = identity * base.LA.HipsSetup.bone.rotation;
+				LA.HipsSetup.bone.rotation = identity * LA.HipsSetup.bone.rotation;
 			}
 		}
 	}
@@ -188,16 +188,16 @@ public class LAM_AutoGroundAlignBodyMatrix : LegsAnimatorControlModuleBase
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
 		if (averageNormal == Vector3.zero)
 		{
-			averageNormal = base.LA.Up;
+			averageNormal = LA.Up;
 		}
 		else
 		{
-			((Vector3)(ref averageNormal)).Normalize();
+			averageNormal.Normalize();
 		}
 		if (_alignSpdV.GetFloat() < 0.999f)
 		{
 			float num = Mathf.LerpUnclamped(5f, 20f, _alignSpdV.GetFloat());
-			animatedAverageNormal = Vector3.Slerp(animatedAverageNormal, averageNormal, base.LA.DeltaTime * num);
+			animatedAverageNormal = Vector3.Slerp(animatedAverageNormal, averageNormal, LA.DeltaTime * num);
 		}
 		else
 		{
@@ -207,7 +207,7 @@ public class LAM_AutoGroundAlignBodyMatrix : LegsAnimatorControlModuleBase
 		Vector3 vector = _AxisBlendV.GetVector3();
 		if (vector != Vector3.one)
 		{
-			Vector3 eulerAngles = ((Quaternion)(ref lastOrientation)).eulerAngles;
+			Vector3 eulerAngles = lastOrientation.eulerAngles;
 			vector = helper.Parent.BaseTransform.TransformDirection(vector);
 			lastOrientation = Quaternion.Euler(eulerAngles.x * vector.x, eulerAngles.y * vector.y, eulerAngles.z * vector.z);
 		}

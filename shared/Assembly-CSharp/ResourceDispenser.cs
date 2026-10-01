@@ -138,7 +138,7 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0249: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.baseEntity.isServer || !info.CanGather || info.DidGather)
+		if (!baseEntity.isServer || !info.CanGather || info.DidGather)
 		{
 			return;
 		}
@@ -179,12 +179,12 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		float num5 = 0f;
 		if (fractionRemaining <= 0f)
 		{
-			num5 = base.baseEntity.MaxHealth();
+			num5 = baseEntity.MaxHealth();
 			if (info.DidGather && num2 < maxDestroyFractionForFinishBonus)
 			{
 				AssignFinishBonus(info.InitiatorPlayer, 1f - num2, info.Weapon);
 			}
-			HeadDispenser headDispenser = default(HeadDispenser);
+			HeadDispenser headDispenser = default;
 			if (((Component)this).gameObject.TryGetComponent<HeadDispenser>(ref headDispenser))
 			{
 				headDispenser.DispenseHead(info, corpse);
@@ -192,16 +192,16 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		}
 		else
 		{
-			num5 = (num4 - fractionRemaining) * base.baseEntity.MaxHealth();
+			num5 = (num4 - fractionRemaining) * baseEntity.MaxHealth();
 		}
 		HitInfo hitInfo = Pool.Get<HitInfo>();
-		hitInfo.Init(info.Initiator, base.baseEntity, DamageType.Generic, num5, ((Component)this).transform.position);
+		hitInfo.Init(info.Initiator, baseEntity, DamageType.Generic, num5, ((Component)this).transform.position);
 		hitInfo.gatherScale = 0f;
 		hitInfo.PointStart = info.PointStart;
 		hitInfo.PointEnd = info.PointEnd;
 		hitInfo.WeaponPrefab = info.WeaponPrefab;
 		hitInfo.Weapon = info.Weapon;
-		base.baseEntity.OnAttacked(hitInfo);
+		baseEntity.OnAttacked(hitInfo);
 		Pool.Free<HitInfo>(ref hitInfo);
 	}
 
@@ -229,7 +229,7 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 					item = (Item)obj;
 				}
 				ApplyItemOwnership(player, item);
-				Facepunch.Rust.Analytics.Azure.OnGatherItem(item.info.shortname, item.amount, base.baseEntity, player, weapon);
+				Facepunch.Rust.Analytics.Azure.OnGatherItem(item.info.shortname, item.amount, baseEntity, player, weapon);
 				Interface.CallHook("OnDispenserBonusReceived", this, player, item);
 				while (item.amount > item.MaxStackable())
 				{
@@ -290,12 +290,12 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		{
 			return 0f;
 		}
-		float num = base.baseEntity.MaxHealth();
+		float num = baseEntity.MaxHealth();
 		if (num <= 0f)
 		{
 			return 0f;
 		}
-		float num2 = Mathf.Min(damage, base.baseEntity.Health());
+		float num2 = Mathf.Min(damage, baseEntity.Health());
 		float num3 = num / startingItemCounts;
 		float num4 = Mathf.Floor(num2 / num3);
 		if (num4 < 1f)
@@ -325,7 +325,7 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		{
 			return;
 		}
-		float num = Mathf.Min(gatherDamage, base.baseEntity.Health()) / base.baseEntity.MaxHealth();
+		float num = Mathf.Min(gatherDamage, baseEntity.Health()) / baseEntity.MaxHealth();
 		float num2 = itemAmt.startAmount / startingItemCounts;
 		float num3 = Mathf.Clamp(itemAmt.startAmount * num / num2, 0f, itemAmt.amount);
 		num3 = Mathf.Round(num3);
@@ -358,7 +358,7 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		{
 			ApplyItemOwnership(entity, item);
 			OverrideOwnership(item, attackWeapon);
-			Facepunch.Rust.Analytics.Azure.OnGatherItem(item.info.shortname, item.amount, base.baseEntity, entity, attackWeapon);
+			Facepunch.Rust.Analytics.Azure.OnGatherItem(item.info.shortname, item.amount, baseEntity, entity, attackWeapon);
 			Interface.CallHook("OnDispenserGathered", this, entity, item);
 			while (item.amount > item.MaxStackable())
 			{
@@ -410,7 +410,7 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		{
 			return 0;
 		}
-		if (base.baseEntity is MonumentBlocker)
+		if (baseEntity is MonumentBlocker)
 		{
 			return 0;
 		}

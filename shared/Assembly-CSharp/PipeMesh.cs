@@ -2,39 +2,29 @@ using UnityEngine;
 
 public class PipeMesh : MonoBehaviour
 {
-	public float PipeRadius;
+	public float PipeRadius = 0.04f;
 
 	public Material PipeMaterial;
 
-	public float StraightLength;
+	public float StraightLength = 0.3f;
 
-	public int PipeSubdivisions;
+	public int PipeSubdivisions = 8;
 
-	public int BendTesselation;
+	public int BendTesselation = 6;
 
-	public float RidgeHeight;
+	public float RidgeHeight = 0.05f;
 
-	public float UvScaleMultiplier;
+	public float UvScaleMultiplier = 2f;
 
-	public float RidgeIncrements;
+	public float RidgeIncrements = 0.5f;
 
-	public float RidgeLength;
+	public float RidgeLength = 0.05f;
 
-	public Vector2 HorizontalUvRange;
+	public Vector2 HorizontalUvRange = new Vector2(0f, 0.2f);
 
 	public PipeMesh()
 	{
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		PipeRadius = 0.04f;
-		StraightLength = 0.3f;
-		PipeSubdivisions = 8;
-		BendTesselation = 6;
-		RidgeHeight = 0.05f;
-		UvScaleMultiplier = 2f;
-		RidgeIncrements = 0.5f;
-		RidgeLength = 0.05f;
-		HorizontalUvRange = new Vector2(0f, 0.2f);
-		((MonoBehaviour)this)._002Ector();
 	}
 }

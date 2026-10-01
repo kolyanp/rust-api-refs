@@ -4,8 +4,8 @@ namespace FIMSpace.Basics;
 
 public class FBasic_FreeCameraBehaviour : MonoBehaviour
 {
-	[Tooltip("How fast camera should fly")]
 	[Header("> Hold right mouse button to rotate camera <")]
+	[Tooltip("How fast camera should fly")]
 	public float SpeedMultiplier = 10f;
 
 	[Tooltip("Value of acceleration smoothness")]
@@ -37,7 +37,7 @@ public class FBasic_FreeCameraBehaviour : MonoBehaviour
 		speeds = Vector3.zero;
 		ySpeed = 0f;
 		Quaternion val = ((Component)this).transform.rotation;
-		rotation = ((Quaternion)(ref val)).eulerAngles;
+		rotation = val.eulerAngles;
 	}
 
 	private void Update()

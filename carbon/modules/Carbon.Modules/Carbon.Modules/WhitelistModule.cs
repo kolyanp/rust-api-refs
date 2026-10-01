@@ -76,10 +76,10 @@ public class WhitelistModule : CarbonModule<WhitelistConfig, EmptyModuleData>
 			return null;
 		}
 		ConsoleNetwork.SendClientCommand(connection, "echo " + ((CarbonModule<WhitelistConfig, EmptyModuleData>)this).GetPhrase("denied", id), Array.Empty<object>());
-		((Plugin)Community.Runtime.Core).NextTick((Action)delegate
+		((Plugin)Community.Runtime.Core).NextTick((Action)(() =>
 		{
 			ConnectionAuth.Reject(connection, ((CarbonModule<WhitelistConfig, EmptyModuleData>)this).GetPhrase("denied", id), (string)null);
-		});
+		}));
 		return null;
 	}
 

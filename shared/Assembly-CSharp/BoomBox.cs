@@ -43,15 +43,15 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 
 	public string CurrentRadioIp { get; set; } = "rustradio.facepunch.com";
 
-	public BaseEntity BaseEntity => base.baseEntity;
+	public BaseEntity BaseEntity => baseEntity;
 
 	private bool isClient
 	{
 		get
 		{
-			if ((Object)(object)base.baseEntity != (Object)null)
+			if ((Object)(object)baseEntity != (Object)null)
 			{
-				return base.baseEntity.isClient;
+				return baseEntity.isClient;
 			}
 			return false;
 		}
@@ -192,7 +192,7 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 				AssignedRadioBy = assignedRadioBy;
 			}
 			CurrentRadioIp = text;
-			base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("OnRadioIPChanged"), CurrentRadioIp);
+			baseEntity.ClientRPC(RpcTarget.NetworkGroup("OnRadioIPChanged"), CurrentRadioIp);
 			Interface.CallHook("OnBoomboxStationUpdated", this, text, msg.player);
 			if (IsOn())
 			{
@@ -249,7 +249,7 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 		bool flag = msg.read.ReadByte() == 1;
 		if (Interface.CallHook("OnBoomboxToggle", this, msg.player, flag) == null)
 		{
-			if (flag && (Object)(object)player != (Object)null && player.IsConnected && !player.IsNpc && !player.IsBot && base.baseEntity is DeployableBoomBox deployableBoomBox)
+			if (flag && (Object)(object)player != (Object)null && player.IsConnected && !player.IsNpc && !player.IsBot && baseEntity is DeployableBoomBox deployableBoomBox)
 			{
 				BaseMission.MissionEventPayload payload = new BaseMission.MissionEventPayload
 				{
@@ -270,10 +270,10 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 
 	public void ServerTogglePlay(bool play)
 	{
-		if (!((Object)(object)base.baseEntity == (Object)null) && HasFlag(BaseEntity.Flags.On) != play)
+		if (!((Object)(object)baseEntity == (Object)null) && HasFlag(BaseEntity.Flags.On) != play)
 		{
 			SetFlag(BaseEntity.Flags.On, play);
-			if (base.baseEntity is IOEntity iOEntity)
+			if (baseEntity is IOEntity iOEntity)
 			{
 				iOEntity.MarkDirtyForceUpdateOutputs();
 			}
@@ -291,20 +291,20 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 	public void OnCassetteInserted(Cassette c)
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)base.baseEntity == (Object)null))
+		if (!((Object)(object)baseEntity == (Object)null))
 		{
-			base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("Client_OnCassetteInserted"), c.net.ID);
+			baseEntity.ClientRPC(RpcTarget.NetworkGroup("Client_OnCassetteInserted"), c.net.ID);
 			ServerTogglePlay(play: false);
 			SetFlag(BaseEntity.Flags.Reserved1, state: true);
-			base.baseEntity.SendNetworkUpdate();
+			baseEntity.SendNetworkUpdate();
 		}
 	}
 
 	public void OnCassetteRemoved(Cassette c)
 	{
-		if (!((Object)(object)base.baseEntity == (Object)null))
+		if (!((Object)(object)baseEntity == (Object)null))
 		{
-			base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("Client_OnCassetteRemoved"));
+			baseEntity.ClientRPC(RpcTarget.NetworkGroup("Client_OnCassetteRemoved"));
 			ServerTogglePlay(play: false);
 			SetFlag(BaseEntity.Flags.Reserved1, state: false);
 		}
@@ -312,9 +312,9 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 
 	public void SetFlag(BaseEntity.Flags f, bool state)
 	{
-		if ((Object)(object)base.baseEntity != (Object)null)
+		if ((Object)(object)baseEntity != (Object)null)
 		{
-			using (BaseEntity.FlagsUpdateScope flagsUpdateScope = base.baseEntity.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate))
+			using (BaseEntity.FlagsUpdateScope flagsUpdateScope = baseEntity.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate))
 			{
 				flagsUpdateScope.Set(f, state);
 			}
@@ -323,32 +323,32 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 
 	public bool IsPowered()
 	{
-		if ((Object)(object)base.baseEntity == (Object)null)
+		if ((Object)(object)baseEntity == (Object)null)
 		{
 			return false;
 		}
-		if (!base.baseEntity.HasFlag(BaseEntity.Flags.Reserved8))
+		if (!baseEntity.HasFlag(BaseEntity.Flags.Reserved8))
 		{
-			return base.baseEntity is HeldBoomBox;
+			return baseEntity is HeldBoomBox;
 		}
 		return true;
 	}
 
 	public bool IsOn()
 	{
-		if ((Object)(object)base.baseEntity == (Object)null)
+		if ((Object)(object)baseEntity == (Object)null)
 		{
 			return false;
 		}
-		return base.baseEntity.IsOn();
+		return baseEntity.IsOn();
 	}
 
 	public bool HasFlag(BaseEntity.Flags f)
 	{
-		if ((Object)(object)base.baseEntity == (Object)null)
+		if ((Object)(object)baseEntity == (Object)null)
 		{
 			return false;
 		}
-		return base.baseEntity.HasFlag(f);
+		return baseEntity.HasFlag(f);
 	}
 }

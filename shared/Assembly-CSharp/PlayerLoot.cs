@@ -58,11 +58,11 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 			return;
 		}
 		Interface.CallHook("OnPlayerLootEnd", this);
-		base.baseEntity.HasClosedLoot();
+		baseEntity.HasClosedLoot();
 		MarkDirty();
 		if (Object.op_Implicit((Object)(object)entitySource))
 		{
-			((Component)entitySource).SendMessage("PlayerStoppedLooting", (object)base.baseEntity, (SendMessageOptions)1);
+			((Component)entitySource).SendMessage("PlayerStoppedLooting", (object)baseEntity, (SendMessageOptions)1);
 		}
 		foreach (ItemContainer container in containers)
 		{
@@ -117,16 +117,16 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 	public void Check()
 	{
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		if (!IsLooting() || !base.baseEntity.isServer)
+		if (!IsLooting() || !baseEntity.isServer)
 		{
 			return;
 		}
 		if ((Object)(object)entitySource == (Object)null)
 		{
-			base.baseEntity.ShowToast(GameTip.Styles.Error, PlayerInventoryErrors.LootableDoesntExist, false);
+			baseEntity.ShowToast(GameTip.Styles.Error, PlayerInventoryErrors.LootableDoesntExist, false);
 			Clear();
 		}
-		else if (!entitySource.CanBeLooted(base.baseEntity) || entitySource.IsTransferring())
+		else if (!entitySource.CanBeLooted(baseEntity) || entitySource.IsTransferring())
 		{
 			Clear();
 		}
@@ -136,7 +136,7 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 			{
 				return;
 			}
-			float num = entitySource.Distance(base.baseEntity.eyes.position);
+			float num = entitySource.Distance(baseEntity.eyes.position);
 			if (num > 3f)
 			{
 				LootDistanceOverride component = ((Component)entitySource).GetComponent<LootDistanceOverride>();
@@ -178,7 +178,7 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		isInvokingSendUpdate = false;
-		if (!base.baseEntity.IsValid() || Interface.CallHook("OnLootNetworkUpdate", this) != null)
+		if (!baseEntity.IsValid() || Interface.CallHook("OnLootNetworkUpdate", this) != null)
 		{
 			return;
 		}
@@ -201,7 +201,7 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 					val.containers.Add(container.Save());
 				}
 			}
-			base.baseEntity.ClientRPC(RpcTarget.Player("UpdateLoot", base.baseEntity), val);
+			baseEntity.ClientRPC(RpcTarget.Player("UpdateLoot", baseEntity), val);
 		}
 		finally
 		{
@@ -216,7 +216,7 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 		{
 			return false;
 		}
-		if (!targetEntity.OnStartBeingLooted(base.baseEntity))
+		if (!targetEntity.OnStartBeingLooted(baseEntity))
 		{
 			return false;
 		}
@@ -228,8 +228,8 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 		MarkDirty();
 		if (targetEntity is ILootableEntity lootableEntity)
 		{
-			lootableEntity.LastLootedBy = base.baseEntity.userID;
-			lootableEntity.LastLootedByPlayer = base.baseEntity;
+			lootableEntity.LastLootedBy = baseEntity.userID;
+			lootableEntity.LastLootedByPlayer = baseEntity;
 		}
 		return true;
 	}
@@ -250,7 +250,7 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 			container.onDirty += _markDirtyCallback;
 			if ((Object)(object)container.entityOwner != (Object)null)
 			{
-				base.baseEntity.ProcessMissionEvent(BaseMission.MissionEventType.OPEN_STORAGE, new BaseMission.MissionEventPayload
+				baseEntity.ProcessMissionEvent(BaseMission.MissionEventType.OPEN_STORAGE, new BaseMission.MissionEventPayload
 				{
 					UintIdentifier = container.entityOwner.prefabID,
 					NetworkIdentifier = container.entityOwner.net.ID,

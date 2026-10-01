@@ -58,29 +58,29 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 	public List<Transform> displayAnchors;
 
 	[Tooltip("Scaling to apply to displayed items, set to (1,1,1) to use prefab's original scale.")]
-	public Vector3 displayScaling;
+	public Vector3 displayScaling = Vector3.one;
 
 	[Tooltip("Do the displayed items have a random rotation, snapped to 90 degree increments?")]
-	public bool randomSpawnAngle;
+	public bool randomSpawnAngle = true;
 
 	[Tooltip("Custom weights to determine how much of the display is allocated to each category.")]
 	public List<DisplayCategoryWeight> displayCategoryCustomWeights;
 
-	private Dictionary<ItemCategory, DisplayCategory> displayCategoryDict;
+	private Dictionary<ItemCategory, DisplayCategory> displayCategoryDict = new Dictionary<ItemCategory, DisplayCategory>();
 
-	private Dictionary<ItemDefinition, DisplayCategory> itemCategoryOverrideDict;
+	private Dictionary<ItemDefinition, DisplayCategory> itemCategoryOverrideDict = new Dictionary<ItemDefinition, DisplayCategory>();
 
-	private Dictionary<DisplayCategory, float> displayCategoryWeightsDict;
+	private Dictionary<DisplayCategory, float> displayCategoryWeightsDict = new Dictionary<DisplayCategory, float>();
 
 	private EntityRef<BaseEntity> cachedPrivilege;
 
-	private HashSet<BasePlayer> openAccessPlayers;
+	private HashSet<BasePlayer> openAccessPlayers = new HashSet<BasePlayer>();
 
 	private float[] cachedResourceProportions;
 
-	private bool dirtyCache;
+	private bool dirtyCache = true;
 
-	private List<ulong> cachedAuthPlayers;
+	private List<ulong> cachedAuthPlayers = new List<ulong>();
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -173,16 +173,16 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 
 	public override bool PlayerOpenLoot(BasePlayer player, string panelToOpen = "", bool doPositionChecks = true)
 	{
-		bool num = base.PlayerOpenLoot(player, panelToOpen, doPositionChecks);
-		if (num && cachedPrivilege.IsSet)
+		bool flag = base.PlayerOpenLoot(player, panelToOpen, doPositionChecks);
+		if (flag && cachedPrivilege.IsSet)
 		{
-			BaseEntity baseEntity = cachedPrivilege.Get(base.isServer);
+			BaseEntity baseEntity = cachedPrivilege.Get(isServer);
 			if ((Object)(object)baseEntity == (Object)null || baseEntity.IsDestroyed)
 			{
 				openAccessPlayers.Add(player);
 			}
 		}
-		return num;
+		return flag;
 	}
 
 	private bool CanShowToPlayer(BasePlayer player)
@@ -199,9 +199,9 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 			}
 			using (TimeWarning.New("DisplayingBoxStorage.CanShowToPlayer.TCCheck"))
 			{
-				if (cachedPrivilege.IsValid(base.isServer))
+				if (cachedPrivilege.IsValid(isServer))
 				{
-					BaseEntity baseEntity = cachedPrivilege.Get(base.isServer);
+					BaseEntity baseEntity = cachedPrivilege.Get(isServer);
 					if ((Object)(object)baseEntity != (Object)null)
 					{
 						if (baseEntity.IsDestroyed || !(baseEntity is IPrivilege privilege))
@@ -257,7 +257,7 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 		{
 			num = value;
 		}
-		float num2 = (float)num / (float)base.inventory.capacity;
+		float num2 = (float)num / (float)inventory.capacity;
 		if (displayCategoryWeightsDict.TryGetValue(category, out var value2))
 		{
 			num2 *= value2;
@@ -268,7 +268,7 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 	private void BuildCategorySlotCache(ref Dictionary<DisplayCategory, int> categorySlotCache)
 	{
 		categorySlotCache.Clear();
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			DisplayCategory categoryForItem = GetCategoryForItem(item.info);
 			categorySlotCache[categoryForItem] = categorySlotCache.GetValueOrDefault(categoryForItem, 0) + 1;
@@ -291,7 +291,7 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (child is Hopper)
 			{
@@ -304,7 +304,7 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 	protected override void OnChildRemoved(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (child is Hopper)
 			{
@@ -385,14 +385,5 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		displayScaling = Vector3.one;
-		randomSpawnAngle = true;
-		displayCategoryDict = new Dictionary<ItemCategory, DisplayCategory>();
-		itemCategoryOverrideDict = new Dictionary<ItemDefinition, DisplayCategory>();
-		displayCategoryWeightsDict = new Dictionary<DisplayCategory, float>();
-		openAccessPlayers = new HashSet<BasePlayer>();
-		dirtyCache = true;
-		cachedAuthPlayers = new List<ulong>();
-		base._002Ector();
 	}
 }

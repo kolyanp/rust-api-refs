@@ -34,13 +34,13 @@ public class TerrainCollisionTrigger : EnvironmentVolumeTrigger
 
 	private void UpdateCollider(Collider other, bool state)
 	{
-		TerrainMeta.Collision.SetIgnore(other, base.volume.trigger, state);
+		TerrainMeta.Collision.SetIgnore(other, volume.trigger, state);
 		TerrainCollisionProxy component = ((Component)other).GetComponent<TerrainCollisionProxy>();
 		if (Object.op_Implicit((Object)(object)component))
 		{
 			for (int i = 0; i < component.colliders.Length; i++)
 			{
-				TerrainMeta.Collision.SetIgnore((Collider)(object)component.colliders[i], base.volume.trigger, state);
+				TerrainMeta.Collision.SetIgnore((Collider)(object)component.colliders[i], volume.trigger, state);
 			}
 		}
 	}

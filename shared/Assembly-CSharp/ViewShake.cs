@@ -23,12 +23,6 @@ public class ViewShake
 		public bool infinite;
 	}
 
-	[CompilerGenerated]
-	private Vector3 _003CPositionOffset_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CAnglesOffset_003Ek__BackingField;
-
 	protected List<ShakeParameters> Entries = new List<ShakeParameters>();
 
 	public Vector3 PositionOffset
@@ -37,14 +31,14 @@ public class ViewShake
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CPositionOffset_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CPositionOffset_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -54,14 +48,14 @@ public class ViewShake
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CAnglesOffset_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CAnglesOffset_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 

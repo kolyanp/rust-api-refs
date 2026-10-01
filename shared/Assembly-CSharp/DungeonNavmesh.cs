@@ -83,11 +83,11 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Expected O, but got Unknown
+		//IL_0031: Expected Obj, but got Unknown
 		if (AI.useUnityNavmesh)
 		{
 			NavMeshBuildSettings settingsByIndex = NavMesh.GetSettingsByIndex(NavMeshAgentTypeIndex);
-			agentTypeId = ((NavMeshBuildSettings)(ref settingsByIndex)).agentTypeID;
+			agentTypeId = settingsByIndex.agentTypeID;
 			NavMeshData = new NavMeshData(agentTypeId);
 			sources = new List<NavMeshBuildSource>();
 			defaultArea = NavMesh.GetAreaFromName(DefaultAreaName);
@@ -103,7 +103,7 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 			if (AI.useUnityNavmesh)
 			{
 				CancelInvoke(FinishBuildingNavmesh);
-				((NavMeshDataInstance)(ref NavMeshDataInstance)).Remove();
+				NavMeshDataInstance.Remove();
 			}
 			Instances.Remove(this);
 		}
@@ -122,8 +122,8 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 			float realtimeSinceStartup = Time.realtimeSinceStartup;
 			NavMeshTools.Log("Starting Dungeon Navmesh Build with " + sources.Count + " sources");
 			NavMeshBuildSettings settingsByIndex = NavMesh.GetSettingsByIndex(NavMeshAgentTypeIndex);
-			((NavMeshBuildSettings)(ref settingsByIndex)).overrideVoxelSize = true;
-			((NavMeshBuildSettings)(ref settingsByIndex)).voxelSize = ((NavMeshBuildSettings)(ref settingsByIndex)).voxelSize * NavmeshResolutionModifier;
+			settingsByIndex.overrideVoxelSize = true;
+			settingsByIndex.voxelSize *= NavmeshResolutionModifier;
 			BuildingOperation = NavMeshBuilder.UpdateNavMeshDataAsync(NavMeshData, settingsByIndex, sources, Bounds);
 			BuildTimer.Reset();
 			BuildTimer.Start();
@@ -152,6 +152,7 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
@@ -159,12 +160,11 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 		RustNavigation.EnsureUnityNavmesh();
 		int count = sources.Count;
 		NavMeshTools.Log("Source count Pre cull : " + sources.Count);
-		Vector3 val = default(Vector3);
 		for (int num = sources.Count - 1; num >= 0; num--)
 		{
 			NavMeshBuildSource item = sources[num];
-			Matrix4x4 transform = ((NavMeshBuildSource)(ref item)).transform;
-			((Vector3)(ref val))._002Ector(((Matrix4x4)(ref transform))[0, 3], ((Matrix4x4)(ref transform))[1, 3], ((Matrix4x4)(ref transform))[2, 3]);
+			Matrix4x4 transform = item.transform;
+			Vector3 val = new Vector3(transform[0, 3], transform[1, 3], transform[2, 3]);
 			bool flag = false;
 			foreach (AIInformationZone zone in AIInformationZone.zones)
 			{
@@ -194,9 +194,9 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 				yield break;
 			}
 			HasBuildOperationStarted = false;
-			((Bounds)(ref Bounds)).center = ((Component)this).transform.position;
-			((Bounds)(ref Bounds)).size = new Vector3(1000000f, 100000f, 100000f);
-			IEnumerator enumerator = NavMeshTools.CollectSourcesAsync(roots, ((LayerMask)(ref LayerMask)).value, NavMeshCollectGeometry, defaultArea, sources, AppendModifierVolumes, UpdateNavMeshAsync);
+			Bounds.center = ((Component)this).transform.position;
+			Bounds.size = new Vector3(1000000f, 100000f, 100000f);
+			IEnumerator enumerator = NavMeshTools.CollectSourcesAsync(roots, LayerMask.value, NavMeshCollectGeometry, defaultArea, sources, AppendModifierVolumes, UpdateNavMeshAsync);
 			if (AiManager.nav_wait)
 			{
 				yield return enumerator;
@@ -242,7 +242,7 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 			if (!((Object)(object)root == (Object)null))
 			{
 				bool hasFootprint = false;
-				Bounds footprint = default(Bounds);
+				Bounds footprint = default;
 				NavMeshTools.EncapsulateNavmeshColliders(root, ref footprint, ref hasFootprint);
 				if (hasFootprint)
 				{
@@ -271,6 +271,7 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -279,21 +280,20 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
 		RustNavigation.EnsureUnityNavmesh();
-		Vector3 size = default(Vector3);
 		foreach (NavMeshModifierVolume activeModifier in NavMeshModifierVolume.activeModifiers)
 		{
 			if ((LayerMask.op_Implicit(LayerMask) & (1 << ((Component)activeModifier).gameObject.layer)) != 0 && activeModifier.AffectsAgentType(agentTypeId))
 			{
 				Vector3 val = ((Component)activeModifier).transform.TransformPoint(activeModifier.center);
-				if (((Bounds)(ref Bounds)).Contains(val))
+				if (Bounds.Contains(val))
 				{
 					Vector3 lossyScale = ((Component)activeModifier).transform.lossyScale;
-					((Vector3)(ref size))._002Ector(activeModifier.size.x * Mathf.Abs(lossyScale.x), activeModifier.size.y * Mathf.Abs(lossyScale.y), activeModifier.size.z * Mathf.Abs(lossyScale.z));
-					NavMeshBuildSource item = default(NavMeshBuildSource);
-					((NavMeshBuildSource)(ref item)).shape = (NavMeshBuildSourceShape)5;
-					((NavMeshBuildSource)(ref item)).transform = Matrix4x4.TRS(val, ((Component)activeModifier).transform.rotation, Vector3.one);
-					((NavMeshBuildSource)(ref item)).size = size;
-					((NavMeshBuildSource)(ref item)).area = activeModifier.area;
+					Vector3 size = new Vector3(activeModifier.size.x * Mathf.Abs(lossyScale.x), activeModifier.size.y * Mathf.Abs(lossyScale.y), activeModifier.size.z * Mathf.Abs(lossyScale.z));
+					NavMeshBuildSource item = default;
+					item.shape = (NavMeshBuildSourceShape)5;
+					item.transform = Matrix4x4.TRS(val, ((Component)activeModifier).transform.rotation, Vector3.one);
+					item.size = size;
+					item.area = activeModifier.area;
 					sources.Add(item);
 				}
 			}
@@ -307,7 +307,7 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 		RustNavigation.EnsureUnityNavmesh();
 		if (BuildingOperation != null && BuildingOperation.isDone)
 		{
-			if (!((NavMeshDataInstance)(ref NavMeshDataInstance)).valid)
+			if (!NavMeshDataInstance.valid)
 			{
 				NavMeshDataInstance = NavMesh.AddNavMeshData(NavMeshData);
 			}

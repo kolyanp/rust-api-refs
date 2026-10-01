@@ -9,9 +9,9 @@ public class LifeScale : BaseMonoBehaviour
 	[NonSerialized]
 	private Vector3 initialScale;
 
-	public Vector3 finalScale;
+	public Vector3 finalScale = Vector3.one;
 
-	private Vector3 targetLerpScale;
+	private Vector3 targetLerpScale = Vector3.zero;
 
 	private Action updateScaleAction;
 
@@ -72,8 +72,5 @@ public class LifeScale : BaseMonoBehaviour
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		finalScale = Vector3.one;
-		targetLerpScale = Vector3.zero;
-		base._002Ector();
 	}
 }

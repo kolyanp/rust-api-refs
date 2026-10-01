@@ -94,7 +94,7 @@ public sealed class PatchManager : CarbonBehaviour, IPatchManager, IDisposable
 			{
 				Logger.Log("Updating hooks...");
 			}
-			Updater.DoUpdate(delegate(bool result)
+			Updater.DoUpdate((bool result) =>
 			{
 				if (!result)
 				{
@@ -106,10 +106,10 @@ public sealed class PatchManager : CarbonBehaviour, IPatchManager, IDisposable
 		else
 		{
 			Logger.Log("Hook updates disabled, loading from disk...");
-			((FacepunchBehaviour)this).Invoke((Action)delegate
+			((FacepunchBehaviour)this).Invoke((Action)(() =>
 			{
 				((Behaviour)this).enabled = true;
-			}, 0.1f);
+			}), 0.1f);
 		}
 	}
 
@@ -150,10 +150,10 @@ public sealed class PatchManager : CarbonBehaviour, IPatchManager, IDisposable
 		if (!InitialOnEnable)
 		{
 			InitialOnEnable = true;
-			((FacepunchBehaviour)this).Invoke((Action)delegate
+			((FacepunchBehaviour)this).Invoke((Action)(() =>
 			{
 				Community.Runtime.Events.Trigger(CarbonEvent.HooksInstalled, EventArgs.Empty);
-			}, 1f);
+			}), 1f);
 		}
 	}
 
@@ -210,7 +210,7 @@ public sealed class PatchManager : CarbonBehaviour, IPatchManager, IDisposable
 			return;
 		}
 		Logger.Warn(" Re-downloading hooks...");
-		Updater.DoUpdate(delegate(bool result)
+		Updater.DoUpdate((bool result) =>
 		{
 			if (!result)
 			{

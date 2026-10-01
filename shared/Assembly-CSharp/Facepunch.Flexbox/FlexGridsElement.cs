@@ -189,7 +189,7 @@ public class FlexGridsElement : FlexElementBase
 
 	private void ReOrderChildren(float innerWidth, float columnWidth)
 	{
-		List<GridSlot> list = base.Children.Select(delegate(IFlexNode child)
+		List<GridSlot> list = base.Children.Select((IFlexNode child) =>
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -214,7 +214,7 @@ public class FlexGridsElement : FlexElementBase
 				SpanY = spanY
 			};
 		}).ToList();
-		list.Sort(delegate(GridSlot a, GridSlot b)
+		list.Sort((GridSlot a, GridSlot b) =>
 		{
 			int value = a.SpanX * a.SpanY;
 			return (b.SpanX * b.SpanY).CompareTo(value);

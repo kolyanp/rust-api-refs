@@ -49,7 +49,7 @@ public class NpcGrenade : BaseEntity
 		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer && !base.IsDestroyed)
+		if (isServer && !IsDestroyed)
 		{
 			Vector3 val = ((Component)grenadeHint).transform.position + 1.8f * Vector3.up;
 			Vector3 position = grenadeHint.landingPoint.position;
@@ -107,9 +107,9 @@ public class NpcGrenade : BaseEntity
 		{
 			Vector3 val2 = Quaternion.Euler(0f, (float)i / (float)numToCreate * 360f, 0f) * Vector3.forward * 1.8f * Random.Range(0.8f, 1.2f);
 			Vector3 spawnPos = val + val2;
-			if (GamePhysics.Trace(new Ray(val, val2), 0f, out var hitInfo, ((Vector3)(ref val2)).magnitude, 1237003025, (QueryTriggerInteraction)0))
+			if (GamePhysics.Trace(new Ray(val, val2), 0f, out var hitInfo, val2.magnitude, 1237003025, (QueryTriggerInteraction)0))
 			{
-				spawnPos = ((RaycastHit)(ref hitInfo)).point - ((Vector3)(ref val2)).normalized * 0.5f;
+				spawnPos = hitInfo.point - val2.normalized * 0.5f;
 			}
 			SpawnFireball(spawnPos);
 		}
@@ -143,6 +143,7 @@ public class NpcGrenade : BaseEntity
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
@@ -162,9 +163,8 @@ public class NpcGrenade : BaseEntity
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = endPos - startPos;
-		Vector2 val2 = default(Vector2);
-		((Vector2)(ref val2))._002Ector(val.x, val.z);
-		float magnitude = ((Vector2)(ref val2)).magnitude;
+		Vector2 val2 = new Vector2(val.x, val.z);
+		float magnitude = val2.magnitude;
 		float num;
 		Vector3 val3;
 		if (magnitude < 0.001f)
@@ -175,7 +175,7 @@ public class NpcGrenade : BaseEntity
 		else
 		{
 			Vector3 val4 = new Vector3(val.x, 0f, val.z);
-			val3 = ((Vector3)(ref val4)).normalized;
+			val3 = val4.normalized;
 			num = Mathf.Max(0.0001f, magnitude / speed);
 		}
 		float num2 = Mathf.Min(elapsedTime, num);

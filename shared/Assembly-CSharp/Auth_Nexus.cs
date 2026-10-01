@@ -33,25 +33,25 @@ public static class Auth_Nexus
 			yield break;
 		}
 		NexusLoginResult result = loginTask.Result;
-		if (((NexusLoginResult)(ref result)).IsRedirect)
+		if (result.IsRedirect)
 		{
 			object obj;
-			if (((NexusLoginResult)(ref result)).AssignedZoneKey == null)
+			if (result.AssignedZoneKey == null)
 			{
 				obj = null;
 			}
 			else
 			{
-				NexusZoneDetails obj2 = NexusServer.FindZone(((NexusLoginResult)(ref result)).AssignedZoneKey);
-				obj = ((obj2 != null) ? NexusUtil.ConnectionProtocol(obj2) : null);
+				NexusZoneDetails val = NexusServer.FindZone(result.AssignedZoneKey);
+				obj = ((val != null) ? NexusUtil.ConnectionProtocol(val) : null);
 			}
 			string text = (string)obj;
-			ConsoleNetwork.SendClientCommandImmediate(connection, "nexus.redirect", ((NexusLoginResult)(ref result)).RedirectIpAddress, ((NexusLoginResult)(ref result)).RedirectGamePort, text ?? "");
+			ConsoleNetwork.SendClientCommandImmediate(connection, "nexus.redirect", result.RedirectIpAddress, result.RedirectGamePort, text ?? "");
 			Reject("Redirecting to another zone...");
 			connection.authStatusNexus = "nexus_login_redirect";
 			yield break;
 		}
-		if (((NexusLoginResult)(ref result)).AssignedZoneKey == null)
+		if (result.AssignedZoneKey == null)
 		{
 			string spawnZoneKey;
 			NexusZoneDetails spawnZone;
@@ -97,8 +97,8 @@ public static class Auth_Nexus
 		}
 		if (NexusServer.TryGetPlayer(connection.userid, out var player))
 		{
-			Variable val = default(Variable);
-			if (!player.TryGetVariable("appKey", ref val) || (int)val.Type != 1 || string.IsNullOrWhiteSpace(val.GetAsString()))
+			Variable val2 = default;
+			if (!player.TryGetVariable("appKey", ref val2) || (int)val2.Type != 1 || string.IsNullOrWhiteSpace(val2.GetAsString()))
 			{
 				player.SetVariable("appKey", Guid.NewGuid().ToString("N"), false, false);
 			}

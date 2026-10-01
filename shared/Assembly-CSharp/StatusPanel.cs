@@ -1,3 +1,4 @@
+using System;
 using Rust.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,12 +12,18 @@ public class StatusPanel : MonoBehaviour
 	[SerializeField]
 	private Image onStatusImage;
 
-	[Header("Off Status")]
 	[SerializeField]
+	[Header("Off Status")]
 	private RustText offStatusText;
 
 	[SerializeField]
 	private Image offStatusImage;
+
+	public void SetStatus(bool status, Phrase offPhrase)
+	{
+		offStatusText.SetPhrase(offPhrase, Array.Empty<object>());
+		SetStatus(status);
+	}
 
 	public void SetStatus(bool status)
 	{

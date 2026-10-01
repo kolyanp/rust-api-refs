@@ -15,15 +15,15 @@ public class ScientistNPC : HumanNPC, IAIMounted
 
 	public GameObjectRef[] DeathEffects;
 
-	public string deathStatName;
+	public string deathStatName = "kill_scientist";
 
-	public static readonly Phrase ScientistName;
+	public static readonly Phrase ScientistName = new Phrase("npc_scientist", "Scientist");
 
-	public Vector2 IdleChatterRepeatRange;
+	public Vector2 IdleChatterRepeatRange = new Vector2(10f, 15f);
 
 	public RadioChatterType radioChatterType;
 
-	public float lastAlertedTime;
+	public float lastAlertedTime = -100f;
 
 	private Action _playRadioChatter;
 
@@ -67,7 +67,7 @@ public class ScientistNPC : HumanNPC, IAIMounted
 
 	public void QueueRadioChatter()
 	{
-		if (IsAlive() && !base.IsDestroyed)
+		if (IsAlive() && !IsDestroyed)
 		{
 			if (_playRadioChatter == null)
 			{
@@ -124,7 +124,7 @@ public class ScientistNPC : HumanNPC, IAIMounted
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		if (RadioChatterEffects.Length != 0)
 		{
-			if ((base.IsDestroyed || (Object)(object)((Component)this).transform == (Object)null) && _playRadioChatter != null)
+			if ((IsDestroyed || (Object)(object)((Component)this).transform == (Object)null) && _playRadioChatter != null)
 			{
 				CancelInvoke(_playRadioChatter);
 			}
@@ -158,7 +158,7 @@ public class ScientistNPC : HumanNPC, IAIMounted
 				return;
 			}
 			lightsOn = false;
-			InvokeRandomized(base.LightCheck, 0f, 30f, 5f);
+			InvokeRandomized(LightCheck, 0f, 30f, 5f);
 			LightCheck();
 		}
 		else
@@ -175,23 +175,18 @@ public class ScientistNPC : HumanNPC, IAIMounted
 
 	public bool IsMounted()
 	{
-		return base.isMounted;
+		return isMounted;
 	}
 
 	public ScientistNPC()
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		deathStatName = "kill_scientist";
-		IdleChatterRepeatRange = new Vector2(10f, 15f);
-		lastAlertedTime = -100f;
-		base._002Ector();
 	}
 
 	static ScientistNPC()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		ScientistName = new Phrase("npc_scientist", "Scientist");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

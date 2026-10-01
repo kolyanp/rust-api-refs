@@ -11,9 +11,6 @@ public class FMuscle_Quaternion
 	[HideInInspector]
 	public Quaternion DesiredRotation;
 
-	[CompilerGenerated]
-	private Quaternion _003CProceduralRotation_003Ek__BackingField;
-
 	private FMuscle_Float x;
 
 	private FMuscle_Float y;
@@ -40,14 +37,14 @@ public class FMuscle_Quaternion
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CProceduralRotation_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CProceduralRotation_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -162,6 +159,7 @@ public class FMuscle_Quaternion
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
@@ -170,6 +168,7 @@ public class FMuscle_Quaternion
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
@@ -178,18 +177,16 @@ public class FMuscle_Quaternion
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		Quaternion val = default(Quaternion);
-		((Quaternion)(ref val))._002Ector(0f - targetRot.x, 0f - targetRot.y, 0f - targetRot.z, 0f - targetRot.w);
-		Quaternion val2 = default(Quaternion);
-		((Quaternion)(ref val2))._002Ector(Mathf.LerpUnclamped(latestRot.x, targetRot.x, 0.5f), Mathf.LerpUnclamped(latestRot.y, targetRot.y, 0.5f), Mathf.LerpUnclamped(latestRot.z, targetRot.z, 0.5f), Mathf.LerpUnclamped(latestRot.w, targetRot.w, 0.5f));
-		Quaternion val3 = default(Quaternion);
-		((Quaternion)(ref val3))._002Ector(Mathf.LerpUnclamped(latestRot.x, val.x, 0.5f), Mathf.LerpUnclamped(latestRot.y, val.y, 0.5f), Mathf.LerpUnclamped(latestRot.z, val.z, 0.5f), Mathf.LerpUnclamped(latestRot.w, val.w, 0.5f));
+		Quaternion val = new Quaternion(0f - targetRot.x, 0f - targetRot.y, 0f - targetRot.z, 0f - targetRot.w);
+		Quaternion val2 = new Quaternion(Mathf.LerpUnclamped(latestRot.x, targetRot.x, 0.5f), Mathf.LerpUnclamped(latestRot.y, targetRot.y, 0.5f), Mathf.LerpUnclamped(latestRot.z, targetRot.z, 0.5f), Mathf.LerpUnclamped(latestRot.w, targetRot.w, 0.5f));
+		Quaternion val3 = new Quaternion(Mathf.LerpUnclamped(latestRot.x, val.x, 0.5f), Mathf.LerpUnclamped(latestRot.y, val.y, 0.5f), Mathf.LerpUnclamped(latestRot.z, val.z, 0.5f), Mathf.LerpUnclamped(latestRot.w, val.w, 0.5f));
 		float num = Quaternion.Angle(latestRot, val2);
 		if (!(Quaternion.Angle(latestRot, val3) < num))
 		{

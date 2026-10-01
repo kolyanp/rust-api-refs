@@ -26,8 +26,8 @@ public class GreyScaleRenderer : PostProcessEffectRenderer<GreyScale>
 		command.BeginSample("GreyScale");
 		PropertySheet propertySheet = context.propertySheets.Get(greyScaleShader);
 		propertySheet.properties.Clear();
-		propertySheet.properties.SetVector(dataProperty, new Vector4(base.settings.redLuminance.value, base.settings.greenLuminance.value, base.settings.blueLuminance.value, base.settings.amount.value));
-		propertySheet.properties.SetColor(colorProperty, base.settings.color.value);
+		propertySheet.properties.SetVector(dataProperty, new Vector4(settings.redLuminance.value, settings.greenLuminance.value, settings.blueLuminance.value, settings.amount.value));
+		propertySheet.properties.SetColor(colorProperty, settings.color.value);
 		context.command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 0);
 		command.EndSample("GreyScale");
 	}

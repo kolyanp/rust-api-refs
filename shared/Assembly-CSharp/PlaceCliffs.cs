@@ -12,11 +12,11 @@ public class PlaceCliffs : ProceduralComponent
 
 		public Prefab prefab;
 
-		public Vector3 pos;
+		public Vector3 pos = Vector3.zero;
 
-		public Quaternion rot;
+		public Quaternion rot = Quaternion.identity;
 
-		public Vector3 scale;
+		public Vector3 scale = Vector3.one;
 
 		public CliffPlacement next;
 
@@ -28,10 +28,6 @@ public class PlaceCliffs : ProceduralComponent
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-			pos = Vector3.zero;
-			rot = Quaternion.identity;
-			scale = Vector3.one;
-			base._002Ector();
 		}
 	}
 
@@ -76,23 +72,30 @@ public class PlaceCliffs : ProceduralComponent
 	[InspectorFlags]
 	public SpawnFilterMode FilterModeRepeat = SpawnFilterMode.PivotPoint;
 
-	private static float min_scale_delta;
+	private static float min_scale_delta = 0.1f;
 
-	private static int max_scale_attempts;
+	private static int max_scale_attempts = 10;
 
-	private static int min_rotation;
+	private static int min_rotation = rotation_delta;
 
-	private static int max_rotation;
+	private static int max_rotation = 60;
 
-	private static int rotation_delta;
+	private static int rotation_delta = 10;
 
-	private static float offset_c;
+	private static float offset_c = 0f;
 
-	private static float offset_l;
+	private static float offset_l = -0.75f;
 
-	private static float offset_r;
+	private static float offset_r = 0.75f;
 
-	private static Vector3[] offsets;
+	private static Vector3[] offsets = new Vector3[5]
+	{
+		new Vector3(offset_c, offset_c, offset_c),
+		new Vector3(offset_l, offset_c, offset_c),
+		new Vector3(offset_r, offset_c, offset_c),
+		new Vector3(offset_c, offset_c, offset_l),
+		new Vector3(offset_c, offset_c, offset_r)
+	};
 
 	public override void Process(uint seed)
 	{
@@ -110,6 +113,7 @@ public class PlaceCliffs : ProceduralComponent
 		//IL_02ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02cc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02d8: Unknown result type (might be due to invalid IL or missing references)
@@ -199,7 +203,6 @@ public class PlaceCliffs : ProceduralComponent
 		float num = position.x + size.x;
 		float num2 = position.z + size.z;
 		int num3 = Mathf.RoundToInt(size.x * size.z * 0.001f * (float)RetryMultiplier);
-		Vector3 val = default(Vector3);
 		for (int num4 = 0; num4 < num3; num4++)
 		{
 			float num5 = SeedRandom.Range(ref seed, x, num);
@@ -234,7 +237,7 @@ public class PlaceCliffs : ProceduralComponent
 			{
 				continue;
 			}
-			((Vector3)(ref val))._002Ector(num5, height, num6);
+			Vector3 val = new Vector3(num5, height, num6);
 			Quaternion val2 = QuaternionEx.LookRotationForcedUp(normal, Vector3.up);
 			float num15 = Mathf.Max((num14 - num13) / (float)max_scale_attempts, min_scale_delta);
 			for (float num16 = num14; num16 >= num13; num16 -= num15)
@@ -477,21 +480,5 @@ public class PlaceCliffs : ProceduralComponent
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		min_scale_delta = 0.1f;
-		max_scale_attempts = 10;
-		min_rotation = rotation_delta;
-		max_rotation = 60;
-		rotation_delta = 10;
-		offset_c = 0f;
-		offset_l = -0.75f;
-		offset_r = 0.75f;
-		offsets = (Vector3[])(object)new Vector3[5]
-		{
-			new Vector3(offset_c, offset_c, offset_c),
-			new Vector3(offset_l, offset_c, offset_c),
-			new Vector3(offset_r, offset_c, offset_c),
-			new Vector3(offset_c, offset_c, offset_l),
-			new Vector3(offset_c, offset_c, offset_r)
-		};
 	}
 }

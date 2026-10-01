@@ -29,7 +29,7 @@ public static class JobEx
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		return IJobParallelForTransformExtensions.ScheduleReadOnly<T>(jobData, transforms, GetBatchSize(((TransformAccessArray)(ref transforms)).length), dependsOn);
+		return IJobParallelForTransformExtensions.ScheduleReadOnly<T>(jobData, transforms, GetBatchSize(transforms.length), dependsOn);
 	}
 
 	public static JobHandle ScheduleParallelReadOnlyByRef<T>(this ref T jobData, TransformAccessArray transforms, JobHandle dependsOn = default(JobHandle)) where T : struct, IJobParallelForTransform
@@ -37,6 +37,6 @@ public static class JobEx
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		return IJobParallelForTransformExtensions.ScheduleReadOnlyByRef<T>(ref jobData, transforms, GetBatchSize(((TransformAccessArray)(ref transforms)).length), dependsOn);
+		return IJobParallelForTransformExtensions.ScheduleReadOnlyByRef<T>(ref jobData, transforms, GetBatchSize(transforms.length), dependsOn);
 	}
 }

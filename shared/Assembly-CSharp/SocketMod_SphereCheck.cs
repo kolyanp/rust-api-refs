@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SocketMod_SphereCheck : SocketMod
 {
-	public float sphereRadius;
+	public float sphereRadius = 1f;
 
 	public LayerMask layerMask;
 
@@ -17,7 +17,7 @@ public class SocketMod_SphereCheck : SocketMod
 	[Space]
 	public BaseEntity[] entityWhitelist;
 
-	private Phrase lastError;
+	private Phrase lastError = new Phrase("", "");
 
 	protected override Phrase ErrorPhrase => lastError;
 
@@ -34,7 +34,7 @@ public class SocketMod_SphereCheck : SocketMod
 		//IL_0237: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 position = place.position + place.rotation * worldPosition;
 		List<Collider> list = Pool.Get<List<Collider>>();
-		GamePhysics.OverlapSphere(position, sphereRadius, list, ((LayerMask)(ref layerMask)).value, (QueryTriggerInteraction)2);
+		GamePhysics.OverlapSphere(position, sphereRadius, list, layerMask.value, (QueryTriggerInteraction)2);
 		if ((Object)(object)place.ignoredEntity != (Object)null)
 		{
 			for (int num = list.Count - 1; num >= 0; num--)
@@ -113,9 +113,6 @@ public class SocketMod_SphereCheck : SocketMod
 	public SocketMod_SphereCheck()
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Expected O, but got Unknown
-		sphereRadius = 1f;
-		lastError = new Phrase("", "");
-		base._002Ector();
+		//IL_0020: Expected Obj, but got Unknown
 	}
 }

@@ -72,7 +72,7 @@ public static class ByteEx
 		}
 		if (source == null)
 		{
-			return default(T);
+			return default;
 		}
 		BinaryFormatter binaryFormatter = new BinaryFormatter();
 		using MemoryStream memoryStream = new MemoryStream();

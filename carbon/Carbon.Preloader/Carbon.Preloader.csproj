@@ -15,14 +15,14 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="System.IO.Compression">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.IO.Compression.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Compression.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression.FileSystem">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.IO.Compression.FileSystem.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Compression.FileSystem.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

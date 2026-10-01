@@ -5,64 +5,64 @@ public static class RaycastHitEx
 {
 	public static Transform GetTransform(this RaycastHit hit)
 	{
-		return ((RaycastHit)(ref hit)).transform;
+		return hit.transform;
 	}
 
 	public static Rigidbody GetRigidbody(this RaycastHit hit)
 	{
-		return ((RaycastHit)(ref hit)).rigidbody;
+		return hit.rigidbody;
 	}
 
 	public static Collider GetCollider(this RaycastHit hit)
 	{
-		return ((RaycastHit)(ref hit)).collider;
+		return hit.collider;
 	}
 
 	public static BaseEntity GetEntity(this RaycastHit hit)
 	{
-		if (!((Object)(object)((RaycastHit)(ref hit)).collider != (Object)null))
+		if (!((Object)(object)hit.collider != (Object)null))
 		{
 			return null;
 		}
-		return GameObjectEx.ToBaseEntity(((RaycastHit)(ref hit)).collider);
+		return GameObjectEx.ToBaseEntity(hit.collider);
 	}
 
 	public static bool IsOnLayer(this RaycastHit hit, Layer rustLayer)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)((RaycastHit)(ref hit)).collider != (Object)null)
+		if ((Object)(object)hit.collider != (Object)null)
 		{
-			return GameObjectEx.IsOnLayer(((Component)((RaycastHit)(ref hit)).collider).gameObject, rustLayer);
+			return GameObjectEx.IsOnLayer(((Component)hit.collider).gameObject, rustLayer);
 		}
 		return false;
 	}
 
 	public static bool IsOnLayer(this RaycastHit hit, int layer)
 	{
-		if ((Object)(object)((RaycastHit)(ref hit)).collider != (Object)null)
+		if ((Object)(object)hit.collider != (Object)null)
 		{
-			return GameObjectEx.IsOnLayer(((Component)((RaycastHit)(ref hit)).collider).gameObject, layer);
+			return GameObjectEx.IsOnLayer(((Component)hit.collider).gameObject, layer);
 		}
 		return false;
 	}
 
 	public static bool IsWaterHit(this RaycastHit hit)
 	{
-		if (!((Object)(object)((RaycastHit)(ref hit)).collider == (Object)null))
+		if (!((Object)(object)hit.collider == (Object)null))
 		{
-			return GameObjectEx.IsOnLayer(((Component)((RaycastHit)(ref hit)).collider).gameObject, (Layer)4);
+			return GameObjectEx.IsOnLayer(((Component)hit.collider).gameObject, (Layer)4);
 		}
 		return true;
 	}
 
 	public static WaterBody GetWaterBody(this RaycastHit hit)
 	{
-		if ((Object)(object)((RaycastHit)(ref hit)).collider == (Object)null)
+		if ((Object)(object)hit.collider == (Object)null)
 		{
 			return WaterSystem.Ocean;
 		}
-		Transform transform = ((Component)((RaycastHit)(ref hit)).collider).transform;
-		WaterBody result = default(WaterBody);
+		Transform transform = ((Component)hit.collider).transform;
+		WaterBody result = default;
 		if (((Component)transform).TryGetComponent<WaterBody>(ref result))
 		{
 			return result;

@@ -7,11 +7,11 @@ using UnityEngine.Scripting;
 
 namespace UnityEngine.Rendering.PostProcessing;
 
-[RequireComponent(typeof(Camera))]
-[AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [DisallowMultipleComponent]
+[AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [ImageEffectAllowedInSceneView]
 [ExecuteAlways]
+[RequireComponent(typeof(Camera))]
 public class PostProcessLayer : MonoBehaviour
 {
 	private enum ScalingMode
@@ -41,7 +41,7 @@ public class PostProcessLayer : MonoBehaviour
 
 	public LayerMask volumeLayer;
 
-	public bool stopNaNPropagation;
+	public bool stopNaNPropagation = true;
 
 	public bool finalBlitToCameraTarget;
 
@@ -55,15 +55,15 @@ public class PostProcessLayer : MonoBehaviour
 
 	public Fog fog;
 
-	private UnityEngine.Rendering.PostProcessing.Dithering dithering;
+	private Dithering dithering;
 
 	public PostProcessDebugLayer debugLayer;
 
-	public RenderTextureFormat intermediateFormat;
+	public RenderTextureFormat intermediateFormat = (RenderTextureFormat)9;
 
-	private RenderTextureFormat prevIntermediateFormat;
+	private RenderTextureFormat prevIntermediateFormat = (RenderTextureFormat)9;
 
-	private bool supportsIntermediateFormat;
+	private bool supportsIntermediateFormat = true;
 
 	[SerializeField]
 	private PostProcessResources m_Resources;
@@ -103,19 +103,19 @@ public class PostProcessLayer : MonoBehaviour
 
 	private PostProcessRenderContext m_CurrentContext;
 
-	private UnityEngine.Rendering.PostProcessing.LogHistogram m_LogHistogram;
+	private LogHistogram m_LogHistogram;
 
-	private bool m_SettingsUpdateNeeded;
+	private bool m_SettingsUpdateNeeded = true;
 
 	private bool m_IsRenderingInSceneView;
 
-	private UnityEngine.Rendering.PostProcessing.TargetPool m_TargetPool;
+	private TargetPool m_TargetPool;
 
 	private bool m_NaNKilled;
 
-	private readonly List<PostProcessEffectRenderer> m_ActiveEffects;
+	private readonly List<PostProcessEffectRenderer> m_ActiveEffects = new List<PostProcessEffectRenderer>(32);
 
-	private readonly List<RenderTargetIdentifier> m_Targets;
+	private readonly List<RenderTargetIdentifier> m_Targets = new List<RenderTargetIdentifier>(8);
 
 	public Dictionary<PostProcessEvent, List<SerializedBundleRef>> sortedBundles { get; private set; }
 
@@ -128,9 +128,9 @@ public class PostProcessLayer : MonoBehaviour
 		{
 			InitBundles();
 		}
-		m_LogHistogram = new UnityEngine.Rendering.PostProcessing.LogHistogram();
+		m_LogHistogram = new LogHistogram();
 		m_PropertySheetFactory = new PropertySheetFactory();
-		m_TargetPool = new UnityEngine.Rendering.PostProcessing.TargetPool();
+		m_TargetPool = new TargetPool();
 		debugLayer.OnEnable();
 		if (!RuntimeUtilities.scriptableRenderPipelineActive)
 		{
@@ -142,16 +142,16 @@ public class PostProcessLayer : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected O, but got Unknown
+		//IL_0016: Expected Obj, but got Unknown
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
+		//IL_002c: Expected Obj, but got Unknown
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Expected O, but got Unknown
+		//IL_0042: Expected Obj, but got Unknown
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Expected O, but got Unknown
+		//IL_0058: Expected Obj, but got Unknown
 		m_LegacyCmdBufferBeforeReflections = new CommandBuffer
 		{
 			name = "Deferred Ambient Occlusion"
@@ -221,7 +221,7 @@ public class PostProcessLayer : MonoBehaviour
 		UpdateBundleSortList(m_BeforeTransparentBundles, PostProcessEvent.BeforeTransparent);
 		UpdateBundleSortList(m_BeforeStackBundles, PostProcessEvent.BeforeStack);
 		UpdateBundleSortList(m_AfterStackBundles, PostProcessEvent.AfterStack);
-		sortedBundles = new Dictionary<PostProcessEvent, List<SerializedBundleRef>>(default(UnityEngine.Rendering.PostProcessing.PostProcessEventComparer))
+		sortedBundles = new Dictionary<PostProcessEvent, List<SerializedBundleRef>>(default(PostProcessEventComparer))
 		{
 			{
 				PostProcessEvent.BeforeTransparent,
@@ -244,7 +244,7 @@ public class PostProcessLayer : MonoBehaviour
 		List<PostProcessBundle> effects = (from kvp in m_Bundles
 			where kvp.Value.attribute.eventType == evt && !kvp.Value.attribute.builtinEffect
 			select kvp.Value).ToList();
-		sortedList.RemoveAll(delegate(SerializedBundleRef x)
+		sortedList.RemoveAll((SerializedBundleRef x) =>
 		{
 			string searchStr = x.assemblyQualifiedName;
 			return !effects.Exists((PostProcessBundle b) => ((object)b.settings).GetType().AssemblyQualifiedName == searchStr);
@@ -305,7 +305,7 @@ public class PostProcessLayer : MonoBehaviour
 		{
 			debugLayer.OnDisable();
 		}
-		UnityEngine.Rendering.PostProcessing.TextureLerper.instance.Clear();
+		TextureLerper.instance.Clear();
 		if ((Object)(object)m_Camera != (Object)null)
 		{
 			m_Camera.ResetProjectionMatrix();
@@ -342,7 +342,7 @@ public class PostProcessLayer : MonoBehaviour
 			}
 			else
 			{
-				Shader.SetGlobalFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.RenderViewportScaleFactor, 1f);
+				Shader.SetGlobalFloat(ShaderIDs.RenderViewportScaleFactor, 1f);
 			}
 			BuildCommandBuffers();
 			Shader.SetGlobalVector("_FrustumJitter", Vector4.op_Implicit(temporalAntialiasing.jitter));
@@ -422,6 +422,7 @@ public class PostProcessLayer : MonoBehaviour
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0277: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
@@ -448,11 +449,11 @@ public class PostProcessLayer : MonoBehaviour
 		m_LegacyCmdBuffer.Clear();
 		SetupContext(currentContext);
 		currentContext.command = m_LegacyCmdBufferOpaque;
-		UnityEngine.Rendering.PostProcessing.TextureLerper.instance.BeginFrame(currentContext);
+		TextureLerper.instance.BeginFrame(currentContext);
 		UpdateVolumeSystem(currentContext.camera, currentContext.command);
 		PostProcessBundle bundle = GetBundle<AmbientOcclusion>();
 		AmbientOcclusion ambientOcclusion = bundle.CastSettings<AmbientOcclusion>();
-		UnityEngine.Rendering.PostProcessing.AmbientOcclusionRenderer ambientOcclusionRenderer = bundle.CastRenderer<UnityEngine.Rendering.PostProcessing.AmbientOcclusionRenderer>();
+		AmbientOcclusionRenderer ambientOcclusionRenderer = bundle.CastRenderer<AmbientOcclusionRenderer>();
 		bool flag = ambientOcclusion.IsEnabledAndSupported(currentContext);
 		bool flag2 = ambientOcclusionRenderer.IsAmbientOnly(currentContext);
 		bool flag3 = flag & flag2;
@@ -463,7 +464,7 @@ public class PostProcessLayer : MonoBehaviour
 		bool flag5 = settings.IsEnabledAndSupported(currentContext);
 		if (flag3)
 		{
-			UnityEngine.Rendering.PostProcessing.IAmbientOcclusionMethod ambientOcclusionMethod = ambientOcclusionRenderer.Get();
+			IAmbientOcclusionMethod ambientOcclusionMethod = ambientOcclusionRenderer.Get();
 			currentContext.command = m_LegacyCmdBufferBeforeReflections;
 			ambientOcclusionMethod.RenderAmbientOnly(currentContext);
 			currentContext.command = m_LegacyCmdBufferBeforeLighting;
@@ -480,8 +481,7 @@ public class PostProcessLayer : MonoBehaviour
 		num += (flag5 ? 1 : 0);
 		num += (flag6 ? 1 : 0);
 		num += (flag7 ? 1 : 0);
-		RenderTargetIdentifier val3 = default(RenderTargetIdentifier);
-		((RenderTargetIdentifier)(ref val3))._002Ector((BuiltinRenderTextureType)2);
+		RenderTargetIdentifier val3 = new RenderTargetIdentifier((BuiltinRenderTextureType)2);
 		if (num > 0)
 		{
 			CommandBuffer val4 = (currentContext.command = m_LegacyCmdBufferOpaque);
@@ -607,7 +607,7 @@ public class PostProcessLayer : MonoBehaviour
 	public void BakeMSVOMap(CommandBuffer cmd, Camera camera, RenderTargetIdentifier destination, RenderTargetIdentifier? depthMap, bool invert, bool isMSAA = false)
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		UnityEngine.Rendering.PostProcessing.MultiScaleVO multiScaleVO = GetBundle<AmbientOcclusion>().CastRenderer<UnityEngine.Rendering.PostProcessing.AmbientOcclusionRenderer>().GetMultiScaleVO();
+		MultiScaleVO multiScaleVO = GetBundle<AmbientOcclusion>().CastRenderer<AmbientOcclusionRenderer>().GetMultiScaleVO();
 		multiScaleVO.SetResources(m_Resources);
 		multiScaleVO.GenerateAOMap(cmd, camera, destination, depthMap, invert, isMSAA);
 	}
@@ -741,7 +741,7 @@ public class PostProcessLayer : MonoBehaviour
 			m_TargetPool.Reset();
 			if (RuntimeUtilities.scriptableRenderPipelineActive)
 			{
-				Shader.SetGlobalFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.RenderViewportScaleFactor, 1f);
+				Shader.SetGlobalFloat(ShaderIDs.RenderViewportScaleFactor, 1f);
 			}
 		}
 		m_SettingsUpdateNeeded = false;
@@ -753,7 +753,7 @@ public class PostProcessLayer : MonoBehaviour
 		{
 			SetupContext(context);
 		}
-		UnityEngine.Rendering.PostProcessing.TextureLerper.instance.BeginFrame(context);
+		TextureLerper.instance.BeginFrame(context);
 		UpdateVolumeSystem(context.camera, context.command);
 		RenderList(sortedBundles[PostProcessEvent.BeforeTransparent], context, "OpaqueOnly");
 	}
@@ -781,7 +781,7 @@ public class PostProcessLayer : MonoBehaviour
 		{
 			SetupContext(context);
 		}
-		UnityEngine.Rendering.PostProcessing.TextureLerper.instance.BeginFrame(context);
+		TextureLerper.instance.BeginFrame(context);
 		CommandBuffer command = context.command;
 		UpdateVolumeSystem(context.camera, context.command);
 		int num = -1;
@@ -837,19 +837,19 @@ public class PostProcessLayer : MonoBehaviour
 				}
 				context.source = RenderTargetIdentifier.op_Implicit(num);
 			}
-			bool num2 = HasActiveEffects(PostProcessEvent.BeforeStack, context);
-			bool flag2 = HasActiveEffects(PostProcessEvent.AfterStack, context) && !breakBeforeColorGrading;
-			bool flag3 = (flag2 || antialiasingMode == Antialiasing.FastApproximateAntialiasing || (antialiasingMode == Antialiasing.SubpixelMorphologicalAntialiasing && subpixelMorphologicalAntialiasing.IsSupported())) && !breakBeforeColorGrading;
-			if (num2)
+			bool flag2 = HasActiveEffects(PostProcessEvent.BeforeStack, context);
+			bool flag3 = HasActiveEffects(PostProcessEvent.AfterStack, context) && !breakBeforeColorGrading;
+			bool flag4 = (flag3 || antialiasingMode == Antialiasing.FastApproximateAntialiasing || (antialiasingMode == Antialiasing.SubpixelMorphologicalAntialiasing && subpixelMorphologicalAntialiasing.IsSupported())) && !breakBeforeColorGrading;
+			if (flag2)
 			{
 				num = RenderInjectionPoint(PostProcessEvent.BeforeStack, context, "BeforeStack", num);
 			}
-			num = RenderBuiltins(context, !flag3, num, i);
-			if (flag2)
+			num = RenderBuiltins(context, !flag4, num, i);
+			if (flag3)
 			{
 				num = RenderInjectionPoint(PostProcessEvent.AfterStack, context, "AfterStack", num);
 			}
-			if (flag3)
+			if (flag4)
 			{
 				RenderFinalPass(context, num, i);
 			}
@@ -865,7 +865,7 @@ public class PostProcessLayer : MonoBehaviour
 		}
 		debugLayer.RenderSpecialOverlays(context);
 		debugLayer.RenderMonitors(context);
-		UnityEngine.Rendering.PostProcessing.TextureLerper.instance.EndFrame();
+		TextureLerper.instance.EndFrame();
 		debugLayer.EndFrame();
 		m_SettingsUpdateNeeded = true;
 		m_NaNKilled = false;
@@ -955,7 +955,7 @@ public class PostProcessLayer : MonoBehaviour
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		if (context.flip && !context.isSceneView)
 		{
-			properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.UVTransform, new Vector4(1f, 1f, 0f, 0f));
+			properties.SetVector(ShaderIDs.UVTransform, new Vector4(1f, 1f, 0f, 0f));
 		}
 		else
 		{
@@ -967,7 +967,7 @@ public class PostProcessLayer : MonoBehaviour
 	{
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.UVTransform, SystemInfo.graphicsUVStartsAtTop ? new Vector4(1f, -1f, 0f, 1f) : new Vector4(1f, 1f, 0f, 0f));
+		properties.SetVector(ShaderIDs.UVTransform, SystemInfo.graphicsUVStartsAtTop ? new Vector4(1f, -1f, 0f, 1f) : new Vector4(1f, 1f, 0f, 0f));
 	}
 
 	private int RenderBuiltins(PostProcessRenderContext context, bool isFinalPass, int releaseTargetAfterUse = -1, int eye = -1)
@@ -1005,7 +1005,7 @@ public class PostProcessLayer : MonoBehaviour
 			context.destination = RenderTargetIdentifier.op_Implicit(num);
 			if (antialiasingMode == Antialiasing.FastApproximateAntialiasing && !fastApproximateAntialiasing.keepAlpha)
 			{
-				propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.LumaInAlpha, 1f);
+				propertySheet.properties.SetFloat(ShaderIDs.LumaInAlpha, 1f);
 			}
 		}
 		int num2 = RenderEffect<DepthOfFieldEffect>(context, useTempTarget: true);
@@ -1015,7 +1015,7 @@ public class PostProcessLayer : MonoBehaviour
 			m_LogHistogram.Generate(context);
 		}
 		RenderEffect<AutoExposure>(context);
-		propertySheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.AutoExposureTex, context.autoExposureTexture);
+		propertySheet.properties.SetTexture(ShaderIDs.AutoExposureTex, context.autoExposureTexture);
 		RenderEffect<LensDistortion>(context);
 		RenderEffect<ChromaticAberration>(context);
 		RenderEffect<Bloom>(context);
@@ -1037,7 +1037,7 @@ public class PostProcessLayer : MonoBehaviour
 		}
 		if (context.stereoActive && context.stereoRenderingMode == PostProcessRenderContext.StereoRenderingMode.SinglePassInstanced)
 		{
-			propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthSlice, (float)eye);
+			propertySheet.properties.SetFloat(ShaderIDs.DepthSlice, (float)eye);
 			command.BlitFullscreenTriangleToTexArray(context.source, context.destination, propertySheet, 0, clear: false, eye);
 		}
 		else if (isFinalPass && context.stereoActive && context.numberOfEyes > 1 && context.stereoRenderingMode == PostProcessRenderContext.StereoRenderingMode.SinglePass)
@@ -1101,7 +1101,7 @@ public class PostProcessLayer : MonoBehaviour
 			}
 			if (context.stereoActive && context.stereoRenderingMode == PostProcessRenderContext.StereoRenderingMode.SinglePassInstanced)
 			{
-				propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthSlice, (float)eye);
+				propertySheet.properties.SetFloat(ShaderIDs.DepthSlice, (float)eye);
 				command.BlitFullscreenTriangleToTexArray(context.source, context.destination, propertySheet, 0, clear: false, eye);
 			}
 			else if (context.stereoActive && context.numberOfEyes > 1 && context.stereoRenderingMode == PostProcessRenderContext.StereoRenderingMode.SinglePass)
@@ -1146,7 +1146,7 @@ public class PostProcessLayer : MonoBehaviour
 			ApplyFlip(context, propertySheet2.properties);
 			if (context.stereoActive && context.stereoRenderingMode == PostProcessRenderContext.StereoRenderingMode.SinglePassInstanced)
 			{
-				propertySheet2.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthSlice, (float)eye);
+				propertySheet2.properties.SetFloat(ShaderIDs.DepthSlice, (float)eye);
 				command.BlitFullscreenTriangleToTexArray(context.source, context.destination, propertySheet2, 0, clear: false, eye);
 			}
 			else if (context.stereoActive && context.numberOfEyes > 1 && context.stereoRenderingMode == PostProcessRenderContext.StereoRenderingMode.SinglePass)
@@ -1204,22 +1204,14 @@ public class PostProcessLayer : MonoBehaviour
 
 	private bool ShouldGenerateLogHistogram(PostProcessRenderContext context)
 	{
-		bool num = GetBundle<AutoExposure>().settings.IsEnabledAndSupported(context);
-		bool flag = debugLayer.lightMeter.IsRequestedAndSupported(context);
-		return num | flag;
+		bool flag = GetBundle<AutoExposure>().settings.IsEnabledAndSupported(context);
+		bool flag2 = debugLayer.lightMeter.IsRequestedAndSupported(context);
+		return flag | flag2;
 	}
 
 	public PostProcessLayer()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		stopNaNPropagation = true;
-		intermediateFormat = (RenderTextureFormat)9;
-		prevIntermediateFormat = (RenderTextureFormat)9;
-		supportsIntermediateFormat = true;
-		m_SettingsUpdateNeeded = true;
-		m_ActiveEffects = new List<PostProcessEffectRenderer>(32);
-		m_Targets = new List<RenderTargetIdentifier>(8);
-		((MonoBehaviour)this)._002Ector();
 	}
 }

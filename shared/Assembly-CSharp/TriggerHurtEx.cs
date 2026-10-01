@@ -119,7 +119,7 @@ public class TriggerHurtEx : TriggerBase, IServerComponent, IHurtTrigger
 				{
 					Vector3 val = ((Component)this).transform.position + new Vector3(0f, 0.1f, 0f);
 					Vector3 val2 = ((Component)ent).transform.position - ((Component)this).transform.position;
-					if (GamePhysics.Trace(new Ray(val, ((Vector3)(ref val2)).normalized), 0f, out var _, LOSDistance, 1218519297, (QueryTriggerInteraction)1, GameObjectEx.ToBaseEntity(((Component)this).gameObject)))
+					if (GamePhysics.Trace(new Ray(val, val2.normalized), 0f, out var _, LOSDistance, 1218519297, (QueryTriggerInteraction)1, GameObjectEx.ToBaseEntity(((Component)this).gameObject)))
 					{
 						return;
 					}
@@ -218,7 +218,7 @@ public class TriggerHurtEx : TriggerBase, IServerComponent, IHurtTrigger
 			{
 				Vector3 position = ((Component)keyValuePair.Key).transform.position;
 				Vector3 val = position - keyValuePair.Value.lastPosition;
-				float magnitude = ((Vector3)(ref val)).magnitude;
+				float magnitude = val.magnitude;
 				if (magnitude > 0.01f)
 				{
 					keyValuePair.Value.lastPosition = position;

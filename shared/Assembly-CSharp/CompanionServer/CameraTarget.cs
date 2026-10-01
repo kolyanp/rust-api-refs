@@ -5,16 +5,13 @@ namespace CompanionServer;
 
 public readonly struct CameraTarget : IEquatable<CameraTarget>
 {
-	[CompilerGenerated]
-	private readonly NetworkableId _003CEntityId_003Ek__BackingField;
-
 	public NetworkableId EntityId
 	{
 		[CompilerGenerated]
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CEntityId_003Ek__BackingField;
+			return field;
 		}
 	}
 

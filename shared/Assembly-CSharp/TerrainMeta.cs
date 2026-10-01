@@ -96,14 +96,14 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 					{
 						num = (_003C_003E1__state = 0);
 						_003C_003Eu__1 = awaiter;
-						((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter, _003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed>(ref awaiter, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter, _003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed>(ref awaiter, ref this);
 						return;
 					}
 				}
 				else
 				{
 					awaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 				}
 				awaiter.GetResult();
@@ -137,11 +137,11 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -153,7 +153,7 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -174,22 +174,7 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 	[HideInInspector]
 	public PaintMode currentPaintMode;
 
-	public static readonly SharedStatic<BurstData> sharedBurstData;
-
-	[CompilerGenerated]
-	private static Vector3 _003CPosition_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private static Vector3 _003CSize_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private static Vector3 _003COneOverSize_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private static Vector3 _003CHighestPoint_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private static Vector3 _003CLowestPoint_003Ek__BackingField;
+	public static readonly SharedStatic<BurstData> sharedBurstData = SharedStatic<BurstData>.GetOrCreateUnsafe(0u, 5411825963348367585L, -2546176521858529784L);
 
 	public static TerrainConfig Config { get; private set; }
 
@@ -205,14 +190,14 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		get
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-			return _003CPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			_003CPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -222,14 +207,14 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		get
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-			return _003CSize_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			_003CSize_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -262,14 +247,14 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		get
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-			return _003COneOverSize_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			_003COneOverSize_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -279,14 +264,14 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		get
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-			return _003CHighestPoint_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			_003CHighestPoint_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -296,14 +281,14 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		get
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLowestPoint_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			_003CLowestPoint_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -415,15 +400,15 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-			_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed obj = default(_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed);
+			_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed obj = default;
 			obj._003C_003Et__builder = AsyncUniTaskMethodBuilder.Create();
 			obj.heights = heights2;
 			obj.posi = posi2;
 			obj.start = start;
 			obj.end = end2;
 			obj._003C_003E1__state = -1;
-			((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed>(ref obj);
-			return ((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+			obj._003C_003Et__builder.Start<_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed>(ref obj);
+			return obj._003C_003Et__builder.Task;
 		}
 	}
 
@@ -660,6 +645,7 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 	{
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
@@ -686,8 +672,7 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
 		float num = Random.Range(-1f, 1f);
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(Mathf.Min(Size.x, 4000f) - 100f, 0f, Mathf.Min(Size.z, 4000f) - 100f);
+		Vector3 val = new Vector3(Mathf.Min(Size.x, 4000f) - 100f, 0f, Mathf.Min(Size.z, 4000f) - 100f);
 		avoidDeepSeaPortal = avoidDeepSeaPortal && (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null && PointEntity<DeepSeaManager>.ServerInstance.IsOpen();
 		avoidDeepSea = avoidDeepSea && (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null;
 		List<CardinalDirection> list = Pool.Get<List<CardinalDirection>>();
@@ -704,13 +689,13 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		{
 			list.Remove(CardinalDirection.West);
 		}
-		Vector3 result = (Vector3)(ListEx.GetRandom<CardinalDirection>(list) switch
+		Vector3 result = ListEx.GetRandom<CardinalDirection>(list) switch
 		{
 			CardinalDirection.West => Center + new Vector3(0f - val.x, 0f, num * val.z), 
 			CardinalDirection.East => Center + new Vector3(val.x, 0f, num * val.z), 
 			CardinalDirection.South => Center + new Vector3(num * val.x, 0f, 0f - val.z), 
 			_ => Center + new Vector3(num * val.x, 0f, val.z), 
-		});
+		};
 		Pool.FreeUnmanaged<CardinalDirection>(ref list);
 		return result;
 	}
@@ -723,15 +708,16 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = default(Vector3);
-		while (((Vector3)(ref val)).Equals(default(Vector3)) || (excludeWater && WaterLevel.Test(val, waves: true, volumes: true)))
+		Vector3 val = default;
+		while (val.Equals(default(Vector3)) || (excludeWater && WaterLevel.Test(val, waves: true, volumes: true)))
 		{
 			float num = Random.Range(0f, Data.size.x);
 			float num2 = Random.Range(0f, Data.size.z);
 			float height = HeightMap.GetHeight(new Vector3(num, 0f, num2));
-			((Vector3)(ref val))._002Ector(num, height, num2);
+			val = new Vector3(num, height, num2);
 		}
 		return val;
 	}
@@ -1043,6 +1029,5 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		sharedBurstData = SharedStatic<BurstData>.GetOrCreateUnsafe(0u, 5411825963348367585L, -2546176521858529784L);
 	}
 }

@@ -58,7 +58,7 @@ public class SleepingBagCamper : SleepingBag
 	public override void ResetState()
 	{
 		base.ResetState();
-		AssociatedSeat = default(EntityRef<BaseVehicleSeat>);
+		AssociatedSeat = default;
 	}
 
 	protected override bool CanAccessBed(BasePlayer player)
@@ -84,7 +84,7 @@ public class SleepingBagCamper : SleepingBag
 	protected override void PostPlayerSpawn(BasePlayer p)
 	{
 		base.PostPlayerSpawn(p);
-		BaseVehicleSeat baseVehicleSeat = AssociatedSeat.Get(base.isServer);
+		BaseVehicleSeat baseVehicleSeat = AssociatedSeat.Get(isServer);
 		if ((Object)(object)baseVehicleSeat != (Object)null)
 		{
 			if (p.IsConnected)
@@ -130,9 +130,9 @@ public class SleepingBagCamper : SleepingBag
 		{
 			return respawnState;
 		}
-		if (AssociatedSeat.IsValid(base.isServer))
+		if (AssociatedSeat.IsValid(isServer))
 		{
-			BasePlayer mounted = AssociatedSeat.Get(base.isServer).GetMounted();
+			BasePlayer mounted = AssociatedSeat.Get(isServer).GetMounted();
 			if ((Object)(object)mounted != (Object)null && (ulong)mounted.userID != userID)
 			{
 				return (RespawnState)2;
@@ -146,7 +146,7 @@ public class SleepingBagCamper : SleepingBag
 	public void ServerClearBed(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
-		if (!((Object)(object)player == (Object)null) && AssociatedSeat.IsValid(base.isServer) && !((Object)(object)AssociatedSeat.Get(base.isServer).GetMounted() != (Object)(object)player))
+		if (!((Object)(object)player == (Object)null) && AssociatedSeat.IsValid(isServer) && !((Object)(object)AssociatedSeat.Get(isServer).GetMounted() != (Object)(object)player))
 		{
 			AssignToUser(0uL);
 		}

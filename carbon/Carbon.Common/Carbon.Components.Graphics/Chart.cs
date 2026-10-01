@@ -66,7 +66,7 @@ public struct Chart
 		public override void ThreadFunction()
 		{
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001c: Expected O, but got Unknown
+			//IL_001c: Expected Obj, but got Unknown
 			try
 			{
 				Bitmap val = new Bitmap(Chart.width, Chart.height);
@@ -167,13 +167,13 @@ public struct Chart
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Expected O, but got Unknown
+		//IL_0063: Expected Obj, but got Unknown
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Expected O, but got Unknown
+		//IL_0077: Expected Obj, but got Unknown
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Expected O, but got Unknown
+		//IL_0088: Expected Obj, but got Unknown
 		if (Settings.GridColor == null)
 		{
 			Settings.GridColor = Pens.DimGray;
@@ -259,7 +259,7 @@ public struct Chart
 			void CreateShadow(float multiply, int alpha)
 			{
 				//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-				//IL_009d: Expected O, but got Unknown
+				//IL_009d: Expected Obj, but got Unknown
 				PointF[] array = new PointF[4]
 				{
 					new PointF(x, y * multiply),
@@ -276,9 +276,9 @@ public struct Chart
 	internal void DrawChartContentLineDots(Graphics graphic, ulong[] data, float chartWidth, float chartHeight, float chartX, float chartY, LayerSettings layerSettings)
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Expected O, but got Unknown
+		//IL_0022: Expected Obj, but got Unknown
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Expected O, but got Unknown
+		//IL_002f: Expected Obj, but got Unknown
 		ulong num = data.Max();
 		float num2 = chartWidth / (float)(data.Length - 1);
 		Pen val = new Pen(layerSettings.Color, 2f);

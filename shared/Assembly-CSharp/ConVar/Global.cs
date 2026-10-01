@@ -23,12 +23,12 @@ public class Global : ConsoleSystem
 {
 	private static int _developer;
 
-	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
+	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
-	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
+	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	public static bool forceUnloadBundles = true;
 
 	[ServerVar(Help = "(Generated) When true, the server network position is updated to match the debug camera world position while spectating; useful for testing position-dependent server logic from the spectator view")]
@@ -94,8 +94,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	[ClientVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
+	[ServerVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	public static int job_system_threads
 	{
 		get
@@ -114,7 +114,7 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ClientVar(ClientInfo = true, Saved = true, Help = "If you're an admin this will enable god mode")]
+	[ClientVar(ClientInfo = true, Saved = true, AllowRunFromServer = true, Help = "If you're an admin this will enable god mode")]
 	public static bool god
 	{
 		get
@@ -146,8 +146,8 @@ public class Global : ConsoleSystem
 		ServerMgr.RestartServer(args.GetString(1, string.Empty), args.GetInt(0, 300));
 	}
 
-	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	[ClientVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
+	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	public static void quit(Arg args)
 	{
 		if (args != null && args.HasArgs())
@@ -177,8 +177,8 @@ public class Global : ConsoleSystem
 		ServerPerformance.DoReport();
 	}
 
-	[ClientVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	[ServerVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
+	[ClientVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	public static void objects(Arg args)
 	{
 		Object[] array = Object.FindObjectsByType<Object>((FindObjectsSortMode)0);
@@ -206,7 +206,7 @@ public class Global : ConsoleSystem
 				dictionary2.Add(((object)val).GetType(), runtimeMemorySize);
 			}
 		}
-		foreach (KeyValuePair<Type, long> item in dictionary2.OrderByDescending(delegate(KeyValuePair<Type, long> x)
+		foreach (KeyValuePair<Type, long> item in dictionary2.OrderByDescending((KeyValuePair<Type, long> x) =>
 		{
 			KeyValuePair<Type, long> keyValuePair = x;
 			return keyValuePair.Value;
@@ -246,8 +246,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(strValue);
 	}
 
-	[ClientVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
+	[ClientVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	public static void queue(Arg args)
 	{
 		string text = "";
@@ -472,7 +472,7 @@ public class Global : ConsoleSystem
 			return;
 		}
 		NetworkableId entityID = ArgEx.GetEntityID(args, 0);
-		if (!((NetworkableId)(ref entityID)).IsValid)
+		if (!entityID.IsValid)
 		{
 			args.ReplyWith("Missing sleeping bag ID");
 			return;
@@ -569,7 +569,7 @@ public class Global : ConsoleSystem
 			return;
 		}
 		NetworkableId entityID = ArgEx.GetEntityID(args, 0);
-		if (!((NetworkableId)(ref entityID)).IsValid)
+		if (!entityID.IsValid)
 		{
 			args.ReplyWith("Missing sleeping bag ID");
 			return;
@@ -625,7 +625,7 @@ public class Global : ConsoleSystem
 		if (Object.op_Implicit((Object)(object)basePlayer))
 		{
 			NetworkableId entityID = ArgEx.GetEntityID(args, 0);
-			if (!((NetworkableId)(ref entityID)).IsValid)
+			if (!entityID.IsValid)
 			{
 				args.ReplyWith("Missing sleeping bag ID");
 				return;
@@ -856,17 +856,17 @@ public class Global : ConsoleSystem
 		BasePlayer basePlayer = ArgEx.Player(args);
 		if (Object.op_Implicit((Object)(object)basePlayer) && basePlayer.IsAlive())
 		{
-			bool num = args.HasArg(TopOfBaseFlag);
-			bool flag = args.HasArg(UndergroundFlag);
-			StringView val = ((StringView)(ref args.FullString)).Replace(StringView.op_Implicit(", "), StringView.op_Implicit(","));
-			val = ((StringView)(ref val)).Replace(StringView.op_Implicit(TopOfBaseFlag), StringView.op_Implicit(""));
-			val = ((StringView)(ref val)).Replace(StringView.op_Implicit(UndergroundFlag), StringView.op_Implicit(""));
-			StringView str = ((StringView)(ref val)).Trim('"');
-			if (num)
+			bool flag = args.HasArg(TopOfBaseFlag);
+			bool flag2 = args.HasArg(UndergroundFlag);
+			StringView val = args.FullString.Replace(StringView.op_Implicit(", "), StringView.op_Implicit(","));
+			val = val.Replace(StringView.op_Implicit(TopOfBaseFlag), StringView.op_Implicit(""));
+			val = val.Replace(StringView.op_Implicit(UndergroundFlag), StringView.op_Implicit(""));
+			StringView str = val.Trim('"');
+			if (flag)
 			{
 				TeleportToTopOfBase(basePlayer, str.ToVector3());
 			}
-			else if (flag)
+			else if (flag2)
 			{
 				TeleportToUnderground(basePlayer, str.ToVector3());
 			}
@@ -893,14 +893,14 @@ public class Global : ConsoleSystem
 		{
 			Ray val = basePlayer.eyes.HeadRay();
 			int num = args.GetInt(0, 1000);
-			RaycastHit val2 = default(RaycastHit);
+			RaycastHit val2 = default;
 			if (Physics.Raycast(val, ref val2, (float)num, 1218652417))
 			{
-				basePlayer.Teleport(((RaycastHit)(ref val2)).point);
+				basePlayer.Teleport(val2.point);
 			}
 			else
 			{
-				basePlayer.Teleport(((Ray)(ref val)).origin + ((Ray)(ref val)).direction * (float)num);
+				basePlayer.Teleport(val.origin + val.direction * (float)num);
 			}
 		}
 	}
@@ -1030,10 +1030,10 @@ public class Global : ConsoleSystem
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		position.y = WaterLevel.GetWaterOrTerrainSurface(position, waves: true, volumes: true);
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(new Ray(position + Vector3.up * 100f, Vector3.down), ref val, 110f, 1218652417))
 		{
-			position.y = ((RaycastHit)(ref val)).point.y + 0.5f;
+			position.y = val.point.y + 0.5f;
 		}
 		player.Teleport(position);
 	}
@@ -1059,7 +1059,7 @@ public class Global : ConsoleSystem
 		for (int i = 0; i < num; i++)
 		{
 			RaycastHit val2 = val[i];
-			float y = ((RaycastHit)(ref val2)).transform.position.y;
+			float y = val2.transform.position.y;
 			if (y < num2)
 			{
 				position.y = y + 2f;
@@ -1271,8 +1271,8 @@ public class Global : ConsoleSystem
 			args.ReplyWith("You are not on a player boat");
 			return;
 		}
-		StringView val = ((StringView)(ref args.FullString)).Replace(StringView.op_Implicit(", "), StringView.op_Implicit(","));
-		string str = ((object)((StringView)(ref val)).Trim('"')/*cast due to constrained. prefix*/).ToString();
+		StringView val = args.FullString.Replace(StringView.op_Implicit(", "), StringView.op_Implicit(","));
+		string str = ((object)val.Trim('"')/*cast due to constrained. prefix*/).ToString();
 		if (!TeleportBoatToWater(playerBoat, str.ToVector3()))
 		{
 			args.ReplyWith("Target position is not in water");
@@ -1330,8 +1330,8 @@ public class Global : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	[ClientVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
+	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	public static void sysinfo(Arg arg)
 	{
 		arg.ReplyWith(SystemInfoGeneralText.currentInfo);
@@ -1369,8 +1369,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	[ClientVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
+	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	public static void subscriptions(Arg arg)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)

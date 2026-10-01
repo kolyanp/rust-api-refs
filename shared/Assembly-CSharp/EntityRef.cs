@@ -27,7 +27,7 @@ public struct EntityRef : IEntityRef, IEquatable<EntityRef>
 			//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 			id_cached = value;
-			if (!((NetworkableId)(ref id_cached)).IsValid)
+			if (!id_cached.IsValid)
 			{
 				ent_cached = null;
 			}
@@ -40,7 +40,7 @@ public struct EntityRef : IEntityRef, IEquatable<EntityRef>
 
 	public bool IsSet()
 	{
-		return ((NetworkableId)(ref id_cached)).IsValid;
+		return id_cached.IsValid;
 	}
 
 	public bool IsValid(bool serverside)
@@ -54,7 +54,7 @@ public struct EntityRef : IEntityRef, IEquatable<EntityRef>
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		ent_cached = ent;
-		id_cached = default(NetworkableId);
+		id_cached = default;
 		if (ent_cached.IsValid())
 		{
 			id_cached = ent_cached.net.ID;
@@ -64,7 +64,7 @@ public struct EntityRef : IEntityRef, IEquatable<EntityRef>
 	public BaseEntity Get(bool serverside)
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)ent_cached == (Object)null && ((NetworkableId)(ref id_cached)).IsValid)
+		if ((Object)(object)ent_cached == (Object)null && id_cached.IsValid)
 		{
 			if (serverside)
 			{
@@ -105,9 +105,12 @@ public struct EntityRef : IEntityRef, IEquatable<EntityRef>
 		return ((object)uid/*cast due to constrained. prefix*/).GetHashCode();
 	}
 }
-public struct EntityRef<T> : IEntityRef, IEquatable<EntityRef<T>> where T : BaseEntity
+public struct EntityRef<T>(NetworkableId uid) : IEntityRef, IEquatable<EntityRef<T>> where T : BaseEntity
 {
-	private EntityRef entityRef;
+	private EntityRef entityRef = new EntityRef
+	{
+		uid = uid
+	};
 
 	public bool IsSet => entityRef.IsSet();
 
@@ -123,15 +126,6 @@ public struct EntityRef<T> : IEntityRef, IEquatable<EntityRef<T>> where T : Base
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			entityRef.uid = value;
 		}
-	}
-
-	public EntityRef(NetworkableId uid)
-	{
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		entityRef = new EntityRef
-		{
-			uid = uid
-		};
 	}
 
 	public bool IsValid(bool serverside)

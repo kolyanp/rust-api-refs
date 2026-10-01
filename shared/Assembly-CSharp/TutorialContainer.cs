@@ -6,11 +6,11 @@ public class TutorialContainer : StorageContainer
 
 	public void LoadStorage(ItemAmount[] toLoad)
 	{
-		base.inventory.Clear();
+		inventory.Clear();
 		acceptingItems = true;
 		foreach (ItemAmount itemAmount in toLoad)
 		{
-			base.inventory.GiveItem(ItemManager.Create(itemAmount.itemDef, (int)itemAmount.amount, 0uL, isServerSide: true, 0uL));
+			inventory.GiveItem(ItemManager.Create(itemAmount.itemDef, (int)itemAmount.amount, 0uL, isServerSide: true, 0uL));
 		}
 		acceptingItems = false;
 	}
@@ -18,7 +18,7 @@ public class TutorialContainer : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 	}
 

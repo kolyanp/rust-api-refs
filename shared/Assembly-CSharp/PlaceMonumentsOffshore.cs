@@ -52,6 +52,7 @@ public class PlaceMonumentsOffshore : ProceduralComponent
 		//IL_03dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_029e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b1: Unknown result type (might be due to invalid IL or missing references)
@@ -113,7 +114,6 @@ public class PlaceMonumentsOffshore : ProceduralComponent
 			List<SpawnInfo> list2 = new List<SpawnInfo>();
 			int num11 = 0;
 			List<SpawnInfo> list3 = new List<SpawnInfo>();
-			Vector3 pos = default(Vector3);
 			for (int num12 = 0; num12 < 10; num12++)
 			{
 				num10 = 0;
@@ -149,7 +149,7 @@ public class PlaceMonumentsOffshore : ProceduralComponent
 						float normX = TerrainMeta.NormalizeX(num16);
 						float normZ = TerrainMeta.NormalizeZ(num17);
 						float height = heightMap.GetHeight(normX, normZ);
-						((Vector3)(ref pos))._002Ector(num16, height, num17);
+						Vector3 pos = new Vector3(num16, height, num17);
 						Quaternion rot = prefab.Object.transform.localRotation;
 						Vector3 scale = prefab.Object.transform.localScale;
 						if (!CheckRadius(list2, pos, DistanceBetweenMonuments))
@@ -198,7 +198,7 @@ public class PlaceMonumentsOffshore : ProceduralComponent
 		foreach (SpawnInfo spawn in spawns)
 		{
 			Vector3 val = spawn.position - pos;
-			if (((Vector3)(ref val)).sqrMagnitude < num)
+			if (val.sqrMagnitude < num)
 			{
 				return true;
 			}

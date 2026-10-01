@@ -28,6 +28,7 @@ internal static class SDFBounds
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
@@ -96,16 +97,15 @@ internal static class SDFBounds
 		float3 val = math.rotate(rotation, math.right()) * halfExtents.x;
 		float3 val2 = math.rotate(rotation, math.up()) * halfExtents.y;
 		float3 val3 = math.rotate(rotation, math.forward()) * halfExtents.z;
-		Bounds result = default(Bounds);
-		((Bounds)(ref result))._002Ector(float3.op_Implicit(position), Vector3.zero);
-		((Bounds)(ref result)).Encapsulate(float3.op_Implicit(position + val2 + val + val3));
-		((Bounds)(ref result)).Encapsulate(float3.op_Implicit(position + val2 + val - val3));
-		((Bounds)(ref result)).Encapsulate(float3.op_Implicit(position + val2 - val + val3));
-		((Bounds)(ref result)).Encapsulate(float3.op_Implicit(position + val2 - val - val3));
-		((Bounds)(ref result)).Encapsulate(float3.op_Implicit(position - val2 + val + val3));
-		((Bounds)(ref result)).Encapsulate(float3.op_Implicit(position - val2 + val - val3));
-		((Bounds)(ref result)).Encapsulate(float3.op_Implicit(position - val2 - val + val3));
-		((Bounds)(ref result)).Encapsulate(float3.op_Implicit(position - val2 - val - val3));
+		Bounds result = new Bounds(float3.op_Implicit(position), Vector3.zero);
+		result.Encapsulate(float3.op_Implicit(position + val2 + val + val3));
+		result.Encapsulate(float3.op_Implicit(position + val2 + val - val3));
+		result.Encapsulate(float3.op_Implicit(position + val2 - val + val3));
+		result.Encapsulate(float3.op_Implicit(position + val2 - val - val3));
+		result.Encapsulate(float3.op_Implicit(position - val2 + val + val3));
+		result.Encapsulate(float3.op_Implicit(position - val2 + val - val3));
+		result.Encapsulate(float3.op_Implicit(position - val2 - val + val3));
+		result.Encapsulate(float3.op_Implicit(position - val2 - val - val3));
 		return result;
 	}
 }

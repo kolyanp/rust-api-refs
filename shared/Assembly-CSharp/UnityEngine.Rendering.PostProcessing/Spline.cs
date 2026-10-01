@@ -33,7 +33,7 @@ public sealed class Spline
 		this.curve = curve;
 		m_ZeroValue = zeroValue;
 		m_Loop = loop;
-		m_Range = ((Vector2)(ref bounds)).magnitude;
+		m_Range = bounds.magnitude;
 		cachedData = new float[128];
 	}
 
@@ -46,7 +46,7 @@ public sealed class Spline
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Expected O, but got Unknown
+		//IL_003b: Expected Obj, but got Unknown
 		if (frame == frameCount)
 		{
 			return;
@@ -59,9 +59,9 @@ public sealed class Spline
 				m_InternalLoopingCurve = new AnimationCurve();
 			}
 			Keyframe val = curve[length - 1];
-			((Keyframe)(ref val)).time = ((Keyframe)(ref val)).time - m_Range;
+			val.time -= m_Range;
 			Keyframe val2 = curve[0];
-			((Keyframe)(ref val2)).time = ((Keyframe)(ref val2)).time + m_Range;
+			val2.time += m_Range;
 			m_InternalLoopingCurve.keys = curve.keys;
 			m_InternalLoopingCurve.AddKey(val);
 			m_InternalLoopingCurve.AddKey(val2);

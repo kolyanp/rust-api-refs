@@ -59,11 +59,11 @@ public static class PremiumUtil
 
 	public const string KickReason = "premium_account_required";
 
-	public static readonly Phrase KickPhrase;
+	public static readonly Phrase KickPhrase = new Phrase("premium.kick_phrase", "Your account must have premium status to play on this server.");
 
-	public static string PremiumStatusEndpoint;
+	public static string PremiumStatusEndpoint = "https://rust-premium.facepunch.com/api/premium/status";
 
-	private static readonly HttpClient Http;
+	private static readonly HttpClient Http = new HttpClient();
 
 	public static async Task<PremiumCheckResult> CheckIfPlayerIsPremium(ulong steamId)
 	{
@@ -71,9 +71,9 @@ public static class PremiumUtil
 		{
 			List<ulong> players = Pool.Get<List<ulong>>();
 			players.Add(steamId);
-			Dictionary<ulong, bool> obj = await CheckIfPlayersArePremium(players);
+			Dictionary<ulong, bool> dictionary = await CheckIfPlayersArePremium(players);
 			Pool.FreeUnmanaged<ulong>(ref players);
-			if (!obj.TryGetValue(steamId, out var value))
+			if (!dictionary.TryGetValue(steamId, out var value))
 			{
 				Debug.LogError((object)$"Failed to check if user {steamId} is premium due to user not being in the results");
 				return new PremiumCheckResult(isPremium: false, "Failed to validate premium status: Missing User in Results");
@@ -133,9 +133,6 @@ public static class PremiumUtil
 	static PremiumUtil()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		KickPhrase = new Phrase("premium.kick_phrase", "Your account must have premium status to play on this server.");
-		PremiumStatusEndpoint = "https://rust-premium.facepunch.com/api/premium/status";
-		Http = new HttpClient();
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

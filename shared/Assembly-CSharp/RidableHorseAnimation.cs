@@ -23,54 +23,54 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3 skiddingHipRotation;
 
+	[SerializeField]
 	[Header("Head")]
 	[Range(0f, 1f)]
-	[SerializeField]
-	private float headBlend;
+	private float headBlend = 1f;
 
 	[ReadOnly]
-	public float headSecondaryBlend;
+	public float headSecondaryBlend = 1f;
 
 	public Transform[] neckBones;
 
 	public AnimationCurve rotationResponsivenessCurve;
 
-	public float yawInertiaFactor;
+	public float yawInertiaFactor = 15f;
 
-	public float maxYawAngle;
+	public float maxYawAngle = 10f;
 
 	public Vector2 minMaxStiffness;
 
 	public Vector2 minMaxDamping;
 
-	public float headTurnSpeed;
+	public float headTurnSpeed = 3.5f;
 
-	public Vector3 headLookOffset;
+	public Vector3 headLookOffset = Vector3.zero;
 
-	[Header("Spine")]
 	[Range(0f, 1f)]
 	[SerializeField]
-	private float spineBlend;
+	[Header("Spine")]
+	private float spineBlend = 0.5f;
 
 	[ReadOnly]
-	public float spineSecondaryBlend;
+	public float spineSecondaryBlend = 1f;
 
 	public Transform[] spineBones;
 
-	public float spineTurnSpeed;
+	public float spineTurnSpeed = 3.5f;
 
-	public float spineYawInertiaFactor;
+	public float spineYawInertiaFactor = 150f;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] targetNeckRotations;
 
 	[SerializeField]
 	[ReadOnly]
 	private Quaternion[] targetSpineRotations;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Vector3[] localSpinePositions;
 
 	[SerializeField]
@@ -91,16 +91,5 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		headBlend = 1f;
-		headSecondaryBlend = 1f;
-		yawInertiaFactor = 15f;
-		maxYawAngle = 10f;
-		headTurnSpeed = 3.5f;
-		headLookOffset = Vector3.zero;
-		spineBlend = 0.5f;
-		spineSecondaryBlend = 1f;
-		spineTurnSpeed = 3.5f;
-		spineYawInertiaFactor = 150f;
-		base._002Ector();
 	}
 }

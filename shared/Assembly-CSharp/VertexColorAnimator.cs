@@ -53,7 +53,7 @@ public class VertexColorAnimator : MonoBehaviour
 		{
 			return;
 		}
-		Color[] array = (Color[])(object)new Color[((Component)this).GetComponent<MeshFilter>().sharedMesh.colors.Length];
+		Color[] array = new Color[((Component)this).GetComponent<MeshFilter>().sharedMesh.colors.Length];
 		int num = 0;
 		for (int i = 0; i < animationKeyframes.Count; i++)
 		{
@@ -106,7 +106,7 @@ public class VertexColorAnimator : MonoBehaviour
 				elapsedTime -= Time.fixedDeltaTime / timeScale;
 			}
 		}
-		Color[] array = (Color[])(object)new Color[((Component)this).GetComponent<MeshFilter>().sharedMesh.colors.Length];
+		Color[] array = new Color[((Component)this).GetComponent<MeshFilter>().sharedMesh.colors.Length];
 		int num = 0;
 		for (int i = 0; i < animationKeyframes.Count; i++)
 		{

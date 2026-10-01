@@ -17,7 +17,7 @@ public class CopyPasteEntity : PointEntity
 
 	public const string FileExtension = ".data";
 
-	public unsafe override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
@@ -58,12 +58,12 @@ public class CopyPasteEntity : PointEntity
 						}
 						finally
 						{
-							((IDisposable)(*(FieldOperationLimitSuspensionScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+							((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 						}
 					}
 					finally
 					{
-						((IDisposable)(*(FieldOrderValidationScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+						((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 					}
 				}
 				return true;
@@ -167,7 +167,7 @@ public class CopyPasteEntity : PointEntity
 
 	public void OnEnable()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if ((Object)(object)ServerInstance != (Object)null)
 			{
@@ -183,7 +183,7 @@ public class CopyPasteEntity : PointEntity
 
 	public void OnDestroy()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			ServerInstance = null;
 		}

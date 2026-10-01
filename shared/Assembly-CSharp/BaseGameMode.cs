@@ -258,11 +258,11 @@ public class BaseGameMode : BaseEntity
 	public void InitScores()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
+		//IL_0050: Expected Obj, but got Unknown
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Expected O, but got Unknown
+		//IL_0090: Expected Obj, but got Unknown
 		gameModeScores = new GameMode();
 		gameModeScores.scoreColumns = new List<ScoreColumn>();
 		gameModeScores.playerScores = new List<PlayerScore>();
@@ -290,11 +290,11 @@ public class BaseGameMode : BaseEntity
 	public void CopyGameModeScores(GameMode from, GameMode to)
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Expected O, but got Unknown
+		//IL_003d: Expected Obj, but got Unknown
 		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Expected O, but got Unknown
+		//IL_008c: Expected Obj, but got Unknown
 		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Expected O, but got Unknown
+		//IL_00e2: Expected Obj, but got Unknown
 		to.teams.Clear();
 		to.scoreColumns.Clear();
 		to.playerScores.Clear();
@@ -328,7 +328,7 @@ public class BaseGameMode : BaseEntity
 	public PlayerScore GetPlayerScoreForPlayer(BasePlayer player)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Expected O, but got Unknown
+		//IL_0056: Expected Obj, but got Unknown
 		PlayerScore val = null;
 		foreach (PlayerScore playerScore in gameModeScores.playerScores)
 		{
@@ -544,8 +544,8 @@ public class BaseGameMode : BaseEntity
 	{
 		if (KeepScores())
 		{
-			TeamInfo obj = gameModeScores.teams[teamIndex];
-			obj.score += modifyAmount;
+			TeamInfo val = gameModeScores.teams[teamIndex];
+			val.score += modifyAmount;
 			SendNetworkUpdate();
 			CheckGameConditions();
 		}
@@ -559,7 +559,7 @@ public class BaseGameMode : BaseEntity
 
 	public virtual void ResetPlayerScores(BasePlayer player)
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			for (int i = 0; i < scoreColumns.Length; i++)
 			{
@@ -605,7 +605,7 @@ public class BaseGameMode : BaseEntity
 
 	public void SetPlayerGameScore(BasePlayer player, int scoreIndex, int scoreValue)
 	{
-		if (!base.isClient && KeepScores())
+		if (!isClient && KeepScores())
 		{
 			GetPlayerScoreForPlayer(player).scores[scoreIndex] = scoreValue;
 			SendNetworkUpdate();
@@ -627,7 +627,7 @@ public class BaseGameMode : BaseEntity
 
 	public virtual ResearchCostResult GetScrapCostForResearch(ItemDefinition item, ResearchTable.ResearchType researchType)
 	{
-		return default(ResearchCostResult);
+		return default;
 	}
 
 	public virtual float? EvaluateSleepingBagReset(SleepingBag bag, Vector3 position, SleepingBag.SleepingBagResetReason reason)
@@ -932,21 +932,21 @@ public class BaseGameMode : BaseEntity
 	public override void InitShared()
 	{
 		base.InitShared();
-		if ((Object)(object)GetActiveGameMode(base.isServer) != (Object)null && (Object)(object)GetActiveGameMode(base.isServer) != (Object)(object)this)
+		if ((Object)(object)GetActiveGameMode(isServer) != (Object)null && (Object)(object)GetActiveGameMode(isServer) != (Object)(object)this)
 		{
-			Debug.LogError((object)("Already an active game mode! was : " + ((Object)GetActiveGameMode(base.isServer)).name));
-			Object.Destroy((Object)(object)((Component)GetActiveGameMode(base.isServer)).gameObject);
+			Debug.LogError((object)("Already an active game mode! was : " + ((Object)GetActiveGameMode(isServer)).name));
+			Object.Destroy((Object)(object)((Component)GetActiveGameMode(isServer)).gameObject);
 		}
 		SetupTags();
-		SetActiveGameMode(this, base.isServer);
+		SetActiveGameMode(this, isServer);
 		OnCreated();
 	}
 
 	public override void DestroyShared()
 	{
-		if ((Object)(object)GetActiveGameMode(base.isServer) == (Object)(object)this)
+		if ((Object)(object)GetActiveGameMode(isServer) == (Object)(object)this)
 		{
-			SetActiveGameMode(null, base.isServer);
+			SetActiveGameMode(null, isServer);
 		}
 		base.DestroyShared();
 	}
@@ -956,7 +956,7 @@ public class BaseGameMode : BaseEntity
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		OnCreated_Vanilla();
-		if (base.isServer)
+		if (isServer)
 		{
 			ApplyConVars();
 			gameModeSpawnGroups = Object.FindObjectsByType<GameModeSpawnGroup>((FindObjectsSortMode)0);
@@ -1081,7 +1081,7 @@ public class BaseGameMode : BaseEntity
 
 	private void Update()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			OnThink(Time.deltaTime);
 		}
@@ -1239,7 +1239,7 @@ public class BaseGameMode : BaseEntity
 
 	public virtual void OnPlayerDisconnected(BasePlayer player)
 	{
-		if (gameModeScores == null || base.isClient)
+		if (gameModeScores == null || isClient)
 		{
 			return;
 		}
@@ -1528,7 +1528,7 @@ public class BaseGameMode : BaseEntity
 		for (int i = 0; i < lootDistributionModifiers.Length; i++)
 		{
 			LootTypeModifier lootTypeModifier = lootDistributionModifiers[i];
-			if ((lootTypeModifier.LootType & forDefinition.lootDistributionType) != ItemDefinition.LootDistributionModifierType.None)
+			if ((lootTypeModifier.LootType & forDefinition.lootDistributionType) != 0)
 			{
 				num += lootTypeModifier.Modifier;
 			}
@@ -1546,7 +1546,7 @@ public class BaseGameMode : BaseEntity
 		for (int i = 0; i < craftingCostModifiers.Length; i++)
 		{
 			CraftingCostMultiplier craftingCostMultiplier = craftingCostModifiers[i];
-			if ((craftingCostMultiplier.LootType & forDefinition.lootDistributionType) != ItemDefinition.LootDistributionModifierType.None)
+			if ((craftingCostMultiplier.LootType & forDefinition.lootDistributionType) != 0)
 			{
 				if (craftingCostMultiplier.ConVarToUse != CraftingCostConVar.None)
 				{

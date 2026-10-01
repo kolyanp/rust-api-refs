@@ -139,7 +139,7 @@ public class CreationGibSpawner : BaseMonoBehaviour
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		Debug.Log((object)"Adding conditional gib source");
-		ConditionalGibSource item = default(ConditionalGibSource);
+		ConditionalGibSource item = default;
 		item.source = cGibSource;
 		item.pos = pos;
 		item.rot = rot;
@@ -187,7 +187,7 @@ public class CreationGibSpawner : BaseMonoBehaviour
 			if (!((Object)(object)component == (Object)null))
 			{
 				bounds = ((Renderer)component).bounds;
-				y = ((Bounds)(ref bounds)).center.y;
+				y = bounds.center.y;
 			}
 			else
 			{
@@ -198,7 +198,7 @@ public class CreationGibSpawner : BaseMonoBehaviour
 			if (!((Object)(object)component2 == (Object)null))
 			{
 				bounds = ((Renderer)component2).bounds;
-				y2 = ((Bounds)(ref bounds)).center.y;
+				y2 = bounds.center.y;
 			}
 			else
 			{
@@ -211,7 +211,7 @@ public class CreationGibSpawner : BaseMonoBehaviour
 		if (!((Object)(object)component == (Object)null))
 		{
 			bounds = ((Renderer)component).bounds;
-			y3 = ((Bounds)(ref bounds)).center.y;
+			y3 = bounds.center.y;
 		}
 		else
 		{
@@ -222,7 +222,7 @@ public class CreationGibSpawner : BaseMonoBehaviour
 		if (!((Object)(object)component2 == (Object)null))
 		{
 			bounds = ((Renderer)component2).bounds;
-			y4 = ((Bounds)(ref bounds)).center.y;
+			y4 = bounds.center.y;
 		}
 		else
 		{
@@ -262,9 +262,9 @@ public class CreationGibSpawner : BaseMonoBehaviour
 		list.Remove(gibsInstance.transform);
 		list.Sort(SortsGibs);
 		gibs = list;
-		spawnPositions = (Vector3[])(object)new Vector3[gibs.Count];
+		spawnPositions = new Vector3[gibs.Count];
 		gibProgress = new float[gibs.Count];
-		particles = (GameObject[])(object)new GameObject[gibs.Count];
+		particles = new GameObject[gibs.Count];
 		for (int i = 0; i < gibs.Count; i++)
 		{
 			Transform val = gibs[i];
@@ -374,8 +374,8 @@ public class CreationGibSpawner : BaseMonoBehaviour
 			if (num5 && (Object)(object)particles[i] == (Object)null && (Object)(object)component != (Object)null && (Object)(object)component.sharedMesh != (Object)null)
 			{
 				Bounds bounds = component.sharedMesh.bounds;
-				Vector3 size = ((Bounds)(ref bounds)).size;
-				if (((Vector3)(ref size)).magnitude == 0f)
+				Vector3 size = bounds.size;
+				if (size.magnitude == 0f)
 				{
 					continue;
 				}
@@ -387,9 +387,9 @@ public class CreationGibSpawner : BaseMonoBehaviour
 				ParticleSystem component2 = val2.GetComponent<ParticleSystem>();
 				MeshRenderer component3 = ((Component)component).GetComponent<MeshRenderer>();
 				ShapeModule shape = component2.shape;
-				((ShapeModule)(ref shape)).shapeType = (ParticleSystemShapeType)5;
+				shape.shapeType = (ParticleSystemShapeType)5;
 				bounds = ((Renderer)component3).bounds;
-				((ShapeModule)(ref shape)).boxThickness = ((Bounds)(ref bounds)).extents;
+				shape.boxThickness = bounds.extents;
 				particles[i] = val2;
 			}
 			float num6 = Mathf.Clamp01(gibProgress[i] / num2);

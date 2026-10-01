@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 public class PathMeshTemplate
 {
-	private static Quaternion rot90;
+	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
 
 	public MeshCache.Data[] srcData;
 
@@ -72,7 +72,7 @@ public class PathMeshTemplate
 	private void PreJob(int[] filter)
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Expected O, but got Unknown
+		//IL_001b: Expected Obj, but got Unknown
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		for (int i = 0; i < outputMeshes.Length; i++)
@@ -209,6 +209,7 @@ public class PathMeshTemplate
 		//IL_03eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0400: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0405: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0407: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0409: Unknown result type (might be due to invalid IL or missing references)
@@ -229,13 +230,12 @@ public class PathMeshTemplate
 		//IL_047a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0495: Unknown result type (might be due to invalid IL or missing references)
 		Bounds bounds = srcData[srcData.Length - 1].bounds;
-		Vector3 min = ((Bounds)(ref bounds)).min;
-		Vector3 size = ((Bounds)(ref bounds)).size;
-		_ = PathList.Width / ((Bounds)(ref bounds)).size.x;
+		Vector3 min = bounds.min;
+		Vector3 size = bounds.size;
+		_ = PathList.Width / bounds.size.x;
 		float randomScale = PathList.RandomScale;
 		float meshOffset = PathList.MeshOffset;
 		float baseRadius = PathList.Width * 0.5f;
-		Vector3 val16 = default(Vector3);
 		for (int i = 0; i < srcData.Length; i++)
 		{
 			if ((Object)(object)outputMeshes[i] == (Object)null)
@@ -243,33 +243,33 @@ public class PathMeshTemplate
 				continue;
 			}
 			MeshCache.Data data = srcData[i];
-			MeshData val = ((MeshDataArray)(ref dstData[i]))[0];
+			MeshData val = dstData[i][0];
 			int num = data.vertices.Length;
 			int num2 = data.triangles.Length;
 			int num3 = segmentCount * num;
 			int num4 = segmentCount * num2;
 			IndexFormat val2 = (IndexFormat)(num3 > 65535);
-			((MeshData)(ref val)).SetVertexBufferParams(num3, (VertexAttributeDescriptor[])(object)new VertexAttributeDescriptor[4]
+			val.SetVertexBufferParams(num3, new VertexAttributeDescriptor[4]
 			{
 				new VertexAttributeDescriptor((VertexAttribute)0, (VertexAttributeFormat)0, 3, 0),
 				new VertexAttributeDescriptor((VertexAttribute)1, (VertexAttributeFormat)0, 3, 1),
 				new VertexAttributeDescriptor((VertexAttribute)2, (VertexAttributeFormat)0, 4, 2),
 				new VertexAttributeDescriptor((VertexAttribute)4, (VertexAttributeFormat)0, 2, 3)
 			});
-			((MeshData)(ref val)).SetIndexBufferParams(num4, val2);
-			NativeArray<Vector3> vertexData = ((MeshData)(ref val)).GetVertexData<Vector3>(0);
-			NativeArray<Vector3> vertexData2 = ((MeshData)(ref val)).GetVertexData<Vector3>(1);
-			NativeArray<Vector4> vertexData3 = ((MeshData)(ref val)).GetVertexData<Vector4>(2);
-			NativeArray<Vector2> vertexData4 = ((MeshData)(ref val)).GetVertexData<Vector2>(3);
-			NativeArray<ushort> val3 = default(NativeArray<ushort>);
-			NativeArray<uint> val4 = default(NativeArray<uint>);
+			val.SetIndexBufferParams(num4, val2);
+			NativeArray<Vector3> vertexData = val.GetVertexData<Vector3>(0);
+			NativeArray<Vector3> vertexData2 = val.GetVertexData<Vector3>(1);
+			NativeArray<Vector4> vertexData3 = val.GetVertexData<Vector4>(2);
+			NativeArray<Vector2> vertexData4 = val.GetVertexData<Vector2>(3);
+			NativeArray<ushort> val3 = default;
+			NativeArray<uint> val4 = default;
 			if ((int)val2 == 0)
 			{
-				val3 = ((MeshData)(ref val)).GetIndexData<ushort>();
+				val3 = val.GetIndexData<ushort>();
 			}
 			else
 			{
-				val4 = ((MeshData)(ref val)).GetIndexData<uint>();
+				val4 = val.GetIndexData<uint>();
 			}
 			for (int j = 0; j < segmentCount; j++)
 			{
@@ -293,7 +293,7 @@ public class PathMeshTemplate
 					Vector3 val9 = (PathList.Spline ? PathList.Path.GetPointCubicHermite(num11) : PathList.Path.GetPoint(num11));
 					Vector3 tangent = PathList.Path.GetTangent(num11);
 					Vector3 val10 = Vector3Ex.XZ3D(tangent);
-					Vector3 normalized = ((Vector3)(ref val10)).normalized;
+					Vector3 normalized = val10.normalized;
 					Vector3 val11 = rot90 * normalized;
 					Vector3 val12 = Vector3.Cross(tangent, val11);
 					Quaternion val13 = Quaternion.LookRotation(normalized, val12);
@@ -318,9 +318,9 @@ public class PathMeshTemplate
 					}
 					val6 -= origin;
 					val7 = val13 * val7;
-					((Vector3)(ref val16))._002Ector(val8.x, val8.y, val8.z);
+					Vector3 val16 = new Vector3(val8.x, val8.y, val8.z);
 					val16 = val13 * val16;
-					((Vector4)(ref val8)).Set(val16.x, val16.y, val16.z, val8.w);
+					val8.Set(val16.x, val16.y, val16.z, val8.w);
 					if (normalSmoothing > 0f)
 					{
 						val7 = Vector3.Slerp(val7, Vector3.up, normalSmoothing);
@@ -351,8 +351,8 @@ public class PathMeshTemplate
 					}
 				}
 			}
-			((MeshData)(ref val)).subMeshCount = 1;
-			((MeshData)(ref val)).SetSubMesh(0, new SubMeshDescriptor(0, num4, (MeshTopology)0), (MeshUpdateFlags)0);
+			val.subMeshCount = 1;
+			val.SetSubMesh(0, new SubMeshDescriptor(0, num4, (MeshTopology)0), (MeshUpdateFlags)0);
 		}
 	}
 
@@ -360,6 +360,5 @@ public class PathMeshTemplate
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		rot90 = Quaternion.Euler(0f, 90f, 0f);
 	}
 }

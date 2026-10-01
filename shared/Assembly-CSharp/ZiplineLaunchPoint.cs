@@ -110,12 +110,12 @@ public class ZiplineLaunchPoint : BaseEntity
 		List<Vector3> list = linePoints;
 		if (Vector3.Distance(val, list[list.Count - 1]) > 100f && ArrivalPointRef != null && ArrivalPointRef.isValid)
 		{
-			GameManager obj = base.gameManager;
+			GameManager gameManager = base.gameManager;
 			string resourcePath = ArrivalPointRef.resourcePath;
 			List<Vector3> list2 = linePoints;
-			ZiplineArrivalPoint obj2 = obj.CreateEntity(resourcePath, list2[list2.Count - 1]) as ZiplineArrivalPoint;
-			obj2.SetPositions(linePoints);
-			obj2.Spawn();
+			ZiplineArrivalPoint obj = gameManager.CreateEntity(resourcePath, list2[list2.Count - 1]) as ZiplineArrivalPoint;
+			obj.SetPositions(linePoints);
+			obj.Spawn();
 		}
 		UpdateBuildingBlocks();
 		SendNetworkUpdate();
@@ -207,9 +207,9 @@ public class ZiplineLaunchPoint : BaseEntity
 			}
 			Vector3 position2 = ((Component)item).transform.position;
 			Vector3 val = Vector3Ex.WithY(position2, position.y) - position;
-			float num3 = Vector3.Dot(((Vector3)(ref val)).normalized, ((Component)this).transform.forward);
+			float num3 = Vector3.Dot(val.normalized, ((Component)this).transform.forward);
 			val = position - Vector3Ex.WithY(position2, position.y);
-			float num4 = Vector3.Dot(((Vector3)(ref val)).normalized, ((Component)item).transform.forward);
+			float num4 = Vector3.Dot(val.normalized, ((Component)item).transform.forward);
 			float num5 = Vector3.Distance(position, position2) + (position2.y - position.y);
 			float num6 = num5 * num3 * num4;
 			if (!(num3 > 0.2f) || !item.IsValidPosition(position) || !(position.y + num2 > position2.y) || !(num5 > 10f) || !(num6 > num))
@@ -232,9 +232,9 @@ public class ZiplineLaunchPoint : BaseEntity
 				}
 				Vector3 position3 = ((Component)item2).transform.position;
 				val = Vector3Ex.WithY(position3, position.y) - position;
-				num3 = Vector3.Dot(((Vector3)(ref val)).normalized, ((Component)this).transform.forward);
+				num3 = Vector3.Dot(val.normalized, ((Component)this).transform.forward);
 				val = position - Vector3Ex.WithY(position3, position.y);
-				num4 = Vector3.Dot(((Vector3)(ref val)).normalized, ((Component)item2).transform.forward);
+				num4 = Vector3.Dot(val.normalized, ((Component)item2).transform.forward);
 				num6 = num5 * num3 * num4;
 				bool flag = CheckLineOfSight(position, ((Component)item2).transform.position);
 				bool flag2 = CheckLineOfSight(((Component)item2).transform.position, position2);
@@ -256,9 +256,9 @@ public class ZiplineLaunchPoint : BaseEntity
 					{
 						if (!((Object)(object)item3 == (Object)(object)item2) && item3.IsValidChainPoint(item2.Target.position, item.Target.position))
 						{
-							bool num7 = CheckLineOfSight(((Component)item2).transform.position, ((Component)item3).transform.position);
-							bool flag3 = CheckLineOfSight(((Component)item3).transform.position, ((Component)item).transform.position);
-							if (num7 & flag3)
+							bool flag3 = CheckLineOfSight(((Component)item2).transform.position, ((Component)item3).transform.position);
+							bool flag4 = CheckLineOfSight(((Component)item3).transform.position, ((Component)item).transform.position);
+							if (flag3 & flag4)
 							{
 								num = num6;
 								ziplineTarget = item;
@@ -299,8 +299,8 @@ public class ZiplineLaunchPoint : BaseEntity
 	}
 
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void MountPlayer(RPCMessage msg)
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -337,10 +337,10 @@ public class ZiplineLaunchPoint : BaseEntity
 		}
 		Vector3 position = LineDeparturePoint.position;
 		Vector3 val = Vector3Ex.WithY(ziplineTargets[0], position.y) - position;
-		Quaternion lineStartRot = Quaternion.LookRotation(((Vector3)(ref val)).normalized);
+		Quaternion lineStartRot = Quaternion.LookRotation(val.normalized);
 		val = position - Vector3Ex.WithY(((Component)msg.player).transform.position, position.y);
-		Quaternion rot = Quaternion.LookRotation(((Vector3)(ref val)).normalized);
-		ZiplineMountable ziplineMountable = base.gameManager.CreateEntity(MountableRef.resourcePath, ((Component)msg.player).transform.position + Vector3.up * 2.1f, rot) as ZiplineMountable;
+		Quaternion rot = Quaternion.LookRotation(val.normalized);
+		ZiplineMountable ziplineMountable = gameManager.CreateEntity(MountableRef.resourcePath, ((Component)msg.player).transform.position + Vector3.up * 2.1f, rot) as ZiplineMountable;
 		if ((Object)(object)ziplineMountable != (Object)null)
 		{
 			CalculateZiplinePoints(ziplineTargets, ref linePoints);
@@ -440,7 +440,7 @@ public class ZiplineLaunchPoint : BaseEntity
 				if (enumerator.Current is ZiplineLaunchPoint ziplineLaunchPoint)
 				{
 					BasePlayer basePlayer = ArgEx.Player(arg);
-					object[] obj = new object[7]
+					object[] array = new object[7]
 					{
 						"60",
 						Color.red,
@@ -451,11 +451,11 @@ public class ZiplineLaunchPoint : BaseEntity
 						null
 					};
 					List<Vector3> list = ziplineLaunchPoint.ziplineTargets;
-					obj[3] = list[list.Count - 1];
-					obj[4] = 25;
-					obj[5] = 0;
-					obj[6] = 0;
-					basePlayer.SendConsoleCommand("ddraw.arrow", obj);
+					array[3] = list[list.Count - 1];
+					array[4] = 25;
+					array[5] = 0;
+					array[6] = 0;
+					basePlayer.SendConsoleCommand("ddraw.arrow", array);
 				}
 			}
 		}
@@ -491,7 +491,7 @@ public class ZiplineLaunchPoint : BaseEntity
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		if (points == null && targets.Count != 0)
 		{
-			Vector3[] array = (Vector3[])(object)new Vector3[targets.Count + 1];
+			Vector3[] array = new Vector3[targets.Count + 1];
 			array[0] = LineDeparturePoint.position;
 			for (int i = 0; i < targets.Count; i++)
 			{
@@ -563,13 +563,13 @@ public class ZiplineLaunchPoint : BaseEntity
 		int startIndex = 0;
 		for (int j = 0; j < linePoints.Count; j++)
 		{
-			if (j == 0 || (base.isClient && j == 1))
+			if (j == 0 || (isClient && j == 1))
 			{
 				continue;
 			}
 			Vector3 val2 = linePoints[j];
 			Vector3 val3 = val2 - Vector3Ex.WithY(linePoints[j - 1], val2.y);
-			Vector3 normalized = ((Vector3)(ref val3)).normalized;
+			Vector3 normalized = val3.normalized;
 			if (val != Vector3.zero && Vector3.Dot(normalized, val) < 0.98f)
 			{
 				if (num < BuildingBlocks.Length)
@@ -620,6 +620,7 @@ public class ZiplineLaunchPoint : BaseEntity
 			//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 			//IL_010d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0114: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0135: Unknown result type (might be due to invalid IL or missing references)
@@ -628,31 +629,28 @@ public class ZiplineLaunchPoint : BaseEntity
 			Vector3 val4 = linePoints[num2];
 			Vector3 val5 = linePoints[endIndex];
 			Vector3 val6 = Vector3.zero;
-			Vector3 center = val4 - val5;
-			Quaternion rotation = Quaternion.LookRotation(((Vector3)(ref center)).normalized, Vector3.up);
+			Vector3 val7 = val4 - val5;
+			Quaternion rotation = Quaternion.LookRotation(val7.normalized, Vector3.up);
 			Vector3 position = Vector3.Lerp(val4, val5, 0.5f);
 			((Component)longCollider).transform.position = position;
 			((Component)longCollider).transform.rotation = rotation;
 			for (int k = num2; k < endIndex; k++)
 			{
-				Vector3 val7 = ((Component)longCollider).transform.InverseTransformPoint(linePoints[k]);
-				if (val7.y < val6.y)
+				Vector3 val8 = ((Component)longCollider).transform.InverseTransformPoint(linePoints[k]);
+				if (val8.y < val6.y)
 				{
-					val6 = val7;
+					val6 = val8;
 				}
 			}
 			float num3 = Mathf.Abs(val6.y) + 2f;
 			float num4 = Vector3.Distance(val4, val5);
-			center = (longCollider.size = (spawnBlocker.BoxCollider.size = new Vector3(0.5f, num3, num4) + Vector3.one));
-			BoxCollider boxCollider = spawnBlocker.BoxCollider;
-			((Vector3)(ref center))._002Ector(0f, 0f - num3 * 0.5f, 0f);
-			boxCollider.center = center;
-			longCollider.center = center;
+			val7 = (longCollider.size = (spawnBlocker.BoxCollider.size = new Vector3(0.5f, num3, num4) + Vector3.one));
+			val7 = (longCollider.center = (spawnBlocker.BoxCollider.center = new Vector3(0f, 0f - num3 * 0.5f, 0f)));
 			((Component)longCollider).gameObject.SetActive(true);
 			((Component)pointCollider).transform.position = linePoints[endIndex];
 			((Component)pointCollider).gameObject.SetActive(true);
 			((Component)spawnBlocker).gameObject.SetActive(true);
-			if (base.isServer)
+			if (isServer)
 			{
 				spawnBlocker.ClearTrees();
 			}

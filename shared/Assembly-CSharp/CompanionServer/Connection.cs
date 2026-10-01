@@ -80,14 +80,14 @@ public class Connection : IConnection
 
 	public void OnMessage(Span<byte> data)
 	{
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		if (App.update && App.queuelimit > 0 && data.Length <= App.maxmessagesize)
 		{
-			MemoryBuffer val = default(MemoryBuffer);
-			((MemoryBuffer)(ref val))._002Ector(data.Length);
+			MemoryBuffer val = new MemoryBuffer(data.Length);
 			data.CopyTo(MemoryBuffer.op_Implicit(val));
-			_listener.Enqueue(this, ((MemoryBuffer)(ref val)).Slice(data.Length));
+			_listener.Enqueue(this, val.Slice(data.Length));
 		}
 	}
 
@@ -110,8 +110,8 @@ public class Connection : IConnection
 				val2.response = response;
 				val2.WriteToStream(val);
 				MemoryBuffer val3 = new MemoryBuffer(val.Length);
-				val.GetBuffer().CopyTo(((MemoryBuffer)(ref val3)).Data, 0);
-				SendRaw(((MemoryBuffer)(ref val3)).Slice(val.Length));
+				val.GetBuffer().CopyTo(val3.Data, 0);
+				SendRaw(val3.Slice(val.Length));
 			}
 			finally
 			{
@@ -230,14 +230,14 @@ public class Connection : IConnection
 	public void SendRaw(MemoryBuffer data)
 	{
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		if (((MemoryBuffer)(ref data)).Length == 0)
+		if (data.Length == 0)
 		{
 			return;
 		}
 		if (!_transport.IsAvailable)
 		{
 			DebugEx.LogWarning($"Ignoring Rust+ message send to disconnected client (connectionID={ConnectionId} steamID={_subscribedPlayer?.SteamId})", (StackTraceLogType)0);
-			((MemoryBuffer)(ref data)).Dispose();
+			data.Dispose();
 			return;
 		}
 		try
@@ -256,7 +256,7 @@ public class Connection : IConnection
 		BaseEntity baseEntity = camera?.GetEnt();
 		if (ObjectEx.IsUnityNull(camera) || (Object)(object)baseEntity == (Object)null || !baseEntity.IsValid())
 		{
-			target = default(CameraTarget);
+			target = default;
 			return false;
 		}
 		target = new CameraTarget(baseEntity.net.ID);

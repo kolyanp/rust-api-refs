@@ -54,6 +54,7 @@ public class PreventBuildingMonumentTag : MonoBehaviour
 		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
@@ -66,56 +67,55 @@ public class PreventBuildingMonumentTag : MonoBehaviour
 		}
 		if ((Object)(object)volume == (Object)null)
 		{
-			result = default(OBB);
+			result = default;
 			return false;
 		}
 		Transform transform = ((Component)volume).transform;
-		Collider obj = volume;
-		BoxCollider val = (BoxCollider)(object)((obj is BoxCollider) ? obj : null);
-		if (val != null)
-		{
-			result = new OBB(transform, new Bounds(val.center, val.size));
-			return true;
-		}
-		Collider obj2 = volume;
-		SphereCollider val2 = (SphereCollider)(object)((obj2 is SphereCollider) ? obj2 : null);
+		Collider val = volume;
+		BoxCollider val2 = (BoxCollider)(object)((val is BoxCollider) ? val : null);
 		if (val2 != null)
 		{
+			result = new OBB(transform, new Bounds(val2.center, val2.size));
+			return true;
+		}
+		Collider val3 = volume;
+		SphereCollider val4 = (SphereCollider)(object)((val3 is SphereCollider) ? val3 : null);
+		if (val4 != null)
+		{
 			Vector3 lossyScale = transform.lossyScale;
-			float num = val2.radius * 2f * Mathf.Max(new float[3]
+			float num = val4.radius * 2f * Mathf.Max(new float[3]
 			{
 				Mathf.Abs(lossyScale.x),
 				Mathf.Abs(lossyScale.y),
 				Mathf.Abs(lossyScale.z)
 			});
-			result = new OBB(transform.TransformPoint(val2.center), Vector3.one * num, Quaternion.identity);
+			result = new OBB(transform.TransformPoint(val4.center), Vector3.one * num, Quaternion.identity);
 			return true;
 		}
-		Collider obj3 = volume;
-		CapsuleCollider val3 = (CapsuleCollider)(object)((obj3 is CapsuleCollider) ? obj3 : null);
-		if (val3 != null)
+		Collider val5 = volume;
+		CapsuleCollider val6 = (CapsuleCollider)(object)((val5 is CapsuleCollider) ? val5 : null);
+		if (val6 != null)
 		{
-			float num2 = val3.radius * 2f;
-			Vector3 val4 = default(Vector3);
-			((Vector3)(ref val4))._002Ector(num2, num2, num2);
-			switch (val3.direction)
+			float num2 = val6.radius * 2f;
+			Vector3 val7 = new Vector3(num2, num2, num2);
+			switch (val6.direction)
 			{
 			case 0:
-				val4.x = Mathf.Max(val3.height, num2);
+				val7.x = Mathf.Max(val6.height, num2);
 				break;
 			case 1:
-				val4.y = Mathf.Max(val3.height, num2);
+				val7.y = Mathf.Max(val6.height, num2);
 				break;
 			default:
-				val4.z = Mathf.Max(val3.height, num2);
+				val7.z = Mathf.Max(val6.height, num2);
 				break;
 			}
-			result = new OBB(transform, new Bounds(val3.center, val4));
+			result = new OBB(transform, new Bounds(val6.center, val7));
 			return true;
 		}
 		Bounds bounds = volume.bounds;
-		result = new OBB(((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).size, Quaternion.identity);
-		return ((Bounds)(ref bounds)).size != Vector3.zero;
+		result = new OBB(bounds.center, bounds.size, Quaternion.identity);
+		return bounds.size != Vector3.zero;
 	}
 
 	public MonumentInfo GetAttachedMonument()

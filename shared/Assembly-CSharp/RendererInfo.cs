@@ -19,11 +19,11 @@ public class RendererInfo : ComponentInfo<Renderer>
 		{
 			component.sharedMaterial = material;
 		}
-		Renderer obj = component;
-		SkinnedMeshRenderer val = (SkinnedMeshRenderer)(object)((obj is SkinnedMeshRenderer) ? obj : null);
-		if (val != null)
+		Renderer val = component;
+		SkinnedMeshRenderer val2 = (SkinnedMeshRenderer)(object)((val is SkinnedMeshRenderer) ? val : null);
+		if (val2 != null)
 		{
-			val.sharedMesh = mesh;
+			val2.sharedMesh = mesh;
 		}
 		else if (component is MeshRenderer)
 		{
@@ -37,11 +37,11 @@ public class RendererInfo : ComponentInfo<Renderer>
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		shadows = component.shadowCastingMode;
 		material = component.sharedMaterial;
-		Renderer obj = component;
-		SkinnedMeshRenderer val = (SkinnedMeshRenderer)(object)((obj is SkinnedMeshRenderer) ? obj : null);
-		if (val != null)
+		Renderer val = component;
+		SkinnedMeshRenderer val2 = (SkinnedMeshRenderer)(object)((val is SkinnedMeshRenderer) ? val : null);
+		if (val2 != null)
 		{
-			mesh = val.sharedMesh;
+			mesh = val2.sharedMesh;
 		}
 		else if (component is MeshRenderer)
 		{

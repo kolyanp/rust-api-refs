@@ -24,6 +24,8 @@ public class FarmableAnimal : BaseCombatEntity
 
 	public Gradient RendererColourGradient;
 
+	public const string PetTheChickenAchievement = "PET_CHICKEN";
+
 	public GameObjectRef CorpsePrefab;
 
 	public GestureConfig PettingGesture;
@@ -114,7 +116,7 @@ public class FarmableAnimal : BaseCombatEntity
 
 	public float HappinessNormalised => (AnimalHunger + AnimalThirst + AnimalLove + AnimalSunlight) / 4f / 100f;
 
-	private ChickenCoop ParentCoop => parentEntity.Get(base.isServer) as ChickenCoop;
+	private ChickenCoop ParentCoop => parentEntity.Get(isServer) as ChickenCoop;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -301,7 +303,7 @@ public class FarmableAnimal : BaseCombatEntity
 		if (TimeUntil.op_Implicit(nextEggProduction) < 0f && (Object)(object)ItemToCreate != (Object)null)
 		{
 			nextEggProduction = TimeUntil.op_Implicit(Random.Range(MinimumMinutesBetweenProduction, MaximumMinutesBetweenProduction) * 60f);
-			if (base.healthFraction > 0.75f)
+			if (healthFraction > 0.75f)
 			{
 				float num2 = Mathx.RemapValClamped(HappinessNormalised, 0.75f, 1f, 0f, 1f);
 				if (Random.Range(0f, 1f) < num2 && (Object)(object)ParentCoop != (Object)null)
@@ -393,7 +395,7 @@ public class FarmableAnimal : BaseCombatEntity
 		if (Vector3.Distance(currentMoveTarget, localPosition) > 0.3f)
 		{
 			Vector3 val2 = Vector3Ex.WithY(currentMoveTarget, localPosition.y) - localPosition;
-			val = Quaternion.LookRotation(((Vector3)(ref val2)).normalized);
+			val = Quaternion.LookRotation(val2.normalized);
 		}
 		((Component)this).transform.SetLocalPositionAndRotation(localPosition, val);
 		if (Vector3.Distance(localPosition, Vector3Ex.WithY(currentMoveTarget, localPosition.y)) < 0.1f)
@@ -444,7 +446,7 @@ public class FarmableAnimal : BaseCombatEntity
 			else
 			{
 				ParentCoop.UpdateMovementPlane();
-				desiredPos.y = ((Plane)(ref ParentCoop.MovementPlane)).ClosestPointOnPlane(desiredPos).y;
+				desiredPos.y = ParentCoop.MovementPlane.ClosestPointOnPlane(desiredPos).y;
 			}
 		}
 		return ((Component)ParentCoop).transform.InverseTransformPoint(desiredPos);
@@ -463,15 +465,16 @@ public class FarmableAnimal : BaseCombatEntity
 	[RPC_Server.IsVisible(3f)]
 	private void ServerPetChicken(RPCMessage msg)
 	{
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer player = msg.player;
 		if (CanPetChicken(msg.player))
 		{
 			AnimalLove = Mathf.Clamp(AnimalLove + 15f, 0f, 100f);
@@ -483,12 +486,13 @@ public class FarmableAnimal : BaseCombatEntity
 			StopMoving();
 			ClientRPC(RpcTarget.NetworkGroup("OnPetted"));
 			Transform transform = ((Component)this).transform;
-			Vector3 val = Vector3Ex.WithY(((Component)msg.player).transform.position, ((Component)this).transform.position.y) - ((Component)this).transform.position;
-			transform.rotation = Quaternion.LookRotation(((Vector3)(ref val)).normalized, ((Component)this).transform.up);
-			if ((Object)(object)PettingGesture != (Object)null && (Object)(object)msg.player != (Object)null)
+			Vector3 val = Vector3Ex.WithY(((Component)player).transform.position, ((Component)this).transform.position.y) - ((Component)this).transform.position;
+			transform.rotation = Quaternion.LookRotation(val.normalized, ((Component)this).transform.up);
+			if ((Object)(object)PettingGesture != (Object)null)
 			{
-				msg.player.Server_StartGesture(PettingGesture, BasePlayer.GestureStartSource.ServerAction, bypassOwnershipCheck: true);
+				player.Server_StartGesture(PettingGesture, BasePlayer.GestureStartSource.ServerAction, bypassOwnershipCheck: true);
 			}
+			player.GiveAchievement("PET_CHICKEN");
 		}
 	}
 
@@ -589,7 +593,7 @@ public class FarmableAnimal : BaseCombatEntity
 		{
 			LoadFromData(info.msg.farmableAnimal);
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
@@ -631,6 +635,6 @@ public class FarmableAnimal : BaseCombatEntity
 				}
 			}
 		}
-		return default(ChickenCoop.AnimalStatus);
+		return default;
 	}
 }

@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class DecorAlign : DecorComponent
 {
-	public float NormalAlignment;
+	public float NormalAlignment = 1f;
 
-	public float GradientAlignment;
+	public float GradientAlignment = 1f;
 
-	public Vector3 SlopeOffset;
+	public Vector3 SlopeOffset = Vector3.zero;
 
-	public Vector3 SlopeScale;
+	public Vector3 SlopeScale = Vector3.one;
 
 	public override void Apply(ref Vector3 pos, ref Quaternion rot, ref Vector3 scale)
 	{
@@ -118,10 +118,5 @@ public class DecorAlign : DecorComponent
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		NormalAlignment = 1f;
-		GradientAlignment = 1f;
-		SlopeOffset = Vector3.zero;
-		SlopeScale = Vector3.one;
-		base._002Ector();
 	}
 }

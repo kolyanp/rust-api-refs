@@ -132,12 +132,12 @@ public class Climate : SingletonComponent<Climate>
 
 	private const int weatherFadeHours = 6;
 
-	public float BiomeFogShoreDistanceFalloff;
+	public float BiomeFogShoreDistanceFalloff = -25f;
 
 	[Range(0f, 1f)]
-	public float BlendingSpeed;
+	public float BlendingSpeed = 1f;
 
-	public float FogDarknessDistance;
+	public float FogDarknessDistance = 200f;
 
 	public bool DebugLUTBlending;
 
@@ -165,7 +165,7 @@ public class Climate : SingletonComponent<Climate>
 
 	public float UndergroundFogDensity;
 
-	public Color UndergroundFogColor;
+	public Color UndergroundFogColor = Color.black;
 
 	public VolumeCloudsConfig[] DefaultCloudConfigs;
 
@@ -686,10 +686,5 @@ public class Climate : SingletonComponent<Climate>
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		BiomeFogShoreDistanceFalloff = -25f;
-		BlendingSpeed = 1f;
-		FogDarknessDistance = 200f;
-		UndergroundFogColor = Color.black;
-		base._002Ector();
 	}
 }

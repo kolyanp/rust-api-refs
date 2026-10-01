@@ -289,8 +289,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	private const bool UsePlayerOnlyOnMediumLayerShortcut = true;
 
-	[ReadOnly]
 	[Header("BaseNetworkable")]
+	[ReadOnly]
 	public uint prefabID;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]
@@ -914,10 +914,10 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 				netWrite.EntityID(net.ID);
 				netWrite.Vector3(GetNetworkPosition());
 				Quaternion networkRotation = GetNetworkRotation();
-				netWrite.Vector3(((Quaternion)(ref networkRotation)).eulerAngles);
+				netWrite.Vector3(networkRotation.eulerAngles);
 				netWrite.Float(GetNetworkTime());
 				NetworkableId uid = parentEntity.uid;
-				if (((NetworkableId)(ref uid)).IsValid)
+				if (uid.IsValid)
 				{
 					netWrite.EntityID(uid);
 				}
@@ -1301,12 +1301,12 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	protected virtual bool OcclusionLeavePlayersGroup(BaseNetworkable other)
 	{
-		bool num = ((ListHashSet<BaseNetworkable>)occlusionGroup).Remove(other);
-		if (num)
+		bool flag = ((ListHashSet<BaseNetworkable>)occlusionGroup).Remove(other);
+		if (flag)
 		{
 			other.OcclusionRemoveGroupRef(this);
 		}
-		return num;
+		return flag;
 	}
 
 	private void OcclusionAddGroupRef(BaseNetworkable other)
@@ -1414,7 +1414,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		{
 			return Facepunch.Extend.TransformEx.Unsafe.GetLocalPosMT(in _transformHandle);
 		}
-		return ((TransformHandle)(ref _transformHandle)).localPosition;
+		return _transformHandle.localPosition;
 	}
 
 	public virtual Quaternion GetNetworkRotation()
@@ -1425,7 +1425,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		{
 			return Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in _transformHandle);
 		}
-		return ((TransformHandle)(ref _transformHandle)).localRotation;
+		return _transformHandle.localRotation;
 	}
 
 	public string InvokeString()
@@ -1796,7 +1796,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 					{
 						BasePlayer current2 = enumerator2.Current;
 						Vector3 val2 = ((Component)current2).transform.position - position;
-						if (((Vector3)(ref val2)).sqrMagnitude <= num && !connectionsInSphereList.Contains(current2.Connection))
+						if (val2.sqrMagnitude <= num && !connectionsInSphereList.Contains(current2.Connection))
 						{
 							connectionsInSphereList.Add(current2.Connection);
 						}

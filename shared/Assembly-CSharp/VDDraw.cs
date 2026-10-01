@@ -290,12 +290,12 @@ public class VDDraw : SingletonComponent<VDDraw>, IServerComponent
 		}
 	}
 
-	public unsafe static string GetEntityReadableName(BaseEntity entity)
+	public static string GetEntityReadableName(BaseEntity entity)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		string name = ((object)entity).GetType().Name;
 		NetworkableId iD = entity.net.ID;
-		return name + "_" + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString();
+		return name + "_" + ((object)iD/*cast due to constrained. prefix*/).ToString();
 	}
 }

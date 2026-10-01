@@ -25,7 +25,7 @@ public class State_AttackWithTracking : State_PlayAnimationRM
 
 	private Action _doDamageAction;
 
-	private static readonly Vector3 force;
+	private static readonly Vector3 force = new Vector3(15f, 3f, 15f);
 
 	private double startTime;
 
@@ -42,9 +42,9 @@ public class State_AttackWithTracking : State_PlayAnimationRM
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		if (trackingDuration > 0f && trackingSpeed > 0f && Time.timeAsDouble - startTime < (double)(trackingDuration + AI.defaultInterpolationDelay) && base.Senses.FindTarget(out var target))
+		if (trackingDuration > 0f && trackingSpeed > 0f && Time.timeAsDouble - startTime < (double)(trackingDuration + AI.defaultInterpolationDelay) && Senses.FindTarget(out var target))
 		{
-			base.AnimPlayer.Track(((Component)target).transform.position, trackingSpeed);
+			AnimPlayer.Track(((Component)target).transform.position, trackingSpeed);
 		}
 		return base.OnStateUpdate(deltaTime);
 	}
@@ -75,19 +75,19 @@ public class State_AttackWithTracking : State_PlayAnimationRM
 		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
 		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target) || !(target is BaseCombatEntity baseCombatEntity))
+		if (!Senses.FindTarget(out var target) || !(target is BaseCombatEntity baseCombatEntity))
 		{
 			return;
 		}
 		if (baseCombatEntity.ToNonNpcPlayer(out var player) && doesStrafeDodge)
 		{
 			Vector3 estimatedVelocity = player.estimatedVelocity;
-			if (Mathf.Abs(Vector3.Dot(((Vector3)(ref estimatedVelocity)).normalized, ((Component)Owner).transform.right)) > 0.7f)
+			if (Mathf.Abs(Vector3.Dot(estimatedVelocity.normalized, ((Component)Owner).transform.right)) > 0.7f)
 			{
 				return;
 			}
 		}
-		if (base.Senses.GetVisibilityStatus(target, out var status) && status.timeNotVisible < 1f && Vector3.Distance(((Component)Owner).transform.position, ((Component)baseCombatEntity).transform.position) < radius)
+		if (Senses.GetVisibilityStatus(target, out var status) && status.timeNotVisible < 1f && Vector3.Distance(((Component)Owner).transform.position, ((Component)baseCombatEntity).transform.position) < radius)
 		{
 			baseCombatEntity.OnAttacked(damage, DamageType, Owner, ignoreShield: false);
 			if (forceScale > 0f && (Object)(object)player != (Object)null)
@@ -108,6 +108,5 @@ public class State_AttackWithTracking : State_PlayAnimationRM
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		force = new Vector3(15f, 3f, 15f);
 	}
 }

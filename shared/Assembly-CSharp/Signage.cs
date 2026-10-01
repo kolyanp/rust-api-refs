@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -57,18 +59,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		}
 	}
 
-	public int TextureCount
-	{
-		get
-		{
-			MeshPaintableSource[] array = paintableSources;
-			if (array == null)
-			{
-				return 0;
-			}
-			return array.Length;
-		}
-	}
+	public int TextureCount => paintableSources?.Length ?? 0;
 
 	[Sync(Autosave = true)]
 	public NetworkableId EaselId
@@ -103,13 +94,13 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 			NetworkableId easelId = EaselId;
-			if (!((NetworkableId)(ref easelId)).IsValid)
+			if (!easelId.IsValid)
 			{
 				return null;
 			}
 			if ((Object)(object)_cachedParentEasel == (Object)null)
 			{
-				_cachedParentEasel = new EntityRef<EaselDeployable>(EaselId).Get(base.isServer);
+				_cachedParentEasel = new EntityRef<EaselDeployable>(EaselId).Get(isServer);
 			}
 			return _cachedParentEasel;
 		}
@@ -278,9 +269,9 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(5f)]
-	[RPC_Server]
 	public void UpdateSign(RPCMessage msg)
 	{
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
@@ -323,6 +314,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 				FileStorage.server.RemoveExact(textureIDs[num], FileStorage.Type.png, net.ID, (uint)num);
 			}
 			textureIDs[num] = FileStorage.server.Store(array, FileStorage.Type.png, net.ID, (uint)num);
+			Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, this, "sign", array.Length, num);
 		}
 		LogEdit(msg.player);
 		SendNetworkUpdate();
@@ -366,7 +358,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		}
 		if (IsLocked())
 		{
-			return (ulong)player.userID == base.OwnerID;
+			return (ulong)player.userID == OwnerID;
 		}
 		if (!HeldEntityCheck(player))
 		{
@@ -439,7 +431,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 				textureIDs[0] = info.msg.sign.imageid;
 			}
 		}
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -505,21 +497,21 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 	public override void PostInitShared()
 	{
 		base.PostInitShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			_ = GetParentEntity() is RentableShop;
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void LockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUpdateSign(msg.player))
 		{
 			SetFlagLocal(Flags.Locked, b: true);
 			SendNetworkUpdate();
-			base.OwnerID = msg.player.userID;
+			OwnerID = msg.player.userID;
 			Interface.CallHook("OnSignLocked", this, msg.player);
 		}
 	}
@@ -527,7 +519,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 	public void LockSign(BasePlayer forPlayer)
 	{
 		SetFlagLocal(Flags.Locked, b: true);
-		base.OwnerID = (((Object)(object)forPlayer != (Object)null) ? forPlayer.userID : ((EncryptedValue<ulong>)0uL));
+		OwnerID = (((Object)(object)forPlayer != (Object)null) ? forPlayer.userID : ((EncryptedValue<ulong>)0uL));
 		SendNetworkUpdate();
 	}
 
@@ -604,7 +596,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 				break;
 			}
 		}
-		ItemModSign itemModSign = default(ItemModSign);
+		ItemModSign itemModSign = default;
 		if (flag && ((Component)createdItem.info).TryGetComponent<ItemModSign>(ref itemModSign))
 		{
 			itemModSign.OnSignPickedUp(this, this, createdItem);
@@ -619,7 +611,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		{
 			parentEasel.RemovePainting(this);
 		}
-		EaselId = default(NetworkableId);
+		EaselId = default;
 	}
 
 	public void AddToEasel(BaseEntity parent)
@@ -636,7 +628,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);
 		AddToEasel(parent);
-		ItemModSign itemModSign = default(ItemModSign);
+		ItemModSign itemModSign = default;
 		if (((Component)fromItem.info).TryGetComponent<ItemModSign>(ref itemModSign))
 		{
 			SignContent associatedEntity = ItemModAssociatedEntity<SignContent>.GetAssociatedEntity(fromItem);
@@ -703,7 +695,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		return "sign";
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -713,7 +705,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: EaselId for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: EaselId for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<NetworkableId>(writer, __sync_EaselId);
 			return true;
@@ -770,18 +762,34 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -802,7 +810,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		base.ResetSyncVars();
-		__sync_EaselId = default(NetworkableId);
+		__sync_EaselId = default;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)

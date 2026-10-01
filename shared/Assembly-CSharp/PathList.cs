@@ -97,11 +97,11 @@ public class PathList
 			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0030: Expected O, but got Unknown
-			//IL_0031: Expected O, but got Unknown
+			//IL_0030: Expected Obj, but got Unknown
+			//IL_0031: Expected Obj, but got Unknown
 			MeshObject meshObject = new MeshObject();
 			meshObject.Position = meshPivot;
-			meshObject.Meshes = (Mesh[])(object)new Mesh[meshData.Length];
+			meshObject.Meshes = new Mesh[meshData.Length];
 			for (int i = 0; i < meshObject.Meshes.Length; i++)
 			{
 				MeshData obj = meshData[i];
@@ -163,11 +163,11 @@ public class PathList
 		}
 	}
 
-	private static Quaternion rot90;
+	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
 
-	private static Quaternion rot180;
+	private static Quaternion rot180 = Quaternion.Euler(0f, 180f, 0f);
 
-	private static Quaternion rot270;
+	private static Quaternion rot270 = Quaternion.Euler(0f, 270f, 0f);
 
 	public const float EndWidthScale = 3f;
 
@@ -217,7 +217,7 @@ public class PathList
 
 	public const float StepSize = 1f;
 
-	private static float[] placements;
+	private static float[] placements = new float[3] { 0f, -1f, 1f };
 
 	public PathList(string name, Vector3[] points)
 	{
@@ -366,7 +366,7 @@ public class PathList
 		if (!obj.AlignToNormal)
 		{
 			Vector3 val = Vector3Ex.XZ3D(dir);
-			dir = ((Vector3)(ref val)).normalized;
+			dir = val.normalized;
 		}
 		SpawnFilter filter = obj.Filter;
 		Vector3 val2 = (Width * 0.5f + obj.Offset) * (rot90 * dir);
@@ -423,7 +423,7 @@ public class PathList
 		if (!obj.AlignToNormal)
 		{
 			Vector3 val = Vector3Ex.XZ3D(dir);
-			dir = ((Vector3)(ref val)).normalized;
+			dir = val.normalized;
 		}
 		SpawnFilter filter = obj.Filter;
 		Vector3 val2 = (Width * 0.5f + obj.Offset) * (rot90 * dir);
@@ -521,7 +521,7 @@ public class PathList
 		{
 			Vector3 val2 = (Spline ? Path.GetPointCubicHermite(num7) : Path.GetPoint(num7));
 			Vector3 val3 = val2 - val;
-			if (((Vector3)(ref val3)).magnitude < distance)
+			if (val3.magnitude < distance)
 			{
 				continue;
 			}
@@ -644,7 +644,7 @@ public class PathList
 		{
 			Vector3 val2 = (Spline ? Path.GetPointCubicHermite(num5) : Path.GetPoint(num5));
 			Vector3 val3 = val2 - val;
-			if (((Vector3)(ref val3)).magnitude < distance)
+			if (val3.magnitude < distance)
 			{
 				continue;
 			}
@@ -738,7 +738,7 @@ public class PathList
 		}
 		Vector3 startPoint = Path.GetStartPoint();
 		Vector3 val = Path.GetEndPoint() - startPoint;
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		Vector3 val2 = val / magnitude;
 		float num = magnitude / obj.Distance;
 		int num2 = Mathf.RoundToInt(num);
@@ -1028,7 +1028,7 @@ public class PathList
 		Vector3 endPoint = Path.GetEndPoint();
 		Vector3 startTangent = Path.GetStartTangent();
 		Vector3 val = Vector3Ex.XZ3D(startTangent);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = rot90 * normalized;
 		Vector3 val3 = startPoint;
 		Line prev_line = new Line(startPoint, startPoint + startTangent * num);
@@ -1056,12 +1056,12 @@ public class PathList
 				opacity = Mathf.InverseLerp(0f, num2, Mathf.Min(num4, num5));
 			}
 			val = Vector3Ex.XZ3D(val7);
-			normalized = ((Vector3)(ref val)).normalized;
+			normalized = val.normalized;
 			val2 = rot90 * normalized;
 			val8 = val6 - val2 * (radius + outerPadding + outerFade);
 			val9 = val6 + val2 * (radius + outerPadding + outerFade);
 			float yn = TerrainMeta.NormalizeY((val6.y + val3.y) * 0.5f);
-			heightmap.ForEach(val4, val5, val8, val9, delegate(int x, int z)
+			heightmap.ForEach(val4, val5, val8, val9, (int x, int z) =>
 			{
 				//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0031: Unknown result type (might be due to invalid IL or missing references)
@@ -1094,9 +1094,9 @@ public class PathList
 				float num6 = heightmap.Coordinate(x);
 				float num7 = heightmap.Coordinate(z);
 				Vector3 val11 = TerrainMeta.Denormalize(new Vector3(num6, yn, num7));
-				Vector3 val12 = ((Line)(ref prev_line)).ClosestPoint2D(val11);
-				Vector3 val13 = ((Line)(ref cur_line)).ClosestPoint2D(val11);
-				Vector3 val14 = ((Line)(ref next_line)).ClosestPoint2D(val11);
+				Vector3 val12 = prev_line.ClosestPoint2D(val11);
+				Vector3 val13 = cur_line.ClosestPoint2D(val11);
+				Vector3 val14 = next_line.ClosestPoint2D(val11);
 				float num8 = Vector3Ex.Magnitude2D(val11 - val12);
 				float num9 = Vector3Ex.Magnitude2D(val11 - val13);
 				float num10 = Vector3Ex.Magnitude2D(val11 - val14);
@@ -1220,7 +1220,7 @@ public class PathList
 		Vector3 endPoint = Path.GetEndPoint();
 		Vector3 startTangent = Path.GetStartTangent();
 		Vector3 val = Vector3Ex.XZ3D(startTangent);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = rot90 * normalized;
 		Vector3 v = startPoint - val2 * (num2 + outerPadding);
 		Vector3 v2 = startPoint + val2 * (num2 + outerPadding);
@@ -1238,13 +1238,13 @@ public class PathList
 			}
 			startTangent = Path.GetTangent(num4);
 			val = Vector3Ex.XZ3D(startTangent);
-			normalized = ((Vector3)(ref val)).normalized;
+			normalized = val.normalized;
 			val2 = rot90 * normalized;
 			Ray ray = new Ray(val3, startTangent);
 			Vector3 val4 = val3 - val2 * (radius + outerPadding);
 			Vector3 val5 = val3 + val2 * (radius + outerPadding);
 			float yn = TerrainMeta.NormalizeY(val3.y);
-			splatmap.ForEach(v, v2, val4, val5, delegate(int x, int z)
+			splatmap.ForEach(v, v2, val4, val5, (int x, int z) =>
 			{
 				//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 				//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -1330,7 +1330,7 @@ public class PathList
 		Vector3 startPoint = Path.GetStartPoint();
 		Vector3 dir = Path.GetStartTangent();
 		Vector3 val = Vector3Ex.XZ3D(dir);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = rot90 * normalized;
 		Vector3 v = startPoint - val2 * (num2 + outerPadding);
 		Vector3 v2 = startPoint + val2 * (num2 + outerPadding);
@@ -1341,11 +1341,11 @@ public class PathList
 			float radius = GetRadius(num4, Path.Length, num2, randomScale, scaleWidthWithLength);
 			dir = Path.GetTangent(num4);
 			val = Vector3Ex.XZ3D(dir);
-			normalized = ((Vector3)(ref val)).normalized;
+			normalized = val.normalized;
 			val2 = rot90 * normalized;
 			Vector3 val4 = val3 - val2 * (radius + outerPadding);
 			Vector3 val5 = val3 + val2 * (radius + outerPadding);
-			flowMap.ForEach(v, v2, val4, val5, delegate(int x, int z)
+			flowMap.ForEach(v, v2, val4, val5, (int x, int z) =>
 			{
 				//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 				float normX = flowMap.Coordinate(x);
@@ -1441,7 +1441,7 @@ public class PathList
 		Vector3 endPoint = Path.GetEndPoint();
 		Vector3 startTangent = Path.GetStartTangent();
 		Vector3 val = Vector3Ex.XZ3D(startTangent);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = rot90 * normalized;
 		Vector3 v = startPoint - val2 * (num2 + outerPadding);
 		Vector3 v2 = startPoint + val2 * (num2 + outerPadding);
@@ -1459,13 +1459,13 @@ public class PathList
 			}
 			startTangent = Path.GetTangent(num4);
 			val = Vector3Ex.XZ3D(startTangent);
-			normalized = ((Vector3)(ref val)).normalized;
+			normalized = val.normalized;
 			val2 = rot90 * normalized;
 			Ray ray = new Ray(val3, startTangent);
 			Vector3 val4 = val3 - val2 * (radius + outerPadding);
 			Vector3 val5 = val3 + val2 * (radius + outerPadding);
 			float yn = TerrainMeta.NormalizeY(val3.y);
-			topomap.ForEach(v, v2, val4, val5, delegate(int x, int z)
+			topomap.ForEach(v, v2, val4, val5, (int x, int z) =>
 			{
 				//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 				//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -1560,7 +1560,7 @@ public class PathList
 		Path.GetEndPoint();
 		Vector3 startTangent = Path.GetStartTangent();
 		Vector3 val = Vector3Ex.XZ3D(startTangent);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = rot90 * normalized;
 		Vector3 v = startPoint - val2 * radius;
 		Vector3 v2 = startPoint + val2 * radius;
@@ -1570,13 +1570,13 @@ public class PathList
 			Vector3 val3 = (Spline ? Path.GetPointCubicHermite(num3) : Path.GetPoint(num3));
 			startTangent = Path.GetTangent(num3);
 			val = Vector3Ex.XZ3D(startTangent);
-			normalized = ((Vector3)(ref val)).normalized;
+			normalized = val.normalized;
 			val2 = rot90 * normalized;
 			Ray ray = new Ray(val3, startTangent);
 			Vector3 val4 = val3 - val2 * radius;
 			Vector3 val5 = val3 + val2 * radius;
 			float yn = TerrainMeta.NormalizeY(val3.y);
-			placementmap.ForEach(v, v2, val4, val5, delegate(int x, int z)
+			placementmap.ForEach(v, v2, val4, val5, (int x, int z) =>
 			{
 				//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 				//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -1623,11 +1623,11 @@ public class PathList
 			array[i] = MeshCache.Get(meshes[i]);
 		}
 		Bounds bounds = meshes[^1].bounds;
-		_ = ((Bounds)(ref bounds)).min;
-		_ = ((Bounds)(ref bounds)).size;
-		float num = Width / ((Bounds)(ref bounds)).size.x;
+		_ = bounds.min;
+		_ = bounds.size;
+		float num = Width / bounds.size.x;
 		List<PathMeshTemplate> list = new List<PathMeshTemplate>();
-		int num2 = (int)(Path.Length / (num * ((Bounds)(ref bounds)).size.z));
+		int num2 = (int)(Path.Length / (num * bounds.size.z));
 		int num3 = 5;
 		float num4 = Path.Length / (float)num2;
 		_ = RandomScale;
@@ -1658,8 +1658,8 @@ public class PathList
 				stepIndex = j,
 				segmentCount = segmentCount,
 				stepSize = num4,
-				dstData = (MeshDataArray[])(object)new MeshDataArray[array.Length],
-				outputMeshes = (Mesh[])(object)new Mesh[array.Length]
+				dstData = new MeshDataArray[array.Length],
+				outputMeshes = new Mesh[array.Length]
 			};
 			list.Add(item);
 		}
@@ -1753,6 +1753,7 @@ public class PathList
 		//IL_036b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0372: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0379: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0380: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0385: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0387: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0389: Unknown result type (might be due to invalid IL or missing references)
@@ -1785,11 +1786,11 @@ public class PathList
 			array3[j].AllocMinimal();
 		}
 		Bounds bounds = meshes[^1].bounds;
-		Vector3 min = ((Bounds)(ref bounds)).min;
-		Vector3 size = ((Bounds)(ref bounds)).size;
-		float num = Width / ((Bounds)(ref bounds)).size.x;
+		Vector3 min = bounds.min;
+		Vector3 size = bounds.size;
+		float num = Width / bounds.size.x;
 		List<MeshObject> list = new List<MeshObject>();
-		int num2 = (int)(Path.Length / (num * ((Bounds)(ref bounds)).size.z));
+		int num2 = (int)(Path.Length / (num * bounds.size.z));
 		int num3 = 5;
 		float num4 = Path.Length / (float)num2;
 		float randomScale = RandomScale;
@@ -1798,7 +1799,6 @@ public class PathList
 		_ = array[0].vertices.Length;
 		_ = array[0].triangles.Length;
 		TerrainHeightMap heightMap = TerrainMeta.HeightMap;
-		Vector3 val12 = default(Vector3);
 		for (int k = 0; k < num2; k += num3)
 		{
 			float distance = (float)k * num4 + 0.5f * (float)num3 * num4;
@@ -1828,7 +1828,7 @@ public class PathList
 						Vector3 val5 = (Spline ? Path.GetPointCubicHermite(num9) : Path.GetPoint(num9));
 						Vector3 tangent = Path.GetTangent(num9);
 						Vector3 val6 = Vector3Ex.XZ3D(tangent);
-						Vector3 normalized = ((Vector3)(ref val6)).normalized;
+						Vector3 normalized = val6.normalized;
 						Vector3 val7 = rot90 * normalized;
 						Vector3 val8 = Vector3.Cross(tangent, val7);
 						Quaternion val9 = Quaternion.LookRotation(normalized, val8);
@@ -1853,9 +1853,9 @@ public class PathList
 						}
 						val2 -= val;
 						val3 = val9 * val3;
-						((Vector3)(ref val12))._002Ector(val4.x, val4.y, val4.z);
+						Vector3 val12 = new Vector3(val4.x, val4.y, val4.z);
 						val12 = val9 * val12;
-						((Vector4)(ref val4)).Set(val12.x, val12.y, val12.z, val4.w);
+						val4.Set(val12.x, val12.y, val12.z, val4.w);
 						if (normalSmoothing > 0f)
 						{
 							val3 = Vector3.Slerp(val3, Vector3.up, normalSmoothing);
@@ -2011,10 +2011,10 @@ public class PathList
 		meshData2.triangles = Pool.Get<List<int>>();
 		meshData2.uv = Pool.Get<List<Vector2>>();
 		Dictionary<WeldVertex, int> dictionary = new Dictionary<WeldVertex, int>();
-		Vector3 min = ((Bounds)(ref bounds)).min;
-		Vector3 size = ((Bounds)(ref bounds)).size;
-		float num = Width / ((Bounds)(ref bounds)).size.x;
-		int num2 = (int)(Path.Length / (num * ((Bounds)(ref bounds)).size.z));
+		Vector3 min = bounds.min;
+		Vector3 size = bounds.size;
+		float num = Width / bounds.size.x;
+		int num2 = (int)(Path.Length / (num * bounds.size.z));
 		int num3 = 5;
 		float num4 = Path.Length / (float)num2;
 		float randomScale = RandomScale;
@@ -2040,7 +2040,15 @@ public class PathList
 					MeshCache.Data data = array[num7];
 					MeshData meshData3 = meshData;
 					int count = meshData3.vertices.Count;
-					float num8 = ((num7 == 2 && !(flag4 & flag3)) ? 1f : ((!((num7 == 3) & flag2) || flag) ? 0f : 1f));
+					float num8;
+					if (num7 == 2 && !(flag4 & flag3))
+					{
+						num8 = 1f;
+					}
+					else
+					{
+						num8 = ((!((num7 == 3) & flag2) || flag) ? 0f : 1f);
+					}
 					float num9 = ((num7 == 0) ? 1f : 0f);
 					for (int m = 0; m < data.vertices.Length; m++)
 					{
@@ -2052,7 +2060,7 @@ public class PathList
 						Vector3 val3 = (Spline ? Path.GetPointCubicHermite(num13) : Path.GetPoint(num13));
 						Vector3 tangent = Path.GetTangent(num13);
 						Vector3 val4 = Vector3Ex.XZ3D(tangent);
-						Vector3 normalized = ((Vector3)(ref val4)).normalized;
+						Vector3 normalized = val4.normalized;
 						Vector3 val5 = rot90 * normalized;
 						Vector3 val6 = Vector3.Cross(tangent, val5);
 						float radius = GetRadius(num13, Path.Length, baseRadius, randomScale, scaleWidthWithLength);
@@ -2155,9 +2163,5 @@ public class PathList
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		rot90 = Quaternion.Euler(0f, 90f, 0f);
-		rot180 = Quaternion.Euler(0f, 180f, 0f);
-		rot270 = Quaternion.Euler(0f, 270f, 0f);
-		placements = new float[3] { 0f, -1f, 1f };
 	}
 }

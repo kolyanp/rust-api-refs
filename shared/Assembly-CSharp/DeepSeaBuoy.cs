@@ -5,13 +5,13 @@ public class DeepSeaBuoy : MonoBehaviour
 	[SerializeField]
 	private MeshRenderer[] meshRenderers;
 
-	[SerializeField]
 	[ColorUsage(true, true)]
-	private Color colorOpen;
+	[SerializeField]
+	private Color colorOpen = Color.green;
 
 	[SerializeField]
 	[ColorUsage(true, true)]
-	private Color colorClosed;
+	private Color colorClosed = Color.red;
 
 	[SerializeField]
 	private GameObject lightClosed;
@@ -31,7 +31,7 @@ public class DeepSeaBuoy : MonoBehaviour
 	public void UpdateLights()
 	{
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Expected O, but got Unknown
+		//IL_0062: Expected Obj, but got Unknown
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		DeepSeaManager deepSeaManager = DeepSeaManager.Get(server: false);
@@ -65,8 +65,5 @@ public class DeepSeaBuoy : MonoBehaviour
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		colorOpen = Color.green;
-		colorClosed = Color.red;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

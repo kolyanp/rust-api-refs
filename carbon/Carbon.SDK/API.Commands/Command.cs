@@ -143,7 +143,7 @@ public class Command : IDisposable
 	public void Fetch()
 	{
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Expected O, but got Unknown
+		//IL_007d: Expected Obj, but got Unknown
 		Name = Name?.ToLower().Trim();
 		Help = Help?.Trim();
 		if (!(this is RCon))

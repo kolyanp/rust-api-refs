@@ -226,7 +226,7 @@ public class Modifier
 		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e2: Expected O, but got Unknown
+		//IL_01e2: Expected Obj, but got Unknown
 		try
 		{
 			bool flag = type != null;
@@ -295,9 +295,9 @@ public class Modifier
 	{
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ca: Expected O, but got Unknown
+		//IL_01ca: Expected Obj, but got Unknown
 		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0213: Expected O, but got Unknown
+		//IL_0213: Expected Obj, but got Unknown
 		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_023f: Unknown result type (might be due to invalid IL or missing references)
 		if (!modifier.HasSavedFields())
@@ -319,7 +319,7 @@ public class Modifier
 				module = assembly.MainModule;
 				storeModifiers = Patch.common.MainModule.GetType("Carbon.Components", "StoredModifiers");
 				baseDataType = ((IEnumerable<TypeDefinition>)storeModifiers.NestedTypes).First((TypeDefinition t) => ((MemberReference)t).Name.Equals("Data", StringComparison.Ordinal));
-				dataType = (TypeDefinition)(((object)((IEnumerable<TypeDefinition>)module.Types).FirstOrDefault((TypeDefinition x) => ((MemberReference)x).Name.Equals(((MemberReference)type).Name + DataType, StringComparison.CurrentCulture))) ?? ((object)new TypeDefinition(((TypeReference)type).Namespace, ((MemberReference)type).Name + DataType, (TypeAttributes)2, module.ImportReference((TypeReference)(object)baseDataType))));
+				dataType = ((IEnumerable<TypeDefinition>)module.Types).FirstOrDefault((TypeDefinition x) => ((MemberReference)x).Name.Equals(((MemberReference)type).Name + DataType, StringComparison.CurrentCulture)) ?? new TypeDefinition(((TypeReference)type).Namespace, ((MemberReference)type).Name + DataType, (TypeAttributes)2, module.ImportReference((TypeReference)(object)baseDataType));
 				TypeDefinition type2 = assembly.MainModule.GetType("BaseNetworkable");
 				saveInfoType = ((IEnumerable<TypeDefinition>)type2.NestedTypes).First((TypeDefinition t) => ((MemberReference)t).Name.Equals("SaveInfo", StringComparison.CurrentCulture));
 				loadInfoType = ((IEnumerable<TypeDefinition>)type2.NestedTypes).First((TypeDefinition t) => ((MemberReference)t).Name.Equals("LoadInfo", StringComparison.CurrentCulture));
@@ -341,7 +341,7 @@ public class Modifier
 			void HandleInitializer()
 			{
 				//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00a7: Expected O, but got Unknown
+				//IL_00a7: Expected Obj, but got Unknown
 				//IL_0106: Unknown result type (might be due to invalid IL or missing references)
 				//IL_011a: Unknown result type (might be due to invalid IL or missing references)
 				//IL_012f: Unknown result type (might be due to invalid IL or missing references)
@@ -353,7 +353,7 @@ public class Modifier
 				//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
 				//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0210: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0217: Expected O, but got Unknown
+				//IL_0217: Expected Obj, but got Unknown
 				//IL_0229: Unknown result type (might be due to invalid IL or missing references)
 				//IL_023c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_026e: Unknown result type (might be due to invalid IL or missing references)
@@ -397,15 +397,15 @@ public class Modifier
 				//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
 				//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
 				//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0102: Expected O, but got Unknown
+				//IL_0102: Expected Obj, but got Unknown
 				//IL_0104: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0115: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0126: Unknown result type (might be due to invalid IL or missing references)
 				//IL_013d: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0241: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0248: Expected O, but got Unknown
+				//IL_0248: Expected Obj, but got Unknown
 				//IL_026a: Unknown result type (might be due to invalid IL or missing references)
-				MethodDefinition val3 = (MethodDefinition)(((object)((IEnumerable<MethodDefinition>)type.Methods).FirstOrDefault((MethodDefinition x) => ((MemberReference)x).Name.Equals("Load", StringComparison.CurrentCulture))) ?? ((object)new MethodDefinition("Load", (MethodAttributes)198, module.TypeSystem.Void)));
+				MethodDefinition val3 = ((IEnumerable<MethodDefinition>)type.Methods).FirstOrDefault((MethodDefinition x) => ((MemberReference)x).Name.Equals("Load", StringComparison.CurrentCulture)) ?? new MethodDefinition("Load", (MethodAttributes)198, module.TypeSystem.Void);
 				ILProcessor iLProcessor = val3.Body.GetILProcessor();
 				TypeDefinition val4 = type.BaseType.Resolve();
 				MethodDefinition loadBaseMethod = null;
@@ -427,7 +427,7 @@ public class Modifier
 					iLProcessor.Append(iLProcessor.Create(OpCodes.Ret));
 					type.Methods.Add(val3);
 				}
-				int num = val3.Body.Instructions.IndexOf(((IEnumerable<Instruction>)val3.Body.Instructions).FirstOrDefault(delegate(Instruction x)
+				int num = val3.Body.Instructions.IndexOf(((IEnumerable<Instruction>)val3.Body.Instructions).FirstOrDefault((Instruction x) =>
 				{
 					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -449,15 +449,15 @@ public class Modifier
 				//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
 				//IL_020c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0105: Expected O, but got Unknown
+				//IL_0105: Expected Obj, but got Unknown
 				//IL_0107: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0118: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0129: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0140: Unknown result type (might be due to invalid IL or missing references)
 				//IL_024f: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0256: Expected O, but got Unknown
+				//IL_0256: Expected Obj, but got Unknown
 				//IL_0278: Unknown result type (might be due to invalid IL or missing references)
-				MethodDefinition val3 = (MethodDefinition)(((object)((IEnumerable<MethodDefinition>)type.Methods).FirstOrDefault((MethodDefinition x) => ((MemberReference)x).Name.Equals("Save", StringComparison.CurrentCulture))) ?? ((object)new MethodDefinition("Save", (MethodAttributes)198, module.TypeSystem.Void)));
+				MethodDefinition val3 = ((IEnumerable<MethodDefinition>)type.Methods).FirstOrDefault((MethodDefinition x) => ((MemberReference)x).Name.Equals("Save", StringComparison.CurrentCulture)) ?? new MethodDefinition("Save", (MethodAttributes)198, module.TypeSystem.Void);
 				ILProcessor iLProcessor = val3.Body.GetILProcessor();
 				TypeDefinition val4 = type.BaseType.Resolve();
 				MethodDefinition val5 = null;
@@ -480,7 +480,7 @@ public class Modifier
 					iLProcessor.Append(iLProcessor.Create(OpCodes.Ret));
 					type.Methods.Add(val3);
 				}
-				int num = val3.Body.Instructions.IndexOf(((IEnumerable<Instruction>)val3.Body.Instructions).FirstOrDefault(delegate(Instruction x)
+				int num = val3.Body.Instructions.IndexOf(((IEnumerable<Instruction>)val3.Body.Instructions).FirstOrDefault((Instruction x) =>
 				{
 					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -540,7 +540,7 @@ public class Modifier
 	private static TypeReference GetTypeReference(AssemblyDefinition assembly, string fullName)
 	{
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Expected O, but got Unknown
+		//IL_005b: Expected Obj, but got Unknown
 		if (!fullName.Contains('`') || !fullName.Contains('['))
 		{
 			return TryResolveSimple(assembly, fullName);

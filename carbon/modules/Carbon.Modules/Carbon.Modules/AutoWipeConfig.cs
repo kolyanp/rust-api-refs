@@ -20,7 +20,7 @@ public class AutoWipeConfig
 		{
 			AutoWipeModule.WipeTypes.FullWipe => FullWipe, 
 			AutoWipeModule.WipeTypes.MapWipe => MapWipe, 
-			_ => default(AutoWipeModule.WipeConfig), 
+			_ => default, 
 		};
 	}
 }

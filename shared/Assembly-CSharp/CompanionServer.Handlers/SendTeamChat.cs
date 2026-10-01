@@ -11,15 +11,15 @@ public class SendTeamChat : BasePlayerHandler<AppSendMessage>
 
 	public override async ValueTask Execute()
 	{
-		string text = base.Proto.message?.Trim();
+		string text = Proto.message?.Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			SendSuccess();
 			return;
 		}
 		text = StringExtensions.Truncate(text, 256, "…");
-		string username = base.Player?.displayName ?? SingletonComponent<ServerMgr>.Instance.persistance.GetPlayerName(base.UserId) ?? "[unknown]";
-		if (await Chat.sayAs(Chat.ChatChannel.Team, base.UserId, username, text, base.Player))
+		string username = Player?.displayName ?? SingletonComponent<ServerMgr>.Instance.persistance.GetPlayerName(UserId) ?? "[unknown]";
+		if (await Chat.sayAs(Chat.ChatChannel.Team, UserId, username, text, Player))
 		{
 			SendSuccess();
 		}

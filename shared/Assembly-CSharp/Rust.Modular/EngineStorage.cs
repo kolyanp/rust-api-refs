@@ -28,16 +28,16 @@ public class EngineStorage : StorageContainer
 	[SerializeField]
 	public VehicleModuleEngineItems allEngineItems;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	public int accelerationBoostSlots;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public int topSpeedBoostSlots;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public int fuelEconomyBoostSlots;
 
 	public bool isUsable { get; set; }
@@ -106,7 +106,7 @@ public class EngineStorage : StorageContainer
 		EngineItemTypes engineItemType = component.engineItemType;
 		for (int i = 0; i < inventorySlots; i++)
 		{
-			if (engineItemType == slotTypes[i] && !base.inventory.SlotTaken(item, i))
+			if (engineItemType == slotTypes[i] && !inventory.SlotTaken(item, i))
 			{
 				return i;
 			}
@@ -119,7 +119,7 @@ public class EngineStorage : StorageContainer
 		RefreshLoadoutData();
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		RefreshLoadoutData();
 	}
@@ -146,7 +146,7 @@ public class EngineStorage : StorageContainer
 	{
 		if (Interface.CallHook("OnEngineLoadoutRefresh", this) == null)
 		{
-			isUsable = base.inventory.IsFull() && base.inventory.itemList.All((Item item) => !item.isBroken);
+			isUsable = inventory.IsFull() && inventory.itemList.All((Item item) => !item.isBroken);
 			accelerationBoostPercent = GetContainerItemsValueFor(EngineItemTypeEx.BoostsAcceleration) / (float)accelerationBoostSlots;
 			topSpeedBoostPercent = GetContainerItemsValueFor(EngineItemTypeEx.BoostsTopSpeed) / (float)topSpeedBoostSlots;
 			fuelEconomyBoostPercent = GetContainerItemsValueFor(EngineItemTypeEx.BoostsFuelEconomy) / (float)fuelEconomyBoostSlots;
@@ -172,7 +172,7 @@ public class EngineStorage : StorageContainer
 			return;
 		}
 		damageTaken *= internalDamageMultiplier;
-		float[] array = new float[base.inventory.capacity];
+		float[] array = new float[inventory.capacity];
 		float num = 0f;
 		for (int i = 0; i < array.Length; i++)
 		{
@@ -182,7 +182,7 @@ public class EngineStorage : StorageContainer
 		float num2 = damageTaken / num;
 		for (int j = 0; j < array.Length; j++)
 		{
-			Item slot = base.inventory.GetSlot(j);
+			Item slot = inventory.GetSlot(j);
 			if (slot != null)
 			{
 				slot.condition -= array[j] * num2;
@@ -193,30 +193,30 @@ public class EngineStorage : StorageContainer
 
 	public void AdminAddParts(int tier)
 	{
-		if (base.inventory == null)
+		if (inventory == null)
 		{
 			Debug.LogWarning((object)(((object)this).GetType().Name + ": Null inventory on " + ((Object)this).name));
 			return;
 		}
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot != null)
 			{
 				slot.RemoveFromContainer();
 				slot.Remove();
 			}
 		}
-		for (int j = 0; j < base.inventory.capacity; j++)
+		for (int j = 0; j < inventory.capacity; j++)
 		{
-			if (base.inventory.GetSlot(j) == null && allEngineItems.TryGetItem(tier, slotTypes[j], out var output))
+			if (inventory.GetSlot(j) == null && allEngineItems.TryGetItem(tier, slotTypes[j], out var output))
 			{
 				ItemDefinition component = ((Component)output).GetComponent<ItemDefinition>();
 				Item item = ItemManager.Create(component, 1, 0uL, isServerSide: true, 0uL);
 				if (item != null)
 				{
 					item.condition = component.condition.max;
-					item.MoveToContainer(base.inventory, j, allowStack: false);
+					item.MoveToContainer(inventory, j, allowStack: false);
 				}
 				else
 				{
@@ -229,7 +229,7 @@ public class EngineStorage : StorageContainer
 	public float GetContainerItemsValueFor(Func<EngineItemTypes, bool> boostConditional)
 	{
 		float num = 0f;
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			ItemModEngineItem component = ((Component)item.info).GetComponent<ItemModEngineItem>();
 			if ((Object)(object)component != (Object)null && boostConditional(component.engineItemType) && !item.isBroken)

@@ -11,8 +11,8 @@ public class LiquidContainerCrude : LiquidContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.inventory.canAcceptItem = CanAcceptItem;
-		base.inventory.allowItemsToIncreaseToMaxStackSize = true;
+		inventory.canAcceptItem = CanAcceptItem;
+		inventory.allowItemsToIncreaseToMaxStackSize = true;
 	}
 
 	private bool CanAcceptItem(BasePlayer player, Item arg1, int arg2)
@@ -33,7 +33,7 @@ public class LiquidContainerCrude : LiquidContainer
 		}
 		if ((Object)(object)arg1.info == (Object)(object)CrudeItem)
 		{
-			base.inventory.maxStackSize = MaxStackSizeCrude;
+			inventory.maxStackSize = MaxStackSizeCrude;
 			BaseEntity baseEntity = GetParentEntity();
 			if ((Object)(object)baseEntity != (Object)null && baseEntity is VehicleModuleStorage vehicleModuleStorage && vehicleModuleStorage.Vehicle.inEditableLocation)
 			{
@@ -46,22 +46,22 @@ public class LiquidContainerCrude : LiquidContainer
 		}
 		else
 		{
-			base.inventory.maxStackSize = maxStackSize;
+			inventory.maxStackSize = maxStackSize;
 		}
 		return true;
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (added && (Object)(object)item.info == (Object)(object)CrudeItem)
 		{
-			base.inventory.maxStackSize = MaxStackSizeCrude;
+			inventory.maxStackSize = MaxStackSizeCrude;
 			item.LockUnlock(bNewState: true);
 		}
 		else
 		{
-			base.inventory.maxStackSize = maxStackSize;
+			inventory.maxStackSize = maxStackSize;
 		}
 	}
 }

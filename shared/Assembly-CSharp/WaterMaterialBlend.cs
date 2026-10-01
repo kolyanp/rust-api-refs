@@ -24,7 +24,17 @@ public class WaterMaterialBlend : ScriptableObject
 
 		public Color SubSurfaceColour;
 
-		public static BlendState Default;
+		public static BlendState Default = new BlendState
+		{
+			Albedo = Color.white,
+			Specular = Color.white,
+			Smoothness = 0.5f,
+			NormalStrength = 0.5f,
+			WaterColor = Color.white,
+			ColorExtinction = Vector4.zero,
+			ScatterCoefficient = 0.5f,
+			SubSurfaceColour = Color.white
+		};
 
 		public static BlendState Blend(BlendState a, BlendState b, float t)
 		{
@@ -83,17 +93,6 @@ public class WaterMaterialBlend : ScriptableObject
 			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-			Default = new BlendState
-			{
-				Albedo = Color.white,
-				Specular = Color.white,
-				Smoothness = 0.5f,
-				NormalStrength = 0.5f,
-				WaterColor = Color.white,
-				ColorExtinction = Vector4.zero,
-				ScatterCoefficient = 0.5f,
-				SubSurfaceColour = Color.white
-			};
 		}
 	}
 

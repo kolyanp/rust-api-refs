@@ -4,15 +4,6 @@ using UnityEngine;
 
 public class LTDescrOptional
 {
-	[CompilerGenerated]
-	private Vector3 _003Cpoint_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003Caxis_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Quaternion _003CorigRotation_003Ek__BackingField;
-
 	public AnimationCurve animationCurve;
 
 	public int initFrameCount;
@@ -25,14 +16,14 @@ public class LTDescrOptional
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cpoint_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cpoint_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -42,14 +33,14 @@ public class LTDescrOptional
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Caxis_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Caxis_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -61,14 +52,14 @@ public class LTDescrOptional
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CorigRotation_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CorigRotation_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 

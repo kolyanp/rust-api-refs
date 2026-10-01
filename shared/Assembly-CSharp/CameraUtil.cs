@@ -8,10 +8,10 @@ public static class CameraUtil
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normal = ((Plane)(ref plane)).normal;
-		float num = 1f / ((Vector3)(ref normal)).magnitude;
-		((Plane)(ref plane)).normal = ((Plane)(ref plane)).normal * num;
-		((Plane)(ref plane)).distance = ((Plane)(ref plane)).distance * num;
+		Vector3 normal = plane.normal;
+		float num = 1f / normal.magnitude;
+		plane.normal *= num;
+		plane.distance *= num;
 	}
 
 	public static void ExtractPlanes(Camera camera, ref Plane[] planes)
@@ -78,23 +78,23 @@ public static class CameraUtil
 		//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
-		((Plane)(ref planes[0])).normal = new Vector3(viewProjMatrix.m30 + viewProjMatrix.m00, viewProjMatrix.m31 + viewProjMatrix.m01, viewProjMatrix.m32 + viewProjMatrix.m02);
-		((Plane)(ref planes[0])).distance = viewProjMatrix.m33 + viewProjMatrix.m03;
+		planes[0].normal = new Vector3(viewProjMatrix.m30 + viewProjMatrix.m00, viewProjMatrix.m31 + viewProjMatrix.m01, viewProjMatrix.m32 + viewProjMatrix.m02);
+		planes[0].distance = viewProjMatrix.m33 + viewProjMatrix.m03;
 		NormalizePlane(ref planes[0]);
-		((Plane)(ref planes[1])).normal = new Vector3(viewProjMatrix.m30 - viewProjMatrix.m00, viewProjMatrix.m31 - viewProjMatrix.m01, viewProjMatrix.m32 - viewProjMatrix.m02);
-		((Plane)(ref planes[1])).distance = viewProjMatrix.m33 - viewProjMatrix.m03;
+		planes[1].normal = new Vector3(viewProjMatrix.m30 - viewProjMatrix.m00, viewProjMatrix.m31 - viewProjMatrix.m01, viewProjMatrix.m32 - viewProjMatrix.m02);
+		planes[1].distance = viewProjMatrix.m33 - viewProjMatrix.m03;
 		NormalizePlane(ref planes[1]);
-		((Plane)(ref planes[2])).normal = new Vector3(viewProjMatrix.m30 - viewProjMatrix.m10, viewProjMatrix.m31 - viewProjMatrix.m11, viewProjMatrix.m32 - viewProjMatrix.m12);
-		((Plane)(ref planes[2])).distance = viewProjMatrix.m33 - viewProjMatrix.m13;
+		planes[2].normal = new Vector3(viewProjMatrix.m30 - viewProjMatrix.m10, viewProjMatrix.m31 - viewProjMatrix.m11, viewProjMatrix.m32 - viewProjMatrix.m12);
+		planes[2].distance = viewProjMatrix.m33 - viewProjMatrix.m13;
 		NormalizePlane(ref planes[2]);
-		((Plane)(ref planes[3])).normal = new Vector3(viewProjMatrix.m30 + viewProjMatrix.m10, viewProjMatrix.m31 + viewProjMatrix.m11, viewProjMatrix.m32 + viewProjMatrix.m12);
-		((Plane)(ref planes[3])).distance = viewProjMatrix.m33 + viewProjMatrix.m13;
+		planes[3].normal = new Vector3(viewProjMatrix.m30 + viewProjMatrix.m10, viewProjMatrix.m31 + viewProjMatrix.m11, viewProjMatrix.m32 + viewProjMatrix.m12);
+		planes[3].distance = viewProjMatrix.m33 + viewProjMatrix.m13;
 		NormalizePlane(ref planes[3]);
-		((Plane)(ref planes[4])).normal = new Vector3(viewProjMatrix.m20, viewProjMatrix.m21, viewProjMatrix.m22);
-		((Plane)(ref planes[4])).distance = viewProjMatrix.m23;
+		planes[4].normal = new Vector3(viewProjMatrix.m20, viewProjMatrix.m21, viewProjMatrix.m22);
+		planes[4].distance = viewProjMatrix.m23;
 		NormalizePlane(ref planes[4]);
-		((Plane)(ref planes[5])).normal = new Vector3(viewProjMatrix.m30 - viewProjMatrix.m20, viewProjMatrix.m31 - viewProjMatrix.m21, viewProjMatrix.m32 - viewProjMatrix.m22);
-		((Plane)(ref planes[5])).distance = viewProjMatrix.m33 - viewProjMatrix.m23;
+		planes[5].normal = new Vector3(viewProjMatrix.m30 - viewProjMatrix.m20, viewProjMatrix.m31 - viewProjMatrix.m21, viewProjMatrix.m32 - viewProjMatrix.m22);
+		planes[5].distance = viewProjMatrix.m33 - viewProjMatrix.m23;
 		NormalizePlane(ref planes[5]);
 	}
 }

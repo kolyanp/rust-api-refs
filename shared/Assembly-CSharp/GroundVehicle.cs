@@ -34,9 +34,6 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 	[SerializeField]
 	private Rigidbody secondaryRigidbody;
 
-	[CompilerGenerated]
-	private Vector3 _003CVelocity_003Ek__BackingField;
-
 	public VehicleEngineController<GroundVehicle> engineController;
 
 	private Dictionary<BaseEntity, float> damageSinceLastTick = new Dictionary<BaseEntity, float>();
@@ -55,14 +52,14 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CVelocity_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CVelocity_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -85,13 +82,13 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 
 	protected virtual void CreateEngineController()
 	{
-		engineController = new VehicleEngineController<GroundVehicle>(this, CreateFuelSystem(), base.isServer, engineStartupTime, waterloggedPoint);
+		engineController = new VehicleEngineController<GroundVehicle>(this, CreateFuelSystem(), isServer, engineStartupTime, waterloggedPoint);
 	}
 
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (old != next && base.isServer)
+		if (old != next && isServer)
 		{
 			ServerFlagsChanged(old, next);
 		}
@@ -129,7 +126,7 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 
 	protected virtual IFuelSystem CreateFuelSystem()
 	{
-		return new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		return new EntityFuelSystem(isServer, fuelStoragePrefab, children);
 	}
 
 	public override void ServerInit()
@@ -138,7 +135,7 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
-		timeSinceDragModSet = default(TimeSince);
+		timeSinceDragModSet = default;
 		timeSinceDragModSet = TimeSince.op_Implicit(float.MaxValue);
 	}
 
@@ -152,7 +149,7 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 
 	protected void OnCollisionEnter(Collision collision)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			ProcessCollision(collision, rigidBody);
 		}
@@ -165,7 +162,7 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 		using (TimeWarning.New("GroundVehicle.VehicleFixedUpdate"))
 		{
 			base.VehicleFixedUpdate();
-			if (base.IsMovingOrOn)
+			if (IsMovingOrOn)
 			{
 				Velocity = GetLocalVelocity();
 			}
@@ -224,7 +221,7 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient && !hurtEntity.IsDestroyed)
+		if (!isClient && !hurtEntity.IsDestroyed)
 		{
 			Vector3 val = hurtEntity.GetLocalVelocity() - Velocity;
 			Vector3 val2 = ClosestPoint(((Component)hurtEntity).transform.position);
@@ -234,7 +231,7 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 			{
 				secondaryRigidbody.AddForceAtPosition(val3 * 1.25f, val2, (ForceMode)1);
 			}
-			QueueCollisionDamage(this, ((Vector3)(ref val3)).magnitude * 0.1f / Time.deltaTime);
+			QueueCollisionDamage(this, val3.magnitude * 0.1f / Time.deltaTime);
 			SetTempDrag(2.25f, 1f);
 		}
 	}
@@ -271,25 +268,25 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient || collision == null || (Object)(object)collision.gameObject == (Object)null || (Object)(object)collision.gameObject == (Object)null)
+		if (isClient || collision == null || (Object)(object)collision.gameObject == (Object)null || (Object)(object)collision.gameObject == (Object)null)
 		{
 			return;
 		}
 		ContactPoint contact = collision.GetContact(0);
 		BaseEntity baseEntity = null;
-		if ((Object)(object)((ContactPoint)(ref contact)).otherCollider.attachedRigidbody == (Object)(object)ourRigidbody)
+		if ((Object)(object)contact.otherCollider.attachedRigidbody == (Object)(object)ourRigidbody)
 		{
-			baseEntity = GameObjectEx.ToBaseEntity(((ContactPoint)(ref contact)).otherCollider);
+			baseEntity = GameObjectEx.ToBaseEntity(contact.otherCollider);
 		}
-		else if ((Object)(object)((ContactPoint)(ref contact)).thisCollider.attachedRigidbody == (Object)(object)ourRigidbody)
+		else if ((Object)(object)contact.thisCollider.attachedRigidbody == (Object)(object)ourRigidbody)
 		{
-			baseEntity = GameObjectEx.ToBaseEntity(((ContactPoint)(ref contact)).thisCollider);
+			baseEntity = GameObjectEx.ToBaseEntity(contact.thisCollider);
 		}
 		if ((Object)(object)baseEntity != (Object)null)
 		{
 			Vector3 impulse = collision.impulse;
 			impulse.y *= 0.5f;
-			float num = ((Vector3)(ref impulse)).magnitude / Time.fixedDeltaTime;
+			float num = impulse.magnitude / Time.fixedDeltaTime;
 			if (GameObjectEx.ToBaseEntity(collision.gameObject) is RidableHorse)
 			{
 				num *= 0.5f;
@@ -320,7 +317,7 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && isSpawned)
+		if (isServer && isSpawned)
 		{
 			GetFuelSystem()?.CheckNewChild(child);
 		}

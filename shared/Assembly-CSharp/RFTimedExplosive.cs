@@ -145,7 +145,7 @@ public class RFTimedExplosive : TimedExplosive, IRFObject
 
 	public override void SetFuse(float fuseLength)
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -254,8 +254,8 @@ public class RFTimedExplosive : TimedExplosive, IRFObject
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void Pickup(RPCMessage msg)
 	{
 		if (Interface.CallHook("ICanPickupEntity", msg.player, this) != null || !msg.player.CanInteract() || !IsArmed())
@@ -302,7 +302,7 @@ public class RFTimedExplosive : TimedExplosive, IRFObject
 			return;
 		}
 		creatorPlayerID = info.msg.explosive.creatorID;
-		if (base.isServer)
+		if (isServer)
 		{
 			if (info.fromDisk)
 			{

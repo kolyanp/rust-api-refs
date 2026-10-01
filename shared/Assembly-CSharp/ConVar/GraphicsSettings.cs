@@ -33,9 +33,9 @@ public class GraphicsSettings : ConsoleSystem
 		set
 		{
 			value = Mathf.Clamp(value, 0, 3);
-			bool num = QualitySettings.globalTextureMipmapLimit != value;
+			bool flag = QualitySettings.globalTextureMipmapLimit != value;
 			QualitySettings.globalTextureMipmapLimit = value;
-			if (num && (Object)(object)SingletonComponent<FoliageGrid>.Instance != (Object)null)
+			if (flag && (Object)(object)SingletonComponent<FoliageGrid>.Instance != (Object)null)
 			{
 				SingletonComponent<FoliageGrid>.Instance.OnGlobalTextureMipmapLimitChange();
 			}

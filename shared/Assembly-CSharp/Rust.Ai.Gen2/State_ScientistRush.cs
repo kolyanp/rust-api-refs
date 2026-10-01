@@ -23,18 +23,18 @@ public class State_ScientistRush : State_MoveToTarget
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		destination = default(NavVector3);
-		if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
+		destination = default;
+		if (!Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
 		{
 			return false;
 		}
-		NavVector3 positionNS = base.Agent.WorldToNavSpace(lkp);
-		if (!base.Agent.SamplePosition(positionNS, out var hitNS, 3.5f) && !base.Agent.SamplePosition(positionNS, out hitNS, 20f))
+		NavVector3 positionNS = Agent.WorldToNavSpace(lkp);
+		if (!Agent.SamplePosition(positionNS, out var hitNS, 3.5f) && !Agent.SamplePosition(positionNS, out hitNS, 20f))
 		{
 			return false;
 		}
-		Vector3 positionWS = base.Agent.NavToWorldSpace(hitNS.position);
-		if (base.Agent.IsInWater(positionWS))
+		Vector3 positionWS = Agent.NavToWorldSpace(hitNS.position);
+		if (Agent.IsInWater(positionWS))
 		{
 			return false;
 		}
@@ -48,8 +48,8 @@ public class State_ScientistRush : State_MoveToTarget
 		Shooting.OnlyShootIfTargetIsVisible = !useSuppressiveFire;
 		if ((Object)(object)assistRequest.entity != (Object)null && assistRequest.position.HasValue)
 		{
-			base.Senses.SimulateSighting(assistRequest.entity, assistRequest.position.Value);
-			base.Senses.TrySetTarget(assistRequest.entity);
+			Senses.SimulateSighting(assistRequest.entity, assistRequest.position.Value);
+			Senses.TrySetTarget(assistRequest.entity);
 		}
 		else
 		{
@@ -67,18 +67,18 @@ public class State_ScientistRush : State_MoveToTarget
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		if (useSuppressiveFire && base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: true, predict: true))
+		if (useSuppressiveFire && Senses.FindTargetLKP(out var lkp, applyHeightOffset: true, predict: true))
 		{
-			if (!base.Senses.IsLineOccluded(base.Senses.EyePosition, lkp, 1218519041))
+			if (!Senses.IsLineOccluded(Senses.EyePosition, lkp, 1218519041))
 			{
-				RustNavMeshAgent agent = base.Agent;
-				Vector3 val = lkp - base.Senses.EyePosition;
-				agent.overrideDirectionWS = ((Vector3)(ref val)).normalized;
+				RustNavMeshAgent agent = Agent;
+				Vector3 val = lkp - Senses.EyePosition;
+				agent.overrideDirectionWS = val.normalized;
 				Shooting.OnlyShootIfTargetIsVisible = true;
 			}
 			else
 			{
-				base.Agent.overrideDirectionWS = null;
+				Agent.overrideDirectionWS = null;
 				Shooting.OnlyShootIfTargetIsVisible = false;
 			}
 		}
@@ -93,7 +93,7 @@ public class State_ScientistRush : State_MoveToTarget
 			NpcZoneComponent.AbandonZone();
 		}
 		Shooting.OnlyShootIfTargetIsVisible = true;
-		base.Agent.overrideDirectionWS = null;
+		Agent.overrideDirectionWS = null;
 		base.OnStateExit();
 	}
 }

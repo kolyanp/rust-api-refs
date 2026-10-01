@@ -8,13 +8,13 @@ namespace Rust.Ai.Gen2;
 
 public class RustNavMeshPath
 {
-	public readonly List<NavVector3> corners;
+	public readonly List<NavVector3> corners = new List<NavVector3>();
 
-	public NavMeshPathStatus status;
+	public NavMeshPathStatus status = (NavMeshPathStatus)2;
 
 	public NavMeshPath unityPath;
 
-	public readonly ulong[] polyRefs;
+	public readonly ulong[] polyRefs = new ulong[256];
 
 	public int polyRefCount;
 
@@ -71,9 +71,5 @@ public class RustNavMeshPath
 	public RustNavMeshPath()
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		corners = new List<NavVector3>();
-		status = (NavMeshPathStatus)2;
-		polyRefs = new ulong[256];
-		base._002Ector();
 	}
 }

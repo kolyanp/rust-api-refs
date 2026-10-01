@@ -7,9 +7,9 @@ public class NpcZone : MonoBehaviour, IServerComponent
 {
 	private static List<NpcZone> zones = new List<NpcZone>();
 
-	public Bounds bounds;
+	public Bounds bounds = new Bounds(Vector3.zero, new Vector3(10f, 3.5f, 10f));
 
-	public bool drawBounds;
+	public bool drawBounds = true;
 
 	private void Awake()
 	{
@@ -33,7 +33,7 @@ public class NpcZone : MonoBehaviour, IServerComponent
 		using (TimeWarning.New("NpcZone.IsPointInside"))
 		{
 			OBB val = new OBB(((Component)this).transform.position, ((Component)this).transform.lossyScale, ((Component)this).transform.rotation, bounds);
-			return ((OBB)(ref val)).Contains(point);
+			return val.Contains(point);
 		}
 	}
 
@@ -83,8 +83,5 @@ public class NpcZone : MonoBehaviour, IServerComponent
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		bounds = new Bounds(Vector3.zero, new Vector3(10f, 3.5f, 10f));
-		drawBounds = true;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

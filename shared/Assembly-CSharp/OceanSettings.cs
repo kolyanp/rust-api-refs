@@ -53,13 +53,13 @@ public class OceanSettings : ScriptableObject
 		return array;
 	}
 
-	internal unsafe Rust.Water5.NativeOceanDisplacementShort3 LoadNativeSimData()
+	internal unsafe NativeOceanDisplacementShort3 LoadNativeSimData()
 	{
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		Rust.Water5.NativeOceanDisplacementShort3 result = Rust.Water5.NativeOceanDisplacementShort3.Create(spectrumSettings.Length, 72, 65536);
+		NativeOceanDisplacementShort3 result = NativeOceanDisplacementShort3.Create(spectrumSettings.Length, 72, 65536);
 		string text = Application.streamingAssetsPath + "/" + ((Object)this).name + ".physicsdata.dat";
 		if (!File.Exists(text))
 		{

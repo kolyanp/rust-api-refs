@@ -56,7 +56,7 @@ public class Workbench : StorageContainer
 	}
 
 	[Header("Upgrades")]
-	public int upgradeSlotCount;
+	public int upgradeSlotCount = 4;
 
 	public TriggerComfort upgradeComfortTrigger;
 
@@ -84,9 +84,9 @@ public class Workbench : StorageContainer
 	[Tooltip("Individual filler transforms that are hidden when their associated upgrade is installed.")]
 	public UpgradeFillerVisual[] upgradeFillerVisuals;
 
-	private readonly List<CachedUpgrade> cachedServerUpgrades;
+	private readonly List<CachedUpgrade> cachedServerUpgrades = new List<CachedUpgrade>();
 
-	public static readonly Phrase RecycleBinNotEmptyPhrase;
+	public static readonly Phrase RecycleBinNotEmptyPhrase = new Phrase("workbench.recyclebin.notempty", "Empty the recycle bin before removing it");
 
 	public const int blueprintSlot = 0;
 
@@ -108,15 +108,15 @@ public class Workbench : StorageContainer
 
 	private const string recycleBinLootPanel = "generic_resizable";
 
-	private Vector3 originalCraftTriggerSize;
+	private Vector3 originalCraftTriggerSize = Vector3.zero;
 
-	private Vector3 originalCraftTriggerCenter;
+	private Vector3 originalCraftTriggerCenter = Vector3.zero;
 
 	private bool craftTriggerCached;
 
-	private float originalComfortBaseValue;
+	private float originalComfortBaseValue = -1f;
 
-	private float originalComfortTriggerRadius;
+	private float originalComfortTriggerRadius = -1f;
 
 	private float originalMaxHealth;
 
@@ -130,7 +130,7 @@ public class Workbench : StorageContainer
 
 	public TechTreeData[] techTrees;
 
-	private float clientTechTreeMultiplier;
+	private float clientTechTreeMultiplier = 1f;
 
 	public static ItemDefinition blueprintBaseDef;
 
@@ -146,14 +146,14 @@ public class Workbench : StorageContainer
 	{
 		get
 		{
-			if (base.inventory == null)
+			if (inventory == null)
 			{
 				return 0;
 			}
 			int num = 0;
 			for (int i = 2; i < RequiredInventorySlots; i++)
 			{
-				if (base.inventory.GetSlot(i) != null)
+				if (inventory.GetSlot(i) != null)
 				{
 					num++;
 				}
@@ -385,11 +385,11 @@ public class Workbench : StorageContainer
 
 	public float GetTechTreeCostMultiplier()
 	{
-		if (base.isClient)
+		if (isClient)
 		{
 			return clientTechTreeMultiplier;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			return CalculateTechTreeCostMultiplier();
 		}
@@ -427,6 +427,7 @@ public class Workbench : StorageContainer
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
@@ -436,7 +437,6 @@ public class Workbench : StorageContainer
 		{
 			return false;
 		}
-		OBB val3 = default(OBB);
 		for (int i = 0; i < cachedUpgradeVisualPoints.Length; i++)
 		{
 			ref CachedUpgradeVisualPoint reference = ref cachedUpgradeVisualPoints[i];
@@ -449,11 +449,11 @@ public class Workbench : StorageContainer
 			Vector3 val = transform.TransformPoint(preventBuildingVolume.center);
 			Vector3 lossyScale = transform.lossyScale;
 			Vector3 val2 = Vector3.Scale(preventBuildingVolume.size, lossyScale);
-			((OBB)(ref val3))._002Ector(val, val2, transform.rotation);
+			OBB val3 = new OBB(val, val2, transform.rotation);
 			PooledList<BaseEntity> val4 = Pool.Get<PooledList<BaseEntity>>();
 			try
 			{
-				Vis.Entities(val3.position, ((Vector3)(ref val3.extents)).magnitude + 0.25f, (List<BaseEntity>)(object)val4, 256, (QueryTriggerInteraction)1);
+				Vis.Entities(val3.position, val3.extents.magnitude + 0.25f, (List<BaseEntity>)(object)val4, 256, (QueryTriggerInteraction)1);
 				for (int j = 0; j < ((List<BaseEntity>)(object)val4).Count; j++)
 				{
 					BaseEntity baseEntity = ((List<BaseEntity>)(object)val4)[j];
@@ -508,13 +508,13 @@ public class Workbench : StorageContainer
 	private void RebuildUpgradeCache()
 	{
 		cachedServerUpgrades.Clear();
-		if (base.inventory == null)
+		if (inventory == null)
 		{
 			return;
 		}
 		for (int i = 2; i < RequiredInventorySlots; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot != null)
 			{
 				ItemModWorkbenchUpgrade component = ((Component)slot.info).GetComponent<ItemModWorkbenchUpgrade>();
@@ -554,7 +554,7 @@ public class Workbench : StorageContainer
 			wbProto.upgradeItemIds = Pool.Get<List<int>>();
 			for (int i = 2; i < RequiredInventorySlots; i++)
 			{
-				Item slot = base.inventory.GetSlot(i);
+				Item slot = inventory.GetSlot(i);
 				wbProto.upgradeItemIds.Add(slot?.info.itemid ?? 0);
 			}
 		}
@@ -792,7 +792,7 @@ public class Workbench : StorageContainer
 	private PooledList<ItemModWorkbenchUpgrade> GetInstalledUpgradeMods()
 	{
 		PooledList<ItemModWorkbenchUpgrade> val = Pool.Get<PooledList<ItemModWorkbenchUpgrade>>();
-		if (base.isServer)
+		if (isServer)
 		{
 			for (int i = 0; i < cachedServerUpgrades.Count; i++)
 			{
@@ -863,7 +863,7 @@ public class Workbench : StorageContainer
 		TechTreeData[] array = techTrees;
 		foreach (TechTreeData techTreeData in array)
 		{
-			if (techTreeData.IsAllowedInEra(ConVar.Server.Era) && techTreeData.IsAllowedInGameMode(base.isServer))
+			if (techTreeData.IsAllowedInEra(ConVar.Server.Era) && techTreeData.IsAllowedInGameMode(isServer))
 			{
 				yield return techTreeData;
 			}
@@ -1066,8 +1066,8 @@ public class Workbench : StorageContainer
 		return blueprintBaseDef;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_BeginExperiment(RPCMessage msg)
 	{
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
@@ -1107,7 +1107,7 @@ public class Workbench : StorageContainer
 			{
 				return;
 			}
-			Item slot = base.inventory.GetSlot(0);
+			Item slot = inventory.GetSlot(0);
 			if (slot != null)
 			{
 				if (!slot.MoveToContainer(player.inventory.containerMain))
@@ -1121,7 +1121,7 @@ public class Workbench : StorageContainer
 				Effect.server.Run(experimentStartEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
 			}
 			SetFlagLocal(Flags.On, b: true);
-			base.inventory.SetLocked(isLocked: true);
+			inventory.SetLocked(isLocked: true);
 			CancelInvoke(ExperimentComplete);
 			Invoke(ExperimentComplete, 5f);
 			SendNetworkUpdate();
@@ -1132,7 +1132,7 @@ public class Workbench : StorageContainer
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
-		if (base.inventory != null)
+		if (inventory != null)
 		{
 			info.msg.workbench = Pool.Get<Workbench>();
 			SaveUpgrades(info.msg.workbench);
@@ -1157,7 +1157,7 @@ public class Workbench : StorageContainer
 
 	public Item GetExperimentResourceItem()
 	{
-		return base.inventory.GetSlot(1);
+		return inventory.GetSlot(1);
 	}
 
 	public void ExperimentComplete()
@@ -1184,7 +1184,7 @@ public class Workbench : StorageContainer
 			Item item = ItemManager.Create(GetBlueprintTemplate(), 1, 0uL, isServerSide: true, 0uL);
 			item.blueprintTarget = pendingBlueprint.itemid;
 			creatingBlueprint = true;
-			if (!item.MoveToContainer(base.inventory, 0))
+			if (!item.MoveToContainer(inventory, 0))
 			{
 				item.Drop(GetDropPosition(), GetDropVelocity());
 			}
@@ -1196,7 +1196,7 @@ public class Workbench : StorageContainer
 		}
 		SetFlagLocal(Flags.On, b: false);
 		pendingBlueprint = null;
-		base.inventory.SetLocked(isLocked: false);
+		inventory.SetLocked(isLocked: false);
 		SendNetworkUpdate();
 		Interface.CallHook("OnExperimentEnded", this);
 	}
@@ -1208,9 +1208,9 @@ public class Workbench : StorageContainer
 		{
 			flagsUpdateScope.Set(Flags.On, b: false);
 		}
-		if (base.inventory != null)
+		if (inventory != null)
 		{
-			base.inventory.SetLocked(isLocked: false);
+			inventory.SetLocked(isLocked: false);
 		}
 		RebuildUpgradeCache();
 		RefreshRuntimeUpgrades();
@@ -1220,7 +1220,7 @@ public class Workbench : StorageContainer
 	{
 		inventorySlots = Mathf.Max(inventorySlots, RequiredInventorySlots);
 		base.ServerInit();
-		base.inventory.canAcceptItem = ItemFilter;
+		inventory.canAcceptItem = ItemFilter;
 		originalMaxHealth = startHealth;
 		CacheOriginalTriggerValues();
 	}
@@ -1251,10 +1251,10 @@ public class Workbench : StorageContainer
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
-		if (!Application.isLoadingSave && item != null && base.inventory != null && IsUpgradeSlot(item.position))
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
+		if (!Application.isLoadingSave && item != null && inventory != null && IsUpgradeSlot(item.position))
 		{
 			OnUpgradeAddedOrRemoved(item, added);
 		}
@@ -1272,7 +1272,7 @@ public class Workbench : StorageContainer
 			{
 				return false;
 			}
-			Item slot = base.inventory.GetSlot(targetSlot);
+			Item slot = inventory.GetSlot(targetSlot);
 			if (slot != null && slot.contents != null && !slot.contents.IsEmpty())
 			{
 				return false;
@@ -1294,7 +1294,7 @@ public class Workbench : StorageContainer
 		{
 			return result;
 		}
-		if (item.parent == base.inventory && IsUpgradeSlot(item.position) && item.contents != null && !item.contents.IsEmpty())
+		if (item.parent == inventory && IsUpgradeSlot(item.position) && item.contents != null && !item.contents.IsEmpty())
 		{
 			return PlayerInventory.CanMoveFromResponse.Failure(RecycleBinNotEmptyPhrase);
 		}
@@ -1340,7 +1340,7 @@ public class Workbench : StorageContainer
 	{
 		for (int i = 2; i < RequiredInventorySlots; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot != null && (Object)(object)((Component)slot.info).GetComponent<ItemModWorkbenchRecycleBin>() != (Object)null)
 			{
 				return slot;
@@ -1408,13 +1408,13 @@ public class Workbench : StorageContainer
 	public override void ScaleDamage(HitInfo info)
 	{
 		base.ScaleDamage(info);
-		if (base.inventory == null)
+		if (inventory == null)
 		{
 			return;
 		}
 		for (int i = 2; i < RequiredInventorySlots; i++)
 		{
-			Item slot = base.inventory.GetSlot(i);
+			Item slot = inventory.GetSlot(i);
 			if (slot == null)
 			{
 				continue;
@@ -1442,20 +1442,11 @@ public class Workbench : StorageContainer
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		upgradeSlotCount = 4;
-		cachedServerUpgrades = new List<CachedUpgrade>();
-		originalCraftTriggerSize = Vector3.zero;
-		originalCraftTriggerCenter = Vector3.zero;
-		originalComfortBaseValue = -1f;
-		originalComfortTriggerRadius = -1f;
-		clientTechTreeMultiplier = 1f;
-		base._002Ector();
 	}
 
 	static Workbench()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		RecycleBinNotEmptyPhrase = new Phrase("workbench.recyclebin.notempty", "Empty the recycle bin before removing it");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

@@ -61,19 +61,19 @@ public class UIPolygon : UIPrimitiveBase
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		Rect rect = ((Graphic)this).rectTransform.rect;
-		size = ((Rect)(ref rect)).width;
+		size = rect.width;
 		rect = ((Graphic)this).rectTransform.rect;
-		float width = ((Rect)(ref rect)).width;
+		float width = rect.width;
 		rect = ((Graphic)this).rectTransform.rect;
-		if (width > ((Rect)(ref rect)).height)
+		if (width > rect.height)
 		{
 			rect = ((Graphic)this).rectTransform.rect;
-			size = ((Rect)(ref rect)).height;
+			size = rect.height;
 		}
 		else
 		{
 			rect = ((Graphic)this).rectTransform.rect;
-			size = ((Rect)(ref rect)).width;
+			size = rect.width;
 		}
 		thickness = Mathf.Clamp(thickness, 0f, size / 2f);
 	}
@@ -84,10 +84,20 @@ public class UIPolygon : UIPrimitiveBase
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
@@ -117,14 +127,10 @@ public class UIPolygon : UIPrimitiveBase
 		vh.Clear();
 		Vector2 val = Vector2.zero;
 		Vector2 val2 = Vector2.zero;
-		Vector2 val3 = default(Vector2);
-		((Vector2)(ref val3))._002Ector(0f, 0f);
-		Vector2 val4 = default(Vector2);
-		((Vector2)(ref val4))._002Ector(0f, 1f);
-		Vector2 val5 = default(Vector2);
-		((Vector2)(ref val5))._002Ector(1f, 1f);
-		Vector2 val6 = default(Vector2);
-		((Vector2)(ref val6))._002Ector(1f, 0f);
+		Vector2 val3 = new Vector2(0f, 0f);
+		Vector2 val4 = new Vector2(0f, 1f);
+		Vector2 val5 = new Vector2(1f, 1f);
+		Vector2 val6 = new Vector2(1f, 0f);
 		float num = 360f / (float)sides;
 		int num2 = sides + 1;
 		if (VerticesDistances.Length != num2)
@@ -136,8 +142,6 @@ public class UIPolygon : UIPrimitiveBase
 			}
 		}
 		VerticesDistances[num2 - 1] = VerticesDistances[0];
-		Vector2 val8 = default(Vector2);
-		Vector2 zero = default(Vector2);
 		for (int j = 0; j < num2; j++)
 		{
 			float num3 = (0f - ((Graphic)this).rectTransform.pivot.x) * size * VerticesDistances[j];
@@ -145,26 +149,27 @@ public class UIPolygon : UIPrimitiveBase
 			float num5 = MathF.PI / 180f * ((float)j * num + rotation);
 			float num6 = Mathf.Cos(num5);
 			float num7 = Mathf.Sin(num5);
-			((Vector2)(ref val3))._002Ector(0f, 1f);
-			((Vector2)(ref val4))._002Ector(1f, 1f);
-			((Vector2)(ref val5))._002Ector(1f, 0f);
-			((Vector2)(ref val6))._002Ector(0f, 0f);
+			val3 = new Vector2(0f, 1f);
+			val4 = new Vector2(1f, 1f);
+			val5 = new Vector2(1f, 0f);
+			val6 = new Vector2(0f, 0f);
 			Vector2 val7 = val;
-			((Vector2)(ref val8))._002Ector(num3 * num6, num3 * num7);
+			Vector2 val8 = new Vector2(num3 * num6, num3 * num7);
 			Vector2 val9;
+			Vector2 val10;
 			if (fill)
 			{
-				zero = Vector2.zero;
 				val9 = Vector2.zero;
+				val10 = Vector2.zero;
 			}
 			else
 			{
-				((Vector2)(ref zero))._002Ector(num4 * num6, num4 * num7);
-				val9 = val2;
+				val9 = new Vector2(num4 * num6, num4 * num7);
+				val10 = val2;
 			}
 			val = val8;
-			val2 = zero;
-			vh.AddUIVertexQuad(SetVbo((Vector2[])(object)new Vector2[4] { val7, val8, zero, val9 }, (Vector2[])(object)new Vector2[4] { val3, val4, val5, val6 }));
+			val2 = val9;
+			vh.AddUIVertexQuad(SetVbo(new Vector2[4] { val7, val8, val9, val10 }, new Vector2[4] { val3, val4, val5, val6 }));
 		}
 	}
 }

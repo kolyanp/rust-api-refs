@@ -31,8 +31,8 @@ public class PrefabReference
 
 	public static bool StopReloadLayoutOptions;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected Mesh _refMesh;
 
 	[HideInInspector]

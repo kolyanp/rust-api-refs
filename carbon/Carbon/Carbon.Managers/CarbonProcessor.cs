@@ -27,11 +27,12 @@ public class CarbonProcessor : BaseProcessor, ICarbonProcessor, IDisposable
 
 	public override void Start()
 	{
+		Timer.PrimeClock();
 		Community.Runtime.CommandManager.RegisterCommand(new Command.RCon
 		{
 			Name = "avgfps",
 			Help = "Displays the server's average FPS.",
-			Callback = delegate(Command.Args arg)
+			Callback = (Command.Args arg) =>
 			{
 				arg.ReplyWith($"{Performance.report.frameRateAverage:0}");
 			}
@@ -40,7 +41,7 @@ public class CarbonProcessor : BaseProcessor, ICarbonProcessor, IDisposable
 		{
 			Name = "avgfps",
 			Help = "Displays the server's average FPS.",
-			Callback = delegate(Command.Args arg)
+			Callback = (Command.Args arg) =>
 			{
 				arg.ReplyWith($"{Performance.report.frameRateAverage:0}");
 			},
@@ -53,7 +54,6 @@ public class CarbonProcessor : BaseProcessor, ICarbonProcessor, IDisposable
 
 	public void Update()
 	{
-		Timer.UpdateStartupTimers();
 		if (CurrentFrameQueue.Count <= 0)
 		{
 			return;
@@ -78,5 +78,10 @@ public class CarbonProcessor : BaseProcessor, ICarbonProcessor, IDisposable
 			}
 		}
 		list.Clear();
+	}
+
+	public void LateUpdate()
+	{
+		Timer.ProcessTimers();
 	}
 }

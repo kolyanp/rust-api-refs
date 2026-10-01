@@ -66,7 +66,7 @@ public class WildlifeTrap : StorageContainer
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && IsOn())
+		if (isServer && IsOn())
 		{
 			InvokeRepeating(TrapThink, tickRate * 0.8f + tickRate * Random.Range(0f, 0.4f), tickRate);
 		}
@@ -104,7 +104,7 @@ public class WildlifeTrap : StorageContainer
 	public int GetBaitCalories()
 	{
 		int num = 0;
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			num += CalculateBaitCalories(item);
 		}
@@ -113,7 +113,7 @@ public class WildlifeTrap : StorageContainer
 
 	public void DestroyRandomFoodItem()
 	{
-		int count = base.inventory.itemList.Count;
+		int count = inventory.itemList.Count;
 		int num = Random.Range(0, count);
 		for (int i = 0; i < count; i++)
 		{
@@ -122,7 +122,7 @@ public class WildlifeTrap : StorageContainer
 			{
 				num2 -= count;
 			}
-			Item item = base.inventory.itemList[num2];
+			Item item = inventory.itemList[num2];
 			if (item != null && !((Object)(object)((Component)item.info).GetComponent<ItemModConsumable>() == (Object)null))
 			{
 				item.UseItem();
@@ -133,7 +133,7 @@ public class WildlifeTrap : StorageContainer
 
 	public void UseBaitCalories(int numToUse)
 	{
-		foreach (Item item in base.inventory.itemList)
+		foreach (Item item in inventory.itemList)
 		{
 			int itemCalories = GetItemCalories(item);
 			if (itemCalories > 0)
@@ -188,11 +188,11 @@ public class WildlifeTrap : StorageContainer
 		if (Interface.CallHook("OnWildlifeTrap", this, trapped) == null)
 		{
 			Item item = ItemManager.Create(trapped.inventoryObject, Random.Range(trapped.minToCatch, trapped.maxToCatch + 1), 0uL, isServerSide: true, 0uL);
-			if ((Object)(object)base.LastLootedByPlayer != (Object)null)
+			if ((Object)(object)LastLootedByPlayer != (Object)null)
 			{
-				item.SetItemOwnership(base.LastLootedByPlayer, ItemOwnershipPhrases.SurvivalTrap);
+				item.SetItemOwnership(LastLootedByPlayer, ItemOwnershipPhrases.SurvivalTrap);
 			}
-			if (!item.MoveToContainer(base.inventory))
+			if (!item.MoveToContainer(inventory))
 			{
 				item.Remove();
 				OnTrappedWildlife(setFlag: false);
@@ -257,7 +257,7 @@ public class WildlifeTrap : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		ItemContainer itemContainer = base.inventory;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 	}
 

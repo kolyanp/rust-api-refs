@@ -8,7 +8,7 @@ public struct TimeMeasure : IDisposable
 {
 	public static TimeMeasure New(string name, int miliseconds = 100, string warn = null)
 	{
-		return default(TimeMeasure);
+		return default;
 	}
 
 	public void Dispose()

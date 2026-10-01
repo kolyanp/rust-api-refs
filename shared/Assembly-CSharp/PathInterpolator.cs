@@ -32,7 +32,6 @@ public class PathInterpolator
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		if (points.Length < 2)
 		{
 			throw new ArgumentException("Point list too short.");
@@ -69,7 +68,7 @@ public class PathInterpolator
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		if (Tangents == null || Tangents.Length != Points.Length)
 		{
-			Tangents = (Vector3[])(object)new Vector3[Points.Length];
+			Tangents = new Vector3[Points.Length];
 		}
 		for (int i = 0; i < Points.Length; i++)
 		{
@@ -88,7 +87,7 @@ public class PathInterpolator
 			Vector3[] tangents = Tangents;
 			int num3 = i;
 			Vector3 val3 = val2 - val;
-			tangents[num3] = ((Vector3)(ref val3)).normalized;
+			tangents[num3] = val3.normalized;
 		}
 		RecalculateLength();
 		initialized = true;
@@ -111,7 +110,7 @@ public class PathInterpolator
 			Vector3 val2 = Points[i + 1];
 			float num2 = num;
 			Vector3 val3 = val2 - val;
-			num = num2 + ((Vector3)(ref val3)).magnitude;
+			num = num2 + val3.magnitude;
 		}
 		Length = num;
 		StepSize = num / (float)Points.Length;
@@ -152,7 +151,7 @@ public class PathInterpolator
 			Vector3 val2 = Points[i + 1];
 			float num2 = num;
 			val3 = val2 - val;
-			num = num2 + ((Vector3)(ref val3)).magnitude;
+			num = num2 + val3.magnitude;
 		}
 		int num3 = Mathf.RoundToInt(num / distance);
 		if (num3 < 2)
@@ -169,7 +168,7 @@ public class PathInterpolator
 			Vector3 val4 = Points[num5];
 			Vector3 val5 = Points[num6];
 			val3 = val5 - val4;
-			float num7 = ((Vector3)(ref val3)).magnitude;
+			float num7 = val3.magnitude;
 			if (num5 == 0)
 			{
 				list.Add(val4);
@@ -365,7 +364,7 @@ public class PathInterpolator
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = GetPoint(i + 1) - GetPoint(i - 1);
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	public int GetPrevIndex(float distance)

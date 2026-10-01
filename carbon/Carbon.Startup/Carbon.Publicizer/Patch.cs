@@ -18,14 +18,14 @@ public class Patch : IDisposable
 		public override AssemblyDefinition Resolve(AssemblyNameReference name)
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000c: Expected O, but got Unknown
+			//IL_000c: Expected Obj, but got Unknown
 			return ((BaseAssemblyResolver)this).Resolve(name, new ReaderParameters());
 		}
 
 		public override AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
 		{
 			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0021: Expected O, but got Unknown
+			//IL_0021: Expected Obj, but got Unknown
 			if (_cache.TryGetValue(name.FullName, out var value))
 			{
 				return value;
@@ -163,10 +163,10 @@ public class Patch : IDisposable
 
 	public static void Uninit()
 	{
-		AssemblyDefinition obj = bootstrap;
-		if (obj != null)
+		AssemblyDefinition val = bootstrap;
+		if (val != null)
 		{
-			obj.Dispose();
+			val.Dispose();
 		}
 		bootstrap = null;
 	}
@@ -180,8 +180,7 @@ public class Patch : IDisposable
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Expected O, but got Unknown
-		base._002Ector();
+		//IL_004a: Expected Obj, but got Unknown
 		filePath = path;
 		fileName = name;
 		if (AssemblyResolver == null)
@@ -251,10 +250,10 @@ public class Patch : IDisposable
 	public void Dispose()
 	{
 		readerParameters = null;
-		AssemblyDefinition obj = assembly;
-		if (obj != null)
+		AssemblyDefinition val = assembly;
+		if (val != null)
 		{
-			obj.Dispose();
+			val.Dispose();
 		}
 		assembly = null;
 	}

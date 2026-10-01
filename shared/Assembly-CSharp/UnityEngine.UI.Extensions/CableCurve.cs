@@ -21,7 +21,11 @@ public class CableCurve
 	[SerializeField]
 	private bool m_regen;
 
-	private static Vector2[] emptyCurve;
+	private static Vector2[] emptyCurve = new Vector2[2]
+	{
+		new Vector2(0f, 0f),
+		new Vector2(0f, 0f)
+	};
 
 	[SerializeField]
 	private Vector2[] points;
@@ -152,7 +156,6 @@ public class CableCurve
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		points = emptyCurve;
 		m_start = Vector2.up;
 		m_end = Vector2.up + Vector2.right;
@@ -167,7 +170,6 @@ public class CableCurve
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		points = inputPoints;
 		m_start = inputPoints[0];
 		m_end = inputPoints[1];
@@ -182,7 +184,6 @@ public class CableCurve
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		points = inputPoints.ToArray();
 		m_start = inputPoints[0];
 		m_end = inputPoints[1];
@@ -197,7 +198,6 @@ public class CableCurve
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		points = v.Points();
 		m_start = v.start;
 		m_end = v.end;
@@ -283,7 +283,7 @@ public class CableCurve
 		float num14 = (num5 - num4) / 2f / num10;
 		float num15 = (num4 + num5 - num14 * Mathf.Log((num3 + y2 - y) / (num3 - y2 + y))) / 2f;
 		float num16 = (y2 + y - num3 * (float)Math.Cosh(num10) / (float)Math.Sinh(num10)) / 2f;
-		points = (Vector2[])(object)new Vector2[m_steps];
+		points = new Vector2[m_steps];
 		float num17 = m_steps - 1;
 		for (int k = 0; k < m_steps; k++)
 		{
@@ -303,10 +303,5 @@ public class CableCurve
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		emptyCurve = (Vector2[])(object)new Vector2[2]
-		{
-			new Vector2(0f, 0f),
-			new Vector2(0f, 0f)
-		};
 	}
 }

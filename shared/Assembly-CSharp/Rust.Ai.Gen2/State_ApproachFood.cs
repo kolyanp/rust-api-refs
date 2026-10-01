@@ -13,14 +13,14 @@ public class State_ApproachFood : State_MoveToTarget
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindFood(out var food))
+		if (!Senses.FindFood(out var food))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (food.WaterFactor() > 0f || !base.Agent.CanReach(((Component)food).transform.position))
+		if (food.WaterFactor() > 0f || !Agent.CanReach(((Component)food).transform.position))
 		{
-			base.Blackboard.Add("TriedToApproachUnreachableFood");
-			SingletonComponent<NpcFoodManager>.Instance.Remove(food);
+			Blackboard.Add("TriedToApproachUnreachableFood");
+			Senses.IgnoreFood(food);
 			return EFSMStateStatus.Failure;
 		}
 		return base.OnStateEnter(payload);
@@ -29,12 +29,12 @@ public class State_ApproachFood : State_MoveToTarget
 	protected override bool GetMoveDestination(out NavVector3 destination)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindFood(out var food))
+		if (!Senses.FindFood(out var food))
 		{
 			destination = NavVector3.zero;
 			return false;
 		}
-		destination = base.Agent.WorldToNavSpace(((Component)food).transform.position);
+		destination = Agent.WorldToNavSpace(((Component)food).transform.position);
 		return true;
 	}
 }

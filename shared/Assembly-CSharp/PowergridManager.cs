@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
@@ -46,8 +47,6 @@ public class PowergridManager : PointEntity<PowergridManager>
 
 	private static List<InsertedFuseEntry> insertedFuses = new List<InsertedFuseEntry>();
 
-	private static int currentInsertedFusesCount;
-
 	private static int fuseSocketsCount;
 
 	private List<ItemId> loadedFuseInsertionOrder;
@@ -64,8 +63,6 @@ public class PowergridManager : PointEntity<PowergridManager>
 
 	private int __sync_CurrentStage;
 
-	private float __sync_LastProcessedStateChangeSqrDistance;
-
 	[Sync(Autosave = true)]
 	public int CurrentStage
 	{
@@ -81,26 +78,6 @@ public class PowergridManager : PointEntity<PowergridManager>
 			{
 				__sync_CurrentStage = value;
 				byte nameID = __GetWeaverID("CurrentStage");
-				QueueSyncVar(nameID);
-			}
-		}
-	}
-
-	[Sync]
-	public float LastProcessedStateChangeSqrDistance
-	{
-		[CompilerGenerated]
-		get
-		{
-			return __sync_LastProcessedStateChangeSqrDistance;
-		}
-		[CompilerGenerated]
-		private set
-		{
-			if (!IsSyncVarEqual(__sync_LastProcessedStateChangeSqrDistance, value))
-			{
-				__sync_LastProcessedStateChangeSqrDistance = value;
-				byte nameID = __GetWeaverID("LastProcessedStateChangeSqrDistance");
 				QueueSyncVar(nameID);
 			}
 		}
@@ -281,10 +258,9 @@ public class PowergridManager : PointEntity<PowergridManager>
 			Fuse = fuse
 		};
 		insertedFuses.Add(item);
-		currentInsertedFusesCount++;
 		if (Application.isServerStarted)
 		{
-			Facepunch.Rust.Analytics.Azure.OnPowerGridFuseInserted(byPlayer, fuse, currentInsertedFusesCount);
+			Facepunch.Rust.Analytics.Azure.OnPowerGridFuseInserted(byPlayer, fuse, insertedFuses.Count);
 		}
 	}
 
@@ -296,7 +272,6 @@ public class PowergridManager : PointEntity<PowergridManager>
 			if (insertedFuses[i].Fuse == fuse)
 			{
 				insertedFuses.RemoveAt(i);
-				currentInsertedFusesCount--;
 				break;
 			}
 		}
@@ -329,8 +304,8 @@ public class PowergridManager : PointEntity<PowergridManager>
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		int i = 0;
-		Vector3 pos = default(Vector3);
-		Quaternion rot = default(Quaternion);
+		Vector3 pos = default;
+		Quaternion rot = default;
 		for (int count = powerlineAccessPointSpawns.Count; i < count; i++)
 		{
 			((Component)powerlineAccessPointSpawns[i]).transform.GetPositionAndRotation(ref pos, ref rot);
@@ -354,6 +329,26 @@ public class PowergridManager : PointEntity<PowergridManager>
 	public static int GetNoOfPowergridEntities()
 	{
 		return powergridEntities.Count;
+	}
+
+	public static int Server_GetCurrentPowerlineEnergy()
+	{
+		if ((Object)(object)PointEntity<PowergridManager>.ServerInstance == (Object)null)
+		{
+			return 0;
+		}
+		if (PowergridStageConfig.instance == null)
+		{
+			return 0;
+		}
+		int num = PointEntity<PowergridManager>.ServerInstance.Server_GetPowerPlantInsertedFuses();
+		if (num <= 0)
+		{
+			return 0;
+		}
+		int num2 = PointEntity<PowergridManager>.ServerInstance.Server_GetFuseSocketsCount();
+		float num3 = ((num2 > 1) ? Mathf.Clamp01((float)(num - 1) / (float)(num2 - 1)) : 0f);
+		return (int)Mathf.Lerp((float)Powergrid.powerlineBasePowerOutput, (float)Powergrid.powerlineMaxPowerOutput, num3);
 	}
 
 	public override void ServerInit()
@@ -460,7 +455,7 @@ public class PowergridManager : PointEntity<PowergridManager>
 
 	public int Server_GetPowerPlantInsertedFuses()
 	{
-		int num = currentInsertedFusesCount + Powergrid.simulatePowerPlantFuses;
+		int num = insertedFuses.Count + Powergrid.simulatePowerPlantFuses;
 		if (num < 0)
 		{
 			num = 0;
@@ -591,6 +586,16 @@ public class PowergridManager : PointEntity<PowergridManager>
 		return Mathf.Lerp(num, num2, SeedRandom.Wanghash01(ref num3));
 	}
 
+	public static float Server_GetPopDecayRateScale(int playerCount)
+	{
+		if (playerCount >= Powergrid.fuseDecayHighPop)
+		{
+			return 1f;
+		}
+		float num = Mathf.InverseLerp((float)Powergrid.fuseDecayLowPop, (float)Powergrid.fuseDecayHighPop, (float)playerCount);
+		return Mathf.Lerp(Powergrid.fuseDecayLowPopScale, 1f, num);
+	}
+
 	private void ServerFuseDeteriorationTick()
 	{
 		using (TimeWarning.New("PowergridManager.ServerFuseDeteriorationTick"))
@@ -606,15 +611,16 @@ public class PowergridManager : PointEntity<PowergridManager>
 			try
 			{
 				Server_GatherFullDecayFuses((List<Item>)(object)val);
-				for (int num = insertedFuses.Count - 1; num >= 0; num--)
+				float num = Server_GetPopDecayRateScale(BasePlayer.activePlayerList.Count);
+				for (int num2 = insertedFuses.Count - 1; num2 >= 0; num2--)
 				{
-					if (num < insertedFuses.Count)
+					if (num2 < insertedFuses.Count)
 					{
-						InsertedFuseEntry entry = insertedFuses[num];
+						InsertedFuseEntry entry = insertedFuses[num2];
 						if (Server_IsActiveFuse(entry))
 						{
-							float decayRateScale = (((List<Item>)(object)val).Contains(entry.Fuse) ? 1f : Server_GetSlowDecayRateScale(entry.Fuse));
-							entry.FuseBox.Server_DeteriorateFuse(entry.Fuse, deltaTime, decayRateScale);
+							float num3 = (((List<Item>)(object)val).Contains(entry.Fuse) ? 1f : Server_GetSlowDecayRateScale(entry.Fuse));
+							entry.FuseBox.Server_DeteriorateFuse(entry.Fuse, deltaTime, num3 * num);
 						}
 					}
 				}
@@ -626,79 +632,49 @@ public class PowergridManager : PointEntity<PowergridManager>
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		switch (id)
+		if (id == 0)
 		{
-		case 0:
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: CurrentStage for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: CurrentStage for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_CurrentStage);
 			return true;
-		case 1:
-			if (Global.developer > 2)
-			{
-				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: LastProcessedStateChangeSqrDistance for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
-			}
-			SyncVarNetWrite(writer, __sync_LastProcessedStateChangeSqrDistance);
-			return true;
-		default:
-			return base.WriteSyncVar(id, writer);
 		}
+		return base.WriteSyncVar(id, writer);
 	}
 
 	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
 	{
-		switch (id)
+		if (id == 0)
 		{
-		case 0:
 			try
 			{
 				_ = __sync_CurrentStage;
 				int _sync_CurrentStage = reader.Int32();
 				__sync_CurrentStage = _sync_CurrentStage;
 			}
-			catch (Exception ex2)
-			{
-				Debug.LogException(ex2);
-			}
-			return true;
-		case 1:
-			try
-			{
-				_ = __sync_LastProcessedStateChangeSqrDistance;
-				float _sync_LastProcessedStateChangeSqrDistance = reader.Float();
-				__sync_LastProcessedStateChangeSqrDistance = _sync_LastProcessedStateChangeSqrDistance;
-			}
 			catch (Exception ex)
 			{
 				Debug.LogException(ex);
 			}
 			return true;
-		default:
-			return base.OnSyncVar(id, reader, fromAutoSave);
 		}
+		return base.OnSyncVar(id, reader, fromAutoSave);
 	}
 
 	private byte __GetWeaverID(string propertyName)
 	{
-		if (!(propertyName == "CurrentStage"))
+		if (propertyName == "CurrentStage")
 		{
-			if (propertyName == "LastProcessedStateChangeSqrDistance")
-			{
-				return 1;
-			}
-			return byte.MaxValue;
+			return 0;
 		}
-		return 0;
+		return byte.MaxValue;
 	}
 
 	protected override void WriteAutoSaveSyncVars(NetWrite writer)
@@ -717,18 +693,34 @@ public class PowergridManager : PointEntity<PowergridManager>
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -749,16 +741,14 @@ public class PowergridManager : PointEntity<PowergridManager>
 	{
 		base.ResetSyncVars();
 		__sync_CurrentStage = 0;
-		__sync_LastProcessedStateChangeSqrDistance = 0f;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)
 	{
-		return id switch
+		if (id == 0)
 		{
-			0 => true, 
-			1 => true, 
-			_ => base.ShouldInvalidateCache(id), 
-		};
+			return true;
+		}
+		return base.ShouldInvalidateCache(id);
 	}
 }

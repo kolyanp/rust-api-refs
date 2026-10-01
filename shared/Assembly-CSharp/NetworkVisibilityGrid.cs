@@ -55,8 +55,10 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 		public void SetupGroup(Group group)
 		{
+			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 			//IL_015c: Unknown result type (might be due to invalid IL or missing references)
@@ -64,11 +66,11 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 			//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0172: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0174: Unknown result type (might be due to invalid IL or missing references)
-			var (value, value2, _) = _grid.DeconstructGroupId((int)group.ID);
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(GridToPosition(value) - HalfCellSize, 0f, GridToPosition(value2) - HalfCellSize);
-			Vector3 max = default(Vector3);
-			((Vector3)(ref max))._002Ector(val.x + CellSize, 0f, val.z + CellSize);
+			(int x, int y, int layer) tuple = _grid.DeconstructGroupId((int)group.ID);
+			int item = tuple.x;
+			int item2 = tuple.y;
+			Vector3 val = new Vector3(GridToPosition(item) - HalfCellSize, 0f, GridToPosition(item2) - HalfCellSize);
+			Vector3 max = new Vector3(val.x + CellSize, 0f, val.z + CellSize);
 			if (LayerIndex >= 10)
 			{
 				group.restricted = true;
@@ -78,7 +80,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 			}
 			else if (LayerIndex == 5)
 			{
-				val.y = ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).min.y;
+				val.y = DeepSeaManager.DeepSeaBounds.min.y;
 				max.y = _grid.dynamicDungeonsThreshold;
 			}
 			else if (LayerIndex >= 0 && LayerIndex <= 4)
@@ -90,9 +92,9 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 			{
 				Debug.LogError((object)$"Cannot get bounds for unknown layer {LayerIndex}!", (Object)(object)_grid);
 			}
-			Bounds bounds = default(Bounds);
-			((Bounds)(ref bounds)).min = val;
-			((Bounds)(ref bounds)).max = max;
+			Bounds bounds = default;
+			bounds.min = val;
+			bounds.max = max;
 			group.bounds = bounds;
 		}
 	}
@@ -110,6 +112,18 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 	public const int deepSeaLayer = 5;
 
 	public const int dynamicDungeonsFirstLayer = 10;
+
+	public const int PositionalLayerCount = 15;
+
+	private const int AxisBits = 14;
+
+	private const int AxisMask = 16383;
+
+	private const int LayerMask = 15;
+
+	public const int MaxRoomGroups = 6553600;
+
+	public const uint RoomGroupIdStart = 4288413696u;
 
 	public const int GlobalId = 0;
 
@@ -150,6 +164,12 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	private Layer[] _layers;
 
+	private const int RoomGroupChunkBits = 12;
+
+	private const int RoomGroupChunkSize = 4096;
+
+	private Group[][] _roomGroups;
+
 	private static List<ListHashSet<Vector2i>> tileOffsetsByRadius = new List<ListHashSet<Vector2i>>(64);
 
 	public float SmallCellSize => (float)baseCellSize * 0.5f;
@@ -162,9 +182,13 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	public float DynamicDungeonCellSize => dynamicDungeonsInterval;
 
+	public ulong MaxPositionalGroupId => (ulong)(startID + EncodeCoord(16383, 16383, 14));
+
 	public void Awake()
 	{
 		Debug.Assert(Net.sv != null, "Network.Net.sv is NULL when creating Visibility Grid");
+		Debug.Assert(true, "PositionalLayerCount doesn't fit in the layer bits of the group ID");
+		Debug.Assert(MaxPositionalGroupId < 4288413696u, "the top positional layer reaches into the room-group ID range: lower startID or PositionalLayerCount");
 		Debug.Assert(Net.sv.visibility == null, "Network.Net.sv.visibility is being set multiple times");
 		Net.sv.visibility = new Manager(this);
 		_hardcodedGroups = new Group[startID];
@@ -218,6 +242,19 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 			Cleanup(_hardcodedGroups);
 			_hardcodedGroups = null;
 		}
+		if (_roomGroups == null)
+		{
+			return;
+		}
+		Group[][] roomGroups = _roomGroups;
+		foreach (Group[] array in roomGroups)
+		{
+			if (array != null)
+			{
+				Cleanup(array);
+			}
+		}
+		_roomGroups = null;
 		static void Cleanup(Group[] groups)
 		{
 			for (int j = 0; j < groups.Length; j++)
@@ -294,11 +331,15 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	private uint CoordToIDUnchecked(int x, int y, int layer)
 	{
-		Assert.IsTrue(layer >= 0 && layer <= 15, "layer >= 0 && layer <= 0xF");
-		Assert.IsTrue(x >= 0 && x <= 16383, "x >= 0 && x <= 0x3FFF");
-		Assert.IsTrue(y >= 0 && y <= 16383, "y >= 0 && y <= 0x3FFF");
-		int num = ((layer & 0xF) << 28) | ((x & 0x3FFF) << 14) | (y & 0x3FFF);
-		return (uint)(startID + num);
+		Assert.IsTrue(layer >= 0 && layer < 15, "layer >= 0 && layer < PositionalLayerCount");
+		Assert.IsTrue(x >= 0 && x <= 16383, "x >= 0 && x <= AxisMask");
+		Assert.IsTrue(y >= 0 && y <= 16383, "y >= 0 && y <= AxisMask");
+		return (uint)startID + EncodeCoord(x, y, layer);
+	}
+
+	private static uint EncodeCoord(int x, int y, int layer)
+	{
+		return (uint)(((layer & 0xF) << 28) | ((x & 0x3FFF) << 14) | (y & 0x3FFF));
 	}
 
 	public (int x, int y, int layer) DeconstructGroupId(int groupId)
@@ -312,7 +353,74 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	public bool IsGroupIdSpecial(uint groupId)
 	{
-		return groupId < startID;
+		if (groupId >= startID)
+		{
+			return IsRoomGroupId(groupId);
+		}
+		return true;
+	}
+
+	public static uint RoomGroupId(int index)
+	{
+		Assert.IsTrue(index >= 0 && index < 6553600, "index >= 0 && index < MaxRoomGroups");
+		return (uint)(-6553600 + index);
+	}
+
+	public static int RoomGroupIndex(uint groupId)
+	{
+		Assert.IsTrue(IsRoomGroupId(groupId), "IsRoomGroupId(groupId)");
+		return (int)groupId - -6553600;
+	}
+
+	public static bool IsRoomGroupId(uint groupId)
+	{
+		return groupId >= 4288413696u;
+	}
+
+	private Group GetOrCreateRoomGroup(uint groupId)
+	{
+		Group[][] array = _roomGroups;
+		if (array == null)
+		{
+			Group[][] array2 = new Group[1600][];
+			array = Interlocked.CompareExchange(ref _roomGroups, array2, null) ?? array2;
+		}
+		int num = RoomGroupIndex(groupId);
+		Group[] array3 = array[num >> 12];
+		if (array3 == null)
+		{
+			Group[] array4 = new Group[4096];
+			array3 = Interlocked.CompareExchange(ref array[num >> 12], array4, null) ?? array4;
+		}
+		int num2 = num & 0xFFF;
+		Group obj = array3[num2];
+		if (obj != null)
+		{
+			return obj;
+		}
+		obj = new Group(Net.sv.visibility, groupId)
+		{
+			restricted = true
+		};
+		return Interlocked.CompareExchange(ref array3[num2], obj, null) ?? obj;
+	}
+
+	private bool TryGetRoomGroup(uint groupId, out Group group)
+	{
+		group = null;
+		Group[][] roomGroups = _roomGroups;
+		if (roomGroups == null)
+		{
+			return false;
+		}
+		int num = RoomGroupIndex(groupId);
+		Group[] array = roomGroups[num >> 12];
+		if (array == null)
+		{
+			return false;
+		}
+		group = array[num & 0xFFF];
+		return group != null;
 	}
 
 	public float GetFarDistanceForRange(EntityNetworkRange range)
@@ -405,12 +513,16 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	public bool IsInside(Group group, Vector3 vPos, EntityNetworkRange range)
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		bool flag = false || group.ID == 0 || ((Bounds)(ref group.bounds)).Contains(vPos);
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		if (IsRoomGroupId(group.ID))
+		{
+			return false;
+		}
+		bool flag = false || group.ID == 0 || group.bounds.Contains(vPos);
 		int item = DeconstructGroupId((int)group.ID).layer;
 		if (PositionToLayer(vPos.x, vPos.y, vPos.z, range) != item)
 		{
@@ -418,7 +530,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 		}
 		if (!group.restricted)
 		{
-			flag = flag || ((Bounds)(ref group.bounds)).SqrDistance(vPos) < switchTolerance;
+			flag = flag || group.bounds.SqrDistance(vPos) < switchTolerance;
 		}
 		return flag;
 	}
@@ -439,20 +551,25 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	private bool IsVisibleFrom(Group from, Group to, int radius)
 	{
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
 		if (to.isGlobal)
 		{
 			return true;
+		}
+		if (IsRoomGroupId(to.ID) || IsRoomGroupId(from.ID))
+		{
+			return false;
 		}
 		if (from.ID < startID)
 		{
@@ -486,8 +603,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 		var (num2, num3, num4) = DeconstructGroupId((int)to.ID);
 		Assert.IsNotNull<Layer>(_layers[num4], "_layers[toLayer] != null");
 		Vector2i item = ConvertLayerCoords(_layers[num], sourceX, sourceY, num4).Position;
-		Vector2i val = default(Vector2i);
-		((Vector2i)(ref val))._002Ector(num2 - item.x, num3 - item.y);
+		Vector2i val = new Vector2i(num2 - item.x, num3 - item.y);
 		switch (num)
 		{
 		case 0:
@@ -534,7 +650,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 		return false;
 	}
 
-	public unsafe Group GetGroup(Vector3 vPos, EntityNetworkRange range)
+	public Group GetGroup(Vector3 vPos, EntityNetworkRange range)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
@@ -547,14 +663,18 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 		Group obj = GetGroup(iD);
 		if (Net.network_group_debug && !IsInside(obj, vPos, range))
 		{
-			float num = ((Bounds)(ref obj.bounds)).SqrDistance(vPos);
-			Debug.Log((object)("Group is inside is all fucked " + iD + "/" + num + "/" + ((object)(*(Vector3*)(&vPos))/*cast due to constrained. prefix*/).ToString()));
+			float num = obj.bounds.SqrDistance(vPos);
+			Debug.Log((object)("Group is inside is all fucked " + iD + "/" + num + "/" + ((object)vPos/*cast due to constrained. prefix*/).ToString()));
 		}
 		return obj;
 	}
 
 	public Group GetGroup(uint groupId)
 	{
+		if (IsRoomGroupId(groupId))
+		{
+			return GetOrCreateRoomGroup(groupId);
+		}
 		if (groupId < startID)
 		{
 			return GetOrCreateFromHardcoded(_hardcodedGroups, groupId);
@@ -596,6 +716,10 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	public bool TryGetGroup(uint groupId, out Group group)
 	{
+		if (IsRoomGroupId(groupId))
+		{
+			return TryGetRoomGroup(groupId, out group);
+		}
 		Group[] array;
 		uint num;
 		if (groupId < startID)
@@ -626,7 +750,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 	public void GetVisibleFromFar(Group group, ListHashSet<Group> groups)
 	{
 		int num = Net.visibilityRadiusFarOverride;
-		if (DeconstructGroupId((int)group.ID).layer == 5 && Net.visibilityRadiusDeepSea > num)
+		if (!IsRoomGroupId(group.ID) && DeconstructGroupId((int)group.ID).layer == 5 && Net.visibilityRadiusDeepSea > num)
 		{
 			num = Net.visibilityRadiusDeepSea;
 		}
@@ -644,7 +768,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 	private void GetGlobalNetworkGroups(Group group, ListHashSet<Group> groups)
 	{
 		groups.Add(GetGroup(0u));
-		if (group.ID >= startID)
+		if (!IsGroupIdSpecial(group.ID))
 		{
 			if (DeconstructGroupId((int)group.ID).layer == 5)
 			{
@@ -749,6 +873,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	private (Layer Layer, Vector2i Position) ConvertLayerCoords(Layer sourceLayer, int sourceX, int sourceY, int destLayerIdx)
 	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
@@ -757,12 +882,14 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		Layer layer;
-		Vector2i item = default(Vector2i);
+		Vector2i item;
 		if (destLayerIdx == sourceLayer.LayerIndex)
 		{
 			layer = sourceLayer;
-			((Vector2i)(ref item))._002Ector(sourceX, sourceY);
+			item = new Vector2i(sourceX, sourceY);
 		}
 		else
 		{
@@ -773,12 +900,12 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 			}
 			if (Mathf.Approximately(layer.CellSize, sourceLayer.CellSize))
 			{
-				((Vector2i)(ref item))._002Ector(sourceX, sourceY);
+				item = new Vector2i(sourceX, sourceY);
 			}
 			else
 			{
 				Vector2 val = new Vector2((float)sourceX, (float)sourceY) * sourceLayer.CellSize + new Vector2(sourceLayer.HalfCellSize - sourceLayer.HalfGridSize, sourceLayer.HalfCellSize - sourceLayer.HalfGridSize);
-				((Vector2i)(ref item))._002Ector(layer.PositionToGrid(val.x), layer.PositionToGrid(val.y));
+				item = new Vector2i(layer.PositionToGrid(val.x), layer.PositionToGrid(val.y));
 			}
 		}
 		return (Layer: layer, Position: item);
@@ -843,7 +970,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 					num3 += 2;
 				}
 			}
-			foreach (Vector2i item in hashSet.OrderBy(delegate(Vector2i v)
+			foreach (Vector2i item in hashSet.OrderBy((Vector2i v) =>
 			{
 				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0006: Unknown result type (might be due to invalid IL or missing references)

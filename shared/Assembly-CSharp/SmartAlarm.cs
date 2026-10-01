@@ -11,9 +11,9 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 {
 	public const Flags Flag_HasCustomMessage = Flags.Reserved6;
 
-	public static readonly Phrase DefaultNotificationTitle;
+	public static readonly Phrase DefaultNotificationTitle = new Phrase("app.alarm.title", "Alarm");
 
-	public static readonly Phrase DefaultNotificationBody;
+	public static readonly Phrase DefaultNotificationBody = new Phrase("app.alarm.body", "Your base is under attack!");
 
 	[Header("Smart Alarm")]
 	public GameObjectRef SetupNotificationDialog;
@@ -200,8 +200,8 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	private void StartSetupNotification(RPCMessage rpc)
 	{
@@ -215,8 +215,8 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	private void SetNotificationTextImpl(RPCMessage rpc)
 	{
@@ -246,10 +246,8 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 	static SmartAlarm()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		DefaultNotificationTitle = new Phrase("app.alarm.title", "Alarm");
-		DefaultNotificationBody = new Phrase("app.alarm.body", "Your base is under attack!");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

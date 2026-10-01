@@ -24,7 +24,7 @@ public class VertexNormalDebugger : MonoBehaviour
 	private void OnEnable()
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Expected O, but got Unknown
+		//IL_003a: Expected Obj, but got Unknown
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
@@ -34,7 +34,7 @@ public class VertexNormalDebugger : MonoBehaviour
 		if (!((Object)(object)mesh == (Object)null) && !((Object)(object)material == (Object)null))
 		{
 			vertexPositionsBuffer = new GraphicsBuffer((Target)16, (UsageFlags)0, mesh.vertexCount * 2, 12);
-			vertexPositions = (Vector3[])(object)new Vector3[mesh.vertexCount * 2];
+			vertexPositions = new Vector3[mesh.vertexCount * 2];
 			for (int i = 0; i < vertexPositions.Length; i += 2)
 			{
 				int num = i / 2;
@@ -60,10 +60,10 @@ public class VertexNormalDebugger : MonoBehaviour
 
 	private void OnDisable()
 	{
-		GraphicsBuffer obj = vertexPositionsBuffer;
-		if (obj != null)
+		GraphicsBuffer val = vertexPositionsBuffer;
+		if (val != null)
 		{
-			obj.Dispose();
+			val.Dispose();
 		}
 		vertexPositionsBuffer = null;
 		vertexPositions = null;

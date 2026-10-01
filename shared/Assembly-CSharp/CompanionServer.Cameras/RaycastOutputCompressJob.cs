@@ -20,13 +20,13 @@ public struct RaycastOutputCompressJob : IJob
 
 	public void Execute()
 	{
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		int num = rayOutputs.Length * 4;
 		if (data.Length < num)
 		{
 			throw new InvalidOperationException("Not enough data buffer available to compress rays");
 		}
-		NativeArray<int> val = default(NativeArray<int>);
-		val._002Ector(64, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<int> val = new NativeArray<int>(64, (Allocator)2, (NativeArrayOptions)1);
 		int num2 = 0;
 		for (int i = 0; i < rayOutputs.Length; i++)
 		{

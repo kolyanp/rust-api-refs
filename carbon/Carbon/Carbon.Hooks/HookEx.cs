@@ -15,9 +15,6 @@ public class HookEx : IDisposable, IHook
 
 	private readonly TypeInfo _patchMethod;
 
-	[CompilerGenerated]
-	private readonly MethodType _003CMethodType_003Ek__BackingField;
-
 	private bool hasDisposed;
 
 	public string HookName { get; }
@@ -34,7 +31,7 @@ public class HookEx : IDisposable, IHook
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CMethodType_003Ek__BackingField;
+			return field;
 		}
 	}
 
@@ -131,8 +128,7 @@ public class HookEx : IDisposable, IHook
 		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bb: Expected O, but got Unknown
-		base._002Ector();
+		//IL_01bb: Expected Obj, but got Unknown
 		try
 		{
 			Harmony.DEBUG = false;
@@ -208,11 +204,11 @@ public class HookEx : IDisposable, IHook
 	public bool ApplyPatch()
 	{
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Expected O, but got Unknown
+		//IL_0044: Expected Obj, but got Unknown
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Expected O, but got Unknown
+		//IL_0078: Expected Obj, but got Unknown
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ac: Expected O, but got Unknown
+		//IL_00ac: Expected Obj, but got Unknown
 		if (IsInstalled)
 		{
 			return true;

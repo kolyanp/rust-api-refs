@@ -239,50 +239,50 @@ public class NexusFerry : BaseEntity
 
 	public const string PrefabPath = "assets/content/nexus/ferry/nexusferry.entity.prefab";
 
-	public static readonly Phrase RetiringPhrase;
+	public static readonly Phrase RetiringPhrase = new Phrase("ferry.not_in_service", "Not In Service");
 
 	[Header("NexusFerry")]
-	public float TravelVelocity;
+	public float TravelVelocity = 20f;
 
-	public float ApproachVelocity;
+	public float ApproachVelocity = 5f;
 
-	public float StoppingVelocity;
+	public float StoppingVelocity = 1f;
 
-	public float AccelerationSpeed;
+	public float AccelerationSpeed = 1f;
 
-	public float TurnSpeed;
+	public float TurnSpeed = 1f;
 
-	public float VelocityPreservationOnTurn;
+	public float VelocityPreservationOnTurn = 0.1f;
 
-	public float TargetDistanceThreshold;
+	public float TargetDistanceThreshold = 10f;
 
-	public float NoRouteRetireCooldown;
+	public float NoRouteRetireCooldown = 120f;
 
-	public LayerMask SpawnObstructionLayers;
+	public LayerMask SpawnObstructionLayers = LayerMask.op_Implicit(134359040);
 
 	public GameObjectRef hornEffect;
 
 	public Transform hornEffectTransform;
 
-	public float departureHornLeadTime;
+	public float departureHornLeadTime = 5f;
 
 	[Header("Pathing")]
 	public SphereCollider SphereCaster;
 
-	public int CastSweepDegrees;
+	public int CastSweepDegrees = 16;
 
 	[Range(0f, 1f)]
-	public float CastSweepNoise;
+	public float CastSweepNoise = 0.25f;
 
-	public LayerMask CastLayers;
+	public LayerMask CastLayers = LayerMask.op_Implicit(134283264);
 
-	public float CastInterval;
+	public float CastInterval = 1f;
 
-	public float CastHitProtection;
+	public float CastHitProtection = 5f;
 
-	public int PathLookahead;
+	public int PathLookahead = 4;
 
-	public int PathLookaheadThreshold;
+	public int PathLookaheadThreshold = 5;
 
 	[Header("UI")]
 	public RustText[] NextZoneLabels;
@@ -299,11 +299,11 @@ public class NexusFerry : BaseEntity
 
 	private bool _isRetiring;
 
-	private int _nextScheduleIndex;
+	private int _nextScheduleIndex = -1;
 
 	private bool _departureHornPlayed;
 
-	public static readonly ListHashSet<NexusFerry> All;
+	public static readonly ListHashSet<NexusFerry> All = new ListHashSet<NexusFerry>();
 
 	private List<NetworkableId> _transferredIds;
 
@@ -450,7 +450,7 @@ public class NexusFerry : BaseEntity
 			else
 			{
 				Quaternion val2 = Quaternion.LookRotation(Vector3Ex.Direction2D(val, position));
-				num2 = ((Quaternion)(ref val2)).eulerAngles.y;
+				num2 = val2.eulerAngles.y;
 			}
 			float num3 = num2;
 			float num4 = (float)Random.Range(0, CastSweepDegrees) * CastSweepNoise;
@@ -463,18 +463,18 @@ public class NexusFerry : BaseEntity
 				int num8 = i / 2 * num7;
 				Quaternion val3 = Quaternion.Euler(0f, num3 + num4 + (float)CastSweepDegrees * 0.5f * (float)num8, 0f);
 				Vector3 val4 = val3 * Vector3.forward;
-				bool num9 = SphereCast(val4, num, out var travelDistance, out var endPosition);
+				bool flag = SphereCast(val4, num, out var travelDistance, out var endPosition);
 				float item = Mathf.Clamp(Vector3.Dot(forward, val4), 0.5f, 1f);
-				float item2 = (num9 ? Mathf.Clamp01(travelDistance / 30f) : 1f);
-				float num10 = Vector3Ex.Distance2D(val, endPosition);
-				list.Add((item, item2, num10, endPosition, val3));
-				num6 = Mathf.Max(num6, num10);
-				if (!num9)
+				float item2 = (flag ? Mathf.Clamp01(travelDistance / 30f) : 1f);
+				float num9 = Vector3Ex.Distance2D(val, endPosition);
+				list.Add((item, item2, num9, endPosition, val3));
+				num6 = Mathf.Max(num6, num9);
+				if (!flag)
 				{
 					break;
 				}
 			}
-			float num11 = -1f;
+			float num10 = -1f;
 			Vector3 value = Vector3.zero;
 			Quaternion value2 = Quaternion.identity;
 			foreach (var item8 in list)
@@ -484,11 +484,11 @@ public class NexusFerry : BaseEntity
 				float item5 = item8.Item3;
 				Vector3 item6 = item8.Item4;
 				Quaternion item7 = item8.Item5;
-				float num12 = 1f - Mathf.Clamp01(item5 / num6);
-				float num13 = item3 * item4 * num12;
-				if (!(num13 <= num11))
+				float num11 = 1f - Mathf.Clamp01(item5 / num6);
+				float num12 = item3 * item4 * num11;
+				if (!(num12 <= num10))
 				{
-					num11 = num13;
+					num10 = num12;
 					value = item6;
 					value2 = item7;
 				}
@@ -518,14 +518,14 @@ public class NexusFerry : BaseEntity
 			if (TryFindWaypointsTowards(target, list2))
 			{
 				Vector3 position2 = ((Component)this).transform.position;
-				Vector3 direction = default(Vector3);
-				float distance = default(float);
-				for (int num14 = list2.Count - 1; num14 >= 0; num14--)
+				Vector3 direction = default;
+				float distance = default;
+				for (int num13 = list2.Count - 1; num13 >= 0; num13--)
 				{
-					Vector3Ex.ToDirectionAndMagnitude(list2[num14] - position2, ref direction, ref distance);
+					Vector3Ex.ToDirectionAndMagnitude(list2[num13] - position2, ref direction, ref distance);
 					if (!SphereCast(direction, distance, out var _, out var _))
 					{
-						Vector3 result = list2[num14];
+						Vector3 result = list2[num13];
 						Pool.FreeUnmanaged<Vector3>(ref list2);
 						return result;
 					}
@@ -642,17 +642,25 @@ public class NexusFerry : BaseEntity
 		bool flag = _state >= State.Queued && _state <= State.CastingOff;
 		Vector3 position = ((Component)this).transform.position;
 		targetPosition.y = position.y;
-		Vector3 val = default(Vector3);
-		float num = default(float);
+		Vector3 val = default;
+		float num = default;
 		Vector3Ex.ToDirectionAndMagnitude(targetPosition - position, ref val, ref num);
 		if (num < 0.1f)
 		{
 			return true;
 		}
-		Vector3 val2 = default(Vector3);
-		float num2 = default(float);
+		Vector3 val2 = default;
+		float num2 = default;
 		Vector3Ex.ToDirectionAndMagnitude(_velocity, ref val2, ref num2);
-		float num3 = ((!flag) ? TravelVelocity : ((_state == State.Stopping) ? StoppingVelocity : ApproachVelocity));
+		float num3;
+		if (flag)
+		{
+			num3 = ((_state == State.Stopping) ? StoppingVelocity : ApproachVelocity);
+		}
+		else
+		{
+			num3 = TravelVelocity;
+		}
 		num2 = Mathx.Lerp(num2, num3, AccelerationSpeed);
 		if (flag)
 		{
@@ -674,7 +682,7 @@ public class NexusFerry : BaseEntity
 			Quaternion rotation2 = targetTransform.rotation;
 			position2.y = position.y;
 			float num5 = Vector3Ex.Distance2D(position2, targetPosition);
-			float num6 = ((Vector3)(ref _velocity)).magnitude * Time.deltaTime;
+			float num6 = _velocity.magnitude * Time.deltaTime;
 			float num7 = Mathf.Min(num6, num);
 			val3 = position + val * num7;
 			val4 = Quaternion.Slerp(targetRotation, rotation2, num / num5);
@@ -686,11 +694,11 @@ public class NexusFerry : BaseEntity
 			return true;
 		}
 		Vector3 val5 = _velocity * Time.deltaTime;
-		Vector3 val6 = default(Vector3);
-		float num8 = default(float);
+		Vector3 val6 = default;
+		float num8 = default;
 		Vector3Ex.ToDirectionAndMagnitude(val5, ref val6, ref num8);
 		val3 = ((!(num8 >= num) || !((double)Vector3.Dot(val6, val) > 0.5)) ? (position + val5) : targetPosition);
-		targetRotation = ((((Vector3)(ref val)).sqrMagnitude > 0.01f) ? Quaternion.LookRotation(val) : Quaternion.identity);
+		targetRotation = ((val.sqrMagnitude > 0.01f) ? Quaternion.LookRotation(val) : Quaternion.identity);
 		val4 = Mathx.Lerp(rotation, targetRotation, TurnSpeed);
 		((Component)this).transform.SetPositionAndRotation(val3, val4);
 		return Vector3.Distance(val3, targetPosition) < TargetDistanceThreshold;
@@ -724,10 +732,10 @@ public class NexusFerry : BaseEntity
 		{
 			RaycastHit current = item;
 			BaseEntity entity = RaycastHitEx.GetEntity(current);
-			if ((!((Object)(object)entity != (Object)null) || (!((Object)(object)entity == (Object)(object)this) && !entity.EqualNetID((BaseNetworkable)this))) && (!((RaycastHit)(ref current)).collider.isTrigger || ((Component)((RaycastHit)(ref current)).collider).CompareTag("FerryAvoid")))
+			if ((!((Object)(object)entity != (Object)null) || (!((Object)(object)entity == (Object)(object)this) && !entity.EqualNetID((BaseNetworkable)this))) && (!current.collider.isTrigger || ((Component)current.collider).CompareTag("FerryAvoid")))
 			{
 				flag = true;
-				travelDistance = Mathf.Max(((RaycastHit)(ref current)).distance - CastHitProtection, 0f);
+				travelDistance = Mathf.Max(current.distance - CastHitProtection, 0f);
 				break;
 			}
 		}
@@ -909,7 +917,7 @@ public class NexusFerry : BaseEntity
 			{
 				throw new ArgumentNullException("schedule");
 			}
-			if (schedule.Count <= 1 || !schedule.Contains<string>(ownerZone, StringComparer.InvariantCultureIgnoreCase))
+			if (schedule.Count <= 1 || !schedule.Contains(ownerZone, StringComparer.InvariantCultureIgnoreCase))
 			{
 				throw new ArgumentException("Ferry schedule is invalid", "schedule");
 			}
@@ -987,7 +995,7 @@ public class NexusFerry : BaseEntity
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			All.Remove(this);
 		}
@@ -1001,7 +1009,7 @@ public class NexusFerry : BaseEntity
 	{
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -1029,15 +1037,15 @@ public class NexusFerry : BaseEntity
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		FerryStatus obj = Pool.Get<FerryStatus>();
-		obj.entityId = net.ID;
-		obj.timestamp = _timestamp;
-		obj.ownerZone = _ownerZone;
-		obj.schedule = List.ShallowClonePooled<string>(_schedule);
-		obj.scheduleIndex = _scheduleIndex;
-		obj.state = (int)_state;
-		obj.isRetiring = _isRetiring;
-		return obj;
+		FerryStatus val = Pool.Get<FerryStatus>();
+		val.entityId = net.ID;
+		val.timestamp = _timestamp;
+		val.ownerZone = _ownerZone;
+		val.schedule = List.ShallowClonePooled<string>(_schedule);
+		val.scheduleIndex = _scheduleIndex;
+		val.state = (int)_state;
+		val.isRetiring = _isRetiring;
+		return val;
 	}
 
 	public void Retire()
@@ -1422,7 +1430,7 @@ public class NexusFerry : BaseEntity
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		Invoke(base.DisableTransferProtectionAction, 0.1f);
+		Invoke(DisableTransferProtectionAction, 0.1f);
 	}
 
 	public override void Save(SaveInfo info)
@@ -1470,7 +1478,7 @@ public class NexusFerry : BaseEntity
 		_state = (State)info.msg.nexusFerry.state;
 		_isRetiring = info.msg.nexusFerry.isRetiring;
 		_nextScheduleIndex = info.msg.nexusFerry.nextScheduleIndex;
-		if (base.isServer)
+		if (isServer)
 		{
 			if (_transferredIds != null)
 			{
@@ -1500,32 +1508,11 @@ public class NexusFerry : BaseEntity
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		TravelVelocity = 20f;
-		ApproachVelocity = 5f;
-		StoppingVelocity = 1f;
-		AccelerationSpeed = 1f;
-		TurnSpeed = 1f;
-		VelocityPreservationOnTurn = 0.1f;
-		TargetDistanceThreshold = 10f;
-		NoRouteRetireCooldown = 120f;
-		SpawnObstructionLayers = LayerMask.op_Implicit(134359040);
-		departureHornLeadTime = 5f;
-		CastSweepDegrees = 16;
-		CastSweepNoise = 0.25f;
-		CastLayers = LayerMask.op_Implicit(134283264);
-		CastInterval = 1f;
-		CastHitProtection = 5f;
-		PathLookahead = 4;
-		PathLookaheadThreshold = 5;
-		_nextScheduleIndex = -1;
-		base._002Ector();
 	}
 
 	static NexusFerry()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		RetiringPhrase = new Phrase("ferry.not_in_service", "Not In Service");
-		All = new ListHashSet<NexusFerry>();
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

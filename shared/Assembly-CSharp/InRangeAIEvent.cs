@@ -8,7 +8,7 @@ public class InRangeAIEvent : BaseAIEvent
 	public InRangeAIEvent()
 		: base(AIEventType.InRange)
 	{
-		base.Rate = ExecuteRate.Fast;
+		Rate = ExecuteRate.Fast;
 	}
 
 	public override void Init(AIEventData data, BaseEntity owner)
@@ -21,23 +21,23 @@ public class InRangeAIEvent : BaseAIEvent
 	public override AIEventData ToProto()
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
-		AIEventData obj = base.ToProto();
-		obj.inRangeData = new InRangeAIEventData();
-		obj.inRangeData.range = Range;
-		return obj;
+		//IL_0011: Expected Obj, but got Unknown
+		AIEventData val = base.ToProto();
+		val.inRangeData = new InRangeAIEventData();
+		val.inRangeData.range = Range;
+		return val;
 	}
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		BaseEntity baseEntity = memory.Entity.Get(base.InputEntityMemorySlot);
-		base.Result = false;
+		BaseEntity baseEntity = memory.Entity.Get(InputEntityMemorySlot);
+		Result = false;
 		if (!((Object)(object)baseEntity == (Object)null))
 		{
-			bool flag = Vector3Ex.Distance2D(((Component)base.Owner).transform.position, ((Component)baseEntity).transform.position) <= Range;
-			base.Result = (base.Inverted ? (!flag) : flag);
+			bool flag = Vector3Ex.Distance2D(((Component)Owner).transform.position, ((Component)baseEntity).transform.position) <= Range;
+			Result = (Inverted ? (!flag) : flag);
 		}
 	}
 }

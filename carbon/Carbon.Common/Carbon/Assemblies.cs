@@ -45,7 +45,7 @@ public class Assemblies
 					}
 				}
 			}
-			return default(KeyValuePair<string, RuntimeAssembly>);
+			return default;
 		}
 
 		public void Update(string key, Assembly assembly, string location, bool isProfiledAssembly = false)
@@ -66,7 +66,7 @@ public class Assemblies
 				IsProfiledAssembly = isProfiledAssembly,
 				Location = location,
 				History = new List<RuntimeAssembly>()
-			}, delegate(string _, RuntimeAssembly existent)
+			}, (string _, RuntimeAssembly existent) =>
 			{
 				if (existent.CurrentAssembly != null)
 				{

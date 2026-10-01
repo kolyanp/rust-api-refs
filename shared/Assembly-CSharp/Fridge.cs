@@ -25,7 +25,7 @@ public class Fridge : ContainerIOEntity, IFoodSpoilModifier
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.inventory.canAcceptItem = CanAcceptItem;
+		inventory.canAcceptItem = CanAcceptItem;
 	}
 
 	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)

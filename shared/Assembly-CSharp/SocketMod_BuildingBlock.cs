@@ -41,7 +41,7 @@ public class SocketMod_BuildingBlock : SocketMod
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		List<BuildingBlock> list = Pool.Get<List<BuildingBlock>>();
-		Vis.Entities(pos, sphereRadius, list, ((LayerMask)(ref layerMask)).value, queryTriggers);
+		Vis.Entities(pos, sphereRadius, list, layerMask.value, queryTriggers);
 		bool result = list.Count > 0;
 		Pool.FreeUnmanaged<BuildingBlock>(ref list);
 		return result;

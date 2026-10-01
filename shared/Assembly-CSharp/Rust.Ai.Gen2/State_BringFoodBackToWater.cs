@@ -18,7 +18,7 @@ public class State_BringFoodBackToWater : State_GoBackToWater
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindFood(out var food))
+		if (!Senses.FindFood(out var food))
 		{
 			return EFSMStateStatus.Failure;
 		}

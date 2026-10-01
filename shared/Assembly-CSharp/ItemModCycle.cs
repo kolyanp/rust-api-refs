@@ -13,7 +13,7 @@ public class ItemModCycle : ItemMod
 	public override void OnItemCreated(Item itemcreated)
 	{
 		float timeTaken = timerStart;
-		itemcreated.onCycle += delegate(Item item, float delta)
+		itemcreated.onCycle += (Item item, float delta) =>
 		{
 			if (!onlyAdvanceTimerWhenPass || CanCycle(item))
 			{

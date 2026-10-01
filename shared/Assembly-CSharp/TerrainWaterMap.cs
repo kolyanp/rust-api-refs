@@ -107,14 +107,14 @@ public class TerrainWaterMap : TerrainMap<short>
 	public void GenerateTextures()
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Expected O, but got Unknown
+		//IL_0027: Expected Obj, but got Unknown
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		WaterTexture = new Texture2D(res, res, (TextureFormat)4, true, true);
 		((Object)WaterTexture).name = "WaterTexture";
 		((Texture)WaterTexture).wrapMode = (TextureWrapMode)1;
 		NativeArray<Color32> heights = WaterTexture.GetPixelData<Color32>(0);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 			for (int i = 0; i < res; i++)
@@ -392,7 +392,7 @@ public class TerrainWaterMap : TerrainMap<short>
 		float num6 = GetHeight01(x, num5) - GetHeight01(num4, num5);
 		float num7 = GetHeight01(num4, z) - GetHeight01(num4, num5);
 		Vector3 val = new Vector3(0f - num6, normY, 0f - num7);
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	public Vector3 GetNormalFast(Vector2 uv)
@@ -433,7 +433,7 @@ public class TerrainWaterMap : TerrainMap<short>
 		float num2 = (GetHeight01(x3, z2) - GetHeight01(x2, z2)) * 0.5f;
 		float num3 = (GetHeight01(x2, z3) - GetHeight01(x2, z2)) * 0.5f;
 		Vector3 val = new Vector3(0f - num2, normY, 0f - num3);
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	public float GetSlope(Vector3 worldPos)

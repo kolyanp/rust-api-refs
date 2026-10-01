@@ -70,9 +70,9 @@ public class SteamInventory : EntityComponent<BasePlayer>
 
 	public bool HasItem(int itemid)
 	{
-		if (!base.baseEntity.DefaultSkinAccess)
+		if (!baseEntity.DefaultSkinAccess)
 		{
-			return base.baseEntity.AllSkinsUnlocked;
+			return baseEntity.AllSkinsUnlocked;
 		}
 		if (Items == null)
 		{
@@ -91,9 +91,9 @@ public class SteamInventory : EntityComponent<BasePlayer>
 
 	public bool HasWorkshopSkin(ItemDefinition itemDefinition)
 	{
-		if (!base.baseEntity.DefaultSkinAccess)
+		if (!baseEntity.DefaultSkinAccess)
 		{
-			return base.baseEntity.AllSkinsUnlocked;
+			return baseEntity.AllSkinsUnlocked;
 		}
 		if (Items == null)
 		{
@@ -121,11 +121,18 @@ public class SteamInventory : EntityComponent<BasePlayer>
 			}
 			workshopSkinVersion = workshopSkinCacheVersion;
 		}
-		if (!workshopSkinShortNames.Contains(itemDefinition.shortname))
+		ItemDefinition itemDefinition3 = itemDefinition;
+		int num = 0;
+		while ((Object)(object)itemDefinition3 != (Object)null && num < 8)
 		{
-			return workshopSkinShortNames.Contains(((Object)itemDefinition).name);
+			if (workshopSkinShortNames.Contains(itemDefinition3.shortname) || workshopSkinShortNames.Contains(((Object)itemDefinition3).name))
+			{
+				return true;
+			}
+			itemDefinition3 = itemDefinition3.inheritSkinsFrom;
+			num++;
 		}
-		return true;
+		return false;
 	}
 
 	private void SetItems(IPlayerItem[] items)
@@ -150,13 +157,13 @@ public class SteamInventory : EntityComponent<BasePlayer>
 		{
 			Debug.LogWarning((object)"UpdateSteamInventory: result is null");
 		}
-		else if ((Object)(object)base.baseEntity == (Object)null)
+		else if ((Object)(object)baseEntity == (Object)null)
 		{
 			Debug.LogWarning((object)"UpdateSteamInventory: player is null");
 		}
-		else if (!val.BelongsTo((ulong)base.baseEntity.userID))
+		else if (!val.BelongsTo((ulong)baseEntity.userID))
 		{
-			Debug.LogWarning((object)$"UpdateSteamPlayer: inventory belongs to someone else (userID={base.baseEntity.userID.Get()})");
+			Debug.LogWarning((object)$"UpdateSteamPlayer: inventory belongs to someone else (userID={baseEntity.userID.Get()})");
 		}
 		else if (Object.op_Implicit((Object)(object)((Component)this).gameObject))
 		{

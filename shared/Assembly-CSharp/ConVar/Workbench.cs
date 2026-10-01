@@ -7,8 +7,8 @@ public class Workbench : ConsoleSystem
 	[Help("Skip server-side upgrade clearance zone checks")]
 	public static bool skipclearancechecks = false;
 
-	[ServerVar]
 	[Help("Whether the range upgrade scales the comfort trigger radius")]
+	[ServerVar]
 	public static bool scalecomfortradius = true;
 
 	[ServerVar]

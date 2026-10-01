@@ -30,6 +30,6 @@ public struct ServersideMountedWeaponInterpolatorTarget : ISnapshot<ServersideMo
 
 	public ServersideMountedWeaponInterpolatorTarget GetNew()
 	{
-		return default(ServersideMountedWeaponInterpolatorTarget);
+		return default;
 	}
 }

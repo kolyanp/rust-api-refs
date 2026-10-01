@@ -8,7 +8,7 @@ using UnityEngine.Assertions;
 
 public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 {
-	public static readonly Phrase EatTitle;
+	public static readonly Phrase EatTitle = new Phrase("eat", "Eat");
 
 	public Phrase itemName;
 
@@ -187,8 +187,8 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 		Kill();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Pickup(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())
@@ -197,8 +197,8 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void PickupEat(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())
@@ -232,7 +232,6 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 	static CollectibleEntity()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		EatTitle = new Phrase("eat", "Eat");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

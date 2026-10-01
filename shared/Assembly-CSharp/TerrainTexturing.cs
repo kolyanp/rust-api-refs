@@ -65,6 +65,7 @@ public class TerrainTexturing : TerrainExtension
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -81,28 +82,27 @@ public class TerrainTexturing : TerrainExtension
 			//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b2: Expected O, but got Unknown
+			//IL_00b2: Expected Obj, but got Unknown
 			Texture2D val = new Texture2D(ShoreMapSize, ShoreMapSize, (TextureFormat)17, false, true, true)
 			{
 				name = name,
 				filterMode = (FilterMode)1,
 				wrapMode = (TextureWrapMode)1
 			};
-			NativeArray<half4> val2 = default(NativeArray<half4>);
-			val2._002Ector(Len, (Allocator)3, (NativeArrayOptions)1);
-			TerrainTexturingJobs.PopulateTextureDataJob jobData = new TerrainTexturingJobs.PopulateTextureDataJob
+			NativeArray<half4> val2 = new NativeArray<half4>(Len, (Allocator)3, (NativeArrayOptions)1);
+			PopulateTextureDataJob jobData = new PopulateTextureDataJob
 			{
 				colors = val2,
 				vectors = ShoreVectors.AsReadOnly(),
 				distances = ShoreDistances.AsReadOnly()
 			};
 			int length = val2.Length;
-			JobHandle val3 = default(JobHandle);
-			val3 = ParallelJobEx.ScheduleParallel<TerrainTexturingJobs.PopulateTextureDataJob>(ref jobData, length, val3);
-			((JobHandle)(ref val3)).Complete();
+			JobHandle val3 = default;
+			val3 = ParallelJobEx.ScheduleParallel<PopulateTextureDataJob>(ref jobData, length, val3);
+			val3.Complete();
 			val.SetPixelData<half4>(val2, 0, 0);
 			val.Apply(false, true);
-			val3 = default(JobHandle);
+			val3 = default;
 			val2.Dispose(val3);
 			return val;
 		}
@@ -112,7 +112,7 @@ public class TerrainTexturing : TerrainExtension
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-			Vector2 uv = default(Vector2);
+			Vector2 uv = default;
 			uv.x = (pos.x - Position.x) * OneOverSize.x;
 			uv.y = (pos.z - Position.z) * OneOverSize.z;
 			return GetCoarseDistanceToShore(uv);
@@ -123,7 +123,7 @@ public class TerrainTexturing : TerrainExtension
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-			Vector2 uv = default(Vector2);
+			Vector2 uv = default;
 			uv.x = (pos.x - Position.x) * OneOverSize.x;
 			uv.y = (pos.z - Position.z) * OneOverSize.z;
 			return GetCoarseVectorToShore(uv);
@@ -195,11 +195,11 @@ public class TerrainTexturing : TerrainExtension
 			Vector3 val2 = Vector4.op_Implicit(ShoreVectors[num11]);
 			Vector3 val3 = Vector4.op_Implicit(ShoreVectors[num12]);
 			Vector3 val4 = Vector4.op_Implicit(ShoreVectors[num13]);
-			Vector3 val5 = default(Vector3);
+			Vector3 val5 = default;
 			val5.x = (val2.x - val.x) * num6 + val.x;
 			val5.y = (val2.y - val.y) * num6 + val.y;
 			val5.z = (val2.z - val.z) * num6 + val.z;
-			Vector3 val6 = default(Vector3);
+			Vector3 val6 = default;
 			val6.x = (val4.x - val3.x) * num6 + val3.x;
 			val6.y = (val4.y - val3.y) * num6 + val3.y;
 			val6.z = (val4.z - val3.z) * num6 + val3.z;
@@ -211,7 +211,7 @@ public class TerrainTexturing : TerrainExtension
 		public (Vector3 shoreDir, float shoreDist) GetCoarseVectorToShore(float normX, float normY)
 		{
 			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-			return this.GetCoarseVectorToShore(new Vector2(normX, normY));
+			return GetCoarseVectorToShore(new Vector2(normX, normY));
 		}
 
 		public Vector4 GetRawShoreVector(Vector3 pos)
@@ -220,7 +220,7 @@ public class TerrainTexturing : TerrainExtension
 			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-			Vector2 uv = default(Vector2);
+			Vector2 uv = default;
 			uv.x = (pos.x - Position.x) * OneOverSize.x;
 			uv.y = (pos.z - Position.z) * OneOverSize.z;
 			return GetRawShoreVector(uv);
@@ -310,7 +310,7 @@ public class TerrainTexturing : TerrainExtension
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-			return (((Bounds)(ref deepSeaBounds)).Contains(pos) ? deepSeaData : mainlandData).GetCoarseDistanceToShore(pos);
+			return (deepSeaBounds.Contains(pos) ? deepSeaData : mainlandData).GetCoarseDistanceToShore(pos);
 		}
 	}
 
@@ -431,7 +431,7 @@ public class TerrainTexturing : TerrainExtension
 		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
 		int num = Mathf.ClosestPowerOfTwo(terrainData.heightmapResolution) >> 1;
 		terrainSize = Mathf.Max(terrainData.size.x, terrainData.size.z);
-		deepSeaSize = Vector3Ex.Max(Vector3Ex.XZ2D(((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size));
+		deepSeaSize = Vector3Ex.Max(Vector3Ex.XZ2D(DeepSeaManager.DeepSeaBounds.size));
 		MainlandShoreData = new ShoreData
 		{
 			ShoreMapSize = num,
@@ -452,9 +452,9 @@ public class TerrainTexturing : TerrainExtension
 			ShoreDistanceScale = deepSeaSize / (float)num2,
 			ShoreDistances = new NativeArray<float>(num2 * num2, (Allocator)4, (NativeArrayOptions)0),
 			ShoreVectors = new NativeArray<Vector4>(num2 * num2, (Allocator)4, (NativeArrayOptions)0),
-			Position = ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).min,
-			Size = ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size,
-			OneOverSize = Vector3Ex.Inverse(((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size),
+			Position = DeepSeaManager.DeepSeaBounds.min,
+			Size = DeepSeaManager.DeepSeaBounds.size,
+			OneOverSize = Vector3Ex.Inverse(DeepSeaManager.DeepSeaBounds.size),
 			DefaultDistance = 10000f,
 			DefaultVector = new Vector4(1f, 1f, 1f, 1f)
 		};
@@ -530,12 +530,12 @@ public class TerrainTexturing : TerrainExtension
 			DeepSeaShoreData.ShoreVectors.SafeDispose<Vector4>();
 			DeepSeaShoreData.ShoreVectors = vectors;
 			Bounds deepSeaBounds = DeepSeaManager.DeepSeaBounds;
-			Vector3 min = ((Bounds)(ref deepSeaBounds)).min;
-			Vector3 val = Vector3Ex.Inverse(((Bounds)(ref deepSeaBounds)).size);
+			Vector3 min = deepSeaBounds.min;
+			Vector3 val = Vector3Ex.Inverse(deepSeaBounds.size);
 			NativeArray<float> deepSeaShoreDistances = DeepSeaShoreData.ShoreDistances;
 			NativeArray<Vector4> deepSeaShoreVectors = DeepSeaShoreData.ShoreVectors;
-			Vector3 val2 = default(Vector3);
-			Quaternion val3 = default(Quaternion);
+			Vector3 val2 = default;
+			Quaternion val3 = default;
 			foreach (var item3 in deepSeaPostGenApplication)
 			{
 				BakedShoreVectors item = item3.data;
@@ -546,7 +546,7 @@ public class TerrainTexturing : TerrainExtension
 				}
 				ShoreVectorData shoreVectorData = item.ShoreVectorData;
 				item2.GetPositionAndRotation(ref val2, ref val3);
-				float y = ((Quaternion)(ref val3)).eulerAngles.y;
+				float y = val3.eulerAngles.y;
 				float normX = (val2.x - min.x) * val.x;
 				float normZ = (val2.z - min.z) * val.z;
 				float worldSize = shoreVectorData.WorldSize;
@@ -554,12 +554,13 @@ public class TerrainTexturing : TerrainExtension
 				float[] srcDistances = shoreVectorData.Distances;
 				Vector4[] srcVectors = shoreVectorData.Vectors;
 				Quaternion quat = Quaternion.Euler(0f, y, 0f);
-				BlitBakedData(worldSize, shoreVectorData.ShoreVectorDimension, deepSeaBounds, shoreMapSize, normX, normZ, y, delegate(int si, int di)
+				BlitBakedData(worldSize, shoreVectorData.ShoreVectorDimension, deepSeaBounds, shoreMapSize, normX, normZ, y, (int si, int di) =>
 				{
 					//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 					//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0062: Unknown result type (might be due to invalid IL or missing references)
@@ -568,6 +569,7 @@ public class TerrainTexturing : TerrainExtension
 					//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 					//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 					float num = srcDistances[si];
 					float num2 = deepSeaShoreDistances[di];
@@ -575,10 +577,9 @@ public class TerrainTexturing : TerrainExtension
 					{
 						deepSeaShoreDistances[di] = srcDistances[si];
 						Vector4 val4 = srcVectors[si];
-						Vector3 val5 = default(Vector3);
-						((Vector3)(ref val5))._002Ector(val4.x, 0f, val4.y);
+						Vector3 val5 = new Vector3(val4.x, 0f, val4.y);
 						val5 = quat * val5;
-						((Vector4)(ref val4))._002Ector(val5.x, val5.z, val4.z, val4.w);
+						val4 = new Vector4(val5.x, val5.z, val4.z, val4.w);
 						deepSeaShoreVectors[di] = val4;
 					}
 				});
@@ -613,6 +614,8 @@ public class TerrainTexturing : TerrainExtension
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
@@ -647,67 +650,82 @@ public class TerrainTexturing : TerrainExtension
 		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0208: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0213: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0232: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0237: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0356: Unknown result type (might be due to invalid IL or missing references)
-		//IL_035b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0221: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0253: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0257: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0264: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0274: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0276: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0400: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0411: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0416: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0431: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0433: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0438: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0448: Unknown result type (might be due to invalid IL or missing references)
+		//IL_044d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_044f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0451: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0456: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0464: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0469: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0471: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0476: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0487: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0489: Unknown result type (might be due to invalid IL or missing references)
+		//IL_048e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0492: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0494: Unknown result type (might be due to invalid IL or missing references)
+		//IL_049c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_049e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_035d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0362: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0364: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0376: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0378: Unknown result type (might be due to invalid IL or missing references)
-		//IL_037d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0386: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0392: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0373: Unknown result type (might be due to invalid IL or missing references)
+		//IL_038e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0394: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0396: Unknown result type (might be due to invalid IL or missing references)
-		//IL_039b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0313: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0324: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0326: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a8: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("GenerateShoreVector"))
 		{
 			int size;
@@ -731,13 +749,12 @@ public class TerrainTexturing : TerrainExtension
 			distances = new NativeArray<float>(size * size, (Allocator)4, (NativeArrayOptions)1);
 			vectors = new NativeArray<Vector4>(size * size, (Allocator)4, (NativeArrayOptions)1);
 			JobHandle val3;
+			JobHandle val4;
 			using (TimeWarning.New("WaterDepth"))
 			{
-				NativeArray<int> indices = default(NativeArray<int>);
-				indices._002Ector(size * size, (Allocator)3, (NativeArrayOptions)1);
-				NativeArray<float> heights = default(NativeArray<float>);
-				heights._002Ector(size * size, (Allocator)3, (NativeArrayOptions)1);
-				TerrainTexturingJobs.GenSamplePoints genSamplePoints = new TerrainTexturingJobs.GenSamplePoints
+				NativeArray<int> indices = new NativeArray<int>(size * size, (Allocator)3, (NativeArrayOptions)1);
+				NativeArray<float> heights = new NativeArray<float>(size * size, (Allocator)3, (NativeArrayOptions)1);
+				GenSamplePoints genSamplePoints = new GenSamplePoints
 				{
 					indices = indices,
 					positions = positions,
@@ -745,32 +762,68 @@ public class TerrainTexturing : TerrainExtension
 					terrainPosition = position,
 					upscaleCoords = shoreDistanceScale
 				};
-				IJobExtensions.RunByRef<TerrainTexturingJobs.GenSamplePoints>(ref genSamplePoints);
-				JobHandle val2 = default(JobHandle);
-				val2 = ((!Object.op_Implicit((Object)(object)TerrainMeta.HeightMap) || !TerrainMeta.HeightMap.isInitialized) ? IJobExtensions.Schedule<FillJob<float>>(new FillJob<float>
+				IJobExtensions.RunByRef<GenSamplePoints>(ref genSamplePoints);
+				JobHandle val2 = default;
+				if (Object.op_Implicit((Object)(object)TerrainMeta.HeightMap) && TerrainMeta.HeightMap.isInitialized)
 				{
-					Value = 0f,
-					Values = val
-				}, val2) : TerrainMeta.HeightMap.GetHeights(positions.AsReadOnly(), val));
+					TerrainHeightMap heightMap = TerrainMeta.HeightMap;
+					ReadOnly<Vector3> worldPos = positions.AsReadOnly();
+					NativeArray<float> results = val;
+					val3 = default;
+					val2 = heightMap.GetHeights(worldPos, results, val3);
+				}
+				else
+				{
+					val2 = IJobExtensions.Schedule<FillJob<float>>(new FillJob<float>
+					{
+						Value = 0f,
+						Values = val
+					}, val2);
+				}
 				WaterLevel.GetWaterLevels(positions.AsReadOnly(), indices.AsReadOnly(), waves: false, heights);
-				TerrainTexturingJobs.GenShoreVecBitMapJob jobData = new TerrainTexturingJobs.GenShoreVecBitMapJob
+				GenShoreVecBitMapJob jobData = new GenShoreVecBitMapJob
 				{
 					bitmap = bitmap,
 					terrainHeights = val.AsReadOnly(),
 					waterHeights = heights.AsReadOnly()
 				};
-				val3 = ParallelJobEx.ScheduleParallel<TerrainTexturingJobs.GenShoreVecBitMapJob>(ref jobData, bitmap.Length, val2);
-				indices.Dispose(val3);
-				heights.Dispose(val3);
+				val4 = ParallelJobEx.ScheduleParallel<GenShoreVecBitMapJob>(ref jobData, bitmap.Length, val2);
+				indices.Dispose(val4);
+				heights.Dispose(val4);
 			}
 			using (TimeWarning.New("DistanceField.XXX"))
 			{
-				JobHandle val4 = val3;
-				val4 = DistanceField.GenerateNative(in size, (byte)127, bitmap.AsReadOnly(), in distances, val4);
-				val4 = DistanceField.ApplyGaussianBlurNative(size, distances, 1, val4);
-				val4 = DistanceField.GenerateVectorsNative(in size, distances.AsReadOnly(), vectors, val4);
-				bitmap.Dispose(val4);
-				((JobHandle)(ref val4)).Complete();
+				NativeReference<bool> hasLand = new NativeReference<bool>(AllocatorHandle.op_Implicit((Allocator)3), (NativeArrayOptions)1);
+				val3 = IJobExtensions.Schedule<HasLandJob>(new HasLandJob
+				{
+					bitmap = bitmap.AsReadOnly(),
+					hasLand = hasLand
+				}, val4);
+				val3.Complete();
+				if (hasLand.Value)
+				{
+					JobHandle val5 = DistanceField.GenerateNative(in size, (byte)127, bitmap.AsReadOnly(), in distances, val4);
+					val5 = DistanceField.ApplyGaussianBlurNative(size, distances, 1, val5);
+					val5 = DistanceField.GenerateVectorsNative(in size, distances.AsReadOnly(), vectors, val5);
+					bitmap.Dispose(val5);
+					val5.Complete();
+				}
+				else
+				{
+					ShoreData shoreData = (genDeepSea ? DeepSeaShoreData : MainlandShoreData);
+					IJobExtensions.Run<FillJob<float>>(new FillJob<float>
+					{
+						Value = shoreData.DefaultDistance,
+						Values = distances
+					});
+					IJobExtensions.Run<FillJob<Vector4>>(new FillJob<Vector4>
+					{
+						Value = shoreData.DefaultVector,
+						Values = vectors
+					});
+					bitmap.Dispose();
+				}
+				hasLand.Dispose();
 			}
 			using (TimeWarning.New("Topology Mask"))
 			{
@@ -778,48 +831,48 @@ public class TerrainTexturing : TerrainExtension
 				{
 					for (int i = 0; i < vectors.Length; i++)
 					{
-						Vector4 val5 = vectors[i];
-						val5.w = -1f;
-						vectors[i] = val5;
+						Vector4 val6 = vectors[i];
+						val6.w = -1f;
+						vectors[i] = val6;
 					}
-					positions.Dispose(default(JobHandle));
-					val.Dispose(default(JobHandle));
+					val3 = default;
+					positions.Dispose(val3);
+					val3 = default;
+					val.Dispose(val3);
 					return;
 				}
-				JobHandle val6 = default(JobHandle);
+				JobHandle val7 = default;
 				if (genDeepSea)
 				{
-					TerrainTexturingJobs.FillAsOceanTopologyJob jobData2 = new TerrainTexturingJobs.FillAsOceanTopologyJob
+					FillAsOceanTopologyJob jobData2 = new FillAsOceanTopologyJob
 					{
 						vectors = vectors
 					};
-					val6 = ParallelJobEx.ScheduleParallel<TerrainTexturingJobs.FillAsOceanTopologyJob>(ref jobData2, vectors.Length, val6);
+					val7 = ParallelJobEx.ScheduleParallel<FillAsOceanTopologyJob>(ref jobData2, vectors.Length, val7);
 				}
 				else
 				{
-					NativeArray<float> radii = default(NativeArray<float>);
-					radii._002Ector(size * size, (Allocator)3, (NativeArrayOptions)1);
-					NativeArray<int> results = default(NativeArray<int>);
-					results._002Ector(size * size, (Allocator)3, (NativeArrayOptions)1);
-					TerrainTexturingJobs.GenTopologyRadiiJob jobData3 = new TerrainTexturingJobs.GenTopologyRadiiJob
+					NativeArray<float> radii = new NativeArray<float>(size * size, (Allocator)3, (NativeArrayOptions)1);
+					NativeArray<int> results2 = new NativeArray<int>(size * size, (Allocator)3, (NativeArrayOptions)1);
+					GenTopologyRadiiJob jobData3 = new GenTopologyRadiiJob
 					{
 						heights = val.AsReadOnly(),
 						radii = radii
 					};
-					val6 = ParallelJobEx.ScheduleParallel<TerrainTexturingJobs.GenTopologyRadiiJob>(ref jobData3, radii.Length, val6);
-					val6 = TerrainMeta.TopologyMap.GetTopologiesIndirect(positions.AsReadOnly(), radii.AsReadOnly(), results, val6);
-					TerrainTexturingJobs.ProcessTopologyJob jobData4 = new TerrainTexturingJobs.ProcessTopologyJob
+					val7 = ParallelJobEx.ScheduleParallel<GenTopologyRadiiJob>(ref jobData3, radii.Length, val7);
+					val7 = TerrainMeta.TopologyMap.GetTopologiesIndirect(positions.AsReadOnly(), radii.AsReadOnly(), results2, val7);
+					ProcessTopologyJob jobData4 = new ProcessTopologyJob
 					{
-						topologies = results.AsReadOnly(),
+						topologies = results2.AsReadOnly(),
 						vectors = vectors
 					};
-					val6 = ParallelJobEx.ScheduleParallel<TerrainTexturingJobs.ProcessTopologyJob>(ref jobData4, vectors.Length, val6);
-					radii.Dispose(val6);
-					results.Dispose(val6);
+					val7 = ParallelJobEx.ScheduleParallel<ProcessTopologyJob>(ref jobData4, vectors.Length, val7);
+					radii.Dispose(val7);
+					results2.Dispose(val7);
 				}
-				positions.Dispose(val6);
-				val.Dispose(val6);
-				((JobHandle)(ref val6)).Complete();
+				positions.Dispose(val7);
+				val.Dispose(val7);
+				val7.Complete();
 			}
 		}
 	}
@@ -900,17 +953,17 @@ public class TerrainTexturing : TerrainExtension
 				return;
 			}
 			ShoreVectorData shoreVectorData = bakedShoreVectors.ShoreVectorData;
-			Vector3 val = default(Vector3);
-			Quaternion val2 = default(Quaternion);
+			Vector3 val = default;
+			Quaternion val2 = default;
 			t.GetPositionAndRotation(ref val, ref val2);
 			if (bakedShoreVectors.OnlyBakeShoreVectors)
 			{
 				deepSeaPostGenApplication.Add((bakedShoreVectors, t));
 			}
-			float y = ((Quaternion)(ref val2)).eulerAngles.y;
+			float y = val2.eulerAngles.y;
 			Bounds deepSeaBounds = DeepSeaManager.DeepSeaBounds;
-			Vector3 min = ((Bounds)(ref deepSeaBounds)).min;
-			Vector3 val3 = Vector3Ex.Inverse(((Bounds)(ref deepSeaBounds)).size);
+			Vector3 min = deepSeaBounds.min;
+			Vector3 val3 = Vector3Ex.Inverse(deepSeaBounds.size);
 			float normX = (val.x - min.x) * val3.x;
 			float normZ = (val.z - min.z) * val3.z;
 			float worldSize = shoreVectorData.WorldSize;
@@ -920,7 +973,7 @@ public class TerrainTexturing : TerrainExtension
 			{
 				float srcPositionY = shoreVectorData.HeightInfo.x;
 				float srcSizeY = shoreVectorData.HeightInfo.y;
-				BlitBakedData(worldSize, shoreVectorData.HeightDimension, deepSeaBounds, TerrainMeta.HeightMap.res, normX, normZ, y, delegate(int si, int di)
+				BlitBakedData(worldSize, shoreVectorData.HeightDimension, deepSeaBounds, TerrainMeta.HeightMap.res, normX, normZ, y, (int si, int di) =>
 				{
 					float num = BitUtility.Short2Float((int)srcHeightData[si]);
 					short num2 = BitUtility.Float2Short(TerrainMeta.NormalizeY(srcPositionY + num * srcSizeY));
@@ -952,7 +1005,7 @@ public class TerrainTexturing : TerrainExtension
 		//IL_0200: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BlitBakedData"))
 		{
-			float scaleMod = worldSize / (float)dimension / (Vector3Ex.Max(Vector3Ex.XZ2D(((Bounds)(ref deepSeaBounds)).size)) / (float)dstMapSize);
+			float scaleMod = worldSize / (float)dimension / (Vector3Ex.Max(Vector3Ex.XZ2D(deepSeaBounds.size)) / (float)dstMapSize);
 			Vector2 destCenterPx = new Vector2(normX * (float)dstMapSize, normZ * (float)dstMapSize);
 			Vector2 val = new Vector2((float)dimension * scaleMod, (float)dimension * scaleMod);
 			float num = yaw * (MathF.PI / 180f);
@@ -976,7 +1029,7 @@ public class TerrainTexturing : TerrainExtension
 			num6 = Mathf.Clamp(num6, 0, dstMapSize - 1);
 			num7 = Mathf.Clamp(num7, 0, dstMapSize - 1);
 			Vector2 srcPivotPx = new Vector2((float)dimension * 0.5f, (float)dimension * 0.5f);
-			Parallel.For(num6, num7 + 1, delegate(int z)
+			Parallel.For(num6, num7 + 1, (int z) =>
 			{
 				for (int i = left; i <= right; i++)
 				{

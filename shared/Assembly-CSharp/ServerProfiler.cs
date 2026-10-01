@@ -284,7 +284,7 @@ public static class ServerProfiler
 			{
 				ExportRecording(handle, name);
 			}
-			handle = default(RecorderHandle);
+			handle = default;
 		}
 
 		public void Pause()
@@ -317,7 +317,7 @@ public static class ServerProfiler
 			{
 				ReleaseState(handle);
 			}
-			handle = default(RecorderHandle);
+			handle = default;
 		}
 
 		public void Pause()
@@ -340,23 +340,23 @@ public static class ServerProfiler
 
 	public const byte MaxFrames = 10;
 
-	private static bool canBeActivated;
+	private static bool canBeActivated = false;
 
 	private static Action<IList<Profile>, MemoryState> onDoneCallback;
 
-	private static bool isContinuous;
+	private static bool isContinuous = false;
 
 	private static int mainThreadId;
 
-	public static bool ImmediateModeEnabled;
+	public static bool ImmediateModeEnabled = false;
 
-	public static bool ExportAsync;
+	public static bool ExportAsync = true;
 
-	public static int ExportIntervalS;
+	public static int ExportIntervalS = 1800;
 
-	private static bool canExportThisFrame;
+	private static bool canExportThisFrame = true;
 
-	private static RealTimeUntil nextExportUnlock;
+	private static RealTimeUntil nextExportUnlock = RealTimeUntil.op_Implicit(0f);
 
 	private static bool alreadyRecording;
 
@@ -630,17 +630,17 @@ public static class ServerProfiler
 	private unsafe static RecorderHandle CreateRecorder()
 	{
 		ValidateIsOnMainThread();
-		byte b = default(byte);
+		byte b = default;
 		if (Native.AllocateRecorder(&b))
 		{
 			return new RecorderHandle((byte)(b + 1));
 		}
-		return default(RecorderHandle);
+		return default;
 	}
 
 	public static void StartRecording(out RecorderHandle handle, bool shouldRecord = true)
 	{
-		handle = default(RecorderHandle);
+		handle = default;
 		if (ImmediateModeEnabled && shouldRecord && !alreadyRecording && canExportThisFrame)
 		{
 			handle = CreateRecorder();
@@ -684,16 +684,16 @@ public static class ServerProfiler
 	{
 		if (!handle.IsValid)
 		{
-			return default(RecorderState);
+			return default;
 		}
-		long timestamp = default(long);
+		long timestamp = default;
 		if (!Native.GetRecordingTimestamp(handle.Id, &timestamp))
 		{
-			return default(RecorderState);
+			return default;
 		}
-		Native.ThreadData* ptr = default(Native.ThreadData*);
-		byte b = default(byte);
-		Native.MemoryData memoryData = default(Native.MemoryData);
+		Native.ThreadData* ptr = default;
+		byte b = default;
+		Native.MemoryData memoryData = default;
 		Native.GetRecordedData(handle.Id, &ptr, &b, &memoryData);
 		List<Profile> list = new List<Profile>(b);
 		for (int i = 0; i < b; i++)
@@ -772,12 +772,12 @@ public static class ServerProfiler
 				handle = handle,
 				name = name
 			};
-			Task.Factory.StartNew(delegate(object stateBox)
+			Task.Factory.StartNew((object stateBox) =>
 			{
-				RecordTaskState obj = (RecordTaskState)stateBox;
-				RecorderState recorderState2 = GetRecorderState(obj.handle);
-				ProfileExporter.JSON.Export(obj.name, recorderState2.ThreadProfiles, recorderState2.MemoryState, skipToStackStart: false);
-				ReleaseState(obj.handle);
+				RecordTaskState recordTaskState2 = (RecordTaskState)stateBox;
+				RecorderState recorderState2 = GetRecorderState(recordTaskState2.handle);
+				ProfileExporter.JSON.Export(recordTaskState2.name, recorderState2.ThreadProfiles, recorderState2.MemoryState, skipToStackStart: false);
+				ReleaseState(recordTaskState2.handle);
 			}, recordTaskState);
 		}
 		else
@@ -796,12 +796,5 @@ public static class ServerProfiler
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		canBeActivated = false;
-		isContinuous = false;
-		ImmediateModeEnabled = false;
-		ExportAsync = true;
-		ExportIntervalS = 1800;
-		canExportThisFrame = true;
-		nextExportUnlock = RealTimeUntil.op_Implicit(0f);
 	}
 }

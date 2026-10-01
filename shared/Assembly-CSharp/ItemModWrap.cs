@@ -4,15 +4,15 @@ public class ItemModWrap : ItemMod
 
 	public ItemDefinition wrappedDefinition;
 
-	public static Phrase wrap_gift;
+	public static Phrase wrap_gift = new Phrase("wrap_gift", "Wrap Gift");
 
-	public static Phrase wrap_gift_desc;
+	public static Phrase wrap_gift_desc = new Phrase("wrap_gift_desc", "Wrap this item and turn it in to an openable gift");
 
 	public override void ServerCommand(Item item, string command, BasePlayer player)
 	{
-		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		if (!(command == "wrap") || item.amount <= 0)
 		{
 			return;
@@ -38,10 +38,8 @@ public class ItemModWrap : ItemMod
 	static ItemModWrap()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		wrap_gift = new Phrase("wrap_gift", "Wrap Gift");
-		wrap_gift_desc = new Phrase("wrap_gift_desc", "Wrap this item and turn it in to an openable gift");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

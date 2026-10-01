@@ -7,65 +7,65 @@ namespace FIMSpace.GroundFitter;
 
 public abstract class FGroundFitter_Base : MonoBehaviour
 {
-	[Header("> Main Variables <", order = 0)]
 	[Space(4f, order = 1)]
 	[Tooltip("How quick rotation should be corrected to target")]
 	[Range(1f, 30f)]
-	public float FittingSpeed;
+	[Header("> Main Variables <", order = 0)]
+	public float FittingSpeed = 6f;
 
 	[Tooltip("Smoothing whole rotation motion")]
 	[Range(0f, 1f)]
 	public float TotalSmoother;
 
-	[Space(3f)]
 	[HideInInspector]
 	[Tooltip("Transform which will be rotated by script, usually it can be the same transform as component's")]
+	[Space(3f)]
 	public Transform TransformToRotate;
 
 	[Space(3f)]
 	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	public bool GlueToGround;
 
+	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
 	[Header("> Tweaking Settings <", order = 0)]
 	[Space(4f, order = 1)]
 	[Range(0f, 1f)]
-	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
 	public float MildForwardValue;
 
-	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
 	[Range(0f, 90f)]
-	public float MaxForwardRotation;
+	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
+	public float MaxForwardRotation = 90f;
 
 	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
-	[Space(5f)]
 	[Range(0f, 1f)]
+	[Space(5f)]
 	public float MildHorizontalValue;
 
-	[Tooltip("Max roll rotation. If rotation should work on also on x axis - good for spiders, can look wrong on quadropeds etc.")]
 	[Range(0f, 90f)]
-	public float MaxHorizontalRotation;
+	[Tooltip("Max roll rotation. If rotation should work on also on x axis - good for spiders, can look wrong on quadropeds etc.")]
+	public float MaxHorizontalRotation = 90f;
 
-	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
-	[Space(4f, order = 1)]
 	[Header("> Advanced settings <", order = 0)]
-	public float RaycastHeightOffset;
+	[Space(4f, order = 1)]
+	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
+	public float RaycastHeightOffset = 0.5f;
 
 	[Tooltip("How far ray should cast to check if ground is under feet")]
-	public float RaycastCheckRange;
+	public float RaycastCheckRange = 5f;
 
 	[Tooltip("If value is not equal 0 there will be casted second ray in front or back of gameObject")]
 	public float LookAheadRaycast;
 
 	[Tooltip("Blending with predicted forward raycast rotation")]
-	public float AheadBlend;
+	public float AheadBlend = 0.5f;
 
 	[Tooltip("Offset over ground")]
 	[HideInInspector]
 	public float UpOffset;
 
-	[Tooltip("What collision layers should be included by algorithm")]
 	[Space(8f)]
-	public LayerMask GroundLayerMask;
+	[Tooltip("What collision layers should be included by algorithm")]
+	public LayerMask GroundLayerMask = LayerMask.op_Implicit(1);
 
 	[Tooltip("When casting down vector should adjust with transform's rotation")]
 	public bool RelativeLookUp;
@@ -73,49 +73,37 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Range(0f, 1f)]
 	public float RelativeLookUpBias;
 
-	internal Vector3 WorldUp;
+	internal Vector3 WorldUp = Vector3.up;
 
 	[Space(8f)]
 	[Tooltip("Casting more raycsts under object to detect ground more precisely, then we use average from all casts to set new rotation")]
 	public bool ZoneCast;
 
-	public Vector2 ZoneCastDimensions;
+	public Vector2 ZoneCastDimensions = new Vector2(0.3f, 0.5f);
 
-	public Vector3 ZoneCastOffset;
+	public Vector3 ZoneCastOffset = Vector3.zero;
 
 	[Range(0f, 10f)]
 	public float ZoneCastBias;
 
 	[Range(0f, 1f)]
 	[Tooltip("More precision = more raycasts = lower performance")]
-	public float ZoneCastPrecision;
-
-	[CompilerGenerated]
-	private RaycastHit _003CLastRaycast_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CLastRaycastOrigin_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private RaycastHit _003CLastTransformRaycast_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Quaternion _003CLastRotation_003Ek__BackingField;
+	public float ZoneCastPrecision = 0.25f;
 
 	[NonSerialized]
 	public float UpAxisRotation;
 
-	protected Quaternion helperRotation;
+	protected Quaternion helperRotation = Quaternion.identity;
 
 	protected Collider selfCollider;
 
-	protected Vector3 castOffset;
+	protected Vector3 castOffset = Vector3.zero;
 
 	protected float deltaTime;
 
-	internal bool ApplyRotation;
+	internal bool ApplyRotation = true;
 
-	internal Quaternion targetRotationToApply;
+	internal Quaternion targetRotationToApply = Quaternion.identity;
 
 	public RaycastHit LastRaycast
 	{
@@ -123,14 +111,14 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLastRaycast_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLastRaycast_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -140,14 +128,14 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLastRaycastOrigin_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLastRaycastOrigin_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -157,14 +145,14 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLastTransformRaycast_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLastTransformRaycast_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -174,14 +162,14 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLastRotation_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLastRotation_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -249,21 +237,21 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		{
 			selfCollider.enabled = false;
 		}
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (LookAheadRaycast != 0f)
 		{
 			Physics.Raycast(TransformToRotate.position + GetUpVector(RaycastHeightOffset) + TransformToRotate.forward * LookAheadRaycast, -GetUpVector(), ref val, RaycastCheckRange, LayerMask.op_Implicit(GroundLayerMask), (QueryTriggerInteraction)1);
 		}
 		RefreshLastRaycast();
 		RaycastHit lastRaycast = LastRaycast;
-		if (Object.op_Implicit((Object)(object)((RaycastHit)(ref lastRaycast)).transform))
+		if (Object.op_Implicit((Object)(object)lastRaycast.transform))
 		{
 			Vector3 up = Vector3.up;
 			lastRaycast = LastRaycast;
-			Quaternion val2 = Quaternion.FromToRotation(up, ((RaycastHit)(ref lastRaycast)).normal);
-			if (Object.op_Implicit((Object)(object)((RaycastHit)(ref val)).transform))
+			Quaternion val2 = Quaternion.FromToRotation(up, lastRaycast.normal);
+			if (Object.op_Implicit((Object)(object)val.transform))
 			{
-				Quaternion val3 = Quaternion.FromToRotation(Vector3.up, ((RaycastHit)(ref val)).normal);
+				Quaternion val3 = Quaternion.FromToRotation(Vector3.up, val.normal);
 				val2 = Quaternion.Lerp(val2, val3, AheadBlend);
 			}
 			helperRotation = Quaternion.Slerp(helperRotation, val2, deltaTime * FittingSpeed);
@@ -276,11 +264,11 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		if (GlueToGround)
 		{
 			lastRaycast = LastRaycast;
-			if (Object.op_Implicit((Object)(object)((RaycastHit)(ref lastRaycast)).transform))
+			if (Object.op_Implicit((Object)(object)lastRaycast.transform))
 			{
 				Transform transformToRotate = TransformToRotate;
 				lastRaycast = LastRaycast;
-				transformToRotate.position = ((RaycastHit)(ref lastRaycast)).point + Vector3.up * UpOffset;
+				transformToRotate.position = lastRaycast.point + Vector3.up * UpOffset;
 			}
 		}
 		if (Object.op_Implicit((Object)(object)selfCollider))
@@ -322,7 +310,7 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		Quaternion val = helperRotation;
-		val = Quaternion.Euler(Mathf.Clamp(FLogicMethods.WrapAngle(((Quaternion)(ref val)).eulerAngles.x), 0f - MaxForwardRotation, MaxForwardRotation) * (1f - MildForwardValue), ((Quaternion)(ref val)).eulerAngles.y, Mathf.Clamp(FLogicMethods.WrapAngle(((Quaternion)(ref val)).eulerAngles.z), 0f - MaxHorizontalRotation, MaxHorizontalRotation) * (1f - MildHorizontalValue));
+		val = Quaternion.Euler(Mathf.Clamp(FLogicMethods.WrapAngle(val.eulerAngles.x), 0f - MaxForwardRotation, MaxForwardRotation) * (1f - MildForwardValue), val.eulerAngles.y, Mathf.Clamp(FLogicMethods.WrapAngle(val.eulerAngles.z), 0f - MaxHorizontalRotation, MaxHorizontalRotation) * (1f - MildHorizontalValue));
 		if (TotalSmoother == 0f)
 		{
 			targetRotationToApply = val * Quaternion.AngleAxis(UpAxisRotation, Vector3.up);
@@ -427,7 +415,7 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
 		LastRaycastOrigin = GetRaycastOrigin() + castOffset;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		Physics.Raycast(LastRaycastOrigin, -GetUpVector(), ref val, RaycastCheckRange + Mathf.Abs(UpOffset), LayerMask.op_Implicit(GroundLayerMask), (QueryTriggerInteraction)1);
 		if (ZoneCast)
 		{
@@ -438,7 +426,7 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 			list.Add(val);
 			int num = 0;
 			float num2 = 1f;
-			RaycastHit item = default(RaycastHit);
+			RaycastHit item = default;
 			for (int i = 0; (float)i < Mathf.Lerp(4f, 24f, ZoneCastPrecision); i++)
 			{
 				Vector3 val5 = Vector3.zero;
@@ -460,7 +448,7 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 					break;
 				}
 				Physics.Raycast(val2 + val5 / num2, -GetUpVector() + val5 * ZoneCastBias + castOffset, ref item, RaycastCheckRange + Mathf.Abs(UpOffset), LayerMask.op_Implicit(GroundLayerMask), (QueryTriggerInteraction)1);
-				if (Object.op_Implicit((Object)(object)((RaycastHit)(ref item)).transform))
+				if (Object.op_Implicit((Object)(object)item.transform))
 				{
 					list.Add(item);
 				}
@@ -472,17 +460,17 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 			{
 				Vector3 val8 = val7;
 				RaycastHit val9 = list[j];
-				val7 = val8 + ((RaycastHit)(ref val9)).normal;
+				val7 = val8 + val9.normal;
 				Vector3 val10 = val6;
 				val9 = list[j];
-				val6 = val10 + ((RaycastHit)(ref val9)).point;
+				val6 = val10 + val9.point;
 			}
 			val6 /= (float)list.Count;
 			val7 /= (float)list.Count;
-			((RaycastHit)(ref val)).normal = val7;
-			if (!Object.op_Implicit((Object)(object)((RaycastHit)(ref val)).transform))
+			val.normal = val7;
+			if (!Object.op_Implicit((Object)(object)val.transform))
 			{
-				((RaycastHit)(ref val)).point = new Vector3(val6.x, TransformToRotate.position.y, val6.z);
+				val.point = new Vector3(val6.x, TransformToRotate.position.y, val6.z);
 			}
 		}
 		return val;
@@ -518,7 +506,7 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		{
 			Vector3 worldUp = WorldUp;
 			Vector3 val = TransformToRotate.TransformDirection(Vector3.up);
-			return Vector3.Lerp(worldUp, ((Vector3)(ref val)).normalized, RelativeLookUpBias) * mulRange;
+			return Vector3.Lerp(worldUp, val.normalized, RelativeLookUpBias) * mulRange;
 		}
 		return WorldUp * mulRange;
 	}
@@ -543,7 +531,7 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		LastRaycast = CastRay();
 		RaycastHit lastRaycast = LastRaycast;
-		if (Object.op_Implicit((Object)(object)((RaycastHit)(ref lastRaycast)).transform))
+		if (Object.op_Implicit((Object)(object)lastRaycast.transform))
 		{
 			LastTransformRaycast = LastRaycast;
 		}
@@ -571,21 +559,5 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		FittingSpeed = 6f;
-		MaxForwardRotation = 90f;
-		MaxHorizontalRotation = 90f;
-		RaycastHeightOffset = 0.5f;
-		RaycastCheckRange = 5f;
-		AheadBlend = 0.5f;
-		GroundLayerMask = LayerMask.op_Implicit(1);
-		WorldUp = Vector3.up;
-		ZoneCastDimensions = new Vector2(0.3f, 0.5f);
-		ZoneCastOffset = Vector3.zero;
-		ZoneCastPrecision = 0.25f;
-		helperRotation = Quaternion.identity;
-		castOffset = Vector3.zero;
-		ApplyRotation = true;
-		targetRotationToApply = Quaternion.identity;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

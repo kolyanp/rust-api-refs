@@ -118,7 +118,7 @@ public class FAnimator
 		if (Animator.IsInTransition(Layer))
 		{
 			val = Animator.GetNextAnimatorStateInfo(Layer);
-			if (((AnimatorStateInfo)(ref val)).shortNameHash == Animator.StringToHash(clip))
+			if (val.shortNameHash == Animator.StringToHash(clip))
 			{
 				return true;
 			}
@@ -126,7 +126,7 @@ public class FAnimator
 		else
 		{
 			val = Animator.GetCurrentAnimatorStateInfo(Layer);
-			if (((AnimatorStateInfo)(ref val)).shortNameHash == Animator.StringToHash(clip))
+			if (val.shortNameHash == Animator.StringToHash(clip))
 			{
 				return true;
 			}

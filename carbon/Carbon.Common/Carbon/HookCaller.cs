@@ -55,7 +55,7 @@ public static class HookCaller
 
 	public static TimeSpan GetTotalTime(uint hook)
 	{
-		TimeSpan result = default(TimeSpan);
+		TimeSpan result = default;
 		foreach (BaseHookable.CachedHook item in GetAllFor(hook))
 		{
 			result += item.HookTime;
@@ -109,12 +109,15 @@ public static class HookCaller
 		{
 			return null;
 		}
+		BaseHookable[] array = HookSubscriberIndex.Get(hookId, flag);
+		if (array.Length == 0)
+		{
+			return null;
+		}
 		object result = null;
 		List<HookCallerCommon.Conflict> list = null;
-		List<BaseHookable> modules = Community.Runtime.ModuleProcessor.Modules;
-		for (int i = 0; i < modules.Count; i++)
+		foreach (BaseHookable baseHookable in array)
 		{
-			BaseHookable baseHookable = modules[i];
 			try
 			{
 				if (baseHookable is IModule module && !module.IsEnabled())
@@ -136,34 +139,13 @@ public static class HookCaller
 			{
 				Exception ex2 = ex.InnerException ?? ex;
 				string orAdd = HookStringPool.GetOrAdd(hookId);
-				Logger.Error($"Failed to call hook '{orAdd}' on module '{baseHookable.Name} v{baseHookable.Version}'", ex2);
-			}
-		}
-		for (int j = 0; j < ModLoader.Packages.Count; j++)
-		{
-			ModLoader.Package package = ModLoader.Packages[j];
-			for (int k = 0; k < package.Plugins.Count; k++)
-			{
-				RustPlugin rustPlugin = package.Plugins[k];
-				try
+				Logger.Error(string.Format("Failed to call hook '{0}' on {1} '{2} v{3}'", new object[4]
 				{
-					object obj2 = Caller.CallHook(rustPlugin, hookId, flag, args);
-					if (obj2 != null)
-					{
-						if (list == null)
-						{
-							list = Pool.Get<List<HookCallerCommon.Conflict>>();
-						}
-						result = obj2;
-						ResultOverride(list, rustPlugin, hookId, result);
-					}
-				}
-				catch (Exception ex3)
-				{
-					Exception ex4 = ex3.InnerException ?? ex3;
-					string orAdd2 = HookStringPool.GetOrAdd(hookId);
-					Logger.Error($"Failed to call hook '{orAdd2}' on plugin '{rustPlugin.Name} v{rustPlugin.Version}'", ex4);
-				}
+					orAdd,
+					(baseHookable is BaseModule) ? "module" : "plugin",
+					baseHookable.Name,
+					baseHookable.Version
+				}), ex2);
 			}
 		}
 		ConflictCheck(list, ref result, hookId);
@@ -245,7 +227,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate)
@@ -257,7 +239,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1)
@@ -279,7 +261,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1)
@@ -292,7 +274,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2)
@@ -316,7 +298,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2)
@@ -330,7 +312,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3)
@@ -356,7 +338,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3)
@@ -371,7 +353,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4)
@@ -399,7 +381,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4)
@@ -415,7 +397,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5)
@@ -445,7 +427,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5)
@@ -462,7 +444,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6)
@@ -494,7 +476,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6)
@@ -512,7 +494,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7)
@@ -546,7 +528,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7)
@@ -565,7 +547,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8)
@@ -601,7 +583,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8)
@@ -621,7 +603,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9)
@@ -659,7 +641,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9)
@@ -680,7 +662,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10)
@@ -720,7 +702,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10)
@@ -742,7 +724,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10, object arg11)
@@ -784,7 +766,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10, object arg11)
@@ -807,7 +789,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10, object arg11, object arg12)
@@ -851,7 +833,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10, object arg11, object arg12)
@@ -875,7 +857,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10, object arg11, object arg12, object arg13)
@@ -921,7 +903,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static T CallDeprecatedHook<T>(BaseHookable plugin, uint oldHookId, uint newHookId, DateTime expireDate, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8, object arg9, object arg10, object arg11, object arg12, object arg13)
@@ -946,7 +928,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallHook(BaseHookable plugin, uint hookId, object[] args)
@@ -961,7 +943,7 @@ public static class HookCaller
 		{
 			return (T)TypeEx.ConvertType<T>(obj);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static object CallStaticHook(uint hookId)
@@ -1419,7 +1401,7 @@ public static class HookCaller
 					}
 					else
 					{
-						VersionNumber versionNumber3 = new VersionNumber(2633, 288, 1);
+						VersionNumber versionNumber3 = new VersionNumber(2634, 289, 1);
 						if ((text5.Equals("ABV") && versionNumber3 > versionNumber) || (text5.Equals("BLW") && versionNumber3 < versionNumber) || (text5.Equals("IS") && versionNumber3 == versionNumber))
 						{
 							conditionals.Add(text3);
@@ -1447,9 +1429,9 @@ public static class HookCaller
 			foreach (SyntaxNodeOrToken item in ((SyntaxNode)input).DescendantNodesAndTokensAndSelf((Func<SyntaxNode, bool>)null, false))
 			{
 				SyntaxNodeOrToken current = item;
-				if (((SyntaxNodeOrToken)(ref current)).ContainsDirectives)
+				if (current.ContainsDirectives)
 				{
-					SyntaxNode val2 = ((SyntaxNodeOrToken)(ref current)).AsNode();
+					SyntaxNode val2 = current.AsNode();
 					if (val2 != null && (CSharpExtensions.IsKind(val2, (SyntaxKind)8548) || CSharpExtensions.IsKind(val2, (SyntaxKind)8549)))
 					{
 						DirectiveTriviaSyntax firstDirective = CSharpExtensions.GetFirstDirective(val2, (Func<DirectiveTriviaSyntax, bool>)null);
@@ -1460,14 +1442,14 @@ public static class HookCaller
 					}
 					else
 					{
-						SyntaxToken val3 = ((SyntaxNodeOrToken)(ref current)).AsToken();
-						SyntaxTriviaList leadingTrivia = ((SyntaxToken)(ref val3)).LeadingTrivia;
-						for (int k = 0; k < ((SyntaxTriviaList)(ref leadingTrivia)).Count; k++)
+						SyntaxToken val3 = current.AsToken();
+						SyntaxTriviaList leadingTrivia = val3.LeadingTrivia;
+						for (int k = 0; k < leadingTrivia.Count; k++)
 						{
-							SyntaxTrivia val4 = ((SyntaxTriviaList)(ref leadingTrivia))[k];
-							if (((SyntaxTrivia)(ref val4)).IsDirective && (CSharpExtensions.IsKind(val4, (SyntaxKind)8548) || CSharpExtensions.IsKind(val4, (SyntaxKind)8549)))
+							SyntaxTrivia val4 = leadingTrivia[k];
+							if (val4.IsDirective && (CSharpExtensions.IsKind(val4, (SyntaxKind)8548) || CSharpExtensions.IsKind(val4, (SyntaxKind)8549)))
 							{
-								output.Add(((object)((SyntaxTrivia)(ref val4)).GetStructure().GetText((Encoding)null, (SourceHashAlgorithm)1)).ToString());
+								output.Add(((object)val4.GetStructure().GetText((Encoding)null, (SourceHashAlgorithm)1)).ToString());
 							}
 						}
 					}

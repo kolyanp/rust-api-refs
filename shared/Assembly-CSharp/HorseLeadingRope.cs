@@ -1,10 +1,4 @@
-using UnityEngine;
-
-public class HorseLeadingRope : FakePhysicsRope
+public class HorseLeadingRope : LeadingRope
 {
 	public RidableHorse horse;
-
-	public Vector2 minMaxLength;
-
-	public Vector2 minMaxDistance;
 }

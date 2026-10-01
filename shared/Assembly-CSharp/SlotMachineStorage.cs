@@ -34,7 +34,7 @@ public class SlotMachineStorage : StorageContainer
 	protected override void OnInventoryDirty()
 	{
 		base.OnInventoryDirty();
-		UpdateAmount(base.inventory.GetSlot(0)?.amount ?? 0);
+		UpdateAmount(inventory.GetSlot(0)?.amount ?? 0);
 	}
 
 	public void UpdateAmount(int amount)

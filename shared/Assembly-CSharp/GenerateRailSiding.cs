@@ -19,9 +19,9 @@ public class GenerateRailSiding : ProceduralComponent
 
 	public const float TerrainOffset = -0.125f;
 
-	private static Quaternion rotRight;
+	private static Quaternion rotRight = Quaternion.Euler(0f, 90f, 0f);
 
-	private static Quaternion rotLeft;
+	private static Quaternion rotLeft = Quaternion.Euler(0f, -90f, 0f);
 
 	private const int MaxDepth = 250000;
 
@@ -139,7 +139,7 @@ public class GenerateRailSiding : ProceduralComponent
 					foreach (Vector3 val2 in points2)
 					{
 						Vector3 val3 = val - val2;
-						if (((Vector3)(ref val3)).sqrMagnitude < num5)
+						if (val3.sqrMagnitude < num5)
 						{
 							hashSet.Add(val);
 							break;
@@ -242,7 +242,5 @@ public class GenerateRailSiding : ProceduralComponent
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		rotRight = Quaternion.Euler(0f, 90f, 0f);
-		rotLeft = Quaternion.Euler(0f, -90f, 0f);
 	}
 }

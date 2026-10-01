@@ -21,7 +21,7 @@ public class Batching : ConsoleSystem
 	[ClientVar(Help = "(Generated) When enabled, industrial pipe meshes are included in the mesh batching pass; disabled by default as pipes frequently change state")]
 	public static bool batch_industrial_pipes = false;
 
-	[ClientVar(Help = "(Generated) Verbosity level for static batching debug output; 0 = off, higher values print more detail about batch operations to the console")]
 	[ServerVar(Help = "(Generated) Verbosity level for static batching debug output; 0 = off, higher values print more detail about batch operations to the console")]
+	[ClientVar(Help = "(Generated) Verbosity level for static batching debug output; 0 = off, higher values print more detail about batch operations to the console")]
 	public static int verbose = 0;
 }

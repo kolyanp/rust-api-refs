@@ -13,7 +13,7 @@ public class ClanChatBatchHandler : BaseNexusRequestHandler<ClanChatBatchRequest
 		}
 		else
 		{
-			nexusClanBackend.HandleClanChatBatch(base.Request);
+			nexusClanBackend.HandleClanChatBatch(Request);
 		}
 	}
 }

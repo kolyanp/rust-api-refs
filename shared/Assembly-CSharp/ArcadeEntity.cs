@@ -11,13 +11,13 @@ public class ArcadeEntity : BaseMonoBehaviour
 
 	public bool visible;
 
-	public Vector3 heading;
+	public Vector3 heading = new Vector3(0f, 1f, 0f);
 
 	public bool isEnabled;
 
 	public bool dirty;
 
-	public float alpha;
+	public float alpha = 1f;
 
 	public BoxCollider boxCollider;
 
@@ -32,9 +32,9 @@ public class ArcadeEntity : BaseMonoBehaviour
 	[Header("Health")]
 	public bool takesDamage;
 
-	public float health;
+	public float health = 1f;
 
-	public float maxHealth;
+	public float maxHealth = 1f;
 
 	[NonSerialized]
 	public bool mapLoadedEntiy;
@@ -43,10 +43,5 @@ public class ArcadeEntity : BaseMonoBehaviour
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		heading = new Vector3(0f, 1f, 0f);
-		alpha = 1f;
-		health = 1f;
-		maxHealth = 1f;
-		base._002Ector();
 	}
 }

@@ -45,19 +45,19 @@ public class Shield : HeldEntity
 	private float lastBlockTime;
 
 	[ReplicatedVar]
-	public static bool InfiniteShieldBlock;
+	public static bool InfiniteShieldBlock = false;
 
 	private Action shieldBlockTick;
 
 	private bool serverWantsBlock;
 
-	private static Vector3 MaximumLocalPosition;
+	private static Vector3 MaximumLocalPosition = new Vector3(0.39f, 1.62f, 0.41f);
 
-	private static Vector3 MinimumLocalPosition;
+	private static Vector3 MinimumLocalPosition = new Vector3(-0.66f, 0.66f, -0.44f);
 
-	private static Vector3 MaximumLocalRotation;
+	private static Vector3 MaximumLocalRotation = new Vector3(360f, 360f, 360f);
 
-	private static Vector3 MinimumLocalRotation;
+	private static Vector3 MinimumLocalRotation = new Vector3(2.5f, 2.14f, 0.04f);
 
 	private TimeSince serverSideShieldBlockStarted;
 
@@ -130,7 +130,7 @@ public class Shield : HeldEntity
 	public override void OnAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			ServerSideAttack(info);
 		}
@@ -139,7 +139,7 @@ public class Shield : HeldEntity
 	public bool RaycastAgainstColliders(Ray r, float maxDistance)
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if ((Object)(object)ShieldCollider != (Object)null)
 		{
 			return ShieldCollider.Raycast(r, ref val, maxDistance);
@@ -161,8 +161,8 @@ public class Shield : HeldEntity
 	}
 
 	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void ServerToggleBlock(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -310,7 +310,18 @@ public class Shield : HeldEntity
 			lastBlockTime = Time.realtimeSinceStartup;
 		}
 		bool flag = Time.realtimeSinceStartup >= lastBlockTime + chargeDelay;
-		serverSideBlockPower = Mathf.MoveTowards(serverSideBlockPower, IsBlocking() ? MaxBlockTime : (flag ? 0f : serverSideBlockPower), Time.deltaTime);
+		ref float reference2 = ref serverSideBlockPower;
+		float num = serverSideBlockPower;
+		float num2;
+		if (IsBlocking())
+		{
+			num2 = MaxBlockTime;
+		}
+		else
+		{
+			num2 = (flag ? 0f : serverSideBlockPower);
+		}
+		reference2 = Mathf.MoveTowards(num, num2, Time.deltaTime);
 		if (TimeSince.op_Implicit(lastLocalPlayerUpdateTick) > 0.5f)
 		{
 			ClientRPC(RpcTarget.Player("ClientUpdateShieldPowerTime", ownerPlayer), serverSideBlockPower / MaxBlockTime);
@@ -392,7 +403,7 @@ public class Shield : HeldEntity
 	{
 		base.OnFlagsChanged(old, next);
 		bool flag = (next & Flags.Broken) != Flags.Broken && (next & Flags.Reserved4) == Flags.Reserved4;
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -448,10 +459,5 @@ public class Shield : HeldEntity
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		InfiniteShieldBlock = false;
-		MaximumLocalPosition = new Vector3(0.39f, 1.62f, 0.41f);
-		MinimumLocalPosition = new Vector3(-0.66f, 0.66f, -0.44f);
-		MaximumLocalRotation = new Vector3(360f, 360f, 360f);
-		MinimumLocalRotation = new Vector3(2.5f, 2.14f, 0.04f);
 	}
 }

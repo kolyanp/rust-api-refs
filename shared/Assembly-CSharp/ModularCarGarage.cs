@@ -39,8 +39,8 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public MagnetSnap magnetSnap;
 
-	[Header("ModularCarGarage")]
 	[SerializeField]
+	[Header("ModularCarGarage")]
 	public Transform vehicleLift;
 
 	[SerializeField]
@@ -64,8 +64,8 @@ public class ModularCarGarage : ContainerIOEntity
 	[SerializeField]
 	public Transform vehicleLiftPos;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	public float recycleEfficiency = 0.5f;
 
 	[SerializeField]
@@ -656,7 +656,7 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public void FixedUpdate()
 	{
-		if (!base.isServer || magnetSnap == null)
+		if (!isServer || magnetSnap == null)
 		{
 			return;
 		}
@@ -741,7 +741,7 @@ public class ModularCarGarage : ContainerIOEntity
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		return default(ItemContainerId);
+		return default;
 	}
 
 	public override bool PlayerOpenLoot(BasePlayer player, string panelToOpen = "", bool doPositionChecks = true)
@@ -814,7 +814,7 @@ public class ModularCarGarage : ContainerIOEntity
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			if (HasOccupant)
 			{
@@ -842,7 +842,7 @@ public class ModularCarGarage : ContainerIOEntity
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		List<Collider> list = Pool.Get<List<Collider>>();
-		Vis.Colliders<Collider>(((Component)this).transform.position, 7f, list, 34816, (QueryTriggerInteraction)2);
+		Vis.Colliders(((Component)this).transform.position, 7f, list, 34816, (QueryTriggerInteraction)2);
 		foreach (Collider item in list)
 		{
 			Rigidbody attachedRigidbody = item.attachedRigidbody;
@@ -909,10 +909,10 @@ public class ModularCarGarage : ContainerIOEntity
 		flagsUpdateScope.Set(Flags.Reserved6, b: false);
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
-	public unsafe void RPC_RepairItem(RPCMessage msg)
+	public void RPC_RepairItem(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
@@ -942,12 +942,12 @@ public class ModularCarGarage : ContainerIOEntity
 		{
 			string name = ((object)this).GetType().Name;
 			ItemId val2 = val;
-			Debug.LogError((object)(name + ": Couldn't get item to repair, with ID: " + ((object)(*(ItemId*)(&val2))/*cast due to constrained. prefix*/).ToString()));
+			Debug.LogError((object)(name + ": Couldn't get item to repair, with ID: " + ((object)val2/*cast due to constrained. prefix*/).ToString()));
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenEditing(RPCMessage msg)
 	{
@@ -959,9 +959,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void RPC_DiedWithKeypadOpen(RPCMessage msg)
 	{
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
@@ -972,8 +972,8 @@ public class ModularCarGarage : ContainerIOEntity
 		RefreshLiftState();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_SelectedLootItem(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -1019,8 +1019,8 @@ public class ModularCarGarage : ContainerIOEntity
 		Interface.CallHook("OnVehicleModuleSelected", vehicleItem, this, player);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_DeselectedLootItem(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1071,8 +1071,8 @@ public class ModularCarGarage : ContainerIOEntity
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestRemoveLock(RPCMessage msg)
 	{
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
@@ -1106,10 +1106,10 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_StartDestroyingChassis(RPCMessage msg)
 	{
 		if (carOccupant.HasAnyModules)
@@ -1121,10 +1121,10 @@ public class ModularCarGarage : ContainerIOEntity
 		flagsUpdateScope.Set(Flags.Reserved6, b: true);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_StopDestroyingChassis(RPCMessage msg)
 	{
 		StopChassisDestroy();
@@ -1141,8 +1141,8 @@ public class ModularCarGarage : ContainerIOEntity
 		flagsUpdateScope.Set(Flags.Reserved6, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void Server_RequestFuelExtract(RPCMessage msg)
 	{
 		if (!lootingPlayers.Contains(msg.player))
@@ -1183,7 +1183,7 @@ public class ModularCarGarage : ContainerIOEntity
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer)
+		if (isServer)
 		{
 			UpdateOccupantMode();
 		}
@@ -1219,7 +1219,7 @@ public class ModularCarGarage : ContainerIOEntity
 		HasEditableOccupant = editableOccupant;
 		HasDriveableOccupant = driveableOccupant;
 		OccupantLockState = occupantLockState;
-		if (base.isServer)
+		if (isServer)
 		{
 			UpdateOccupantMode();
 			SendNetworkUpdate();
@@ -1249,7 +1249,7 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 		_ = vehicleLiftState;
 		vehicleLiftState = desiredLiftState;
-		if (base.isServer)
+		if (isServer)
 		{
 			UpdateOccupantMode();
 			WakeNearbyRigidbodies();
@@ -1276,8 +1276,8 @@ public class ModularCarGarage : ContainerIOEntity
 	{
 		if (!((Object)(object)vehicleLiftAnim == (Object)null))
 		{
-			AnimationState obj = vehicleLiftAnim[animName];
-			obj.speed = obj.length / liftMoveTime;
+			AnimationState val = vehicleLiftAnim[animName];
+			val.speed = val.length / liftMoveTime;
 			vehicleLiftAnim.Play();
 		}
 	}

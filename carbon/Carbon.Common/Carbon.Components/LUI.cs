@@ -28,6 +28,8 @@ public class LUI : IDisposable
 
 		public bool activeSelf = true;
 
+		public bool activeSelfSet;
+
 		public LuiContainer SetDestroy(string name)
 		{
 			destroyUi = name;
@@ -49,6 +51,7 @@ public class LUI : IDisposable
 		public LuiContainer SetActiveSelf(bool active)
 		{
 			activeSelf = active;
+			activeSelfSet = true;
 			return this;
 		}
 
@@ -111,7 +114,7 @@ public class LUI : IDisposable
 			}
 		}
 
-		public unsafe LuiContainer SetText(string input, int fontSize = 0, string color = null, TextAnchor alignment = (TextAnchor)4, bool update = false)
+		public LuiContainer SetText(string input, int fontSize = 0, string color = null, TextAnchor alignment = (TextAnchor)4, bool update = false)
 		{
 			if (luiComponents.TryGetValue<LuiTextComp>(LuiCompType.Text, out var value))
 			{
@@ -126,7 +129,7 @@ public class LUI : IDisposable
 				}
 				if (!update)
 				{
-					value.align = ((object)(*(TextAnchor*)(&alignment))/*cast due to constrained. prefix*/).ToString();
+					value.align = ((object)alignment/*cast due to constrained. prefix*/).ToString();
 				}
 			}
 			else
@@ -143,7 +146,7 @@ public class LUI : IDisposable
 				}
 				if (!update)
 				{
-					value.align = ((object)(*(TextAnchor*)(&alignment))/*cast due to constrained. prefix*/).ToString();
+					value.align = ((object)alignment/*cast due to constrained. prefix*/).ToString();
 				}
 				luiComponents.Add(value.type, value);
 			}
@@ -180,31 +183,31 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetTextAlign(TextAnchor align)
+		public LuiContainer SetTextAlign(TextAnchor align)
 		{
 			if (luiComponents.TryGetValue<LuiTextComp>(LuiCompType.Text, out var value))
 			{
-				value.align = ((object)(*(TextAnchor*)(&align))/*cast due to constrained. prefix*/).ToString();
+				value.align = ((object)align/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetText();
-				value.align = ((object)(*(TextAnchor*)(&align))/*cast due to constrained. prefix*/).ToString();
+				value.align = ((object)align/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public unsafe LuiContainer SetTextOverflow(VerticalWrapMode verticalOverflow)
+		public LuiContainer SetTextOverflow(VerticalWrapMode verticalOverflow)
 		{
 			if (luiComponents.TryGetValue<LuiTextComp>(LuiCompType.Text, out var value))
 			{
-				value.verticalOverflow = ((object)(*(VerticalWrapMode*)(&verticalOverflow))/*cast due to constrained. prefix*/).ToString();
+				value.verticalOverflow = ((object)verticalOverflow/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetText();
-				value.verticalOverflow = ((object)(*(VerticalWrapMode*)(&verticalOverflow))/*cast due to constrained. prefix*/).ToString();
+				value.verticalOverflow = ((object)verticalOverflow/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -240,29 +243,29 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetImageType(Type imageType)
+		public LuiContainer SetImageType(Type imageType)
 		{
 			if (luiComponents.TryGetValue<LuiImageComp>(LuiCompType.Image, out var value))
 			{
-				value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
+				value.imageType = ((object)imageType/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetImage();
-				value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
+				value.imageType = ((object)imageType/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public unsafe LuiContainer SetSprite(string sprite = null, string color = null, Type imageType = (Type)0)
+		public LuiContainer SetSprite(string sprite = null, string color = null, Type imageType = (Type)0)
 		{
 			if (luiComponents.TryGetValue<LuiImageComp>(LuiCompType.Image, out var value))
 			{
 				if (sprite != null)
 				{
 					value.sprite = sprite;
-					value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
+					value.imageType = ((object)imageType/*cast due to constrained. prefix*/).ToString();
 				}
 				if (color != null)
 				{
@@ -275,7 +278,7 @@ public class LUI : IDisposable
 				if (sprite != null)
 				{
 					value.sprite = sprite;
-					value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
+					value.imageType = ((object)imageType/*cast due to constrained. prefix*/).ToString();
 				}
 				if (color != null)
 				{
@@ -625,18 +628,18 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetButtonSprite(string sprite, Type imageType = (Type)0)
+		public LuiContainer SetButtonSprite(string sprite, Type imageType = (Type)0)
 		{
 			if (luiComponents.TryGetValue<LuiButtonComp>(LuiCompType.Button, out var value))
 			{
 				value.sprite = sprite;
-				value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
+				value.imageType = ((object)imageType/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetButton();
 				value.sprite = sprite;
-				value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
+				value.imageType = ((object)imageType/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -695,7 +698,7 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetInput(string color = null, string text = null, int fontSize = 0, string command = null, int charLimit = 0, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedBold, TextAnchor alignment = (TextAnchor)4, bool update = false)
+		public LuiContainer SetInput(string color = null, string text = null, int fontSize = 0, string command = null, int charLimit = 0, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedBold, TextAnchor alignment = (TextAnchor)4, bool update = false)
 		{
 			if (luiComponents.TryGetValue<LuiInputComp>(LuiCompType.InputField, out var value))
 			{
@@ -721,7 +724,7 @@ public class LUI : IDisposable
 				}
 				if (!update)
 				{
-					value.align = ((object)(*(TextAnchor*)(&alignment))/*cast due to constrained. prefix*/).ToString();
+					value.align = ((object)alignment/*cast due to constrained. prefix*/).ToString();
 					value.font = GetFont(font);
 				}
 			}
@@ -750,7 +753,7 @@ public class LUI : IDisposable
 				}
 				if (!update)
 				{
-					value.align = ((object)(*(TextAnchor*)(&alignment))/*cast due to constrained. prefix*/).ToString();
+					value.align = ((object)alignment/*cast due to constrained. prefix*/).ToString();
 					value.font = GetFont(font);
 				}
 				luiComponents.Add(value.type, value);
@@ -820,16 +823,16 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetInputLineType(LineType lineType)
+		public LuiContainer SetInputLineType(LineType lineType)
 		{
 			if (luiComponents.TryGetValue<LuiInputComp>(LuiCompType.InputField, out var value))
 			{
-				value.lineType = ((object)(*(LineType*)(&lineType))/*cast due to constrained. prefix*/).ToString();
+				value.lineType = ((object)lineType/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetInput();
-				value.lineType = ((object)(*(LineType*)(&lineType))/*cast due to constrained. prefix*/).ToString();
+				value.lineType = ((object)lineType/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1061,16 +1064,16 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetHorizontalLayoutAlignment(TextAnchor anchor)
+		public LuiContainer SetHorizontalLayoutAlignment(TextAnchor anchor)
 		{
 			if (luiComponents.TryGetValue<LuiHorizontalLayoutGroupComp>(LuiCompType.HorizontalLayoutGroup, out var value))
 			{
-				value.childAlignment = ((object)(*(TextAnchor*)(&anchor))/*cast due to constrained. prefix*/).ToString();
+				value.childAlignment = ((object)anchor/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetHorizontalLayoutGroup();
-				value.childAlignment = ((object)(*(TextAnchor*)(&anchor))/*cast due to constrained. prefix*/).ToString();
+				value.childAlignment = ((object)anchor/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1157,16 +1160,16 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetVerticalLayoutAlignment(TextAnchor anchor)
+		public LuiContainer SetVerticalLayoutAlignment(TextAnchor anchor)
 		{
 			if (luiComponents.TryGetValue<LuiVerticalLayoutGroupComp>(LuiCompType.VerticalLayoutGroup, out var value))
 			{
-				value.childAlignment = ((object)(*(TextAnchor*)(&anchor))/*cast due to constrained. prefix*/).ToString();
+				value.childAlignment = ((object)anchor/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetVerticalLayoutGroup();
-				value.childAlignment = ((object)(*(TextAnchor*)(&anchor))/*cast due to constrained. prefix*/).ToString();
+				value.childAlignment = ((object)anchor/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1276,61 +1279,61 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetStartCorner(Corner corner)
+		public LuiContainer SetStartCorner(Corner corner)
 		{
 			if (luiComponents.TryGetValue<LuiGridLayoutGroupComp>(LuiCompType.GridLayoutGroup, out var value))
 			{
-				value.startCorner = ((object)(*(Corner*)(&corner))/*cast due to constrained. prefix*/).ToString();
+				value.startCorner = ((object)corner/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetGridLayoutGroup();
-				value.startCorner = ((object)(*(Corner*)(&corner))/*cast due to constrained. prefix*/).ToString();
+				value.startCorner = ((object)corner/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public unsafe LuiContainer SetStartAxis(Axis axis)
+		public LuiContainer SetStartAxis(Axis axis)
 		{
 			if (luiComponents.TryGetValue<LuiGridLayoutGroupComp>(LuiCompType.GridLayoutGroup, out var value))
 			{
-				value.startAxis = ((object)(*(Axis*)(&axis))/*cast due to constrained. prefix*/).ToString();
+				value.startAxis = ((object)axis/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetGridLayoutGroup();
-				value.startAxis = ((object)(*(Axis*)(&axis))/*cast due to constrained. prefix*/).ToString();
+				value.startAxis = ((object)axis/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public unsafe LuiContainer SetChildAlign(TextAnchor align)
+		public LuiContainer SetChildAlign(TextAnchor align)
 		{
 			if (luiComponents.TryGetValue<LuiGridLayoutGroupComp>(LuiCompType.GridLayoutGroup, out var value))
 			{
-				value.childAlignment = ((object)(*(TextAnchor*)(&align))/*cast due to constrained. prefix*/).ToString();
+				value.childAlignment = ((object)align/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetGridLayoutGroup();
-				value.childAlignment = ((object)(*(TextAnchor*)(&align))/*cast due to constrained. prefix*/).ToString();
+				value.childAlignment = ((object)align/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public unsafe LuiContainer SetContraint(Constraint constraint)
+		public LuiContainer SetContraint(Constraint constraint)
 		{
 			if (luiComponents.TryGetValue<LuiGridLayoutGroupComp>(LuiCompType.GridLayoutGroup, out var value))
 			{
-				value.constraint = ((object)(*(Constraint*)(&constraint))/*cast due to constrained. prefix*/).ToString();
+				value.constraint = ((object)constraint/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetGridLayoutGroup();
-				value.constraint = ((object)(*(Constraint*)(&constraint))/*cast due to constrained. prefix*/).ToString();
+				value.constraint = ((object)constraint/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1366,18 +1369,18 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetFitMode(FitMode horizontalFit, FitMode verticalFit)
+		public LuiContainer SetFitMode(FitMode horizontalFit, FitMode verticalFit)
 		{
 			if (luiComponents.TryGetValue<LuiContentSizeFitterComp>(LuiCompType.ContentSizeFitter, out var value))
 			{
-				value.horizontalFit = ((object)(*(FitMode*)(&horizontalFit))/*cast due to constrained. prefix*/).ToString();
-				value.verticalFit = ((object)(*(FitMode*)(&verticalFit))/*cast due to constrained. prefix*/).ToString();
+				value.horizontalFit = ((object)horizontalFit/*cast due to constrained. prefix*/).ToString();
+				value.verticalFit = ((object)verticalFit/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetContentSizeFitter();
-				value.horizontalFit = ((object)(*(FitMode*)(&horizontalFit))/*cast due to constrained. prefix*/).ToString();
-				value.verticalFit = ((object)(*(FitMode*)(&verticalFit))/*cast due to constrained. prefix*/).ToString();
+				value.horizontalFit = ((object)horizontalFit/*cast due to constrained. prefix*/).ToString();
+				value.verticalFit = ((object)verticalFit/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1590,16 +1593,16 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetDraggableRPC(DraggablePositionSendType posSendType)
+		public LuiContainer SetDraggableRPC(DraggablePositionSendType posSendType)
 		{
 			if (luiComponents.TryGetValue<LuiDraggableComp>(LuiCompType.Draggable, out var value))
 			{
-				value.positionRPC = ((object)(*(DraggablePositionSendType*)(&posSendType))/*cast due to constrained. prefix*/).ToString();
+				value.positionRPC = ((object)posSendType/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetDraggable();
-				value.positionRPC = ((object)(*(DraggablePositionSendType*)(&posSendType))/*cast due to constrained. prefix*/).ToString();
+				value.positionRPC = ((object)posSendType/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1636,7 +1639,7 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public unsafe LuiContainer SetScrollView(bool vertical, bool horizontal, MovementType movementType = (MovementType)2, float elasticity = 0f, bool inertia = false, float decelerationRate = 0f, float scrollSensitivity = 0f, LuiScrollbar verticalScrollOptions = default(LuiScrollbar), LuiScrollbar horizontalScrollOptions = default(LuiScrollbar), bool update = false)
+		public LuiContainer SetScrollView(bool vertical, bool horizontal, MovementType movementType = (MovementType)2, float elasticity = 0f, bool inertia = false, float decelerationRate = 0f, float scrollSensitivity = 0f, LuiScrollbar verticalScrollOptions = default(LuiScrollbar), LuiScrollbar horizontalScrollOptions = default(LuiScrollbar), bool update = false)
 		{
 			if (luiComponents.TryGetValue<LuiScrollComp>(LuiCompType.ScrollView, out var value))
 			{
@@ -1644,7 +1647,7 @@ public class LUI : IDisposable
 				{
 					value.vertical = vertical;
 					value.horizontal = horizontal;
-					value.movementType = ((object)(*(MovementType*)(&movementType))/*cast due to constrained. prefix*/).ToString();
+					value.movementType = ((object)movementType/*cast due to constrained. prefix*/).ToString();
 					value.inertia = inertia;
 				}
 				if (elasticity != 0f)
@@ -1669,7 +1672,7 @@ public class LUI : IDisposable
 				{
 					value.vertical = vertical;
 					value.horizontal = horizontal;
-					value.movementType = ((object)(*(MovementType*)(&movementType))/*cast due to constrained. prefix*/).ToString();
+					value.movementType = ((object)movementType/*cast due to constrained. prefix*/).ToString();
 					value.inertia = inertia;
 				}
 				if (elasticity != 0f)
@@ -1830,11 +1833,11 @@ public class LUI : IDisposable
 
 	public string lastName = string.Empty;
 
-	public static readonly Vector2 defaultPivot;
+	public static readonly Vector2 defaultPivot = new Vector2(0.5f, 0.5f);
 
-	public static readonly Vector2 defaultFade;
+	public static readonly Vector2 defaultFade = new Vector2(0f, 1f);
 
-	public static readonly Vector2 defaultCellSize;
+	public static readonly Vector2 defaultCellSize = new Vector2(100f, 100f);
 
 	private ImageDatabaseModule imgDb { get; }
 
@@ -2708,8 +2711,5 @@ public class LUI : IDisposable
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		defaultPivot = new Vector2(0.5f, 0.5f);
-		defaultFade = new Vector2(0f, 1f);
-		defaultCellSize = new Vector2(100f, 100f);
 	}
 }

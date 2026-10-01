@@ -34,7 +34,6 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-			base._002Ector();
 			Transform = t;
 			if (Object.op_Implicit((Object)(object)t))
 			{
@@ -163,19 +162,19 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 		public Vector3 up;
 
-		public Vector3 initLocalPos;
+		public Vector3 initLocalPos = Vector3.zero;
 
-		public Quaternion initLocalRot;
+		public Quaternion initLocalRot = Quaternion.identity;
 
 		public Vector3 targetDelayPosition;
 
 		public Vector3 animatedDelayPosition;
 
-		public float lookWeight;
+		public float lookWeight = 1f;
 
-		public float lookWeightB;
+		public float lookWeightB = 1f;
 
-		public float motionWeight;
+		public float motionWeight = 1f;
 
 		public Quaternion correctionOffsetQ
 		{
@@ -199,12 +198,6 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-			initLocalPos = Vector3.zero;
-			initLocalRot = Quaternion.identity;
-			lookWeight = 1f;
-			lookWeightB = 1f;
-			motionWeight = 1f;
-			base._002Ector();
 			Transform = t;
 			correctionOffset = Vector3.zero;
 			if ((Object)(object)t != (Object)null)
@@ -370,30 +363,30 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	[Tooltip("Bird mode laggy movement for neck amount, lowering this value will cause crossfade motion of laggy movement and basic follow rotation")]
-	public float LagRotation;
+	public float LagRotation = 0.85f;
 
-	[FPD_Suffix(0.1f, 1f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
 	[Tooltip("How often should be acquired new target position for laggy movement, time to trigger it will be slightly randomized")]
-	public float LagEvery;
+	[FPD_Suffix(0.1f, 1f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
+	public float LagEvery = 0.285f;
 
-	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	[Tooltip("Bird mode keeping previous position until distance is reached")]
+	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	public float DelayPosition;
 
 	[Tooltip("How far distance to go back should have head to move (remind movement of pigeons to yourself)")]
-	public float DelayMaxDistance;
+	public float DelayMaxDistance = 0.25111f;
 
-	[Tooltip("How quick head and neck should go back to right position after reaching distance")]
 	[Range(0f, 1f)]
-	public float DelayGoSpeed;
+	[Tooltip("How quick head and neck should go back to right position after reaching distance")]
+	public float DelayGoSpeed = 0.6f;
 
-	public Vector3 BirdTargetPosition;
+	public Vector3 BirdTargetPosition = Vector3.forward;
 
-	private Vector3 birdTargetPositionMemory;
+	private Vector3 birdTargetPositionMemory = Vector3.forward;
 
 	private float lagTimer;
 
-	private float preWeightFaloff;
+	private float preWeightFaloff = -1f;
 
 	private float[] baseWeights;
 
@@ -420,29 +413,29 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	public Vector3 EyesOffsetRotation;
 
-	public Vector3 LeftEyeOffsetRotation;
+	public Vector3 LeftEyeOffsetRotation = Vector3.zero;
 
-	public Vector3 RightEyeOffsetRotation;
+	public Vector3 RightEyeOffsetRotation = Vector3.zero;
 
 	[Range(0f, 1f)]
 	[Tooltip("How fast eyes should follow target")]
-	public float EyesSpeed;
+	public float EyesSpeed = 0.5f;
 
 	[FPD_Percentage(0f, 1f, false, true, "%", false)]
-	public float EyesBlend;
+	public float EyesBlend = 1f;
 
-	[Tooltip("In what angle eyes should go back to deafult position")]
 	[Range(0f, 180f)]
-	public Vector2 EyesXRange;
+	[Tooltip("In what angle eyes should go back to deafult position")]
+	public Vector2 EyesXRange = new Vector2(-60f, 60f);
 
-	public Vector2 EyesYRange;
+	public Vector2 EyesYRange = new Vector2(-50f, 50f);
 
 	[Tooltip("If your eyes don't have baked keyframes in animation this value should be enabled, otherwise eyes would go crazy")]
-	public bool EyesNoKeyframes;
+	public bool EyesNoKeyframes = true;
 
 	public bool CustomEyesLogics;
 
-	private float EyesOutOfRangeBlend;
+	private float EyesOutOfRangeBlend = 1f;
 
 	private Transform[] eyes;
 
@@ -456,15 +449,15 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Vector3 headForward;
 
-	[Range(-1f, 1f)]
 	[Tooltip("When switching targets character will make small nod to make it look more natural, set higher value for toony effect")]
+	[Range(-1f, 1f)]
 	public float NoddingTransitions;
 
-	public Vector3 NodAxis;
+	public Vector3 NodAxis = Vector3.right;
 
-	[Range(-1f, 1f)]
 	[Tooltip("Set zero to use only leading bone, set -1 to 1 to spread this motion over backbones")]
-	public float BackBonesNod;
+	[Range(-1f, 1f)]
+	public float BackBonesNod = 0.15f;
 
 	private float nodProgress;
 
@@ -472,25 +465,25 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private float nodPower;
 
-	private float nodDuration;
+	private float nodDuration = 1f;
 
 	private float smoothingTimer;
 
-	private float smoothingPower;
+	private float smoothingPower = 1f;
 
-	private float smoothingTime;
+	private float smoothingTime = 1f;
 
-	private float smoothingEffect;
+	private float smoothingEffect = 1f;
 
-	public int ParentalOffsetsV;
+	public int ParentalOffsetsV = 2;
 
 	private Vector3 lookFreezeFocusPoint;
 
-	private Vector3 smoothLookPosition;
+	private Vector3 smoothLookPosition = Vector3.zero;
 
-	private Vector3 _velo_smoothLookPosition;
+	private Vector3 _velo_smoothLookPosition = Vector3.zero;
 
-	private Vector3 finalLookPosition;
+	private Vector3 finalLookPosition = Vector3.zero;
 
 	private bool usingAxisCorrection;
 
@@ -503,7 +496,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Quaternion _parentalBackParentRot;
 
-	private Vector2 _parentalAngles;
+	private Vector2 _parentalAngles = Vector2.zero;
 
 	private bool animatePhysicsWorking;
 
@@ -511,23 +504,23 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private int startAfterTPoseCounter;
 
-	private Vector3 unclampedLookAngles;
+	private Vector3 unclampedLookAngles = Vector3.zero;
 
-	private Vector3 targetLookAngles;
+	private Vector3 targetLookAngles = Vector3.zero;
 
-	private Vector3 animatedLookAngles;
+	private Vector3 animatedLookAngles = Vector3.zero;
 
-	private Vector3 finalLookAngles;
+	private Vector3 finalLookAngles = Vector3.zero;
 
 	private Quaternion lastBaseRotation;
 
-	private Vector3 _preLookAboveLookAngles;
+	private Vector3 _preLookAboveLookAngles = Vector3.zero;
 
-	private Vector3 _velo_animatedLookAngles;
+	private Vector3 _velo_animatedLookAngles = Vector3.zero;
 
 	private float _rememberSideLookHorizontalAngle;
 
-	private Vector3 leadBoneInitLocalOffset;
+	private Vector3 leadBoneInitLocalOffset = Vector3.zero;
 
 	private EFHeadLookState previousState;
 
@@ -542,7 +535,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	private bool isLooking;
 
 	[Tooltip("If moment transform should be destroyed when max distance range is exceed")]
-	public bool DestroyMomentTargetOnMaxDistance;
+	public bool DestroyMomentTargetOnMaxDistance = true;
 
 	private float whenAboveGoBackDuration;
 
@@ -554,8 +547,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Vector2 whenAboveGoBackAngles;
 
-	[Range(0f, 1f)]
 	[Tooltip("If you want to remove animator's keyframes and replace them by look animation")]
+	[Range(0f, 1f)]
 	public float OverrideRotations;
 
 	private bool overrideRefInitialized;
@@ -566,7 +559,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool refreshReferencePose;
 
-	private float monitorTransitionTime;
+	private float monitorTransitionTime = 0.8f;
 
 	private List<Quaternion> _monitorTransitionStart;
 
@@ -581,11 +574,11 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Quaternion targetLookRotation;
 
-	private float finalMotionWeight;
+	private float finalMotionWeight = 1f;
 
-	private float animatedMotionWeight;
+	private float animatedMotionWeight = 1f;
 
-	private float _velo_animatedMotionWeight;
+	private float _velo_animatedMotionWeight = 1f;
 
 	private float changeTargetSmootherWeight;
 
@@ -595,7 +588,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	public bool _editor_hideEyes;
 
-	public string _editor_displayName;
+	public string _editor_displayName = "Look Animator 2";
 
 	public EEditorLookCategory _Editor_Category;
 
@@ -606,9 +599,9 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public Transform BaseTransform;
 
 	[Tooltip("Faloff value of how weight of animation should be spread over bones")]
-	public float FaloffValue;
+	public float FaloffValue = 0.35f;
 
-	public float FaloffValueB;
+	public float FaloffValueB = 1.1f;
 
 	[Tooltip("When character is looking far back in big angle or far high, you can automate weights falloff value")]
 	public bool BigAngleAutomation;
@@ -617,23 +610,23 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public bool BigAngleAutomationCompensation;
 
 	[Tooltip("If bone weights spread should be computed automatically or by hand")]
-	public bool AutoBackbonesWeights;
+	public bool AutoBackbonesWeights = true;
 
 	[Tooltip("When you want use curve for more custom falloff or define it by simple slider - 'FaloffValue'")]
 	public bool CurveSpread;
 
 	[Tooltip("Configurable rotation weight placed over back bones - when you will use for example spine bones, here you can define how much will they rotate towards target in reference to other animated bones")]
-	public AnimationCurve BackBonesFalloff;
+	public AnimationCurve BackBonesFalloff = AnimationCurve.Linear(0f, 1f, 1f, 0.1f);
 
 	[Header("bone is rotated by script (drag & drop here)", order = 3)]
 	[Header("If you don't want arms to be rotated when spine", order = 1)]
-	public List<CompensationBone> CompensationBones;
+	public List<CompensationBone> CompensationBones = new List<CompensationBone>();
 
 	[Range(0f, 1f)]
-	public float CompensationWeight;
+	public float CompensationWeight = 0.5f;
 
 	[Range(0f, 1f)]
-	public float CompensationWeightB;
+	public float CompensationWeightB = 0.5f;
 
 	[Range(0f, 1f)]
 	public float CompensatePositions;
@@ -641,12 +634,12 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float CompensatePositionsB;
 
-	private float targetCompensationWeight;
+	private float targetCompensationWeight = 0.5f;
 
 	private float targetCompensationPosWeight;
 
 	[Tooltip("Making script start after first frame so initialization will not catch TPose initial bones rotations, which can cause some wrong offsets for rotations")]
-	public bool StartAfterTPose;
+	public bool StartAfterTPose = true;
 
 	[Tooltip("Update with waiting for fixed update clock")]
 	public bool AnimatePhysics;
@@ -663,27 +656,27 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("If 'FollowOffset' should be world position translation\n\nor target object local space translation\n\nor we don't want to use ObjectToFollow and use just 'FollowOffset' position.")]
 	public EFFollowMode FollowMode;
 
-	[Tooltip("How fast character should rotate towards focus direction.\n\nRotationSpeed = 2.5 -> Instant rotation\n\nIt is speed of transition for look direction (no bones rotations smoothing)")]
 	[Range(0f, 2.5f)]
-	public float RotationSpeed;
+	[Tooltip("How fast character should rotate towards focus direction.\n\nRotationSpeed = 2.5 -> Instant rotation\n\nIt is speed of transition for look direction (no bones rotations smoothing)")]
+	public float RotationSpeed = 0.65f;
 
 	private bool instantRotation;
 
-	[Tooltip("This variable is making rotation animation become very smooth (but also slower).\nIt is enabling smooth rotation transition in bone rotations")]
 	[Range(0f, 1f)]
+	[Tooltip("This variable is making rotation animation become very smooth (but also slower).\nIt is enabling smooth rotation transition in bone rotations")]
 	public float UltraSmoother;
 
-	[Range(25f, 180f)]
-	[Header("Look forward if this angle is exceeded", order = 1)]
 	[Tooltip("If target is too much after transform's back we smooth rotating head back to default animation's rotation")]
-	public float StopLookingAbove;
+	[Header("Look forward if this angle is exceeded", order = 1)]
+	[Range(25f, 180f)]
+	public float StopLookingAbove = 180f;
 
-	[Range(0.1f, 1f)]
 	[Tooltip("If object in rotation range should be detected only when is nearer than 'StopLookingAbove' to avoid stuttery target changes")]
-	public float StopLookingAboveFactor;
+	[Range(0.1f, 1f)]
+	public float StopLookingAboveFactor = 1f;
 
-	[Tooltip("If your character moves head too fast when loosing / changing target, here you can adjust it")]
 	[Range(0f, 1f)]
+	[Tooltip("If your character moves head too fast when loosing / changing target, here you can adjust it")]
 	public float ChangeTargetSmoothing;
 
 	[Tooltip("Switch to enable advanced settings for back bones falloff")]
@@ -696,8 +689,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("When Character is looking at something on his back but more on his right he look to right, when target suddenly goes more on his left and again to right very frequently you can set with this variable range from which rotating head to opposide shoulder side should be triggered to prevent strange looking behaviour when looking at dynamic objects")]
 	public float HoldRotateToOppositeUntil;
 
-	[Range(0f, 1f)]
 	[Tooltip("If object in range should be detected only when is nearer than 'MaxDistance' to avoid stuttery target changes")]
+	[Range(0f, 1f)]
 	public float MaxOutDistanceFactor;
 
 	[Tooltip("If distance should be measured not using Up (y) axis")]
@@ -728,7 +721,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	[Tooltip("Head going back looking in front of target after this amount of seconds")]
 	[FPD_Suffix(0.05f, 1f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
-	public float WhenAboveGoBackDuration;
+	public float WhenAboveGoBackDuration = 0.2f;
 
 	[Tooltip("Rotating towards target slower when target don't need much angle to look at")]
 	[FPD_Suffix(0f, 90f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
@@ -739,56 +732,56 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public float StartLookElasticRangeY;
 
 	[Header("Limits for rotation | Horizontal: X Vertical: Y")]
-	public Vector2 XRotationLimits;
+	public Vector2 XRotationLimits = new Vector2(-80f, 80f);
 
-	[FPD_Suffix(0f, 60f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
 	[Tooltip("Making clamp ranges elastic, so when it starts to reach clamp value it slows like muscles needs more effort")]
-	public float XElasticRange;
+	[FPD_Suffix(0f, 60f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
+	public float XElasticRange = 20f;
 
 	[Tooltip("When head want go back to default state of looking, it will blend with default animation instead of changing values of rotation variables to go back")]
-	public bool LimitHolder;
+	public bool LimitHolder = true;
 
-	public Vector2 YRotationLimits;
+	public Vector2 YRotationLimits = new Vector2(-50f, 50f);
 
-	[FPD_Suffix(0f, 45f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
 	[Tooltip("Making clamp ranges elastic, so when it starts to reach clamp value it slows like muscles needs more effort")]
-	public float YElasticRange;
+	[FPD_Suffix(0f, 45f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
+	public float YElasticRange = 15f;
 
-	[Tooltip("You can use this variable to blend intensity of look animator motion over skeleton animation\n\nValue = 1: Animation with Look Animator motion\nValue = 0: Only skeleton animation")]
 	[FPD_Percentage(0f, 1f, false, true, "%", false)]
-	public float LookAnimatorAmount;
+	[Tooltip("You can use this variable to blend intensity of look animator motion over skeleton animation\n\nValue = 1: Animation with Look Animator motion\nValue = 0: Only skeleton animation")]
+	public float LookAnimatorAmount = 1f;
 
 	[Tooltip("If head look seems to be calculated like it is not looking from center of head but far from bottom or over it - you can adjust it - check scene view gizmos")]
 	public Vector3 StartLookPointOffset;
 
 	[Tooltip("Freezes reference start look position in x and z axes to avoid re-reaching max rotation limits when hips etc. are rotating in animation clip.\n\nIf your character is crouching or so, you would like to have this parameter disabled")]
-	public bool AnchorStartLookPoint;
+	public bool AnchorStartLookPoint = true;
 
 	[Tooltip("In some cases you'll want to refresh anchor position during gameplay to make it more fitting to character's animation poses")]
-	public bool RefreshStartLookPoint;
+	public bool RefreshStartLookPoint = true;
 
 	[Tooltip("[When some of your bones are rotating making circles]\n\nDon't set hard rotations for bones, use animation rotation and add rotation offset to bones so animation's rotations are animated correctly (useful when using attack animations for example)")]
-	public bool SyncWithAnimator;
+	public bool SyncWithAnimator = true;
 
 	[Tooltip("When using above action, we need to keep remembered rotations of animation clip from first frame, with monitoring we will remember root rotations from each new animation played")]
 	public bool MonitorAnimator;
 
 	private Quaternion rootStaticRotation;
 
-	[FPD_Percentage(0f, 3f, true, true, "%", false)]
 	[Tooltip("When you want create strange effects - this variable will overrotate bones")]
-	public float WeightsMultiplier;
+	[FPD_Percentage(0f, 3f, true, true, "%", false)]
+	public float WeightsMultiplier = 1f;
 
-	[Tooltip("If speed of looking toward target should be limited then lower this value")]
 	[Range(0.1f, 2.5f)]
-	public float MaxRotationSpeed;
+	[Tooltip("If speed of looking toward target should be limited then lower this value")]
+	public float MaxRotationSpeed = 2.5f;
 
-	[Tooltip("When character is rotating and head is rotating with it instead of keep focusing on target, change this value higher")]
 	[Range(0f, 1f)]
+	[Tooltip("When character is rotating and head is rotating with it instead of keep focusing on target, change this value higher")]
 	public float BaseRotationCompensation;
 
 	[Tooltip("If your skeleton have not animated keyframes in animation clip then bones would start doing circles with this option disabled\n\nIn most cases all keyframes are filled, if you're sure for baked keyframes you can disable this option to avoid some not needed calculations")]
-	public bool DetectZeroKeyframes;
+	public bool DetectZeroKeyframes = true;
 
 	[Tooltip("Target position to look can be smoothed out instead of immediate position changes")]
 	[Range(0f, 1f)]
@@ -798,28 +791,28 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public EFDeltaType DeltaType;
 
 	[Tooltip("Multiplier for delta time resulting in changed speed of calculations for Look Animator")]
-	public float SimulationSpeed;
+	public float SimulationSpeed = 1f;
 
 	[Range(0f, 1f)]
 	[Tooltip("It will make head animation stiff but perfectly looking at target")]
 	public float OverrideHeadForPerfectLookDirection;
 
 	[Tooltip("Resetting bones before animators update to avoid bones twisting if bones are not animated using unity animator")]
-	public bool Calibration;
+	public bool Calibration = true;
 
 	[Tooltip("With crazy flipped axes from models done in different modelling softwares, sometimes you have to change axes order for Quaternion.LookRotation to work correctly")]
 	public EFAxisFixOrder FixingPreset;
 
 	[Tooltip("If your model is not facing 'Z' axis (blue) you can adjust it with this value")]
-	public Vector3 ModelForwardAxis;
+	public Vector3 ModelForwardAxis = Vector3.forward;
 
 	[Tooltip("If your model is not pointing up 'Y' axis (green) you can adjust it with this value")]
-	public Vector3 ModelUpAxis;
+	public Vector3 ModelUpAxis = Vector3.up;
 
 	[Tooltip("Defines model specific bones orientation in order to fix Quaternion.LookRotation axis usage")]
-	public Vector3 ManualFromAxis;
+	public Vector3 ManualFromAxis = Vector3.forward;
 
-	public Vector3 ManualToAxis;
+	public Vector3 ManualToAxis = Vector3.forward;
 
 	public Vector3 FromAuto;
 
@@ -832,13 +825,13 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public Vector3 DynamicReferenceUp;
 
 	[Tooltip("Additional degrees of rotations for head look - for simple correction, sometimes you have just to rotate head in y axis by 90 degrees")]
-	public Vector3 RotationOffset;
+	public Vector3 RotationOffset = new Vector3(0f, 0f, 0f);
 
 	[Tooltip("Additional degrees of rotations for backones - for example when you have wolf and his neck is going up in comparison to keyfarmed animation\nVariable name 'BackBonesAddOffset'")]
-	public Vector3 BackBonesAddOffset;
+	public Vector3 BackBonesAddOffset = new Vector3(0f, 0f, 0f);
 
 	[Tooltip("[ADVANCED] Axes multiplier for custom fixing flipped armature rotations")]
-	public Vector3 RotCorrectionMultiplier;
+	public Vector3 RotCorrectionMultiplier = new Vector3(1f, 1f, 1f);
 
 	[Tooltip("View debug rays in scene window")]
 	public bool DebugRays;
@@ -847,9 +840,9 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public EFAnimationStyle AnimationStyle;
 
 	[Tooltip("Updating reference axis for parental look rotation mode every frame")]
-	public bool ConstantParentalAxisUpdate;
+	public bool ConstantParentalAxisUpdate = true;
 
-	private bool updateLookAnimator;
+	private bool updateLookAnimator = true;
 
 	private bool wasUpdating;
 
@@ -1129,23 +1122,23 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = worldPosition - GetLookStartMeasurePosition();
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Quaternion val3;
 		if (usingAxisCorrection)
 		{
-			Matrix4x4 inverse = ((Matrix4x4)(ref axisCorrectionMatrix)).inverse;
-			val = ((Matrix4x4)(ref inverse)).MultiplyVector(normalized);
-			normalized = ((Vector3)(ref val)).normalized;
+			Matrix4x4 inverse = axisCorrectionMatrix.inverse;
+			val = inverse.MultiplyVector(normalized);
+			normalized = val.normalized;
 			Vector3 val2 = normalized;
-			val = ((Matrix4x4)(ref axisCorrectionMatrix)).MultiplyVector(ModelUpAxis);
-			val3 = Quaternion.LookRotation(val2, ((Vector3)(ref val)).normalized);
-			normalized = WrapVector(((Quaternion)(ref val3)).eulerAngles);
+			val = axisCorrectionMatrix.MultiplyVector(ModelUpAxis);
+			val3 = Quaternion.LookRotation(val2, val.normalized);
+			normalized = WrapVector(val3.eulerAngles);
 		}
 		else
 		{
 			normalized = BaseTransform.InverseTransformDirection(normalized);
 			val3 = Quaternion.LookRotation(normalized, BaseTransform.TransformDirection(ModelUpAxis));
-			normalized = WrapVector(((Quaternion)(ref val3)).eulerAngles);
+			normalized = WrapVector(val3.eulerAngles);
 		}
 		return Vector2.op_Implicit(normalized);
 	}
@@ -1153,9 +1146,9 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public GameObject SetMomentLookTarget(Transform parent = null, Vector3? position = null, float? destroyTimer = null, bool worldPosition = false)
 	{
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d2: Expected O, but got Unknown
+		//IL_00d2: Expected Obj, but got Unknown
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Expected O, but got Unknown
+		//IL_0068: Expected Obj, but got Unknown
 		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
@@ -1490,25 +1483,25 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
-		eyes = (Transform[])(object)new Transform[0];
+		eyes = new Transform[0];
 		if ((Object)(object)LeftEye != (Object)null || (Object)(object)RightEye != (Object)null)
 		{
 			if ((Object)(object)LeftEye != (Object)null && (Object)(object)RightEye != (Object)null)
 			{
-				eyes = (Transform[])(object)new Transform[2] { LeftEye, RightEye };
+				eyes = new Transform[2] { LeftEye, RightEye };
 			}
 			else if ((Object)(object)LeftEye != (Object)null)
 			{
-				eyes = (Transform[])(object)new Transform[1] { LeftEye };
+				eyes = new Transform[1] { LeftEye };
 			}
 			else
 			{
-				eyes = (Transform[])(object)new Transform[1] { RightEye };
+				eyes = new Transform[1] { RightEye };
 			}
 		}
-		eyeForwards = (Vector3[])(object)new Vector3[eyes.Length];
-		eyesInitLocalRotations = (Quaternion[])(object)new Quaternion[eyes.Length];
-		eyesLerpRotations = (Quaternion[])(object)new Quaternion[eyes.Length];
+		eyeForwards = new Vector3[eyes.Length];
+		eyesInitLocalRotations = new Quaternion[eyes.Length];
+		eyesLerpRotations = new Quaternion[eyes.Length];
 		for (int i = 0; i < eyeForwards.Length; i++)
 		{
 			Vector3 val = eyes[i].position + Vector3.Scale(BaseTransform.forward, ((Component)eyes[i]).transform.lossyScale);
@@ -1516,7 +1509,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			Vector3[] array = eyeForwards;
 			int num = i;
 			Vector3 val2 = eyes[i].InverseTransformPoint(val) - eyes[i].InverseTransformPoint(position);
-			array[num] = ((Vector3)(ref val2)).normalized;
+			array[num] = val2.normalized;
 			eyesInitLocalRotations[i] = eyes[i].localRotation;
 			eyesLerpRotations[i] = eyes[i].rotation;
 		}
@@ -1646,9 +1639,9 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		}
 		Vector3 lookStartMeasurePosition = GetLookStartMeasurePosition();
 		Quaternion val2 = Quaternion.LookRotation(val.position - lookStartMeasurePosition);
-		Vector3 eulerAngles = ((Quaternion)(ref val2)).eulerAngles;
+		Vector3 eulerAngles = val2.eulerAngles;
 		Quaternion val3 = GetHeadReference().rotation * Quaternion.FromToRotation(headForward, Vector3.forward);
-		Vector3 eulerAngles2 = ((Quaternion)(ref val3)).eulerAngles;
+		Vector3 eulerAngles2 = val3.eulerAngles;
 		Vector2 val4 = Vector2.op_Implicit(new Vector3(Mathf.DeltaAngle(eulerAngles.x, eulerAngles2.x), Mathf.DeltaAngle(eulerAngles.y, eulerAngles2.y)));
 		if (val4.x > EyesYRange.y)
 		{
@@ -2189,22 +2182,22 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			else
 			{
 				val = finalLookPosition - GetLookStartMeasurePosition();
-				Vector3 normalized = ((Vector3)(ref val)).normalized;
+				Vector3 normalized = val.normalized;
 				if (usingAxisCorrection)
 				{
-					Matrix4x4 inverse = ((Matrix4x4)(ref axisCorrectionMatrix)).inverse;
-					val = ((Matrix4x4)(ref inverse)).MultiplyVector(normalized);
-					normalized = ((Vector3)(ref val)).normalized;
+					Matrix4x4 inverse = axisCorrectionMatrix.inverse;
+					val = inverse.MultiplyVector(normalized);
+					normalized = val.normalized;
 					Vector3 val2 = normalized;
-					val = ((Matrix4x4)(ref axisCorrectionMatrix)).MultiplyVector(ModelUpAxis);
-					val3 = Quaternion.LookRotation(val2, ((Vector3)(ref val)).normalized);
-					normalized = WrapVector(((Quaternion)(ref val3)).eulerAngles);
+					val = axisCorrectionMatrix.MultiplyVector(ModelUpAxis);
+					val3 = Quaternion.LookRotation(val2, val.normalized);
+					normalized = WrapVector(val3.eulerAngles);
 				}
 				else
 				{
 					normalized = BaseTransform.InverseTransformDirection(normalized);
 					val3 = Quaternion.LookRotation(normalized, BaseTransform.TransformDirection(ModelUpAxis));
-					normalized = WrapVector(((Quaternion)(ref val3)).eulerAngles);
+					normalized = WrapVector(val3.eulerAngles);
 				}
 				targetLookAngles = normalized;
 			}
@@ -2215,7 +2208,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			{
 				Quaternion val4 = Quaternion.FromToRotation(Vector3.right, Vector3.Cross(Vector3.up, ModelForwardAxis));
 				val4 = Quaternion.Euler(finalLookAngles) * val4 * BaseTransform.rotation;
-				val5 = ((Quaternion)(ref val4)).eulerAngles;
+				val5 = val4.eulerAngles;
 			}
 			else
 			{
@@ -2227,8 +2220,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		else
 		{
 			val = finalLookPosition - GetLookStartMeasurePosition();
-			val3 = LookRotationParental(((Vector3)(ref val)).normalized);
-			val5 = ((Quaternion)(ref val3)).eulerAngles;
+			val3 = LookRotationParental(val.normalized);
+			val5 = val3.eulerAngles;
 		}
 		if (!_stopLooking)
 		{
@@ -2354,7 +2347,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		{
 			_parentalBackParentRot = ParentalReferenceBone.rotation;
 		}
-		Vector3 val = Quaternion.Inverse(_parentalBackParentRot) * ((Vector3)(ref direction)).normalized;
+		Vector3 val = Quaternion.Inverse(_parentalBackParentRot) * direction.normalized;
 		_parentalAngles.y = AngleAroundAxis(parentalReferenceLookForward, val, parentalReferenceUp);
 		Vector3 axis = Vector3.Cross(parentalReferenceUp, val);
 		Vector3 firstDirection = val - Vector3.Project(val, parentalReferenceUp);
@@ -2727,7 +2720,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		if (!usingAxisCorrection)
 		{
 			Quaternion val = BaseTransform.rotation * Quaternion.Inverse(lastBaseRotation);
-			Vector3 eulerAngles = ((Quaternion)(ref val)).eulerAngles;
+			Vector3 eulerAngles = val.eulerAngles;
 			eulerAngles = WrapVector(eulerAngles) * BaseRotationCompensation;
 			animatedLookAngles -= eulerAngles;
 		}
@@ -2737,20 +2730,64 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			{
 			case EFAnimationStyle.SmoothDamp:
 			{
-				float num4 = ((RotationSpeed < 0.8f) ? Mathf.Lerp(0.4f, 0.18f, RotationSpeed / 0.8f) : ((RotationSpeed < 1.7f) ? Mathf.Lerp(0.18f, 0.1f, (RotationSpeed - 0.8f) / 0.90000004f) : ((!(RotationSpeed < 2.15f)) ? Mathf.Lerp(0.05f, 0.02f, (RotationSpeed - 2.15f) / 0.3499999f) : Mathf.Lerp(0.1f, 0.05f, (RotationSpeed - 1.7f) / 0.45000005f))));
+				float num4;
+				if (RotationSpeed < 0.8f)
+				{
+					num4 = Mathf.Lerp(0.4f, 0.18f, RotationSpeed / 0.8f);
+				}
+				else if (RotationSpeed < 1.7f)
+				{
+					num4 = Mathf.Lerp(0.18f, 0.1f, (RotationSpeed - 0.8f) / 0.90000004f);
+				}
+				else
+				{
+					num4 = ((!(RotationSpeed < 2.15f)) ? Mathf.Lerp(0.05f, 0.02f, (RotationSpeed - 2.15f) / 0.3499999f) : Mathf.Lerp(0.1f, 0.05f, (RotationSpeed - 1.7f) / 0.45000005f));
+				}
 				num4 *= smoothingEffect;
-				float num5 = ((MaxRotationSpeed >= 2.5f) ? float.PositiveInfinity : ((MaxRotationSpeed < 0.8f) ? Mathf.Lerp(100f, 430f, MaxRotationSpeed / 0.8f) : ((!(MaxRotationSpeed < 1.7f)) ? Mathf.Lerp(685f, 1250f, (MaxRotationSpeed - 1.7f) / 0.79999995f) : Mathf.Lerp(430f, 685f, (MaxRotationSpeed - 0.8f) / 0.90000004f))));
+				float num5;
+				if (MaxRotationSpeed >= 2.5f)
+				{
+					num5 = float.PositiveInfinity;
+				}
+				else if (MaxRotationSpeed < 0.8f)
+				{
+					num5 = Mathf.Lerp(100f, 430f, MaxRotationSpeed / 0.8f);
+				}
+				else
+				{
+					num5 = ((!(MaxRotationSpeed < 1.7f)) ? Mathf.Lerp(685f, 1250f, (MaxRotationSpeed - 1.7f) / 0.79999995f) : Mathf.Lerp(430f, 685f, (MaxRotationSpeed - 0.8f) / 0.90000004f));
+				}
 				animatedLookAngles = Vector3.SmoothDamp(animatedLookAngles, Vector2.op_Implicit(angles), ref _velo_animatedLookAngles, num4, num5, delta);
 				break;
 			}
 			case EFAnimationStyle.FastLerp:
 			{
-				float num = ((RotationSpeed < 0.8f) ? Mathf.Lerp(2.85f, 4.5f, RotationSpeed / 0.8f) : ((RotationSpeed < 1.7f) ? Mathf.Lerp(4.5f, 10f, (RotationSpeed - 0.8f) / 0.90000004f) : ((!(RotationSpeed < 2.15f)) ? Mathf.Lerp(14f, 25f, (RotationSpeed - 2.15f) / 0.3499999f) : Mathf.Lerp(10f, 14f, (RotationSpeed - 1.7f) / 0.45000005f))));
+				float num;
+				if (RotationSpeed < 0.8f)
+				{
+					num = Mathf.Lerp(2.85f, 4.5f, RotationSpeed / 0.8f);
+				}
+				else if (RotationSpeed < 1.7f)
+				{
+					num = Mathf.Lerp(4.5f, 10f, (RotationSpeed - 0.8f) / 0.90000004f);
+				}
+				else
+				{
+					num = ((!(RotationSpeed < 2.15f)) ? Mathf.Lerp(14f, 25f, (RotationSpeed - 2.15f) / 0.3499999f) : Mathf.Lerp(10f, 14f, (RotationSpeed - 1.7f) / 0.45000005f));
+				}
 				num /= smoothingEffect;
 				Vector3 val2 = Vector3.Lerp(animatedLookAngles, Vector2.op_Implicit(angles), num * delta);
 				if (MaxRotationSpeed < 2.5f)
 				{
-					float num2 = ((MaxRotationSpeed < 1.1f) ? Mathf.Lerp(5f, 9f, MaxRotationSpeed / 1.1f) : ((!(MaxRotationSpeed < 1.7f)) ? Mathf.Lerp(20f, 45f, (MaxRotationSpeed - 1.7f) / 0.79999995f) : Mathf.Lerp(9f, 20f, (MaxRotationSpeed - 1.1f) / 0.6f)));
+					float num2;
+					if (MaxRotationSpeed < 1.1f)
+					{
+						num2 = Mathf.Lerp(5f, 9f, MaxRotationSpeed / 1.1f);
+					}
+					else
+					{
+						num2 = ((!(MaxRotationSpeed < 1.7f)) ? Mathf.Lerp(20f, 45f, (MaxRotationSpeed - 1.7f) / 0.79999995f) : Mathf.Lerp(9f, 20f, (MaxRotationSpeed - 1.1f) / 0.6f));
+					}
 					float num3 = Vector3.Distance(val2, animatedLookAngles);
 					if (num3 > num2)
 					{
@@ -2825,9 +2862,9 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 				}
 				if (leadBoneInitLocalOffset == Vector3.zero)
 				{
-					return LeadBone.position + ((Matrix4x4)(ref axisCorrectionMatrix)).MultiplyVector(StartLookPointOffset);
+					return LeadBone.position + axisCorrectionMatrix.MultiplyVector(StartLookPointOffset);
 				}
-				return ((Matrix4x4)(ref axisCorrectionMatrix)).MultiplyPoint(leadBoneInitLocalOffset) + ((Matrix4x4)(ref axisCorrectionMatrix)).MultiplyVector(StartLookPointOffset);
+				return axisCorrectionMatrix.MultiplyPoint(leadBoneInitLocalOffset) + axisCorrectionMatrix.MultiplyVector(StartLookPointOffset);
 			}
 			if (leadBoneInitLocalOffset == Vector3.zero)
 			{
@@ -2858,8 +2895,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		}
 		else
 		{
-			Matrix4x4 inverse = ((Matrix4x4)(ref axisCorrectionMatrix)).inverse;
-			leadBoneInitLocalOffset = ((Matrix4x4)(ref inverse)).MultiplyPoint(LeadBone.position);
+			Matrix4x4 inverse = axisCorrectionMatrix.inverse;
+			leadBoneInitLocalOffset = inverse.MultiplyPoint(LeadBone.position);
 		}
 		RefreshStartLookPoint = false;
 	}
@@ -3089,14 +3126,14 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 currentHeadForwardDirection = GetCurrentHeadForwardDirection();
-		Vector3 normalized = ((Vector3)(ref preLookDir)).normalized;
+		Vector3 normalized = preLookDir.normalized;
 		Quaternion val = Quaternion.LookRotation(currentHeadForwardDirection);
-		Vector3 val2 = ((Quaternion)(ref val)).eulerAngles;
+		Vector3 val2 = val.eulerAngles;
 		Vector3 val3;
 		if (!(normalized == Vector3.zero))
 		{
 			val = Quaternion.LookRotation(normalized);
-			val3 = ((Quaternion)(ref val)).eulerAngles;
+			val3 = val.eulerAngles;
 		}
 		else
 		{
@@ -3104,7 +3141,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		}
 		Vector3 val4 = val3;
 		val = Quaternion.LookRotation(((Component)this).transform.TransformVector(ModelForwardAxis));
-		Vector3 eulerAngles = ((Quaternion)(ref val)).eulerAngles;
+		Vector3 eulerAngles = val.eulerAngles;
 		Vector2 val5 = Vector2.op_Implicit(new Vector3(Mathf.DeltaAngle(val2.x, eulerAngles.x), Mathf.DeltaAngle(val2.y, eulerAngles.y)));
 		float num = StopLookingAbove;
 		if (Mathf.Abs(XRotationLimits.x) > StopLookingAbove)
@@ -3388,7 +3425,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	private void CheckOverrideReference()
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Expected O, but got Unknown
+		//IL_002f: Expected Obj, but got Unknown
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
@@ -3683,10 +3720,10 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			Vector3 position = other.position;
 			Vector3 up = Vector3.up;
 			Bounds bounds = componentInChildren2.bounds;
-			Vector3 val = position + other.TransformVector(up * (((Bounds)(ref bounds)).max.y * 0.9f));
+			Vector3 val = position + other.TransformVector(up * (bounds.max.y * 0.9f));
 			Vector3 forward = Vector3.forward;
 			bounds = componentInChildren2.bounds;
-			return val + other.TransformVector(forward * (((Bounds)(ref bounds)).max.z * 0.75f));
+			return val + other.TransformVector(forward * (bounds.max.z * 0.75f));
 		}
 		return other.position;
 	}
@@ -3759,7 +3796,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			{
 				rotations += OffsetAuto;
 				val = Quaternion.Euler(rotations) * Quaternion.FromToRotation(FromAuto, ModelForwardAxis);
-				rotations = ((Quaternion)(ref val)).eulerAngles;
+				rotations = val.eulerAngles;
 			}
 			else
 			{
@@ -3769,12 +3806,12 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 					rotations.y *= RotCorrectionMultiplier.y;
 					rotations.z *= RotCorrectionMultiplier.z;
 					val = Quaternion.Euler(rotations) * Quaternion.FromToRotation(ManualFromAxis, ManualToAxis);
-					return ((Quaternion)(ref val)).eulerAngles;
+					return val.eulerAngles;
 				}
 				if (FixingPreset == EFAxisFixOrder.ZYX)
 				{
 					val = Quaternion.Euler(rotations.z, rotations.y - 90f, 0f - rotations.x - 90f);
-					return ((Quaternion)(ref val)).eulerAngles;
+					return val.eulerAngles;
 				}
 			}
 		}
@@ -3866,12 +3903,12 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			FromAuto = LeadBone.rotation * -Vector3.forward;
 			float num = Quaternion.Angle(Quaternion.identity, LeadBone.rotation);
 			Quaternion val = LeadBone.rotation * Quaternion.Inverse(Quaternion.FromToRotation(FromAuto, ModelForwardAxis));
-			Vector3 eulerAngles = ((Quaternion)(ref val)).eulerAngles;
-			Quaternion val2 = Quaternion.AngleAxis(num, ((Vector3)(ref eulerAngles)).normalized);
-			OffsetAuto = ((Quaternion)(ref val2)).eulerAngles;
+			Vector3 eulerAngles = val.eulerAngles;
+			Quaternion val2 = Quaternion.AngleAxis(num, eulerAngles.normalized);
+			OffsetAuto = val2.eulerAngles;
 			BaseTransform.rotation = rotation;
 			RefreshParentalLookReferenceAxis();
-			headForward = Quaternion.FromToRotation(LeadBone.InverseTransformDirection(BaseTransform.TransformDirection(((Vector3)(ref ModelForwardAxis)).normalized)), Vector3.forward) * Vector3.forward;
+			headForward = Quaternion.FromToRotation(LeadBone.InverseTransformDirection(BaseTransform.TransformDirection(ModelForwardAxis.normalized)), Vector3.forward) * Vector3.forward;
 		}
 		else
 		{
@@ -3895,8 +3932,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		parentalReferenceLookForward = Quaternion.Inverse(LeadBone.parent.rotation) * BaseTransform.rotation * ((Vector3)(ref ModelForwardAxis)).normalized;
-		parentalReferenceUp = Quaternion.Inverse(LeadBone.parent.rotation) * BaseTransform.rotation * ((Vector3)(ref ModelUpAxis)).normalized;
+		parentalReferenceLookForward = Quaternion.Inverse(LeadBone.parent.rotation) * BaseTransform.rotation * ModelForwardAxis.normalized;
+		parentalReferenceUp = Quaternion.Inverse(LeadBone.parent.rotation) * BaseTransform.rotation * ModelUpAxis.normalized;
 	}
 
 	public Vector3 GetCurrentHeadForwardDirection()
@@ -4100,81 +4137,5 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		//IL_0341: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0356: Unknown result type (might be due to invalid IL or missing references)
 		//IL_035b: Unknown result type (might be due to invalid IL or missing references)
-		LagRotation = 0.85f;
-		LagEvery = 0.285f;
-		DelayMaxDistance = 0.25111f;
-		DelayGoSpeed = 0.6f;
-		BirdTargetPosition = Vector3.forward;
-		birdTargetPositionMemory = Vector3.forward;
-		preWeightFaloff = -1f;
-		LeftEyeOffsetRotation = Vector3.zero;
-		RightEyeOffsetRotation = Vector3.zero;
-		EyesSpeed = 0.5f;
-		EyesBlend = 1f;
-		EyesXRange = new Vector2(-60f, 60f);
-		EyesYRange = new Vector2(-50f, 50f);
-		EyesNoKeyframes = true;
-		EyesOutOfRangeBlend = 1f;
-		NodAxis = Vector3.right;
-		BackBonesNod = 0.15f;
-		nodDuration = 1f;
-		smoothingPower = 1f;
-		smoothingTime = 1f;
-		smoothingEffect = 1f;
-		ParentalOffsetsV = 2;
-		smoothLookPosition = Vector3.zero;
-		_velo_smoothLookPosition = Vector3.zero;
-		finalLookPosition = Vector3.zero;
-		_parentalAngles = Vector2.zero;
-		unclampedLookAngles = Vector3.zero;
-		targetLookAngles = Vector3.zero;
-		animatedLookAngles = Vector3.zero;
-		finalLookAngles = Vector3.zero;
-		_preLookAboveLookAngles = Vector3.zero;
-		_velo_animatedLookAngles = Vector3.zero;
-		leadBoneInitLocalOffset = Vector3.zero;
-		DestroyMomentTargetOnMaxDistance = true;
-		monitorTransitionTime = 0.8f;
-		finalMotionWeight = 1f;
-		animatedMotionWeight = 1f;
-		_velo_animatedMotionWeight = 1f;
-		_editor_displayName = "Look Animator 2";
-		FaloffValue = 0.35f;
-		FaloffValueB = 1.1f;
-		AutoBackbonesWeights = true;
-		BackBonesFalloff = AnimationCurve.Linear(0f, 1f, 1f, 0.1f);
-		CompensationBones = new List<CompensationBone>();
-		CompensationWeight = 0.5f;
-		CompensationWeightB = 0.5f;
-		targetCompensationWeight = 0.5f;
-		StartAfterTPose = true;
-		RotationSpeed = 0.65f;
-		StopLookingAbove = 180f;
-		StopLookingAboveFactor = 1f;
-		WhenAboveGoBackDuration = 0.2f;
-		XRotationLimits = new Vector2(-80f, 80f);
-		XElasticRange = 20f;
-		LimitHolder = true;
-		YRotationLimits = new Vector2(-50f, 50f);
-		YElasticRange = 15f;
-		LookAnimatorAmount = 1f;
-		AnchorStartLookPoint = true;
-		RefreshStartLookPoint = true;
-		SyncWithAnimator = true;
-		WeightsMultiplier = 1f;
-		MaxRotationSpeed = 2.5f;
-		DetectZeroKeyframes = true;
-		SimulationSpeed = 1f;
-		Calibration = true;
-		ModelForwardAxis = Vector3.forward;
-		ModelUpAxis = Vector3.up;
-		ManualFromAxis = Vector3.forward;
-		ManualToAxis = Vector3.forward;
-		RotationOffset = new Vector3(0f, 0f, 0f);
-		BackBonesAddOffset = new Vector3(0f, 0f, 0f);
-		RotCorrectionMultiplier = new Vector3(1f, 1f, 1f);
-		ConstantParentalAxisUpdate = true;
-		updateLookAnimator = true;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

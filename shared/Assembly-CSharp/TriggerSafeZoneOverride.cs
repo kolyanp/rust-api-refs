@@ -28,7 +28,7 @@ public class TriggerSafeZoneOverride : TriggerBase, IServerComponent
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		base.Awake();
 		triggerCollider = ((Component)this).GetComponent<Collider>();
-		base.InterestLayers = LayerMask.op_Implicit(LayerMask.op_Implicit(base.InterestLayers) | 0x200);
+		InterestLayers = LayerMask.op_Implicit(LayerMask.op_Implicit(InterestLayers) | 0x200);
 		Apartment = ((Component)this).GetComponentInParent<ApartmentRoom>();
 	}
 

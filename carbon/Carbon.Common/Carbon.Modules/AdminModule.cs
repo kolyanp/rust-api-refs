@@ -8,7 +8,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using API.Hooks;
@@ -84,7 +83,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		public static void Add(BasePlayer player, string message, float duration = 2f)
 		{
 			List<Notification> queue = GetOrCreateQueue(player);
-			Community.Runtime.Core.timer.In(duration, delegate
+			Community.Runtime.Core.timer.In(duration, () =>
 			{
 				queue.RemoveAt(queue.Count - 1);
 				Redraw(player);
@@ -229,7 +228,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				Logger.Warn("Failed GetStorage<" + typeof(T).Name + ">(" + tab?.Id + ", " + id + "): " + ex.Message);
 			}
-			return default(T);
+			return default;
 		}
 
 		public T SetStorage<T>(Tab tab, string id, T value)
@@ -243,7 +242,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			if ((Object)(object)Player == (Object)null)
 			{
-				return default(T);
+				return default;
 			}
 			return GetStorage(tab, id, value);
 		}
@@ -321,7 +320,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					Pool.Free<Option>(ref pinnedOption);
 				}
-				for (int i = 0; i < base.Count; i++)
+				for (int i = 0; i < Count; i++)
 				{
 					Option option = base[i];
 					Pool.Free<Option>(ref option);
@@ -368,10 +367,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 
 			public OptionName(string name, TextAnchor align, string tooltip = null, bool hidden = false)
+				: base(name, tooltip, hidden)
 			{
 				//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 				//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-				base._002Ector(name, tooltip, hidden);
 				Align = align;
 			}
 		}
@@ -393,10 +392,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 
 			public OptionText(string name, int size, string color, TextAnchor align, CUI.Handler.FontTypes font, bool isInput, string tooltip = null, bool hidden = false)
+				: base(name, tooltip, hidden)
 			{
 				//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-				base._002Ector(name, tooltip, hidden);
 				Align = align;
 				Size = size;
 				Color = color;
@@ -422,7 +421,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			public OptionInput(string name, Func<PlayerSession, string> placeholder, int characterLimit, bool readOnly, Action<PlayerSession, object[]> args, string tooltip = null, bool hidden = false)
 				: base(name, tooltip, hidden)
 			{
-				Placeholder = delegate(PlayerSession ap)
+				Placeholder = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -434,7 +433,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						return string.Empty;
 					}
 				};
-				Callback = delegate(PlayerSession ap, object[] arg)
+				Callback = (PlayerSession ap, object[] arg) =>
 				{
 					try
 					{
@@ -464,24 +463,21 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 			public Action<PlayerSession> Callback;
 
-			public TextAnchor Align;
+			public TextAnchor Align = (TextAnchor)4;
 
 			public OptionButton()
 			{
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				Align = (TextAnchor)4;
-				base._002Ector();
 			}
 
 			public OptionButton(string name, TextAnchor align, Action<PlayerSession> callback, Func<PlayerSession, Types> type = null, string tooltip = null, bool hidden = false)
+				: base(name, tooltip, hidden)
 			{
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-				Align = (TextAnchor)4;
-				base._002Ector(name, tooltip, hidden);
 				Align = align;
-				Callback = delegate(PlayerSession ap)
+				Callback = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -492,7 +488,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						Logger.Error("Failed OptionButton.Callback callback (" + name + "): " + ex.Message);
 					}
 				};
-				Type = delegate(PlayerSession ap)
+				Type = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -507,10 +503,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 
 			public OptionButton(string name, Action<PlayerSession> callback, Func<PlayerSession, Types> type = null, string tooltip = null, bool hidden = false)
+				: base(name, tooltip, hidden)
 			{
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				Align = (TextAnchor)4;
-				base._002Ector(name, tooltip, hidden);
 				Callback = callback;
 				Type = type;
 			}
@@ -529,7 +524,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			public OptionToggle(string name, Action<PlayerSession> callback, Func<PlayerSession, bool> isOn = null, string tooltip = null, bool hidden = false)
 				: base(name, tooltip, hidden)
 			{
-				Callback = delegate(PlayerSession ap)
+				Callback = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -540,7 +535,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						Logger.Error("Failed OptionToggle.Callback callback (" + name + "): " + ex.Message);
 					}
 				};
-				IsOn = delegate(PlayerSession ap)
+				IsOn = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -568,7 +563,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			public OptionEnum(string name, Action<PlayerSession, bool> callback, Func<PlayerSession, string> text, string tooltip = null, bool hidden = false)
 				: base(name, tooltip, hidden)
 			{
-				Callback = delegate(PlayerSession ap, bool value)
+				Callback = (PlayerSession ap, bool value) =>
 				{
 					try
 					{
@@ -579,7 +574,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						Logger.Error("Failed OptionEnum.Callback callback (" + name + "): " + ex.Message);
 					}
 				};
-				Text = delegate(PlayerSession ap)
+				Text = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -615,7 +610,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				Min = min;
 				Max = max;
-				Callback = delegate(PlayerSession ap, float arg)
+				Callback = (PlayerSession ap, float arg) =>
 				{
 					try
 					{
@@ -626,7 +621,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						Logger.Error("Failed OptionRange.Callback callback (" + name + "): " + ex.Message);
 					}
 				};
-				Value = delegate(PlayerSession ap)
+				Value = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -638,7 +633,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						return 0f;
 					}
 				};
-				Text = delegate(PlayerSession ap)
+				Text = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -670,7 +665,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			public OptionDropdown(string name, Func<PlayerSession, int> index, Action<PlayerSession, int> callback, string[] options, string[] optionsIcons, string tooltip = null, bool hidden = false)
 				: base(name, tooltip, hidden)
 			{
-				Index = delegate(PlayerSession ap)
+				Index = (PlayerSession ap) =>
 				{
 					try
 					{
@@ -682,7 +677,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						return 0;
 					}
 				};
-				Callback = delegate(PlayerSession ap, int value)
+				Callback = (PlayerSession ap, int value) =>
 				{
 					try
 					{
@@ -792,7 +787,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					if (string.IsNullOrEmpty(identifier))
 					{
-						return default(ChartCache);
+						return default;
 					}
 					if (TryGetValue(identifier, out var chartCache) && chartCache.Status != ChartCache.StatusTypes.Failure)
 					{
@@ -800,10 +795,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						return chartCache;
 					}
 					chartCache.Dispose();
-					chartCache = default(ChartCache);
+					chartCache = default;
 					chartCache.ViewingPool = new List<ulong>();
 					chartCache.Status = ChartCache.StatusTypes.Processing;
-					chart.StartProcess(delegate(byte[] data, Exception exception)
+					chart.StartProcess((byte[] data, Exception exception) =>
 					{
 						if (exception != null)
 						{
@@ -1062,7 +1057,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			OptionToggle optionToggle = Pool.Get<OptionToggle>();
 			optionToggle.Name = name;
 			optionToggle.Callback = callback;
-			optionToggle.IsOn = delegate(PlayerSession ap)
+			optionToggle.IsOn = (PlayerSession ap) =>
 			{
 				try
 				{
@@ -1258,7 +1253,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 		public static Tab Get()
 		{
-			Instance = new Tab("carbon", "Carbon", Community.Runtime.Core, delegate(PlayerSession ap, Tab t)
+			Instance = new Tab("carbon", "Carbon", Community.Runtime.Core, (PlayerSession ap, Tab t) =>
 			{
 				ap.SetStorage(t, "carbontabedit", value: false);
 				Refresh(t, ap);
@@ -1278,18 +1273,18 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			if (Singleton.HasAccess(ap.Player, "carbon.server_settings"))
 			{
-				tab.AddInput(0, Singleton.GetPhrase("hostname", ap.Player.UserIDString), (PlayerSession playerSession) => Server.hostname ?? "", delegate(PlayerSession playerSession, object[] args)
+				tab.AddInput(0, Singleton.GetPhrase("hostname", ap.Player.UserIDString), (PlayerSession playerSession) => Server.hostname ?? "", (PlayerSession playerSession, object[] args) =>
 				{
 					string str = ((args.Length != 0) ? args.Select((object x) => x as string).ToString(" ") : Server.hostname);
-					tab.CreateDialog("Are you sure you want to update the host name?", delegate
+					tab.CreateDialog("Are you sure you want to update the host name?", (PlayerSession playerSession2) =>
 					{
 						Server.hostname = str;
 					});
 				});
-				tab.AddInput(0, Singleton.GetPhrase("maxplayers", ap.Player.UserIDString), (PlayerSession playerSession) => $"{Server.maxplayers}", delegate(PlayerSession playerSession, object[] args)
+				tab.AddInput(0, Singleton.GetPhrase("maxplayers", ap.Player.UserIDString), (PlayerSession playerSession) => $"{Server.maxplayers}", (PlayerSession playerSession, object[] args) =>
 				{
 					int val = ((args.Length != 0) ? ((string)args[0]).ToInt() : Server.maxplayers);
-					tab.CreateDialog("Are you sure you want to update the maximum players that can join the server?", delegate
+					tab.CreateDialog("Are you sure you want to update the maximum players that can join the server?", (PlayerSession playerSession2) =>
 					{
 						Server.maxplayers = val;
 					});
@@ -1315,7 +1310,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					{
 						tab.AddText(0, item, 8, "1 1 1 0.85", (TextAnchor)3, CUI.Handler.FontTypes.DroidSansMono, isInput: true);
 					}
-					tab.AddInputButton(0, Singleton.GetPhrase("execservercmd", ap.Player.UserIDString), 0.2f, new Tab.OptionInput(null, null, 0, readOnly: false, delegate(PlayerSession ap2, object[] args)
+					tab.AddInputButton(0, Singleton.GetPhrase("execservercmd", ap.Player.UserIDString), 0.2f, new Tab.OptionInput(null, null, 0, readOnly: false, (PlayerSession ap2, object[] args) =>
 					{
 						//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 						string text = ((args.Length != 0) ? ((string)args[0]) : string.Empty);
@@ -1324,7 +1319,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 							ConsoleSystem.Run(Option.Server, text, (object[])null);
 							Refresh(tab, ap2);
 						}
-					}), new Tab.OptionButton("Refresh", delegate(PlayerSession ap2)
+					}), new Tab.OptionButton("Refresh", (PlayerSession ap2) =>
 					{
 						Refresh(tab, ap2);
 					}));
@@ -1336,7 +1331,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				bool editMode = Singleton.HasAccess(ap.Player, "carbon.quickactions.edit") && ap.GetStorage(tab, "carbontabedit", @default: false);
 				foreach (AdminConfig.ActionButton action in Singleton.ConfigInstance.QuickActions)
 				{
-					tab.AddButton(1, editMode ? (action.Name + " (" + action.Command + ")" + (action.User ? " [user]" : string.Empty) + (action.IncludeUserId ? " [incl.user]" : string.Empty)) : action.Name, delegate(PlayerSession ap2)
+					tab.AddButton(1, editMode ? (action.Name + " (" + action.Command + ")" + (action.User ? " [user]" : string.Empty) + (action.IncludeUserId ? " [incl.user]" : string.Empty)) : action.Name, (PlayerSession ap2) =>
 					{
 						if (editMode)
 						{
@@ -1346,7 +1341,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}
 						else if (action.ConfirmDialog)
 						{
-							tab.CreateDialog("Are you sure you want to execute?", delegate(PlayerSession ap3)
+							tab.CreateDialog("Are you sure you want to execute?", (PlayerSession ap3) =>
 							{
 								Execute(action, ap3);
 							});
@@ -1360,27 +1355,27 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				if (editMode)
 				{
 					tab.AddText(1, "Click on existent buttons above to delete. Separate commands with | if you want multiple commands per button.", 10, "1 1 1 0.5", (TextAnchor)4);
-					tab.AddInput(1, Singleton.GetPhrase("quickactions_name", ap.Player.UserIDString), (PlayerSession playerSession) => playerSession.GetStorage(tab, "carbontabbtnname", string.Empty), delegate(PlayerSession playerSession, object[] args)
+					tab.AddInput(1, Singleton.GetPhrase("quickactions_name", ap.Player.UserIDString), (PlayerSession playerSession) => playerSession.GetStorage(tab, "carbontabbtnname", string.Empty), (PlayerSession playerSession, object[] args) =>
 					{
 						playerSession.SetStorage(tab, "carbontabbtnname", (args.Length != 0) ? ((string)args[0]) : string.Empty);
 					}, Singleton.GetPhrase("quickactions_name_help", ap.Player.UserIDString));
-					tab.AddInput(1, Singleton.GetPhrase("quickactions_command", ap.Player.UserIDString), (PlayerSession playerSession) => playerSession.GetStorage(tab, "carbontabbtncmd", string.Empty), delegate(PlayerSession playerSession, object[] args)
+					tab.AddInput(1, Singleton.GetPhrase("quickactions_command", ap.Player.UserIDString), (PlayerSession playerSession) => playerSession.GetStorage(tab, "carbontabbtncmd", string.Empty), (PlayerSession playerSession, object[] args) =>
 					{
 						playerSession.SetStorage(tab, "carbontabbtncmd", (args.Length != 0) ? ((string)args[0]) : string.Empty);
 					}, Singleton.GetPhrase("quickactions_command_help", ap.Player.UserIDString));
-					tab.AddToggle(1, Singleton.GetPhrase("quickactions_user", ap.Player.UserIDString), delegate(PlayerSession playerSession)
+					tab.AddToggle(1, Singleton.GetPhrase("quickactions_user", ap.Player.UserIDString), (PlayerSession playerSession) =>
 					{
 						playerSession.SetStorage(tab, "carbontabbtnuser", !playerSession.GetStorage(tab, "carbontabbtnuser", @default: false));
 					}, (PlayerSession playerSession) => playerSession.GetStorage(tab, "carbontabbtnuser", @default: false), Singleton.GetPhrase("quickactions_user_help", ap.Player.UserIDString));
-					tab.AddToggle(1, Singleton.GetPhrase("quickactions_incluserid", ap.Player.UserIDString), delegate(PlayerSession playerSession)
+					tab.AddToggle(1, Singleton.GetPhrase("quickactions_incluserid", ap.Player.UserIDString), (PlayerSession playerSession) =>
 					{
 						playerSession.SetStorage(tab, "carbontabbtnincludeuserid", !playerSession.GetStorage(tab, "carbontabbtnincludeuserid", @default: false));
 					}, (PlayerSession playerSession) => playerSession.GetStorage(tab, "carbontabbtnincludeuserid", @default: false), Singleton.GetPhrase("quickactions_incluserid_help", ap.Player.UserIDString));
-					tab.AddToggle(1, Singleton.GetPhrase("quickactions_confirmdialog", ap.Player.UserIDString), delegate(PlayerSession playerSession)
+					tab.AddToggle(1, Singleton.GetPhrase("quickactions_confirmdialog", ap.Player.UserIDString), (PlayerSession playerSession) =>
 					{
 						playerSession.SetStorage(tab, "carbontabbtnconfirmdialog", !playerSession.GetStorage(tab, "carbontabbtnconfirmdialog", @default: false));
 					}, (PlayerSession playerSession) => playerSession.GetStorage(tab, "carbontabbtnconfirmdialog", @default: false), Singleton.GetPhrase("quickactions_confirmdialog_help", ap.Player.UserIDString));
-					tab.AddButton(1, Singleton.GetPhrase("quickactions_add", ap.Player.UserIDString), delegate(PlayerSession playerSession)
+					tab.AddButton(1, Singleton.GetPhrase("quickactions_add", ap.Player.UserIDString), (PlayerSession playerSession) =>
 					{
 						string storage = playerSession.GetStorage(tab, "carbontabbtnname", string.Empty);
 						string storage2 = playerSession.GetStorage(tab, "carbontabbtncmd", string.Empty);
@@ -1409,7 +1404,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				if (Singleton.HasAccess(ap.Player, "carbon.quickactions.edit"))
 				{
-					tab.AddButton(1, Singleton.GetPhrase(editMode ? "quickactions_stopedit" : "quickactions_edit", ap.Player.UserIDString), delegate(PlayerSession playerSession)
+					tab.AddButton(1, Singleton.GetPhrase(editMode ? "quickactions_stopedit" : "quickactions_edit", ap.Player.UserIDString), (PlayerSession playerSession) =>
 					{
 						playerSession.SetStorage(tab, "carbontabedit", !editMode);
 						Refresh(tab, playerSession);
@@ -1421,50 +1416,50 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				return;
 			}
 			tab.AddName(1, Singleton.GetPhrase("general", ap.Player.UserIDString), (TextAnchor)3);
-			tab.AddToggle(1, Singleton.GetPhrase("ismodded", ap.Player.UserIDString), delegate
+			tab.AddToggle(1, Singleton.GetPhrase("ismodded", ap.Player.UserIDString), (PlayerSession playerSession) =>
 			{
 				Config.IsModded = !Config.IsModded;
 				Community.Runtime.SaveConfig();
 			}, (PlayerSession playerSession) => Config.IsModded, Singleton.GetPhrase("ismodded_help", ap.Player.UserIDString));
-			tab.AddToggle(1, Singleton.GetPhrase("scriptwatchers", ap.Player.UserIDString), delegate
+			tab.AddToggle(1, Singleton.GetPhrase("scriptwatchers", ap.Player.UserIDString), (PlayerSession playerSession) =>
 			{
 				Config.Watchers.ScriptWatchers = !Config.Watchers.ScriptWatchers;
 				Community.Runtime.SaveConfig();
 			}, (PlayerSession playerSession) => Config.Watchers.ScriptWatchers, Singleton.GetPhrase("scriptwatchers_help", ap.Player.UserIDString));
-			tab.AddDropdown(1, Singleton.GetPhrase("scriptwatchersoption", ap.Player.UserIDString), (PlayerSession playerSession) => (int)Config.Watchers.ScriptWatcherOption, delegate(PlayerSession playerSession, int num2)
+			tab.AddDropdown(1, Singleton.GetPhrase("scriptwatchersoption", ap.Player.UserIDString), (PlayerSession playerSession) => (int)Config.Watchers.ScriptWatcherOption, (PlayerSession playerSession, int num2) =>
 			{
 				Config.Watchers.ScriptWatcherOption = (SearchOption)num2;
 				Community.Runtime.ScriptProcessor.IncludeSubdirectories = num2 == 1;
 				Community.Runtime.SaveConfig();
 			}, SearchDirectories, null, 0f, Singleton.GetPhrase("scriptwatchersoption_help", ap.Player.UserIDString));
-			tab.AddToggle(1, Singleton.GetPhrase("zipscriptwatchers", ap.Player.UserIDString), delegate
+			tab.AddToggle(1, Singleton.GetPhrase("zipscriptwatchers", ap.Player.UserIDString), (PlayerSession playerSession) =>
 			{
 				Config.Watchers.ZipScriptWatchers = !Config.Watchers.ZipScriptWatchers;
 				Community.Runtime.SaveConfig();
 			}, (PlayerSession playerSession) => Config.Watchers.ZipScriptWatchers, Singleton.GetPhrase("zipscriptwatchers_help", ap.Player.UserIDString));
 			tab.AddName(1, Singleton.GetPhrase("logging", ap.Player.UserIDString), (TextAnchor)3);
-			tab.AddDropdown(1, Singleton.GetPhrase("logfilemode", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Logging.LogFileMode, delegate(PlayerSession playerSession, int logFileMode)
+			tab.AddDropdown(1, Singleton.GetPhrase("logfilemode", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Logging.LogFileMode, (PlayerSession playerSession, int logFileMode) =>
 			{
 				Config.Logging.LogFileMode = logFileMode;
 				Community.Runtime.SaveConfig();
 			}, LogFileModes);
-			tab.AddDropdown(1, Singleton.GetPhrase("logverbosity", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Logging.LogVerbosity, delegate(PlayerSession playerSession, int logVerbosity)
+			tab.AddDropdown(1, Singleton.GetPhrase("logverbosity", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Logging.LogVerbosity, (PlayerSession playerSession, int logVerbosity) =>
 			{
 				Config.Logging.LogVerbosity = logVerbosity;
 				Community.Runtime.SaveConfig();
 			}, LogVerbosity);
-			tab.AddDropdown(1, Singleton.GetPhrase("logseverity", ap.Player.UserIDString), (PlayerSession playerSession) => (int)Config.Logging.LogSeverity, delegate(PlayerSession playerSession, int logSeverity)
+			tab.AddDropdown(1, Singleton.GetPhrase("logseverity", ap.Player.UserIDString), (PlayerSession playerSession) => (int)Config.Logging.LogSeverity, (PlayerSession playerSession, int logSeverity) =>
 			{
 				Config.Logging.LogSeverity = (Severity)logSeverity;
 				Community.Runtime.SaveConfig();
 			}, Enum.GetNames(typeof(Severity)));
 			tab.AddName(1, Singleton.GetPhrase("misc", ap.Player.UserIDString), (TextAnchor)3);
-			tab.AddInput(1, Singleton.GetPhrase("serverlang", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Language, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(1, Singleton.GetPhrase("serverlang", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Language, (PlayerSession playerSession, object[] args) =>
 			{
 				Config.Language = ((args.Length == 0) ? Config.Language : args[0]?.ToString());
 				Community.Runtime.SaveConfig();
 			});
-			tab.AddInput(1, Singleton.GetPhrase("webreqip", ap.Player.UserIDString), (PlayerSession playerSession) => Config.WebRequestIp, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(1, Singleton.GetPhrase("webreqip", ap.Player.UserIDString), (PlayerSession playerSession) => Config.WebRequestIp, (PlayerSession playerSession, object[] args) =>
 			{
 				if (args.Length != 0)
 				{
@@ -1476,7 +1471,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 				}
 			});
-			tab.AddToggle(1, Singleton.GetPhrase("consoleinfo", ap.Player.UserIDString), delegate
+			tab.AddToggle(1, Singleton.GetPhrase("consoleinfo", ap.Player.UserIDString), (PlayerSession playerSession) =>
 			{
 				Config.Misc.ShowConsoleInfo = !Config.Misc.ShowConsoleInfo;
 				if (Config.Misc.ShowConsoleInfo)
@@ -1490,7 +1485,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				Community.Runtime.SaveConfig();
 			}, (PlayerSession playerSession) => Config.Misc.ShowConsoleInfo, Singleton.GetPhrase("consoleinfo_help", ap.Player.UserIDString));
 			tab.AddName(1, Singleton.GetPhrase("permissions", ap.Player.UserIDString), (TextAnchor)3);
-			tab.AddInput(1, Singleton.GetPhrase("playerdefgroup", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Permissions.PlayerDefaultGroup, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(1, Singleton.GetPhrase("playerdefgroup", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Permissions.PlayerDefaultGroup, (PlayerSession playerSession, object[] args) =>
 			{
 				Config.Permissions.PlayerDefaultGroup = ((args.Length == 0) ? Config.Permissions.PlayerDefaultGroup : args[0]?.ToString());
 				if (string.IsNullOrEmpty(Config.Permissions.PlayerDefaultGroup))
@@ -1499,7 +1494,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				Community.Runtime.SaveConfig();
 			});
-			tab.AddInput(1, Singleton.GetPhrase("admindefgroup", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Permissions.AdminDefaultGroup, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(1, Singleton.GetPhrase("admindefgroup", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Permissions.AdminDefaultGroup, (PlayerSession playerSession, object[] args) =>
 			{
 				Config.Permissions.AdminDefaultGroup = ((args.Length == 0) ? Config.Permissions.AdminDefaultGroup : args[0]?.ToString());
 				if (string.IsNullOrEmpty(Config.Permissions.AdminDefaultGroup))
@@ -1508,7 +1503,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				Community.Runtime.SaveConfig();
 			});
-			tab.AddInput(1, Singleton.GetPhrase("moderatordefgroup", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Permissions.ModeratorDefaultGroup, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(1, Singleton.GetPhrase("moderatordefgroup", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Permissions.ModeratorDefaultGroup, (PlayerSession playerSession, object[] args) =>
 			{
 				Config.Permissions.ModeratorDefaultGroup = ((args.Length == 0) ? Config.Permissions.ModeratorDefaultGroup : args[0]?.ToString());
 				if (string.IsNullOrEmpty(Config.Permissions.ModeratorDefaultGroup))
@@ -1522,22 +1517,22 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				int index = num;
 				string symbol = Config.Compiler.ConditionalCompilationSymbols[num];
-				tab.AddInputButton(1, string.Empty, 0.075f, new Tab.OptionInput(null, (PlayerSession playerSession) => symbol, 0, readOnly: false, delegate(PlayerSession ap2, object[] args)
+				tab.AddInputButton(1, string.Empty, 0.075f, new Tab.OptionInput(null, (PlayerSession playerSession) => symbol, 0, readOnly: false, (PlayerSession ap2, object[] args) =>
 				{
 					Config.Compiler.ConditionalCompilationSymbols[index] = ((args.Length == 0) ? Config.Compiler.ConditionalCompilationSymbols[index] : args[0]?.ToString().ToUpper().Trim());
 					Refresh(tab, ap2);
 					Community.Runtime.SaveConfig();
-				}), new Tab.OptionButton("X", delegate(PlayerSession ap2)
+				}), new Tab.OptionButton("X", (PlayerSession ap2) =>
 				{
 					Config.Compiler.ConditionalCompilationSymbols.RemoveAt(index);
 					Refresh(tab, ap2);
 					Community.Runtime.SaveConfig();
 				}, (PlayerSession playerSession) => Tab.OptionButton.Types.Important));
 			}
-			tab.AddInputButton(1, string.Empty, 0.075f, new Tab.OptionInput(null, (PlayerSession playerSession) => playerSession.GetStorage<string>(tab, "conditional"), 0, readOnly: false, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInputButton(1, string.Empty, 0.075f, new Tab.OptionInput(null, (PlayerSession playerSession) => playerSession.GetStorage<string>(tab, "conditional"), 0, readOnly: false, (PlayerSession playerSession, object[] args) =>
 			{
 				playerSession.SetStorage(tab, "conditional", (args.Length == 0) ? string.Empty : args[0]?.ToString().ToUpper().Trim());
-			}), new Tab.OptionButton("+", delegate(PlayerSession playerSession)
+			}), new Tab.OptionButton("+", (PlayerSession playerSession) =>
 			{
 				string storage = playerSession.GetStorage<string>(tab, "conditional");
 				if (!string.IsNullOrEmpty(storage))
@@ -1549,7 +1544,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 			}, (PlayerSession playerSession) => Tab.OptionButton.Types.Selected));
 			tab.AddName(1, Singleton.GetPhrase("debugging", ap.Player.UserIDString), (TextAnchor)3);
-			tab.AddInput(1, Singleton.GetPhrase("scriptdebugorigin", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Debugging.ScriptDebuggingOrigin, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(1, Singleton.GetPhrase("scriptdebugorigin", ap.Player.UserIDString), (PlayerSession playerSession) => Config.Debugging.ScriptDebuggingOrigin, (PlayerSession playerSession, object[] args) =>
 			{
 				Config.Debugging.ScriptDebuggingOrigin = ((args.Length == 0) ? Config.Debugging.ScriptDebuggingOrigin : args[0]?.ToString());
 				Community.Runtime.SaveConfig();
@@ -1637,21 +1632,21 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			List<OptionButton> list = Pool.Get<List<OptionButton>>();
 			if (OnCancel != null)
 			{
-				list.Add(new OptionButton("Cancel", delegate(PlayerSession ap)
+				list.Add(new OptionButton("Cancel", (PlayerSession ap) =>
 				{
 					OnCancel?.Invoke(ap, Entry);
 				}));
 			}
 			if (OnSave != null)
 			{
-				list.Add(new OptionButton("Save", delegate(PlayerSession ap)
+				list.Add(new OptionButton("Save", (PlayerSession ap) =>
 				{
 					OnSave?.Invoke(ap, Entry);
 				}));
 			}
 			if (OnSaveAndReload != null)
 			{
-				list.Add(new OptionButton("Save & Reload", delegate(PlayerSession ap)
+				list.Add(new OptionButton("Save & Reload", (PlayerSession ap) =>
 				{
 					OnSaveAndReload?.Invoke(ap, Entry);
 				}));
@@ -1748,27 +1743,27 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				return;
 			}
-			JToken obj = token;
-			JArray val = (JArray)(object)((obj is JArray) ? obj : null);
-			if (val != null)
+			JToken val = token;
+			JArray val2 = (JArray)(object)((val is JArray) ? val : null);
+			if (val2 != null)
 			{
 				AddName(column, " ".SpacedString(level, trimEnd: false) + name, (TextAnchor)3);
-				AddButton(column, "Edit", delegate(PlayerSession ap)
+				AddButton(column, "Edit", (PlayerSession ap) =>
 				{
-					_drawArray(name, val, level, column, ap);
+					_drawArray(name, val2, level, column, ap);
 				}, null, (TextAnchor)4);
 				return;
 			}
-			JToken obj2 = token;
-			JProperty val2 = (JProperty)(object)((obj2 is JProperty) ? obj2 : null);
-			JToken usableToken = ((val2 != null) ? val2.Value : token);
-			JToken obj3 = usableToken;
-			JTokenType? val3 = ((obj3 != null) ? new JTokenType?(obj3.Type) : ((JTokenType?)null));
-			if (!val3.HasValue)
+			JToken val3 = token;
+			JProperty val4 = (JProperty)(object)((val3 is JProperty) ? val3 : null);
+			JToken usableToken = ((val4 != null) ? val4.Value : token);
+			JToken val5 = usableToken;
+			JTokenType? val6 = ((val5 != null) ? new JTokenType?(val5.Type) : ((JTokenType?)null));
+			if (!val6.HasValue)
 			{
 				return;
 			}
-			JTokenType valueOrDefault = val3.GetValueOrDefault();
+			JTokenType valueOrDefault = val6.GetValueOrDefault();
 			switch (valueOrDefault - 1)
 			{
 			case 7:
@@ -1777,11 +1772,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				string[] array2 = value2.Split(' ');
 				if (value2.StartsWith("#") || (array2.Length >= 3 && array2.All((string x) => float.TryParse(x, out var _))))
 				{
-					AddColor(column, name, () => (!value2.StartsWith("#")) ? value2 : CUI.HexToRustColor(value2), delegate(PlayerSession ap, string hex, string rust, float alpha)
+					AddColor(column, name, () => (!value2.StartsWith("#")) ? value2 : CUI.HexToRustColor(value2), (PlayerSession ap, string hex, string rust, float alpha) =>
 					{
 						value2 = (value2.StartsWith("#") ? hex : rust);
 						usableToken.Replace(usableToken = JToken.op_Implicit("#" + value2));
-						Community.Runtime.Core.NextFrame(delegate
+						Community.Runtime.Core.NextFrame(() =>
 						{
 							Singleton.SetTab(ap.Player, Make(((object)Entry).ToString(), OnCancel, OnSave, OnSaveAndReload), onChange: false);
 						});
@@ -1789,7 +1784,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				else
 				{
-					AddInput(column, name, (PlayerSession ap) => usableToken.ToObject<string>(), delegate(PlayerSession ap, object[] args)
+					AddInput(column, name, (PlayerSession ap) => usableToken.ToObject<string>(), (PlayerSession ap, object[] args) =>
 					{
 						usableToken.Replace(usableToken = JToken.op_Implicit(args.Select((object x) => x as string).ToString(" ")));
 					});
@@ -1799,37 +1794,37 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				break;
 			}
 			case 5:
-				AddInput(column, name, delegate
+				AddInput(column, name, (PlayerSession ap) =>
 				{
-					JToken obj6 = usableToken;
-					return (obj6 == null) ? null : obj6.ToObject<long>().ToString();
-				}, delegate(PlayerSession ap, object[] args)
+					JToken val9 = usableToken;
+					return (val9 == null) ? null : val9.ToObject<long>().ToString();
+				}, (PlayerSession ap, object[] args) =>
 				{
 					usableToken.Replace(usableToken = JToken.op_Implicit(args[0]?.ToString().ToLong(0L)));
 				}, "The integer/long value of the '" + name.Trim() + "' property.");
 				break;
 			case 6:
-				AddInput(column, name, delegate
+				AddInput(column, name, (PlayerSession ap) =>
 				{
-					JToken obj6 = usableToken;
-					return (obj6 == null) ? null : obj6.ToObject<float>().ToString();
-				}, delegate(PlayerSession ap, object[] args)
+					JToken val9 = usableToken;
+					return (val9 == null) ? null : val9.ToObject<float>().ToString();
+				}, (PlayerSession ap, object[] args) =>
 				{
 					usableToken.Replace(usableToken = JToken.op_Implicit(args[0]?.ToString().ToFloat()));
 				}, "The float value of the '" + name.Trim() + "' property.");
 				break;
 			case 8:
-				AddToggle(column, name, delegate
+				AddToggle(column, name, (PlayerSession ap) =>
 				{
 					usableToken.Replace(usableToken = JToken.op_Implicit(!usableToken.ToObject<bool>()));
 				}, (PlayerSession ap) => usableToken.ToObject<bool>(), "The boolean value of the '" + name.Trim() + "' property.");
 				break;
 			case 1:
 			{
-				JToken obj5 = usableToken;
-				JArray array3 = (JArray)(object)((obj5 is JArray) ? obj5 : null);
+				JToken val8 = usableToken;
+				JArray array3 = (JArray)(object)((val8 is JArray) ? val8 : null);
 				AddName(column, " ".SpacedString(level, trimEnd: false) + name, (TextAnchor)3);
-				AddButton(column, "Edit", delegate(PlayerSession ap)
+				AddButton(column, "Edit", (PlayerSession ap) =>
 				{
 					_drawArray(name, array3, level, column, ap);
 				}, null, (TextAnchor)4);
@@ -1839,33 +1834,33 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				if (LegendIndex.Count > 0 && LegendOptions.Count > 0 && LegendIndex.TryGetValue(trimName, out var _) && LegendOptions.TryGetValue(trimName, out var options))
 				{
-					JToken obj4 = usableToken;
-					JObject tokenObject = (JObject)(object)((obj4 is JObject) ? obj4 : null);
+					JToken val7 = usableToken;
+					JObject tokenObject = (JObject)(object)((val7 is JObject) ? val7 : null);
 					if (tokenObject != null)
 					{
 						string text = trimName;
 						int length = "Legend".Length;
 						string baseName = text.Substring(0, text.Length - length);
-						AddDropdown(column, baseName, (PlayerSession ap) => Mathf.Clamp(LegendIndex[trimName], 0, options.Length - 1), delegate(PlayerSession ap, int i)
+						AddDropdown(column, baseName, (PlayerSession ap) => Mathf.Clamp(LegendIndex[trimName], 0, options.Length - 1), (PlayerSession ap, int i) =>
 						{
 							JContainer parent2 = ((JToken)tokenObject).Parent;
-							object obj6;
+							object obj;
 							if (parent2 == null)
 							{
-								obj6 = null;
+								obj = null;
 							}
 							else
 							{
 								JContainer parent3 = ((JToken)parent2).Parent;
-								obj6 = ((parent3 != null) ? ((JToken)parent3)[(object)baseName] : null);
+								obj = ((parent3 != null) ? ((JToken)parent3)[(object)baseName] : null);
 							}
-							JToken val4 = (JToken)obj6;
-							if (val4 == null)
+							JToken val9 = (JToken)obj;
+							if (val9 == null)
 							{
-								throw new InvalidOperationException($"Failed to find token for '{val4}', please validate configuration and try again.");
+								throw new InvalidOperationException($"Failed to find token for '{val9}', please validate configuration and try again.");
 							}
 							JToken value3 = tokenObject.Properties().ElementAt(i).Value;
-							val4.Replace(value3);
+							val9.Replace(value3);
 							LegendIndex[trimName] = i;
 						}, options, null, 0f, "The selected value of the '" + baseName + "' property.");
 						break;
@@ -1876,7 +1871,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				JArray array = (JArray)(object)((parent is JArray) ? parent : null);
 				if (array != null)
 				{
-					AddInputButton(column, null, 0.2f, new OptionInput(null, (PlayerSession ap) => $"{array.IndexOf(token)}", 0, readOnly: true, null), new OptionButton("Remove", (TextAnchor)4, delegate(PlayerSession ap)
+					AddInputButton(column, null, 0.2f, new OptionInput(null, (PlayerSession ap) => $"{array.IndexOf(token)}", 0, readOnly: true, null), new OptionButton("Remove", (TextAnchor)4, (PlayerSession ap) =>
 					{
 						array.Remove(token);
 						ClearColumn(column);
@@ -1898,8 +1893,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					ConfigEditor configEditor = this;
 					int column2 = column;
 					JContainer parent2 = tok.Parent;
-					JContainer obj6 = ((parent2 is JProperty) ? parent2 : null);
-					configEditor.AddName(column2, "Editing '" + ((obj6 != null) ? ((JProperty)obj6).Name : null) + "'", (TextAnchor)3);
+					JContainer obj = ((parent2 is JProperty) ? parent2 : null);
+					configEditor.AddName(column2, "Editing '" + ((obj != null) ? ((JProperty)obj).Name : null) + "'", (TextAnchor)3);
 				}
 				foreach (JToken item in (IEnumerable<JToken>)tok)
 				{
@@ -1909,23 +1904,23 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						int column3 = column;
 						string text2 = " ".SpacedString(num, trimEnd: false);
 						JContainer parent3 = item.Parent;
-						JContainer obj7 = ((parent3 is JProperty) ? parent3 : null);
-						configEditor2.AddName(column3, text2 + ((obj7 != null) ? ((JProperty)obj7).Name : null), (TextAnchor)3);
+						JContainer obj2 = ((parent3 is JProperty) ? parent3 : null);
+						configEditor2.AddName(column3, text2 + ((obj2 != null) ? ((JProperty)obj2).Name : null), (TextAnchor)3);
 					}
 					ConfigEditor configEditor3 = this;
 					string text3 = " ".SpacedString(num + 1, trimEnd: false);
-					JToken obj8 = ((item is JProperty) ? item : null);
-					configEditor3._recurseBuild(text3 + ((obj8 != null) ? ((JProperty)obj8).Name : null), item, num + 1, column);
+					JToken obj3 = ((item is JProperty) ? item : null);
+					configEditor3._recurseBuild(text3 + ((obj3 != null) ? ((JProperty)obj3).Name : null), item, num + 1, column);
 					if (removeButtons)
 					{
 						JProperty jproperty = (JProperty)(object)((item is JProperty) ? item : null);
 						ConfigEditor configEditor4 = this;
 						int column4 = column;
-						JProperty obj9 = jproperty;
-						configEditor4.AddButton(column4, "Remove '" + ((obj9 != null) ? obj9.Name.Trim() : null) + "'", delegate(PlayerSession ap2)
+						JProperty val9 = jproperty;
+						configEditor4.AddButton(column4, "Remove '" + ((val9 != null) ? val9.Name.Trim() : null) + "'", (PlayerSession ap2) =>
 						{
-							JToken obj10 = tok;
-							((JObject)((obj10 is JObject) ? obj10 : null)).Remove(jproperty.Name);
+							JToken val10 = tok;
+							((JObject)((val10 is JObject) ? val10 : null)).Remove(jproperty.Name);
 							ConfigEditor configEditor5 = this;
 							string name2 = name;
 							JContainer parent4 = tok.Parent;
@@ -1945,7 +1940,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			foreach (JToken element in array)
 			{
 				_recurseBuild(string.Format("{0}{1:n0}", " ".SpacedString(level, trimEnd: false), num), element, 0, num2, ((JContainer)array).Count == 1);
-				AddButton(num2, "Remove", delegate
+				AddButton(num2, "Remove", (PlayerSession playerSession) =>
 				{
 					array.Remove(element);
 					_drawArray(name, array, level, column, ap);
@@ -1954,12 +1949,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			if (((JContainer)array).Count <= 1)
 			{
-				JToken? obj = ((IEnumerable<JToken>)array).FirstOrDefault();
-				JObject sample = (JObject)(object)((obj is JObject) ? obj : null);
+				JToken? val = ((IEnumerable<JToken>)array).FirstOrDefault();
+				JObject sample = (JObject)(object)((val is JObject) ? val : null);
 				string newPropertyName = ap.GetStorage(this, "jsonprop", "New Property");
 				if (((JContainer)array).Count == 1)
 				{
-					AddButton(num2, "Duplicate", delegate
+					AddButton(num2, "Duplicate", (PlayerSession playerSession) =>
 					{
 						array.Add(((IEnumerable<JToken>)array).LastOrDefault());
 						_drawArray(name, array, level, column, ap);
@@ -1969,11 +1964,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					AddText(num2, " ".SpacedString(0, trimEnd: false) + "No entries", 10, "1 1 1 0.6", (TextAnchor)3);
 				}
-				AddInput(num2, "Property Name", (PlayerSession playerSession) => playerSession.GetStorage(this, "jsonprop", "New Property"), delegate(PlayerSession playerSession, object[] args)
+				AddInput(num2, "Property Name", (PlayerSession playerSession) => playerSession.GetStorage(this, "jsonprop", "New Property"), (PlayerSession playerSession, object[] args) =>
 				{
 					playerSession.SetStorage(this, "jsonprop", newPropertyName = args.Select((object x) => x as string).ToString(" "));
 				});
-				AddButtonArray(num2, new OptionButton("Add Label", delegate(PlayerSession ap2)
+				AddButtonArray(num2, new OptionButton("Add Label", (PlayerSession ap2) =>
 				{
 					if (sample == null)
 					{
@@ -1984,7 +1979,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						sample.Add(newPropertyName, JToken.op_Implicit(string.Empty));
 						_drawArray(name, array, level, column, ap2);
 					}
-				}), new OptionButton("Add Toggle", delegate(PlayerSession ap2)
+				}), new OptionButton("Add Toggle", (PlayerSession ap2) =>
 				{
 					if (sample == null)
 					{
@@ -1995,7 +1990,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						sample.Add(newPropertyName, JToken.op_Implicit(false));
 						_drawArray(name, array, level, column, ap2);
 					}
-				}), new OptionButton("Add Int", delegate(PlayerSession ap2)
+				}), new OptionButton("Add Int", (PlayerSession ap2) =>
 				{
 					if (sample == null)
 					{
@@ -2006,7 +2001,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						sample.Add(newPropertyName, JToken.op_Implicit(0));
 						_drawArray(name, array, level, column, ap2);
 					}
-				}), new OptionButton("Add Float", delegate(PlayerSession ap2)
+				}), new OptionButton("Add Float", (PlayerSession ap2) =>
 				{
 					if (sample == null)
 					{
@@ -2021,7 +2016,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			else
 			{
-				AddButton(num2, "Duplicate", delegate
+				AddButton(num2, "Duplicate", (PlayerSession playerSession) =>
 				{
 					array.Add(((IEnumerable<JToken>)array).LastOrDefault());
 					_drawArray(name, array, level, column, ap);
@@ -2050,9 +2045,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 		private const float _applyChangesCooldown = 60f;
 
-		private static TimeSince _applyChangesTimeSince;
+		private static TimeSince _applyChangesTimeSince = TimeSince.op_Implicit(60f);
 
-		public static readonly string[] AuthLevels;
+		public static readonly string[] AuthLevels = new string[4] { "User", "Moderator", "Admin", "Developer" };
 
 		public ConfigurationTab(string id, string name, RustPlugin plugin, Action<PlayerSession, Tab> onChange = null)
 			: base(id, name, plugin, onChange)
@@ -2066,7 +2061,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 		private static ConfigurationTab Make()
 		{
-			ConfigurationTab configurationTab = new ConfigurationTab("configuration", "Configuration", Community.Runtime.Core, delegate(PlayerSession session, Tab tab)
+			ConfigurationTab configurationTab = new ConfigurationTab("configuration", "Configuration", Community.Runtime.Core, (PlayerSession session, Tab tab) =>
 			{
 				session.ClearStorage(null, "itemtabitem");
 				Refresh(tab, session);
@@ -2075,7 +2070,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				IsFullscreen = true,
 				Access = "config.use"
 			};
-			configurationTab.Over = delegate(Tab t, CUI cui, CuiElementContainer container, string panel, PlayerSession ap)
+			configurationTab.Over = (Tab t, CUI cui, CuiElementContainer container, string panel, PlayerSession ap) =>
 			{
 				ItemDefinition storage = ap.GetStorage<ItemDefinition>(null, "itemtabitem");
 				if ((Object)(object)storage != (Object)null)
@@ -2085,7 +2080,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					cui.CreateImage(container, pair2, "close", "1 0.4 0.35 0.9", null, 0.2f, 0.8f, 0.2f, 0.8f);
 					CUI.Pair<string, CuiElement> pair3 = cui.CreatePanel(container, pair, "0.1 0.1 0.1 0.5", null, 0.06f, 0.42f, 0.6f, 0.9f);
 					cui.CreateItemImage(container, pair3, storage.itemid, 0uL, "1 1 1 1", null, 0.05f, 0.95f, 0.05f, 0.95f);
-					cui.CreateText(container, pair, "0.8 0.2 0.15 1", ((object)Unsafe.As<ItemCategory, ItemCategory>(ref storage.category)/*cast due to constrained. prefix*/).ToString().ToUpper().SpacedString(1), 10, 0.45f, 1f, 0f, 0.88f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
+					cui.CreateText(container, pair, "0.8 0.2 0.15 1", ((object)storage.category/*cast due to constrained. prefix*/).ToString().ToUpper().SpacedString(1), 10, 0.45f, 1f, 0f, 0.88f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
 					cui.CreateInputField(container, pair, "1 1 1 1", storage.displayName.english, 16, 0, readOnly: true, 0.45f, 1f, 0f, 0.8525f, 0f, 0f, 0f, 0f, null, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedBold, autoFocus: false, hudMenuInput: false, (LineType)0);
 					cui.CreateText(container, pair, "1 1 1 0.4", "ID", 10, 0.45f, 1f, 0f, 0.81f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
 					cui.CreateInputField(container, pair, "0.8 0.2 0.15 1", storage.itemid.ToString(), 10, 0, readOnly: true, 0.475f, 1f, 0f, 0.81f, 0f, 0f, 0f, 0f, null, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedBold, autoFocus: false, hudMenuInput: false, (LineType)0);
@@ -2147,7 +2142,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				//IL_1902: Unknown result type (might be due to invalid IL or missing references)
 				//IL_1907: Unknown result type (might be due to invalid IL or missing references)
 				tab.ClearColumn(0);
-				tab.AddButton(-1, "< Go Back", delegate
+				tab.AddButton(-1, "< Go Back", (PlayerSession ap) =>
 				{
 					Singleton.SetTab(session.Player, "carbon");
 				}, (PlayerSession ap) => OptionButton.Types.Selected, (TextAnchor)4);
@@ -2156,12 +2151,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				for (int num = 0; num < Singleton.Tabs.Count; num++)
 				{
 					Tab t = Singleton.Tabs[num];
-					tab.AddToggle(0, t.Name, delegate
+					tab.AddToggle(0, t.Name, (PlayerSession ap) =>
 					{
 						Singleton.DataInstance.MarkTabHidden(t.Id, !Singleton.DataInstance.IsTabHidden(t.Id));
 					}, (PlayerSession ap) => !Singleton.DataInstance.IsTabHidden(t.Id));
 				}
-				tab.AddButton(0, "Apply Changes", delegate(PlayerSession ap)
+				tab.AddButton(0, "Apply Changes", (PlayerSession ap) =>
 				{
 					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0020: Unknown result type (might be due to invalid IL or missing references)
@@ -2174,114 +2169,114 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						Singleton.Draw(ap.Player);
 						Singleton.Save();
 					}
-				}, delegate
+				}, (PlayerSession ap) =>
 				{
 					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 					return (TimeSince.op_Implicit(_applyChangesTimeSince) > 60f) ? OptionButton.Types.Selected : OptionButton.Types.None;
 				}, (TextAnchor)4);
-				tab.AddToggle(0, "Spectating Info Overlay", delegate
+				tab.AddToggle(0, "Spectating Info Overlay", (PlayerSession ap) =>
 				{
 					Singleton.ConfigInstance.SpectatingInfoOverlay = !Singleton.ConfigInstance.SpectatingInfoOverlay;
 				}, (PlayerSession ap) => Singleton.ConfigInstance.SpectatingInfoOverlay);
-				tab.AddToggle(0, "Spectating End Teleport Back", delegate
+				tab.AddToggle(0, "Spectating End Teleport Back", (PlayerSession ap) =>
 				{
 					Singleton.ConfigInstance.SpectatingEndTeleportBack = !Singleton.ConfigInstance.SpectatingEndTeleportBack;
 				}, (PlayerSession ap) => Singleton.ConfigInstance.SpectatingEndTeleportBack);
-				tab.AddToggle(0, "Disable uMod (Plugins tab)", delegate
+				tab.AddToggle(0, "Disable uMod (Plugins tab)", (PlayerSession ap) =>
 				{
 					Singleton.DataInstance.DisableUMod = !Singleton.DataInstance.DisableUMod;
 				}, (PlayerSession ap) => Singleton.DataInstance.DisableUMod);
-				tab.AddToggle(0, "Hide Plugin Icons (Plugins tab)", delegate
+				tab.AddToggle(0, "Hide Plugin Icons (Plugins tab)", (PlayerSession ap) =>
 				{
 					Singleton.DataInstance.HidePluginIcons = !Singleton.DataInstance.HidePluginIcons;
 				}, (PlayerSession ap) => Singleton.DataInstance.HidePluginIcons);
 				tab.AddName(0, "Customization", (TextAnchor)3);
-				tab.AddToggle(0, "Background Blur", delegate
+				tab.AddToggle(0, "Background Blur", (PlayerSession ap) =>
 				{
 					Singleton.DataInstance.BackgroundBlur = !Singleton.DataInstance.BackgroundBlur;
 				}, (PlayerSession ap) => Singleton.DataInstance.BackgroundBlur);
-				tab.AddRange(0, "Background Opacity", 0f, 100f, (PlayerSession ap) => Singleton.DataInstance.BackgroundOpacity * 100f, delegate(PlayerSession ap, float value)
+				tab.AddRange(0, "Background Opacity", 0f, 100f, (PlayerSession ap) => Singleton.DataInstance.BackgroundOpacity * 100f, (PlayerSession ap, float value) =>
 				{
 					Singleton.DataInstance.BackgroundOpacity = value * 0.01f;
 				}, (PlayerSession ap) => Singleton.DataInstance.BackgroundOpacity.ToString("0.0"));
-				tab.AddInput(0, "Background Image", (PlayerSession ap) => Singleton.DataInstance.BackgroundImage, delegate(PlayerSession ap, object[] value)
+				tab.AddInput(0, "Background Image", (PlayerSession ap) => Singleton.DataInstance.BackgroundImage, (PlayerSession ap, object[] value) =>
 				{
 					Singleton.DataInstance.BackgroundImage = (string)value[0];
 				});
-				tab.AddRange(0, "Background Image Opacity", 0f, 100f, (PlayerSession ap) => Singleton.DataInstance.BackgroundImageOpacity * 100f, delegate(PlayerSession ap, float value)
+				tab.AddRange(0, "Background Image Opacity", 0f, 100f, (PlayerSession ap) => Singleton.DataInstance.BackgroundImageOpacity * 100f, (PlayerSession ap, float value) =>
 				{
 					Singleton.DataInstance.BackgroundImageOpacity = value * 0.01f;
 				}, (PlayerSession ap) => Singleton.DataInstance.BackgroundImageOpacity.ToString("0.0"));
-				tab.AddRange(0, "Background Column Opacity", 0f, 100f, (PlayerSession ap) => Singleton.DataInstance.BackgroundColumnOpacity * 100f, delegate(PlayerSession ap, float value)
+				tab.AddRange(0, "Background Column Opacity", 0f, 100f, (PlayerSession ap) => Singleton.DataInstance.BackgroundColumnOpacity * 100f, (PlayerSession ap, float value) =>
 				{
 					Singleton.DataInstance.BackgroundColumnOpacity = value * 0.01f;
 				}, (PlayerSession ap) => Singleton.DataInstance.BackgroundColumnOpacity.ToString("0.0"));
-				tab.AddRange(0, "Title Underline Opacity", 0f, 100f, (PlayerSession ap) => Singleton.DataInstance.Colors.TitleUnderlineOpacity * 100f, delegate(PlayerSession ap, float value)
+				tab.AddRange(0, "Title Underline Opacity", 0f, 100f, (PlayerSession ap) => Singleton.DataInstance.Colors.TitleUnderlineOpacity * 100f, (PlayerSession ap, float value) =>
 				{
 					Singleton.DataInstance.Colors.TitleUnderlineOpacity = value * 0.01f;
 					Singleton.Draw(ap.Player);
 				}, (PlayerSession ap) => Singleton.DataInstance.Colors.TitleUnderlineOpacity.ToString("0.0"));
-				tab.AddRange(0, "Option Width", 20f, 80f, (PlayerSession ap) => Singleton.DataInstance.Colors.OptionWidth * 100f, delegate(PlayerSession ap, float value)
+				tab.AddRange(0, "Option Width", 20f, 80f, (PlayerSession ap) => Singleton.DataInstance.Colors.OptionWidth * 100f, (PlayerSession ap, float value) =>
 				{
 					Singleton.DataInstance.Colors.OptionWidth = value * 0.01f;
 					Singleton.Draw(ap.Player);
 				}, (PlayerSession ap) => Singleton.DataInstance.Colors.OptionWidth.ToString("0.0"));
-				tab.AddColor(0, "Selected Tab Color", () => Singleton.DataInstance.Colors.SelectedTabColor, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Selected Tab Color", () => Singleton.DataInstance.Colors.SelectedTabColor, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.SelectedTabColor = CUI.HexToRustColor("#" + color1);
 					Singleton.Draw(ap.Player);
 				});
-				tab.AddColor(0, "Editable Input Highlight", () => Singleton.DataInstance.Colors.EditableInputHighlight, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Editable Input Highlight", () => Singleton.DataInstance.Colors.EditableInputHighlight, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.EditableInputHighlight = CUI.HexToRustColor("#" + color1);
 					Singleton.Draw(ap.Player);
 				});
-				tab.AddColor(0, "Name Text Color", () => Singleton.DataInstance.Colors.NameTextColor, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Name Text Color", () => Singleton.DataInstance.Colors.NameTextColor, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.NameTextColor = CUI.HexToRustColor("#" + color1, value);
 					Singleton.Draw(ap.Player);
 				});
-				tab.AddColor(0, "Option Name Color", () => Singleton.DataInstance.Colors.OptionNameColor, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Option Name Color", () => Singleton.DataInstance.Colors.OptionNameColor, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.OptionNameColor = CUI.HexToRustColor("#" + color1, value);
 					Singleton.Draw(ap.Player);
 				});
-				tab.AddColor(0, "Button Selected Color", () => Singleton.DataInstance.Colors.ButtonSelectedColor, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Button Selected Color", () => Singleton.DataInstance.Colors.ButtonSelectedColor, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.ButtonSelectedColor = CUI.HexToRustColor("#" + color1, value);
 					Singleton.Draw(ap.Player);
 				});
-				tab.AddColor(0, "Button Warned Color", () => Singleton.DataInstance.Colors.ButtonWarnedColor, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Button Warned Color", () => Singleton.DataInstance.Colors.ButtonWarnedColor, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.ButtonWarnedColor = CUI.HexToRustColor("#" + color1, value);
 					Singleton.Draw(ap.Player);
 				});
-				tab.AddColor(0, "Button Important Color", () => Singleton.DataInstance.Colors.ButtonImportantColor, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Button Important Color", () => Singleton.DataInstance.Colors.ButtonImportantColor, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.ButtonImportantColor = CUI.HexToRustColor("#" + color1, value);
 					Singleton.Draw(ap.Player);
 				});
-				tab.AddColor(0, "Option Color (1st)", () => Singleton.DataInstance.Colors.OptionColor, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Option Color (1st)", () => Singleton.DataInstance.Colors.OptionColor, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.OptionColor = CUI.HexToRustColor("#" + color1, value);
 					Singleton.Draw(ap.Player);
 				});
-				tab.AddColor(0, "Option Color (2nd)", () => Singleton.DataInstance.Colors.OptionColor2, delegate(PlayerSession ap, string color1, string color2, float value)
+				tab.AddColor(0, "Option Color (2nd)", () => Singleton.DataInstance.Colors.OptionColor2, (PlayerSession ap, string color1, string color2, float value) =>
 				{
 					Singleton.DataInstance.Colors.OptionColor2 = CUI.HexToRustColor("#" + color1, value);
 					Singleton.Draw(ap.Player);
 				});
 				tab.ClearColumn(1);
 				ConfigTabs configTab = session.GetStorage(tab, "configtab", ConfigTabs.ConVars);
-				tab.AddButtonArray(-2, new OptionButton("ConVars", delegate(PlayerSession ap)
+				tab.AddButtonArray(-2, new OptionButton("ConVars", (PlayerSession ap) =>
 				{
 					session.SetStorage(tab, "configtab", ConfigTabs.ConVars);
 					Refresh(tab, ap);
-				}, (PlayerSession ap) => (configTab == ConfigTabs.ConVars) ? OptionButton.Types.Selected : OptionButton.Types.None), new OptionButton("Carbon Auto", delegate(PlayerSession ap)
+				}, (PlayerSession ap) => (configTab == ConfigTabs.ConVars) ? OptionButton.Types.Selected : OptionButton.Types.None), new OptionButton("Carbon Auto", (PlayerSession ap) =>
 				{
 					session.SetStorage(tab, "configtab", ConfigTabs.CarbonAuto);
 					Refresh(tab, ap);
-				}, (PlayerSession ap) => (configTab == ConfigTabs.CarbonAuto) ? OptionButton.Types.Selected : OptionButton.Types.None), new OptionButton("Items", delegate(PlayerSession ap)
+				}, (PlayerSession ap) => (configTab == ConfigTabs.CarbonAuto) ? OptionButton.Types.Selected : OptionButton.Types.None), new OptionButton("Items", (PlayerSession ap) =>
 				{
 					session.SetStorage(tab, "configtab", ConfigTabs.Items);
 					Refresh(tab, ap);
@@ -2296,7 +2291,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					tab.AddText(1, "Changing the following values will not be stored anywhere. This page is simply for informational purposes.\nIf you want Rust to load up your changes, please add them in 'server/identity/cfg/server.cfg'.", 8, "1 1 1 0.5", (TextAnchor)4);
 					if (string.IsNullOrEmpty(convarSearch))
 					{
-						tab.AddInput(1, $"Search ({num4:n0})", (PlayerSession ap) => convarSearch, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+						tab.AddInput(1, $"Search ({num4:n0})", (PlayerSession ap) => convarSearch, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 						{
 							ap.SetStorage(tab, "convarsearch", args.Select((object x) => x as string).ToString(" "));
 							Refresh(tab, ap);
@@ -2304,11 +2299,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 					else
 					{
-						tab.AddInputButton(1, $"Search ({num4:n0})", 0.08f, new OptionInput(string.Empty, (PlayerSession ap) => convarSearch, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+						tab.AddInputButton(1, $"Search ({num4:n0})", 0.08f, new OptionInput(string.Empty, (PlayerSession ap) => convarSearch, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 						{
 							ap.SetStorage(tab, "convarsearch", args.Select((object x) => x as string).ToString(" "));
 							Refresh(tab, ap);
-						}), new OptionButton("X", delegate(PlayerSession ap)
+						}), new OptionButton("X", (PlayerSession ap) =>
 						{
 							ap.SetStorage(tab, "convarsearch", string.Empty);
 							Refresh(tab, ap);
@@ -2333,64 +2328,64 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 								ConVarSnapshots.Snapshot snapshot = ConVarSnapshots.Snapshots[key];
 								if (field.FieldType == typeof(string))
 								{
-									tab.AddInput(1, field.Name, (PlayerSession ap) => field.GetValue(null)?.ToString(), 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+									tab.AddInput(1, field.Name, (PlayerSession ap) => field.GetValue(null)?.ToString(), 0, readOnly: false, (PlayerSession ap, object[] args) =>
 									{
 										field.SetValue(null, args.Select((object x) => x as string).ToString(" "));
 									}, ((ConsoleVar)customAttribute2).Help);
 								}
 								else if (field.FieldType == typeof(bool))
 								{
-									tab.AddToggle(1, $"{field.Name} (default: {snapshot.Value})", delegate
+									tab.AddToggle(1, $"{field.Name} (default: {snapshot.Value})", (PlayerSession ap) =>
 									{
 										field.SetValue(null, !(bool)field.GetValue(null));
 									}, (PlayerSession ap) => (bool)field.GetValue(null), ((ConsoleVar)customAttribute2).Help);
 								}
 								else if (field.FieldType == typeof(float))
 								{
-									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, (PlayerSession ap, object[] args) =>
 									{
 										field.SetValue(null, ((string)args[0]).ToFloat());
-									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", delegate
+									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", (PlayerSession ap) =>
 									{
 										field.SetValue(null, snapshot.Value);
 									}), ((ConsoleVar)customAttribute2).Help);
 								}
 								else if (field.FieldType == typeof(int))
 								{
-									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, (PlayerSession ap, object[] args) =>
 									{
 										field.SetValue(null, ((string)args[0]).ToInt());
-									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", delegate
+									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", (PlayerSession ap) =>
 									{
 										field.SetValue(null, snapshot.Value);
 									}), ((ConsoleVar)customAttribute2).Help);
 								}
 								else if (field.FieldType == typeof(long))
 								{
-									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, (PlayerSession ap, object[] args) =>
 									{
 										field.SetValue(null, ((string)args[0]).ToLong(0L));
-									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", delegate
+									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", (PlayerSession ap) =>
 									{
 										field.SetValue(null, snapshot.Value);
 									}), ((ConsoleVar)customAttribute2).Help);
 								}
 								else if (field.FieldType == typeof(ulong))
 								{
-									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, (PlayerSession ap, object[] args) =>
 									{
 										field.SetValue(null, ((string)args[0]).ToUlong(0uL));
-									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", delegate
+									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", (PlayerSession ap) =>
 									{
 										field.SetValue(null, snapshot.Value);
 									}), ((ConsoleVar)customAttribute2).Help);
 								}
 								else if (field.FieldType == typeof(uint))
 								{
-									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+									tab.AddInputButton(1, field.Name, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{field.GetValue(null)}", 0, readOnly: false, (PlayerSession ap, object[] args) =>
 									{
 										field.SetValue(null, ((string)args[0]).ToUint());
-									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", delegate
+									}), new OptionButton($"<size=8>{snapshot.Value:n0}</size>", (PlayerSession ap) =>
 									{
 										field.SetValue(null, snapshot.Value);
 									}), ((ConsoleVar)customAttribute2).Help);
@@ -2410,7 +2405,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					int num6 = CarbonAuto.AutoCache.Count((KeyValuePair<string, CarbonAuto.AutoVar> x) => string.IsNullOrEmpty(carbonAutoSearch) || x.Key.Contains(carbonAutoSearch));
 					if (string.IsNullOrEmpty(carbonAutoSearch))
 					{
-						tab.AddInput(1, $"Search ({num6:n0})", (PlayerSession ap) => carbonAutoSearch, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+						tab.AddInput(1, $"Search ({num6:n0})", (PlayerSession ap) => carbonAutoSearch, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 						{
 							ap.SetStorage(tab, "carbonautosearch", args.Select((object x) => x as string).ToString(" "));
 							Refresh(tab, ap);
@@ -2418,17 +2413,17 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 					else
 					{
-						tab.AddInputButton(1, $"Search ({num6:n0})", 0.08f, new OptionInput(string.Empty, (PlayerSession ap) => carbonAutoSearch, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+						tab.AddInputButton(1, $"Search ({num6:n0})", 0.08f, new OptionInput(string.Empty, (PlayerSession ap) => carbonAutoSearch, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 						{
 							ap.SetStorage(tab, "carbonautosearch", args.Select((object x) => x as string).ToString(" "));
 							Refresh(tab, ap);
-						}), new OptionButton("X", delegate(PlayerSession ap)
+						}), new OptionButton("X", (PlayerSession ap) =>
 						{
 							ap.SetStorage(tab, "carbonautosearch", string.Empty);
 							Refresh(tab, ap);
 						}, (PlayerSession ap) => OptionButton.Types.Important));
 					}
-					tab.AddWidget(1, 1, delegate(PlayerSession playerSession, CUI cui, CuiElementContainer container, string parent)
+					tab.AddWidget(1, 1, (PlayerSession playerSession, CUI cui, CuiElementContainer container, string parent) =>
 					{
 						cui.CreateText(container, parent, "1 1 1 0.5", "All values with <b>(*)</b> indicate that they're a multiplier value \nrelative to Rust's native value the configuration is defined for.", 8, 0f, 0.48f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)5, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 						cui.CreateText(container, parent, "1 1 1 0.5", "<color=orange>Orange variables</color> indicate will enforce the server\nto modded once the value is not <b>-1</b>.", 8, 0.52f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
@@ -2442,44 +2437,44 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 							Type varType = cache.Value.GetVarType();
 							if (varType == typeof(string))
 							{
-								tab.AddInput(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, (PlayerSession ap) => cache.Value.GetValue()?.ToString(), 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+								tab.AddInput(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, (PlayerSession ap) => cache.Value.GetValue()?.ToString(), 0, readOnly: false, (PlayerSession ap, object[] args) =>
 								{
 									cache.Value.SetValue(args.Select((object x) => x as string).ToString(" "));
 								}, cache.Value.Variable.Help + " (" + cache.Key + ")");
 							}
 							else if (varType == typeof(bool))
 							{
-								tab.AddToggle(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, delegate
+								tab.AddToggle(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, (PlayerSession ap) =>
 								{
 									cache.Value.SetValue(!(bool)cache.Value.GetValue());
 								}, (PlayerSession ap) => (bool)cache.Value.GetValue(), cache.Value.Variable.Help + " (" + cache.Key + ")");
 							}
 							else if (varType == typeof(float))
 							{
-								tab.AddInputButton(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{cache.Value.GetValue()}", 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+								tab.AddInputButton(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{cache.Value.GetValue()}", 0, readOnly: false, (PlayerSession ap, object[] args) =>
 								{
 									cache.Value.SetValue(((string)args[0]).ToFloat());
-								}), new OptionButton("<size=8>-1</size>", delegate
+								}), new OptionButton("<size=8>-1</size>", (PlayerSession ap) =>
 								{
 									cache.Value.SetValue(-1);
 								}), cache.Value.Variable.Help + " (" + cache.Key + ")");
 							}
 							else if (varType == typeof(int))
 							{
-								tab.AddInputButton(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{cache.Value.GetValue()}", 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+								tab.AddInputButton(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{cache.Value.GetValue()}", 0, readOnly: false, (PlayerSession ap, object[] args) =>
 								{
 									cache.Value.SetValue(((string)args[0]).ToInt());
-								}), new OptionButton("<size=8>-1</size>", delegate
+								}), new OptionButton("<size=8>-1</size>", (PlayerSession ap) =>
 								{
 									cache.Value.SetValue(-1);
 								}), cache.Value.Variable.Help + " (" + cache.Key + ")");
 							}
 							else if (varType == typeof(long))
 							{
-								tab.AddInputButton(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{cache.Value.GetValue()}", 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+								tab.AddInputButton(1, cache.Value.Variable.ForceModded ? ("<color=orange>" + cache.Value.Variable.DisplayName + "</color>") : cache.Value.Variable.DisplayName, 0.2f, new OptionInput(string.Empty, (PlayerSession ap) => $"{cache.Value.GetValue()}", 0, readOnly: false, (PlayerSession ap, object[] args) =>
 								{
 									cache.Value.SetValue(((string)args[0]).ToLong(0L));
-								}), new OptionButton("<size=8>-1</size>", delegate
+								}), new OptionButton("<size=8>-1</size>", (PlayerSession ap) =>
 								{
 									cache.Value.SetValue(-1);
 								}), cache.Value.Variable.Help + " (" + cache.Key + ")");
@@ -2499,7 +2494,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					int num2 = source.Count();
 					if (string.IsNullOrEmpty(itemSearch))
 					{
-						tab.AddInput(1, $"Search ({num2:n0})", (PlayerSession ap) => itemSearch, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+						tab.AddInput(1, $"Search ({num2:n0})", (PlayerSession ap) => itemSearch, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 						{
 							ap.SetStorage(tab, "itemsearch", args.Select((object x) => x as string).ToString(" "));
 							Refresh(tab, ap);
@@ -2507,11 +2502,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 					else
 					{
-						tab.AddInputButton(1, $"Search ({num2:n0})", 0.08f, new OptionInput(string.Empty, (PlayerSession ap) => itemSearch, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+						tab.AddInputButton(1, $"Search ({num2:n0})", 0.08f, new OptionInput(string.Empty, (PlayerSession ap) => itemSearch, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 						{
 							ap.SetStorage(tab, "itemsearch", args.Select((object x) => x as string).ToString(" "));
 							Refresh(tab, ap);
-						}), new OptionButton("X", delegate(PlayerSession ap)
+						}), new OptionButton("X", (PlayerSession ap) =>
 						{
 							ap.SetStorage(tab, "itemsearch", string.Empty);
 							Refresh(tab, ap);
@@ -2521,7 +2516,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					foreach (string text in names)
 					{
 						ItemCategory parsedCategory = (ItemCategory)Enum.Parse(typeof(ItemCategory), text);
-						IEnumerable<ItemDefinition> enumerable = source.Where(delegate(ItemDefinition x)
+						IEnumerable<ItemDefinition> enumerable = source.Where((ItemDefinition x) =>
 						{
 							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 							//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -2532,7 +2527,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 							tab.AddName(1, "<color=orange>></color> " + text, (TextAnchor)3);
 							foreach (ItemDefinition item in enumerable)
 							{
-								tab.AddButton(1, item.displayName.english + "  (" + item.shortname + ")", delegate(PlayerSession ap)
+								tab.AddButton(1, item.displayName.english + "  (" + item.shortname + ")", (PlayerSession ap) =>
 								{
 									ap.SetStorage<ItemDefinition>(null, "itemtabitem", item);
 									Singleton.Draw(ap.Player);
@@ -2550,8 +2545,6 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-			_applyChangesTimeSince = TimeSince.op_Implicit(60f);
-			AuthLevels = new string[4] { "User", "Moderator", "Admin", "Developer" };
 		}
 	}
 
@@ -2571,7 +2564,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 		public static Tab Get()
 		{
-			Tab tab = new Tab("entities", "Entities", Community.Runtime.Core, delegate(PlayerSession ap, Tab tab2)
+			Tab tab = new Tab("entities", "Entities", Community.Runtime.Core, (PlayerSession ap, Tab tab2) =>
 			{
 				tab2.ClearColumn(1);
 				ResetSelection(tab2, ap);
@@ -2617,16 +2610,16 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				selectedEntitites = ap3.SetStorage(tab, "selectedentities", new List<BaseEntity>());
 			}
-			tab.AddInputButton(0, "Search Entity", 0.3f, new Tab.OptionInput(null, (PlayerSession playerSession) => playerSession.GetStorage(tab, "filter", string.Empty), 0, readOnly: false, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInputButton(0, "Search Entity", 0.3f, new Tab.OptionInput(null, (PlayerSession playerSession) => playerSession.GetStorage(tab, "filter", string.Empty), 0, readOnly: false, (PlayerSession playerSession, object[] args) =>
 			{
 				playerSession.SetStorage(tab, "filter", args.Select((object x) => x as string).ToString(" "));
 				DrawEntities(tab, playerSession);
-			}), new Tab.OptionButton("Refresh", delegate(PlayerSession ap4)
+			}), new Tab.OptionButton("Refresh", (PlayerSession ap4) =>
 			{
 				DrawEntities(tab, ap4);
 			}));
 			bool isMulti = ap3.GetStorage(tab, "multi", @default: false);
-			tab.AddToggle(0, "Multi-selection", delegate(PlayerSession playerSession)
+			tab.AddToggle(0, "Multi-selection", (PlayerSession playerSession) =>
 			{
 				isMulti = playerSession.SetStorage(tab, "multi", !isMulti);
 				selectedEntitites.Clear();
@@ -2638,26 +2631,26 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			Func<BaseEntity, bool> validateFilter = ap3.GetStorage<Func<BaseEntity, bool>>(tab, "validatefilter");
 			int size = (int)World.Size;
 			int range = ap3.GetStorage(tab, "range", size);
-			IEnumerable<BaseEntity> enumerable = ((IEnumerable)BaseNetworkable.serverEntities).OfType<BaseEntity>().Where(delegate(BaseEntity val2)
+			IEnumerable<BaseEntity> enumerable = ((IEnumerable)BaseNetworkable.serverEntities).OfType<BaseEntity>().Where((BaseEntity val3) =>
 			{
 				//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-				if ((Object)(object)val2 == (Object)null || (Object)(object)((Component)val2).transform == (Object)null)
+				if ((Object)(object)val3 == (Object)null || (Object)(object)((Component)val3).transform == (Object)null)
 				{
 					return false;
 				}
-				if (validateFilter != null && !validateFilter(val2))
+				if (validateFilter != null && !validateFilter(val3))
 				{
 					return false;
 				}
-				if (range != -1 && (Object)(object)ap3.Player != (Object)null && Vector3.Distance(((Component)ap3.Player).transform.position, ((Component)val2).transform.position) > (float)range)
+				if (range != -1 && (Object)(object)ap3.Player != (Object)null && Vector3.Distance(((Component)ap3.Player).transform.position, ((Component)val3).transform.position) > (float)range)
 				{
 					return false;
 				}
-				return StringEx.Contains(((Object)val2).name, usedFilter, CompareOptions.OrdinalIgnoreCase) || StringEx.Contains(((object)val2).GetType().Name, usedFilter, CompareOptions.OrdinalIgnoreCase) || val2.OwnerID.ToString().Equals(usedFilter, StringComparison.OrdinalIgnoreCase) || val2.skinID.ToString().Equals(usedFilter, StringComparison.OrdinalIgnoreCase);
+				return StringEx.Contains(((Object)val3).name, usedFilter, CompareOptions.OrdinalIgnoreCase) || StringEx.Contains(((object)val3).GetType().Name, usedFilter, CompareOptions.OrdinalIgnoreCase) || val3.OwnerID.ToString().Equals(usedFilter, StringComparison.OrdinalIgnoreCase) || val3.skinID.ToString().Equals(usedFilter, StringComparison.OrdinalIgnoreCase);
 			});
 			EntityCount = ((!string.IsNullOrEmpty(usedFilter)) ? enumerable.Count() : 0);
-			tab.AddRange(0, "Range", 0f, size, (PlayerSession playerSession) => range, delegate(PlayerSession playerSession, float value)
+			tab.AddRange(0, "Range", 0f, size, (PlayerSession playerSession) => range, (PlayerSession playerSession, float value) =>
 			{
 				try
 				{
@@ -2671,31 +2664,31 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}, (PlayerSession playerSession) => $"{range:0.0}m");
 			tab.AddName(0, $"Entities  ({EntityCount:n0})", (TextAnchor)3);
 			string filter = ap3.GetStorage(tab, "filter", string.Empty);
-			tab.AddButtonArray(0, new Tab.OptionButton("Players", delegate(PlayerSession playerSession)
+			tab.AddButtonArray(0, new Tab.OptionButton("Players", (PlayerSession playerSession) =>
 			{
 				playerSession.SetStorage(tab, "filter", "BasePlayer");
 				DrawEntities(tab, playerSession);
-			}, (PlayerSession _) => (filter == "BasePlayer") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("Containers", delegate(PlayerSession playerSession)
+			}, (PlayerSession _) => (filter == "BasePlayer") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("Containers", (PlayerSession playerSession) =>
 			{
 				playerSession.SetStorage(tab, "filter", "StorageContainer");
 				playerSession.ClearStorage(tab, "validatefilter");
 				DrawEntities(tab, playerSession);
-			}, (PlayerSession _) => (filter == "StorageContainer") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("Deployables", delegate(PlayerSession playerSession)
+			}, (PlayerSession _) => (filter == "StorageContainer") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("Deployables", (PlayerSession playerSession) =>
 			{
 				playerSession.SetStorage(tab, "filter", "Deployable");
 				playerSession.ClearStorage(tab, "validatefilter");
 				DrawEntities(tab, playerSession);
-			}, (PlayerSession _) => (filter == "Deployable") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("Collectibles", delegate(PlayerSession playerSession)
+			}, (PlayerSession _) => (filter == "Deployable") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("Collectibles", (PlayerSession playerSession) =>
 			{
 				playerSession.SetStorage(tab, "filter", "CollectibleEntity");
 				playerSession.ClearStorage(tab, "validatefilter");
 				DrawEntities(tab, playerSession);
-			}, (PlayerSession _) => (filter == "CollectibleEntity") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("NPCs", delegate(PlayerSession playerSession)
+			}, (PlayerSession _) => (filter == "CollectibleEntity") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("NPCs", (PlayerSession playerSession) =>
 			{
 				playerSession.SetStorage(tab, "filter", "NPCPlayer");
 				playerSession.ClearStorage(tab, "validatefilter");
 				DrawEntities(tab, playerSession);
-			}, (PlayerSession _) => (filter == "NPCPlayer") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("I/O", delegate(PlayerSession playerSession)
+			}, (PlayerSession _) => (filter == "NPCPlayer") ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None), new Tab.OptionButton("I/O", (PlayerSession playerSession) =>
 			{
 				playerSession.SetStorage(tab, "filter", "IOEntity");
 				playerSession.ClearStorage(tab, "validatefilter");
@@ -2704,29 +2697,29 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			string storage = ap3.GetStorage(tab, "filter", string.Empty);
 			if (storage == "BasePlayer")
 			{
-				tab.AddButtonArray(0, new Tab.OptionButton("Online", delegate(PlayerSession playerSession)
+				tab.AddButtonArray(0, new Tab.OptionButton("Online", (PlayerSession playerSession) =>
 				{
 					playerSession.SetStorage(tab, "filter", "BasePlayer");
-					playerSession.SetStorage<Func<BaseEntity, bool>>(tab, "validatefilter", delegate(BaseEntity val3)
+					playerSession.SetStorage<Func<BaseEntity, bool>>(tab, "validatefilter", (BaseEntity val4) =>
 					{
-						BasePlayer val2 = (BasePlayer)(object)((val3 is BasePlayer) ? val3 : null);
-						return val2 != null && val2.IsConnected;
+						BasePlayer val3 = (BasePlayer)(object)((val4 is BasePlayer) ? val4 : null);
+						return val3 != null && val3.IsConnected;
 					});
 					DrawEntities(tab, playerSession);
-				}), new Tab.OptionButton("Offline", delegate(PlayerSession playerSession)
+				}), new Tab.OptionButton("Offline", (PlayerSession playerSession) =>
 				{
-					playerSession.SetStorage<Func<BaseEntity, bool>>(tab, "validatefilter", delegate(BaseEntity val3)
+					playerSession.SetStorage<Func<BaseEntity, bool>>(tab, "validatefilter", (BaseEntity val4) =>
 					{
-						BasePlayer val2 = (BasePlayer)(object)((val3 is BasePlayer) ? val3 : null);
-						return val2 != null && !val2.IsConnected;
+						BasePlayer val3 = (BasePlayer)(object)((val4 is BasePlayer) ? val4 : null);
+						return val3 != null && !val3.IsConnected;
 					});
 					DrawEntities(tab, playerSession);
-				}), new Tab.OptionButton("Dead", delegate(PlayerSession playerSession)
+				}), new Tab.OptionButton("Dead", (PlayerSession playerSession) =>
 				{
-					playerSession.SetStorage<Func<BaseEntity, bool>>(tab, "validatefilter", delegate(BaseEntity val3)
+					playerSession.SetStorage<Func<BaseEntity, bool>>(tab, "validatefilter", (BaseEntity val4) =>
 					{
-						BasePlayer val2 = (BasePlayer)(object)((val3 is BasePlayer) ? val3 : null);
-						return val2 != null && ((BaseCombatEntity)val2).IsDead();
+						BasePlayer val3 = (BasePlayer)(object)((val4 is BasePlayer) ? val4 : null);
+						return val3 != null && ((BaseCombatEntity)val3).IsDead();
 					});
 					DrawEntities(tab, playerSession);
 				}));
@@ -2735,11 +2728,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				foreach (BaseEntity entity in enumerable)
 				{
-					BaseEntity obj = entity;
-					BasePlayer val = (BasePlayer)(object)((obj is BasePlayer) ? obj : null);
-					string text = ((val == null) ? ((object)entity).ToString() : val.displayName);
+					BaseEntity val = entity;
+					BasePlayer val2 = (BasePlayer)(object)((val is BasePlayer) ? val : null);
+					string text = ((val2 == null) ? ((object)entity).ToString() : val2.displayName);
 					string name = text;
-					tab.AddButton(0, name, delegate(PlayerSession playerSession)
+					tab.AddButton(0, name, (PlayerSession playerSession) =>
 					{
 						if (selectedEntitites.Contains(entity))
 						{
@@ -2775,7 +2768,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			tab.AddName(column, "Hierarchy", (TextAnchor)3);
 			if (column != 1)
 			{
-				tab.AddButton(column, "<", delegate(PlayerSession ap4)
+				tab.AddButton(column, "<", (PlayerSession ap4) =>
 				{
 					DrawEntities(tab, ap4);
 					DrawEntitySettings(tab, 1, ap4);
@@ -2783,16 +2776,16 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			if ((Object)(object)entity != (Object)null && !((BaseNetworkable)entity).IsDestroyed)
 			{
-				BaseEntity obj = entity;
-				BasePlayer player = (BasePlayer)(object)((obj is BasePlayer) ? obj : null);
+				BaseEntity val = entity;
+				BasePlayer player = (BasePlayer)(object)((val is BasePlayer) ? val : null);
 				BasePlayer owner = BasePlayer.FindByID(entity.OwnerID);
 				if ((Object)(object)player != (Object)(object)ap3?.Player && Singleton.HasAccess(ap3.Player, "entities.kill_entity"))
 				{
-					tab.AddButtonArray(column, new Tab.OptionButton("Kill", delegate
+					tab.AddButtonArray(column, new Tab.OptionButton("Kill", (PlayerSession playerSession) =>
 					{
-						tab.CreateDialog("Are you sure about that?", delegate(PlayerSession ap4)
+						tab.CreateDialog("Are you sure about that?", (PlayerSession ap4) =>
 						{
-							DoAll<BaseEntity>(delegate(BaseEntity e)
+							DoAll<BaseEntity>((BaseEntity e) =>
 							{
 								((BaseNetworkable)e).Kill((DestroyMode)0, true);
 							});
@@ -2805,11 +2798,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 							DrawEntities(tab, ap4);
 							tab.ClearColumn(column);
 						});
-					}, (PlayerSession playerSession) => Tab.OptionButton.Types.Important), new Tab.OptionButton("Kill (Gibbed)", delegate
+					}, (PlayerSession playerSession) => Tab.OptionButton.Types.Important), new Tab.OptionButton("Kill (Gibbed)", (PlayerSession playerSession) =>
 					{
-						tab.CreateDialog("Are you sure about that?", delegate(PlayerSession ap4)
+						tab.CreateDialog("Are you sure about that?", (PlayerSession ap4) =>
 						{
-							DoAll<BaseEntity>(delegate(BaseEntity e)
+							DoAll<BaseEntity>((BaseEntity e) =>
 							{
 								((BaseNetworkable)e).Kill((DestroyMode)1, true);
 							});
@@ -2824,40 +2817,40 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						});
 					}));
 				}
-				tab.AddInput(column, "Id", delegate
+				tab.AddInput(column, "Id", (PlayerSession playerSession) =>
 				{
 					//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 					return (!multiSelection) ? $"{((BaseNetworkable)entity).net.ID} [<b>{((object)entity).GetType().FullName}</b>]" : "-";
 				});
-				tab.AddInput(column, "Name", delegate
+				tab.AddInput(column, "Name", (PlayerSession playerSession) =>
 				{
-					object obj8;
+					string text;
 					if (!multiSelection)
 					{
-						obj8 = ((BaseNetworkable)entity).ShortPrefabName;
-						if (obj8 == null)
+						text = ((BaseNetworkable)entity).ShortPrefabName;
+						if (text == null)
 						{
 							return "";
 						}
 					}
 					else
 					{
-						obj8 = "-";
+						text = "-";
 					}
-					return (string)obj8;
+					return text;
 				});
 				if (!multiSelection)
 				{
-					tab.AddInputButton(column, "Owner", 0.3f, new Tab.OptionInput(null, (PlayerSession playerSession) => $"{entity.OwnerID}", 0, !Singleton.HasAccess(ap3.Player, "entities.owner_change"), delegate(PlayerSession ap4, object[] args)
+					tab.AddInputButton(column, "Owner", 0.3f, new Tab.OptionInput(null, (PlayerSession playerSession) => $"{entity.OwnerID}", 0, !Singleton.HasAccess(ap3.Player, "entities.owner_change"), (PlayerSession ap4, object[] args) =>
 					{
 						ulong id = ((string)args[0]).ToUlong(0uL);
-						DoAll<BaseEntity>(delegate(BaseEntity e)
+						DoAll<BaseEntity>((BaseEntity e) =>
 						{
 							e.OwnerID = id;
 						});
 						DrawEntities(tab, ap4);
 						DrawEntitySettings(tab, 1, ap4);
-					}), new Tab.OptionButton("Select", delegate(PlayerSession playerSession)
+					}), new Tab.OptionButton("Select", (PlayerSession playerSession) =>
 					{
 						if (!((Object)(object)owner == (Object)null))
 						{
@@ -2867,46 +2860,47 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}
 					}, (PlayerSession playerSession) => (!((Object)(object)owner == (Object)null)) ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None));
 				}
-				tab.AddInput(column, "Prefab", delegate
+				tab.AddInput(column, "Prefab", (PlayerSession playerSession) =>
 				{
-					object obj8;
+					string text;
 					if (!multiSelection)
 					{
-						obj8 = ((BaseNetworkable)entity).PrefabName;
-						if (obj8 == null)
+						text = ((BaseNetworkable)entity).PrefabName;
+						if (text == null)
 						{
 							return "";
 						}
 					}
 					else
 					{
-						obj8 = "-";
+						text = "-";
 					}
-					return (string)obj8;
+					return text;
 				});
-				tab.AddInput(column, "Flags", delegate
+				tab.AddInput(column, "Flags", (PlayerSession playerSession) =>
 				{
 					//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-					return (!multiSelection) ? (((int)entity.flags != 0) ? $"{entity.flags}" : "None") : "-";
+					string result = ((!multiSelection) ? (((int)entity.flags != 0) ? $"{entity.flags}" : "None") : "-");
+					return result;
 				});
-				tab.AddInput(column, "Skin", (PlayerSession playerSession) => (!multiSelection) ? entity.skinID.ToString() : "-", delegate(PlayerSession session, object[] args)
+				tab.AddInput(column, "Skin", (PlayerSession playerSession) => (!multiSelection) ? entity.skinID.ToString() : "-", (PlayerSession session, object[] args) =>
 				{
 					entity.skinID = ((string)args[0]).ToUlong(0uL);
 					((BaseNetworkable)entity).SendNetworkUpdate((NetworkQueue)0);
 				});
-				tab.AddButton(column, "Edit Flags", delegate(PlayerSession playerSession)
+				tab.AddButton(column, "Edit Flags", (PlayerSession playerSession) =>
 				{
 					DrawEntitySettings(tab, 0, playerSession);
 					DrawEntityFlags(tab, playerSession);
 				}, null, (TextAnchor)4);
-				tab.AddInput(column, "Position", delegate
+				tab.AddInput(column, "Position", (PlayerSession playerSession) =>
 				{
 					//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 					//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 					return (!multiSelection) ? $"{((Component)entity).transform.position} [{MapHelper.PositionToString(((Component)entity).transform.position)}]" : "-";
 				});
-				tab.AddInput(column, "Rotation", delegate
+				tab.AddInput(column, "Rotation", (PlayerSession playerSession) =>
 				{
 					//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -2914,7 +2908,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					if (!multiSelection)
 					{
 						Quaternion serverRotation = entity.ServerRotation;
-						return $"{((Quaternion)(ref serverRotation)).eulerAngles}";
+						return $"{serverRotation.eulerAngles}";
 					}
 					return "-";
 				});
@@ -2924,21 +2918,21 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				if (!multiSelection && Singleton.HasAccess(ap3.Player, "entities.tp_entity"))
 				{
-					tab.AddButtonArray(column, new Tab.OptionButton("TeleportTo", delegate(PlayerSession playerSession)
+					tab.AddButtonArray(column, new Tab.OptionButton("TeleportTo", (PlayerSession playerSession) =>
 					{
 						//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 						playerSession.Player.Teleport(((Component)entity).transform.position);
-					}), new Tab.OptionButton("Teleport2Me", delegate
+					}), new Tab.OptionButton("Teleport2Me", (PlayerSession playerSession) =>
 					{
-						tab.CreateDialog("Are you sure about that?", delegate(PlayerSession playerSession2)
+						tab.CreateDialog("Are you sure about that?", (PlayerSession playerSession2) =>
 						{
 							//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 							//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-							BaseEntity obj8 = entity;
-							BasePlayer val5 = (BasePlayer)(object)((obj8 is BasePlayer) ? obj8 : null);
-							if (val5 != null)
+							BaseEntity val12 = entity;
+							BasePlayer val13 = (BasePlayer)(object)((val12 is BasePlayer) ? val12 : null);
+							if (val13 != null)
 							{
-								val5.Teleport(((Component)playerSession2.Player).transform.position);
+								val13.Teleport(((Component)playerSession2.Player).transform.position);
 							}
 							else
 							{
@@ -2946,15 +2940,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 								((BaseNetworkable)entity).SendNetworkUpdate_Position();
 							}
 						});
-					}), new Tab.OptionButton("Teleport2OwnedItem", delegate(PlayerSession playerSession)
+					}), new Tab.OptionButton("Teleport2OwnedItem", (PlayerSession playerSession) =>
 					{
 						//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 						//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 						BaseEntity[] array = Util.FindTargetsOwnedBy(EncryptedValue<ulong>.op_Implicit(player.userID), string.Empty);
 						if (array.Length != 0)
 						{
-							BaseEntity val5 = array[RandomEx.GetRandomInteger(0, array.Length)];
-							playerSession.Player.Teleport(((Component)val5).transform.position);
+							BaseEntity val12 = array[RandomEx.GetRandomInteger(0, array.Length)];
+							playerSession.Player.Teleport(((Component)val12).transform.position);
 						}
 						else
 						{
@@ -2962,19 +2956,19 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}
 					}));
 				}
-				BaseEntity obj2 = entity;
-				StorageContainer storage = (StorageContainer)(object)((obj2 is StorageContainer) ? obj2 : null);
+				BaseEntity val2 = entity;
+				StorageContainer storage = (StorageContainer)(object)((val2 is StorageContainer) ? val2 : null);
 				if (storage != null && !multiSelection && Singleton.HasAccess(ap3.Player, "entities.loot_entity"))
 				{
-					tab.AddButton(column, "Loot Container", delegate(PlayerSession playerSession)
+					tab.AddButton(column, "Loot Container", (PlayerSession playerSession) =>
 					{
 						LastContainerLooter = playerSession;
 						playerSession.SetStorage<BaseEntity>(tab, "lootedent", entity);
-						Core.timer.In(0.2f, delegate
+						Core.timer.In(0.2f, () =>
 						{
 							Admin.Close(playerSession.Player);
 						});
-						Core.timer.In(0.5f, delegate
+						Core.timer.In(0.5f, () =>
 						{
 							//IL_0113: Unknown result type (might be due to invalid IL or missing references)
 							SendEntityToPlayer(playerSession.Player, entity);
@@ -2996,57 +2990,57 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					tab.AddInput(column, "Steam ID", (PlayerSession playerSession) => (!multiSelection) ? player.UserIDString : "-");
 					if (Singleton.HasAccess(ap3.Player, "players.see_ips"))
 					{
-						tab.AddInput(column, "IP", delegate
+						tab.AddInput(column, "IP", (PlayerSession playerSession) =>
 						{
-							object obj8;
+							object obj;
 							if (!multiSelection)
 							{
 								Networkable net = ((BaseNetworkable)player).net;
 								if (net == null)
 								{
-									obj8 = null;
+									obj = null;
 								}
 								else
 								{
 									Connection connection = net.connection;
-									obj8 = ((connection != null) ? connection.ipaddress : null);
+									obj = ((connection != null) ? connection.ipaddress : null);
 								}
-								if (obj8 == null)
+								if (obj == null)
 								{
 									return "";
 								}
 							}
 							else
 							{
-								obj8 = "-";
+								obj = "-";
 							}
-							return (string)obj8;
+							return (string)obj;
 						}, null, null, hidden: true);
 					}
 					if (!multiSelection && (ap3.Player.IsAdmin || Singleton.Permissions.UserHasPermission(ap3?.Player.UserIDString, "carbon.cmod") || player.userID.IsSteamId()))
 					{
-						tab.AddButtonArray(1, new Tab.OptionButton("Kick", delegate(PlayerSession playerSession)
+						tab.AddButtonArray(1, new Tab.OptionButton("Kick", (PlayerSession playerSession) =>
 						{
-							Singleton.Modal.Open(playerSession.Player, "Kick " + player.displayName, new Dictionary<string, ModalModule.Modal.Field> { ["reason"] = ModalModule.Modal.Field.Make("Reason", ModalModule.Modal.Field.FieldTypes.String, required: false, "Stop doing that.") }, delegate(BasePlayer p, ModalModule.Modal m)
+							Singleton.Modal.Open(playerSession.Player, "Kick " + player.displayName, new Dictionary<string, ModalModule.Modal.Field> { ["reason"] = ModalModule.Modal.Field.Make("Reason", ModalModule.Modal.Field.FieldTypes.String, required: false, "Stop doing that.") }, (BasePlayer p, ModalModule.Modal m) =>
 							{
 								player.Kick(m.Get<string>("reason"), true);
 							});
-						}), new Tab.OptionButton("Ban", delegate(PlayerSession playerSession)
+						}), new Tab.OptionButton("Ban", (PlayerSession playerSession) =>
 						{
 							Singleton.Modal.Open(playerSession.Player, "Ban " + player.displayName, new Dictionary<string, ModalModule.Modal.Field>
 							{
 								["reason"] = ModalModule.Modal.Field.Make("Reason", ModalModule.Modal.Field.FieldTypes.String, required: false, "Stop doing that."),
-								["until"] = ModalModule.Modal.ButtonField.MakeButton("Until", "Select Date", delegate
+								["until"] = ModalModule.Modal.ButtonField.MakeButton("Until", "Select Date", (ModalModule.Modal m) =>
 								{
-									Core.NextTick(delegate
+									Core.NextTick(() =>
 									{
-										Singleton.DatePicker.Draw(playerSession.Player, delegate(DateTime date)
+										Singleton.DatePicker.Draw(playerSession.Player, (DateTime date) =>
 										{
 											playerSession.SetStorage(tab, "date", date);
 										});
 									});
 								})
-							}, delegate(BasePlayer p, ModalModule.Modal m)
+							}, (BasePlayer p, ModalModule.Modal m) =>
 							{
 								DateTime storage2 = playerSession.GetStorage(tab, "date", DateTime.UtcNow.AddYears(100));
 								DateTime utcNow = DateTime.UtcNow;
@@ -3058,7 +3052,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 								TimeSpan duration = utcNow - storage2;
 								player.AsIPlayer().Ban(m.Get<string>("reason"), duration);
 							});
-						}), new Tab.OptionButton(player.IsSleeping() ? "End Sleep" : "Sleep", delegate(PlayerSession ap4)
+						}), new Tab.OptionButton(player.IsSleeping() ? "End Sleep" : "Sleep", (PlayerSession ap4) =>
 						{
 							if (player.IsSleeping())
 							{
@@ -3069,10 +3063,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 								player.StartSleeping();
 							}
 							DrawEntitySettings(tab, 1, ap4);
-						}), new Tab.OptionButton("Hostility", delegate(PlayerSession playerSession)
+						}), new Tab.OptionButton("Hostility", (PlayerSession playerSession) =>
 						{
 							Dictionary<string, ModalModule.Modal.Field> fields = new Dictionary<string, ModalModule.Modal.Field> { ["duration"] = ModalModule.Modal.Field.Make("Duration", ModalModule.Modal.Field.FieldTypes.Float, required: true, 60f) };
-							Singleton.Modal.Open(playerSession.Player, "Player Hostile", fields, delegate(BasePlayer val5, ModalModule.Modal modal)
+							Singleton.Modal.Open(playerSession.Player, "Player Hostile", fields, (BasePlayer val12, ModalModule.Modal modal) =>
 							{
 								//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 								float num = modal.Get<float>("duration").Clamp(0f, float.MaxValue);
@@ -3083,7 +3077,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 								fields = null;
 								SelectEntity(tab, ap3, (BaseEntity)(object)owner);
 								Singleton.Draw(ap3.Player);
-							}, delegate
+							}, () =>
 							{
 								fields.Clear();
 								fields = null;
@@ -3097,14 +3091,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					List<Tab.OptionButton> list = Pool.Get<List<Tab.OptionButton>>();
 					if (Singleton.HasAccess(ap3.Player, "entities.loot_players"))
 					{
-						list.Add(new Tab.OptionButton("Loot", delegate(PlayerSession ap4)
+						list.Add(new Tab.OptionButton("Loot", (PlayerSession ap4) =>
 						{
 							if (!multiSelection)
 							{
 								OpenPlayerContainer(ap4, player, tab);
 							}
 						}));
-						list.Add(new Tab.OptionButton("Strip", delegate
+						list.Add(new Tab.OptionButton("Strip", (PlayerSession playerSession) =>
 						{
 							if (!multiSelection)
 							{
@@ -3114,11 +3108,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 					if (Singleton.HasAccess(ap3.Player, "entities.respawn_players"))
 					{
-						list.Add(new Tab.OptionButton("Respawn", delegate
+						list.Add(new Tab.OptionButton("Respawn", (PlayerSession playerSession) =>
 						{
-							tab.CreateDialog("Are you sure about that?", delegate
+							tab.CreateDialog("Are you sure about that?", (PlayerSession playerSession2) =>
 							{
-								DoAll<BasePlayer>(delegate(BasePlayer e)
+								DoAll<BasePlayer>((BasePlayer e) =>
 								{
 									((BaseCombatEntity)e).Hurt(((BaseEntity)player).MaxHealth());
 									e.Respawn();
@@ -3133,13 +3127,13 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					if (Singleton.HasAccess(ap3.Player, "players.inventory_management"))
 					{
 						tab.AddName(1, "Inventory Lock", (TextAnchor)3);
-						tab.AddButtonArray(1, new Tab.OptionButton("Main", delegate
+						tab.AddButtonArray(1, new Tab.OptionButton("Main", (PlayerSession playerSession) =>
 						{
 							player.inventory.containerMain.SetLocked(!player.inventory.containerMain.IsLocked(), false);
-						}, (PlayerSession playerSession) => player.inventory.containerMain.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None), new Tab.OptionButton("Belt", delegate
+						}, (PlayerSession playerSession) => player.inventory.containerMain.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None), new Tab.OptionButton("Belt", (PlayerSession playerSession) =>
 						{
 							player.inventory.containerBelt.SetLocked(!player.inventory.containerBelt.IsLocked(), false);
-						}, (PlayerSession playerSession) => player.inventory.containerBelt.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None), new Tab.OptionButton("Wear", delegate
+						}, (PlayerSession playerSession) => player.inventory.containerBelt.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None), new Tab.OptionButton("Wear", (PlayerSession playerSession) =>
 						{
 							player.inventory.containerWear.SetLocked(!player.inventory.containerWear.IsLocked(), false);
 						}, (PlayerSession playerSession) => player.inventory.containerWear.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None));
@@ -3148,16 +3142,16 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					{
 						if (!PlayersTab.BlindedPlayers.Contains(player))
 						{
-							tab.AddButton(1, "Blind Player", delegate
+							tab.AddButton(1, "Blind Player", (PlayerSession playerSession) =>
 							{
-								tab.CreateDialog("Are you sure you want to blind the player?", delegate(PlayerSession playerSession2)
+								tab.CreateDialog("Are you sure you want to blind the player?", (PlayerSession playerSession2) =>
 								{
 									BlindPlayer(ap3.Player, player);
 									SelectEntity(tab, playerSession2, entity);
 									DrawEntitySettings(tab, column, ap3);
 									if ((Object)(object)playerSession2.Player == (Object)(object)player)
 									{
-										Core.timer.In(1f, delegate
+										Core.timer.In(1f, () =>
 										{
 											Singleton.Close(player);
 										});
@@ -3167,7 +3161,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}
 						else
 						{
-							tab.AddButton(1, "Unblind Player", delegate(PlayerSession session)
+							tab.AddButton(1, "Unblind Player", (PlayerSession session) =>
 							{
 								UnblindPlayer(ap3.Player, player);
 								SelectEntity(tab, session, entity);
@@ -3176,12 +3170,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}
 					}
 				}
-				if (!multiSelection && ((EntityRef)(ref ((BaseNetworkable)entity).parentEntity)).IsValid(true))
+				if (!multiSelection && ((BaseNetworkable)entity).parentEntity.IsValid(true))
 				{
-					tab.AddButton(column, $"Parent: {((EntityRef)(ref ((BaseNetworkable)entity).parentEntity)).Get(true)}", delegate(PlayerSession playerSession)
+					tab.AddButton(column, $"Parent: {((BaseNetworkable)entity).parentEntity.Get(true)}", (PlayerSession playerSession) =>
 					{
 						DrawEntities(tab, playerSession);
-						SelectEntity(tab, playerSession, ((EntityRef)(ref ((BaseNetworkable)entity).parentEntity)).Get(true));
+						SelectEntity(tab, playerSession, ((BaseNetworkable)entity).parentEntity.Get(true));
 						DrawEntitySettings(tab, 1, playerSession);
 					}, null, (TextAnchor)4);
 				}
@@ -3190,7 +3184,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					tab.AddName(column, "Children", (TextAnchor)3);
 					foreach (BaseEntity child in ((BaseNetworkable)entity).children)
 					{
-						tab.AddButton(column, $"{child}", delegate(PlayerSession playerSession)
+						tab.AddButton(column, $"{child}", (PlayerSession playerSession) =>
 						{
 							SelectEntity(tab, playerSession, child);
 							DrawEntities(tab, playerSession);
@@ -3198,31 +3192,31 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}, null, (TextAnchor)4);
 					}
 				}
-				BaseEntity obj3 = entity;
-				CCTV_RC val = (CCTV_RC)(object)((obj3 is CCTV_RC) ? obj3 : null);
-				if (val == null)
+				BaseEntity val3 = entity;
+				CCTV_RC val4 = (CCTV_RC)(object)((val3 is CCTV_RC) ? val3 : null);
+				if (val4 == null)
 				{
-					BaseEntity obj4 = entity;
-					CodeLock val2 = (CodeLock)(object)((obj4 is CodeLock) ? obj4 : null);
-					if (val2 == null)
+					BaseEntity val5 = entity;
+					CodeLock val6 = (CodeLock)(object)((val5 is CodeLock) ? val5 : null);
+					if (val6 == null)
 					{
-						BaseEntity obj5 = entity;
-						Minicopter val3 = (Minicopter)(object)((obj5 is Minicopter) ? obj5 : null);
-						if (val3 == null)
+						BaseEntity val7 = entity;
+						Minicopter val8 = (Minicopter)(object)((val7 is Minicopter) ? val7 : null);
+						if (val8 == null)
 						{
-							BaseEntity obj6 = entity;
-							BuildingBlock val4 = (BuildingBlock)(object)((obj6 is BuildingBlock) ? obj6 : null);
-							if (val4 != null)
+							BaseEntity val9 = entity;
+							BuildingBlock val10 = (BuildingBlock)(object)((val9 is BuildingBlock) ? val9 : null);
+							if (val10 != null)
 							{
 								tab.AddName(column, "Building Block", (TextAnchor)3);
-								tab.AddDropdown(column, "Grade", delegate
+								tab.AddDropdown(column, "Grade", (PlayerSession playerSession) =>
 								{
 									//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 									//IL_000c: Expected I4, but got Unknown
-									return (int)val4.grade;
-								}, delegate(PlayerSession ap4, int index)
+									return (int)val10.grade;
+								}, (PlayerSession ap4, int index) =>
 								{
-									DoAll<BuildingBlock>(delegate(BuildingBlock e)
+									DoAll<BuildingBlock>((BuildingBlock e) =>
 									{
 										e.ChangeGrade((Enum)index, true, true);
 										((BaseEntity)e).skinID = 0uL;
@@ -3234,18 +3228,18 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						else
 						{
 							tab.AddName(column, "Minicopter", (TextAnchor)3);
-							if (!Object.op_Implicit((Object)(object)val3))
+							if (!Object.op_Implicit((Object)(object)val8))
 							{
-								tab.AddButton(column, "Open Fuel", delegate(PlayerSession playerSession)
+								tab.AddButton(column, "Open Fuel", (PlayerSession playerSession) =>
 								{
 									LastContainerLooter = playerSession;
-									Core.timer.In(0.2f, delegate
+									Core.timer.In(0.2f, () =>
 									{
 										Admin.Close(playerSession.Player);
 									});
-									Core.timer.In(0.5f, delegate
+									Core.timer.In(0.5f, () =>
 									{
-										((PlayerHelicopter)val3).engineController.FuelSystem.LootFuel(playerSession.Player);
+										((PlayerHelicopter)val8).engineController.FuelSystem.LootFuel(playerSession.Player);
 									});
 								}, null, (TextAnchor)4);
 							}
@@ -3254,7 +3248,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					else
 					{
 						tab.AddName(column, "Code Lock", (TextAnchor)3);
-						tab.AddInput(column, "Code", (PlayerSession playerSession) => (!multiSelection) ? val2.code : "-", delegate(PlayerSession playerSession, object[] args)
+						tab.AddInput(column, "Code", (PlayerSession playerSession) => (!multiSelection) ? val6.code : "-", (PlayerSession playerSession, object[] args) =>
 						{
 							string code = (string)args[0];
 							string text = code;
@@ -3265,7 +3259,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 									return;
 								}
 							}
-							DoAll<CodeLock>(delegate(CodeLock e)
+							DoAll<CodeLock>((CodeLock e) =>
 							{
 								e.code = StringEx.Truncate(code, 4);
 							});
@@ -3275,49 +3269,49 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				else
 				{
 					tab.AddName(column, "CCTV", (TextAnchor)3);
-					tab.AddInput(column, "Identifier", (PlayerSession playerSession) => (!multiSelection) ? ((PoweredRemoteControlEntity)val).GetIdentifier() : "-", delegate(PlayerSession playerSession, object[] args)
+					tab.AddInput(column, "Identifier", (PlayerSession playerSession) => (!multiSelection) ? ((PoweredRemoteControlEntity)val4).GetIdentifier() : "-", (PlayerSession playerSession, object[] args) =>
 					{
-						((PoweredRemoteControlEntity)val).UpdateIdentifier((string)args[0], true);
+						((PoweredRemoteControlEntity)val4).UpdateIdentifier((string)args[0], true);
 					});
 					if (!multiSelection)
 					{
-						tab.AddButton(column, "View CCTV", delegate(PlayerSession playerSession)
+						tab.AddButton(column, "View CCTV", (PlayerSession playerSession) =>
 						{
-							Core.timer.In(0.1f, delegate
+							Core.timer.In(0.1f, () =>
 							{
 								Admin.Close(playerSession.Player);
 								playerSession.SetStorage(tab, "wasviewingcam", value: true);
 							});
-							Core.timer.In(0.3f, delegate
+							Core.timer.In(0.3f, () =>
 							{
 								//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 								//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 								//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 								Admin.Subscribe("OnEntityDismounted");
 								Admin.Subscribe("CanDismountEntity");
-								BaseEntity obj8 = GameManager.server.CreateEntity("assets/prefabs/deployable/computerstation/computerstation.deployed.prefab", ((Component)playerSession.Player).transform.position, default(Quaternion), true);
-								ComputerStation val5 = (ComputerStation)(object)((obj8 is ComputerStation) ? obj8 : null);
-								((BaseEntity)val5).skinID = 69696uL;
-								val5.SendControlBookmarks(playerSession.Player);
-								((BaseNetworkable)val5).Spawn();
-								((BaseMountable)val5).checkPlayerLosOnMount = false;
-								((BaseMountable)val5).legacyDismount = true;
-								((BaseMountable)val5).MountPlayer(playerSession.Player);
-								ViewCamera(playerSession.Player, val5, val);
+								BaseEntity val12 = GameManager.server.CreateEntity("assets/prefabs/deployable/computerstation/computerstation.deployed.prefab", ((Component)playerSession.Player).transform.position, default(Quaternion), true);
+								ComputerStation val13 = (ComputerStation)(object)((val12 is ComputerStation) ? val12 : null);
+								((BaseEntity)val13).skinID = 69696uL;
+								val13.SendControlBookmarks(playerSession.Player);
+								((BaseNetworkable)val13).Spawn();
+								((BaseMountable)val13).checkPlayerLosOnMount = false;
+								((BaseMountable)val13).legacyDismount = true;
+								((BaseMountable)val13).MountPlayer(playerSession.Player);
+								ViewCamera(playerSession.Player, val13, val4);
 							});
 						}, null, (TextAnchor)4);
 					}
 				}
-				BaseEntity obj7 = entity;
-				BaseCombatEntity combat = (BaseCombatEntity)(object)((obj7 is BaseCombatEntity) ? obj7 : null);
+				BaseEntity val11 = entity;
+				BaseCombatEntity combat = (BaseCombatEntity)(object)((val11 is BaseCombatEntity) ? val11 : null);
 				if (combat == null)
 				{
 					return;
 				}
 				tab.AddName(column, "Combat", (TextAnchor)3);
-				tab.AddRange(column, "Health", 0f, ((BaseEntity)combat).MaxHealth(), (PlayerSession playerSession) => combat.health, delegate(PlayerSession playerSession, float value)
+				tab.AddRange(column, "Health", 0f, ((BaseEntity)combat).MaxHealth(), (PlayerSession playerSession) => combat.health, (PlayerSession playerSession, float value) =>
 				{
-					DoAll<BaseCombatEntity>(delegate(BaseCombatEntity e)
+					DoAll<BaseCombatEntity>((BaseCombatEntity e) =>
 					{
 						e.SetHealth(value);
 					});
@@ -3326,39 +3320,39 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					return;
 				}
-				tab.AddRange(column, "Thirst", 0f, ((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.max, (PlayerSession _) => ((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.value, delegate(PlayerSession _, float value)
+				tab.AddRange(column, "Thirst", 0f, ((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.max, (PlayerSession _) => ((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.value, (PlayerSession _, float value) =>
 				{
-					DoAll<BasePlayer>(delegate(BasePlayer e)
+					DoAll<BasePlayer>((BasePlayer e) =>
 					{
 						((BaseMetabolism<BasePlayer>)(object)e.metabolism).hydration.SetValue(value);
 					});
 				}, (PlayerSession _) => $"{((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.value:0}");
-				tab.AddRange(column, "Hunger", 0f, ((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.max, (PlayerSession _) => ((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.value, delegate(PlayerSession _, float value)
+				tab.AddRange(column, "Hunger", 0f, ((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.max, (PlayerSession _) => ((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.value, (PlayerSession _, float value) =>
 				{
-					DoAll<BasePlayer>(delegate(BasePlayer e)
+					DoAll<BasePlayer>((BasePlayer e) =>
 					{
 						((BaseMetabolism<BasePlayer>)(object)e.metabolism).calories.SetValue(value);
 					});
 				}, (PlayerSession _) => $"{((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.value:0}");
-				tab.AddRange(column, "Radiation", 0f, player.metabolism.radiation_poison.max, (PlayerSession _) => player.metabolism.radiation_poison.value, delegate(PlayerSession _, float value)
+				tab.AddRange(column, "Radiation", 0f, player.metabolism.radiation_poison.max, (PlayerSession _) => player.metabolism.radiation_poison.value, (PlayerSession _, float value) =>
 				{
-					DoAll<BasePlayer>(delegate(BasePlayer e)
+					DoAll<BasePlayer>((BasePlayer e) =>
 					{
 						e.metabolism.radiation_poison.SetValue(value);
 					});
 				}, (PlayerSession _) => $"{player.metabolism.radiation_poison.value:0}");
-				tab.AddRange(column, "Bleeding", 0f, player.metabolism.bleeding.max, (PlayerSession _) => player.metabolism.bleeding.value, delegate(PlayerSession _, float value)
+				tab.AddRange(column, "Bleeding", 0f, player.metabolism.bleeding.max, (PlayerSession _) => player.metabolism.bleeding.value, (PlayerSession _, float value) =>
 				{
-					DoAll<BasePlayer>(delegate(BasePlayer e)
+					DoAll<BasePlayer>((BasePlayer e) =>
 					{
 						e.metabolism.bleeding.SetValue(value);
 					});
 				}, (PlayerSession _) => $"{player.metabolism.bleeding.value:0}");
-				tab.AddRange(column, "Wetness", 0f, player.metabolism.wetness.max * 10f, (PlayerSession playerSession) => player.metabolism.wetness.value * 10f, delegate(PlayerSession _, float value)
+				tab.AddRange(column, "Wetness", 0f, player.metabolism.wetness.max * 10f, (PlayerSession playerSession) => player.metabolism.wetness.value * 10f, (PlayerSession _, float value) =>
 				{
 					player.metabolism.wetness.SetValue(value * 0.1f);
 				}, (PlayerSession _) => $"{player.metabolism.wetness.value * 100f:0}%");
-				tab.AddButton(column, "Empower Stats", delegate
+				tab.AddButton(column, "Empower Stats", (PlayerSession _) =>
 				{
 					EmpowerPlayerStats(ap3.Player, player);
 				}, null, (TextAnchor)4);
@@ -3377,7 +3371,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 		}
 
-		internal unsafe static void DrawEntityFlags(Tab tab, PlayerSession session, int column = 1)
+		internal static void DrawEntityFlags(Tab tab, PlayerSession session, int column = 1)
 		{
 			//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
@@ -3398,15 +3392,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				select x)
 			{
 				Flags flagValue = (Flags)Enum.Parse(typeof(Flags), item);
-				bool isDifferent = selectedEntitites.All(delegate(BaseEntity x)
+				bool isDifferent = selectedEntitites.All((BaseEntity x) =>
 				{
 					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 					return x.HasFlag(flagValue);
 				});
 				bool hasFlag = val.HasFlag(flagValue);
-				list.Add(new Tab.OptionButton(item, delegate(PlayerSession ap)
+				list.Add(new Tab.OptionButton(item, (PlayerSession ap) =>
 				{
-					DoAll<BaseEntity>(delegate(BaseEntity e)
+					DoAll<BaseEntity>((BaseEntity e) =>
 					{
 						//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 						//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -3414,11 +3408,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						FlagsUpdateScope val2 = e.StartSetFlags((FlagsUpdateMode)2);
 						try
 						{
-							((FlagsUpdateScope)(ref val2)).Set(flagValue, !hasFlag, false);
+							val2.Set(flagValue, !hasFlag, false);
 						}
 						finally
 						{
-							((IDisposable)(*(FlagsUpdateScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+							((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 						}
 					});
 					DrawEntitySettings(tab, 0, ap);
@@ -3445,7 +3439,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 		}
 
-		internal unsafe static void ViewCamera(BasePlayer player, ComputerStation station, CCTV_RC camera)
+		internal static void ViewCamera(BasePlayer player, ComputerStation station, CCTV_RC camera)
 		{
 			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -3453,17 +3447,17 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 			((BaseNetworkable)player).net.SwitchSecondaryGroup(((BaseNetworkable)camera).net.group);
-			((EntityRef)(ref station.currentlyControllingEnt)).uid = ((BaseNetworkable)camera).net.ID;
+			station.currentlyControllingEnt.uid = ((BaseNetworkable)camera).net.ID;
 			station.currentPlayerID = EncryptedValue<ulong>.op_Implicit(player.userID);
 			bool flag = ((PoweredRemoteControlEntity)camera).InitializeControl(new CameraViewerId(station.currentPlayerID, 0L));
 			FlagsUpdateScope val = ((BaseEntity)station).StartSetFlags((FlagsUpdateMode)3);
 			try
 			{
-				((FlagsUpdateScope)(ref val)).Set((Flags)256, flag, false);
+				val.Set((Flags)256, flag, false);
 			}
 			finally
 			{
-				((IDisposable)(*(FlagsUpdateScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 			}
 			station.SendControlBookmarks(player);
 		}
@@ -3502,7 +3496,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		public static Tab Get()
 		{
 			Tab tab = null;
-			return new Tab("env", "Environment", Community.Runtime.Core, delegate(PlayerSession ap, Tab tab2)
+			return new Tab("env", "Environment", Community.Runtime.Core, (PlayerSession ap, Tab tab2) =>
 			{
 				if (Options == null)
 				{
@@ -3519,9 +3513,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			tab.AddColumn(0, clear: true);
 			tab.AddColumn(1, clear: true);
 			tab.AddName(0, "Time", (TextAnchor)3);
-			tab.AddInputButton(0, "Date", 0.3f, new Tab.OptionInput(null, (PlayerSession ap) => TOD_Sky.Instance.Cycle.DateTime.ToString(), 0, readOnly: true, null), new Tab.OptionButton("Change", delegate(PlayerSession ap)
+			tab.AddInputButton(0, "Date", 0.3f, new Tab.OptionInput(null, (PlayerSession ap) => TOD_Sky.Instance.Cycle.DateTime.ToString(), 0, readOnly: true, null), new Tab.OptionButton("Change", (PlayerSession ap) =>
 			{
-				Singleton.DatePicker.Open(ap.Player, delegate(DateTime date)
+				Singleton.DatePicker.Open(ap.Player, (DateTime date) =>
 				{
 					float hour = TOD_Sky.Instance.Cycle.Hour;
 					TOD_Sky.Instance.Cycle.DateTime = date;
@@ -3530,124 +3524,124 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					Singleton.Draw(ap.Player);
 				});
 			}));
-			tab.AddToggle(0, "Progress Time", delegate
+			tab.AddToggle(0, "Progress Time", (PlayerSession ap) =>
 			{
 				TOD_Sky.Instance.Components.Time.ProgressTime = !TOD_Sky.Instance.Components.Time.ProgressTime;
 			}, (PlayerSession ap) => TOD_Sky.Instance.Components.Time.ProgressTime);
-			tab.AddRange(0, "Time", 0f, 24f, (PlayerSession ap) => TOD_Sky.Instance.Cycle.Hour, delegate(PlayerSession ap, float value)
+			tab.AddRange(0, "Time", 0f, 24f, (PlayerSession ap) => TOD_Sky.Instance.Cycle.Hour, (PlayerSession ap, float value) =>
 			{
 				TOD_Sky.Instance.Cycle.Hour = value;
 			}, (PlayerSession ap) => $"{TOD_Sky.Instance.Cycle.Hour:0.0}");
 			tab.AddName(0, "Ocean", (TextAnchor)3);
-			tab.AddRange(0, "Scale", -100f, 500f, (PlayerSession ap) => overrides.OceanScale * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(0, "Scale", -100f, 500f, (PlayerSession ap) => overrides.OceanScale * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.OceanScale = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.OceanScale:0.0}");
-			tab.AddRange(0, "Level", 0f, 500f, (PlayerSession ap) => WaterSystem.OceanLevel, delegate(PlayerSession ap, float value)
+			tab.AddRange(0, "Level", 0f, 500f, (PlayerSession ap) => WaterSystem.OceanLevel, (PlayerSession ap, float value) =>
 			{
 				WaterSystem.OceanLevel = value;
 				ServerMgr.SendReplicatedVars("env.");
 			}, (PlayerSession ap) => $"{WaterSystem.OceanLevel:0.0}");
-			tab.AddDropdown(1, "Weather Preset", (PlayerSession ap) => LastWeatherPresetSelectedIndex, delegate(PlayerSession ap, int index)
+			tab.AddDropdown(1, "Weather Preset", (PlayerSession ap) => LastWeatherPresetSelectedIndex, (PlayerSession ap, int index) =>
 			{
 				overrides.Set(presets[LastWeatherPresetSelectedIndex = index]);
 				ServerMgr.SendReplicatedVars("weather.");
 			}, Options);
 			tab.AddName(1, "Environment", (TextAnchor)3);
-			tab.AddRange(1, "Wind", -100f, 100f, (PlayerSession ap) => overrides.Wind * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Wind", -100f, 100f, (PlayerSession ap) => overrides.Wind * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Wind = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Wind:0.0}");
-			tab.AddRange(1, "Rain", -100f, 100f, (PlayerSession ap) => overrides.Rain * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Rain", -100f, 100f, (PlayerSession ap) => overrides.Rain * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Rain = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Rain:0.0}");
-			tab.AddRange(1, "Thunder", -100f, 100f, (PlayerSession ap) => overrides.Thunder * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Thunder", -100f, 100f, (PlayerSession ap) => overrides.Thunder * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Thunder = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Thunder:0.0}");
-			tab.AddRange(1, "Rainbow", -100f, 100f, (PlayerSession ap) => overrides.Rainbow * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Rainbow", -100f, 100f, (PlayerSession ap) => overrides.Rainbow * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Rainbow = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Rainbow:0.0}");
 			tab.AddName(1, "Atmosphere", (TextAnchor)3);
-			tab.AddRange(1, "RayleighMultiplier", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.RayleighMultiplier * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "RayleighMultiplier", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.RayleighMultiplier * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Atmosphere.RayleighMultiplier = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Atmosphere.RayleighMultiplier:0.0}");
-			tab.AddRange(1, "MieMultiplier", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.MieMultiplier * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "MieMultiplier", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.MieMultiplier * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Atmosphere.MieMultiplier = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Atmosphere.MieMultiplier:0.0}");
-			tab.AddRange(1, "Brightness", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.Brightness * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Brightness", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.Brightness * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Atmosphere.Brightness = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Atmosphere.Brightness:0.0}");
-			tab.AddRange(1, "Contrast", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.Contrast * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Contrast", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.Contrast * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Atmosphere.Contrast = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Atmosphere.Contrast:0.0}");
-			tab.AddRange(1, "Directionality", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.Directionality * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Directionality", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.Directionality * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Atmosphere.Directionality = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Atmosphere.Directionality:0.0}");
-			tab.AddRange(1, "Fogginess", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.Fogginess * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Fogginess", -100f, 500f, (PlayerSession ap) => overrides.Atmosphere.Fogginess * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Atmosphere.Fogginess = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Atmosphere.Fogginess:0.0}");
 			tab.AddName(1, "Clouds", (TextAnchor)3);
-			tab.AddRange(1, "Size", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Size * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Size", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Size * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Size = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Clouds.Size:0.0}");
-			tab.AddRange(1, "Opacity", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Opacity * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Opacity", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Opacity * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Opacity = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Clouds.Opacity:0.0}");
-			tab.AddRange(1, "Coverage", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Coverage * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Coverage", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Coverage * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Coverage = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Clouds.Coverage:0.0}");
-			tab.AddRange(1, "Sharpness", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Sharpness * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Sharpness", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Sharpness * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Sharpness = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Clouds.Sharpness:0.0}");
-			tab.AddRange(1, "Coloring", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Coloring * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Coloring", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Coloring * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Coloring = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Clouds.Coloring:0.0}");
-			tab.AddRange(1, "Attenuation", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Attenuation * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Attenuation", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Attenuation * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Attenuation = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Clouds.Attenuation:0.0}");
-			tab.AddRange(1, "Saturation", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Saturation * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Saturation", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Saturation * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Saturation = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Clouds.Saturation:0.0}");
-			tab.AddRange(1, "Scattering", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Scattering * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Scattering", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Scattering * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Scattering = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
 			}, (PlayerSession ap) => $"{overrides.Clouds.Scattering:0.0}");
-			tab.AddRange(1, "Brightness", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Brightness * 100f, delegate(PlayerSession ap, float value)
+			tab.AddRange(1, "Brightness", -100f, 500f, (PlayerSession ap) => overrides.Clouds.Brightness * 100f, (PlayerSession ap, float value) =>
 			{
 				overrides.Clouds.Brightness = value * 0.01f;
 				ServerMgr.SendReplicatedVars("weather.");
@@ -3663,7 +3657,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				IsFullscreen = true
 			};
-			tab.Override = delegate(Tab _, CUI cui, CuiElementContainer container, string panel, PlayerSession _)
+			tab.Override = (Tab _, CUI cui, CuiElementContainer container, string panel, PlayerSession _) =>
 			{
 				cui.CreateImage(container, panel, "carbonws", "1 1 1 0.7", null, 0.2f, 0.8f, 0.52f, 0.71f, 0f, 0f, -20f, -20f);
 				cui.CreateText(container, panel, "1 1 1 0.5", "Welcome to <b>Carbon</b>!\n\n<size=12><color=grey>If you've seen this panel again, your existent settings have not been reset.\nFor more information, go to <color=orange>carbonmod.gg</color>.</color></size>", 18, 0f, 1f, 0f, 0.495f, 0f, 0f, -20f, -20f, (TextAnchor)1, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
@@ -3701,7 +3695,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			AddColumn(0, clear: true);
 			AddColumn(1, clear: true);
-			AddButton(0, "Cancel", delegate(PlayerSession ap)
+			AddButton(0, "Cancel", (PlayerSession ap) =>
 			{
 				OnCancel?.Invoke(ap);
 			}, (PlayerSession ap) => OptionButton.Types.Important, (TextAnchor)4);
@@ -3719,29 +3713,29 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					continue;
 				}
 				string file = source.FirstOrDefault();
-				AddButton(0, Path.GetFileName(path), delegate(PlayerSession ap)
+				AddButton(0, Path.GetFileName(path), (PlayerSession ap) =>
 				{
-					Singleton.SetTab(ap.Player, ConfigEditor.Make(OsEx.File.ReadText(file), delegate(PlayerSession playerSession, JObject jobject)
+					Singleton.SetTab(ap.Player, ConfigEditor.Make(OsEx.File.ReadText(file), (PlayerSession playerSession, JObject jobject) =>
 					{
-						Community.Runtime.Core.NextTick(delegate
+						Community.Runtime.Core.NextTick(() =>
 						{
 							Singleton.SetTab(playerSession.Player, "plugins", onChange: false);
 						});
-					}, delegate(PlayerSession playerSession, JObject jobject)
+					}, (PlayerSession playerSession, JObject jobject) =>
 					{
 						OsEx.File.Create(file, ((JToken)jobject).ToString((Formatting)1, Array.Empty<JsonConverter>()));
-						Community.Runtime.Core.NextTick(delegate
+						Community.Runtime.Core.NextTick(() =>
 						{
 							Singleton.SetTab(playerSession.Player, "plugins", onChange: false);
 						});
-					}, delegate(PlayerSession playerSession, JObject jobject)
+					}, (PlayerSession playerSession, JObject jobject) =>
 					{
 						OsEx.File.Create(file, ((JToken)jobject).ToString((Formatting)1, Array.Empty<JsonConverter>()));
 						if (TargetPlugin is RustPlugin rustPlugin)
 						{
 							rustPlugin.ProcessorProcess.MarkDirty();
 						}
-						Community.Runtime.Core.NextTick(delegate
+						Community.Runtime.Core.NextTick(() =>
 						{
 							Singleton.SetTab(playerSession.Player, "plugins", onChange: false);
 						});
@@ -3767,7 +3761,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		public static Tab Get()
 		{
 			Tab tab = null;
-			return new Tab("modules", "Modules", Community.Runtime.Core, delegate(PlayerSession ap, Tab tab2)
+			return new Tab("modules", "Modules", Community.Runtime.Core, (PlayerSession ap, Tab tab2) =>
 			{
 				Draw(tab2, ap);
 			}, "modules.use");
@@ -3778,14 +3772,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			tab.AddColumn(0, clear: true);
 			tab.AddColumn(1, clear: true);
 			string searchInput = ap.GetStorage<string>(tab, "search")?.ToLower();
-			tab.AddInput(0, "Search", (PlayerSession playerSession) => searchInput, delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(0, "Search", (PlayerSession playerSession) => searchInput, (PlayerSession playerSession, object[] args) =>
 			{
 				playerSession.SetStorage(tab, "search", args.Select((object x) => x as string).ToString(" "));
 				Draw(tab, playerSession);
 			});
 			SortTypes sort = (SortTypes)ap.GetStorage(tab, "sorttype", 0);
 			bool sortFlip = ap.GetStorage(tab, "sortflip", @default: false);
-			tab.AddDropdown(0, "Sorting", (PlayerSession playerSession) => (int)sort, delegate(PlayerSession playerSession, int index)
+			tab.AddDropdown(0, "Sorting", (PlayerSession playerSession) => (int)sort, (PlayerSession playerSession, int index) =>
 			{
 				if (sort != (SortTypes)index)
 				{
@@ -3806,7 +3800,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				IEnumerable<BaseHookable> enumerable = sortTypes switch
 				{
-					SortTypes.Name => Community.Runtime.ModuleProcessor.Modules.OrderBy((BaseHookable x) => x.Name), 
+					SortTypes.Name => (IEnumerable<BaseHookable>)Community.Runtime.ModuleProcessor.Modules.OrderBy((BaseHookable x) => x.Name), 
 					SortTypes.Enabled => Community.Runtime.ModuleProcessor.Modules.OrderByDescending((BaseHookable x) => x is BaseModule baseModule && baseModule.IsEnabled()), 
 					_ => Community.Runtime.ModuleProcessor.Modules, 
 				};
@@ -3821,10 +3815,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					{
 						string moduleConfigFile = Path.Combine(Defines.GetModulesFolder(), module.Name, "config.json");
 						bool exists = OsEx.File.Exists(moduleConfigFile);
-						tab2.AddButtonArray(0, new Tab.OptionButton(item.Name, delegate(PlayerSession ap2)
+						tab2.AddButtonArray(0, new Tab.OptionButton(item.Name, (PlayerSession ap2) =>
 						{
 							Draw(tab2, ap2);
-						}, (PlayerSession _) => Tab.OptionButton.Types.None), new Tab.OptionButton((module.ForceEnabled ? "Always Enabled" : (module.IsEnabled() ? "Enabled" : "Disabled")) ?? "", delegate(PlayerSession ap2)
+						}, (PlayerSession _) => Tab.OptionButton.Types.None), new Tab.OptionButton((module.ForceEnabled ? "Always Enabled" : (module.IsEnabled() ? "Enabled" : "Disabled")) ?? "", (PlayerSession ap2) =>
 						{
 							if (!module.ForceEnabled)
 							{
@@ -3832,15 +3826,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 								module.Save();
 								Draw(tab2, ap2);
 							}
-						}, (PlayerSession playerSession) => (!module.ForceEnabled) ? (module.IsEnabled() ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None) : Tab.OptionButton.Types.Warned), new Tab.OptionButton("Edit Config", delegate(PlayerSession playerSession)
+						}, (PlayerSession playerSession) => (!module.ForceEnabled) ? (module.IsEnabled() ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None) : Tab.OptionButton.Types.Warned), new Tab.OptionButton("Edit Config", (PlayerSession playerSession) =>
 						{
 							if (exists)
 							{
-								playerSession.SelectedTab = ConfigEditor.Make(OsEx.File.ReadText(moduleConfigFile), delegate(PlayerSession playerSession2, JObject _)
+								playerSession.SelectedTab = ConfigEditor.Make(OsEx.File.ReadText(moduleConfigFile), (PlayerSession playerSession2, JObject _) =>
 								{
 									Singleton.SetTab(playerSession2.Player, "modules");
 									Singleton.Draw(playerSession2.Player);
-								}, delegate(PlayerSession playerSession2, JObject jobject)
+								}, (PlayerSession playerSession2, JObject jobject) =>
 								{
 									bool flag2 = module.IsEnabled();
 									OsEx.File.Create(moduleConfigFile, ((JToken)jobject).ToString((Formatting)1, Array.Empty<JsonConverter>()));
@@ -3884,7 +3878,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		public static Tab Get()
 		{
 			permission = Community.Runtime.Core.permission;
-			Tab tab = new Tab("permissions", "Permissions", Community.Runtime.Core, delegate(PlayerSession ap, Tab tab2)
+			Tab tab = new Tab("permissions", "Permissions", Community.Runtime.Core, (PlayerSession ap, Tab tab2) =>
 			{
 				ap.SetStorage(tab2, "toggleall", value: true);
 				ap.SetStorage(tab2, "groupedit", value: false);
@@ -3897,7 +3891,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				GeneratePlayers(tab2, permission, ap);
 			}, "permissions.use");
 			tab.AddName(0, "Options", (TextAnchor)3);
-			tab.AddButton(0, "Players", delegate(PlayerSession ap)
+			tab.AddButton(0, "Players", (PlayerSession ap) =>
 			{
 				ap.SetStorage(tab, "toggleall", value: true);
 				ap.SetStorage(tab, "groupedit", value: false);
@@ -3910,7 +3904,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				GeneratePlayers(tab, permission, ap);
 			}, (PlayerSession ap) => (ap.GetStorage(tab, "option", 0) == 0) ? Tab.OptionButton.Types.Selected : Tab.OptionButton.Types.None, (TextAnchor)4);
 			GeneratePlayers(tab, permission, PlayerSession.Blank);
-			tab.AddButton(0, "Groups", delegate(PlayerSession ap)
+			tab.AddButton(0, "Groups", (PlayerSession ap) =>
 			{
 				ap.SetStorage(tab, "toggleall", value: true);
 				ap.SetStorage(tab, "pluginedit", value: false);
@@ -3936,19 +3930,23 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			string filter = ap.GetStorage(tab, "playerfilter", string.Empty)?.Trim().ToLower();
 			tab.ClearColumn(1);
 			tab.AddName(1, "Players", (TextAnchor)3);
-			tab.AddInput(1, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "playerfilter", string.Empty), delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(1, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "playerfilter", string.Empty), (PlayerSession playerSession, object[] args) =>
 			{
 				playerSession.SetStorage(tab, "playerfilter", args.Select((object x) => x as string).ToString(" "));
 				GeneratePlayers(tab, perms, playerSession);
 			});
-			tab.AddButtonArray(1, new Tab.OptionButton("Add User", delegate(PlayerSession playerSession)
+			tab.AddButtonArray(1, new Tab.OptionButton("Add User", (PlayerSession playerSession) =>
 			{
 				Singleton.Modal.Open(playerSession.Player, "Create New User", new Dictionary<string, ModalModule.Modal.Field>
 				{
-					["steamid"] = ModalModule.Modal.Field.Make("Steam ID", ModalModule.Modal.Field.FieldTypes.String, required: true, null, isReadOnly: false, (ModalModule.Modal.Field field) => field.Get<string>().IsSteamId() ? ((!permission.UserExists(field.Get<string>())) ? string.Empty : "User with the same Steam ID already exists.") : "Not a valid Steam ID."),
+					["steamid"] = ModalModule.Modal.Field.Make("Steam ID", ModalModule.Modal.Field.FieldTypes.String, required: true, null, isReadOnly: false, (ModalModule.Modal.Field field) =>
+					{
+						string result = (field.Get<string>().IsSteamId() ? ((!permission.UserExists(field.Get<string>())) ? string.Empty : "User with the same Steam ID already exists.") : "Not a valid Steam ID.");
+						return result;
+					}),
 					["displayname"] = ModalModule.Modal.Field.Make("Display Name", ModalModule.Modal.Field.FieldTypes.String),
 					["language"] = ModalModule.Modal.Field.Make("Language", ModalModule.Modal.Field.FieldTypes.String)
-				}, delegate(BasePlayer pl, ModalModule.Modal mod)
+				}, (BasePlayer pl, ModalModule.Modal mod) =>
 				{
 					UserData userData = permission.GetUserData(mod.Get<string>("steamid"), addIfNotExisting: true);
 					userData.LastSeenNickname = mod.Get<string>("displayname");
@@ -3956,7 +3954,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					GeneratePlayers(tab, perms, playerSession);
 				});
 			}, (PlayerSession playerSession) => Tab.OptionButton.Types.None));
-			IEnumerable<BasePlayer> enumerable = BasePlayer.allPlayerList.Where(delegate(BasePlayer x)
+			IEnumerable<BasePlayer> enumerable = BasePlayer.allPlayerList.Where((BasePlayer x) =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				if (!x.userID.IsSteamId())
@@ -3967,7 +3965,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			});
 			foreach (BasePlayer player in enumerable)
 			{
-				tab.AddRow(1, new Tab.OptionButton($"{player.displayName} ({player.userID})", delegate
+				tab.AddRow(1, new Tab.OptionButton($"{player.displayName} ({player.userID})", (PlayerSession instance2) =>
 				{
 					ap.SetStorage(tab, "player", player.UserIDString);
 					ap.ClearStorage(tab, "plugin");
@@ -3988,14 +3986,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				tab.AddName(2, player.Value.LastSeenNickname ?? "", (TextAnchor)7);
 				tab.AddText(2, player.Key, 8, "1 1 1 0.6", (TextAnchor)1, CUI.Handler.FontTypes.RobotoCondensedRegular, isInput: true);
 				BasePlayer existentPlayer = BasePlayer.FindAwakeOrSleeping(player.Key);
-				tab.AddButtonArray(2, new Tab.OptionButton("Select Player", delegate
+				tab.AddButtonArray(2, new Tab.OptionButton("Select Player", (PlayerSession playerSession) =>
 				{
 					Singleton.SetTab(ap.Player, "players");
 					Tab tab2 = Singleton.GetTab(ap.Player);
 					ap.SetStorage(tab2, "playerfilterpl", player);
 					PlayersTab.RefreshPlayers(tab2, ap);
 					PlayersTab.ShowInfo(1, tab2, ap, existentPlayer);
-				}, (PlayerSession playerSession) => Tab.OptionButton.Types.Warned), new Tab.OptionButton(groupEdit ? "▼ Plugins" : (((hookableType == HookableTypes.Plugin) ? "▼ Modules" : "▼ Groups") ?? ""), delegate
+				}, (PlayerSession playerSession) => Tab.OptionButton.Types.Warned), new Tab.OptionButton(groupEdit ? "▼ Plugins" : (((hookableType == HookableTypes.Plugin) ? "▼ Modules" : "▼ Groups") ?? ""), (PlayerSession playerSession) =>
 				{
 					if (groupEdit)
 					{
@@ -4011,14 +4009,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						ap.SetStorage(tab, "groupedit", !groupEdit);
 						GenerateHookables(tab, ap, permission, player, null, hookableType);
 					}
-				}), new Tab.OptionButton("Edit User", delegate
+				}), new Tab.OptionButton("Edit User", (PlayerSession playerSession) =>
 				{
 					Singleton.Modal.Open(ap.Player, "Edit User", new Dictionary<string, ModalModule.Modal.Field>
 					{
 						["steamid"] = ModalModule.Modal.Field.Make("Steam ID", ModalModule.Modal.Field.FieldTypes.String, required: false, player.Key, isReadOnly: true),
 						["displayname"] = ModalModule.Modal.Field.Make("Display Name", ModalModule.Modal.Field.FieldTypes.String, required: true, player.Value.LastSeenNickname),
 						["language"] = ModalModule.Modal.Field.Make("Language", ModalModule.Modal.Field.FieldTypes.String, required: true, player.Value.Language)
-					}, delegate(BasePlayer pl, ModalModule.Modal mod)
+					}, (BasePlayer pl, ModalModule.Modal mod) =>
 					{
 						UserData userData = permission.GetUserData(player.Key);
 						userData.LastSeenNickname = mod.Get<string>("displayname");
@@ -4030,9 +4028,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			else
 			{
 				tab.AddName(2, selectedGroup ?? "", (TextAnchor)3);
-				tab.AddButtonArray(2, new Tab.OptionButton("Delete", delegate(PlayerSession ap2)
+				tab.AddButtonArray(2, new Tab.OptionButton("Delete", (PlayerSession ap2) =>
 				{
-					tab.CreateDialog("Are you sure you want to delete the '" + selectedGroup + "' group?", delegate
+					tab.CreateDialog("Are you sure you want to delete the '" + selectedGroup + "' group?", (PlayerSession playerSession) =>
 					{
 						permission.RemoveGroup(selectedGroup);
 						tab.ClearColumn(1);
@@ -4040,7 +4038,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						tab.ClearColumn(3);
 						GenerateGroups(tab, permission, ap2);
 					});
-				}, (PlayerSession playerSession) => Tab.OptionButton.Types.Important), new Tab.OptionButton("Edit", delegate(PlayerSession playerSession)
+				}, (PlayerSession playerSession) => Tab.OptionButton.Types.Important), new Tab.OptionButton("Edit", (PlayerSession playerSession) =>
 				{
 					List<string> list = Pool.Get<List<string>>();
 					string[] groups2 = Community.Runtime.Core.permission.GetGroups();
@@ -4057,7 +4055,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						["dname"] = ModalModule.Modal.Field.Make("Display Name", ModalModule.Modal.Field.FieldTypes.String, required: false, permission.GetGroupTitle(selectedGroup)),
 						["rank"] = ModalModule.Modal.Field.Make("Rank", ModalModule.Modal.Field.FieldTypes.Integer, required: false, permission.GetGroupRank(selectedGroup)),
 						["parent"] = ModalModule.Modal.EnumField.MakeEnum("Parent", array, required: false, (!string.IsNullOrEmpty(groupParent)) ? Array.IndexOf(array, groupParent) : 0, isReadOnly: false, (ModalModule.Modal.Field field) => (!(permission.GetGroupParent(array[field.Get<int>()]) == selectedGroup)) ? null : ("Circular parenting detected with '" + array[field.Get<int>()] + "'."))
-					}, delegate(BasePlayer val, ModalModule.Modal modal)
+					}, (BasePlayer val, ModalModule.Modal modal) =>
 					{
 						int num3 = modal.Get<int>("parent");
 						permission.SetGroupTitle(selectedGroup, modal.Get<string>("dname"));
@@ -4075,13 +4073,13 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						tab.ClearColumn(3);
 						GenerateGroups(tab, permission, playerSession);
 						GenerateHookables(tab, playerSession, permission, permission.FindUser(playerSession.Player.UserIDString), selectedGroup, hookableType);
-						Singleton.NextFrame(delegate
+						Singleton.NextFrame(() =>
 						{
 							Singleton.Draw(playerSession.Player);
 						});
 					});
 				}));
-				tab.AddButtonArray(2, new Tab.OptionButton("Duplicate Group", delegate(PlayerSession playerSession)
+				tab.AddButtonArray(2, new Tab.OptionButton("Duplicate Group", (PlayerSession playerSession) =>
 				{
 					List<string> list = Pool.Get<List<string>>();
 					string[] groups2 = Community.Runtime.Core.permission.GetGroups();
@@ -4095,7 +4093,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						["dname"] = ModalModule.Modal.Field.Make("Display Name", ModalModule.Modal.Field.FieldTypes.String, required: false, string.Empty),
 						["rank"] = ModalModule.Modal.Field.Make("Rank", ModalModule.Modal.Field.FieldTypes.Integer, required: false, 0),
 						["parent"] = ModalModule.Modal.EnumField.MakeEnum("Parent", array, required: false, 0)
-					}, delegate(BasePlayer p, ModalModule.Modal modal)
+					}, (BasePlayer p, ModalModule.Modal modal) =>
 					{
 						string text = modal.Get<string>("name");
 						int num2 = modal.Get<int>("parent");
@@ -4114,12 +4112,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						tab.ClearColumn(2);
 						tab.ClearColumn(3);
 						GenerateGroups(tab, permission, playerSession);
-						Singleton.NextFrame(delegate
+						Singleton.NextFrame(() =>
 						{
 							Singleton.Draw(playerSession.Player);
 						});
 					});
-				}, (PlayerSession playerSession) => Tab.OptionButton.Types.None), new Tab.OptionButton(groupEdit ? "▼ Plugins" : (((hookableType == HookableTypes.Plugin) ? "▼ Modules" : "▼ Groups") ?? ""), delegate
+				}, (PlayerSession playerSession) => Tab.OptionButton.Types.None), new Tab.OptionButton(groupEdit ? "▼ Plugins" : (((hookableType == HookableTypes.Plugin) ? "▼ Modules" : "▼ Groups") ?? ""), (PlayerSession playerSession) =>
 				{
 					if (pluginEdit)
 					{
@@ -4141,7 +4139,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				tab.ClearColumn(3);
 				tab.AddName(2, "Groups", (TextAnchor)3);
-				tab.AddInput(2, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "groupfilter", string.Empty), delegate(PlayerSession playerSession, object[] args)
+				tab.AddInput(2, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "groupfilter", string.Empty), (PlayerSession playerSession, object[] args) =>
 				{
 					playerSession.SetStorage(tab, "groupfilter", args.Select((object x) => x as string).ToString(" "));
 					GenerateHookables(tab, playerSession, permission, player, selectedGroup, hookableType);
@@ -4154,7 +4152,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					{
 						continue;
 					}
-					tab.AddButton(2, group ?? "", delegate(PlayerSession ap2)
+					tab.AddButton(2, group ?? "", (PlayerSession ap2) =>
 					{
 						if (permission.UserHasGroup(player.Key, group))
 						{
@@ -4172,14 +4170,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			if (!pluginEdit)
 			{
 				tab.AddName(2, (hookableType == HookableTypes.Module) ? "Modules" : "Plugins", (TextAnchor)3);
-				tab.AddInput(2, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "pluginfilter", string.Empty), delegate(PlayerSession playerSession, object[] args)
+				tab.AddInput(2, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "pluginfilter", string.Empty), (PlayerSession playerSession, object[] args) =>
 				{
 					playerSession.SetStorage(tab, "pluginfilter", args.Select((object x) => x as string).ToString(" "));
 					GenerateHookables(tab, playerSession, permission, player, selectedGroup, hookableType);
 				});
 				SortTypes sort = (SortTypes)ap.GetStorage(tab, "sorttype", 0);
 				bool sortFlip = ap.GetStorage(tab, "sortflip", @default: false);
-				tab.AddDropdown(2, "Sorting", (PlayerSession playerSession) => (int)sort, delegate(PlayerSession session, int index)
+				tab.AddDropdown(2, "Sorting", (PlayerSession playerSession) => (int)sort, (PlayerSession session, int index) =>
 				{
 					if (sort != (SortTypes)index)
 					{
@@ -4211,7 +4209,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					foreach (BaseHookable plugin in enumerable)
 					{
-						tab.AddRow(2, new Tab.OptionButton($"{plugin.Name} ({plugin.Version})", delegate(PlayerSession instance3)
+						tab.AddRow(2, new Tab.OptionButton($"{plugin.Name} ({plugin.Version})", (PlayerSession instance3) =>
 						{
 							ap.SetStorage(tab, "toggleall", value: true);
 							ap.SetStorage(tab, "plugin", plugin);
@@ -4224,12 +4222,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 			}
 			tab.AddName(2, "Players", (TextAnchor)3);
-			tab.AddInput(2, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "pluginfilter", string.Empty), delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(2, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "pluginfilter", string.Empty), (PlayerSession playerSession, object[] args) =>
 			{
 				playerSession.SetStorage(tab, "pluginfilter", args.Select((object x) => x as string).ToString(" "));
 				GenerateHookables(tab, playerSession, permission, player, selectedGroup, hookableType);
 			});
-			IEnumerable<KeyValuePair<string, UserData>> enumerable2 = permission.userdata.Where(delegate(KeyValuePair<string, UserData> x)
+			IEnumerable<KeyValuePair<string, UserData>> enumerable2 = permission.userdata.Where((KeyValuePair<string, UserData> x) =>
 			{
 				if (!x.Value.Groups.Contains(selectedGroup))
 				{
@@ -4239,7 +4237,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			});
 			foreach (KeyValuePair<string, UserData> user in enumerable2)
 			{
-				tab.AddRow(2, new Tab.OptionButton(user.Value.LastSeenNickname + " (" + user.Key + ")", delegate
+				tab.AddRow(2, new Tab.OptionButton(user.Value.LastSeenNickname + " (" + user.Key + ")", (PlayerSession instance3) =>
 				{
 					ap.SetStorage(tab, "toggleall", value: true);
 					ap.SetStorage(tab, "groupedit", value: false);
@@ -4262,12 +4260,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			string text = ap.GetStorage(tab, "permfilter", string.Empty)?.Trim().ToLower();
 			tab.ClearColumn(3);
 			tab.AddName(3, "Permissions", (TextAnchor)3);
-			tab.AddInput(3, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "permfilter", string.Empty), delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(3, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "permfilter", string.Empty), (PlayerSession playerSession, object[] args) =>
 			{
 				playerSession.SetStorage(tab, "permfilter", args.Select((object x) => x as string).ToString(" "));
 				GeneratePermissions(tab, playerSession, perms, hookable, player, selectedGroup);
 			});
-			tab.AddButton(3, grantAllStatus ? "Grant All" : "Revoke All", delegate(PlayerSession playerSession)
+			tab.AddButton(3, grantAllStatus ? "Grant All" : "Revoke All", (PlayerSession playerSession) =>
 			{
 				string[] permissions2 = perms.GetPermissions(hookable);
 				foreach (string perm2 in permissions2)
@@ -4321,7 +4319,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 							text2 = text2 + "<b>" + text3 + "</b>, ";
 						}
 					}
-					tab.AddRow(3, new Tab.OptionButton(perm ?? "", delegate
+					tab.AddRow(3, new Tab.OptionButton(perm ?? "", (PlayerSession instance5) =>
 					{
 						if (perms.UserHasPermission(player.Key, perm))
 						{
@@ -4338,7 +4336,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 					continue;
 				}
-				tab.AddRow(3, new Tab.OptionButton(perm ?? "", delegate
+				tab.AddRow(3, new Tab.OptionButton(perm ?? "", (PlayerSession instance5) =>
 				{
 					if (permission.GroupHasPermission(selectedGroup, perm))
 					{
@@ -4356,13 +4354,13 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			tab.ClearColumn(1);
 			tab.AddName(1, "Groups", (TextAnchor)3);
-			tab.AddInput(1, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "groupfilter", string.Empty), delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(1, "Search", (PlayerSession playerSession) => playerSession.GetStorage(tab, "groupfilter", string.Empty), (PlayerSession playerSession, object[] args) =>
 			{
 				playerSession.SetStorage(tab, "groupfilter", args.Select((object x) => x as string).ToString(" "));
 				GenerateGroups(tab, perms, playerSession);
 			});
 			string storage = ap.GetStorage<string>(tab, "groupfilter");
-			tab.AddButton(1, "Add Group", delegate(PlayerSession playerSession)
+			tab.AddButton(1, "Add Group", (PlayerSession playerSession) =>
 			{
 				List<string> list = Pool.Get<List<string>>();
 				string[] groups = Community.Runtime.Core.permission.GetGroups();
@@ -4376,7 +4374,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					["dname"] = ModalModule.Modal.Field.Make("Display Name", ModalModule.Modal.Field.FieldTypes.String, required: false, string.Empty),
 					["rank"] = ModalModule.Modal.Field.Make("Rank", ModalModule.Modal.Field.FieldTypes.Integer, required: false, 0),
 					["parent"] = ModalModule.Modal.EnumField.MakeEnum("Parent", array, required: false, 0)
-				}, delegate(BasePlayer player, ModalModule.Modal modal)
+				}, (BasePlayer player, ModalModule.Modal modal) =>
 				{
 					int num = modal.Get<int>("parent");
 					perms.CreateGroup(modal.Get<string>("name"), modal.Get<string>("dname"), modal.Get<int>("rank"));
@@ -4388,7 +4386,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					tab.ClearColumn(2);
 					tab.ClearColumn(3);
 					GenerateGroups(tab, perms, playerSession);
-					Singleton.NextFrame(delegate
+					Singleton.NextFrame(() =>
 					{
 						Singleton.Draw(playerSession.Player);
 					});
@@ -4401,7 +4399,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				if (string.IsNullOrEmpty(storage) || group.Contains(storage))
 				{
 					GroupData groupData = permission.GetGroupData(group);
-					tab.AddButton(1, string.IsNullOrEmpty(groupData.Title) ? (group ?? "") : (groupData.Title + " (" + group + ")"), delegate
+					tab.AddButton(1, string.IsNullOrEmpty(groupData.Title) ? (group ?? "") : (groupData.Title + " (" + group + ")"), (PlayerSession instance2) =>
 					{
 						ap.SetStorage(tab, "group", group);
 						ap.ClearStorage(tab, "plugin");
@@ -4420,7 +4418,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 		public static Tab Get()
 		{
-			Tab tab = new Tab("players", "Players", Community.Runtime.Core, delegate(PlayerSession instance, Tab tab2)
+			Tab tab = new Tab("players", "Players", Community.Runtime.Core, (PlayerSession instance, Tab tab2) =>
 			{
 				tab2.ClearColumn(1);
 				RefreshPlayers(tab2, instance);
@@ -4433,12 +4431,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		public static void RefreshPlayers(Tab tab, PlayerSession ap)
 		{
 			tab.ClearColumn(0);
-			tab.AddInput(0, "Search", (PlayerSession playerSession) => playerSession?.GetStorage<string>(tab, "playerfilter"), delegate(PlayerSession playerSession, object[] args)
+			tab.AddInput(0, "Search", (PlayerSession playerSession) => playerSession?.GetStorage<string>(tab, "playerfilter"), (PlayerSession playerSession, object[] args) =>
 			{
 				playerSession.SetStorage(tab, "playerfilter", args.Select((object x) => x as string).ToString(" "));
 				RefreshPlayers(tab, playerSession);
 			});
-			IOrderedEnumerable<BasePlayer> orderedEnumerable = from x in BasePlayer.allPlayerList.Distinct().Where(delegate(BasePlayer x)
+			IOrderedEnumerable<BasePlayer> orderedEnumerable = from x in BasePlayer.allPlayerList.Distinct().Where((BasePlayer x) =>
 				{
 					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 					return x.userID.IsSteamId() && x.IsConnected;
@@ -4454,7 +4452,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				tab.AddText(0, "No online players found.", 10, "1 1 1 0.4", (TextAnchor)4);
 			}
-			IEnumerable<BasePlayer> enumerable = BasePlayer.allPlayerList.Distinct().Where(delegate(BasePlayer x)
+			IEnumerable<BasePlayer> enumerable = BasePlayer.allPlayerList.Distinct().Where((BasePlayer x) =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				return x.userID.IsSteamId() && !x.IsConnected;
@@ -4480,7 +4478,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					return;
 				}
 			}
-			tab.AddButton(0, player.displayName ?? "", delegate
+			tab.AddButton(0, player.displayName ?? "", (PlayerSession _) =>
 			{
 				ap.SetStorage<BasePlayer>(tab, "playerfilterpl", player);
 				ShowInfo(1, tab, ap, player);
@@ -4494,26 +4492,26 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			tab.ClearColumn(column);
 			if (column != 1)
 			{
-				tab.AddButton(column, "<", delegate(PlayerSession ap)
+				tab.AddButton(column, "<", (PlayerSession ap) =>
 				{
 					RefreshPlayers(tab, ap);
 					ShowInfo(1, tab, ap, player);
 				}, null, (TextAnchor)4);
 			}
 			tab.AddName(column, "Player Information", (TextAnchor)3);
-			tab.AddInput(column, "Name", (PlayerSession _) => player.displayName, delegate(PlayerSession _, object[] args)
+			tab.AddInput(column, "Name", (PlayerSession _) => player.displayName, (PlayerSession _, object[] args) =>
 			{
 				player.AsIPlayer().Rename(args.Select((object x) => x as string).ToString(" "));
 			});
 			tab.AddInput(column, "Steam ID", (PlayerSession _) => player.UserIDString);
-			tab.AddInput(column, "Net ID", delegate
+			tab.AddInput(column, "Net ID", (PlayerSession _) =>
 			{
 				//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 				return $"{((BaseNetworkable)player).net?.ID}";
 			});
 			if (Singleton.HasAccess(aap.Player, "players.see_ips"))
 			{
-				tab.AddInput(column, "IP", delegate
+				tab.AddInput(column, "IP", (PlayerSession _) =>
 				{
 					Networkable net = ((BaseNetworkable)player).net;
 					object obj2;
@@ -4536,7 +4534,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			try
 			{
 				Vector3 position = ((Component)player).transform.position;
-				tab.AddInput(column, "Position", delegate
+				tab.AddInput(column, "Position", (PlayerSession _) =>
 				{
 					//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0011: Unknown result type (might be due to invalid IL or missing references)
@@ -4547,7 +4545,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			catch
 			{
 			}
-			tab.AddButton(column, "Player Flags", delegate(PlayerSession ap)
+			tab.AddButton(column, "Player Flags", (PlayerSession ap) =>
 			{
 				ShowInfo(0, tab, ap, player);
 				PlayerFlags(1, tab, player);
@@ -4555,7 +4553,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			if (Singleton.HasAccess(aap.Player, "permissions.use"))
 			{
 				tab.AddName(column, "Permissions", (TextAnchor)3);
-				tab.AddButton(column, "View Permissions", delegate(PlayerSession ap)
+				tab.AddButton(column, "View Permissions", (PlayerSession ap) =>
 				{
 					Tab tab2 = Singleton.FindTab("permissions");
 					Permission permission = Community.Runtime.Core.permission;
@@ -4567,28 +4565,28 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			if (aap.Player.IsAdmin || Singleton.Permissions.UserHasPermission(aap.Player.UserIDString, "carbon.cmod"))
 			{
-				tab.AddButtonArray(column, new Tab.OptionButton("Kick", delegate
+				tab.AddButtonArray(column, new Tab.OptionButton("Kick", (PlayerSession _) =>
 				{
-					Singleton.Modal.Open(aap.Player, "Kick " + player.displayName, new Dictionary<string, ModalModule.Modal.Field> { ["reason"] = ModalModule.Modal.Field.Make("Reason", ModalModule.Modal.Field.FieldTypes.String, required: false, "Stop doing that.") }, delegate(BasePlayer val, ModalModule.Modal m)
+					Singleton.Modal.Open(aap.Player, "Kick " + player.displayName, new Dictionary<string, ModalModule.Modal.Field> { ["reason"] = ModalModule.Modal.Field.Make("Reason", ModalModule.Modal.Field.FieldTypes.String, required: false, "Stop doing that.") }, (BasePlayer val, ModalModule.Modal m) =>
 					{
 						player.Kick(m.Get<string>("reason"), true);
 					});
-				}), new Tab.OptionButton("Ban", delegate(PlayerSession ap)
+				}), new Tab.OptionButton("Ban", (PlayerSession ap) =>
 				{
 					Singleton.Modal.Open(aap.Player, "Ban " + player.displayName, new Dictionary<string, ModalModule.Modal.Field>
 					{
 						["reason"] = ModalModule.Modal.Field.Make("Reason", ModalModule.Modal.Field.FieldTypes.String, required: false, "Stop doing that."),
-						["until"] = ModalModule.Modal.ButtonField.MakeButton("Until", "Select Date", delegate
+						["until"] = ModalModule.Modal.ButtonField.MakeButton("Until", "Select Date", (ModalModule.Modal _) =>
 						{
-							Core.NextTick(delegate
+							Core.NextTick(() =>
 							{
-								Singleton.DatePicker.Draw(ap.Player, delegate(DateTime date)
+								Singleton.DatePicker.Draw(ap.Player, (DateTime date) =>
 								{
 									ap.SetStorage(tab, "date", date);
 								});
 							});
 						})
-					}, delegate(BasePlayer _, ModalModule.Modal m)
+					}, (BasePlayer _, ModalModule.Modal m) =>
 					{
 						DateTime storage = ap.GetStorage(tab, "date", DateTime.UtcNow.AddYears(100));
 						DateTime utcNow = DateTime.UtcNow;
@@ -4596,7 +4594,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						TimeSpan duration = utcNow - storage;
 						player.AsIPlayer().Ban(m.Get<string>("reason"), duration);
 					});
-				}), new Tab.OptionButton(player.IsSleeping() ? "End Sleep" : "Sleep", delegate(PlayerSession ap)
+				}), new Tab.OptionButton(player.IsSleeping() ? "End Sleep" : "Sleep", (PlayerSession ap) =>
 				{
 					if (player.IsSleeping())
 					{
@@ -4607,10 +4605,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						player.StartSleeping();
 					}
 					ShowInfo(column, tab, ap, player);
-				}), new Tab.OptionButton("Hostility", delegate(PlayerSession ap)
+				}), new Tab.OptionButton("Hostility", (PlayerSession ap) =>
 				{
 					Dictionary<string, ModalModule.Modal.Field> fields = new Dictionary<string, ModalModule.Modal.Field> { ["duration"] = ModalModule.Modal.Field.Make("Duration", ModalModule.Modal.Field.FieldTypes.Float, required: true, 60f) };
-					Singleton.Modal.Open(ap.Player, "Player Hostile", fields, delegate(BasePlayer val, ModalModule.Modal modal)
+					Singleton.Modal.Open(ap.Player, "Player Hostile", fields, (BasePlayer val, ModalModule.Modal modal) =>
 					{
 						//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 						float num = modal.Get<float>("duration").Clamp(0f, float.MaxValue);
@@ -4621,7 +4619,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						fields = null;
 						ShowInfo(column, tab, aap, player);
 						Singleton.Draw(aap.Player);
-					}, delegate
+					}, () =>
 					{
 						fields.Clear();
 						fields = null;
@@ -4635,18 +4633,18 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			tab.AddName(column, "Actions", (TextAnchor)3);
 			if (Singleton.HasAccess(aap.Player, "entities.tp_entity"))
 			{
-				tab.AddButtonArray(column, new Tab.OptionButton("TeleportTo", delegate(PlayerSession ap)
+				tab.AddButtonArray(column, new Tab.OptionButton("TeleportTo", (PlayerSession ap) =>
 				{
 					//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 					ap.Player.Teleport(((Component)player).transform.position);
-				}), new Tab.OptionButton("Teleport2Me", delegate
+				}), new Tab.OptionButton("Teleport2Me", (PlayerSession _) =>
 				{
-					tab.CreateDialog("Are you sure about that?", delegate(PlayerSession ap)
+					tab.CreateDialog("Are you sure about that?", (PlayerSession ap) =>
 					{
 						//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 						player.Teleport(((Component)ap.Player).transform.position);
 					});
-				}), new Tab.OptionButton("Teleport2OwnedItem", delegate(PlayerSession ap)
+				}), new Tab.OptionButton("Teleport2OwnedItem", (PlayerSession ap) =>
 				{
 					//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0037: Unknown result type (might be due to invalid IL or missing references)
@@ -4664,15 +4662,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			if (Singleton.HasAccess(aap.Player, "entities.loot_players"))
 			{
-				tab.AddButtonArray(column, new Tab.OptionButton("Loot", delegate(PlayerSession ap)
+				tab.AddButtonArray(column, new Tab.OptionButton("Loot", (PlayerSession ap) =>
 				{
 					OpenPlayerContainer(ap, player, tab);
-				}), new Tab.OptionButton("Strip", delegate
+				}), new Tab.OptionButton("Strip", (PlayerSession ap) =>
 				{
 					player.inventory.Strip();
-				}), new Tab.OptionButton("Respawn", delegate
+				}), new Tab.OptionButton("Respawn", (PlayerSession _) =>
 				{
-					tab.CreateDialog("Are you sure about that?", delegate
+					tab.CreateDialog("Are you sure about that?", (PlayerSession playerSession) =>
 					{
 						((BaseCombatEntity)player).Hurt(((BaseEntity)player).MaxHealth());
 						player.Respawn();
@@ -4684,20 +4682,20 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			if (Singleton.HasAccess(aap.Player, "players.inventory_management"))
 			{
 				tab.AddName(column, "Inventory Lock", (TextAnchor)3);
-				tab.AddButtonArray(column, new Tab.OptionButton("Main", delegate
+				tab.AddButtonArray(column, new Tab.OptionButton("Main", (PlayerSession _) =>
 				{
 					LockPlayerContainer(aap.Player, player, player.inventory.containerMain, !player.inventory.containerMain.IsLocked());
-				}, (PlayerSession _) => player.inventory.containerMain.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None), new Tab.OptionButton("Belt", delegate
+				}, (PlayerSession _) => player.inventory.containerMain.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None), new Tab.OptionButton("Belt", (PlayerSession _) =>
 				{
 					LockPlayerContainer(aap.Player, player, player.inventory.containerBelt, !player.inventory.containerBelt.IsLocked());
-				}, (PlayerSession _) => player.inventory.containerBelt.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None), new Tab.OptionButton("Wear", delegate
+				}, (PlayerSession _) => player.inventory.containerBelt.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None), new Tab.OptionButton("Wear", (PlayerSession _) =>
 				{
 					LockPlayerContainer(aap.Player, player, player.inventory.containerWear, !player.inventory.containerWear.IsLocked());
 				}, (PlayerSession _) => player.inventory.containerWear.IsLocked() ? Tab.OptionButton.Types.Important : Tab.OptionButton.Types.None));
 			}
 			if (Singleton.HasTab("entities"))
 			{
-				tab.AddButton(column, "Select Entity", delegate(PlayerSession ap2)
+				tab.AddButton(column, "Select Entity", (PlayerSession ap2) =>
 				{
 					Singleton.SetTab(ap2.Player, "entities");
 					Tab tab2 = Singleton.GetTab(ap2.Player);
@@ -4710,15 +4708,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				if (!BlindedPlayers.Contains(player))
 				{
-					tab.AddButton(column, "Blind Player", delegate
+					tab.AddButton(column, "Blind Player", (PlayerSession _) =>
 					{
-						tab.CreateDialog("Are you sure you want to blind the player?", delegate(PlayerSession ap)
+						tab.CreateDialog("Are you sure you want to blind the player?", (PlayerSession ap) =>
 						{
 							BlindPlayer(aap.Player, player);
 							ShowInfo(column, tab, ap, player);
 							if ((Object)(object)ap.Player == (Object)(object)player)
 							{
-								Core.timer.In(1f, delegate
+								Core.timer.In(1f, () =>
 								{
 									Singleton.Close(player);
 								});
@@ -4728,7 +4726,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				else
 				{
-					tab.AddButton(column, "Unblind Player", delegate(PlayerSession ap)
+					tab.AddButton(column, "Unblind Player", (PlayerSession ap) =>
 					{
 						UnblindPlayer(aap.Player, player);
 						ShowInfo(column, tab, ap, player);
@@ -4737,31 +4735,31 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			tab.AddName(column, "Stats", (TextAnchor)3);
 			tab.AddName(column, "Combat", (TextAnchor)3);
-			tab.AddRange(column, "Health", 0f, ((BaseEntity)player).MaxHealth(), (PlayerSession _) => ((BaseCombatEntity)player).health, delegate(PlayerSession _, float value)
+			tab.AddRange(column, "Health", 0f, ((BaseEntity)player).MaxHealth(), (PlayerSession _) => ((BaseCombatEntity)player).health, (PlayerSession _, float value) =>
 			{
 				((BaseCombatEntity)player).SetHealth(value);
 			}, (PlayerSession _) => $"{((BaseCombatEntity)player).health:0}");
-			tab.AddRange(column, "Thirst", 0f, ((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.max, (PlayerSession _) => ((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.value, delegate(PlayerSession _, float value)
+			tab.AddRange(column, "Thirst", 0f, ((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.max, (PlayerSession _) => ((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.value, (PlayerSession _, float value) =>
 			{
 				((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.SetValue(value);
 			}, (PlayerSession _) => $"{((BaseMetabolism<BasePlayer>)(object)player.metabolism).hydration.value:0}");
-			tab.AddRange(column, "Hunger", 0f, ((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.max, (PlayerSession _) => ((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.value, delegate(PlayerSession _, float value)
+			tab.AddRange(column, "Hunger", 0f, ((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.max, (PlayerSession _) => ((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.value, (PlayerSession _, float value) =>
 			{
 				((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.SetValue(value);
 			}, (PlayerSession _) => $"{((BaseMetabolism<BasePlayer>)(object)player.metabolism).calories.value:0}");
-			tab.AddRange(column, "Radiation", 0f, player.metabolism.radiation_poison.max, (PlayerSession _) => player.metabolism.radiation_poison.value, delegate(PlayerSession _, float value)
+			tab.AddRange(column, "Radiation", 0f, player.metabolism.radiation_poison.max, (PlayerSession _) => player.metabolism.radiation_poison.value, (PlayerSession _, float value) =>
 			{
 				player.metabolism.radiation_poison.SetValue(value);
 			}, (PlayerSession _) => $"{player.metabolism.radiation_poison.value:0}");
-			tab.AddRange(column, "Bleeding", 0f, player.metabolism.bleeding.max, (PlayerSession _) => player.metabolism.bleeding.value, delegate(PlayerSession _, float value)
+			tab.AddRange(column, "Bleeding", 0f, player.metabolism.bleeding.max, (PlayerSession _) => player.metabolism.bleeding.value, (PlayerSession _, float value) =>
 			{
 				player.metabolism.bleeding.SetValue(value);
 			}, (PlayerSession _) => $"{player.metabolism.bleeding.value:0}");
-			tab.AddRange(column, "Wetness", 0f, player.metabolism.wetness.max * 10f, (PlayerSession ap) => player.metabolism.wetness.value * 10f, delegate(PlayerSession _, float value)
+			tab.AddRange(column, "Wetness", 0f, player.metabolism.wetness.max * 10f, (PlayerSession ap) => player.metabolism.wetness.value * 10f, (PlayerSession _, float value) =>
 			{
 				player.metabolism.wetness.SetValue(value * 0.1f);
 			}, (PlayerSession _) => $"{player.metabolism.wetness.value * 100f:0}%");
-			tab.AddButton(column, "Empower Stats", delegate
+			tab.AddButton(column, "Empower Stats", (PlayerSession _) =>
 			{
 				EmpowerPlayerStats(aap.Player, player);
 			}, null, (TextAnchor)4);
@@ -4773,7 +4771,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			IEnumerable<ItemCraftTask> enumerable = player.inventory.crafting.queue.Where((ItemCraftTask x) => !x.cancelled);
 			foreach (ItemCraftTask craft in enumerable)
 			{
-				tab.AddInputButton(column, $"{craft.blueprint.targetItem.displayName.english} (x{craft.amount}, {TimeEx.Format(craft.endTime - Time.realtimeSinceStartup)})", 0.1f, new Tab.OptionInput(null, (PlayerSession _) => "<size=8>" + craft.takenItems.Select((Item x) => $"{x.info.displayName.english} x {x.amount}").ToString(", ") + "</size>", 0, readOnly: true, null), new Tab.OptionButton("X", (TextAnchor)4, delegate(PlayerSession ap)
+				tab.AddInputButton(column, $"{craft.blueprint.targetItem.displayName.english} (x{craft.amount}, {TimeEx.Format(craft.endTime - Time.realtimeSinceStartup)})", 0.1f, new Tab.OptionInput(null, (PlayerSession _) => "<size=8>" + craft.takenItems.Select((Item x) => $"{x.info.displayName.english} x {x.amount}").ToString(", ") + "</size>", 0, readOnly: true, null), new Tab.OptionButton("X", (TextAnchor)4, (PlayerSession ap) =>
 				{
 					player.inventory.crafting.CancelTask(craft.taskUID);
 					ShowInfo(column, tab, ap, player);
@@ -4801,7 +4799,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				PlayerFlags flagValue = (PlayerFlags)Enum.Parse(typeof(PlayerFlags), item);
 				bool hasFlag = player.HasPlayerFlag(flagValue);
-				list.Add(new Tab.OptionButton(item, delegate(PlayerSession ap)
+				list.Add(new Tab.OptionButton(item, (PlayerSession ap) =>
 				{
 					//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 					player.SetPlayerFlag(flagValue, !hasFlag);
@@ -5097,7 +5095,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 			public override void FetchList(Action<Vendor> callback = null)
 			{
-				Community.Runtime.Core.webrequest.Enqueue(ListEndpoint, null, delegate(int error, string data)
+				Community.Runtime.Core.webrequest.Enqueue(ListEndpoint, null, (int error, string data) =>
 				{
 					if (error != 200)
 					{
@@ -5201,7 +5199,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				plugin.IsBusy = true;
 				plugin.DownloadCount++;
 				CorePlugin core = Community.Runtime.Core;
-				core.timer.In(2f, delegate
+				core.timer.In(2f, () =>
 				{
 					if (plugin.IsBusy)
 					{
@@ -5218,7 +5216,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						{
 							return;
 						}
-						core.webrequest.Enqueue(string.Format(AuthDownloadFileEndpoint, plugin.Id), null, delegate(int error, string source)
+						core.webrequest.Enqueue(string.Format(AuthDownloadFileEndpoint, plugin.Id), null, (int error, string source) =>
 						{
 							if (error != 200)
 							{
@@ -5230,7 +5228,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 								JObject val = JObject.Parse(source);
 								string url2 = ((object)val["files"][(object)0][(object)"url"]).ToString();
 								string path2 = ((plugin.ExistentPlugin == null) ? Path.Combine(Defines.GetScriptsFolder(), plugin.File) : plugin.ExistentPlugin.FilePath);
-								core.webrequest.Enqueue(url2, null, delegate(int _, string content)
+								core.webrequest.Enqueue(url2, null, (int _, string content) =>
 								{
 									plugin.IsBusy = false;
 									Singleton.Puts("Downloaded " + plugin.Name);
@@ -5241,7 +5239,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}, core, RequestMethod.GET, _headers);
 						return;
 					}
-					core.webrequest.Enqueue(string.Format(AuthDownloadFileEndpoint, plugin.Id), null, delegate(int error, string source)
+					core.webrequest.Enqueue(string.Format(AuthDownloadFileEndpoint, plugin.Id), null, (int error, string source) =>
 					{
 						if (error != 200)
 						{
@@ -5254,7 +5252,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 							string path2 = ((object)val["files"][(object)0][(object)"name"]).ToString();
 							string url2 = ((object)val["files"][(object)0][(object)"url"]).ToString();
 							string path3 = ((plugin.ExistentPlugin == null) ? Path.Combine(Defines.GetScriptsFolder(), path2) : plugin.ExistentPlugin.FilePath);
-							core.webrequest.EnqueueData(url2, null, delegate(int _, byte[] array)
+							core.webrequest.EnqueueData(url2, null, (int _, byte[] array) =>
 							{
 								plugin.IsBusy = false;
 								using MemoryStream stream = new MemoryStream(array);
@@ -5309,7 +5307,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				string path = ((plugin.ExistentPlugin == null) ? Path.Combine(Defines.GetScriptsFolder(), plugin.File) : plugin.ExistentPlugin.FilePath);
 				string url = DownloadEndpoint.Replace("[ID]", id);
-				core.webrequest.Enqueue(url, null, delegate(int error, string source)
+				core.webrequest.Enqueue(url, null, (int error, string source) =>
 				{
 					if (error != 200)
 					{
@@ -5357,7 +5355,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			public void Validate(PlayerSession session, Action onComplete)
 			{
 				CorePlugin core = Community.Runtime.Core;
-				ValidationTimer = core.timer.Every(AuthValidationCheckRate, delegate
+				ValidationTimer = core.timer.Every(AuthValidationCheckRate, () =>
 				{
 					if (User == null || !session.IsInMenu)
 					{
@@ -5368,7 +5366,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					else
 					{
 						string url = string.Format(AuthValidationEndpoint, AuthCode);
-						core.webrequest.Enqueue(url, null, delegate(int code, string result)
+						core.webrequest.Enqueue(url, null, (int code, string result) =>
 						{
 							if (User == null)
 							{
@@ -5409,7 +5407,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				CorePlugin core = Community.Runtime.Core;
 				KeyValuePair<HttpRequestHeader, string> authHeader = AuthHeader;
 				Dictionary<string, string> headers = new Dictionary<string, string> { [authHeader.Key.ToString()] = string.Format(authHeader.Value, User.AccessToken) };
-				core.webrequest.Enqueue(AuthUserInfoEndpoint, null, delegate(int code, string info)
+				core.webrequest.Enqueue(AuthUserInfoEndpoint, null, (int code, string info) =>
 				{
 					if (code == 200)
 					{
@@ -5420,7 +5418,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						User.CoverUrl = ((object)val["coverPhotoUrl"])?.ToString();
 						User.Id = ((object)val["id"]).ToString().ToInt();
 						User.IsAdmin = User.Authority == "Administrator";
-						core.webrequest.Enqueue(AuthOwnedPluginsEndpoint, null, delegate(int num, string data)
+						core.webrequest.Enqueue(AuthOwnedPluginsEndpoint, null, (int num, string data) =>
 						{
 							JObject val2 = JObject.Parse(data);
 							User.OwnedFiles.Clear();
@@ -5568,7 +5566,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				FetchedPlugins.Clear();
 				Logger.Log("[" + Type + "] Caching plugin metadata for displaying plugins in the Admin module -> Plugins tab. This might take a while..");
-				FetchingRequest = Community.Runtime.Core.webrequest.Enqueue(ListEndpoint.Replace("[ID]", "0"), null, delegate(int error, string data)
+				FetchingRequest = Community.Runtime.Core.webrequest.Enqueue(ListEndpoint.Replace("[ID]", "0"), null, (int error, string data) =>
 				{
 					if (error != 200)
 					{
@@ -5598,7 +5596,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				string path = ((plugin.ExistentPlugin == null) ? Path.Combine(Defines.GetScriptsFolder(), plugin.File) : plugin.ExistentPlugin.FilePath);
 				string url = DownloadEndpoint.Replace("[ID]", plugin.Name);
 				plugin.IsBusy = true;
-				Community.Runtime.Core.timer.In(2f, delegate
+				Community.Runtime.Core.timer.In(2f, () =>
 				{
 					if (plugin.IsBusy)
 					{
@@ -5606,7 +5604,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						onTimeout?.Invoke();
 					}
 				});
-				Community.Runtime.Core.webrequest.Enqueue(url, null, delegate(int error, string source)
+				Community.Runtime.Core.webrequest.Enqueue(url, null, (int error, string source) =>
 				{
 					if (error != 200)
 					{
@@ -5642,7 +5640,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					return;
 				}
-				Community.Runtime.Core.webrequest.Enqueue(PluginLookupEndpoint.Replace("[ID]", plugin.Name.ToLower().Trim()), null, delegate(int error, string data)
+				Community.Runtime.Core.webrequest.Enqueue(PluginLookupEndpoint.Replace("[ID]", plugin.Name.ToLower().Trim()), null, (int error, string data) =>
 				{
 					if (error != 200)
 					{
@@ -5695,7 +5693,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					callback?.Invoke(this);
 					return;
 				}
-				FetchingPageRequest = Community.Runtime.Core.webrequest.Enqueue(ListEndpoint.Replace("[ID]", $"{page}"), null, delegate(int error, string data)
+				FetchingPageRequest = Community.Runtime.Core.webrequest.Enqueue(ListEndpoint.Replace("[ID]", $"{page}"), null, (int error, string data) =>
 				{
 					if (error != 200)
 					{
@@ -5760,7 +5758,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}
 					}
 				}, Community.Runtime.Core);
-				FetchingTimer = Community.Runtime.Core.timer.In(5f, delegate
+				FetchingTimer = Community.Runtime.Core.timer.In(5f, () =>
 				{
 					FetchPage(page + 1, maxPage, callback);
 				});
@@ -6170,11 +6168,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			OsEx.Folder.Create(Path.Combine(Defines.GetScriptsFolder(), "backups"));
 			Tab tab = null;
-			tab = new Tab("plugins", "Plugins", Community.Runtime.Core, delegate
+			tab = new Tab("plugins", "Plugins", Community.Runtime.Core, (PlayerSession session, Tab tab2) =>
 			{
 				tab.AddColumn(0, clear: true);
 				tab.AddColumn(1, clear: true);
-				tab.Override = delegate(Tab tab3, CUI cui, CuiElementContainer container, string panel, PlayerSession ap)
+				tab.Override = (Tab tab3, CUI cui, CuiElementContainer container, string panel, PlayerSession ap) =>
 				{
 					cui.CreatePanel(container, panel, Cache.CUI.BlackColor);
 					float optionsOffset = 0f;
@@ -6418,7 +6416,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			CodeflingInstance = new Codefling();
 			if (CodeflingInstance is IVendorStored vendorStored && !vendorStored.Load())
 			{
-				CodeflingInstance.FetchList(delegate
+				CodeflingInstance.FetchList((Vendor vendor) =>
 				{
 					CodeflingInstance.Refresh();
 					CodeflingInstance.VersionCheck();
@@ -6488,7 +6486,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			uModInstance = new uMod();
 			if (uModInstance is IVendorStored vendorStored && !vendorStored.Load())
 			{
-				uModInstance.FetchList(delegate
+				uModInstance.FetchList((Vendor _) =>
 				{
 					uModInstance.Refresh();
 					uModInstance.VersionCheck();
@@ -6770,11 +6768,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				sample.Clear();
 			}
 			ProfilerTab profiler = new ProfilerTab("profiler", "Profiler", Community.Runtime.Core);
-			profiler.OnChange = delegate(PlayerSession ap, Tab _)
+			profiler.OnChange = (PlayerSession ap, Tab _) =>
 			{
 				profiler.Draw(ap);
 			};
-			profiler.Over = delegate(Tab _, CUI cui, CuiElementContainer container, string parent, PlayerSession _)
+			profiler.Over = (Tab _, CUI cui, CuiElementContainer container, string parent, PlayerSession _) =>
 			{
 				string text = (MonoProfiler.Crashed ? "<b>Mono profiler has failed initializing properly</b>\nPlease ensure CarbonNative.dll is located in <b>carbon/native</b> or contact developers" : ((!MonoProfiler.Enabled) ? "<b>Mono profiler is disabled</b>\nEnable it in the config, then reboot the server" : null));
 				if (!string.IsNullOrEmpty(text))
@@ -6795,7 +6793,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 			return (sort switch
 			{
-				0 => sample.Assemblies.OrderBy((MonoProfiler.AssemblyRecord x) => x.assembly_name.GetDisplayName(sample.IsCleared)), 
+				0 => (IEnumerable<MonoProfiler.AssemblyRecord>)sample.Assemblies.OrderBy((MonoProfiler.AssemblyRecord x) => x.assembly_name.GetDisplayName(sample.IsCleared)), 
 				1 => sample.Assemblies.OrderByDescending((MonoProfiler.AssemblyRecord x) => x.total_time), 
 				2 => sample.Assemblies.OrderByDescending((MonoProfiler.AssemblyRecord x) => x.calls), 
 				3 => sample.Assemblies.OrderByDescending((MonoProfiler.AssemblyRecord x) => x.alloc), 
@@ -6866,7 +6864,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				maxValue = value;
 			}
-			tab.AddWidget(column, 0, delegate(PlayerSession ap, CUI cui, CuiElementContainer container, string parent)
+			tab.AddWidget(column, 0, (PlayerSession ap, CUI cui, CuiElementContainer container, string parent) =>
 			{
 				//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0027: Unknown result type (might be due to invalid IL or missing references)
@@ -6933,7 +6931,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				num = num2;
 			}
-			AddWidget(-1, 0, delegate(PlayerSession ap, CUI cui, CuiElementContainer container, string panel)
+			AddWidget(-1, 0, (PlayerSession ap, CUI cui, CuiElementContainer container, string panel) =>
 			{
 				int num4 = 1;
 				cui.CreateProtectedButton(container, panel, "0.2 0.2 0.2 0.7", $"1 1 1 {((!timelineMode) ? 0.2 : 0.5)}", "TIMELINE\nMODE", 8, null, 0.83f, 0.925f, 0f, 1f, -46f * (float)num4, -46f * (float)num4, 0f, 0f, "adminmodule.timelinemode", (TextAnchor)4);
@@ -6952,16 +6950,16 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				cui.CreateProtectedButton(container, panel, MonoProfiler.IsRecording ? "0.9 0.1 0.1 1" : "0.2 0.2 0.2 0.7", "1 1 1 0.5", "REC<size=6>\n[SHIFT]</size>", 8, null, 0.93f, 0.99f, 0f, 1f, 0f, 0f, 0f, 0f, "adminmodule.profilertoggle", (TextAnchor)4);
 			});
 			Stripe(this, 0, (float)list.Sum((MonoProfiler.AssemblyRecord x) => x.total_time_percentage), 100f, niceColor, niceColor, "All", $"{list.Sum((MonoProfiler.AssemblyRecord x) => (float)x.total_time_ms):n0}ms | {list.Sum((MonoProfiler.AssemblyRecord x) => (float)x.total_time_percentage):0.0}%", $"<size=7>{MonoProfiler.Sample.GetDifferenceString(sample.Comparison.Duration)}{TimeEx.Format(sample.Duration, shortName: false).ToLower()}\n{sample.Calls.Count:n0} calls</size>", "adminmodule.profilerselect -1", string.IsNullOrEmpty(assembly));
-			AddDropdown(0, $"<b>ASSEMBLIES ({sample.Assemblies.Count:n0})</b>", (PlayerSession ap) => sortIndex, delegate(PlayerSession ap, int i)
+			AddDropdown(0, $"<b>ASSEMBLIES ({sample.Assemblies.Count:n0})</b>", (PlayerSession ap) => sortIndex, (PlayerSession ap, int i) =>
 			{
 				ap.SetStorage(this, "bsort", i);
 				DrawAssemblies(session, assembly);
 			}, sortAssemblyOptions);
-			AddInputButton(0, "Search", 0.075f, new OptionInput(null, (PlayerSession ap) => searchInput, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+			AddInputButton(0, "Search", 0.075f, new OptionInput(null, (PlayerSession ap) => searchInput, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 			{
 				ap.SetStorage(this, "bsearch", args.Select((object x) => x as string).ToString(" "));
 				DrawAssemblies(ap, assembly);
-			}), new OptionButton("X", delegate(PlayerSession ap)
+			}), new OptionButton("X", (PlayerSession ap) =>
 			{
 				ap.SetStorage(this, "bsearch", string.Empty);
 				DrawAssemblies(ap, assembly);
@@ -7021,7 +7019,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				int timelineChartType = session.GetStorage(this, "timelinect", 0);
 				AddSpace(1);
-				AddDropdown(1, "Chart Options", (PlayerSession ap) => timelineChartType, delegate(PlayerSession ap, int i)
+				AddDropdown(1, "Chart Options", (PlayerSession ap) => timelineChartType, (PlayerSession ap, int i) =>
 				{
 					ap.SetStorage(this, "timelinect", i);
 					DrawSubtabs(session, assembly);
@@ -7030,11 +7028,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				return;
 			}
 			SubtabTypes subtab = session.GetStorage(this, "subtab", SubtabTypes.Calls);
-			AddButtonArray(-2, new OptionButton("Calls", delegate
+			AddButtonArray(-2, new OptionButton("Calls", (PlayerSession ap) =>
 			{
 				session.SetStorage(this, "subtab", SubtabTypes.Calls);
 				DrawSubtabs(session, assembly);
-			}, (PlayerSession ap) => (subtab == SubtabTypes.Calls) ? OptionButton.Types.Selected : OptionButton.Types.None), new OptionButton("Memory", delegate
+			}, (PlayerSession ap) => (subtab == SubtabTypes.Calls) ? OptionButton.Types.Selected : OptionButton.Types.None), new OptionButton("Memory", (PlayerSession ap) =>
 			{
 				session.SetStorage(this, "subtab", SubtabTypes.Memory);
 				DrawSubtabs(session, assembly);
@@ -7072,16 +7070,16 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 					num4 = num2;
 				}
-				AddDropdown(1, $"<b>MEMORY ({sortedMemory.Count():n0})</b>", (PlayerSession ap) => sort2, delegate(PlayerSession ap, int i)
+				AddDropdown(1, $"<b>MEMORY ({sortedMemory.Count():n0})</b>", (PlayerSession ap) => sort2, (PlayerSession ap, int i) =>
 				{
 					ap.SetStorage(this, "msort", i);
 					DrawSubtabs(session, assembly);
 				}, sortMemoryOptions);
-				AddInputButton(1, "Search", 0.075f, new OptionInput(null, (PlayerSession ap) => searchInput2, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+				AddInputButton(1, "Search", 0.075f, new OptionInput(null, (PlayerSession ap) => searchInput2, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 				{
 					ap.SetStorage(this, "msearch", args.Select((object x) => x as string).ToString(" "));
 					DrawSubtabs(ap, assembly);
-				}), new OptionButton("X", delegate(PlayerSession ap)
+				}), new OptionButton("X", (PlayerSession ap) =>
 				{
 					ap.SetStorage(this, "msearch", string.Empty);
 					DrawSubtabs(ap, assembly);
@@ -7158,16 +7156,16 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 					num = num2;
 				}
-				AddDropdown(1, $"<b>CALLS ({sortedCalls.Count():n0})</b>", (PlayerSession ap) => sort, delegate(PlayerSession ap, int i)
+				AddDropdown(1, $"<b>CALLS ({sortedCalls.Count():n0})</b>", (PlayerSession ap) => sort, (PlayerSession ap, int i) =>
 				{
 					ap.SetStorage(this, "asort", i);
 					DrawSubtabs(session, assembly);
 				}, sortCallsOptions);
-				AddInputButton(1, "Search", 0.075f, new OptionInput(null, (PlayerSession ap) => searchInput, 0, readOnly: false, delegate(PlayerSession ap, object[] args)
+				AddInputButton(1, "Search", 0.075f, new OptionInput(null, (PlayerSession ap) => searchInput, 0, readOnly: false, (PlayerSession ap, object[] args) =>
 				{
 					ap.SetStorage(this, "asearch", args.Select((object x) => x as string).ToString(" "));
 					DrawSubtabs(ap, assembly);
-				}), new OptionButton("X", delegate(PlayerSession ap)
+				}), new OptionButton("X", (PlayerSession ap) =>
 				{
 					ap.SetStorage(this, "asearch", string.Empty);
 					DrawSubtabs(ap, assembly);
@@ -7247,7 +7245,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			//IL_0bff: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0c04: Unknown result type (might be due to invalid IL or missing references)
 			int storage = session.GetStorage(this, "timelinect", 0);
-			AddWidget(0, 0, delegate(PlayerSession ap, CUI cui, CuiElementContainer container, string panel)
+			AddWidget(0, 0, (PlayerSession ap, CUI cui, CuiElementContainer container, string panel) =>
 			{
 				int num5 = 1;
 				cui.CreateProtectedButton(container, panel, "0.2 0.2 0.2 0.7", "1 1 1 0.5", "TIMELINE\nMODE", 8, null, 0.83f, 0.925f, 0f, 1f, -46f * (float)num5, -46f * (float)num5, 0f, 0f, "adminmodule.timelinemode", (TextAnchor)4);
@@ -7488,8 +7486,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				foreach (SyntaxToken item in node.DescendantTokens((Func<SyntaxNode, bool>)null, false))
 				{
 					SyntaxToken current = item;
-					string text = ((SyntaxToken)(ref current)).ToFullString();
-					SyntaxKind syntaxKind = CSharpExtensions.Kind(((SyntaxToken)(ref current)).Parent);
+					string text = current.ToFullString();
+					SyntaxKind syntaxKind = CSharpExtensions.Kind(current.Parent);
 					string text2 = _resolver[syntaxKind];
 					if (!string.IsNullOrEmpty(text2))
 					{
@@ -7509,15 +7507,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 			private static readonly string[] _styles = new string[_names.Length];
 
-			public unsafe string this[SyntaxKind syntaxKind]
+			public string this[SyntaxKind syntaxKind]
 			{
 				get
 				{
-					return _styles[_names.IndexOf<string>(((object)(*(SyntaxKind*)(&syntaxKind))/*cast due to constrained. prefix*/).ToString())];
+					return _styles[_names.IndexOf(((object)syntaxKind/*cast due to constrained. prefix*/).ToString())];
 				}
 				set
 				{
-					_styles[_names.IndexOf<string>(((object)(*(SyntaxKind*)(&syntaxKind))/*cast due to constrained. prefix*/).ToString())] = value;
+					_styles[_names.IndexOf(((object)syntaxKind/*cast due to constrained. prefix*/).ToString())] = value;
 				}
 			}
 		}
@@ -7532,11 +7530,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		public static SourceViewerTab Make(string fileName, string content, string context, int size = 8)
 		{
 			SourceViewerTab sourceViewerTab = new SourceViewerTab("sourceviewer", "Source Viewer", Community.Runtime.Core);
-			sourceViewerTab.OnChange = (Action<PlayerSession, Tab>)Delegate.Combine(sourceViewerTab.OnChange, (Action<PlayerSession, Tab>)delegate(PlayerSession _, Tab tab1)
+			sourceViewerTab.OnChange = (Action<PlayerSession, Tab>)Delegate.Combine(sourceViewerTab.OnChange, (Action<PlayerSession, Tab>)((PlayerSession _, Tab tab1) =>
 			{
 				tab1.AddColumn(0, clear: true);
-			});
-			sourceViewerTab.Over = (Action<Tab, CUI, CuiElementContainer, string, PlayerSession>)Delegate.Combine(sourceViewerTab.Over, (Action<Tab, CUI, CuiElementContainer, string, PlayerSession>)delegate(Tab _, CUI cui, CuiElementContainer container, string panel, PlayerSession ap)
+			}));
+			sourceViewerTab.Over = (Action<Tab, CUI, CuiElementContainer, string, PlayerSession>)Delegate.Combine(sourceViewerTab.Over, (Action<Tab, CUI, CuiElementContainer, string, PlayerSession>)((Tab _, CUI cui, CuiElementContainer container, string panel, PlayerSession ap) =>
 			{
 				CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, panel, "0.1 0.1 0.1 0.8", null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, blur: true);
 				string[] array = content.Split('\n');
@@ -7569,7 +7567,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				cui.CreateText(container, pair3, "0.3 0.7 0.9 0.5", string.Join("\n", list), size, 0f, 0f, 1f, 1f, 0f, 20f, num, -7.5f, (TextAnchor)2, CUI.Handler.FontTypes.DroidSansMono, (VerticalWrapMode)1);
 				cui.CreateText(container, pair3, "0.8 0.8 0.8 1", text.Replace("\r", "").Replace("\"", "'").Replace("\t", "<color=#454545>————</color>"), size, 0f, 0f, 1f, 1f, 40f, 40f + num2, num, -7.5f, (TextAnchor)0, CUI.Handler.FontTypes.DroidSansMono, (VerticalWrapMode)1);
 				Pool.FreeUnmanaged<string>(ref list);
-			});
+			}));
 			return sourceViewerTab;
 		}
 
@@ -7700,7 +7698,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		Tab selectedTab = playerSession.SelectedTab;
 		string value = args.GetString(0, "");
 		playerSession.Clear();
-		IEnumerable<Tab> source = Tabs.Where((Tab x) => !base.DataInstance.IsTabHidden(x.Id));
+		IEnumerable<Tab> source = Tabs.Where((Tab x) => !DataInstance.IsTabHidden(x.Id));
 		SetTab(player, source.FirstOrDefault((Tab x) => x.Id.Equals(value)));
 	}
 
@@ -7715,7 +7713,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			array = HookCaller.Caller.AllocateBuffer(args.Args.Length - 2);
 			for (int i = 2; i < args.Args.Length; i++)
 			{
-				array[i - 2] = ((object)Unsafe.As<StringView, StringView>(ref args.Args[i])/*cast due to constrained. prefix*/).ToString();
+				array[i - 2] = ((object)args.Args[i]/*cast due to constrained. prefix*/).ToString();
 			}
 		}
 		if (CallColumnRow(player, args.GetInt(0, 0), args.GetInt(1, 0), array))
@@ -7799,7 +7797,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	[ProtectedCommand("carbonmodularui.maximize")]
 	private void Maximize(Arg args)
 	{
-		base.DataInstance.Maximize = !base.DataInstance.Maximize;
+		DataInstance.Maximize = !DataInstance.Maximize;
 		Draw(ArgEx.Player(args));
 	}
 
@@ -7871,7 +7869,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	public override void OnServerInit(bool initial)
 	{
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a8: Expected O, but got Unknown
+		//IL_00a8: Expected Obj, but got Unknown
 		base.OnServerInit(initial);
 		if (initial)
 		{
@@ -7889,7 +7887,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			Unsubscribe("CanAcceptItem");
 			if (!_logRegistration)
 			{
-				Application.logMessageReceived += new LogCallback(OnLog);
+				Application.logMessageReceived += OnLog;
 				_logRegistration = true;
 			}
 			OnEnabled(initialized: true);
@@ -7909,10 +7907,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			return;
 		}
-		for (int i = 0; i < base.ConfigInstance.OpenCommands.Length; i++)
+		for (int i = 0; i < ConfigInstance.OpenCommands.Length; i++)
 		{
-			string command = base.ConfigInstance.OpenCommands[i];
-			Action<BasePlayer, string, string[]> callback = delegate(BasePlayer player, string cmd, string[] args)
+			string command = ConfigInstance.OpenCommands[i];
+			Action<BasePlayer, string, string[]> callback = (BasePlayer player, string cmd, string[] args) =>
 			{
 				if (CanAccess(player))
 				{
@@ -7925,10 +7923,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					{
 						if (playerSession.SelectedTab == null)
 						{
-							playerSession.SelectedTab = Tabs.FirstOrDefault((Tab x) => !base.DataInstance.IsTabHidden(x.Id) && HasAccess(player, x.Access));
+							playerSession.SelectedTab = Tabs.FirstOrDefault((Tab x) => !DataInstance.IsTabHidden(x.Id) && HasAccess(player, x.Access));
 							playerSession.Clear();
 						}
-						else if (base.DataInstance.IsTabHidden(playerSession.SelectedTab.Id) || !HasAccess(player, playerSession.SelectedTab.Access))
+						else if (DataInstance.IsTabHidden(playerSession.SelectedTab.Id) || !HasAccess(player, playerSession.SelectedTab.Access))
 						{
 							playerSession.SelectedTab = null;
 						}
@@ -7959,14 +7957,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			ImageDatabase = BaseModule.GetModule<ImageDatabaseModule>();
 		}
-		ImageDatabase.Queue(@override: true, base.DataInstance.BackgroundImage);
+		ImageDatabase.Queue(@override: true, DataInstance.BackgroundImage);
 	}
 
 	public override void OnDisabled(bool initialized)
 	{
 		if (initialized)
 		{
-			Community.Runtime.Core.NextTick(delegate
+			Community.Runtime.Core.NextTick(() =>
 			{
 				for (int i = 0; i < BasePlayer.activePlayerList.Count; i++)
 				{
@@ -7986,15 +7984,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	public override void Load()
 	{
 		base.Load();
-		base.ConfigInstance.MinimumAuthLevel = base.ConfigInstance.MinimumAuthLevel.Clamp(0, 3);
-		base.ConfigInstance.MaximumAuthLevel = base.ConfigInstance.MaximumAuthLevel.Clamp(0, 3);
+		ConfigInstance.MinimumAuthLevel = ConfigInstance.MinimumAuthLevel.Clamp(0, 3);
+		ConfigInstance.MaximumAuthLevel = ConfigInstance.MaximumAuthLevel.Clamp(0, 3);
 		if (Community.IsServerInitialized)
 		{
 			GenerateTabs();
 		}
-		if (base.ModuleConfiguration.HasConfigStructureChanged())
+		if (ModuleConfiguration.HasConfigStructureChanged())
 		{
-			base.DataInstance.GreetDisplayed = false;
+			DataInstance.GreetDisplayed = false;
 		}
 	}
 
@@ -8089,7 +8087,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 	public bool HasAccess(BasePlayer player, string access)
 	{
-		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)player) && player.IsConnected && player.Connection.authLevel >= base.ConfigInstance.MinimumAuthLevel && player.Connection.authLevel <= base.ConfigInstance.MaximumAuthLevel)
+		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)player) && player.IsConnected && player.Connection.authLevel >= ConfigInstance.MinimumAuthLevel && player.Connection.authLevel <= ConfigInstance.MaximumAuthLevel)
 		{
 			return true;
 		}
@@ -8125,8 +8123,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			return (bool)obj;
 		}
 		uint authLevel = player.Connection.authLevel;
-		int minimumAuthLevel = base.ConfigInstance.MinimumAuthLevel;
-		int maximumAuthLevel = base.ConfigInstance.MaximumAuthLevel;
+		int minimumAuthLevel = ConfigInstance.MinimumAuthLevel;
+		int maximumAuthLevel = ConfigInstance.MaximumAuthLevel;
 		bool flag = authLevel >= minimumAuthLevel && authLevel <= maximumAuthLevel;
 		if (!flag)
 		{
@@ -8149,7 +8147,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	[Conditional("!MINIMAL")]
 	internal void TabButton(CUI cui, CuiElementContainer container, string parent, string text, string command, float width, float offset, bool highlight = false, bool disabled = false)
 	{
-		CUI.Pair<string, CuiElement, CuiElement> pair = cui.CreateProtectedButton(container, parent, highlight ? (base.DataInstance.Colors.SelectedTabColor + " 0.7") : "0.3 0.3 0.3 0.1", $"1 1 1 {(disabled ? 0.15 : 0.5)}", text, 11, null, offset, offset + width, 0f, 1f, 0f, 0f, 0f, 0f, disabled ? string.Empty : command, (TextAnchor)4);
+		CUI.Pair<string, CuiElement, CuiElement> pair = cui.CreateProtectedButton(container, parent, highlight ? (DataInstance.Colors.SelectedTabColor + " 0.7") : "0.3 0.3 0.3 0.1", $"1 1 1 {(disabled ? 0.15 : 0.5)}", text, 11, null, offset, offset + width, 0f, 1f, 0f, 0f, 0f, 0f, disabled ? string.Empty : command, (TextAnchor)4);
 		cui.CreateImage(container, pair, "fade", Cache.CUI.WhiteColor);
 		if (highlight)
 		{
@@ -8171,14 +8169,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	public void TabPanelName(CUI cui, CuiElementContainer container, string parent, string text, float height, float offset, TextAnchor align)
 	{
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		string nameTextColor = base.DataInstance.Colors.NameTextColor;
+		string nameTextColor = DataInstance.Colors.NameTextColor;
 		string text2 = text?.ToUpper();
 		float option_LeftOffset = Option_LeftOffset;
 		float option_RightOffset = Option_RightOffset;
 		CUI.Pair<string, CuiElement> pair = cui.CreateText(container, parent, nameTextColor, text2, 12, 0f, 1f, offset, offset + height, option_LeftOffset, option_RightOffset, 0f, 0f, align, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
 		if (!string.IsNullOrEmpty(text))
 		{
-			cui.CreatePanel(container, pair, $"1 1 1 {base.DataInstance.Colors.TitleUnderlineOpacity}", null, 0f, 1f, 0f, 0.015f);
+			cui.CreatePanel(container, pair, $"1 1 1 {DataInstance.Colors.TitleUnderlineOpacity}", null, 0f, 1f, 0f, 0.015f);
 		}
 	}
 
@@ -8203,16 +8201,16 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	public void TabPanelButton(CUI cui, CuiElementContainer container, string parent, string text, string command, float height, float offset, Tab.OptionButton.Types type = Tab.OptionButton.Types.None, TextAnchor align = (TextAnchor)4)
 	{
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		object color = type switch
+		string color = type switch
 		{
-			Tab.OptionButton.Types.Selected => base.DataInstance.Colors.ButtonSelectedColor, 
-			Tab.OptionButton.Types.Warned => base.DataInstance.Colors.ButtonWarnedColor, 
-			Tab.OptionButton.Types.Important => base.DataInstance.Colors.ButtonImportantColor, 
-			_ => base.DataInstance.Colors.OptionColor, 
+			Tab.OptionButton.Types.Selected => DataInstance.Colors.ButtonSelectedColor, 
+			Tab.OptionButton.Types.Warned => DataInstance.Colors.ButtonWarnedColor, 
+			Tab.OptionButton.Types.Important => DataInstance.Colors.ButtonImportantColor, 
+			_ => DataInstance.Colors.OptionColor, 
 		};
 		float option_LeftOffset = Option_LeftOffset;
 		float option_RightOffset = Option_RightOffset;
-		CUI.Pair<string, CuiElement, CuiElement> pair = cui.CreateProtectedButton(container, parent, (string)color, "1 1 1 0.5", text, 11, null, 0f, 1f, offset, offset + height, option_LeftOffset, option_RightOffset, 0f, 0f, command, align);
+		CUI.Pair<string, CuiElement, CuiElement> pair = cui.CreateProtectedButton(container, parent, color, "1 1 1 0.5", text, 11, null, 0f, 1f, offset, offset + height, option_LeftOffset, option_RightOffset, 0f, 0f, command, align);
 		cui.CreateImage(container, pair, "fade", Cache.CUI.WhiteColor);
 	}
 
@@ -8222,14 +8220,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, Cache.CUI.BlankColor, null, 0f, 1f, offset, offset + height);
 		if (!string.IsNullOrEmpty(text))
 		{
-			cui.CreateText(container, pair, base.DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
+			cui.CreateText(container, pair, DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 			cui.CreatePanel(container, pair, "0.2 0.2 0.2 0.5", null, 0f, xMax, 0f, 0.015f);
 		}
-		CUI.Pair<string, CuiElement, CuiElement> pair2 = cui.CreateProtectedButton(container, pair, base.DataInstance.Colors.OptionColor, "1 1 1 0.5", string.Empty, 11, null, 0.975f, 0.975f, 0.5f, 0.5f, -25f, 0f, -12.5f, 12.5f, command, (TextAnchor)4);
+		CUI.Pair<string, CuiElement, CuiElement> pair2 = cui.CreateProtectedButton(container, pair, DataInstance.Colors.OptionColor, "1 1 1 0.5", string.Empty, 11, null, 0.975f, 0.975f, 0.5f, 0.5f, -25f, 0f, -12.5f, 12.5f, command, (TextAnchor)4);
 		cui.CreateImage(container, pair2, "fade", Cache.CUI.WhiteColor);
 		if (isOn)
 		{
-			cui.CreateImage(container, pair2, "checkmark", base.DataInstance.Colors.ButtonSelectedColor, null, 0.15f, 0.85f, 0.15f, 0.85f);
+			cui.CreateImage(container, pair2, "checkmark", DataInstance.Colors.ButtonSelectedColor, null, 0.15f, 0.85f, 0.15f, 0.85f);
 		}
 	}
 
@@ -8237,30 +8235,30 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	{
 		string color = type switch
 		{
-			Tab.OptionButton.Types.Selected => base.DataInstance.Colors.ButtonSelectedColor, 
-			Tab.OptionButton.Types.Warned => base.DataInstance.Colors.ButtonWarnedColor, 
-			Tab.OptionButton.Types.Important => base.DataInstance.Colors.ButtonImportantColor, 
-			_ => base.DataInstance.Colors.OptionColor, 
+			Tab.OptionButton.Types.Selected => DataInstance.Colors.ButtonSelectedColor, 
+			Tab.OptionButton.Types.Warned => DataInstance.Colors.ButtonWarnedColor, 
+			Tab.OptionButton.Types.Important => DataInstance.Colors.ButtonImportantColor, 
+			_ => DataInstance.Colors.OptionColor, 
 		};
 		CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, Cache.CUI.BlankColor, null, 0f, 1f, offset, offset + height);
 		if (!string.IsNullOrEmpty(text))
 		{
-			cui.CreateText(container, pair, base.DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
-			cui.CreatePanel(container, pair, color, null, 0f, base.DataInstance.Colors.OptionWidth, 0f, 0.015f);
+			cui.CreateText(container, pair, DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
+			cui.CreatePanel(container, pair, color, null, 0f, DataInstance.Colors.OptionWidth, 0f, 0.015f);
 		}
-		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, color, null, base.DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
+		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, color, null, DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
 		cui.CreateImage(container, pair2, "fade", Cache.CUI.WhiteColor);
 		string parent2 = pair2;
 		string color2 = $"1 1 1 {(readOnly ? 0.2f : 1f)}";
 		string text2 = command;
-		cui.CreateProtectedInputField(command: text2, font: CUI.Handler.FontTypes.RobotoCondensedRegular, needsKeyboard: session.Input == option, container: container, parent: parent2, color: color2, text: placeholder, size: 11, characterLimit: characterLimit, readOnly: readOnly, xMin: 0.03f, xMax: 1f, yMin: 0f, yMax: 1f, OxMin: 0f, OxMax: 0f, OyMin: 0f, OyMax: 0f, align: (TextAnchor)3, autoFocus: session.Input == option && session.Input != session.PreviousInput, hudMenuInput: false, lineType: (LineType)0);
+		cui.CreateProtectedInputField(readOnly: readOnly, command: text2, font: CUI.Handler.FontTypes.RobotoCondensedRegular, needsKeyboard: session.Input == option, container: container, parent: parent2, color: color2, text: placeholder, size: 11, characterLimit: characterLimit, xMin: 0.03f, xMax: 1f, yMin: 0f, yMax: 1f, OxMin: 0f, OxMax: 0f, OyMin: 0f, OyMax: 0f, align: (TextAnchor)3, autoFocus: session.Input == option && session.Input != session.PreviousInput, hudMenuInput: false, lineType: (LineType)0);
 		if (session.Input == option)
 		{
 			session.PreviousInput = session.Input;
 		}
 		if (!readOnly)
 		{
-			cui.CreatePanel(container, pair2, base.DataInstance.Colors.EditableInputHighlight + " 0.9", null, 0f, 1f, 0f, 0.05f, 0f, -0.5f);
+			cui.CreatePanel(container, pair2, DataInstance.Colors.EditableInputHighlight + " 0.9", null, 0f, 1f, 0f, 0.05f, 0f, -0.5f);
 		}
 	}
 
@@ -8268,18 +8266,18 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	{
 		string color = type switch
 		{
-			Tab.OptionButton.Types.Selected => base.DataInstance.Colors.ButtonSelectedColor, 
-			Tab.OptionButton.Types.Warned => base.DataInstance.Colors.ButtonWarnedColor, 
-			Tab.OptionButton.Types.Important => base.DataInstance.Colors.ButtonImportantColor, 
-			_ => base.DataInstance.Colors.OptionColor, 
+			Tab.OptionButton.Types.Selected => DataInstance.Colors.ButtonSelectedColor, 
+			Tab.OptionButton.Types.Warned => DataInstance.Colors.ButtonWarnedColor, 
+			Tab.OptionButton.Types.Important => DataInstance.Colors.ButtonImportantColor, 
+			_ => DataInstance.Colors.OptionColor, 
 		};
 		CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, Cache.CUI.BlankColor, null, 0f, 1f, offset, offset + height);
 		if (!string.IsNullOrEmpty(text))
 		{
-			cui.CreateText(container, pair, base.DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
-			cui.CreatePanel(container, pair, "0.2 0.2 0.2 0.5", null, 0f, base.DataInstance.Colors.OptionWidth, 0f, 0.015f);
+			cui.CreateText(container, pair, DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
+			cui.CreatePanel(container, pair, "0.2 0.2 0.2 0.5", null, 0f, DataInstance.Colors.OptionWidth, 0f, 0.015f);
 		}
-		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, base.DataInstance.Colors.OptionColor, null, base.DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
+		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, DataInstance.Colors.OptionColor, null, DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
 		cui.CreateImage(container, pair2, "fade", Cache.CUI.WhiteColor);
 		cui.CreateText(container, pair2, "1 1 1 0.7", value, 11, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 		CUI.Pair<string, CuiElement, CuiElement> pair3 = cui.CreateProtectedButton(container, pair2, color, "1 1 1 0.7", "<", 10, null, 0f, 0.15f, 0f, 1f, 0f, 0f, 0f, 0f, command + " true", (TextAnchor)4);
@@ -8292,20 +8290,20 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	{
 		string rustColor = type switch
 		{
-			Tab.OptionButton.Types.Selected => base.DataInstance.Colors.ButtonSelectedColor, 
-			Tab.OptionButton.Types.Warned => base.DataInstance.Colors.ButtonWarnedColor, 
-			Tab.OptionButton.Types.Important => base.DataInstance.Colors.ButtonImportantColor, 
-			_ => base.DataInstance.Colors.OptionColor2, 
+			Tab.OptionButton.Types.Selected => DataInstance.Colors.ButtonSelectedColor, 
+			Tab.OptionButton.Types.Warned => DataInstance.Colors.ButtonWarnedColor, 
+			Tab.OptionButton.Types.Important => DataInstance.Colors.ButtonImportantColor, 
+			_ => DataInstance.Colors.OptionColor2, 
 		};
 		CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, Cache.CUI.BlankColor, null, 0f, 1f, offset, offset + height);
 		if (!string.IsNullOrEmpty(text))
 		{
-			cui.CreateText(container, pair, base.DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
-			cui.CreatePanel(container, pair, base.DataInstance.Colors.OptionColor, null, 0f, base.DataInstance.Colors.OptionWidth, 0f, 0.015f);
+			cui.CreateText(container, pair, DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
+			cui.CreatePanel(container, pair, DataInstance.Colors.OptionColor, null, 0f, DataInstance.Colors.OptionWidth, 0f, 0.015f);
 		}
-		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, base.DataInstance.Colors.OptionColor, null, base.DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
+		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, DataInstance.Colors.OptionColor, null, DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
 		string text2 = ((optionsIcons != null && index < optionsIcons.Length) ? optionsIcons[index] : null);
-		CUI.Pair<string, CuiElement, CuiElement> pair3 = cui.CreateProtectedButton(container, pair2, base.DataInstance.Colors.OptionColor, Cache.CUI.BlankColor, string.Empty, 0, null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, command + " false", (TextAnchor)3);
+		CUI.Pair<string, CuiElement, CuiElement> pair3 = cui.CreateProtectedButton(container, pair2, DataInstance.Colors.OptionColor, Cache.CUI.BlankColor, string.Empty, 0, null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, command + " false", (TextAnchor)3);
 		cui.CreateImage(container, pair3, "fade", Cache.CUI.WhiteColor);
 		cui.CreateText(container, pair3, "1 1 1 0.7", (index >= options.Length) ? "Out of bounds" : options[index], 10, string.IsNullOrEmpty(text2) ? 0.035f : 0.09f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 		cui.CreateText(container, pair3, "1 1 1 0.4", "▼", 8, 0f, 1f, 0f, 1f, 0f, Option_RightOffset, 0f, 0f, (TextAnchor)5, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
@@ -8363,18 +8361,18 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	{
 		string color = type switch
 		{
-			Tab.OptionButton.Types.Selected => base.DataInstance.Colors.ButtonSelectedColor, 
-			Tab.OptionButton.Types.Warned => base.DataInstance.Colors.ButtonWarnedColor, 
-			Tab.OptionButton.Types.Important => base.DataInstance.Colors.ButtonImportantColor, 
-			_ => base.DataInstance.Colors.OptionColor, 
+			Tab.OptionButton.Types.Selected => DataInstance.Colors.ButtonSelectedColor, 
+			Tab.OptionButton.Types.Warned => DataInstance.Colors.ButtonWarnedColor, 
+			Tab.OptionButton.Types.Important => DataInstance.Colors.ButtonImportantColor, 
+			_ => DataInstance.Colors.OptionColor, 
 		};
 		CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, Cache.CUI.BlankColor, null, 0f, 1f, offset, offset + height);
 		if (!string.IsNullOrEmpty(text))
 		{
-			cui.CreateText(container, pair, base.DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
-			cui.CreatePanel(container, pair, color, null, 0f, base.DataInstance.Colors.OptionWidth, 0f, 0.015f);
+			cui.CreateText(container, pair, DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
+			cui.CreatePanel(container, pair, color, null, 0f, DataInstance.Colors.OptionWidth, 0f, 0.015f);
 		}
-		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, Cache.CUI.BlankColor, null, base.DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
+		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, Cache.CUI.BlankColor, null, DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
 		CUI.Pair<string, CuiElement> pair3 = cui.CreatePanel(container, pair2, color, null, 0f, 1f, 0.4f, 0.6f);
 		cui.CreateImage(container, pair3, "fade", Cache.CUI.WhiteColor);
 		float num = value.Scale(min, max, 0f, 1f);
@@ -8413,10 +8411,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			Tab.OptionButton optionButton = buttons[i];
 			string color = ((optionButton.Type != null) ? optionButton.Type(session) : Tab.OptionButton.Types.None) switch
 			{
-				Tab.OptionButton.Types.Selected => base.DataInstance.Colors.ButtonSelectedColor, 
-				Tab.OptionButton.Types.Warned => base.DataInstance.Colors.ButtonWarnedColor, 
-				Tab.OptionButton.Types.Important => base.DataInstance.Colors.ButtonImportantColor, 
-				_ => base.DataInstance.Colors.OptionColor, 
+				Tab.OptionButton.Types.Selected => DataInstance.Colors.ButtonSelectedColor, 
+				Tab.OptionButton.Types.Warned => DataInstance.Colors.ButtonWarnedColor, 
+				Tab.OptionButton.Types.Important => DataInstance.Colors.ButtonImportantColor, 
+				_ => DataInstance.Colors.OptionColor, 
 			};
 			CUI.Pair<string, CuiElement, CuiElement> pair2 = cui.CreateProtectedButton(container, pair, color, "1 1 1 0.5", optionButton.Name, 11, null, num2, num2 + num, 0f, 1f, 0f, 0f, 0f, 0f, $"{command} {i}", (TextAnchor)4);
 			cui.CreateImage(container, pair2, "fade", Cache.CUI.WhiteColor);
@@ -8427,21 +8425,21 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	public void TabPanelInputButton(CUI cui, CuiElementContainer container, string parent, string text, string command, float buttonPriority, Tab.OptionInput input, Tab.OptionButton button, PlayerSession session, float height, float offset, Tab.Option option = null)
 	{
 		//IL_0402: Unknown result type (might be due to invalid IL or missing references)
-		string optionColor = base.DataInstance.Colors.OptionColor;
+		string optionColor = DataInstance.Colors.OptionColor;
 		string color = ((button.Type != null) ? button.Type(null) : Tab.OptionButton.Types.None) switch
 		{
-			Tab.OptionButton.Types.Selected => base.DataInstance.Colors.ButtonSelectedColor, 
-			Tab.OptionButton.Types.Warned => base.DataInstance.Colors.ButtonWarnedColor, 
-			Tab.OptionButton.Types.Important => base.DataInstance.Colors.ButtonImportantColor, 
-			_ => base.DataInstance.Colors.OptionColor, 
+			Tab.OptionButton.Types.Selected => DataInstance.Colors.ButtonSelectedColor, 
+			Tab.OptionButton.Types.Warned => DataInstance.Colors.ButtonWarnedColor, 
+			Tab.OptionButton.Types.Important => DataInstance.Colors.ButtonImportantColor, 
+			_ => DataInstance.Colors.OptionColor, 
 		};
 		CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, Cache.CUI.BlankColor, null, 0f, 1f, offset, offset + height);
 		if (!string.IsNullOrEmpty(text))
 		{
-			cui.CreateText(container, pair, base.DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
+			cui.CreateText(container, pair, DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 		}
-		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, optionColor, null, base.DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
-		cui.CreatePanel(container, pair, optionColor, null, 0f, base.DataInstance.Colors.OptionWidth, 0f, 0.015f);
+		CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, optionColor, null, DataInstance.Colors.OptionWidth, 1f, 0f, 1f, 0f, Option_RightOffset);
+		cui.CreatePanel(container, pair, optionColor, null, 0f, DataInstance.Colors.OptionWidth, 0f, 0.015f);
 		cui.CreateImage(container, pair2, "fade", Cache.CUI.WhiteColor, null, 0f, 1f - buttonPriority);
 		string parent2 = pair2;
 		string color2 = $"1 1 1 {(input.ReadOnly ? 0.2f : 1f)}";
@@ -8457,7 +8455,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		cui.CreateImage(container, pair3, "fade", Cache.CUI.WhiteColor);
 		if (!input.ReadOnly)
 		{
-			cui.CreatePanel(container, pair2, base.DataInstance.Colors.EditableInputHighlight + " 0.9", null, 0f, 1f - buttonPriority, 0f, 0.05f, 0f, -0.5f);
+			cui.CreatePanel(container, pair2, DataInstance.Colors.EditableInputHighlight + " 0.9", null, 0f, 1f - buttonPriority, 0f, 0.05f, 0f, -0.5f);
 		}
 	}
 
@@ -8468,8 +8466,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, Cache.CUI.BlankColor, null, 0f, 1f, offset, offset + height);
 		if (!string.IsNullOrEmpty(text))
 		{
-			cui.CreateText(container, pair, base.DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
-			cui.CreatePanel(container, pair, base.DataInstance.Colors.OptionColor, null, 0f, num, 0f, 0.015f);
+			cui.CreateText(container, pair, DataInstance.Colors.OptionNameColor, text + ":", 12, 0f, 1f, 0f, 1f, Option_LeftOffset, Option_RightOffset, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
+			cui.CreatePanel(container, pair, DataInstance.Colors.OptionColor, null, 0f, num, 0f, 0.015f);
 		}
 		string[] array = color.Split(' ');
 		string text2 = ((array.Length > 1) ? ("#" + ColorUtility.ToHtmlStringRGB(new Color(array[0].ToFloat(), array[1].ToFloat(), array[2].ToFloat(), 1f))) : string.Empty);
@@ -8546,9 +8544,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			CreateLayerButton(layer.Name, layer.LayerSettings.Color, !layer.Disabled, layer.LayerSettings.Shadows > 0);
 		}
 		cui.CreateText(container, panel, Cache.CUI.WhiteColor, chart.Name, chart.NameSize, 0.025f, 0.95f, 1f, 1f, 0f, 0f, 10f, 17.5f, chart.NameAlign, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
-		Community.Runtime.Core.NextFrame(delegate
+		Community.Runtime.Core.NextFrame(() =>
 		{
-			Tab.OptionChart.Cache.GetOrProcessCache(identifier, chart.Chart, delegate(Tab.OptionChart.ChartCache chartCache)
+			Tab.OptionChart.Cache.GetOrProcessCache(identifier, chart.Chart, (Tab.OptionChart.ChartCache chartCache) =>
 			{
 				//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0063: Unknown result type (might be due to invalid IL or missing references)
@@ -8607,7 +8605,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		}
 		if (!string.IsNullOrEmpty(tooltip.Tooltip))
 		{
-			cui.CreateProtectedButton(container, parent, Cache.CUI.BlankColor, Cache.CUI.BlankColor, string.Empty, 0, null, 0f, base.DataInstance.Colors.OptionWidth, offset, offset + height, 0f, 0f, 0f, 0f, command + " tooltip", (TextAnchor)4);
+			cui.CreateProtectedButton(container, parent, Cache.CUI.BlankColor, Cache.CUI.BlankColor, string.Empty, 0, null, 0f, DataInstance.Colors.OptionWidth, offset, offset + height, 0f, 0f, 0f, 0f, command + " tooltip", (TextAnchor)4);
 		}
 	}
 
@@ -8618,22 +8616,22 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			PlayerSession playerSession = GetPlayerSession(player);
 			Tab tab = GetTab(player);
 			playerSession.IsInMenu = true;
-			if (CanAccess(player) && !base.DataInstance.GreetDisplayed && tab != null && tab.Id != "greet" && tab.Id != "configeditor" && HasAccess(player, "greet"))
+			if (CanAccess(player) && !DataInstance.GreetDisplayed && tab != null && tab.Id != "greet" && tab.Id != "configeditor" && HasAccess(player, "greet"))
 			{
 				tab = (playerSession.SelectedTab = Greet.Make());
 			}
-			if (playerSession.SelectedTab != null && ((!string.IsNullOrEmpty(playerSession.SelectedTab.Access) && !HasAccess(player, playerSession.SelectedTab.Access)) || base.DataInstance.IsTabHidden(playerSession.SelectedTab.Id)))
+			if (playerSession.SelectedTab != null && ((!string.IsNullOrEmpty(playerSession.SelectedTab.Access) && !HasAccess(player, playerSession.SelectedTab.Access)) || DataInstance.IsTabHidden(playerSession.SelectedTab.Id)))
 			{
 				playerSession.SelectedTab = null;
 			}
 			using CUI cUI = new CUI(Handler);
-			CuiElementContainer cuiElementContainer = cUI.CreateContainer("carbonmodularui", $"0 0 0 {base.DataInstance.BackgroundOpacity}", 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, needsCursor: true, needsKeyboard: false, CUI.ClientPanels.HudMenu, "carbonmodularui");
+			CuiElementContainer cuiElementContainer = cUI.CreateContainer("carbonmodularui", $"0 0 0 {DataInstance.BackgroundOpacity}", 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, needsCursor: true, needsKeyboard: false, CUI.ClientPanels.HudMenu, "carbonmodularui");
 			cUI.CreatePanel(cuiElementContainer, "carbonmodularui", "0 0 0 0.6");
-			cUI.CreatePanel(cuiElementContainer, "carbonmodularui", "0 0 0 0.5", null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, base.DataInstance.BackgroundBlur);
+			cUI.CreatePanel(cuiElementContainer, "carbonmodularui", "0 0 0 0.5", null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, DataInstance.BackgroundBlur);
 			cUI.CreateImage(cuiElementContainer, "carbonmodularui", "fade", Cache.CUI.WhiteColor);
-			bool maximize = base.DataInstance.Maximize;
+			bool maximize = DataInstance.Maximize;
 			CUI.Pair<string, CuiElement> pair = cUI.CreatePanel(cuiElementContainer, "carbonmodularui", "0 0 0 0.6", null, 0.5f, 0.5f, 0.5f, 0.5f, -475f * (maximize ? 1.1f : 1f), 475f * (maximize ? 1.1f : 1f), -300f * (maximize ? 1.15f : 1f), 300f * (maximize ? 1.15f : 1f), blur: false, 0f, 0f, needsCursor: false, needsKeyboard: false, null, null, outlineUseGraphicAlpha: false, "carbonmodularuicolor");
-			cUI.CreateImage(cuiElementContainer, pair, base.DataInstance.BackgroundImage, "1 1 1 " + base.DataInstance.BackgroundImageOpacity, null, 0f, 1f, base.DataInstance.BackgroundImageYAnchor.x, base.DataInstance.BackgroundImageYAnchor.y);
+			cUI.CreateImage(cuiElementContainer, pair, DataInstance.BackgroundImage, "1 1 1 " + DataInstance.BackgroundImageOpacity, null, 0f, 1f, DataInstance.BackgroundImageYAnchor.x, DataInstance.BackgroundImageYAnchor.y);
 			using (TimeMeasure.New(Name + ".Main"))
 			{
 				if (tab == null || !tab.IsFullscreen)
@@ -8642,14 +8640,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					try
 					{
 						CUI.Pair<string, CuiElement> pair2 = cUI.CreatePanel(cuiElementContainer, pair, "0 0 0 0.6", null, 0.01f, 0.99f, 0.875f, 0.92f);
-						IEnumerable<Tab> enumerable = Tabs.Where((Tab x) => !base.DataInstance.IsTabHidden(x.Id));
+						IEnumerable<Tab> enumerable = Tabs.Where((Tab x) => !DataInstance.IsTabHidden(x.Id));
 						float num = 0f;
 						int num2 = enumerable.Count();
 						float num3 = ((num2 == 0) ? 0f : (1f / (float)num2));
 						for (int num4 = playerSession.TabSkip; num4 < num2; num4++)
 						{
 							Tab tab2 = enumerable.ElementAt(playerSession.TabSkip + num4);
-							if (!base.DataInstance.IsTabHidden(tab2.Id))
+							if (!DataInstance.IsTabHidden(tab2.Id))
 							{
 								string text = (tab2.Plugin.IsCorePlugin ? string.Empty : ("<size=8>\nby " + tab2.Plugin?.Name + "</size>"));
 								TabButton(cUI, cuiElementContainer, pair2, ((enumerable.IndexOf(playerSession.SelectedTab) == num4) ? ("<b>" + tab2.Name + "</b>") : tab2.Name) + text, "carbonmodularui.changetab " + tab2.Id, num3, num, enumerable.IndexOf(playerSession.SelectedTab) == num4, !HasAccess(player, tab2.Access));
@@ -8681,8 +8679,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 							while (count-- > 0)
 							{
 								Tab.OptionPool optionPool = tab.Columns[count];
-								CUI.Pair<string, CuiElement> pair4 = cUI.CreatePanel(cuiElementContainer, pair3, "0 0 0 " + base.DataInstance.BackgroundColumnOpacity, null, num7, num7 + num6 - num5, 0f, 1f, 0f, 0f, 0f, 0f, blur: false, 0f, 0f, needsCursor: false, needsKeyboard: false, null, null, outlineUseGraphicAlpha: false, $"sub{count}");
-								cUI.CreateImage(cuiElementContainer, pair4, "fade", "1 1 1 " + base.DataInstance.BackgroundColumnOpacity);
+								CUI.Pair<string, CuiElement> pair4 = cUI.CreatePanel(cuiElementContainer, pair3, "0 0 0 " + DataInstance.BackgroundColumnOpacity, null, num7, num7 + num6 - num5, 0f, 1f, 0f, 0f, 0f, 0f, blur: false, 0f, 0f, needsCursor: false, needsKeyboard: false, null, null, outlineUseGraphicAlpha: false, $"sub{count}");
+								cUI.CreateImage(cuiElementContainer, pair4, "fade", "1 1 1 " + DataInstance.BackgroundColumnOpacity);
 								PlayerSession.Page orCreatePage = playerSession.GetOrCreatePage(count);
 								int num8 = 19 - ((optionPool.pinnedOption != null) ? 1 : 0);
 								float num9 = 0.04f;
@@ -8748,7 +8746,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				int num14 = ((tab == null || tab.IsFullscreen) ? 15 : 0);
 				CUI.Pair<string, CuiElement, CuiElement> pair6 = cUI.CreateProtectedButton(cuiElementContainer, pair, "#d1cd56", Cache.CUI.BlankColor, string.Empty, 0, null, 0.9675f, 0.99f, 0.955f, 0.99f, -75f, -75f, num14, num14, "carbonmodularui.maximize", (TextAnchor)4);
-				cUI.CreateImage(cuiElementContainer, pair6, base.DataInstance.Maximize ? "minimize" : "maximize", "#fffed4", null, 0.15f, 0.85f, 0.15f, 0.85f);
+				cUI.CreateImage(cuiElementContainer, pair6, DataInstance.Maximize ? "minimize" : "maximize", "#fffed4", null, 0.15f, 0.85f, 0.15f, 0.85f);
 				cUI.CreateImage(cuiElementContainer, pair6, "fade", Cache.CUI.WhiteColor);
 				bool flag = HasAccess(playerSession.Player, "profiler.use");
 				CUI.Pair<string, CuiElement, CuiElement> pair7 = cUI.CreateProtectedButton(cuiElementContainer, pair, (!flag) ? "0.3 0.3 0.3 0.7" : "#6651c2", Cache.CUI.BlankColor, string.Empty, 0, null, 0.9675f, 0.99f, 0.955f, 0.99f, -50f, -50f, num14, num14, flag ? "carbonmodularui.profiler" : string.Empty, (TextAnchor)4);
@@ -8980,7 +8978,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	{
 		PlayerSession playerSession = GetPlayerSession(player);
 		Tab selectedTab = playerSession.SelectedTab;
-		Tab tab = Tabs.FirstOrDefault((Tab x) => !base.DataInstance.IsTabHidden(x.Id) && HasAccess(player, x.Access) && x.Id == id);
+		Tab tab = Tabs.FirstOrDefault((Tab x) => !DataInstance.IsTabHidden(x.Id) && HasAccess(player, x.Access) && x.Id == id);
 		if (tab != null)
 		{
 			playerSession.Tooltip = null;
@@ -9008,8 +9006,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	{
 		PlayerSession playerSession = GetPlayerSession(player);
 		Tab selectedTab = playerSession.SelectedTab;
-		tab = (string.IsNullOrEmpty(tab.Access) ? tab : (HasAccess(player, tab.Access) ? tab : Tabs.FirstOrDefault((Tab x) => !base.DataInstance.IsTabHidden(x.Id) && HasAccess(player, x.Access))));
-		if (base.DataInstance.IsTabHidden(tab.Id))
+		tab = (string.IsNullOrEmpty(tab.Access) ? tab : (HasAccess(player, tab.Access) ? tab : Tabs.FirstOrDefault((Tab x) => !DataInstance.IsTabHidden(x.Id) && HasAccess(player, x.Access))));
+		if (DataInstance.IsTabHidden(tab.Id))
 		{
 			tab = null;
 		}
@@ -9093,17 +9091,17 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			option.CurrentlyHidden = false;
 			return true;
 		}
-		if (!(option is Tab.OptionButton optionButton))
+		if (!(option is Tab.OptionButton { Callback: var callback } optionButton))
 		{
 			if (!(option is Tab.OptionInput optionInput))
 			{
-				if (!(option is Tab.OptionEnum optionEnum))
+				if (!(option is Tab.OptionEnum { Callback: var callback2 } optionEnum))
 				{
-					if (!(option is Tab.OptionToggle optionToggle))
+					if (!(option is Tab.OptionToggle { Callback: var callback3 } optionToggle))
 					{
 						if (!(option is Tab.OptionDropdown optionDropdown))
 						{
-							if (!(option is Tab.OptionRange optionRange))
+							if (!(option is Tab.OptionRange { Callback: var callback4 } optionRange))
 							{
 								if (!(option is Tab.OptionButtonArray optionButtonArray))
 								{
@@ -9157,7 +9155,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 														(!flag3) ? 0.15 : 0.5
 													}), textColor2, text2, 8, null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, string.Format("{0} {1} {2} {3}", new object[4] { text3, num, oldIdentifier2, text3 }), (TextAnchor)4));
 													updatePool2.Send(ap.Player);
-													Tab.OptionChart.Cache.GetOrProcessCache(empty2, optionChart.Chart, delegate(Tab.OptionChart.ChartCache chartCache)
+													Tab.OptionChart.Cache.GetOrProcessCache(empty2, optionChart.Chart, (Tab.OptionChart.ChartCache chartCache) =>
 													{
 														//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 														//IL_0072: Unknown result type (might be due to invalid IL or missing references)
@@ -9228,7 +9226,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 														(!flag) ? 0.15 : 0.5
 													}), textColor, "⦿", 8, null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, string.Format("{0} {1} {2} {3}", new object[4] { text, num, oldIdentifier, text }), (TextAnchor)4));
 													updatePool.Send(ap.Player);
-													Tab.OptionChart.Cache.GetOrProcessCache(empty, optionChart.Chart, delegate(Tab.OptionChart.ChartCache chartCache)
+													Tab.OptionChart.Cache.GetOrProcessCache(empty, optionChart.Chart, (Tab.OptionChart.ChartCache chartCache) =>
 													{
 														//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 														//IL_0072: Unknown result type (might be due to invalid IL or missing references)
@@ -9259,7 +9257,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 										}
 										else if (optionColor.Callback != null)
 										{
-											ColorPicker.Open(player, delegate(string rustColor, string hexColor, float alpha)
+											ColorPicker.Open(player, (string rustColor, string hexColor, float alpha) =>
 											{
 												optionColor.Callback?.Invoke(ap, rustColor, hexColor, alpha);
 											});
@@ -9303,11 +9301,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 									}
 									return false;
 								}
-								Action<PlayerSession> callback = optionButtonArray.Buttons[((string)args[0]).ToInt()].Callback;
-								callback?.Invoke(ap);
-								return callback != null;
+								Action<PlayerSession> callback5 = optionButtonArray.Buttons[((string)args[0]).ToInt()].Callback;
+								callback5?.Invoke(ap);
+								return callback5 != null;
 							}
-							optionRange.Callback?.Invoke(ap, ((string)args[0]).ToFloat().Scale(0f, optionRange.Max.Clamp(optionRange.Min, 50f) - 1f, optionRange.Min, optionRange.Max));
+							callback4?.Invoke(ap, ((string)args[0]).ToFloat().Scale(0f, optionRange.Max.Clamp(optionRange.Min, 50f) - 1f, optionRange.Min, optionRange.Max));
 							return optionRange.Callback != null;
 						}
 						PlayerSession.Page selectedDropdownPage = ap._selectedDropdownPage;
@@ -9356,10 +9354,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						ap._selectedDropdown = optionDropdown;
 						return selectedDropdown != optionDropdown;
 					}
-					optionToggle.Callback?.Invoke(ap);
+					callback3?.Invoke(ap);
 					return optionToggle.Callback != null;
 				}
-				optionEnum.Callback?.Invoke(ap, ((string)args[0]).ToBool());
+				callback2?.Invoke(ap, ((string)args[0]).ToBool());
 				return optionEnum.Callback != null;
 			}
 			if (ap.Input != optionInput)
@@ -9374,7 +9372,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			ap.Input = (ap.PreviousInput = null);
 			return optionInput.Callback != null;
 		}
-		optionButton.Callback?.Invoke(ap);
+		callback?.Invoke(ap);
 		return optionButton.Callback != null;
 	}
 
@@ -9397,7 +9395,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	[Conditional("!MINIMAL")]
 	private void OnPluginUnloaded(RustPlugin plugin)
 	{
-		Community.Runtime.Core.NextTick(delegate
+		Community.Runtime.Core.NextTick(() =>
 		{
 			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
@@ -9555,11 +9553,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		EntitiesTab.LastContainerLooter = ap;
 		ap.SetStorage<BasePlayer>(tab, "lootedent", player);
 		EntitiesTab.SendEntityToPlayer(ap.Player, (BaseEntity)(object)player);
-		Core.timer.In(0.2f, delegate
+		Core.timer.In(0.2f, () =>
 		{
 			Singleton.Close(ap.Player);
 		});
-		Core.timer.In(0.5f, delegate
+		Core.timer.In(0.5f, () =>
 		{
 			//IL_0152: Unknown result type (might be due to invalid IL or missing references)
 			EntitiesTab.SendEntityToPlayer(ap.Player, (BaseEntity)(object)player);
@@ -9581,7 +9579,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		EntitiesTab.LastContainerLooter = null;
 		ap.ClearStorage(tab, "lootedent");
 		ap.Player.inventory.loot.Clear();
-		Core.timer.In(0.5f, delegate
+		Core.timer.In(0.5f, () =>
 		{
 			//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
 			EntitiesTab.LastContainerLooter = ap;
@@ -9794,7 +9792,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		ap.SetStorage(tab, "page", 0);
 		Singleton.DataInstance.GreetDisplayed = true;
 		Singleton.GenerateTabs();
-		Community.Runtime.Core.NextTick(delegate
+		Community.Runtime.Core.NextTick(() =>
 		{
 			Save();
 			Singleton.SetTab(ap.Player, "carbon");
@@ -9851,21 +9849,21 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		string[] arg = new string[args.Args.Length];
 		for (int num = 0; num < args.Args.Length; num++)
 		{
-			arg[num] = ((object)Unsafe.As<StringView, StringView>(ref args.Args[num])/*cast due to constrained. prefix*/).ToString();
+			arg[num] = ((object)args.Args[num]/*cast due to constrained. prefix*/).ToString();
 		}
 		switch (arg[0])
 		{
 		case "0":
-			tabPlugin.GetPreferredVendor().Download(pluginName, delegate
+			tabPlugin.GetPreferredVendor().Download(pluginName, () =>
 			{
 				Singleton.Draw(ArgEx.Player(args));
 			});
 			Array.Clear(arg, 0, arg.Length);
 			break;
 		case "1":
-			tab.CreateDialog("Are you sure you want to update '" + ap.GetStorage<PluginsTab.Plugin>(tab, "selectedplugin").Name + "'?", delegate
+			tab.CreateDialog("Are you sure you want to update '" + ap.GetStorage<PluginsTab.Plugin>(tab, "selectedplugin").Name + "'?", (PlayerSession playerSession) =>
 			{
-				tabPlugin.GetPreferredVendor().Download(pluginName, delegate
+				tabPlugin.GetPreferredVendor().Download(pluginName, () =>
 				{
 					Singleton.Draw(ArgEx.Player(args));
 				});
@@ -9873,7 +9871,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			});
 			break;
 		case "2":
-			tab.CreateDialog("Are you sure you want to uninstall '" + ap.GetStorage<PluginsTab.Plugin>(tab, "selectedplugin").Name + "'?", delegate
+			tab.CreateDialog("Are you sure you want to uninstall '" + ap.GetStorage<PluginsTab.Plugin>(tab, "selectedplugin").Name + "'?", (PlayerSession playerSession) =>
 			{
 				Singleton.Puts("Uninstalling " + pluginName + " on " + vendor?.GetType().Name);
 				tabPlugin.GetPreferredVendor().Uninstall(pluginName);
@@ -9889,24 +9887,24 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			string path = Path.Combine(Defines.GetConfigsFolder(), plugin.Config.Filename);
 			if (OsEx.File.Exists(path))
 			{
-				Singleton.SetTab(ap.Player, ConfigEditor.Make(OsEx.File.ReadText(path), delegate(PlayerSession playerSession, JObject jobject)
+				Singleton.SetTab(ap.Player, ConfigEditor.Make(OsEx.File.ReadText(path), (PlayerSession playerSession, JObject jobject) =>
 				{
-					Community.Runtime.Core.NextTick(delegate
+					Community.Runtime.Core.NextTick(() =>
 					{
 						Singleton.SetTab(playerSession.Player, "plugins", onChange: false);
 					});
-				}, delegate(PlayerSession playerSession, JObject jobject)
+				}, (PlayerSession playerSession, JObject jobject) =>
 				{
 					OsEx.File.Create(path, ((JToken)jobject).ToString((Formatting)1, Array.Empty<JsonConverter>()));
-					Community.Runtime.Core.NextTick(delegate
+					Community.Runtime.Core.NextTick(() =>
 					{
 						Singleton.SetTab(playerSession.Player, "plugins", onChange: false);
 					});
-				}, delegate(PlayerSession playerSession, JObject jobject)
+				}, (PlayerSession playerSession, JObject jobject) =>
 				{
 					OsEx.File.Create(path, ((JToken)jobject).ToString((Formatting)1, Array.Empty<JsonConverter>()));
 					plugin.ProcessorProcess.MarkDirty();
-					Community.Runtime.Core.NextTick(delegate
+					Community.Runtime.Core.NextTick(() =>
 					{
 						Singleton.SetTab(playerSession.Player, "plugins", onChange: false);
 					});
@@ -9927,7 +9925,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			if (plugin != null)
 			{
 				plugin.ProcessorProcess.MarkDirty();
-				Community.Runtime.Core.NextTick(delegate
+				Community.Runtime.Core.NextTick(() =>
 				{
 					Singleton.SetTab(ap.Player, "plugins", onChange: false);
 				});
@@ -9938,9 +9936,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				plugin = vendor.FetchedPlugins.FirstOrDefault((PluginsTab.Plugin x) => x.Id.Equals(pluginName)).ExistentPlugin;
 			}
-			Singleton.SetTab(ap.Player, LangEditor.Make(plugin, delegate(PlayerSession playerSession)
+			Singleton.SetTab(ap.Player, LangEditor.Make(plugin, (PlayerSession playerSession) =>
 			{
-				Community.Runtime.Core.NextTick(delegate
+				Community.Runtime.Core.NextTick(() =>
 				{
 					Singleton.SetTab(playerSession.Player, "plugins", onChange: false);
 				});
@@ -10039,13 +10037,13 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 	[Conditional("!MINIMAL")]
 	[ProtectedCommand("pluginbrowser.search")]
-	private unsafe void PluginBrowserSearch(Arg args)
+	private void PluginBrowserSearch(Arg args)
 	{
 		PlayerSession playerSession = Singleton.GetPlayerSession(ArgEx.Player(args));
 		Tab tab = Singleton.GetTab(playerSession.Player);
 		PluginsTab.Vendor vendor = PluginsTab.GetVendor(playerSession.GetStorage(tab, "vendor", PluginsTab.VendorTypes.Installed));
 		vendor.Refresh();
-		string text = playerSession.SetStorage(tab, "search", args.Args?.Select((StringView x) => ((object)(*(StringView*)(&x))/*cast due to constrained. prefix*/).ToString()).ToString(" "));
+		string text = playerSession.SetStorage(tab, "search", args.Args?.Select((StringView x) => ((object)x/*cast due to constrained. prefix*/).ToString()).ToString(" "));
 		playerSession.SetStorage(tab, "page", 0);
 		if (text == "Search...")
 		{
@@ -10066,7 +10064,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			return;
 		}
-		tab.CreateDialog("Are you sure you want to fetch the " + vendor.Type + " plugin list?", delegate(PlayerSession ap)
+		tab.CreateDialog("Are you sure you want to fetch the " + vendor.Type + " plugin list?", (PlayerSession ap) =>
 		{
 			string text = string.Empty;
 			if (!(vendor is PluginsTab.Codefling))
@@ -10084,7 +10082,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			OsEx.File.Delete(file);
 			if (vendor is PluginsTab.IVendorStored vendorStored && !vendorStored.Load())
 			{
-				vendor.FetchList(delegate(PluginsTab.Vendor vendor2)
+				vendor.FetchList((PluginsTab.Vendor vendor2) =>
 				{
 					vendor2.Refresh();
 				});
@@ -10272,7 +10270,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		}
 		if (auth.IsLoggedIn)
 		{
-			tab.CreateDialog("Are you sure you want to log out?", delegate
+			tab.CreateDialog("Are you sure you want to log out?", (PlayerSession playerSession) =>
 			{
 				auth.User = null;
 				vendor.Refresh();
@@ -10292,7 +10290,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			};
 			string currentCode = auth.AuthCode;
 			CorePlugin core = Community.Runtime.Core;
-			core.timer.In(5f, delegate
+			core.timer.In(5f, () =>
 			{
 				if (currentCode != auth.AuthCode || !ap.IsInMenu)
 				{
@@ -10300,9 +10298,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				else
 				{
-					auth.Validate(ap, delegate
+					auth.Validate(ap, () =>
 					{
-						core.timer.In(2f, delegate
+						core.timer.In(2f, () =>
 						{
 							auth.User.PendingAccessToken = false;
 							Singleton.Draw(player);
@@ -10348,7 +10346,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			Singleton.PutsWarn("Cannot find that plugin.");
 			return;
 		}
-		vendor.Download(plugin.Id, delegate
+		vendor.Download(plugin.Id, () =>
 		{
 			Singleton.PutsWarn("Couldn't download " + plugin.Name + ".");
 		});
@@ -10381,7 +10379,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		OsEx.File.Delete(file);
 		if (vendor is PluginsTab.IVendorStored vendorStored && !vendorStored.Load())
 		{
-			vendor.FetchList(delegate(PluginsTab.Vendor vendor2)
+			vendor.FetchList((PluginsTab.Vendor vendor2) =>
 			{
 				vendor2.Refresh();
 			});
@@ -10413,7 +10411,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			MonoProfiler.CallRecord call = ProfilerTab.GetSortedCalls(storage, playerSession.GetStorage(playerSession.SelectedTab, "asort", 1), playerSession.GetStorage(playerSession.SelectedTab, "asearch", string.Empty)).FindAt(index);
 			Tab currentTab = playerSession.SelectedTab;
 			SourceViewerTab sourceViewerTab = SourceViewerTab.MakeMethod(call);
-			sourceViewerTab.Close = delegate
+			sourceViewerTab.Close = (PlayerSession ap) =>
 			{
 				SetTab(player, currentTab);
 			};
@@ -10445,7 +10443,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			dictionary["swa"] = ModalModule.Modal.Field.Make("Stack Walk Allocations", ModalModule.Modal.Field.FieldTypes.Boolean, required: false, true);
 			dictionary["gc"] = ModalModule.Modal.Field.Make("GC Events", ModalModule.Modal.Field.FieldTypes.Boolean, required: false, true);
 			dictionary["timings"] = ModalModule.Modal.Field.Make("Timings (Performance Intensive)", ModalModule.Modal.Field.FieldTypes.Boolean, required: false, true);
-			Modal.Open(player, "Profile Recording", dictionary, delegate
+			Modal.Open(player, "Profile Recording", dictionary, (BasePlayer _, ModalModule.Modal _) =>
 			{
 				MonoProfiler.ProfilerArgs profilerArgs = MonoProfiler.ProfilerArgs.None;
 				if (dictionary["advancedmemory"].Get<bool>())
@@ -10474,7 +10472,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				float duration = dictionary["duration"].Get<float>();
 				MonoProfiler.Clear();
-				MonoProfiler.ToggleProfilingTimed(duration, profilerArgs, delegate
+				MonoProfiler.ToggleProfilingTimed(duration, profilerArgs, (MonoProfiler.ProfilerArgs args) =>
 				{
 					if (ap.IsInMenu && ap.SelectedTab != null && ap.SelectedTab.Id == "profiler")
 					{
@@ -10488,7 +10486,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				Pool.FreeUnmanaged<string, ModalModule.Modal.Field>(ref dictionary);
 				ap.SelectedTab.OnChange(ap, ap.SelectedTab);
 				Draw(player);
-			}, delegate
+			}, () =>
 			{
 				Pool.FreeUnmanaged<string, ModalModule.Modal.Field>(ref dictionary);
 				ap.SelectedTab.OnChange(ap, ap.SelectedTab);
@@ -10557,7 +10555,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			return;
 		}
 		BasePlayer player = ArgEx.Player(arg);
-		File.Open(player, "Profiles", Defines.GetProfilesFolder(), Defines.GetProfilesFolder(), "cprf", delegate(BasePlayer player2, FileModule.FileBrowser file)
+		File.Open(player, "Profiles", Defines.GetProfilesFolder(), Defines.GetProfilesFolder(), "cprf", (BasePlayer player2, FileModule.FileBrowser file) =>
 		{
 			byte[] data = OsEx.File.ReadBytes(file.SelectedFile);
 			if (ProfilerTab.sample.IsCleared)
@@ -10572,7 +10570,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			PlayerSession playerSession = Singleton.GetPlayerSession(player2);
 			playerSession.SelectedTab.OnChange(playerSession, playerSession.SelectedTab);
 			Singleton.Draw(player2);
-		}, null, delegate(FileModule.FileBrowser.Item item)
+		}, null, (FileModule.FileBrowser.Item item) =>
 		{
 			if (item.IsDirectory)
 			{
@@ -10631,14 +10629,22 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		if (!MonoProfiler.IsRecording)
 		{
 			Dictionary<string, ModalModule.Modal.Field> dictionary = Pool.Get<Dictionary<string, ModalModule.Modal.Field>>();
-			dictionary["duration"] = ModalModule.Modal.Field.Make("Duration", ModalModule.Modal.Field.FieldTypes.Float, required: true, 3f, isReadOnly: false, (ModalModule.Modal.Field field) => (!(field.Get<float>() <= 0f)) ? ((!(field.Get<float>() > 100f)) ? string.Empty : ("You cannot record above " + TimeEx.Format(100, shortName: false).ToLower() + ".")) : "Duration must be above zero.");
-			dictionary["rate"] = ModalModule.Modal.Field.Make("Rate", ModalModule.Modal.Field.FieldTypes.Float, required: true, 1f, isReadOnly: false, (ModalModule.Modal.Field field) => (!(field.Get<float>() < 1f)) ? ((!(field.Get<float>() > 10f)) ? string.Empty : "Rate must be under or equal to 10 seconds.") : "Rate must be above or equal to one second.");
+			dictionary["duration"] = ModalModule.Modal.Field.Make("Duration", ModalModule.Modal.Field.FieldTypes.Float, required: true, 3f, isReadOnly: false, (ModalModule.Modal.Field field) =>
+			{
+				string result = ((!(field.Get<float>() <= 0f)) ? ((!(field.Get<float>() > 100f)) ? string.Empty : ("You cannot record above " + TimeEx.Format(100, shortName: false).ToLower() + ".")) : "Duration must be above zero.");
+				return result;
+			});
+			dictionary["rate"] = ModalModule.Modal.Field.Make("Rate", ModalModule.Modal.Field.FieldTypes.Float, required: true, 1f, isReadOnly: false, (ModalModule.Modal.Field field) =>
+			{
+				string result = ((!(field.Get<float>() < 1f)) ? ((!(field.Get<float>() > 10f)) ? string.Empty : "Rate must be under or equal to 10 seconds.") : "Rate must be above or equal to one second.");
+				return result;
+			});
 			dictionary["calls"] = ModalModule.Modal.Field.Make("Calls", ModalModule.Modal.Field.FieldTypes.Boolean, required: false, true);
 			dictionary["advancedmemory"] = ModalModule.Modal.Field.Make("Advanced Memory", ModalModule.Modal.Field.FieldTypes.Boolean, required: false, true);
 			dictionary["callmemory"] = ModalModule.Modal.Field.Make("Call Memory", ModalModule.Modal.Field.FieldTypes.Boolean, required: false, true);
 			dictionary["swa"] = ModalModule.Modal.Field.Make("Stack Walk Allocations", ModalModule.Modal.Field.FieldTypes.Boolean, required: false, true);
 			dictionary["timings"] = ModalModule.Modal.Field.Make("Timings (Performance Intensive)", ModalModule.Modal.Field.FieldTypes.Boolean, required: false, true);
-			Modal.Open(player, "Timeline Profiling", dictionary, delegate(BasePlayer player2, ModalModule.Modal _)
+			Modal.Open(player, "Timeline Profiling", dictionary, (BasePlayer player2, ModalModule.Modal _) =>
 			{
 				MonoProfiler.ProfilerArgs profilerArgs = MonoProfiler.ProfilerArgs.None;
 				if (dictionary["advancedmemory"].Get<bool>())
@@ -10662,7 +10668,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					profilerArgs |= MonoProfiler.ProfilerArgs.StackWalkAllocations;
 				}
 				ProfilerTab.recording.Discard();
-				ProfilerTab.recording.Start(dictionary["rate"].Get<float>(), dictionary["duration"].Get<float>(), profilerArgs, delegate(bool discarded)
+				ProfilerTab.recording.Start(dictionary["rate"].Get<float>(), dictionary["duration"].Get<float>(), profilerArgs, (bool discarded) =>
 				{
 					if (discarded)
 					{
@@ -10679,7 +10685,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				Pool.FreeUnmanaged<string, ModalModule.Modal.Field>(ref dictionary);
 				ap.SelectedTab.OnChange(ap, ap.SelectedTab);
 				Draw(player2);
-			}, delegate
+			}, () =>
 			{
 				Pool.FreeUnmanaged<string, ModalModule.Modal.Field>(ref dictionary);
 				ap.SelectedTab.OnChange(ap, ap.SelectedTab);
@@ -10718,9 +10724,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	private void ProfilerPreviewClose(Arg arg)
 	{
 		PlayerSession playerSession = GetPlayerSession(ArgEx.Player(arg));
-		if (playerSession.SelectedTab is SourceViewerTab sourceViewerTab)
+		if (playerSession.SelectedTab is SourceViewerTab { Close: { } close })
 		{
-			sourceViewerTab.Close?.Invoke(playerSession);
+			close(playerSession);
 		}
 	}
 

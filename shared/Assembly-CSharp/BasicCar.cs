@@ -80,7 +80,7 @@ public class BasicCar : BaseVehicle
 	public override void ServerInit()
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient)
+		if (!isClient)
 		{
 			base.ServerInit();
 			rigidBody = ((Component)this).GetComponent<Rigidbody>();
@@ -161,7 +161,7 @@ public class BasicCar : BaseVehicle
 			return;
 		}
 		Vector3 linearVelocity = rigidBody.linearVelocity;
-		float num = ((Vector3)(ref linearVelocity)).magnitude * Vector3.Dot(((Vector3)(ref linearVelocity)).normalized, ((Component)this).transform.forward);
+		float num = linearVelocity.magnitude * Vector3.Dot(linearVelocity.normalized, ((Component)this).transform.forward);
 		float num2 = brakePedal;
 		float num3 = gasPedal;
 		if (num > 0f && num3 < 0f)

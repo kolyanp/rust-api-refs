@@ -8,13 +8,13 @@ using Rust;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion, IEngineControllerUser, IEntity
+public class SmallEngine : DecayEntity, IBoatBuildingPiece, IBoatPropulsion, IEngineControllerUser, IEntity
 {
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[Header("Small Engine")]
 	[SerializeField]
+	[Header("Small Engine")]
 	private float maxThrust = 1000f;
 
 	[SerializeField]
@@ -237,7 +237,7 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 	public override void InitShared()
 	{
 		base.InitShared();
-		fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children, editorGiveFreeFuel: true, FuelAddedRemovedCallback);
+		fuelSystem = new EntityFuelSystem(isServer, fuelStoragePrefab, children, editorGiveFreeFuel: true, FuelAddedRemovedCallback);
 	}
 
 	public override void Load(LoadInfo info)
@@ -273,7 +273,7 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && isSpawned)
+		if (isServer && isSpawned)
 		{
 			fuelSystem.CheckNewChild(child);
 		}
@@ -295,8 +295,8 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void TurnOn(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnEngineStart", this, msg.player) == null && fuelSystem.HasFuel() && PlayerBoat.IsPlayerAuthedOnChildEntity(this, msg.player, authedIfNoPrivOrLock: true))
@@ -312,8 +312,8 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void TurnOff(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnEngineStop", this, msg.player) == null && PlayerBoat.IsPlayerAuthedOnChildEntity(this, msg.player, authedIfNoPrivOrLock: true))
@@ -395,7 +395,7 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 		return true;
 	}
 
-	void global::IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
+	void IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
 	{
 		TurnOff();
 	}

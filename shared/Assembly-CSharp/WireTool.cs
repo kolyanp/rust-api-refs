@@ -67,9 +67,6 @@ public class WireTool : HeldEntity
 
 	public const float MAX_SLACK = 2f;
 
-	[CompilerGenerated]
-	private NetworkableId _003CvalidatedWireEntity_003Ek__BackingField;
-
 	private const float wireValidationDist = 5f;
 
 	private const float wireValidationDistSqr = 25f;
@@ -91,14 +88,14 @@ public class WireTool : HeldEntity
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CvalidatedWireEntity_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CvalidatedWireEntity_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -106,7 +103,7 @@ public class WireTool : HeldEntity
 
 	public bool validatedWireIsInput { get; private set; }
 
-	public unsafe override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
@@ -208,7 +205,7 @@ public class WireTool : HeldEntity
 						}
 						finally
 						{
-							((IDisposable)(*(FieldOperationLimitSuspensionScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+							((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 						}
 					}
 				}
@@ -383,10 +380,10 @@ public class WireTool : HeldEntity
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void RPC_WireStarted(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -426,11 +423,11 @@ public class WireTool : HeldEntity
 		typeof(RPC_Server.MaxRepeatedElements),
 		typeof(RPC_Server.IgnoreProtoFieldOperationLimit)
 	})]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxRepeatedElements(54)]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.MaxRepeatedElements(54)]
 	public void RPC_MakeConnection(RPCMessage rpc)
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
@@ -459,7 +456,7 @@ public class WireTool : HeldEntity
 			{
 				return;
 			}
-			validatedWireEntity = default(NetworkableId);
+			validatedWireEntity = default;
 			validatedWireSlot = -1;
 			List<float> slackLevels = val.slackLevels;
 			if (slackLevels.Count != linePoints.Count)
@@ -561,10 +558,10 @@ public class WireTool : HeldEntity
 				return false;
 			}
 			Matrix4x4 val2 = ((Component)door2).transform.worldToLocalMatrix * bone2.localToWorldMatrix;
-			Vector3 val3 = ((Matrix4x4)(ref val2)).MultiplyPoint3x4(val.position);
+			Vector3 val3 = val2.MultiplyPoint3x4(val.position);
 			Bounds val4 = door.bounds;
-			((Bounds)(ref val4)).Expand(0.25f);
-			if (!((Bounds)(ref val4)).Contains(val3))
+			val4.Expand(0.25f);
+			if (!val4.Contains(val3))
 			{
 				return false;
 			}
@@ -756,29 +753,29 @@ public class WireTool : HeldEntity
 			}
 			else if (!flag3)
 			{
-				validatedWireEntity = default(NetworkableId);
+				validatedWireEntity = default;
 				validatedWireSlot = -1;
 			}
 		}
 		val2.Dispose();
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_CancelPendingWire(RPCMessage msg)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		validatedWireEntity = default(NetworkableId);
+		validatedWireEntity = default;
 		validatedWireSlot = -1;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void RPC_RequestChangeColor(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -913,16 +910,16 @@ public class WireTool : HeldEntity
 		}
 		Vector3 val3 = lineList[count - 1];
 		Bounds val4 = outputEntity.bounds;
-		((Bounds)(ref val4)).Expand(0.5f);
-		if (!((Bounds)(ref val4)).Contains(val3))
+		val4.Expand(0.5f);
+		if (!val4.Contains(val3))
 		{
 			return false;
 		}
 		Vector3 val5 = ((Component)outputEntity).transform.TransformPoint(lineList[0]);
 		val3 = ((Component)inputEntity).transform.InverseTransformPoint(val5);
 		Bounds val6 = inputEntity.bounds;
-		((Bounds)(ref val6)).Expand(0.5f);
-		if (!((Bounds)(ref val6)).Contains(val3))
+		val6.Expand(0.5f);
+		if (!val6.Contains(val3))
 		{
 			return false;
 		}
@@ -954,10 +951,10 @@ public class WireTool : HeldEntity
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 worldSpaceA = ((Matrix4x4)(ref localToWorldSpace)).MultiplyPoint3x4(positions[0]);
+		Vector3 worldSpaceA = localToWorldSpace.MultiplyPoint3x4(positions[0]);
 		for (int i = 1; i < positions.Count; i++)
 		{
-			Vector3 val = ((Matrix4x4)(ref localToWorldSpace)).MultiplyPoint3x4(positions[i]);
+			Vector3 val = localToWorldSpace.MultiplyPoint3x4(positions[i]);
 			if (!VerifyLineOfSight(worldSpaceA, val))
 			{
 				return false;
@@ -986,7 +983,7 @@ public class WireTool : HeldEntity
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		float maxDistance = Vector3.Distance(worldSpaceA, worldSpaceB);
 		Vector3 val = worldSpaceA - worldSpaceB;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
 		GamePhysics.TraceAll(new Ray(worldSpaceB, normalized), 0.01f, list, maxDistance, 136380672, (QueryTriggerInteraction)0);
 		bool result = true;

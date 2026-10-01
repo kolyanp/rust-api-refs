@@ -18,16 +18,16 @@ public class CommandBlock : IOEntity
 	[HideInInspector]
 	public ulong lastPlayerID;
 
-	private static readonly Phrase disabledErrorPhrase;
+	private static readonly Phrase disabledErrorPhrase = new Phrase("commandblock.disabled.error", "Command blocks are currently disabled");
 
 	[ServerVar(Help = "Can command blocks execute commands")]
-	public static bool commands_enabled;
+	public static bool commands_enabled = false;
 
 	[ServerVar(Help = "If enabled, commands from command blocks will run using the last player who set them, allowing for a wider range of commands to be used")]
-	public static bool use_player;
+	public static bool use_player = false;
 
 	[ServerVar(Help = "Print a log message when a command block is executed")]
-	public static bool log_executions;
+	public static bool log_executions = true;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -188,10 +188,10 @@ public class CommandBlock : IOEntity
 		return 0;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_RequestOpenPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -222,10 +222,6 @@ public class CommandBlock : IOEntity
 	static CommandBlock()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		disabledErrorPhrase = new Phrase("commandblock.disabled.error", "Command blocks are currently disabled");
-		commands_enabled = false;
-		use_player = false;
-		log_executions = true;
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

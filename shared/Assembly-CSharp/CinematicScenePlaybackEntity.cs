@@ -27,7 +27,7 @@ public class CinematicScenePlaybackEntity : BaseEntity
 	[UnityEvent]
 	public void SignalKillPlayer()
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}

@@ -86,7 +86,7 @@ public class ItemSkinDirectory : ScriptableObject
 				return result;
 			}
 		}
-		return default(Skin);
+		return default;
 	}
 
 	public static bool TryGetItemFromDefinitionID(int id, out ItemDefinition result)

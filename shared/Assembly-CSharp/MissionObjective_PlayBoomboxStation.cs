@@ -7,18 +7,18 @@ public class MissionObjective_PlayBoomboxStation : MissionObjective
 	[Tooltip("If true, the boombox must be a static environment boombox for this objective to complete.")]
 	public bool boomboxMustBeStatic;
 
-	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
 	[BaseMission.PositionGenerator.PositionPoint]
+	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
 	public string requireProximityToPosition;
 
-	[Min(0f)]
 	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
+	[Min(0f)]
 	public float minimumDistanceToMissionPoint;
 
 	public bool shouldHideCompassMarkerWhenClose;
 
-	[Min(0f)]
 	[Tooltip("If \"Should Hide Compass Marker When Close\" is enabled and player is within this distance of the mission point then hide the compass marker, else the compass marker is visible.")]
+	[Min(0f)]
 	public float hideCompassMarkerDistance = 50f;
 
 	private float sqrDistanceToMissionPoint;
@@ -44,7 +44,7 @@ public class MissionObjective_PlayBoomboxStation : MissionObjective
 		SetObjectiveWorldLocation(index, instance, point);
 	}
 
-	public unsafe override void ProcessMissionEvent(BasePlayer playerFor, BaseMission.MissionInstance instance, int index, BaseMission.MissionEventType type, BaseMission.MissionEventPayload payload, float amount)
+	public override void ProcessMissionEvent(BasePlayer playerFor, BaseMission.MissionInstance instance, int index, BaseMission.MissionEventType type, BaseMission.MissionEventPayload payload, float amount)
 	{
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
@@ -69,7 +69,7 @@ public class MissionObjective_PlayBoomboxStation : MissionObjective
 		}
 		else
 		{
-			Debug.LogError((object)("Failed to find a server entity with network ID " + ((object)(*(NetworkableId*)(&payload.NetworkIdentifier))/*cast due to constrained. prefix*/).ToString()));
+			Debug.LogError((object)("Failed to find a server entity with network ID " + ((object)payload.NetworkIdentifier/*cast due to constrained. prefix*/).ToString()));
 		}
 		CompleteObjective(index, instance, playerFor);
 	}

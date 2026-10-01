@@ -37,6 +37,7 @@ public class PlaceCliffsUniform : ProceduralComponent
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
@@ -106,7 +107,6 @@ public class PlaceCliffsUniform : ProceduralComponent
 		float z = position.z;
 		float num = position.x + size.x;
 		float num2 = position.z + size.z;
-		Vector3 pos = default(Vector3);
 		for (int num3 = 128; num3 > 0; num3 /= 2)
 		{
 			float num4 = ObjectDistance * (float)num3;
@@ -132,7 +132,7 @@ public class PlaceCliffsUniform : ProceduralComponent
 					Prefab[] array2 = array;
 					foreach (Prefab prefab in array2)
 					{
-						((Vector3)(ref pos))._002Ector(num7, height, num8);
+						Vector3 pos = new Vector3(num7, height, num8);
 						Quaternion rot = prefab.Object.transform.localRotation;
 						Vector3 scale = prefab.Object.transform.localScale;
 						bool flag = false;
@@ -164,7 +164,7 @@ public class PlaceCliffsUniform : ProceduralComponent
 						}
 						if (flag)
 						{
-							Quaternion rot2 = Quaternion.Euler(((Quaternion)(ref rotation)).eulerAngles);
+							Quaternion rot2 = Quaternion.Euler(rotation.eulerAngles);
 							if (prefab.CheckTerrainFootprint(val, rot2, scale2))
 							{
 								prefab.FillTerrainFootprint(val, rot2, scale2);

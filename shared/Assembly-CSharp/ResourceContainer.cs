@@ -62,12 +62,12 @@ public class ResourceContainer : EntityComponent<BaseEntity>
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.IsVisible(3f)]
+	[BaseEntity.RPC_Server]
 	private void StartLootingContainer(BaseEntity.RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
-		if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && lootable && Interface.CallHook("CanLootEntity", player, this) == null && player.inventory.loot.StartLootingEntity(base.baseEntity))
+		if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && lootable && Interface.CallHook("CanLootEntity", player, this) == null && player.inventory.loot.StartLootingEntity(baseEntity))
 		{
 			lastAccessTime = Time.realtimeSinceStartup;
 			player.inventory.loot.AddContainer(container);

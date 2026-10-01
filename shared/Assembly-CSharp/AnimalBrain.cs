@@ -9,7 +9,7 @@ public class AnimalBrain : BaseAIBrain
 		public AttackState()
 			: base(AIState.Attack)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
@@ -140,7 +140,7 @@ public class AnimalBrain : BaseAIBrain
 		public ChaseState()
 			: base(AIState.Chase)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
@@ -257,12 +257,12 @@ public class AnimalBrain : BaseAIBrain
 			{
 				return false;
 			}
-			bool num = brain.Navigator.SetDestination(result, BaseNavigator.NavigationSpeed.Fast);
-			if (!num)
+			bool flag = brain.Navigator.SetDestination(result, BaseNavigator.NavigationSpeed.Fast);
+			if (!flag)
 			{
 				Stop();
 			}
-			return num;
+			return flag;
 		}
 	}
 
@@ -304,7 +304,7 @@ public class AnimalBrain : BaseAIBrain
 			{
 				Vector3 position = ((Component)entity).transform.position;
 				Vector3 val = BasePathFinder.GetPointOnCircle(position, 1f, Random.Range(0f, 594f)) - position;
-				Vector3 normalized = ((Vector3)(ref val)).normalized;
+				Vector3 normalized = val.normalized;
 				brain.Navigator.SetFacingDirectionOverride(normalized);
 			}
 			nextTurnTime = Time.realtimeSinceStartup + Random.Range(minTurnTime, maxTurnTime);
@@ -501,9 +501,9 @@ public class AnimalBrain : BaseAIBrain
 	public override void InitializeAI()
 	{
 		base.InitializeAI();
-		base.ThinkMode = AIThinkMode.Interval;
+		ThinkMode = AIThinkMode.Interval;
 		thinkRate = 0.25f;
-		base.PathFinder = new BasePathFinder();
+		PathFinder = new BasePathFinder();
 		Count++;
 	}
 
@@ -516,5 +516,10 @@ public class AnimalBrain : BaseAIBrain
 	public BaseAnimalNPC GetEntity()
 	{
 		return GetBaseEntity() as BaseAnimalNPC;
+	}
+
+	protected override void SetDebugMoveSpeed(BaseNavigator.NavigationSpeed speed)
+	{
+		ControlTestAnimalSpeed = speed;
 	}
 }

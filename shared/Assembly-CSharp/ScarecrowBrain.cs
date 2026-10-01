@@ -12,7 +12,7 @@ public class ScarecrowBrain : BaseAIBrain
 		public AttackState()
 			: base(AIState.Attack)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
@@ -139,7 +139,7 @@ public class ScarecrowBrain : BaseAIBrain
 		public ChaseState()
 			: base(AIState.Chase)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
@@ -291,10 +291,10 @@ public class ScarecrowBrain : BaseAIBrain
 	public override void InitializeAI()
 	{
 		base.InitializeAI();
-		base.ThinkMode = AIThinkMode.Interval;
+		ThinkMode = AIThinkMode.Interval;
 		thinkRate = 0.25f;
-		base.PathFinder = new HumanPathFinder();
-		((HumanPathFinder)base.PathFinder).Init(GetBaseEntity());
+		PathFinder = new HumanPathFinder();
+		((HumanPathFinder)PathFinder).Init(GetBaseEntity());
 	}
 
 	public override void OnDestroy()

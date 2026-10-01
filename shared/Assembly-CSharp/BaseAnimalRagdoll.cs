@@ -23,7 +23,7 @@ public class BaseAnimalRagdoll : BaseCombatEntity
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.temporaryRagdoll = Pool.Get<TemporaryRagdoll>();
-		if (linkedEntity.IsValid(base.isServer))
+		if (linkedEntity.IsValid(isServer))
 		{
 			info.msg.temporaryRagdoll.parentID = linkedEntity.uid;
 		}
@@ -46,8 +46,8 @@ public class BaseAnimalRagdoll : BaseCombatEntity
 	{
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		BaseCombatEntity baseCombatEntity = linkedEntity.Get(base.isServer);
-		if (base.isServer)
+		BaseCombatEntity baseCombatEntity = linkedEntity.Get(isServer);
+		if (isServer)
 		{
 			if ((Object)(object)baseCombatEntity == (Object)null || baseCombatEntity.IsDead())
 			{
@@ -119,7 +119,7 @@ public class BaseAnimalRagdoll : BaseCombatEntity
 
 	protected void ProcessCollision(Collision collision)
 	{
-		if (!base.isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null) && linkedEntity.Get(serverside: true) is IAnimalRagdollCollisionReceiver animalRagdollCollisionReceiver)
+		if (!isClient && collision != null && !((Object)(object)collision.gameObject == (Object)null) && !((Object)(object)collision.gameObject == (Object)null) && linkedEntity.Get(serverside: true) is IAnimalRagdollCollisionReceiver animalRagdollCollisionReceiver)
 		{
 			animalRagdollCollisionReceiver.OnRagdollCollisionEnter(collision);
 		}

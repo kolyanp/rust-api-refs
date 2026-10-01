@@ -11,9 +11,9 @@ public class SpawnDistribution
 
 	private WorldSpaceGrid<int> grid;
 
-	private Dictionary<uint, int> dict;
+	private Dictionary<uint, int> dict = new Dictionary<uint, int>();
 
-	private ByteQuadtree quadtree;
+	private ByteQuadtree quadtree = new ByteQuadtree();
 
 	private Vector3 origin;
 
@@ -29,9 +29,6 @@ public class SpawnDistribution
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-		dict = new Dictionary<uint, int>();
-		quadtree = new ByteQuadtree();
-		base._002Ector();
 		Handler = handler;
 		quadtree.UpdateValues(baseValues);
 		this.origin = origin;
@@ -68,6 +65,7 @@ public class SpawnDistribution
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
@@ -116,8 +114,7 @@ public class SpawnDistribution
 		float placementCheckHeight = Handler.PlacementCheckHeight;
 		LayerMask radiusCheckMask = Handler.RadiusCheckMask;
 		float radiusCheckDistance = Handler.RadiusCheckDistance;
-		Vector3 val = default(Vector3);
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		for (int i = 0; i < 15; i++)
 		{
 			spawnPos = origin;
@@ -127,7 +124,7 @@ public class SpawnDistribution
 			spawnPos.z += Random.value * area.z;
 			spawnPos.x += Random.Range(0f - dithering, dithering);
 			spawnPos.z += Random.Range(0f - dithering, dithering);
-			((Vector3)(ref val))._002Ector(spawnPos.x, TerrainMeta.HeightMap.GetHeight(spawnPos), spawnPos.z);
+			Vector3 val = new Vector3(spawnPos.x, TerrainMeta.HeightMap.GetHeight(spawnPos), spawnPos.z);
 			if (val.y <= spawnPos.y || (filter != null && filter.GetFactor(spawnPos) <= cutoff))
 			{
 				continue;
@@ -137,11 +134,11 @@ public class SpawnDistribution
 				bool flag = false;
 				if ((radius != 0f) ? Physics.SphereCast(val + Vector3.up * placementCheckHeight, radius, Vector3.down, ref val2, placementCheckHeight, LayerMask.op_Implicit(placementCheckMask)) : Physics.Raycast(val + Vector3.up * placementCheckHeight, Vector3.down, ref val2, placementCheckHeight, LayerMask.op_Implicit(placementCheckMask)))
 				{
-					if (((1 << ((Component)((RaycastHit)(ref val2)).transform).gameObject.layer) & LayerMask.op_Implicit(placementMask)) == 0)
+					if (((1 << ((Component)val2.transform).gameObject.layer) & LayerMask.op_Implicit(placementMask)) == 0)
 					{
 						continue;
 					}
-					val.y = ((RaycastHit)(ref val2)).point.y;
+					val.y = val2.point.y;
 				}
 			}
 			if (LayerMask.op_Implicit(radiusCheckMask) == 0 || !Physics.CheckSphere(val, radiusCheckDistance, LayerMask.op_Implicit(radiusCheckMask)))

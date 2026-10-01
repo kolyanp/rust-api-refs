@@ -12,6 +12,8 @@ public class EntityLink : IPooled
 
 	public int capacity = int.MaxValue;
 
+	public List<EdgeLink> edges = new List<EdgeLink>();
+
 	public string name => socket.socketName;
 
 	public void Setup(BaseEntity owner, Socket_Base socket)
@@ -29,6 +31,7 @@ public class EntityLink : IPooled
 		owner = null;
 		socket = null;
 		capacity = int.MaxValue;
+		edges.Clear();
 	}
 
 	public void LeavePool()

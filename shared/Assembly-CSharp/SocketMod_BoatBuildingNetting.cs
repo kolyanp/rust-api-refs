@@ -21,7 +21,7 @@ public class SocketMod_BoatBuildingNetting : SocketMod_BuildingBlock
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		List<BoatBuildingNetting> list = Pool.Get<List<BoatBuildingNetting>>();
-		Vis.Components<BoatBuildingNetting>(pos, sphereRadius, list, ((LayerMask)(ref layerMask)).value, queryTriggers);
+		Vis.Components<BoatBuildingNetting>(pos, sphereRadius, list, layerMask.value, queryTriggers);
 		bool result = list.Count > 0;
 		Pool.FreeUnmanaged<BoatBuildingNetting>(ref list);
 		return result;

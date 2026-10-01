@@ -36,8 +36,8 @@ public class InvokeProfiler
 
 	public void Reset()
 	{
-		elapsedTime = default(TimeSpan);
-		executedTime = default(TimeSpan);
+		elapsedTime = default;
+		executedTime = default;
 		tickCount = 0;
 		executedCount = 0;
 		addCount = 0;

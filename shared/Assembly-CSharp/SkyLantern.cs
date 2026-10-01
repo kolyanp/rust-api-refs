@@ -3,25 +3,25 @@ using UnityEngine;
 
 public class SkyLantern : StorageContainer, IIgniteable
 {
-	public float gravityScale;
+	public float gravityScale = -0.1f;
 
-	public float travelSpeed;
+	public float travelSpeed = 2f;
 
-	public float collisionRadius;
+	public float collisionRadius = 0.5f;
 
-	public float rotationSpeed;
+	public float rotationSpeed = 5f;
 
-	public float randOffset;
+	public float randOffset = 1f;
 
-	public float lifeTime;
+	public float lifeTime = 120f;
 
-	public float hoverHeight;
+	public float hoverHeight = 14f;
 
 	public Transform collisionCheckPoint;
 
 	private float idealAltitude;
 
-	private Vector3 travelVec;
+	private Vector3 travelVec = Vector3.forward;
 
 	private float takeOffY;
 
@@ -42,7 +42,7 @@ public class SkyLantern : StorageContainer, IIgniteable
 		base.ServerInit();
 		randOffset = ((Random.Range(0.5f, 1f) * (float)Random.Range(0, 2) == 1f) ? (-1f) : 1f);
 		Vector3 val = Vector3.forward + Vector3.right * randOffset;
-		travelVec = ((Vector3)(ref val)).normalized;
+		travelVec = val.normalized;
 		Invoke(StartSinking, lifeTime - 15f);
 		Invoke(SelfDestroy, lifeTime);
 		travelSpeed = Random.Range(1.75f, 2.25f);
@@ -73,7 +73,7 @@ public class SkyLantern : StorageContainer, IIgniteable
 	{
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		base.OnAttacked(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (info.damageTypes.Has(DamageType.Heat) && CanIgnite())
 			{
@@ -168,7 +168,7 @@ public class SkyLantern : StorageContainer, IIgniteable
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient && IsOn())
+		if (!isClient && IsOn())
 		{
 			float num = Mathf.Abs(((Component)this).transform.position.y - idealAltitude);
 			float num2 = ((((Component)this).transform.position.y < idealAltitude) ? (-1f) : 1f);
@@ -184,7 +184,7 @@ public class SkyLantern : StorageContainer, IIgniteable
 			Vector3 val = ((Component)this).transform.position + zero * Time.fixedDeltaTime;
 			Vector3 val2 = Vector3Ex.Direction(val, ((Component)this).transform.position);
 			float num4 = Vector3.Distance(val, ((Component)this).transform.position);
-			RaycastHit val3 = default(RaycastHit);
+			RaycastHit val3 = default;
 			if (!Physics.SphereCast(collisionCheckPoint.position, collisionRadius, val2, ref val3, num4, 1218519297))
 			{
 				((Component)this).transform.position = val;
@@ -201,14 +201,5 @@ public class SkyLantern : StorageContainer, IIgniteable
 	{
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		gravityScale = -0.1f;
-		travelSpeed = 2f;
-		collisionRadius = 0.5f;
-		rotationSpeed = 5f;
-		randOffset = 1f;
-		lifeTime = 120f;
-		hoverHeight = 14f;
-		travelVec = Vector3.forward;
-		base._002Ector();
 	}
 }

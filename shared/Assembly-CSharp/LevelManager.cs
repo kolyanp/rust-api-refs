@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Facepunch;
 using Facepunch.Extend;
 using Network;
+using Rust.Registry;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -62,7 +63,7 @@ public static class LevelManager
 			}
 			Log("Loading level: " + strName);
 			Scene sceneByName = SceneManager.GetSceneByName("EmptyLastScene");
-			if (!((Scene)(ref sceneByName)).IsValid())
+			if (!sceneByName.IsValid())
 			{
 				SceneManager.CreateScene("EmptyLastScene");
 			}
@@ -71,7 +72,7 @@ public static class LevelManager
 			for (int i = 0; i < sceneCount; i++)
 			{
 				Scene sceneAt = SceneManager.GetSceneAt(i);
-				string name = ((Scene)(ref sceneAt)).name;
+				string name = sceneAt.name;
 				if (CanUnloadScene(name))
 				{
 					list.Add(name);
@@ -89,13 +90,13 @@ public static class LevelManager
 			{
 				Log("Disabling all objects in scene: " + item2);
 				Scene sceneByName2 = SceneManager.GetSceneByName(item2);
-				if (!((Scene)(ref sceneByName2)).IsValid())
+				if (!sceneByName2.IsValid())
 				{
 					Debug.LogWarning((object)("Cannot disable objects in scene because it was not found: " + item2));
 					continue;
 				}
 				list2.Clear();
-				((Scene)(ref sceneByName2)).GetRootGameObjects(list2);
+				sceneByName2.GetRootGameObjects(list2);
 				foreach (GameObject item3 in list2)
 				{
 					if (!((Object)(object)item3 == (Object)null))
@@ -121,6 +122,8 @@ public static class LevelManager
 			{
 				yield return item5;
 			}
+			int num2 = Entity.RemoveDestroyed();
+			Log($"Removed {num2} destroyed entities from the entity registry");
 			Net.sv.Reset();
 			Log("Loading scene: " + strName);
 			AsyncOperation loadOp = SceneManager.LoadSceneAsync(strName, (LoadSceneMode)1);

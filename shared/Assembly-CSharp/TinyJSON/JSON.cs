@@ -96,7 +96,7 @@ public static class JSON
 	{
 		if (data == null)
 		{
-			return default(T);
+			return default;
 		}
 		Type type = typeof(T);
 		if (type.IsEnum)

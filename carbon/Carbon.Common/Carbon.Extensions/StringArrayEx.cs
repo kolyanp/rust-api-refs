@@ -99,7 +99,7 @@ public static class StringArrayEx
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		StringView[] array2 = (StringView[])(object)new StringView[array.Length];
+		StringView[] array2 = new StringView[array.Length];
 		for (int i = 0; i < array.Length; i++)
 		{
 			array2[i] = new StringView(array[i]?.ToString());

@@ -39,7 +39,7 @@ public class DrawCallManager
 
 		public DrawCallJobData JobData;
 
-		public MaterialPropertyBlock MaterialBlock;
+		public MaterialPropertyBlock MaterialBlock = new MaterialPropertyBlock();
 
 		public DrawCallKey CalculateKey()
 		{
@@ -55,9 +55,7 @@ public class DrawCallManager
 		public DrawCall()
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000b: Expected O, but got Unknown
-			MaterialBlock = new MaterialPropertyBlock();
-			base._002Ector();
+			//IL_000b: Expected Obj, but got Unknown
 		}
 	}
 
@@ -79,7 +77,7 @@ public class DrawCallManager
 
 	private int _positionBufferVersion;
 
-	private List<DrawCall> DrawCalls;
+	private List<DrawCall> DrawCalls = new List<DrawCall>();
 
 	private bool _needsDrawCallRebuild;
 
@@ -89,7 +87,7 @@ public class DrawCallManager
 
 	private const int initialCapacity = 1024;
 
-	private Bounds cullingBounds;
+	private Bounds cullingBounds = new Bounds(Vector3.zero, Vector3.one * 30000f);
 
 	public int DrawCallsLastFrame { get; private set; }
 
@@ -102,9 +100,6 @@ public class DrawCallManager
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		DrawCalls = new List<DrawCall>();
-		cullingBounds = new Bounds(Vector3.zero, Vector3.one * 30000f);
-		base._002Ector();
 		this.cellAllocator = cellAllocator;
 		GeometryBuffers = geometryBuffers;
 	}
@@ -212,13 +207,13 @@ public class DrawCallManager
 	private void UpdateMaterialBlock(DrawCall drawCall)
 	{
 		MaterialPropertyBlock materialBlock = drawCall.MaterialBlock;
-		materialBlock.SetBuffer(Instancing.InstancingUtil.PositionBufferProperty, cellAllocator.PositionBuffer.Buffer);
-		materialBlock.SetBuffer(Instancing.InstancingUtil.RenderBufferProperty, RenderBuffer.Buffer);
-		materialBlock.SetBuffer(Instancing.InstancingUtil.IndirectExtraArgProperty, IndirectExtraArgBuffer.Buffer);
-		materialBlock.SetBuffer(Instancing.InstancingUtil.Param_MeshOverrideBuffer, cellAllocator.OverrideBuffer.Buffer);
-		materialBlock.SetBuffer(Instancing.InstancingUtil.Param_Verticies, GeometryBuffers.VertexBuffer.Buffer);
-		materialBlock.SetBuffer(Instancing.InstancingUtil.Param_Triangles, GeometryBuffers.TriangleBuffer.Buffer);
-		materialBlock.SetInt(Instancing.InstancingUtil.DrawCallIndexProperty, drawCall.DrawCallIndex);
+		materialBlock.SetBuffer(InstancingUtil.PositionBufferProperty, cellAllocator.PositionBuffer.Buffer);
+		materialBlock.SetBuffer(InstancingUtil.RenderBufferProperty, RenderBuffer.Buffer);
+		materialBlock.SetBuffer(InstancingUtil.IndirectExtraArgProperty, IndirectExtraArgBuffer.Buffer);
+		materialBlock.SetBuffer(InstancingUtil.Param_MeshOverrideBuffer, cellAllocator.OverrideBuffer.Buffer);
+		materialBlock.SetBuffer(InstancingUtil.Param_Verticies, GeometryBuffers.VertexBuffer.Buffer);
+		materialBlock.SetBuffer(InstancingUtil.Param_Triangles, GeometryBuffers.TriangleBuffer.Buffer);
+		materialBlock.SetInt(InstancingUtil.DrawCallIndexProperty, drawCall.DrawCallIndex);
 	}
 
 	public void EnsureCapacity(int totalMeshCount)
@@ -325,7 +320,7 @@ public class DrawCallManager
 		}
 		if (Render.IsMultidrawEnabled)
 		{
-			Shader.EnableKeyword(ref Instancing.InstancingUtil.Keyword_Rust_Procedural_Rendering);
+			Shader.EnableKeyword(ref InstancingUtil.Keyword_Rust_Procedural_Rendering);
 		}
 		for (int i = 0; i < DrawCalls.Count; i++)
 		{
@@ -354,17 +349,17 @@ public class DrawCallManager
 			DrawCallsLastFrame++;
 			if (Render.IsMultidrawEnabled)
 			{
-				RenderParams val = default(RenderParams);
-				((RenderParams)(ref val)).camera = camera;
-				((RenderParams)(ref val)).layer = 2097152;
-				((RenderParams)(ref val)).lightProbeUsage = drawCall.LightProbes;
-				((RenderParams)(ref val)).material = drawCall.MultidrawMaterial;
-				((RenderParams)(ref val)).worldBounds = cullingBounds;
-				((RenderParams)(ref val)).shadowCastingMode = drawCall.ShadowMode;
-				((RenderParams)(ref val)).receiveShadows = drawCall.ReceiveShadows;
-				((RenderParams)(ref val)).matProps = drawCall.MaterialBlock;
+				RenderParams val = default;
+				val.camera = camera;
+				val.layer = 2097152;
+				val.lightProbeUsage = drawCall.LightProbes;
+				val.material = drawCall.MultidrawMaterial;
+				val.worldBounds = cullingBounds;
+				val.shadowCastingMode = drawCall.ShadowMode;
+				val.receiveShadows = drawCall.ReceiveShadows;
+				val.matProps = drawCall.MaterialBlock;
 				RenderParams val2 = val;
-				if (((int)((RenderParams)(ref val2)).shadowCastingMode != 1 && (int)((RenderParams)(ref val2)).shadowCastingMode != 3) || Render.render_shadows)
+				if (((int)val2.shadowCastingMode != 1 && (int)val2.shadowCastingMode != 3) || Render.render_shadows)
 				{
 					Graphics.RenderPrimitivesIndexedIndirect(ref val2, (MeshTopology)0, GeometryBuffers.TriangleBuffer.Buffer, IndirectArgsBuffer.Buffer, 1 + drawCall.MultiDrawExtraCount, i);
 				}
@@ -376,7 +371,7 @@ public class DrawCallManager
 				Graphics.DrawMeshInstancedIndirect(drawCall.Mesh, drawCall.SubmeshIndex, drawCall.Material, cullingBounds, IndirectArgsBuffer.Buffer, num, drawCall.MaterialBlock, drawCall.ShadowMode, drawCall.ReceiveShadows, 2097152, camera, drawCall.LightProbes);
 			}
 		}
-		Shader.DisableKeyword(ref Instancing.InstancingUtil.Keyword_Rust_Procedural_Rendering);
+		Shader.DisableKeyword(ref InstancingUtil.Keyword_Rust_Procedural_Rendering);
 	}
 
 	public void PrintMemoryUsage(StringBuilder builder)

@@ -19,9 +19,9 @@ public struct FilterInsideMeshHitsJob : IJobFor
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		RaycastHit val = Hits[index];
-		if (((RaycastHit)(ref val)).colliderInstanceID == 0 || !(Vector3.Dot(Vector3.up, ((RaycastHit)(ref val)).normal) > 0f))
+		if (val.colliderInstanceID == 0 || !(Vector3.Dot(Vector3.up, val.normal) > 0f))
 		{
-			Hits[index] = default(RaycastHit);
+			Hits[index] = default;
 		}
 	}
 }

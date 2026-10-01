@@ -395,8 +395,8 @@ public class WeaponRack : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
-		ItemContainer itemContainer = base.inventory;
+		inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
+		ItemContainer itemContainer = inventory;
 		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(InventoryItemFilter));
 		SpawnLightSubEntities();
 	}
@@ -422,9 +422,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		bool flag = false;
 		if (!added)
 		{
@@ -467,17 +467,17 @@ public class WeaponRack : StorageContainer
 		{
 			if (weaponRackSlot.Used)
 			{
-				Item slot = base.inventory.GetSlot(weaponRackSlot.InventoryIndex);
+				Item slot = inventory.GetSlot(weaponRackSlot.InventoryIndex);
 				WeaponRackItem proto = Pool.Get<WeaponRackItem>();
 				info.msg.weaponRack.items.Add(weaponRackSlot.SaveToProto(slot, proto));
 			}
 		}
 	}
 
-	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server]
 	private void ReqSwapWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -526,9 +526,9 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void ReqTakeWeapon(RPCMessage msg)
 	{
@@ -555,7 +555,7 @@ public class WeaponRack : StorageContainer
 		{
 			return;
 		}
-		Item slot = base.inventory.GetSlot(weaponAtIndex.InventoryIndex);
+		Item slot = inventory.GetSlot(weaponAtIndex.InventoryIndex);
 		if (slot == null || Interface.CallHook("OnRackedWeaponTake", slot, player, this) != null)
 		{
 			return;
@@ -585,7 +585,7 @@ public class WeaponRack : StorageContainer
 		}
 		else if (!slot.MoveToContainer(player.inventory.containerMain))
 		{
-			slot.Drop(base.inventory.dropPosition, base.inventory.dropVelocity);
+			slot.Drop(inventory.dropPosition, inventory.dropVelocity);
 		}
 		if (sendUpdate)
 		{
@@ -595,10 +595,10 @@ public class WeaponRack : StorageContainer
 		Interface.CallHook("OnRackedWeaponTaken", slot, player, this);
 	}
 
-	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
+	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void ReqTakeAll(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -631,10 +631,10 @@ public class WeaponRack : StorageContainer
 		SendNetworkUpdateImmediate();
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqUnloadWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -655,7 +655,7 @@ public class WeaponRack : StorageContainer
 		{
 			return;
 		}
-		Item slot = base.inventory.GetSlot(weaponAtIndex.InventoryIndex);
+		Item slot = inventory.GetSlot(weaponAtIndex.InventoryIndex);
 		if (slot == null || Interface.CallHook("OnRackedWeaponUnload", slot, player, this) != null)
 		{
 			return;
@@ -676,13 +676,13 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void ReqMountWeapon(RPCMessage msg)
 	{
-		if (base.inventory.itemList.Count != base.inventory.capacity)
+		if (inventory.itemList.Count != inventory.capacity)
 		{
 			int num = msg.read.Int32();
 			if (num != -1)
@@ -710,13 +710,13 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void ReqMountBackSlot(RPCMessage msg)
 	{
-		if (base.inventory.itemList.Count != base.inventory.capacity)
+		if (inventory.itemList.Count != inventory.capacity)
 		{
 			int num = msg.read.Int32();
 			if (num != -1)
@@ -741,7 +741,7 @@ public class WeaponRack : StorageContainer
 
 	private void SetSlotItem(WeaponRackSlot slot, Item item, int gridCellIndex, int rotation)
 	{
-		slot.SetItem(item, base.inventory.GetSlot(item.position)?.info, gridCellIndex, rotation);
+		slot.SetItem(item, inventory.GetSlot(item.position)?.info, gridCellIndex, rotation);
 	}
 
 	private void SetSlotAmmoDetails(WeaponRackSlot slot, Item item)
@@ -783,7 +783,7 @@ public class WeaponRack : StorageContainer
 		{
 			return false;
 		}
-		if (item.MoveToContainer(base.inventory, -1, allowStack: false) && item.position >= 0 && item.position < gridSlots.Length)
+		if (item.MoveToContainer(inventory, -1, allowStack: false) && item.position >= 0 && item.position < gridSlots.Length)
 		{
 			WeaponRackSlot slot = gridSlots[item.position];
 			SetSlotItem(slot, item, gridCellIndex, rotation);
@@ -808,9 +808,9 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
-	[RPC_Server.MaxDistance(2f)]
 	private void LoadWeaponAmmo(RPCMessage msg)
 	{
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
@@ -826,7 +826,7 @@ public class WeaponRack : StorageContainer
 		{
 			return;
 		}
-		Item slot = base.inventory.GetSlot(weaponAtIndex.InventoryIndex);
+		Item slot = inventory.GetSlot(weaponAtIndex.InventoryIndex);
 		if (slot == null)
 		{
 			return;
@@ -943,13 +943,13 @@ public class WeaponRack : StorageContainer
 		Vector2Int xYForIndex = GetXYForIndex(slot.GridSlotIndex);
 		Vector2Int weaponSize = GetWeaponSize(forItemDef, slot.Rotation);
 		Vector2Int weaponStart = GetWeaponStart(xYForIndex, weaponSize, clamp: false);
-		if (((Vector2Int)(ref weaponStart)).x < 0 || ((Vector2Int)(ref weaponStart)).y < 0 || ((Vector2Int)(ref weaponStart)).x + ((Vector2Int)(ref weaponSize)).x > GridCellCountX || ((Vector2Int)(ref weaponStart)).y + ((Vector2Int)(ref weaponSize)).y > GridCellCountY)
+		if (weaponStart.x < 0 || weaponStart.y < 0 || weaponStart.x + weaponSize.x > GridCellCountX || weaponStart.y + weaponSize.y > GridCellCountY)
 		{
 			return;
 		}
-		for (int i = ((Vector2Int)(ref weaponStart)).y; i < ((Vector2Int)(ref weaponStart)).y + ((Vector2Int)(ref weaponSize)).y; i++)
+		for (int i = weaponStart.y; i < weaponStart.y + weaponSize.y; i++)
 		{
-			for (int j = ((Vector2Int)(ref weaponStart)).x; j < ((Vector2Int)(ref weaponStart)).x + ((Vector2Int)(ref weaponSize)).x; j++)
+			for (int j = weaponStart.x; j < weaponStart.x + weaponSize.x; j++)
 			{
 				gridCellSlotReferences[GetGridCellIndex(j, i)] = (clear ? null : slot);
 			}
@@ -1003,6 +1003,78 @@ public class WeaponRack : StorageContainer
 		return new Vector2Int(index % GridCellCountX, index / GridCellCountX);
 	}
 
+	public Vector3 GetPosition(float x, float y)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 val = ((Component)Collision).transform.TransformPoint(Collision.center - Collision.size / 2f) + ((Component)this).transform.right * Collision.size.x;
+		Vector3 val2 = -(((Component)this).transform.right * x * GridCellSize);
+		val2 += ((Component)this).transform.up * y * GridCellSize;
+		return val + val2;
+	}
+
+	public Vector3 GetCenterPosition(int cellIndex, WorldModelRackMountConfig config, bool rotated)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		if (config == null)
+		{
+			return Vector3.zero;
+		}
+		Vector2Int xYForIndex = GetXYForIndex(cellIndex);
+		float num = 0f;
+		float num2 = 0f;
+		if (Type == RackType.Stand)
+		{
+			num = (float)config.ZSize / 2f;
+		}
+		else if (rotated)
+		{
+			if (config.YSize % 2 != 0)
+			{
+				num = 0.5f;
+			}
+			if (config.XSize % 2 != 0)
+			{
+				num2 = 0.5f;
+			}
+		}
+		else
+		{
+			if (config.XSize % 2 != 0)
+			{
+				num = 0.5f;
+			}
+			if (config.YSize % 2 != 0)
+			{
+				num2 = 0.5f;
+			}
+		}
+		return GetPosition((float)xYForIndex.x + num, (float)xYForIndex.y + num2);
+	}
+
 	private Vector2Int GetWeaponSize(WorldModelRackMountConfig config, int rotation)
 	{
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
@@ -1021,13 +1093,13 @@ public class WeaponRack : StorageContainer
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		if (Type == RackType.Board)
 		{
-			((Vector2Int)(ref targetXY)).x = ((Vector2Int)(ref targetXY)).x - ((Vector2Int)(ref size)).x / 2;
-			((Vector2Int)(ref targetXY)).y = ((Vector2Int)(ref targetXY)).y - ((Vector2Int)(ref size)).y / 2;
+			targetXY.x -= size.x / 2;
+			targetXY.y -= size.y / 2;
 		}
 		if (clamp)
 		{
-			((Vector2Int)(ref targetXY)).x = Mathf.Max(((Vector2Int)(ref targetXY)).x, 0);
-			((Vector2Int)(ref targetXY)).y = Mathf.Max(((Vector2Int)(ref targetXY)).y, 0);
+			targetXY.x = Mathf.Max(targetXY.x, 0);
+			targetXY.y = Mathf.Max(targetXY.y, 0);
 		}
 		return targetXY;
 	}
@@ -1062,9 +1134,9 @@ public class WeaponRack : StorageContainer
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		if (Type == RackType.Stand)
 		{
-			((Vector2Int)(ref targetXY)).y = 0;
+			targetXY.y = 0;
 		}
-		int gridCellIndex = GetGridCellIndex(((Vector2Int)(ref targetXY)).x, ((Vector2Int)(ref targetXY)).y);
+		int gridCellIndex = GetGridCellIndex(targetXY.x, targetXY.y);
 		if (GridCellsFree(config, gridCellIndex, rotation, ignoreSlot))
 		{
 			return gridCellIndex;
@@ -1073,20 +1145,20 @@ public class WeaponRack : StorageContainer
 		int result = -1;
 		Vector2Int weaponSize = GetWeaponSize(config, rotation);
 		Vector2Int weaponStart = GetWeaponStart(targetXY, weaponSize, clamp: true);
-		Vector2Int val = default(Vector2Int);
-		for (int i = ((Vector2Int)(ref weaponStart)).y; i < ((Vector2Int)(ref weaponStart)).y + ((Vector2Int)(ref weaponSize)).y + 1; i++)
+		Vector2Int val = default;
+		for (int i = weaponStart.y; i < weaponStart.y + weaponSize.y + 1; i++)
 		{
 			if (Type == RackType.Stand && i != 0)
 			{
 				continue;
 			}
-			for (int j = ((Vector2Int)(ref weaponStart)).x; j < ((Vector2Int)(ref weaponStart)).x + ((Vector2Int)(ref weaponSize)).x + 1; j++)
+			for (int j = weaponStart.x; j < weaponStart.x + weaponSize.x + 1; j++)
 			{
 				gridCellIndex = GetGridCellIndex(j, i);
 				if (GridCellsFree(config, gridCellIndex, rotation, ignoreSlot))
 				{
-					((Vector2Int)(ref val)).x = j;
-					((Vector2Int)(ref val)).y = i;
+					val.x = j;
+					val.y = i;
 					float num2 = Vector2Int.Distance(targetXY, val);
 					if (!(num2 >= num))
 					{
@@ -1129,13 +1201,13 @@ public class WeaponRack : StorageContainer
 		Vector2Int xYForIndex = GetXYForIndex(gridIndex);
 		Vector2Int weaponSize = GetWeaponSize(config, rotation);
 		Vector2Int weaponStart = GetWeaponStart(xYForIndex, weaponSize, clamp: false);
-		if (((Vector2Int)(ref weaponStart)).x < 0 || ((Vector2Int)(ref weaponStart)).y < 0)
+		if (weaponStart.x < 0 || weaponStart.y < 0)
 		{
 			return false;
 		}
-		for (int i = ((Vector2Int)(ref weaponStart)).y; i < ((Vector2Int)(ref weaponStart)).y + ((Vector2Int)(ref weaponSize)).y; i++)
+		for (int i = weaponStart.y; i < weaponStart.y + weaponSize.y; i++)
 		{
-			for (int j = ((Vector2Int)(ref weaponStart)).x; j < ((Vector2Int)(ref weaponStart)).x + ((Vector2Int)(ref weaponSize)).x; j++)
+			for (int j = weaponStart.x; j < weaponStart.x + weaponSize.x; j++)
 			{
 				int gridCellIndex = GetGridCellIndex(j, i);
 				if (gridCellIndex == -1 || !GridCellFree(gridCellIndex, ignoreGridSlot))

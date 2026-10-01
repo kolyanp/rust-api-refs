@@ -40,7 +40,7 @@ public class CinematicEntity : BaseEntity
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer && serverList.Contains(this))
+		if (isServer && serverList.Contains(this))
 		{
 			serverList.Remove(this);
 		}

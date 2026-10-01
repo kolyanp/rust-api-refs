@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Extend;
@@ -31,8 +32,6 @@ public class ApartmentRoom : BaseEntity
 	}
 
 	public NetworkableId UpkeepTerminalId;
-
-	private ItemDefinition scrapItemDef;
 
 	private ApartmentUpkeepTerminal apartmentUpkeepTerminal;
 
@@ -146,7 +145,7 @@ public class ApartmentRoom : BaseEntity
 		{
 			return;
 		}
-		val.upkeepTerminalId = (NetworkableId)(((Object)(object)apartmentUpkeepTerminal != (Object)null) ? apartmentUpkeepTerminal.net.ID : default(NetworkableId));
+		val.upkeepTerminalId = (((Object)(object)apartmentUpkeepTerminal != (Object)null) ? apartmentUpkeepTerminal.net.ID : default(NetworkableId));
 		val.timeRentOverdue = timeRentOverdue;
 		val.outstandingRent = outstandingRent;
 		val.furnitureIds = Pool.Get<List<NetworkableId>>();
@@ -172,7 +171,7 @@ public class ApartmentRoom : BaseEntity
 		{
 			RoomNumber = info.msg.apartmentRoom.roomNumber;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			SetStaticFurnitureVisible(HasFlag(Flag_IsRented));
 		}
@@ -184,7 +183,7 @@ public class ApartmentRoom : BaseEntity
 				owners.Add(owner);
 			}
 		}
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -207,12 +206,6 @@ public class ApartmentRoom : BaseEntity
 		timeRentOverdue = info.msg.apartmentRoom.timeRentOverdue;
 		outstandingRent = info.msg.apartmentRoom.outstandingRent;
 		UpkeepTerminalId = info.msg.apartmentRoom.upkeepTerminalId;
-	}
-
-	public override void InitShared()
-	{
-		base.InitShared();
-		scrapItemDef = ItemManager.FindItemDefinition("scrap");
 	}
 
 	public override bool CanUseNetworkCache(Connection connection)
@@ -310,9 +303,9 @@ public class ApartmentRoom : BaseEntity
 	private void SubscribeToUpkeepUpdates(StorageContainer container)
 	{
 		ItemContainer inventory = container.inventory;
-		inventory.onItemAddedRemoved = (Action<Item, bool>)Delegate.Remove(inventory.onItemAddedRemoved, new Action<Item, bool>(OnFurnitureInventoryAddedRemoved));
+		inventory.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Remove(inventory.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnFurnitureInventoryAddedRemoved));
 		ItemContainer inventory2 = container.inventory;
-		inventory2.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory2.onItemAddedRemoved, new Action<Item, bool>(OnFurnitureInventoryAddedRemoved));
+		inventory2.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(inventory2.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnFurnitureInventoryAddedRemoved));
 		container.inventory.onDirty -= OnFurnitureInventoryDirty;
 		container.inventory.onDirty += OnFurnitureInventoryDirty;
 	}
@@ -345,7 +338,7 @@ public class ApartmentRoom : BaseEntity
 			Debug.LogError((object)$"Apartment {this} is missing it's upkeep terminal");
 			return 0;
 		}
-		return apartmentUpkeepTerminal.inventory.GetAmount(scrapItemDef.itemid);
+		return apartmentUpkeepTerminal.inventory.GetAmount(ItemManager.Items.Scrap.itemid);
 	}
 
 	public float GetDailyUpkeepCost()
@@ -398,7 +391,7 @@ public class ApartmentRoom : BaseEntity
 		return Mathf.Max((float)MinimumRent, num * ApartmentCommands.rentscaling);
 	}
 
-	private void OnFurnitureInventoryAddedRemoved(Item item, bool added)
+	private void OnFurnitureInventoryAddedRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		AddDelayedUpdate();
 	}
@@ -425,7 +418,7 @@ public class ApartmentRoom : BaseEntity
 			float num2 = dailyUpkeepCost * (num / 86400f);
 			outstandingRent += num2;
 			int iAmount = Mathf.CeilToInt(outstandingRent);
-			int num3 = apartmentUpkeepTerminal.inventory.Take(null, scrapItemDef.itemid, iAmount);
+			int num3 = apartmentUpkeepTerminal.inventory.Take(null, ItemManager.Items.Scrap.itemid, iAmount);
 			outstandingRent -= num3;
 			if (outstandingRent > 0f)
 			{
@@ -475,11 +468,11 @@ public class ApartmentRoom : BaseEntity
 		{
 			return true;
 		}
-		if (base.isServer && ApartmentCommands.adminapartmentbypass && BasePlayer.TryFindByID(user, out var basePlayer) && basePlayer.IsAdmin)
+		if (isServer && ApartmentCommands.adminapartmentbypass && BasePlayer.TryFindByID(user, out var basePlayer) && basePlayer.IsAdmin)
 		{
 			return true;
 		}
-		if (auth == ApartmentAuth.EnterApartment && base.isServer)
+		if (auth == ApartmentAuth.EnterApartment && isServer)
 		{
 			RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(user);
 			if (playerTeam != null)
@@ -507,7 +500,7 @@ public class ApartmentRoom : BaseEntity
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		OBB val = WorldSpaceBounds();
-		return ((OBB)(ref val)).Contains(((Component)player).transform.position);
+		return val.Contains(((Component)player).transform.position);
 	}
 
 	public override void AdminKill()
@@ -802,7 +795,7 @@ public class ApartmentRoom : BaseEntity
 			return cachedStorageCapacity;
 		}
 		int num = 0;
-		StorageContainer storageContainer = default(StorageContainer);
+		StorageContainer storageContainer = default;
 		foreach (FurnitureSpawn furnitureSpawn in furnitureSpawns)
 		{
 			GameObject val = GameManager.server.FindPrefab(furnitureSpawn.Prefab);
@@ -875,7 +868,7 @@ public class ApartmentRoom : BaseEntity
 		}
 		TriggerSafeZoneOverride triggerSafeZoneOverride = attacker.FindActiveCombatTrigger();
 		TriggerSafeZoneOverride triggerSafeZoneOverride2 = victim.FindActiveCombatTrigger();
-		if ((Object)(object)triggerSafeZoneOverride != (Object)null && (Object)(object)triggerSafeZoneOverride2 != (Object)null && (Object)(object)triggerSafeZoneOverride == (Object)(object)triggerSafeZoneOverride2)
+		if ((Object)(object)triggerSafeZoneOverride != (Object)null && (Object)(object)triggerSafeZoneOverride2 != (Object)null && (Object)(object)triggerSafeZoneOverride == (Object)(object)triggerSafeZoneOverride2 && attacker.InVerifiedSafeCombatZone() && victim.InVerifiedSafeCombatZone())
 		{
 			if ((Object)(object)triggerSafeZoneOverride.Apartment != (Object)null && ApartmentCommands.apartmentinvisibleblocker && !triggerSafeZoneOverride.Apartment.IsBreakInActive() && !triggerSafeZoneOverride.Apartment.CanBypassInvisibleBarrier(attacker))
 			{
@@ -917,7 +910,7 @@ public class ApartmentRoom : BaseEntity
 		base.OnFlagsChanged(old, next);
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -926,7 +919,7 @@ public class ApartmentRoom : BaseEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: Building for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: Building for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_Building);
 			return true;
@@ -978,18 +971,34 @@ public class ApartmentRoom : BaseEntity
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -1009,7 +1018,7 @@ public class ApartmentRoom : BaseEntity
 	protected override void ResetSyncVars()
 	{
 		base.ResetSyncVars();
-		__sync_Building = default(EntityRef<ApartmentBuilding>);
+		__sync_Building = default;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)

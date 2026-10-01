@@ -50,6 +50,8 @@ public class HackableLockedCrate : LootContainer
 
 	public bool wasDropped;
 
+	private bool hasBeenOpened;
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("HackableLockedCrate.OnRpcMessage"))
@@ -113,7 +115,7 @@ public class HackableLockedCrate : LootContainer
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
-		if (base.isServer && info.forDisk)
+		if (isServer && info.forDisk)
 		{
 			info.msg.hackableLockedCrate = Pool.Get<HackableLockedCrate>();
 			info.msg.hackableLockedCrate.hackSeconds = hackSeconds;
@@ -124,7 +126,7 @@ public class HackableLockedCrate : LootContainer
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.fromDisk && info.msg.hackableLockedCrate != null)
+		if (isServer && info.fromDisk && info.msg.hackableLockedCrate != null)
 		{
 			hackSeconds = info.msg.hackableLockedCrate.hackSeconds;
 			originalHackerPlayerId = info.msg.hackableLockedCrate.originalHackerPlayerId;
@@ -133,7 +135,7 @@ public class HackableLockedCrate : LootContainer
 
 	public override void DestroyShared()
 	{
-		if (base.isServer && Object.op_Implicit((Object)(object)mapMarkerInstance))
+		if (isServer && Object.op_Implicit((Object)(object)mapMarkerInstance))
 		{
 			mapMarkerInstance.Kill();
 		}
@@ -181,7 +183,7 @@ public class HackableLockedCrate : LootContainer
 	{
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			if (StringPool.Get(info.HitBone) == "laptopcollision")
 			{
@@ -210,7 +212,7 @@ public class HackableLockedCrate : LootContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (base.isServer && !Application.isLoadingSave)
+		if (isServer && !Application.isLoadingSave)
 		{
 			Init();
 		}
@@ -238,10 +240,10 @@ public class HackableLockedCrate : LootContainer
 		}
 		RefreshDecay();
 		isLootable = IsFullyHacked();
-		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
+		inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		if (!added && (Object)(object)mapMarkerInstance != (Object)null)
 		{
@@ -249,7 +251,7 @@ public class HackableLockedCrate : LootContainer
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local);
 			flagsUpdateScope.Set(Flags.Reserved4, b: true);
 		}
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 	}
 
 	public void LandCheck()
@@ -262,18 +264,18 @@ public class HackableLockedCrate : LootContainer
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (!hasLanded && Physics.Raycast(new Ray(((Component)this).transform.position + Vector3.up * 0.5f, Vector3.down), ref val, 1f, 1084293377))
 		{
-			Effect.server.Run(landEffect.resourcePath, ((RaycastHit)(ref val)).point, Vector3.up);
+			Effect.server.Run(landEffect.resourcePath, val.point, Vector3.up);
 			hasLanded = true;
 			Interface.CallHook("OnCrateLanded", this);
 			CancelInvoke(LandCheck);
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Hack(RPCMessage msg)
 	{
 		if (!IsBeingHacked() && Interface.CallHook("CanHackCrate", msg.player, this) == null)
@@ -327,11 +329,12 @@ public class HackableLockedCrate : LootContainer
 
 	public override bool OnStartBeingLooted(BasePlayer player)
 	{
-		bool num = base.OnStartBeingLooted(player);
-		if (num && !HasBeenLooted())
+		bool flag = base.OnStartBeingLooted(player);
+		if (flag && !hasBeenOpened)
 		{
 			player.AddClanScore((ClanScoreEventType)6);
+			hasBeenOpened = true;
 		}
-		return num;
+		return flag;
 	}
 }

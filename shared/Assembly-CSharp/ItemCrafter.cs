@@ -13,7 +13,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 {
 	public List<ItemContainer> containers = new List<ItemContainer>();
 
-	public LinkedList<ItemCraftTask> queue = new LinkedList<ItemCraftTask>();
+	public readonly LinkedList<ItemCraftTask> queue = new LinkedList<ItemCraftTask>();
 
 	public int taskUID;
 
@@ -212,7 +212,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 				if ((Object)(object)takenItem.info == (Object)(object)ingredient.itemDef)
 				{
 					int num2 = Mathf.Min(takenItem.amount, num);
-					Facepunch.Rust.Analytics.Azure.OnCraftMaterialConsumed(takenItem.info.shortname, num, base.baseEntity, task.workbenchEntity, inSafezone, item.info.shortname);
+					Facepunch.Rust.Analytics.Azure.OnCraftMaterialConsumed(takenItem.info.shortname, num, baseEntity, task.workbenchEntity, inSafezone, item.info.shortname);
 					takenItem.UseItem(num);
 					num -= num2;
 				}
@@ -223,7 +223,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			}
 		}
 		task.takenItems?.RemoveAll((Item item2) => item2.amount == 0);
-		Facepunch.Rust.Analytics.Azure.OnCraftItem(item.info.shortname, item.amount, base.baseEntity, task.workbenchEntity, inSafezone, item.skin);
+		Facepunch.Rust.Analytics.Azure.OnCraftItem(item.info.shortname, item.amount, baseEntity, task.workbenchEntity, inSafezone, item.skin);
 		owner.Command("note.craft_done", task.taskUID, 1, task.amount);
 		Interface.CallHook("OnItemCraftFinished", task, item, this);
 		if (task.instanceData != null)
@@ -351,9 +351,9 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		{
 			return false;
 		}
-		if ((Object)(object)base.baseEntity != (Object)null && base.baseEntity.IsRestrained)
+		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsRestrained)
 		{
-			Handcuffs restraintItem = base.baseEntity.Belt.GetRestraintItem();
+			Handcuffs restraintItem = baseEntity.Belt.GetRestraintItem();
 			if ((Object)(object)restraintItem != (Object)null && restraintItem.BlockCrafting)
 			{
 				return false;
@@ -463,7 +463,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			val2.takenItems = SaveItems(item.takenItems);
 			val2.numCrafted = item.numCrafted;
 			val2.conditionScale = item.conditionScale;
-			val2.workbenchEntity = (NetworkableId)(item.workbenchEntity.IsValid() ? item.workbenchEntity.net.ID : default(NetworkableId));
+			val2.workbenchEntity = (item.workbenchEntity.IsValid() ? item.workbenchEntity.net.ID : default(NetworkableId));
 			val.queue.Add(val2);
 		}
 		return val;
@@ -489,7 +489,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			return;
 		}
 		queue.Clear();
-		ItemBlueprint blueprint = default(ItemBlueprint);
+		ItemBlueprint blueprint = default;
 		foreach (Task item in proto.queue)
 		{
 			ItemDefinition itemDefinition = ItemManager.FindItemDefinition(item.itemID);

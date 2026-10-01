@@ -8,8 +8,8 @@ namespace AntiHackJobs;
 [BurstCompile]
 public struct CalcDistAndBudgetJob : IJobFor
 {
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<(float Dist, float Budget)> DistAndBudget;
 
 	[WriteOnly]
@@ -40,7 +40,7 @@ public struct CalcDistAndBudgetJob : IJobFor
 		int num = Indices[jobInd];
 		bool isSwimming = States[num].IsSwimming;
 		Vector3 val = End[num] - Start[num];
-		float num2 = ((isSwimming && Use3DMagnitude) ? ((Vector3)(ref val)).magnitude : Vector3Ex.Magnitude2D(val));
+		float num2 = ((isSwimming && Use3DMagnitude) ? val.magnitude : Vector3Ex.Magnitude2D(val));
 		float num3 = Speed[jobInd] * DeltaTime[num];
 		DistAndBudget[num] = (num2, num3);
 		if (!isSwimming && num2 > num3)

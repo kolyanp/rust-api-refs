@@ -27,10 +27,10 @@ internal class TabbedPanel
 	internal void DrawVertical(float width)
 	{
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Expected O, but got Unknown
+		//IL_0054: Expected Obj, but got Unknown
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Expected O, but got Unknown
-		GUILayout.BeginVertical((GUILayoutOption[])(object)new GUILayoutOption[2]
+		//IL_0098: Expected Obj, but got Unknown
+		GUILayout.BeginVertical(new GUILayoutOption[2]
 		{
 			GUILayout.Width(width),
 			GUILayout.ExpandHeight(true)
@@ -42,7 +42,7 @@ internal class TabbedPanel
 				selectedTabID = i;
 			}
 		}
-		if (GUILayout.Toggle(false, "", new GUIStyle(GUIStyle.op_Implicit("devtab")), (GUILayoutOption[])(object)new GUILayoutOption[1] { GUILayout.ExpandHeight(true) }))
+		if (GUILayout.Toggle(false, "", new GUIStyle(GUIStyle.op_Implicit("devtab")), new GUILayoutOption[1] { GUILayout.ExpandHeight(true) }))
 		{
 			selectedTabID = -1;
 		}
@@ -52,11 +52,11 @@ internal class TabbedPanel
 	internal void DrawContents()
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Expected O, but got Unknown
+		//IL_003d: Expected Obj, but got Unknown
 		if (selectedTabID >= 0)
 		{
 			Tab tab = selectedTab;
-			GUILayout.BeginVertical(new GUIStyle(GUIStyle.op_Implicit("devtabcontents")), (GUILayoutOption[])(object)new GUILayoutOption[2]
+			GUILayout.BeginVertical(new GUIStyle(GUIStyle.op_Implicit("devtabcontents")), new GUILayoutOption[2]
 			{
 				GUILayout.ExpandHeight(true),
 				GUILayout.ExpandWidth(true)

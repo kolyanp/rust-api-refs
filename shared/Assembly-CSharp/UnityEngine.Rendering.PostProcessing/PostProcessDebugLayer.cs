@@ -117,7 +117,7 @@ public sealed class PostProcessDebugLayer
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Expected O, but got Unknown
+		//IL_008d: Expected Obj, but got Unknown
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)debugOverlayTarget == (Object)null || !debugOverlayTarget.IsCreated() || ((Texture)debugOverlayTarget).width != frameWidth || ((Texture)debugOverlayTarget).height != frameHeight)
@@ -175,8 +175,8 @@ public sealed class PostProcessDebugLayer
 		command.BeginSample("Monitors");
 		if (flag2)
 		{
-			command.GetTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.HalfResFinalCopy, context.width / 2, context.height / 2, 0, (FilterMode)1, context.sourceFormat);
-			command.Blit(context.destination, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.HalfResFinalCopy));
+			command.GetTemporaryRT(ShaderIDs.HalfResFinalCopy, context.width / 2, context.height / 2, 0, (FilterMode)1, context.sourceFormat);
+			command.Blit(context.destination, RenderTargetIdentifier.op_Implicit(ShaderIDs.HalfResFinalCopy));
 		}
 		foreach (KeyValuePair<MonitorType, Monitor> monitor2 in m_Monitors)
 		{
@@ -188,7 +188,7 @@ public sealed class PostProcessDebugLayer
 		}
 		if (flag2)
 		{
-			command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.HalfResFinalCopy);
+			command.ReleaseTemporaryRT(ShaderIDs.HalfResFinalCopy);
 		}
 		command.EndSample("Monitors");
 	}
@@ -208,7 +208,7 @@ public sealed class PostProcessDebugLayer
 		if (debugOverlay == DebugOverlay.Depth)
 		{
 			PropertySheet propertySheet = context.propertySheets.Get(context.resources.shaders.debugOverlays);
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Params, new Vector4(overlaySettings.linearDepth ? 1f : 0f, 0f, 0f, 0f));
+			propertySheet.properties.SetVector(ShaderIDs.Params, new Vector4(overlaySettings.linearDepth ? 1f : 0f, 0f, 0f, 0f));
 			PushDebugOverlay(context.command, RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), propertySheet, 0);
 		}
 		else if (debugOverlay == DebugOverlay.Normals)
@@ -224,7 +224,7 @@ public sealed class PostProcessDebugLayer
 		else if (debugOverlay == DebugOverlay.MotionVectors)
 		{
 			PropertySheet propertySheet3 = context.propertySheets.Get(context.resources.shaders.debugOverlays);
-			propertySheet3.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Params, new Vector4(overlaySettings.motionColorIntensity, (float)overlaySettings.motionGridSize, 0f, 0f));
+			propertySheet3.properties.SetVector(ShaderIDs.Params, new Vector4(overlaySettings.motionColorIntensity, (float)overlaySettings.motionGridSize, 0f, 0f));
 			PushDebugOverlay(context.command, context.source, propertySheet3, 2);
 		}
 		else if (debugOverlay == DebugOverlay.NANTracker)
@@ -235,7 +235,7 @@ public sealed class PostProcessDebugLayer
 		else if (debugOverlay == DebugOverlay.ColorBlindnessSimulation)
 		{
 			PropertySheet propertySheet4 = context.propertySheets.Get(context.resources.shaders.debugOverlays);
-			propertySheet4.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Params, new Vector4(overlaySettings.colorBlindnessStrength, 0f, 0f, 0f));
+			propertySheet4.properties.SetVector(ShaderIDs.Params, new Vector4(overlaySettings.colorBlindnessStrength, 0f, 0f, 0f));
 			PushDebugOverlay(context.command, context.source, propertySheet4, (int)(4 + overlaySettings.colorBlindnessType));
 		}
 	}

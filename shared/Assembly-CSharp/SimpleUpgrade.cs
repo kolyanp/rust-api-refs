@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using ConVar;
-using Facepunch;
 using UnityEngine;
 
 internal static class SimpleUpgrade
@@ -110,72 +109,25 @@ internal static class SimpleUpgrade
 
 	public static void DoUpgrade(BaseEntity entity, BasePlayer player, ItemDefinition upgradeItem)
 	{
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0227: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023f: Unknown result type (might be due to invalid IL or missing references)
-		if (!(entity is ISimpleUpgradable simpleUpgradable) || !simpleUpgradable.CanUpgrade(player, upgradeItem))
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		if (entity is ISimpleUpgradable simpleUpgradable && simpleUpgradable.CanUpgrade(player, upgradeItem))
 		{
-			return;
-		}
-		PayForUpgrade(entity, upgradeItem, player);
-		EntityRef[] slots = entity.GetSlots();
-		BaseEntity parentEntity = entity.GetParentEntity();
-		bool flag = entity is DecayEntity decayEntity && decayEntity.HasFlag(BaseEntity.Flags.Reserved2);
-		ItemModDeployable component = ((Component)upgradeItem).GetComponent<ItemModDeployable>();
-		BaseEntity baseEntity = GameManager.server.CreateEntity(component.entityPrefab.resourcePath, ((Component)entity).transform.position, ((Component)entity).transform.rotation);
-		baseEntity.SetParent(parentEntity);
-		baseEntity.OwnerID = player.userID;
-		Deployable component2 = component.entityPrefab.Get().GetComponent<Deployable>();
-		if (component2 != null && component2.placeEffect.isValid)
-		{
-			Effect.server.Run(component2.placeEffect.resourcePath, ((Component)entity).transform.position, Vector3.up);
-		}
-		DecayEntity decayEntity2 = baseEntity as DecayEntity;
-		if ((Object)(object)decayEntity2 != (Object)null)
-		{
-			decayEntity2.timePlaced = entity.GetNetworkTime();
-		}
-		List<BaseEntity.ChildPreserveInfo> list = Pool.Get<List<BaseEntity.ChildPreserveInfo>>();
-		foreach (BaseEntity child in entity.children)
-		{
-			list.Add(new BaseEntity.ChildPreserveInfo
+			PayForUpgrade(entity, upgradeItem, player);
+			GameObjectRef entityPrefab = ((Component)upgradeItem).GetComponent<ItemModDeployable>().entityPrefab;
+			entity = SprayCan.DoRedirectSwap(entity, entityPrefab.resourcePath, 0uL);
+			entity.OwnerID = player.userID;
+			Deployable deployable = default;
+			if (entityPrefab.Get().TryGetComponent<Deployable>(ref deployable) && deployable.placeEffect.isValid)
 			{
-				targetEntity = child,
-				targetBone = child.parentBone,
-				localPosition = ((Component)child).transform.localPosition,
-				localRotation = ((Component)child).transform.localRotation
-			});
+				Effect.server.Run(deployable.placeEffect.resourcePath, ((Component)entity).transform.position, Vector3.up);
+			}
+			if (entity is DecayEntity decayEntity)
+			{
+				decayEntity.timePlaced = entity.GetNetworkTime();
+				decayEntity.AttachToBuilding(null);
+			}
 		}
-		foreach (BaseEntity.ChildPreserveInfo item in list)
-		{
-			item.targetEntity.SetParent(null, worldPositionStays: true);
-		}
-		entity.Kill();
-		if (baseEntity is DecayEntity decayEntity3)
-		{
-			decayEntity3.AttachToBuilding(null);
-		}
-		baseEntity.Spawn();
-		foreach (BaseEntity.ChildPreserveInfo item2 in list)
-		{
-			item2.targetEntity.SetParent(baseEntity, item2.targetBone, worldPositionStays: true);
-			((Component)item2.targetEntity).transform.localPosition = item2.localPosition;
-			((Component)item2.targetEntity).transform.localRotation = item2.localRotation;
-			item2.targetEntity.SendNetworkUpdate();
-		}
-		baseEntity.SetSlots(slots);
-		if (!flag && baseEntity is DecayEntity decayEntity4)
-		{
-			decayEntity4.StopBeingDemolishable();
-		}
-		Pool.FreeUnmanaged<BaseEntity.ChildPreserveInfo>(ref list);
 	}
 
 	public static bool IsUpgradeBlocked(BaseEntity entity, ItemDefinition upgradeItem, BasePlayer player)

@@ -49,7 +49,7 @@ public class BeeSwarmMaster : BaseCombatEntity, ISplashable
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.fromDisk && base.isServer)
+		if (info.fromDisk && isServer)
 		{
 			StartDie();
 		}
@@ -60,7 +60,7 @@ public class BeeSwarmMaster : BaseCombatEntity, ISplashable
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			timeSinceLastSpawnedSwarm = TimeSince.op_Implicit(secondsBetweenSpawns);
 			InvokeRepeating(ThinkAI, 0f, 0.25f);
@@ -136,7 +136,7 @@ public class BeeSwarmMaster : BaseCombatEntity, ISplashable
 		}
 		Vector3 position = ((Component)this).transform.position;
 		BaseEntity baseEntity = GameManager.server.CreateEntity(beeSwarmPrefab.resourcePath, position, Quaternion.identity);
-		baseEntity.OwnerID = base.OwnerID;
+		baseEntity.OwnerID = OwnerID;
 		baseEntity.creatorEntity = creatorEntity;
 		baseEntity.Spawn();
 	}
@@ -208,12 +208,12 @@ public class BeeSwarmMaster : BaseCombatEntity, ISplashable
 
 	public int DoSplash(ItemDefinition splashType, int amount)
 	{
-		float num = base.health - 10f;
+		float num = health - 10f;
 		if (num > 0f)
 		{
 			Hurt(num);
 		}
-		if (base.health <= 10f)
+		if (health <= 10f)
 		{
 			StartDie();
 		}

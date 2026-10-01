@@ -78,8 +78,8 @@ public class FogMachine : ContainerIOEntity, IAlwaysOn
 		flagsUpdateScope.Set(Flags.On, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SetMotionDetection(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -233,7 +233,7 @@ public class FogMachine : ContainerIOEntity, IAlwaysOn
 
 	public int GetFuelAmount()
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || slot.amount < 1)
 		{
 			return 0;
@@ -256,7 +256,7 @@ public class FogMachine : ContainerIOEntity, IAlwaysOn
 		{
 			return true;
 		}
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || slot.amount < 1)
 		{
 			return false;

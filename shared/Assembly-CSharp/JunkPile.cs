@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using ConVar;
 using Facepunch;
 using Network;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 public class JunkPile : BaseEntity
@@ -51,6 +53,10 @@ public class JunkPile : BaseEntity
 		StartTimeout();
 		((MonoBehaviour)this).StartCoroutine(SpawnInitialCoroutine());
 		isSinking = false;
+		if (!AI.useUnityNavmesh)
+		{
+			RustNavigation.Instance.RebuildTilesUnder(this);
+		}
 	}
 
 	public override void Spawn()
@@ -93,7 +99,11 @@ public class JunkPile : BaseEntity
 		base.DoServerDestroy();
 		StabilityEntity.UpdateSurroundingsQueue updateSurroundingsQueue = StabilityEntity.updateSurroundingsQueue;
 		OBB val = WorldSpaceBounds();
-		((ObjectWorkQueue<Bounds>)updateSurroundingsQueue).Add(((OBB)(ref val)).ToBounds());
+		((ObjectWorkQueue<Bounds>)updateSurroundingsQueue).Add(val.ToBounds());
+		if (!AI.useUnityNavmesh)
+		{
+			RustNavigation.Instance.RebuildTilesUnder(this);
+		}
 	}
 
 	private IEnumerator SpawnInitialCoroutine()
@@ -186,7 +196,7 @@ public class JunkPile : BaseEntity
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			CancelInvoke(SinkAndDestroy);
 			SpawnGroup[] array = spawngroups;

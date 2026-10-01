@@ -68,7 +68,7 @@ public class ConnectionAuth : MonoBehaviour
 			Reject(connection, "Invalid SteamID");
 			return;
 		}
-		if (connection.protocol != 2633)
+		if (connection.protocol != 2634)
 		{
 			if (!DeveloperList.Contains(connection.userid))
 			{
@@ -176,14 +176,14 @@ public class ConnectionAuth : MonoBehaviour
 				}
 				else
 				{
-					JToken obj4 = obj2["ClientVersions"];
-					obj3 = ((obj4 != null) ? obj4[(object)text] : null);
+					JToken val = obj2["ClientVersions"];
+					obj3 = ((val != null) ? val[(object)text] : null);
 				}
-				JToken val = (JToken)obj3;
-				if (val != null && (int)val.Type == 1)
+				JToken val2 = (JToken)obj3;
+				if (val2 != null && (int)val2.Type == 1)
 				{
-					int item = val.Value<int>((object)"Changeset");
-					int item2 = val.Value<int>((object)"Timestamp");
+					int item = val2.Value<int>((object)"Changeset");
+					int item2 = val2.Value<int>((object)"Timestamp");
 					_clientRequirementCache = (item, item2);
 				}
 			}
@@ -219,7 +219,15 @@ public class ConnectionAuth : MonoBehaviour
 		}
 		string text = (string)obj;
 		string text2 = text.ToLowerInvariant();
-		string clientVersionMismatchMessage = ((text2 == "release") ? "Client update required. Close Rust and apply update from Steam." : ((!(text2 == "main")) ? ("Client update required. Apply \"Rust - Staging Branch\" (" + text + " beta) update from Steam.") : "Client update required. Apply \"Rust - Staging Branch\" update from Steam."));
+		string clientVersionMismatchMessage;
+		if (text2 == "release")
+		{
+			clientVersionMismatchMessage = "Client update required. Close Rust and apply update from Steam.";
+		}
+		else
+		{
+			clientVersionMismatchMessage = ((!(text2 == "main")) ? ("Client update required. Apply \"Rust - Staging Branch\" (" + text + " beta) update from Steam.") : "Client update required. Apply \"Rust - Staging Branch\" update from Steam.");
+		}
 		_clientVersionMismatchMessage = clientVersionMismatchMessage;
 		return _clientVersionMismatchMessage;
 	}

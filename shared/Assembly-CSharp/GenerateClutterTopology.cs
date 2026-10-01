@@ -9,7 +9,7 @@ public class GenerateClutterTopology : ProceduralComponent
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		NativeArray<int> map = TerrainMeta.TopologyMap.dst;
 		int res = TerrainMeta.TopologyMap.res;
-		ImageProcessing.Dilate2D(map, res, res, 16777728, 3, delegate(int x, int y)
+		ImageProcessing.Dilate2D(map, res, res, 16777728, 3, (int x, int y) =>
 		{
 			if ((map[x * res + y] & 0x200) == 0)
 			{

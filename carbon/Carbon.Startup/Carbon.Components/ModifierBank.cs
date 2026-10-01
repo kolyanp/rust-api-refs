@@ -9,7 +9,7 @@ public class ModifierBank : List<Modifier>
 {
 	public bool HasPlugin(string name)
 	{
-		for (int i = 0; i < base.Count; i++)
+		for (int i = 0; i < Count; i++)
 		{
 			if (Path.GetFileNameWithoutExtension(base[i].Path).Equals(name, StringComparison.CurrentCulture))
 			{

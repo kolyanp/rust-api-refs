@@ -38,13 +38,13 @@ public class SupplyDrop : LootContainer
 	private void OnCollisionEnter(Collision collision)
 	{
 		bool flag = ((1 << ((Component)collision.collider).gameObject.layer) & 0x40A10111) > 0;
-		bool num = ((1 << ((Component)collision.collider).gameObject.layer) & 0x8000000) > 0;
+		bool flag2 = ((1 << ((Component)collision.collider).gameObject.layer) & 0x8000000) > 0;
 		BaseEntity entity = CollisionEx.GetEntity(collision);
-		if (num && entity is Tugboat)
+		if (flag2 && entity is Tugboat)
 		{
 			flag = true;
 		}
-		if (num && (entity is BoatBuildingBlock || PlayerBoat.IsChildOfFinishedPlayerBoat(entity)))
+		if (flag2 && (entity is BoatBuildingBlock || PlayerBoat.IsChildOfFinishedPlayerBoat(entity)))
 		{
 			flag = true;
 		}

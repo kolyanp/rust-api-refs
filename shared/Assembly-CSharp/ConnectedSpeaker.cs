@@ -24,7 +24,7 @@ public class ConnectedSpeaker : IOEntity
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		base.OnFlagsChanged(old, next);
-		if (!base.isServer || (old & Flags.Reserved8) == Flags.Reserved8 == ((next & Flags.Reserved8) == Flags.Reserved8))
+		if (!isServer || (old & Flags.Reserved8) == Flags.Reserved8 == ((next & Flags.Reserved8) == Flags.Reserved8))
 		{
 			return;
 		}
@@ -63,7 +63,7 @@ public class ConnectedSpeaker : IOEntity
 		IOSlot[] array = entity.inputs;
 		for (int i = 0; i < array.Length; i++)
 		{
-			IOEntity iOEntity = array[i].connectedTo.Get(base.isServer);
+			IOEntity iOEntity = array[i].connectedTo.Get(isServer);
 			if ((Object)(object)iOEntity == (Object)(object)this)
 			{
 				return null;

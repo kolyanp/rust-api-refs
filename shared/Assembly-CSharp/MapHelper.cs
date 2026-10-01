@@ -27,8 +27,10 @@ public static class MapHelper
 
 	public static Vector3 GridToPosition(Vector2i grid)
 	{
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
@@ -39,10 +41,8 @@ public static class MapHelper
 		float num = 146.28572f;
 		int num2 = Mathf.FloorToInt((float)World.Size / num + 0.001f);
 		float num3 = World.Size / num2;
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector((float)(0L - (long)World.Size) / 2f, (float)World.Size / 2f);
-		Vector2 val2 = default(Vector2);
-		((Vector2)(ref val2))._002Ector((float)grid.x * num3, (float)grid.y * num3);
+		Vector2 val = new Vector2((float)(0L - (long)World.Size) / 2f, (float)World.Size / 2f);
+		Vector2 val2 = new Vector2((float)grid.x * num3, (float)grid.y * num3);
 		return new Vector3(val.x + val2.x, 0f, val.y - val2.y) + new Vector3(num3 / 2f, 0f, num3 / -2f);
 	}
 
@@ -67,6 +67,7 @@ public static class MapHelper
 
 	public static Vector2i PositionToGrid(Vector3 position)
 	{
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
@@ -77,8 +78,7 @@ public static class MapHelper
 		float num = 146.28572f;
 		int num2 = Mathf.FloorToInt((float)World.Size / num + 0.001f);
 		float num3 = World.Size / num2;
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector((float)(0L - (long)World.Size) / 2f, (float)World.Size / 2f);
+		Vector2 val = new Vector2((float)(0L - (long)World.Size) / 2f, (float)World.Size / 2f);
 		Vector2 val2 = new Vector2(position.x - val.x, val.y - position.z);
 		int num4 = Mathf.FloorToInt(val2.x / num3);
 		int num5 = Mathf.FloorToInt(val2.y / num3);

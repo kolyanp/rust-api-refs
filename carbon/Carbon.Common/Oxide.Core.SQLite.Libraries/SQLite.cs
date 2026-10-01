@@ -44,7 +44,7 @@ public class SQLite : Library, IDatabaseProvider
 		public void Handle()
 		{
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004c: Expected O, but got Unknown
+			//IL_004c: Expected Obj, but got Unknown
 			List<Dictionary<string, object>> list = null;
 			int nonQueryResult = 0;
 			long lastInsertRowId = 0L;
@@ -100,7 +100,7 @@ public class SQLite : Library, IDatabaseProvider
 				Logger.Error(text, ex);
 				Cleanup();
 			}
-			Interface.Oxide.NextTick(delegate
+			Interface.Oxide.NextTick(() =>
 			{
 				Connection?.Plugin?.TrackStart();
 				try
@@ -134,7 +134,7 @@ public class SQLite : Library, IDatabaseProvider
 		private long GetLastInsertRowId(SqliteConnection connection)
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000c: Expected O, but got Unknown
+			//IL_000c: Expected Obj, but got Unknown
 			SqliteCommand val = new SqliteCommand("SELECT last_insert_rowid()", connection);
 			try
 			{
@@ -211,7 +211,7 @@ public class SQLite : Library, IDatabaseProvider
 	public Connection OpenDb(string file, Plugin plugin, bool persistent = false)
 	{
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Expected O, but got Unknown
+		//IL_00a4: Expected Obj, but got Unknown
 		if (string.IsNullOrEmpty(file))
 		{
 			return null;

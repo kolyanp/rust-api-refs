@@ -59,9 +59,9 @@ internal static class MeshUtilities
 	private static Mesh GetBuiltinMesh(PrimitiveType primitiveType)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		GameObject obj = GameObject.CreatePrimitive(primitiveType);
-		Mesh sharedMesh = obj.GetComponent<MeshFilter>().sharedMesh;
-		RuntimeUtilities.Destroy((Object)(object)obj);
+		GameObject val = GameObject.CreatePrimitive(primitiveType);
+		Mesh sharedMesh = val.GetComponent<MeshFilter>().sharedMesh;
+		RuntimeUtilities.Destroy((Object)(object)val);
 		return sharedMesh;
 	}
 }

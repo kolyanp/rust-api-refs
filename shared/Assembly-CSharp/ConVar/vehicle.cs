@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using Facepunch;
 using UnityEngine;
 
@@ -8,8 +7,11 @@ namespace ConVar;
 [Factory("vehicle")]
 public class vehicle : ConsoleSystem
 {
-	[ServerVar]
+	[ReplicatedVar(Saved = true, Help = "Whether repairable vehicle pads (eg. the Air Wolf helipad) have to be rebuilt with a hammer before their vendor will sell. When disabled, pads spawn already rebuilt and players cannot repair them.")]
+	public static bool padrepairsrequired = true;
+
 	[Help("how long until boat corpses despawn (excluding tugboat - use tugboat_corpse_seconds)")]
+	[ServerVar]
 	public static float boat_corpse_seconds = 300f;
 
 	[ServerVar(Help = "(Generated) When enabled, wheel colliders are disabled on vehicles that have gone to sleep in the physics engine, reducing CPU overhead for parked vehicles")]
@@ -146,6 +148,14 @@ public class vehicle : ConsoleSystem
 			}
 		}
 		arg.ReplyWith($"Fixed up {num2} vehicles/engines.");
+	}
+
+	[ServerVar(Help = "Forces every repairable vehicle pad on the map to be rebuilt, or pass false to wreck them again.")]
+	public static void setrepairablepads(Arg arg)
+	{
+		bool flag = arg.GetBool(0, def: true);
+		int num = RepairableVehiclePad.ServerSetAllRepaired(flag);
+		arg.ReplyWith(string.Format("{0} {1} repairable pad(s).", (RepairableVehiclePad.ShouldSpawnAsRepaired | flag) ? "Rebuilt" : "Wrecked", num));
 	}
 
 	[ServerVar(Help = "(Generated) Toggles auto-hover mode on the mini-helicopter the calling player is piloting, maintaining altitude automatically without pilot input")]
@@ -327,7 +337,7 @@ public class vehicle : ConsoleSystem
 					float num = ((trainEngine.completeTrain != null) ? trainEngine.completeTrain.GetTrackSpeedFor(trainEngine) : 0f);
 					val.AddRow(new string[4]
 					{
-						((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref trainEngine.net.ID)/*cast due to constrained. prefix*/).ToString(),
+						((object)trainEngine.net.ID/*cast due to constrained. prefix*/).ToString(),
 						trainEngine.ShortPrefabName,
 						$"{num:F1} m/s",
 						((object)((Component)trainEngine).transform.position/*cast due to constrained. prefix*/).ToString()
@@ -457,7 +467,7 @@ public class vehicle : ConsoleSystem
 					string driftStatus = baseBoat.GetDriftStatus();
 					val.AddRow(new string[5]
 					{
-						((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref baseBoat.net.ID)/*cast due to constrained. prefix*/).ToString(),
+						((object)baseBoat.net.ID/*cast due to constrained. prefix*/).ToString(),
 						baseBoat.ShortPrefabName,
 						((object)((Component)baseBoat).transform.position/*cast due to constrained. prefix*/).ToString(),
 						text,

@@ -19,13 +19,18 @@ public class Pinata : BaseCombatEntity
 	public float DropPointRadius;
 
 	[Header("Hit Animation")]
-	public float TotalSwingTime;
+	public float TotalSwingTime = 0.6f;
 
-	public float SwingForce;
+	public float SwingForce = 45f;
 
 	public Transform SwingTransform;
 
-	public AnimationCurve SwingCurve;
+	public AnimationCurve SwingCurve = new AnimationCurve(new Keyframe[3]
+	{
+		new Keyframe(0f, 0f),
+		new Keyframe(0.5f, 1f),
+		new Keyframe(1f, 0f)
+	});
 
 	[Header("Visual")]
 	public VisualThreshold[] Thresholds;
@@ -34,7 +39,7 @@ public class Pinata : BaseCombatEntity
 
 	public Transform DestroyEffectSpawnPos;
 
-	public float HangLength;
+	public float HangLength = -1.863f;
 
 	public GameObjectRef FinalDestroyEffect;
 
@@ -66,16 +71,6 @@ public class Pinata : BaseCombatEntity
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Expected O, but got Unknown
-		TotalSwingTime = 0.6f;
-		SwingForce = 45f;
-		SwingCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[3]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(0.5f, 1f),
-			new Keyframe(1f, 0f)
-		});
-		HangLength = -1.863f;
-		base._002Ector();
+		//IL_0069: Expected Obj, but got Unknown
 	}
 }

@@ -18,8 +18,8 @@ public class ResourceRef<T> where T : Object
 	{
 		if ((Object)(object)_cachedObject == (Object)null)
 		{
-			Object obj = GameManifest.GUIDToObject(guid);
-			_cachedObject = (T)(object)((obj is T) ? obj : null);
+			Object val = GameManifest.GUIDToObject(guid);
+			_cachedObject = (T)(object)((val is T) ? val : null);
 		}
 		return _cachedObject;
 	}

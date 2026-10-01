@@ -18,11 +18,11 @@ public abstract class State_PlayAnimationBase : FSMStateBase
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		if (FaceTarget && base.Senses.FindTargetPosition(out var targetPosition))
+		if (FaceTarget && Senses.FindTargetPosition(out var targetPosition))
 		{
 			Vector3 val = targetPosition - ((Component)Owner).transform.position;
 			val.y = 0f;
-			if (((Vector3)(ref val)).magnitude > 0.001f)
+			if (val.magnitude > 0.001f)
 			{
 				((Component)Owner).transform.rotation = Quaternion.LookRotation(val);
 			}
@@ -36,7 +36,7 @@ public abstract class State_PlayAnimationBase : FSMStateBase
 		{
 			if (AI.logIssues)
 			{
-				Debug.LogError((object)$"[FSM] Animation state is null in state update {base.Name} from {Owner}");
+				Debug.LogError((object)$"[FSM] Animation state is null in state update {Name} from {Owner}");
 			}
 			return EFSMStateStatus.Failure;
 		}
@@ -49,6 +49,6 @@ public abstract class State_PlayAnimationBase : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.AnimPlayer.StopServerAndReturnToPool(ref animState);
+		AnimPlayer.StopServerAndReturnToPool(ref animState);
 	}
 }

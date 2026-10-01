@@ -7,11 +7,11 @@ using UnityEngine;
 
 public class StorageMonitor : AppIOEntity
 {
-	public readonly Action<Item, bool> _onItemAddedRemoved;
+	public readonly Action<Item, bool, BasePlayer> _onItemAddedRemoved;
 
-	private readonly Action<Item, int> _onItemAddedToStack;
+	private readonly Action<Item, int, BasePlayer> _onItemAddedToStack;
 
-	private readonly Action<Item, int> _onItemRemovedFromStack;
+	private readonly Action<Item, int, BasePlayer> _onItemRemovedFromStack;
 
 	private readonly Action _resetSwitchHandler;
 
@@ -79,9 +79,9 @@ public class StorageMonitor : AppIOEntity
 		ItemContainer inventory = GetInventory();
 		if (inventory != null)
 		{
-			inventory.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory.onItemAddedRemoved, _onItemAddedRemoved);
-			inventory.onItemAddedToStack = (Action<Item, int>)Delegate.Combine(inventory.onItemAddedToStack, _onItemAddedToStack);
-			inventory.onItemRemovedFromStack = (Action<Item, int>)Delegate.Combine(inventory.onItemRemovedFromStack, _onItemRemovedFromStack);
+			inventory.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(inventory.onItemAddedRemoved, _onItemAddedRemoved);
+			inventory.onItemAddedToStack = (Action<Item, int, BasePlayer>)Delegate.Combine(inventory.onItemAddedToStack, _onItemAddedToStack);
+			inventory.onItemRemovedFromStack = (Action<Item, int, BasePlayer>)Delegate.Combine(inventory.onItemRemovedFromStack, _onItemRemovedFromStack);
 		}
 	}
 
@@ -91,9 +91,9 @@ public class StorageMonitor : AppIOEntity
 		ItemContainer inventory = GetInventory();
 		if (inventory != null)
 		{
-			inventory.onItemAddedRemoved = (Action<Item, bool>)Delegate.Remove(inventory.onItemAddedRemoved, _onItemAddedRemoved);
-			inventory.onItemAddedToStack = (Action<Item, int>)Delegate.Remove(inventory.onItemAddedToStack, _onItemAddedToStack);
-			inventory.onItemRemovedFromStack = (Action<Item, int>)Delegate.Remove(inventory.onItemRemovedFromStack, _onItemRemovedFromStack);
+			inventory.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Remove(inventory.onItemAddedRemoved, _onItemAddedRemoved);
+			inventory.onItemAddedToStack = (Action<Item, int, BasePlayer>)Delegate.Remove(inventory.onItemAddedToStack, _onItemAddedToStack);
+			inventory.onItemRemovedFromStack = (Action<Item, int, BasePlayer>)Delegate.Remove(inventory.onItemRemovedFromStack, _onItemRemovedFromStack);
 		}
 	}
 
@@ -152,9 +152,9 @@ public class StorageMonitor : AppIOEntity
 		base.UpdateHasPower(inputAmount, inputSlot);
 		if (inputSlot == 0)
 		{
-			bool num = inputAmount >= ConsumptionAmount();
+			bool flag2 = inputAmount >= ConsumptionAmount();
 			double realtimeSinceStartup = TimeEx.realtimeSinceStartup;
-			if (num && !flag && _lastPowerOnUpdate < realtimeSinceStartup - 1.0)
+			if (flag2 && !flag && _lastPowerOnUpdate < realtimeSinceStartup - 1.0)
 			{
 				_lastPowerOnUpdate = realtimeSinceStartup;
 				BroadcastValueChange();
@@ -162,17 +162,17 @@ public class StorageMonitor : AppIOEntity
 		}
 	}
 
-	private void OnItemAddedRemoved(Item item, bool added)
+	private void OnItemAddedRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		OnContainerChanged();
 	}
 
-	private void OnItemAddedToStack(Item item, int amount)
+	private void OnItemAddedToStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
 		OnContainerChanged();
 	}
 
-	private void OnItemRemovedFromStack(Item item, int amount)
+	private void OnItemRemovedFromStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
 		OnContainerChanged();
 	}

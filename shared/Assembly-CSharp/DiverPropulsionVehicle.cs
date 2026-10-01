@@ -65,8 +65,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float minWaterDepth = 0.75f;
 
-	[SerializeField]
 	[Header("DPV - Control stability")]
+	[SerializeField]
 	private float rotStability = 0.05f;
 
 	[SerializeField]
@@ -84,8 +84,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float maxRollDegrees = 30f;
 
-	[SerializeField]
 	[Header("DPV - UI")]
+	[SerializeField]
 	private Canvas dashboardCanvas;
 
 	[SerializeField]
@@ -198,7 +198,7 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 		get
 		{
 			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			if (base.isServer)
+			if (isServer)
 			{
 				if (TimeSince.op_Implicit(timeSinceLastUsed) >= timeUntilAutoSurface)
 				{
@@ -289,7 +289,7 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && isSpawned && GetFuelSystem().CheckNewChild(child))
+		if (isServer && isSpawned && GetFuelSystem().CheckNewChild(child))
 		{
 			SetFuelUpdateInventoryCallback(child as StorageContainer);
 		}
@@ -298,10 +298,10 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	private void SetFuelUpdateInventoryCallback(StorageContainer sc)
 	{
 		ItemContainer inventory = sc.inventory;
-		inventory.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory.onItemAddedRemoved, (Action<Item, bool>)delegate
+		inventory.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(inventory.onItemAddedRemoved, (Action<Item, bool, BasePlayer>)((Item _, bool _, BasePlayer _) =>
 		{
 			SendClientFuelInfo();
-		});
+		}));
 	}
 
 	private void UpdateMovementState()
@@ -402,7 +402,7 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 				Quaternion val = Quaternion.AngleAxis(targetPitch, right);
 				Vector3 val2 = Quaternion.AngleAxis(targetRoll, forward) * val * Vector3.up;
 				Vector3 angularVelocity = rigidBody.angularVelocity;
-				Vector3 val3 = Vector3.Cross(Quaternion.AngleAxis(((Vector3)(ref angularVelocity)).magnitude * 57.29578f * rotStability / rotPower, rigidBody.angularVelocity) * ((Component)this).transform.up, val2) * rotPower * rotPower;
+				Vector3 val3 = Vector3.Cross(Quaternion.AngleAxis(angularVelocity.magnitude * 57.29578f * rotStability / rotPower, rigidBody.angularVelocity) * ((Component)this).transform.up, val2) * rotPower * rotPower;
 				rigidBody.AddTorque(val3);
 				rigidBody.AddForce(Vector3.up * (0f - num4) * vertStability, (ForceMode)2);
 				if (IsOn())
@@ -410,7 +410,7 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 					rigidBody.AddForce(((Component)this).transform.forward * (engineKW * ThrottleInput), (ForceMode)0);
 					if (Mathf.Abs(num) > 1f)
 					{
-						Vector3 normalized = ((Vector3)(ref localVelocity)).normalized;
+						Vector3 normalized = localVelocity.normalized;
 						float num6 = Mathf.Abs(Vector3.Dot(normalized, ((Component)this).transform.right));
 						rigidBody.AddForce(-normalized * (num6 * (0.08f * engineKW) * rigidBody.mass * rigidBody.linearDamping));
 					}
@@ -595,8 +595,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 			return;
 		}
 		List<Collider> list = Pool.Get<List<Collider>>();
-		Vector3 val = default(Vector3);
-		Quaternion val2 = default(Quaternion);
+		Vector3 val = default;
+		Quaternion val2 = default;
 		((Component)characterBoxCollider).transform.GetPositionAndRotation(ref val, ref val2);
 		GamePhysics.OverlapOBB(new OBB(val + val2 * characterBoxCollider.center, characterBoxCollider.size, val2), list, 1218652417, (QueryTriggerInteraction)1);
 		foreach (Collider item in list)
@@ -616,9 +616,9 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	public override void InitShared()
 	{
 		base.InitShared();
-		EntityFuelSystem entityFuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		EntityFuelSystem entityFuelSystem = new EntityFuelSystem(isServer, fuelStoragePrefab, children);
 		IFuelSystem fuelSystem = entityFuelSystem;
-		if (base.isServer)
+		if (isServer)
 		{
 			StorageContainer fuelContainer = entityFuelSystem.GetFuelContainer();
 			if ((Object)(object)fuelContainer != (Object)null)
@@ -626,7 +626,7 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 				SetFuelUpdateInventoryCallback(fuelContainer);
 			}
 		}
-		engineController = new VehicleEngineController<DiverPropulsionVehicle>(this, fuelSystem, base.isServer, engineStartupTime);
+		engineController = new VehicleEngineController<DiverPropulsionVehicle>(this, fuelSystem, isServer, engineStartupTime);
 	}
 
 	public override void Load(LoadInfo info)
@@ -642,7 +642,7 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (old != next && base.isServer)
+		if (old != next && isServer)
 		{
 			characterWorldCollider.SetActive((next & Flags.Busy) == Flags.Busy);
 		}

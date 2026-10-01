@@ -25,17 +25,17 @@ public class MeshPaintController : MonoBehaviour, IClientComponent
 
 	public Texture2D brushTexture;
 
-	public Vector2 brushScale;
+	public Vector2 brushScale = new Vector2(8f, 8f);
 
-	public Color brushColor;
+	public Color brushColor = Color.white;
 
-	public float brushSpacing;
+	public float brushSpacing = 2f;
 
-	public float brushSpacingFactor;
+	public float brushSpacingFactor = 0.25f;
 
 	public RawImage brushImage;
 
-	public float brushPreviewScaleMultiplier;
+	public float brushPreviewScaleMultiplier = 1f;
 
 	public Texture2D stampTexture;
 
@@ -45,13 +45,13 @@ public class MeshPaintController : MonoBehaviour, IClientComponent
 
 	public Texture2D defaltBrushTexture;
 
-	public float defaultBrushSize;
+	public float defaultBrushSize = 16f;
 
-	public Color defaultBrushColor;
+	public Color defaultBrushColor = Color.black;
 
-	public float defaultBrushAlpha;
+	public float defaultBrushAlpha = 0.5f;
 
-	public float maxBrushScale;
+	public float maxBrushScale = 32f;
 
 	public RustButton UndoButton;
 
@@ -84,15 +84,5 @@ public class MeshPaintController : MonoBehaviour, IClientComponent
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		brushScale = new Vector2(8f, 8f);
-		brushColor = Color.white;
-		brushSpacing = 2f;
-		brushSpacingFactor = 0.25f;
-		brushPreviewScaleMultiplier = 1f;
-		defaultBrushSize = 16f;
-		defaultBrushColor = Color.black;
-		defaultBrushAlpha = 0.5f;
-		maxBrushScale = 32f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

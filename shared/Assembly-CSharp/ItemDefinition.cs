@@ -148,8 +148,8 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 	[Tooltip("If true, this item will support item ownership even if it's stacksize is >1")]
 	public bool supportsStackableOwnership;
 
-	[Header("Spawn Tables")]
 	[Tooltip("How rare this item is and how much it costs to research")]
+	[Header("Spawn Tables")]
 	public Rarity rarity;
 
 	public Rarity despawnRarity;
@@ -199,6 +199,9 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 
 	public Vector3 DropCenterOfMass;
 
+	[Tooltip("Workshop skins uploaded for this item can also be applied to us (ie the sandbag variants share the sandbag barricade skins)")]
+	public ItemDefinition inheritSkinsFrom;
+
 	public ItemDefinition isRedirectOf;
 
 	public RedirectVendingBehaviour redirectVendingBehaviour;
@@ -214,6 +217,9 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 
 	[NonSerialized]
 	public IPlayerItemDefinition[] _skins2;
+
+	[NonSerialized]
+	private string _cachedPrefabName;
 
 	private float _worldModelMass;
 
@@ -247,8 +253,7 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 			}
 			if (PlatformService.Instance.IsValid && PlatformService.Instance.ItemDefinitions != null)
 			{
-				string prefabname = ((Object)this).name;
-				_skins2 = PlatformService.Instance.ItemDefinitions.Where((IPlayerItemDefinition x) => (x.ItemShortName == shortname || x.ItemShortName == prefabname) && x.WorkshopId != 0).ToArray();
+				_skins2 = PlatformService.Instance.ItemDefinitions.Where((IPlayerItemDefinition x) => MatchesSkinShortName(x.ItemShortName) && x.WorkshopId != 0).ToArray();
 			}
 			return _skins2;
 		}
@@ -273,6 +278,8 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 	public ItemModWearable ItemModWearable { get; set; }
 
 	public ItemModBurnable ItemModBurnable { get; set; }
+
+	public ItemModConsumable ItemModConsumable { get; private set; }
 
 	public CookableItemInfo ItemModCookable { get; set; }
 
@@ -327,6 +334,35 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 	public void InvalidateWorkshopSkinCache()
 	{
 		_skins2 = null;
+	}
+
+	public bool MatchesSkinShortName(string skinShortName)
+	{
+		ItemDefinition itemDefinition = this;
+		int num = 0;
+		while ((Object)(object)itemDefinition != (Object)null && num < 8)
+		{
+			if (itemDefinition.IsOwnSkinShortName(skinShortName))
+			{
+				return true;
+			}
+			itemDefinition = itemDefinition.inheritSkinsFrom;
+			num++;
+		}
+		return false;
+	}
+
+	public bool IsOwnSkinShortName(string skinShortName)
+	{
+		if (skinShortName == shortname)
+		{
+			return true;
+		}
+		if (_cachedPrefabName == null)
+		{
+			_cachedPrefabName = ((Object)this).name;
+		}
+		return skinShortName == _cachedPrefabName;
 	}
 
 	public bool IsAllowed(EraRestriction targetRestriction)
@@ -422,13 +458,9 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 		if (itemDefinition2 != null)
 		{
 			ulong workshopDownload = itemDefinition2.WorkshopDownload;
-			if (workshopDownload != 0L)
+			if (workshopDownload != 0L && itemDefinition.MatchesSkinShortName(itemDefinition2.ItemShortName))
 			{
-				string itemShortName = itemDefinition2.ItemShortName;
-				if (itemShortName == itemDefinition.shortname || itemShortName == ((Object)itemDefinition).name)
-				{
-					return workshopDownload;
-				}
+				return workshopDownload;
 			}
 		}
 		for (int i = 0; i < itemDefinition.skins.Length; i++)
@@ -471,7 +503,7 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 		{
 			return 0;
 		}
-		WorldModel worldModel = default(WorldModel);
+		WorldModel worldModel = default;
 		if (val.TryGetComponent<WorldModel>(ref worldModel))
 		{
 			return worldModel.GetTriCount(lod);
@@ -500,6 +532,7 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 		Children = itemList.Where((ItemDefinition x) => (Object)(object)x.Parent == (Object)(object)this).ToArray();
 		ItemModWearable = ((Component)this).GetComponent<ItemModWearable>();
 		ItemModBurnable = ((Component)this).GetComponent<ItemModBurnable>();
+		ItemModConsumable = ((Component)this).GetComponent<ItemModConsumable>();
 		ItemModCookable component = ((Component)this).GetComponent<ItemModCookable>();
 		if ((Object)(object)component != (Object)null)
 		{
@@ -582,7 +615,7 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 
 	public static Phrase GetCategoryLabel(ItemCategory category)
 	{
-		return (Phrase)(category switch
+		return category switch
 		{
 			ItemCategory.Weapon => Translate.GetPhrase("bp_weapons"), 
 			ItemCategory.Attire => Translate.GetPhrase("bp_clothing"), 
@@ -590,7 +623,7 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 			ItemCategory.Ammunition => Translate.GetPhrase("bp_ammo"), 
 			ItemCategory.Misc => Translate.GetPhrase("bp_misc"), 
 			_ => Translate.GetPhrase("bp_" + category.ToString().ToLower()), 
-		});
+		};
 	}
 
 	public static Phrase GetVehicleCategoryLabel(VehicleCategory category)

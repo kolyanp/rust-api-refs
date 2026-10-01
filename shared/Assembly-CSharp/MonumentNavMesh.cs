@@ -97,6 +97,7 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 	{
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
@@ -104,17 +105,16 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		if (!overrideAutoBounds)
 		{
-			((Bounds)(ref Bounds)).size = new Vector3((float)(CellSize * CellCount), (float)Height, (float)(CellSize * CellCount));
+			Bounds.size = new Vector3((float)(CellSize * CellCount), (float)Height, (float)(CellSize * CellCount));
 		}
-		Bounds result = default(Bounds);
-		((Bounds)(ref result))._002Ector(((Bounds)(ref Bounds)).center, ((Bounds)(ref Bounds)).size);
+		Bounds result = new Bounds(Bounds.center, Bounds.size);
 		if (offsetBoundsByCenterPoint)
 		{
-			((Bounds)(ref result)).center = ((Component)this).transform.TransformPoint(((Bounds)(ref Bounds)).center);
+			result.center = ((Component)this).transform.TransformPoint(Bounds.center);
 		}
 		else
 		{
-			((Bounds)(ref result)).center = ((Component)this).transform.position;
+			result.center = ((Component)this).transform.position;
 		}
 		return result;
 	}
@@ -125,11 +125,11 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Expected O, but got Unknown
+		//IL_0031: Expected Obj, but got Unknown
 		if (AI.useUnityNavmesh)
 		{
 			NavMeshBuildSettings settingsByIndex = NavMesh.GetSettingsByIndex(NavMeshAgentTypeIndex);
-			agentTypeId = ((NavMeshBuildSettings)(ref settingsByIndex)).agentTypeID;
+			agentTypeId = settingsByIndex.agentTypeID;
 			NavMeshData = new NavMeshData(agentTypeId);
 			sources = new List<NavMeshBuildSource>();
 			defaultArea = NavMesh.GetAreaFromName(DefaultAreaName);
@@ -146,7 +146,7 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 		if (AI.useUnityNavmesh && !Application.isQuitting)
 		{
 			CancelInvoke(FinishBuildingNavmesh);
-			((NavMeshDataInstance)(ref NavMeshDataInstance)).Remove();
+			NavMeshDataInstance.Remove();
 		}
 	}
 
@@ -163,8 +163,8 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 			float realtimeSinceStartup = Time.realtimeSinceStartup;
 			NavMeshTools.Log("Starting Monument Navmesh Build with " + sources.Count + " sources");
 			NavMeshBuildSettings settingsByIndex = NavMesh.GetSettingsByIndex(NavMeshAgentTypeIndex);
-			((NavMeshBuildSettings)(ref settingsByIndex)).overrideVoxelSize = true;
-			((NavMeshBuildSettings)(ref settingsByIndex)).voxelSize = ((NavMeshBuildSettings)(ref settingsByIndex)).voxelSize * NavmeshResolutionModifier;
+			settingsByIndex.overrideVoxelSize = true;
+			settingsByIndex.voxelSize *= NavmeshResolutionModifier;
 			BuildingOperation = NavMeshBuilder.UpdateNavMeshDataAsync(NavMeshData, settingsByIndex, sources, GetBounds());
 			BuildTimer.Reset();
 			BuildTimer.Start();
@@ -227,14 +227,14 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 		}
 		else if (isOffMainLand)
 		{
-			if (!((Component)this).TryGetComponent<IndependantNavmesh>(ref independantNavmesh))
+			if (!((Component)this).TryGetComponent<IndependantNavmesh>(ref this.independantNavmesh))
 			{
-				independantNavmesh = ((Component)this).gameObject.AddComponent<IndependantNavmesh>();
+				this.independantNavmesh = ((Component)this).gameObject.AddComponent<IndependantNavmesh>();
 			}
-			IndependantNavmesh obj = independantNavmesh;
+			IndependantNavmesh independantNavmesh = this.independantNavmesh;
 			Bounds bounds = GetBounds();
-			obj.size = ((Bounds)(ref bounds)).size;
-			RustNavigation.Instance.AddNavmesh(independantNavmesh);
+			independantNavmesh.size = bounds.size;
+			RustNavigation.Instance.AddNavmesh(this.independantNavmesh);
 		}
 	}
 
@@ -264,6 +264,7 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
@@ -272,22 +273,21 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
 		RustNavigation.EnsureUnityNavmesh();
-		Vector3 size = default(Vector3);
 		foreach (NavMeshModifierVolume activeModifier in NavMeshModifierVolume.activeModifiers)
 		{
 			if ((LayerMask.op_Implicit(LayerMask) & (1 << ((Component)activeModifier).gameObject.layer)) != 0 && activeModifier.AffectsAgentType(agentTypeId))
 			{
 				Vector3 val = ((Component)activeModifier).transform.TransformPoint(activeModifier.center);
 				Bounds bounds = GetBounds();
-				if (((Bounds)(ref bounds)).Contains(val))
+				if (bounds.Contains(val))
 				{
 					Vector3 lossyScale = ((Component)activeModifier).transform.lossyScale;
-					((Vector3)(ref size))._002Ector(activeModifier.size.x * Mathf.Abs(lossyScale.x), activeModifier.size.y * Mathf.Abs(lossyScale.y), activeModifier.size.z * Mathf.Abs(lossyScale.z));
-					NavMeshBuildSource item = default(NavMeshBuildSource);
-					((NavMeshBuildSource)(ref item)).shape = (NavMeshBuildSourceShape)5;
-					((NavMeshBuildSource)(ref item)).transform = Matrix4x4.TRS(val, ((Component)activeModifier).transform.rotation, Vector3.one);
-					((NavMeshBuildSource)(ref item)).size = size;
-					((NavMeshBuildSource)(ref item)).area = activeModifier.area;
+					Vector3 size = new Vector3(activeModifier.size.x * Mathf.Abs(lossyScale.x), activeModifier.size.y * Mathf.Abs(lossyScale.y), activeModifier.size.z * Mathf.Abs(lossyScale.z));
+					NavMeshBuildSource item = default;
+					item.shape = (NavMeshBuildSourceShape)5;
+					item.transform = Matrix4x4.TRS(val, ((Component)activeModifier).transform.rotation, Vector3.one);
+					item.size = size;
+					item.area = activeModifier.area;
 					sources.Add(item);
 				}
 			}
@@ -301,7 +301,7 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 		RustNavigation.EnsureUnityNavmesh();
 		if (BuildingOperation != null && BuildingOperation.isDone)
 		{
-			if (!((NavMeshDataInstance)(ref NavMeshDataInstance)).valid)
+			if (!NavMeshDataInstance.valid)
 			{
 				NavMeshDataInstance = NavMesh.AddNavMeshData(NavMeshData);
 			}

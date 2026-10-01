@@ -89,8 +89,8 @@ public class RHIB : MotorRowboat
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsVisible(6f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(6f)]
 	public void Server_Release(RPCMessage msg)
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
@@ -103,7 +103,7 @@ public class RHIB : MotorRowboat
 			SetToNonKinematic();
 			buoyancy.Wake();
 			rigidBody.centerOfMass = centerOfMass.localPosition + Vector3.down * 7f;
-			Invoke(delegate
+			Invoke(() =>
 			{
 				//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 				rigidBody.centerOfMass = centerOfMass.localPosition;
@@ -173,7 +173,7 @@ public class RHIB : MotorRowboat
 
 	public void AdminKillNoLoot(bool killMountedNPCs = true)
 	{
-		StorageContainer storageContainer = storageUnitInstance.Get(base.isServer);
+		StorageContainer storageContainer = storageUnitInstance.Get(isServer);
 		if ((Object)(object)storageContainer != (Object)null)
 		{
 			storageContainer.dropsLoot = false;

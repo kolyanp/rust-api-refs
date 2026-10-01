@@ -277,7 +277,7 @@ public class ComputerStation : BaseMountable
 
 	public bool AllowPings()
 	{
-		BaseEntity baseEntity = currentlyControllingEnt.Get(base.isServer);
+		BaseEntity baseEntity = currentlyControllingEnt.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity is IRemoteControllable { CanPing: not false })
 		{
 			return true;
@@ -300,7 +300,7 @@ public class ComputerStation : BaseMountable
 
 	public override void DestroyShared()
 	{
-		if (base.isServer && Object.op_Implicit((Object)(object)GetMounted()))
+		if (isServer && Object.op_Implicit((Object)(object)GetMounted()))
 		{
 			StopControl(GetMounted());
 		}
@@ -393,7 +393,7 @@ public class ComputerStation : BaseMountable
 			if (!((Object)(object)baseEntity == (Object)null))
 			{
 				Vector3 val = ((Component)baseEntity).transform.position - position;
-				if (!(((Vector3)(ref val)).sqrMagnitude > num) && !connections.Contains(mounted.Connection))
+				if (!(val.sqrMagnitude > num) && !connections.Contains(mounted.Connection))
 				{
 					connections.Add(mounted.Connection);
 				}
@@ -418,7 +418,7 @@ public class ComputerStation : BaseMountable
 		{
 			ply.net.SwitchSecondaryGroup(null);
 		}
-		currentlyControllingEnt.uid = default(NetworkableId);
+		currentlyControllingEnt.uid = default;
 		currentPlayerID = 0uL;
 		controllingStations.Remove(this);
 		SetFlagLocal(Flags.Reserved2, b: false);
@@ -481,7 +481,7 @@ public class ComputerStation : BaseMountable
 		{
 			SendControlBookmarks(mountedPlayer);
 			BaseEntity baseEntity = currentlyControllingEnt.Get(serverside: true);
-			IRemoteControllable remoteControllable = default(IRemoteControllable);
+			IRemoteControllable remoteControllable = default;
 			if ((Object)(object)baseEntity != (Object)null && ((Component)baseEntity).TryGetComponent<IRemoteControllable>(ref remoteControllable) && remoteControllable.GetIdentifier() == identifier)
 			{
 				StopControl(mountedPlayer);
@@ -545,7 +545,7 @@ public class ComputerStation : BaseMountable
 			SetFlagLocal(Flags.Reserved2, b);
 			SendNetworkUpdateImmediate();
 			SendControlBookmarks(player);
-			if (Rust.GameInfo.HasAchievements && remoteControllable.GetEnt() is CCTV_RC)
+			if (GameInfo.HasAchievements && remoteControllable.GetEnt() is CCTV_RC)
 			{
 				InvokeRepeating(CheckCCTVAchievement, 1f, 3f);
 			}
@@ -588,9 +588,9 @@ public class ComputerStation : BaseMountable
 			{
 				Vector3 val = basePlayer.CenterPoint();
 				Vector3 val2 = val - cCTV_RC.pitch.position;
-				float num = Vector3.Dot(((Vector3)(ref val2)).normalized, cCTV_RC.pitch.forward);
+				float num = Vector3.Dot(val2.normalized, cCTV_RC.pitch.forward);
 				Vector3 val3 = cCTV_RC.pitch.InverseTransformPoint(val);
-				if (num > 0.6f && ((Vector3)(ref val3)).magnitude < 10f)
+				if (num > 0.6f && val3.magnitude < 10f)
 				{
 					mounted.GiveAchievement("BIG_BROTHER");
 					CancelInvoke(CheckCCTVAchievement);
@@ -690,7 +690,7 @@ public class ComputerStation : BaseMountable
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = false;
-		BaseEntity baseEntity = currentlyControllingEnt.Get(base.isServer);
+		BaseEntity baseEntity = currentlyControllingEnt.Get(isServer);
 		BasePlayer mounted = GetMounted();
 		if (Object.op_Implicit((Object)(object)baseEntity) && Object.op_Implicit((Object)(object)mounted))
 		{
@@ -747,9 +747,9 @@ public class ComputerStation : BaseMountable
 	public override void PlayerServerInput(InputState inputState, BasePlayer player)
 	{
 		base.PlayerServerInput(inputState, player);
-		if (spawnedIo.IsValid(base.isServer))
+		if (spawnedIo.IsValid(isServer))
 		{
-			IOEntity iOEntity = spawnedIo.Get(base.isServer);
+			IOEntity iOEntity = spawnedIo.Get(isServer);
 			if (((Object)(object)iOEntity != (Object)null) & !iOEntity.IsPowered())
 			{
 				DismountAllPlayers();

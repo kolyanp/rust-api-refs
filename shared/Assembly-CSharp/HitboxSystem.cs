@@ -35,9 +35,6 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 
 		private Matrix4x4 inverseTransform;
 
-		[CompilerGenerated]
-		private Vector3 _003CSize_003Ek__BackingField;
-
 		public Matrix4x4 Transform
 		{
 			get
@@ -53,7 +50,7 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 			{
 				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 				//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-				return ((Matrix4x4)(ref transform)).MultiplyPoint(Vector3.zero);
+				return transform.MultiplyPoint(Vector3.zero);
 			}
 		}
 
@@ -62,7 +59,7 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 			get
 			{
 				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-				return ((Matrix4x4)(ref transform)).rotation;
+				return transform.rotation;
 			}
 		}
 
@@ -72,14 +69,14 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 			get
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-				return _003CSize_003Ek__BackingField;
+				return field;
 			}
 			[CompilerGenerated]
 			private set
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				_003CSize_003Ek__BackingField = value;
+				field = value;
 			}
 		}
 
@@ -100,9 +97,9 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 			using (TimeWarning.New("HitboxSystem.UpdateTransform"))
 			{
 				transform = bone.localToWorldMatrix * localTransform;
-				Size = ((Matrix4x4)(ref transform)).lossyScale;
+				Size = transform.lossyScale;
 				transform = Matrix4x4.TRS(Position, Rotation, Vector3.one);
-				inverseTransform = ((Matrix4x4)(ref transform)).inverse;
+				inverseTransform = transform.inverse;
 			}
 		}
 
@@ -110,28 +107,28 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-			return ((Matrix4x4)(ref transform)).MultiplyPoint(pt);
+			return transform.MultiplyPoint(pt);
 		}
 
 		public Vector3 InverseTransformPoint(Vector3 pt)
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-			return ((Matrix4x4)(ref inverseTransform)).MultiplyPoint(pt);
+			return inverseTransform.MultiplyPoint(pt);
 		}
 
 		public Vector3 TransformDirection(Vector3 pt)
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-			return ((Matrix4x4)(ref transform)).MultiplyVector(pt);
+			return transform.MultiplyVector(pt);
 		}
 
 		public Vector3 InverseTransformDirection(Vector3 pt)
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-			return ((Matrix4x4)(ref inverseTransform)).MultiplyVector(pt);
+			return inverseTransform.MultiplyVector(pt);
 		}
 
 		public JobStruct GetJobStruct()
@@ -160,9 +157,11 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 			//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 			//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
@@ -170,28 +169,26 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 			//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 			using (TimeWarning.New("Hitbox.Trace"))
 			{
-				((Ray)(ref ray)).origin = InverseTransformPoint(((Ray)(ref ray)).origin);
-				((Ray)(ref ray)).direction = InverseTransformDirection(((Ray)(ref ray)).direction);
+				ray.origin = InverseTransformPoint(ray.origin);
+				ray.direction = InverseTransformDirection(ray.direction);
 				if (type == HitboxDefinition.Type.BOX)
 				{
-					AABB val = default(AABB);
-					((AABB)(ref val))._002Ector(Vector3.zero, Size);
-					if (!((AABB)(ref val)).Trace(ray, ref hit, forgivness, maxDistance))
+					AABB val = new AABB(Vector3.zero, Size);
+					if (!val.Trace(ray, ref hit, forgivness, maxDistance))
 					{
 						return false;
 					}
 				}
 				else
 				{
-					Capsule val2 = default(Capsule);
-					((Capsule)(ref val2))._002Ector(Vector3.zero, Size.x, Size.y * 0.5f);
-					if (!((Capsule)(ref val2)).Trace(ray, ref hit, forgivness, maxDistance))
+					Capsule val2 = new Capsule(Vector3.zero, Size.x, Size.y * 0.5f);
+					if (!val2.Trace(ray, ref hit, forgivness, maxDistance))
 					{
 						return false;
 					}
 				}
-				((RaycastHit)(ref hit)).point = TransformPoint(((RaycastHit)(ref hit)).point);
-				((RaycastHit)(ref hit)).normal = TransformDirection(((RaycastHit)(ref hit)).normal);
+				hit.point = TransformPoint(hit.point);
+				hit.normal = TransformDirection(hit.normal);
 				return true;
 			}
 		}
@@ -213,13 +210,13 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 			{
 				for (int j = 0; j < 3; j++)
 				{
-					((Matrix4x4)(ref val))[i, j] = Mathf.Abs(((Matrix4x4)(ref val))[i, j]);
+					val[i, j] = Mathf.Abs(val[i, j]);
 				}
 			}
-			Bounds result = default(Bounds);
+			Bounds result = default;
 			Matrix4x4 val2 = Transform;
-			((Bounds)(ref result)).center = ((Matrix4x4)(ref val2)).MultiplyPoint(Vector3.zero);
-			((Bounds)(ref result)).extents = ((Matrix4x4)(ref val)).MultiplyVector(Size);
+			result.center = val2.MultiplyPoint(Vector3.zero);
+			result.extents = val.MultiplyVector(Size);
 			return result;
 		}
 	}

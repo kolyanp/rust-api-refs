@@ -10,14 +10,14 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 	}
 
 	[Header("MonumentInfo")]
-	public MonumentType Type;
+	public MonumentType Type = MonumentType.Building;
 
 	[InspectorFlags]
-	public MonumentTier Tier;
+	public MonumentTier Tier = (MonumentTier)(-1);
 
 	public int MinWorldSize;
 
-	public Bounds Bounds;
+	public Bounds Bounds = new Bounds(Vector3.zero, Vector3.zero);
 
 	public bool HasNavmesh;
 
@@ -71,6 +71,7 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
@@ -84,12 +85,11 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(pos, scale, rot, Bounds);
-		Vector3 point = ((OBB)(ref val)).GetPoint(-1f, 0f, -1f);
-		Vector3 point2 = ((OBB)(ref val)).GetPoint(-1f, 0f, 1f);
-		Vector3 point3 = ((OBB)(ref val)).GetPoint(1f, 0f, -1f);
-		Vector3 point4 = ((OBB)(ref val)).GetPoint(1f, 0f, 1f);
+		OBB val = new OBB(pos, scale, rot, Bounds);
+		Vector3 point = val.GetPoint(-1f, 0f, -1f);
+		Vector3 point2 = val.GetPoint(-1f, 0f, 1f);
+		Vector3 point3 = val.GetPoint(1f, 0f, -1f);
+		Vector3 point4 = val.GetPoint(1f, 0f, 1f);
 		int topology = TerrainMeta.TopologyMap.GetTopology(point);
 		int topology2 = TerrainMeta.TopologyMap.GetTopology(point2);
 		int topology3 = TerrainMeta.TopologyMap.GetTopology(point3);
@@ -131,38 +131,38 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 	public float Distance(Vector3 position)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return ((OBB)(ref obbBounds)).Distance(position);
+		return obbBounds.Distance(position);
 	}
 
 	public float SqrDistance(Vector3 position)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return ((OBB)(ref obbBounds)).SqrDistance(position);
+		return obbBounds.SqrDistance(position);
 	}
 
 	public float Distance(OBB obb)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return ((OBB)(ref obbBounds)).Distance(obb);
+		return obbBounds.Distance(obb);
 	}
 
 	public float SqrDistance(OBB obb)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return ((OBB)(ref obbBounds)).SqrDistance(obb);
+		return obbBounds.SqrDistance(obb);
 	}
 
 	public bool IsInBounds(Vector3 position)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return ((OBB)(ref obbBounds)).Contains(position);
+		return obbBounds.Contains(position);
 	}
 
 	public Vector3 ClosestPointOnBounds(Vector3 position)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		return ((OBB)(ref obbBounds)).ClosestPoint(position);
+		return obbBounds.ClosestPoint(position);
 	}
 
 	public PathFinder.Point GetPathFinderPoint(int res)
@@ -185,8 +185,8 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		float num = ((Bounds)(ref Bounds)).extents.x * TerrainMeta.OneOverSize.x;
-		float num2 = ((Bounds)(ref Bounds)).extents.z * TerrainMeta.OneOverSize.z;
+		float num = Bounds.extents.x * TerrainMeta.OneOverSize.x;
+		float num2 = Bounds.extents.z * TerrainMeta.OneOverSize.z;
 		return Mathf.CeilToInt(Mathf.Max(num, num2) * (float)res);
 	}
 
@@ -194,8 +194,8 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		float x = ((Bounds)(ref Bounds)).size.x;
-		float z = ((Bounds)(ref Bounds)).size.z;
+		float x = Bounds.size.x;
+		float z = Bounds.size.z;
 		return Mathf.Max(x, z);
 	}
 
@@ -210,9 +210,9 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		Gizmos.matrix = ((Component)this).transform.localToWorldMatrix;
 		Gizmos.color = new Color(0f, 0.7f, 1f, 0.1f);
-		Gizmos.DrawCube(((Bounds)(ref Bounds)).center, ((Bounds)(ref Bounds)).size);
+		Gizmos.DrawCube(Bounds.center, Bounds.size);
 		Gizmos.color = new Color(0f, 0.7f, 1f, 1f);
-		Gizmos.DrawWireCube(((Bounds)(ref Bounds)).center, ((Bounds)(ref Bounds)).size);
+		Gizmos.DrawWireCube(Bounds.center, Bounds.size);
 	}
 
 	public MonumentNavMesh GetMonumentNavMesh()
@@ -311,9 +311,5 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		Type = MonumentType.Building;
-		Tier = (MonumentTier)(-1);
-		Bounds = new Bounds(Vector3.zero, Vector3.zero);
-		base._002Ector();
 	}
 }

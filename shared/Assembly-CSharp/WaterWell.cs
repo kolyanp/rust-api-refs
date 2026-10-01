@@ -111,15 +111,15 @@ public class WaterWell : LiquidContainer
 		SendNetworkUpdateImmediate();
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		SendNetworkUpdate();
 	}
 
 	public void Produce()
 	{
-		base.inventory.AddItem(defaultLiquid, waterPerPump, 0uL);
+		inventory.AddItem(defaultLiquid, waterPerPump, 0uL);
 		SetFlagLocal(Flags.Reserved3, b: true);
 		ScheduleTapOff();
 		SendNetworkUpdateImmediate();
@@ -162,9 +162,9 @@ public class WaterWell : LiquidContainer
 
 	public float GetWaterAmount()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
-			Item slot = base.inventory.GetSlot(0);
+			Item slot = inventory.GetSlot(0);
 			if (slot == null)
 			{
 				return 0f;

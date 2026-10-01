@@ -8,7 +8,7 @@ public class CardGamePlayerStorage : StorageContainer
 
 	public BaseCardGameEntity GetCardGameEntity()
 	{
-		BaseEntity baseEntity = cardTableRef.Get(base.isServer);
+		BaseEntity baseEntity = cardTableRef.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsValid())
 		{
 			return baseEntity as BaseCardGameEntity;

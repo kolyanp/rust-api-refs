@@ -7,8 +7,8 @@ namespace Rust.Ai;
 [DefaultExecutionOrder(-103)]
 public class AiManager : SingletonComponent<AiManager>, IServerComponent
 {
-	[SerializeField]
 	[Header("Cover System")]
+	[SerializeField]
 	public bool UseCover = true;
 
 	public float CoverPointVolumeCellSize = 20f;
@@ -137,7 +137,7 @@ public class AiManager : SingletonComponent<AiManager>, IServerComponent
 			{
 				Vector2i val = SingletonComponent<AiManager>.Instance.coverPointVolumeGrid.WorldToGridCoords(point);
 				coverPointVolume = ((!((Object)(object)SingletonComponent<AiManager>.Instance.cpvPrefab != (Object)null)) ? new GameObject("CoverPointVolume").AddComponent<CoverPointVolume>() : Object.Instantiate<CoverPointVolume>(SingletonComponent<AiManager>.Instance.cpvPrefab));
-				((Component)coverPointVolume).transform.localPosition = default(Vector3);
+				((Component)coverPointVolume).transform.localPosition = default;
 				((Component)coverPointVolume).transform.position = SingletonComponent<AiManager>.Instance.coverPointVolumeGrid.GridToWorldCoords(val) + Vector3.up * point.y;
 				((Component)coverPointVolume).transform.localScale = new Vector3(SingletonComponent<AiManager>.Instance.CoverPointVolumeCellSize, SingletonComponent<AiManager>.Instance.CoverPointVolumeCellHeight, SingletonComponent<AiManager>.Instance.CoverPointVolumeCellSize);
 				coverPointVolume.CoverLayerMask = SingletonComponent<AiManager>.Instance.DynamicCoverPointVolumeLayerMask;

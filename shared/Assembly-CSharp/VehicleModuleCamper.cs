@@ -123,7 +123,7 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		base.ModuleAdded(vehicle, firstSocketIndex);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -131,7 +131,7 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		{
 			for (int i = 0; i < SleepingBagPoints.Length; i++)
 			{
-				SleepingBagCamper sleepingBagCamper = base.gameManager.CreateEntity(SleepingBagEntity.resourcePath, SleepingBagPoints[i].localPosition, SleepingBagPoints[i].localRotation) as SleepingBagCamper;
+				SleepingBagCamper sleepingBagCamper = gameManager.CreateEntity(SleepingBagEntity.resourcePath, SleepingBagPoints[i].localPosition, SleepingBagPoints[i].localRotation) as SleepingBagCamper;
 				if ((Object)(object)sleepingBagCamper != (Object)null)
 				{
 					sleepingBagCamper.SetParent(this);
@@ -149,10 +149,9 @@ public class VehicleModuleCamper : VehicleModuleSeating
 			{
 				sleepingBagCamper2.SetSeat(GetSeatAtIndex(num++), sendNetworkUpdate: true);
 			}
-			else if (child is IItemContainerEntity itemContainerEntity)
+			else if (child is IItemContainerEntity { inventory: var inventory })
 			{
-				ItemContainer inventory = itemContainerEntity.inventory;
-				inventory.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+				inventory.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(inventory.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedRemoved));
 			}
 		}
 	}
@@ -188,29 +187,29 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		bool flag = false;
 		if (!Application.isLoadingSave && !flag)
 		{
-			Locker locker = base.gameManager.CreateEntity(LockerEntity.resourcePath, LockerPoint.localPosition, LockerPoint.localRotation) as Locker;
+			Locker locker = gameManager.CreateEntity(LockerEntity.resourcePath, LockerPoint.localPosition, LockerPoint.localRotation) as Locker;
 			locker.SetParent(this);
 			locker.Spawn();
 			ItemContainer inventory = locker.inventory;
-			inventory.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			inventory.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(inventory.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedRemoved));
 			activeLocker.Set(locker);
-			BaseOven baseOven = base.gameManager.CreateEntity(BbqEntity.resourcePath, BbqPoint.localPosition, BbqPoint.localRotation) as BaseOven;
+			BaseOven baseOven = gameManager.CreateEntity(BbqEntity.resourcePath, BbqPoint.localPosition, BbqPoint.localRotation) as BaseOven;
 			baseOven.SetParent(this);
 			baseOven.Spawn();
 			ItemContainer inventory2 = baseOven.inventory;
-			inventory2.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory2.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			inventory2.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(inventory2.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedRemoved));
 			activeBbq.Set(baseOven);
-			StorageContainer storageContainer = base.gameManager.CreateEntity(StorageEntity.resourcePath, StoragePoint.localPosition, StoragePoint.localRotation) as StorageContainer;
+			StorageContainer storageContainer = gameManager.CreateEntity(StorageEntity.resourcePath, StoragePoint.localPosition, StoragePoint.localRotation) as StorageContainer;
 			storageContainer.SetParent(this);
 			storageContainer.Spawn();
 			ItemContainer inventory3 = storageContainer.inventory;
-			inventory3.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory3.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			inventory3.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(inventory3.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedRemoved));
 			activeStorage.Set(storageContainer);
 			PostConditionalRefresh();
 		}
 	}
 
-	private void OnItemAddedRemoved(Item item, bool add)
+	private void OnItemAddedRemoved(Item item, bool add, BasePlayer sourcePlayer)
 	{
 		AssociatedItemInstance?.LockUnlock(!CanBeMovedNowOnVehicle());
 	}
@@ -240,7 +239,7 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		base.PostConditionalRefresh();
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -256,16 +255,16 @@ public class VehicleModuleCamper : VehicleModuleSeating
 				}
 			}
 		}
-		if (activeBbq.IsValid(base.isServer) && (Object)(object)seatConfig != (Object)null)
+		if (activeBbq.IsValid(isServer) && (Object)(object)seatConfig != (Object)null)
 		{
 			BaseOven baseOven = activeBbq.Get(serverside: true);
 			((Component)baseOven).transform.position = seatConfig.StovePosition.position;
 			((Component)baseOven).transform.rotation = seatConfig.StovePosition.rotation;
 			baseOven.SendNetworkUpdate();
 		}
-		if (activeStorage.IsValid(base.isServer) && (Object)(object)seatConfig != (Object)null)
+		if (activeStorage.IsValid(isServer) && (Object)(object)seatConfig != (Object)null)
 		{
-			StorageContainer storageContainer = activeStorage.Get(base.isServer);
+			StorageContainer storageContainer = activeStorage.Get(isServer);
 			((Component)storageContainer).transform.position = seatConfig.StoragePosition.position;
 			((Component)storageContainer).transform.rotation = seatConfig.StoragePosition.rotation;
 			storageContainer.SendNetworkUpdate();
@@ -276,7 +275,7 @@ public class VehicleModuleCamper : VehicleModuleSeating
 	{
 		List<ConditionalObject> list = GetConditionals();
 		CamperSeatConfig result = null;
-		CamperSeatConfig camperSeatConfig = default(CamperSeatConfig);
+		CamperSeatConfig camperSeatConfig = default;
 		foreach (ConditionalObject item in list)
 		{
 			if (item.gameObject.activeSelf && item.gameObject.TryGetComponent<CamperSeatConfig>(ref camperSeatConfig))
@@ -305,14 +304,14 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		info.msg.camperModule.storageID = activeStorage.uid;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenLocker(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
 		if (!((Object)(object)player == (Object)null) && CanBeLooted(player))
 		{
-			IItemContainerEntity itemContainerEntity = activeLocker.Get(base.isServer);
+			IItemContainerEntity itemContainerEntity = activeLocker.Get(isServer);
 			if (!ObjectEx.IsUnityNull(itemContainerEntity))
 			{
 				itemContainerEntity.PlayerOpenLoot(player);
@@ -331,7 +330,7 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		BasePlayer player = msg.player;
 		if (!((Object)(object)player == (Object)null) && CanBeLooted(player))
 		{
-			IItemContainerEntity itemContainerEntity = activeStorage.Get(base.isServer);
+			IItemContainerEntity itemContainerEntity = activeStorage.Get(isServer);
 			if (!ObjectEx.IsUnityNull(itemContainerEntity))
 			{
 				itemContainerEntity.PlayerOpenLoot(player);
@@ -347,17 +346,17 @@ public class VehicleModuleCamper : VehicleModuleSeating
 	{
 		if (vehicle.vehiclesdroploot)
 		{
-			if (activeStorage.IsValid(base.isServer))
+			if (activeStorage.IsValid(isServer))
 			{
-				activeStorage.Get(base.isServer).DropItems();
+				activeStorage.Get(isServer).DropItems();
 			}
-			if (activeBbq.IsValid(base.isServer))
+			if (activeBbq.IsValid(isServer))
 			{
-				activeBbq.Get(base.isServer).DropItems();
+				activeBbq.Get(isServer).DropItems();
 			}
-			if (activeLocker.IsValid(base.isServer))
+			if (activeLocker.IsValid(isServer))
 			{
-				activeLocker.Get(base.isServer).DropItems();
+				activeLocker.Get(isServer).DropItems();
 			}
 		}
 		base.DoServerDestroy();
@@ -365,17 +364,17 @@ public class VehicleModuleCamper : VehicleModuleSeating
 
 	public IItemContainerEntity GetContainer()
 	{
-		Locker locker = activeLocker.Get(base.isServer);
+		Locker locker = activeLocker.Get(isServer);
 		if ((Object)(object)locker != (Object)null && locker.IsValid() && !locker.inventory.IsEmpty())
 		{
 			return locker;
 		}
-		BaseOven baseOven = activeBbq.Get(base.isServer);
+		BaseOven baseOven = activeBbq.Get(isServer);
 		if ((Object)(object)baseOven != (Object)null && baseOven.IsValid() && !baseOven.inventory.IsEmpty())
 		{
 			return baseOven;
 		}
-		StorageContainer storageContainer = activeStorage.Get(base.isServer);
+		StorageContainer storageContainer = activeStorage.Get(isServer);
 		if ((Object)(object)storageContainer != (Object)null && storageContainer.IsValid() && !storageContainer.inventory.IsEmpty())
 		{
 			return storageContainer;
@@ -400,7 +399,7 @@ public class VehicleModuleCamper : VehicleModuleSeating
 
 	public override bool CanBeLooted(BasePlayer player)
 	{
-		if (base.IsOnAVehicle && base.Vehicle.IsDead())
+		if (IsOnAVehicle && Vehicle.IsDead())
 		{
 			return base.CanBeLooted(player);
 		}
@@ -414,6 +413,7 @@ public class VehicleModuleCamper : VehicleModuleSeating
 	public override bool IsOnThisModule(BasePlayer player)
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		if (base.IsOnThisModule(player))
 		{
@@ -423,9 +423,8 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		{
 			return false;
 		}
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(((Component)this).transform, bounds);
-		return ((OBB)(ref val)).Contains(player.CenterPoint());
+		OBB val = new OBB(((Component)this).transform, bounds);
+		return val.Contains(player.CenterPoint());
 	}
 
 	public override void Load(LoadInfo info)

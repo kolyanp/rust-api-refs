@@ -17,9 +17,9 @@ public static class RuntimeProfiler
 {
 	private static class ProfilerCategories
 	{
-		public static readonly ProfilerCategory VSync;
+		public static readonly ProfilerCategory VSync = new ProfilerCategory("VSync");
 
-		public static readonly ProfilerCategory PlayerLoop;
+		public static readonly ProfilerCategory PlayerLoop = new ProfilerCategory("PlayerLoop");
 
 		static ProfilerCategories()
 		{
@@ -27,40 +27,38 @@ public static class RuntimeProfiler
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-			VSync = new ProfilerCategory("VSync");
-			PlayerLoop = new ProfilerCategory("PlayerLoop");
 		}
 	}
 
-	private static int profilingPreset;
+	private static int profilingPreset = 0;
 
-	private static int _profilingInterval;
+	private static int _profilingInterval = 60;
 
-	private static bool _init;
+	private static bool _init = false;
 
-	private static Stopwatch serializationTimer;
+	private static Stopwatch serializationTimer = new Stopwatch();
 
-	public static AnalyticsTable FrameProfilingTable;
+	public static AnalyticsTable FrameProfilingTable = new AnalyticsTable("profiling_frames", TimeSpan.FromSeconds((double)runtime_profiling_interval));
 
-	public static AnalyticsTable EntityProfilingTable;
+	public static AnalyticsTable EntityProfilingTable = new AnalyticsTable("entity_profiling", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
 
-	public static AnalyticsTable EntityAggregateTable;
+	public static AnalyticsTable EntityAggregateTable = new AnalyticsTable("entity_aggregates", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
 
-	public static AnalyticsTable InvokeDetailsTable;
+	public static AnalyticsTable InvokeDetailsTable = new AnalyticsTable("invoke_minute_breakdown", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
 
-	public static AnalyticsTable MethodTable;
+	public static AnalyticsTable MethodTable = new AnalyticsTable("unity_methods", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
 
-	public static AnalyticsTable ObjectWorkQueueTable;
+	public static AnalyticsTable ObjectWorkQueueTable = new AnalyticsTable("object_work_queue_2", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
 
-	public static AnalyticsTable PacketTable;
+	public static AnalyticsTable PacketTable = new AnalyticsTable("profiling_packets", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
 
-	public static AnalyticsTable LagSpikeTable;
+	public static AnalyticsTable LagSpikeTable = new AnalyticsTable("lag_spikes", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.JSON, useJsonDataObject: true);
 
-	public static AnalyticsTable RconTable;
+	public static AnalyticsTable RconTable = new AnalyticsTable("rcon_profiling", TimeSpan.FromSeconds((double)runtime_profiling_interval));
 
-	public static AnalyticsTable RaknetTable;
+	public static AnalyticsTable RaknetTable = new AnalyticsTable("raknet", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
 
-	public static AnalyticsTable PoolTable;
+	public static AnalyticsTable PoolTable = new AnalyticsTable("pool_profiling", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.JSON, useJsonDataObject: true);
 
 	public static TimeSpan ServerMgr_Update;
 
@@ -72,15 +70,54 @@ public static class RuntimeProfiler
 
 	public static TimeSpan BasePlayer_ServerCycle;
 
+	public static TimeSpan RoomOcclusion;
+
+	public static TimeSpan RustNavigation_Tick;
+
+	public static TimeSpan RustNavMeshAgent_Tick;
+
 	private static DateTime nextPoolFlush;
 
-	private static DateTime lastInvokeSerialization;
+	private static DateTime lastInvokeSerialization = DateTime.UtcNow;
 
-	private static readonly ProfilerRecorderOptions PhysicsRecorderOptions;
+	private static readonly ProfilerRecorderOptions PhysicsRecorderOptions = (ProfilerRecorderOptions)8;
 
-	private static readonly List<RustProfilerRecorder> recorders;
+	private static readonly List<RustProfilerRecorder> recorders = new List<RustProfilerRecorder>
+	{
+		new RustProfilerRecorder("cpu_total", ProfilerCategory.Scripts, "CPU Total Frame Time", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("main_thread", ProfilerCategory.Scripts, "CPU Main Thread Frame Time", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("gc_collect_time", ProfilerCategory.Memory, "GC.Collect", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("player_loop", ProfilerCategories.PlayerLoop, "PlayerLoop", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("wait_for_target_fps", ProfilerCategories.VSync, "WaitForTargetFPS", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("ram_app_resident", ProfilerCategory.Memory, "App Resident Memory", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("ram_total_used", ProfilerCategory.Memory, "Total Used Memory", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("ram_gc_used", ProfilerCategory.Memory, "GC Used Memory", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("gc_alloc_bytes", ProfilerCategory.Memory, "GC Allocated In Frame", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("gc_alloc_count", ProfilerCategory.Memory, "GC Allocation In Frame Count", 1, (ProfilerRecorderOptions)24),
+		new RustProfilerRecorder("physics_used_memory", ProfilerCategory.Physics, "Physics Used Memory", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("active_dynamic_bodies", ProfilerCategory.Physics, "Active Dynamic Bodies", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("active_kinematic_bodies", ProfilerCategory.Physics, "Active Kinematic Bodies", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("static_colliders", ProfilerCategory.Physics, "Static Colliders", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("dynamic_bodies", ProfilerCategory.Physics, "Dynamic Bodies", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("articulation_bodies", ProfilerCategory.Physics, "Articulation Bodies", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("active_constraints", ProfilerCategory.Physics, "Active Constraints", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("overlaps", ProfilerCategory.Physics, "Overlaps", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("discreet_overlaps", ProfilerCategory.Physics, "Discreet Overlaps", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("continuous_overlaps", ProfilerCategory.Physics, "Continuous Overlaps", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("modified_overlaps", ProfilerCategory.Physics, "Modified Overlaps", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("trigger_overlaps", ProfilerCategory.Physics, "Trigger Overlaps", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("colliders_synced", ProfilerCategory.Physics, "Colliders Synced", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("rigidbodies_synced", ProfilerCategory.Physics, "Rigidbodies Synced", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("physics_queries", ProfilerCategory.Physics, "Physics Queries", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("broadphase_adds_removes", ProfilerCategory.Physics, "Broadphase Adds/Removes", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("broadphase_adds", ProfilerCategory.Physics, "Broadphase Adds", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("broadphase_removes", ProfilerCategory.Physics, "Broadphase Removes", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("narrowphase_touches", ProfilerCategory.Physics, "Narrowphase Touches", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("narrowphase_new_touches", ProfilerCategory.Physics, "Narrowphase New Touches", 1, PhysicsRecorderOptions),
+		new RustProfilerRecorder("narrowphase_lost_touches", ProfilerCategory.Physics, "Narrowphase Lost Touches", 1, PhysicsRecorderOptions)
+	};
 
-	private static Stopwatch invokeExecutionResetTimer;
+	private static Stopwatch invokeExecutionResetTimer = new Stopwatch();
 
 	[RconVar]
 	public static int rpc_lagspike_threshold
@@ -121,11 +158,11 @@ public static class RuntimeProfiler
 		}
 	}
 
-	public static TimeSpan RpcWarningThreshold { get; private set; }
+	public static TimeSpan RpcWarningThreshold { get; private set; } = TimeSpan.FromMilliseconds(40.0);
 
-	public static TimeSpan ConsoleCommandWarningThreshold { get; private set; }
+	public static TimeSpan ConsoleCommandWarningThreshold { get; private set; } = TimeSpan.FromMilliseconds(40.0);
 
-	public static TimeSpan RconCommandWarningThreshold { get; private set; }
+	public static TimeSpan RconCommandWarningThreshold { get; private set; } = TimeSpan.FromMilliseconds(40.0);
 
 	[RconVar(Saved = true, Help = "0 = off, 1 = basic, 2 = everything. This will reset all profiling convars, however they can be modified afterwards")]
 	public static int runtime_profiling
@@ -142,7 +179,7 @@ public static class RuntimeProfiler
 	}
 
 	[RconVar(Saved = true, Help = "Enable to allow runtime profiling to persist across restarts")]
-	public static bool runtime_profiling_persist { get; set; }
+	public static bool runtime_profiling_persist { get; set; } = false;
 
 	[RconVar(Help = "Record inbound RPC & ConsoleCommands that cause lag spikes")]
 	public static bool profiling_lagspikes
@@ -329,10 +366,10 @@ public static class RuntimeProfiler
 	}
 
 	[RconVar(Help = "How often to flush pooling stats in seconds")]
-	public static int runtime_profiling_pool_flush_interval { get; set; }
+	public static int runtime_profiling_pool_flush_interval { get; set; } = 300;
 
-	[ServerVar(Help = "(Generated) Dumps all available Unity Profiler recorder handles to CSV format showing name, category, unit type, and flags; useful for discovering available performance metrics")]
 	[ClientVar(ClientAdmin = true)]
+	[ServerVar(Help = "(Generated) Dumps all available Unity Profiler recorder handles to CSV format showing name, category, unit type, and flags; useful for discovering available performance metrics")]
 	public static void dump_profile_recorders(ConsoleSystem.Arg arg)
 	{
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
@@ -351,11 +388,11 @@ public static class RuntimeProfiler
 		foreach (ProfilerRecorderHandle item in list)
 		{
 			ProfilerRecorderDescription description = ProfilerRecorderHandle.GetDescription(item);
-			stringBuilder.Append(((ProfilerRecorderDescription)(ref description)).Name).Append(",").Append(((object)((ProfilerRecorderDescription)(ref description)).Category/*cast due to constrained. prefix*/).ToString())
+			stringBuilder.Append(description.Name).Append(",").Append(((object)description.Category/*cast due to constrained. prefix*/).ToString())
 				.Append(",")
-				.Append(((object)((ProfilerRecorderDescription)(ref description)).UnitType/*cast due to constrained. prefix*/).ToString())
+				.Append(((object)description.UnitType/*cast due to constrained. prefix*/).ToString())
 				.Append(",")
-				.Append(((object)((ProfilerRecorderDescription)(ref description)).Flags/*cast due to constrained. prefix*/).ToString())
+				.Append(((object)description.Flags/*cast due to constrained. prefix*/).ToString())
 				.AppendLine();
 		}
 		string contents = stringBuilder.ToString();
@@ -474,6 +511,7 @@ public static class RuntimeProfiler
 		WorkQueueProfiler.Reset();
 		EntityProfiler.Reset();
 		RconProfiler.Reset();
+		RoomOcclusion = TimeSpan.Zero;
 	}
 
 	private static void SerializeCommon(EventRecord record, RconProfilerStats rconStats)
@@ -495,6 +533,10 @@ public static class RuntimeProfiler
 				.AddField("physics_sync_time", Physics_SyncTransforms)
 				.AddField("companion_tick", Companion_Tick)
 				.AddField("baseplayer_tick", BasePlayer_ServerCycle)
+				.AddField("room_occlusion", RoomOcclusion)
+				.AddField("rustnav_tick", RustNavigation_Tick)
+				.AddField("navmesh_agent_tick", RustNavMeshAgent_Tick)
+				.AddField("unity_navmesh", AI.useUnityNavmesh)
 				.AddField("fixed_update_scripts", lastFrame.FixedUpdate)
 				.AddField("update_scripts", lastFrame.Update)
 				.AddField("late_update_scripts", lastFrame.LateUpdate)
@@ -645,7 +687,7 @@ public static class RuntimeProfiler
 			{
 				string columnName = recorder2.ColumnName;
 				ProfilerRecorder recorder = recorder2.Recorder;
-				record.AddField(columnName, ((ProfilerRecorder)(ref recorder)).LastValue);
+				record.AddField(columnName, recorder.LastValue);
 			}
 		}
 		catch (Exception ex)
@@ -767,62 +809,5 @@ public static class RuntimeProfiler
 		//IL_0542: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0557: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0562: Unknown result type (might be due to invalid IL or missing references)
-		RpcWarningThreshold = TimeSpan.FromMilliseconds(40.0);
-		ConsoleCommandWarningThreshold = TimeSpan.FromMilliseconds(40.0);
-		RconCommandWarningThreshold = TimeSpan.FromMilliseconds(40.0);
-		profilingPreset = 0;
-		runtime_profiling_persist = false;
-		_profilingInterval = 60;
-		runtime_profiling_pool_flush_interval = 300;
-		_init = false;
-		serializationTimer = new Stopwatch();
-		FrameProfilingTable = new AnalyticsTable("profiling_frames", TimeSpan.FromSeconds((double)runtime_profiling_interval));
-		EntityProfilingTable = new AnalyticsTable("entity_profiling", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
-		EntityAggregateTable = new AnalyticsTable("entity_aggregates", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
-		InvokeDetailsTable = new AnalyticsTable("invoke_minute_breakdown", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
-		MethodTable = new AnalyticsTable("unity_methods", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
-		ObjectWorkQueueTable = new AnalyticsTable("object_work_queue_2", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
-		PacketTable = new AnalyticsTable("profiling_packets", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
-		LagSpikeTable = new AnalyticsTable("lag_spikes", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.JSON, useJsonDataObject: true);
-		RconTable = new AnalyticsTable("rcon_profiling", TimeSpan.FromSeconds((double)runtime_profiling_interval));
-		RaknetTable = new AnalyticsTable("raknet", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.CSV);
-		PoolTable = new AnalyticsTable("pool_profiling", TimeSpan.FromSeconds((double)runtime_profiling_interval), AnalyticsDocumentMode.JSON, useJsonDataObject: true);
-		lastInvokeSerialization = DateTime.UtcNow;
-		PhysicsRecorderOptions = (ProfilerRecorderOptions)8;
-		recorders = new List<RustProfilerRecorder>
-		{
-			new RustProfilerRecorder("cpu_total", ProfilerCategory.Scripts, "CPU Total Frame Time", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("main_thread", ProfilerCategory.Scripts, "CPU Main Thread Frame Time", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("gc_collect_time", ProfilerCategory.Memory, "GC.Collect", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("player_loop", ProfilerCategories.PlayerLoop, "PlayerLoop", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("wait_for_target_fps", ProfilerCategories.VSync, "WaitForTargetFPS", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("ram_app_resident", ProfilerCategory.Memory, "App Resident Memory", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("ram_total_used", ProfilerCategory.Memory, "Total Used Memory", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("ram_gc_used", ProfilerCategory.Memory, "GC Used Memory", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("gc_alloc_bytes", ProfilerCategory.Memory, "GC Allocated In Frame", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("gc_alloc_count", ProfilerCategory.Memory, "GC Allocation In Frame Count", 1, (ProfilerRecorderOptions)24),
-			new RustProfilerRecorder("physics_used_memory", ProfilerCategory.Physics, "Physics Used Memory", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("active_dynamic_bodies", ProfilerCategory.Physics, "Active Dynamic Bodies", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("active_kinematic_bodies", ProfilerCategory.Physics, "Active Kinematic Bodies", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("static_colliders", ProfilerCategory.Physics, "Static Colliders", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("dynamic_bodies", ProfilerCategory.Physics, "Dynamic Bodies", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("articulation_bodies", ProfilerCategory.Physics, "Articulation Bodies", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("active_constraints", ProfilerCategory.Physics, "Active Constraints", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("overlaps", ProfilerCategory.Physics, "Overlaps", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("discreet_overlaps", ProfilerCategory.Physics, "Discreet Overlaps", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("continuous_overlaps", ProfilerCategory.Physics, "Continuous Overlaps", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("modified_overlaps", ProfilerCategory.Physics, "Modified Overlaps", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("trigger_overlaps", ProfilerCategory.Physics, "Trigger Overlaps", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("colliders_synced", ProfilerCategory.Physics, "Colliders Synced", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("rigidbodies_synced", ProfilerCategory.Physics, "Rigidbodies Synced", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("physics_queries", ProfilerCategory.Physics, "Physics Queries", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("broadphase_adds_removes", ProfilerCategory.Physics, "Broadphase Adds/Removes", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("broadphase_adds", ProfilerCategory.Physics, "Broadphase Adds", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("broadphase_removes", ProfilerCategory.Physics, "Broadphase Removes", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("narrowphase_touches", ProfilerCategory.Physics, "Narrowphase Touches", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("narrowphase_new_touches", ProfilerCategory.Physics, "Narrowphase New Touches", 1, PhysicsRecorderOptions),
-			new RustProfilerRecorder("narrowphase_lost_touches", ProfilerCategory.Physics, "Narrowphase Lost Touches", 1, PhysicsRecorderOptions)
-		};
-		invokeExecutionResetTimer = new Stopwatch();
 	}
 }

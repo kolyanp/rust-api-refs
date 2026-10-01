@@ -22,6 +22,7 @@ public class PlacementTest : MonoBehaviour
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
@@ -29,10 +30,9 @@ public class PlacementTest : MonoBehaviour
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		degreesOffset = Mathf.Clamp(degreesOffset / 180f, -180f, 180f);
 		Vector2 insideUnitCircle = Random.insideUnitCircle;
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(insideUnitCircle.x * degreesOffset, Random.Range(-1f, 1f) * degreesOffset, insideUnitCircle.y * degreesOffset);
+		Vector3 val = new Vector3(insideUnitCircle.x * degreesOffset, Random.Range(-1f, 1f) * degreesOffset, insideUnitCircle.y * degreesOffset);
 		Vector3 val2 = input + val;
-		return ((Vector3)(ref val2)).normalized;
+		return val2.normalized;
 	}
 
 	public Vector3 RandomCylinderPointAroundVector(Vector3 input, float distance, float minHeight = 0f, float maxHeight = 0f)
@@ -50,7 +50,7 @@ public class PlacementTest : MonoBehaviour
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 insideUnitCircle = Random.insideUnitCircle;
 		Vector3 val = new Vector3(insideUnitCircle.x, 0f, insideUnitCircle.y);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		return new Vector3(normalized.x * distance, Random.Range(minHeight, maxHeight), normalized.z * distance);
 	}
 
@@ -73,14 +73,14 @@ public class PlacementTest : MonoBehaviour
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		degreesOffset = Mathf.Clamp(degreesOffset / 180f, -180f, 180f);
 		Vector3 val = hemiInput + Vector3.one * degreesOffset;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		val = hemiInput + Vector3.one * (0f - degreesOffset);
-		Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+		Vector3 normalized2 = val.normalized;
 		for (int i = 0; i < 3; i++)
 		{
-			((Vector3)(ref inputVec))[i] = Mathf.Clamp(((Vector3)(ref inputVec))[i], ((Vector3)(ref normalized2))[i], ((Vector3)(ref normalized))[i]);
+			inputVec[i] = Mathf.Clamp(inputVec[i], normalized2[i], normalized[i]);
 		}
-		return ((Vector3)(ref inputVec)).normalized;
+		return inputVec.normalized;
 	}
 
 	private void Update()
@@ -115,13 +115,13 @@ public class PlacementTest : MonoBehaviour
 		if ((Object)(object)testTransform != (Object)null && (Object)(object)visualTest != (Object)null)
 		{
 			Vector3 position = ((Component)this).transform.position;
-			MeshCollider obj = myMeshCollider;
+			MeshCollider val2 = myMeshCollider;
 			Vector3 position2 = testTransform.position;
-			Vector3 val2 = ((Component)this).transform.position - testTransform.position;
-			RaycastHit val3 = default(RaycastHit);
-			if (((Collider)obj).Raycast(new Ray(position2, ((Vector3)(ref val2)).normalized), ref val3, 5f))
+			Vector3 val3 = ((Component)this).transform.position - testTransform.position;
+			RaycastHit val4 = default;
+			if (((Collider)val2).Raycast(new Ray(position2, val3.normalized), ref val4, 5f))
 			{
-				position = ((RaycastHit)(ref val3)).point;
+				position = val4.point;
 			}
 			else
 			{

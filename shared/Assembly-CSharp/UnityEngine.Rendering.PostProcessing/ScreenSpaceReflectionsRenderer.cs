@@ -89,7 +89,7 @@ internal sealed class ScreenSpaceReflectionsRenderer : PostProcessEffectRenderer
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Expected O, but got Unknown
+		//IL_006d: Expected Obj, but got Unknown
 		if ((Object)(object)rt == (Object)null || !rt.IsCreated() || ((Texture)rt).width != width || ((Texture)rt).height != height)
 		{
 			if ((Object)(object)rt != (Object)null)
@@ -144,6 +144,7 @@ internal sealed class ScreenSpaceReflectionsRenderer : PostProcessEffectRenderer
 		//IL_0468: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0500: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0529: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0540: Unknown result type (might be due to invalid IL or missing references)
 		//IL_055a: Unknown result type (might be due to invalid IL or missing references)
@@ -156,20 +157,20 @@ internal sealed class ScreenSpaceReflectionsRenderer : PostProcessEffectRenderer
 		//IL_061d: Unknown result type (might be due to invalid IL or missing references)
 		CommandBuffer command = context.command;
 		command.BeginSample("Screen-space Reflections");
-		if (base.settings.preset.value != ScreenSpaceReflectionPreset.Custom)
+		if (settings.preset.value != ScreenSpaceReflectionPreset.Custom)
 		{
-			int value = (int)base.settings.preset.value;
-			base.settings.maximumIterationCount.value = m_Presets[value].maximumIterationCount;
-			base.settings.thickness.value = m_Presets[value].thickness;
-			base.settings.resolution.value = m_Presets[value].downsampling;
+			int value = (int)settings.preset.value;
+			settings.maximumIterationCount.value = m_Presets[value].maximumIterationCount;
+			settings.thickness.value = m_Presets[value].thickness;
+			settings.resolution.value = m_Presets[value].downsampling;
 		}
-		base.settings.maximumMarchDistance.value = Mathf.Max(0f, base.settings.maximumMarchDistance.value);
+		settings.maximumMarchDistance.value = Mathf.Max(0f, settings.maximumMarchDistance.value);
 		int num = Mathf.ClosestPowerOfTwo(Mathf.Min(context.width, context.height));
-		if (base.settings.resolution.value == ScreenSpaceReflectionResolution.Downsampled)
+		if (settings.resolution.value == ScreenSpaceReflectionResolution.Downsampled)
 		{
 			num >>= 1;
 		}
-		else if (base.settings.resolution.value == ScreenSpaceReflectionResolution.Supersampled)
+		else if (settings.resolution.value == ScreenSpaceReflectionResolution.Supersampled)
 		{
 			num <<= 1;
 		}
@@ -178,25 +179,25 @@ internal sealed class ScreenSpaceReflectionsRenderer : PostProcessEffectRenderer
 		CheckRT(ref m_Resolve, num, num, (FilterMode)2, useMipMap: true);
 		Texture2D val = context.resources.blueNoise256[0];
 		PropertySheet propertySheet = context.propertySheets.Get(context.resources.shaders.screenSpaceReflections);
-		propertySheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.Noise, (Texture)(object)val);
-		Matrix4x4 val2 = default(Matrix4x4);
-		((Matrix4x4)(ref val2)).SetRow(0, new Vector4((float)num * 0.5f, 0f, 0f, (float)num * 0.5f));
-		((Matrix4x4)(ref val2)).SetRow(1, new Vector4(0f, (float)num * 0.5f, 0f, (float)num * 0.5f));
-		((Matrix4x4)(ref val2)).SetRow(2, new Vector4(0f, 0f, 1f, 0f));
-		((Matrix4x4)(ref val2)).SetRow(3, new Vector4(0f, 0f, 0f, 1f));
+		propertySheet.properties.SetTexture(ShaderIDs.Noise, (Texture)(object)val);
+		Matrix4x4 val2 = default;
+		val2.SetRow(0, new Vector4((float)num * 0.5f, 0f, 0f, (float)num * 0.5f));
+		val2.SetRow(1, new Vector4(0f, (float)num * 0.5f, 0f, (float)num * 0.5f));
+		val2.SetRow(2, new Vector4(0f, 0f, 1f, 0f));
+		val2.SetRow(3, new Vector4(0f, 0f, 0f, 1f));
 		Matrix4x4 gPUProjectionMatrix = GL.GetGPUProjectionMatrix(context.camera.projectionMatrix, false);
 		val2 *= gPUProjectionMatrix;
-		propertySheet.properties.SetMatrix(UnityEngine.Rendering.PostProcessing.ShaderIDs.ViewMatrix, context.camera.worldToCameraMatrix);
+		propertySheet.properties.SetMatrix(ShaderIDs.ViewMatrix, context.camera.worldToCameraMatrix);
 		MaterialPropertyBlock properties = propertySheet.properties;
-		int inverseViewMatrix = UnityEngine.Rendering.PostProcessing.ShaderIDs.InverseViewMatrix;
+		int inverseViewMatrix = ShaderIDs.InverseViewMatrix;
 		Matrix4x4 worldToCameraMatrix = context.camera.worldToCameraMatrix;
-		properties.SetMatrix(inverseViewMatrix, ((Matrix4x4)(ref worldToCameraMatrix)).inverse);
-		propertySheet.properties.SetMatrix(UnityEngine.Rendering.PostProcessing.ShaderIDs.InverseProjectionMatrix, ((Matrix4x4)(ref gPUProjectionMatrix)).inverse);
-		propertySheet.properties.SetMatrix(UnityEngine.Rendering.PostProcessing.ShaderIDs.ScreenSpaceProjectionMatrix, val2);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Params, new Vector4(base.settings.vignette.value, base.settings.distanceFade.value, base.settings.maximumMarchDistance.value, (float)num2));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Params2, new Vector4((float)context.width / (float)context.height, (float)num / (float)((Texture)val).width, base.settings.thickness.value, (float)base.settings.maximumIterationCount.value));
-		command.GetTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.Test, num, num, 0, (FilterMode)0, context.sourceFormat);
-		command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.Test), propertySheet, 0);
+		properties.SetMatrix(inverseViewMatrix, worldToCameraMatrix.inverse);
+		propertySheet.properties.SetMatrix(ShaderIDs.InverseProjectionMatrix, gPUProjectionMatrix.inverse);
+		propertySheet.properties.SetMatrix(ShaderIDs.ScreenSpaceProjectionMatrix, val2);
+		propertySheet.properties.SetVector(ShaderIDs.Params, new Vector4(settings.vignette.value, settings.distanceFade.value, settings.maximumMarchDistance.value, (float)num2));
+		propertySheet.properties.SetVector(ShaderIDs.Params2, new Vector4((float)context.width / (float)context.height, (float)num / (float)((Texture)val).width, settings.thickness.value, (float)settings.maximumIterationCount.value));
+		command.GetTemporaryRT(ShaderIDs.Test, num, num, 0, (FilterMode)0, context.sourceFormat);
+		command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(ShaderIDs.Test), propertySheet, 0);
 		if (context.isSceneView)
 		{
 			command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit((Texture)(object)m_Resolve), propertySheet, 1);
@@ -209,14 +210,14 @@ internal sealed class ScreenSpaceReflectionsRenderer : PostProcessEffectRenderer
 				RuntimeUtilities.BlitFullscreenTriangle(context.command, context.source, RenderTargetIdentifier.op_Implicit((Texture)(object)m_History));
 				m_ResetHistory = false;
 			}
-			command.GetTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.SSRResolveTemp, num, num, 0, (FilterMode)1, context.sourceFormat);
-			command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.SSRResolveTemp), propertySheet, 1);
-			propertySheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.History, (Texture)(object)m_History);
-			command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.SSRResolveTemp), RenderTargetIdentifier.op_Implicit((Texture)(object)m_Resolve), propertySheet, 2);
+			command.GetTemporaryRT(ShaderIDs.SSRResolveTemp, num, num, 0, (FilterMode)1, context.sourceFormat);
+			command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(ShaderIDs.SSRResolveTemp), propertySheet, 1);
+			propertySheet.properties.SetTexture(ShaderIDs.History, (Texture)(object)m_History);
+			command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(ShaderIDs.SSRResolveTemp), RenderTargetIdentifier.op_Implicit((Texture)(object)m_Resolve), propertySheet, 2);
 			command.CopyTexture(RenderTargetIdentifier.op_Implicit((Texture)(object)m_Resolve), 0, 0, RenderTargetIdentifier.op_Implicit((Texture)(object)m_History), 0, 0);
-			command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.SSRResolveTemp);
+			command.ReleaseTemporaryRT(ShaderIDs.SSRResolveTemp);
 		}
-		command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.Test);
+		command.ReleaseTemporaryRT(ShaderIDs.Test);
 		if (m_MipIDs == null || m_MipIDs.Length == 0)
 		{
 			m_MipIDs = new int[12];
@@ -227,8 +228,7 @@ internal sealed class ScreenSpaceReflectionsRenderer : PostProcessEffectRenderer
 		}
 		ComputeShader gaussianDownsample = context.resources.computeShaders.gaussianDownsample;
 		int num3 = gaussianDownsample.FindKernel("KMain");
-		RenderTargetIdentifier val3 = default(RenderTargetIdentifier);
-		((RenderTargetIdentifier)(ref val3))._002Ector((Texture)(object)m_Resolve);
+		RenderTargetIdentifier val3 = new RenderTargetIdentifier((Texture)(object)m_Resolve);
 		for (int j = 0; j < num2; j++)
 		{
 			num >>= 1;
@@ -245,7 +245,7 @@ internal sealed class ScreenSpaceReflectionsRenderer : PostProcessEffectRenderer
 		{
 			command.ReleaseTemporaryRT(m_MipIDs[k]);
 		}
-		propertySheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.Resolve, (Texture)(object)m_Resolve);
+		propertySheet.properties.SetTexture(ShaderIDs.Resolve, (Texture)(object)m_Resolve);
 		command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 3);
 		command.EndSample("Screen-space Reflections");
 	}

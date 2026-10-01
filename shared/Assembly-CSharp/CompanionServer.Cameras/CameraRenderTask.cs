@@ -52,7 +52,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 			if (_pendingJob.HasValue)
 			{
 				JobHandle value = _pendingJob.Value;
-				return !((JobHandle)(ref value)).IsCompleted;
+				return !value.IsCompleted;
 			}
 			return false;
 		}
@@ -82,7 +82,6 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		((CustomYieldInstruction)this)._002Ector();
 		_raycastCommands = new NativeArray<RaycastCommand>(10000, (Allocator)4, (NativeArrayOptions)1);
 		_raycastHits = new NativeArray<RaycastHit>(10000, (Allocator)4, (NativeArrayOptions)0);
 		_colliderIds = new NativeArray<int>(512, (Allocator)4, (NativeArrayOptions)0);
@@ -132,12 +131,12 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		if (_pendingJob.HasValue)
 		{
 			JobHandle value = _pendingJob.Value;
-			if (!((JobHandle)(ref value)).IsCompleted)
+			if (!value.IsCompleted)
 			{
 				Debug.LogWarning((object)"CameraRenderTask is resetting before completion! This will cause it to synchronously block for completion.");
 			}
 			value = _pendingJob.Value;
-			((JobHandle)(ref value)).Complete();
+			value.Complete();
 		}
 		_pendingJob = null;
 		_sampleCount = 0;
@@ -281,8 +280,8 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 			colliderMaterials = _colliderMaterials.GetSubArray(0, _colliderLength),
 			colliderHits = _colliderHits.GetSubArray(0, _colliderLength)
 		};
-		Vector3 position = ((Matrix4x4)(ref transf)).GetPosition();
-		Quaternion rotation = ((Matrix4x4)(ref transf)).rotation;
+		Vector3 position = transf.GetPosition();
+		Quaternion rotation = transf.rotation;
 		RaycastRaySetupJob raycastRaySetupJob = new RaycastRaySetupJob
 		{
 			res = new float2((float)width, (float)height),
@@ -300,21 +299,21 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		};
 		float oceanLevel = WaterSystem.OceanLevel;
 		TerrainTopologyMap topologyMap = TerrainMeta.TopologyMap;
-		bool num2 = (Object)(object)topologyMap != (Object)null;
-		TerrainTopologyMap.TopologyQueryStructure topologyQueryStructure = (num2 ? topologyMap.GetQueryStructure() : default(TerrainTopologyMap.TopologyQueryStructure));
-		bool flag = num2 && topologyQueryStructure.source.IsCreated && position.y > oceanLevel;
+		bool flag = (Object)(object)topologyMap != (Object)null;
+		TerrainTopologyMap.TopologyQueryStructure topologyQueryStructure = (flag ? topologyMap.GetQueryStructure() : default(TerrainTopologyMap.TopologyQueryStructure));
+		bool flag2 = flag && topologyQueryStructure.source.IsCreated && position.y > oceanLevel;
 		Vector3 val = rotation * Vector3.forward;
 		RaycastRayProcessingJob raycastRayProcessingJob = new RaycastRayProcessingJob
 		{
 			cameraForward = float3.op_Implicit(-val),
 			farPlane = farPlane,
-			oceanEnabled = flag,
+			oceanEnabled = flag2,
 			oceanLevel = oceanLevel,
 			oceanTopologyMask = 384,
-			topologyRes = ((!flag) ? 1 : topologyQueryStructure.res),
+			topologyRes = ((!flag2) ? 1 : topologyQueryStructure.res),
 			topologyOrigin = new float2(TerrainMeta.Position.x, TerrainMeta.Position.z),
 			topologyOneOverSize = new float2(TerrainMeta.OneOverSize.x, TerrainMeta.OneOverSize.z),
-			topology = (flag ? topologyQueryStructure.source : _emptyTopology.AsReadOnly()),
+			topology = (flag2 ? topologyQueryStructure.source : _emptyTopology.AsReadOnly()),
 			raycastCommands = _raycastCommands.GetSubArray(0, sampleCount),
 			raycastHits = _raycastHits.GetSubArray(0, sampleCount),
 			colliderIds = _colliderIds.GetSubArray(0, _colliderLength),
@@ -329,7 +328,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 			foundCollidersLength = _foundCollidersLength,
 			foundColliders = _foundColliders
 		};
-		RaycastOutputCompressJob obj = new RaycastOutputCompressJob
+		RaycastOutputCompressJob raycastOutputCompressJob = new RaycastOutputCompressJob
 		{
 			rayOutputs = _raycastOutput.GetSubArray(0, sampleCount),
 			dataLength = _outputDataLength,
@@ -340,7 +339,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		JobHandle val4 = RaycastCommand.ScheduleBatch(_raycastCommands.GetSubArray(0, sampleCount), _raycastHits.GetSubArray(0, sampleCount), 100, val3);
 		JobHandle val5 = IJobParallelForExtensions.Schedule<RaycastRayProcessingJob>(raycastRayProcessingJob, sampleCount, 100, JobHandle.CombineDependencies(val2, val4));
 		JobHandle val6 = IJobExtensions.Schedule<RaycastColliderProcessingJob>(raycastColliderProcessingJob, val5);
-		JobHandle val7 = IJobExtensions.Schedule<RaycastOutputCompressJob>(obj, val5);
+		JobHandle val7 = IJobExtensions.Schedule<RaycastOutputCompressJob>(raycastOutputCompressJob, val5);
 		_pendingJob = JobHandle.CombineDependencies(val7, val6);
 		return (sampleOffset + sampleCount) % samplePositions.Length;
 	}
@@ -366,12 +365,12 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 			throw new InvalidOperationException("Job was not started for this CameraRenderTask");
 		}
 		JobHandle value = _pendingJob.Value;
-		if (!((JobHandle)(ref value)).IsCompleted)
+		if (!value.IsCompleted)
 		{
 			Debug.LogWarning((object)"Trying to extract ray data from CameraRenderTask before completion! This will cause it to synchronously block for completion.");
 		}
 		value = _pendingJob.Value;
-		((JobHandle)(ref value)).Complete();
+		value.Complete();
 		int num2 = _outputDataLength[0];
 		NativeArray<byte>.Copy(_outputData.GetSubArray(0, num2), buffer, num2);
 		if (hitColliderIds != null)
@@ -399,6 +398,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 
 	private static NativeArray<int2> GetSamplePositions(int width, int height)
 	{
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
@@ -421,7 +421,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		{
 			return value;
 		}
-		value._002Ector(width * height, (Allocator)4, (NativeArrayOptions)0);
+		value = new NativeArray<int2>(width * height, (Allocator)4, (NativeArrayOptions)0);
 		IJobExtensions.Run<RaycastSamplePositionsJob>(new RaycastSamplePositionsJob
 		{
 			res = new int2(width, height),

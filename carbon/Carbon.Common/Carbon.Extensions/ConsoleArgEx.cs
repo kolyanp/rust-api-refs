@@ -18,7 +18,7 @@ public static class ConsoleArgEx
 			args = Array.Empty<object>();
 			return false;
 		}
-		return TryParseCommand(input.AsSpan(), out command, out args);
+		return TryParseCommand((ReadOnlySpan<char>)input, out command, out args);
 	}
 
 	public static bool TryParseCommand(string input, object[] extraArgs, out string command, out object[] args)
@@ -28,7 +28,7 @@ public static class ConsoleArgEx
 			args = Array.Empty<object>();
 			return false;
 		}
-		int num = ((extraArgs != null) ? extraArgs.Length : 0);
+		int num = extraArgs?.Length ?? 0;
 		if (num == 0)
 		{
 			args = args2;

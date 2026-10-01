@@ -6,7 +6,7 @@ public class WearableHairCap : MonoBehaviour
 	public HairType Type;
 
 	[ColorUsage(false, true)]
-	public Color BaseColor;
+	public Color BaseColor = Color.black;
 
 	public Texture Mask;
 
@@ -27,13 +27,13 @@ public class WearableHairCap : MonoBehaviour
 		if (Type == HairType.Head || Type == HairType.Armpit || Type == HairType.Pubic)
 		{
 			Texture texture = block.GetTexture(_HairPackedMapUV1);
-			block.SetColor(_HairBaseColorUV1, ((Color)(ref BaseColor)).gamma);
+			block.SetColor(_HairBaseColorUV1, BaseColor.gamma);
 			block.SetTexture(_HairPackedMapUV1, ((Object)(object)Mask != (Object)null) ? Mask : texture);
 		}
 		else if (Type == HairType.Facial)
 		{
 			Texture texture2 = block.GetTexture(_HairPackedMapUV2);
-			block.SetColor(_HairBaseColorUV2, ((Color)(ref BaseColor)).gamma);
+			block.SetColor(_HairBaseColorUV2, BaseColor.gamma);
 			block.SetTexture(_HairPackedMapUV2, ((Object)(object)Mask != (Object)null) ? Mask : texture2);
 		}
 	}
@@ -42,7 +42,5 @@ public class WearableHairCap : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		BaseColor = Color.black;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

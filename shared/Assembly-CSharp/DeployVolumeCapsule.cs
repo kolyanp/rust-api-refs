@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class DeployVolumeCapsule : DeployVolume
 {
-	public Vector3 center;
+	public Vector3 center = Vector3.zero;
 
-	public float radius;
+	public float radius = 0.5f;
 
-	public float height;
+	public float height = 1f;
 
 	protected override bool Check(Vector3 position, Quaternion rotation, int mask = -1)
 	{
@@ -105,9 +105,5 @@ public class DeployVolumeCapsule : DeployVolume
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		center = Vector3.zero;
-		radius = 0.5f;
-		height = 1f;
-		base._002Ector();
 	}
 }

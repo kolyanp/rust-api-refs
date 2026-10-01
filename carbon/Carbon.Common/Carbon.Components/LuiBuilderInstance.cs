@@ -9,15 +9,15 @@ public struct LuiBuilderInstance : IDisposable
 {
 	private static int _segmentLimit = 100;
 
-	private LUIBuilder.WriteArray[] _segments;
+	private LUIBuilder.WriteArray[] _segments = ArrayPool<LUIBuilder.WriteArray>.Shared.Rent(_segmentLimit);
 
-	private int _segmentCount;
+	private int _segmentCount = 0;
 
 	private const int maxSegmentSize = 4096;
 
-	public readonly char[] _charBuffer;
+	public readonly char[] _charBuffer = new char[4096];
 
-	public int _charIndex;
+	public int _charIndex = 0;
 
 	private string GetFieldName(LuiCompType type)
 	{
@@ -50,45 +50,41 @@ public struct LuiBuilderInstance : IDisposable
 
 	public LuiBuilderInstance(LUI cui)
 	{
-		//IL_0ea8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ead: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0eb5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0eba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_07ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a90: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0aad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a56: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a73: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ed3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0eda: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a9d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0aba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a63: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a80: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0ee0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ec7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_139a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_139f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0805: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ef7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_143b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1440: Unknown result type (might be due to invalid IL or missing references)
-		//IL_168c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1691: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1412: Unknown result type (might be due to invalid IL or missing references)
-		//IL_142f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_16ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1461: Unknown result type (might be due to invalid IL or missing references)
-		//IL_122f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1236: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ee7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0eed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ed4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0812: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f04: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1448: Unknown result type (might be due to invalid IL or missing references)
+		//IL_144d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1699: Unknown result type (might be due to invalid IL or missing references)
+		//IL_169e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_141f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_143c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_16bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_146e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_123c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_125f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1266: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1243: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1249: Unknown result type (might be due to invalid IL or missing references)
 		//IL_126c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1253: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1283: Unknown result type (might be due to invalid IL or missing references)
-		_segments = ArrayPool<LUIBuilder.WriteArray>.Shared.Rent(_segmentLimit);
-		_segmentCount = 0;
-		_charBuffer = new char[4096];
-		_charIndex = 0;
+		//IL_1273: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1279: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1260: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1290: Unknown result type (might be due to invalid IL or missing references)
 		this.WriteStartArray();
 		int count = cui.elements.Count;
 		int num = 0;
@@ -129,10 +125,10 @@ public struct LuiBuilderInstance : IDisposable
 				this.WriteComma();
 				this.WriteField("update", value: true);
 			}
-			if (!element.activeSelf)
+			if (element.activeSelfSet || !element.activeSelf)
 			{
 				this.WriteComma();
-				this.WriteField("activeSelf", value: false);
+				this.WriteField("activeSelf", element.activeSelf);
 			}
 			if (element.luiComponents.Count > 0)
 			{

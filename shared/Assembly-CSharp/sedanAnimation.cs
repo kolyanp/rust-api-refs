@@ -237,8 +237,8 @@ public class sedanAnimation : MonoBehaviour
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		int mask = LayerMask.GetMask(new string[3] { "Terrain", "World", "Construction" });
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		Physics.Linecast(((Component)wheel).transform.position, ((Component)wheel).transform.position - Vector3.up * 10f, ref val, mask);
-		return Mathx.RemapValClamped(((RaycastHit)(ref val)).distance, traceDistanceNeutralPoint - shockDistance, traceDistanceNeutralPoint + shockDistance, shockDistance * 0.75f, -0.75f * shockDistance);
+		return Mathx.RemapValClamped(val.distance, traceDistanceNeutralPoint - shockDistance, traceDistanceNeutralPoint + shockDistance, shockDistance * 0.75f, -0.75f * shockDistance);
 	}
 }

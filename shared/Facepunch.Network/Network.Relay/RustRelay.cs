@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -57,7 +58,7 @@ public static class RustRelay
 
 		public static RelayQueueItem FromNetWrite(NetWrite packet, string wipeId, long serverTimeTicks, bool shouldEncrypt)
 		{
-			return new RelayQueueItem(packet, default(ArraySegment<byte>), wipeId, returnBuffer: false, serverTimeTicks, isMarker: false, shouldEncrypt);
+			return new RelayQueueItem(packet, default, wipeId, returnBuffer: false, serverTimeTicks, isMarker: false, shouldEncrypt);
 		}
 
 		public static RelayQueueItem FromMarker(byte[] buffer, string wipeId, long serverTimeTicks)
@@ -162,6 +163,12 @@ public static class RustRelay
 
 	private static string KeyExchangeUrl;
 
+	[CompilerGenerated]
+	private static string RelayWipeId__BackingField;
+
+	[CompilerGenerated]
+	private static string ServerHostname__BackingField;
+
 	private const int MarkerMagic = 1398035026;
 
 	private const int MarkerLength = 12;
@@ -248,6 +255,9 @@ public static class RustRelay
 
 	private static readonly byte[] _encryptionCiphertextBuffer;
 
+	[CompilerGenerated]
+	private static RustRelayConfig Config__BackingField;
+
 	public static readonly ArrayPool<byte> PacketArrayPool;
 
 	private static readonly TimeSpan ApiTimeout;
@@ -256,11 +266,47 @@ public static class RustRelay
 
 	private static readonly Stopwatch SendTimer;
 
-	public static string RelayWipeId { get; set; }
+	public static string RelayWipeId
+	{
+		[CompilerGenerated]
+		get
+		{
+			return RelayWipeId__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			RelayWipeId__BackingField = value;
+		}
+	}
 
-	public static string ServerHostname { get; set; }
+	public static string ServerHostname
+	{
+		[CompilerGenerated]
+		get
+		{
+			return ServerHostname__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			ServerHostname__BackingField = value;
+		}
+	}
 
-	public static RustRelayConfig Config { get; set; }
+	public static RustRelayConfig Config
+	{
+		[CompilerGenerated]
+		get
+		{
+			return Config__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			Config__BackingField = value;
+		}
+	}
 
 	public static Func<bool> ForceSave { get; set; }
 
@@ -294,13 +340,13 @@ public static class RustRelay
 	{
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Expected O, but got Unknown
-		//IL_0060: Expected O, but got Unknown
+		//IL_0060: Expected Obj, but got Unknown
+		//IL_0060: Expected Obj, but got Unknown
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Expected O, but got Unknown
+		//IL_0065: Expected Obj, but got Unknown
 		Client = new HttpClient();
-		RelayWipeId = string.Empty;
-		ServerHostname = string.Empty;
+		RelayWipeId__BackingField = string.Empty;
+		ServerHostname__BackingField = string.Empty;
 		_lastMarkerTicks = -1L;
 		_socketWipeId = string.Empty;
 		_socketToken = string.Empty;
@@ -315,7 +361,7 @@ public static class RustRelay
 		_encryptionNonceBuffer = new byte[12];
 		_encryptionPlaintextBuffer = new byte[4194304];
 		_encryptionCiphertextBuffer = new byte[4194320];
-		Config = new RustRelayConfig();
+		Config__BackingField = new RustRelayConfig();
 		PacketArrayPool = new ArrayPool<byte>(Math.Max(4194304, 12));
 		ApiTimeout = TimeSpan.FromSeconds(10.0);
 		UploadTimeout = TimeSpan.FromMinutes(2.0);
@@ -1038,7 +1084,7 @@ public static class RustRelay
 	private static void SendPacket(NetWrite packet, bool shouldEncrypt)
 	{
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0108: Expected O, but got Unknown
+		//IL_0108: Expected Obj, but got Unknown
 		try
 		{
 			var (array, num) = packet.GetBuffer();
@@ -1124,7 +1170,7 @@ public static class RustRelay
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Invalid comparison between Unknown and I4
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Expected O, but got Unknown
+		//IL_00a6: Expected Obj, but got Unknown
 		if (!Config.Enabled)
 		{
 			return null;
@@ -1146,15 +1192,15 @@ public static class RustRelay
 			{
 				_socket.SetUserHeader("Authorization", "Bearer " + text);
 			}
-			_socket.OnOpen += delegate
+			_socket.OnOpen += (object _, EventArgs __) =>
 			{
 				Debug.Log((object)("[RustRelay] WebSocket opened wipeId=" + RelayWipeId));
 			};
-			_socket.OnClose += delegate(object _, CloseEventArgs args)
+			_socket.OnClose += (object _, CloseEventArgs args) =>
 			{
 				SignalReconnect($"WebSocket closed code={args.Code} reason={args.Reason} wasClean={args.WasClean}");
 			};
-			_socket.OnError += delegate(object _, ErrorEventArgs args)
+			_socket.OnError += (object _, ErrorEventArgs args) =>
 			{
 				SignalReconnect("WebSocket error: " + args.Message);
 			};
@@ -1210,7 +1256,7 @@ public static class RustRelay
 
 	private static Uri BuildPacketWsUri(string wipeId, string token)
 	{
-		UriBuilder obj = new UriBuilder(new Uri(Config.ServerUrl.Replace("https://", "http://")))
+		UriBuilder uriBuilder = new UriBuilder(new Uri(Config.ServerUrl.Replace("https://", "http://")))
 		{
 			Scheme = "ws",
 			Path = "/ws/ingest"
@@ -1228,8 +1274,8 @@ public static class RustRelay
 		{
 			text += $"&reconnectAttempt={_consecutiveReconnects}";
 		}
-		obj.Query = text;
-		return obj.Uri;
+		uriBuilder.Query = text;
+		return uriBuilder.Uri;
 	}
 
 	public static async void AttemptRestart()
@@ -1358,17 +1404,17 @@ public static class RustRelay
 	private static X25519PrivateKeyParameters CreatePrivateKey()
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Expected O, but got Unknown
+		//IL_000a: Expected Obj, but got Unknown
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		return new X25519PrivateKeyParameters(new SecureRandom());
 	}
 
 	public static string DownloadStringSync(string url)
 	{
-		HttpWebRequest obj = (HttpWebRequest)WebRequest.Create(url);
-		obj.Method = "GET";
-		using HttpWebResponse httpWebResponse = (HttpWebResponse)obj.GetResponse();
+		HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+		httpWebRequest.Method = "GET";
+		using HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
 		using Stream stream = httpWebResponse.GetResponseStream();
 		using StreamReader streamReader = new StreamReader(stream);
 		return streamReader.ReadToEnd();

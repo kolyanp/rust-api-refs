@@ -87,7 +87,7 @@ public class CompoundBowWeapon : BowWeapon
 	{
 		BasePlayer ownerPlayer = GetOwnerPlayer();
 		bool flag = false;
-		if (base.isServer)
+		if (isServer)
 		{
 			if ((Object)(object)ownerPlayer == (Object)null)
 			{
@@ -157,7 +157,7 @@ public class CompoundBowWeapon : BowWeapon
 
 	public float GetLastPlayerMovementTime()
 	{
-		_ = base.isServer;
+		_ = isServer;
 		return 0f;
 	}
 

@@ -27,9 +27,9 @@ public static class Auth_CentralizedBans
 
 	public static IEnumerator Run(Connection connection)
 	{
-		int num = default(int);
-		UnityWebRequest ownerRequest = default(UnityWebRequest);
-		UnityWebRequest userRequest = default(UnityWebRequest);
+		int num = default;
+		UnityWebRequest ownerRequest = default;
+		UnityWebRequest userRequest = default;
 		while (true)
 		{
 			object obj = Interface.CallHook("OnCentralizedBanCheck", connection);

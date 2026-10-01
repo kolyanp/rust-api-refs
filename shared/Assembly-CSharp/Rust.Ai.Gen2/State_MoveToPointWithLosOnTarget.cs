@@ -36,21 +36,21 @@ public class State_MoveToPointWithLosOnTarget : FSMStateBase
 		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0207: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0235: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target))
+		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
+		if (!Senses.FindTarget(out var target))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Senses.FindLKP(target, out var lkp, applyHeightOffset: true))
+		if (!Senses.FindLKP(target, out var lkp, applyHeightOffset: true))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		bool flag = NpcZoneComponent.IsPointInsideZone(lkp) || (base.Senses.GetVisibilityStatus(target, out var status) && status.timeNotVisible < 30f);
+		bool flag = NpcZoneComponent.IsPointInsideZone(lkp) || (Senses.GetVisibilityStatus(target, out var status) && status.timeNotVisible < 30f);
 		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			NavVector3 nextPosition = base.Agent.nextPosition;
-			bool flag2 = ((!flag) ? Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius, 4) : Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius * 0.5f, 16));
+			NavVector3 nextPosition = Agent.nextPosition;
+			bool flag2 = ((!flag) ? Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius, 4) : Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius * 0.5f, 16));
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
@@ -70,14 +70,14 @@ public class State_MoveToPointWithLosOnTarget : FSMStateBase
 					NavVector3 navVector = item;
 					if (!flag2)
 					{
-						if (!base.Agent.SamplePosition(item, out var hitNS, 3.5f))
+						if (!Agent.SamplePosition(item, out var hitNS, 3.5f))
 						{
 							continue;
 						}
 						navVector = hitNS.position;
 					}
-					Vector3 val2 = base.Agent.NavToWorldSpace(navVector);
-					if (NpcZoneComponent.IsPointInsideZone(val2) && (!lastChosenPeekNS.HasValue || !(NavVector3.Distance(navVector, lastChosenPeekNS.Value) < 2f)) && !base.Agent.IsInWater(val2) && Shooting.CanShootFromAt(val2 + base.Senses.EyeOffset, lkp, "navigation") && base.Agent.CalculatePath(navVector, Path) && (int)Path.status == 0 && !(Path.GetPathLength() > searchRadius * 3f) && base.Agent.SetDestinationWithParams(navVector, autoBraking: true, RustNavMeshAgent.Speeds.Walk))
+					Vector3 val2 = Agent.NavToWorldSpace(navVector);
+					if (NpcZoneComponent.IsPointInsideZone(val2) && (!lastChosenPeekNS.HasValue || !(NavVector3.Distance(navVector, lastChosenPeekNS.Value) < 2f)) && !Agent.IsInWater(val2) && Shooting.CanShootFromAt(val2 + Senses.EyeOffset, lkp, "navigation") && Agent.CalculatePath(navVector, Path) && (int)Path.status == 0 && !(Path.GetPathLength() > searchRadius * 3f) && Agent.SetDestinationWithParams(navVector, autoBraking: true, RustNavMeshAgent.Speeds.Walk))
 					{
 						lastChosenPeekNS = navVector;
 						return base.OnStateEnter(payload);
@@ -98,7 +98,7 @@ public class State_MoveToPointWithLosOnTarget : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		if (!base.Agent.hasPath)
+		if (!Agent.hasPath)
 		{
 			return EFSMStateStatus.Success;
 		}
@@ -107,7 +107,7 @@ public class State_MoveToPointWithLosOnTarget : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.Agent.ResetPath();
+		Agent.ResetPath();
 		base.OnStateExit();
 	}
 }

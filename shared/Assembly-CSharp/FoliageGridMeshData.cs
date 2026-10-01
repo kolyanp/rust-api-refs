@@ -19,7 +19,15 @@ public class FoliageGridMeshData
 
 		public Vector4 uv2;
 
-		public static readonly VertexAttributeDescriptor[] VertexLayout;
+		public static readonly VertexAttributeDescriptor[] VertexLayout = new VertexAttributeDescriptor[6]
+		{
+			new VertexAttributeDescriptor((VertexAttribute)0, (VertexAttributeFormat)0, 3, 0),
+			new VertexAttributeDescriptor((VertexAttribute)1, (VertexAttributeFormat)0, 3, 0),
+			new VertexAttributeDescriptor((VertexAttribute)2, (VertexAttributeFormat)0, 4, 0),
+			new VertexAttributeDescriptor((VertexAttribute)3, (VertexAttributeFormat)2, 4, 0),
+			new VertexAttributeDescriptor((VertexAttribute)4, (VertexAttributeFormat)0, 2, 0),
+			new VertexAttributeDescriptor((VertexAttribute)6, (VertexAttributeFormat)0, 4, 0)
+		};
 
 		static FoliageVertex()
 		{
@@ -35,15 +43,6 @@ public class FoliageGridMeshData
 			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-			VertexLayout = (VertexAttributeDescriptor[])(object)new VertexAttributeDescriptor[6]
-			{
-				new VertexAttributeDescriptor((VertexAttribute)0, (VertexAttributeFormat)0, 3, 0),
-				new VertexAttributeDescriptor((VertexAttribute)1, (VertexAttributeFormat)0, 3, 0),
-				new VertexAttributeDescriptor((VertexAttribute)2, (VertexAttributeFormat)0, 4, 0),
-				new VertexAttributeDescriptor((VertexAttribute)3, (VertexAttributeFormat)2, 4, 0),
-				new VertexAttributeDescriptor((VertexAttribute)4, (VertexAttributeFormat)0, 2, 0),
-				new VertexAttributeDescriptor((VertexAttribute)6, (VertexAttributeFormat)0, 4, 0)
-			};
 		}
 	}
 
@@ -102,6 +101,7 @@ public class FoliageGridMeshData
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
@@ -134,7 +134,6 @@ public class FoliageGridMeshData
 			return;
 		}
 		bounds = new Bounds(((List<MeshInstance>)(object)meshGroup)[0].position, Vector3.zero);
-		Vector3 val3 = default(Vector3);
 		for (int i = 0; i < ((List<MeshInstance>)(object)meshGroup).Count; i++)
 		{
 			MeshInstance meshInstance = ((List<MeshInstance>)(object)meshGroup)[i];
@@ -147,12 +146,12 @@ public class FoliageGridMeshData
 			for (int k = 0; k < meshInstance.data.vertices.Length; k++)
 			{
 				Vector4 val2 = meshInstance.data.tangents[k];
-				((Vector3)(ref val3))._002Ector(val2.x, val2.y, val2.z);
-				Vector3 val4 = ((Matrix4x4)(ref val)).MultiplyVector(val3);
+				Vector3 val3 = new Vector3(val2.x, val2.y, val2.z);
+				Vector3 val4 = val.MultiplyVector(val3);
 				FoliageVertex item = new FoliageVertex
 				{
-					position = ((Matrix4x4)(ref val)).MultiplyPoint3x4(meshInstance.data.vertices[k]),
-					normal = ((Matrix4x4)(ref val)).MultiplyVector(meshInstance.data.normals[k]),
+					position = val.MultiplyPoint3x4(meshInstance.data.vertices[k]),
+					normal = val.MultiplyVector(meshInstance.data.normals[k]),
 					uv = meshInstance.data.uv[k],
 					uv2 = Vector4.op_Implicit(meshInstance.position),
 					tangent = new Vector4(val4.x, val4.y, val4.z, val2.w)
@@ -163,10 +162,10 @@ public class FoliageGridMeshData
 				}
 				vertices.Add(item);
 			}
-			((Bounds)(ref bounds)).Encapsulate(new Bounds(meshInstance.position + ((Bounds)(ref meshInstance.data.bounds)).center, ((Bounds)(ref meshInstance.data.bounds)).size));
+			bounds.Encapsulate(new Bounds(meshInstance.position + meshInstance.data.bounds.center, meshInstance.data.bounds.size));
 		}
 		ref Bounds reference = ref bounds;
-		((Bounds)(ref reference)).size = ((Bounds)(ref reference)).size + Vector3.one;
+		reference.size += Vector3.one;
 	}
 
 	public void Apply(Mesh mesh)

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FIMSpace.AnimationTools;
@@ -34,39 +33,39 @@ public static class SkeletonRecognize
 
 		public Transform ProbablyHead;
 
-		public List<Transform> TrReachingGround;
+		public List<Transform> TrReachingGround = new List<Transform>();
 
-		public List<Transform> TrReachingSides;
+		public List<Transform> TrReachingSides = new List<Transform>();
 
-		public List<Transform> TrEnds;
+		public List<Transform> TrEnds = new List<Transform>();
 
-		public List<Transform> ProbablySpineChain;
+		public List<Transform> ProbablySpineChain = new List<Transform>();
 
-		public List<Transform> ProbablySpineChainShort;
+		public List<Transform> ProbablySpineChainShort = new List<Transform>();
 
-		public List<List<Transform>> ProbablyRightArms;
+		public List<List<Transform>> ProbablyRightArms = new List<List<Transform>>();
 
-		public List<List<Transform>> ProbablyLeftArms;
+		public List<List<Transform>> ProbablyLeftArms = new List<List<Transform>>();
 
-		public List<List<Transform>> ProbablyLeftLegs;
+		public List<List<Transform>> ProbablyLeftLegs = new List<List<Transform>>();
 
-		public List<Transform> ProbablyLeftLegRoot;
+		public List<Transform> ProbablyLeftLegRoot = new List<Transform>();
 
-		public List<List<Transform>> ProbablyRightLegs;
+		public List<List<Transform>> ProbablyRightLegs = new List<List<Transform>>();
 
-		public List<Transform> ProbablyRightLegRoot;
+		public List<Transform> ProbablyRightLegRoot = new List<Transform>();
 
-		public Vector3 LocalSpaceHighest;
+		public Vector3 LocalSpaceHighest = Vector3.zero;
 
-		public Vector3 LocalSpaceMostRight;
+		public Vector3 LocalSpaceMostRight = Vector3.zero;
 
-		public Vector3 LocalSpaceMostForward;
+		public Vector3 LocalSpaceMostForward = Vector3.zero;
 
-		public Vector3 LocalSpaceMostBack;
+		public Vector3 LocalSpaceMostBack = Vector3.zero;
 
-		public Vector3 LocalSpaceMostLeft;
+		public Vector3 LocalSpaceMostLeft = Vector3.zero;
 
-		public Vector3 LocalSpaceLowest;
+		public Vector3 LocalSpaceLowest = Vector3.zero;
 
 		public EWhatIsIt WhatIsIt;
 
@@ -192,29 +191,11 @@ public static class SkeletonRecognize
 			//IL_0e5b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0dd9: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0f05: Unknown result type (might be due to invalid IL or missing references)
-			TrReachingGround = new List<Transform>();
-			TrReachingSides = new List<Transform>();
-			TrEnds = new List<Transform>();
-			ProbablySpineChain = new List<Transform>();
-			ProbablySpineChainShort = new List<Transform>();
-			ProbablyRightArms = new List<List<Transform>>();
-			ProbablyLeftArms = new List<List<Transform>>();
-			ProbablyLeftLegs = new List<List<Transform>>();
-			ProbablyLeftLegRoot = new List<Transform>();
-			ProbablyRightLegs = new List<List<Transform>>();
-			ProbablyRightLegRoot = new List<Transform>();
-			LocalSpaceHighest = Vector3.zero;
-			LocalSpaceMostRight = Vector3.zero;
-			LocalSpaceMostForward = Vector3.zero;
-			LocalSpaceMostBack = Vector3.zero;
-			LocalSpaceMostLeft = Vector3.zero;
-			LocalSpaceLowest = Vector3.zero;
-			base._002Ector();
 			AnimatorTransform = t;
 			Transform[] array;
 			if (checkOnly != null)
 			{
-				array = (Transform[])(object)new Transform[checkOnly.Count];
+				array = new Transform[checkOnly.Count];
 				for (int i = 0; i < checkOnly.Count; i++)
 				{
 					array[i] = checkOnly[i];
@@ -747,12 +728,12 @@ public static class SkeletonRecognize
 		{
 			string text = "< " + ((Object)AnimatorTransform).name + " >\n";
 			text += "\nGenerate Guides:\n";
-			text = text + "Highest: " + ((object)Unsafe.As<Vector3, Vector3>(ref LocalSpaceHighest)/*cast due to constrained. prefix*/).ToString() + "     ";
-			text = text + "Lowest: " + ((object)Unsafe.As<Vector3, Vector3>(ref LocalSpaceLowest)/*cast due to constrained. prefix*/).ToString() + "     ";
-			text = text + "Left: " + ((object)Unsafe.As<Vector3, Vector3>(ref LocalSpaceMostLeft)/*cast due to constrained. prefix*/).ToString() + "     ";
-			text = text + "Right: " + ((object)Unsafe.As<Vector3, Vector3>(ref LocalSpaceMostRight)/*cast due to constrained. prefix*/).ToString() + "     ";
-			text = text + "Forward: " + ((object)Unsafe.As<Vector3, Vector3>(ref LocalSpaceMostForward)/*cast due to constrained. prefix*/).ToString() + "     ";
-			text = text + "Back: " + ((object)Unsafe.As<Vector3, Vector3>(ref LocalSpaceMostBack)/*cast due to constrained. prefix*/).ToString() + "     ";
+			text = text + "Highest: " + ((object)LocalSpaceHighest/*cast due to constrained. prefix*/).ToString() + "     ";
+			text = text + "Lowest: " + ((object)LocalSpaceLowest/*cast due to constrained. prefix*/).ToString() + "     ";
+			text = text + "Left: " + ((object)LocalSpaceMostLeft/*cast due to constrained. prefix*/).ToString() + "     ";
+			text = text + "Right: " + ((object)LocalSpaceMostRight/*cast due to constrained. prefix*/).ToString() + "     ";
+			text = text + "Forward: " + ((object)LocalSpaceMostForward/*cast due to constrained. prefix*/).ToString() + "     ";
+			text = text + "Back: " + ((object)LocalSpaceMostBack/*cast due to constrained. prefix*/).ToString() + "     ";
 			text += "\n\nGenerated Helper Measurements: \n";
 			text = text + "UpDown: " + LowestVsHighestLen + "     ";
 			text = text + "LeftRight: " + MostLeftVsMostRightLen + "     ";

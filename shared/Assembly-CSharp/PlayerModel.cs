@@ -5,6 +5,28 @@ using UnityEngine;
 
 public class PlayerModel : ListComponent<PlayerModel>
 {
+	[Serializable]
+	public struct TurnSegment
+	{
+		public float Onset;
+
+		public float Gain;
+
+		public float Max;
+
+		public float SmoothTime;
+
+		public float Capacity(float absoluteOffset)
+		{
+			float num = absoluteOffset - Onset;
+			if (num <= 0f || Max <= 0f)
+			{
+				return 0f;
+			}
+			return Max * (1f - Mathf.Exp((0f - num) * Gain / Max));
+		}
+	}
+
 	public enum MountPoses
 	{
 		Chair = 0,
@@ -53,11 +75,87 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public Transform[] AdditionalSpineBones;
 
+	[Header("Turn Cascade")]
+	public float TurnAimSmoothTime = 0.03f;
+
+	public TurnSegment TurnHead = new TurnSegment
+	{
+		Onset = 0f,
+		Gain = 1.6f,
+		Max = 30f,
+		SmoothTime = 0.02f
+	};
+
+	public TurnSegment TurnChest = new TurnSegment
+	{
+		Onset = 14f,
+		Gain = 1f,
+		Max = 20f,
+		SmoothTime = 0.05f
+	};
+
+	public TurnSegment TurnSpine = new TurnSegment
+	{
+		Onset = 28f,
+		Gain = 0.9f,
+		Max = 14f,
+		SmoothTime = 0.08f
+	};
+
+	public TurnSegment TurnPelvis = new TurnSegment
+	{
+		Onset = 42f,
+		Gain = 0.8f,
+		Max = 11f,
+		SmoothTime = 0.11f
+	};
+
+	public float TurnChestLowerShare = 0.5f;
+
+	public float TurnSpineLowerShare = 0.45f;
+
+	public float TurnHeadLockAngle = 100f;
+
+	public float TurnHeadSmoothTime = 0.25f;
+
+	public float TurnHeadMaxSpeed = 120f;
+
+	public float TurnHeadAimFadeSpeed = 6f;
+
+	[Header("Turn Commit")]
+	public TurnClipSet TurnClips;
+
+	public AnimationCurve TurnSpeedByBacklog = new AnimationCurve(new Keyframe[3]
+	{
+		new Keyframe(45f, 1f),
+		new Keyframe(90f, 1.35f),
+		new Keyframe(180f, 1.6f)
+	});
+
+	public float TurnMoveThreshold = 0.5f;
+
+	public bool TurnSuppressProceduralLegs = true;
+
+	public float TurnLegBlendTime = 0.12f;
+
+	[Header("Turn Pelvis")]
+	public bool TurnPelvisEnabled = true;
+
+	public float TurnPelvisFootPinWeight = 1f;
+
+	public float TurnArmFadeSpeed = 1.4f;
+
+	public float TurnArmFadeWeight = 0.3f;
+
 	protected static int speed = Animator.StringToHash("speed");
 
 	protected static int acceleration = Animator.StringToHash("acceleration");
 
 	protected static int rotationYaw = Animator.StringToHash("rotationYaw");
+
+	protected static int turnAngle = Animator.StringToHash("turnAngle");
+
+	protected static int turning = Animator.StringToHash("turning");
 
 	protected static int forward = Animator.StringToHash("forward");
 
@@ -182,6 +280,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 	[Range(0f, 1f)]
 	public float rightHandTwistRelaxWeight = 1f;
 
+	public PlayerTwistBoneSetup[] TwistBones;
+
 	public float steeringTargetDegrees;
 
 	public float playerBoatSteeringTargetDegrees;
@@ -228,8 +328,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public SubsurfaceProfile subsurfaceProfile;
 
-	[Header("Parameters")]
 	[Range(0f, 1f)]
+	[Header("Parameters")]
 	public float voiceVolume;
 
 	[Range(0f, 1f)]
@@ -262,6 +362,50 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public float mouthSideFrequency = 15f;
 
+	[Header("Arm Secondary Motion")]
+	public float ArmMotionWeight = 1f;
+
+	public float ArmGravity = 2f;
+
+	public AnimationCurve ArmGravityByPitch = new AnimationCurve(new Keyframe[3]
+	{
+		new Keyframe(-70f, 1f),
+		new Keyframe(0f, 0f),
+		new Keyframe(70f, 1f)
+	});
+
+	public float ArmStiffness = 110f;
+
+	public float ArmDamping = 11f;
+
+	public float ArmMotionSpeedLimit = 1f;
+
+	public float ArmFlexAngle = 35f;
+
+	public AnimationCurve ArmFlexByPitch = new AnimationCurve(new Keyframe[3]
+	{
+		new Keyframe(-70f, 0f),
+		new Keyframe(0f, 0f),
+		new Keyframe(70f, 1f)
+	});
+
+	public float ArmSpinFadeStart = 250f;
+
+	public float ArmSpinFadeEnd = 500f;
+
+	[Header("Spine IK")]
+	public float SpineLookUpLimit = -45f;
+
+	public float SpineTwistClamp = 90f;
+
+	public float SpineHeadLookWeightVertical = 0.2f;
+
+	public float HeadYawLimit = 70f;
+
+	public float SpineLowerFollow = 0.3f;
+
+	public float SpineFollowSmoothSpeed = 32f;
+
 	public MovementSounds movementSounds;
 
 	public bool showSash;
@@ -272,12 +416,6 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	[NonSerialized]
 	public int paintballColor;
-
-	[CompilerGenerated]
-	private Quaternion _003CAimAngles_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Quaternion _003CLookAngles_003Ek__BackingField;
 
 	public ulong overrideSkinSeed { get; private set; }
 
@@ -305,14 +443,14 @@ public class PlayerModel : ListComponent<PlayerModel>
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CAimAngles_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CAimAngles_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -322,14 +460,14 @@ public class PlayerModel : ListComponent<PlayerModel>
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLookAngles_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CLookAngles_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -339,7 +477,7 @@ public class PlayerModel : ListComponent<PlayerModel>
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		dir.y = 0f;
-		return ((Vector3)(ref dir)).normalized;
+		return dir.normalized;
 	}
 
 	public static void RebuildAll()
@@ -350,5 +488,33 @@ public class PlayerModel : ListComponent<PlayerModel>
 	{
 		player = GameObjectEx.ToBaseEntity(((Component)this).gameObject) as BasePlayer;
 		return (Object)(object)player != (Object)null;
+	}
+
+	public PlayerModel()
+	{
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019c: Expected Obj, but got Unknown
+		//IL_0262: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0293: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a2: Expected Obj, but got Unknown
+		//IL_02e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0312: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0317: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0321: Expected Obj, but got Unknown
 	}
 }

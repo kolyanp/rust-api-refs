@@ -44,7 +44,7 @@ public static class CustomVitalManager
 
 		public T AddVital(CustomVitalInfo vital, float expiry = 0f)
 		{
-			//IL_0069: Expected I4, but got O
+			//IL_0069: Expected I4, but got Obj
 			T val = Pool.Get<T>();
 			val.id = ++nextVitalId;
 			val.info = vital;
@@ -67,7 +67,7 @@ public static class CustomVitalManager
 
 		public unsafe bool RemoveVital(uint id)
 		{
-			T val = default(T);
+			T val = default;
 			if (!((ListDictionary<uint, uint>)(object)buffer).TryGetValue(id, ref *(uint*)(&val)))
 			{
 				return false;
@@ -257,7 +257,7 @@ public static class CustomVitalManager
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default(VitalDictionary<PlayerIdentifiableVital>);
+		VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default;
 		if (!playerVitals.TryGetValue(EncryptedValue<ulong>.op_Implicit(player.userID), ref vitalDictionary))
 		{
 			playerVitals.Add(EncryptedValue<ulong>.op_Implicit(player.userID), vitalDictionary = new VitalDictionary<PlayerIdentifiableVital>());
@@ -298,7 +298,7 @@ public static class CustomVitalManager
 
 	public static VitalDictionary<PlayerIdentifiableVital> GetPlayerVitals(ulong playerId)
 	{
-		VitalDictionary<PlayerIdentifiableVital> result = default(VitalDictionary<PlayerIdentifiableVital>);
+		VitalDictionary<PlayerIdentifiableVital> result = default;
 		if (playerVitals.TryGetValue(playerId, ref result))
 		{
 			return result;
@@ -334,7 +334,7 @@ public static class CustomVitalManager
 
 	public static bool TryGetVital<T>(ulong playerId, uint id, out T vital) where T : PlayerIdentifiableVital
 	{
-		VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default(VitalDictionary<PlayerIdentifiableVital>);
+		VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default;
 		if (!playerVitals.TryGetValue(playerId, ref vitalDictionary))
 		{
 			vital = null;
@@ -383,7 +383,7 @@ public static class CustomVitalManager
 	public static bool RemoveVital(BasePlayer player, uint id, bool sendUpdate = true)
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default(VitalDictionary<PlayerIdentifiableVital>);
+		VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default;
 		if (!BaseNetworkableEx.IsValid((BaseNetworkable)(object)player) || !playerVitals.TryGetValue(EncryptedValue<ulong>.op_Implicit(player.userID), ref vitalDictionary))
 		{
 			return false;
@@ -420,7 +420,7 @@ public static class CustomVitalManager
 	public static void ClearVitals(BasePlayer player, bool sendUpdate = true)
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default(VitalDictionary<PlayerIdentifiableVital>);
+		VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default;
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)player) && playerVitals.TryGetValue(EncryptedValue<ulong>.op_Implicit(player.userID), ref vitalDictionary))
 		{
 			vitalDictionary.ClearVitals();
@@ -447,7 +447,7 @@ public static class CustomVitalManager
 		{
 			CustomVitals val = Pool.Get<CustomVitals>();
 			val.vitals = Pool.Get<List<CustomVitalInfo>>();
-			VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default(VitalDictionary<PlayerIdentifiableVital>);
+			VitalDictionary<PlayerIdentifiableVital> vitalDictionary = default;
 			if (playerVitals.TryGetValue(EncryptedValue<ulong>.op_Implicit(player.userID), ref vitalDictionary))
 			{
 				vitalDictionary.AppendVitals(val);

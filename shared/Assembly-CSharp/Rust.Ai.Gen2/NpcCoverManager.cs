@@ -69,7 +69,7 @@ public class NpcCoverManager : SingletonComponent<NpcCoverManager>, IServerCompo
 							continue;
 						}
 						Bounds bounds = ((Component)item2).GetComponentInChildren<Collider>().bounds;
-						float num = Mathf.Max(((Bounds)(ref bounds)).extents.x, ((Bounds)(ref bounds)).extents.z);
+						float num = Mathf.Max(bounds.extents.x, bounds.extents.z);
 						if (!(num > 1.5f) && !(num < 0.5f))
 						{
 							using PillarCoverGroup pillarCoverGroup = Pool.Get<PillarCoverGroup>();
@@ -212,15 +212,15 @@ public class NpcCoverManager : SingletonComponent<NpcCoverManager>, IServerCompo
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = end - start;
-		if (((Vector3)(ref val)).sqrMagnitude == 0f)
+		if (val.sqrMagnitude == 0f)
 		{
 			return false;
 		}
 		float num = radius * radius;
 		Vector3 val2 = start - center;
-		bool flag = ((Vector3)(ref val2)).sqrMagnitude <= num;
+		bool flag = val2.sqrMagnitude <= num;
 		val2 = end - center;
-		bool flag2 = ((Vector3)(ref val2)).sqrMagnitude <= num;
+		bool flag2 = val2.sqrMagnitude <= num;
 		if (flag & flag2)
 		{
 			return true;

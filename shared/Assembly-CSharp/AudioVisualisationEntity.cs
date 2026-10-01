@@ -96,7 +96,7 @@ public class AudioVisualisationEntity : IOEntity
 	{
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		base.OnFlagsChanged(old, next);
-		if (base.isServer && (old & Flags.Reserved8) == Flags.Reserved8 != ((next & Flags.Reserved8) == Flags.Reserved8) && (next & Flags.Reserved8) == Flags.Reserved8)
+		if (isServer && (old & Flags.Reserved8) == Flags.Reserved8 != ((next & Flags.Reserved8) == Flags.Reserved8) && (next & Flags.Reserved8) == Flags.Reserved8)
 		{
 			int depth = BoomBox.BacktrackLength * 4;
 			IOEntity audioSource = GetAudioSource(this, ref depth);
@@ -115,12 +115,12 @@ public class AudioVisualisationEntity : IOEntity
 			return null;
 		}
 		IOSlot[] array = entity.inputs;
-		IAudioConnectionSource audioConnectionSource = default(IAudioConnectionSource);
-		AudioVisualisationEntity audioVisualisationEntity = default(AudioVisualisationEntity);
-		IAudioConnectionSource audioConnectionSource2 = default(IAudioConnectionSource);
+		IAudioConnectionSource audioConnectionSource = default;
+		AudioVisualisationEntity audioVisualisationEntity = default;
+		IAudioConnectionSource audioConnectionSource2 = default;
 		for (int i = 0; i < array.Length; i++)
 		{
-			IOEntity iOEntity = array[i].connectedTo.Get(base.isServer);
+			IOEntity iOEntity = array[i].connectedTo.Get(isServer);
 			if ((Object)(object)iOEntity == (Object)(object)this)
 			{
 				return null;
@@ -131,7 +131,7 @@ public class AudioVisualisationEntity : IOEntity
 			}
 			if ((Object)(object)iOEntity != (Object)null && ((Component)iOEntity).TryGetComponent<AudioVisualisationEntity>(ref audioVisualisationEntity) && audioVisualisationEntity.connectedTo.IsSet)
 			{
-				return audioVisualisationEntity.connectedTo.Get(base.isServer) as IOEntity;
+				return audioVisualisationEntity.connectedTo.Get(isServer) as IOEntity;
 			}
 			if ((Object)(object)iOEntity != (Object)null)
 			{

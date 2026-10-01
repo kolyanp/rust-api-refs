@@ -336,7 +336,7 @@ public class IndustrialConveyor : IndustrialEntity
 	{
 		base.OnFlagsChanged(old, next);
 		bool flag = (next & Flags.On) == Flags.On;
-		if ((old & Flags.On) == Flags.On != flag && base.isServer)
+		if ((old & Flags.On) == Flags.On != flag && isServer)
 		{
 			if (scheduleMoveAction == null)
 			{
@@ -367,8 +367,8 @@ public class IndustrialConveyor : IndustrialEntity
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		associatedFilter = default(ItemFilter);
-		(ItemFilter, int) tuple = default((ItemFilter, int));
+		associatedFilter = default;
+		(ItemFilter, int) tuple = default;
 		if (storage == null || storage.Container == null)
 		{
 			return null;
@@ -384,7 +384,7 @@ public class IndustrialConveyor : IndustrialEntity
 			{
 				continue;
 			}
-			tuple = default((ItemFilter, int));
+			tuple = default;
 			if (item != null && (filterItems.Count == 0 || FilterHasItem(item, out tuple)))
 			{
 				(associatedFilter, _) = tuple;
@@ -399,7 +399,7 @@ public class IndustrialConveyor : IndustrialEntity
 
 	private bool FilterHasItem(Item item, out (ItemFilter filter, int index) filter)
 	{
-		filter = default((ItemFilter, int));
+		filter = default;
 		using (TimeWarning.New("FilterHasItem"))
 		{
 			if (quickItemFilterLookup.TryGetValue(item.info, out filter))
@@ -639,7 +639,7 @@ public class IndustrialConveyor : IndustrialEntity
 						continue;
 					}
 					bool flag3 = item6.position >= val.x && item6.position <= val.y;
-					(ItemFilter, int) filter = default((ItemFilter, int));
+					(ItemFilter, int) filter = default;
 					if ((filterItems.Count > 0) & flag3)
 					{
 						if (mode == ConveyorMode.Any || mode == ConveyorMode.And)
@@ -1220,8 +1220,8 @@ public class IndustrialConveyor : IndustrialEntity
 
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.MaxRepeatedElements(30)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxRepeatedElements(30)]
 	private void RPC_ChangeFilters(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null || !msg.player.CanBuild())
@@ -1266,9 +1266,9 @@ public class IndustrialConveyor : IndustrialEntity
 		SendNetworkUpdate();
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	private void SvSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnSwitchToggle", this, msg.player) == null)
@@ -1391,9 +1391,9 @@ public class IndustrialConveyor : IndustrialEntity
 		return inputIndex == 1;
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_RequestUpToDateFilters(RPCMessage msg)
 	{
 		if (!IsOn())

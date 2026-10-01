@@ -42,8 +42,7 @@ public class GPUBuffer<T> : GPUBuffer, IDisposable where T : unmanaged
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Expected O, but got Unknown
-		base._002Ector();
+		//IL_009c: Expected Obj, but got Unknown
 		count = length;
 		stride = Marshal.SizeOf<T>();
 		Type = target;
@@ -105,9 +104,9 @@ public class GPUBuffer<T> : GPUBuffer, IDisposable where T : unmanaged
 
 	public void ClearData()
 	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		NativeArray<T> data = default(NativeArray<T>);
-		data._002Ector(count, (Allocator)2, (NativeArrayOptions)1);
+		NativeArray<T> data = new NativeArray<T>(count, (Allocator)2, (NativeArrayOptions)1);
 		try
 		{
 			Buffer.SetData<T>(data);
@@ -122,7 +121,7 @@ public class GPUBuffer<T> : GPUBuffer, IDisposable where T : unmanaged
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Expected O, but got Unknown
+		//IL_0013: Expected Obj, but got Unknown
 		GraphicsBuffer val = new GraphicsBuffer(_type, newCapacity, stride);
 		BufferVersion++;
 		if (preserveData)

@@ -23,11 +23,11 @@ public class FImp_ColliderData_Capsule : FImp_ColliderData_Base
 	public FImp_ColliderData_Capsule(CapsuleCollider collider)
 	{
 		Is2D = false;
-		base.Transform = ((Component)collider).transform;
-		base.Collider = (Collider)(object)collider;
-		base.Transform = ((Component)collider).transform;
+		Transform = ((Component)collider).transform;
+		Collider = (Collider)(object)collider;
+		Transform = ((Component)collider).transform;
 		Capsule = collider;
-		base.ColliderType = EFColliderType.Capsule;
+		ColliderType = EFColliderType.Capsule;
 		CalculateCapsuleParameters(Capsule, ref Direction, ref radius, ref scaleFactor);
 		RefreshColliderData();
 	}
@@ -35,11 +35,11 @@ public class FImp_ColliderData_Capsule : FImp_ColliderData_Base
 	public FImp_ColliderData_Capsule(CapsuleCollider2D collider)
 	{
 		Is2D = true;
-		base.Transform = ((Component)collider).transform;
-		base.Collider2D = (Collider2D)(object)collider;
-		base.Transform = ((Component)collider).transform;
+		Transform = ((Component)collider).transform;
+		Collider2D = (Collider2D)(object)collider;
+		Transform = ((Component)collider).transform;
 		Capsule2D = collider;
-		base.ColliderType = EFColliderType.Capsule;
+		ColliderType = EFColliderType.Capsule;
 		CalculateCapsuleParameters(Capsule2D, ref Direction, ref radius, ref scaleFactor);
 		RefreshColliderData();
 	}
@@ -62,27 +62,27 @@ public class FImp_ColliderData_Capsule : FImp_ColliderData_Base
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		if (base.IsStatic)
+		if (IsStatic)
 		{
 			return;
 		}
 		bool flag = false;
-		if (!FEngineering.VIsSame(previousPosition, base.Transform.position))
+		if (!FEngineering.VIsSame(previousPosition, Transform.position))
 		{
 			flag = true;
 		}
-		else if (!FEngineering.QIsSame(base.Transform.rotation, previousRotation))
+		else if (!FEngineering.QIsSame(Transform.rotation, previousRotation))
 		{
 			flag = true;
 		}
 		else if (!Is2D)
 		{
-			if (preRadius != Capsule.radius || !FEngineering.VIsSame(previousScale, base.Transform.lossyScale))
+			if (preRadius != Capsule.radius || !FEngineering.VIsSame(previousScale, Transform.lossyScale))
 			{
 				CalculateCapsuleParameters(Capsule, ref Direction, ref radius, ref scaleFactor);
 			}
 		}
-		else if (preRadius != GetCapsule2DRadius(Capsule2D) || !FEngineering.VIsSame(previousScale, base.Transform.lossyScale))
+		else if (preRadius != GetCapsule2DRadius(Capsule2D) || !FEngineering.VIsSame(previousScale, Transform.lossyScale))
 		{
 			CalculateCapsuleParameters(Capsule2D, ref Direction, ref radius, ref scaleFactor);
 		}
@@ -98,9 +98,9 @@ public class FImp_ColliderData_Capsule : FImp_ColliderData_Base
 			}
 		}
 		base.RefreshColliderData();
-		previousPosition = base.Transform.position;
-		previousRotation = base.Transform.rotation;
-		previousScale = base.Transform.lossyScale;
+		previousPosition = Transform.position;
+		previousRotation = Transform.rotation;
+		previousScale = Transform.lossyScale;
 		if (!Is2D)
 		{
 			preRadius = Capsule.radius;
@@ -196,7 +196,7 @@ public class FImp_ColliderData_Capsule : FImp_ColliderData_Base
 		float num2 = Vector3.Dot(val2, val);
 		if (num2 <= 0f)
 		{
-			float sqrMagnitude = ((Vector3)(ref val2)).sqrMagnitude;
+			float sqrMagnitude = val2.sqrMagnitude;
 			if (sqrMagnitude > 0f && sqrMagnitude < num * num)
 			{
 				segmentPos = capSphereCenter1 - segmentOffset + val2 * (num / Mathf.Sqrt(sqrMagnitude));
@@ -205,11 +205,11 @@ public class FImp_ColliderData_Capsule : FImp_ColliderData_Base
 		}
 		else
 		{
-			float sqrMagnitude2 = ((Vector3)(ref val)).sqrMagnitude;
+			float sqrMagnitude2 = val.sqrMagnitude;
 			if (num2 >= sqrMagnitude2)
 			{
 				val2 = segmentPos + segmentOffset - capSphereCenter2;
-				float sqrMagnitude3 = ((Vector3)(ref val2)).sqrMagnitude;
+				float sqrMagnitude3 = val2.sqrMagnitude;
 				if (sqrMagnitude3 > 0f && sqrMagnitude3 < num * num)
 				{
 					segmentPos = capSphereCenter2 - segmentOffset + val2 * (num / Mathf.Sqrt(sqrMagnitude3));
@@ -219,7 +219,7 @@ public class FImp_ColliderData_Capsule : FImp_ColliderData_Base
 			else if (sqrMagnitude2 > 0f)
 			{
 				val2 -= val * (num2 / sqrMagnitude2);
-				float sqrMagnitude4 = ((Vector3)(ref val2)).sqrMagnitude;
+				float sqrMagnitude4 = val2.sqrMagnitude;
 				if (sqrMagnitude4 > 0f && sqrMagnitude4 < num * num)
 				{
 					float num3 = Mathf.Sqrt(sqrMagnitude4);

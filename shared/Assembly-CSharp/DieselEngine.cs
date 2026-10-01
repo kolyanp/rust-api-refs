@@ -74,7 +74,7 @@ public class DieselEngine : StorageContainer
 
 	public void FixedUpdate()
 	{
-		if (!base.isClient && IsOn())
+		if (!isClient && IsOn())
 		{
 			if (cachedFuelTime <= Time.fixedDeltaTime && ConsumeFuelItem())
 			{
@@ -103,7 +103,7 @@ public class DieselEngine : StorageContainer
 			{
 				EngineOn();
 				startedByPlayer = msg.player;
-				if (Rust.GameInfo.HasAchievements && (Object)(object)msg.player != (Object)null)
+				if (GameInfo.HasAchievements && (Object)(object)msg.player != (Object)null)
 				{
 					msg.player.stats.Add("excavator_activated", 1, Stats.All);
 					msg.player.stats.Save(forceSteamSave: true);
@@ -123,7 +123,7 @@ public class DieselEngine : StorageContainer
 
 	public bool ConsumeFuelItem(int amount = 1)
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || slot.amount < amount)
 		{
 			return false;
@@ -140,7 +140,7 @@ public class DieselEngine : StorageContainer
 
 	public int GetFuelAmount()
 	{
-		Item slot = base.inventory.GetSlot(0);
+		Item slot = inventory.GetSlot(0);
 		if (slot == null || slot.amount < 1)
 		{
 			return 0;
@@ -221,7 +221,7 @@ public class DieselEngine : StorageContainer
 		else if (info.msg.dieselEngine != null)
 		{
 			cachedFuelTime = info.msg.dieselEngine.fuelTime;
-			if (base.isServer)
+			if (isServer)
 			{
 				startedByPlayer = BasePlayer.FindAwakeOrSleepingByID(info.msg.dieselEngine.startedByPlayer);
 			}

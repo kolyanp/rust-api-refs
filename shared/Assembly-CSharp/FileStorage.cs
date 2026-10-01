@@ -39,33 +39,29 @@ public class FileStorage : IDisposable
 
 		private static AssociatedFile ReadAssociatedFileRow(IntPtr stmHandle)
 		{
-			AssociatedFile obj = Pool.Get<AssociatedFile>();
-			obj.type = Database.GetColumnValue<int>(stmHandle, 0);
-			obj.crc = (uint)Database.GetColumnValue<int>(stmHandle, 1);
-			obj.numID = (uint)Database.GetColumnValue<int>(stmHandle, 2);
-			obj.data = Database.GetColumnValue<byte[]>(stmHandle, 3);
-			return obj;
+			AssociatedFile val = Pool.Get<AssociatedFile>();
+			val.type = Database.GetColumnValue<int>(stmHandle, 0);
+			val.crc = (uint)Database.GetColumnValue<int>(stmHandle, 1);
+			val.numID = (uint)Database.GetColumnValue<int>(stmHandle, 2);
+			val.data = Database.GetColumnValue<byte[]>(stmHandle, 3);
+			return val;
 		}
 	}
 
 	private FileDatabase db;
 
-	private CRC32 crc;
+	private CRC32 crc = new CRC32();
 
-	private MruDictionary<uint, CacheData> _cache;
+	private MruDictionary<uint, CacheData> _cache = new MruDictionary<uint, CacheData>(1000, (Action<uint, CacheData>)null);
 
-	public static FileStorage server = new FileStorage("sv.files." + 288, server: true);
+	public static FileStorage server = new FileStorage("sv.files." + 289, server: true);
 
-	private string filePath;
+	private string filePath = string.Empty;
 
 	protected FileStorage(string name, bool server)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
-		crc = new CRC32();
-		_cache = new MruDictionary<uint, CacheData>(1000, (Action<uint, CacheData>)null);
-		filePath = string.Empty;
-		base._002Ector();
+		//IL_000b: Expected Obj, but got Unknown
 		if (server)
 		{
 			string path = (filePath = Server.filesStorageFolder + "/" + name + ".db");
@@ -134,7 +130,7 @@ public class FileStorage : IDisposable
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("FileStorage.Get"))
 		{
-			CacheData cacheData = default(CacheData);
+			CacheData cacheData = default;
 			if (_cache.TryGetValue(crc, ref cacheData))
 			{
 				Assert.IsTrue(cacheData.data != null, "FileStorage cache contains a null texture");
@@ -196,7 +192,7 @@ public class FileStorage : IDisposable
 			{
 				db.Execute("DELETE FROM data WHERE entid = ? AND part = ?", (long)entityid.Value, (int)numid);
 			}
-			uint[] array = (from x in ((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Where(delegate(KeyValuePair<uint, CacheData> x)
+			uint[] array = (from x in ((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Where((KeyValuePair<uint, CacheData> x) =>
 				{
 					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 					//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -220,7 +216,7 @@ public class FileStorage : IDisposable
 			{
 				db.Execute("DELETE FROM data WHERE entid = ?", (long)entityid.Value);
 			}
-			uint[] array = (from x in ((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Where(delegate(KeyValuePair<uint, CacheData> x)
+			uint[] array = (from x in ((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Where((KeyValuePair<uint, CacheData> x) =>
 				{
 					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 					//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -258,7 +254,7 @@ public class FileStorage : IDisposable
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		if (((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Count(delegate(KeyValuePair<uint, CacheData> x)
+		if (((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Count((KeyValuePair<uint, CacheData> x) =>
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000d: Unknown result type (might be due to invalid IL or missing references)

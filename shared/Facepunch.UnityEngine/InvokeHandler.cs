@@ -91,7 +91,7 @@ public class InvokeHandler : InvokeHandlerBase<InvokeHandler>
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
+		//IL_002c: Expected Obj, but got Unknown
 		GameObject val = new GameObject
 		{
 			name = "InvokeHandler",

@@ -40,25 +40,25 @@ public class TextureColorPicker : MonoBehaviour, IPointerDownHandler, IEventSyst
 		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
 		Transform transform = ((Component)this).transform;
 		RectTransform val = (RectTransform)(object)((transform is RectTransform) ? transform : null);
-		Vector2 val2 = default(Vector2);
+		Vector2 val2 = default;
 		if (RectTransformUtility.ScreenPointToLocalPointInRectangle(val, eventData.position, eventData.pressEventCamera, ref val2))
 		{
 			ref float x = ref val2.x;
 			float num = x;
 			Rect rect = val.rect;
-			x = num + ((Rect)(ref rect)).width * val.pivot.x;
+			x = num + rect.width * val.pivot.x;
 			ref float y = ref val2.y;
 			float num2 = y;
 			rect = val.rect;
-			y = num2 + ((Rect)(ref rect)).height * val.pivot.y;
+			y = num2 + rect.height * val.pivot.y;
 			ref float x2 = ref val2.x;
 			float num3 = x2;
 			rect = val.rect;
-			x2 = num3 / ((Rect)(ref rect)).width;
+			x2 = num3 / rect.width;
 			ref float y2 = ref val2.y;
 			float num4 = y2;
 			rect = val.rect;
-			y2 = num4 / ((Rect)(ref rect)).height;
+			y2 = num4 / rect.height;
 			Color pixel = texture.GetPixel((int)(val2.x * (float)((Texture)texture).width), (int)(val2.y * (float)((Texture)texture).height));
 			((UnityEvent<Color>)onColorSelected).Invoke(pixel);
 		}

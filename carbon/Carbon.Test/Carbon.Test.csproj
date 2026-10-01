@@ -20,7 +20,7 @@
     <Reference Include="Assembly-CSharp" />
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Unity" />
     <Reference Include="Facepunch.System" />

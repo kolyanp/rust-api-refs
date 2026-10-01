@@ -17,20 +17,11 @@ public class PostProcessRenderContext
 
 	private Camera m_Camera;
 
-	[CompilerGenerated]
-	private RenderTargetIdentifier _003Csource_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private RenderTargetIdentifier _003Cdestination_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private RenderTextureFormat _003CsourceFormat_003Ek__BackingField;
-
 	internal PropertySheet uberSheet;
 
 	internal Texture autoExposureTexture;
 
-	internal UnityEngine.Rendering.PostProcessing.LogHistogram logHistogram;
+	internal LogHistogram logHistogram;
 
 	internal Texture logLut;
 
@@ -55,8 +46,8 @@ public class PostProcessRenderContext
 			{
 				width = m_Camera.pixelWidth;
 				height = m_Camera.pixelHeight;
-				((RenderTextureDescriptor)(ref m_sourceDescriptor)).width = width;
-				((RenderTextureDescriptor)(ref m_sourceDescriptor)).height = height;
+				m_sourceDescriptor.width = width;
+				m_sourceDescriptor.height = height;
 				screenWidth = width;
 				screenHeight = height;
 				stereoActive = false;
@@ -73,14 +64,14 @@ public class PostProcessRenderContext
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Csource_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Csource_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -90,14 +81,14 @@ public class PostProcessRenderContext
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cdestination_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cdestination_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -107,14 +98,14 @@ public class PostProcessRenderContext
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CsourceFormat_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CsourceFormat_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -157,8 +148,8 @@ public class PostProcessRenderContext
 		num = (screenHeight = height);
 		this.height = num;
 		this.dlssEnabled = dlssEnabled;
-		((RenderTextureDescriptor)(ref m_sourceDescriptor)).width = width;
-		((RenderTextureDescriptor)(ref m_sourceDescriptor)).height = height;
+		m_sourceDescriptor.width = width;
+		m_sourceDescriptor.height = height;
 	}
 
 	public void Reset()
@@ -219,6 +210,7 @@ public class PostProcessRenderContext
 	private RenderTextureDescriptor GetDescriptor(int depthBufferBits = 0, RenderTextureFormat colorFormat = (RenderTextureFormat)7, RenderTextureReadWrite readWrite = (RenderTextureReadWrite)0)
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
@@ -234,32 +226,31 @@ public class PostProcessRenderContext
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fe: Invalid comparison between Unknown and I4
-		RenderTextureDescriptor result = default(RenderTextureDescriptor);
-		((RenderTextureDescriptor)(ref result))._002Ector(((RenderTextureDescriptor)(ref m_sourceDescriptor)).width, ((RenderTextureDescriptor)(ref m_sourceDescriptor)).height, ((RenderTextureDescriptor)(ref m_sourceDescriptor)).colorFormat, depthBufferBits);
-		((RenderTextureDescriptor)(ref result)).dimension = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).dimension;
-		((RenderTextureDescriptor)(ref result)).volumeDepth = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).volumeDepth;
-		((RenderTextureDescriptor)(ref result)).vrUsage = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).vrUsage;
-		((RenderTextureDescriptor)(ref result)).msaaSamples = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).msaaSamples;
-		((RenderTextureDescriptor)(ref result)).memoryless = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).memoryless;
-		((RenderTextureDescriptor)(ref result)).useMipMap = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).useMipMap;
-		((RenderTextureDescriptor)(ref result)).autoGenerateMips = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).autoGenerateMips;
-		((RenderTextureDescriptor)(ref result)).enableRandomWrite = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).enableRandomWrite;
-		((RenderTextureDescriptor)(ref result)).shadowSamplingMode = ((RenderTextureDescriptor)(ref m_sourceDescriptor)).shadowSamplingMode;
+		RenderTextureDescriptor result = new RenderTextureDescriptor(m_sourceDescriptor.width, m_sourceDescriptor.height, m_sourceDescriptor.colorFormat, depthBufferBits);
+		result.dimension = m_sourceDescriptor.dimension;
+		result.volumeDepth = m_sourceDescriptor.volumeDepth;
+		result.vrUsage = m_sourceDescriptor.vrUsage;
+		result.msaaSamples = m_sourceDescriptor.msaaSamples;
+		result.memoryless = m_sourceDescriptor.memoryless;
+		result.useMipMap = m_sourceDescriptor.useMipMap;
+		result.autoGenerateMips = m_sourceDescriptor.autoGenerateMips;
+		result.enableRandomWrite = m_sourceDescriptor.enableRandomWrite;
+		result.shadowSamplingMode = m_sourceDescriptor.shadowSamplingMode;
 		if ((int)colorFormat != 7)
 		{
-			((RenderTextureDescriptor)(ref result)).colorFormat = colorFormat;
+			result.colorFormat = colorFormat;
 		}
 		if ((int)readWrite == 2)
 		{
-			((RenderTextureDescriptor)(ref result)).sRGB = true;
+			result.sRGB = true;
 		}
 		else if ((int)readWrite == 1)
 		{
-			((RenderTextureDescriptor)(ref result)).sRGB = false;
+			result.sRGB = false;
 		}
 		else if ((int)readWrite == 0)
 		{
-			((RenderTextureDescriptor)(ref result)).sRGB = (int)QualitySettings.activeColorSpace > 0;
+			result.sRGB = (int)QualitySettings.activeColorSpace > 0;
 		}
 		return result;
 	}
@@ -277,15 +268,15 @@ public class PostProcessRenderContext
 		RenderTextureDescriptor descriptor = GetDescriptor(depthBufferBits, colorFormat, readWrite);
 		if (widthOverride > 0)
 		{
-			((RenderTextureDescriptor)(ref descriptor)).width = widthOverride;
+			descriptor.width = widthOverride;
 		}
 		if (heightOverride > 0)
 		{
-			((RenderTextureDescriptor)(ref descriptor)).height = heightOverride;
+			descriptor.height = heightOverride;
 		}
-		if (stereoActive && (int)((RenderTextureDescriptor)(ref descriptor)).dimension == 5)
+		if (stereoActive && (int)descriptor.dimension == 5)
 		{
-			((RenderTextureDescriptor)(ref descriptor)).dimension = (TextureDimension)2;
+			descriptor.dimension = (TextureDimension)2;
 		}
 		cmd.GetTemporaryRT(nameID, descriptor, filter);
 	}
@@ -300,11 +291,11 @@ public class PostProcessRenderContext
 		RenderTextureDescriptor descriptor = GetDescriptor(depthBufferBits, colorFormat, readWrite);
 		if (widthOverride > 0)
 		{
-			((RenderTextureDescriptor)(ref descriptor)).width = widthOverride;
+			descriptor.width = widthOverride;
 		}
 		if (heightOverride > 0)
 		{
-			((RenderTextureDescriptor)(ref descriptor)).height = heightOverride;
+			descriptor.height = heightOverride;
 		}
 		return RenderTexture.GetTemporary(descriptor);
 	}

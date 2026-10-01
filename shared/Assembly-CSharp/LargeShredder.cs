@@ -78,7 +78,7 @@ public class LargeShredder : BaseEntity
 			return;
 		}
 		shreddingEntityNormalizedHealth = 1f;
-		MagnetLiftable magnetLiftable = default(MagnetLiftable);
+		MagnetLiftable magnetLiftable = default;
 		if (((Component)ent).TryGetComponent<MagnetLiftable>(ref magnetLiftable))
 		{
 			if (magnetLiftable.requireObjectOff && ent.IsOn())
@@ -137,7 +137,7 @@ public class LargeShredder : BaseEntity
 		{
 			return;
 		}
-		if ((Object)(object)component.associatedPlayer != (Object)null && Rust.GameInfo.HasAchievements)
+		if ((Object)(object)component.associatedPlayer != (Object)null && GameInfo.HasAchievements)
 		{
 			component.associatedPlayer.stats.Add("cars_shredded", 1);
 			component.associatedPlayer.stats.Save(forceSteamSave: true);
@@ -271,7 +271,7 @@ public class LargeShredder : BaseEntity
 		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f5: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}

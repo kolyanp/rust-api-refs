@@ -35,7 +35,7 @@ public class ScientistBrain : BaseAIBrain
 		public ChaseState()
 			: base(AIState.Chase)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateLeave(BaseAIBrain brain, BaseEntity entity)
@@ -99,7 +99,7 @@ public class ScientistBrain : BaseAIBrain
 				return StateStatus.Error;
 			}
 			float num = Vector3.Distance(((Component)baseEntity).transform.position, ((Component)entity).transform.position);
-			if (brain.Senses.Memory.IsLOS(baseEntity) || num <= brain.Navigator.FaceTargetChaseDistance || base.TimeInState <= 5f)
+			if (brain.Senses.Memory.IsLOS(baseEntity) || num <= brain.Navigator.FaceTargetChaseDistance || TimeInState <= 5f)
 			{
 				brain.Navigator.SetFacingDirectionEntity(baseEntity);
 			}
@@ -204,7 +204,7 @@ public class ScientistBrain : BaseAIBrain
 		public CombatState()
 			: base(AIState.Combat)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
@@ -267,7 +267,7 @@ public class ScientistBrain : BaseAIBrain
 		public CombatStationaryState()
 			: base(AIState.CombatStationary)
 		{
-			base.AgrresiveState = true;
+			AgrresiveState = true;
 		}
 
 		public override void StateLeave(BaseAIBrain brain, BaseEntity entity)
@@ -692,10 +692,10 @@ public class ScientistBrain : BaseAIBrain
 	public override void InitializeAI()
 	{
 		base.InitializeAI();
-		base.ThinkMode = AIThinkMode.Interval;
+		ThinkMode = AIThinkMode.Interval;
 		thinkRate = 0.25f;
-		base.PathFinder = new HumanPathFinder();
-		((HumanPathFinder)base.PathFinder).Init(GetBaseEntity());
+		PathFinder = new HumanPathFinder();
+		((HumanPathFinder)PathFinder).Init(GetBaseEntity());
 		Count++;
 	}
 
@@ -713,9 +713,9 @@ public class ScientistBrain : BaseAIBrain
 	protected override void OnStateChanged()
 	{
 		base.OnStateChanged();
-		if (base.CurrentState != null)
+		if (CurrentState != null)
 		{
-			switch (base.CurrentState.StateType)
+			switch (CurrentState.StateType)
 			{
 			case AIState.Idle:
 			case AIState.Roam:

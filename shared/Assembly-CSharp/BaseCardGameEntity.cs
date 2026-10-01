@@ -35,11 +35,9 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		Blackjack
 	}
 
-	[SerializeField]
 	[Header("Card Game")]
+	[SerializeField]
 	private GameObjectRef uiPrefab;
-
-	public ItemDefinition scrapItemDef;
 
 	[SerializeField]
 	private GameObjectRef potPrefab;
@@ -59,7 +57,7 @@ public abstract class BaseCardGameEntity : BaseVehicle
 
 	private bool storageLinked;
 
-	public int ScrapItemID => scrapItemDef.itemid;
+	public int ScrapItemID => ItemManager.Items.Scrap.itemid;
 
 	public CardGameController GameController
 	{
@@ -317,7 +315,7 @@ public abstract class BaseCardGameEntity : BaseVehicle
 	{
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (base.isServer)
+		if (isServer)
 		{
 			PotInstance.uid = info.msg.cardGame.potRef;
 		}
@@ -331,7 +329,7 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		}
 		return gameOption switch
 		{
-			CardGameOption.TexasHoldEm => new TexasHoldEmController(this), 
+			CardGameOption.TexasHoldEm => (CardGameController)new TexasHoldEmController(this), 
 			CardGameOption.Blackjack => new BlackjackController(this), 
 			_ => new TexasHoldEmController(this), 
 		};
@@ -398,7 +396,7 @@ public abstract class BaseCardGameEntity : BaseVehicle
 			PlayerStorageInfo[] array = playerStoragePoints;
 			for (int i = 0; i < array.Length; i++)
 			{
-				CardGamePlayerStorage cardGamePlayerStorage2 = array[i].storageInstance.Get(base.isServer) as CardGamePlayerStorage;
+				CardGamePlayerStorage cardGamePlayerStorage2 = array[i].storageInstance.Get(isServer) as CardGamePlayerStorage;
 				if (!cardGamePlayerStorage2.IsValid() || (cardGamePlayerStorage2.inventory.IsEmpty() && num2 != 0))
 				{
 					continue;
@@ -422,7 +420,7 @@ public abstract class BaseCardGameEntity : BaseVehicle
 			PlayerStorageInfo[] array = playerStoragePoints;
 			for (int i = 0; i < array.Length; i++)
 			{
-				if (!array[i].storageInstance.IsValid(base.isServer))
+				if (!array[i].storageInstance.IsValid(isServer))
 				{
 					flag = false;
 					break;
@@ -439,7 +437,7 @@ public abstract class BaseCardGameEntity : BaseVehicle
 			}
 			else
 			{
-				Invoke(base.KillMessage, 0f);
+				Invoke(KillMessage, 0f);
 			}
 		}
 	}
@@ -662,7 +660,7 @@ public abstract class BaseCardGameEntity : BaseVehicle
 				StorageContainer storage = cardPlayer.GetStorage();
 				if ((Object)(object)storage != (Object)null)
 				{
-					storage.inventory.AddItem(scrapItemDef, 400 - scrapAmount, 0uL);
+					storage.inventory.AddItem(ItemManager.Items.Scrap, 400 - scrapAmount, 0uL);
 				}
 				else
 				{
@@ -686,8 +684,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_Play(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Rust.UI.MainMenu;
 
@@ -25,4 +26,7 @@ public class UI_Popup : UI_Window
 
 	[SerializeField]
 	private RustButton[] buttons;
+
+	[SerializeField]
+	private Image dismisser;
 }

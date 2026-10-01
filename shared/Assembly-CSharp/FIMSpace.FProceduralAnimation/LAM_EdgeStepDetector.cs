@@ -53,23 +53,23 @@ public class LAM_EdgeStepDetector : LegsAnimatorControlModuleBase
 			leg.User_RestoreRaycasting();
 			return;
 		}
-		Vector3 val = base.LegsAnim.ToRootLocalSpace(leg.ParentHub.LastKeyframePosition);
-		Vector3 val2 = base.LegsAnim.ToRootLocalSpace(leg.lastRaycastingOrigin);
+		Vector3 val = LegsAnim.ToRootLocalSpace(leg.ParentHub.LastKeyframePosition);
+		Vector3 val2 = LegsAnim.ToRootLocalSpace(leg.lastRaycastingOrigin);
 		val.y = val2.y;
 		val.z = val2.z;
-		RaycastHit hit = default(RaycastHit);
+		RaycastHit hit = default;
 		float num = Vector3.Distance(leg.lastRaycastingOrigin, leg.lastRaycastingEndPoint);
 		float num2 = iterationsV.GetInt();
 		for (float num3 = 1f; num3 <= num2; num3++)
 		{
 			Vector3 localPos = Vector3.LerpUnclamped(val2, val, 0.1f + num3 / num2);
-			localPos = base.LegsAnim.RootToWorldSpace(localPos);
-			if (Physics.Raycast(localPos, -base.LegsAnim.Up, ref hit, num * 1.01f, LayerMask.op_Implicit(base.LegsAnim.GroundMask), (QueryTriggerInteraction)1))
+			localPos = LegsAnim.RootToWorldSpace(localPos);
+			if (Physics.Raycast(localPos, -LegsAnim.Up, ref hit, num * 1.01f, LayerMask.op_Implicit(LegsAnim.GroundMask), (QueryTriggerInteraction)1))
 			{
 				break;
 			}
 		}
-		if ((Object)(object)((RaycastHit)(ref hit)).transform == (Object)null)
+		if ((Object)(object)hit.transform == (Object)null)
 		{
 			leg.User_RestoreRaycasting();
 		}

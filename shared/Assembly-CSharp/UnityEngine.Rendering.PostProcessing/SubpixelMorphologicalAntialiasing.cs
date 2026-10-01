@@ -45,14 +45,14 @@ public sealed class SubpixelMorphologicalAntialiasing
 		propertySheet.properties.SetTexture("_SearchTex", (Texture)(object)context.resources.smaaLuts.search);
 		CommandBuffer command = context.command;
 		command.BeginSample("SubpixelMorphologicalAntialiasing");
-		command.GetTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.SMAA_Flip, context.width, context.height, 0, (FilterMode)1, context.sourceFormat, (RenderTextureReadWrite)1);
-		command.GetTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.SMAA_Flop, context.width, context.height, 0, (FilterMode)1, context.sourceFormat, (RenderTextureReadWrite)1);
-		command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.SMAA_Flip), propertySheet, (int)quality, clear: true);
-		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.SMAA_Flip), RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.SMAA_Flop), propertySheet, (int)(3 + quality));
-		command.SetGlobalTexture("_BlendTex", RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.SMAA_Flop));
+		command.GetTemporaryRT(ShaderIDs.SMAA_Flip, context.width, context.height, 0, (FilterMode)1, context.sourceFormat, (RenderTextureReadWrite)1);
+		command.GetTemporaryRT(ShaderIDs.SMAA_Flop, context.width, context.height, 0, (FilterMode)1, context.sourceFormat, (RenderTextureReadWrite)1);
+		command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(ShaderIDs.SMAA_Flip), propertySheet, (int)quality, clear: true);
+		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(ShaderIDs.SMAA_Flip), RenderTargetIdentifier.op_Implicit(ShaderIDs.SMAA_Flop), propertySheet, (int)(3 + quality));
+		command.SetGlobalTexture("_BlendTex", RenderTargetIdentifier.op_Implicit(ShaderIDs.SMAA_Flop));
 		command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 6);
-		command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.SMAA_Flip);
-		command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.SMAA_Flop);
+		command.ReleaseTemporaryRT(ShaderIDs.SMAA_Flip);
+		command.ReleaseTemporaryRT(ShaderIDs.SMAA_Flop);
 		command.EndSample("SubpixelMorphologicalAntialiasing");
 	}
 }

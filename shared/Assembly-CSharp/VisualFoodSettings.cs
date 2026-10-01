@@ -50,9 +50,9 @@ public class VisualFoodSettings : PrefabAttribute, IClientComponent
 			//IL_0168: Unknown result type (might be due to invalid IL or missing references)
 			if (parents != null && parents.Length != 0)
 			{
-				parentPositions = (Vector3[])(object)new Vector3[parents.Length];
-				parentRotations = (Quaternion[])(object)new Quaternion[parents.Length];
-				parentScales = (Vector3[])(object)new Vector3[parents.Length];
+				parentPositions = new Vector3[parents.Length];
+				parentRotations = new Quaternion[parents.Length];
+				parentScales = new Vector3[parents.Length];
 				for (int i = 0; i < parents.Length; i++)
 				{
 					if ((Object)(object)parents[i] != (Object)null)
@@ -67,9 +67,9 @@ public class VisualFoodSettings : PrefabAttribute, IClientComponent
 			{
 				return;
 			}
-			effectParentPositions = (Vector3[])(object)new Vector3[effects.Length];
-			effectParentRotations = (Quaternion[])(object)new Quaternion[effects.Length];
-			effectParentScales = (Vector3[])(object)new Vector3[effects.Length];
+			effectParentPositions = new Vector3[effects.Length];
+			effectParentRotations = new Quaternion[effects.Length];
+			effectParentScales = new Vector3[effects.Length];
 			for (int j = 0; j < effects.Length; j++)
 			{
 				if ((Object)(object)effects[j] != (Object)null)

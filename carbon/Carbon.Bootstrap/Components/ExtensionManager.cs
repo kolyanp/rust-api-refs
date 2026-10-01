@@ -69,13 +69,22 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 
 	private readonly string[] _directories = new string[1] { Context.CarbonExtensions };
 
-	private static readonly string[] _references;
+	private static readonly string[] _references = new string[4]
+	{
+		Context.CarbonExtensions,
+		Context.CarbonManaged,
+		Context.CarbonLib,
+		Context.GameManaged
+	};
 
-	public static Dictionary<string, Assembly> ExtensionAssemblyCache;
+	public static Dictionary<string, Assembly> ExtensionAssemblyCache = new Dictionary<string, Assembly>();
 
 	public static Resolver ResolverInstance;
 
-	public static ReaderParameters ReadingParameters;
+	public static ReaderParameters ReadingParameters = new ReaderParameters
+	{
+		AssemblyResolver = (IAssemblyResolver)(object)(ResolverInstance = new Resolver())
+	};
 
 	internal List<string> _created = new List<string>();
 
@@ -86,12 +95,12 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 	internal void Awake()
 	{
 		FileWatcherManager watcher = Bootstrap.Watcher;
-		WatchFolder obj = new WatchFolder
+		WatchFolder watchFolder = new WatchFolder
 		{
 			Filter = "*.dll",
 			IncludeSubFolders = false,
 			Directory = Context.CarbonExtensions,
-			OnEvent = delegate(WatchFileEvent e)
+			OnEvent = (WatchFileEvent e) =>
 			{
 				if (e.IsInitial && e.Type == WatcherChangeTypes.Created && !_created.Contains(e.Path) && !_changed.Contains(e.Path) && !_deleted.Contains(e.Path))
 				{
@@ -99,8 +108,8 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 				}
 			}
 		};
-		WatchFolder item = obj;
-		base.Watcher = obj;
+		WatchFolder item = watchFolder;
+		Watcher = watchFolder;
 		watcher.Watch(item);
 	}
 
@@ -155,7 +164,7 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 			MethodBase method = new StackFrame(1).GetMethod();
 			requester = $"{method.DeclaringType}.{method.Name}";
 		}
-		Item item = base._loaded.FirstOrDefault((Item x) => x.File == file);
+		Item item = _loaded.FirstOrDefault((Item x) => x.File == file);
 		AssemblyDefinition val = null;
 		MemoryStream stream = null;
 		ICarbonExtension carbonExtension = null;
@@ -201,31 +210,31 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 			ExtensionAssemblyCache[assembly.FullName] = assembly;
 			bool isProfiledAssembly = MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Extension, assembly, Path.GetFileNameWithoutExtension(file));
 			Assemblies.Extensions.Update(Path.GetFileNameWithoutExtension(file), assembly, file, isProfiledAssembly);
-			if (base.AssemblyManager.IsType<ICarbonExtension>(assembly, out var output))
+			if (AssemblyManager.IsType<ICarbonExtension>(assembly, out var output))
 			{
 				string file2 = Path.Combine(Context.CarbonExtensions, text + ".dll");
 				if (item == null)
 				{
-					List<Item> loaded = base._loaded;
-					Item obj = new Item
+					List<Item> loaded = _loaded;
+					Item item2 = new Item
 					{
 						File = file2
 					};
-					item = obj;
-					loaded.Add(obj);
+					item = item2;
+					loaded.Add(item2);
 				}
 				item.PostProcessedRaw = postProcessedRaw;
 				item.Shared = assembly.GetTypes();
 				List<Type> list = new List<Type>();
 				if (output != null)
 				{
-					foreach (Type item2 in output)
+					foreach (Type item3 in output)
 					{
-						if (Enumerable.Contains<Type>(item2.GetInterfaces(), typeof(ICarbonExtension)))
+						if (Enumerable.Contains(item3.GetInterfaces(), typeof(ICarbonExtension)))
 						{
-							carbonExtension = Activator.CreateInstance(item2) as ICarbonExtension;
+							carbonExtension = Activator.CreateInstance(item3) as ICarbonExtension;
 							Hydrate(assembly, carbonExtension);
-							list.Add(item2);
+							list.Add(item3);
 							item.Addon = carbonExtension;
 						}
 					}
@@ -263,7 +272,7 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 	[MethodImpl(MethodImplOptions.NoInlining)]
 	public override void Unload(string file, string requester)
 	{
-		Item item = base._loaded.FirstOrDefault((Item x) => x.File == file);
+		Item item = _loaded.FirstOrDefault((Item x) => x.File == file);
 		CarbonEventArgs e = Pool.Get<CarbonEventArgs>();
 		e.Init(file);
 		try
@@ -277,25 +286,13 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 			Bootstrap.Events.Trigger(CarbonEvent.ExtensionUnloadFailed, e);
 		}
 		Pool.Free<CarbonEventArgs>(ref e);
-		base._loaded.Remove(item);
+		_loaded.Remove(item);
 	}
 
 	static ExtensionManager()
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
-		_references = new string[4]
-		{
-			Context.CarbonExtensions,
-			Context.CarbonManaged,
-			Context.CarbonLib,
-			Context.GameManaged
-		};
-		ExtensionAssemblyCache = new Dictionary<string, Assembly>();
-		ReadingParameters = new ReaderParameters
-		{
-			AssemblyResolver = (IAssemblyResolver)(object)(ResolverInstance = new Resolver())
-		};
+		//IL_0050: Expected Obj, but got Unknown
 	}
 }

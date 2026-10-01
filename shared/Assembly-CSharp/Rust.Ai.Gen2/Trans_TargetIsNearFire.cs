@@ -12,7 +12,7 @@ public class Trans_TargetIsNearFire : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_TargetIsNearFire"))
 		{
-			return Test(Owner, base.Senses, onlySeeFireWhenClose);
+			return Test(Owner, Senses, onlySeeFireWhenClose);
 		}
 	}
 

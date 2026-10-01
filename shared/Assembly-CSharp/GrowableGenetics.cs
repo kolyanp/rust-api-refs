@@ -27,7 +27,7 @@ public static class GrowableGenetics
 
 	private static GeneWeighting[] neighbourWeights = new GeneWeighting[Enum.GetValues(typeof(GeneType)).Length];
 
-	private static GeneWeighting dominant = default(GeneWeighting);
+	private static GeneWeighting dominant = default;
 
 	public static void CrossBreed(GrowableEntity growable)
 	{

@@ -35,7 +35,7 @@ internal sealed class AnalyticsManager : CarbonBehaviour, IAnalyticsManager
 
 	private const string MeasurementSecret = "edBQH3_wRCWxZSzx5Y2IWA";
 
-	private static readonly Lazy<string> _branch = new Lazy<string>(delegate
+	private static readonly Lazy<string> _branch = new Lazy<string>(() =>
 	{
 		string value = _infoVersion.Value;
 		if (value != null)
@@ -68,9 +68,9 @@ internal sealed class AnalyticsManager : CarbonBehaviour, IAnalyticsManager
 
 	private static readonly Lazy<string> _version = new Lazy<string>(() => AccessTools.TypeByName("Carbon.Community").Assembly.GetName().Version.ToString());
 
-	private static readonly Lazy<Identity> _serverInfo = new Lazy<Identity>(delegate
+	private static readonly Lazy<Identity> _serverInfo = new Lazy<Identity>(() =>
 	{
-		Identity identity = default(Identity);
+		Identity identity = default;
 		try
 		{
 			_location = Path.Combine(Context.Game, "server", Server.identity, "carbon.id");

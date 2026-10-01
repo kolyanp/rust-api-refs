@@ -163,7 +163,7 @@ public class DDraw : MonoBehaviour
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		BroadcastBox(((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).size, Vector3.zero, color, duration, distanceFade, zTest);
+		BroadcastBox(bounds.center, bounds.size, Vector3.zero, color, duration, distanceFade, zTest);
 	}
 
 	public static void BroadcastClear()
@@ -247,7 +247,7 @@ public class DDraw : MonoBehaviour
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		Box(player, ((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).size, Vector3.zero, color, duration, distanceFade, zTest);
+		Box(player, bounds.center, bounds.size, Vector3.zero, color, duration, distanceFade, zTest);
 	}
 
 	public static void Box(BasePlayer player, Vector3 pos, Vector3 size, Vector3 rot, Color color, float duration = 10f, bool distanceFade = true, bool zTest = true)

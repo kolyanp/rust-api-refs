@@ -165,9 +165,9 @@ public static class Server
 				}
 				Debug.LogWarning((object)"Failed to refresh server ID - registering a new one");
 			}
-			HttpResponseMessage obj = await AutoRetry(() => WebUtil.HttpClient.GetAsync(App.endpoint + "/server/register" + query));
-			obj.EnsureSuccessStatusCode();
-			SetServerRegistration(await obj.Content.ReadAsStringAsync());
+			HttpResponseMessage httpResponseMessage2 = await AutoRetry(() => WebUtil.HttpClient.GetAsync(App.endpoint + "/server/register" + query));
+			httpResponseMessage2.EnsureSuccessStatusCode();
+			SetServerRegistration(await httpResponseMessage2.Content.ReadAsStringAsync());
 		}
 		catch (Exception arg2)
 		{

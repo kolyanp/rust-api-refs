@@ -9,7 +9,7 @@ public class AttackedAIEvent : BaseAIEvent
 	public AttackedAIEvent()
 		: base(AIEventType.Attacked)
 	{
-		base.Rate = ExecuteRate.Fast;
+		Rate = ExecuteRate.Fast;
 	}
 
 	public override void Reset()
@@ -20,8 +20,8 @@ public class AttackedAIEvent : BaseAIEvent
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
-		base.Result = base.Inverted;
-		combatEntity = memory.Entity.Get(base.InputEntityMemorySlot) as BaseCombatEntity;
+		Result = Inverted;
+		combatEntity = memory.Entity.Get(InputEntityMemorySlot) as BaseCombatEntity;
 		float num = lastExecuteTime;
 		lastExecuteTime = Time.time;
 		if ((Object)(object)combatEntity == (Object)null || !(combatEntity.lastAttackedTime >= num) || (Object)(object)combatEntity.lastAttacker == (Object)null || (Object)(object)combatEntity.lastAttacker == (Object)(object)combatEntity)
@@ -29,13 +29,13 @@ public class AttackedAIEvent : BaseAIEvent
 			return;
 		}
 		BasePlayer basePlayer = combatEntity.lastAttacker as BasePlayer;
-		if (!((Object)(object)basePlayer != (Object)null) || !((Object)(object)basePlayer == (Object)(object)memory.Entity.Get(5)) || !((Object)(object)basePlayer.lastDealtDamageTo == (Object)(object)base.Owner))
+		if (!((Object)(object)basePlayer != (Object)null) || !((Object)(object)basePlayer == (Object)(object)memory.Entity.Get(5)) || !((Object)(object)basePlayer.lastDealtDamageTo == (Object)(object)Owner))
 		{
-			if (base.ShouldSetOutputEntityMemory)
+			if (ShouldSetOutputEntityMemory)
 			{
-				memory.Entity.Set(combatEntity.lastAttacker, base.OutputEntityMemorySlot);
+				memory.Entity.Set(combatEntity.lastAttacker, OutputEntityMemorySlot);
 			}
-			base.Result = !base.Inverted;
+			Result = !Inverted;
 		}
 	}
 }

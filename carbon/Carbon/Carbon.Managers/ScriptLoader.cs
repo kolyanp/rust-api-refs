@@ -60,7 +60,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 			Type = null;
 			Name = null;
 			Author = null;
-			Version = default(VersionNumber);
+			Version = default;
 			Description = null;
 			Loader = null;
 			Instance = null;
@@ -186,21 +186,21 @@ public class ScriptLoader : IScriptLoader, IDisposable
 		{
 			for (int i = 0; i < Scripts.Count; i++)
 			{
-				IScript plugin = Scripts[i];
-				if (!plugin.IsCore && plugin.Instance != null)
+				IScript script = Scripts[i];
+				if (!script.IsCore && script.Instance != null)
 				{
-					plugin.Instance.Package.Plugins?.RemoveAll((RustPlugin x) => x == plugin.Instance);
-					if (plugin.Instance.IsExtension)
+					script.Instance.Package.RemovePlugin(script.Instance);
+					if (script.Instance.IsExtension)
 					{
-						ScriptCompilationThread._clearExtensionPlugin(plugin.Instance.FilePath);
+						ScriptCompilationThread._clearExtensionPlugin(script.Instance.FilePath);
 					}
 					try
 					{
-						ModLoader.UninitializePlugin(plugin.Instance);
+						ModLoader.UninitializePlugin(script.Instance);
 					}
 					catch (Exception ex)
 					{
-						Logger.Error($"Failed unloading '{plugin.Instance}'", ex);
+						Logger.Error($"Failed unloading '{script.Instance}'", ex);
 					}
 				}
 			}
@@ -214,7 +214,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 
 	private IEnumerator ReadFileAsync(string filePath, Action<string> onRead)
 	{
-		Task<string> task = Task.Run<string>(async delegate
+		Task<string> task = Task.Run<string>(async () =>
 		{
 			FileInfo fileInfo = new FileInfo(filePath);
 			bool inUse = true;
@@ -269,7 +269,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 	{
 		if (string.IsNullOrEmpty(InitialSource.Content) && !string.IsNullOrEmpty(InitialSource.FilePath) && OsEx.File.Exists(InitialSource.FilePath))
 		{
-			yield return ReadFileAsync(InitialSource.FilePath, delegate(string content)
+			yield return ReadFileAsync(InitialSource.FilePath, (string content) =>
 			{
 				if (InitialSource != null && !string.IsNullOrEmpty(content))
 				{
@@ -516,7 +516,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 				plugin2.Author = info.Author;
 				plugin2.Version = info.Version;
 				plugin2.Description = descriptionAttribute?.Description;
-				if (ModLoader.InitializePlugin(type, out var plugin3, Mod, delegate(RustPlugin p)
+				if (ModLoader.InitializePlugin(type, out var plugin3, Mod, (RustPlugin p) =>
 				{
 					Scripts.Add(plugin2);
 					p.HasConditionals = Sources.Any((ISource x) => x.Content.Contains("#if "));

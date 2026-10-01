@@ -9,26 +9,26 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 		Any
 	}
 
-	public bool runClientside;
+	public bool runClientside = true;
 
 	[Tooltip("Server-side only works if the EntityFlag_Toggle is on the same GameObject as the Entity")]
-	public bool runServerside;
+	public bool runServerside = true;
 
 	public BaseEntity.Flags flag;
 
-	[SerializeField]
 	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
+	[SerializeField]
 	private FlagCheck flagCheck;
 
-	[SerializeField]
 	[Tooltip("Specify any flags that must NOT be on for this toggle to be on")]
+	[SerializeField]
 	private BaseEntity.Flags notFlag;
 
 	[SerializeField]
-	private UnityEvent onFlagEnabled;
+	private UnityEvent onFlagEnabled = new UnityEvent();
 
 	[SerializeField]
-	private UnityEvent onFlagDisabled;
+	private UnityEvent onFlagDisabled = new UnityEvent();
 
 	internal bool hasRunOnce;
 
@@ -71,7 +71,7 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 
 	public void OnPostNetworkUpdate(BaseEntity entity)
 	{
-		if (!((Object)(object)base.baseEntity != (Object)(object)entity) && runClientside)
+		if (!((Object)(object)baseEntity != (Object)(object)entity) && runClientside)
 		{
 			DoUpdate(entity);
 		}
@@ -96,13 +96,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 	public EntityFlag_Toggle()
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Expected O, but got Unknown
+		//IL_0019: Expected Obj, but got Unknown
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Expected O, but got Unknown
-		runClientside = true;
-		runServerside = true;
-		onFlagEnabled = new UnityEvent();
-		onFlagDisabled = new UnityEvent();
-		base._002Ector();
+		//IL_0024: Expected Obj, but got Unknown
 	}
 }

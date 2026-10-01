@@ -66,7 +66,7 @@ public class VendingMachineMapMarker : MapMarker
 			info.msg.vendingMachine.networkID = server_vendingMachine.net.ID;
 			info.msg.vendingMachine.droneAccessible = server_vendingMachine.IsDroneAccessible();
 			info.msg.vendingMachine.sellOrderContainer = server_vendingMachine.sellOrders.Copy();
-			info.msg.vendingMachine.sellOrderContainer.sellOrders.RemoveAll(delegate(SellOrder x)
+			info.msg.vendingMachine.sellOrderContainer.sellOrders.RemoveAll((SellOrder x) =>
 			{
 				//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0030: Unknown result type (might be due to invalid IL or missing references)

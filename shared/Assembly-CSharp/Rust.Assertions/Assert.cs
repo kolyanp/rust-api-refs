@@ -146,8 +146,8 @@ public static class Assert
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
-		//IL_0021: Expected O, but got Unknown
+		//IL_0021: Expected Obj, but got Unknown
+		//IL_0021: Expected Obj, but got Unknown
 		if (a is Object || b is Object)
 		{
 			return (Object)a == (Object)b;

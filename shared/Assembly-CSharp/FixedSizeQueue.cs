@@ -12,7 +12,7 @@ public class FixedSizeQueue<T> : Queue<T>
 	public new void Enqueue(T item)
 	{
 		base.Enqueue(item);
-		while (base.Count > _maxSize)
+		while (Count > _maxSize)
 		{
 			Dequeue();
 		}

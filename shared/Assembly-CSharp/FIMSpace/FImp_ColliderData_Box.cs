@@ -31,14 +31,13 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		Is2D = false;
-		base.Collider = (Collider)(object)collider;
-		base.Transform = ((Component)collider).transform;
+		Collider = (Collider)(object)collider;
+		Transform = ((Component)collider).transform;
 		Box = collider;
-		base.ColliderType = EFColliderType.Box;
+		ColliderType = EFColliderType.Box;
 		RefreshColliderData();
-		previousPosition = base.Transform.position + Vector3.forward * Mathf.Epsilon;
+		previousPosition = Transform.position + Vector3.forward * Mathf.Epsilon;
 	}
 
 	public FImp_ColliderData_Box(BoxCollider2D collider2D)
@@ -48,14 +47,13 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		Is2D = true;
-		base.Collider2D = (Collider2D)(object)collider2D;
-		base.Transform = ((Component)collider2D).transform;
+		Collider2D = (Collider2D)(object)collider2D;
+		Transform = ((Component)collider2D).transform;
 		Box2D = collider2D;
-		base.ColliderType = EFColliderType.Box;
+		ColliderType = EFColliderType.Box;
 		RefreshColliderData();
-		previousPosition = base.Transform.position + Vector3.forward * Mathf.Epsilon;
+		previousPosition = Transform.position + Vector3.forward * Mathf.Epsilon;
 	}
 
 	public override void RefreshColliderData()
@@ -129,18 +127,18 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		if (base.IsStatic)
+		if (IsStatic)
 		{
 			return;
 		}
-		if ((Object)(object)base.Collider2D == (Object)null)
+		if ((Object)(object)Collider2D == (Object)null)
 		{
 			bool flag = false;
-			if (!FEngineering.VIsSame(base.Transform.position, previousPosition))
+			if (!FEngineering.VIsSame(Transform.position, previousPosition))
 			{
 				flag = true;
 			}
-			else if (!FEngineering.QIsSame(base.Transform.rotation, previousRotation))
+			else if (!FEngineering.QIsSame(Transform.rotation, previousRotation))
 			{
 				flag = true;
 			}
@@ -149,22 +147,22 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 				right = ((Component)Box).transform.TransformVector(Vector3.right / 2f * Box.size.x);
 				up = ((Component)Box).transform.TransformVector(Vector3.up / 2f * Box.size.y);
 				forward = ((Component)Box).transform.TransformVector(Vector3.forward / 2f * Box.size.z);
-				rightN = ((Vector3)(ref right)).normalized;
-				upN = ((Vector3)(ref up)).normalized;
-				forwardN = ((Vector3)(ref forward)).normalized;
+				rightN = right.normalized;
+				upN = up.normalized;
+				forwardN = forward.normalized;
 				boxCenter = GetBoxCenter(Box);
 				scales = Vector3.Scale(Box.size, ((Component)Box).transform.lossyScale);
-				((Vector3)(ref scales)).Normalize();
+				scales.Normalize();
 			}
 		}
 		else
 		{
 			bool flag2 = false;
-			if (Vector2.Distance(Vector2.op_Implicit(base.Transform.position), Vector2.op_Implicit(previousPosition)) > Mathf.Epsilon)
+			if (Vector2.Distance(Vector2.op_Implicit(Transform.position), Vector2.op_Implicit(previousPosition)) > Mathf.Epsilon)
 			{
 				flag2 = true;
 			}
-			else if (!FEngineering.QIsSame(base.Transform.rotation, previousRotation))
+			else if (!FEngineering.QIsSame(Transform.rotation, previousRotation))
 			{
 				flag2 = true;
 			}
@@ -172,19 +170,19 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 			{
 				right = ((Component)Box2D).transform.TransformVector(Vector3.right / 2f * Box2D.size.x);
 				up = ((Component)Box2D).transform.TransformVector(Vector3.up / 2f * Box2D.size.y);
-				rightN = ((Vector3)(ref right)).normalized;
-				upN = ((Vector3)(ref up)).normalized;
+				rightN = right.normalized;
+				upN = up.normalized;
 				boxCenter = GetBoxCenter(Box2D);
 				boxCenter.z = 0f;
-				Vector3 lossyScale = base.Transform.lossyScale;
+				Vector3 lossyScale = Transform.lossyScale;
 				lossyScale.z = 1f;
 				scales = Vector3.Scale(Vector2.op_Implicit(Box2D.size), lossyScale);
-				((Vector3)(ref scales)).Normalize();
+				scales.Normalize();
 			}
 		}
 		base.RefreshColliderData();
-		previousPosition = base.Transform.position;
-		previousRotation = base.Transform.rotation;
+		previousPosition = Transform.position;
+		previousRotation = Transform.rotation;
 	}
 
 	public override bool PushIfInside(ref Vector3 segmentPosition, float segmentRadius, Vector3 segmentOffset)
@@ -312,7 +310,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 			val = right;
 		}
 		bool flag = false;
-		if ((Object)(object)base.Collider2D == (Object)null)
+		if ((Object)(object)Collider2D == (Object)null)
 		{
 			planeDistance = PlaneDistance(boxCenter + forward, forwardN, val2);
 			if (SphereInsidePlane(planeDistance, segmentRadius))
@@ -346,11 +344,11 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		if (flag)
 		{
 			bool flag2 = false;
-			if (((Vector3)(ref val)).sqrMagnitude == 0f)
+			if (val.sqrMagnitude == 0f)
 			{
 				flag2 = true;
 			}
-			else if ((Object)(object)base.Collider2D == (Object)null)
+			else if ((Object)(object)Collider2D == (Object)null)
 			{
 				if (IsInsideBoxCollider(Box, val2))
 				{
@@ -362,12 +360,12 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 				flag2 = true;
 			}
 			Vector3 val3 = GetNearestPoint(val2) - val2;
-			val3 = ((!flag2) ? (val3 - ((Vector3)(ref val3)).normalized * segmentRadius) : (val3 + ((Vector3)(ref val3)).normalized * segmentRadius));
+			val3 = ((!flag2) ? (val3 - val3.normalized * segmentRadius) : (val3 + val3.normalized * segmentRadius));
 			if (flag2)
 			{
 				segmentPosition += val3;
 			}
-			else if (((Vector3)(ref val3)).sqrMagnitude > 0f)
+			else if (val3.sqrMagnitude > 0f)
 			{
 				segmentPosition += val3;
 			}
@@ -420,7 +418,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		Vector3 val2 = ((Component)box).transform.TransformVector(Vector3.up / 2f * box.size.y + box.center.y * Vector3.up);
 		Vector3 val3 = ((Component)box).transform.TransformVector(Vector3.forward / 2f * box.size.z + box.center.z * Vector3.forward);
 		Vector3 val4 = Vector3.Scale(box.size, ((Component)box).transform.lossyScale);
-		((Vector3)(ref val4)).Normalize();
+		val4.Normalize();
 		PushOutFromBoxCollider(box, collision, segmentColliderRadius, ref segmentPosition, val, val2, val3, val4, is2D);
 	}
 
@@ -552,11 +550,11 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		Vector3 val2 = ((Component)box).transform.TransformVector(Vector3.up / 2f * box.size.y + box.center.y * Vector3.up);
 		Vector3 val3 = ((Component)box).transform.TransformVector(Vector3.forward / 2f * box.size.z + box.center.z * Vector3.forward);
 		Vector3 val4 = Vector3.Scale(box.size, ((Component)box).transform.lossyScale);
-		((Vector3)(ref val4)).Normalize();
+		val4.Normalize();
 		Vector3 val5 = GetBoxCenter(box);
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
-		Vector3 normalized2 = ((Vector3)(ref val)).normalized;
-		Vector3 normalized3 = ((Vector3)(ref val3)).normalized;
+		Vector3 normalized = val2.normalized;
+		Vector3 normalized2 = val.normalized;
+		Vector3 normalized3 = val3.normalized;
 		int num = 0;
 		Vector3 val6 = Vector3.zero;
 		float planeDistance = PlaneDistance(val5 + val2, normalized, segmentPosition);
@@ -622,7 +620,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		if (num == 6)
 		{
 			bool flag = false;
-			if (((Vector3)(ref val6)).sqrMagnitude == 0f)
+			if (val6.sqrMagnitude == 0f)
 			{
 				flag = true;
 			}
@@ -631,12 +629,12 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 				flag = true;
 			}
 			Vector3 val7 = GetNearestPoint(segmentPosition, val5, val, val2, val3, is2D) - segmentPosition;
-			val7 = ((!flag) ? (val7 - ((Vector3)(ref val7)).normalized * segmentColliderRadius * 1.01f) : (val7 + ((Vector3)(ref val7)).normalized * segmentColliderRadius * 1.01f));
+			val7 = ((!flag) ? (val7 - val7.normalized * segmentColliderRadius * 1.01f) : (val7 + val7.normalized * segmentColliderRadius * 1.01f));
 			if (flag)
 			{
 				segmentPosition += val7;
 			}
-			else if (((Vector3)(ref val7)).sqrMagnitude > 0f)
+			else if (val7.sqrMagnitude > 0f)
 			{
 				segmentPosition += val7;
 			}
@@ -703,10 +701,10 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = ((ContactPoint)(ref collision.contacts[0])).point;
+		Vector3 val = collision.contacts[0].point;
 		Vector3 val2 = pos - val;
 		Vector3 val3 = GetBoxCenter(box);
-		if (((Vector3)(ref val2)).sqrMagnitude == 0f)
+		if (val2.sqrMagnitude == 0f)
 		{
 			val2 = pos - val3;
 		}
@@ -715,15 +713,15 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		{
 			float boxAverageScale = GetBoxAverageScale(box);
 			Vector3 targetPlaneNormal = GetTargetPlaneNormal(box, pos, right, up, forward, scales);
-			Vector3 normalized = ((Vector3)(ref targetPlaneNormal)).normalized;
-			RaycastHit val4 = default(RaycastHit);
-			val = ((!((Collider)box).Raycast(new Ray(pos - normalized * boxAverageScale * 3f, normalized), ref val4, boxAverageScale * 4f)) ? GetIntersectOnBoxFromInside(box, val3, pos, targetPlaneNormal) : ((RaycastHit)(ref val4)).point);
+			Vector3 normalized = targetPlaneNormal.normalized;
+			RaycastHit val4 = default;
+			val = ((!((Collider)box).Raycast(new Ray(pos - normalized * boxAverageScale * 3f, normalized), ref val4, boxAverageScale * 4f)) ? GetIntersectOnBoxFromInside(box, val3, pos, targetPlaneNormal) : val4.point);
 			val2 = val - pos;
 			num = 100f;
 		}
-		Vector3 val5 = pos - (val2 / num + ((Vector3)(ref val2)).normalized * 1.15f) / 2f * segmentColliderRadius;
+		Vector3 val5 = pos - (val2 / num + val2.normalized * 1.15f) / 2f * segmentColliderRadius;
 		val5 = val - val5;
-		float sqrMagnitude = ((Vector3)(ref val5)).sqrMagnitude;
+		float sqrMagnitude = val5.sqrMagnitude;
 		if (sqrMagnitude > 0f && sqrMagnitude < segmentColliderRadius * segmentColliderRadius * num)
 		{
 			pos += val5;
@@ -850,10 +848,10 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		Vector3 lossyScale = ((Component)box2D).transform.lossyScale;
 		lossyScale.z = 1f;
 		Vector2 val3 = Vector2.op_Implicit(Vector3.Scale(Vector2.op_Implicit(box2D.size), lossyScale));
-		((Vector2)(ref val3)).Normalize();
+		val3.Normalize();
 		Vector2 val4 = Vector2.op_Implicit(GetBoxCenter(box2D));
-		Vector2 normalized = ((Vector2)(ref val2)).normalized;
-		Vector2 normalized2 = ((Vector2)(ref val)).normalized;
+		Vector2 normalized = val2.normalized;
+		Vector2 normalized2 = val.normalized;
 		int num = 0;
 		Vector3 val5 = Vector3.zero;
 		float planeDistance = PlaneDistance(Vector2.op_Implicit(val4 + val2), Vector2.op_Implicit(normalized), segmentPosition);
@@ -899,7 +897,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		if (num == 4)
 		{
 			bool flag = false;
-			if (((Vector3)(ref val5)).sqrMagnitude == 0f)
+			if (val5.sqrMagnitude == 0f)
 			{
 				flag = true;
 			}
@@ -908,12 +906,12 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 				flag = true;
 			}
 			Vector3 val6 = GetNearestPoint2D(Vector2.op_Implicit(segmentPosition), val4, val, val2) - segmentPosition;
-			val6 = ((!flag) ? (val6 - ((Vector3)(ref val6)).normalized * segmentColliderRadius * 1.01f) : (val6 + ((Vector3)(ref val6)).normalized * segmentColliderRadius * 1.01f));
+			val6 = ((!flag) ? (val6 - val6.normalized * segmentColliderRadius * 1.01f) : (val6 + val6.normalized * segmentColliderRadius * 1.01f));
 			if (flag)
 			{
 				segmentPosition += val6;
 			}
-			else if (((Vector3)(ref val6)).sqrMagnitude > 0f)
+			else if (val6.sqrMagnitude > 0f)
 			{
 				segmentPosition += val6;
 			}
@@ -1008,14 +1006,14 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		Vector3 one = Vector3.one;
 		one.x = PlaneDistance(boxCenter + right, rightN, point);
 		one.y = PlaneDistance(boxCenter + up, upN, point);
-		if ((Object)(object)base.Collider2D == (Object)null)
+		if ((Object)(object)Collider2D == (Object)null)
 		{
 			one.z = PlaneDistance(boxCenter + forward, forwardN, point);
 		}
 		Vector3 one2 = Vector3.one;
 		one2.x = PlaneDistance(boxCenter - right, -rightN, point);
 		one2.y = PlaneDistance(boxCenter - up, -upN, point);
-		if ((Object)(object)base.Collider2D == (Object)null)
+		if ((Object)(object)Collider2D == (Object)null)
 		{
 			one2.z = PlaneDistance(boxCenter - forward, -forwardN, point);
 		}
@@ -1044,7 +1042,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 			y = one2.y;
 			num2 = 1f;
 		}
-		if ((Object)(object)base.Collider2D == (Object)null)
+		if ((Object)(object)Collider2D == (Object)null)
 		{
 			float z;
 			if (one.z > one2.z)
@@ -1164,18 +1162,18 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = point;
 		Vector3 one = Vector3.one;
-		one.x = PlaneDistance(boxCenter + right, ((Vector3)(ref right)).normalized, point);
-		one.y = PlaneDistance(boxCenter + up, ((Vector3)(ref up)).normalized, point);
+		one.x = PlaneDistance(boxCenter + right, right.normalized, point);
+		one.y = PlaneDistance(boxCenter + up, up.normalized, point);
 		if (!is2D)
 		{
-			one.z = PlaneDistance(boxCenter + forward, ((Vector3)(ref forward)).normalized, point);
+			one.z = PlaneDistance(boxCenter + forward, forward.normalized, point);
 		}
 		Vector3 one2 = Vector3.one;
-		one2.x = PlaneDistance(boxCenter - right, -((Vector3)(ref right)).normalized, point);
-		one2.y = PlaneDistance(boxCenter - up, -((Vector3)(ref up)).normalized, point);
+		one2.x = PlaneDistance(boxCenter - right, -right.normalized, point);
+		one2.y = PlaneDistance(boxCenter - up, -up.normalized, point);
 		if (!is2D)
 		{
-			one2.z = PlaneDistance(boxCenter - forward, -((Vector3)(ref forward)).normalized, point);
+			one2.z = PlaneDistance(boxCenter - forward, -forward.normalized, point);
 		}
 		float num = 1f;
 		float num2 = 1f;
@@ -1304,11 +1302,11 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector2.op_Implicit(point);
 		Vector3 one = Vector3.one;
-		one.x = PlaneDistance(Vector2.op_Implicit(boxCenter + right), Vector2.op_Implicit(((Vector2)(ref right)).normalized), Vector2.op_Implicit(point));
-		one.y = PlaneDistance(Vector2.op_Implicit(boxCenter + up), Vector2.op_Implicit(((Vector2)(ref up)).normalized), Vector2.op_Implicit(point));
+		one.x = PlaneDistance(Vector2.op_Implicit(boxCenter + right), Vector2.op_Implicit(right.normalized), Vector2.op_Implicit(point));
+		one.y = PlaneDistance(Vector2.op_Implicit(boxCenter + up), Vector2.op_Implicit(up.normalized), Vector2.op_Implicit(point));
 		Vector3 one2 = Vector3.one;
-		one2.x = PlaneDistance(Vector2.op_Implicit(boxCenter - right), Vector2.op_Implicit(-((Vector2)(ref right)).normalized), Vector2.op_Implicit(point));
-		one2.y = PlaneDistance(Vector2.op_Implicit(boxCenter - up), Vector2.op_Implicit(-((Vector2)(ref up)).normalized), Vector2.op_Implicit(point));
+		one2.x = PlaneDistance(Vector2.op_Implicit(boxCenter - right), Vector2.op_Implicit(-right.normalized), Vector2.op_Implicit(point));
+		one2.y = PlaneDistance(Vector2.op_Implicit(boxCenter - up), Vector2.op_Implicit(-up.normalized), Vector2.op_Implicit(point));
 		float num = 1f;
 		float num2 = 1f;
 		float x;
@@ -1455,9 +1453,9 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		}
 		Vector3 val4 = point;
 		Vector3 val5 = GetBoxCenter(boxCollider);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
-		Vector3 normalized2 = ((Vector3)(ref val2)).normalized;
-		Vector3 normalized3 = ((Vector3)(ref val3)).normalized;
+		Vector3 normalized = val.normalized;
+		Vector3 normalized2 = val2.normalized;
+		Vector3 normalized3 = val3.normalized;
 		Vector3 one = Vector3.one;
 		one.x = PlaneDistance(val5 + val, normalized, point);
 		one.y = PlaneDistance(val5 + val2, normalized2, point);
@@ -1548,7 +1546,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = ((Vector3)(ref planeNormal)).normalized * distance;
+		Vector3 val = planeNormal.normalized * distance;
 		return point + val;
 	}
 
@@ -1694,7 +1692,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 			val3 = ((Component)boxCollider).transform.TransformVector(Vector3.forward / 2f * boxCollider.size.z);
 		}
 		Vector3 val4 = Vector3.Scale(boxCollider.size, ((Component)boxCollider).transform.lossyScale);
-		((Vector3)(ref val4)).Normalize();
+		val4.Normalize();
 		return GetTargetPlaneNormal(boxCollider, point, val, val2, val3, val4, is2D);
 	}
 
@@ -1753,22 +1751,22 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = GetBoxCenter(boxCollider) - point;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
-		Vector3 val2 = default(Vector3);
-		val2.x = Vector3.Dot(normalized, ((Vector3)(ref right)).normalized);
-		val2.y = Vector3.Dot(normalized, ((Vector3)(ref up)).normalized);
+		Vector3 normalized = val.normalized;
+		Vector3 val2 = default;
+		val2.x = Vector3.Dot(normalized, right.normalized);
+		val2.y = Vector3.Dot(normalized, up.normalized);
 		val2.x = val2.x * scales.y * scales.z;
 		val2.y = val2.y * scales.x * scales.z;
 		if (!is2D)
 		{
-			val2.z = Vector3.Dot(normalized, ((Vector3)(ref forward)).normalized);
+			val2.z = Vector3.Dot(normalized, forward.normalized);
 			val2.z = val2.z * scales.y * scales.x;
 		}
 		else
 		{
 			val2.z = 0f;
 		}
-		((Vector3)(ref val2)).Normalize();
+		val2.Normalize();
 		Vector3 val3 = val2;
 		if (val2.x < 0f)
 		{
@@ -1838,13 +1836,13 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 val = Vector2.op_Implicit(GetBoxCenter(boxCollider)) - point;
-		Vector2 normalized = ((Vector2)(ref val)).normalized;
-		Vector2 val2 = default(Vector2);
-		val2.x = Vector3.Dot(Vector2.op_Implicit(normalized), Vector2.op_Implicit(((Vector2)(ref right)).normalized));
-		val2.y = Vector3.Dot(Vector2.op_Implicit(normalized), Vector2.op_Implicit(((Vector2)(ref up)).normalized));
+		Vector2 normalized = val.normalized;
+		Vector2 val2 = default;
+		val2.x = Vector3.Dot(Vector2.op_Implicit(normalized), Vector2.op_Implicit(right.normalized));
+		val2.y = Vector3.Dot(Vector2.op_Implicit(normalized), Vector2.op_Implicit(up.normalized));
 		val2.x *= scales.y;
 		val2.y *= scales.x;
-		((Vector2)(ref val2)).Normalize();
+		val2.Normalize();
 		Vector2 val3 = val2;
 		if (val2.x < 0f)
 		{
@@ -1872,24 +1870,24 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = to - from;
-		Plane val2 = default(Plane);
-		((Plane)(ref val2))._002Ector(-planeNormal, GetBoxCenter(boxCollider) + planeNormal);
+		Plane val2 = new Plane(-planeNormal, GetBoxCenter(boxCollider) + planeNormal);
 		Vector3 result = to;
 		float num = 0f;
-		Ray val3 = default(Ray);
-		((Ray)(ref val3))._002Ector(from, val);
-		if (((Plane)(ref val2)).Raycast(val3, ref num))
+		Ray val3 = new Ray(from, val);
+		if (val2.Raycast(val3, ref num))
 		{
-			result = ((Ray)(ref val3)).GetPoint(num);
+			result = val3.GetPoint(num);
 		}
 		return result;
 	}

@@ -103,8 +103,8 @@ public class BaseNpc : BaseCombatEntity
 			Player
 		}
 
-		[Tooltip("Ai will be less likely to fight animals that are larger than them, and more likely to flee from them.")]
 		[Range(0f, 1f)]
+		[Tooltip("Ai will be less likely to fight animals that are larger than them, and more likely to flee from them.")]
 		public float Size;
 
 		[Tooltip("How fast we can move")]
@@ -237,21 +237,21 @@ public class BaseNpc : BaseCombatEntity
 
 	public bool NewAI;
 
-	public bool LegacyNavigation;
+	public bool LegacyNavigation = true;
 
-	public bool canSwim;
+	public bool canSwim = true;
 
 	private Vector3 stepDirection;
 
 	private float maxFleeTime;
 
-	private float fleeHealthThresholdPercentage;
+	private float fleeHealthThresholdPercentage = 1f;
 
-	private float blockEnemyTargetingTimeout;
+	private float blockEnemyTargetingTimeout = float.NegativeInfinity;
 
-	private float blockFoodTargetingTimeout;
+	private float blockFoodTargetingTimeout = float.NegativeInfinity;
 
-	private float aggroTimeout;
+	private float aggroTimeout = float.NegativeInfinity;
 
 	private float lastAggroChanceResult;
 
@@ -259,9 +259,9 @@ public class BaseNpc : BaseCombatEntity
 
 	private const float aggroChanceRecalcTimeout = 5f;
 
-	private float eatTimeout;
+	private float eatTimeout = float.NegativeInfinity;
 
-	private float wakeUpBlockMoveTimeout;
+	private float wakeUpBlockMoveTimeout = float.NegativeInfinity;
 
 	private BaseEntity blockTargetingThisEnemy;
 
@@ -292,23 +292,23 @@ public class BaseNpc : BaseCombatEntity
 
 	public float nextAttackTime;
 
-	[SerializeField]
 	[InspectorFlags]
-	public Enum topologyPreference;
+	[SerializeField]
+	public Enum topologyPreference = (Enum)96;
 
 	[InspectorFlags]
 	public AiFlags aiFlags;
 
 	[NonSerialized]
-	public byte[] CurrentFacts;
+	public byte[] CurrentFacts = new byte[Enum.GetValues(typeof(Facts)).Length];
 
 	[Header("NPC Senses")]
-	public int ForgetUnseenEntityTime;
+	public int ForgetUnseenEntityTime = 10;
 
-	public float SensesTickRate;
+	public float SensesTickRate = 0.5f;
 
 	[NonSerialized]
-	public BaseEntity[] SensesResults;
+	public BaseEntity[] SensesResults = new BaseEntity[64];
 
 	private float lastTickTime;
 
@@ -335,24 +335,24 @@ public class BaseNpc : BaseCombatEntity
 
 	public Vector3 AttackOffset;
 
-	public float AttackDamage;
+	public float AttackDamage = 20f;
 
-	public DamageType AttackDamageType;
+	public DamageType AttackDamageType = DamageType.Bite;
 
 	public float MinimumTargetHealthFraction;
 
 	[Tooltip("Stamina to use per attack")]
-	public float AttackCost;
+	public float AttackCost = 0.1f;
 
 	[Tooltip("How often can we attack")]
-	public float AttackRate;
+	public float AttackRate = 1f;
 
 	[Tooltip("Maximum Distance for an attack")]
-	public float AttackRange;
+	public float AttackRange = 1f;
 
 	public RustNavMeshAgent NavAgent;
 
-	public LayerMask movementMask;
+	public LayerMask movementMask = LayerMask.op_Implicit(1503731969);
 
 	public float stuckDuration;
 
@@ -363,9 +363,6 @@ public class BaseNpc : BaseCombatEntity
 	private bool _isDormant;
 
 	private float lastSetDestinationTime;
-
-	[CompilerGenerated]
-	private Vector3 _003CSpawnPosition_003Ek__BackingField;
 
 	[NonSerialized]
 	public StateTimer BusyTimer;
@@ -563,14 +560,14 @@ public class BaseNpc : BaseCombatEntity
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CSpawnPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CSpawnPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -584,7 +581,7 @@ public class BaseNpc : BaseCombatEntity
 	{
 		get
 		{
-			if (base.isClient)
+			if (isClient)
 			{
 				return null;
 			}
@@ -679,7 +676,7 @@ public class BaseNpc : BaseCombatEntity
 			IsStopped = false;
 		}
 		Vector3 val = Destination - position;
-		if (((Vector3)(ref val)).sqrMagnitude > 0.010000001f)
+		if (val.sqrMagnitude > 0.010000001f)
 		{
 			Destination = position;
 		}
@@ -715,14 +712,14 @@ public class BaseNpc : BaseCombatEntity
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		BaseEntity baseEntity = ent.GetParentEntity();
 		if ((Object)(object)baseEntity != (Object)null)
 		{
@@ -730,9 +727,9 @@ public class BaseNpc : BaseCombatEntity
 		}
 		Vector3 targetPositionWS = ent.ServerPosition + velocity * Time.fixedDeltaTime;
 		RustNavMeshHelpers.Raycast(ent.ServerPosition, targetPositionWS, out var hitWS, -1);
-		if (!Vector3Ex.IsNaNOrInfinity(((NavMeshHit)(ref hitWS)).position))
+		if (!Vector3Ex.IsNaNOrInfinity(hitWS.position))
 		{
-			return ((NavMeshHit)(ref hitWS)).position;
+			return hitWS.position;
 		}
 		return ent.ServerPosition;
 	}
@@ -800,13 +797,13 @@ public class BaseNpc : BaseCombatEntity
 		if (NewAI)
 		{
 			speed = (swimming ? ToSpeed(SpeedEnum.Walk) : TargetSpeed);
-			speed *= 0.5f + base.healthFraction * 0.5f;
+			speed *= 0.5f + healthFraction * 0.5f;
 			NavAgent.speed = Mathf.Lerp(NavAgent.speed, speed, 0.5f);
 			NavAgent.angularSpeed = Stats.TurnSpeed;
 			NavAgent.acceleration = Stats.Acceleration;
 			return;
 		}
-		speed *= 0.5f + base.healthFraction * 0.5f;
+		speed *= 0.5f + healthFraction * 0.5f;
 		if (CurrentBehaviour == Behaviour.Idle)
 		{
 			speed *= 0.2f;
@@ -819,7 +816,7 @@ public class BaseNpc : BaseCombatEntity
 		num = speedFractionResponse.Evaluate(num);
 		Vector3 forward = ((Component)this).transform.forward;
 		Vector3 val = NavAgent.nextPositionWS - ServerPosition;
-		float num2 = 1f - 0.9f * Vector3.Angle(forward, ((Vector3)(ref val)).normalized) / 180f * num * num;
+		float num2 = 1f - 0.9f * Vector3.Angle(forward, val.normalized) / 180f * num * num;
 		speed *= num2;
 		NavAgent.speed = Mathf.Lerp(NavAgent.speed, speed, 0.5f);
 		NavAgent.angularSpeed = Stats.TurnSpeed * (1.1f - num);
@@ -836,7 +833,7 @@ public class BaseNpc : BaseCombatEntity
 			num *= 0.01f;
 		}
 		Vector3 desiredVelocityWS = NavAgent.desiredVelocityWS;
-		if (((Vector3)(ref desiredVelocityWS)).sqrMagnitude > 0.1f)
+		if (desiredVelocityWS.sqrMagnitude > 0.1f)
 		{
 			num *= 2f;
 		}
@@ -846,7 +843,7 @@ public class BaseNpc : BaseCombatEntity
 			float num2 = 1f / 15f;
 			Stamina.Add(0.1f * num2);
 		}
-		_ = base.SecondsSinceAttacked;
+		_ = SecondsSinceAttacked;
 		_ = 60f;
 	}
 
@@ -1015,12 +1012,12 @@ public class BaseNpc : BaseCombatEntity
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ChaseTransform.position;
 		Vector3 val2 = ((Component)this).transform.position - val;
-		if ((double)((Vector3)(ref val2)).magnitude < 5.0)
+		if ((double)val2.magnitude < 5.0)
 		{
-			val += ((Vector3)(ref val2)).normalized * AttackOffset.z;
+			val += val2.normalized * AttackOffset.z;
 		}
 		Vector3 val3 = NavAgent.destinationWS - val;
-		if (((Vector3)(ref val3)).sqrMagnitude > 0.010000001f)
+		if (val3.sqrMagnitude > 0.010000001f)
 		{
 			NavAgent.SetDestination(val);
 		}
@@ -1101,12 +1098,12 @@ public class BaseNpc : BaseCombatEntity
 		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
 		OffMeshLinkData currentOffMeshLinkData = NavAgent.currentOffMeshLinkData;
-		if (!((OffMeshLinkData)(ref currentOffMeshLinkData)).valid || !((OffMeshLinkData)(ref currentOffMeshLinkData)).activated || (Object)(object)((OffMeshLinkData)(ref currentOffMeshLinkData)).offMeshLink == (Object)null)
+		if (!currentOffMeshLinkData.valid || !currentOffMeshLinkData.activated || (Object)(object)currentOffMeshLinkData.offMeshLink == (Object)null)
 		{
 			return false;
 		}
-		Vector3 val = ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos - ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 val = currentOffMeshLinkData.endPos - currentOffMeshLinkData.startPos;
+		Vector3 normalized = val.normalized;
 		normalized.y = 0f;
 		Vector3 desiredVelocityWS = NavAgent.desiredVelocityWS;
 		desiredVelocityWS.y = 0f;
@@ -1116,32 +1113,32 @@ public class BaseNpc : BaseCombatEntity
 			return false;
 		}
 		_currentNavMeshLink = currentOffMeshLinkData;
-		_currentNavMeshLinkName = ((object)((OffMeshLinkData)(ref _currentNavMeshLink)).linkType/*cast due to constrained. prefix*/).ToString();
-		if (((OffMeshLinkData)(ref currentOffMeshLinkData)).offMeshLink.biDirectional)
+		_currentNavMeshLinkName = ((object)_currentNavMeshLink.linkType/*cast due to constrained. prefix*/).ToString();
+		if (currentOffMeshLinkData.offMeshLink.biDirectional)
 		{
-			val = ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos - ServerPosition;
-			if (((Vector3)(ref val)).sqrMagnitude < 0.05f)
+			val = currentOffMeshLinkData.endPos - ServerPosition;
+			if (val.sqrMagnitude < 0.05f)
 			{
-				_currentNavMeshLinkEndPos = ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos;
-				_currentNavMeshLinkOrientation = Quaternion.LookRotation(((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos + Vector3.up * (((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos.y - ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos.y) - ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos);
+				_currentNavMeshLinkEndPos = currentOffMeshLinkData.startPos;
+				_currentNavMeshLinkOrientation = Quaternion.LookRotation(currentOffMeshLinkData.startPos + Vector3.up * (currentOffMeshLinkData.endPos.y - currentOffMeshLinkData.startPos.y) - currentOffMeshLinkData.endPos);
 			}
 			else
 			{
-				_currentNavMeshLinkEndPos = ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos;
-				_currentNavMeshLinkOrientation = Quaternion.LookRotation(((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos + Vector3.up * (((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos.y - ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos.y) - ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos);
+				_currentNavMeshLinkEndPos = currentOffMeshLinkData.endPos;
+				_currentNavMeshLinkOrientation = Quaternion.LookRotation(currentOffMeshLinkData.endPos + Vector3.up * (currentOffMeshLinkData.startPos.y - currentOffMeshLinkData.endPos.y) - currentOffMeshLinkData.startPos);
 			}
 		}
 		else
 		{
-			_currentNavMeshLinkEndPos = ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos;
-			_currentNavMeshLinkOrientation = Quaternion.LookRotation(((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos + Vector3.up * (((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos.y - ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos.y) - ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos);
+			_currentNavMeshLinkEndPos = currentOffMeshLinkData.endPos;
+			_currentNavMeshLinkOrientation = Quaternion.LookRotation(currentOffMeshLinkData.endPos + Vector3.up * (currentOffMeshLinkData.startPos.y - currentOffMeshLinkData.endPos.y) - currentOffMeshLinkData.startPos);
 		}
 		_traversingNavMeshLink = true;
 		NavAgent.ActivateCurrentOffMeshLink(activated: false);
 		NavAgent.obstacleAvoidanceType = (ObstacleAvoidanceType)0;
 		float num = Mathf.Max(NavAgent.speed, 2.8f);
-		Vector3 val2 = ((OffMeshLinkData)(ref _currentNavMeshLink)).startPos - ((OffMeshLinkData)(ref _currentNavMeshLink)).endPos;
-		float magnitude = ((Vector3)(ref val2)).magnitude;
+		Vector3 val2 = _currentNavMeshLink.startPos - _currentNavMeshLink.endPos;
+		float magnitude = val2.magnitude;
 		_currentNavMeshLinkTraversalTime = magnitude / num;
 		_currentNavMeshLinkTraversalTimeDelta = 0f;
 		if (!(_currentNavMeshLinkName == "OpenDoorLink") && !(_currentNavMeshLinkName == "JumpRockLink"))
@@ -1171,19 +1168,19 @@ public class BaseNpc : BaseCombatEntity
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		if (_currentNavMeshLinkName == "OpenDoorLink")
 		{
-			moveToPosition = Vector3.Lerp(((OffMeshLinkData)(ref _currentNavMeshLink)).startPos, ((OffMeshLinkData)(ref _currentNavMeshLink)).endPos, _currentNavMeshLinkTraversalTimeDelta);
+			moveToPosition = Vector3.Lerp(_currentNavMeshLink.startPos, _currentNavMeshLink.endPos, _currentNavMeshLinkTraversalTimeDelta);
 		}
 		else if (_currentNavMeshLinkName == "JumpRockLink")
 		{
-			moveToPosition = Vector3.Lerp(((OffMeshLinkData)(ref _currentNavMeshLink)).startPos, ((OffMeshLinkData)(ref _currentNavMeshLink)).endPos, _currentNavMeshLinkTraversalTimeDelta);
+			moveToPosition = Vector3.Lerp(_currentNavMeshLink.startPos, _currentNavMeshLink.endPos, _currentNavMeshLinkTraversalTimeDelta);
 		}
 		else if (_currentNavMeshLinkName == "JumpFoundationLink")
 		{
-			moveToPosition = Vector3.Lerp(((OffMeshLinkData)(ref _currentNavMeshLink)).startPos, ((OffMeshLinkData)(ref _currentNavMeshLink)).endPos, _currentNavMeshLinkTraversalTimeDelta);
+			moveToPosition = Vector3.Lerp(_currentNavMeshLink.startPos, _currentNavMeshLink.endPos, _currentNavMeshLinkTraversalTimeDelta);
 		}
 		else
 		{
-			moveToPosition = Vector3.Lerp(((OffMeshLinkData)(ref _currentNavMeshLink)).startPos, ((OffMeshLinkData)(ref _currentNavMeshLink)).endPos, _currentNavMeshLinkTraversalTimeDelta);
+			moveToPosition = Vector3.Lerp(_currentNavMeshLink.startPos, _currentNavMeshLink.endPos, _currentNavMeshLinkTraversalTimeDelta);
 		}
 	}
 
@@ -1196,9 +1193,9 @@ public class BaseNpc : BaseCombatEntity
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		if (_currentNavMeshLinkTraversalTimeDelta >= _currentNavMeshLinkTraversalTime)
 		{
-			moveToPosition = ((OffMeshLinkData)(ref _currentNavMeshLink)).endPos;
+			moveToPosition = _currentNavMeshLink.endPos;
 			_traversingNavMeshLink = false;
-			_currentNavMeshLink = default(OffMeshLinkData);
+			_currentNavMeshLink = default;
 			_currentNavMeshLinkTraversalTime = 0f;
 			_currentNavMeshLinkTraversalTimeDelta = 0f;
 			_currentNavMeshLinkName = string.Empty;
@@ -1227,15 +1224,15 @@ public class BaseNpc : BaseCombatEntity
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		moveToPosition = NavAgent.nextPositionWS;
 		Vector3 desiredVelocityWS = NavAgent.desiredVelocityWS;
-		stepDirection = ((Vector3)(ref desiredVelocityWS)).normalized;
+		stepDirection = desiredVelocityWS.normalized;
 	}
 
 	private bool ValidateNextPosition(ref Vector3 moveToPosition)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		if (!ValidBounds.Test(this, moveToPosition) && (Object)(object)((Component)this).transform != (Object)null && !base.IsDestroyed)
+		if (!ValidBounds.Test(this, moveToPosition) && (Object)(object)((Component)this).transform != (Object)null && !IsDestroyed)
 		{
-			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
+			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)moveToPosition/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
 			Kill();
 			return false;
 		}
@@ -1272,7 +1269,7 @@ public class BaseNpc : BaseCombatEntity
 		if (IsNavRunning() && !NavAgent.isStopped)
 		{
 			Vector3 val = lastStuckPos - ServerPosition;
-			if (((Vector3)(ref val)).sqrMagnitude < 0.0625f && AttackReady())
+			if (val.sqrMagnitude < 0.0625f && AttackReady())
 			{
 				stuckDuration += 0.1f;
 				if (stuckDuration >= 5f && Mathf.Approximately(lastStuckTime, 0f))
@@ -1347,12 +1344,20 @@ public class BaseNpc : BaseCombatEntity
 		}
 		if (_traversingNavMeshLink)
 		{
-			Vector3 val = (((Object)(object)ChaseTransform != (Object)null) ? (ChaseTransform.localPosition - ServerPosition) : ((!((Object)(object)AttackTarget != (Object)null)) ? (NavAgent.destinationWS - ServerPosition) : (AttackTarget.ServerPosition - ServerPosition)));
-			if (((Vector3)(ref val)).sqrMagnitude > 1f)
+			Vector3 val;
+			if ((Object)(object)ChaseTransform != (Object)null)
+			{
+				val = ChaseTransform.localPosition - ServerPosition;
+			}
+			else
+			{
+				val = ((!((Object)(object)AttackTarget != (Object)null)) ? (NavAgent.destinationWS - ServerPosition) : (AttackTarget.ServerPosition - ServerPosition));
+			}
+			if (val.sqrMagnitude > 1f)
 			{
 				val = _currentNavMeshLinkEndPos - ServerPosition;
 			}
-			if (((Vector3)(ref val)).sqrMagnitude > 0.001f)
+			if (val.sqrMagnitude > 0.001f)
 			{
 				ServerRotation = _currentNavMeshLinkOrientation;
 				return;
@@ -1361,10 +1366,10 @@ public class BaseNpc : BaseCombatEntity
 		else
 		{
 			Vector3 val2 = NavAgent.destinationWS - ServerPosition;
-			if (((Vector3)(ref val2)).sqrMagnitude > 1f)
+			if (val2.sqrMagnitude > 1f)
 			{
 				Vector3 val3 = stepDirection;
-				if (((Vector3)(ref val3)).sqrMagnitude > 0.001f)
+				if (val3.sqrMagnitude > 0.001f)
 				{
 					ServerRotation = Quaternion.LookRotation(val3);
 					return;
@@ -1374,19 +1379,19 @@ public class BaseNpc : BaseCombatEntity
 		if (Object.op_Implicit((Object)(object)ChaseTransform) && CurrentBehaviour == Behaviour.Attack)
 		{
 			Vector3 val4 = ChaseTransform.localPosition - ServerPosition;
-			float sqrMagnitude = ((Vector3)(ref val4)).sqrMagnitude;
+			float sqrMagnitude = val4.sqrMagnitude;
 			if (sqrMagnitude < 9f && sqrMagnitude > 0.001f)
 			{
-				ServerRotation = Quaternion.LookRotation(((Vector3)(ref val4)).normalized);
+				ServerRotation = Quaternion.LookRotation(val4.normalized);
 			}
 		}
 		else if (Object.op_Implicit((Object)(object)AttackTarget) && CurrentBehaviour == Behaviour.Attack)
 		{
 			Vector3 val5 = AttackTarget.ServerPosition - ServerPosition;
-			float sqrMagnitude2 = ((Vector3)(ref val5)).sqrMagnitude;
+			float sqrMagnitude2 = val5.sqrMagnitude;
 			if (sqrMagnitude2 < 9f && sqrMagnitude2 > 0.001f)
 			{
-				ServerRotation = Quaternion.LookRotation(((Vector3)(ref val5)).normalized);
+				ServerRotation = Quaternion.LookRotation(val5.normalized);
 			}
 		}
 	}
@@ -1408,7 +1413,7 @@ public class BaseNpc : BaseCombatEntity
 			return;
 		}
 		Vector3 val = AttackTarget.ServerPosition - ServerPosition;
-		if (!(((Vector3)(ref val)).magnitude > AttackRange))
+		if (!(val.magnitude > AttackRange))
 		{
 			nextAttackTime = Time.realtimeSinceStartup + AttackRate;
 			BaseCombatEntity combatTarget = CombatTarget;
@@ -1435,9 +1440,9 @@ public class BaseNpc : BaseCombatEntity
 		if (!((Object)(object)target == (Object)null) && (!(MinimumTargetHealthFraction > 0f) || !(target.healthFraction < MinimumTargetHealthFraction)))
 		{
 			Vector3 val = target.ServerPosition - ServerPosition;
-			if (((Vector3)(ref val)).magnitude > 0.001f)
+			if (val.magnitude > 0.001f)
 			{
-				ServerRotation = Quaternion.LookRotation(((Vector3)(ref val)).normalized);
+				ServerRotation = Quaternion.LookRotation(val.normalized);
 			}
 			nextAttackTime = Time.realtimeSinceStartup + AttackRate;
 			target.OnAttacked(AttackDamage, AttackDamageType, this, ignoreShield: false);
@@ -1491,7 +1496,7 @@ public class BaseNpc : BaseCombatEntity
 
 	private bool CheckHealthThresholdToFlee()
 	{
-		if (base.healthFraction > Stats.HealthThresholdForFleeing)
+		if (healthFraction > Stats.HealthThresholdForFleeing)
 		{
 			if (Stats.HealthThresholdForFleeing < 1f)
 			{
@@ -1747,16 +1752,16 @@ public class BaseNpc : BaseCombatEntity
 
 	public void SetAiFlag(AiFlags f, bool set)
 	{
-		AiFlags num = aiFlags;
+		AiFlags aiFlags = this.aiFlags;
 		if (set)
 		{
-			aiFlags |= f;
+			this.aiFlags |= f;
 		}
 		else
 		{
-			aiFlags &= ~f;
+			this.aiFlags &= ~f;
 		}
-		if (num != aiFlags && base.isServer)
+		if (aiFlags != this.aiFlags && isServer)
 		{
 			SendNetworkUpdate();
 		}
@@ -2020,7 +2025,7 @@ public class BaseNpc : BaseCombatEntity
 			return true;
 		}
 		Vector3 val = other.ServerPosition - npc.ServerPosition;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		if (Vector3.Dot(((Component)npc).transform.forward, normalized) < npc.Stats.VisionCone)
 		{
 			return false;
@@ -2096,14 +2101,14 @@ public class BaseNpc : BaseCombatEntity
 
 	public override void OnDied(HitInfo hitInfo = null)
 	{
-		Assert.IsTrue(base.isServer, "OnDied called on client!");
+		Assert.IsTrue(isServer, "OnDied called on client!");
 		BaseCorpse baseCorpse = DropCorpse(CorpsePrefab.resourcePath);
 		if (Object.op_Implicit((Object)(object)baseCorpse))
 		{
 			baseCorpse.Spawn();
 			baseCorpse.TakeChildren(this);
 		}
-		Invoke(base.KillMessage, 0.5f);
+		Invoke(KillMessage, 0.5f);
 	}
 
 	public bool IsNavRunning()
@@ -2156,7 +2161,7 @@ public class BaseNpc : BaseCombatEntity
 			{
 				if (GetNavAgent.SamplePosition(ServerPosition, out var hitWS, GetNavAgent.height * maxDistanceMultiplier))
 				{
-					ServerPosition = ((NavMeshHit)(ref hitWS)).position;
+					ServerPosition = hitWS.position;
 					GetNavAgent.Warp(ServerPosition);
 					((Behaviour)GetNavAgent).enabled = true;
 					yield break;
@@ -2240,25 +2245,5 @@ public class BaseNpc : BaseCombatEntity
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		LegacyNavigation = true;
-		canSwim = true;
-		fleeHealthThresholdPercentage = 1f;
-		blockEnemyTargetingTimeout = float.NegativeInfinity;
-		blockFoodTargetingTimeout = float.NegativeInfinity;
-		aggroTimeout = float.NegativeInfinity;
-		eatTimeout = float.NegativeInfinity;
-		wakeUpBlockMoveTimeout = float.NegativeInfinity;
-		topologyPreference = (Enum)96;
-		CurrentFacts = new byte[Enum.GetValues(typeof(Facts)).Length];
-		ForgetUnseenEntityTime = 10;
-		SensesTickRate = 0.5f;
-		SensesResults = new BaseEntity[64];
-		AttackDamage = 20f;
-		AttackDamageType = DamageType.Bite;
-		AttackCost = 0.1f;
-		AttackRate = 1f;
-		AttackRange = 1f;
-		movementMask = LayerMask.op_Implicit(1503731969);
-		base._002Ector();
 	}
 }

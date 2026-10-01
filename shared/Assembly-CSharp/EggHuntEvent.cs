@@ -27,14 +27,14 @@ public class EggHuntEvent : BaseHuntEvent
 
 	public float timeAlive;
 
-	public static EggHuntEvent serverEvent;
+	public static EggHuntEvent serverEvent = null;
 
-	public static EggHuntEvent clientEvent;
+	public static EggHuntEvent clientEvent = null;
 
 	public const int CAST_LAYERS = 10551297;
 
 	[NonSerialized]
-	public static float durationSeconds;
+	public static float durationSeconds = 180f;
 
 	public Dictionary<ulong, EggHunter> _eggHunters = new Dictionary<ulong, EggHunter>();
 
@@ -59,15 +59,15 @@ public class EggHuntEvent : BaseHuntEvent
 	private float eggSpawningFrameBudget = 1.5f;
 
 	[ServerVar(Help = "Will spawn eggs for bots, only for debug purposes - don't enable it!")]
-	public static bool includeBots;
+	public static bool includeBots = false;
 
-	public static Phrase topBunnyPhrase;
+	public static Phrase topBunnyPhrase = new Phrase("egghunt.result.topbunny", "{0} is the top bunny with {1} eggs collected.");
 
-	public static Phrase noPlayersPhrase;
+	public static Phrase noPlayersPhrase = new Phrase("egghunt.result.noplayers", "Wow, no one played so no one won.");
 
-	public static Phrase placePhrase;
+	public static Phrase placePhrase = new Phrase("egghunt.result.place", "You placed {0} of {1} with {2} eggs collected.");
 
-	public static Phrase rewardPhrase;
+	public static Phrase rewardPhrase = new Phrase("egghunt.result.reward", "You received {0}x {1} as an award!.");
 
 	public bool IsEventActive()
 	{
@@ -81,7 +81,7 @@ public class EggHuntEvent : BaseHuntEvent
 	public void Update()
 	{
 		timeAlive += Time.deltaTime;
-		if (!base.isServer || base.IsDestroyed)
+		if (!isServer || IsDestroyed)
 		{
 			return;
 		}
@@ -102,7 +102,7 @@ public class EggHuntEvent : BaseHuntEvent
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			serverEvent = null;
 		}
@@ -115,7 +115,7 @@ public class EggHuntEvent : BaseHuntEvent
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (Object.op_Implicit((Object)(object)serverEvent) && base.isServer)
+		if (Object.op_Implicit((Object)(object)serverEvent) && isServer)
 		{
 			serverEvent.Kill();
 			serverEvent = null;
@@ -208,21 +208,21 @@ public class EggHuntEvent : BaseHuntEvent
 			if (commandIndex > 0)
 			{
 				JobHandle handle = RaycastCommand.ScheduleBatch(raycastCommands, hits, 1, default(JobHandle));
-				yield return (object)new WaitUntil((Func<bool>)(() => ((JobHandle)(ref handle)).IsCompleted));
-				((JobHandle)(ref handle)).Complete();
+				yield return (object)new WaitUntil((Func<bool>)(() => handle.IsCompleted));
+				handle.Complete();
 				for (int num2 = 0; num2 < commandIndex; num2++)
 				{
 					RaycastCommand val = raycastCommands[num2];
-					Vector3 val2 = ((RaycastCommand)(ref val)).from;
+					Vector3 val2 = val.from;
 					RaycastHit val3 = hits[num2];
-					if ((Object)(object)((RaycastHit)(ref val3)).collider == (Object)null)
+					if ((Object)(object)val3.collider == (Object)null)
 					{
 						val2.y = TerrainMeta.HeightMap.GetHeight(val2);
 					}
 					else
 					{
 						val3 = hits[num2];
-						val2 = ((RaycastHit)(ref val3)).point;
+						val2 = val3.point;
 					}
 					pendingSpawns.Enqueue((val2, ownerIDs[num2]));
 				}
@@ -272,7 +272,7 @@ public class EggHuntEvent : BaseHuntEvent
 		string strPrefab = HuntableResourcePathCached[Random.Range(0, HuntableResourcePathCached.Count)];
 		Vector3 pos2 = pos;
 		bool startActive = active;
-		return server.CreateEntity(strPrefab, pos2, default(Quaternion), startActive) as CollectableEasterEgg;
+		return server.CreateEntity(strPrefab, pos2, default, startActive) as CollectableEasterEgg;
 	}
 
 	private Vector3 GetRandomSpawnPoint(Vector3 pos, Vector3 aimDir, float minDist = 1f, float maxDist = 2f, bool raycast = false)
@@ -303,10 +303,10 @@ public class EggHuntEvent : BaseHuntEvent
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		aimDir = ((aimDir == Vector3.zero) ? Random.onUnitSphere : AimConeUtil.GetModifiedAimConeDirection(90f, aimDir));
 		Vector3 val = pos + Vector3Ex.Direction2D(pos + aimDir * 10f, pos) * Random.Range(minDist, maxDist);
-		RaycastHit val2 = default(RaycastHit);
+		RaycastHit val2 = default;
 		if (raycast && Physics.Raycast(val + Vector3.up * 100f, Vector3.down, ref val2, 105f, 10551297))
 		{
-			val.y = ((RaycastHit)(ref val2)).point.y;
+			val.y = val2.point.y;
 		}
 		else
 		{
@@ -548,20 +548,12 @@ public class EggHuntEvent : BaseHuntEvent
 	static EggHuntEvent()
 	{
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Expected O, but got Unknown
+		//IL_0030: Expected Obj, but got Unknown
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Expected O, but got Unknown
+		//IL_0044: Expected Obj, but got Unknown
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Expected O, but got Unknown
+		//IL_0058: Expected Obj, but got Unknown
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Expected O, but got Unknown
-		serverEvent = null;
-		clientEvent = null;
-		durationSeconds = 180f;
-		includeBots = false;
-		topBunnyPhrase = new Phrase("egghunt.result.topbunny", "{0} is the top bunny with {1} eggs collected.");
-		noPlayersPhrase = new Phrase("egghunt.result.noplayers", "Wow, no one played so no one won.");
-		placePhrase = new Phrase("egghunt.result.place", "You placed {0} of {1} with {2} eggs collected.");
-		rewardPhrase = new Phrase("egghunt.result.reward", "You received {0}x {1} as an award!.");
+		//IL_006c: Expected Obj, but got Unknown
 	}
 }

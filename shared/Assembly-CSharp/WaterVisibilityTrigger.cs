@@ -58,7 +58,7 @@ public class WaterVisibilityTrigger : EnvironmentVolumeTrigger
 	{
 		if (togglePhysics && (Object)(object)WaterSystem.Collision != (Object)null)
 		{
-			WaterSystem.Collision.SetIgnore(other, base.volume.trigger);
+			WaterSystem.Collision.SetIgnore(other, volume.trigger);
 		}
 	}
 
@@ -66,21 +66,21 @@ public class WaterVisibilityTrigger : EnvironmentVolumeTrigger
 	{
 		if (togglePhysics && (Object)(object)WaterSystem.Collision != (Object)null)
 		{
-			WaterSystem.Collision.SetIgnore(other, base.volume.trigger, ignore: false);
+			WaterSystem.Collision.SetIgnore(other, volume.trigger, ignore: false);
 		}
 	}
 
 	protected void OnTriggerEnter(Collider other)
 	{
-		bool num = (Object)(object)((Component)other).gameObject.GetComponent<PlayerWalkMovement>() != (Object)null;
-		bool flag = ((Component)other).gameObject.CompareTag("MainCamera");
-		if ((num | flag) && !tracker.ContainsValue(this))
+		bool flag = (Object)(object)((Component)other).gameObject.GetComponent<PlayerWalkMovement>() != (Object)null;
+		bool flag2 = ((Component)other).gameObject.CompareTag("MainCamera");
+		if ((flag | flag2) && !tracker.ContainsValue(this))
 		{
 			enteredTick = ticks++;
 			tracker.Add(enteredTick, this);
 			ToggleVisibility();
 		}
-		if (!flag && !other.isTrigger)
+		if (!flag2 && !other.isTrigger)
 		{
 			ToggleCollision(other);
 		}
@@ -88,23 +88,23 @@ public class WaterVisibilityTrigger : EnvironmentVolumeTrigger
 
 	protected void OnTriggerExit(Collider other)
 	{
-		bool num = (Object)(object)((Component)other).gameObject.GetComponent<PlayerWalkMovement>() != (Object)null;
-		bool flag = ((Component)other).gameObject.CompareTag("MainCamera");
-		if ((num | flag) && tracker.ContainsValue(this))
+		bool flag = (Object)(object)((Component)other).gameObject.GetComponent<PlayerWalkMovement>() != (Object)null;
+		bool flag2 = ((Component)other).gameObject.CompareTag("MainCamera");
+		if ((flag | flag2) && tracker.ContainsValue(this))
 		{
 			tracker.Remove(enteredTick);
 			if (tracker.Count > 0)
 			{
-				bool flag2 = false;
+				bool flag3 = false;
 				foreach (WaterVisibilityTrigger value in tracker.Values)
 				{
 					if (value.toggleVisuals)
 					{
-						flag2 = true;
+						flag3 = true;
 						break;
 					}
 				}
-				if (flag2)
+				if (flag3)
 				{
 					tracker.Values[tracker.Count - 1].ToggleVisibility();
 				}
@@ -118,7 +118,7 @@ public class WaterVisibilityTrigger : EnvironmentVolumeTrigger
 				ResetVisibility();
 			}
 		}
-		if (!flag && !other.isTrigger)
+		if (!flag2 && !other.isTrigger)
 		{
 			ResetCollision(other);
 		}

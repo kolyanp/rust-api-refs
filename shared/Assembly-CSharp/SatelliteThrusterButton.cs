@@ -10,16 +10,16 @@ public class SatelliteThrusterButton : MonoBehaviour, IPointerEnterHandler, IEve
 	public Button button;
 
 	[Header("Colours")]
-	public Color normalColor;
+	public Color normalColor = Color.white;
 
-	public Color firedColor;
+	public Color firedColor = new Color(0.1f, 1f, 0.2f, 1f);
 
-	public Color disabledColor;
+	public Color disabledColor = new Color(0.2f, 0.2f, 0.2f, 0.5f);
 
 	[Header("Hover")]
 	public GameObject hoverFill;
 
-	public Color hoverLabelColor;
+	public Color hoverLabelColor = new Color(0.12668449f, 0.12668449f, 0.12668449f, 1f);
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
@@ -39,10 +39,5 @@ public class SatelliteThrusterButton : MonoBehaviour, IPointerEnterHandler, IEve
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		normalColor = Color.white;
-		firedColor = new Color(0.1f, 1f, 0.2f, 1f);
-		disabledColor = new Color(0.2f, 0.2f, 0.2f, 0.5f);
-		hoverLabelColor = new Color(0.12668449f, 0.12668449f, 0.12668449f, 1f);
-		((MonoBehaviour)this)._002Ector();
 	}
 }

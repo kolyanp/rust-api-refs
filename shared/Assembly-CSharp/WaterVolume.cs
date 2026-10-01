@@ -5,20 +5,20 @@ using UnityEngine;
 
 public class WaterVolume : TriggerBase
 {
-	public Bounds WaterBounds;
+	public Bounds WaterBounds = new Bounds(Vector3.zero, Vector3.one);
 
 	private OBB cachedBounds;
 
 	private Transform cachedTransform;
 
-	public Transform[] cutOffPlanes;
+	public Transform[] cutOffPlanes = new Transform[0];
 
 	[Tooltip("Allows filling bota bags, jugs, etc. Don't turn this on if the player is responsible for filling this water volume as that will allow water duplication")]
 	public bool naturalSource;
 
-	public bool waterEnabled;
+	public bool waterEnabled = true;
 
-	public static readonly SharedStatic<NativeGrid<WaterVolumeBurstData>> WaterVolumeBoundsGrid;
+	public static readonly SharedStatic<NativeGrid<WaterVolumeBurstData>> WaterVolumeBoundsGrid = SharedStatic<NativeGrid<WaterVolumeBurstData>>.GetOrCreateUnsafe(0u, 5868069335773950620L, 0L);
 
 	private WaterVolumeBurstData? instanceBurstData;
 
@@ -47,8 +47,8 @@ public class WaterVolume : TriggerBase
 			cutOffPlaneMatrices = new NativeArray<Matrix4x4>(cutOffPlanes.Length, allocator, (NativeArrayOptions)1),
 			cutOffPlanePoses = new NativeArray<Pose>(cutOffPlanes.Length, allocator, (NativeArrayOptions)1)
 		};
-		Vector3 val = default(Vector3);
-		Quaternion val2 = default(Quaternion);
+		Vector3 val = default;
+		Quaternion val2 = default;
 		for (int i = 0; i < cutOffPlanes.Length; i++)
 		{
 			if ((Object)(object)cutOffPlanes[i] != (Object)null)
@@ -132,23 +132,23 @@ public class WaterVolume : TriggerBase
 		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
 		if (!waterEnabled)
 		{
-			info = default(WaterLevel.WaterInfo);
+			info = default;
 			return false;
 		}
 		UpdateCachedTransform();
-		if (((OBB)(ref cachedBounds)).Contains(pos))
+		if (cachedBounds.Contains(pos))
 		{
 			if (!CheckCutOffPlanes(pos, out var bottomCutY))
 			{
-				info = default(WaterLevel.WaterInfo);
+				info = default;
 				return false;
 			}
 			Plane waterPlane = GetWaterPlane();
-			Vector3 val = ((Plane)(ref waterPlane)).ClosestPointOnPlane(pos);
+			Vector3 val = waterPlane.ClosestPointOnPlane(pos);
 			float y = (val + cachedBounds.up * cachedBounds.extents.y).y;
 			float y2 = (val + -cachedBounds.up * cachedBounds.extents.y).y;
 			y2 = Mathf.Max(y2, bottomCutY);
-			info = default(WaterLevel.WaterInfo);
+			info = default;
 			info.isValid = true;
 			info.artificalWater = !naturalSource;
 			info.currentDepth = Mathf.Max(0f, y - pos.y);
@@ -156,7 +156,7 @@ public class WaterVolume : TriggerBase
 			info.surfaceLevel = y;
 			return true;
 		}
-		info = default(WaterLevel.WaterInfo);
+		info = default;
 		return false;
 	}
 
@@ -180,31 +180,31 @@ public class WaterVolume : TriggerBase
 		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
 		if (!waterEnabled)
 		{
-			info = default(WaterLevel.WaterInfo);
+			info = default;
 			return false;
 		}
 		UpdateCachedTransform();
-		if (((OBB)(ref cachedBounds)).Contains(((Bounds)(ref bounds)).ClosestPoint(cachedBounds.position)))
+		if (cachedBounds.Contains(bounds.ClosestPoint(cachedBounds.position)))
 		{
-			if (!CheckCutOffPlanes(((Bounds)(ref bounds)).center, out var bottomCutY))
+			if (!CheckCutOffPlanes(bounds.center, out var bottomCutY))
 			{
-				info = default(WaterLevel.WaterInfo);
+				info = default;
 				return false;
 			}
 			Plane waterPlane = GetWaterPlane();
-			Vector3 val = ((Plane)(ref waterPlane)).ClosestPointOnPlane(((Bounds)(ref bounds)).center);
+			Vector3 val = waterPlane.ClosestPointOnPlane(bounds.center);
 			float y = (val + cachedBounds.up * cachedBounds.extents.y).y;
 			float y2 = (val + -cachedBounds.up * cachedBounds.extents.y).y;
 			y2 = Mathf.Max(y2, bottomCutY);
-			info = default(WaterLevel.WaterInfo);
+			info = default;
 			info.isValid = true;
 			info.artificalWater = !naturalSource;
-			info.currentDepth = Mathf.Max(0f, y - ((Bounds)(ref bounds)).min.y);
+			info.currentDepth = Mathf.Max(0f, y - bounds.min.y);
 			info.overallDepth = Mathf.Max(0f, y - y2);
 			info.surfaceLevel = y;
 			return true;
 		}
-		info = default(WaterLevel.WaterInfo);
+		info = default;
 		return false;
 	}
 
@@ -234,25 +234,25 @@ public class WaterVolume : TriggerBase
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		if (!waterEnabled)
 		{
-			info = default(WaterLevel.WaterInfo);
+			info = default;
 			return false;
 		}
 		UpdateCachedTransform();
 		Vector3 val = (start + end) * 0.5f;
 		float num = Mathf.Min(start.y, end.y) - radius;
-		if (((OBB)(ref cachedBounds)).Distance(start) < radius || ((OBB)(ref cachedBounds)).Distance(end) < radius)
+		if (cachedBounds.Distance(start) < radius || cachedBounds.Distance(end) < radius)
 		{
 			if (!CheckCutOffPlanes(val, out var bottomCutY))
 			{
-				info = default(WaterLevel.WaterInfo);
+				info = default;
 				return false;
 			}
 			Plane waterPlane = GetWaterPlane();
-			Vector3 val2 = ((Plane)(ref waterPlane)).ClosestPointOnPlane(val);
+			Vector3 val2 = waterPlane.ClosestPointOnPlane(val);
 			float y = (val2 + cachedBounds.up * cachedBounds.extents.y).y;
 			float y2 = (val2 + -cachedBounds.up * cachedBounds.extents.y).y;
 			y2 = Mathf.Max(y2, bottomCutY);
-			info = default(WaterLevel.WaterInfo);
+			info = default;
 			info.isValid = true;
 			info.artificalWater = !naturalSource;
 			info.currentDepth = Mathf.Max(0f, y - num);
@@ -260,7 +260,7 @@ public class WaterVolume : TriggerBase
 			info.surfaceLevel = y;
 			return true;
 		}
-		info = default(WaterLevel.WaterInfo);
+		info = default;
 		return false;
 	}
 
@@ -346,16 +346,11 @@ public class WaterVolume : TriggerBase
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		WaterBounds = new Bounds(Vector3.zero, Vector3.one);
-		cutOffPlanes = (Transform[])(object)new Transform[0];
-		waterEnabled = true;
-		base._002Ector();
 	}
 
 	static WaterVolume()
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		WaterVolumeBoundsGrid = SharedStatic<NativeGrid<WaterVolumeBurstData>>.GetOrCreateUnsafe(0u, 5868069335773950620L, 0L);
 	}
 }

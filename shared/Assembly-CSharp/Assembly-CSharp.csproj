@@ -100,6 +100,9 @@
     <Reference Include="Rust.Harmony" />
     <Reference Include="UnityEngine.Physics2DModule" />
     <Reference Include="Facepunch.Steamworks.Win64" />
+    <Reference Include="System.Numerics">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="UIEffect" />
     <Reference Include="Rust.Clans.Local">
       <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Rust.Clans.Local.dll</HintPath>

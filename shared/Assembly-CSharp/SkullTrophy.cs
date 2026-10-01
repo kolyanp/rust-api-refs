@@ -32,10 +32,10 @@ public class SkullTrophy : StorageContainer
 
 	public const Flags HasSkull = Flags.Reserved1;
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
-		SetFlagLocal(Flags.Reserved1, base.inventory.GetSlot(0) != null);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
+		SetFlagLocal(Flags.Reserved1, inventory.GetSlot(0) != null);
 		SendNetworkUpdate();
 	}
 
@@ -44,11 +44,11 @@ public class SkullTrophy : StorageContainer
 		base.Save(info);
 		if (!info.forDisk)
 		{
-			if (base.inventory != null && base.inventory.itemList.Count == 1)
+			if (inventory != null && inventory.itemList.Count == 1)
 			{
 				info.msg.skullTrophy = Pool.Get<SkullTrophy>();
-				info.msg.skullTrophy.playerName = base.inventory.itemList[0].GetName(false);
-				info.msg.skullTrophy.streamerName = base.inventory.itemList[0].GetName(true);
+				info.msg.skullTrophy.playerName = inventory.itemList[0].GetName(false);
+				info.msg.skullTrophy.streamerName = inventory.itemList[0].GetName(true);
 			}
 			else if (info.msg.skullTrophy != null)
 			{

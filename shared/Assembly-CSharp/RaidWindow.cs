@@ -82,7 +82,7 @@ public static class RaidWindow
 	{
 		using (TimeWarning.New("RaidWindow.TryGetNextChange"))
 		{
-			change = default(DateTime);
+			change = default;
 			bool state = IsOpenAt(now);
 			DateTime c = now.Date;
 			int num = 0;

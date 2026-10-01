@@ -7,19 +7,19 @@ public class SetSubscription : BaseEntityHandler<AppFlag>
 {
 	public override ValueTask Execute()
 	{
-		if (base.Entity is ISubscribable subscribable)
+		if (Entity is ISubscribable subscribable)
 		{
-			if (base.Proto.value)
+			if (Proto.value)
 			{
-				if (!subscribable.AddSubscription(base.UserId))
+				if (!subscribable.AddSubscription(UserId))
 				{
 					SendError("too_many_subscribers");
-					return default(ValueTask);
+					return default;
 				}
 			}
 			else
 			{
-				subscribable.RemoveSubscription(base.UserId);
+				subscribable.RemoveSubscription(UserId);
 			}
 			SendSuccess();
 		}
@@ -27,6 +27,6 @@ public class SetSubscription : BaseEntityHandler<AppFlag>
 		{
 			SendError("wrong_type");
 		}
-		return default(ValueTask);
+		return default;
 	}
 }

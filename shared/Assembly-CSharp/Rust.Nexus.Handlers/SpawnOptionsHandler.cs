@@ -12,7 +12,7 @@ public class SpawnOptionsHandler : BaseNexusRequestHandler<SpawnOptionsRequest>
 		Response val = BaseNexusRequestHandler<SpawnOptionsRequest>.NewResponse();
 		val.spawnOptions = Pool.Get<SpawnOptionsResponse>();
 		val.spawnOptions.spawnOptions = Pool.Get<List<SpawnOptions>>();
-		BasePlayer.GetRespawnOptionsForPlayer(val.spawnOptions.spawnOptions, base.Request.userId);
+		BasePlayer.GetRespawnOptionsForPlayer(val.spawnOptions.spawnOptions, Request.userId);
 		SendSuccess(val);
 	}
 }

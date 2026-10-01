@@ -58,7 +58,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	private string _AssemblyHash;
 
-	private static readonly Memoized<string, (bool Server, bool Player)> _systemConfigTag;
+	private static readonly Memoized<string, (bool Server, bool Player)> _systemConfigTag = new Memoized<string, (bool, bool)>((Func<(bool, bool), string>)(((bool Server, bool Player) t) => (!t.Server && !t.Player) ? null : $",sc{(t.Player ? 2 : 0) | (t.Server ? 1 : 0)}"));
 
 	private GameObject[] proceduralSpawnPoints;
 
@@ -66,13 +66,15 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	public IEnumerator restartCoroutine;
 
-	public static readonly Phrase SERVER_RESTARTING;
+	public static readonly Phrase SERVER_RESTARTING = new Phrase("server.restarting", "Server Restarting!");
 
-	public static readonly Phrase RESTART_INTERRUPTED_PHRASE;
+	public static readonly Phrase RESTART_INTERRUPTED_PHRASE = new Phrase("server.restart_interrupted", "Server Restart interrupted!");
 
 	public bool runFrameUpdate { get; private set; }
 
 	public static int FrameCount { get; private set; }
+
+	public bool NetworkPortsConfigured { get; private set; }
 
 	public int AvailableSlots => ConVar.Server.maxplayers - BasePlayer.activePlayerList.Count - connectionQueue.ReservedCount;
 
@@ -81,7 +83,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		get
 		{
 			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0032: Expected O, but got Unknown
+			//IL_0032: Expected Obj, but got Unknown
 			if (_AssemblyHash == null)
 			{
 				string location = typeof(ServerMgr).Assembly.Location;
@@ -111,7 +113,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		}
 	}
 
-	public unsafe void OnNetworkMessage(Message packet)
+	public void OnNetworkMessage(Message packet)
 	{
 		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
@@ -180,7 +182,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			}
 			finally
 			{
-				((IDisposable)(*(FieldOperationLimitScope*)(&val3))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val3/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
 		case Message.Type.RPCMessage:
@@ -287,7 +289,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			}
 			finally
 			{
-				((IDisposable)(*(FieldOperationLimitScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
 		case Message.Type.EAC:
@@ -336,7 +338,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			}
 			finally
 			{
-				((IDisposable)(*(FieldOperationLimitScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+				((IDisposable)val2/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
 		case Message.Type.VoiceData:
@@ -623,14 +625,14 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their branch is '" + text + "' not '" + branch + "'", (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Steam Beta: Requires '" + branch + "' branch!");
 		}
-		else if (packet.connection.protocol > 2633)
+		else if (packet.connection.protocol > 2634)
 		{
-			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2633, (StackTraceLogType)0);
+			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2634, (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Server update required!");
 		}
-		else if (packet.connection.protocol < 2633)
+		else if (packet.connection.protocol < 2634)
 		{
-			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2633, (StackTraceLogType)0);
+			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2634, (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Client update required!");
 		}
 		else
@@ -706,7 +708,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		RustRelay.SetCachedMapSnapshot(World.MapFolderName, World.MapFileName);
 		RustRelay.SetCachedSnapshot(ConVar.Server.rootFolder, World.SaveFileName);
 		RustRelay.ForceSave = () => SaveRestore.Save(AndWait: true);
-		RustRelay.EnabledChanged = delegate
+		RustRelay.EnabledChanged = (bool _) =>
 		{
 			RustRelayFakePlayer.SetDirty();
 		};
@@ -720,13 +722,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	public void OpenConnection(bool useSteamServer = true)
 	{
-		if (ConVar.Server.queryport <= 0 || ConVar.Server.queryport == ConVar.Server.port)
-		{
-			ConVar.Server.queryport = Math.Max(ConVar.Server.port, RCon.Port) + 1;
-		}
 		Net.sv.ip = ConVar.Server.ip;
 		Net.sv.port = ConVar.Server.port;
 		Net.sv.encryption = ConVar.Server.encryption;
+		NetworkPortsConfigured = true;
 		int num = Application.Manifest?.Features?.MinimumSecureEncryption ?? 2;
 		if (CommandLine.HasSwitch("-insecure"))
 		{
@@ -764,6 +763,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	public void CloseConnection()
 	{
+		NetworkPortsConfigured = false;
 		if (persistance != null)
 		{
 			persistance.Dispose();
@@ -873,7 +873,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		CreateImportantEntity<DeepSeaManager>("assets/bundled/prefabs/system/deep_sea_manager.prefab", ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).center);
+		CreateImportantEntity<DeepSeaManager>("assets/bundled/prefabs/system/deep_sea_manager.prefab", DeepSeaManager.DeepSeaBounds.center);
 		if (!DeepSea.enabled)
 		{
 			Physics.SetBounds(Physics.DeepSeaDisabledBounds);
@@ -918,7 +918,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		PlatformService.Instance.RefreshItemDefinitions();
 	}
 
-	internal unsafe void OnValidateAuthTicketResponse(ulong SteamId, ulong OwnerId, AuthResponse Status)
+	internal void OnValidateAuthTicketResponse(ulong SteamId, ulong OwnerId, AuthResponse Status)
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
@@ -957,10 +957,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				connection.ipaddress,
 				connection.userid,
 				connection.username,
-				((object)(*(AuthResponse*)(&Status))/*cast due to constrained. prefix*/).ToString()
+				((object)Status/*cast due to constrained. prefix*/).ToString()
 			}));
-			connection.authStatusSteam = ((object)(*(AuthResponse*)(&Status))/*cast due to constrained. prefix*/).ToString();
-			Net.sv.Kick(connection, "Steam: " + ((object)(*(AuthResponse*)(&Status))/*cast due to constrained. prefix*/).ToString());
+			connection.authStatusSteam = ((object)Status/*cast due to constrained. prefix*/).ToString();
+			Net.sv.Kick(connection, "Steam: " + ((object)Status/*cast due to constrained. prefix*/).ToString());
 		}
 	}
 
@@ -1283,16 +1283,28 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 						Debug.LogWarning((object)"Server Exception: WaterCatcher.CollectWorkQueue");
 						Debug.LogException(ex23, (Object)(object)this);
 					}
+					try
+					{
+						using (TimeWarning.New("LivestockAnimal.LivestockNeedsQueue"))
+						{
+							((PersistentObjectWorkQueue<LivestockAnimal>)LivestockAnimal.NeedsQueue).RunList(0.10000000149011612);
+						}
+					}
+					catch (Exception ex24)
+					{
+						Debug.LogWarning((object)"Server Exception: LivestockAnimal.LivestockNeedsQueue");
+						Debug.LogException(ex24, (Object)(object)this);
+					}
 					if (batchsynctransforms & autosynctransforms)
 					{
 						Physics.autoSyncTransforms = true;
 					}
 				}
 			}
-			catch (Exception ex24)
+			catch (Exception ex25)
 			{
 				Debug.LogWarning((object)"Server Exception: Player Update");
-				Debug.LogException(ex24, (Object)(object)this);
+				Debug.LogException(ex25, (Object)(object)this);
 			}
 			try
 			{
@@ -1301,10 +1313,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					connectionQueue.Cycle(AvailableSlots);
 				}
 			}
-			catch (Exception ex25)
+			catch (Exception ex26)
 			{
 				Debug.LogWarning((object)"Server Exception: Connection Queue");
-				Debug.LogException(ex25, (Object)(object)this);
+				Debug.LogException(ex26, (Object)(object)this);
 			}
 			try
 			{
@@ -1313,22 +1325,30 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					IOEntity.ProcessQueue();
 				}
 			}
-			catch (Exception ex26)
+			catch (Exception ex27)
 			{
 				Debug.LogWarning((object)"Server Exception: IOEntity.ProcessQueue");
-				Debug.LogException(ex26, (Object)(object)this);
+				Debug.LogException(ex27, (Object)(object)this);
 			}
 			try
 			{
 				using (TimeWarning.New("RustNavigation.Tick"))
 				{
-					RustNavigation.Instance.Tick();
+					methodTimer.Restart();
+					try
+					{
+						RustNavigation.Instance.Tick();
+					}
+					finally
+					{
+						RuntimeProfiler.RustNavigation_Tick = methodTimer.Elapsed;
+					}
 				}
 			}
-			catch (Exception ex27)
+			catch (Exception ex28)
 			{
 				Debug.LogWarning((object)"Server Exception: RustNavigation.Tick");
-				Debug.LogException(ex27, (Object)(object)this);
+				Debug.LogException(ex28, (Object)(object)this);
 			}
 			try
 			{
@@ -1348,34 +1368,66 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					}
 				}
 			}
-			catch (Exception ex28)
+			catch (Exception ex29)
 			{
 				Debug.LogWarning((object)"Server Exception: NpcManagers.Tick");
-				Debug.LogException(ex28, (Object)(object)this);
+				Debug.LogException(ex29, (Object)(object)this);
 			}
 			try
 			{
 				using (TimeWarning.New("FSMComponent.BudgetedUpdate"))
 				{
-					((PersistentObjectWorkQueue<FSMComponent>)FSMComponent.workQueue).RunList(1.0);
+					((PersistentObjectWorkQueue<FSMComponent>)FSMComponent.defaultWorkQueue).RunList((double)FSMComponent.frameBudgetMs);
 				}
 			}
-			catch (Exception ex29)
+			catch (Exception ex30)
 			{
 				Debug.LogWarning((object)"Server Exception: FSMComponent.BudgetedUpdate");
-				Debug.LogException(ex29, (Object)(object)this);
+				Debug.LogException(ex30, (Object)(object)this);
+			}
+			try
+			{
+				using (TimeWarning.New("CritterAnimalFSM.BudgetedUpdate"))
+				{
+					((PersistentObjectWorkQueue<FSMComponent>)CritterAnimalFSM.critterWorkQueue).RunList((double)CritterAnimalFSM.critterFrameBudgetMs);
+				}
+			}
+			catch (Exception ex31)
+			{
+				Debug.LogWarning((object)"Server Exception: CritterAnimalFSM.BudgetedUpdate");
+				Debug.LogException(ex31, (Object)(object)this);
+			}
+			try
+			{
+				using (TimeWarning.New("SwimmingNPC.BudgetedSwim"))
+				{
+					((PersistentObjectWorkQueue<SwimmingNPC>)SwimmingNPC.swimQueue).RunList((double)SwimmingNPC.swimFrameBudgetMs);
+				}
+			}
+			catch (Exception ex32)
+			{
+				Debug.LogWarning((object)"Server Exception: SwimmingNPC.BudgetedSwim");
+				Debug.LogException(ex32, (Object)(object)this);
 			}
 			try
 			{
 				using (TimeWarning.New("RustNavMeshAgent.TickEnabledComponents"))
 				{
-					RustNavMeshAgent.TickEnabledComponents();
+					methodTimer.Restart();
+					try
+					{
+						RustNavMeshAgent.TickEnabledComponents();
+					}
+					finally
+					{
+						RuntimeProfiler.RustNavMeshAgent_Tick = methodTimer.Elapsed;
+					}
 				}
 			}
-			catch (Exception ex30)
+			catch (Exception ex33)
 			{
 				Debug.LogWarning((object)"Server Exception: RustNavMeshAgent.TickEnabledComponents");
-				Debug.LogException(ex30, (Object)(object)this);
+				Debug.LogException(ex33, (Object)(object)this);
 			}
 			if (!AI.spliceupdates)
 			{
@@ -1394,10 +1446,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 						AIThinkManager.ProcessQueue(AIThinkManager.QueueType.Human);
 					}
 				}
-				catch (Exception ex31)
+				catch (Exception ex34)
 				{
 					Debug.LogWarning((object)"Server Exception: AIThinkManager.ProcessQueue");
-					Debug.LogException(ex31, (Object)(object)this);
+					Debug.LogException(ex34, (Object)(object)this);
 				}
 				if (!AI.spliceupdates)
 				{
@@ -1413,10 +1465,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 						AIThinkManager.ProcessQueue(AIThinkManager.QueueType.Animal);
 					}
 				}
-				catch (Exception ex32)
+				catch (Exception ex35)
 				{
 					Debug.LogWarning((object)"Server Exception: AIThinkManager.ProcessAnimalQueue");
-					Debug.LogException(ex32, (Object)(object)this);
+					Debug.LogException(ex35, (Object)(object)this);
 				}
 			}
 			try
@@ -1426,10 +1478,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					AIThinkManager.ProcessQueue(AIThinkManager.QueueType.Pets);
 				}
 			}
-			catch (Exception ex33)
+			catch (Exception ex36)
 			{
 				Debug.LogWarning((object)"Server Exception: AIThinkManager.ProcessPetQueue");
-				Debug.LogException(ex33, (Object)(object)this);
+				Debug.LogException(ex36, (Object)(object)this);
 			}
 			try
 			{
@@ -1438,10 +1490,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					BasePet.ProcessMovementQueue();
 				}
 			}
-			catch (Exception ex34)
+			catch (Exception ex37)
 			{
 				Debug.LogWarning((object)"Server Exception: AIThinkManager.ProcessPetMovementQueue");
-				Debug.LogException(ex34, (Object)(object)this);
+				Debug.LogException(ex37, (Object)(object)this);
 			}
 			try
 			{
@@ -1450,10 +1502,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					BaseSculpture.ProcessSculptureUpdates();
 				}
 			}
-			catch (Exception ex35)
+			catch (Exception ex38)
 			{
 				Debug.LogWarning((object)"Server Exception: BaseSculpture.ProcessGridUpdates");
-				Debug.LogException(ex35, (Object)(object)this);
+				Debug.LogException(ex38, (Object)(object)this);
 			}
 			try
 			{
@@ -1462,10 +1514,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((ObjectWorkQueue<GrowableEntity>)GrowableEntity.growableEntityUpdateQueue).RunQueue((double)GrowableEntity.framebudgetms);
 				}
 			}
-			catch (Exception ex36)
+			catch (Exception ex39)
 			{
 				Debug.LogWarning((object)"Server Exception: GrowableEntity.BudgetedUpdate");
-				Debug.LogException(ex36, (Object)(object)this);
+				Debug.LogException(ex39, (Object)(object)this);
 			}
 			try
 			{
@@ -1474,10 +1526,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((ObjectWorkQueue<BasePlayer>)BasePlayer.lifeStoryQueue).RunQueue((double)BasePlayer.lifeStoryFramebudgetms);
 				}
 			}
-			catch (Exception ex37)
+			catch (Exception ex40)
 			{
 				Debug.LogWarning((object)"Server Exception: BasePlayer.BudgetedLifeStoryUpdate");
-				Debug.LogException(ex37, (Object)(object)this);
+				Debug.LogException(ex40, (Object)(object)this);
 			}
 			try
 			{
@@ -1486,10 +1538,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((PersistentObjectWorkQueue<IBudgetedFloatingEntity>)JunkPileWater.junkpileWaterWorkQueue).RunList((double)JunkPileWater.framebudgetms);
 				}
 			}
-			catch (Exception ex38)
+			catch (Exception ex41)
 			{
 				Debug.LogWarning((object)"Server Exception: JunkPileWater.UpdateNearbyPlayers");
-				Debug.LogException(ex38, (Object)(object)this);
+				Debug.LogException(ex41, (Object)(object)this);
 			}
 			try
 			{
@@ -1501,10 +1553,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					}
 				}
 			}
-			catch (Exception ex39)
+			catch (Exception ex42)
 			{
 				Debug.LogWarning((object)"Server Exception: IndustrialEntity.RunQueue");
-				Debug.LogException(ex39, (Object)(object)this);
+				Debug.LogException(ex42, (Object)(object)this);
 			}
 			try
 			{
@@ -1513,10 +1565,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					PowergridManager.stageChangeWorkQueue.RunList(Powergrid.stageChangeWorkQueueBudget);
 				}
 			}
-			catch (Exception ex40)
+			catch (Exception ex43)
 			{
 				Debug.LogWarning((object)"Server Exception: PowergridManager.StageChangeWorkQueue");
-				Debug.LogException(ex40, (Object)(object)this);
+				Debug.LogException(ex43, (Object)(object)this);
 			}
 			try
 			{
@@ -1525,10 +1577,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((PersistentObjectWorkQueue<Hopper>)Hopper.WorkQueue).RunList((double)ConVar.Server.hopperAnimationBudgetMs);
 				}
 			}
-			catch (Exception ex41)
+			catch (Exception ex44)
 			{
 				Debug.LogWarning((object)"Server Exception: Hopper.WorkQueue");
-				Debug.LogException(ex41, (Object)(object)this);
+				Debug.LogException(ex44, (Object)(object)this);
 			}
 			try
 			{
@@ -1537,10 +1589,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					AntiHack.Cycle();
 				}
 			}
-			catch (Exception ex42)
+			catch (Exception ex45)
 			{
 				Debug.LogWarning((object)"Server Exception: AntiHack.Cycle");
-				Debug.LogException(ex42, (Object)(object)this);
+				Debug.LogException(ex45, (Object)(object)this);
 			}
 			try
 			{
@@ -1549,10 +1601,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					TreeManager.server.SendPendingTrees();
 				}
 			}
-			catch (Exception ex43)
+			catch (Exception ex46)
 			{
 				Debug.LogWarning((object)"Server Exception: TreeManager.SendPendingTrees");
-				Debug.LogException(ex43, (Object)(object)this);
+				Debug.LogException(ex46, (Object)(object)this);
 			}
 			try
 			{
@@ -1561,10 +1613,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((ObjectWorkQueue<ChickenCoop>)ChickenCoop.CoopWorkQueue).RunQueue(0.10000000149011612);
 				}
 			}
-			catch (Exception ex44)
+			catch (Exception ex47)
 			{
 				Debug.LogWarning((object)"Server Exception: ChickenCoop.CoopWorkQueue");
-				Debug.LogException(ex44, (Object)(object)this);
+				Debug.LogException(ex47, (Object)(object)this);
 			}
 			try
 			{
@@ -1573,10 +1625,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((ObjectWorkQueue<FarmableAnimal>)FarmableAnimal.NeedsWorkQueue).RunQueue(0.10000000149011612);
 				}
 			}
-			catch (Exception ex45)
+			catch (Exception ex48)
 			{
 				Debug.LogWarning((object)"Server Exception: FarmableAnimal.NeedsWorkQueue");
-				Debug.LogException(ex45, (Object)(object)this);
+				Debug.LogException(ex48, (Object)(object)this);
 			}
 			try
 			{
@@ -1585,10 +1637,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((ObjectWorkQueue<Chicken>)Chicken.EggWorkQueue).RunQueue(0.10000000149011612);
 				}
 			}
-			catch (Exception ex46)
+			catch (Exception ex49)
 			{
 				Debug.LogWarning((object)"Server Exception: Chicken.EggWorkQueue");
-				Debug.LogException(ex46, (Object)(object)this);
+				Debug.LogException(ex49, (Object)(object)this);
 			}
 			try
 			{
@@ -1597,10 +1649,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((ObjectWorkQueue<IndustrialStorageAdaptor>)IndustrialStorageAdaptor.SortQueue).RunQueue(0.10000000149011612);
 				}
 			}
-			catch (Exception ex47)
+			catch (Exception ex50)
 			{
 				Debug.LogWarning((object)"Server Exception: IndustrialStorageAdaptor.SortQueue");
-				Debug.LogException(ex47, (Object)(object)this);
+				Debug.LogException(ex50, (Object)(object)this);
 			}
 			try
 			{
@@ -1612,10 +1664,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					}
 				}
 			}
-			catch (Exception ex48)
+			catch (Exception ex51)
 			{
 				Debug.LogWarning((object)"Server Exception: BasePlayer.RelationshipUpdateQueue");
-				Debug.LogException(ex48, (Object)(object)this);
+				Debug.LogException(ex51, (Object)(object)this);
 				throw;
 			}
 			try
@@ -1625,10 +1677,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					TriggerParent.RunOnTick();
 				}
 			}
-			catch (Exception ex49)
+			catch (Exception ex52)
 			{
 				Debug.LogWarning((object)"Server Exception: TriggerParent.RunOnTick");
-				Debug.LogException(ex49, (Object)(object)this);
+				Debug.LogException(ex52, (Object)(object)this);
 			}
 			try
 			{
@@ -1637,10 +1689,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					((ObjectWorkQueue<BaseMission.MissionIdentifierData>)BaseMission.updateMissionValidStateWorkQueue).RunQueue((double)BaseMission.missionValidStateWorkQueueBudget);
 				}
 			}
-			catch (Exception ex50)
+			catch (Exception ex53)
 			{
 				Debug.LogWarning((object)"Server Exception: BaseMission.UpdateMissionValidStateWorkQueue");
-				Debug.LogException(ex50, (Object)(object)this);
+				Debug.LogException(ex53, (Object)(object)this);
 			}
 		}
 		try
@@ -1650,10 +1702,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				((ObjectWorkQueue<BoatAI.BoatAIInstruction>)BoatAI.BoatWorkQueue).RunQueue((double)BoatAI.boat_ai_frame_budget_ms);
 			}
 		}
-		catch (Exception ex51)
+		catch (Exception ex54)
 		{
 			Debug.LogWarning((object)"Server Exception: BoatAI.BoatWorkQueue");
-			Debug.LogException(ex51, (Object)(object)this);
+			Debug.LogException(ex54, (Object)(object)this);
 		}
 		try
 		{
@@ -1662,10 +1714,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				((PersistentObjectWorkQueue<ElectricWaterWheel>)ElectricWaterWheel.UpdateWorkQueue).RunList((double)ConVar.Server.waterWheelWorkBudgetMs);
 			}
 		}
-		catch (Exception ex52)
+		catch (Exception ex55)
 		{
 			Debug.LogWarning((object)"Server Exception: DisplayingBoxStorage.UpdateWorkQueue");
-			Debug.LogException(ex52, (Object)(object)this);
+			Debug.LogException(ex55, (Object)(object)this);
 		}
 		RuntimeProfiler.ServerMgr_Update = updateTimer.Elapsed;
 	}
@@ -1900,7 +1952,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				Net.sv.ProtocolId,
 				SingletonComponent<ServerMgr>.Instance.connectionQueue.Queued,
 				text11,
-				2633,
+				2634,
 				text4,
 				text6,
 				text2,
@@ -1982,6 +2034,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			SteamServer.SetKey("build", BuildInfo.Current.Scm.ChangeId);
 		}
 		Interface.CallHook("OnServerInformationUpdated");
+		CrashSessionMarker.RefreshFromServerTags();
 	}
 
 	public void OnDisconnected(string strReason, Network.Connection connection)
@@ -2155,10 +2208,10 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				spawnPoint3.rot = MainCamera.rotation;
 			}
 		}
-		RaycastHit val3 = default(RaycastHit);
+		RaycastHit val3 = default;
 		if (Physics.Raycast(new Ray(spawnPoint3.pos, Vector3.down), ref val3, 32f, 1537286401))
 		{
-			spawnPoint3.pos = ((RaycastHit)(ref val3)).point;
+			spawnPoint3.pos = val3.point;
 		}
 		return spawnPoint3;
 	}
@@ -2214,6 +2267,17 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			array[i].Kick("Server Shutting Down");
 		}
 		ConsoleSystem.Run(ConsoleSystem.Option.Server, "server.save");
+		try
+		{
+			if ((Object)(object)RustNavigation.Instance != (Object)null)
+			{
+				RustNavigation.Instance.FlushSaves();
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+		}
 		ConsoleSystem.Run(ConsoleSystem.Option.Server, "server.writecfg");
 	}
 
@@ -2339,11 +2403,8 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 	static ServerMgr()
 	{
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Expected O, but got Unknown
+		//IL_002e: Expected Obj, but got Unknown
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Expected O, but got Unknown
-		_systemConfigTag = new Memoized<string, (bool, bool)>((Func<(bool, bool), string>)(((bool Server, bool Player) t) => (!t.Server && !t.Player) ? null : $",sc{(t.Player ? 2 : 0) | (t.Server ? 1 : 0)}"));
-		SERVER_RESTARTING = new Phrase("server.restarting", "Server Restarting!");
-		RESTART_INTERRUPTED_PHRASE = new Phrase("server.restart_interrupted", "Server Restart interrupted!");
+		//IL_0042: Expected Obj, but got Unknown
 	}
 }

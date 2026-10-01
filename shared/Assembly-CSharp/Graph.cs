@@ -4,15 +4,15 @@ public abstract class Graph : MonoBehaviour
 {
 	public Material Material;
 
-	public int Resolution;
+	public int Resolution = 128;
 
-	public Vector2 ScreenFill;
+	public Vector2 ScreenFill = new Vector2(0f, 0f);
 
-	public Vector2 ScreenOrigin;
+	public Vector2 ScreenOrigin = new Vector2(0f, 0f);
 
-	public Vector2 Pivot;
+	public Vector2 Pivot = new Vector2(0f, 0f);
 
-	public Rect Area;
+	public Rect Area = new Rect(0f, 0f, 128f, 32f);
 
 	internal float CurrentValue;
 
@@ -57,10 +57,10 @@ public abstract class Graph : MonoBehaviour
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
 		if ((int)Event.current.type == 7 && values != null && values.Length != 0)
 		{
-			float num = Mathf.Max(((Rect)(ref Area)).width, ScreenFill.x * (float)Screen.width);
-			float num2 = Mathf.Max(((Rect)(ref Area)).height, ScreenFill.y * (float)Screen.height);
-			float num3 = ((Rect)(ref Area)).x - Pivot.x * num + ScreenOrigin.x * (float)Screen.width;
-			float num4 = ((Rect)(ref Area)).y - Pivot.y * num2 + ScreenOrigin.y * (float)Screen.height;
+			float num = Mathf.Max(Area.width, ScreenFill.x * (float)Screen.width);
+			float num2 = Mathf.Max(Area.height, ScreenFill.y * (float)Screen.height);
+			float num3 = Area.x - Pivot.x * num + ScreenOrigin.x * (float)Screen.width;
+			float num4 = Area.y - Pivot.y * num2 + ScreenOrigin.y * (float)Screen.height;
 			GL.PushMatrix();
 			Material.SetPass(0);
 			GL.LoadPixelMatrix();
@@ -93,11 +93,5 @@ public abstract class Graph : MonoBehaviour
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		Resolution = 128;
-		ScreenFill = new Vector2(0f, 0f);
-		ScreenOrigin = new Vector2(0f, 0f);
-		Pivot = new Vector2(0f, 0f);
-		Area = new Rect(0f, 0f, 128f, 32f);
-		((MonoBehaviour)this)._002Ector();
 	}
 }

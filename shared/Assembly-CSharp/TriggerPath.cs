@@ -34,7 +34,7 @@ public class TriggerPath : TriggerBase, IServerComponent
 	internal override void OnEntityEnter(BaseEntity ent)
 	{
 		base.OnEntityEnter(ent);
-		IPathListener pathListener = default(IPathListener);
+		IPathListener pathListener = default;
 		if (((Component)ent).TryGetComponent<IPathListener>(ref pathListener))
 		{
 			if (Object.op_Implicit((Object)(object)spline))

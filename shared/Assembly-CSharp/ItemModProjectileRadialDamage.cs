@@ -78,13 +78,13 @@ public class ItemModProjectileRadialDamage : ItemModProjectileMod
 			{
 				num2 = 0.9f;
 			}
-			if (!item.IsVisibleAndCanSeeLegacy(info.HitPositionWorld - ((Vector3)(ref info.ProjectileVelocity)).normalized * 0.1f))
+			if (!item.IsVisibleAndCanSeeLegacy(info.HitPositionWorld - info.ProjectileVelocity.normalized * 0.1f))
 			{
 				continue;
 			}
 			Vector3 hitPositionWorld = info.HitPositionWorld;
 			Vector3 val2 = val - info.HitPositionWorld;
-			if (item.IsVisibleAndCanSeeLegacy(hitPositionWorld - ((Vector3)(ref val2)).normalized * 0.1f))
+			if (item.IsVisibleAndCanSeeLegacy(hitPositionWorld - val2.normalized * 0.1f))
 			{
 				list.Add(item);
 				if (flag)

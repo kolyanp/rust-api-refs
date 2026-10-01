@@ -52,9 +52,9 @@ public class PoweredWaterPurifier : WaterPurifier
 		return true;
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (HasLiquidItem())
 		{
 			if (HasFlag(Flags.Reserved8) && !IsInvoking(ConvertWater))
@@ -85,7 +85,7 @@ public class PoweredWaterPurifier : WaterPurifier
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}

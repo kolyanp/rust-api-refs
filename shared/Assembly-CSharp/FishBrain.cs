@@ -184,10 +184,10 @@ public class FishBrain : BaseAIBrain
 	public override void InitializeAI()
 	{
 		base.InitializeAI();
-		base.ThinkMode = AIThinkMode.Interval;
+		ThinkMode = AIThinkMode.Interval;
 		thinkRate = 0.25f;
-		base.PathFinder = new UnderwaterPathFinder();
-		((UnderwaterPathFinder)base.PathFinder).Init(GetBaseEntity());
+		PathFinder = new UnderwaterPathFinder();
+		((UnderwaterPathFinder)PathFinder).Init(GetBaseEntity());
 		Count++;
 	}
 

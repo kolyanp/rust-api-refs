@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(Camera))]
 [ResetStaticFields]
+[RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(Camera))]
 public class CoverageQueries : MonoBehaviour
 {
@@ -21,9 +21,9 @@ public class CoverageQueries : MonoBehaviour
 
 		public RenderTexture resultTexture;
 
-		public Color[] inputData = (Color[])(object)new Color[0];
+		public Color[] inputData = new Color[0];
 
-		public Color32[] resultData = (Color32[])(object)new Color32[0];
+		public Color32[] resultData = new Color32[0];
 
 		private Material coverageMat;
 
@@ -52,17 +52,18 @@ public class CoverageQueries : MonoBehaviour
 			}
 			if (data)
 			{
-				inputData = (Color[])(object)new Color[0];
-				resultData = (Color32[])(object)new Color32[0];
+				inputData = new Color[0];
+				resultData = new Color32[0];
 			}
 		}
 
 		public bool CheckResize(int count)
 		{
 			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0075: Expected O, but got Unknown
+			//IL_0075: Expected Obj, but got Unknown
 			//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b7: Expected O, but got Unknown
+			//IL_00b7: Expected Obj, but got Unknown
+			//IL_012f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_013e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_013f: Unknown result type (might be due to invalid IL or missing references)
 			if (count > inputData.Length || ((Object)(object)resultTexture != (Object)null && !resultTexture.IsCreated()))
@@ -84,8 +85,7 @@ public class CoverageQueries : MonoBehaviour
 				int num2 = width * height;
 				Array.Resize(ref inputData, num2);
 				Array.Resize(ref resultData, num2);
-				Color32 val = default(Color32);
-				((Color32)(ref val))._002Ector(byte.MaxValue, (byte)0, (byte)0, (byte)0);
+				Color32 val = new Color32(byte.MaxValue, (byte)0, (byte)0, (byte)0);
 				for (int i = num; i < num2; i++)
 				{
 					resultData[i] = val;
@@ -156,14 +156,14 @@ public class CoverageQueries : MonoBehaviour
 			while (asyncRequests.Count > 0)
 			{
 				AsyncGPUReadbackRequest val = asyncRequests.Peek();
-				if (((AsyncGPUReadbackRequest)(ref val)).hasError)
+				if (val.hasError)
 				{
 					asyncRequests.Dequeue();
 					continue;
 				}
-				if (((AsyncGPUReadbackRequest)(ref val)).done)
+				if (val.done)
 				{
-					NativeArray<Color32> data = ((AsyncGPUReadbackRequest)(ref val)).GetData<Color32>(0);
+					NativeArray<Color32> data = val.GetData<Color32>(0);
 					for (int i = 0; i < data.Length; i++)
 					{
 						resultData[i] = data[i];
@@ -201,9 +201,12 @@ public class CoverageQueries : MonoBehaviour
 		{
 			public int id;
 
+			public bool pendingRemoval;
+
 			public void Reset()
 			{
 				id = -1;
+				pendingRemoval = false;
 			}
 		}
 

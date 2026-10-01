@@ -85,16 +85,16 @@ public class CH47PathFinder : BasePathFinder
 			float y = 30f;
 			val = Vector3Ex.Range(-1f, 1f);
 			val.y = 0f;
-			((Vector3)(ref val)).Normalize();
+			val.Normalize();
 			val *= x * Random.Range(0f, 0.75f);
 			val.y = y;
 		}
 		float waterOrTerrainSurface = WaterLevel.GetWaterOrTerrainSurface(val, waves: false, volumes: false);
 		float num = waterOrTerrainSurface;
-		RaycastHit val3 = default(RaycastHit);
+		RaycastHit val3 = default;
 		if (Physics.SphereCast(val + new Vector3(0f, 200f, 0f), 20f, Vector3.down, ref val3, 300f, 1218511105))
 		{
-			num = Mathf.Max(((RaycastHit)(ref val3)).point.y, waterOrTerrainSurface);
+			num = Mathf.Max(val3.point.y, waterOrTerrainSurface);
 		}
 		val.y = num + 30f;
 		return val;

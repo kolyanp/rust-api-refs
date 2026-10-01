@@ -154,6 +154,9 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	public string hierachyName;
 
 	[NonSerialized]
+	public string localName;
+
+	[NonSerialized]
 	public uint prefabID;
 
 	[NonSerialized]
@@ -176,8 +179,6 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 
 	public virtual void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
@@ -188,8 +189,11 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		fullName = name;
 		hierachyName = TransformEx.GetRecursiveName(((Component)this).transform);
+		localName = ((Object)((Component)this).gameObject).name;
 		prefabID = StringPool.Get(name);
 		instanceID = ((Object)this).GetInstanceID();
 		worldPosition = ((Component)this).transform.position;

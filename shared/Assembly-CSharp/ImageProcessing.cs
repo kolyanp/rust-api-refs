@@ -42,7 +42,7 @@ public static class ImageProcessing
 		float[] dst = new float[len1 * len2 * len3];
 		for (int i = 0; i < iterations; i++)
 		{
-			Parallel.For(0, len1, delegate(int x)
+			Parallel.For(0, len1, (int x) =>
 			{
 				int num = Mathf.Max(0, x - 1);
 				int num2 = Mathf.Min(len1 - 1, x + 1);
@@ -71,7 +71,7 @@ public static class ImageProcessing
 		float[] dst = new float[len1 * len2];
 		for (int i = 0; i < iterations; i++)
 		{
-			Parallel.For(0, len1, delegate(int x)
+			Parallel.For(0, len1, (int x) =>
 			{
 				int num = Mathf.Max(0, x - 1);
 				int num2 = Mathf.Min(len1 - 1, x + 1);
@@ -97,7 +97,7 @@ public static class ImageProcessing
 		float[] dst = new float[len1 * len2 * len3];
 		for (int i = 0; i < iterations; i++)
 		{
-			Parallel.For(0, len1, delegate(int x)
+			Parallel.For(0, len1, (int x) =>
 			{
 				int num = Mathf.Max(0, x - 1);
 				int num2 = Mathf.Min(len1 - 1, x + 1);
@@ -126,7 +126,7 @@ public static class ImageProcessing
 		{
 			return;
 		}
-		Parallel.For(0, srclen1, delegate(int x)
+		Parallel.For(0, srclen1, (int x) =>
 		{
 			int num = Mathf.Max(0, x - 1);
 			int num2 = Mathf.Min(srclen1 - 1, x + 1);
@@ -153,7 +153,7 @@ public static class ImageProcessing
 		{
 			return;
 		}
-		Parallel.For(0, srclen1, delegate(int x)
+		Parallel.For(0, srclen1, (int x) =>
 		{
 			int num = Mathf.Max(0, x - 1);
 			int num2 = Mathf.Min(srclen1 - 1, x + 1);
@@ -181,10 +181,10 @@ public static class ImageProcessing
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		Parallel.For(0, len1, delegate(int x)
+		Parallel.For(0, len1, (int x) =>
 		{
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0010: Expected O, but got Unknown
+			//IL_0010: Expected Obj, but got Unknown
 			MaxQueue val = new MaxQueue(radius * 2 + 1);
 			for (int i = 0; i < radius; i++)
 			{
@@ -206,10 +206,10 @@ public static class ImageProcessing
 				}
 			}
 		});
-		Parallel.For(0, len2, delegate(int y)
+		Parallel.For(0, len2, (int y) =>
 		{
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0010: Expected O, but got Unknown
+			//IL_0010: Expected Obj, but got Unknown
 			MaxQueue val = new MaxQueue(radius * 2 + 1);
 			for (int i = 0; i < radius; i++)
 			{
@@ -235,10 +235,10 @@ public static class ImageProcessing
 
 	public static void Dilate2D(int[] src, int len1, int len2, int srcmask, int radius, Action<int, int> action)
 	{
-		Parallel.For(0, len1, delegate(int x)
+		Parallel.For(0, len1, (int x) =>
 		{
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0010: Expected O, but got Unknown
+			//IL_0010: Expected Obj, but got Unknown
 			MaxQueue val = new MaxQueue(radius * 2 + 1);
 			for (int i = 0; i < radius; i++)
 			{
@@ -260,10 +260,10 @@ public static class ImageProcessing
 				}
 			}
 		});
-		Parallel.For(0, len2, delegate(int y)
+		Parallel.For(0, len2, (int y) =>
 		{
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0010: Expected O, but got Unknown
+			//IL_0010: Expected Obj, but got Unknown
 			MaxQueue val = new MaxQueue(radius * 2 + 1);
 			for (int i = 0; i < radius; i++)
 			{

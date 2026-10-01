@@ -8,9 +8,9 @@ public class BackpackInventoryPanel : MonoBehaviour
 
 	public GameObject[] HideWhenSelected;
 
-	public Vector3 BackpackTargetRotation;
+	public Vector3 BackpackTargetRotation = new Vector3(0f, 0f, 0f);
 
-	public Vector3 BackpackTargetUIShift;
+	public Vector3 BackpackTargetUIShift = Vector2.op_Implicit(new Vector2(160f, 0f));
 
 	public AnimationCurve BackpackModelRotateCurve;
 
@@ -20,11 +20,11 @@ public class BackpackInventoryPanel : MonoBehaviour
 
 	public AnimationCurve FadeOutWhenOpenCurve;
 
-	public float OpenScale;
+	public float OpenScale = 1f;
 
-	public float CloseScale;
+	public float CloseScale = 1f;
 
-	public float BackpackAlphaActiveThreshold;
+	public float BackpackAlphaActiveThreshold = 1f;
 
 	public RectTransform PreviewModelRectTransform;
 
@@ -39,11 +39,5 @@ public class BackpackInventoryPanel : MonoBehaviour
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		BackpackTargetRotation = new Vector3(0f, 0f, 0f);
-		BackpackTargetUIShift = Vector2.op_Implicit(new Vector2(160f, 0f));
-		OpenScale = 1f;
-		CloseScale = 1f;
-		BackpackAlphaActiveThreshold = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

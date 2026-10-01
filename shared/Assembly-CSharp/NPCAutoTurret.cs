@@ -68,7 +68,7 @@ public class NPCAutoTurret : AutoTurret
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			return base.GetCenterMuzzle() * toCenterMuzzleFromPitch;
 		}

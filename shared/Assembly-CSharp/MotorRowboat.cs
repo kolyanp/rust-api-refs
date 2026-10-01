@@ -223,7 +223,7 @@ public class MotorRowboat : BaseBoat
 	public override void InitShared()
 	{
 		base.InitShared();
-		fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		fuelSystem = new EntityFuelSystem(isServer, fuelStoragePrefab, children);
 	}
 
 	public override void ServerInit()
@@ -238,7 +238,7 @@ public class MotorRowboat : BaseBoat
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer)
+		if (isServer)
 		{
 			if (isSpawned)
 			{
@@ -253,9 +253,9 @@ public class MotorRowboat : BaseBoat
 
 	internal override void DoServerDestroy()
 	{
-		if (vehicle.vehiclesdroploot && storageUnitInstance.IsValid(base.isServer))
+		if (vehicle.vehiclesdroploot && storageUnitInstance.IsValid(isServer))
 		{
-			storageUnitInstance.Get(base.isServer).DropItems();
+			storageUnitInstance.Get(isServer).DropItems();
 		}
 		base.DoServerDestroy();
 	}
@@ -340,7 +340,7 @@ public class MotorRowboat : BaseBoat
 			Vector3 val2 = Vector3Ex.Direction2D(((Component)player).transform.position, ((Component)this).transform.position);
 			Vector3 val3 = Vector3Ex.Direction2D(((Component)player).transform.position + player.eyes.BodyForward() * 3f, ((Component)player).transform.position);
 			Vector3 val4 = Vector3.up * 0.1f + val3;
-			val3 = ((Vector3)(ref val4)).normalized;
+			val3 = val4.normalized;
 			Vector3 val5 = ((Component)this).transform.position + val2 * 2f;
 			float num2 = 3f;
 			float num3 = Vector3.Dot(((Component)this).transform.forward, val3);
@@ -431,7 +431,7 @@ public class MotorRowboat : BaseBoat
 	{
 		base.PostServerLoad();
 		Invoke(CheckInvalidBoat, 1f);
-		if (base.health <= 0f)
+		if (health <= 0f)
 		{
 			EnterCorpseState();
 			buoyancy.buoyancyScale = 0f;
@@ -442,8 +442,8 @@ public class MotorRowboat : BaseBoat
 
 	public virtual void CheckInvalidBoat()
 	{
-		bool num = fuelStoragePrefab.isValid && !fuelSystem.HasValidInstance(base.isServer);
-		bool flag = storageUnitPrefab.isValid && !storageUnitInstance.IsValid(base.isServer);
+		bool num = fuelStoragePrefab.isValid && !fuelSystem.HasValidInstance(isServer);
+		bool flag = storageUnitPrefab.isValid && !storageUnitInstance.IsValid(isServer);
 		if (num | flag)
 		{
 			Debug.Log((object)"Destroying invalid boat ");
@@ -509,12 +509,12 @@ public class MotorRowboat : BaseBoat
 			{
 				float num2 = 1f;
 				float num3 = Vector3Ex.Magnitude2D(rigidBody.linearVelocity);
-				float num4 = Mathf.InverseLerp(1f, 10f, num3) * 0.5f * base.healthFraction;
+				float num4 = Mathf.InverseLerp(1f, 10f, num3) * 0.5f * healthFraction;
 				if (!EngineOn())
 				{
 					num4 = 0f;
 				}
-				float num5 = 1f - 0.3f * (1f - base.healthFraction);
+				float num5 = 1f - 0.3f * (1f - healthFraction);
 				buoyancy.buoyancyScale = (num2 + num4) * num5;
 			}
 			if (EngineOn())
@@ -538,7 +538,7 @@ public class MotorRowboat : BaseBoat
 			flagsUpdateScope.Set(Flags.Reserved12, EngineOn() && gasPedal < 0f);
 			flagsUpdateScope.Set(Flags.Reserved9, buoyancy.submergedFraction > 0.85f);
 			flagsUpdateScope.Set(Flags.Reserved6, fuelSystem.HasFuel());
-			flagsUpdateScope.Set(Flags.Reserved8, base.RecentlyPushed);
+			flagsUpdateScope.Set(Flags.Reserved8, RecentlyPushed);
 		}
 	}
 
@@ -560,7 +560,7 @@ public class MotorRowboat : BaseBoat
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 localVelocity = GetLocalVelocity();
-		if (((Vector3)(ref localVelocity)).sqrMagnitude < 0.5f)
+		if (localVelocity.sqrMagnitude < 0.5f)
 		{
 			return !AnyMounted();
 		}
@@ -580,7 +580,7 @@ public class MotorRowboat : BaseBoat
 				gasPedal = 0f;
 			}
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			float num = Mathf.InverseLerp(4f, 20f, ((Vector3)(ref linearVelocity)).magnitude);
+			float num = Mathf.InverseLerp(4f, 20f, linearVelocity.magnitude);
 			if (num > 0f)
 			{
 				mounted.Hurt(num * 100f, DamageType.Blunt, this, useProtection: false);
@@ -609,10 +609,10 @@ public class MotorRowboat : BaseBoat
 		{
 			Vector3 forward = ((Component)this).transform.forward;
 			Vector3 linearVelocity = rigidBody.linearVelocity;
-			float num5 = Vector3.Dot(forward, ((Vector3)(ref linearVelocity)).normalized);
+			float num5 = Vector3.Dot(forward, linearVelocity.normalized);
 			float num6 = Mathf.InverseLerp(0.98f, 0.92f, num5);
-			Rigidbody obj = rigidBody;
-			obj.linearDamping += num6 * offAxisDrag * buoyancy.submergedFraction;
+			Rigidbody val = rigidBody;
+			val.linearDamping += num6 * offAxisDrag * buoyancy.submergedFraction;
 		}
 	}
 
@@ -649,7 +649,7 @@ public class MotorRowboat : BaseBoat
 			return false;
 		}
 		Vector3 linearVelocity = rigidBody.linearVelocity;
-		if (((Vector3)(ref linearVelocity)).magnitude >= 5f && HasDriver())
+		if (linearVelocity.magnitude >= 5f && HasDriver())
 		{
 			return false;
 		}
@@ -662,7 +662,7 @@ public class MotorRowboat : BaseBoat
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 worldVelocity = GetWorldVelocity();
-		if (((Vector3)(ref worldVelocity)).magnitude <= 4f)
+		if (worldVelocity.magnitude <= 4f)
 		{
 			Transform[] array = stationaryDismounts;
 			foreach (Transform val in array)
@@ -687,7 +687,7 @@ public class MotorRowboat : BaseBoat
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 linearVelocity = rigidBody.linearVelocity;
-		if (((Vector3)(ref linearVelocity)).magnitude <= 4f)
+		if (linearVelocity.magnitude <= 4f)
 		{
 			List<Vector3> list = Pool.Get<List<Vector3>>();
 			Transform[] array = stationaryDismounts;
@@ -701,7 +701,7 @@ public class MotorRowboat : BaseBoat
 			if (list.Count > 0)
 			{
 				Vector3 pos = ((Component)player).transform.position;
-				list.Sort(delegate(Vector3 a, Vector3 b)
+				list.Sort((Vector3 a, Vector3 b) =>
 				{
 					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -715,7 +715,7 @@ public class MotorRowboat : BaseBoat
 			}
 			Pool.FreeUnmanaged<Vector3>(ref list);
 		}
-		return base.GetDismountPosition(player, out res, false);
+		return base.GetDismountPosition(player, out res);
 	}
 
 	public override void DisableTransferProtection()
@@ -765,7 +765,7 @@ public class MotorRowboat : BaseBoat
 		{
 			return false;
 		}
-		if (!pusher.isMounted && pusher.IsOnGround() && base.healthFraction > 0f)
+		if (!pusher.isMounted && pusher.IsOnGround() && healthFraction > 0f)
 		{
 			return ShowPushMenu(pusher);
 		}

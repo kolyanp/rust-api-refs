@@ -20,7 +20,7 @@ public class Hammer : BaseMelee
 	{
 		BasePlayer ownerPlayer = GetOwnerPlayer();
 		BaseCombatEntity baseCombatEntity = info.HitEntity as BaseCombatEntity;
-		if (base.isServer && (Object)(object)baseCombatEntity != (Object)null && baseCombatEntity.ShouldRepairViaParent())
+		if (isServer && (Object)(object)baseCombatEntity != (Object)null && baseCombatEntity.ShouldRepairViaParent())
 		{
 			BaseCombatEntity repairableParent = baseCombatEntity.GetRepairableParent();
 			if ((Object)(object)repairableParent != (Object)null)
@@ -28,7 +28,7 @@ public class Hammer : BaseMelee
 				baseCombatEntity = repairableParent;
 			}
 		}
-		if ((Object)(object)baseCombatEntity != (Object)null && (Object)(object)ownerPlayer != (Object)null && base.isServer)
+		if ((Object)(object)baseCombatEntity != (Object)null && (Object)(object)ownerPlayer != (Object)null && isServer)
 		{
 			if (Interface.CallHook("OnHammerHit", ownerPlayer, info) != null)
 			{
@@ -40,7 +40,7 @@ public class Hammer : BaseMelee
 			}
 		}
 		info.DoDecals = false;
-		if (base.isServer)
+		if (isServer)
 		{
 			Effect.server.ImpactEffect(info);
 		}

@@ -12,7 +12,7 @@ public static class RenderTextureEx
 		get
 		{
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0020: Expected O, but got Unknown
+			//IL_0020: Expected Obj, but got Unknown
 			if (!Object.op_Implicit((Object)(object)_alphaBlending))
 			{
 				_alphaBlending = new Material(Shader.Find("Hidden/BlitAlphaBlend"));

@@ -15,16 +15,16 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private UI_Window _shockbyteWindow;
 
+	[SerializeField]
 	[Header("Categories")]
-	[SerializeField]
-	private List<Rust.UI.MainMenu.ServerBrowserCategoryData> _categories;
+	private List<ServerBrowserCategoryData> _categories;
 
+	[SerializeField]
 	[Header("Headers")]
-	[SerializeField]
-	private List<Rust.UI.MainMenu.ServerBrowserHeader> _headers;
+	private List<ServerBrowserHeader> _headers;
 
-	[Header("Filters")]
 	[SerializeField]
+	[Header("Filters")]
 	private RustButton _showEmptyToggle;
 
 	[SerializeField]
@@ -45,8 +45,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private RustInput _searchInput;
 
-	[Header("No Results")]
 	[SerializeField]
+	[Header("No Results")]
 	private UI_ServerBrowser_NoResults_Controller _noResultsController;
 
 	[SerializeField]

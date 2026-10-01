@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Facepunch;
 using UnityEngine;
@@ -38,6 +37,9 @@ public class DeepSea : ConsoleSystem
 
 	[ServerVar(Help = "(Generated) When enabled, outputs verbose deep sea system log messages (portal transitions, wipe events, entity moves) to the server log for debugging")]
 	public static bool logs = false;
+
+	[ServerVar(Help = "Ensure all players on a mounted boat are repositioned after a transition, if this is false we rely on parenting exclusively")]
+	public static bool strictTransitionReposition = true;
 
 	private static float _entities_spawninterval = 5f;
 
@@ -381,11 +383,11 @@ public class DeepSea : ConsoleSystem
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3Ex.WithY(((Component)ArgEx.Player(arg)).transform.position, 0f);
 		Vector3 val2 = new Vector3(val.x, 0f, val.y);
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		if ((Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null)
 		{
-			val2 = ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).center - new Vector3(val.x, 0f, val.y);
-			normalized = ((Vector3)(ref val2)).normalized;
+			val2 = DeepSeaManager.DeepSeaBounds.center - new Vector3(val.x, 0f, val.y);
+			normalized = val2.normalized;
 		}
 		Quaternion rot = Quaternion.LookRotation(normalized);
 		BoatAI.SpawnBoatGroup(new Vector2(val.x, val.z), rot, null, registerWithDeepSea: true);
@@ -464,7 +466,7 @@ public class DeepSea : ConsoleSystem
 		Transform portalEntranceTransform = DeepSeaManager.PortalEntranceTransform;
 		Transform portalEntranceTransform2 = DeepSeaManager.PortalEntranceTransform;
 		stringBuilder.AppendLine($"Entrance Portal Transform: {portalEntranceTransform}, {((portalEntranceTransform2 != null) ? portalEntranceTransform2.position : Vector3.zero)}");
-		stringBuilder.AppendLine("Entrance Portal Bounds: pos:" + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref DeepSeaManager.PortalEntranceBounds.position)/*cast due to constrained. prefix*/).ToString() + ", extents:" + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref DeepSeaManager.PortalEntranceBounds.extents)/*cast due to constrained. prefix*/).ToString());
+		stringBuilder.AppendLine("Entrance Portal Bounds: pos:" + ((object)DeepSeaManager.PortalEntranceBounds.position/*cast due to constrained. prefix*/).ToString() + ", extents:" + ((object)DeepSeaManager.PortalEntranceBounds.extents/*cast due to constrained. prefix*/).ToString());
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("Portals:");
 		foreach (DeepSeaPortal serverPortal in DeepSeaManager.ServerPortals)

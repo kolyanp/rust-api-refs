@@ -59,13 +59,13 @@ public class LensDirtinessRenderer : PostProcessEffectRenderer<LensDirtinessEffe
 		//IL_03f4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0410: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0412: Unknown result type (might be due to invalid IL or missing references)
-		float value = base.settings.bloomSize.value;
-		float value2 = base.settings.gain.value;
-		float value3 = base.settings.threshold.value;
-		float value4 = base.settings.dirtiness.value;
-		Color value5 = base.settings.bloomColor.value;
-		Texture value6 = base.settings.dirtinessTexture.value;
-		bool value7 = base.settings.sceneTintsBloom.value;
+		float value = settings.bloomSize.value;
+		float value2 = settings.gain.value;
+		float value3 = settings.threshold.value;
+		float value4 = settings.dirtiness.value;
+		Color value5 = settings.bloomColor.value;
+		Texture value6 = settings.dirtinessTexture.value;
+		bool value7 = settings.sceneTintsBloom.value;
 		CommandBuffer command = context.command;
 		command.BeginSample("LensDirtinessEffect");
 		if (value7)

@@ -24,19 +24,19 @@ namespace Carbon;
 
 public class Community
 {
-	private readonly Lazy<IAnalyticsManager> _analyticsManager;
+	private readonly Lazy<IAnalyticsManager> _analyticsManager = new Lazy<IAnalyticsManager>((Func<IAnalyticsManager>)GameObject.GetComponent<IAnalyticsManager>);
 
-	private readonly Lazy<IAssemblyManager> _assemblyEx;
+	private readonly Lazy<IAssemblyManager> _assemblyEx = new Lazy<IAssemblyManager>((Func<IAssemblyManager>)GameObject.GetComponent<IAssemblyManager>);
 
-	private readonly Lazy<ICommandManager> _commandManager;
+	private readonly Lazy<ICommandManager> _commandManager = new Lazy<ICommandManager>((Func<ICommandManager>)GameObject.GetComponent<ICommandManager>);
 
-	private readonly Lazy<IDownloadManager> _downloadManager;
+	private readonly Lazy<IDownloadManager> _downloadManager = new Lazy<IDownloadManager>((Func<IDownloadManager>)GameObject.GetComponent<IDownloadManager>);
 
-	private readonly Lazy<IEventManager> _eventManager;
+	private readonly Lazy<IEventManager> _eventManager = new Lazy<IEventManager>((Func<IEventManager>)GameObject.GetComponent<IEventManager>);
 
-	private readonly Lazy<ICompatManager> _compatManager;
+	private readonly Lazy<ICompatManager> _compatManager = new Lazy<ICompatManager>((Func<ICompatManager>)GameObject.GetComponent<ICompatManager>);
 
-	private static readonly Lazy<GameObject> _gameObject = new Lazy<GameObject>(delegate
+	private static readonly Lazy<GameObject> _gameObject = new Lazy<GameObject>(() =>
 	{
 		GameObject val = GameObject.Find("Carbon");
 		if (!((Object)(object)val == (Object)null))
@@ -194,7 +194,7 @@ public class Community
 			else
 			{
 				List<string> list = Pool.Get<List<string>>();
-				list.AddRange(Config.Aliases.Where(delegate(KeyValuePair<string, string> keyValuePair2)
+				list.AddRange(Config.Aliases.Where((KeyValuePair<string, string> keyValuePair2) =>
 				{
 					Config config3 = Config;
 					KeyValuePair<string, string> keyValuePair = keyValuePair2;
@@ -206,7 +206,7 @@ public class Community
 						return key == keyValuePair.Value;
 					}
 					return true;
-				}).Select(delegate(KeyValuePair<string, string> keyValuePair2)
+				}).Select((KeyValuePair<string, string> keyValuePair2) =>
 				{
 					KeyValuePair<string, string> keyValuePair = keyValuePair2;
 					return keyValuePair.Key;
@@ -319,17 +319,10 @@ public class Community
 	public Community()
 	{
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0113: Expected O, but got Unknown
-		_analyticsManager = new Lazy<IAnalyticsManager>((Func<IAnalyticsManager>)GameObject.GetComponent<IAnalyticsManager>);
-		_assemblyEx = new Lazy<IAssemblyManager>((Func<IAssemblyManager>)GameObject.GetComponent<IAssemblyManager>);
-		_commandManager = new Lazy<ICommandManager>((Func<ICommandManager>)GameObject.GetComponent<ICommandManager>);
-		_downloadManager = new Lazy<IDownloadManager>((Func<IDownloadManager>)GameObject.GetComponent<IDownloadManager>);
-		_eventManager = new Lazy<IEventManager>((Func<IEventManager>)GameObject.GetComponent<IEventManager>);
-		_compatManager = new Lazy<ICompatManager>((Func<ICompatManager>)GameObject.GetComponent<ICompatManager>);
-		base._002Ector();
+		//IL_0113: Expected Obj, but got Unknown
 		try
 		{
-			Events.Subscribe(CarbonEvent.CarbonStartup, delegate
+			Events.Subscribe(CarbonEvent.CarbonStartup, (EventArgs args) =>
 			{
 				if (!Config.Logging.ReducedLogging)
 				{
@@ -338,12 +331,12 @@ public class Community
 				}
 				Analytics.SessionStart();
 			});
-			Events.Subscribe(CarbonEvent.CarbonStartupComplete, delegate
+			Events.Subscribe(CarbonEvent.CarbonStartupComplete, (EventArgs args) =>
 			{
 				Carbon.Components.Analytics.on_server_startup();
 			});
 			char[] newlineSplit = new char[1] { '\n' };
-			Application.logMessageReceived += (LogCallback)delegate(string condition, string stackTrace, LogType type)
+			Application.logMessageReceived += (string condition, string stackTrace, LogType type) =>
 			{
 				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0002: Invalid comparison between Unknown and I4
@@ -378,13 +371,9 @@ public class Community
 	{
 		if (wants && !IsServerInitialized)
 		{
-			Oxide.Core.Libraries.Timer.FireDueStartupTimers();
+			Oxide.Core.Libraries.Timer.ProcessTimers(int.MaxValue);
 		}
 		IsServerInitialized = wants;
-		if (wants)
-		{
-			Oxide.Core.Libraries.Timer.ConvertRemainingStartupTimersToInvokes();
-		}
 	}
 
 	public void ClearCommands(bool all = false)
@@ -394,12 +383,17 @@ public class Community
 
 	public void RefreshConsoleInfo()
 	{
-		if (IsConfigReady && Config.Misc.ShowConsoleInfo && IsServerInitialized && !((Object)(object)SingletonComponent<ServerConsole>.Instance == (Object)null) && SingletonComponent<ServerConsole>.Instance.input != null)
+		if (!IsConfigReady || !Config.Misc.ShowConsoleInfo || (Object)(object)SingletonComponent<ServerConsole>.Instance == (Object)null || SingletonComponent<ServerConsole>.Instance.input == null)
 		{
-			if (SingletonComponent<ServerConsole>.Instance.input.statusText.Length != 4)
-			{
-				SingletonComponent<ServerConsole>.Instance.input.statusText = new string[4];
-			}
+			return;
+		}
+		if (SingletonComponent<ServerConsole>.Instance.input.statusText.Length != 4)
+		{
+			SingletonComponent<ServerConsole>.Instance.input.statusText = new string[4];
+			SingletonComponent<ServerConsole>.Instance.input.Initialize();
+		}
+		if (IsServerInitialized)
+		{
 			string version = Analytics.Version;
 			SingletonComponent<ServerConsole>.Instance.input.statusText[3] = " Carbon" + string.Format(" v{0}, {1:n0} mods, {2:n0} plgs, {3:n0}/{4:n0} mdls, {5:n0} exts, {6:n0} mdfs", new object[7]
 			{
@@ -411,6 +405,10 @@ public class Community
 				AssemblyEx.Extensions.Loaded.Count,
 				StoredModifiers.Entities?.Count
 			});
+		}
+		else
+		{
+			SingletonComponent<ServerConsole>.Instance.input.statusText[3] = string.Empty;
 		}
 	}
 
@@ -449,8 +447,9 @@ public class Community
 		ModLoader.UnloadCarbonMods();
 	}
 
-	public unsafe static string Protect(string name)
+	public static string Protect(string name)
 	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
@@ -459,15 +458,14 @@ public class Community
 		{
 			return string.Empty;
 		}
-		StringView val = default(StringView);
-		((StringView)(ref val))._002Ector(name);
-		int num = ((StringView)(ref val)).IndexOf(' ');
+		StringView val = new StringView(name);
+		int num = val.IndexOf(' ');
 		if (num < 0)
 		{
-			return Vault.Pool.Get(((object)(*(StringView*)(&val))/*cast due to constrained. prefix*/).ToString() + RuntimeId).ToString();
+			return Vault.Pool.Get(((object)val/*cast due to constrained. prefix*/).ToString() + RuntimeId).ToString();
 		}
-		StringView val2 = ((StringView)(ref val)).Substring(0, num);
-		StringView val3 = ((StringView)(ref val)).Substring(num + 1);
-		return Vault.Pool.Get(((object)(*(StringView*)(&val2))/*cast due to constrained. prefix*/).ToString() + RuntimeId) + " " + ((object)(*(StringView*)(&val3))/*cast due to constrained. prefix*/).ToString();
+		StringView val2 = val.Substring(0, num);
+		StringView val3 = val.Substring(num + 1);
+		return Vault.Pool.Get(((object)val2/*cast due to constrained. prefix*/).ToString() + RuntimeId) + " " + ((object)val3/*cast due to constrained. prefix*/).ToString();
 	}
 }

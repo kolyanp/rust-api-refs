@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class ItemModReveal : ItemMod
 {
-	public static readonly Phrase RevealItemTitle;
+	public static readonly Phrase RevealItemTitle = new Phrase("reveal_item", "Reveal BP");
 
-	public static readonly Phrase RevealItemDesc;
+	public static readonly Phrase RevealItemDesc = new Phrase("reveal_item_desc", "Reveal blueprint");
 
 	public int numForReveal = 10;
 
@@ -48,10 +48,8 @@ public class ItemModReveal : ItemMod
 	static ItemModReveal()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		RevealItemTitle = new Phrase("reveal_item", "Reveal BP");
-		RevealItemDesc = new Phrase("reveal_item_desc", "Reveal blueprint");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

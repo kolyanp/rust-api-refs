@@ -13,22 +13,22 @@ public class AssemblyDebugPatch : IAssemblyPatch
 	public void Apply(ModuleDefinition assembly, ReferenceImporter importer, ref BaseConverter.Context context)
 	{
 		//IL_0305: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030b: Expected O, but got Unknown
+		//IL_030b: Expected Obj, but got Unknown
 		//IL_030b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0315: Expected O, but got Unknown
+		//IL_0315: Expected Obj, but got Unknown
 		//IL_0310: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0316: Expected O, but got Unknown
+		//IL_0316: Expected Obj, but got Unknown
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0145: Expected O, but got Unknown
+		//IL_0145: Expected Obj, but got Unknown
 		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016e: Invalid comparison between Unknown and I4
 		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b5: Expected O, but got Unknown
+		//IL_01b5: Expected Obj, but got Unknown
 		if (!Debugger.IsAttached)
 		{
 			return;
@@ -91,7 +91,7 @@ public class AssemblyDebugPatch : IAssemblyPatch
 			}
 		}
 		TypeSignature val5 = importer.ImportTypeSignature(typeof(DebuggableAttribute.DebuggingModes));
-		CustomAttribute item = new CustomAttribute((ICustomAttributeType)(object)TypeDescriptorExtensions.CreateMemberReference((IMemberRefParent)(object)importer.ImportType(typeof(DebuggableAttribute)), ".ctor", (MemberSignature)(object)MethodSignature.CreateInstance((TypeSignature)(object)assembly.CorLibTypeFactory.Void, (TypeSignature[])(object)new TypeSignature[1] { importer.ImportTypeSignature(typeof(DebuggableAttribute.DebuggingModes)) })).ImportWith(importer), new CustomAttributeSignature((CustomAttributeArgument[])(object)new CustomAttributeArgument[1]
+		CustomAttribute item = new CustomAttribute((ICustomAttributeType)(object)TypeDescriptorExtensions.CreateMemberReference((IMemberRefParent)(object)importer.ImportType(typeof(DebuggableAttribute)), ".ctor", (MemberSignature)(object)MethodSignature.CreateInstance((TypeSignature)(object)assembly.CorLibTypeFactory.Void, new TypeSignature[1] { importer.ImportTypeSignature(typeof(DebuggableAttribute.DebuggingModes)) })).ImportWith(importer), new CustomAttributeSignature(new CustomAttributeArgument[1]
 		{
 			new CustomAttributeArgument(val5, (object)262)
 		}));

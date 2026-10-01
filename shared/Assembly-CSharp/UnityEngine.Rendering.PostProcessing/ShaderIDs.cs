@@ -269,4 +269,6 @@ internal static class ShaderIDs
 	internal static readonly int AntiAliasing = Shader.PropertyToID("_AntiAliasing");
 
 	internal static readonly int GlobalMipBias = Shader.PropertyToID("_GlobalMipBias");
+
+	internal static readonly int TemporalBlending = Shader.PropertyToID("_TemporalBlending");
 }

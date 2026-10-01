@@ -26,17 +26,17 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 
 	public Transform pitch;
 
-	public Vector2 pitchClamp;
+	public Vector2 pitchClamp = new Vector2(-50f, 50f);
 
-	public Vector2 yawClamp;
+	public Vector2 yawClamp = new Vector2(-50f, 50f);
 
-	public float turnSpeed;
+	public float turnSpeed = 25f;
 
-	public float serverLerpSpeed;
+	public float serverLerpSpeed = 15f;
 
-	public float clientLerpSpeed;
+	public float clientLerpSpeed = 10f;
 
-	public float zoomLerpSpeed;
+	public float zoomLerpSpeed = 10f;
 
 	public float[] fovScales;
 
@@ -46,17 +46,17 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 
 	public int fovScaleIndex;
 
-	public float fovScaleLerped;
+	public float fovScaleLerped = 1f;
 
-	public bool hasPTZ;
+	public bool hasPTZ = true;
 
-	public AnimationCurve dofCurve;
+	public AnimationCurve dofCurve = AnimationCurve.Constant(0f, 1f, 0f);
 
-	public float dofApertureMax;
+	public float dofApertureMax = 10f;
 
 	public const Flags Flag_HasViewer = Flags.Reserved5;
 
-	public bool disableWhenShot;
+	public bool disableWhenShot = true;
 
 	[ServerVar(Name = "camera_disable_seconds")]
 	public static float CameraDisableSeconds = 300f;
@@ -65,9 +65,9 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 
 	public AnimationCurve movementLoopGainCurve;
 
-	public float movementLoopSmoothing;
+	public float movementLoopSmoothing = 1f;
 
-	public float movementLoopReference;
+	public float movementLoopReference = 50f;
 
 	private Sound movementLoop;
 
@@ -142,7 +142,7 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			if (IsStatic())
 			{
@@ -259,7 +259,7 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 				Vector3 val = Vector3Ex.Direction(player.eyes.position, ((Component)yaw).transform.position);
 				val = ((Component)this).transform.InverseTransformDirection(val);
 				Quaternion val2 = Quaternion.LookRotation(val);
-				Vector3 val3 = BaseMountable.ConvertVector(((Quaternion)(ref val2)).eulerAngles);
+				Vector3 val3 = BaseMountable.ConvertVector(val2.eulerAngles);
 				pitchAmount = Mathf.Clamp(val3.x, pitchClamp.x, pitchClamp.y);
 				yawAmount = Mathf.Clamp(val3.y, yawClamp.x, yawClamp.y);
 				SendNetworkUpdate();
@@ -287,7 +287,7 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 		Vector3 val = Vector3Ex.Direction(point, ((Component)yaw).transform.position);
 		val = ((Component)this).transform.InverseTransformDirection(val);
 		Quaternion val2 = Quaternion.LookRotation(val);
-		Vector3 val3 = BaseMountable.ConvertVector(((Quaternion)(ref val2)).eulerAngles);
+		Vector3 val3 = BaseMountable.ConvertVector(val2.eulerAngles);
 		pitchAmount = Mathf.Clamp(val3.x, pitchClamp.x, pitchClamp.y);
 		yawAmount = Mathf.Clamp(val3.y, yawClamp.x, yawClamp.y);
 		SendNetworkUpdate();
@@ -309,12 +309,12 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 	public void UpdateViewers()
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved5, base.ViewerCount > 0);
+		flagsUpdateScope.Set(Flags.Reserved5, ViewerCount > 0);
 	}
 
 	public void ServerTick()
 	{
-		if (base.isClient || base.IsDestroyed || (double)timeSinceLastServerTick < 0.014999999664723873)
+		if (isClient || IsDestroyed || (double)timeSinceLastServerTick < 0.014999999664723873)
 		{
 			return;
 		}
@@ -396,7 +396,7 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		Quaternion val = Quaternion.Euler(pitchAmount, 0f, 0f);
 		Quaternion val2 = Quaternion.Euler(0f, yawAmount, 0f);
-		float num = ((base.isServer && !base.IsBeingControlled) ? serverLerpSpeed : clientLerpSpeed);
+		float num = ((isServer && !IsBeingControlled) ? serverLerpSpeed : clientLerpSpeed);
 		pitch.localRotation = Mathx.Lerp(pitch.localRotation, val, num, delta);
 		yaw.localRotation = Mathx.Lerp(yaw.localRotation, val2, num, delta);
 		if (fovScales != null && fovScales.Length != 0)
@@ -422,7 +422,7 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 		if (info.msg.rcEntity != null)
 		{
 			int num = Mathf.Clamp((int)info.msg.rcEntity.zoom, 0, fovScales.Length - 1);
-			if (base.isServer)
+			if (isServer)
 			{
 				pitchAmount = info.msg.rcEntity.aim.x;
 				yawAmount = info.msg.rcEntity.aim.y;
@@ -442,19 +442,5 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		pitchClamp = new Vector2(-50f, 50f);
-		yawClamp = new Vector2(-50f, 50f);
-		turnSpeed = 25f;
-		serverLerpSpeed = 15f;
-		clientLerpSpeed = 10f;
-		zoomLerpSpeed = 10f;
-		fovScaleLerped = 1f;
-		hasPTZ = true;
-		dofCurve = AnimationCurve.Constant(0f, 1f, 0f);
-		dofApertureMax = 10f;
-		disableWhenShot = true;
-		movementLoopSmoothing = 1f;
-		movementLoopReference = 50f;
-		base._002Ector();
 	}
 }

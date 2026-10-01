@@ -8,7 +8,7 @@ public class FoliageDisplacementRendererFeature : RustRendererFeature
 	private Material clearDisplacementMaterial;
 
 	[SerializeField]
-	private RenderPassEvent cameraEvent;
+	private RenderPassEvent cameraEvent = (RenderPassEvent)5;
 
 	public override void Create()
 	{
@@ -21,7 +21,5 @@ public class FoliageDisplacementRendererFeature : RustRendererFeature
 	public FoliageDisplacementRendererFeature()
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		cameraEvent = (RenderPassEvent)5;
-		((RustRendererFeature)this)._002Ector();
 	}
 }

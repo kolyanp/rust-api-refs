@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using UnityEngine;
 
+[ResetStaticFields]
 public static class RecipeDictionary
 {
 	private static Dictionary<uint, Dictionary<int, List<Recipe>>> recipeListsDict = new Dictionary<uint, Dictionary<int, List<Recipe>>>();

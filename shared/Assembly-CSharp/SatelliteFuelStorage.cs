@@ -19,9 +19,9 @@ public class SatelliteFuelStorage : StorageContainer
 		if (GetParentEntity() is SatelliteControlComputer { powerCost: not null } satelliteControlComputer && satelliteControlComputer.powerCost.Count != 0)
 		{
 			inventorySlots = satelliteControlComputer.powerCost.Count;
-			if (base.inventory != null)
+			if (inventory != null)
 			{
-				base.inventory.capacity = inventorySlots;
+				inventory.capacity = inventorySlots;
 			}
 		}
 	}

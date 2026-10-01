@@ -21,21 +21,21 @@ public class NexusDock : SingletonComponent<NexusDock>
 	public Transform Departure;
 
 	[Header("Ferry")]
-	public float WaitTime;
+	public float WaitTime = 30f;
 
 	[Header("Ejection")]
 	public BoxCollider EjectionZone;
 
-	public float TraceHeight;
+	public float TraceHeight = 100f;
 
-	public LayerMask TraceLayerMask;
+	public LayerMask TraceLayerMask = LayerMask.op_Implicit(1503731969);
 
-	public int EjectionAttempts;
+	public int EjectionAttempts = 25;
 
 	[Range(0f, 1f)]
-	public float MinGroundNormal;
+	public float MinGroundNormal = 0.7f;
 
-	public float MaxGroundVariance;
+	public float MaxGroundVariance = 0.35f;
 
 	private const float SkinWidth = 0.05f;
 
@@ -129,6 +129,7 @@ public class NexusDock : SingletonComponent<NexusDock>
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -158,6 +159,7 @@ public class NexusDock : SingletonComponent<NexusDock>
 		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
@@ -177,6 +179,7 @@ public class NexusDock : SingletonComponent<NexusDock>
 		//IL_0276: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0294: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
@@ -211,28 +214,25 @@ public class NexusDock : SingletonComponent<NexusDock>
 		Quaternion val = Quaternion.Euler(0f, ((Component)entity).transform.eulerAngles.y, 0f);
 		Bounds bounds = entity.bounds;
 		Vector3 lossyScale = ((Component)entity).transform.lossyScale;
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(Mathf.Max(Mathf.Abs(((Bounds)(ref bounds)).extents.x * lossyScale.x), 0.25f), Mathf.Max(Mathf.Abs(((Bounds)(ref bounds)).extents.y * lossyScale.y), 0.25f), Mathf.Max(Mathf.Abs(((Bounds)(ref bounds)).extents.z * lossyScale.z), 0.25f));
-		Vector3 val3 = val * Vector3.Scale(((Bounds)(ref bounds)).center, lossyScale);
+		Vector3 val2 = new Vector3(Mathf.Max(Mathf.Abs(bounds.extents.x * lossyScale.x), 0.25f), Mathf.Max(Mathf.Abs(bounds.extents.y * lossyScale.y), 0.25f), Mathf.Max(Mathf.Abs(bounds.extents.z * lossyScale.z), 0.25f));
+		Vector3 val3 = val * Vector3.Scale(bounds.center, lossyScale);
 		Vector3 val4 = Vector3.Max(val2 - new Vector3(0.05f, 0.05f, 0.05f), new Vector3(0.05f, 0.05f, 0.05f));
 		Transform transform = ((Component)EjectionZone).transform;
 		Vector3 size = EjectionZone.size;
 		float num = transform.position.y - size.y / 2f;
 		bool flag = false;
 		Vector3 val5 = Vector3.zero;
-		Vector3 val8 = default(Vector3);
-		RaycastHit val9 = default(RaycastHit);
-		Vector3 val10 = default(Vector3);
+		RaycastHit val9 = default;
 		for (int i = 0; i < EjectionAttempts; i++)
 		{
 			Vector3 val6 = Vector3Ex.Scale(size, Random.value - 0.5f, 0f, Random.value - 0.5f);
 			Vector3 val7 = transform.TransformPoint(val6);
-			((Vector3)(ref val8))._002Ector(val7.x + val3.x, num + TraceHeight + val4.y, val7.z + val3.z);
-			if (!Physics.BoxCast(val8, val4, Vector3.down, ref val9, val, TraceHeight + size.y, LayerMask.op_Implicit(TraceLayerMask), (QueryTriggerInteraction)1) || ((RaycastHit)(ref val9)).normal.y < MinGroundNormal)
+			Vector3 val8 = new Vector3(val7.x + val3.x, num + TraceHeight + val4.y, val7.z + val3.z);
+			if (!Physics.BoxCast(val8, val4, Vector3.down, ref val9, val, TraceHeight + size.y, LayerMask.op_Implicit(TraceLayerMask), (QueryTriggerInteraction)1) || val9.normal.y < MinGroundNormal)
 			{
 				continue;
 			}
-			float num2 = val8.y - ((RaycastHit)(ref val9)).distance - val4.y;
+			float num2 = val8.y - val9.distance - val4.y;
 			if (num2 < val7.y - size.y || num2 > val7.y + size.y)
 			{
 				continue;
@@ -240,7 +240,7 @@ public class NexusDock : SingletonComponent<NexusDock>
 			float waterSurface = WaterLevel.GetWaterSurface(val7, waves: false, volumes: false);
 			if (!(num2 < waterSurface))
 			{
-				((Vector3)(ref val10))._002Ector(val8.x, num2 + val2.y, val8.z);
+				Vector3 val10 = new Vector3(val8.x, num2 + val2.y, val8.z);
 				Vector3 val11 = val10 - val3;
 				if (!flag)
 				{
@@ -279,7 +279,7 @@ public class NexusDock : SingletonComponent<NexusDock>
 		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		float num = groundHeight + MaxGroundVariance;
 		float num2 = MaxGroundVariance * 2f;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		for (int i = 0; i < 4; i++)
 		{
 			float num3 = (((i & 1) == 0) ? (-1f) : 1f) * extents.x * 0.8f;
@@ -288,7 +288,7 @@ public class NexusDock : SingletonComponent<NexusDock>
 			{
 				return false;
 			}
-			if (Mathf.Abs(((RaycastHit)(ref val)).point.y - groundHeight) > MaxGroundVariance || ((RaycastHit)(ref val)).normal.y < MinGroundNormal || ((RaycastHit)(ref val)).point.y < waterHeight)
+			if (Mathf.Abs(val.point.y - groundHeight) > MaxGroundVariance || val.normal.y < MinGroundNormal || val.point.y < waterHeight)
 			{
 				return false;
 			}
@@ -316,12 +316,5 @@ public class NexusDock : SingletonComponent<NexusDock>
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		WaitTime = 30f;
-		TraceHeight = 100f;
-		TraceLayerMask = LayerMask.op_Implicit(1503731969);
-		EjectionAttempts = 25;
-		MinGroundNormal = 0.7f;
-		MaxGroundVariance = 0.35f;
-		base._002Ector();
 	}
 }

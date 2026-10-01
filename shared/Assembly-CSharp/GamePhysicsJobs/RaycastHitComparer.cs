@@ -11,6 +11,6 @@ public struct RaycastHitComparer : IComparer<RaycastHit>
 {
 	public int Compare(RaycastHit x, RaycastHit y)
 	{
-		return ((RaycastHit)(ref x)).distance.CompareTo(((RaycastHit)(ref y)).distance);
+		return x.distance.CompareTo(y.distance);
 	}
 }

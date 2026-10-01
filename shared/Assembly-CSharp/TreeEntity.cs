@@ -255,6 +255,7 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)xMarker == (Object)null)
 		{
@@ -267,9 +268,8 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 		}
 		if (PrefabAttribute.server.Find<TreeMarkerData>(prefabID) != null)
 		{
-			Bounds val = default(Bounds);
-			((Bounds)(ref val))._002Ector(((Component)xMarker).transform.position, Vector3.one * 0.2f);
-			if (((Bounds)(ref val)).Contains(info.HitPositionWorld))
+			Bounds val = new Bounds(((Component)xMarker).transform.position, Vector3.one * 0.2f);
+			if (val.Contains(info.HitPositionWorld))
 			{
 				return true;
 			}
@@ -366,6 +366,7 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 		//IL_02b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02d8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f0: Unknown result type (might be due to invalid IL or missing references)
@@ -417,7 +418,7 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 				float num2 = Random.Range(0.5f, 0.5f);
 				val2 = Vector3.Lerp(-val, val3 * num, num2);
 			}
-			Vector3 val4 = ((Component)this).transform.InverseTransformDirection(((Vector3)(ref val2)).normalized) * 2.5f;
+			Vector3 val4 = ((Component)this).transform.InverseTransformDirection(val2.normalized) * 2.5f;
 			val4 = ((Component)this).transform.InverseTransformPoint(serverCollider.ClosestPoint(((Component)this).transform.TransformPoint(val4)));
 			Vector3 val5 = ((Component)this).transform.TransformPoint(val4);
 			Vector3 val6 = ((Component)this).transform.InverseTransformPoint(nextHotspotMarkerValues.hitPositionWorld);
@@ -431,9 +432,8 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 			Quaternion val9 = QuaternionEx.LookRotationNormal(-val8, Vector3.zero);
 			val4 = ((Component)this).transform.TransformPoint(val4);
 			val4 = serverCollider.ClosestPoint(val4);
-			Line val10 = default(Line);
-			((Line)(ref val10))._002Ector(((Component)serverCollider).transform.TransformPoint(new Vector3(0f, 10f, 0f)), ((Component)serverCollider).transform.TransformPoint(new Vector3(0f, -10f, 0f)));
-			val9 = QuaternionEx.LookRotationNormal(-Vector3Ex.Direction(((Line)(ref val10)).ClosestPoint(val4), val4));
+			Line val10 = new Line(((Component)serverCollider).transform.TransformPoint(new Vector3(0f, 10f, 0f)), ((Component)serverCollider).transform.TransformPoint(new Vector3(0f, -10f, 0f)));
+			val9 = QuaternionEx.LookRotationNormal(-Vector3Ex.Direction(val10.ClosestPoint(val4), val4));
 			xMarker = GameManager.server.CreateEntity("assets/content/nature/treesprefabs/trees/effects/tree_marking.prefab", val4, val9);
 		}
 		xMarker.Spawn();
@@ -481,12 +481,12 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient && !(Time.realtimeSinceStartup < nextBirdTime) && !(((Bounds)(ref bounds)).extents.y < 6f))
+		if (!isClient && !(Time.realtimeSinceStartup < nextBirdTime) && !(bounds.extents.y < 6f))
 		{
 			uint num = (uint)(int)net.ID.Value + birdCycleIndex;
 			if (SeedRandom.Range(ref num, 0, 2) == 0)
 			{
-				Effect.server.Run("assets/prefabs/npc/birds/birdemission.prefab", ((Component)this).transform.position + Vector3.up * Random.Range(((Bounds)(ref bounds)).extents.y * 0.65f, ((Bounds)(ref bounds)).extents.y * 0.9f), Vector3.up);
+				Effect.server.Run("assets/prefabs/npc/birds/birdemission.prefab", ((Component)this).transform.position + Vector3.up * Random.Range(bounds.extents.y * 0.65f, bounds.extents.y * 0.9f), Vector3.up);
 			}
 			birdCycleIndex++;
 			nextBirdTime = Time.realtimeSinceStartup + 90f;
@@ -522,11 +522,11 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 		}
 		isKilled = true;
 		CleanupMarker();
-		if (base.isServer)
+		if (isServer)
 		{
 			StabilityEntity.UpdateSurroundingsQueue updateSurroundingsQueue = StabilityEntity.updateSurroundingsQueue;
 			OBB val = WorldSpaceBounds();
-			((ObjectWorkQueue<Bounds>)updateSurroundingsQueue).Add(((OBB)(ref val)).ToBounds());
+			((ObjectWorkQueue<Bounds>)updateSurroundingsQueue).Add(val.ToBounds());
 			TryKillTreeAddition();
 		}
 		if (fallOnDied)

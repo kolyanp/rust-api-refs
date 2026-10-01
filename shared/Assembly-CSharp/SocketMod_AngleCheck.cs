@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class SocketMod_AngleCheck : SocketMod
 {
-	public bool wantsAngle;
+	public bool wantsAngle = true;
 
-	public Vector3 worldNormal;
+	public Vector3 worldNormal = Vector3.up;
 
-	public float withinDegrees;
+	public float withinDegrees = 45f;
 
 	public bool usePlacementNormal;
 
@@ -34,9 +34,5 @@ public class SocketMod_AngleCheck : SocketMod
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		wantsAngle = true;
-		worldNormal = Vector3.up;
-		withinDegrees = 45f;
-		base._002Ector();
 	}
 }

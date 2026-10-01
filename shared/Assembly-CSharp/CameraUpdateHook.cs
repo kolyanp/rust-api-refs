@@ -49,20 +49,20 @@ public class CameraUpdateHook : MonoBehaviour
 	private void Awake()
 	{
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Expected O, but got Unknown
+		//IL_005b: Expected Obj, but got Unknown
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Expected O, but got Unknown
+		//IL_004c: Expected Obj, but got Unknown
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Expected O, but got Unknown
+		//IL_008e: Expected Obj, but got Unknown
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Expected O, but got Unknown
+		//IL_007f: Expected Obj, but got Unknown
 		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Expected O, but got Unknown
+		//IL_00c1: Expected Obj, but got Unknown
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Expected O, but got Unknown
+		//IL_00b2: Expected Obj, but got Unknown
 		CameraUpdateHook[] components = ((Component)this).GetComponents<CameraUpdateHook>();
 		foreach (CameraUpdateHook cameraUpdateHook in components)
 		{
@@ -72,42 +72,42 @@ public class CameraUpdateHook : MonoBehaviour
 			}
 		}
 		CameraCallback onPreRender = Camera.onPreRender;
-		object obj = _003C_003Ec._003C_003E9__5_0;
-		if (obj == null)
+		CameraCallback val = _003C_003Ec._003C_003E9__5_0;
+		if (val == null)
 		{
-			CameraCallback val = delegate
+			CameraCallback val2 = (Camera args) =>
 			{
 				Camera mainCamera = MainCamera.mainCamera;
 				LastFrameFOV = ((mainCamera != null) ? mainCamera.fieldOfView : Graphics.fov);
 				PreRender?.Invoke();
 			};
-			_003C_003Ec._003C_003E9__5_0 = val;
-			obj = (object)val;
+			_003C_003Ec._003C_003E9__5_0 = val2;
+			val = val2;
 		}
-		Camera.onPreRender = (CameraCallback)Delegate.Combine((Delegate?)(object)onPreRender, (Delegate?)obj);
+		Camera.onPreRender = (CameraCallback)Delegate.Combine((Delegate?)(object)onPreRender, (Delegate?)(object)val);
 		CameraCallback onPostRender = Camera.onPostRender;
-		object obj2 = _003C_003Ec._003C_003E9__5_1;
-		if (obj2 == null)
+		CameraCallback val3 = _003C_003Ec._003C_003E9__5_1;
+		if (val3 == null)
 		{
-			CameraCallback val2 = delegate
+			CameraCallback val4 = (Camera args) =>
 			{
 				PostRender?.Invoke();
 			};
-			_003C_003Ec._003C_003E9__5_1 = val2;
-			obj2 = (object)val2;
+			_003C_003Ec._003C_003E9__5_1 = val4;
+			val3 = val4;
 		}
-		Camera.onPostRender = (CameraCallback)Delegate.Combine((Delegate?)(object)onPostRender, (Delegate?)obj2);
+		Camera.onPostRender = (CameraCallback)Delegate.Combine((Delegate?)(object)onPostRender, (Delegate?)(object)val3);
 		CameraCallback onPreCull = Camera.onPreCull;
-		object obj3 = _003C_003Ec._003C_003E9__5_2;
-		if (obj3 == null)
+		CameraCallback val5 = _003C_003Ec._003C_003E9__5_2;
+		if (val5 == null)
 		{
-			CameraCallback val3 = delegate
+			CameraCallback val6 = (Camera args) =>
 			{
 				PreCull?.Invoke();
 			};
-			_003C_003Ec._003C_003E9__5_2 = val3;
-			obj3 = (object)val3;
+			_003C_003Ec._003C_003E9__5_2 = val6;
+			val5 = val6;
 		}
-		Camera.onPreCull = (CameraCallback)Delegate.Combine((Delegate?)(object)onPreCull, (Delegate?)obj3);
+		Camera.onPreCull = (CameraCallback)Delegate.Combine((Delegate?)(object)onPreCull, (Delegate?)(object)val5);
 	}
 }

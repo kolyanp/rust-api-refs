@@ -71,21 +71,21 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 		base.OnHit(rayHit, hitEntity);
 		willKill = true;
 		HitInfo hitInfo = new HitInfo();
-		hitInfo.Initiator = base.baseEntity.creatorEntity;
-		hitInfo.WeaponPrefab = base.baseEntity;
+		hitInfo.Initiator = baseEntity.creatorEntity;
+		hitInfo.WeaponPrefab = baseEntity;
 		hitInfo.IsPredicting = false;
 		hitInfo.DoDecals = true;
 		hitInfo.DoHitEffects = true;
 		hitInfo.DidHit = true;
-		hitInfo.HitPositionWorld = ((RaycastHit)(ref rayHit)).point;
-		hitInfo.HitNormalWorld = ((RaycastHit)(ref rayHit)).normal;
-		hitInfo.ProjectileVelocity = base.CurrentVelocity;
+		hitInfo.HitPositionWorld = rayHit.point;
+		hitInfo.HitNormalWorld = rayHit.normal;
+		hitInfo.ProjectileVelocity = CurrentVelocity;
 		hitInfo.PointStart = startPosition;
-		hitInfo.PointEnd = ((RaycastHit)(ref rayHit)).point;
+		hitInfo.PointEnd = rayHit.point;
 		hitInfo.damageProperties = damageProperties;
 		CalculateDamage(hitInfo, 1f);
 		hitInfo.HitMaterial = StringPool.Get(GetMaterialName(rayHit));
-		ThrownBoomerang obj = base.baseEntity as ThrownBoomerang;
+		ThrownBoomerang obj = baseEntity as ThrownBoomerang;
 		obj.OnHit();
 		if (hitEntity.IsValid())
 		{
@@ -103,8 +103,8 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 			}
 			hitInfo.HitEntity.OnAttacked(hitInfo);
 		}
-		Vector3 currentVelocity = base.CurrentVelocity;
-		obj.CreateWorldModel(hitInfo, ((Vector3)(ref currentVelocity)).normalized);
+		Vector3 currentVelocity = CurrentVelocity;
+		obj.CreateWorldModel(hitInfo, currentVelocity.normalized);
 		Effect.server.ImpactEffect(hitInfo);
 	}
 
@@ -134,13 +134,13 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 		List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
 		List<RaycastHit> list2 = Pool.Get<List<RaycastHit>>();
 		Vector3 position = ((Component)this).transform.position;
-		GamePhysics.TraceAll(new Ray(position, ((Vector3)(ref velocityToUse)).normalized), radius, list, distance + scanRange, mask, (QueryTriggerInteraction)1);
-		GamePhysics.TraceAll(new Ray(position, ((Vector3)(ref velocityToUse)).normalized), worldAttackRadius, list2, distance + scanRange, mask, (QueryTriggerInteraction)1);
+		GamePhysics.TraceAll(new Ray(position, velocityToUse.normalized), radius, list, distance + scanRange, mask, (QueryTriggerInteraction)1);
+		GamePhysics.TraceAll(new Ray(position, velocityToUse.normalized), worldAttackRadius, list2, distance + scanRange, mask, (QueryTriggerInteraction)1);
 		foreach (RaycastHit item in list)
 		{
 			RaycastHit current = item;
 			BaseEntity entity = RaycastHitEx.GetEntity(current);
-			if ((!((Object)(object)entity != (Object)null) || !entity.isClient) && (!IgnoreAI || !IsAnIgnoredAI(entity)) && (entity is BasePlayer || entity is BaseNpc) && IsAValidHit(entity) && GamePhysics.LineOfSight(((Component)this).transform.position, ((RaycastHit)(ref current)).point, mask, 0f))
+			if ((!((Object)(object)entity != (Object)null) || !entity.isClient) && (!IgnoreAI || !IsAnIgnoredAI(entity)) && (entity is BasePlayer || entity is BaseNpc) && IsAValidHit(entity) && GamePhysics.LineOfSight(((Component)this).transform.position, current.point, mask, 0f))
 			{
 				ProcessHit(current, entity, position);
 				Pool.FreeUnmanaged<RaycastHit>(ref list);
@@ -168,7 +168,7 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 	{
 		if (willKill)
 		{
-			base.baseEntity.Kill();
+			baseEntity.Kill();
 		}
 	}
 
@@ -180,7 +180,7 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)hitEnt != (Object)null)
 		{
-			if (base.baseEntity.creatorEntity.IsValid() && hitEnt.net.ID == base.baseEntity.creatorEntity.net.ID)
+			if (baseEntity.creatorEntity.IsValid() && hitEnt.net.ID == baseEntity.creatorEntity.net.ID)
 			{
 				return false;
 			}

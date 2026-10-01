@@ -44,7 +44,7 @@ public class SlidingProgressDoor : ProgressDoor
 
 	public void ServerUpdate()
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -99,7 +99,7 @@ public class SlidingProgressDoor : ProgressDoor
 		float num = storedEnergy / energyForOpen;
 		Vector3 val = Vector3.Lerp(closedPosition, openPosition, num);
 		doorObject.transform.localPosition = val;
-		if (base.isServer)
+		if (isServer)
 		{
 			bool flag = Vector3.SqrMagnitude(localPosition - val) > 0.0001f;
 			Flags flags = base.flags;

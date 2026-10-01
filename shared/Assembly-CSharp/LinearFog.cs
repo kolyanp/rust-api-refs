@@ -5,13 +5,13 @@ public class LinearFog : MonoBehaviour
 {
 	public Material fogMaterial;
 
-	public Color fogColor;
+	public Color fogColor = Color.white;
 
 	public float fogStart;
 
-	public float fogRange;
+	public float fogRange = 1f;
 
-	public float fogDensity;
+	public float fogDensity = 1f;
 
 	public bool fogSky;
 
@@ -45,9 +45,5 @@ public class LinearFog : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		fogColor = Color.white;
-		fogRange = 1f;
-		fogDensity = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

@@ -2,7 +2,7 @@ using ConVar;
 using ProtoBuf;
 using UnityEngine;
 
-public class GingerbreadNPC : HumanNPC, global::IClientBrainStateListener
+public class GingerbreadNPC : HumanNPC, IClientBrainStateListener
 {
 	public GameObjectRef OverrideCorpseMale;
 
@@ -69,8 +69,8 @@ public class GingerbreadNPC : HumanNPC, global::IClientBrainStateListener
 	public override void AttackerInfo(DeathInfo info)
 	{
 		base.AttackerInfo(info);
-		info.inflictorName = base.inventory.containerBelt.GetSlot(0).info.shortname;
-		info.attackerName = base.ShortPrefabName;
+		info.inflictorName = inventory.containerBelt.GetSlot(0).info.shortname;
+		info.attackerName = ShortPrefabName;
 	}
 
 	public void OnClientStateChanged(AIState state)

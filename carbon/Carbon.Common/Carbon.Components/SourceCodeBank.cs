@@ -31,10 +31,10 @@ public class SourceCodeBank
 		{
 			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0033: Expected O, but got Unknown
+			//IL_0033: Expected Obj, but got Unknown
 			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0046: Expected O, but got Unknown
-			SourceCode result = default(SourceCode);
+			//IL_0046: Expected Obj, but got Unknown
+			SourceCode result = default;
 			result.Types = new Dictionary<string, string>();
 			result.Methods = new Dictionary<string, string>();
 			result.Settings = new DecompilerSettings
@@ -49,12 +49,12 @@ public class SourceCodeBank
 		{
 			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0033: Expected O, but got Unknown
+			//IL_0033: Expected Obj, but got Unknown
 			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0076: Expected O, but got Unknown
+			//IL_0076: Expected Obj, but got Unknown
 			//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-			//IL_007b: Expected O, but got Unknown
-			SourceCode result = default(SourceCode);
+			//IL_007b: Expected Obj, but got Unknown
+			SourceCode result = default;
 			result.Types = new Dictionary<string, string>();
 			result.Methods = new Dictionary<string, string>();
 			result.Settings = new DecompilerSettings
@@ -158,7 +158,7 @@ public class SourceCodeBank
 	public unsafe static SourceCode Parse(string name, ModuleHandle handle)
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Expected O, but got Unknown
+		//IL_0031: Expected Obj, but got Unknown
 		if (!AssemblyBank.TryGetValue(name, out var value))
 		{
 			MonoProfiler.MonoImage* ptr = MonoProfiler.MonoImage.handle_to_image(handle);

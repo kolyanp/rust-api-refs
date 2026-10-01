@@ -63,11 +63,11 @@ public class SetParameterAnimatorBehaviour : StateMachineBehaviour
 		((StateMachineBehaviour)this).OnStateUpdate(animator, stateInfo, layerIndex);
 		if (SetParameterTiming == Timing.PassThreshold)
 		{
-			if (((AnimatorStateInfo)(ref stateInfo)).normalizedTime > ThresholdTiming && lastNormalisedTime < ThresholdTiming)
+			if (stateInfo.normalizedTime > ThresholdTiming && lastNormalisedTime < ThresholdTiming)
 			{
 				SetParameter(animator);
 			}
-			lastNormalisedTime = ((AnimatorStateInfo)(ref stateInfo)).normalizedTime;
+			lastNormalisedTime = stateInfo.normalizedTime;
 		}
 	}
 

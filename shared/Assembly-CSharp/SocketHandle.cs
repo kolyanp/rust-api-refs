@@ -25,9 +25,9 @@ public class SocketHandle : PrefabAttribute
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = worldPosition;
-		Vector3 val2 = ((Ray)(ref target.ray)).origin + ((Ray)(ref target.ray)).direction * maxplaceDistance - val;
+		Vector3 val2 = target.ray.origin + target.ray.direction * maxplaceDistance - val;
 		ref Ray ray = ref target.ray;
-		Vector3 val3 = val2 - ((Ray)(ref target.ray)).origin;
-		((Ray)(ref ray)).direction = ((Vector3)(ref val3)).normalized;
+		Vector3 val3 = val2 - target.ray.origin;
+		ray.direction = val3.normalized;
 	}
 }

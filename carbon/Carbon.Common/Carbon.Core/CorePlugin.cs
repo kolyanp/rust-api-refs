@@ -227,7 +227,7 @@ public class CorePlugin : CarbonPlugin
 		{
 			return Type switch
 			{
-				Types.Script => Community.Runtime.ScriptProcessor, 
+				Types.Script => (IBaseProcessor)Community.Runtime.ScriptProcessor, 
 				Types.CSZIP => Community.Runtime.ZipScriptProcessor, 
 				_ => null, 
 			};
@@ -705,6 +705,21 @@ public class CorePlugin : CarbonPlugin
 		set
 		{
 			Community.Runtime.Config.Compiler.EnableProxy = value;
+			Community.Runtime.SaveConfig();
+		}
+	}
+
+	[CommandVar("gichsof", "Generates the internal call hook source on failure.")]
+	[AuthLevel(2)]
+	private bool GenerateInternalCallHookSourceOnFailure
+	{
+		get
+		{
+			return Community.Runtime.Config.Compiler.GenerateInternalCallHookSourceOnFailure;
+		}
+		set
+		{
+			Community.Runtime.Config.Compiler.GenerateInternalCallHookSourceOnFailure = value;
 			Community.Runtime.SaveConfig();
 		}
 	}
@@ -1275,11 +1290,11 @@ public class CorePlugin : CarbonPlugin
 			arg.ReplyWith("File '" + file + "' does not exist");
 			return;
 		}
-		AdminModule.Singleton.SetTab(player, AdminModule.ConfigEditor.Make(OsEx.File.ReadText(file), delegate
+		AdminModule.Singleton.SetTab(player, AdminModule.ConfigEditor.Make(OsEx.File.ReadText(file), (AdminModule.PlayerSession _, JObject _) =>
 		{
 			AdminModule.Singleton.SetTab(player, "carbon");
 			AdminModule.Singleton.Close(player);
-		}, delegate(AdminModule.PlayerSession _, JObject jobj)
+		}, (AdminModule.PlayerSession _, JObject jobj) =>
 		{
 			OsEx.File.Create(file, ((JToken)jobj).ToString((Formatting)1, Array.Empty<JsonConverter>()));
 			AdminModule.Singleton.SetTab(player, "carbon");
@@ -1457,6 +1472,44 @@ public class CorePlugin : CarbonPlugin
 		}
 	}
 
+	[ConsoleCommand("hookindex", "Prints the static hook subscriber cache summary, or the subscribers of the given hook")]
+	[AuthLevel(2)]
+	private void HookIndex(Arg arg)
+	{
+		string text = arg.GetString(0, "");
+		if (string.IsNullOrEmpty(text))
+		{
+			int num = 0;
+			foreach (KeyValuePair<uint, BaseHookable[]> item in HookSubscriberIndex.Current)
+			{
+				num += item.Value.Length;
+			}
+			arg.ReplyWith(string.Format("Hook index: {0:n0} cached {1}, {2:n0} subscriber {3}, invalidations {4:n0}, cache built at {5:n0}", new object[6]
+			{
+				HookSubscriberIndex.Current.Count,
+				HookSubscriberIndex.Current.Count.Plural("hook", "hooks"),
+				num,
+				num.Plural("entry", "entries"),
+				HookSubscriberIndex.Version,
+				HookSubscriberIndex.BuiltVersion
+			}));
+			return;
+		}
+		BaseHookable[] array = HookSubscriberIndex.Get(HookStringPool.GetOrAdd(text));
+		if (array.Length == 0)
+		{
+			arg.ReplyWith("No subscribers for hook '" + text + "'.");
+			return;
+		}
+		using StringTable stringTable = new StringTable("#", "hookable", "type", "version");
+		for (int i = 0; i < array.Length; i++)
+		{
+			BaseHookable baseHookable = array[i];
+			stringTable.AddRow(i + 1, baseHookable.Name, (!(baseHookable is IModule module)) ? "plugin" : (module.IsEnabled() ? "module" : "module (disabled)"), baseHookable.Version);
+		}
+		arg.ReplyWith(stringTable.Write(StringTable.FormatTypes.None));
+	}
+
 	[ConsoleCommand("devdump", "Creates a zip package in the temporary directory of the Carbon folder with useful information (output log & profile snapshot). Syntax: c.devdump [logfile] [duration]")]
 	[AuthLevel(2)]
 	private void DevDumpSnapshot(Arg arg)
@@ -1468,7 +1521,7 @@ public class CorePlugin : CarbonPlugin
 		dump.Init(includeServerLog);
 		if (duration > 0f)
 		{
-			dump.Export(duration, file, delegate
+			dump.Export(duration, file, () =>
 			{
 				Logger.Log($"Exported developer dump at '{file}' with a {duration} seconds profile recording.");
 				Pool.Free<DevDump>(ref dump);
@@ -1730,7 +1783,7 @@ public class CorePlugin : CarbonPlugin
 					double totalMemory = HookCaller.GetTotalMemory(orAdd);
 					double totalLagSpikes = HookCaller.GetTotalLagSpikes(orAdd);
 					int totalExceptions = HookCaller.GetTotalExceptions(orAdd);
-					object[] obj = new object[12]
+					object[] array = new object[12]
 					{
 						$"{num++:n0}",
 						item.IsHidden ? (item.HookFullName + " (*)") : item.HookFullName,
@@ -1746,17 +1799,27 @@ public class CorePlugin : CarbonPlugin
 						null
 					};
 					string identifier = item.Identifier;
-					obj[2] = identifier.Substring(identifier.Length - 6);
-					obj[3] = (item.IsStaticHook ? "Static" : (item.IsPatch ? "Patch" : "Dynamic"));
-					obj[4] = item.Status.ToString();
-					obj[5] = ((totalMilliseconds == 0.0) ? string.Empty : $"{totalMilliseconds:0}ms");
-					obj[6] = ((totalFires == 0) ? string.Empty : $"{totalFires}");
-					obj[7] = ((totalMemory == 0.0) ? string.Empty : (totalMemory.Format().ToLower() ?? ""));
-					obj[8] = ((totalLagSpikes == 0.0) ? string.Empty : $"{totalLagSpikes}");
-					obj[9] = ((totalExceptions == 0) ? string.Empty : $"{totalExceptions}");
-					obj[10] = (item.IsStaticHook ? "N/A" : $"{Community.Runtime.HookManager.GetHookSubscriberCount(item.Identifier),3}");
-					obj[11] = item.TargetType?.Name + "." + item.TargetMethod;
-					stringTable.AddRow(obj);
+					array[2] = identifier.Substring(identifier.Length - 6);
+					ref object reference = ref array[3];
+					string text3;
+					if (item.IsStaticHook)
+					{
+						text3 = "Static";
+					}
+					else
+					{
+						text3 = (item.IsPatch ? "Patch" : "Dynamic");
+					}
+					reference = text3;
+					array[4] = item.Status.ToString();
+					array[5] = ((totalMilliseconds == 0.0) ? string.Empty : $"{totalMilliseconds:0}ms");
+					array[6] = ((totalFires == 0) ? string.Empty : $"{totalFires}");
+					array[7] = ((totalMemory == 0.0) ? string.Empty : (totalMemory.Format().ToLower() ?? ""));
+					array[8] = ((totalLagSpikes == 0.0) ? string.Empty : $"{totalLagSpikes}");
+					array[9] = ((totalExceptions == 0) ? string.Empty : $"{totalExceptions}");
+					array[10] = (item.IsStaticHook ? "N/A" : $"{Community.Runtime.HookManager.GetHookSubscriberCount(item.Identifier),3}");
+					array[11] = item.TargetType?.Name + "." + item.TargetMethod;
+					stringTable.AddRow(array);
 				}
 				args.ReplyWith(string.Format("total:{0} success:{1} warning:{2} failed:{3}", new object[4] { num, num2, num3, num4 }) + Environment.NewLine + Environment.NewLine + stringTable.ToStringMinimal());
 				return;
@@ -1797,7 +1860,7 @@ public class CorePlugin : CarbonPlugin
 				double totalMemory2 = HookCaller.GetTotalMemory(orAdd2);
 				double totalLagSpikes2 = HookCaller.GetTotalLagSpikes(orAdd2);
 				int totalExceptions2 = HookCaller.GetTotalExceptions(orAdd2);
-				object[] obj2 = new object[12]
+				object[] array2 = new object[12]
 				{
 					$"{num++:n0}",
 					item2.IsHidden ? (item2.HookFullName + " (*)") : item2.HookFullName,
@@ -1813,17 +1876,27 @@ public class CorePlugin : CarbonPlugin
 					null
 				};
 				string identifier2 = item2.Identifier;
-				obj2[2] = identifier2.Substring(identifier2.Length - 6);
-				obj2[3] = (item2.IsStaticHook ? "Static" : (item2.IsPatch ? "Patch" : "Dynamic"));
-				obj2[4] = item2.Status.ToString();
-				obj2[5] = ((totalMilliseconds2 == 0.0) ? string.Empty : $"{totalMilliseconds2:0}ms");
-				obj2[6] = ((totalFires2 == 0) ? string.Empty : $"{totalFires2:n0}");
-				obj2[7] = ((totalMemory2 == 0.0) ? string.Empty : (totalMemory2.Format().ToLower() ?? ""));
-				obj2[8] = ((totalLagSpikes2 == 0.0) ? string.Empty : $"{totalLagSpikes2:n0}");
-				obj2[9] = ((totalExceptions2 == 0) ? string.Empty : $"{totalExceptions2:n0}");
-				obj2[10] = (item2.IsStaticHook ? "N/A" : $"{Community.Runtime.HookManager.GetHookSubscriberCount(item2.Identifier),3}");
-				obj2[11] = item2.TargetType?.Name + "." + item2.TargetMethod;
-				stringTable.AddRow(obj2);
+				array2[2] = identifier2.Substring(identifier2.Length - 6);
+				ref object reference2 = ref array2[3];
+				string text4;
+				if (item2.IsStaticHook)
+				{
+					text4 = "Static";
+				}
+				else
+				{
+					text4 = (item2.IsPatch ? "Patch" : "Dynamic");
+				}
+				reference2 = text4;
+				array2[4] = item2.Status.ToString();
+				array2[5] = ((totalMilliseconds2 == 0.0) ? string.Empty : $"{totalMilliseconds2:0}ms");
+				array2[6] = ((totalFires2 == 0) ? string.Empty : $"{totalFires2:n0}");
+				array2[7] = ((totalMemory2 == 0.0) ? string.Empty : (totalMemory2.Format().ToLower() ?? ""));
+				array2[8] = ((totalLagSpikes2 == 0.0) ? string.Empty : $"{totalLagSpikes2:n0}");
+				array2[9] = ((totalExceptions2 == 0) ? string.Empty : $"{totalExceptions2:n0}");
+				array2[10] = (item2.IsStaticHook ? "N/A" : $"{Community.Runtime.HookManager.GetHookSubscriberCount(item2.Identifier),3}");
+				array2[11] = item2.TargetType?.Name + "." + item2.TargetMethod;
+				stringTable.AddRow(array2);
 			}
 			args.ReplyWith(string.Format("total:{0} success:{1} warning:{2} failed:{3}", new object[4]
 			{
@@ -2805,7 +2878,7 @@ public class CorePlugin : CarbonPlugin
 		string text = arg.GetString(0, "");
 		string empty = string.Empty;
 		string group = string.Empty;
-		KeyValuePair<string, UserData> keyValuePair = default(KeyValuePair<string, UserData>);
+		KeyValuePair<string, UserData> keyValuePair = default;
 		if (text == "add" || text == "remove")
 		{
 			if (!arg.HasArgs(3))
@@ -3203,10 +3276,23 @@ public class CorePlugin : CarbonPlugin
 				{
 					if (plugin.HasInitialized)
 					{
-						if (Community.Runtime.Config.Watchers.ScriptWatchers)
+						if (!Community.Runtime.Config.Watchers.ScriptWatchers)
+						{
+							processor.ClearIgnore(pluginFile.Path);
+							if (processor.InstanceBuffer.TryGetValue(pluginFile.Id, out var value))
+							{
+								value.Clear();
+							}
+							processor.Prepare(pluginFile.Id, pluginFile.Path);
+						}
+						else
 						{
 							Assemblies.RuntimeAssembly runtimeAssembly = Assemblies.Plugins.Get(plugin.Name);
-							if (runtimeAssembly == null || Community.Runtime.MonoProfilerConfig.IsWhitelisted(MonoProfilerConfig.ProfileTypes.Plugin, plugin.Name) == runtimeAssembly.IsProfiledAssembly)
+							if (runtimeAssembly != null && Community.Runtime.MonoProfilerConfig.IsWhitelisted(MonoProfilerConfig.ProfileTypes.Plugin, plugin.Name) != runtimeAssembly.IsProfiledAssembly)
+							{
+								plugin.ProcessorProcess.MarkDirty();
+							}
+							else
 							{
 								List<uint> hooks = Pool.Get<List<uint>>();
 								List<HookMethodAttribute> hookMethods = Pool.Get<List<HookMethodAttribute>>();
@@ -3218,7 +3304,7 @@ public class CorePlugin : CarbonPlugin
 								pluginReferences.AddRange(plugin.PluginReferences);
 								requires.AddRange(plugin.Requires);
 								ModLoader.UninitializePlugin(plugin);
-								ModLoader.InitializePlugin(plugin.GetType(), out var plugin2, plugin.Package, delegate(RustPlugin p)
+								ModLoader.InitializePlugin(plugin.GetType(), out var plugin2, plugin.Package, (RustPlugin p) =>
 								{
 									p.IsCorePlugin = plugin.IsCorePlugin;
 									p.HasConditionals = plugin.HasConditionals;
@@ -3248,10 +3334,8 @@ public class CorePlugin : CarbonPlugin
 									ModLoader.OnPluginProcessFinished();
 								}
 								HookCaller.CallStaticHook(3051933177u, plugin2);
-								return;
 							}
 						}
-						plugin.ProcessorProcess.MarkDirty();
 					}
 					return;
 				}
@@ -3339,7 +3423,7 @@ public class CorePlugin : CarbonPlugin
 
 	[ConsoleCommand("unload", "Unloads all mods and/or plugins. E.g 'c.unload * <except[]>' to unload everything, 'c.unload PluginA [PluginB..]' to unload multiple. They'll be marked as 'ignored'.")]
 	[AuthLevel(2)]
-	private unsafe void UnloadPlugin(Arg arg)
+	private void UnloadPlugin(Arg arg)
 	{
 		if (!arg.HasArgs(1))
 		{
@@ -3351,7 +3435,7 @@ public class CorePlugin : CarbonPlugin
 		if (fullString == "*")
 		{
 			IEnumerable<string> enumerable = from x in arg.Args.Skip(1)
-				select ((object)(*(StringView*)(&x))/*cast due to constrained. prefix*/).ToString();
+				select ((object)x/*cast due to constrained. prefix*/).ToString();
 			Community.Runtime.ScriptProcessor.Clear(enumerable);
 			Community.Runtime.ZipScriptProcessor.Clear(enumerable);
 			PooledList<RustPlugin> val = Pool.Get<PooledList<RustPlugin>>();
@@ -3725,7 +3809,7 @@ public class CorePlugin : CarbonPlugin
 			Analytics.profiler_started(flags, timed: false);
 			return;
 		}
-		MonoProfiler.ToggleProfilingTimed(duration, flags, delegate
+		MonoProfiler.ToggleProfilingTimed(duration, flags, (MonoProfiler.ProfilerArgs args) =>
 		{
 			Analytics.profiler_ended(flags, duration, timed: true);
 			ProfileSample.Resample();
@@ -3865,7 +3949,7 @@ public class CorePlugin : CarbonPlugin
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer val = ArgEx.Player(arg);
-		RaycastHit val3 = default(RaycastHit);
+		RaycastHit val3 = default;
 		BaseEntity val2 = (Physics.Raycast(val.eyes.HeadRay(), ref val3, 10f, -1, (QueryTriggerInteraction)1) ? RaycastHitEx.GetEntity(val3) : null);
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)val2))
 		{
@@ -3899,7 +3983,7 @@ public class CorePlugin : CarbonPlugin
 			return;
 		}
 		rustPlugin.CollectTests();
-		rustPlugin.NextFrame(delegate
+		rustPlugin.NextFrame(() =>
 		{
 			Integrations.Run(delay, channel);
 		});
@@ -4022,7 +4106,17 @@ public class CorePlugin : CarbonPlugin
 		bool flag = arg.GetBool(2, true);
 		string text2 = arg.GetString(3, Vault.Global);
 		bool valueOrDefault = Vault.GetFactory(Vault.Pool.Get(text2))?.HasItem(Vault.Pool.Get(text)) == true;
-		arg.ReplyWith((!Vault.Add(text2, text, value, flag)) ? "Couldn't add a new vault factory item in Carbon.Vault, probably because invalid parameters" : (valueOrDefault ? ("Updated vault factory " + (flag ? "encrypted" : "unencrypted") + " item '" + text + "' for factory '" + text2 + "'") : ("Added new vault factory " + (flag ? "encrypted" : "unencrypted") + " item '" + text + "' for factory '" + text2 + "'")));
+		_003F val = arg;
+		string text3;
+		if (Vault.Add(text2, text, value, flag))
+		{
+			text3 = (valueOrDefault ? ("Updated vault factory " + (flag ? "encrypted" : "unencrypted") + " item '" + text + "' for factory '" + text2 + "'") : ("Added new vault factory " + (flag ? "encrypted" : "unencrypted") + " item '" + text + "' for factory '" + text2 + "'"));
+		}
+		else
+		{
+			text3 = "Couldn't add a new vault factory item in Carbon.Vault, probably because invalid parameters";
+		}
+		((Arg)val).ReplyWith(text3);
 	}
 
 	[AuthLevel(2)]
@@ -4115,7 +4209,7 @@ public class CorePlugin : CarbonPlugin
 		}
 		try
 		{
-			if (!ConsoleArgEx.TryParseCommand(message.AsSpan().Slice(prefix.Value.Length), out var command, out var args))
+			if (!ConsoleArgEx.TryParseCommand(((ReadOnlySpan<char>)message).Slice(prefix.Value.Length), out var command, out var args))
 			{
 				return Cache.False;
 			}
@@ -4247,7 +4341,7 @@ public class CorePlugin : CarbonPlugin
 			}
 			string text2 = @switch.Key.Substring(1);
 			Option unrestricted = Option.Unrestricted;
-			((Option)(ref unrestricted)).PrintOutput = false;
+			unrestricted.PrintOutput = false;
 			ConsoleSystem.Run(unrestricted, text2, new object[1] { text });
 		}
 		return Cache.False;
@@ -4284,9 +4378,9 @@ public class CorePlugin : CarbonPlugin
 		return null;
 	}
 
-	internal unsafe static object IOnPlayerBanned(Connection connection, AuthResponse status)
+	internal static object IOnPlayerBanned(Connection connection, AuthResponse status)
 	{
-		HookCaller.CallStaticHook(140408349u, connection, ((object)(*(AuthResponse*)(&status))/*cast due to constrained. prefix*/).ToString());
+		HookCaller.CallStaticHook(140408349u, connection, ((object)status/*cast due to constrained. prefix*/).ToString());
 		return null;
 	}
 
@@ -4307,12 +4401,12 @@ public class CorePlugin : CarbonPlugin
 			return;
 		}
 		Vector3 position = ((Component)player).transform.position;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (!Physics.Raycast(position, Vector3.down, ref val, float.MaxValue, -1, (QueryTriggerInteraction)1))
 		{
 			return;
 		}
-		position.y = ((RaycastHit)(ref val)).point.y;
+		position.y = val.point.y;
 		if (!(Vector3.Distance(((Component)player).transform.position, position) > 3.5f))
 		{
 			return;
@@ -4320,7 +4414,7 @@ public class CorePlugin : CarbonPlugin
 		player.SetServerFall(false);
 		player.Teleport(position);
 		player.estimatedVelocity = Vector3.zero;
-		NextFrame(delegate
+		NextFrame(() =>
 		{
 			if ((Object)(object)player != (Object)null)
 			{
@@ -4640,7 +4734,7 @@ public class CorePlugin : CarbonPlugin
 				return processableFile;
 			}
 		}
-		return default(ProcessableFile);
+		return default;
 	}
 
 	public override bool IInit()
@@ -4663,14 +4757,14 @@ public class CorePlugin : CarbonPlugin
 		_defaultAssertTrace = Application.GetStackTraceLogType((LogType)1);
 		_defaultExceptionTrace = Application.GetStackTraceLogType((LogType)4);
 		ApplyStacktrace();
-		base.HookableType = GetType();
+		HookableType = GetType();
 		Hooks = new List<uint>();
-		MethodInfo[] methods = base.HookableType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+		MethodInfo[] methods = HookableType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		foreach (MethodInfo methodInfo in methods)
 		{
 			if (Community.Runtime.HookManager.IsHook(methodInfo.Name))
 			{
-				Community.Runtime.HookManager.Subscribe(methodInfo.Name, base.Name);
+				Community.Runtime.HookManager.Subscribe(methodInfo.Name, Name);
 				uint orAdd = HookStringPool.GetOrAdd(methodInfo.Name);
 				if (!Hooks.Contains(orAdd))
 				{
@@ -4695,7 +4789,7 @@ public class CorePlugin : CarbonPlugin
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		timer.Every(5f, delegate
+		timer.Every(5f, () =>
 		{
 			if (Community.Runtime != null && Logger.CoreLog != null && Logger.CoreLog.HasInit && Logger.CoreLog.PendingCount != 0 && Community.Runtime.Config.Logging.LogFileMode == 1)
 			{
@@ -4765,110 +4859,111 @@ public class CorePlugin : CarbonPlugin
 
 	public override object InternalCallHook(uint hook, object[] args)
 	{
-		//IL_1dea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_137c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0dbe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0cb6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_12f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1b14: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1f76: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1e2c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1a4e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1a90: Unknown result type (might be due to invalid IL or missing references)
-		//IL_107b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2522: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ef2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_19ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_095c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_133a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0d3a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1103: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ad2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1eb0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1fb8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1988: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1f34: Unknown result type (might be due to invalid IL or missing references)
-		//IL_099e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f4a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1b98: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1904: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c74: Unknown result type (might be due to invalid IL or missing references)
-		//IL_091a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ec6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_203c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1400: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0bf0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_22d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_12b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2186: Unknown result type (might be due to invalid IL or missing references)
-		//IL_241a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1bda: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1da8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_15cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0847: Unknown result type (might be due to invalid IL or missing references)
-		//IL_228e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0889: Unknown result type (might be due to invalid IL or missing references)
-		//IL_245c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e84: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c32: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ca0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_24e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2144: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2312: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a64: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0aa6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_14e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_249e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_207e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0cf8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2396: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1274: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0805: Unknown result type (might be due to invalid IL or missing references)
-		//IL_224c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1144: Unknown result type (might be due to invalid IL or missing references)
-		//IL_21c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1a0c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1232: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0b2a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1946: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a22: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2561: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0d7c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1650: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ce2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0bae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1442: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1b56: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ae8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_20c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_2354: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0b6c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1c5e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1d66: Unknown result type (might be due to invalid IL or missing references)
-		//IL_155b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1d24: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ffd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f08: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1c1c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e00: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1ffa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_160e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1e6e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_23d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_220a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e42: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1820: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1825: Unknown result type (might be due to invalid IL or missing references)
-		//IL_149d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_14a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_14b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_18cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1e44: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0dd6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0cce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1352: Unknown result type (might be due to invalid IL or missing references)
+		//IL_11fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1b6e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_211a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1cb8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1d7e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f62: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2432: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0e5a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0974: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1394: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0d52: Unknown result type (might be due to invalid IL or missing references)
+		//IL_115d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1b2c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1f0a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_19e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1f8e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0fa4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1bf2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_195e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c8c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0932: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f20: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_145a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c08: Unknown result type (might be due to invalid IL or missing references)
+		//IL_232a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_149c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1fd0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1bb0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b00: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1e86: Unknown result type (might be due to invalid IL or missing references)
+		//IL_23ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b84: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1aa8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1dc0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_15b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1aea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_10d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1c76: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0e18: Unknown result type (might be due to invalid IL or missing references)
+		//IL_257c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1668: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1ec8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1418: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2264: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1f4c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1a24: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ede: Unknown result type (might be due to invalid IL or missing references)
+		//IL_24f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_20d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0d10: Unknown result type (might be due to invalid IL or missing references)
+		//IL_23f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_081d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_22a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_215c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_119e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2222: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1a66: Unknown result type (might be due to invalid IL or missing references)
+		//IL_128c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b42: Unknown result type (might be due to invalid IL or missing references)
+		//IL_19a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a3a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_25bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0d94: Unknown result type (might be due to invalid IL or missing references)
+		//IL_16aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1d3c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bc6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1310: Unknown result type (might be due to invalid IL or missing references)
+		//IL_21e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_2474: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1c34: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1e02: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1627: Unknown result type (might be due to invalid IL or missing references)
+		//IL_085f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_22e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_24b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0e9c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_124a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c4a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1cfa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_253a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_219e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_236c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a7c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0abe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1543: Unknown result type (might be due to invalid IL or missing references)
+		//IL_187a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_187f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_14f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_14fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1510: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1925: Unknown result type (might be due to invalid IL or missing references)
 		int? num = args?.Length;
 		object obj = ((num > 0) ? args[0] : null);
 		object obj2 = ((num > 1) ? args[1] : null);
@@ -4882,11 +4977,11 @@ public class CorePlugin : CarbonPlugin
 			case 3617829410u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag57 = flag;
-				Arg arg40 = ((!flag57) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag57)
+				bool flag64 = flag;
+				Arg arg42 = ((!flag64) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag64)
 				{
-					AddConditional(arg40);
+					AddConditional(arg42);
 					return null;
 				}
 				break;
@@ -4894,11 +4989,11 @@ public class CorePlugin : CarbonPlugin
 			case 1461696666u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag25 = flag;
-				Arg arg18 = ((!flag25) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag25)
+				bool flag76 = flag;
+				Arg arg53 = ((!flag76) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag76)
 				{
-					Aliases(arg18);
+					Aliases(arg53);
 					return null;
 				}
 				break;
@@ -4906,11 +5001,11 @@ public class CorePlugin : CarbonPlugin
 			case 1310794640u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag68 = flag;
-				Arg arg49 = ((!flag68) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag68)
+				bool flag85 = flag;
+				Arg arg61 = ((!flag85) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag85)
 				{
-					AssignAlias(arg49);
+					AssignAlias(arg61);
 					return null;
 				}
 				break;
@@ -4918,11 +5013,11 @@ public class CorePlugin : CarbonPlugin
 			case 1569187096u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag54 = flag;
-				Arg arg37 = ((!flag54) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag54)
+				bool flag79 = flag;
+				Arg arg56 = ((!flag79) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag79)
 				{
-					BuildCall(arg37);
+					BuildCall(arg56);
 					return null;
 				}
 				break;
@@ -4932,11 +5027,11 @@ public class CorePlugin : CarbonPlugin
 			case 2522567266u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag104 = flag;
-				Arg arg74 = ((!flag104) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag104)
+				bool flag7 = flag;
+				Arg arg6 = ((!flag7) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag7)
 				{
-					CarbonLoadConfig(arg74);
+					CarbonLoadConfig(arg6);
 					return null;
 				}
 				break;
@@ -4944,11 +5039,11 @@ public class CorePlugin : CarbonPlugin
 			case 8097725u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag7 = flag;
-				Arg arg6 = ((!flag7) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag7)
+				bool flag104 = flag;
+				Arg arg74 = ((!flag104) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag104)
 				{
-					CarbonSaveConfig(arg6);
+					CarbonSaveConfig(arg74);
 					return null;
 				}
 				break;
@@ -4956,11 +5051,11 @@ public class CorePlugin : CarbonPlugin
 			case 3026698837u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag43 = flag;
-				Arg arg30 = ((!flag43) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag43)
+				bool flag70 = flag;
+				Arg arg47 = ((!flag70) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag70)
 				{
-					ChangeVersion(arg30);
+					ChangeVersion(arg47);
 					return null;
 				}
 				break;
@@ -4968,11 +5063,11 @@ public class CorePlugin : CarbonPlugin
 			case 3716440972u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag67 = flag;
-				Arg arg48 = ((!flag67) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag67)
+				bool flag80 = flag;
+				Arg arg57 = ((!flag80) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag80)
 				{
-					Cleanup(arg48);
+					Cleanup(arg57);
 					return null;
 				}
 				break;
@@ -4980,11 +5075,11 @@ public class CorePlugin : CarbonPlugin
 			case 2486811342u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag34 = flag;
-				Arg arg26 = ((!flag34) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag34)
+				bool flag30 = flag;
+				Arg arg18 = ((!flag30) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag30)
 				{
-					ClearMarkers(arg26);
+					ClearMarkers(arg18);
 					return null;
 				}
 				break;
@@ -4992,11 +5087,11 @@ public class CorePlugin : CarbonPlugin
 			case 212981081u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag85 = flag;
-				Arg arg61 = ((!flag85) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag85)
+				bool flag113 = flag;
+				Arg arg81 = ((!flag113) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag113)
 				{
-					Commit(arg61);
+					Commit(arg81);
 					return null;
 				}
 				break;
@@ -5004,11 +5099,11 @@ public class CorePlugin : CarbonPlugin
 			case 121761328u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag66 = flag;
-				Arg arg47 = ((!flag66) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag66)
+				bool flag102 = flag;
+				Arg arg72 = ((!flag102) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag102)
 				{
-					Conditionals(arg47);
+					Conditionals(arg72);
 					return null;
 				}
 				break;
@@ -5016,11 +5111,11 @@ public class CorePlugin : CarbonPlugin
 			case 1813333766u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag86 = flag;
-				Arg arg62 = ((!flag86) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag86)
+				bool flag74 = flag;
+				Arg arg51 = ((!flag74) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag74)
 				{
-					CreatePlugin(arg62);
+					CreatePlugin(arg51);
 					return null;
 				}
 				break;
@@ -5028,11 +5123,11 @@ public class CorePlugin : CarbonPlugin
 			case 2563024626u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag18 = flag;
-				Arg arg17 = ((!flag18) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag18)
+				bool flag55 = flag;
+				Arg arg36 = ((!flag55) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag55)
 				{
-					Delete(arg17);
+					Delete(arg36);
 					return null;
 				}
 				break;
@@ -5040,11 +5135,11 @@ public class CorePlugin : CarbonPlugin
 			case 1566035725u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag116 = flag;
-				Arg arg83 = ((!flag116) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag116)
+				bool flag26 = flag;
+				Arg arg14 = ((!flag26) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag26)
 				{
-					DeleteExt(arg83);
+					DeleteExt(arg14);
 					return null;
 				}
 				break;
@@ -5052,11 +5147,11 @@ public class CorePlugin : CarbonPlugin
 			case 2179227208u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag69 = flag;
-				Arg arg50 = ((!flag69) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag69)
+				bool flag65 = flag;
+				Arg arg43 = ((!flag65) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag65)
 				{
-					DevDumpSnapshot(arg50);
+					DevDumpSnapshot(arg43);
 					return null;
 				}
 				break;
@@ -5064,11 +5159,11 @@ public class CorePlugin : CarbonPlugin
 			case 2215751651u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag112 = flag;
-				Arg arg80 = ((!flag112) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag112)
+				bool flag33 = flag;
+				Arg arg21 = ((!flag33) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag33)
 				{
-					EditConfig(arg80);
+					EditConfig(arg21);
 					return null;
 				}
 				break;
@@ -5076,11 +5171,11 @@ public class CorePlugin : CarbonPlugin
 			case 1012871006u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag32 = flag;
-				Arg arg24 = ((!flag32) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag32)
+				bool flag56 = flag;
+				Arg arg37 = ((!flag56) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag56)
 				{
-					Extensions(arg24);
+					Extensions(arg37);
 					return null;
 				}
 				break;
@@ -5088,11 +5183,11 @@ public class CorePlugin : CarbonPlugin
 			case 2557278796u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag9 = flag;
-				Arg arg8 = ((!flag9) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag9)
+				bool flag87 = flag;
+				Arg arg63 = ((!flag87) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag87)
 				{
-					Find(arg8);
+					Find(arg63);
 					return null;
 				}
 				break;
@@ -5100,11 +5195,11 @@ public class CorePlugin : CarbonPlugin
 			case 2822243214u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag49 = flag;
-				Arg arg35 = ((!flag49) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag49)
+				bool flag28 = flag;
+				Arg arg16 = ((!flag28) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag28)
 				{
-					FindChat(arg35);
+					FindChat(arg16);
 					return null;
 				}
 				break;
@@ -5112,11 +5207,11 @@ public class CorePlugin : CarbonPlugin
 			case 3993433097u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag79 = flag;
-				Arg arg55 = ((!flag79) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag79)
+				bool flag105 = flag;
+				Arg arg75 = ((!flag105) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag105)
 				{
-					GetVault(arg55);
+					GetVault(arg75);
 					return null;
 				}
 				break;
@@ -5124,11 +5219,11 @@ public class CorePlugin : CarbonPlugin
 			case 4128227484u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag33 = flag;
-				Arg arg25 = ((!flag33) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag33)
+				bool flag44 = flag;
+				Arg arg31 = ((!flag44) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag44)
 				{
-					GetWebControlPanelClients(arg25);
+					GetWebControlPanelClients(arg31);
 					return null;
 				}
 				break;
@@ -5136,11 +5231,11 @@ public class CorePlugin : CarbonPlugin
 			case 2362460257u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag73 = flag;
-				Arg arg52 = ((!flag73) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag73)
+				bool flag82 = flag;
+				Arg arg59 = ((!flag82) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag82)
 				{
-					GoCommunity(arg52);
+					GoCommunity(arg59);
 					return null;
 				}
 				break;
@@ -5148,11 +5243,11 @@ public class CorePlugin : CarbonPlugin
 			case 3167076070u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag10 = flag;
-				Arg arg9 = ((!flag10) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag10)
+				bool flag40 = flag;
+				Arg arg28 = ((!flag40) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag40)
 				{
-					Grant(arg9);
+					Grant(arg28);
 					return null;
 				}
 				break;
@@ -5160,11 +5255,11 @@ public class CorePlugin : CarbonPlugin
 			case 879858435u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag89 = flag;
-				Arg arg64 = ((!flag89) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag89)
+				bool flag95 = flag;
+				Arg arg68 = ((!flag95) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag95)
 				{
-					Group(arg64);
+					Group(arg68);
 					return null;
 				}
 				break;
@@ -5172,11 +5267,11 @@ public class CorePlugin : CarbonPlugin
 			case 126019937u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag98 = flag;
-				Arg arg71 = ((!flag98) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag98)
+				bool flag117 = flag;
+				Arg arg83 = ((!flag117) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag117)
 				{
-					HarmonyMods(arg71);
+					HarmonyMods(arg83);
 					return null;
 				}
 				break;
@@ -5184,11 +5279,23 @@ public class CorePlugin : CarbonPlugin
 			case 1224025706u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag12 = flag;
-				Arg arg11 = ((!flag12) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag12)
+				bool flag110 = flag;
+				Arg arg79 = ((!flag110) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag110)
 				{
-					Help(arg11);
+					Help(arg79);
+					return null;
+				}
+				break;
+			}
+			case 14884890u:
+			{
+				bool flag = ((obj is Arg || obj == null) ? true : false);
+				bool flag75 = flag;
+				Arg arg52 = ((!flag75) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag75)
+				{
+					HookIndex(arg52);
 					return null;
 				}
 				break;
@@ -5196,11 +5303,11 @@ public class CorePlugin : CarbonPlugin
 			case 2465598932u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag90 = flag;
-				Arg arg65 = ((!flag90) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag90)
+				bool flag54 = flag;
+				Arg arg35 = ((!flag54) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag54)
 				{
-					HookInfo(arg65);
+					HookInfo(arg35);
 					return null;
 				}
 				break;
@@ -5208,9 +5315,9 @@ public class CorePlugin : CarbonPlugin
 			case 1110553926u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag62 = flag;
-				Arg args2 = ((!flag62) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag62)
+				bool flag116 = flag;
+				Arg args2 = ((!flag116) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag116)
 				{
 					HooksCall(args2);
 					return null;
@@ -5220,15 +5327,15 @@ public class CorePlugin : CarbonPlugin
 			case 2966092386u:
 			{
 				bool flag = ((obj is ItemBlueprint || obj == null) ? true : false);
-				bool flag50 = flag;
-				ItemBlueprint bp = ((!flag50) ? ((ItemBlueprint)null) : ((ItemBlueprint)(obj ?? null)));
+				bool flag98 = flag;
+				ItemBlueprint bp = ((!flag98) ? ((ItemBlueprint)null) : ((ItemBlueprint)(obj ?? null)));
 				flag = ((obj2 is float || obj2 == null) ? true : false);
-				bool flag51 = flag;
-				float workbenchLevel = (flag51 ? ((float)(obj2 ?? ((object)0f))) : 0f);
+				bool flag99 = flag;
+				float workbenchLevel = (flag99 ? ((float)(obj2 ?? ((object)0f))) : 0f);
 				flag = ((obj3 is bool || obj3 == null) ? true : false);
-				bool flag52 = flag;
-				bool isInTutorial = flag52 && (bool)(obj3 ?? ((object)false));
-				if (flag50 & flag51 & flag52)
+				bool flag100 = flag;
+				bool isInTutorial = flag100 && (bool)(obj3 ?? ((object)false));
+				if (flag98 & flag99 & flag100)
 				{
 					return ICraftDurationMultiplier(bp, workbenchLevel, isInTutorial);
 				}
@@ -5237,12 +5344,12 @@ public class CorePlugin : CarbonPlugin
 			case 1211592203u:
 			{
 				bool flag = ((obj is MixingTable || obj == null) ? true : false);
-				bool flag95 = flag;
-				MixingTable table = ((!flag95) ? ((MixingTable)null) : ((MixingTable)(obj ?? null)));
+				bool flag52 = flag;
+				MixingTable table = ((!flag52) ? ((MixingTable)null) : ((MixingTable)(obj ?? null)));
 				flag = ((obj2 is float || obj2 == null) ? true : false);
-				bool flag96 = flag;
-				float originalValue = (flag96 ? ((float)(obj2 ?? ((object)0f))) : 0f);
-				if (flag95 & flag96)
+				bool flag53 = flag;
+				float originalValue = (flag53 ? ((float)(obj2 ?? ((object)0f))) : 0f);
+				if (flag52 & flag53)
 				{
 					return IMixingSpeedMultiplier(table, originalValue);
 				}
@@ -5251,9 +5358,9 @@ public class CorePlugin : CarbonPlugin
 			case 1112160822u:
 			{
 				bool flag = ((obj is ExcavatorArm || obj == null) ? true : false);
-				bool flag44 = flag;
-				ExcavatorArm arm = ((!flag44) ? ((ExcavatorArm)null) : ((ExcavatorArm)(obj ?? null)));
-				if (flag44)
+				bool flag8 = flag;
+				ExcavatorArm arm = ((!flag8) ? ((ExcavatorArm)null) : ((ExcavatorArm)(obj ?? null)));
+				if (flag8)
 				{
 					IOnExcavatorInit(arm);
 					return null;
@@ -5263,9 +5370,9 @@ public class CorePlugin : CarbonPlugin
 			case 4155259925u:
 			{
 				bool flag = ((obj is bool || obj == null) ? true : false);
-				bool flag114 = flag;
-				bool inited = flag114 && (bool)(obj ?? ((object)false));
-				if (flag114)
+				bool flag89 = flag;
+				bool inited = flag89 && (bool)(obj ?? ((object)false));
+				if (flag89)
 				{
 					return IOnServerInitialized(inited);
 				}
@@ -5274,9 +5381,9 @@ public class CorePlugin : CarbonPlugin
 			case 3923985155u:
 			{
 				bool flag = ((obj is BaseOven || obj == null) ? true : false);
-				bool flag88 = flag;
-				BaseOven oven = ((!flag88) ? ((BaseOven)null) : ((BaseOven)(obj ?? null)));
-				if (flag88)
+				bool flag67 = flag;
+				BaseOven oven = ((!flag67) ? ((BaseOven)null) : ((BaseOven)(obj ?? null)));
+				if (flag67)
 				{
 					return IOvenSmeltSpeedMultiplier(oven);
 				}
@@ -5285,9 +5392,9 @@ public class CorePlugin : CarbonPlugin
 			case 3134346010u:
 			{
 				bool flag = ((obj is Recycler || obj == null) ? true : false);
-				bool flag61 = flag;
-				Recycler recycler = ((!flag61) ? ((Recycler)null) : ((Recycler)(obj ?? null)));
-				if (flag61)
+				bool flag43 = flag;
+				Recycler recycler = ((!flag43) ? ((Recycler)null) : ((Recycler)(obj ?? null)));
+				if (flag43)
 				{
 					return IRecyclerThinkSpeed(recycler);
 				}
@@ -5301,11 +5408,11 @@ public class CorePlugin : CarbonPlugin
 			case 2370971930u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag110 = flag;
-				Arg arg78 = ((!flag110) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag110)
+				bool flag97 = flag;
+				Arg arg70 = ((!flag97) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag97)
 				{
-					InstallPlugin(arg78);
+					InstallPlugin(arg70);
 					return null;
 				}
 				break;
@@ -5316,11 +5423,11 @@ public class CorePlugin : CarbonPlugin
 			case 1175002629u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag111 = flag;
-				Arg arg79 = ((!flag111) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag111)
+				bool flag103 = flag;
+				Arg arg73 = ((!flag103) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag103)
 				{
-					LoadModule(arg79);
+					LoadModule(arg73);
 					return null;
 				}
 				break;
@@ -5328,11 +5435,11 @@ public class CorePlugin : CarbonPlugin
 			case 2699051938u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag81 = flag;
-				Arg arg57 = ((!flag81) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag81)
+				bool flag57 = flag;
+				Arg arg38 = ((!flag57) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag57)
 				{
-					LoadPlugin(arg57);
+					LoadPlugin(arg38);
 					return null;
 				}
 				break;
@@ -5340,11 +5447,11 @@ public class CorePlugin : CarbonPlugin
 			case 3768797615u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag48 = flag;
-				Arg arg34 = ((!flag48) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag48)
+				bool flag34 = flag;
+				Arg arg22 = ((!flag34) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag34)
 				{
-					LoadWebControlPanelConfig(arg34);
+					LoadWebControlPanelConfig(arg22);
 					return null;
 				}
 				break;
@@ -5352,11 +5459,11 @@ public class CorePlugin : CarbonPlugin
 			case 2009737156u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag5 = flag;
-				Arg arg4 = ((!flag5) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag5)
+				bool flag114 = flag;
+				Arg arg82 = ((!flag114) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag114)
 				{
-					MigrateToProto(arg4);
+					MigrateToProto(arg82);
 					return null;
 				}
 				break;
@@ -5364,11 +5471,11 @@ public class CorePlugin : CarbonPlugin
 			case 2539568543u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag102 = flag;
-				Arg arg73 = ((!flag102) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag102)
+				bool flag81 = flag;
+				Arg arg58 = ((!flag81) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag81)
 				{
-					MigrateToSql(arg73);
+					MigrateToSql(arg58);
 					return null;
 				}
 				break;
@@ -5376,11 +5483,11 @@ public class CorePlugin : CarbonPlugin
 			case 4209386718u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag101 = flag;
-				Arg arg72 = ((!flag101) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag101)
+				bool flag38 = flag;
+				Arg arg26 = ((!flag38) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag38)
 				{
-					ModdedRustConVars(arg72);
+					ModdedRustConVars(arg26);
 					return null;
 				}
 				break;
@@ -5388,11 +5495,11 @@ public class CorePlugin : CarbonPlugin
 			case 3694325137u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag63 = flag;
-				Arg arg44 = ((!flag63) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag63)
+				bool flag35 = flag;
+				Arg arg23 = ((!flag35) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag35)
 				{
-					ModuleInfo(arg44);
+					ModuleInfo(arg23);
 					return null;
 				}
 				break;
@@ -5400,11 +5507,11 @@ public class CorePlugin : CarbonPlugin
 			case 346822591u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag14 = flag;
-				Arg arg13 = ((!flag14) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag14)
+				bool flag3 = flag;
+				Arg arg2 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag3)
 				{
-					Modules(arg13);
+					Modules(arg2);
 					return null;
 				}
 				break;
@@ -5412,9 +5519,9 @@ public class CorePlugin : CarbonPlugin
 			case 2263673102u:
 			{
 				bool flag = ((obj is Connection || obj == null) ? true : false);
-				bool flag105 = flag;
-				Connection connection2 = ((!flag105) ? ((Connection)null) : ((Connection)(obj ?? null)));
-				if (flag105)
+				bool flag83 = flag;
+				Connection connection2 = ((!flag83) ? ((Connection)null) : ((Connection)(obj ?? null)));
+				if (flag83)
 				{
 					OnClientAuth(connection2);
 					return null;
@@ -5424,15 +5531,15 @@ public class CorePlugin : CarbonPlugin
 			case 2032160890u:
 			{
 				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag39 = flag;
-				BasePlayer player = ((!flag39) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag22 = flag;
+				BasePlayer player = ((!flag22) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
 				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag40 = flag;
-				string message = (flag40 ? ((string)(obj2 ?? null)) : null);
+				bool flag23 = flag;
+				string message = (flag23 ? ((string)(obj2 ?? null)) : null);
 				flag = ((obj3 is ChatChannel || obj3 == null) ? true : false);
-				bool flag41 = flag;
-				ChatChannel channel = (ChatChannel)(flag41 ? ((int)(ChatChannel)(obj3 ?? ((object)(ChatChannel)0))) : 0);
-				if (flag39 & flag40 & flag41)
+				bool flag24 = flag;
+				ChatChannel channel = (ChatChannel)(flag24 ? ((int)(ChatChannel)(obj3 ?? ((object)(ChatChannel)0))) : 0);
+				if (flag22 & flag23 & flag24)
 				{
 					OnPlayerChat(player, message, channel);
 					return null;
@@ -5442,12 +5549,12 @@ public class CorePlugin : CarbonPlugin
 			case 72085565u:
 			{
 				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag99 = flag;
-				BasePlayer player2 = ((!flag99) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag91 = flag;
+				BasePlayer player2 = ((!flag91) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
 				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag100 = flag;
-				string reason3 = (flag100 ? ((string)(obj2 ?? null)) : null);
-				if (flag99 & flag100)
+				bool flag92 = flag;
+				string reason3 = (flag92 ? ((string)(obj2 ?? null)) : null);
+				if (flag91 & flag92)
 				{
 					OnPlayerDisconnected(player2, reason3);
 					return null;
@@ -5457,12 +5564,12 @@ public class CorePlugin : CarbonPlugin
 			case 1321158727u:
 			{
 				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag70 = flag;
-				BasePlayer basePlayer3 = ((!flag70) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				bool flag50 = flag;
+				BasePlayer basePlayer3 = ((!flag50) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
 				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag71 = flag;
-				string reason2 = (flag71 ? ((string)(obj2 ?? null)) : null);
-				if (flag70 & flag71)
+				bool flag51 = flag;
+				string reason2 = (flag51 ? ((string)(obj2 ?? null)) : null);
+				if (flag50 & flag51)
 				{
 					OnPlayerKicked(basePlayer3, reason2);
 					return null;
@@ -5472,9 +5579,9 @@ public class CorePlugin : CarbonPlugin
 			case 1546340674u:
 			{
 				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag38 = flag;
-				BasePlayer basePlayer2 = ((!flag38) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag38)
+				bool flag45 = flag;
+				BasePlayer basePlayer2 = ((!flag45) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag45)
 				{
 					return OnPlayerRespawn(basePlayer2);
 				}
@@ -5483,9 +5590,9 @@ public class CorePlugin : CarbonPlugin
 			case 458523914u:
 			{
 				bool flag = ((obj is BasePlayer || obj == null) ? true : false);
-				bool flag24 = flag;
-				BasePlayer basePlayer = ((!flag24) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
-				if (flag24)
+				bool flag10 = flag;
+				BasePlayer basePlayer = ((!flag10) ? ((BasePlayer)null) : ((BasePlayer)(obj ?? null)));
+				if (flag10)
 				{
 					OnPlayerRespawned(basePlayer);
 					return null;
@@ -5495,15 +5602,15 @@ public class CorePlugin : CarbonPlugin
 			case 2283023029u:
 			{
 				bool flag = ((obj is Connection || obj == null) ? true : false);
-				bool flag75 = flag;
-				Connection connection = ((!flag75) ? ((Connection)null) : ((Connection)(obj ?? null)));
+				bool flag61 = flag;
+				Connection connection = ((!flag61) ? ((Connection)null) : ((Connection)(obj ?? null)));
 				flag = ((obj2 is string || obj2 == null) ? true : false);
-				bool flag76 = flag;
-				string key = (flag76 ? ((string)(obj2 ?? null)) : null);
+				bool flag62 = flag;
+				string key = (flag62 ? ((string)(obj2 ?? null)) : null);
 				flag = ((obj3 is string || obj3 == null) ? true : false);
-				bool flag77 = flag;
-				string val2 = (flag77 ? ((string)(obj3 ?? null)) : null);
-				if (flag75 & flag76 & flag77)
+				bool flag63 = flag;
+				string val2 = (flag63 ? ((string)(obj3 ?? null)) : null);
+				if (flag61 & flag62 & flag63)
 				{
 					OnPlayerSetInfo(connection, key, val2);
 					return null;
@@ -5513,9 +5620,9 @@ public class CorePlugin : CarbonPlugin
 			case 3051933177u:
 			{
 				bool flag = ((obj is RustPlugin || obj == null) ? true : false);
-				bool flag42 = flag;
-				RustPlugin plugin2 = (flag42 ? ((RustPlugin)(obj ?? null)) : null);
-				if (flag42)
+				bool flag46 = flag;
+				RustPlugin plugin2 = (flag46 ? ((RustPlugin)(obj ?? null)) : null);
+				if (flag46)
 				{
 					OnPluginLoaded(plugin2);
 					return null;
@@ -5525,9 +5632,9 @@ public class CorePlugin : CarbonPlugin
 			case 1250294368u:
 			{
 				bool flag = ((obj is RustPlugin || obj == null) ? true : false);
-				bool flag28 = flag;
-				RustPlugin plugin = (flag28 ? ((RustPlugin)(obj ?? null)) : null);
-				if (flag28)
+				bool flag20 = flag;
+				RustPlugin plugin = (flag20 ? ((RustPlugin)(obj ?? null)) : null);
+				if (flag20)
 				{
 					OnPluginUnloaded(plugin);
 					return null;
@@ -5546,9 +5653,9 @@ public class CorePlugin : CarbonPlugin
 			case 2043356880u:
 			{
 				bool flag = ((obj is ulong || obj == null) ? true : false);
-				bool flag106 = flag;
-				ulong steamId2 = (flag106 ? ((ulong)(obj ?? ((object)0uL))) : 0);
-				if (flag106)
+				bool flag112 = flag;
+				ulong steamId2 = (flag112 ? ((ulong)(obj ?? ((object)0uL))) : 0);
+				if (flag112)
 				{
 					OnServerUserRemove(steamId2);
 					return null;
@@ -5558,21 +5665,21 @@ public class CorePlugin : CarbonPlugin
 			case 931424179u:
 			{
 				bool flag = ((obj is ulong || obj == null) ? true : false);
-				bool flag19 = flag;
-				ulong steamId = (flag19 ? ((ulong)(obj ?? ((object)0uL))) : 0);
+				bool flag13 = flag;
+				ulong steamId = (flag13 ? ((ulong)(obj ?? ((object)0uL))) : 0);
 				flag = ((obj2 is UserGroup || obj2 == null) ? true : false);
-				bool flag20 = flag;
-				UserGroup val = (UserGroup)(flag20 ? ((int)(UserGroup)(obj2 ?? ((object)(UserGroup)0))) : 0);
+				bool flag14 = flag;
+				UserGroup val = (UserGroup)(flag14 ? ((int)(UserGroup)(obj2 ?? ((object)(UserGroup)0))) : 0);
 				flag = ((obj3 is string || obj3 == null) ? true : false);
-				bool flag21 = flag;
-				string playerName = (flag21 ? ((string)(obj3 ?? null)) : null);
+				bool flag15 = flag;
+				string playerName = (flag15 ? ((string)(obj3 ?? null)) : null);
 				flag = ((obj4 is string || obj4 == null) ? true : false);
-				bool flag22 = flag;
-				string reason = (flag22 ? ((string)(obj4 ?? null)) : null);
+				bool flag16 = flag;
+				string reason = (flag16 ? ((string)(obj4 ?? null)) : null);
 				flag = ((obj5 is long || obj5 == null) ? true : false);
-				bool flag23 = flag;
-				long expiry = (flag23 ? ((long)(obj5 ?? ((object)0L))) : 0);
-				if (flag19 & flag20 & flag21 & flag22 & flag23)
+				bool flag17 = flag;
+				long expiry = (flag17 ? ((long)(obj5 ?? ((object)0L))) : 0);
+				if (flag13 & flag14 & flag15 & flag16 & flag17)
 				{
 					OnServerUserSet(steamId, val, playerName, reason, expiry);
 					return null;
@@ -5582,11 +5689,11 @@ public class CorePlugin : CarbonPlugin
 			case 2601596680u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag3 = flag;
-				Arg arg2 = ((!flag3) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag3)
+				bool flag5 = flag;
+				Arg arg4 = ((!flag5) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag5)
 				{
-					OpenConfigs(arg2);
+					OpenConfigs(arg4);
 					return null;
 				}
 				break;
@@ -5594,11 +5701,11 @@ public class CorePlugin : CarbonPlugin
 			case 2529893848u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag108 = flag;
-				Arg arg76 = ((!flag108) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag108)
+				bool flag93 = flag;
+				Arg arg66 = ((!flag93) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag93)
 				{
-					OpenData(arg76);
+					OpenData(arg66);
 					return null;
 				}
 				break;
@@ -5606,11 +5713,11 @@ public class CorePlugin : CarbonPlugin
 			case 3168678498u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag82 = flag;
-				Arg arg58 = ((!flag82) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag82)
+				bool flag72 = flag;
+				Arg arg49 = ((!flag72) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag72)
 				{
-					OpenExtensions(arg58);
+					OpenExtensions(arg49);
 					return null;
 				}
 				break;
@@ -5618,11 +5725,11 @@ public class CorePlugin : CarbonPlugin
 			case 113708137u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag59 = flag;
-				Arg arg42 = ((!flag59) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag59)
+				bool flag66 = flag;
+				Arg arg44 = ((!flag66) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag66)
 				{
-					OpenLang(arg42);
+					OpenLang(arg44);
 					return null;
 				}
 				break;
@@ -5630,11 +5737,11 @@ public class CorePlugin : CarbonPlugin
 			case 2745846876u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag53 = flag;
-				Arg arg36 = ((!flag53) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag53)
+				bool flag32 = flag;
+				Arg arg20 = ((!flag32) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag32)
 				{
-					OpenLogs(arg36);
+					OpenLogs(arg20);
 					return null;
 				}
 				break;
@@ -5642,11 +5749,11 @@ public class CorePlugin : CarbonPlugin
 			case 1539167114u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag17 = flag;
-				Arg arg16 = ((!flag17) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag17)
+				bool flag18 = flag;
+				Arg arg10 = ((!flag18) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag18)
 				{
-					OpenModules(arg16);
+					OpenModules(arg10);
 					return null;
 				}
 				break;
@@ -5654,11 +5761,11 @@ public class CorePlugin : CarbonPlugin
 			case 1290689173u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag4 = flag;
-				Arg arg3 = ((!flag4) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag4)
+				bool flag9 = flag;
+				Arg arg7 = ((!flag9) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag9)
 				{
-					OpenPlugin(arg3);
+					OpenPlugin(arg7);
 					return null;
 				}
 				break;
@@ -5666,11 +5773,11 @@ public class CorePlugin : CarbonPlugin
 			case 3801308235u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag115 = flag;
-				Arg arg82 = ((!flag115) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag115)
+				bool flag108 = flag;
+				Arg arg77 = ((!flag108) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag108)
 				{
-					OpenPlugins(arg82);
+					OpenPlugins(arg77);
 					return null;
 				}
 				break;
@@ -5678,11 +5785,11 @@ public class CorePlugin : CarbonPlugin
 			case 2180218250u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag93 = flag;
-				Arg arg68 = ((!flag93) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag93)
+				bool flag86 = flag;
+				Arg arg62 = ((!flag86) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag86)
 				{
-					OpenRoot(arg68);
+					OpenRoot(arg62);
 					return null;
 				}
 				break;
@@ -5690,11 +5797,11 @@ public class CorePlugin : CarbonPlugin
 			case 1853185048u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag74 = flag;
-				Arg arg53 = ((!flag74) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag74)
+				bool flag69 = flag;
+				Arg arg46 = ((!flag69) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag69)
 				{
-					PluginCmds(arg53);
+					PluginCmds(arg46);
 					return null;
 				}
 				break;
@@ -5702,11 +5809,11 @@ public class CorePlugin : CarbonPlugin
 			case 2730263207u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag56 = flag;
-				Arg arg39 = ((!flag56) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag56)
+				bool flag48 = flag;
+				Arg arg33 = ((!flag48) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag48)
 				{
-					PluginInfo(arg39);
+					PluginInfo(arg33);
 					return null;
 				}
 				break;
@@ -5714,11 +5821,11 @@ public class CorePlugin : CarbonPlugin
 			case 1778989243u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag36 = flag;
-				Arg arg28 = ((!flag36) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag36)
+				bool flag39 = flag;
+				Arg arg27 = ((!flag39) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag39)
 				{
-					Plugins(arg28);
+					Plugins(arg27);
 					return null;
 				}
 				break;
@@ -5726,11 +5833,11 @@ public class CorePlugin : CarbonPlugin
 			case 958120911u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag29 = flag;
-				Arg arg21 = ((!flag29) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag29)
+				bool flag25 = flag;
+				Arg arg13 = ((!flag25) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag25)
 				{
-					PrintHookPool(arg21);
+					PrintHookPool(arg13);
 					return null;
 				}
 				break;
@@ -5738,11 +5845,11 @@ public class CorePlugin : CarbonPlugin
 			case 1503455692u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag11 = flag;
-				Arg arg10 = ((!flag11) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag11)
+				bool flag4 = flag;
+				Arg arg3 = ((!flag4) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag4)
 				{
-					Profile(arg10);
+					Profile(arg3);
 					return null;
 				}
 				break;
@@ -5750,11 +5857,11 @@ public class CorePlugin : CarbonPlugin
 			case 869177234u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag109 = flag;
-				Arg arg77 = ((!flag109) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag109)
+				bool flag107 = flag;
+				Arg arg76 = ((!flag107) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag107)
 				{
-					ProfileAbort(arg77);
+					ProfileAbort(arg76);
 					return null;
 				}
 				break;
@@ -5762,11 +5869,11 @@ public class CorePlugin : CarbonPlugin
 			case 2235018487u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag92 = flag;
-				Arg arg67 = ((!flag92) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag92)
+				bool flag88 = flag;
+				Arg arg64 = ((!flag88) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag88)
 				{
-					ProfilerPrint(arg67);
+					ProfilerPrint(arg64);
 					return null;
 				}
 				break;
@@ -5774,9 +5881,9 @@ public class CorePlugin : CarbonPlugin
 			case 1282370872u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag78 = flag;
-				Arg arg54 = ((!flag78) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag78)
+				bool flag77 = flag;
+				Arg arg54 = ((!flag77) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag77)
 				{
 					ProfilerRemovePlugin(arg54);
 					return null;
@@ -5786,11 +5893,11 @@ public class CorePlugin : CarbonPlugin
 			case 1400659095u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag64 = flag;
-				Arg arg45 = ((!flag64) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag64)
+				bool flag59 = flag;
+				Arg arg40 = ((!flag59) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag59)
 				{
-					ProfilerTrackPlugin(arg45);
+					ProfilerTrackPlugin(arg40);
 					return null;
 				}
 				break;
@@ -5798,11 +5905,11 @@ public class CorePlugin : CarbonPlugin
 			case 1603732279u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag46 = flag;
-				Arg arg32 = ((!flag46) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag46)
+				bool flag42 = flag;
+				Arg arg30 = ((!flag42) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag42)
 				{
-					ProfilerTracked(arg32);
+					ProfilerTracked(arg30);
 					return null;
 				}
 				break;
@@ -5810,11 +5917,11 @@ public class CorePlugin : CarbonPlugin
 			case 4118252168u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag31 = flag;
-				Arg arg23 = ((!flag31) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag31)
+				bool flag21 = flag;
+				Arg arg12 = ((!flag21) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag21)
 				{
-					Protocol(arg23);
+					Protocol(arg12);
 					return null;
 				}
 				break;
@@ -5822,11 +5929,11 @@ public class CorePlugin : CarbonPlugin
 			case 1669471309u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag8 = flag;
-				Arg arg7 = ((!flag8) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag8)
+				bool flag6 = flag;
+				Arg arg5 = ((!flag6) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag6)
 				{
-					Reload(arg7);
+					Reload(arg5);
 					return null;
 				}
 				break;
@@ -5834,11 +5941,11 @@ public class CorePlugin : CarbonPlugin
 			case 407700441u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag113 = flag;
-				Arg arg81 = ((!flag113) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag113)
+				bool flag111 = flag;
+				Arg arg80 = ((!flag111) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag111)
 				{
-					ReloadConfig(arg81);
+					ReloadConfig(arg80);
 					return null;
 				}
 				break;
@@ -5846,11 +5953,11 @@ public class CorePlugin : CarbonPlugin
 			case 3607291287u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag97 = flag;
-				Arg arg70 = ((!flag97) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag97)
+				bool flag101 = flag;
+				Arg arg71 = ((!flag101) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag101)
 				{
-					ReloadModule(arg70);
+					ReloadModule(arg71);
 					return null;
 				}
 				break;
@@ -5858,11 +5965,11 @@ public class CorePlugin : CarbonPlugin
 			case 165571558u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag87 = flag;
-				Arg arg63 = ((!flag87) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag87)
+				bool flag94 = flag;
+				Arg arg67 = ((!flag94) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag94)
 				{
-					RemoveConditional(arg63);
+					RemoveConditional(arg67);
 					return null;
 				}
 				break;
@@ -5870,11 +5977,11 @@ public class CorePlugin : CarbonPlugin
 			case 3053121748u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag83 = flag;
-				Arg arg59 = ((!flag83) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag83)
+				bool flag68 = flag;
+				Arg arg45 = ((!flag68) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag68)
 				{
-					ResetHooks(arg59);
+					ResetHooks(arg45);
 					return null;
 				}
 				break;
@@ -5882,11 +5989,11 @@ public class CorePlugin : CarbonPlugin
 			case 1983852833u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag55 = flag;
-				Arg arg38 = ((!flag55) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag55)
+				bool flag58 = flag;
+				Arg arg39 = ((!flag58) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag58)
 				{
-					Revoke(arg38);
+					Revoke(arg39);
 					return null;
 				}
 				break;
@@ -5894,11 +6001,11 @@ public class CorePlugin : CarbonPlugin
 			case 3408782460u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag45 = flag;
-				Arg arg31 = ((!flag45) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag45)
+				bool flag41 = flag;
+				Arg arg29 = ((!flag41) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag41)
 				{
-					SaveModule(arg31);
+					SaveModule(arg29);
 					return null;
 				}
 				break;
@@ -5906,11 +6013,11 @@ public class CorePlugin : CarbonPlugin
 			case 523784464u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag30 = flag;
-				Arg arg22 = ((!flag30) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag30)
+				bool flag31 = flag;
+				Arg arg19 = ((!flag31) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag31)
 				{
-					SaveWebControlPanelConfig(arg22);
+					SaveWebControlPanelConfig(arg19);
 					return null;
 				}
 				break;
@@ -5918,11 +6025,11 @@ public class CorePlugin : CarbonPlugin
 			case 2303807553u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag16 = flag;
-				Arg arg15 = ((!flag16) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag16)
+				bool flag11 = flag;
+				Arg arg8 = ((!flag11) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag11)
 				{
-					SayAs(arg15);
+					SayAs(arg8);
 					return null;
 				}
 				break;
@@ -5930,9 +6037,9 @@ public class CorePlugin : CarbonPlugin
 			case 4206019811u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag117 = flag;
-				Arg module = ((!flag117) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag117)
+				bool flag115 = flag;
+				Arg module = ((!flag115) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag115)
 				{
 					SetModule(module);
 					return null;
@@ -5942,9 +6049,9 @@ public class CorePlugin : CarbonPlugin
 			case 1624709752u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag103 = flag;
-				Arg webControlPanelPort = ((!flag103) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag103)
+				bool flag106 = flag;
+				Arg webControlPanelPort = ((!flag106) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag106)
 				{
 					SetWebControlPanelPort(webControlPanelPort);
 					return null;
@@ -5954,11 +6061,11 @@ public class CorePlugin : CarbonPlugin
 			case 3296300873u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag91 = flag;
-				Arg arg66 = ((!flag91) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag91)
+				bool flag90 = flag;
+				Arg arg65 = ((!flag90) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag90)
 				{
-					Show(arg66);
+					Show(arg65);
 					return null;
 				}
 				break;
@@ -5966,11 +6073,11 @@ public class CorePlugin : CarbonPlugin
 			case 414928410u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag80 = flag;
-				Arg arg56 = ((!flag80) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag80)
+				bool flag78 = flag;
+				Arg arg55 = ((!flag78) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag78)
 				{
-					Shutdown(arg56);
+					Shutdown(arg55);
 					return null;
 				}
 				break;
@@ -5978,11 +6085,11 @@ public class CorePlugin : CarbonPlugin
 			case 1867912083u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag65 = flag;
-				Arg arg46 = ((!flag65) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag65)
+				bool flag71 = flag;
+				Arg arg48 = ((!flag71) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag71)
 				{
-					Skin(arg46);
+					Skin(arg48);
 					return null;
 				}
 				break;
@@ -5990,11 +6097,11 @@ public class CorePlugin : CarbonPlugin
 			case 2977018099u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag58 = flag;
-				Arg arg41 = ((!flag58) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag58)
+				bool flag49 = flag;
+				Arg arg34 = ((!flag49) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag49)
 				{
-					TryToggleWebControlPanelServer(arg41);
+					TryToggleWebControlPanelServer(arg34);
 					return null;
 				}
 				break;
@@ -6003,10 +6110,10 @@ public class CorePlugin : CarbonPlugin
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
 				bool flag37 = flag;
-				Arg arg29 = ((!flag37) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				Arg arg25 = ((!flag37) ? ((Arg)null) : ((Arg)(obj ?? null)));
 				if (flag37)
 				{
-					UnassignAlias(arg29);
+					UnassignAlias(arg25);
 					return null;
 				}
 				break;
@@ -6014,11 +6121,11 @@ public class CorePlugin : CarbonPlugin
 			case 3547710285u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag27 = flag;
-				Arg arg20 = ((!flag27) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag27)
+				bool flag29 = flag;
+				Arg arg17 = ((!flag29) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag29)
 				{
-					UninstallPlugin(arg20);
+					UninstallPlugin(arg17);
 					return null;
 				}
 				break;
@@ -6026,11 +6133,11 @@ public class CorePlugin : CarbonPlugin
 			case 1342457948u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag15 = flag;
-				Arg arg14 = ((!flag15) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag15)
+				bool flag19 = flag;
+				Arg arg11 = ((!flag19) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag19)
 				{
-					UnloadPlugin(arg14);
+					UnloadPlugin(arg11);
 					return null;
 				}
 				break;
@@ -6038,11 +6145,11 @@ public class CorePlugin : CarbonPlugin
 			case 2108743044u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag6 = flag;
-				Arg arg5 = ((!flag6) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag6)
+				bool flag118 = flag;
+				Arg arg84 = ((!flag118) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag118)
 				{
-					UserGroup(arg5);
+					UserGroup(arg84);
 					return null;
 				}
 				break;
@@ -6050,11 +6157,11 @@ public class CorePlugin : CarbonPlugin
 			case 297788813u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag107 = flag;
-				Arg arg75 = ((!flag107) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag107)
+				bool flag109 = flag;
+				Arg arg78 = ((!flag109) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag109)
 				{
-					VaultAdd(arg75);
+					VaultAdd(arg78);
 					return null;
 				}
 				break;
@@ -6062,9 +6169,9 @@ public class CorePlugin : CarbonPlugin
 			case 1579191406u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag94 = flag;
-				Arg arg69 = ((!flag94) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag94)
+				bool flag96 = flag;
+				Arg arg69 = ((!flag96) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag96)
 				{
 					VaultRemove(arg69);
 					return null;
@@ -6086,11 +6193,11 @@ public class CorePlugin : CarbonPlugin
 			case 340806103u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag72 = flag;
-				Arg arg51 = ((!flag72) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag72)
+				bool flag73 = flag;
+				Arg arg50 = ((!flag73) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag73)
 				{
-					WhyModded(arg51);
+					WhyModded(arg50);
 					return null;
 				}
 				break;
@@ -6099,10 +6206,10 @@ public class CorePlugin : CarbonPlugin
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
 				bool flag60 = flag;
-				Arg arg43 = ((!flag60) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				Arg arg41 = ((!flag60) ? ((Arg)null) : ((Arg)(obj ?? null)));
 				if (flag60)
 				{
-					WipeUI(arg43);
+					WipeUI(arg41);
 					return null;
 				}
 				break;
@@ -6111,10 +6218,10 @@ public class CorePlugin : CarbonPlugin
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
 				bool flag47 = flag;
-				Arg arg33 = ((!flag47) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				Arg arg32 = ((!flag47) ? ((Arg)null) : ((Arg)(obj ?? null)));
 				if (flag47)
 				{
-					test_beds(arg33);
+					test_beds(arg32);
 					return null;
 				}
 				break;
@@ -6122,11 +6229,11 @@ public class CorePlugin : CarbonPlugin
 			case 4236641972u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag35 = flag;
-				Arg arg27 = ((!flag35) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag35)
+				bool flag36 = flag;
+				Arg arg24 = ((!flag36) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag36)
 				{
-					test_clear(arg27);
+					test_clear(arg24);
 					return null;
 				}
 				break;
@@ -6134,11 +6241,11 @@ public class CorePlugin : CarbonPlugin
 			case 473670306u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag26 = flag;
-				Arg arg19 = ((!flag26) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag26)
+				bool flag27 = flag;
+				Arg arg15 = ((!flag27) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag27)
 				{
-					test_collect(arg19);
+					test_collect(arg15);
 					return null;
 				}
 				break;
@@ -6146,11 +6253,11 @@ public class CorePlugin : CarbonPlugin
 			case 683585953u:
 			{
 				bool flag = ((obj is Arg || obj == null) ? true : false);
-				bool flag13 = flag;
-				Arg arg12 = ((!flag13) ? ((Arg)null) : ((Arg)(obj ?? null)));
-				if (flag13)
+				bool flag12 = flag;
+				Arg arg9 = ((!flag12) ? ((Arg)null) : ((Arg)(obj ?? null)));
+				if (flag12)
 				{
-					test_plugin(arg12);
+					test_plugin(arg9);
 					return null;
 				}
 				break;
@@ -6174,7 +6281,7 @@ public class CorePlugin : CarbonPlugin
 			Logger.Error(string.Format("Failed to call internal hook '{0}' on plugin '{1} v{2}' [{3}]", new object[4]
 			{
 				HookStringPool.GetOrAdd(hook),
-				base.Name,
+				Name,
 				base.Version,
 				hook
 			}), ex);

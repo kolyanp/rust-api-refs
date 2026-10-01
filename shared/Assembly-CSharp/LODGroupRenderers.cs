@@ -11,9 +11,12 @@ public class LODGroupRenderers
 	public void SetRenderersEnabled(bool enabled)
 	{
 		Renderer[] array = renderers;
-		for (int i = 0; i < array.Length; i++)
+		foreach (Renderer val in array)
 		{
-			array[i].enabled = enabled;
+			if ((Object)(object)val != (Object)null)
+			{
+				val.enabled = enabled;
+			}
 		}
 	}
 }

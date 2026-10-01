@@ -37,9 +37,9 @@ public class VehicleModuleStorage : VehicleModuleSeating
 
 	private EntityRef storageUnitInstance;
 
-	private static ItemDefinition _crudeItem;
+	private static ItemDefinition _crudeItem = null;
 
-	public static readonly Phrase StorageCantBeMovedError;
+	public static readonly Phrase StorageCantBeMovedError = new Phrase("error.itemsinstorage", "Cannot move item: Storage contains items!");
 
 	private TimeSince lastExplosionSpawned;
 
@@ -129,7 +129,7 @@ public class VehicleModuleStorage : VehicleModuleSeating
 
 	public IItemContainerEntity GetContainer()
 	{
-		BaseEntity baseEntity = storageUnitInstance.Get(base.isServer);
+		BaseEntity baseEntity = storageUnitInstance.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsValid())
 		{
 			return baseEntity as IItemContainerEntity;
@@ -151,7 +151,7 @@ public class VehicleModuleStorage : VehicleModuleSeating
 
 	public BaseEntity GetStorageUnitInstance()
 	{
-		return storageUnitInstance.Get(base.isServer);
+		return storageUnitInstance.Get(isServer);
 	}
 
 	public override void Spawn()
@@ -173,7 +173,7 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		}
 	}
 
-	private void OnItemAddedRemoved(Item item, bool add)
+	private void OnItemAddedRemoved(Item item, bool add, BasePlayer sourcePlayer)
 	{
 		AssociatedItemInstance?.LockUnlock(!CanBeMovedNowOnVehicle());
 	}
@@ -205,7 +205,7 @@ public class VehicleModuleStorage : VehicleModuleSeating
 	{
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		if (IsFullySpawned() && base.isServer && !storageUnitInstance.IsValid(base.isServer))
+		if (IsFullySpawned() && isServer && !storageUnitInstance.IsValid(isServer))
 		{
 			BaseEntity baseEntity = GameManager.server.CreateEntity(storage.storageUnitPrefab.resourcePath, storage.storageUnitPoint.localPosition, storage.storageUnitPoint.localRotation);
 			storageUnitInstance.Set(baseEntity);
@@ -217,17 +217,17 @@ public class VehicleModuleStorage : VehicleModuleSeating
 
 	protected virtual void InitStorageEvents(ItemContainer container)
 	{
-		container.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(container.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+		container.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(container.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedRemoved));
 	}
 
 	[UnityEvent]
 	public void DestroyStorageEntity()
 	{
-		if (!IsFullySpawned() || !base.isServer)
+		if (!IsFullySpawned() || !isServer)
 		{
 			return;
 		}
-		BaseEntity baseEntity = storageUnitInstance.Get(base.isServer);
+		BaseEntity baseEntity = storageUnitInstance.Get(isServer);
 		if (baseEntity.IsValid())
 		{
 			if (baseEntity is BaseCombatEntity baseCombatEntity)
@@ -285,7 +285,7 @@ public class VehicleModuleStorage : VehicleModuleSeating
 	[RPC_Server.MaxDistance(3f)]
 	public void RPC_TryOpenWithKeycode(RPCMessage msg)
 	{
-		if (!base.IsOnACar)
+		if (!IsOnACar)
 		{
 			return;
 		}
@@ -293,13 +293,13 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		if (!((Object)(object)player == (Object)null))
 		{
 			string codeEntered = msg.read.String();
-			if (base.Car.CarLock.TryOpenWithCode(player, codeEntered))
+			if (Car.CarLock.TryOpenWithCode(player, codeEntered))
 			{
 				TryOpen(player);
 			}
 			else
 			{
-				base.Car.ClientRPC(RpcTarget.NetworkGroup("CodeEntryFailed"));
+				Car.ClientRPC(RpcTarget.NetworkGroup("CodeEntryFailed"));
 			}
 		}
 	}
@@ -340,7 +340,7 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		{
 			ServerProjectile component = ((Component)baseEntity).GetComponent<ServerProjectile>();
 			baseEntity.Spawn();
-			TimedExplosive timedExplosive = default(TimedExplosive);
+			TimedExplosive timedExplosive = default;
 			if ((Object)(object)component != (Object)null && ((Component)component).TryGetComponent<TimedExplosive>(ref timedExplosive))
 			{
 				timedExplosive.creatorEntity = creatorEntity;
@@ -356,8 +356,6 @@ public class VehicleModuleStorage : VehicleModuleSeating
 	static VehicleModuleStorage()
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Expected O, but got Unknown
-		_crudeItem = null;
-		StorageCantBeMovedError = new Phrase("error.itemsinstorage", "Cannot move item: Storage contains items!");
+		//IL_001a: Expected Obj, but got Unknown
 	}
 }

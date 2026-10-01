@@ -18,16 +18,16 @@ public class ApartmentUpkeepTerminal : StorageContainer
 		if (!info.forDisk)
 		{
 			info.msg.apartmentUpkeep = Pool.Get<ApartmentUpkeepTerminal>();
-			info.msg.apartmentUpkeep.apartmentId = (NetworkableId)(((Object)(object)Apartment != (Object)null) ? Apartment.net.ID : default(NetworkableId));
+			info.msg.apartmentUpkeep.apartmentId = (((Object)(object)Apartment != (Object)null) ? Apartment.net.ID : default(NetworkableId));
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
-		if (base.inventory != null && (Object)(object)Apartment != (Object)null)
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
+		if (inventory != null && (Object)(object)Apartment != (Object)null)
 		{
-			base.inventory.maxStackSize = Mathf.RoundToInt(Apartment.GetDailyUpkeepCost() * 3f);
+			inventory.maxStackSize = Mathf.RoundToInt(Apartment.GetDailyUpkeepCost() * 3f);
 		}
 		if ((Object)(object)Apartment != (Object)null)
 		{

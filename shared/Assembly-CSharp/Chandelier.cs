@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -38,9 +39,9 @@ public class Chandelier : IOEntity
 
 	private const float baseBoundsSizeY = 0.35f;
 
-	public static Phrase BlockedByObjectPhrase;
+	public static Phrase BlockedByObjectPhrase = new Phrase("chandelier.blocked", "Cannot extend through solid objects");
 
-	public static Phrase MaxLengthPhrase;
+	public static Phrase MaxLengthPhrase = new Phrase("chandelier.maxlengthreached", "Maximum length reached");
 
 	private float __sync_ChandelierLength;
 
@@ -125,7 +126,7 @@ public class Chandelier : IOEntity
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		float chandelierLength = ChandelierLength;
-		if (base.isServer)
+		if (isServer)
 		{
 			if ((Object)(object)ChandelierBodyRoot != (Object)null)
 			{
@@ -157,8 +158,8 @@ public class Chandelier : IOEntity
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		Bounds val = bounds;
-		((Bounds)(ref val)).center = new Vector3(((Bounds)(ref bounds)).center.x, 0f - y, ((Bounds)(ref bounds)).center.z);
-		((Bounds)(ref val)).extents = new Vector3(((Bounds)(ref bounds)).extents.x, y, ((Bounds)(ref bounds)).extents.z);
+		val.center = new Vector3(bounds.center.x, 0f - y, bounds.center.z);
+		val.extents = new Vector3(bounds.extents.x, y, bounds.extents.z);
 		bounds = val;
 	}
 
@@ -178,7 +179,7 @@ public class Chandelier : IOEntity
 	{
 		CancelInvoke(ServerTick);
 		InvokeRepeating(ServerTick, 0f, 0f);
-		Invoke(delegate
+		Invoke(() =>
 		{
 			CancelInvoke(ServerTick);
 		}, 2.5f);
@@ -186,7 +187,7 @@ public class Chandelier : IOEntity
 
 	public void ServerTick()
 	{
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			UpdateChandelierLength(Time.deltaTime);
 		}
@@ -283,14 +284,14 @@ public class Chandelier : IOEntity
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && lastLength != ChandelierLength)
+		if (isServer && lastLength != ChandelierLength)
 		{
 			StartServerTick();
 			lastLength = ChandelierLength;
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -299,7 +300,7 @@ public class Chandelier : IOEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: ChandelierLength for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: ChandelierLength for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_ChandelierLength);
 			return true;
@@ -351,18 +352,34 @@ public class Chandelier : IOEntity
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -397,10 +414,8 @@ public class Chandelier : IOEntity
 	static Chandelier()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		BlockedByObjectPhrase = new Phrase("chandelier.blocked", "Cannot extend through solid objects");
-		MaxLengthPhrase = new Phrase("chandelier.maxlengthreached", "Maximum length reached");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

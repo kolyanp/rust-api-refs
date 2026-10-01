@@ -58,50 +58,50 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	}
 
 	[ServerVar]
-	public static int max_returned;
+	public static int max_returned = 100;
 
 	[ServerVar]
-	public static int max_processed;
+	public static int max_processed = 10000;
 
 	[ServerVar]
-	public static int max_history;
+	public static int max_history = 10000;
 
-	private List<PurchaseDetails> purchaseHistory;
+	private List<PurchaseDetails> purchaseHistory = new List<PurchaseDetails>();
 
-	private Dictionary<ulong, int> uniqueCustomers;
+	private Dictionary<ulong, int> uniqueCustomers = new Dictionary<ulong, int>();
 
 	[Header("VendingMachine")]
-	public static readonly Phrase WaitForVendingMessage;
+	public static readonly Phrase WaitForVendingMessage = new Phrase("vendingmachine.wait", "Please wait...");
 
 	public GameObjectRef adminMenuPrefab;
 
-	public string customerPanel;
+	public string customerPanel = "";
 
 	public SellOrderContainer sellOrders;
 
 	public SoundPlayer buySound;
 
-	public string shopName;
+	public string shopName = "A Shop";
 
-	public int maxCurrencyVolume;
+	public int maxCurrencyVolume = 1;
 
-	public Vector3 localDropPosition;
+	public Vector3 localDropPosition = Vector3.zero;
 
 	public GameObjectRef mapMarkerPrefab;
 
 	public bool IsLocalized;
 
 	[Range(0f, 1f)]
-	public float PoweredFoodSpoilageRateMultiplier;
+	public float PoweredFoodSpoilageRateMultiplier = 0.1f;
 
-	public int PowerConsumption;
+	public int PowerConsumption = 5;
 
 	public bool IsInDeepSeaCached;
 
 	[Header("Drone Prediction")]
 	public DeliveryDroneConfig predictionConfig;
 
-	private HashSet<BasePlayer> purchasingPlayers;
+	private HashSet<BasePlayer> purchasingPlayers = new HashSet<BasePlayer>();
 
 	private Action fullUpdateCached;
 
@@ -121,9 +121,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 
 	private bool industrialItemIncoming;
 
-	private static readonly Phrase NotAdministratingError;
+	private static readonly Phrase NotAdministratingError = new Phrase("error.notadministrating", "Cannot move item: Not administrating!");
 
-	public static readonly Phrase TooManySellOrders;
+	public static readonly Phrase TooManySellOrders = new Phrase("error_toomanysellorders", "Too many sell orders");
 
 	private int __sync_PendingItemId;
 
@@ -815,8 +815,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void SV_RequestLongTermData(RPCMessage msg)
 	{
@@ -957,27 +957,27 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 
 	private VendingMachinePurchaseHistoryEntryMessage GetEntryProto(PurchaseDetails details)
 	{
-		VendingMachinePurchaseHistoryEntryMessage obj = Pool.Get<VendingMachinePurchaseHistoryEntryMessage>();
-		obj.itemID = details.itemId;
-		obj.amount = details.amount;
-		obj.priceID = details.priceId;
-		obj.price = details.price;
-		obj.dateTime = details.timestamp;
-		obj.priceIsBp = details.priceIsBp;
-		obj.itemIsBp = details.itemIsBp;
-		return obj;
+		VendingMachinePurchaseHistoryEntryMessage val = Pool.Get<VendingMachinePurchaseHistoryEntryMessage>();
+		val.itemID = details.itemId;
+		val.amount = details.amount;
+		val.priceID = details.priceId;
+		val.price = details.price;
+		val.dateTime = details.timestamp;
+		val.priceIsBp = details.priceIsBp;
+		val.itemIsBp = details.itemIsBp;
+		return val;
 	}
 
 	private VendingMachinePurchaseHistoryEntrySmallMessage GetEntryProtoSmall(PurchaseDetails details)
 	{
-		VendingMachinePurchaseHistoryEntrySmallMessage obj = Pool.Get<VendingMachinePurchaseHistoryEntrySmallMessage>();
-		obj.itemID = details.itemId;
-		obj.amount = details.amount;
-		obj.priceID = details.priceId;
-		obj.price = details.price;
-		obj.priceIsBp = details.priceIsBp;
-		obj.itemIsBp = details.itemIsBp;
-		return obj;
+		VendingMachinePurchaseHistoryEntrySmallMessage val = Pool.Get<VendingMachinePurchaseHistoryEntrySmallMessage>();
+		val.itemID = details.itemId;
+		val.amount = details.amount;
+		val.priceID = details.priceId;
+		val.price = details.price;
+		val.priceIsBp = details.priceIsBp;
+		val.itemIsBp = details.itemIsBp;
+		return val;
 	}
 
 	public List<PurchaseDetails> GetRecentPurchases(int seconds)
@@ -1105,7 +1105,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				sellOrders = info.msg.vendingMachine.sellOrderContainer;
 				sellOrders.ShouldPool = false;
 			}
-			if (info.fromDisk && base.isServer)
+			if (info.fromDisk && isServer)
 			{
 				nameLastEditedBy = info.msg.vendingMachine.nameLastEditedBy;
 				RefreshSellOrderStockLevel();
@@ -1189,11 +1189,11 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	public override void Save(SaveInfo info)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Expected O, but got Unknown
+		//IL_0017: Expected Obj, but got Unknown
 		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0127: Expected O, but got Unknown
+		//IL_0127: Expected Obj, but got Unknown
 		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018c: Expected O, but got Unknown
+		//IL_018c: Expected Obj, but got Unknown
 		base.Save(info);
 		info.msg.vendingMachine = new VendingMachine();
 		info.msg.vendingMachine.ShouldPool = false;
@@ -1236,7 +1236,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (base.isServer)
+		if (isServer)
 		{
 			fullUpdateCached = FullUpdate;
 			UpdateDronePrediction(checkForUpdate: false);
@@ -1245,9 +1245,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 			{
 				flagsUpdateScope.Set(Flags.Reserved10, b: false);
 			}
-			base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
+			inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 			RefreshSellOrderStockLevel();
-			ItemContainer itemContainer = base.inventory;
+			ItemContainer itemContainer = inventory;
 			itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 			UpdateMapMarker();
 		}
@@ -1263,9 +1263,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		base.DestroyShared();
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 	}
 
 	public override bool ShouldUseCastNoClipChecks()
@@ -1275,7 +1275,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 
 	public void FullUpdate()
 	{
-		if (base.inventory != null)
+		if (inventory != null)
 		{
 			RefreshSellOrderStockLevel();
 			UpdateMapMarker();
@@ -1302,7 +1302,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 			List<Item> list = Pool.Get<List<Item>>();
 			GetItemsToSell(sellOrder, list);
 			int num2 = sellOrder.itemToSellAmount;
-			if ((Object)(object)ItemManager.FindItemDefinition(sellOrder.itemToSellID) == (Object)(object)NPCVendingMachine.ScrapItem && sellOrder.receivedQuantityMultiplier != 1f)
+			if ((Object)(object)ItemManager.FindItemDefinition(sellOrder.itemToSellID) == (Object)(object)ItemManager.Items.Scrap && sellOrder.receivedQuantityMultiplier != 1f)
 			{
 				num2 = GetTotalPriceForOrder(num2, sellOrder.receivedQuantityMultiplier);
 			}
@@ -1411,7 +1411,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	public void UpdateEmptyFlag()
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved1, base.inventory.itemList.Count == 0);
+		flagsUpdateScope.Set(Flags.Reserved1, inventory.itemList.Count == 0);
 	}
 
 	public override void PlayerStoppedLooting(BasePlayer player)
@@ -1428,7 +1428,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	public virtual void InstallDefaultSellOrders()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		sellOrders = new SellOrderContainer();
 		sellOrders.ShouldPool = false;
 		sellOrders.sellOrders = new List<SellOrder>();
@@ -1475,8 +1475,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_CancelVendingSounds"));
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	public void BuyItemRentableShop(RPCMessage rpc)
 	{
@@ -1486,8 +1486,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	public void BuyItem(RPCMessage rpc)
 	{
@@ -1537,8 +1537,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		Decay.RadialDecayTouch(((Component)this).transform.position, 40f, 2097408);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void TransactionStart(RPCMessage rpc)
 	{
 	}
@@ -1547,7 +1547,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	{
 		if (sellOrder.itemToSellIsBP)
 		{
-			foreach (Item item in base.inventory.itemList)
+			foreach (Item item in inventory.itemList)
 			{
 				if (item.info.itemid == blueprintBaseDef.itemid && item.blueprintTarget == sellOrder.itemToSellID)
 				{
@@ -1556,7 +1556,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 			}
 			return;
 		}
-		foreach (Item item2 in base.inventory.itemList)
+		foreach (Item item2 in inventory.itemList)
 		{
 			if (item2.info.itemid == sellOrder.itemToSellID && (sellOrder.sellSkinId == 0L || item2.skin == sellOrder.sellSkinId))
 			{
@@ -1589,10 +1589,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d4: Unknown result type (might be due to invalid IL or missing references)
 		if (sellOrderId < 0 || sellOrderId >= sellOrders.sellOrders.Count)
 		{
 			return false;
@@ -1622,7 +1622,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		{
 			return false;
 		}
-		if ((Object)(object)itemDefinition == (Object)(object)NPCVendingMachine.ScrapItem && val.receivedQuantityMultiplier != 1f)
+		if ((Object)(object)itemDefinition == (Object)(object)ItemManager.Items.Scrap && val.receivedQuantityMultiplier != 1f)
 		{
 			num = GetTotalReceivedMerchandiseForOrder(val.itemToSellAmount, val.receivedQuantityMultiplier) * numberOfTransactions;
 		}
@@ -1726,6 +1726,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 			{
 				AddPurchaseHistory(val.itemToSellID, num, val.currencyID, num6, val.itemToSellIsBP, val.currencyIsBP);
 			}
+			if (GetParentEntity() is TravellingVendor)
+			{
+				buyer.GiveAchievement("TRAVELLING_VENDOR_PURCHASE");
+			}
 			Pool.FreeUnmanaged<Item>(ref list);
 			UpdateEmptyFlag();
 			transactionActive = false;
@@ -1747,9 +1751,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		if (Interface.CallHook("OnTakeCurrencyItem", this, takenCurrencyItem) == null && !takenCurrencyItem.MoveToContainer(base.inventory))
+		if (Interface.CallHook("OnTakeCurrencyItem", this, takenCurrencyItem) == null && !takenCurrencyItem.MoveToContainer(inventory))
 		{
-			takenCurrencyItem.Drop(base.inventory.dropPosition, Vector3.zero);
+			takenCurrencyItem.Drop(inventory.dropPosition, Vector3.zero);
 		}
 	}
 
@@ -1778,8 +1782,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public virtual void RPC_Broadcast(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1795,8 +1799,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetSkinMode(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -1807,21 +1811,22 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public virtual void RPC_UpdateShopName(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
-		string obj = msg.read.String(32);
+		string text = msg.read.String(32);
 		if (CanPlayerAdmin(player))
 		{
-			if (Interface.CallHook("OnVendingShopRename", this, obj, player) != null)
+			if (Interface.CallHook("OnVendingShopRename", this, text, player) != null)
 			{
 				return;
 			}
-			shopName = obj;
+			shopName = text;
 			nameLastEditedBy = player.userID.Get();
 			UpdateMapMarker();
+			Facepunch.Rust.Analytics.Azure.OnUGCCreated(player, this, "vending_machine_name", text.Length);
 		}
 		SendNetworkUpdate();
 	}
@@ -1912,8 +1917,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenAdmin(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1955,7 +1960,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		{
 			return true;
 		}
-		if (base.inventory.itemList.Contains(item))
+		if (inventory.itemList.Contains(item))
 		{
 			return true;
 		}
@@ -2005,8 +2010,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return ((Component)this).transform.TransformPoint(localDropPosition);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_DeleteSellOrder(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -2067,8 +2072,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_RotateVM(RPCMessage msg)
 	{
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
@@ -2086,8 +2091,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_AddSellOrder(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -2119,7 +2124,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	public void AddSellOrder(int itemToSellID, int itemToSellAmount, int currencyToUseID, int currencyAmount, byte bpState, ulong sellSkinId = 0uL, ulong costSkinId = 0uL)
 	{
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Expected O, but got Unknown
+		//IL_0045: Expected Obj, but got Unknown
 		ItemDefinition itemDefinition = ItemManager.FindItemDefinition(itemToSellID);
 		ItemDefinition itemDefinition2 = ItemManager.FindItemDefinition(currencyToUseID);
 		if (!((Object)(object)itemDefinition == (Object)null) && !((Object)(object)itemDefinition2 == (Object)null))
@@ -2161,7 +2166,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		PooledList<Item> val = Pool.Get<PooledList<Item>>();
 		try
 		{
-			base.inventory.FindItemsByItemID((List<Item>)(object)val, itemDefinition.itemid);
+			inventory.FindItemsByItemID((List<Item>)(object)val, itemDefinition.itemid);
 			Item item = null;
 			foreach (Item item4 in (List<Item>)(object)val)
 			{
@@ -2174,11 +2179,11 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 			if (item == null)
 			{
 				ItemDefinition itemDefinition2 = ItemManager.FindItemDefinition("paper");
-				Item item2 = base.inventory.FindItemByItemID(itemDefinition2.itemid);
+				Item item2 = inventory.FindItemByItemID(itemDefinition2.itemid);
 				if (item2 != null)
 				{
 					item = ItemManager.CreateByItemID(itemDefinition.itemid, 1, 0uL, 0uL);
-					if (!item.MoveToContainer(base.inventory))
+					if (!item.MoveToContainer(inventory))
 					{
 						item.Drop(GetDropPosition(), GetDropVelocity());
 					}
@@ -2254,7 +2259,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 forward = ((Component)this).transform.forward;
 		Vector3 val = ((Component)player).transform.position - ((Component)this).transform.position;
-		return Vector3.Dot(forward, ((Vector3)(ref val)).normalized) <= -0.7f;
+		return Vector3.Dot(forward, val.normalized) <= -0.7f;
 	}
 
 	public bool PlayerInfront(BasePlayer player)
@@ -2267,7 +2272,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 forward = ((Component)this).transform.forward;
 		Vector3 val = ((Component)player).transform.position - ((Component)this).transform.position;
-		return Vector3.Dot(forward, ((Vector3)(ref val)).normalized) >= 0.7f;
+		return Vector3.Dot(forward, val.normalized) >= 0.7f;
 	}
 
 	public virtual bool CanPlayerAdmin(BasePlayer player)
@@ -2306,7 +2311,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return false;
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -2315,7 +2320,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: PendingItemId for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: PendingItemId for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_PendingItemId);
 			return true;
@@ -2390,31 +2395,15 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		purchaseHistory = new List<PurchaseDetails>();
-		uniqueCustomers = new Dictionary<ulong, int>();
-		customerPanel = "";
-		shopName = "A Shop";
-		maxCurrencyVolume = 1;
-		localDropPosition = Vector3.zero;
-		PoweredFoodSpoilageRateMultiplier = 0.1f;
-		PowerConsumption = 5;
-		purchasingPlayers = new HashSet<BasePlayer>();
-		base._002Ector();
 	}
 
 	static VendingMachine()
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Expected O, but got Unknown
+		//IL_002f: Expected Obj, but got Unknown
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Expected O, but got Unknown
+		//IL_0043: Expected Obj, but got Unknown
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Expected O, but got Unknown
-		max_returned = 100;
-		max_processed = 10000;
-		max_history = 10000;
-		WaitForVendingMessage = new Phrase("vendingmachine.wait", "Please wait...");
-		NotAdministratingError = new Phrase("error.notadministrating", "Cannot move item: Not administrating!");
-		TooManySellOrders = new Phrase("error_toomanysellorders", "Too many sell orders");
+		//IL_0057: Expected Obj, but got Unknown
 	}
 }

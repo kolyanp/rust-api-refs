@@ -5,8 +5,60 @@ namespace Rust.Ai.Gen2;
 
 public class BaseNPC2 : BaseCombatEntity
 {
+	public const Flags Mounted = Flags.Busy;
+
+	private EntityRef<BaseEntity> mountHost;
+
+	private int mountAnchorIndex = -1;
+
+	private RustNavMeshAgent _mountAgent;
+
+	private FSMComponent _mountFsm;
+
+	private const float DismountNavmeshSampleRadius = 10f;
+
 	[SerializeField]
 	private float mass = 45f;
+
+	private int safeZoneCheckedFrame = -1;
+
+	private bool inSafeZone;
+
+	public bool IsMounted => HasFlag(Flags.Busy);
+
+	private RustNavMeshAgent MountAgent => _mountAgent ?? (_mountAgent = ((Component)this).GetComponent<RustNavMeshAgent>());
+
+	private FSMComponent MountFsm => _mountFsm ?? (_mountFsm = ((Component)this).GetComponent<FSMComponent>());
+
+	private bool HasMountReservation => mountHost.IsSet;
+
+	public bool IsDismounting
+	{
+		get
+		{
+			if ((Object)(object)MountFsm != (Object)null)
+			{
+				return MountFsm.IsDismounting;
+			}
+			return false;
+		}
+	}
+
+	public int MountAnchorIndex => mountAnchorIndex;
+
+	public NPCMountable Mount
+	{
+		get
+		{
+			BaseEntity baseEntity = mountHost.Get(serverside: true);
+			NPCMountable result = default;
+			if (!((Object)(object)baseEntity != (Object)null) || !((Component)baseEntity).TryGetComponent<NPCMountable>(ref result))
+			{
+				return null;
+			}
+			return result;
+		}
+	}
 
 	public override bool IsNpc => true;
 
@@ -19,7 +71,7 @@ public class BaseNPC2 : BaseCombatEntity
 		get
 		{
 			PrefabInformation prefabInformation = null;
-			if (base.isServer)
+			if (isServer)
 			{
 				prefabInformation = PrefabAttribute.server.Find<PrefabInformation>(prefabID);
 			}
@@ -35,6 +87,183 @@ public class BaseNPC2 : BaseCombatEntity
 		}
 	}
 
+	public bool StartMountTo(NPCMountable mountable, int index)
+	{
+		if ((Object)(object)mountable == (Object)null || IsDead() || IsMounted)
+		{
+			return false;
+		}
+		if ((Object)(object)MountFsm == (Object)null || !MountFsm.SupportsMounting)
+		{
+			return false;
+		}
+		mountHost.Set(mountable.GetBaseEntity());
+		mountAnchorIndex = index;
+		if (MountFsm.StartMount())
+		{
+			return true;
+		}
+		mountHost = default;
+		mountAnchorIndex = -1;
+		return false;
+	}
+
+	public void ResumeMountedState()
+	{
+		MountFsm?.ResumeMounted();
+	}
+
+	public bool StartDismount()
+	{
+		if (IsMounted && (Object)(object)MountFsm != (Object)null)
+		{
+			return MountFsm.StartDismount();
+		}
+		return false;
+	}
+
+	public void CancelMount()
+	{
+		if (!IsMounted)
+		{
+			Mount?.ReleaseAnchor(this);
+			mountHost = default;
+			mountAnchorIndex = -1;
+		}
+	}
+
+	public void OnMountFinalized(BaseEntity host, int index)
+	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		NPCMountable nPCMountable = default;
+		if (!((Object)(object)host == (Object)null) && ((Component)host).TryGetComponent<NPCMountable>(ref nPCMountable))
+		{
+			mountHost.Set(host);
+			mountAnchorIndex = index;
+			SetParent(host, worldPositionStays: true);
+			Transform anchorTransform = nPCMountable.GetAnchorTransform(index);
+			if ((Object)(object)anchorTransform != (Object)null)
+			{
+				((Component)this).transform.localPosition = ((Component)host).transform.InverseTransformPoint(anchorTransform.position);
+				((Component)this).transform.localRotation = Quaternion.Inverse(((Component)host).transform.rotation) * anchorTransform.rotation;
+			}
+			MountAgent?.Pause(this);
+			SetMountedFlag(mounted: true);
+		}
+	}
+
+	private void SetMountedFlag(bool mounted)
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Busy, mounted);
+	}
+
+	public void DetachFromHost()
+	{
+		if (HasParent())
+		{
+			SetParent(null, worldPositionStays: true);
+		}
+	}
+
+	public bool TrySampleNavmesh(Vector3 position, float radius, out Vector3 onNavmesh)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		onNavmesh = default;
+		if ((Object)(object)MountAgent == (Object)null || !MountAgent.SamplePosition(position, out var hitWS, radius, debugDraw: false))
+		{
+			return false;
+		}
+		onNavmesh = hitWS.position;
+		return true;
+	}
+
+	public void OnDismountFinalized(Vector3 position, Quaternion rotation)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		NPCMountable mount = Mount;
+		bool flag = TrySampleNavmesh(position, 10f, out var onNavmesh);
+		if (flag)
+		{
+			position = onNavmesh;
+		}
+		DetachFromHost();
+		((Component)this).transform.SetPositionAndRotation(position, rotation);
+		mountHost = default;
+		mountAnchorIndex = -1;
+		MountAgent?.Unpause(this);
+		mount?.ReleaseAnchor(this);
+		SetMountedFlag(mounted: false);
+		if (!flag)
+		{
+			DieOffNavmesh();
+		}
+	}
+
+	private void DieOffNavmesh()
+	{
+		HitInfo hitInfo = new HitInfo();
+		hitInfo.damageTypes.Set(DamageType.Generic, MaxHealth());
+		Die(hitInfo);
+	}
+
+	public void HandOverMountTo(BaseNPC2 next)
+	{
+		NPCMountable mount = Mount;
+		if (!((Object)(object)mount == (Object)null) && !((Object)(object)next == (Object)null))
+		{
+			int index = mountAnchorIndex;
+			if (mount.HandOverAnchor(this, next))
+			{
+				mountHost = default;
+				mountAnchorIndex = -1;
+				SetMountedFlag(mounted: false);
+				MountAgent?.Unpause(this);
+				next.OnMountFinalized(mount.GetBaseEntity(), index);
+				next.ResumeMountedState();
+			}
+		}
+	}
+
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		if (!HasMountReservation)
+		{
+			BaseEntity baseEntity = GetParentEntity();
+			NPCMountable nPCMountable = default;
+			if ((Object)(object)baseEntity == (Object)null || !((Component)baseEntity).TryGetComponent<NPCMountable>(ref nPCMountable) || !nPCMountable.TryReclaimAnchor(this, out var index))
+			{
+				SetMountedFlag(mounted: false);
+				return;
+			}
+			mountHost.Set(baseEntity);
+			mountAnchorIndex = index;
+			SetMountedFlag(mounted: true);
+			MountAgent?.Pause(this);
+			ResumeMountedState();
+		}
+	}
+
+	private void ReleaseMountOnDestroy()
+	{
+		Mount?.ReleaseAnchor(this);
+		mountHost = default;
+		mountAnchorIndex = -1;
+	}
+
 	public override float AntiHackVelocity()
 	{
 		return 10f;
@@ -48,7 +277,7 @@ public class BaseNPC2 : BaseCombatEntity
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			startHealth *= AI.npcHealthMultiplier;
 			startHealth = Mathf.Max(1f, startHealth);
@@ -57,20 +286,62 @@ public class BaseNPC2 : BaseCombatEntity
 		}
 	}
 
+	public override void Hurt(HitInfo info)
+	{
+		SenseComponent senseComponent = default;
+		if (((Component)this).TryGetComponent<SenseComponent>(ref senseComponent))
+		{
+			senseComponent.NoteAttacker(info.Initiator);
+		}
+		base.Hurt(info);
+	}
+
 	public override void OnAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (base.isServer && Object.op_Implicit((Object)(object)info.InitiatorPlayer) && !info.damageTypes.IsMeleeType())
+		if (isServer && Object.op_Implicit((Object)(object)info.InitiatorPlayer) && !info.damageTypes.IsMeleeType())
 		{
 			info.InitiatorPlayer.LifeStoryShotHit(info.Weapon);
+		}
+	}
+
+	public override bool InSafeZone()
+	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		if (safeZoneCheckedFrame != Time.frameCount)
+		{
+			safeZoneCheckedFrame = Time.frameCount;
+			inSafeZone = TriggerSafeZone.IsBoundsInsideSafeZone(WorldSpaceBounds());
+		}
+		return inSafeZone;
+	}
+
+	public override void ApplyInheritedVelocity(Vector3 velocity)
+	{
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		if (!(velocity.sqrMagnitude < 0.0001f) && !IsDead() && !HasMountReservation && !IsMounted && !IsDismounting)
+		{
+			RustNavMeshAgent mountAgent = MountAgent;
+			if (!((Object)(object)mountAgent == (Object)null) && !mountAgent.IsPaused)
+			{
+				Vector3 position = ((Component)this).transform.position;
+				mountAgent.Move(mountAgent.WorldToNavSpace(position + velocity * Time.fixedDeltaTime) - mountAgent.WorldToNavSpace(position));
+			}
 		}
 	}
 
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer && !Application.isQuitting)
+		if (isServer && !Application.isQuitting)
 		{
+			ReleaseMountOnDestroy();
 			Query.Server.RemoveBrain(this);
 		}
 	}

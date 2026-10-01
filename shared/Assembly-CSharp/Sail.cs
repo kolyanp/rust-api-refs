@@ -7,13 +7,13 @@ using Oxide.Core;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
+public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 {
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Sail")]
+	[SerializeField]
 	private float maxThrust = 1000f;
 
 	public float RaiseDuration = 1.5f;
@@ -326,6 +326,7 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
@@ -339,28 +340,27 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
 		PooledList<BoxCollider> val = Pool.Get<PooledList<BoxCollider>>();
 		try
 		{
 			((Component)this).GetComponentsInChildren<BoxCollider>(true, (List<BoxCollider>)(object)val);
 			Matrix4x4 val2 = Matrix4x4.TRS(newSailPos, newSailRot, Vector3.one);
-			OBB val3 = default(OBB);
-			Ray val4 = default(Ray);
-			RaycastHit val5 = default(RaycastHit);
+			RaycastHit val5 = default;
 			foreach (BoxCollider item in (List<BoxCollider>)(object)val)
 			{
 				if (((Collider)item).isTrigger)
 				{
 					continue;
 				}
-				((OBB)(ref val3))._002Ector(((Component)item).transform.localPosition, ((Component)item).transform.localRotation, new Bounds(item.center, item.size));
-				val3.position = ((Matrix4x4)(ref val2)).MultiplyPoint3x4(val3.position);
-				val3.rotation = ((Matrix4x4)(ref val2)).rotation * val3.rotation;
+				OBB val3 = new OBB(((Component)item).transform.localPosition, ((Component)item).transform.localRotation, new Bounds(item.center, item.size));
+				val3.position = val2.MultiplyPoint3x4(val3.position);
+				val3.rotation = val2.rotation * val3.rotation;
 				foreach (Transform windBlockedCheckPoint in WindBlockedCheckPoints)
 				{
-					((Ray)(ref val4))._002Ector(windBlockedCheckPoint.position, windBlockedCheckPoint.rotation * Vector3.forward);
-					if (((OBB)(ref val3)).Trace(val4, ref val5, WindBlockedCheckDistance))
+					Ray val4 = new Ray(windBlockedCheckPoint.position, windBlockedCheckPoint.rotation * Vector3.forward);
+					if (val3.Trace(val4, ref val5, WindBlockedCheckDistance))
 					{
 						return true;
 					}
@@ -396,7 +396,7 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		foreach (Transform checkPoint in checkPoints)
 		{
 			list.Clear();
-			GamePhysics.TraceAllUnordered(new Ray(((Matrix4x4)(ref val)).MultiplyPoint3x4(checkPoint.localPosition), worldRotation * checkPoint.localRotation * Vector3.forward), radius, list, distance, layerMask, (QueryTriggerInteraction)0, toIgnore);
+			GamePhysics.TraceAllUnordered(new Ray(val.MultiplyPoint3x4(checkPoint.localPosition), worldRotation * checkPoint.localRotation * Vector3.forward), radius, list, distance, layerMask, (QueryTriggerInteraction)0, toIgnore);
 			for (int i = 0; i < list.Count; i++)
 			{
 				BaseEntity entity = RaycastHitEx.GetEntity(list[i]);
@@ -414,7 +414,7 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.fromDisk)
+		if (isServer && info.fromDisk)
 		{
 			Raise(null, instant: true);
 		}
@@ -508,8 +508,8 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void LowerSail(RPCMessage msg)
 	{
 		Lower(msg.player);
@@ -601,9 +601,9 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		OnRaisedOrLowered();
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RotateSail(RPCMessage msg)
 	{
 		RotateSail(msg.player);
@@ -627,12 +627,12 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 			SendNetworkUpdateImmediate();
 			if (sailRotateEffect.isValid)
 			{
-				Effect.server.Run(sailRotateEffect.resourcePath, this, 0u, default(Vector3), default(Vector3), null, false, null, 0, Effect.Type.Generic);
+				Effect.server.Run(sailRotateEffect.resourcePath, this, 0u, default, default, null, false, null, 0, Effect.Type.Generic);
 			}
 		}
 	}
 
-	void global::IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
+	void IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
 	{
 		Raise(null);
 	}

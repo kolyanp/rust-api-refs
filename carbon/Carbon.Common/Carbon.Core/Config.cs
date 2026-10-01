@@ -27,6 +27,8 @@ public class Config
 
 		public bool UnloadOnFailure;
 
+		public bool GenerateInternalCallHookSourceOnFailure = true;
+
 		public List<string> ConditionalCompilationSymbols;
 	}
 

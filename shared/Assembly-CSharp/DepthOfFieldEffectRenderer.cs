@@ -88,12 +88,12 @@ public class DepthOfFieldEffectRenderer : PostProcessEffectRenderer<DepthOfField
 		int width = context.width;
 		int height = context.height;
 		RenderTextureFormat sourceFormat = context.sourceFormat;
-		bool value = base.settings.highResolution.value;
-		DOFBlurSampleCountParameter blurSampleCount = base.settings.blurSampleCount;
-		float value2 = base.settings.focalSize.value;
-		float value3 = base.settings.focalLength.value;
-		float value4 = base.settings.aperture.value;
-		float value5 = base.settings.maxBlurSize.value;
+		bool value = settings.highResolution.value;
+		DOFBlurSampleCountParameter blurSampleCount = settings.blurSampleCount;
+		float value2 = settings.focalSize.value;
+		float value3 = settings.focalLength.value;
+		float value4 = settings.aperture.value;
+		float value5 = settings.maxBlurSize.value;
 		int num = Shader.PropertyToID("DOFrtLow");
 		int num2 = Shader.PropertyToID("DOFrtLow2");
 		value4 = Mathf.Clamp(value4, 1f, 32f);
@@ -102,7 +102,7 @@ public class DepthOfFieldEffectRenderer : PostProcessEffectRenderer<DepthOfField
 		internalBlurWidth = Mathf.Max(value5, 0f);
 		focalDistance01 = FocalDistance01(context.camera, value3);
 		propertySheet.properties.SetVector("_CurveParams", new Vector4(1f, value2, value4 / 10f, focalDistance01));
-		propertySheet.properties.SetVector("_DistortionParams", new Vector4((float)base.settings.anamorphicSqueeze, (float)base.settings.anamorphicBarrel * 2f, 0f, 0f));
+		propertySheet.properties.SetVector("_DistortionParams", new Vector4((float)settings.anamorphicSqueeze, (float)settings.anamorphicBarrel * 2f, 0f, 0f));
 		if (value)
 		{
 			internalBlurWidth *= 2f;
@@ -116,7 +116,7 @@ public class DepthOfFieldEffectRenderer : PostProcessEffectRenderer<DepthOfField
 		command.GetTemporaryRT(num, width >> 1, height >> 1, 0, (FilterMode)1, sourceFormat);
 		command.GetTemporaryRT(num2, width >> 1, height >> 1, 0, (FilterMode)1, sourceFormat);
 		int pass = 2;
-		if ((float)base.settings.anamorphicSqueeze > 0f || (float)base.settings.anamorphicBarrel > 0f)
+		if ((float)settings.anamorphicSqueeze > 0f || (float)settings.anamorphicBarrel > 0f)
 		{
 			command.EnableShaderKeyword("ANAMORPHIC_BOKEH");
 		}

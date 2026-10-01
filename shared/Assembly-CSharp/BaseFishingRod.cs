@@ -66,9 +66,9 @@ public class BaseFishingRod : HeldEntity
 		PlayerMoved
 	}
 
-	public static UpdateFishingRod updateFishingRodQueue;
+	public static UpdateFishingRod updateFishingRodQueue = new UpdateFishingRod();
 
-	public static Phrase overfishedWarningPhrase;
+	public static Phrase overfishedWarningPhrase = new Phrase("overfished_warning", "This area is overfished, only junk remains.");
 
 	private TimeUntil nextFishStateChange;
 
@@ -96,18 +96,18 @@ public class BaseFishingRod : HeldEntity
 
 	private ItemModFishable lastFish;
 
-	public static Dictionary<Vector2, (int, TimeSince)> FishedSpots;
+	public static Dictionary<Vector2, (int, TimeSince)> FishedSpots = new Dictionary<Vector2, (int, TimeSince)>();
 
 	private bool inQueue;
 
 	[ServerVar(Help = "(Generated) When enabled, all fishing attempts succeed immediately regardless of bite probability; cheat for testing fishing catch logic")]
-	public static bool ForceSuccess;
+	public static bool ForceSuccess = false;
 
 	[ServerVar(Help = "(Generated) When enabled, all fishing attempts fail immediately; cheat for testing failed-catch animations and UI feedback")]
-	public static bool ForceFail;
+	public static bool ForceFail = false;
 
 	[ServerVar(Help = "(Generated) When enabled, fish bite the hook immediately after casting without any wait time; cheat for testing bite response")]
-	public static bool ImmediateHook;
+	public static bool ImmediateHook = false;
 
 	public GameObjectRef FishingBobberRef;
 
@@ -133,11 +133,11 @@ public class BaseFishingRod : HeldEntity
 
 	public ItemModFishable ForceFish;
 
-	public static Flags PullingLeftFlag;
+	public static Flags PullingLeftFlag = Flags.Reserved6;
 
-	public static Flags PullingRightFlag;
+	public static Flags PullingRightFlag = Flags.Reserved7;
 
-	public static Flags ReelingInFlag;
+	public static Flags ReelingInFlag = Flags.Reserved8;
 
 	public GameObjectRef BobberPreview;
 
@@ -290,9 +290,9 @@ public class BaseFishingRod : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	private void Server_RequestCast(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -337,7 +337,7 @@ public class BaseFishingRod : HeldEntity
 		object obj = Interface.CallHook("CanCastFishingRod", ownerPlayer, this, currentLure, pos);
 		if (!(obj is bool) || (bool)obj)
 		{
-			FishingBobber component = ((Component)base.gameManager.CreateEntity(FishingBobberRef.resourcePath, ((Component)this).transform.position + Vector3.up * 2.8f + ownerPlayer.eyes.BodyForward() * 1.8f, GetOwnerPlayer().ServerRotation)).GetComponent<FishingBobber>();
+			FishingBobber component = ((Component)gameManager.CreateEntity(FishingBobberRef.resourcePath, ((Component)this).transform.position + Vector3.up * 2.8f + ownerPlayer.eyes.BodyForward() * 1.8f, GetOwnerPlayer().ServerRotation)).GetComponent<FishingBobber>();
 			((Component)component).transform.forward = GetOwnerPlayer().eyes.BodyForward();
 			component.Spawn();
 			component.InitialiseBobber(ownerPlayer, surfaceBody, pos, 150f);
@@ -359,7 +359,7 @@ public class BaseFishingRod : HeldEntity
 			ownerPlayer.SignalBroadcast(Signal.Attack);
 			catchTime = TimeUntil.op_Implicit(ImmediateHook ? 0f : Random.Range(10f, 20f));
 			catchTime = TimeUntil.op_Implicit(TimeUntil.op_Implicit(catchTime) * fishableModifier.CatchWaitTimeMultiplier);
-			ItemModCompostable itemModCompostable = default(ItemModCompostable);
+			ItemModCompostable itemModCompostable = default;
 			float num = (((Component)lureUsed).TryGetComponent<ItemModCompostable>(ref itemModCompostable) ? itemModCompostable.BaitValue : 0f);
 			num = Mathx.RemapValClamped(num, 0f, 20f, 1f, 10f);
 			catchTime = TimeUntil.op_Implicit(Mathf.Clamp(TimeUntil.op_Implicit(catchTime) - num, 3f, 20f));
@@ -387,9 +387,9 @@ public class BaseFishingRod : HeldEntity
 	}
 
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_OverfishingCheck(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -471,7 +471,7 @@ public class BaseFishingRod : HeldEntity
 		}
 		Vector3 position = ((Component)ownerPlayer).transform.position;
 		Vector3 val = Vector3Ex.WithY(((Component)fishingBobber).transform.position, 0f) - Vector3Ex.WithY(position, 0f);
-		float num = Vector3.Angle(((Vector3)(ref val)).normalized, Vector3Ex.WithY(ownerPlayer.eyes.HeadForward(), 0f));
+		float num = Vector3.Angle(val.normalized, Vector3Ex.WithY(ownerPlayer.eyes.HeadForward(), 0f));
 		float num2 = Vector3.Distance(position, Vector3Ex.WithY(((Component)fishingBobber).transform.position, position.y));
 		if (num > ((num2 > 1.2f) ? 60f : 180f))
 		{
@@ -644,14 +644,14 @@ public class BaseFishingRod : HeldEntity
 				{
 					item.name = RandomUsernames.Get(Random.Range(0, 1000));
 				}
-				if (Rust.GameInfo.HasAchievements && !string.IsNullOrEmpty(fishableModifier.SteamStatName))
+				if (GameInfo.HasAchievements && !string.IsNullOrEmpty(fishableModifier.SteamStatName))
 				{
 					ownerPlayer.stats.Add(fishableModifier.SteamStatName, 1);
 					ownerPlayer.stats.Save(forceSteamSave: true);
 					FishLookup.Instance.CheckCatchAllAchievement(ownerPlayer);
 				}
 				Facepunch.Rust.Analytics.Azure.OnCaughtFish(ownerPlayer, item);
-				ItemModFishable itemModFishable = default(ItemModFishable);
+				ItemModFishable itemModFishable = default;
 				if (!Fishing.disableOverfishing && ((Component)currentFishTarget).TryGetComponent<ItemModFishable>(ref itemModFishable) && !itemModFishable.IsJunk)
 				{
 					FishArea(((Component)fishingBobber).transform.position);
@@ -745,6 +745,7 @@ public class BaseFishingRod : HeldEntity
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
@@ -774,8 +775,7 @@ public class BaseFishingRod : HeldEntity
 			DebugOverfishing($"PROCESS FISH AREA | Position: ({position}) is already overfished.", (Object)(object)this);
 			return;
 		}
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector((float)Mathf.FloorToInt(position.x / Fishing.overfishedAreaRadius), (float)Mathf.FloorToInt(position.z / Fishing.overfishedAreaRadius));
+		Vector2 val = new Vector2((float)Mathf.FloorToInt(position.x / Fishing.overfishedAreaRadius), (float)Mathf.FloorToInt(position.z / Fishing.overfishedAreaRadius));
 		if (FishedSpots.ContainsKey(val))
 		{
 			float num = Fishing.overfishedAreaDurationMinutes * 60f;
@@ -825,7 +825,7 @@ public class BaseFishingRod : HeldEntity
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if ((!base.isServer || !info.fromDisk) && info.msg.simpleUID != null)
+		if ((!isServer || !info.fromDisk) && info.msg.simpleUID != null)
 		{
 			currentBobber.uid = info.msg.simpleUID.uid;
 		}
@@ -853,7 +853,7 @@ public class BaseFishingRod : HeldEntity
 		Vector3 position = ((Component)this).transform.position;
 		Vector3 val = Vector3Ex.WithY(bobberPosition, position.y);
 		Vector3 val2 = val - position;
-		return Vector3.Dot(worldDirection, ((Vector3)(ref val2)).normalized) < 0f;
+		return Vector3.Dot(worldDirection, val2.normalized) < 0f;
 	}
 
 	private bool EvaluateFishingPosition(ref Vector3 pos, BasePlayer ply, out FailReason reason, out WaterBody waterBody)
@@ -907,17 +907,17 @@ public class BaseFishingRod : HeldEntity
 		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
-		bool num = GamePhysics.Trace(new Ray(pos + Vector3.up, Vector3.down), 0f, out var hitInfo, 1.5f, 16, (QueryTriggerInteraction)0);
-		if (num)
+		bool flag = GamePhysics.Trace(new Ray(pos + Vector3.up, Vector3.down), 0f, out var hitInfo, 1.5f, 16, (QueryTriggerInteraction)0);
+		if (flag)
 		{
 			waterBody = RaycastHitEx.GetWaterBody(hitInfo);
-			pos.y = ((RaycastHit)(ref hitInfo)).point.y;
+			pos.y = hitInfo.point.y;
 		}
 		else
 		{
 			waterBody = null;
 		}
-		if (!num)
+		if (!flag)
 		{
 			reason = FailReason.NoWaterFound;
 			return false;
@@ -940,10 +940,10 @@ public class BaseFishingRod : HeldEntity
 		}
 		Vector3 position = ((Component)ply).transform.position;
 		position.y = pos.y;
-		float num2 = Vector3.Distance(pos, position);
+		float num = Vector3.Distance(pos, position);
 		Vector3 val = pos;
 		Vector3 val2 = position - pos;
-		Vector3 p2 = val + ((Vector3)(ref val2)).normalized * (num2 - FishCatchDistance);
+		Vector3 p2 = val + val2.normalized * (num - FishCatchDistance);
 		if (!GamePhysics.LineOfSight(pos, p2, 1218652417))
 		{
 			reason = FailReason.Obstructed;
@@ -999,15 +999,6 @@ public class BaseFishingRod : HeldEntity
 	static BaseFishingRod()
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Expected O, but got Unknown
-		updateFishingRodQueue = new UpdateFishingRod();
-		overfishedWarningPhrase = new Phrase("overfished_warning", "This area is overfished, only junk remains.");
-		FishedSpots = new Dictionary<Vector2, (int, TimeSince)>();
-		ForceSuccess = false;
-		ForceFail = false;
-		ImmediateHook = false;
-		PullingLeftFlag = Flags.Reserved6;
-		PullingRightFlag = Flags.Reserved7;
-		ReelingInFlag = Flags.Reserved8;
+		//IL_001e: Expected Obj, but got Unknown
 	}
 }

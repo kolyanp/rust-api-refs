@@ -40,7 +40,7 @@ public class ProtoStorage
 		{
 			Logger.Error("Failed to load protobuf data from " + fileName, ex);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static void Save<T>(T data, params string[] subPaths)

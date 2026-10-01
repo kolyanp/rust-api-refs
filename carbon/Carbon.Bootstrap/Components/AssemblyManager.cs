@@ -17,9 +17,9 @@ internal sealed class AssemblyManager : CarbonBehaviour, IAssemblyManager
 {
 	private LibraryLoader _library;
 
-	private static readonly IReadOnlyList<string> _blacklistLibs = new global::_003C_003Ez__ReadOnlyArray<string>(new string[2] { "^Carbon\\.Bootstrap|Preloader$", "^Carbon\\..+_\\d{4}\\.\\d{2}\\.\\d{2}\\.\\d{4}$" });
+	private static readonly IReadOnlyList<string> _blacklistLibs = new _003C_003Ez__ReadOnlyArray<string>(new string[2] { "^Carbon\\.Bootstrap|Preloader$", "^Carbon\\..+_\\d{4}\\.\\d{2}\\.\\d{2}\\.\\d{4}$" });
 
-	private static readonly IReadOnlyList<string> _whitelistLibs = new global::_003C_003Ez__ReadOnlyArray<string>(new string[88]
+	private static readonly IReadOnlyList<string> _whitelistLibs = new _003C_003Ez__ReadOnlyArray<string>(new string[88]
 	{
 		"mscorlib", "netstandard", "System.Core", "System.Data", "System.Drawing", "System.Globalization", "System.Management", "System.Net.Http", "System.Memory", "System.Runtime.CompilerServices.Unsafe",
 		"System.Runtime", "System.Threading.Tasks.Extensions", "System.Xml.Linq", "System.Xml.Serialization", "System.Xml", "System", "Carbon", "Carbon.Common", "Carbon.SDK", "Carbon.Test",
@@ -32,7 +32,7 @@ internal sealed class AssemblyManager : CarbonBehaviour, IAssemblyManager
 		"UnityEngine.UnityWebRequestAssetBundleModule", "UnityEngine.UnityWebRequestAudioModule", "UnityEngine.UnityWebRequestModule", "UnityEngine.UnityWebRequestTextureModule", "UnityEngine.UnityWebRequestWWWModule", "UnityEngine.VehiclesModule", "UnityEngine", "Facepunch.Steamworks.Win64"
 	});
 
-	private static readonly IReadOnlyList<string> _proxyLibs = new global::_003C_003Ez__ReadOnlySingleElementList<string>("Carbon.Proxy");
+	private static readonly IReadOnlyList<string> _proxyLibs = new _003C_003Ez__ReadOnlySingleElementList<string>("Carbon.Proxy");
 
 	public IReadOnlyList<string> RefBlacklist => _blacklistLibs;
 
@@ -116,7 +116,7 @@ internal sealed class AssemblyManager : CarbonBehaviour, IAssemblyManager
 	private void CMDAssemblyInfo(Command.Args arg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0008: Expected O, but got Unknown
+		//IL_0008: Expected Obj, but got Unknown
 		int num = 0;
 		TextTable val = new TextTable();
 		val.AddColumns(new string[5] { "#", "Assembly", "Version", "Dynamic", "Location" });

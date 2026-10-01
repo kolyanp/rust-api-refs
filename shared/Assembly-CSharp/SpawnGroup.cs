@@ -4,7 +4,6 @@ using System.Linq;
 using ConVar;
 using Rust.Ai.Gen2;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, ISpawnGroup
 {
@@ -176,7 +175,7 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 			if ((Object)(object)setFreeIfMovedBeyond != (Object)null)
 			{
 				Bounds bounds = ((Collider)setFreeIfMovedBeyond).bounds;
-				if (!((Bounds)(ref bounds)).Contains(((Component)baseEntity).transform.position))
+				if (!bounds.Contains(((Component)baseEntity).transform.position))
 				{
 					spawnPointInstance.Retire();
 					continue;
@@ -325,10 +324,10 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 		if (entity is HumanNPC humanNPC)
 		{
 			Vector3 position = ((Component)spawnPoint).transform.position;
-			bool num = TerrainMeta.BiomeMap.GetBiomeMaxType(position) == 16;
-			bool flag = EnvironmentManager.Check(position, EnvironmentType.TrainTunnels | EnvironmentType.UnderwaterLab | EnvironmentType.Submarine);
+			bool flag = TerrainMeta.BiomeMap.GetBiomeMaxType(position) == 16;
+			bool flag2 = EnvironmentManager.Check(position, EnvironmentType.TrainTunnels | EnvironmentType.UnderwaterLab | EnvironmentType.Submarine);
 			bool topology = TerrainMeta.TopologyMap.GetTopology(position, 128);
-			if (num && !flag && !topology && SingletonComponent<SpawnHandler>.Instance.JungleLoadouts != null && SingletonComponent<SpawnHandler>.Instance.JungleLoadouts.Length != 0)
+			if (flag && !flag2 && !topology && SingletonComponent<SpawnHandler>.Instance.JungleLoadouts != null && SingletonComponent<SpawnHandler>.Instance.JungleLoadouts.Length != 0)
 			{
 				humanNPC.EquipLoadout(SingletonComponent<SpawnHandler>.Instance.JungleLoadouts);
 			}
@@ -361,9 +360,9 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		pos = Vector3.zero;
 		rot = Quaternion.identity;
 		bool flag = DoesRequireNavmeshToSpawn(prefabRef.Get());
@@ -381,7 +380,7 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 				}
 				if (RustNavMeshHelpers.SamplePosition(pos, out var hitWS, 2f, -1))
 				{
-					pos = ((NavMeshHit)(ref hitWS)).position;
+					pos = hitWS.position;
 					return baseSpawnPoint;
 				}
 				if (AI.logIssues)
@@ -399,12 +398,12 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 		{
 			return false;
 		}
-		BaseNavigator baseNavigator = default(BaseNavigator);
+		BaseNavigator baseNavigator = default;
 		if (prefab.TryGetComponent<BaseNavigator>(ref baseNavigator) && !baseNavigator.CanUseNavMesh)
 		{
 			return false;
 		}
-		RustNavMeshAgent rustNavMeshAgent = default(RustNavMeshAgent);
+		RustNavMeshAgent rustNavMeshAgent = default;
 		if (prefab.TryGetComponent<RustNavMeshAgent>(ref rustNavMeshAgent))
 		{
 			return true;

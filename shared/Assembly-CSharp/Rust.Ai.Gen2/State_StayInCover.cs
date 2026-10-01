@@ -54,41 +54,41 @@ public class State_StayInCover : FSMStateBase
 		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target))
+		if (!Senses.FindTarget(out var target))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		Vector3 position = ((Component)Owner).transform.position;
-		if (base.Senses.FindLKP(target, out var lkp, applyHeightOffset: true) && (base.Senses.CanBeSeenAtFrom(position + 1.1f * Vector3.up, lkp, "navigation") || base.Senses.CanBeSeenAtFrom(position + 0.1f * Vector3.up, lkp, "navigation")))
+		if (Senses.FindLKP(target, out var lkp, applyHeightOffset: true) && (Senses.CanBeSeenAtFrom(position + 1.1f * Vector3.up, lkp, "navigation") || Senses.CanBeSeenAtFrom(position + 0.1f * Vector3.up, lkp, "navigation")))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		ClientAnim.IsCrouching = true;
 		Vector3 val2;
-		if (base.Senses.FindLKP(target, out var lkp2) && Vector3.Distance(lkp2, position) < 40f && Mathf.Abs(lkp2.y - position.y) < 10f)
+		if (Senses.FindLKP(target, out var lkp2) && Vector3.Distance(lkp2, position) < 40f && Mathf.Abs(lkp2.y - position.y) < 10f)
 		{
-			NavVector3 positionNS = base.Agent.WorldToNavSpace(lkp2);
-			if (base.Agent.SamplePosition(positionNS, out var hitNS, 3.5f) && base.Agent.CalculatePath(hitNS.position, PathToLkp) && PathToLkp.corners.Count >= 2)
+			NavVector3 positionNS = Agent.WorldToNavSpace(lkp2);
+			if (Agent.SamplePosition(positionNS, out var hitNS, 3.5f) && Agent.CalculatePath(hitNS.position, PathToLkp) && PathToLkp.corners.Count >= 2)
 			{
-				Vector3 val = base.Agent.NavToWorldSpace(PathToLkp.corners[1]);
-				RustNavMeshAgent agent = base.Agent;
+				Vector3 val = Agent.NavToWorldSpace(PathToLkp.corners[1]);
+				RustNavMeshAgent agent = Agent;
 				val2 = val - position;
-				agent.overrideDirectionWS = ((Vector3)(ref val2)).normalized;
+				agent.overrideDirectionWS = val2.normalized;
 			}
 		}
-		if (!base.Agent.overrideDirectionWS.HasValue && base.Agent.lastValidPath.Count >= 2)
+		if (!Agent.overrideDirectionWS.HasValue && Agent.lastValidPath.Count >= 2)
 		{
-			List<NavVector3> lastValidPath = base.Agent.lastValidPath;
+			List<NavVector3> lastValidPath = Agent.lastValidPath;
 			NavVector3 navVector = lastValidPath[lastValidPath.Count - 1];
-			List<NavVector3> lastValidPath2 = base.Agent.lastValidPath;
+			List<NavVector3> lastValidPath2 = Agent.lastValidPath;
 			NavVector3 normalized = (navVector - lastValidPath2[lastValidPath2.Count - 2]).normalized;
-			Vector3 value = base.Agent.NavToWorldDirection(normalized);
-			base.Agent.overrideDirectionWS = value;
-			val2 = lkp - base.Senses.EyePosition;
-			Vector3 normalized2 = ((Vector3)(ref val2)).normalized;
-			if (Vector3.Dot(base.Agent.overrideDirectionWS.Value, normalized2) < 0f)
+			Vector3 value = Agent.NavToWorldDirection(normalized);
+			Agent.overrideDirectionWS = value;
+			val2 = lkp - Senses.EyePosition;
+			Vector3 normalized2 = val2.normalized;
+			if (Vector3.Dot(Agent.overrideDirectionWS.Value, normalized2) < 0f)
 			{
-				base.Agent.overrideDirectionWS = normalized2;
+				Agent.overrideDirectionWS = normalized2;
 			}
 		}
 		return base.OnStateEnter(payload);
@@ -97,7 +97,7 @@ public class State_StayInCover : FSMStateBase
 	public override void OnStateExit()
 	{
 		ClientAnim.IsCrouching = false;
-		base.Agent.overrideDirectionWS = null;
+		Agent.overrideDirectionWS = null;
 		base.OnStateExit();
 	}
 }

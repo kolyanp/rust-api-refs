@@ -119,6 +119,7 @@ public class SDFChunk : FacepunchBehaviour, IDisposable
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
@@ -142,42 +143,41 @@ public class SDFChunk : FacepunchBehaviour, IDisposable
 		int num = segments.x * segments.y * segments.z;
 		int num2 = math.max(1, num / JobsUtility.JobWorkerCount);
 		int num3 = (num + num2 - 1) / num2;
-		NativeStream val = default(NativeStream);
-		((NativeStream)(ref val))._002Ector(num3, AllocatorHandle.op_Implicit((Allocator)3));
-		JobHandle val2 = IJobParallelForBatchExtensions.Schedule<Facepunch.MarchingCubes.SDFChunkJobs.AccumulateCensorBoundsJob>(new Facepunch.MarchingCubes.SDFChunkJobs.AccumulateCensorBoundsJob
+		NativeStream val = new NativeStream(num3, AllocatorHandle.op_Implicit((Allocator)3));
+		JobHandle val2 = IJobParallelForBatchExtensions.Schedule<SDFChunkJobs.AccumulateCensorBoundsJob>(new SDFChunkJobs.AccumulateCensorBoundsJob
 		{
 			SrcData = srcData,
-			ShapeStream = ((NativeStream)(ref val)).AsWriter(),
+			ShapeStream = val.AsWriter(),
 			SegmentsX = segments.x,
 			SegmentsY = segments.y,
 			SegmentsZ = segments.z,
 			iso = _iso,
 			batchSize = num2
 		}, num, num2, inputDeps);
-		Facepunch.MarchingCubes.SDFChunkJobs.ApplyCensorBoundsJob obj = new Facepunch.MarchingCubes.SDFChunkJobs.ApplyCensorBoundsJob
+		SDFChunkJobs.ApplyCensorBoundsJob applyCensorBoundsJob = new SDFChunkJobs.ApplyCensorBoundsJob
 		{
 			OutputArray = DataArray,
-			ShapeStream = ((NativeStream)(ref val)).AsReader()
+			ShapeStream = val.AsReader()
 		};
 		int num4 = math.max(1, DataArray.Depth / JobsUtility.JobWorkerCount);
-		val2 = IJobParallelForExtensions.Schedule<Facepunch.MarchingCubes.SDFChunkJobs.ApplyCensorBoundsJob>(obj, DataArray.Depth, num4, val2);
-		((NativeStream)(ref val)).Dispose(val2);
-		Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob clearBoundariesJob = new Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob
+		val2 = IJobParallelForExtensions.Schedule<SDFChunkJobs.ApplyCensorBoundsJob>(applyCensorBoundsJob, DataArray.Depth, num4, val2);
+		val.Dispose(val2);
+		SDFChunkJobs.ClearBoundariesJob clearBoundariesJob = new SDFChunkJobs.ClearBoundariesJob
 		{
 			DataArray = DataArray
 		};
-		return IJobExtensions.ScheduleByRef<Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob>(ref clearBoundariesJob, val2);
+		return IJobExtensions.ScheduleByRef<SDFChunkJobs.ClearBoundariesJob>(ref clearBoundariesJob, val2);
 	}
 
 	public static JobHandle ScheduleClearBoundaries(QuantizedFloatData3DArray dataArray, JobHandle inputDeps)
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob clearBoundariesJob = new Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob
+		SDFChunkJobs.ClearBoundariesJob clearBoundariesJob = new SDFChunkJobs.ClearBoundariesJob
 		{
 			DataArray = dataArray
 		};
-		return IJobExtensions.ScheduleByRef<Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob>(ref clearBoundariesJob, inputDeps);
+		return IJobExtensions.ScheduleByRef<SDFChunkJobs.ClearBoundariesJob>(ref clearBoundariesJob, inputDeps);
 	}
 
 	public JobHandle GenerateChunkData(ReadOnly<Shape> mods, JobHandle inputDeps)
@@ -199,25 +199,25 @@ public class SDFChunk : FacepunchBehaviour, IDisposable
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		Facepunch.MarchingCubes.SDFChunkJobs.CalculateDistanceFieldJob calculateDistanceFieldJob = new Facepunch.MarchingCubes.SDFChunkJobs.CalculateDistanceFieldJob
+		SDFChunkJobs.CalculateDistanceFieldJob calculateDistanceFieldJob = new SDFChunkJobs.CalculateDistanceFieldJob
 		{
 			Origin = float3.op_Implicit(Origin),
 			ChunkBounds = ChunkBoundsSetSpace,
 			Mods = mods,
 			DataArray = DataArray
 		};
-		inputDeps = IJobExtensions.ScheduleByRef<Facepunch.MarchingCubes.SDFChunkJobs.CalculateDistanceFieldJob>(ref calculateDistanceFieldJob, inputDeps);
-		Facepunch.MarchingCubes.SDFChunkJobs.CleanupIslandsJob cleanupIslandsJob = new Facepunch.MarchingCubes.SDFChunkJobs.CleanupIslandsJob
+		inputDeps = IJobExtensions.ScheduleByRef<SDFChunkJobs.CalculateDistanceFieldJob>(ref calculateDistanceFieldJob, inputDeps);
+		SDFChunkJobs.CleanupIslandsJob cleanupIslandsJob = new SDFChunkJobs.CleanupIslandsJob
 		{
 			DataArray = DataArray,
 			Iso = _iso
 		};
-		inputDeps = IJobExtensions.ScheduleByRef<Facepunch.MarchingCubes.SDFChunkJobs.CleanupIslandsJob>(ref cleanupIslandsJob, inputDeps);
-		Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob clearBoundariesJob = new Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob
+		inputDeps = IJobExtensions.ScheduleByRef<SDFChunkJobs.CleanupIslandsJob>(ref cleanupIslandsJob, inputDeps);
+		SDFChunkJobs.ClearBoundariesJob clearBoundariesJob = new SDFChunkJobs.ClearBoundariesJob
 		{
 			DataArray = DataArray
 		};
-		inputDeps = IJobExtensions.ScheduleByRef<Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob>(ref clearBoundariesJob, inputDeps);
+		inputDeps = IJobExtensions.ScheduleByRef<SDFChunkJobs.ClearBoundariesJob>(ref clearBoundariesJob, inputDeps);
 		return inputDeps;
 	}
 

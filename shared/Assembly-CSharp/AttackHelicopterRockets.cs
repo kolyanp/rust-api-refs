@@ -118,26 +118,26 @@ public class AttackHelicopterRockets : StorageContainer
 
 	public int GetRocketAmount()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if (preferredRocketType == AttackHelicopter.PreferredRocketType.HV)
 			{
-				return base.inventory.GetAmmoAmount(hvRocketDef);
+				return inventory.GetAmmoAmount(hvRocketDef);
 			}
 			if (preferredRocketType == AttackHelicopter.PreferredRocketType.Incendiary)
 			{
-				return base.inventory.GetAmmoAmount(incendiaryRocketDef);
+				return inventory.GetAmmoAmount(incendiaryRocketDef);
 			}
-			return base.inventory.GetAmmoAmount((AmmoTypes)32);
+			return inventory.GetAmmoAmount((AmmoTypes)32);
 		}
 		return 0;
 	}
 
 	public bool HasFlareAmmo()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
-			return base.inventory.HasAny(flareItemDef);
+			return inventory.HasAny(flareItemDef);
 		}
 		return false;
 	}
@@ -151,10 +151,10 @@ public class AttackHelicopterRockets : StorageContainer
 	public bool TryGetAmmoDef(out ItemDefinition ammoDef)
 	{
 		ammoDef = null;
-		if (base.isServer)
+		if (isServer)
 		{
 			List<Item> list = Pool.Get<List<Item>>();
-			base.inventory.FindAmmo(list, (AmmoTypes)32);
+			inventory.FindAmmo(list, (AmmoTypes)32);
 			if (list.Count > 0)
 			{
 				ammoDef = list[list.Count - 1].info;
@@ -226,7 +226,7 @@ public class AttackHelicopterRockets : StorageContainer
 						val2 += forward * (0f - num);
 					}
 				}
-				if (Ballistics.TryGetPhysicsProjectileHitPos(val, ((Vector3)(ref val2)).normalized, ((Vector3)(ref val2)).magnitude, gravity, out var result, 1.5f, 0.5f, 32f, owner))
+				if (Ballistics.TryGetPhysicsProjectileHitPos(val, val2.normalized, val2.magnitude, gravity, out var result, 1.5f, 0.5f, 32f, owner))
 				{
 					return result;
 				}
@@ -278,9 +278,9 @@ public class AttackHelicopterRockets : StorageContainer
 		{
 			if (IsValidFlare())
 			{
-				for (int i = 12; i < base.inventory.capacity; i++)
+				for (int i = 12; i < inventory.capacity; i++)
 				{
-					if (!base.inventory.SlotTaken(item, i))
+					if (!inventory.SlotTaken(item, i))
 					{
 						targetSlot = i;
 						break;
@@ -295,7 +295,7 @@ public class AttackHelicopterRockets : StorageContainer
 				}
 				for (int j = 0; j < 12; j++)
 				{
-					if (!base.inventory.SlotTaken(item, j))
+					if (!inventory.SlotTaken(item, j))
 					{
 						targetSlot = j;
 						break;
@@ -322,7 +322,7 @@ public class AttackHelicopterRockets : StorageContainer
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
@@ -413,7 +413,7 @@ public class AttackHelicopterRockets : StorageContainer
 		{
 			return false;
 		}
-		if (!base.inventory.TryTakeOne(flareItemDef.itemid, out var item))
+		if (!inventory.TryTakeOne(flareItemDef.itemid, out var item))
 		{
 			return false;
 		}

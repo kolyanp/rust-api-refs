@@ -27,12 +27,12 @@ public class LockState
 		{
 			return false;
 		}
-		bool num = locks.Remove(handle);
-		Assert.IsTrue(num, "Trying to remove a lock that doesn't exist");
-		if (num)
+		bool flag = locks.Remove(handle);
+		Assert.IsTrue(flag, "Trying to remove a lock that doesn't exist");
+		if (flag)
 		{
 			Pool.FreeUnsafe<LockHandle>(ref handle);
 		}
-		return num;
+		return flag;
 	}
 }

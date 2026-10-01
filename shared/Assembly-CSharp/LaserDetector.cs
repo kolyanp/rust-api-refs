@@ -107,10 +107,10 @@ public class LaserDetector : BaseDetector
 				return false;
 			}
 			Vector3 worldVelocity = ent.GetWorldVelocity();
-			if (((Vector3)(ref worldVelocity)).magnitude > 5f)
+			if (worldVelocity.magnitude > 5f)
 			{
 				Vector3 val3 = ((Component)ent).transform.position + worldVelocity * Time.fixedDeltaTime - val2;
-				Vector3 normalized = ((Vector3)(ref val3)).normalized;
+				Vector3 normalized = val3.normalized;
 				((List<RaycastHit>)(object)val).Clear();
 				GamePhysics.TraceAll(new Ray(val2, normalized), 0.25f, (List<RaycastHit>)(object)val, 20f, 0x48A12101 | LayerMask.op_Implicit(myTrigger.InterestLayers), (QueryTriggerInteraction)1, this);
 				foreach (RaycastHit item2 in (List<RaycastHit>)(object)val)

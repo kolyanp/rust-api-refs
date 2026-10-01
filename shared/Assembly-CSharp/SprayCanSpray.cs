@@ -174,7 +174,7 @@ public class SprayCanSpray : DecayEntity, ISplashable
 
 	public int DoSplash(ItemDefinition splashType, int amount)
 	{
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			Kill();
 		}

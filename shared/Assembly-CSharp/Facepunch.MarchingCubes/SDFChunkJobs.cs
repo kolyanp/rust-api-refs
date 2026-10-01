@@ -21,6 +21,8 @@ internal static class SDFChunkJobs
 
 		public void Execute()
 		{
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
@@ -62,10 +64,8 @@ internal static class SDFChunkJobs
 			//IL_020b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_020c: Unknown result type (might be due to invalid IL or missing references)
 			int length = DataArray.FlatArray.Length;
-			NativeArray<byte> touched = default(NativeArray<byte>);
-			touched._002Ector(length, (Allocator)2, (NativeArrayOptions)1);
-			NativeArray<int4> queue = default(NativeArray<int4>);
-			queue._002Ector(length, (Allocator)2, (NativeArrayOptions)0);
+			NativeArray<byte> touched = new NativeArray<byte>(length, (Allocator)2, (NativeArrayOptions)1);
+			NativeArray<int4> queue = new NativeArray<int4>(length, (Allocator)2, (NativeArrayOptions)0);
 			int num = 0;
 			int tail = 0;
 			int num2 = 1;
@@ -161,6 +161,9 @@ internal static class SDFChunkJobs
 		public void Execute(int startIndex, int count)
 		{
 			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
@@ -180,6 +183,8 @@ internal static class SDFChunkJobs
 			//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 			//IL_010d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+			//IL_012e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0133: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0138: Unknown result type (might be due to invalid IL or missing references)
 			//IL_013a: Unknown result type (might be due to invalid IL or missing references)
@@ -233,6 +238,9 @@ internal static class SDFChunkJobs
 			//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
 			//IL_02ea: Unknown result type (might be due to invalid IL or missing references)
 			//IL_02ef: Unknown result type (might be due to invalid IL or missing references)
+			//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0304: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0166: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0171: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0189: Unknown result type (might be due to invalid IL or missing references)
 			//IL_018b: Unknown result type (might be due to invalid IL or missing references)
@@ -257,6 +265,7 @@ internal static class SDFChunkJobs
 			//IL_0332: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0339: Unknown result type (might be due to invalid IL or missing references)
 			//IL_033b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0342: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0347: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0349: Unknown result type (might be due to invalid IL or missing references)
 			//IL_034b: Unknown result type (might be due to invalid IL or missing references)
@@ -295,24 +304,15 @@ internal static class SDFChunkJobs
 			//IL_03e2: Unknown result type (might be due to invalid IL or missing references)
 			//IL_03e4: Unknown result type (might be due to invalid IL or missing references)
 			int num = startIndex / batchSize;
-			((Writer)(ref ShapeStream)).PatchMinMaxRange(num);
-			((Writer)(ref ShapeStream)).BeginForEachIndex(num);
-			NativeList<int3> val = default(NativeList<int3>);
-			val._002Ector(AllocatorHandle.op_Implicit((Allocator)2));
+			ShapeStream.PatchMinMaxRange(num);
+			ShapeStream.BeginForEachIndex(num);
+			NativeList<int3> val = new NativeList<int3>(AllocatorHandle.op_Implicit((Allocator)2));
 			int num2 = SrcData.Width / SegmentsX;
 			int num3 = SrcData.Height / SegmentsY;
 			int num4 = SrcData.Depth / SegmentsZ;
-			int3 val2 = default(int3);
-			((int3)(ref val2))._002Ector(num2, num3, num4);
-			int3 val3 = default(int3);
-			((int3)(ref val3))._002Ector(1);
+			int3 val2 = new int3(num2, num3, num4);
+			int3 val3 = new int3(1);
 			int num5 = SegmentsX * SegmentsY;
-			int3 val6 = default(int3);
-			int3 val7 = default(int3);
-			int3 val9 = default(int3);
-			float3 val15 = default(float3);
-			float3 val16 = default(float3);
-			float3 val18 = default(float3);
 			for (int i = startIndex; i < startIndex + count; i++)
 			{
 				int num6 = i % SegmentsX;
@@ -321,8 +321,8 @@ internal static class SDFChunkJobs
 				int3 val4 = math.max(val2 * new int3(num6, num7, num8) - val3, int3.op_Implicit(0));
 				int3 val5 = math.min(val2 * new int3(num6, num7, num8) + val2 + val3, SrcData.Bounds - 1);
 				val.Clear();
-				((int3)(ref val6))._002Ector(int.MaxValue);
-				((int3)(ref val7))._002Ector(int.MinValue);
+				int3 val6 = new int3(int.MaxValue);
+				int3 val7 = new int3(int.MinValue);
 				int3 val8 = int3.zero;
 				for (int j = val4.z; j <= val5.z; j++)
 				{
@@ -330,7 +330,7 @@ internal static class SDFChunkJobs
 					{
 						for (int l = val4.x; l <= val5.x; l++)
 						{
-							((int3)(ref val9))._002Ector(l, k, j);
+							int3 val9 = new int3(l, k, j);
 							if (SrcData.Sample(val9) < iso)
 							{
 								val.Add(ref val9);
@@ -360,22 +360,22 @@ internal static class SDFChunkJobs
 					float3 val12 = math.normalize(V.c0);
 					float3 val13 = math.normalize(V.c1);
 					float3 val14 = math.normalize(V.c2);
-					((float3)(ref val15))._002Ector(float.MaxValue);
-					((float3)(ref val16))._002Ector(float.MinValue);
+					float3 val15 = new float3(float.MaxValue);
+					float3 val16 = new float3(float.MinValue);
 					for (int n = 0; n < val.Length; n++)
 					{
 						float3 val17 = float3.op_Implicit(val[n]) - val10;
-						((float3)(ref val18))._002Ector(math.dot(val17, val12), math.dot(val17, val13), math.dot(val17, val14));
+						float3 val18 = new float3(math.dot(val17, val12), math.dot(val17, val13), math.dot(val17, val14));
 						val15 = math.min(val15, val18);
 						val16 = math.max(val16, val18);
 					}
 					float3 extents = (val16 - val15) * 0.5f;
 					float3 val19 = (val16 + val15) * 0.5f;
 					val10 = val10 + val12 * val19.x + val13 * val19.y + val14 * val19.z;
-					((Writer)(ref ShapeStream)).Write<Shape>(new Shape(ShapeType.OBB, val10, extents, quaternion.LookRotation(val14, val13), isAdditive: true, 0.2f));
+					ShapeStream.Write<Shape>(new Shape(ShapeType.OBB, val10, extents, quaternion.LookRotation(val14, val13), isAdditive: true, 0.2f));
 				}
 			}
-			((Writer)(ref ShapeStream)).EndForEachIndex();
+			ShapeStream.EndForEachIndex();
 		}
 
 		private static void EigenDecomposition(float3x3 A, out float3x3 V)
@@ -424,19 +424,19 @@ internal static class SDFChunkJobs
 					num4 = 1;
 					num5 = 2;
 				}
-				if (!(math.abs(((float3)(ref ((float3x3)(ref A))[num4]))[num5]) < 1E-10f))
+				if (!(math.abs(A[num4][num5]) < 1E-10f))
 				{
-					float num6 = ((float3)(ref ((float3x3)(ref A))[num4]))[num4];
-					float num7 = ((float3)(ref ((float3x3)(ref A))[num5]))[num5];
-					float num8 = ((float3)(ref ((float3x3)(ref A))[num4]))[num5];
+					float num6 = A[num4][num4];
+					float num7 = A[num5][num5];
+					float num8 = A[num4][num5];
 					float num9 = 0.5f * math.atan2(2f * num8, num7 - num6);
 					float num10 = math.cos(num9);
 					float num11 = math.sin(num9);
 					float3x3 identity = float3x3.identity;
-					((float3)(ref ((float3x3)(ref identity))[num4]))[num4] = num10;
-					((float3)(ref ((float3x3)(ref identity))[num5]))[num5] = num10;
-					((float3)(ref ((float3x3)(ref identity))[num4]))[num5] = num11;
-					((float3)(ref ((float3x3)(ref identity))[num5]))[num4] = 0f - num11;
+					identity[num4][num4] = num10;
+					identity[num5][num5] = num10;
+					identity[num4][num5] = num11;
+					identity[num5][num4] = 0f - num11;
 					A = math.mul(math.transpose(identity), math.mul(A, identity));
 					V = math.mul(V, identity);
 					continue;
@@ -468,12 +468,12 @@ internal static class SDFChunkJobs
 			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 			byte* unsafePtr = (byte*)NativeArrayUnsafeUtility.GetUnsafePtr<byte>(OutputArray.FlatArray);
 			UnsafeUtility.MemSet((void*)(unsafePtr + z * OutputArray.WidthHeight), byte.MaxValue, (long)OutputArray.WidthHeight);
-			for (int i = 0; i < ((Reader)(ref ShapeStream)).ForEachCount; i++)
+			for (int i = 0; i < ShapeStream.ForEachCount; i++)
 			{
-				((Reader)(ref ShapeStream)).BeginForEachIndex(i);
-				while (((Reader)(ref ShapeStream)).RemainingItemCount > 0)
+				ShapeStream.BeginForEachIndex(i);
+				while (ShapeStream.RemainingItemCount > 0)
 				{
-					ref Shape reference = ref ((Reader)(ref ShapeStream)).Read<Shape>();
+					ref Shape reference = ref ShapeStream.Read<Shape>();
 					Bounds worldFloatBounds = reference.GetBounds();
 					OutputArray.ToLocalIntBounds(in worldFloatBounds, out var min, out var max);
 					if (z < min.z || z >= max.z)
@@ -494,7 +494,7 @@ internal static class SDFChunkJobs
 						}
 					}
 				}
-				((Reader)(ref ShapeStream)).EndForEachIndex();
+				ShapeStream.EndForEachIndex();
 			}
 		}
 	}
@@ -560,34 +560,34 @@ internal static class SDFChunkJobs
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 			Bounds worldFloatBounds = mod.GetBounds();
-			if (((Bounds)(ref ChunkBounds)).Intersects(worldFloatBounds))
+			if (ChunkBounds.Intersects(worldFloatBounds))
 			{
 				DataArray.ToLocalIntBounds(in worldFloatBounds, out var min, out var max);
 				switch (mod.Type)
 				{
 				case ShapeType.Sphere:
-					ApplyDistanceOps<Facepunch.MarchingCubes.SphereSdf>(in mod, in min, in max);
+					ApplyDistanceOps<SphereSdf>(in mod, in min, in max);
 					break;
 				case ShapeType.AABB:
-					ApplyDistanceOps<Facepunch.MarchingCubes.AABBSdf>(in mod, in min, in max);
+					ApplyDistanceOps<AABBSdf>(in mod, in min, in max);
 					break;
 				case ShapeType.OBB:
-					ApplyDistanceOps<Facepunch.MarchingCubes.OBBSdf>(in mod, in min, in max);
+					ApplyDistanceOps<OBBSdf>(in mod, in min, in max);
 					break;
 				case ShapeType.SharpOBB:
-					ApplyDistanceOps<Facepunch.MarchingCubes.SharpOBBSdf>(in mod, in min, in max);
+					ApplyDistanceOps<SharpOBBSdf>(in mod, in min, in max);
 					break;
 				case ShapeType.Cylinder:
-					ApplyDistanceOps<Facepunch.MarchingCubes.CylinderSdf>(in mod, in min, in max);
+					ApplyDistanceOps<CylinderSdf>(in mod, in min, in max);
 					break;
 				case ShapeType.Capsule:
-					ApplyDistanceOps<Facepunch.MarchingCubes.CapsuleSdf>(in mod, in min, in max);
+					ApplyDistanceOps<CapsuleSdf>(in mod, in min, in max);
 					break;
 				case ShapeType.Cone:
-					ApplyDistanceOps<Facepunch.MarchingCubes.ConeSdf>(in mod, in min, in max);
+					ApplyDistanceOps<ConeSdf>(in mod, in min, in max);
 					break;
 				case ShapeType.HexPrism:
-					ApplyDistanceOps<Facepunch.MarchingCubes.HexPrismSdf>(in mod, in min, in max);
+					ApplyDistanceOps<HexPrismSdf>(in mod, in min, in max);
 					break;
 				case ShapeType.Bulge:
 					ApplyBulgeOp(in mod, in min, in max);
@@ -669,6 +669,7 @@ internal static class SDFChunkJobs
 			//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0119: Unknown result type (might be due to invalid IL or missing references)
 			//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0120: Unknown result type (might be due to invalid IL or missing references)
@@ -698,7 +699,6 @@ internal static class SDFChunkJobs
 			int widthHeight = DataArray.WidthHeight;
 			int3 val = DataArray.Bounds - 1;
 			float3 val2 = Origin - mod.Position;
-			int3 val3 = default(int3);
 			for (int i = min.z; i <= max.z; i++)
 			{
 				for (int j = min.y; j <= max.y; j++)
@@ -719,7 +719,7 @@ internal static class SDFChunkJobs
 						if (!(num8 >= 1f))
 						{
 							float num9 = strength * (1f - num8 * (3f - 2f * math.sqrt(num8)));
-							((int3)(ref val3))._002Ector(num6, j, i);
+							int3 val3 = new int3(num6, j, i);
 							float num10 = (int)DataArray.FlatArray[num5];
 							float num11 = ((!(math.all(val3 > int3.zero) & math.all(val3 < val))) ? (num10 + ClampedTap(val3 + new int3(1, 0, 0)) + ClampedTap(val3 - new int3(1, 0, 0)) + ClampedTap(val3 + new int3(0, 1, 0)) + ClampedTap(val3 - new int3(0, 1, 0)) + ClampedTap(val3 + new int3(0, 0, 1)) + ClampedTap(val3 - new int3(0, 0, 1))) : (num10 + (float)(int)DataArray.FlatArray[num5 - 1] + (float)(int)DataArray.FlatArray[num5 + 1] + (float)(int)DataArray.FlatArray[num5 - width] + (float)(int)DataArray.FlatArray[num5 + width] + (float)(int)DataArray.FlatArray[num5 - widthHeight] + (float)(int)DataArray.FlatArray[num5 + widthHeight]));
 							float num12 = math.clamp(math.lerp(num10, num11 * (1f / 7f), num9), 0f, 255f);
@@ -747,12 +747,12 @@ internal static class SDFChunkJobs
 			return (int)DataArray.GetByte(c.x, c.y, c.z);
 		}
 
-		private void ApplyDistanceOps<TSdf>(in Shape mod, in int3 min, in int3 max) where TSdf : struct, Facepunch.MarchingCubes.ISdf
+		private void ApplyDistanceOps<TSdf>(in Shape mod, in int3 min, in int3 max) where TSdf : struct, ISdf
 		{
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-			TSdf val = default(TSdf);
+			TSdf val = default;
 			for (int i = min.x; i <= max.x; i++)
 			{
 				for (int j = min.y; j <= max.y; j++)

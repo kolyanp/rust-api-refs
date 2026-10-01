@@ -11,9 +11,9 @@ using UnityEngine;
 public class WaterVolumeBurst
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate bool TestBurst_00006524_0024PostfixBurstDelegate(in Vector3 position, out WaterLevel.WaterInfo info, float queryRadius = 100f);
+	internal delegate bool TestBurst_00006913_0024PostfixBurstDelegate(in Vector3 position, out WaterLevel.WaterInfo info, float queryRadius = 100f);
 
-	internal static class TestBurst_00006524_0024BurstDirectCall
+	internal static class TestBurst_00006913_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -24,7 +24,7 @@ public class WaterVolumeBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<TestBurst_00006524_0024PostfixBurstDelegate>((TestBurst_00006524_0024PostfixBurstDelegate)TestBurst).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<TestBurst_00006913_0024PostfixBurstDelegate>((TestBurst_00006913_0024PostfixBurstDelegate)TestBurst).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -50,11 +50,11 @@ public class WaterVolumeBurst
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(TestBurst_00006524_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(TestBurst_00006913_0024PostfixBurstDelegate))]
 	public static bool TestBurst(in Vector3 position, out WaterLevel.WaterInfo info, float queryRadius = 100f)
 	{
-		return TestBurst_00006524_0024BurstDirectCall.Invoke(in position, out info, queryRadius);
+		return TestBurst_00006913_0024BurstDirectCall.Invoke(in position, out info, queryRadius);
 	}
 
 	private static bool CheckCutOffPlanesBurst(in WaterVolumeBurstData data, in Vector3 pos, out float bottomCutY)
@@ -92,10 +92,10 @@ public class WaterVolumeBurst
 		for (int i = 0; i < length; i++)
 		{
 			float4 val = math.mul(math.inverse(float4x4.op_Implicit(data.cutOffPlaneMatrices[i])), new float4(float3.op_Implicit(pos), 1f));
-			float3 xyz = ((float4)(ref val)).xyz;
+			float3 xyz = val.xyz;
 			Vector3 position = data.cutOffPlanePoses[i].position;
 			Pose val2 = data.cutOffPlanePoses[i];
-			if (math.dot(float3.op_Implicit(((Pose)(ref val2)).up), float3.op_Implicit(data.bounds.up)) < -0.1f)
+			if (math.dot(float3.op_Implicit(val2.up), float3.op_Implicit(data.bounds.up)) < -0.1f)
 			{
 				bottomCutY = math.min(bottomCutY, position.y);
 			}
@@ -125,6 +125,7 @@ public class WaterVolumeBurst
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
@@ -142,18 +143,17 @@ public class WaterVolumeBurst
 		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		NativeList<WaterVolumeBurstData> val = WaterVolume.WaterVolumeBoundsGrid.Data.Query((Allocator)2, position.x, position.z, queryRadius);
-		Plane val2 = default(Plane);
 		for (int i = 0; i < val.Length; i++)
 		{
 			OBB bounds = val[i].bounds;
-			if (((OBB)(ref bounds)).Contains(position) && CheckCutOffPlanesBurst(val[i], in position, out var bottomCutY))
+			if (bounds.Contains(position) && CheckCutOffPlanesBurst(val[i], in position, out var bottomCutY))
 			{
-				((Plane)(ref val2))._002Ector(bounds.up, bounds.position);
-				Vector3 val3 = ((Plane)(ref val2)).ClosestPointOnPlane(position);
+				Plane val2 = new Plane(bounds.up, bounds.position);
+				Vector3 val3 = val2.ClosestPointOnPlane(position);
 				float y = (val3 + bounds.up * bounds.extents.y).y;
 				float y2 = (val3 + -bounds.up * bounds.extents.y).y;
 				y2 = math.max(y2, bottomCutY);
-				info = default(WaterLevel.WaterInfo);
+				info = default;
 				info.isValid = true;
 				info.artificalWater = !val[i].naturalSource;
 				info.currentDepth = Mathf.Max(0f, y - position.y);
@@ -162,7 +162,7 @@ public class WaterVolumeBurst
 				return true;
 			}
 		}
-		info = default(WaterLevel.WaterInfo);
+		info = default;
 		return false;
 	}
 }

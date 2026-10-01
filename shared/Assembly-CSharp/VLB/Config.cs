@@ -7,37 +7,37 @@ namespace VLB;
 [HelpURL("http://saladgamer.com/vlb-doc/config/")]
 public class Config : ScriptableObject
 {
-	public int geometryLayerID;
+	public int geometryLayerID = 1;
 
-	public string geometryTag;
+	public string geometryTag = "Untagged";
 
-	public int geometryRenderQueue;
+	public int geometryRenderQueue = 3000;
 
-	public bool forceSinglePass;
+	public bool forceSinglePass = RustRenderPipeline.IsActive();
 
-	[HighlightNull]
 	[SerializeField]
+	[HighlightNull]
 	private Shader beamShader1Pass;
 
-	[HighlightNull]
 	[SerializeField]
+	[HighlightNull]
 	[FormerlySerializedAs("beamShader")]
 	[FormerlySerializedAs("BeamShader")]
 	private Shader beamShader2Pass;
 
-	public int sharedMeshSides;
+	public int sharedMeshSides = 24;
 
-	public int sharedMeshSegments;
+	public int sharedMeshSegments = 5;
 
 	[Range(0.01f, 2f)]
-	public float globalNoiseScale;
+	public float globalNoiseScale = 0.5f;
 
-	public Vector3 globalNoiseVelocity;
+	public Vector3 globalNoiseVelocity = Consts.NoiseVelocityDefault;
 
 	[HighlightNull]
 	public TextAsset noise3DData;
 
-	public int noise3DSize;
+	public int noise3DSize = 64;
 
 	[HighlightNull]
 	public ParticleSystem dustParticlesPrefab;
@@ -92,11 +92,11 @@ public class Config : ScriptableObject
 		sharedMeshSegments = 5;
 		globalNoiseScale = 0.5f;
 		globalNoiseVelocity = Consts.NoiseVelocityDefault;
-		Object obj = Resources.Load("Noise3D_64x64x64");
-		noise3DData = (TextAsset)(object)((obj is TextAsset) ? obj : null);
+		Object val = Resources.Load("Noise3D_64x64x64");
+		noise3DData = (TextAsset)(object)((val is TextAsset) ? val : null);
 		noise3DSize = 64;
-		Object obj2 = Resources.Load("DustParticles", typeof(ParticleSystem));
-		dustParticlesPrefab = (ParticleSystem)(object)((obj2 is ParticleSystem) ? obj2 : null);
+		Object val2 = Resources.Load("DustParticles", typeof(ParticleSystem));
+		dustParticlesPrefab = (ParticleSystem)(object)((val2 is ParticleSystem) ? val2 : null);
 	}
 
 	public ParticleSystem NewVolumetricDustParticles()
@@ -110,27 +110,17 @@ public class Config : ScriptableObject
 			}
 			return null;
 		}
-		ParticleSystem obj = Object.Instantiate<ParticleSystem>(dustParticlesPrefab);
-		obj.useAutoRandomSeed = false;
-		((Object)obj).name = "Dust Particles";
-		((Object)((Component)obj).gameObject).hideFlags = Consts.ProceduralObjectsHideFlags;
-		((Component)obj).gameObject.SetActive(true);
-		return obj;
+		ParticleSystem val = Object.Instantiate<ParticleSystem>(dustParticlesPrefab);
+		val.useAutoRandomSeed = false;
+		((Object)val).name = "Dust Particles";
+		((Object)((Component)val).gameObject).hideFlags = Consts.ProceduralObjectsHideFlags;
+		((Component)val).gameObject.SetActive(true);
+		return val;
 	}
 
 	public Config()
 	{
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		geometryLayerID = 1;
-		geometryTag = "Untagged";
-		geometryRenderQueue = 3000;
-		forceSinglePass = RustRenderPipeline.IsActive();
-		sharedMeshSides = 24;
-		sharedMeshSegments = 5;
-		globalNoiseScale = 0.5f;
-		globalNoiseVelocity = Consts.NoiseVelocityDefault;
-		noise3DSize = 64;
-		((ScriptableObject)this)._002Ector();
 	}
 }

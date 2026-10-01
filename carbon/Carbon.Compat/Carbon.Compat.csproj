@@ -23,14 +23,14 @@
     <Reference Include="AsmResolver" />
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="0Harmony" />
     <Reference Include="Facepunch.Console" />
     <Reference Include="Assembly-CSharp" />
     <Reference Include="AsmResolver.PE" />
     <Reference Include="System.Collections.Immutable">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Collections.Immutable.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.System" />
     <Reference Include="AsmResolver.PE.File" />

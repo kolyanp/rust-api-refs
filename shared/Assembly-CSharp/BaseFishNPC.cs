@@ -8,7 +8,7 @@ public class BaseFishNPC : BaseNpc, IAIAttack, IAISenses, IThinker
 	{
 		base.ServerInit();
 		brain = ((Component)this).GetComponent<FishBrain>();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			AIThinkManager.AddAnimal(this);
 		}
@@ -16,7 +16,7 @@ public class BaseFishNPC : BaseNpc, IAIAttack, IAISenses, IThinker
 
 	internal override void DoServerDestroy()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			AIThinkManager.RemoveAnimal(this);
 			base.DoServerDestroy();
@@ -62,7 +62,7 @@ public class BaseFishNPC : BaseNpc, IAIAttack, IAISenses, IThinker
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		dist = Vector3.Distance(((Component)entity).transform.position, base.AttackPosition);
+		dist = Vector3.Distance(((Component)entity).transform.position, AttackPosition);
 		return dist <= EngagementRange();
 	}
 

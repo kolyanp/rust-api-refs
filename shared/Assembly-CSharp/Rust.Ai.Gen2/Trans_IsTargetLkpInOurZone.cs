@@ -17,7 +17,7 @@ public class Trans_IsTargetLkpInOurZone : FSMTransitionBase
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Trans_IsTargetLkpInOurZone"))
 		{
-			if (!base.Senses.FindTargetLKP(out var lkp))
+			if (!Senses.FindTargetLKP(out var lkp))
 			{
 				return false;
 			}

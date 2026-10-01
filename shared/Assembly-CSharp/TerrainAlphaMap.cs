@@ -130,7 +130,7 @@ public class TerrainAlphaMap : TerrainMap<byte>
 	public void GenerateTextures()
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Expected O, but got Unknown
+		//IL_001a: Expected Obj, but got Unknown
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		AlphaTexture = new Texture2D(res, res, (TextureFormat)1, false, true);
 		((Object)AlphaTexture).name = "AlphaTexture";
@@ -216,7 +216,7 @@ public class TerrainAlphaMap : TerrainMap<byte>
 
 	public void SetAlpha(float normX, float normZ, float a, float opacity, float radius, float fade = 0f)
 	{
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			lerp *= opacity;
 			if (lerp > 0f)

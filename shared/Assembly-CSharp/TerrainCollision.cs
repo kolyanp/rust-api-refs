@@ -91,18 +91,21 @@ public class TerrainCollision : TerrainExtension
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
@@ -128,11 +131,10 @@ public class TerrainCollision : TerrainExtension
 				Step = 1,
 				Count = positions.Length
 			}, default(JobHandle)) : TerrainIgnoreGrid.Check(positions, radii, val));
-			((JobHandle)(ref val2)).Complete();
+			val2.Complete();
 			if (!val.IsEmpty)
 			{
-				NativeArray<Vector3> results2 = default(NativeArray<Vector3>);
-				results2._002Ector(val.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<Vector3> results2 = new NativeArray<Vector3>(val.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<Vector3> gatherJob = new GatherJob<Vector3>
 				{
 					Results = results2,
@@ -140,8 +142,7 @@ public class TerrainCollision : TerrainExtension
 					Indices = val.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<Vector3>>(ref gatherJob);
-				NativeArray<float> results3 = default(NativeArray<float>);
-				results3._002Ector(val.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<float> results3 = new NativeArray<float>(val.Length, (Allocator)3, (NativeArrayOptions)0);
 				GatherJob<float> gatherJob2 = new GatherJob<float>
 				{
 					Results = results3,
@@ -149,8 +150,7 @@ public class TerrainCollision : TerrainExtension
 					Indices = val.AsReadOnly()
 				};
 				IJobExtensions.RunByRef<GatherJob<float>>(ref gatherJob2);
-				NativeArray<int> values = default(NativeArray<int>);
-				values._002Ector(val.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<int> values = new NativeArray<int>(val.Length, (Allocator)3, (NativeArrayOptions)0);
 				FillJob<int> fillJob2 = new FillJob<int>
 				{
 					Values = values,
@@ -176,15 +176,15 @@ public class TerrainCollision : TerrainExtension
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("TerrainCollision.GetIgnore"))
 		{
-			if (!(((RaycastHit)(ref hit)).collider is TerrainCollider))
+			if (!(hit.collider is TerrainCollider))
 			{
 				return false;
 			}
-			if (!TerrainIgnoreGrid.Check(((RaycastHit)(ref hit)).point))
+			if (!TerrainIgnoreGrid.Check(hit.point))
 			{
 				return false;
 			}
-			return ((RaycastHit)(ref hit)).collider is TerrainCollider && GetIgnore(((RaycastHit)(ref hit)).point);
+			return hit.collider is TerrainCollider && GetIgnore(hit.point);
 		}
 	}
 

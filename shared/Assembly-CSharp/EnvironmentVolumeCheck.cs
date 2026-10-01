@@ -4,11 +4,11 @@ using UnityEngine;
 public class EnvironmentVolumeCheck : PrefabAttribute
 {
 	[InspectorFlags]
-	public EnvironmentType Type;
+	public EnvironmentType Type = EnvironmentType.Underground | EnvironmentType.TrainTunnels;
 
-	public Vector3 Center;
+	public Vector3 Center = Vector3.zero;
 
-	public Vector3 Size;
+	public Vector3 Size = Vector3.one;
 
 	protected void OnDrawGizmosSelected()
 	{
@@ -38,9 +38,5 @@ public class EnvironmentVolumeCheck : PrefabAttribute
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		Type = EnvironmentType.Underground | EnvironmentType.TrainTunnels;
-		Center = Vector3.zero;
-		Size = Vector3.one;
-		base._002Ector();
 	}
 }

@@ -40,7 +40,7 @@ public static class Bech32
 			throw new Exception("Invalid Bech32 format");
 		}
 		hrp = bech32.Substring(0, num);
-		int[] array = bech32.Substring(num + 1).Select(delegate(char c)
+		int[] array = bech32.Substring(num + 1).Select((char c) =>
 		{
 			int num2 = "qpzry9x8gf2tvdw0s3jn54khce6mua7l".IndexOf(c);
 			if (num2 == -1)

@@ -17,9 +17,9 @@ public class NexusIsland : BaseEntity, INexusTransferTriggerController
 
 	public BoxCollider SpawnZone;
 
-	public float TraceHeight;
+	public float TraceHeight = 100f;
 
-	public LayerMask TraceLayerMask;
+	public LayerMask TraceLayerMask = LayerMask.op_Implicit(1503731969);
 
 	public Transform FerryWaypoint;
 
@@ -35,7 +35,7 @@ public class NexusIsland : BaseEntity, INexusTransferTriggerController
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.isServer && !All.Contains(this))
+		if (isServer && !All.Contains(this))
 		{
 			All.Add(this);
 		}
@@ -44,7 +44,7 @@ public class NexusIsland : BaseEntity, INexusTransferTriggerController
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			All.Remove(this);
 		}
@@ -96,7 +96,7 @@ public class NexusIsland : BaseEntity, INexusTransferTriggerController
 		}
 		Transform transform = ((Component)SpawnZone).transform;
 		Vector3 size = SpawnZone.size;
-		RaycastHit val3 = default(RaycastHit);
+		RaycastHit val3 = default;
 		for (int i = 0; i < 10; i++)
 		{
 			Vector3 val = Vector3Ex.Scale(size, Random.value - 0.5f, 0f, Random.value - 0.5f);
@@ -104,7 +104,7 @@ public class NexusIsland : BaseEntity, INexusTransferTriggerController
 			if (IsValidPosition(val2, radius))
 			{
 				float waterSurface = WaterLevel.GetWaterSurface(val2, waves: false, volumes: false);
-				if (!Physics.SphereCast(Vector3Ex.WithY(val2, waterSurface + TraceHeight), radius, Vector3.down, ref val3, TraceHeight + radius, LayerMask.op_Implicit(TraceLayerMask), (QueryTriggerInteraction)1) || ((RaycastHit)(ref val3)).point.y < waterSurface)
+				if (!Physics.SphereCast(Vector3Ex.WithY(val2, waterSurface + TraceHeight), radius, Vector3.down, ref val3, TraceHeight + radius, LayerMask.op_Implicit(TraceLayerMask), (QueryTriggerInteraction)1) || val3.point.y < waterSurface)
 				{
 					position = Vector3Ex.WithY(val2, waterSurface);
 					return true;
@@ -166,8 +166,5 @@ public class NexusIsland : BaseEntity, INexusTransferTriggerController
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		TraceHeight = 100f;
-		TraceLayerMask = LayerMask.op_Implicit(1503731969);
-		base._002Ector();
 	}
 }

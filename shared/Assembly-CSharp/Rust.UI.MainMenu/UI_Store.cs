@@ -18,8 +18,8 @@ public class UI_Store : UI_Page
 
 	private const string JOURNEY_ID_KEY = "journey_id";
 
-	[Header("Search")]
 	[SerializeField]
+	[Header("Search")]
 	private UI_StoreItemGrid searchGrid;
 
 	[SerializeField]
@@ -61,6 +61,8 @@ public class UI_Store : UI_Page
 
 	private const string KNOWN_OWNEDITEMS_KEY = "STORE_KNOWN_OWNEDITEMS";
 
+	public const string UIBundle = "ui/store.bundle";
+
 	public static Guid JourneyId
 	{
 		get
@@ -95,7 +97,7 @@ public class UI_Store : UI_Page
 
 	private StoreSource ParseSource(string query)
 	{
-		StoreSource result = default(StoreSource);
+		StoreSource result = default;
 		string[] array = query.Split('&');
 		foreach (string text in array)
 		{

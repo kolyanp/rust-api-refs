@@ -6,12 +6,6 @@ namespace Instancing;
 
 public class InstancedMeshRenderer
 {
-	[CompilerGenerated]
-	private readonly ShadowCastingMode _003CCastShadows_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private readonly LightProbeUsage _003CLightProbes_003Ek__BackingField;
-
 	public int RendererId { get; }
 
 	public int DrawCallIndex { get; }
@@ -32,7 +26,7 @@ public class InstancedMeshRenderer
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CCastShadows_003Ek__BackingField;
+			return field;
 		}
 	}
 
@@ -44,7 +38,7 @@ public class InstancedMeshRenderer
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CLightProbes_003Ek__BackingField;
+			return field;
 		}
 	}
 
@@ -130,7 +124,6 @@ public class InstancedMeshRenderer
 		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
 		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
-		base._002Ector();
 		RendererId = rendererIndex;
 		DrawCallIndex = drawCallIndex;
 		Mesh = key.Mesh;
@@ -160,16 +153,16 @@ public class InstancedMeshRenderer
 			Triangles += (int)Mesh.GetIndexCount(i) / 3;
 		}
 		Bounds bounds = Mesh.bounds;
-		BoundsPoints = (Vector3[])(object)new Vector3[8]
+		BoundsPoints = new Vector3[8]
 		{
-			((Bounds)(ref bounds)).min,
-			((Bounds)(ref bounds)).max,
-			new Vector3(((Bounds)(ref bounds)).max.x, ((Bounds)(ref bounds)).min.y, ((Bounds)(ref bounds)).min.z),
-			new Vector3(((Bounds)(ref bounds)).min.x, ((Bounds)(ref bounds)).max.y, ((Bounds)(ref bounds)).min.z),
-			new Vector3(((Bounds)(ref bounds)).min.x, ((Bounds)(ref bounds)).min.y, ((Bounds)(ref bounds)).max.z),
-			new Vector3(((Bounds)(ref bounds)).max.x, ((Bounds)(ref bounds)).max.y, ((Bounds)(ref bounds)).min.z),
-			new Vector3(((Bounds)(ref bounds)).min.x, ((Bounds)(ref bounds)).max.y, ((Bounds)(ref bounds)).max.z),
-			new Vector3(((Bounds)(ref bounds)).max.x, ((Bounds)(ref bounds)).min.y, ((Bounds)(ref bounds)).max.z)
+			bounds.min,
+			bounds.max,
+			new Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
+			new Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
+			new Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
+			new Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
+			new Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
+			new Vector3(bounds.max.x, bounds.min.y, bounds.max.z)
 		};
 		MultidrawSubmeshes = buffers.CopyMesh(Mesh);
 	}

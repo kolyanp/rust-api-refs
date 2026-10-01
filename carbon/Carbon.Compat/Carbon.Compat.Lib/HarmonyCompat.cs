@@ -77,7 +77,7 @@ public static class HarmonyCompat
 		void ProcessType(MethodBase original, bool pregen)
 		{
 			//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008a: Expected O, but got Unknown
+			//IL_008a: Expected Obj, but got Unknown
 			if (pregen)
 			{
 				string name = type.Assembly.GetName().Name;

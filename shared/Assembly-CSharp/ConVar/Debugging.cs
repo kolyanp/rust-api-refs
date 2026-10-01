@@ -15,13 +15,14 @@ using Oxide.Core;
 using ProtoBuf;
 using Rust;
 using Rust.Ai;
+using Rust.Ai.Gen2;
 using UnityEngine;
 using UnityEngine.Diagnostics;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("debug")]
+[ResetStaticFields]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
@@ -43,6 +44,9 @@ public class Debugging : ConsoleSystem
 	[ServerVar(Help = "Shows debug info for what objects are causing clipping checks to fail.")]
 	public static bool DebugClippingChecks = false;
 
+	[ServerVar(EditorOnly = true, Help = "Keeps players mounted on the biofuel generator after they let go of stir, until they dismount with jump")]
+	public static bool biofuel_stir_lock = false;
+
 	[ServerVar(Help = "Do not damage any items")]
 	public static bool disablecondition = false;
 
@@ -61,12 +65,12 @@ public class Debugging : ConsoleSystem
 	[ServerVar(Help = "(Generated) When true, nav mesh obstacle components on loot containers are disabled in the deep sea zone to improve performance in underwater areas")]
 	public static bool disableLootNavObstaclesInDeepSea = true;
 
-	[ServerVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
+	[ServerVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	public static bool callbacks = false;
 
-	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	[ServerVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
+	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	public static bool log
 	{
 		get
@@ -554,7 +558,7 @@ public class Debugging : ConsoleSystem
 				{
 					List<Door> list = Pool.Get<List<Door>>();
 					global::Vis.Entities(((Component)newEntity).transform.position, 10f, list, -1, (QueryTriggerInteraction)2);
-					Door door = list.OrderBy(delegate(Door x)
+					Door door = list.OrderBy((Door x) =>
 					{
 						//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 						return x.Distance(((Component)newEntity).transform.position);
@@ -643,7 +647,15 @@ public class Debugging : ConsoleSystem
 		for (int i = num; i < arg.Args.Length; i++)
 		{
 			string text = arg.GetString(i);
-			BasePlayer basePlayer2 = ((!(text == basePlayer.displayName)) ? (string.IsNullOrEmpty(text) ? null : ArgEx.GetPlayerOrSleeperOrBot(arg, i)) : basePlayer);
+			BasePlayer basePlayer2;
+			if (text == basePlayer.displayName)
+			{
+				basePlayer2 = basePlayer;
+			}
+			else
+			{
+				basePlayer2 = (string.IsNullOrEmpty(text) ? null : ArgEx.GetPlayerOrSleeperOrBot(arg, i));
+			}
 			if ((Object)(object)basePlayer2 == (Object)null)
 			{
 				stringBuilder.AppendLine("Could not find player '" + text + "'");
@@ -941,13 +953,34 @@ public class Debugging : ConsoleSystem
 		}
 		void FindSpoilableItems(List<Item> items)
 		{
-			ItemModFoodSpoiling itemModFoodSpoiling = default(ItemModFoodSpoiling);
+			ItemModFoodSpoiling itemModFoodSpoiling = default;
 			foreach (Item item2 in items)
 			{
 				if (((Component)item2.info).TryGetComponent<ItemModFoodSpoiling>(ref itemModFoodSpoiling))
 				{
 					((List<Item>)(object)spoilList).Add(item2);
 				}
+			}
+		}
+	}
+
+	[ServerVar(Help = "Adds the given number of refrigerated hours to all food in the players inventory, so things like milk skimming can be tested without waiting")]
+	public static void RefrigeratedInventoryHours(Arg arg)
+	{
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		float seconds;
+		if (!((Object)(object)basePlayer == (Object)null))
+		{
+			seconds = arg.GetFloat(0) * 60f * 60f;
+			AddToAll(basePlayer.inventory.containerMain.itemList);
+			AddToAll(basePlayer.inventory.containerBelt.itemList);
+			basePlayer.inventory.ServerUpdate(0f);
+		}
+		void AddToAll(List<Item> items)
+		{
+			foreach (Item item in items)
+			{
+				ItemModConditionRefrigeratedTime.AddRefrigeratedTime(item, seconds);
 			}
 		}
 	}
@@ -1002,7 +1035,7 @@ public class Debugging : ConsoleSystem
 		int num = arg.GetInt(0);
 		ItemDefinition itemDefinition = ItemManager.FindItemDefinition(arg.GetString(1));
 		Ray val = basePlayer.eyes.HeadRay();
-		Vector3 val2 = ((Ray)(ref val)).GetPoint(1f);
+		Vector3 val2 = val.GetPoint(1f);
 		if (!((Object)(object)itemDefinition == (Object)null))
 		{
 			for (int i = 0; i < num; i++)
@@ -1021,6 +1054,7 @@ public class Debugging : ConsoleSystem
 		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
@@ -1043,10 +1077,9 @@ public class Debugging : ConsoleSystem
 			int num = 12;
 			float num2 = Mathf.Ceil(Mathf.Sqrt((float)list.Count));
 			float num3 = num2 * (float)num / 2f;
-			Vector3 pos = default(Vector3);
 			for (int num4 = 0; num4 < list.Count; num4++)
 			{
-				((Vector3)(ref pos))._002Ector(position.x - num3 + (float)num * ((float)num4 % num2), position.y, position.z - num3 + (float)num * Mathf.Floor((float)num4 / num2));
+				Vector3 pos = new Vector3(position.x - num3 + (float)num * ((float)num4 % num2), position.y, position.z - num3 + (float)num * Mathf.Floor((float)num4 / num2));
 				GameManager.server.CreateEntity(list[num4].entityPrefab.resourcePath, pos)?.Spawn();
 			}
 		}
@@ -1462,7 +1495,7 @@ public class Debugging : ConsoleSystem
 			obj.connectedToSlot = num3;
 			obj.wireColour = wireColour;
 			obj.connectedTo.Init();
-			obj.linePoints = (Vector3[])(object)new Vector3[2]
+			obj.linePoints = new Vector3[2]
 			{
 				Vector3.zero,
 				((Component)OutputIOEnt).transform.InverseTransformPoint(((Component)InputIOEnt).transform.TransformPoint(iOSlot.handlePosition))
@@ -1474,8 +1507,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
 	[ServerVar]
+	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
 	public static void completeMissionStage(Arg arg)
 	{
 		int num = arg.GetInt(0, -1);
@@ -1867,7 +1900,7 @@ public class Debugging : ConsoleSystem
 	{
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Expected O, but got Unknown
+		//IL_0039: Expected Obj, but got Unknown
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -1885,7 +1918,7 @@ public class Debugging : ConsoleSystem
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Expected O, but got Unknown
+		//IL_00a9: Expected Obj, but got Unknown
 		int num = Mathf.Clamp(arg.GetInt(0, 1), 0, 100);
 		int timeLeft = arg.GetInt(1, 60);
 		string text = arg.GetString(2, "ss");
@@ -2029,7 +2062,7 @@ public class Debugging : ConsoleSystem
 			arg.ReplyWith($"Reduce max distance: hit before {num}m");
 			return;
 		}
-		basePlayer.SendConsoleCommand(DDrawCommand.Line(((Ray)(ref ray)).origin, ((Ray)(ref ray)).origin + ((Ray)(ref ray)).direction * num, 5f, Color.red));
+		basePlayer.SendConsoleCommand(DDrawCommand.Line(ray.origin, ray.origin + ray.direction * num, 5f, Color.red));
 		for (float num4 = num2; num4 <= num3; num4 += num2)
 		{
 			if (GamePhysics.TraceRealm(GamePhysics.Realm.Server, ray, num4, out var _, num - num4, layerMask, (QueryTriggerInteraction)1))

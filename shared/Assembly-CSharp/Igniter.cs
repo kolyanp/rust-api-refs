@@ -61,7 +61,7 @@ public class Igniter : IOEntity
 
 	public bool CanIgnite()
 	{
-		return base.healthFraction >= 0.1f;
+		return healthFraction >= 0.1f;
 	}
 
 	private void IgniteInRange()

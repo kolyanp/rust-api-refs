@@ -40,6 +40,6 @@ public class StabilitySocket : Socket_Base
 		}
 		OBB selectBounds = GetSelectBounds(position, rotation);
 		OBB selectBounds2 = socket.GetSelectBounds(socketPosition, socketRotation);
-		return ((OBB)(ref selectBounds)).Intersects(selectBounds2);
+		return selectBounds.Intersects(selectBounds2);
 	}
 }

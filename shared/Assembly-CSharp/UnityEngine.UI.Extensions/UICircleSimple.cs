@@ -6,21 +6,21 @@ namespace UnityEngine.UI.Extensions;
 [AddComponentMenu("UI/Extensions/Primitives/UI Circle Simple")]
 public class UICircleSimple : UIPrimitiveBase
 {
-	[Range(0f, 1000f)]
 	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
-	public int ArcSteps;
+	[Range(0f, 1000f)]
+	public int ArcSteps = 100;
 
-	public bool Fill;
+	public bool Fill = true;
 
-	public float Thickness;
+	public float Thickness = 5f;
 
 	public bool ThicknessIsOutside;
 
-	private List<int> indices;
+	private List<int> indices = new List<int>();
 
-	private List<UIVertex> vertices;
+	private List<UIVertex> vertices = new List<UIVertex>();
 
-	private Vector2 uvCenter;
+	private Vector2 uvCenter = new Vector2(0.5f, 0.5f);
 
 	protected override void OnPopulateMesh(VertexHelper vh)
 	{
@@ -52,6 +52,7 @@ public class UICircleSimple : UIPrimitiveBase
 		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
@@ -102,18 +103,18 @@ public class UICircleSimple : UIPrimitiveBase
 		//IL_03e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03ee: Unknown result type (might be due to invalid IL or missing references)
 		Rect rect = ((Graphic)this).rectTransform.rect;
-		float width = ((Rect)(ref rect)).width;
+		float width = rect.width;
 		rect = ((Graphic)this).rectTransform.rect;
 		float num;
-		if (!(width < ((Rect)(ref rect)).height))
+		if (!(width < rect.height))
 		{
 			rect = ((Graphic)this).rectTransform.rect;
-			num = ((Rect)(ref rect)).height;
+			num = rect.height;
 		}
 		else
 		{
 			rect = ((Graphic)this).rectTransform.rect;
-			num = ((Rect)(ref rect)).width;
+			num = rect.width;
 		}
 		float num2 = num;
 		float num3 = (ThicknessIsOutside ? ((0f - ((Graphic)this).rectTransform.pivot.x) * num2 - Thickness) : ((0f - ((Graphic)this).rectTransform.pivot.x) * num2));
@@ -132,13 +133,12 @@ public class UICircleSimple : UIPrimitiveBase
 		simpleVert.position = Vector2.op_Implicit(new Vector2(num3 * num8, num3 * num9));
 		simpleVert.uv0 = Vector4.op_Implicit(new Vector2(simpleVert.position.x / num2 + 0.5f, simpleVert.position.y / num2 + 0.5f));
 		vertices.Add(simpleVert);
-		Vector2 zero = default(Vector2);
-		((Vector2)(ref zero))._002Ector(num4 * num8, num4 * num9);
+		Vector2 val = new Vector2(num4 * num8, num4 * num9);
 		if (Fill)
 		{
-			zero = Vector2.zero;
+			val = Vector2.zero;
 		}
-		simpleVert.position = Vector2.op_Implicit(zero);
+		simpleVert.position = Vector2.op_Implicit(val);
 		simpleVert.uv0 = Vector4.op_Implicit((Vector2)(Fill ? uvCenter : new Vector2(simpleVert.position.x / num2 + 0.5f, simpleVert.position.y / num2 + 0.5f)));
 		vertices.Add(simpleVert);
 		for (int i = 1; i <= ArcSteps; i++)
@@ -177,7 +177,7 @@ public class UICircleSimple : UIPrimitiveBase
 		}
 		if (Fill)
 		{
-			simpleVert.position = Vector2.op_Implicit(zero);
+			simpleVert.position = Vector2.op_Implicit(val);
 			simpleVert.color = Color32.op_Implicit(((Graphic)this).color);
 			simpleVert.uv0 = Vector4.op_Implicit(uvCenter);
 			vertices.Add(simpleVert);
@@ -225,12 +225,5 @@ public class UICircleSimple : UIPrimitiveBase
 	{
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		ArcSteps = 100;
-		Fill = true;
-		Thickness = 5f;
-		indices = new List<int>();
-		vertices = new List<UIVertex>();
-		uvCenter = new Vector2(0.5f, 0.5f);
-		base._002Ector();
 	}
 }

@@ -18,6 +18,8 @@ public class ApartmentBuilding : BaseEntity
 		public GameObjectRef Prefab;
 	}
 
+	public const string RentRoomAchievement = "RENT_APARTMENT";
+
 	public static float MaxRadiusSearch = 300f;
 
 	public ApartmentPurchaseCost[] PurchaseCosts;
@@ -113,11 +115,11 @@ public class ApartmentBuilding : BaseEntity
 		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
 		foreach (ApartmentRoom room in rooms)
 		{
-			room.Building = default(EntityRef<ApartmentBuilding>);
+			room.Building = default;
 		}
 		foreach (ApartmentVendor vendor in vendors)
 		{
-			vendor.BuildingRef = default(EntityRef<ApartmentBuilding>);
+			vendor.BuildingRef = default;
 		}
 		rooms.Clear();
 		roomLookup.Clear();
@@ -383,6 +385,7 @@ public class ApartmentBuilding : BaseEntity
 			int purchaseScrapCost = GetPurchaseScrapCost(size);
 			player.inventory.Take(null, ItemManager.Items.Scrap.itemid, purchaseScrapCost);
 			GiveRoomToPlayer(player, apartmentRoom);
+			player.GiveAchievement("RENT_APARTMENT");
 			Facepunch.Rust.Analytics.Azure.OnApartmentCheckIn(player, apartmentRoom, purchaseScrapCost);
 			Interface.CallHook("OnApartmentRoomPurchased", apartmentRoom, player, size, this);
 		}
@@ -408,7 +411,7 @@ public class ApartmentBuilding : BaseEntity
 
 	private ApartmentRoom FetchClosestUnoccupiedRoom(ApartmentSize size)
 	{
-		return rooms.Where((ApartmentRoom x) => !x.IsCurrentlyRented() && x.Size == size).OrderBy(delegate(ApartmentRoom x)
+		return rooms.Where((ApartmentRoom x) => !x.IsCurrentlyRented() && x.Size == size).OrderBy((ApartmentRoom x) =>
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)

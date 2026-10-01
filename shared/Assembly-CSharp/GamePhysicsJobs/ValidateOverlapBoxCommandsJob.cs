@@ -25,11 +25,11 @@ public struct ValidateOverlapBoxCommandsJob : IJob
 		for (int i = 0; i < Commands.Length; i++)
 		{
 			OverlapBoxCommand val = Commands[i];
-			if (Vector3Ex.IsNaNOrInfinity(((OverlapBoxCommand)(ref val)).halfExtents))
+			if (Vector3Ex.IsNaNOrInfinity(val.halfExtents))
 			{
 				InvalidIndices.AddNoResize(i);
 			}
-			else if (((OverlapBoxCommand)(ref val)).halfExtents.x <= 0f || ((OverlapBoxCommand)(ref val)).halfExtents.y <= 0f || ((OverlapBoxCommand)(ref val)).halfExtents.z <= 0f)
+			else if (val.halfExtents.x <= 0f || val.halfExtents.y <= 0f || val.halfExtents.z <= 0f)
 			{
 				InvalidIndices.AddNoResize(i);
 			}

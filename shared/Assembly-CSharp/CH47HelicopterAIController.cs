@@ -12,9 +12,9 @@ public class CH47HelicopterAIController : CH47Helicopter
 	[Tooltip("Prefab for the NPCs that will be spawned in the helicopter IF it lands.")]
 	public GameObjectRef dismountablePrefab;
 
-	public float maxTiltAngle;
+	public float maxTiltAngle = 0.3f;
 
-	public float AiAltitudeForce;
+	public float AiAltitudeForce = 10000f;
 
 	public GameObjectRef lockedCratePrefab;
 
@@ -28,17 +28,17 @@ public class CH47HelicopterAIController : CH47Helicopter
 
 	public static HashSet<CH47HelicopterAIController> activeScientistCH47s = new HashSet<CH47HelicopterAIController>();
 
-	private List<BaseNPC2> parentedNpcs;
+	private List<BaseNPC2> parentedNpcs = new List<BaseNPC2>();
 
-	public int numCrates;
+	public int numCrates = 1;
 
 	private bool shouldLand;
 
 	public bool aimDirOverride;
 
-	public Vector3 _aimDirection;
+	public Vector3 _aimDirection = Vector3.forward;
 
-	public Vector3 _moveTarget;
+	public Vector3 _moveTarget = Vector3.zero;
 
 	public int lastAltitudeCheckFrame;
 
@@ -46,9 +46,9 @@ public class CH47HelicopterAIController : CH47Helicopter
 
 	public float currentDesiredAltitude;
 
-	private bool altitudeProtection;
+	private bool altitudeProtection = true;
 
-	public float hoverHeight;
+	public float hoverHeight = 30f;
 
 	[ServerVar(Help = "(Generated) Commands all active CH47 Chinook helicopter AI controllers to drop their cargo crate immediately")]
 	public static void dropCrate()
@@ -215,7 +215,7 @@ public class CH47HelicopterAIController : CH47Helicopter
 			}
 			BaseMountable baseMountable = null;
 			float num = float.MaxValue;
-			foreach (MountPointInfo allMountPoint in base.allMountPoints)
+			foreach (MountPointInfo allMountPoint in allMountPoints)
 			{
 				if (allMountPoint.mountable.AnyMounted())
 				{
@@ -424,7 +424,7 @@ public class CH47HelicopterAIController : CH47Helicopter
 
 	public void CancelAnger()
 	{
-		if (base.SecondsSinceAttacked > 120f)
+		if (SecondsSinceAttacked > 120f)
 		{
 			UnHostile();
 			CancelInvoke(UnHostile);
@@ -494,8 +494,8 @@ public class CH47HelicopterAIController : CH47Helicopter
 		base.OnAttacked(info);
 		InitiateAnger();
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved9, base.healthFraction <= 0.8f);
-		flagsUpdateScope.Set(Flags.OnFire, base.healthFraction <= 0.33f);
+		flagsUpdateScope.Set(Flags.Reserved9, healthFraction <= 0.8f);
+		flagsUpdateScope.Set(Flags.OnFire, healthFraction <= 0.33f);
 	}
 
 	public void DelayedKill()
@@ -601,10 +601,10 @@ public class CH47HelicopterAIController : CH47Helicopter
 		{
 			Vector3 val = rigidBody.linearVelocity;
 			Vector3 val2;
-			if (!(((Vector3)(ref val)).magnitude < 0.1f))
+			if (!(val.magnitude < 0.1f))
 			{
 				val = rigidBody.linearVelocity;
-				val2 = ((Vector3)(ref val)).normalized;
+				val2 = val.normalized;
 			}
 			else
 			{
@@ -612,12 +612,12 @@ public class CH47HelicopterAIController : CH47Helicopter
 			}
 			Vector3 val3 = val2;
 			val = Vector3.Cross(Vector3.Cross(((Component)this).transform.up, val3), Vector3.up) + Vector3.down * 0.3f;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
-			RaycastHit val4 = default(RaycastHit);
-			RaycastHit val5 = default(RaycastHit);
-			if (Physics.SphereCast(((Component)this).transform.position - normalized * 20f, 20f, normalized, ref val4, 75f, 1218511105) && Physics.SphereCast(((RaycastHit)(ref val4)).point + Vector3.up * 200f, 20f, Vector3.down, ref val5, 200f, 1218511105))
+			Vector3 normalized = val.normalized;
+			RaycastHit val4 = default;
+			RaycastHit val5 = default;
+			if (Physics.SphereCast(((Component)this).transform.position - normalized * 20f, 20f, normalized, ref val4, 75f, 1218511105) && Physics.SphereCast(val4.point + Vector3.up * 200f, 20f, Vector3.down, ref val5, 200f, 1218511105))
 			{
-				num = ((RaycastHit)(ref val5)).point.y + hoverHeight;
+				num = val5.point.y + hoverHeight;
 			}
 		}
 		altOverride = num;
@@ -760,7 +760,7 @@ public class CH47HelicopterAIController : CH47Helicopter
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			activeScientistCH47s.Remove(this);
 			foreach (MountPointInfo mountPoint in mountPoints)
@@ -784,14 +784,5 @@ public class CH47HelicopterAIController : CH47Helicopter
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		maxTiltAngle = 0.3f;
-		AiAltitudeForce = 10000f;
-		parentedNpcs = new List<BaseNPC2>();
-		numCrates = 1;
-		_aimDirection = Vector3.forward;
-		_moveTarget = Vector3.zero;
-		altitudeProtection = true;
-		hoverHeight = 30f;
-		base._002Ector();
 	}
 }

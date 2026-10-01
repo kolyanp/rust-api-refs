@@ -33,7 +33,7 @@ internal sealed class DepthOfFieldRenderer : PostProcessEffectRenderer<DepthOfFi
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			m_CoCHistoryTextures[i] = (RenderTexture[])(object)new RenderTexture[2];
+			m_CoCHistoryTextures[i] = new RenderTexture[2];
 			m_HistoryPingPong[i] = 0;
 		}
 	}
@@ -62,7 +62,7 @@ internal sealed class DepthOfFieldRenderer : PostProcessEffectRenderer<DepthOfFi
 
 	private float CalculateMaxCoCRadius(int screenHeight)
 	{
-		float num = (float)base.settings.kernelSize.value * 4f + 6f;
+		float num = (float)settings.kernelSize.value * 4f + 6f;
 		return Mathf.Min(0.05f, num / (float)screenHeight);
 	}
 
@@ -116,51 +116,51 @@ internal sealed class DepthOfFieldRenderer : PostProcessEffectRenderer<DepthOfFi
 		RenderTextureFormat sourceFormat = context.sourceFormat;
 		RenderTextureFormat val = SelectFormat((RenderTextureFormat)16, (RenderTextureFormat)15);
 		float num = 0.024f * ((float)context.height / 1080f);
-		float num2 = base.settings.focalLength.value / 1000f;
-		float num3 = Mathf.Max(base.settings.focusDistance.value, num2);
+		float num2 = settings.focalLength.value / 1000f;
+		float num3 = Mathf.Max(settings.focusDistance.value, num2);
 		float num4 = (float)context.screenWidth / (float)context.screenHeight;
-		float num5 = num2 * num2 / (base.settings.aperture.value * (num3 - num2) * num * 2f);
+		float num5 = num2 * num2 / (settings.aperture.value * (num3 - num2) * num * 2f);
 		float num6 = CalculateMaxCoCRadius(context.screenHeight);
 		PropertySheet propertySheet = context.propertySheets.Get(context.resources.shaders.depthOfField);
 		propertySheet.properties.Clear();
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.Distance, num3);
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.LensCoeff, num5);
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaxCoC, num6);
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.RcpMaxCoC, 1f / num6);
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.RcpAspect, 1f / num4);
+		propertySheet.properties.SetFloat(ShaderIDs.Distance, num3);
+		propertySheet.properties.SetFloat(ShaderIDs.LensCoeff, num5);
+		propertySheet.properties.SetFloat(ShaderIDs.MaxCoC, num6);
+		propertySheet.properties.SetFloat(ShaderIDs.RcpMaxCoC, 1f / num6);
+		propertySheet.properties.SetFloat(ShaderIDs.RcpAspect, 1f / num4);
 		CommandBuffer command = context.command;
 		command.BeginSample("DepthOfField");
-		context.GetScreenSpaceTemporaryRT(command, UnityEngine.Rendering.PostProcessing.ShaderIDs.CoCTex, 0, val, (RenderTextureReadWrite)1, (FilterMode)1);
-		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.CoCTex), propertySheet, 0);
+		context.GetScreenSpaceTemporaryRT(command, ShaderIDs.CoCTex, 0, val, (RenderTextureReadWrite)1, (FilterMode)1);
+		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), RenderTargetIdentifier.op_Implicit(ShaderIDs.CoCTex), propertySheet, 0);
 		if (context.IsTemporalAntialiasingActive() || context.dlssEnabled)
 		{
 			float motionBlending = context.temporalAntialiasing.motionBlending;
 			float num7 = (m_ResetHistory ? 0f : motionBlending);
 			Vector2 texelOffset = RustTemporalAntialiasingRenderer.Instance.JitterSettings.TexelOffset;
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.TaaParams, Vector4.op_Implicit(new Vector3(texelOffset.x, texelOffset.y, num7)));
+			propertySheet.properties.SetVector(ShaderIDs.TaaParams, Vector4.op_Implicit(new Vector3(texelOffset.x, texelOffset.y, num7)));
 			int num8 = m_HistoryPingPong[context.xrActiveEye];
 			RenderTexture val2 = CheckHistory(context.xrActiveEye, ++num8 % 2, context, val);
 			RenderTexture val3 = CheckHistory(context.xrActiveEye, ++num8 % 2, context, val);
 			m_HistoryPingPong[context.xrActiveEye] = ++num8 % 2;
 			command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((Texture)(object)val2), RenderTargetIdentifier.op_Implicit((Texture)(object)val3), propertySheet, 1);
-			command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.CoCTex);
-			command.SetGlobalTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.CoCTex, RenderTargetIdentifier.op_Implicit((Texture)(object)val3));
+			command.ReleaseTemporaryRT(ShaderIDs.CoCTex);
+			command.SetGlobalTexture(ShaderIDs.CoCTex, RenderTargetIdentifier.op_Implicit((Texture)(object)val3));
 		}
-		context.GetScreenSpaceTemporaryRT(command, UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTex, 0, sourceFormat, (RenderTextureReadWrite)0, (FilterMode)1, context.width / 2, context.height / 2);
-		command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTex), propertySheet, 2);
-		context.GetScreenSpaceTemporaryRT(command, UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTemp, 0, sourceFormat, (RenderTextureReadWrite)0, (FilterMode)1, context.width / 2, context.height / 2);
-		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTex), RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTemp), propertySheet, (int)(3 + base.settings.kernelSize.value));
-		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTemp), RenderTargetIdentifier.op_Implicit(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTex), propertySheet, 7);
-		command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTemp);
+		context.GetScreenSpaceTemporaryRT(command, ShaderIDs.DepthOfFieldTex, 0, sourceFormat, (RenderTextureReadWrite)0, (FilterMode)1, context.width / 2, context.height / 2);
+		command.BlitFullscreenTriangle(context.source, RenderTargetIdentifier.op_Implicit(ShaderIDs.DepthOfFieldTex), propertySheet, 2);
+		context.GetScreenSpaceTemporaryRT(command, ShaderIDs.DepthOfFieldTemp, 0, sourceFormat, (RenderTextureReadWrite)0, (FilterMode)1, context.width / 2, context.height / 2);
+		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(ShaderIDs.DepthOfFieldTex), RenderTargetIdentifier.op_Implicit(ShaderIDs.DepthOfFieldTemp), propertySheet, (int)(3 + settings.kernelSize.value));
+		command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(ShaderIDs.DepthOfFieldTemp), RenderTargetIdentifier.op_Implicit(ShaderIDs.DepthOfFieldTex), propertySheet, 7);
+		command.ReleaseTemporaryRT(ShaderIDs.DepthOfFieldTemp);
 		if (context.IsDebugOverlayEnabled(DebugOverlay.DepthOfField))
 		{
 			context.PushDebugOverlay(command, context.source, propertySheet, 9);
 		}
 		command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 8);
-		command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.DepthOfFieldTex);
+		command.ReleaseTemporaryRT(ShaderIDs.DepthOfFieldTex);
 		if (!context.IsTemporalAntialiasingActive() || context.dlssEnabled)
 		{
-			command.ReleaseTemporaryRT(UnityEngine.Rendering.PostProcessing.ShaderIDs.CoCTex);
+			command.ReleaseTemporaryRT(ShaderIDs.CoCTex);
 		}
 		command.EndSample("DepthOfField");
 		m_ResetHistory = false;

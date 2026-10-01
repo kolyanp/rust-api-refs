@@ -53,7 +53,7 @@ public class BaseMountable : BaseCombatEntity
 
 	public const float MountCheckRadius = 0.25f;
 
-	public static Phrase dismountPhrase;
+	public static Phrase dismountPhrase = new Phrase("dismount", "Dismount");
 
 	[Header("Base Mountable")]
 	public MountSyncType mountSyncType;
@@ -65,13 +65,13 @@ public class BaseMountable : BaseCombatEntity
 
 	public bool overrideEyesRotation;
 
-	public Vector2 pitchClamp;
+	public Vector2 pitchClamp = new Vector2(-80f, 50f);
 
-	public Vector2 yawClamp;
+	public Vector2 yawClamp = new Vector2(-80f, 80f);
 
-	public bool canWieldItems;
+	public bool canWieldItems = true;
 
-	public bool relativeViewAngles;
+	public bool relativeViewAngles = true;
 
 	public bool disableLegsWhenMounted;
 
@@ -81,15 +81,15 @@ public class BaseMountable : BaseCombatEntity
 	public bool AllowForceMountWhenRestrained;
 
 	[Tooltip("Allow players to mount other mountables/ladders from this vehicle")]
-	public bool mountChaining;
+	public bool mountChaining = true;
 
 	public Transform mountAnchor;
 
-	public float mountLOSVertOffset;
+	public float mountLOSVertOffset = 0.5f;
 
+	[Header("Mount Pose")]
 	[Range(0f, 1f)]
 	[Tooltip("The speed of the posde animation for this mountable.")]
-	[Header("Mount Pose")]
 	public float mountedAnimationSpeed;
 
 	public PlayerModel.MountPoses mountPose;
@@ -98,7 +98,7 @@ public class BaseMountable : BaseCombatEntity
 	public bool animateVehicleAim360;
 
 	[Space]
-	public float maxMountDistance;
+	public float maxMountDistance = 1.5f;
 
 	public Transform[] dismountPositions;
 
@@ -118,7 +118,7 @@ public class BaseMountable : BaseCombatEntity
 
 	public BasePlayer.CapsuleColliderInfo customPlayerCollider;
 
-	public float clippingCheckRadius;
+	public float clippingCheckRadius = 0.4f;
 
 	public bool clippingAndVisChecks;
 
@@ -141,7 +141,7 @@ public class BaseMountable : BaseCombatEntity
 
 	public MountGestureType allowedGestures;
 
-	public bool canDrinkWhileMounted;
+	public bool canDrinkWhileMounted = true;
 
 	public bool allowSleeperMounting;
 
@@ -151,13 +151,15 @@ public class BaseMountable : BaseCombatEntity
 	public bool blockLooting;
 
 	[Help("Set this to true if the mountable is enclosed so it doesn't move inside cars and such")]
-	public bool animateClothInLocalSpace;
+	public bool animateClothInLocalSpace = true;
 
 	[SerializeField]
-	private bool protectsFromAnimals;
+	private bool protectsFromAnimals = true;
 
 	[Header("Camera")]
 	public BasePlayer.CameraMode MountedCameraMode;
+
+	public ViewmodelCameraAnimation mountedCameraAnimation;
 
 	[Header("Rigidbody (Optional)")]
 	public Rigidbody rigidBody;
@@ -167,7 +169,7 @@ public class BaseMountable : BaseCombatEntity
 	[FormerlySerializedAs("needsVehicleTick")]
 	public bool isMobile;
 
-	public float SideLeanAmount;
+	public float SideLeanAmount = 0.2f;
 
 	public const float playerHeight = 1.8f;
 
@@ -175,14 +177,14 @@ public class BaseMountable : BaseCombatEntity
 
 	public BasePlayer _mounted;
 
-	public static ListHashSet<BaseMountable> AllMountables;
+	public static ListHashSet<BaseMountable> AllMountables = new ListHashSet<BaseMountable>();
 
-	public static ListHashSet<BaseMountable> Mounted;
+	public static ListHashSet<BaseMountable> Mounted = new ListHashSet<BaseMountable>();
 
 	[ServerVar(Help = "Toggles the usage of mountable MountedPlayerSync optimisations (only used by boat scientists currently)")]
-	public static bool canPauseMountedPlayerSync;
+	public static bool canPauseMountedPlayerSync = false;
 
-	protected bool syncsMountedPlayers;
+	protected bool syncsMountedPlayers = true;
 
 	public const float MOUNTABLE_TICK_RATE = 0.05f;
 
@@ -197,6 +199,8 @@ public class BaseMountable : BaseCombatEntity
 			return protectsFromAnimals;
 		}
 	}
+
+	public virtual bool AllowDuckToggle => true;
 
 	public override float PositionTickRate
 	{
@@ -348,7 +352,7 @@ public class BaseMountable : BaseCombatEntity
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		if (base.isServer && !info.forDisk && Object.op_Implicit((Object)(object)_mounted) && _mounted.IsValid())
+		if (isServer && !info.forDisk && Object.op_Implicit((Object)(object)_mounted) && _mounted.IsValid())
 		{
 			info.msg.baseMountable = Pool.Get<BaseMountable>();
 			info.msg.baseMountable.mounted = _mounted.net.ID;
@@ -362,7 +366,7 @@ public class BaseMountable : BaseCombatEntity
 
 	public virtual BasePlayer GetMounted()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return _mounted;
 		}
@@ -414,10 +418,10 @@ public class BaseMountable : BaseCombatEntity
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		OBB val = player.WorldSpaceBounds();
-		Bounds val2 = ((OBB)(ref val)).ToBounds();
-		if (((Bounds)(ref val2)).size == Vector3.zero)
+		Bounds val2 = val.ToBounds();
+		if (val2.size == Vector3.zero)
 		{
-			((Bounds)(ref val2)).size = new Vector3(0.1f, 0.1f, 0.1f);
+			val2.size = new Vector3(0.1f, 0.1f, 0.1f);
 		}
 		info = WaterLevel.GetWaterInfo(val2, waves: true, volumes: true, this);
 		return WaterLevel.Factor(in info, val2);
@@ -522,7 +526,7 @@ public class BaseMountable : BaseCombatEntity
 		Vector3 start = disPos + new Vector3(0f, 0.5f, 0f);
 		Vector3 end = disPos + new Vector3(0f, 1.3f, 0f);
 		Collider col = null;
-		if (!GamePhysics.CheckCapsule(base.isServer ? GamePhysics.Realm.Server : GamePhysics.Realm.Client, start, end, 0.5f, 1537286401, (QueryTriggerInteraction)0))
+		if (!GamePhysics.CheckCapsule(isServer ? GamePhysics.Realm.Server : GamePhysics.Realm.Client, start, end, 0.5f, 1537286401, (QueryTriggerInteraction)0))
 		{
 			Vector3 position = disPos + ((Component)this).transform.up * 0.5f;
 			if (IsVisibleAndCanSee(position))
@@ -604,8 +608,8 @@ public class BaseMountable : BaseCombatEntity
 		base.OnDied(info);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_WantsMount(RPCMessage msg)
 	{
 		WantsMount(msg.player);
@@ -644,6 +648,7 @@ public class BaseMountable : BaseCombatEntity
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
@@ -659,8 +664,7 @@ public class BaseMountable : BaseCombatEntity
 				Vector3 position = player.eyes.position;
 				Vector3 val = mountAnchor.position + ((Component)this).transform.up * mountLOSVertOffset;
 				Vector3 val2 = val - position;
-				Ray ray = default(Ray);
-				((Ray)(ref ray))._002Ector(position, ((Vector3)(ref val2)).normalized);
+				Ray ray = new Ray(position, val2.normalized);
 				PooledList<RaycastHit> val3 = Pool.Get<PooledList<RaycastHit>>();
 				try
 				{
@@ -788,7 +792,7 @@ public class BaseMountable : BaseCombatEntity
 			player.ServerRotation = val.rotation;
 		}
 		Quaternion rotation = val.rotation;
-		player.OverrideViewAngles(((Quaternion)(ref rotation)).eulerAngles);
+		player.OverrideViewAngles(rotation.eulerAngles);
 		_mounted.eyes.NetworkUpdate(val.rotation);
 		player.SendNetworkUpdateImmediate();
 		Facepunch.Rust.Analytics.Azure.OnMountEntity(player, this, VehicleParent());
@@ -1068,41 +1072,41 @@ public class BaseMountable : BaseCombatEntity
 			}
 			float world_boundary_force_start_distance = vehicle.world_boundary_force_start_distance;
 			float world_boundary_force_offset = vehicle.world_boundary_force_offset;
-			bool num = (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null;
-			bool flag = num && DeepSeaManager.IsInsideDeepSea(((Component)this).transform.position);
-			Vector3 center = (flag ? Vector3Ex.WithY(((Bounds)(ref DeepSeaManager.DeepSeaBounds)).center, 0f) : Vector3.zero);
-			float num2 = (flag ? float.MaxValue : Mathf.Max(0f, ValidBounds.TestDist(this, ((Component)this).transform.position) - world_boundary_force_offset));
-			if (num)
+			bool flag = (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null;
+			bool flag2 = flag && DeepSeaManager.IsInsideDeepSea(((Component)this).transform.position);
+			Vector3 center = (flag2 ? Vector3Ex.WithY(DeepSeaManager.DeepSeaBounds.center, 0f) : Vector3.zero);
+			float num = (flag2 ? float.MaxValue : Mathf.Max(0f, ValidBounds.TestDist(this, ((Component)this).transform.position) - world_boundary_force_offset));
+			if (flag)
 			{
-				DeepSeaPortal.PortalModeEnum portalMode = ((!flag) ? DeepSeaPortal.PortalModeEnum.Entrance : DeepSeaPortal.PortalModeEnum.Exit);
+				DeepSeaPortal.PortalModeEnum portalMode = ((!flag2) ? DeepSeaPortal.PortalModeEnum.Entrance : DeepSeaPortal.PortalModeEnum.Exit);
 				if (DeepSeaManager.IsInsideAnyPortal(((Component)this).transform.position, portalMode, out var deepSeaPortal))
 				{
 					OBB val = deepSeaPortal.WorldSpaceBounds();
 					Transform transform = ((Component)deepSeaPortal).transform;
-					float num3 = Vector3.Dot(((Component)this).transform.position - transform.position, transform.forward);
-					float num4 = val.extents.z - num3;
-					if (num4 < vehicle.deepseaportal_boundary_force_start_distance)
+					float num2 = Vector3.Dot(((Component)this).transform.position - transform.position, transform.forward);
+					float num3 = val.extents.z - num2;
+					if (num3 < vehicle.deepseaportal_boundary_force_start_distance)
 					{
-						bool num5 = deepSeaPortal.PortalDirection == DeepSeaManager.GetEntrancePortalDirection();
-						bool flag2;
-						if (flag)
+						bool flag3 = deepSeaPortal.PortalDirection == DeepSeaManager.GetEntrancePortalDirection();
+						bool flag4;
+						if (flag2)
 						{
-							(flag2, _) = DeepSeaManager.CanTeleportToMainIsland(this);
+							(flag4, _) = DeepSeaManager.CanTeleportToMainIsland(this);
 						}
 						else
 						{
-							(flag2, _) = DeepSeaManager.CanTeleportToDeepSea(this);
+							(flag4, _) = DeepSeaManager.CanTeleportToDeepSea(this);
 						}
-						if (!num5 || !flag2)
+						if (!flag3 || !flag4)
 						{
-							num2 = (flag ? num4 : Mathf.Min(num2, num4));
+							num = (flag2 ? num3 : Mathf.Min(num, num3));
 						}
 					}
 				}
 			}
-			if (num2 < world_boundary_force_start_distance)
+			if (num < world_boundary_force_start_distance)
 			{
-				ApplyRepelForce(num2, world_boundary_force_start_distance, center);
+				ApplyRepelForce(num, world_boundary_force_start_distance, center);
 			}
 		}
 	}
@@ -1131,13 +1135,13 @@ public class BaseMountable : BaseCombatEntity
 			return;
 		}
 		Vector3 val = ((Component)this).transform.position - center;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		float num = Vector3.Dot(rigidBody.linearVelocity, normalized);
 		if (num > 0f)
 		{
 			float num2 = 1f - distToWorldEdge / forceStartDistance;
-			Rigidbody obj = rigidBody;
-			obj.linearVelocity -= normalized * num * (num2 * num2);
+			Rigidbody val2 = rigidBody;
+			val2.linearVelocity -= normalized * num * (num2 * num2);
 			if (distToWorldEdge < forceStartDistance * 0.25f)
 			{
 				float num3 = 1f - distToWorldEdge / (forceStartDistance * 0.25f);
@@ -1264,10 +1268,10 @@ public class BaseMountable : BaseCombatEntity
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		if (Physics.Raycast(firingPos, firingDir, ref val, launchOffset, 1237003025))
 		{
-			launchOffset = ((RaycastHit)(ref val)).distance - 0.1f;
+			launchOffset = val.distance - 0.1f;
 		}
 		BaseEntity baseEntity = GameManager.server.CreateEntity(projectilePrefab.resourcePath, firingPos + firingDir * launchOffset);
 		projectile = ((Component)baseEntity).GetComponent<ServerProjectile>();
@@ -1336,7 +1340,7 @@ public class BaseMountable : BaseCombatEntity
 		Vector3 position = ((Component)mountable.eyePositionOverride).transform.position;
 		Vector3 position2 = ((Component)mountable).transform.position;
 		Vector3 val = position - position2;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		float num = clippingCheckRadius;
 		if (mountable.modifiesPlayerCollider)
 		{
@@ -1502,7 +1506,7 @@ public class BaseMountable : BaseCombatEntity
 		{
 			return false;
 		}
-		RaycastHit hit = default(RaycastHit);
+		RaycastHit hit = default;
 		if (Physics.SphereCast(ray, 0.25f, ref hit, maxDistance, 1218652417))
 		{
 			BaseEntity entity = RaycastHitEx.GetEntity(hit);
@@ -1580,17 +1584,17 @@ public class BaseMountable : BaseCombatEntity
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		for (int i = 0; i < 3; i++)
 		{
-			if (((Vector3)(ref vec))[i] > 180f)
+			if (vec[i] > 180f)
 			{
 				ref Vector3 reference = ref vec;
 				int num = i;
-				((Vector3)(ref reference))[num] = ((Vector3)(ref reference))[num] - 360f;
+				reference[num] -= 360f;
 			}
-			else if (((Vector3)(ref vec))[i] < -180f)
+			else if (vec[i] < -180f)
 			{
 				ref Vector3 reference = ref vec;
 				int num = i;
-				((Vector3)(ref reference))[num] = ((Vector3)(ref reference))[num] + 360f;
+				reference[num] += 360f;
 			}
 		}
 		return vec;
@@ -1614,29 +1618,11 @@ public class BaseMountable : BaseCombatEntity
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		pitchClamp = new Vector2(-80f, 50f);
-		yawClamp = new Vector2(-80f, 80f);
-		canWieldItems = true;
-		relativeViewAngles = true;
-		mountChaining = true;
-		mountLOSVertOffset = 0.5f;
-		maxMountDistance = 1.5f;
-		clippingCheckRadius = 0.4f;
-		canDrinkWhileMounted = true;
-		animateClothInLocalSpace = true;
-		protectsFromAnimals = true;
-		SideLeanAmount = 0.2f;
-		syncsMountedPlayers = true;
-		base._002Ector();
 	}
 
 	static BaseMountable()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		dismountPhrase = new Phrase("dismount", "Dismount");
-		AllMountables = new ListHashSet<BaseMountable>();
-		Mounted = new ListHashSet<BaseMountable>();
-		canPauseMountedPlayerSync = false;
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

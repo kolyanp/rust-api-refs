@@ -26,7 +26,7 @@ public class NaturalBeehive : LootContainer
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.fromDisk && base.isServer)
+		if (info.fromDisk && isServer)
 		{
 			Kill();
 		}

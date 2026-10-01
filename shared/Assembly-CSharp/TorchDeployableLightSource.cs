@@ -33,7 +33,7 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 
 	private ItemDefinition spawnedTorchDef;
 
-	private Item CurrentTorch => base.inventory.GetSlot(0);
+	private Item CurrentTorch => inventory.GetSlot(0);
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -233,14 +233,14 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 		}
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		UpdateTorch();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RequestTurnOnOff(RPCMessage msg)
 	{
 		bool wantsOn = msg.read.Bit();
@@ -326,7 +326,7 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 	{
 		if (flag)
 		{
-			if (AllowedTorches == null || AllowedTorches.Length == 0 || base.inventory == null)
+			if (AllowedTorches == null || AllowedTorches.Length == 0 || inventory == null)
 			{
 				return;
 			}
@@ -337,7 +337,7 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 				{
 					return;
 				}
-				ItemManager.Create(torch, 1, 0uL, isServerSide: true, 0uL).MoveToContainer(base.inventory, 0, allowStack: false);
+				ItemManager.Create(torch, 1, 0uL, isServerSide: true, 0uL).MoveToContainer(inventory, 0, allowStack: false);
 			}
 		}
 		TryToggle(flag);

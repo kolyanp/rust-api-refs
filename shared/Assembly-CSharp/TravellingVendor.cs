@@ -64,8 +64,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	public SoundPlayer BuySound;
 
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private VisualCarWheel wheelFL;
 
 	[SerializeField]
@@ -81,7 +81,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	public float client_steering_right;
 
-	public Vector3 client_velocity;
+	public Vector3 client_velocity = Vector3.zero;
 
 	public TimeSince timeSinceLastUpdate;
 
@@ -93,7 +93,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	public VehicleLight rearRightIndicator;
 
-	private static Collider[] spawncheckColliders = (Collider[])(object)new Collider[2];
+	private static Collider[] spawncheckColliders = new Collider[2];
 
 	public const string PREFAB_PATH = "assets/prefabs/npc/travelling vendor/travellingvendor.prefab";
 
@@ -101,11 +101,11 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private int currentPathIndex;
 
-	private float atDestinationDistance;
+	private float atDestinationDistance = 8f;
 
 	private bool followingSpine;
 
-	private int splineId;
+	private int splineId = -1;
 
 	private WorldSpline spline;
 
@@ -113,36 +113,38 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private List<BasePlayer> localPlayers;
 
-	private int searchRange;
+	private int searchRange = 10;
 
-	private float allowedVendorBlockTime;
+	private float allowedVendorBlockTime = 1f;
+
+	public const string PurchaseFromAchievement = "TRAVELLING_VENDOR_PURCHASE";
 
 	[Header("General")]
-	public bool DoAI;
+	public bool DoAI = true;
 
-	public float ObstacleCheckTime;
+	public float ObstacleCheckTime = 0.33f;
 
-	public float MarkerUpdateTime;
+	public float MarkerUpdateTime = 0.05f;
 
-	public float TimeBetweenPullovers;
+	public float TimeBetweenPullovers = 120f;
 
 	[Header("Engine Config")]
-	public float motorForceConstant;
+	public float motorForceConstant = 300f;
 
-	public float brakeForceConstant;
+	public float brakeForceConstant = 500f;
 
-	public float acceleration;
+	public float acceleration = 2f;
 
 	[Header("Steer Config")]
-	public float wheelbase;
+	public float wheelbase = 3.3f;
 
-	public float rearTrack;
+	public float rearTrack = 1.6f;
 
-	public float steeringSmoothing;
+	public float steeringSmoothing = 0.1f;
 
-	public float downforceCoefficient;
+	public float downforceCoefficient = 10f;
 
-	public float maxSteerAngle;
+	public float maxSteerAngle = 80f;
 
 	[Header("Trade")]
 	public GameObjectRef vendingMachineRef;
@@ -150,7 +152,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	public GameObjectRef vendingMachineFrontRef;
 
 	[Header("Pullover")]
-	public float maxPulloverAngleDifference;
+	public float maxPulloverAngleDifference = 15f;
 
 	[Header("Other")]
 	public static int obstacleMask = 196608;
@@ -171,7 +173,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	public NPCVendingMachine vendingMachine;
 
 	[Header("Spline")]
-	public float splineMovementSpeed;
+	public float splineMovementSpeed = 2f;
 
 	public Vector3 splineOffset;
 
@@ -196,9 +198,9 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private float throttle;
 
-	private float targetThrottle;
+	private float targetThrottle = 3f;
 
-	private bool handbrake;
+	private bool handbrake = true;
 
 	private float steeringAngle;
 
@@ -224,11 +226,11 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private bool pullingOver;
 
-	private Vector3 pulloverPosition;
+	private Vector3 pulloverPosition = Vector3.zero;
 
 	private float pullOverTimer;
 
-	private Vector3 pulloverTangent;
+	private Vector3 pulloverTangent = Vector3.zero;
 
 	private bool overrideSteering;
 
@@ -257,7 +259,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		}
 	}
 
-	public float DriveWheelVelocity => ((Vector3)(ref client_velocity)).magnitude;
+	public float DriveWheelVelocity => client_velocity.magnitude;
 
 	public float SteerAngle => (client_steering_left + client_steering_right) / 2f;
 
@@ -431,7 +433,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 			runtimePath.AddInterestNode(interestNode);
 		}
 		Vector3 val2 = runtimePath.Nodes[1].Position - startPoint;
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
+		Vector3 normalized = val2.normalized;
 		BaseEntity baseEntity = GameManager.server.CreateEntity("assets/prefabs/npc/travelling vendor/travellingvendor.prefab", startPoint + Vector3.up * 2f, Quaternion.LookRotation(normalized));
 		TravellingVendor travellingVendor = null;
 		if (Object.op_Implicit((Object)(object)baseEntity))
@@ -549,7 +551,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		{
 			int item = spawnPoint.Item2;
 			Vector3 val = pathList.Path.Points[(item + 1) % pathList.Path.Points.Length] - pathList.Path.Points[item];
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			BaseEntity baseEntity = GameManager.server.CreateEntity("assets/prefabs/npc/travelling vendor/travellingvendor.prefab", pathList.Path.Points[item] + Vector3.up * 2f, Quaternion.LookRotation(normalized));
 			TravellingVendor travellingVendor = null;
 			if (Object.op_Implicit((Object)(object)baseEntity))
@@ -886,7 +888,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 			return;
 		}
 		vendingMachine = child as NPCVendingMachine;
-		if (base.isServer && (Object)(object)vendingMachine != (Object)null)
+		if (isServer && (Object)(object)vendingMachine != (Object)null)
 		{
 			using (FlagsUpdateScope flagsUpdateScope = vendingMachine.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
@@ -979,7 +981,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		info.msg.travellingVendor.steeringAngle = steeringAngle;
 		if (IsFollowingSpline())
 		{
-			Vector3 val = ((!BaseNetworkable.UseParallelSaves) ? ((Component)this).transform.forward : (Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(base.TransformHandle) * Vector3.forward));
+			Vector3 val = ((!BaseNetworkable.UseParallelSaves) ? ((Component)this).transform.forward : (Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(TransformHandle) * Vector3.forward));
 			info.msg.travellingVendor.velocity = val * splineTranslator.Speed;
 		}
 		else
@@ -993,7 +995,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			myRigidbody = ((Component)this).GetComponent<Rigidbody>();
 			obstacleHits = Pool.Get<List<RaycastHit>>();
@@ -1063,7 +1065,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	{
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient && DoAI && HasPath())
+		if (!isClient && DoAI && HasPath())
 		{
 			ProcessLifetime();
 			ProcessHandbrake();
@@ -1246,7 +1248,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		{
 			targetThrottle = 0.2f;
 			Vector3 val = currentPath[GetPathIndexAhead(3)] - currentPath[GetPathIndexAhead(2)];
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			float steerAngle = ((Vector3.Dot(((Component)this).transform.right, normalized) <= 0f) ? (0f - MaxSteerAngle) : MaxSteerAngle);
 			if (Vector3.Angle(((Component)this).transform.forward, pulloverTangent) > 5f)
 			{
@@ -1386,7 +1388,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		pulloverHits.Clear();
 		bool flag = Random.value > 0.5f;
 		Vector3 val = currentPath[GetPathIndexAhead(3)] - currentPath[GetPathIndexAhead(2)];
-		pulloverTangent = ((Vector3)(ref val)).normalized;
+		pulloverTangent = val.normalized;
 		Vector3 val2 = Vector3.Cross(((Component)this).transform.up, pulloverTangent);
 		Vector3 val3 = Vector3.Cross(pulloverTangent, ((Component)this).transform.up);
 		if (!TryFindClearPulloverPoint(flag, out var testedPosition))
@@ -1457,11 +1459,11 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 adjustedPulloverPoint = GetAdjustedPulloverPoint(onLeft);
 		Vector3 val = adjustedPulloverPoint - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		testedPosition = adjustedPulloverPoint;
-		bool num = IsDirectionClear(normalized, adjustedPulloverPoint);
-		bool flag = IsPositionClear(adjustedPulloverPoint);
-		return num & flag;
+		bool flag = IsDirectionClear(normalized, adjustedPulloverPoint);
+		bool flag2 = IsPositionClear(adjustedPulloverPoint);
+		return flag & flag2;
 	}
 
 	private Vector3 GetPulloverPointFromSide(Vector3 side, bool inFront = true)
@@ -1491,7 +1493,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		List<Collider> list = Pool.Get<List<Collider>>();
-		Vis.Colliders<Collider>(position, radiusCheck, list, obstacleMask, (QueryTriggerInteraction)2);
+		Vis.Colliders(position, radiusCheck, list, obstacleMask, (QueryTriggerInteraction)2);
 		bool result = true;
 		if (list.Count > 0)
 		{
@@ -1522,7 +1524,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		foreach (RaycastHit pulloverHit in pulloverHits)
 		{
 			RaycastHit current = pulloverHit;
-			if (!((Component)((RaycastHit)(ref current)).collider).CompareTag("IgnoreCollider") && !((Component)((RaycastHit)(ref current)).collider).CompareTag("Main Terrain") && !((Component)((RaycastHit)(ref current)).collider).transform.IsChildOf(((Component)this).transform) && !((Object)(object)((Component)((RaycastHit)(ref current)).collider).transform == (Object)(object)((Component)this).transform))
+			if (!((Component)current.collider).CompareTag("IgnoreCollider") && !((Component)current.collider).CompareTag("Main Terrain") && !((Component)current.collider).transform.IsChildOf(((Component)this).transform) && !((Object)(object)((Component)current.collider).transform == (Object)(object)((Component)this).transform))
 			{
 				return false;
 			}
@@ -1545,7 +1547,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		if (TransformUtil.GetGroundInfo(testPos, out hit, 100f, LayerMask.op_Implicit(8388608)))
 		{
-			return ((RaycastHit)(ref hit)).normal;
+			return hit.normal;
 		}
 		return Vector3.zero;
 	}
@@ -1660,7 +1662,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		float stiffness = 0.75f + 0.75f * scale;
 		WheelFrictionCurve sidewaysFriction = wheelFL.wheelCollider.sidewaysFriction;
-		((WheelFrictionCurve)(ref sidewaysFriction)).stiffness = stiffness;
+		sidewaysFriction.stiffness = stiffness;
 		wheelFL.wheelCollider.sidewaysFriction = sidewaysFriction;
 		wheelFR.wheelCollider.sidewaysFriction = sidewaysFriction;
 		wheelRL.wheelCollider.sidewaysFriction = sidewaysFriction;
@@ -1743,16 +1745,16 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		foreach (RaycastHit obstacleHit in obstacleHits)
 		{
 			RaycastHit current = obstacleHit;
-			if ((Object)(object)((RaycastHit)(ref current)).collider == (Object)null)
+			if ((Object)(object)current.collider == (Object)null)
 			{
 				continue;
 			}
-			if (GameObjectEx.ToBaseEntity(((RaycastHit)(ref current)).collider) is BradleyAPC)
+			if (GameObjectEx.ToBaseEntity(current.collider) is BradleyAPC)
 			{
 				obstacleHits.Clear();
 				return true;
 			}
-			if (!(GameObjectEx.ToBaseEntity(((RaycastHit)(ref current)).collider) is BasePlayer basePlayer) || IsPlayerIgnored(basePlayer) || basePlayer.IsFlying || IsInvalidPlayer(basePlayer))
+			if (!(GameObjectEx.ToBaseEntity(current.collider) is BasePlayer basePlayer) || IsPlayerIgnored(basePlayer) || basePlayer.IsFlying || IsInvalidPlayer(basePlayer))
 			{
 				continue;
 			}
@@ -1814,7 +1816,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		hits.Clear();
-		GamePhysics.TraceAll(new Ray(((Component)this).transform.position + ((Component)this).transform.forward * (((Bounds)(ref bounds)).extents.z / 0.6f - 1f), forward), checkRadius, hits, 15f, obstacleMask | 1 | 0x8000, (QueryTriggerInteraction)1, this);
+		GamePhysics.TraceAll(new Ray(((Component)this).transform.position + ((Component)this).transform.forward * (bounds.extents.z / 0.6f - 1f), forward), checkRadius, hits, 15f, obstacleMask | 1 | 0x8000, (QueryTriggerInteraction)1, this);
 	}
 
 	private void DoSteering()
@@ -1831,9 +1833,9 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 linearVelocity = myRigidbody.linearVelocity;
-		float magnitude = ((Vector3)(ref linearVelocity)).magnitude;
+		float magnitude = linearVelocity.magnitude;
 		linearVelocity = myRigidbody.linearVelocity;
-		float num = Mathf.InverseLerp(5f, 1.5f, magnitude * Mathf.Abs(Vector3.Dot(((Vector3)(ref linearVelocity)).normalized, ((Component)this).transform.forward)));
+		float num = Mathf.InverseLerp(5f, 1.5f, magnitude * Mathf.Abs(Vector3.Dot(linearVelocity.normalized, ((Component)this).transform.forward)));
 		ScaleSidewaysFriction(1f - num);
 		if (!overrideSteering)
 		{
@@ -1862,7 +1864,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		throttle = Mathf.MoveTowards(throttle, targetThrottle, acceleration * Time.deltaTime);
 		float num = throttle * motorForceConstant * 5f;
 		Vector3 linearVelocity = myRigidbody.linearVelocity;
-		bool flag = ((Vector3)(ref linearVelocity)).magnitude >= max_speed;
+		bool flag = linearVelocity.magnitude >= max_speed;
 		wheelFL.wheelCollider.brakeTorque = (flag ? brakeForceConstant : 0f);
 		wheelFR.wheelCollider.brakeTorque = (flag ? brakeForceConstant : 0f);
 		wheelRL.wheelCollider.brakeTorque = (flag ? brakeForceConstant : 0f);
@@ -1929,7 +1931,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		((Component)this).transform.position = Vector3.Lerp(((Component)this).transform.position, position, Time.deltaTime * splineMovementSpeed * 10f);
 		Vector3 val = splineTranslator.PeekNextPositionFollowingDirection();
 		tangent = val - position;
-		Vector3 normalized = ((Vector3)(ref tangent)).normalized;
+		Vector3 normalized = tangent.normalized;
 		((Component)this).transform.forward = normalized;
 		Vector3 val2 = ((Component)this).transform.InverseTransformPoint(val);
 		steeringAngle = Mathf.Atan2(val2.x, val2.z);
@@ -1970,29 +1972,5 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
-		client_velocity = Vector3.zero;
-		atDestinationDistance = 8f;
-		splineId = -1;
-		searchRange = 10;
-		allowedVendorBlockTime = 1f;
-		DoAI = true;
-		ObstacleCheckTime = 0.33f;
-		MarkerUpdateTime = 0.05f;
-		TimeBetweenPullovers = 120f;
-		motorForceConstant = 300f;
-		brakeForceConstant = 500f;
-		acceleration = 2f;
-		wheelbase = 3.3f;
-		rearTrack = 1.6f;
-		steeringSmoothing = 0.1f;
-		downforceCoefficient = 10f;
-		maxSteerAngle = 80f;
-		maxPulloverAngleDifference = 15f;
-		splineMovementSpeed = 2f;
-		targetThrottle = 3f;
-		handbrake = true;
-		pulloverPosition = Vector3.zero;
-		pulloverTangent = Vector3.zero;
-		base._002Ector();
 	}
 }

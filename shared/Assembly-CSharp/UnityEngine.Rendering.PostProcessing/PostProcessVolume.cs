@@ -1,7 +1,7 @@
 namespace UnityEngine.Rendering.PostProcessing;
 
-[AddComponentMenu("Rendering/Post-process Volume", 1001)]
 [ExecuteAlways]
+[AddComponentMenu("Rendering/Post-process Volume", 1001)]
 public sealed class PostProcessVolume : MonoBehaviour
 {
 	public PostProcessProfile sharedProfile;
@@ -11,12 +11,12 @@ public sealed class PostProcessVolume : MonoBehaviour
 
 	public Bounds bounds;
 
-	[Min(0f)]
 	[Tooltip("The distance (from the attached Collider) to start blending from. A value of 0 means there will be no blending and the Volume overrides will be applied immediatly upon entry to the attached Collider.")]
+	[Min(0f)]
 	public float blendDistance;
 
-	[Range(0f, 1f)]
 	[Tooltip("The total weight of this Volume in the Scene. A value of 0 signifies that it will have no effect, 1 signifies full effect.")]
+	[Range(0f, 1f)]
 	public float weight = 1f;
 
 	[Tooltip("The volume priority in the stack. A higher value means higher priority. Negative values are supported.")]
@@ -102,6 +102,7 @@ public sealed class PostProcessVolume : MonoBehaviour
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
@@ -118,11 +119,10 @@ public sealed class PostProcessVolume : MonoBehaviour
 		if (!isGlobal)
 		{
 			Vector3 lossyScale = ((Component)this).transform.lossyScale;
-			Vector3 val = default(Vector3);
-			((Vector3)(ref val))._002Ector(1f / lossyScale.x, 1f / lossyScale.y, 1f / lossyScale.z);
+			Vector3 val = new Vector3(1f / lossyScale.x, 1f / lossyScale.y, 1f / lossyScale.z);
 			Gizmos.matrix = Matrix4x4.TRS(((Component)this).transform.position, ((Component)this).transform.rotation, lossyScale);
-			Gizmos.DrawCube(((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).size);
-			Gizmos.DrawWireCube(((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).size + val * blendDistance * 4f);
+			Gizmos.DrawCube(bounds.center, bounds.size);
+			Gizmos.DrawWireCube(bounds.center, bounds.size + val * blendDistance * 4f);
 			Gizmos.matrix = Matrix4x4.identity;
 		}
 	}

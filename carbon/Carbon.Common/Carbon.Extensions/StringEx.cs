@@ -524,7 +524,7 @@ public static class StringEx
 
 	public static string ToMorse(string value, string spacing = "/")
 	{
-		using StringBody stringBody = default(StringBody);
+		using StringBody stringBody = default;
 		string text = value.ToLower();
 		foreach (char c in text)
 		{
@@ -560,7 +560,7 @@ public static class StringEx
 
 	public static string ToL33t(string value, string spacing = " ")
 	{
-		using StringBody stringBody = default(StringBody);
+		using StringBody stringBody = default;
 		foreach (char c in value)
 		{
 			char c2 = char.ToLower(c);

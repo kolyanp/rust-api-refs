@@ -37,16 +37,16 @@ public class State_Search : FSMStateBase
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target))
+		if (!Senses.FindTarget(out var target))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Senses.FindLKP(target, out var lkp, applyHeightOffset: false, predict: true))
+		if (!Senses.FindLKP(target, out var lkp, applyHeightOffset: false, predict: true))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		NavVector3 positionNS = base.Agent.WorldToNavSpace(lkp);
-		if (!base.Agent.SamplePosition(positionNS, out var hitNS, 3.5f) && !base.Agent.SamplePosition(positionNS, out hitNS, 20f))
+		NavVector3 positionNS = Agent.WorldToNavSpace(lkp);
+		if (!Agent.SamplePosition(positionNS, out var hitNS, 3.5f) && !Agent.SamplePosition(positionNS, out hitNS, 20f))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -64,9 +64,9 @@ public class State_Search : FSMStateBase
 			PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
 			try
 			{
-				base.Senses.GetPerceivedAllies((List<BaseEntity>)(object)val);
-				Scientist2FSM scientist2FSM = default(Scientist2FSM);
-				SenseComponent senseComponent = default(SenseComponent);
+				Senses.GetPerceivedAllies((List<BaseEntity>)(object)val);
+				Scientist2FSM scientist2FSM = default;
+				SenseComponent senseComponent = default;
 				foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 				{
 					if (((Component)item).TryGetComponent<Scientist2FSM>(ref scientist2FSM) && ((Component)item).TryGetComponent<SenseComponent>(ref senseComponent) && senseComponent.FindTarget(out var target2) && !((Object)(object)target2 != (Object)(object)target))
@@ -101,18 +101,18 @@ public class State_Search : FSMStateBase
 		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			bool flag = ((numIterations >= numCloseSearchesBeforeExpanding) ? Eqs.SampleNavigablePositions(base.Agent, base.Agent.nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius, 8) : Eqs.SampleNavigablePositions(base.Agent, searchOriginNS, (List<NavVector3>)(object)val, searchRadius, searchRadius * 0.5f, 16));
-			if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
+			bool flag = ((numIterations >= numCloseSearchesBeforeExpanding) ? Eqs.SampleNavigablePositions(Agent, Agent.nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius, 8) : Eqs.SampleNavigablePositions(Agent, searchOriginNS, (List<NavVector3>)(object)val, searchRadius, searchRadius * 0.5f, 16));
+			if (!Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
 			{
 				return false;
 			}
-			if (!base.Senses.FindTargetLKP(out var lkp2, applyHeightOffset: false, predict: true))
+			if (!Senses.FindTargetLKP(out var lkp2, applyHeightOffset: false, predict: true))
 			{
 				return false;
 			}
-			NavVector3 navVector = base.Agent.WorldToNavSpace(lkp);
-			base.Agent.WorldToNavSpace(lkp2);
-			NavVector3 aNS = base.Agent.WorldToNavDirection(((Component)Owner).transform.forward);
+			NavVector3 navVector = Agent.WorldToNavSpace(lkp);
+			Agent.WorldToNavSpace(lkp2);
+			NavVector3 aNS = Agent.WorldToNavDirection(((Component)Owner).transform.forward);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
@@ -120,7 +120,7 @@ public class State_Search : FSMStateBase
 				try
 				{
 					BaseEntity.Query.Server.GetBrainsInSphere(((Component)Owner).transform.position, searchRadius * 3f, (List<ScientistNPC2>)(object)val2);
-					RustNavMeshAgent rustNavMeshAgent = default(RustNavMeshAgent);
+					RustNavMeshAgent rustNavMeshAgent = default;
 					foreach (NavVector3 item2 in (List<NavVector3>)(object)val)
 					{
 						float num = 0f;
@@ -135,7 +135,7 @@ public class State_Search : FSMStateBase
 							{
 								if (!((Object)(object)item3 == (Object)(object)Owner))
 								{
-									Vector3 val3 = base.Agent.NavToWorldSpace(item2);
+									Vector3 val3 = Agent.NavToWorldSpace(item2);
 									if (((Component)item3).TryGetComponent<RustNavMeshAgent>(ref rustNavMeshAgent) && rustNavMeshAgent.hasPath && rustNavMeshAgent.lastValidPath.Count > 0)
 									{
 										float num2 = num;
@@ -160,14 +160,14 @@ public class State_Search : FSMStateBase
 						NavVector3 navVector2 = item;
 						if (!flag)
 						{
-							if (!base.Agent.SamplePosition(item, out var hitNS, 3.5f))
+							if (!Agent.SamplePosition(item, out var hitNS, 3.5f))
 							{
 								continue;
 							}
 							navVector2 = hitNS.position;
 						}
-						Vector3 positionWS = base.Agent.NavToWorldSpace(navVector2);
-						if (!base.Agent.IsInWater(positionWS) && !(NavVector3.Distance(navVector2, base.Agent.nextPosition) < 2f) && base.Agent.SetDestinationWithParams(navVector2, autoBraking: true, speed))
+						Vector3 positionWS = Agent.NavToWorldSpace(navVector2);
+						if (!Agent.IsInWater(positionWS) && !(NavVector3.Distance(navVector2, Agent.nextPosition) < 2f) && Agent.SetDestinationWithParams(navVector2, autoBraking: true, speed))
 						{
 							numIterations++;
 							ClientAnim.IsCrouching = speed == RustNavMeshAgent.Speeds.Sneak;
@@ -195,13 +195,13 @@ public class State_Search : FSMStateBase
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		if (base.Agent.lastValidPath.Count > 0)
+		if (Agent.lastValidPath.Count > 0)
 		{
-			List<NavVector3> lastValidPath = base.Agent.lastValidPath;
-			NavVector3 normalized = (lastValidPath[lastValidPath.Count - 1] - base.Agent.nextPosition).normalized;
-			base.Agent.overrideDirectionWS = base.Agent.NavToWorldDirection(normalized);
+			List<NavVector3> lastValidPath = Agent.lastValidPath;
+			NavVector3 normalized = (lastValidPath[lastValidPath.Count - 1] - Agent.nextPosition).normalized;
+			Agent.overrideDirectionWS = Agent.NavToWorldDirection(normalized);
 		}
-		if (!base.Agent.hasPath)
+		if (!Agent.hasPath)
 		{
 			if (!loop)
 			{
@@ -218,8 +218,8 @@ public class State_Search : FSMStateBase
 	public override void OnStateExit()
 	{
 		numIterations = 0;
-		base.Agent.ResetPath();
-		base.Agent.overrideDirectionWS = null;
+		Agent.ResetPath();
+		Agent.overrideDirectionWS = null;
 		ClientAnim.IsCrouching = false;
 		base.OnStateExit();
 	}

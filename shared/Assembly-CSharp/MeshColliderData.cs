@@ -105,11 +105,11 @@ public class MeshColliderData
 			}
 			for (int k = 0; k < meshColliderInstance.data.vertices.Length; k++)
 			{
-				vertices.Add(((Matrix4x4)(ref val)).MultiplyPoint3x4(meshColliderInstance.data.vertices[k]));
+				vertices.Add(val.MultiplyPoint3x4(meshColliderInstance.data.vertices[k]));
 			}
 			for (int l = 0; l < meshColliderInstance.data.normals.Length; l++)
 			{
-				normals.Add(((Matrix4x4)(ref val)).MultiplyVector(meshColliderInstance.data.normals[l]));
+				normals.Add(val.MultiplyVector(meshColliderInstance.data.normals[l]));
 			}
 		}
 	}
@@ -136,11 +136,11 @@ public class MeshColliderData
 			}
 			for (int k = 0; k < instance.data.vertices.Length; k++)
 			{
-				vertices.Add(((Matrix4x4)(ref val)).MultiplyPoint3x4(instance.data.vertices[k]));
+				vertices.Add(val.MultiplyPoint3x4(instance.data.vertices[k]));
 			}
 			for (int l = 0; l < instance.data.normals.Length; l++)
 			{
-				normals.Add(((Matrix4x4)(ref val)).MultiplyVector(instance.data.normals[l]));
+				normals.Add(val.MultiplyVector(instance.data.normals[l]));
 			}
 			colliderLookup.Add(instance);
 		}

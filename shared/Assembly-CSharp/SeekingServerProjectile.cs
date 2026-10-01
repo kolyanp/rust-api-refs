@@ -2,23 +2,23 @@ using UnityEngine;
 
 public class SeekingServerProjectile : ServerProjectile
 {
-	public float courseAdjustRate;
+	public float courseAdjustRate = 1f;
 
-	public float maxTrackDistance;
+	public float maxTrackDistance = 500f;
 
 	public float minLockDot;
 
-	public float flareLockDot;
+	public float flareLockDot = 0.6f;
 
 	public bool autoSeek;
 
-	public float swimAfter;
+	public float swimAfter = 6f;
 
-	public float launchingDuration;
+	public float launchingDuration = 0.15f;
 
-	public float armingDuration;
+	public float armingDuration = 0.75f;
 
-	public float velocityRampUpTime;
+	public float velocityRampUpTime = 6f;
 
 	public Vector3 armingFinalDir;
 
@@ -30,17 +30,17 @@ public class SeekingServerProjectile : ServerProjectile
 
 	public AnimationCurve velocityCurve;
 
-	public float orphanedVectorChangeRate;
+	public float orphanedVectorChangeRate = 30f;
 
 	public SeekerTarget lockedTarget;
 
-	private float nextTargetUpdateTime;
+	private float nextTargetUpdateTime = float.NegativeInfinity;
 
 	private Vector3 seekingDestination;
 
 	private float launchTime;
 
-	private Vector3 initialDir;
+	private Vector3 initialDir = Vector3.forward;
 
 	private bool orphanedProjectile;
 
@@ -102,7 +102,7 @@ public class SeekingServerProjectile : ServerProjectile
 		}
 		if (lockedTarget != null)
 		{
-			lockedTarget.SendOwnerMessage(base.baseEntity, "RadarLock");
+			lockedTarget.SendOwnerMessage(baseEntity, "RadarLock");
 		}
 	}
 
@@ -149,13 +149,13 @@ public class SeekingServerProjectile : ServerProjectile
 			{
 				float num2 = num - launchingDuration;
 				Vector3 val = Vector3.Lerp(initialDir, armingFinalDir, Mathf.Clamp01(num2 / armingDuration));
-				base.CurrentVelocity = val * armingVelocity * armingVelocityCurve.Evaluate(num);
+				CurrentVelocity = val * armingVelocity * armingVelocityCurve.Evaluate(num);
 			}
 			else
 			{
 				UpdateTarget();
-				Vector3 val2 = base.CurrentVelocity;
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
+				Vector3 val2 = CurrentVelocity;
+				Vector3 normalized = val2.normalized;
 				Vector3 normalized2;
 				if (orphanedProjectile)
 				{
@@ -169,12 +169,12 @@ public class SeekingServerProjectile : ServerProjectile
 				else
 				{
 					val2 = GetSeekingDestination() - ((Component)this).transform.position;
-					normalized2 = ((Vector3)(ref val2)).normalized;
+					normalized2 = val2.normalized;
 				}
 				Vector3 val3 = Vector3.MoveTowards(normalized, normalized2, Time.fixedDeltaTime * courseAdjustRate);
-				((Vector3)(ref val3)).Normalize();
+				val3.Normalize();
 				float num3 = armingVelocity + velocityCurve.Evaluate(TimeSinceArmed() / velocityRampUpTime) * speed;
-				base.CurrentVelocity = val3 * num3;
+				CurrentVelocity = val3 * num3;
 			}
 		}
 		return base.DoMovement();
@@ -192,7 +192,7 @@ public class SeekingServerProjectile : ServerProjectile
 
 	public void EnableBoosters()
 	{
-		using (BaseEntity.FlagsUpdateScope flagsUpdateScope = base.baseEntity.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate))
+		using (BaseEntity.FlagsUpdateScope flagsUpdateScope = baseEntity.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(BaseEntity.Flags.On, b: true);
 		}
@@ -201,7 +201,7 @@ public class SeekingServerProjectile : ServerProjectile
 
 	public void DisableBoosters()
 	{
-		using BaseEntity.FlagsUpdateScope flagsUpdateScope = base.baseEntity.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate);
+		using BaseEntity.FlagsUpdateScope flagsUpdateScope = baseEntity.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(BaseEntity.Flags.On, b: false);
 	}
 
@@ -212,7 +212,7 @@ public class SeekingServerProjectile : ServerProjectile
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normalized = ((Vector3)(ref overrideVel)).normalized;
+		Vector3 normalized = overrideVel.normalized;
 		launchTime = Time.time;
 		initialDir = normalized;
 		Invoke(EnableBoosters, 0.5f);
@@ -228,23 +228,12 @@ public class SeekingServerProjectile : ServerProjectile
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3.Cross(orphanedTargetVector, Random.onUnitSphere);
-		orphanedRotationAxis = ((Vector3)(ref val)).normalized;
+		orphanedRotationAxis = val.normalized;
 	}
 
 	public SeekingServerProjectile()
 	{
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		courseAdjustRate = 1f;
-		maxTrackDistance = 500f;
-		flareLockDot = 0.6f;
-		swimAfter = 6f;
-		launchingDuration = 0.15f;
-		armingDuration = 0.75f;
-		velocityRampUpTime = 6f;
-		orphanedVectorChangeRate = 30f;
-		nextTargetUpdateTime = float.NegativeInfinity;
-		initialDir = Vector3.forward;
-		base._002Ector();
 	}
 }

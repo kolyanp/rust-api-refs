@@ -36,7 +36,7 @@ public class MissionObjective_GoToDeepSeaIsland : MissionObjective
 		}
 		else
 		{
-			SetObjectiveWorldLocation(index, instance, ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).center);
+			SetObjectiveWorldLocation(index, instance, DeepSeaManager.DeepSeaBounds.center);
 		}
 	}
 

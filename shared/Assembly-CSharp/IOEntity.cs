@@ -197,26 +197,15 @@ public class IOEntity : DecayEntity
 		public double Time;
 	}
 
-	public struct LineAnchor
+	public struct LineAnchor(WireLineAnchorInfo info)
 	{
-		public EntityRef<Door> entityRef;
+		public EntityRef<Door> entityRef = new EntityRef<Door>(info.parentID);
 
-		public string boneName;
+		public string boneName = info.boneName;
 
-		public int index;
+		public int index = (int)info.index;
 
-		public Vector3 position;
-
-		public LineAnchor(WireLineAnchorInfo info)
-		{
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-			entityRef = new EntityRef<Door>(info.parentID);
-			boneName = info.boneName;
-			index = (int)info.index;
-			position = info.position;
-		}
+		public Vector3 position = info.position;
 
 		public WireLineAnchorInfo ToInfo()
 		{
@@ -224,12 +213,12 @@ public class IOEntity : DecayEntity
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-			WireLineAnchorInfo obj = Pool.Get<WireLineAnchorInfo>();
-			obj.parentID = entityRef.Get(serverside: true).net.ID;
-			obj.boneName = boneName;
-			obj.index = index;
-			obj.position = position;
-			return obj;
+			WireLineAnchorInfo val = Pool.Get<WireLineAnchorInfo>();
+			val.parentID = entityRef.Get(serverside: true).net.ID;
+			val.boneName = boneName;
+			val.index = index;
+			val.position = position;
+			return val;
 		}
 	}
 
@@ -330,12 +319,12 @@ public class IOEntity : DecayEntity
 	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
 	public static float frameBudgetElectricLowPriorityMs = 0.5f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
+	[ServerVar]
 	public static float frameBudgetFluidMs = 0.25f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]
+	[ServerVar]
 	public static float frameBudgetKineticMs = 1f;
 
 	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
@@ -571,7 +560,7 @@ public class IOEntity : DecayEntity
 	public override void ResetState()
 	{
 		base.ResetState();
-		if (base.isServer)
+		if (isServer)
 		{
 			lastResetIndex = 0;
 			cachedOutputsUsed = 0;
@@ -588,7 +577,7 @@ public class IOEntity : DecayEntity
 	{
 		if (!((Object)(object)sourceItem != (Object)null))
 		{
-			return Phrase.op_Implicit(base.ShortPrefabName);
+			return Phrase.op_Implicit(ShortPrefabName);
 		}
 		return sourceItem.displayName;
 	}
@@ -626,7 +615,7 @@ public class IOEntity : DecayEntity
 		IOSlot[] array = inputs;
 		for (int i = 0; i < array.Length; i++)
 		{
-			IOEntity iOEntity = array[i].connectedTo.Get(base.isServer);
+			IOEntity iOEntity = array[i].connectedTo.Get(isServer);
 			if ((Object)(object)iOEntity != (Object)null)
 			{
 				if (iOEntity.IsGravitySource)
@@ -663,7 +652,7 @@ public class IOEntity : DecayEntity
 			{
 				return false;
 			}
-			if ((Object)(object)BoatBuildingStation.GetStationOverlappingPosition(((Component)this).transform.position, base.isServer, 1.5f) != (Object)null)
+			if ((Object)(object)BoatBuildingStation.GetStationOverlappingPosition(((Component)this).transform.position, isServer, 1.5f) != (Object)null)
 			{
 				return false;
 			}
@@ -696,7 +685,7 @@ public class IOEntity : DecayEntity
 		{
 			return null;
 		}
-		return iOSlot.connectedTo.Get(base.isServer);
+		return iOSlot.connectedTo.Get(isServer);
 	}
 
 	public bool TryGetConnectedTo(int slotIndex, bool isInput, out IOEntity connectedTo)
@@ -991,10 +980,10 @@ public class IOEntity : DecayEntity
 			val.AddColumns(new string[2] { "Prefab Name", "Time (in ms)" });
 			foreach (FrameTiming timing in timings)
 			{
-				string[] obj = new string[2] { timing.PrefabName, null };
+				string[] array = new string[2] { timing.PrefabName, null };
 				double time = timing.Time;
-				obj[1] = time.ToString();
-				val.AddRow(obj);
+				array[1] = time.ToString();
+				val.AddRow(array);
 			}
 			val.AddRow(new string[2]
 			{
@@ -1104,7 +1093,7 @@ public class IOEntity : DecayEntity
 
 	internal override void DoServerDestroy()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			Shutdown();
 		}
@@ -1220,7 +1209,7 @@ public class IOEntity : DecayEntity
 
 	public virtual void MarkDirty()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			UpdateUsedOutputs();
 			TouchIOState();
@@ -1286,9 +1275,9 @@ public class IOEntity : DecayEntity
 		{
 			num = 999;
 		}
-		bool num2 = lastPassthroughEnergy != num;
+		bool flag = lastPassthroughEnergy != num;
 		lastPassthroughEnergy = num;
-		if (num2)
+		if (flag)
 		{
 			IOStateChanged(currentEnergy, 0);
 			ensureOutputsUpdated = true;
@@ -1330,7 +1319,7 @@ public class IOEntity : DecayEntity
 
 	public virtual void TouchIOState()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			TouchInternal();
 		}
@@ -1555,7 +1544,7 @@ public class IOEntity : DecayEntity
 			val.connectedToSlot = iOSlot.connectedToSlot;
 			val.niceName = iOSlot.niceName;
 			val.type = (int)iOSlot.type;
-			val.inUse = ((NetworkableId)(ref val.connectedID)).IsValid;
+			val.inUse = val.connectedID.IsValid;
 			val.colour = (int)iOSlot.wireColour;
 			val.lineThickness = iOSlot.lineThickness;
 			val.originPosition = iOSlot.originPosition;
@@ -1570,7 +1559,7 @@ public class IOEntity : DecayEntity
 			val2.connectedToSlot = iOSlot2.connectedToSlot;
 			val2.niceName = iOSlot2.niceName;
 			val2.type = (int)iOSlot2.type;
-			val2.inUse = ((NetworkableId)(ref val2.connectedID)).IsValid;
+			val2.inUse = val2.connectedID.IsValid;
 			val2.colour = (int)iOSlot2.wireColour;
 			val2.worldSpaceRotation = iOSlot2.worldSpaceLineEndRotation;
 			val2.lineThickness = iOSlot2.lineThickness;
@@ -1731,7 +1720,7 @@ public class IOEntity : DecayEntity
 		obj2.worldSpaceLineEndRotation = ((Component)entity).transform.TransformDirection(entity.inputs[inputIndex].handleDirection);
 		obj2.originPosition = ((Component)this).transform.position;
 		Quaternion rotation = ((Component)this).transform.rotation;
-		obj2.originRotation = ((Quaternion)(ref rotation)).eulerAngles;
+		obj2.originRotation = rotation.eulerAngles;
 		MarkDirtyForceUpdateOutputs();
 		SendNetworkUpdate();
 		entity.SendNetworkUpdate();
@@ -1774,7 +1763,7 @@ public class IOEntity : DecayEntity
 			{
 				continue;
 			}
-			IOEntity iOEntity = iOSlot.connectedTo.Get(base.isServer);
+			IOEntity iOEntity = iOSlot.connectedTo.Get(isServer);
 			if (!((Object)(object)iOEntity != (Object)null) || ignoreList.Contains(iOEntity))
 			{
 				continue;
@@ -1897,7 +1886,7 @@ public class IOEntity : DecayEntity
 				IOConnection val = info.msg.ioEntity.inputs[i];
 				inputs[i].connectedTo = new IORef();
 				inputs[i].connectedTo.entityRef.uid = val.connectedID;
-				if (base.isClient)
+				if (isClient)
 				{
 					inputs[i].connectedTo.InitClient();
 				}
@@ -1933,13 +1922,13 @@ public class IOEntity : DecayEntity
 					outputs[k] = new IOSlot();
 				}
 				IOConnection val2 = info.msg.ioEntity.outputs[k];
-				if (val2.linePointList == null || val2.linePointList.Count == 0 || !((NetworkableId)(ref val2.connectedID)).IsValid)
+				if (val2.linePointList == null || val2.linePointList.Count == 0 || !val2.connectedID.IsValid)
 				{
 					outputs[k].Clear();
 				}
 				outputs[k].connectedTo = new IORef();
 				outputs[k].connectedTo.entityRef.uid = val2.connectedID;
-				if (base.isClient)
+				if (isClient)
 				{
 					outputs[k].connectedTo.InitClient();
 				}
@@ -1959,17 +1948,17 @@ public class IOEntity : DecayEntity
 				else
 				{
 					Quaternion rotation = ((Component)this).transform.rotation;
-					originRotation = ((Quaternion)(ref rotation)).eulerAngles;
+					originRotation = rotation.eulerAngles;
 				}
 				obj.originRotation = originRotation;
-				if (!info.fromDisk && !base.isClient)
+				if (!info.fromDisk && !isClient)
 				{
 					continue;
 				}
 				List<LineVec> list = val2.linePointList ?? new List<LineVec>();
 				if (outputs[k].linePoints == null || outputs[k].linePoints.Length != list.Count)
 				{
-					outputs[k].linePoints = (Vector3[])(object)new Vector3[list.Count];
+					outputs[k].linePoints = new Vector3[list.Count];
 				}
 				if (outputs[k].slackLevels == null || outputs[k].slackLevels.Length != list.Count)
 				{
@@ -1988,7 +1977,7 @@ public class IOEntity : DecayEntity
 				for (int m = 0; m < list2.Count; m++)
 				{
 					WireLineAnchorInfo val3 = list2[m];
-					if (((NetworkableId)(ref val3.parentID)).IsValid)
+					if (val3.parentID.IsValid)
 					{
 						LineAnchor lineAnchor = new LineAnchor(val3);
 						outputs[k].lineAnchors[m] = lineAnchor;
@@ -2005,7 +1994,7 @@ public class IOEntity : DecayEntity
 		IOSlot[] array = inputs;
 		for (int i = 0; i < array.Length; i++)
 		{
-			if ((Object)(object)array[i].connectedTo.Get(base.isServer) != (Object)null)
+			if ((Object)(object)array[i].connectedTo.Get(isServer) != (Object)null)
 			{
 				num++;
 			}
@@ -2019,7 +2008,7 @@ public class IOEntity : DecayEntity
 		IOSlot[] array = outputs;
 		for (int i = 0; i < array.Length; i++)
 		{
-			if ((Object)(object)array[i].connectedTo.Get(base.isServer) != (Object)null)
+			if ((Object)(object)array[i].connectedTo.Get(isServer) != (Object)null)
 			{
 				num++;
 			}
@@ -2078,8 +2067,8 @@ public class IOEntity : DecayEntity
 		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		ClearIndustrialPreventBuilding();
 		Matrix4x4 localToWorldMatrix = ((Component)this).transform.localToWorldMatrix;
-		CapsuleCollider val5 = default(CapsuleCollider);
-		ColliderInfo_Pipe colliderInfo_Pipe = default(ColliderInfo_Pipe);
+		CapsuleCollider val6 = default;
+		ColliderInfo_Pipe colliderInfo_Pipe = default;
 		for (int i = 0; i < outputs.Length; i++)
 		{
 			IOSlot iOSlot = outputs[i];
@@ -2087,32 +2076,32 @@ public class IOEntity : DecayEntity
 			{
 				continue;
 			}
-			Vector3 val = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(iOSlot.linePoints[0]);
+			Vector3 val = localToWorldMatrix.MultiplyPoint3x4(iOSlot.linePoints[0]);
 			for (int j = 1; j < iOSlot.linePoints.Length; j++)
 			{
-				Vector3 val2 = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(iOSlot.linePoints[j]);
+				Vector3 val2 = localToWorldMatrix.MultiplyPoint3x4(iOSlot.linePoints[j]);
 				Vector3 pos = Vector3.Lerp(val2, val, 0.5f);
 				float num = Vector3.Distance(val2, val);
 				Vector3 val3 = val2 - val;
 				Quaternion val4;
-				if (!(((Vector3)(ref val3)).normalized != Vector3.zero))
+				if (!(val3.normalized != Vector3.zero))
 				{
 					val4 = Quaternion.identity;
 				}
 				else
 				{
 					val3 = val2 - val;
-					val4 = Quaternion.LookRotation(((Vector3)(ref val3)).normalized);
+					val4 = Quaternion.LookRotation(val3.normalized);
 				}
 				Quaternion rot = val4;
-				GameObject obj = base.gameManager.CreatePrefab("assets/prefabs/misc/ioentitypreventbuilding.prefab", pos, rot);
-				obj.transform.SetParent(((Component)this).transform);
-				if (obj.TryGetComponent<CapsuleCollider>(ref val5))
+				GameObject val5 = gameManager.CreatePrefab("assets/prefabs/misc/ioentitypreventbuilding.prefab", pos, rot);
+				val5.transform.SetParent(((Component)this).transform);
+				if (val5.TryGetComponent<CapsuleCollider>(ref val6))
 				{
-					val5.height = num + val5.radius;
-					spawnedColliders.Add((Collider)(object)val5);
+					val6.height = num + val6.radius;
+					spawnedColliders.Add((Collider)(object)val6);
 				}
-				if (obj.TryGetComponent<ColliderInfo_Pipe>(ref colliderInfo_Pipe))
+				if (val5.TryGetComponent<ColliderInfo_Pipe>(ref colliderInfo_Pipe))
 				{
 					colliderInfo_Pipe.OutputSlotIndex = i;
 					colliderInfo_Pipe.ParentEntity = this;
@@ -2126,7 +2115,7 @@ public class IOEntity : DecayEntity
 	{
 		foreach (Collider spawnedCollider in spawnedColliders)
 		{
-			base.gameManager.Retire(((Component)spawnedCollider).gameObject);
+			gameManager.Retire(((Component)spawnedCollider).gameObject);
 		}
 		spawnedColliders.Clear();
 	}
@@ -2145,7 +2134,7 @@ public class IOEntity : DecayEntity
 			if (!((Object)(object)iOEntity == (Object)null))
 			{
 				iOSlot.Preserve(ref ioEntityPreserve.outputInfos[i]);
-				SlotPreserveInfo preserve = default(SlotPreserveInfo);
+				SlotPreserveInfo preserve = default;
 				iOEntity.inputs[iOSlot.connectedToSlot].Preserve(ref preserve);
 				ioEntityPreserve.connectionInfos.Add(new ConnectionPreserveInfo
 				{
@@ -2163,7 +2152,7 @@ public class IOEntity : DecayEntity
 			if (!((Object)(object)iOEntity2 == (Object)null))
 			{
 				iOSlot2.Preserve(ref ioEntityPreserve.inputInfos[j]);
-				SlotPreserveInfo preserve2 = default(SlotPreserveInfo);
+				SlotPreserveInfo preserve2 = default;
 				iOEntity2.outputs[iOSlot2.connectedToSlot].Preserve(ref preserve2);
 				ioEntityPreserve.connectionInfos.Add(new ConnectionPreserveInfo
 				{

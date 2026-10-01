@@ -14,11 +14,11 @@ public class sRGB
 		to_srgb = new byte[256];
 		for (int i = 0; i < 256; i++)
 		{
-			to_linear[i] = (byte)(srgb_to_linear((float)i * 0.003921569f) * 255f + 0.5f);
+			to_linear[i] = (byte)(srgb_to_linear((float)i * (1f / 255f)) * 255f + 0.5f);
 		}
 		for (int j = 0; j < 256; j++)
 		{
-			to_srgb[j] = (byte)(linear_to_srgb((float)j * 0.003921569f) * 255f + 0.5f);
+			to_srgb[j] = (byte)(linear_to_srgb((float)j * (1f / 255f)) * 255f + 0.5f);
 		}
 	}
 

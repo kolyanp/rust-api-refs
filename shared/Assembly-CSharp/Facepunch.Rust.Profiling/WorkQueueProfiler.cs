@@ -23,10 +23,10 @@ public static class WorkQueueProfiler
 		}
 		try
 		{
-			WorkQueueTelemStats val = default(WorkQueueTelemStats);
+			WorkQueueTelemStats val = default;
 			foreach (ObjectWorkQueue item in ObjectWorkQueue.All)
 			{
-				((WorkQueueTelemStats)(ref val)).Append(item.Stats);
+				val.Append(item.Stats);
 				if (item.Stats.ProcessedCount != 0)
 				{
 					EventRecord eventRecord = EventRecord.CSV();
@@ -41,7 +41,7 @@ public static class WorkQueueProfiler
 			}
 			foreach (PersistentObjectWorkQueue item2 in PersistentObjectWorkQueue.All)
 			{
-				((WorkQueueTelemStats)(ref val)).Append(item2.Stats);
+				val.Append(item2.Stats);
 				if (item2.Stats.ProcessedCount != 0)
 				{
 					EventRecord eventRecord2 = EventRecord.CSV();

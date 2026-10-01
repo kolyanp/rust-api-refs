@@ -6,9 +6,9 @@ public class BigWheelBettingTerminal : StorageContainer
 {
 	public BigWheelGame bigWheel;
 
-	public Vector3 seatedPlayerOffset;
+	public Vector3 seatedPlayerOffset = Vector3.forward;
 
-	public float offsetCheckRadius;
+	public float offsetCheckRadius = 0.4f;
 
 	public SoundDefinition winSound;
 
@@ -50,12 +50,12 @@ public class BigWheelBettingTerminal : StorageContainer
 		{
 			return false;
 		}
-		bool num = base.PlayerOpenLoot(player, panelToOpen);
-		if (num)
+		bool flag = base.PlayerOpenLoot(player, panelToOpen);
+		if (flag)
 		{
 			lastPlayer = player;
 		}
-		return num;
+		return flag;
 	}
 
 	public bool TrySetBigWheel(BigWheelGame newWheel)
@@ -66,7 +66,7 @@ public class BigWheelBettingTerminal : StorageContainer
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return false;
 		}
@@ -87,8 +87,5 @@ public class BigWheelBettingTerminal : StorageContainer
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		seatedPlayerOffset = Vector3.forward;
-		offsetCheckRadius = 0.4f;
-		base._002Ector();
 	}
 }

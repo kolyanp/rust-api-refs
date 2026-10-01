@@ -36,18 +36,18 @@ public struct FilterRaycastHitsJob : IJob
 			for (int j = num2; j < num3; j++)
 			{
 				RaycastHit val = Hits[j];
-				if (((RaycastHit)(ref val)).normal == Vector3.zero)
+				if (val.normal == Vector3.zero)
 				{
 					break;
 				}
-				if (((RaycastHit)(ref val)).colliderInstanceID != 0)
+				if (val.colliderInstanceID != 0)
 				{
 					ColliderHits.AddNoResize(val);
 					ColliderIndices.AddNoResize(j);
 				}
 				else
 				{
-					WaterHits.AddNoResize(((RaycastHit)(ref val)).point);
+					WaterHits.AddNoResize(val.point);
 					WaterIndices.AddNoResize(j);
 				}
 			}

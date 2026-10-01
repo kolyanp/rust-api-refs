@@ -17,8 +17,8 @@ public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 	[HideInInspector]
 	protected CharacterController optionalCharContr;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected bool rootMotionRotation = true;
 
 	protected Animator rootMAnimator;
@@ -98,24 +98,24 @@ public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 		}
 		else if ((Object)(object)TransformToRotate != (Object)(object)((Component)this).transform)
 		{
-			Transform obj = parentTransform;
-			obj.position += TransformToRotate.rotation * rootMAnimator.deltaPosition;
+			Transform val = parentTransform;
+			val.position += TransformToRotate.rotation * rootMAnimator.deltaPosition;
 		}
 		else
 		{
-			Transform obj2 = parentTransform;
-			obj2.position += rootMAnimator.deltaPosition;
+			Transform val2 = parentTransform;
+			val2.position += rootMAnimator.deltaPosition;
 		}
 		rootMAnimator.rootPosition = TransformToRotate.position;
-		rootMAnimator.rootRotation = base.LastRotation;
+		rootMAnimator.rootRotation = LastRotation;
 		if (rootMotionRotation)
 		{
-			rootMAnimator.rootRotation = base.LastRotation;
+			rootMAnimator.rootRotation = LastRotation;
 			Quaternion deltaRotation = rootMAnimator.deltaRotation;
-			float num = default(float);
-			Vector3 val = default(Vector3);
-			((Quaternion)(ref deltaRotation)).ToAngleAxis(ref num, ref val);
-			float y = (val * num * (MathF.PI / 180f)).y;
+			float num = default;
+			Vector3 val3 = default;
+			deltaRotation.ToAngleAxis(ref num, ref val3);
+			float y = (val3 * num * (MathF.PI / 180f)).y;
 			UpAxisRotation += y * 57.290154f;
 		}
 	}

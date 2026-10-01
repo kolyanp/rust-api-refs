@@ -147,7 +147,7 @@ public class FishingBobber : BaseCombatEntity
 		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0290: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = playerPos - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = Vector3.zero;
 		bobberForcePingPong = Mathf.Clamp(Mathf.PingPong(Time.time, 2f), 0.2f, 2f);
 		if (state.Contains(BaseFishingRod.FishState.PullingLeft))
@@ -190,7 +190,7 @@ public class FishingBobber : BaseCombatEntity
 		}
 		((Component)this).transform.LookAt(Vector3Ex.WithY(playerPos, ((Component)this).transform.position.y));
 		Vector3 val3 = ((Component)this).transform.position + val2;
-		if (!IsDirectionValid(val3, ((Vector3)(ref val2)).magnitude, playerPos))
+		if (!IsDirectionValid(val3, val2.magnitude, playerPos))
 		{
 			state = state.FlipHorizontal();
 		}
@@ -219,13 +219,13 @@ public class FishingBobber : BaseCombatEntity
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = pos - playerPos;
-		if (Vector3.Angle(Vector3Ex.WithY(((Vector3)(ref val)).normalized, 0f), initialDirection) > 60f)
+		if (Vector3.Angle(Vector3Ex.WithY(val.normalized, 0f), initialDirection) > 60f)
 		{
 			return false;
 		}
 		Vector3 position = ((Component)this).transform.position;
 		val = pos - position;
-		if (GamePhysics.Trace(new Ray(position, ((Vector3)(ref val)).normalized), 0.1f, out var _, checkLength, 1084293377, (QueryTriggerInteraction)0))
+		if (GamePhysics.Trace(new Ray(position, val.normalized), 0.1f, out var _, checkLength, 1084293377, (QueryTriggerInteraction)0))
 		{
 			return false;
 		}

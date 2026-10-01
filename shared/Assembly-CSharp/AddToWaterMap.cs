@@ -16,9 +16,11 @@ public class AddToWaterMap : ProceduralObject
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
@@ -26,30 +28,28 @@ public class AddToWaterMap : ProceduralObject
 		Collider component2 = ((Component)this).GetComponent<Collider>();
 		Bounds bounds = component2.bounds;
 		int mask = (((Object)(object)component != (Object)null) ? component.GetTopologyMask() : 0);
-		float num = TerrainMeta.NormalizeY(((Bounds)(ref bounds)).max.y);
-		int num2 = TerrainMeta.WaterMap.Index(TerrainMeta.NormalizeX(((Bounds)(ref bounds)).min.x));
-		int num3 = TerrainMeta.WaterMap.Index(TerrainMeta.NormalizeZ(((Bounds)(ref bounds)).max.x));
-		int num4 = TerrainMeta.WaterMap.Index(TerrainMeta.NormalizeX(((Bounds)(ref bounds)).min.z));
-		int num5 = TerrainMeta.WaterMap.Index(TerrainMeta.NormalizeZ(((Bounds)(ref bounds)).max.z));
+		float num = TerrainMeta.NormalizeY(bounds.max.y);
+		int num2 = TerrainMeta.WaterMap.Index(TerrainMeta.NormalizeX(bounds.min.x));
+		int num3 = TerrainMeta.WaterMap.Index(TerrainMeta.NormalizeZ(bounds.max.x));
+		int num4 = TerrainMeta.WaterMap.Index(TerrainMeta.NormalizeX(bounds.min.z));
+		int num5 = TerrainMeta.WaterMap.Index(TerrainMeta.NormalizeZ(bounds.max.z));
 		bool flag = component2 is BoxCollider && ((Component)this).transform.rotation == Quaternion.identity;
-		Vector3 val = default(Vector3);
-		Ray val2 = default(Ray);
-		RaycastHit val3 = default(RaycastHit);
+		RaycastHit val3 = default;
 		for (int i = num4; i <= num5; i++)
 		{
 			float normZ = TerrainMeta.WaterMap.Coordinate(i);
 			for (int j = num2; j <= num3; j++)
 			{
 				float normX = TerrainMeta.WaterMap.Coordinate(j);
-				((Vector3)(ref val))._002Ector(TerrainMeta.DenormalizeX(normX), ((Bounds)(ref bounds)).max.y + 1f, TerrainMeta.DenormalizeZ(normZ));
+				Vector3 val = new Vector3(TerrainMeta.DenormalizeX(normX), bounds.max.y + 1f, TerrainMeta.DenormalizeZ(normZ));
 				if (!flag)
 				{
-					((Ray)(ref val2))._002Ector(val, Vector3.down);
-					if (!component2.Raycast(val2, ref val3, ((Bounds)(ref bounds)).size.y + 1f + 1f))
+					Ray val2 = new Ray(val, Vector3.down);
+					if (!component2.Raycast(val2, ref val3, bounds.size.y + 1f + 1f))
 					{
 						continue;
 					}
-					num = TerrainMeta.NormalizeY(((RaycastHit)(ref val3)).point.y);
+					num = TerrainMeta.NormalizeY(val3.point.y);
 				}
 				float height = TerrainMeta.HeightMap.GetHeight01(normX, normZ);
 				if (num < height - TerrainMeta.OneOverSize.z)

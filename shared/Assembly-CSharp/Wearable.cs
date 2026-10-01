@@ -181,11 +181,11 @@ public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
 
 	public Renderer[] SkipInFirstPersonLegs;
 
-	private static LOD[] emptyLOD = (LOD[])(object)new LOD[1];
+	private static LOD[] emptyLOD = new LOD[1];
 
 	public PartRandomizer[] randomParts;
 
-	public bool stripOccupationCollisions => stripOccupation != (OccupationSlots)0;
+	public bool stripOccupationCollisions => stripOccupation != 0;
 
 	bool IPrefabPreProcess.CanRunDuringBundling => false;
 

@@ -10,8 +10,8 @@ public class SeparableSSS
 		Vector3 zero = Vector3.zero;
 		for (int i = 0; i < 3; i++)
 		{
-			float num = r / (0.001f + ((Color)(ref falloffColor))[i]);
-			((Vector3)(ref zero))[i] = Mathf.Exp((0f - num * num) / (2f * variance)) / (6.28f * variance);
+			float num = r / (0.001f + falloffColor[i]);
+			zero[i] = Mathf.Exp((0f - num * num) / (2f * variance)) / (6.28f * variance);
 		}
 		return zero;
 	}
@@ -67,7 +67,7 @@ public class SeparableSSS
 		int num = targetSize * 2 - 1;
 		float num2 = ((num > 20) ? 3f : 2f);
 		float num3 = 2f;
-		Color[] array = (Color[])(object)new Color[num];
+		Color[] array = new Color[num];
 		float num4 = 2f * num2 / (float)(num - 1);
 		for (int i = 0; i < num; i++)
 		{

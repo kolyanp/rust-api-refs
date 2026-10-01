@@ -7,15 +7,15 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 {
 	private Color backgroundColor;
 
-	public Color selectedBackgroundColor;
+	public Color selectedBackgroundColor = new Color(31f / 255f, 107f / 255f, 160f / 255f, 200f / 255f);
 
-	public float unoccupiedAlpha;
+	public float unoccupiedAlpha = 1f;
 
 	public Color unoccupiedColor;
 
-	public Color conditionFillColor;
+	public Color conditionFillColor = new Color(115f / 255f, 141f / 255f, 69f / 255f, 1f);
 
-	public Color refrigeratedConditionFillColor;
+	public Color refrigeratedConditionFillColor = new Color(31f / 255f, 132f / 255f, 160f / 255f, 1f);
 
 	public ItemContainerSource containerSource;
 
@@ -24,7 +24,7 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 	[Range(0f, 64f)]
 	public int slot;
 
-	public bool setSlotFromSiblingIndex;
+	public bool setSlotFromSiblingIndex = true;
 
 	public bool suppressCookingIcon;
 
@@ -70,11 +70,11 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 
 	public AmmoIconIndicator ammoIconIndicator;
 
-	public bool allowSelection;
+	public bool allowSelection = true;
 
-	public bool allowDropping;
+	public bool allowDropping = true;
 
-	public bool allowMove;
+	public bool allowMove = true;
 
 	public bool showCountDropShadow;
 
@@ -106,14 +106,5 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		selectedBackgroundColor = new Color(0.12156863f, 0.41960785f, 32f / 51f, 40f / 51f);
-		unoccupiedAlpha = 1f;
-		conditionFillColor = new Color(23f / 51f, 47f / 85f, 23f / 85f, 1f);
-		refrigeratedConditionFillColor = new Color(0.12156863f, 44f / 85f, 32f / 51f, 1f);
-		setSlotFromSiblingIndex = true;
-		allowSelection = true;
-		allowDropping = true;
-		allowMove = true;
-		base._002Ector();
 	}
 }

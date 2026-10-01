@@ -10,7 +10,7 @@ public class State_DeadlyAttack : State_Attack
 
 	public SoundDefinition impactSound;
 
-	private static readonly Vector3 force;
+	private static readonly Vector3 force = new Vector3(15f, 3f, 15f);
 
 	protected override void DoDamage()
 	{
@@ -31,7 +31,7 @@ public class State_DeadlyAttack : State_Attack
 		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target) || !(target is BaseCombatEntity baseCombatEntity))
+		if (!Senses.FindTarget(out var target) || !(target is BaseCombatEntity baseCombatEntity))
 		{
 			return;
 		}
@@ -59,6 +59,5 @@ public class State_DeadlyAttack : State_Attack
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		force = new Vector3(15f, 3f, 15f);
 	}
 }

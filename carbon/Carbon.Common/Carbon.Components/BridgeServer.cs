@@ -38,8 +38,8 @@ public abstract class BridgeServer
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Expected O, but got Unknown
-		//IL_0042: Expected O, but got Unknown
+		//IL_003d: Expected Obj, but got Unknown
+		//IL_0042: Expected Obj, but got Unknown
 		_context = serverInfo.context;
 		if (!OnPasswordValidate(serverInfo.password))
 		{
@@ -59,12 +59,12 @@ public abstract class BridgeServer
 		try
 		{
 			listener.Start(serverInfo.maxConnections, serverInfo.maxConnectionsPerIp);
-			listener.server._config = delegate(IWebSocketConnection socket)
+			listener.server._config = (IWebSocketConnection socket) =>
 			{
 				//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00cb: Expected O, but got Unknown
+				//IL_00cb: Expected Obj, but got Unknown
 				//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00d5: Expected O, but got Unknown
+				//IL_00d5: Expected Obj, but got Unknown
 				lock (listener.clients)
 				{
 					if (!OnSocketValidate(socket))
@@ -75,22 +75,22 @@ public abstract class BridgeServer
 					{
 						int id = Interlocked.Increment(ref listener.nextClientId);
 						BridgeConnection bridgeConnection = Pool.Get<BridgeConnection>().Init(id, socket, Messages);
-						socket.OnOpen = delegate
+						socket.OnOpen = () =>
 						{
-							_bridgeEvents.Enqueue(delegate
+							_bridgeEvents.Enqueue(() =>
 							{
 								OnOpenSocket(socket, bridgeConnection);
 							});
 						};
-						socket.OnClose = delegate
+						socket.OnClose = () =>
 						{
-							_bridgeEvents.Enqueue(delegate
+							_bridgeEvents.Enqueue(() =>
 							{
 								OnCloseSocket(socket, bridgeConnection);
 							});
 						};
-						IWebSocketConnection obj = socket;
-						obj.OnBinary = (BinaryDataHandler)Delegate.Combine((Delegate?)(object)obj.OnBinary, (Delegate?)(BinaryDataHandler)delegate(Span<byte> data)
+						IWebSocketConnection val3 = socket;
+						val3.OnBinary = (BinaryDataHandler)Delegate.Combine((Delegate?)(object)val3.OnBinary, (Delegate?)(BinaryDataHandler)((Span<byte> data) =>
 						{
 							BufferStream stream = Pool.Get<BufferStream>().Initialize();
 							stream._buffer = BufferStream.RentBuffer(data.Length);
@@ -100,12 +100,12 @@ public abstract class BridgeServer
 							{
 								stream._buffer[i] = data[i];
 							}
-							_bridgeEvents.Enqueue(delegate
+							_bridgeEvents.Enqueue(() =>
 							{
 								OnBinarySocket(socket, bridgeConnection, stream);
 							});
-						});
-						socket.OnError = delegate(Exception e)
+						}));
+						socket.OnError = (Exception e) =>
 						{
 							Logger.Error("Socket failure", e);
 						};
@@ -254,7 +254,7 @@ public abstract class BridgeServer
 	private void OnOpenSocket(IWebSocketConnection socket, BridgeConnection bridgeConnection)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Expected O, but got Unknown
+		//IL_0022: Expected Obj, but got Unknown
 		Listener.clients.Add(bridgeConnection.Id, new RconConnection(socket, bridgeConnection.Id));
 		Connections[bridgeConnection.Id] = bridgeConnection;
 		ConnectionsList.Add(bridgeConnection);

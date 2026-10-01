@@ -24,7 +24,7 @@ public class Trans_IsNavmeshReady : FSMTransitionBase
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
 		base.OnStateEnter();
-		if (!AI.useUnityNavmesh || base.Agent.agentTypeID != humanoid)
+		if (!AI.useUnityNavmesh || Agent.agentTypeID != humanoid)
 		{
 			return;
 		}
@@ -73,14 +73,14 @@ public class Trans_IsNavmeshReady : FSMTransitionBase
 			}
 			if (AI.useUnityNavmesh)
 			{
-				if (base.Agent.agentTypeID == animal)
+				if (Agent.agentTypeID == animal)
 				{
 					if ((Object)(object)SingletonComponent<DynamicNavMesh>.Instance == (Object)null || SingletonComponent<DynamicNavMesh>.Instance.IsBuilding)
 					{
 						return false;
 					}
 				}
-				else if (base.Agent.agentTypeID == humanoid)
+				else if (Agent.agentTypeID == humanoid)
 				{
 					if ((Object)(object)cachedMonumentNavMesh != (Object)null && cachedMonumentNavMesh.IsBuilding)
 					{
@@ -95,15 +95,15 @@ public class Trans_IsNavmeshReady : FSMTransitionBase
 						return false;
 					}
 				}
-				NavVector3 positionNS = base.Agent.WorldToNavSpace(((Component)Owner).transform.position);
+				NavVector3 positionNS = Agent.WorldToNavSpace(((Component)Owner).transform.position);
 				NavHit hitNS;
-				return base.Agent.SamplePosition(positionNS, out hitNS, 2f);
+				return Agent.SamplePosition(positionNS, out hitNS, 2f);
 			}
-			if (!base.Agent.IsNavMeshBuilt)
+			if (!Agent.IsNavMeshBuilt)
 			{
 				return false;
 			}
-			return base.Agent.isOnNavMesh;
+			return Agent.isOnNavMesh;
 		}
 	}
 }

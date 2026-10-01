@@ -20,7 +20,7 @@ internal struct TerrainRef
 
 	public int alpha_res;
 
-	public static Rust.Rendering.IndirectInstancing.TerrainRef FromCurrent()
+	public static TerrainRef FromCurrent()
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
@@ -33,7 +33,7 @@ internal struct TerrainRef
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		Assert.IsNotNull<TerrainHeightMap>(TerrainMeta.HeightMap, "Cannot create TerrainRef because there is no terrain!");
-		return new Rust.Rendering.IndirectInstancing.TerrainRef
+		return new TerrainRef
 		{
 			data = TerrainMeta.HeightMap.src.AsReadOnly(),
 			alpha = TerrainMeta.AlphaMap.src.AsReadOnly(),

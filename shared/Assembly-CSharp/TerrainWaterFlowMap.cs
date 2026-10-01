@@ -48,7 +48,7 @@ public class TerrainWaterFlowMap : TerrainMap<byte>
 		NativeArray<Vector2> normalizedCoords = new NativeArray<Vector2>(res * res, (Allocator)3, (NativeArrayOptions)1);
 		NativeArray<float> radii = new NativeArray<float>(res * res, (Allocator)3, (NativeArrayOptions)1);
 		NativeArray<int> topologies = new NativeArray<int>(res * res, (Allocator)3, (NativeArrayOptions)1);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 			float num = Coordinate(z);
@@ -61,22 +61,22 @@ public class TerrainWaterFlowMap : TerrainMap<byte>
 		});
 		TerrainMeta.TopologyMap.GetTopologiesIndirect(normalizedCoords.AsReadOnly(), radii.AsReadOnly(), topologies);
 		TerrainTexturing.ShoreData shoreMap = TerrainTexturing.Instance.GetMap(isDeepSea: false);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 			float num = Coordinate(z);
-			Vector3 flow = default(Vector3);
 			for (int i = 0; i < res; i++)
 			{
 				float num2 = Coordinate(i);
 				int num3 = topologies[z * res + i];
 				Vector4 rawShoreVector = shoreMap.GetRawShoreVector(new Vector2(num2, num));
-				((Vector3)(ref flow))._002Ector(rawShoreVector.x, 0f, rawShoreVector.y);
+				Vector3 flow = new Vector3(rawShoreVector.x, 0f, rawShoreVector.y);
 				if ((num3 & 0x14080) != 0)
 				{
 					SetFlowDirection(num2, num, flow);
@@ -147,7 +147,7 @@ public class TerrainWaterFlowMap : TerrainMap<byte>
 		int num = Index(normX);
 		int num2 = Index(normZ);
 		Vector3 val = Vector3Extensions.XZ(flow, 0f);
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		byte b = AngleToByte(Mathf.Atan2(normalized.x, normalized.z));
 		src[num2 * res + num] = b;
 	}
@@ -166,9 +166,9 @@ public class TerrainWaterFlowMap : TerrainMap<byte>
 	public NativeArray<float3> GetFlowDirections(NativeArray<Vector3> positions3D, Allocator allocator)
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		NativeArray<float3> results = default(NativeArray<float3>);
-		results._002Ector(positions3D.Length, allocator, (NativeArrayOptions)1);
+		NativeArray<float3> results = new NativeArray<float3>(positions3D.Length, allocator, (NativeArrayOptions)1);
 		TerrainWaterFlowMapBurst.GetFlowDirections(in positions3D, ref results, in src, in res);
 		return results;
 	}

@@ -54,8 +54,8 @@ public struct CheckBoundsJobIndirect : IJob
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		Bounds checkBounds = default(Bounds);
 		for (int i = 0; i < Indices.Length; i++)
 		{
 			int num = Indices[i];
@@ -65,7 +65,7 @@ public struct CheckBoundsJobIndirect : IJob
 			Vector3 val3 = Vector3.one * num2;
 			Vector3 val4 = Vector3.Min(val, val2) - val3;
 			Vector3 val5 = Vector3.Max(val, val2) + val3;
-			((Bounds)(ref checkBounds))._002Ector((val5 + val4) * 0.5f, val5 - val4);
+			Bounds checkBounds = new Bounds((val5 + val4) * 0.5f, val5 - val4);
 			if (Grid.Check(checkBounds))
 			{
 				OverlapIndices.AddNoResize(num);

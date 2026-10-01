@@ -26,7 +26,7 @@ public class LAM_InsectBodyElevateHelper : LegsAnimatorControlModuleBase
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		float hips_LastHipsOffset = base.LA.HipsSetup._Hips_LastHipsOffset;
+		float hips_LastHipsOffset = LA.HipsSetup._Hips_LastHipsOffset;
 		hips_LastHipsOffset = ((!(hips_LastHipsOffset < 0f)) ? 0f : (0f - hips_LastHipsOffset));
 		if (_AdjustingSpeedV.GetFloat() >= 1f)
 		{
@@ -36,7 +36,7 @@ public class LAM_InsectBodyElevateHelper : LegsAnimatorControlModuleBase
 		{
 			currentHeightAdjust = Mathf.SmoothDamp(currentHeightAdjust, hips_LastHipsOffset, ref sd_currentHeightAdjust, Mathf.Lerp(0.16f, 0.005f, _AdjustingSpeedV.GetFloat()));
 		}
-		Transform hips = base.LA.Hips;
-		hips.position += base.LA.Up * currentHeightAdjust * base.EffectBlend * _AdjustPowerV.GetFloat();
+		Transform hips = LA.Hips;
+		hips.position += LA.Up * currentHeightAdjust * EffectBlend * _AdjustPowerV.GetFloat();
 	}
 }

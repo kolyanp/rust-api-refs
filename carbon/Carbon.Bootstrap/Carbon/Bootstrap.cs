@@ -47,9 +47,9 @@ public sealed class Bootstrap
 	public static void Initialize()
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Expected O, but got Unknown
+		//IL_0023: Expected Obj, but got Unknown
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Expected O, but got Unknown
+		//IL_0083: Expected Obj, but got Unknown
 		Utility.Logger.Log(assemblyName + " loaded.");
 		_harmonyInstance = new Harmony(identifier);
 		string text = Path.Combine(Context.CarbonLogs, "Carbon.Harmony.log");
@@ -67,12 +67,12 @@ public sealed class Bootstrap
 		Watcher = _gameObject.AddComponent<FileWatcherManager>();
 		Analytics = _gameObject.AddComponent<AnalyticsManager>();
 		Downloader = _gameObject.AddComponent<DownloadManager>();
-		Events.Subscribe(CarbonEvent.StartupShared, delegate
+		Events.Subscribe(CarbonEvent.StartupShared, (EventArgs x) =>
 		{
 			AssemblyEx = _gameObject.AddComponent<AssemblyManager>();
 			AssemblyEx.Components.Load("Carbon.dll", "CarbonEvent.StartupShared");
 		});
-		Events.Subscribe(CarbonEvent.CarbonStartupComplete, delegate
+		Events.Subscribe(CarbonEvent.CarbonStartupComplete, (EventArgs x) =>
 		{
 			((Behaviour)Watcher).enabled = true;
 		});
@@ -85,7 +85,7 @@ public sealed class Bootstrap
 		{
 			Utility.Logger.Error("Unable to apply all patches", ex);
 		}
-		Events.Subscribe(CarbonEvent.HooksInstalled, delegate
+		Events.Subscribe(CarbonEvent.HooksInstalled, (EventArgs x) =>
 		{
 			FileSystem_WarmupHalt.IsReady = true;
 		});

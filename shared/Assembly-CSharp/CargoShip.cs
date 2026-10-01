@@ -29,7 +29,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		public int approachNode;
 	}
 
-	public int targetNodeIndex;
+	public int targetNodeIndex = -1;
 
 	public GameObject wakeParent;
 
@@ -143,17 +143,17 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	private float lifetime;
 
-	private List<int> availableCrateSpawnIndices;
+	private List<int> availableCrateSpawnIndices = new List<int>();
 
 	private CargoShipContainerDestination[] containerDestinations;
 
-	private HashSet<ulong> boardedPlayerIds;
+	private HashSet<ulong> boardedPlayerIds = new HashSet<ulong>();
 
 	public static bool hasCalculatedApproaches = false;
 
 	public BaseEntity mapMarkerInstance;
 
-	public Vector3 currentVelocity;
+	public Vector3 currentVelocity = Vector3.zero;
 
 	public float currentThrottle;
 
@@ -175,7 +175,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	public HarborProximityManager proxManager;
 
-	private float lastSpeed;
+	private float lastSpeed = 0.3f;
 
 	public bool IsShipDocked => HasFlag(Flags.Reserved1);
 
@@ -298,7 +298,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 			return;
 		}
 		layoutChoice = info.msg.cargoShip.layout;
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -351,7 +351,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		{
 			layouts[i].SetActive(layoutChoice == i);
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			containerDestinations = ((Component)this).GetComponentsInChildren<CargoShipContainerDestination>();
 		}
@@ -492,7 +492,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 			while (enumerator.MoveNext())
 			{
 				HarborCraneContainerPickup current = enumerator.Current;
-				if ((Object)(object)current == (Object)null || current.isClient || current.Distance2D((BaseEntity)this) > 150f)
+				if ((Object)(object)current == (Object)null || current.isClient || current.SqrDistance((BaseEntity)this) > 22500f)
 				{
 					continue;
 				}
@@ -704,7 +704,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		base.OnChildAdded(child);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -886,7 +886,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		{
 			if (!(item is JunkPileWater junkPileWater))
 			{
-				if (item is DecayEntity decayEntity && (Object)(object)decayEntity.parentEntity.Get(serverside: true) != (Object)(object)this && decayEntity.isServer && decayEntity.IsAlive() && !decayEntity.AllowOnCargoShip && !PlayerBoat.IsChildOfFinishedPlayerBoat(decayEntity))
+				if (item is DecayEntity { IsDestroyed: false } decayEntity && (Object)(object)decayEntity.parentEntity.Get(serverside: true) != (Object)(object)this && decayEntity.isServer && decayEntity.IsAlive() && !decayEntity.AllowOnCargoShip && !PlayerBoat.IsChildOfFinishedPlayerBoat(decayEntity))
 				{
 					decayEntity.Kill(DestroyMode.Gib);
 				}
@@ -901,7 +901,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	public void FixedUpdate()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			UpdateMovement();
 			lifetime += Time.fixedDeltaTime;
@@ -963,7 +963,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		CalculateDesiredNodes(out var desiredMoveNode, out var _);
 		Vector3 val = ((Component)this).transform.position - desiredMoveNode;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		((Component)this).transform.forward = normalized;
 		currentTurnSpeed = 0f;
 	}
@@ -1008,7 +1008,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = desiredWaypoint - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		normalized.y = 0f;
 		float num = Vector3.Dot(((Component)this).transform.right, normalized);
 		float num2 = (isDoingHarborApproach ? 6.5f : 2.5f);
@@ -1030,7 +1030,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		{
 			currentVelocity = normalized * currentThrottle * 5f;
 			val = approachRotationNode - ((Component)this).transform.position;
-			Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+			Vector3 normalized2 = val.normalized;
 			normalized2.y = 0f;
 			if (normalized2 != Vector3.zero)
 			{
@@ -1048,7 +1048,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 	private void UpdateHarborApproachProgress()
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		HarborProximityManager harborProximityManager = default(HarborProximityManager);
+		HarborProximityManager harborProximityManager = default;
 		if (isDoingHarborApproach && (Object)(object)harborApproachPath != (Object)null && ((Component)harborApproachPath).TryGetComponent<HarborProximityManager>(ref harborProximityManager))
 		{
 			float pathLength = harborApproachPath.GetPathLength();
@@ -1077,7 +1077,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = desiredMoveNode - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		float num = Vector3.Dot(((Component)this).transform.forward, normalized);
 		float num2 = Mathf.InverseLerp(0f, 1f, num);
 		if (isDoingHarborApproach)
@@ -1175,16 +1175,16 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		if (egressing)
 		{
 			Vector3 val = Vector3Ex.WithY(((Component)this).transform.position, 0f);
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			val = Vector3Ex.WithY(((Component)this).transform.forward, 0f);
-			Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+			Vector3 normalized2 = val.normalized;
 			Vector3 val2 = ((Component)this).transform.position + Vector3.up * 5f;
 			Ray[] array = new Ray[2];
 			val = Quaternion.Euler(0f, -7f, 0f) * normalized2;
-			array[0] = new Ray(val2, ((Vector3)(ref val)).normalized);
+			array[0] = new Ray(val2, val.normalized);
 			val = Quaternion.Euler(0f, 7f, 0f) * normalized2;
-			array[1] = new Ray(val2, ((Vector3)(ref val)).normalized);
-			Ray[] array2 = (Ray[])(object)array;
+			array[1] = new Ray(val2, val.normalized);
+			Ray[] array2 = array;
 			int num = 0;
 			List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
 			for (int i = 0; i < array2.Length; i++)
@@ -1195,7 +1195,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 				{
 					RaycastHit current = item;
 					BaseEntity entity = RaycastHitEx.GetEntity(current);
-					if ((!((Object)(object)entity != (Object)null) || (!((Object)(object)entity == (Object)(object)this) && !entity.EqualNetID((BaseNetworkable)this))) && !(entity is CargoShip) && ((RaycastHit)(ref current)).collider.isTrigger && ((Component)((RaycastHit)(ref current)).collider).CompareTag("FerryAvoid"))
+					if ((!((Object)(object)entity != (Object)null) || (!((Object)(object)entity == (Object)(object)this) && !entity.EqualNetID((BaseNetworkable)this))) && !(entity is CargoShip) && current.collider.isTrigger && ((Component)current.collider).CompareTag("FerryAvoid"))
 					{
 						num = ((i != 0) ? 1 : (-1));
 						flag = true;
@@ -1211,9 +1211,9 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 			if (num != 0)
 			{
 				val = Quaternion.Euler(0f, -45f, 0f) * normalized2;
-				Vector3 normalized3 = ((Vector3)(ref val)).normalized;
+				Vector3 normalized3 = val.normalized;
 				val = Quaternion.Euler(0f, 45f, 0f) * normalized2;
-				Vector3 normalized4 = ((Vector3)(ref val)).normalized;
+				Vector3 normalized4 = val.normalized;
 				Vector3 val3 = ((num == -1) ? normalized4 : normalized3);
 				desiredMoveNode = ((Component)this).transform.position + val3 * 10000f;
 			}
@@ -1223,7 +1223,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 			}
 			Pool.FreeUnmanaged<RaycastHit>(ref list);
 			val = ((Component)this).transform.position;
-			if (((Vector3)(ref val)).sqrMagnitude > 100000000f)
+			if (val.sqrMagnitude > 100000000f)
 			{
 				Debug.LogWarning((object)"Immediately deleting cargo as it is a long way out of bounds");
 				Kill();
@@ -1411,7 +1411,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		{
 			Vector3 val = TerrainMeta.Path.OceanPatrolFar[i];
 			Vector3 val2 = val - position;
-			float sqrMagnitude = ((Vector3)(ref val2)).sqrMagnitude;
+			float sqrMagnitude = val2.sqrMagnitude;
 			if (sqrMagnitude < num2)
 			{
 				num2 = sqrMagnitude;
@@ -1459,7 +1459,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 			return false;
 		}
 		Vector3 val = to - from;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = from + Vector3.up * 5f;
 		List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
 		GamePhysics.TraceAll(new Ray(val2, normalized), 10f, list, num + 5f, 262144, (QueryTriggerInteraction)2);
@@ -1468,7 +1468,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		{
 			RaycastHit current = item;
 			BaseEntity entity = RaycastHitEx.GetEntity(current);
-			if ((!((Object)(object)entity != (Object)null) || (!((Object)(object)entity == (Object)(object)this) && !entity.EqualNetID((BaseNetworkable)this))) && ((RaycastHit)(ref current)).collider.isTrigger && ((Component)((RaycastHit)(ref current)).collider).CompareTag("FerryAvoid"))
+			if ((!((Object)(object)entity != (Object)null) || (!((Object)(object)entity == (Object)(object)this) && !entity.EqualNetID((BaseNetworkable)this))) && current.collider.isTrigger && ((Component)current.collider).CompareTag("FerryAvoid"))
 			{
 				result = true;
 				break;
@@ -1527,11 +1527,5 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		targetNodeIndex = -1;
-		availableCrateSpawnIndices = new List<int>();
-		boardedPlayerIds = new HashSet<ulong>();
-		currentVelocity = Vector3.zero;
-		lastSpeed = 0.3f;
-		base._002Ector();
 	}
 }

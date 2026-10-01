@@ -164,9 +164,9 @@ public class PrefabPreProcess : IPrefabProcessor
 		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0286: Expected O, but got Unknown
+		//IL_0286: Expected Obj, but got Unknown
 		StringPool.Get(name);
-		StripEmptyChildren stripEmptyChildren = default(StripEmptyChildren);
+		StripEmptyChildren stripEmptyChildren = default;
 		bool flag = go.TryGetComponent<StripEmptyChildren>(ref stripEmptyChildren) && Render.IsInstancingEnabled;
 		if (options.StripComponents)
 		{
@@ -247,7 +247,7 @@ public class PrefabPreProcess : IPrefabProcessor
 		}
 		if (options.StripEmptyChildren)
 		{
-			BaseEntity baseEntity = default(BaseEntity);
+			BaseEntity baseEntity = default;
 			foreach (Transform item6 in list)
 			{
 				if (!Object.op_Implicit((Object)(object)item6) || !Object.op_Implicit((Object)(object)((Component)item6).gameObject))
@@ -261,9 +261,9 @@ public class PrefabPreProcess : IPrefabProcessor
 				}
 				if (isClientside)
 				{
-					bool num = ((Component)item6).gameObject.CompareTag("Client Cull");
-					bool flag2 = (Object)(object)item6 != (Object)(object)go.transform && ((Component)item6).gameObject.TryGetComponent<BaseEntity>(ref baseEntity);
-					if (num | flag2)
+					bool flag2 = ((Component)item6).gameObject.CompareTag("Client Cull");
+					bool flag3 = (Object)(object)item6 != (Object)(object)go.transform && ((Component)item6).gameObject.TryGetComponent<BaseEntity>(ref baseEntity);
+					if (flag2 | flag3)
 					{
 						RemoveComponents(((Component)item6).gameObject);
 						NominateForDeletion(((Component)item6).gameObject);
@@ -292,16 +292,16 @@ public class PrefabPreProcess : IPrefabProcessor
 		GameObject val = go;
 		if (Application.isPlaying && !val.CompareTag("NoPreProcessing"))
 		{
-			bool num = PrefabNeedsCopy(val);
-			bool flag = NeedsProcessing(val, assetSceneRuntime);
-			bool flag2 = num & flag;
-			if (!forceInPlace & flag2)
+			bool flag = PrefabNeedsCopy(val);
+			bool flag2 = NeedsProcessing(val, assetSceneRuntime);
+			bool flag3 = flag & flag2;
+			if (!forceInPlace & flag3)
 			{
 				Transform val2 = (TryGetHierarchyGroup(out var obj) ? obj.transform : null);
 				go = Instantiate.GameObject(val, val2);
 				((Object)go).name = ((Object)val).name;
 			}
-			if (flag)
+			if (flag2)
 			{
 				ProcessObject(name, go, assetSceneRuntime);
 			}
@@ -312,7 +312,7 @@ public class PrefabPreProcess : IPrefabProcessor
 		}
 		static bool PrefabNeedsCopy(GameObject val3)
 		{
-			Wearable wearable = default(Wearable);
+			Wearable wearable = default;
 			if (val3.TryGetComponent<Wearable>(ref wearable) && !wearable.disableRigStripping)
 			{
 				return true;
@@ -378,7 +378,7 @@ public class PrefabPreProcess : IPrefabProcessor
 	private bool TryGetHierarchyGroup(out GameObject obj)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Expected O, but got Unknown
+		//IL_005a: Expected Obj, but got Unknown
 		if (isBundling || !Application.isPlaying)
 		{
 			obj = null;
@@ -386,7 +386,15 @@ public class PrefabPreProcess : IPrefabProcessor
 		}
 		if ((Object)(object)parentObject == (Object)null)
 		{
-			string text = ((isClientside && isServerside) ? "PrefabPreProcess - Generic" : (isServerside ? "PrefabPreProcess - Server" : "PrefabPreProcess - Client"));
+			string text;
+			if (isClientside && isServerside)
+			{
+				text = "PrefabPreProcess - Generic";
+			}
+			else
+			{
+				text = (isServerside ? "PrefabPreProcess - Server" : "PrefabPreProcess - Client");
+			}
 			parentObject = new GameObject(text);
 			parentObject.SetActive(false);
 			Object.DontDestroyOnLoad((Object)(object)parentObject);
@@ -406,7 +414,7 @@ public class PrefabPreProcess : IPrefabProcessor
 		List<Component> list = new List<Component>();
 		FindComponents(go.transform, list, t);
 		list.Reverse();
-		RealmedRemove realmedRemove = default(RealmedRemove);
+		RealmedRemove realmedRemove = default;
 		foreach (Component item in list)
 		{
 			if (!item.TryGetComponent<RealmedRemove>(ref realmedRemove) || realmedRemove.ShouldDelete(item, client, server))
@@ -422,7 +430,7 @@ public class PrefabPreProcess : IPrefabProcessor
 
 	private bool ShouldExclude(Transform transform)
 	{
-		BaseEntity baseEntity = default(BaseEntity);
+		BaseEntity baseEntity = default;
 		if (((Component)transform).TryGetComponent<BaseEntity>(ref baseEntity))
 		{
 			return true;
@@ -446,7 +454,7 @@ public class PrefabPreProcess : IPrefabProcessor
 		static void ExcludeChildHierarchy(Transform transf, HashSet<Transform> set)
 		{
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0022: Expected O, but got Unknown
+			//IL_0022: Expected Obj, but got Unknown
 			set.Add(transf);
 			foreach (Transform item in transf)
 			{
@@ -458,8 +466,8 @@ public class PrefabPreProcess : IPrefabProcessor
 	private bool HasComponents<T>(Transform transform)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
-		T val = default(T);
+		//IL_0021: Expected Obj, but got Unknown
+		T val = default;
 		if (((Component)transform).TryGetComponent<T>(ref val))
 		{
 			return true;
@@ -478,8 +486,8 @@ public class PrefabPreProcess : IPrefabProcessor
 	private bool HasComponents(Transform transform, Type t)
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Expected O, but got Unknown
-		Component val = default(Component);
+		//IL_0022: Expected Obj, but got Unknown
+		Component val = default;
 		if (((Component)transform).TryGetComponent(t, ref val))
 		{
 			return true;
@@ -535,7 +543,7 @@ public class PrefabPreProcess : IPrefabProcessor
 	public void FindIComponents<T>(Transform transform, List<T> list)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected O, but got Unknown
+		//IL_0021: Expected Obj, but got Unknown
 		list.AddRange(((Component)transform).GetComponents<T>());
 		foreach (Transform item in transform)
 		{

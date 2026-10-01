@@ -36,10 +36,10 @@ public class VineMountable : BaseMountable
 		{
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-			VineDestination obj = Pool.Get<VineDestination>();
-			obj.index = PointIndex;
-			obj.targetTree = TreeEntity.uid;
-			return obj;
+			VineDestination val = Pool.Get<VineDestination>();
+			val.index = PointIndex;
+			val.targetTree = TreeEntity.uid;
+			return val;
 		}
 
 		public void Load(VineDestination destination)
@@ -50,16 +50,22 @@ public class VineMountable : BaseMountable
 		}
 	}
 
+	public const string SwingDistanceAchievement = "VINE_SWINGING";
+
+	public const string SwingDistanceStat = "vine_distance";
+
+	private const int SwingDistanceAchievementThreshold = 250;
+
 	public float moveSpeed;
 
 	[Header("Rotation Settings")]
-	public float rotationSpeed;
+	public float rotationSpeed = 0.5f;
 
-	public float descendSpeed;
+	public float descendSpeed = 5f;
 
 	public Vector3 WorldSpaceAnchorPoint;
 
-	private List<VinePoint> destinations;
+	private List<VinePoint> destinations = new List<VinePoint>();
 
 	private VinePoint origin;
 
@@ -73,7 +79,7 @@ public class VineMountable : BaseMountable
 
 	public ViewModel VineViewModel;
 
-	public float DismountViewmodelHoldTime;
+	public float DismountViewmodelHoldTime = 0.2f;
 
 	public GameObjectRef VineWorldModel;
 
@@ -100,9 +106,13 @@ public class VineMountable : BaseMountable
 
 	private bool wantsToSyncPos;
 
+	private Vector3 swingStartPosition;
+
+	private bool trackingSwing;
+
 	private VineMountable chainTarget;
 
-	private Vector3 lastValidLocation;
+	private Vector3 lastValidLocation = Vector3.zero;
 
 	private TimeSince lastValidLocationTime;
 
@@ -196,6 +206,40 @@ public class VineMountable : BaseMountable
 			}
 		}
 		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public override void OnPlayerMounted()
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		base.OnPlayerMounted();
+		swingStartPosition = ((Component)this).transform.position;
+		trackingSwing = true;
+	}
+
+	public override void OnPlayerDismounted(BasePlayer player)
+	{
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		base.OnPlayerDismounted(player);
+		if (!trackingSwing)
+		{
+			return;
+		}
+		trackingSwing = false;
+		if (player.IsNpc || player.IsBot)
+		{
+			return;
+		}
+		int num = Mathf.RoundToInt(Vector3Ex.Distance2D(swingStartPosition, ((Component)this).transform.position));
+		if (num > 0)
+		{
+			player.stats.Add("vine_distance", num, Stats.Life);
+			if (player.TryGetLifeStoryGenericStat("vine_distance", out var value) && value >= 250)
+			{
+				player.GiveAchievement("VINE_SWINGING");
+			}
+		}
 	}
 
 	public static void NotifyVinesLaunchSiteRemoved(VineLaunchPoint point)
@@ -315,7 +359,7 @@ public class VineMountable : BaseMountable
 			}
 			if (HasFlag(Flags.Reserved1))
 			{
-				VineLaunchPoint vineLaunchPoint = origin.Get(base.isServer);
+				VineLaunchPoint vineLaunchPoint = origin.Get(isServer);
 				if ((Object)(object)vineLaunchPoint != (Object)null && bp.Distance(((Component)vineLaunchPoint).transform.position) < num)
 				{
 					Swing(null, shouldMount: false);
@@ -430,7 +474,7 @@ public class VineMountable : BaseMountable
 		float time = Mathf.SmoothStep(0f, 1f, currentTime);
 		if (isDescending && (Object)(object)vineLaunchPoint2 != (Object)null)
 		{
-			if (GamePhysics.Trace(new Ray(((Component)this).transform.position, -Vector3.up), 0.2f, out var hitInfo, 50f, 1218519297, (QueryTriggerInteraction)0, this) && ((RaycastHit)(ref hitInfo)).distance < 1.5f && !(RaycastHitEx.GetEntity(hitInfo) is VineMountable))
+			if (GamePhysics.Trace(new Ray(((Component)this).transform.position, -Vector3.up), 0.2f, out var hitInfo, 50f, 1218519297, (QueryTriggerInteraction)0, this) && hitInfo.distance < 1.5f && !(RaycastHitEx.GetEntity(hitInfo) is VineMountable))
 			{
 				if (Vector3.Distance(((Component)this).transform.position, ((Component)vineLaunchPoint2).transform.position) < 2f)
 				{
@@ -474,7 +518,7 @@ public class VineMountable : BaseMountable
 		Vector3 swingPointAtTime = vineLaunchPoint2.GetSwingPointAtTime(time, vineLaunchPoint);
 		Vector3 position = ((Component)this).transform.position;
 		Vector3 val = swingPointAtTime - position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		PooledList<RaycastHit> val2 = Pool.Get<PooledList<RaycastHit>>();
 		try
 		{
@@ -494,13 +538,13 @@ public class VineMountable : BaseMountable
 			}
 			((Component)this).transform.position = swingPointAtTime;
 			Vector3 val3 = swingPointAtTime - lastPosition;
-			val = ((Vector3)(ref val3)).normalized;
-			Quaternion val4 = ((!(((Vector3)(ref val)).sqrMagnitude > Mathf.Epsilon)) ? ((Component)this).transform.rotation : Quaternion.LookRotation(((Vector3)(ref val3)).normalized, Vector3.up));
+			val = val3.normalized;
+			Quaternion val4 = ((!(val.sqrMagnitude > Mathf.Epsilon)) ? ((Component)this).transform.rotation : Quaternion.LookRotation(val3.normalized, Vector3.up));
 			float num2 = Mathf.Abs((((Component)this).transform.position.y - lastPosition.y) / Time.deltaTime);
 			float num3 = Mathf.Clamp01(Mathf.InverseLerp(0f, 6f, num2));
 			Quaternion rotation = ((Component)this).transform.rotation;
-			Vector3 eulerAngles = ((Quaternion)(ref rotation)).eulerAngles;
-			float num4 = Mathf.Clamp(((Quaternion)(ref val4)).eulerAngles.y, 0f - num3, num3);
+			Vector3 eulerAngles = rotation.eulerAngles;
+			float num4 = Mathf.Clamp(val4.eulerAngles.y, 0f - num3, num3);
 			Quaternion val5 = Quaternion.Euler(eulerAngles.x, num4, eulerAngles.z);
 			Quaternion rotation2 = Quaternion.Slerp(((Component)this).transform.rotation, val5 * val4, Time.deltaTime * rotationSpeed);
 			((Component)this).transform.rotation = rotation2;
@@ -544,13 +588,13 @@ public class VineMountable : BaseMountable
 		destinations.Clear();
 		foreach (VineLaunchPoint destinationPoint in destinationPoints)
 		{
-			VinePoint item = default(VinePoint);
+			VinePoint item = default;
 			item.Set(destinationPoint);
 			destinations.Add(item);
 		}
 		WorldSpaceAnchorPoint = anchor;
 		Vector3 val = ((Component)destinationPoints[0]).transform.position - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		((Component)this).transform.rotation = Quaternion.LookRotation(normalized, Vector3.up);
 		((Component)this).transform.localEulerAngles = Vector3Ex.WithX(((Component)this).transform.localEulerAngles, 0f);
 	}
@@ -584,7 +628,7 @@ public class VineMountable : BaseMountable
 		return Mathf.Clamp(num / num2, 1f, 50f);
 	}
 
-	private unsafe float GetMaxVineDistance(Vector3 origin)
+	private float GetMaxVineDistance(Vector3 origin)
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
@@ -597,7 +641,7 @@ public class VineMountable : BaseMountable
 		float num = 0f;
 		foreach (VinePoint destination in destinations)
 		{
-			VineLaunchPoint vineLaunchPoint = destination.Get(base.isServer);
+			VineLaunchPoint vineLaunchPoint = destination.Get(isServer);
 			if ((Object)(object)vineLaunchPoint != (Object)null)
 			{
 				num = Mathf.Max(Vector3.Distance(((Component)vineLaunchPoint).transform.position, origin), num);
@@ -612,7 +656,7 @@ public class VineMountable : BaseMountable
 				if ((Object)(object)vineLaunchPoint2 != (Object)null)
 				{
 					float num2 = Vector3.Distance(((Component)vineLaunchPoint2).transform.position, origin);
-					Debug.LogWarning((object)("Detected broken distance between " + ((object)((Component)vineLaunchPoint2).transform.position/*cast due to constrained. prefix*/).ToString() + " and origin " + ((object)(*(Vector3*)(&origin))/*cast due to constrained. prefix*/).ToString()));
+					Debug.LogWarning((object)("Detected broken distance between " + ((object)((Component)vineLaunchPoint2).transform.position/*cast due to constrained. prefix*/).ToString() + " and origin " + ((object)origin/*cast due to constrained. prefix*/).ToString()));
 					Debug.LogWarning((object)("home " + ((object)((Component)this).transform.position/*cast due to constrained. prefix*/).ToString()));
 					Debug.LogWarning((object)("dist is  " + num2));
 				}
@@ -626,7 +670,7 @@ public class VineMountable : BaseMountable
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		base.PostServerLoad();
-		VineLaunchPoint vineLaunchPoint = origin.Get(base.isServer);
+		VineLaunchPoint vineLaunchPoint = origin.Get(isServer);
 		if ((Object)(object)vineLaunchPoint != (Object)null)
 		{
 			((Component)this).transform.position = ((Component)vineLaunchPoint).transform.position;
@@ -682,16 +726,23 @@ public class VineMountable : BaseMountable
 		Vector3 forward = (((Object)(object)forPlayer != (Object)null) ? forPlayer.eyes.BodyForward() : Vector3.forward);
 		Vector3 playerPos = (((Object)(object)forPlayer != (Object)null) ? ((Component)forPlayer).transform.position : ((Component)this).transform.position);
 		VineLaunchPoint vineLaunchPoint = null;
-		vineLaunchPoint = (HasFlag(Flags.Reserved1) ? origin.Get(base.isServer) : ((!((Object)(object)overridePoint != (Object)null)) ? GetTargetDestination(playerPos, forward, out var _) : overridePoint));
+		if (HasFlag(Flags.Reserved1))
+		{
+			vineLaunchPoint = origin.Get(isServer);
+		}
+		else
+		{
+			vineLaunchPoint = ((!((Object)(object)overridePoint != (Object)null)) ? GetTargetDestination(playerPos, forward, out var _) : overridePoint);
+		}
 		if ((Object)(object)vineLaunchPoint == (Object)null)
 		{
 			Debug.Log((object)"Could not find valid vine launch destination, should not happen");
 			return;
 		}
 		Vector3 val = ((Component)vineLaunchPoint).transform.position - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		((Component)this).transform.rotation = Quaternion.LookRotation(normalized, Vector3.up);
-		activeOriginPoint = currentLocation.Get(base.isServer);
+		activeOriginPoint = currentLocation.Get(isServer);
 		activeDestinationPoint = vineLaunchPoint;
 		if ((Object)(object)forPlayer != (Object)null)
 		{
@@ -803,10 +854,10 @@ public class VineMountable : BaseMountable
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 position = ((Component)origin.Get(base.isServer)).transform.position;
+		Vector3 position = ((Component)origin.Get(isServer)).transform.position;
 		foreach (VinePoint destination in destinations)
 		{
-			Vector3 position2 = ((Component)destination.Get(base.isServer)).transform.position;
+			Vector3 position2 = ((Component)destination.Get(isServer)).transform.position;
 			forPlayer.SendConsoleCommand("ddraw.arrow", "60", Color.red, position, position2, 25, 0, 0);
 		}
 	}
@@ -826,7 +877,7 @@ public class VineMountable : BaseMountable
 		destinations.Clear();
 		foreach (VineDestination destination in info.msg.vineMountable.destinations)
 		{
-			VinePoint item = default(VinePoint);
+			VinePoint item = default;
 			item.Load(destination);
 			destinations.Add(item);
 		}
@@ -835,7 +886,7 @@ public class VineMountable : BaseMountable
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -872,12 +923,12 @@ public class VineMountable : BaseMountable
 		forward.y = 0f;
 		foreach (VinePoint destination in destinations)
 		{
-			VineLaunchPoint vineLaunchPoint = destination.Get(base.isServer);
+			VineLaunchPoint vineLaunchPoint = destination.Get(isServer);
 			if ((Object)(object)vineLaunchPoint != (Object)null)
 			{
 				Vector3 val = forward;
 				Vector3 val2 = ((Component)vineLaunchPoint).transform.position - playerPos;
-				float num2 = Vector3.Angle(val, Vector3Ex.WithY(((Vector3)(ref val2)).normalized, 0f));
+				float num2 = Vector3.Angle(val, Vector3Ex.WithY(val2.normalized, 0f));
 				if (num2 < num)
 				{
 					result = vineLaunchPoint;
@@ -893,11 +944,5 @@ public class VineMountable : BaseMountable
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		rotationSpeed = 0.5f;
-		descendSpeed = 5f;
-		destinations = new List<VinePoint>();
-		DismountViewmodelHoldTime = 0.2f;
-		lastValidLocation = Vector3.zero;
-		base._002Ector();
 	}
 }

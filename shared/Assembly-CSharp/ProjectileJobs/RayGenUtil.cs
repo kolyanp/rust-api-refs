@@ -27,6 +27,7 @@ public static class RayGenUtil
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
@@ -49,13 +50,12 @@ public static class RayGenUtil
 			Vector3 swimSpeed = data.SwimSpeed;
 			Vector3 swimScale = data.SwimScale;
 			float num = time + data.SwimRandom;
-			Vector3 val2 = default(Vector3);
-			((Vector3)(ref val2))._002Ector(Mathf.Sin(num * swimSpeed.x) * swimScale.x, Mathf.Cos(num * swimSpeed.y) * swimScale.y, Mathf.Sin(num * swimSpeed.z) * swimScale.z);
-			val2 = Quaternion.Inverse(((TransformAccess)(ref transform)).rotation) * val2;
+			Vector3 val2 = new Vector3(Mathf.Sin(num * swimSpeed.x) * swimScale.x, Mathf.Cos(num * swimSpeed.y) * swimScale.y, Mathf.Sin(num * swimSpeed.z) * swimScale.z);
+			val2 = Quaternion.Inverse(transform.rotation) * val2;
 			val += val2;
 		}
 		Vector3 val3 = val * deltaTime;
-		float magnitude = ((Vector3)(ref val3)).magnitude;
+		float magnitude = val3.magnitude;
 		float num2 = 1f / magnitude;
 		Vector3 val4 = val3 * num2;
 		if (isClientDemo && Vector3Ex.IsNaNOrInfinity(val4))

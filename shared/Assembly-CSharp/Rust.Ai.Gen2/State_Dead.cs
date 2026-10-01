@@ -21,24 +21,60 @@ public class State_Dead : FSMStateBase
 	private RootMotionData forwardMotionDeathAnim;
 
 	[SerializeField]
+	private RootMotionData swimmingDeathAnim;
+
+	[SerializeField]
 	private float ragdollWhenAnimRemainingTimeIsBelow = 0.5f;
 
 	[SerializeField]
 	private LootContainer.LootSpawnSlot[] LootSpawnSlots;
 
+	[Tooltip("Whether an animal that dies with nobody having attacked it - old age - lies down and goes quietly instead of playing its combat death. Needs the owner to provide a held sleeping pose; a species without one falls back to a death clip.")]
+	[SerializeField]
+	private bool peacefulNaturalDeath;
+
+	[Tooltip("How long (in seconds) the animal lies there before the corpse drops, so it dies in its sleep rather than the instant it settles.")]
+	[SerializeField]
+	private float peacefulDeathSettleTime = 6f;
+
 	private RootMotionPlayer.PlayServerState animState;
 
 	private Action _startRagdollAction;
 
+	private Action _killOwnerAction;
+
+	public bool HasCorpse => CorpsePrefab.isValid;
+
+	public GameObjectRef Corpse => CorpsePrefab;
+
+	public bool HasDeathAnimation
+	{
+		get
+		{
+			if (!(staticDeathAnim != null) && !(forwardMotionDeathAnim != null))
+			{
+				if ((Object)(object)Owner != (Object)null && Owner.HasFlag(BaseEntity.Flags.Reserved1))
+				{
+					return swimmingDeathAnim != null;
+				}
+				return false;
+			}
+			return true;
+		}
+	}
+
+	public bool HasPeacefulDeathAnimation => peacefulNaturalDeath;
+
 	private Action StartRagdollAction => StartRagdoll;
+
+	private Action KillOwnerAction => KillOwner;
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
-		if (payload.hitInfo == null && AI.logIssues && AI.logIssues)
+		bool flag = payload.hitInfo == null;
+		if (flag && !peacefulNaturalDeath && AI.logIssues)
 		{
-			Debug.LogError((object)$"Entering {base.Name} without HitInfo payload, this should not happen and may cause issues with stats tracking. Owner: {Owner}", (Object)(object)Owner);
+			Debug.LogError((object)$"Entering {Name} without HitInfo payload, this should not happen and may cause issues with stats tracking. Owner: {Owner}", (Object)(object)Owner);
 		}
 		if (payload.hitInfo != null && (Object)(object)payload.hitInfo.InitiatorPlayer != (Object)null && !payload.hitInfo.InitiatorPlayer.IsNpc)
 		{
@@ -59,26 +95,52 @@ public class State_Dead : FSMStateBase
 		}
 		if (!CorpsePrefab.isValid)
 		{
-			Owner.Kill();
+			if (HasDeathAnimation)
+			{
+				PlayDeathAnim(payload, flag, KillOwnerAction);
+			}
+			else
+			{
+				Owner.Kill();
+			}
 			return base.OnStateEnter(payload);
 		}
-		if (forwardMotionDeathAnim != null && base.Agent.speed > base.Agent.GetSpeedForGait(RustNavMeshAgent.Speeds.Run))
+		if (Owner is INaturalDeathPose naturalDeathPose && ((flag && peacefulNaturalDeath) || naturalDeathPose.IsHoldingPose))
 		{
-			animState = base.AnimPlayer.PlayServerAndTakeFromPool(forwardMotionDeathAnim);
-			float num = Mathf.Max(0f, forwardMotionDeathAnim.inPlaceAnimation.length - ragdollWhenAnimRemainingTimeIsBelow);
+			naturalDeathPose.EnterNaturalDeathPose();
+			Agent.ResetPath();
+			float num = (flag ? Mathf.Max(0f, peacefulDeathSettleTime) : 0f);
 			Owner.Invoke(StartRagdollAction, num + AI.defaultInterpolationDelay);
+			return base.OnStateEnter(payload);
 		}
-		else if (staticDeathAnim != null && payload.hitInfo != null && Vector3.Dot(payload.hitInfo.attackNormal, ((Component)Owner).transform.forward) < 0f)
+		PlayDeathAnim(payload, flag, StartRagdollAction);
+		return base.OnStateEnter(payload);
+	}
+
+	private void KillOwner()
+	{
+		Owner.Kill();
+	}
+
+	private void PlayDeathAnim(FSMPayload payload, bool diedOfNaturalCauses, Action invokeAction)
+	{
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		RootMotionData rootMotionData = ((((Agent.speed > Agent.GetSpeedForGait(RustNavMeshAgent.Speeds.Run)) | diedOfNaturalCauses) || Vector3.Dot(payload.hitInfo.attackNormal, ((Component)Owner).transform.forward) >= 0f) ? (forwardMotionDeathAnim ?? staticDeathAnim) : (staticDeathAnim ?? forwardMotionDeathAnim));
+		if (swimmingDeathAnim != null && Agent.canSwim && Agent.IsSwimming)
 		{
-			animState = base.AnimPlayer.PlayServerAndTakeFromPool(staticDeathAnim);
-			float num2 = Mathf.Max(0f, staticDeathAnim.inPlaceAnimation.length - ragdollWhenAnimRemainingTimeIsBelow);
-			Owner.Invoke(StartRagdollAction, num2 + AI.defaultInterpolationDelay);
+			rootMotionData = swimmingDeathAnim;
+		}
+		if (rootMotionData != null)
+		{
+			animState = AnimPlayer.PlayServerAndTakeFromPool(rootMotionData);
+			float num = Mathf.Max(0f, rootMotionData.inPlaceAnimation.length - ragdollWhenAnimRemainingTimeIsBelow);
+			Owner.Invoke(invokeAction, num + AI.defaultInterpolationDelay);
 		}
 		else
 		{
 			StartRagdoll();
 		}
-		return base.OnStateEnter(payload);
 	}
 
 	private void StartRagdoll()
@@ -124,7 +186,7 @@ public class State_Dead : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.AnimPlayer.StopServerAndReturnToPool(ref animState);
+		AnimPlayer.StopServerAndReturnToPool(ref animState);
 		base.OnStateExit();
 	}
 
@@ -135,7 +197,7 @@ public class State_Dead : FSMStateBase
 			entityOwner = Owner
 		};
 		itemContainer.ServerInitialize(null, 24);
-		if (!((ItemContainerId)(ref itemContainer.uid)).IsValid)
+		if (!itemContainer.uid.IsValid)
 		{
 			itemContainer.GiveUID();
 		}

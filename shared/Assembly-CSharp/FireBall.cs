@@ -9,9 +9,9 @@ public class FireBall : BaseEntity, ISplashable
 {
 	private const Flags StationaryFlag = Flags.Reserved1;
 
-	public float lifeTimeMin;
+	public float lifeTimeMin = 20f;
 
-	public float lifeTimeMax;
+	public float lifeTimeMax = 40f;
 
 	public ParticleSystem[] movementSystems;
 
@@ -22,23 +22,23 @@ public class FireBall : BaseEntity, ISplashable
 
 	public GameObjectRef spreadSubEntity;
 
-	public float tickRate;
+	public float tickRate = 0.5f;
 
-	public float damagePerSecond;
+	public float damagePerSecond = 2f;
 
-	public float radius;
+	public float radius = 0.5f;
 
-	public int waterToExtinguish;
+	public int waterToExtinguish = 200;
 
 	public bool canMerge;
 
-	public LayerMask AttackLayers;
+	public LayerMask AttackLayers = LayerMask.op_Implicit(1220225809);
 
 	public bool ignoreNPC;
 
-	private readonly float siegeWeaponDamageScale;
+	private readonly float siegeWeaponDamageScale = 0.2f;
 
-	private Vector3 lastPos;
+	private Vector3 lastPos = Vector3.zero;
 
 	private float deathTime;
 
@@ -161,10 +161,10 @@ public class FireBall : BaseEntity, ISplashable
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			Vector3 val = (((Component)this).transform.localPosition - lastPos) / Time.deltaTime;
-			UpdateIsStationary(((Vector3)(ref val)).magnitude < 0.05f);
+			UpdateIsStationary(val.magnitude < 0.05f);
 			lastPos = ((Component)this).transform.localPosition;
 			if (IsStationary)
 			{
@@ -250,7 +250,7 @@ public class FireBall : BaseEntity, ISplashable
 		if (((shouldBeStationary != IsStationary) & shouldBeStationary) && CanMerge())
 		{
 			List<Collider> list = Pool.Get<List<Collider>>();
-			Vis.Colliders<Collider>(((Component)this).transform.position, 0.5f, list, 512, (QueryTriggerInteraction)2);
+			Vis.Colliders(((Component)this).transform.position, 0.5f, list, 512, (QueryTriggerInteraction)2);
 			foreach (Collider item in list)
 			{
 				BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((Component)item).gameObject);
@@ -274,7 +274,7 @@ public class FireBall : BaseEntity, ISplashable
 	public void Extinguish()
 	{
 		CancelInvoke(Extinguish);
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			Kill();
 		}
@@ -282,7 +282,7 @@ public class FireBall : BaseEntity, ISplashable
 
 	public bool WantsSplash(ItemDefinition splashType, int amount)
 	{
-		return !base.IsDestroyed;
+		return !IsDestroyed;
 	}
 
 	public int DoSplash(ItemDefinition splashType, int amount)
@@ -307,15 +307,5 @@ public class FireBall : BaseEntity, ISplashable
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		lifeTimeMin = 20f;
-		lifeTimeMax = 40f;
-		tickRate = 0.5f;
-		damagePerSecond = 2f;
-		radius = 0.5f;
-		waterToExtinguish = 200;
-		AttackLayers = LayerMask.op_Implicit(1220225809);
-		siegeWeaponDamageScale = 0.2f;
-		lastPos = Vector3.zero;
-		base._002Ector();
 	}
 }

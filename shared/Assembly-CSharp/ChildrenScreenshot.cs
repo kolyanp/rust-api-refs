@@ -6,27 +6,27 @@ using UnityEngine;
 
 public class ChildrenScreenshot : MonoBehaviour
 {
-	public Vector3 offsetAngle;
+	public Vector3 offsetAngle = new Vector3(0f, 0f, 1f);
 
-	public int width;
+	public int width = 512;
 
-	public int height;
+	public int height = 512;
 
-	public float fieldOfView;
+	public float fieldOfView = 70f;
 
 	[Tooltip("0 = full recursive name, 1 = object name")]
-	public string folder;
+	public string folder = "screenshots/{0}.png";
 
 	[ContextMenu("Create Screenshots")]
 	public void CreateScreenshots()
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Expected O, but got Unknown
+		//IL_0013: Expected Obj, but got Unknown
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Expected O, but got Unknown
+		//IL_0019: Expected Obj, but got Unknown
 		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Expected O, but got Unknown
+		//IL_00aa: Expected Obj, but got Unknown
 		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
 		RenderTexture val = new RenderTexture(width, height, 0);
 		GameObject val2 = new GameObject();
@@ -72,6 +72,7 @@ public class ChildrenScreenshot : MonoBehaviour
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
@@ -83,37 +84,30 @@ public class ChildrenScreenshot : MonoBehaviour
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		Bounds bounds = default(Bounds);
-		((Bounds)(ref bounds))._002Ector(obj.transform.position, Vector3.zero * 0.1f);
+		Bounds val = new Bounds(obj.transform.position, Vector3.zero * 0.1f);
 		bool flag = true;
 		Renderer[] componentsInChildren = obj.GetComponentsInChildren<Renderer>();
-		foreach (Renderer val in componentsInChildren)
+		foreach (Renderer val2 in componentsInChildren)
 		{
 			if (flag)
 			{
-				bounds = val.bounds;
+				val = val2.bounds;
 				flag = false;
 			}
 			else
 			{
-				((Bounds)(ref bounds)).Encapsulate(val.bounds);
+				val.Encapsulate(val2.bounds);
 			}
 		}
-		Vector3 size = ((Bounds)(ref bounds)).size;
-		float num = ((Vector3)(ref size)).magnitude * 0.5f / Mathf.Tan(cam.fieldOfView * 0.5f * (MathF.PI / 180f));
-		((Component)cam).transform.position = ((Bounds)(ref bounds)).center + obj.transform.TransformVector(((Vector3)(ref offsetAngle)).normalized) * num;
-		((Component)cam).transform.LookAt(((Bounds)(ref bounds)).center);
+		Vector3 size = val.size;
+		float num = size.magnitude * 0.5f / Mathf.Tan(cam.fieldOfView * 0.5f * (MathF.PI / 180f));
+		((Component)cam).transform.position = val.center + obj.transform.TransformVector(offsetAngle.normalized) * num;
+		((Component)cam).transform.LookAt(val.center);
 	}
 
 	public ChildrenScreenshot()
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		offsetAngle = new Vector3(0f, 0f, 1f);
-		width = 512;
-		height = 512;
-		fieldOfView = 70f;
-		folder = "screenshots/{0}.png";
-		((MonoBehaviour)this)._002Ector();
 	}
 }

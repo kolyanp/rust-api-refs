@@ -25,7 +25,7 @@ public static class AssetStorage
 		if (Object.op_Implicit((Object)(object)asset))
 		{
 			Object.Destroy((Object)(object)asset);
-			asset = default(T);
+			asset = default;
 		}
 	}
 }

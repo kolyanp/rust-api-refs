@@ -69,6 +69,14 @@ public abstract class Trans_Composite : FSMTransitionBase, IEnumerable<FSMTransi
 		}
 	}
 
+	public override void OnTransitionConfirmed(FSMStateBase entered)
+	{
+		foreach (FSMTransitionBase transition in transitions)
+		{
+			transition.OnTransitionConfirmed(entered);
+		}
+	}
+
 	protected virtual string GetNameSeparator()
 	{
 		return " ";

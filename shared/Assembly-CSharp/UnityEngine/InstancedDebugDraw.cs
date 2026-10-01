@@ -1,7 +1,7 @@
 namespace UnityEngine;
 
-[DisallowMultipleComponent]
 [RequireComponent(typeof(Camera))]
+[DisallowMultipleComponent]
 public class InstancedDebugDraw : SingletonComponent<InstancedDebugDraw>
 {
 	public Material overlayMaterial;

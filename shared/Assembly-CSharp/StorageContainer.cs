@@ -11,27 +11,27 @@ using UnityEngine.Assertions;
 public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEntity, ILootableEntity, IInventoryProvider, LootPanel.IHasLootPanel, IContainerSounds, IIndustrialStorageCallbackReceiver, PlayerInventory.ICanMoveFrom
 {
 	[Header("Storage Container")]
-	public static readonly Phrase LockedMessage;
+	public static readonly Phrase LockedMessage = new Phrase("storage.locked", "Can't loot right now");
 
-	public static readonly Phrase InUseMessage;
+	public static readonly Phrase InUseMessage = new Phrase("storage.in_use", "Already in use");
 
-	public int inventorySlots;
+	public int inventorySlots = 6;
 
-	public bool dropsLoot;
+	public bool dropsLoot = true;
 
 	public float dropLootDestroyPercent;
 
 	public bool dropFloats;
 
-	public bool isLootable;
+	public bool isLootable = true;
 
-	public bool isLockable;
+	public bool isLockable = true;
 
 	public bool isMonitorable;
 
-	public string panelName;
+	public string panelName = "generic";
 
-	public Phrase panelTitle;
+	public Phrase panelTitle = new Phrase("loot", "Loot");
 
 	public ItemContainer.ContentsType allowedContents;
 
@@ -52,7 +52,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	public bool allowSorting;
 
 	[ServerVar(Help = "(Generated) When enabled, storage containers without a lock can still require tool cupboard auth to access; default false")]
-	public static bool canRequireAuthIfNoLock;
+	public static bool canRequireAuthIfNoLock = false;
 
 	public bool mustBeMountedToUse;
 
@@ -63,9 +63,9 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	[Header("Item Dropping")]
 	public Vector3 dropPosition;
 
-	public Vector3 dropVelocity;
+	public Vector3 dropVelocity = Vector3.forward;
 
-	public ItemCategory onlyAcceptCategory;
+	public ItemCategory onlyAcceptCategory = ItemCategory.All;
 
 	public bool onlyOneUser;
 
@@ -73,7 +73,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	public static bool dropCorpseOnDeath;
 
 	[ServerVar(Help = "(Generated) Fraction of items preserved when a storage container spawns a death corpse; 0.5 = 50% of items survive the container death")]
-	public static float corpseItemsSavedPercent;
+	public static float corpseItemsSavedPercent = 0.5f;
 
 	public ItemContainer _inventory;
 
@@ -124,7 +124,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
-						if (!RPC_Server.IsVisible.Test(331989034u, "RPC_OpenLoot", this, player, 3f))
+						if (!RPC_Server.IsVisibleTwoWay.Test(331989034u, "RPC_OpenLoot", this, player, 3f))
 						{
 							return true;
 						}
@@ -217,9 +217,9 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 
 	protected override bool CanCompletePickup(BasePlayer player)
 	{
-		bool num = (Object)(object)GetSlot(Slot.Lock) != (Object)null;
+		bool flag = (Object)(object)GetSlot(Slot.Lock) != (Object)null;
 		pickupErrorToFormat.arg0 = pickup.itemTarget.displayName;
-		if (num)
+		if (flag)
 		{
 			pickupErrorToFormat.format = PickupErrors.ItemHasLock;
 			return false;
@@ -269,19 +269,19 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	{
 	}
 
-	public virtual void OnItemAddedOrRemoved(Item item, bool added)
+	public virtual void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 	}
 
-	public virtual void OnItemAddedToStack(Item item, int amount)
+	public virtual void OnItemAddedToStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
 	}
 
-	public virtual void OnItemRemovedFromStack(Item item, int amount)
+	public virtual void OnItemRemovedFromStack(Item item, int amount, BasePlayer sourcePlayer)
 	{
 	}
 
-	public virtual void OnItemPositionChanged(Item item, int from, int to)
+	public virtual void OnItemPositionChanged(Item item, int from, int to, BasePlayer sourcePlayer)
 	{
 	}
 
@@ -304,7 +304,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 		Debug.Assert(_inventory == null, "Double init of inventory!");
 		_inventory = Pool.Get<ItemContainer>();
 		_inventory.entityOwner = this;
-		_inventory.allowedContents = ((allowedContents == (ItemContainer.ContentsType)0) ? ItemContainer.ContentsType.Generic : allowedContents);
+		_inventory.allowedContents = ((allowedContents == 0) ? ItemContainer.ContentsType.Generic : allowedContents);
 		_inventory.SetOnlyAllowedItems(allowedItems, allowedItem, allowedItem2);
 		_inventory.SetBlacklist(blockedItems);
 		_inventory.maxStackSize = maxStackSize;
@@ -359,7 +359,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		if (_inventory != null && !((ItemContainerId)(ref _inventory.uid)).IsValid)
+		if (_inventory != null && !_inventory.uid.IsValid)
 		{
 			_inventory.GiveUID();
 		}
@@ -376,8 +376,8 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 		}
 	}
 
+	[RPC_Server.IsVisibleTwoWay(3f)]
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (isLootable)
@@ -561,7 +561,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		Matrix4x4 localToWorldMatrix = ((Component)this).transform.localToWorldMatrix;
-		return ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint(dropPosition);
+		return localToWorldMatrix.MultiplyPoint(dropPosition);
 	}
 
 	public override Vector3 GetDropVelocity()
@@ -574,7 +574,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 inheritedDropVelocity = GetInheritedDropVelocity();
 		Matrix4x4 localToWorldMatrix = ((Component)this).transform.localToWorldMatrix;
-		return inheritedDropVelocity + ((Matrix4x4)(ref localToWorldMatrix)).MultiplyVector(dropPosition);
+		return inheritedDropVelocity + localToWorldMatrix.MultiplyVector(dropPosition);
 	}
 
 	public virtual bool ShouldDropItemsIndividually()
@@ -608,7 +608,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		return default(ItemContainerId);
+		return default;
 	}
 
 	public virtual void GetAllInventories(List<ItemContainer> list)
@@ -700,29 +700,16 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	public StorageContainer()
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		inventorySlots = 6;
-		dropsLoot = true;
-		isLootable = true;
-		isLockable = true;
-		panelName = "generic";
-		panelTitle = new Phrase("loot", "Loot");
-		dropVelocity = Vector3.forward;
-		onlyAcceptCategory = ItemCategory.All;
-		base._002Ector();
 	}
 
 	static StorageContainer()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		LockedMessage = new Phrase("storage.locked", "Can't loot right now");
-		InUseMessage = new Phrase("storage.in_use", "Already in use");
-		canRequireAuthIfNoLock = false;
-		corpseItemsSavedPercent = 0.5f;
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

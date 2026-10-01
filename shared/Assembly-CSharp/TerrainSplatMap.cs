@@ -133,18 +133,18 @@ public class TerrainSplatMap : TerrainMap<byte>
 	public void GenerateTextures()
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Expected O, but got Unknown
+		//IL_0027: Expected Obj, but got Unknown
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a0: Expected O, but got Unknown
+		//IL_00a0: Expected Obj, but got Unknown
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		SplatTexture0 = new Texture2D(res, res, (TextureFormat)4, false, true);
 		((Object)SplatTexture0).name = "SplatTexture0";
 		((Texture)SplatTexture0).wrapMode = (TextureWrapMode)1;
 		NativeArray<Color32> cols = SplatTexture0.GetPixelData<Color32>(0);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 			for (int i = 0; i < res; i++)
@@ -172,7 +172,7 @@ public class TerrainSplatMap : TerrainMap<byte>
 		((Object)SplatTexture1).name = "SplatTexture1";
 		((Texture)SplatTexture1).wrapMode = (TextureWrapMode)1;
 		NativeArray<Color32> cols2 = SplatTexture1.GetPixelData<Color32>(0);
-		Parallel.For(0, res, delegate(int z)
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_011e: Unknown result type (might be due to invalid IL or missing references)
 			for (int i = 0; i < res; i++)
@@ -470,7 +470,7 @@ public class TerrainSplatMap : TerrainMap<byte>
 	public void SetSplat(float normX, float normZ, int id, float opacity, float radius, float fade = 0f)
 	{
 		int idx = TerrainSplat.TypeToIndex(id);
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if (lerp > 0f)
 			{
@@ -494,7 +494,7 @@ public class TerrainSplatMap : TerrainMap<byte>
 	public void AddSplat(float normX, float normZ, int id, float delta, float radius, float fade = 0f)
 	{
 		int idx = TerrainSplat.TypeToIndex(id);
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if (lerp > 0f)
 			{
@@ -534,7 +534,7 @@ public class TerrainSplatMap : TerrainMap<byte>
 			b_idx = TerrainSplat.TypeToIndex(2);
 			break;
 		}
-		Action<int, int, float> action = delegate(int x, int z, float lerp)
+		Action<int, int, float> action = (int x, int z, float lerp) =>
 		{
 			if (lerp > 0f)
 			{

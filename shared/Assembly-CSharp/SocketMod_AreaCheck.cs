@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class SocketMod_AreaCheck : SocketMod
 {
-	public Bounds bounds;
+	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one * 0.1f);
 
 	public LayerMask layerMask;
 
-	public bool wantsInside;
+	public bool wantsInside = true;
 
 	public bool ignoreAntiLargeVehicleCheck;
 
-	private Phrase lastError;
+	private Phrase lastError = new Phrase("", "");
 
 	protected override Phrase ErrorPhrase => lastError;
 
@@ -23,7 +23,7 @@ public class SocketMod_AreaCheck : SocketMod
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		List<Collider> list = Pool.Get<List<Collider>>();
-		GamePhysics.OverlapOBB(obb, list, ((LayerMask)(ref layerMask)).value, (QueryTriggerInteraction)0);
+		GamePhysics.OverlapOBB(obb, list, layerMask.value, (QueryTriggerInteraction)0);
 		foundParent = false;
 		if ((Object)(object)ignoredEntity != (Object)null)
 		{
@@ -55,7 +55,7 @@ public class SocketMod_AreaCheck : SocketMod
 				if (parentEntity is PlayerBoat playerBoat)
 				{
 					OBB val = playerBoat.WorldSpaceBounds();
-					if (((OBB)(ref val)).Contains(position))
+					if (val.Contains(position))
 					{
 						foundParent = true;
 					}
@@ -97,7 +97,7 @@ public class SocketMod_AreaCheck : SocketMod
 	{
 		if (!check.ignoreAntiLargeVehicleCheck)
 		{
-			return (((LayerMask)(ref check.layerMask)).value & 0x8000000) != 0;
+			return (check.layerMask.value & 0x8000000) != 0;
 		}
 		return true;
 	}
@@ -181,10 +181,6 @@ public class SocketMod_AreaCheck : SocketMod
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Expected O, but got Unknown
-		bounds = new Bounds(Vector3.zero, Vector3.one * 0.1f);
-		wantsInside = true;
-		lastError = new Phrase("", "");
-		base._002Ector();
+		//IL_003b: Expected Obj, but got Unknown
 	}
 }

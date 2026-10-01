@@ -10,10 +10,10 @@ public class FImp_ColliderData_Terrain : FImp_ColliderData_Base
 
 	public FImp_ColliderData_Terrain(TerrainCollider collider)
 	{
-		base.Collider = (Collider)(object)collider;
-		base.Transform = ((Component)collider).transform;
+		Collider = (Collider)(object)collider;
+		Transform = ((Component)collider).transform;
 		TerrCollider = collider;
-		base.ColliderType = EFColliderType.Terrain;
+		ColliderType = EFColliderType.Terrain;
 		TerrainComponent = ((Component)collider).GetComponent<Terrain>();
 	}
 
@@ -67,7 +67,7 @@ public class FImp_ColliderData_Terrain : FImp_ColliderData_Base
 		Vector3 val2 = val;
 		val2.y = ((Component)TerrCollider).transform.position.y + TerrainComponent.SampleHeight(val);
 		Vector3 val3 = val - val2;
-		float magnitude = ((Vector3)(ref val3)).magnitude;
+		float magnitude = val3.magnitude;
 		float num = 1f;
 		if (val.y < val2.y)
 		{
@@ -80,7 +80,7 @@ public class FImp_ColliderData_Terrain : FImp_ColliderData_Base
 		if (magnitude < segmentRadius * num)
 		{
 			Vector3 val4 = val2 - val;
-			Vector3 val5 = ((!(num > 1f)) ? (val4 - ((Vector3)(ref val4)).normalized * segmentRadius) : (val4 + ((Vector3)(ref val4)).normalized * segmentRadius));
+			Vector3 val5 = ((!(num > 1f)) ? (val4 - val4.normalized * segmentRadius) : (val4 + val4.normalized * segmentRadius));
 			segmentPosition += val5;
 			return true;
 		}
@@ -95,6 +95,7 @@ public class FImp_ColliderData_Terrain : FImp_ColliderData_Base
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
@@ -123,26 +124,25 @@ public class FImp_ColliderData_Terrain : FImp_ColliderData_Base
 		Terrain component = ((Component)terrainCollider).GetComponent<Terrain>();
 		Vector3 val = point;
 		val.y = ((Component)terrainCollider).transform.position.y + component.SampleHeight(point) + segmentRadius;
-		Ray val2 = default(Ray);
-		((Ray)(ref val2))._002Ector(val, Vector3.down);
-		RaycastHit val3 = default(RaycastHit);
+		Ray val2 = new Ray(val, Vector3.down);
+		RaycastHit val3 = default;
 		if (((Collider)terrainCollider).Raycast(val2, ref val3, segmentRadius * 2f))
 		{
-			Vector3 val4 = point - ((RaycastHit)(ref val3)).point;
-			float magnitude = ((Vector3)(ref val4)).magnitude;
+			Vector3 val4 = point - val3.point;
+			float magnitude = val4.magnitude;
 			float num = 1f;
-			if (((RaycastHit)(ref val3)).point.y > point.y + segmentRadius * 0.9f)
+			if (val3.point.y > point.y + segmentRadius * 0.9f)
 			{
 				num = 8f;
 			}
-			else if (((RaycastHit)(ref val3)).point.y > point.y)
+			else if (val3.point.y > point.y)
 			{
 				num = 4f;
 			}
 			if (magnitude < segmentRadius * num)
 			{
-				Vector3 val5 = ((RaycastHit)(ref val3)).point - point;
-				Vector3 val6 = ((!(num > 1f)) ? (val5 - ((Vector3)(ref val5)).normalized * segmentRadius) : (val5 + ((Vector3)(ref val5)).normalized * segmentRadius));
+				Vector3 val5 = val3.point - point;
+				Vector3 val6 = ((!(num > 1f)) ? (val5 - val5.normalized * segmentRadius) : (val5 + val5.normalized * segmentRadius));
 				point += val6;
 			}
 		}

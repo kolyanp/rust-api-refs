@@ -50,13 +50,13 @@ public class State_ScientistSurprised : FSMStateBase
 		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTargetLKP(out var lkp))
+		if (!Senses.FindTargetLKP(out var lkp))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		startRotation = ((Component)Owner).transform.rotation;
-		base.Agent.overrideDirectionWS = Vector3Ex.NormalizeXZ(startRotation * Vector3.forward);
-		base.Agent.Pause(this);
+		Agent.overrideDirectionWS = Vector3Ex.NormalizeXZ(startRotation * Vector3.forward);
+		Agent.Pause(this);
 		Shooting.AllowShooting = false;
 		Shooting.AllowBeingAccurate = false;
 		BarkComponent.PlayVoicelineFromCategory(voicelineCategory);
@@ -64,8 +64,8 @@ public class State_ScientistSurprised : FSMStateBase
 		elapsedTimeShooting = 0f;
 		if (angularSpeedOverride > 0f)
 		{
-			previousAngularSpeed = base.Agent.angularSpeed;
-			base.Agent.angularSpeed = angularSpeedOverride;
+			previousAngularSpeed = Agent.angularSpeed;
+			Agent.angularSpeed = angularSpeedOverride;
 		}
 		wasSurprisedFromBehind = Vector3.Angle(((Component)Owner).transform.forward, Vector3Ex.WithY(lkp - ((Component)Owner).transform.position, 0f)) > 60f;
 		return base.OnStateEnter(payload);
@@ -84,7 +84,7 @@ public class State_ScientistSurprised : FSMStateBase
 		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: true, predict: false, ignoreCrouch: false))
+		if (!Senses.FindTargetLKP(out var lkp, applyHeightOffset: true, predict: false, ignoreCrouch: false))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -92,10 +92,10 @@ public class State_ScientistSurprised : FSMStateBase
 		elapsedTime += deltaTime;
 		if (!wasSurprisedFromBehind || !(elapsedTime < timeBeforeTurning))
 		{
-			Vector3 val = lkp - base.Senses.EyePosition;
-			base.Agent.overrideDirectionWS = val;
-			NavVector3 navVector = base.Agent.WorldToNavDirection(val);
-			base.Agent.Move(navVector.NormalizeXZ() * ((0f - deltaTime) * 1.7f));
+			Vector3 val = lkp - Senses.EyePosition;
+			Agent.overrideDirectionWS = val;
+			NavVector3 navVector = Agent.WorldToNavDirection(val);
+			Agent.Move(navVector.NormalizeXZ() * ((0f - deltaTime) * 1.7f));
 		}
 		if (elapsedTime >= minTimeBeforeShooting && Vector3.Angle(((Component)Owner).transform.forward, Vector3Ex.WithY(lkp - ((Component)Owner).transform.position, 0f)) <= 5f)
 		{
@@ -120,10 +120,10 @@ public class State_ScientistSurprised : FSMStateBase
 	{
 		if (angularSpeedOverride > 0f)
 		{
-			base.Agent.angularSpeed = previousAngularSpeed;
+			Agent.angularSpeed = previousAngularSpeed;
 		}
-		base.Agent.overrideDirectionWS = null;
-		base.Agent.Unpause(this);
+		Agent.overrideDirectionWS = null;
+		Agent.Unpause(this);
 		Shooting.AllowShooting = true;
 		Shooting.AllowBeingAccurate = true;
 		base.OnStateExit();

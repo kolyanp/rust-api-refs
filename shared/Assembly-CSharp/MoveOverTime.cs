@@ -33,7 +33,7 @@ public class MoveOverTime : MonoBehaviour
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		Transform transform = ((Component)this).transform;
 		Quaternion val = ((Component)this).transform.rotation;
-		transform.rotation = Quaternion.Euler(((Quaternion)(ref val)).eulerAngles + rotation * speed * Time.deltaTime);
+		transform.rotation = Quaternion.Euler(val.eulerAngles + rotation * speed * Time.deltaTime);
 		Transform transform2 = ((Component)this).transform;
 		transform2.localScale += scale * speed * Time.deltaTime;
 		Transform transform3 = ((Component)this).transform;

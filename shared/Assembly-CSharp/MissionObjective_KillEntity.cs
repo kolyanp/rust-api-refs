@@ -6,7 +6,7 @@ public class MissionObjective_KillEntity : MissionObjective
 {
 	public BaseEntityRef[] targetEntities;
 
-	public LayerMask targetLayerMask;
+	public LayerMask targetLayerMask = LayerMask.op_Implicit(-1);
 
 	public int numToKill;
 
@@ -19,11 +19,11 @@ public class MissionObjective_KillEntity : MissionObjective
 	[Tooltip("If enabled, the player must be within the defined distance threshold of the team member which initiated the kill for the objective to progress.")]
 	public bool enableDistanceThresholdForTeamkills;
 
-	public float teamkillDistanceThreshold;
+	public float teamkillDistanceThreshold = 50f;
 
-	public Enum mustBeInBiome;
+	public Enum mustBeInBiome = (Enum)(-1);
 
-	private readonly HashSet<uint> targetPrefabIDs;
+	private readonly HashSet<uint> targetPrefabIDs = new HashSet<uint>();
 
 	private bool isInitialized;
 
@@ -163,7 +163,7 @@ public class MissionObjective_KillEntity : MissionObjective
 			sinceLastThink = RealTimeSince.op_Implicit(0f);
 			EnsureInitialized();
 			assignee.DeregisterPingedEntitiesOfType(BasePlayer.PingType.Hostile);
-			if (pingTargets && TryFindNearby<BaseCombatEntity>(((Component)assignee).transform.position, ((LayerMask)(ref targetLayerMask)).value, out var entity, 200f))
+			if (pingTargets && TryFindNearby<BaseCombatEntity>(((Component)assignee).transform.position, targetLayerMask.value, out var entity, 200f))
 			{
 				SetObjectiveWorldLocation(index, instance, ((Component)entity).transform.position);
 				assignee.MissionsDirty();
@@ -177,10 +177,5 @@ public class MissionObjective_KillEntity : MissionObjective
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		targetLayerMask = LayerMask.op_Implicit(-1);
-		teamkillDistanceThreshold = 50f;
-		mustBeInBiome = (Enum)(-1);
-		targetPrefabIDs = new HashSet<uint>();
-		base._002Ector();
 	}
 }

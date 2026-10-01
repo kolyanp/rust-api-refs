@@ -28,7 +28,7 @@ public class Ballista : BaseSiegeWeapon
 
 	private BallistaGun GetBallistaGun()
 	{
-		BallistaGun ballistaGun = ballistaGunRef.Get(base.isServer);
+		BallistaGun ballistaGun = ballistaGunRef.Get(isServer);
 		if (ballistaGun.IsValid())
 		{
 			return ballistaGun;
@@ -71,9 +71,9 @@ public class Ballista : BaseSiegeWeapon
 	private void RotateDismountPositions()
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)ballistaGunRef.Get(base.isServer) != (Object)null)
+		if ((Object)(object)ballistaGunRef.Get(isServer) != (Object)null)
 		{
-			dismountPositionsParent.rotation = ((Component)ballistaGunRef.Get(base.isServer)).transform.rotation;
+			dismountPositionsParent.rotation = ((Component)ballistaGunRef.Get(isServer)).transform.rotation;
 		}
 	}
 
@@ -82,7 +82,7 @@ public class Ballista : BaseSiegeWeapon
 		base.ServerInit();
 		mountPose = PlayerModel.MountPoses.StandDrive;
 		DisablePhysics();
-		Invoke(base.EnablePhysics, 1f);
+		Invoke(EnablePhysics, 1f);
 	}
 
 	public override BasePlayer GetMounted()
@@ -112,7 +112,7 @@ public class Ballista : BaseSiegeWeapon
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		base.VehicleFixedUpdate();
 		Vector3 worldVelocity = GetWorldVelocity();
-		if (((Vector3)(ref worldVelocity)).magnitude > 5f || IsFlipping())
+		if (worldVelocity.magnitude > 5f || IsFlipping())
 		{
 			DismountAllPlayers();
 		}
@@ -134,7 +134,7 @@ public class Ballista : BaseSiegeWeapon
 		if (!((Object)(object)rigidBody == (Object)null))
 		{
 			Vector3 val = Vector3.ProjectOnPlane(((Component)this).transform.position - player.eyes.position, ((Component)this).transform.up);
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			float num = rigidBody.mass * 2.4f;
 			rigidBody.AddForce(normalized * num, (ForceMode)1);
 		}

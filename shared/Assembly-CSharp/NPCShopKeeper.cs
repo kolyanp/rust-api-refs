@@ -52,11 +52,11 @@ public class NPCShopKeeper : NPCPlayer
 
 	public InvisibleVendingMachine GetVendingMachine()
 	{
-		if (!invisibleVendingMachineRef.IsValid(base.isServer))
+		if (!invisibleVendingMachineRef.IsValid(isServer))
 		{
 			return null;
 		}
-		return ((Component)invisibleVendingMachineRef.Get(base.isServer)).GetComponent<InvisibleVendingMachine>();
+		return ((Component)invisibleVendingMachineRef.Get(isServer)).GetComponent<InvisibleVendingMachine>();
 	}
 
 	public override void UpdateProtectionFromClothing()
@@ -71,7 +71,7 @@ public class NPCShopKeeper : NPCPlayer
 	public override void OnDied(HitInfo info)
 	{
 		base.OnDied(info);
-		if ((Object)(object)invisibleVendingMachineRef.Get(base.isServer) != (Object)null && invisibleVendingMachineRef.Get(base.isServer) is InvisibleVendingMachine invisibleVendingMachine)
+		if ((Object)(object)invisibleVendingMachineRef.Get(isServer) != (Object)null && invisibleVendingMachineRef.Get(isServer) is InvisibleVendingMachine invisibleVendingMachine)
 		{
 			invisibleVendingMachine.SetAttachedNPC(null);
 		}
@@ -114,7 +114,7 @@ public class NPCShopKeeper : NPCPlayer
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		base.PostInitShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			if ((Object)(object)machine == (Object)null)
 			{
@@ -169,7 +169,7 @@ public class NPCShopKeeper : NPCPlayer
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)base.eyes == (Object)null)
+		if ((Object)(object)eyes == (Object)null)
 		{
 			return;
 		}
@@ -192,7 +192,7 @@ public class NPCShopKeeper : NPCPlayer
 				BasePlayer basePlayer2 = null;
 				foreach (BasePlayer item in (List<BasePlayer>)(object)val)
 				{
-					if (!item.isClient && !item.IsNpc && !((Object)(object)item == (Object)(object)this) && item.IsVisible(base.eyes.position) && !((Object)(object)item == (Object)(object)lastWavedAtPlayer) && !(Vector3.Dot(Vector3Ex.Direction2D(item.eyes.position, base.eyes.position), initialFacingDir) < 0.2f))
+					if (!item.isClient && !item.IsNpc && !((Object)(object)item == (Object)(object)this) && item.IsVisible(eyes.position) && !((Object)(object)item == (Object)(object)lastWavedAtPlayer) && !(Vector3.Dot(Vector3Ex.Direction2D(item.eyes.position, eyes.position), initialFacingDir) < 0.2f))
 					{
 						basePlayer2 = item;
 						break;
@@ -205,7 +205,7 @@ public class NPCShopKeeper : NPCPlayer
 				if ((Object)(object)basePlayer2 != (Object)null)
 				{
 					ClientRPC(RpcTarget.NetworkGroup("ClientNotifyShopEvent"), 4);
-					SetAimDirection(Vector3Ex.Direction2D(basePlayer2.eyes.position, base.eyes.position));
+					SetAimDirection(Vector3Ex.Direction2D(basePlayer2.eyes.position, eyes.position));
 					lastWavedAtPlayer = basePlayer2;
 				}
 				else

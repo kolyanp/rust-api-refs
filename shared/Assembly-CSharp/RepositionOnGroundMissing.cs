@@ -6,7 +6,7 @@ public class RepositionOnGroundMissing : EntityComponent<BaseEntity>, IServerCom
 
 	public bool killIfInvalid;
 
-	public LayerMask castLayers;
+	public LayerMask castLayers = LayerMask.op_Implicit(10551552);
 
 	private void OnGroundMissing()
 	{
@@ -55,8 +55,8 @@ public class RepositionOnGroundMissing : EntityComponent<BaseEntity>, IServerCom
 			Quaternion rotation = ((Component)baseCombatEntity).transform.rotation;
 			if (GamePhysics.Trace(new Ray(((Component)this).transform.position, Vector3.down), 0f, out var hitInfo, 100f, LayerMask.op_Implicit(castLayers), (QueryTriggerInteraction)0))
 			{
-				position = ((RaycastHit)(ref hitInfo)).point;
-				rotation = Quaternion.FromToRotation(((Component)baseEntity).transform.up, ((RaycastHit)(ref hitInfo)).normal) * ((Component)baseCombatEntity).transform.rotation;
+				position = hitInfo.point;
+				rotation = Quaternion.FromToRotation(((Component)baseEntity).transform.up, hitInfo.normal) * ((Component)baseCombatEntity).transform.rotation;
 			}
 			else
 			{
@@ -88,7 +88,5 @@ public class RepositionOnGroundMissing : EntityComponent<BaseEntity>, IServerCom
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		castLayers = LayerMask.op_Implicit(10551552);
-		base._002Ector();
 	}
 }

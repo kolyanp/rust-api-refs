@@ -21,7 +21,7 @@ public struct ValidateOverlapSphereCommandsJob : IJob
 		for (int i = 0; i < Commands.Length; i++)
 		{
 			OverlapSphereCommand val = Commands[i];
-			if (((OverlapSphereCommand)(ref val)).radius < 0f)
+			if (val.radius < 0f)
 			{
 				InvalidIndices.AddNoResize(i);
 			}

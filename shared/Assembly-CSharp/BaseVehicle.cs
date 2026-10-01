@@ -110,12 +110,12 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 
 			public void EnterPool()
 			{
-				Value = default(Enumerator);
+				Value = default;
 			}
 
 			public void LeavePool()
 			{
-				Value = default(Enumerator);
+				Value = default;
 			}
 		}
 
@@ -299,7 +299,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 
 	private readonly List<BaseVehicle> childVehicles = new List<BaseVehicle>(0);
 
-	public bool IsClient => base.isClient;
+	public bool IsClient => isClient;
 
 	public virtual bool AlwaysAllowBradleyTargeting => false;
 
@@ -474,7 +474,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		if (!base.isServer || !info.forDisk)
+		if (!isServer || !info.forDisk)
 		{
 			return;
 		}
@@ -496,12 +496,12 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.fromDisk && info.msg.baseVehicle != null)
+		if (isServer && info.fromDisk && info.msg.baseVehicle != null)
 		{
-			BaseVehicle obj = pendingLoad;
-			if (obj != null)
+			BaseVehicle val = pendingLoad;
+			if (val != null)
 			{
-				obj.Dispose();
+				val.Dispose();
 			}
 			pendingLoad = info.msg.baseVehicle;
 			info.msg.baseVehicle = null;
@@ -576,7 +576,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 				{
 					flag = true;
 				}
-				if (flag && Physics.CheckBox(((Component)this).transform.TransformPoint(((Bounds)(ref bounds)).center), ((Bounds)(ref bounds)).extents, ((Component)this).transform.rotation, GetClipCheckMask()))
+				if (flag && Physics.CheckBox(((Component)this).transform.TransformPoint(bounds.center), bounds.extents, ((Component)this).transform.rotation, GetClipCheckMask()))
 				{
 					CheckSeatsForClipping();
 				}
@@ -775,7 +775,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 			savedCollisionDetectionMode = rigidBody.collisionDetectionMode;
 		}
 		OBB val = WorldSpaceBounds();
-		lastNavmeshBuildBounds = ((OBB)(ref val)).ToBounds();
+		lastNavmeshBuildBounds = val.ToBounds();
 		lastPosition = ((Component)this).transform.position;
 		lastNavmeshMoveTime = Time.time;
 		navmeshRebuildPending = false;
@@ -832,7 +832,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		{
 			RustNavigation.Instance.RebuildTilesInBounds(lastNavmeshBuildBounds);
 			OBB val = WorldSpaceBounds();
-			lastNavmeshBuildBounds = ((OBB)(ref val)).ToBounds();
+			lastNavmeshBuildBounds = val.ToBounds();
 			RustNavigation.Instance.RebuildTilesInBounds(lastNavmeshBuildBounds);
 		}
 	}
@@ -894,10 +894,10 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 				}
 			}
 		}
-		BaseVehicle obj = pendingLoad;
-		if (obj != null)
+		BaseVehicle val = pendingLoad;
+		if (val != null)
 		{
-			obj.Dispose();
+			val.Dispose();
 		}
 		pendingLoad = null;
 		for (int i = 0; i < mountPoints.Count; i++)
@@ -910,7 +910,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 	public override void Spawn()
 	{
 		base.Spawn();
-		if (base.isServer && !Application.isLoadingSave)
+		if (isServer && !Application.isLoadingSave)
 		{
 			SpawnSubEntities();
 		}
@@ -1308,9 +1308,9 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		if ((Object)(object)owner != (Object)null)
 		{
 			creatorEntity = owner;
-			base.OwnerID = owner.userID;
+			OwnerID = owner.userID;
 			bool b = true;
-			BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(base.isServer);
+			BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(isServer);
 			if ((Object)(object)activeGameMode != (Object)null && !activeGameMode.safeZone)
 			{
 				b = false;
@@ -1499,7 +1499,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		ContactPoint contact = collision.GetContact(0);
-		TryShowCollisionFX(((ContactPoint)(ref contact)).point, effectGO);
+		TryShowCollisionFX(contact.point, effectGO);
 	}
 
 	public void TryShowCollisionFX(Vector3 contactPoint, GameObjectRef effectGO)
@@ -1629,7 +1629,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 			if (dismountStyle == DismountStyle.Closest)
 			{
 				Vector3 comparePos = player.TriggerPoint();
-				list.Sort(delegate(Transform a, Transform b)
+				list.Sort((Transform a, Transform b) =>
 				{
 					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -1793,7 +1793,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		else
 		{
 			Vector3 val2 = Vector3.ProjectOnPlane(((Component)this).transform.position - player.eyes.position, ((Component)this).transform.up);
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			float pushActionForce = GetPushActionForce();
 			rigidBody.AddForce(normalized * pushActionForce, (ForceMode)1);
 		}
@@ -1962,7 +1962,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 			}
 			return false;
 		}
-		if (base.isServer)
+		if (isServer)
 		{
 			foreach (MountPointInfo allMountPoint in allMountPoints)
 			{
@@ -1977,7 +1977,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 
 	public override bool CanBeLooted(BasePlayer player)
 	{
-		if (IsAlive() && !base.IsDestroyed)
+		if (IsAlive() && !IsDestroyed)
 		{
 			return (Object)(object)player != (Object)null;
 		}
@@ -2036,7 +2036,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (!IsDead() && !base.IsDestroyed && child is BaseVehicle baseVehicle && !baseVehicle.IsVehicleRoot() && !childVehicles.Contains(baseVehicle))
+		if (!IsDead() && !IsDestroyed && child is BaseVehicle baseVehicle && !baseVehicle.IsVehicleRoot() && !childVehicles.Contains(baseVehicle))
 		{
 			childVehicles.Add(baseVehicle);
 		}

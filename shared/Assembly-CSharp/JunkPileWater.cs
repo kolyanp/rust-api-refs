@@ -25,22 +25,22 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 
 	public static JunkpileWaterWorkQueue junkpileWaterWorkQueue = new JunkpileWaterWorkQueue();
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing junk pile updates per frame")]
+	[ServerVar]
 	public static float framebudgetms = 0.05f;
 
 	public Transform[] buoyancyPoints;
 
 	public bool debugDraw;
 
-	public float updateCullRange;
+	public float updateCullRange = 16f;
 
-	public float VehicleCheckRadius;
+	public float VehicleCheckRadius = 5f;
 
 	public Rigidbody Body;
 
 	[Range(0f, 1f)]
-	public float buoyancyAmplitude;
+	public float buoyancyAmplitude = 1f;
 
 	[ServerVar]
 	public static bool DestroyableByPlayerBoats = true;
@@ -53,9 +53,9 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 
 	private Action updateMovementFixedTick;
 
-	private Quaternion baseRotation;
+	private Quaternion baseRotation = Quaternion.identity;
 
-	private bool first;
+	private bool first = true;
 
 	private bool hasPlayersNearby;
 
@@ -80,7 +80,7 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 		((Component)this).transform.position = position;
 		base.Spawn();
 		Quaternion rotation = ((Component)this).transform.rotation;
-		baseRotation = Quaternion.Euler(0f, ((Quaternion)(ref rotation)).eulerAngles.y, 0f);
+		baseRotation = Quaternion.Euler(0f, rotation.eulerAngles.y, 0f);
 		if (Physics.CheckSphere(((Component)this).transform.position, VehicleCheckRadius, 134217728))
 		{
 			Kill();
@@ -153,6 +153,7 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
@@ -216,17 +217,16 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 			val.y = WaterLevel.GetWaterSurface(val, waves: true, volumes: false);
 			val2.y = WaterLevel.GetWaterSurface(val2, waves: true, volumes: false);
 			val3.y = WaterLevel.GetWaterSurface(val3, waves: true, volumes: false);
-			Vector3 val4 = default(Vector3);
-			((Vector3)(ref val4))._002Ector(position.x, val.y - localPosition.y, position.z);
+			Vector3 val4 = new Vector3(position.x, val.y - localPosition.y, position.z);
 			Vector3 val5 = val2 - val;
 			Vector3 val6 = Vector3.Cross(val3 - val, val5);
 			Quaternion val7 = Quaternion.LookRotation(new Vector3(val6.x, val6.z, val6.y));
-			Vector3 eulerAngles = ((Quaternion)(ref val7)).eulerAngles;
+			Vector3 eulerAngles = val7.eulerAngles;
 			val7 = Quaternion.Euler(0f - eulerAngles.x, 0f, 0f - eulerAngles.y);
 			if (first)
 			{
 				Quaternion rotation = forTransform.rotation;
-				baseRotation = Quaternion.Euler(0f, ((Quaternion)(ref rotation)).eulerAngles.y, 0f);
+				baseRotation = Quaternion.Euler(0f, rotation.eulerAngles.y, 0f);
 				first = false;
 			}
 			Vector3 val8 = Vector3.Lerp(forTransform.position, val4, movementMultiplier);
@@ -309,7 +309,7 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 		if (boat.rigidBody.mass >= MinimumPlayerBoatMassToBeDestroyed)
 		{
 			Vector3 linearVelocity = boat.rigidBody.linearVelocity;
-			return ((Vector3)(ref linearVelocity)).magnitude >= MinimumPlayerBoatVelocityToBeDestroyed;
+			return linearVelocity.magnitude >= MinimumPlayerBoatVelocityToBeDestroyed;
 		}
 		return false;
 	}
@@ -318,11 +318,5 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		updateCullRange = 16f;
-		VehicleCheckRadius = 5f;
-		buoyancyAmplitude = 1f;
-		baseRotation = Quaternion.identity;
-		first = true;
-		base._002Ector();
 	}
 }

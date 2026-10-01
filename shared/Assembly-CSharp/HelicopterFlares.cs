@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class HelicopterFlares : StorageContainer
 {
-	[Header("Helicopter Flares")]
 	[SerializeField]
+	[Header("Helicopter Flares")]
 	private ItemDefinition flareItemDef;
 
 	[SerializeField]
@@ -78,9 +78,9 @@ public class HelicopterFlares : StorageContainer
 
 	public bool HasFlareAmmo()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
-			HasFlares = base.inventory.HasAny(flareItemDef);
+			HasFlares = inventory.HasAny(flareItemDef);
 			return HasFlares;
 		}
 		return false;
@@ -126,7 +126,7 @@ public class HelicopterFlares : StorageContainer
 		{
 			return false;
 		}
-		if (!base.inventory.TryTakeOne(flareItemDef.itemid, out var item))
+		if (!inventory.TryTakeOne(flareItemDef.itemid, out var item))
 		{
 			return false;
 		}
@@ -159,10 +159,10 @@ public class HelicopterFlares : StorageContainer
 	{
 		ItemDefinition itemDefinition = ItemManager.FindItemDefinition("flare");
 		int amount = itemDefinition.stackable * 2;
-		base.inventory.AddItem(itemDefinition, amount, 0uL, ItemContainer.LimitStack.All);
+		inventory.AddItem(itemDefinition, amount, 0uL, ItemContainer.LimitStack.All);
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -171,7 +171,7 @@ public class HelicopterFlares : StorageContainer
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: HasFlares for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: HasFlares for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_HasFlares);
 			return true;

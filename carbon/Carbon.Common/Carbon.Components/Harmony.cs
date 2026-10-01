@@ -87,11 +87,11 @@ public class Harmony
 	public static int PatchAll(Assembly assembly, string fileName)
 	{
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Expected O, but got Unknown
+		//IL_002a: Expected Obj, but got Unknown
 		int num = 0;
 		string name = assembly.GetName().Name;
 		Harmony val = new Harmony("com.compat-harmony." + (string.IsNullOrEmpty(fileName) ? name : fileName));
-		foreach (Type item in assembly.GetTypes().Where(delegate(Type x)
+		foreach (Type item in assembly.GetTypes().Where((Type x) =>
 		{
 			IEnumerable<HarmonyPatch> customAttributes = ((MemberInfo)x).GetCustomAttributes<HarmonyPatch>();
 			return customAttributes != null && customAttributes.Count() > 0;

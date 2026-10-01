@@ -41,7 +41,7 @@ public class Kayak : BaseBoat, IPoolVehicle
 
 	public PlayerModel.MountPoses noPaddlePose;
 
-	public TimeSince[] playerPaddleCooldowns = (TimeSince[])(object)new TimeSince[2];
+	public TimeSince[] playerPaddleCooldowns = new TimeSince[2];
 
 	public TimeCachedValue<float> fixedDragUpdate;
 
@@ -92,10 +92,10 @@ public class Kayak : BaseBoat, IPoolVehicle
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		base.OnPlayerMounted();
-		if (!IsInvoking(TravelDistanceUpdate) && Rust.GameInfo.HasAchievements)
+		if (!IsInvoking(TravelDistanceUpdate) && GameInfo.HasAchievements)
 		{
 			int num = 0;
-			foreach (MountPointInfo allMountPoint in base.allMountPoints)
+			foreach (MountPointInfo allMountPoint in allMountPoints)
 			{
 				if ((Object)(object)allMountPoint.mountable != (Object)null && allMountPoint.mountable.AnyMounted())
 				{
@@ -179,16 +179,16 @@ public class Kayak : BaseBoat, IPoolVehicle
 		{
 			flag2 = true;
 			rigidBody.AddForceAtPosition(val * num, GetPaddlePoint(playerSeat, PaddleDirection.Left), (ForceMode)1);
-			Rigidbody obj = rigidBody;
-			obj.angularVelocity += -((Component)this).transform.up * rotatePaddleForce;
+			Rigidbody val2 = rigidBody;
+			val2.angularVelocity += -((Component)this).transform.up * rotatePaddleForce;
 			ClientRPC(RpcTarget.NetworkGroup("OnPaddled"), flag ? 2 : 0, playerSeat);
 		}
 		else if (inputState.IsDown(BUTTON.RIGHT) || inputState.IsDown(BUTTON.FIRE_SECONDARY))
 		{
 			flag2 = true;
 			rigidBody.AddForceAtPosition(val * num, GetPaddlePoint(playerSeat, PaddleDirection.Right), (ForceMode)1);
-			Rigidbody obj2 = rigidBody;
-			obj2.angularVelocity += ((Component)this).transform.up * rotatePaddleForce;
+			Rigidbody val3 = rigidBody;
+			val3.angularVelocity += ((Component)this).transform.up * rotatePaddleForce;
 			ClientRPC(RpcTarget.NetworkGroup("OnPaddled"), (!flag) ? 1 : 3, playerSeat);
 		}
 		if (flag2)
@@ -197,7 +197,7 @@ public class Kayak : BaseBoat, IPoolVehicle
 			if (!flag)
 			{
 				Vector3 linearVelocity = rigidBody.linearVelocity;
-				rigidBody.linearVelocity = Vector3.Lerp(linearVelocity, val * ((Vector3)(ref linearVelocity)).magnitude, 0.4f);
+				rigidBody.linearVelocity = Vector3.Lerp(linearVelocity, val * linearVelocity.magnitude, 0.4f);
 			}
 		}
 	}
@@ -212,12 +212,12 @@ public class Kayak : BaseBoat, IPoolVehicle
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3Ex.WithY(((Component)this).transform.position, 0f);
-		if (Rust.GameInfo.HasAchievements)
+		if (GameInfo.HasAchievements)
 		{
 			float num = Vector3.Distance(lastTravelPos, val) + distanceRemainder;
 			float num2 = Mathf.Max(Mathf.Floor(num), 0f);
 			distanceRemainder = num - num2;
-			foreach (MountPointInfo allMountPoint in base.allMountPoints)
+			foreach (MountPointInfo allMountPoint in allMountPoints)
 			{
 				if ((Object)(object)allMountPoint.mountable != (Object)null && allMountPoint.mountable.AnyMounted() && (int)num2 > 0)
 				{
@@ -270,7 +270,7 @@ public class Kayak : BaseBoat, IPoolVehicle
 		{
 			Vector3 val = Vector3Ex.Direction2D(((Component)player).transform.position + player.eyes.BodyForward() * 3f, ((Component)player).transform.position);
 			Vector3 val2 = Vector3.up * 0.1f + val;
-			val = ((Vector3)(ref val2)).normalized;
+			val = val2.normalized;
 			Vector3 position = ((Component)this).transform.position;
 			float num = 5f;
 			if (IsInWater())
@@ -407,7 +407,7 @@ public class Kayak : BaseBoat, IPoolVehicle
 
 	public bool IsInWater()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return buoyancy.timeOutOfWater < 0.1f;
 		}

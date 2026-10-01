@@ -34,11 +34,11 @@ internal struct PreProcessWaterRaysJob : IJob
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
 		int num = 0;
-		Ray val2 = default(Ray);
 		for (int i = 0; i < rays.Length; i++)
 		{
 			RaycastCommand val = rays[i];
@@ -46,13 +46,13 @@ internal struct PreProcessWaterRaysJob : IJob
 			{
 				continue;
 			}
-			int num2 = GamePhysicsJobs.Util.FindFreeSlot(i, in hits, maxHitsPerTrace, out var endInd);
+			int num2 = Util.FindFreeSlot(i, in hits, maxHitsPerTrace, out var endInd);
 			if (num2 != endInd)
 			{
 				int num3 = num++;
-				((Ray)(ref val2))._002Ector(((RaycastCommand)(ref val)).from, ((RaycastCommand)(ref val)).direction);
+				Ray val2 = new Ray(val.from, val.direction);
 				WaterRays.Add(ref val2);
-				if (((Bounds)(ref DeepSeaBounds)).Contains(((Ray)(ref val2)).origin))
+				if (DeepSeaBounds.Contains(val2.origin))
 				{
 					DeepIndices.Add(ref num3);
 				}
@@ -60,7 +60,7 @@ internal struct PreProcessWaterRaysJob : IJob
 				{
 					MainIndices.Add(ref num3);
 				}
-				WaterMaxDists[num3] = ((RaycastCommand)(ref val)).distance;
+				WaterMaxDists[num3] = val.distance;
 				ref NativeList<Vector2i> waterIndices = ref WaterIndices;
 				Vector2i val3 = new Vector2i(num2, endInd);
 				waterIndices.Add(ref val3);

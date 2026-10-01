@@ -15,7 +15,7 @@ public static class Server
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			if (!((Scene)(ref _entityScene)).IsValid())
+			if (!_entityScene.IsValid())
 			{
 				_entityScene = SceneManager.CreateScene("Server Entities");
 			}

@@ -38,7 +38,7 @@ public class LocalClanDatabase : Database
 	{
 		IntPtr stmHandle = Prepare("SELECT name, created, creator, motd, motd_timestamp, motd_author, logo, logo_timestamp, color, score FROM clans WHERE clan_id = ? AND deleted IS NULL");
 		Database.Bind(stmHandle, 1, clanId);
-		return ExecuteAndReadQueryResult(stmHandle, delegate(IntPtr stm)
+		return ExecuteAndReadQueryResult(stmHandle, (IntPtr stm) =>
 		{
 			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -61,27 +61,27 @@ public class LocalClanDatabase : Database
 	public bool UpdateClanMotd(long clanId, string newMotd, ulong authorSteamId)
 	{
 		Execute("UPDATE clans SET motd = ?, motd_timestamp = ?, motd_author = ? WHERE clan_id = ? AND deleted IS NULL", newMotd, ClanUtility.Timestamp(), authorSteamId, clanId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool UpdateClanLogo(long clanId, byte[] newLogo)
 	{
 		Execute("UPDATE clans SET logo = ?, logo_timestamp = ? WHERE clan_id = ? AND deleted IS NULL", newLogo, ClanUtility.Timestamp(), clanId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool UpdateClanColor(long clanId, Color32 newColor)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		Execute("UPDATE clans SET color = ? WHERE clan_id = ? AND deleted IS NULL", newColor.ToInt32(), clanId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool DeleteClan(long clanId)
 	{
 		BeginTransaction();
 		Execute("UPDATE clans SET deleted = ? WHERE clan_id = ? AND deleted IS NULL", ClanUtility.Timestamp(), clanId);
-		if (base.AffectedRows == 0)
+		if (AffectedRows == 0)
 		{
 			Rollback();
 			return false;
@@ -107,7 +107,7 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("SELECT clan_id, name, score FROM clans WHERE deleted IS NULL ORDER BY score DESC LIMIT ?");
 		Database.Bind(stmHandle, 1, Mathf.Clamp(limit, 10, 100));
 		List<ClanLeaderboardEntry> list = Pool.Get<List<ClanLeaderboardEntry>>();
-		ExecuteAndReadQueryResults<ClanLeaderboardEntry>(stmHandle, list, delegate(IntPtr stm)
+		ExecuteAndReadQueryResults(stmHandle, list, (Func<IntPtr, ClanLeaderboardEntry>)((IntPtr stm) =>
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -117,7 +117,7 @@ public class LocalClanDatabase : Database
 				Name = Database.GetColumnValue<string>(stm, 1),
 				Score = Database.GetColumnValue<long>(stm, 2)
 			};
-		});
+		}));
 		return list;
 	}
 
@@ -130,7 +130,7 @@ public class LocalClanDatabase : Database
 	public bool CreateInvite(long clanId, ulong steamId, ulong recruiterSteamId)
 	{
 		Execute("\r\n            INSERT OR IGNORE INTO invites (clan_id, user_id, recruiter, timestamp)\r\n            SELECT ?1, ?2, ?3, ?4\r\n            FROM (SELECT 1)\r\n            WHERE NOT EXISTS (SELECT * FROM members m WHERE m.user_id = ?2);\r\n        ", clanId, steamId, recruiterSteamId, ClanUtility.Timestamp());
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool AcceptInvite(long clanId, ulong steamId)
@@ -159,7 +159,7 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("SELECT user_id, recruiter, timestamp FROM invites WHERE clan_id = ? ORDER BY timestamp ASC");
 		Database.Bind(stmHandle, 1, clanId);
 		List<ClanInvite> list = Pool.Get<List<ClanInvite>>();
-		ExecuteAndReadQueryResults<ClanInvite>(stmHandle, list, delegate(IntPtr stm)
+		ExecuteAndReadQueryResults(stmHandle, list, (Func<IntPtr, ClanInvite>)((IntPtr stm) =>
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -169,7 +169,7 @@ public class LocalClanDatabase : Database
 				Recruiter = Database.GetColumnValue<ulong>(stm, 1),
 				Timestamp = Database.GetColumnValue<long>(stm, 2)
 			};
-		});
+		}));
 		return list;
 	}
 
@@ -178,7 +178,7 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("SELECT clan_id, recruiter, timestamp FROM invites WHERE user_id = ? ORDER BY timestamp ASC");
 		Database.Bind(stmHandle, 1, steamId);
 		List<ClanInvitation> list = Pool.Get<List<ClanInvitation>>();
-		ExecuteAndReadQueryResults<ClanInvitation>(stmHandle, list, delegate(IntPtr stm)
+		ExecuteAndReadQueryResults(stmHandle, list, (Func<IntPtr, ClanInvitation>)((IntPtr stm) =>
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -188,14 +188,14 @@ public class LocalClanDatabase : Database
 				Recruiter = Database.GetColumnValue<ulong>(stm, 1),
 				Timestamp = Database.GetColumnValue<long>(stm, 2)
 			};
-		});
+		}));
 		return list;
 	}
 
 	public bool DeleteInvite(long clanId, ulong steamId)
 	{
 		Execute("DELETE FROM invites WHERE clan_id = ? AND user_id = ?", clanId, steamId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public void DeleteAllInvites(ulong steamId)
@@ -240,7 +240,7 @@ public class LocalClanDatabase : Database
 		Database.Bind(stmHandle, 1, clanId);
 		Database.Bind(stmHandle, 2, Mathf.Clamp(limit, 10, 1000));
 		List<ClanLogEntry> list = Pool.Get<List<ClanLogEntry>>();
-		ExecuteAndReadQueryResults<ClanLogEntry>(stmHandle, list, delegate(IntPtr stm)
+		ExecuteAndReadQueryResults(stmHandle, list, (Func<IntPtr, ClanLogEntry>)((IntPtr stm) =>
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
@@ -253,7 +253,7 @@ public class LocalClanDatabase : Database
 				Arg3 = Database.GetColumnValue<string>(stm, 4),
 				Arg4 = Database.GetColumnValue<string>(stm, 5)
 			};
-		});
+		}));
 		return list;
 	}
 
@@ -265,13 +265,13 @@ public class LocalClanDatabase : Database
 	public bool CreateMember(long clanId, ulong steamId)
 	{
 		Execute("\r\n            INSERT OR IGNORE INTO members (clan_id, user_id, role_id, joined, seen)\r\n            SELECT ?1, ?2, MAX(r.role_id), ?3, ?3\r\n            FROM (SELECT role_id FROM roles WHERE clan_id = ?1 ORDER BY rank DESC LIMIT 1) r\r\n        ", clanId, steamId, ClanUtility.Timestamp());
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool CreateMember(long clanId, ulong steamId, int roleId)
 	{
 		Execute("INSERT INTO members (clan_id, user_id, role_id, joined, seen) VALUES (?1, ?2, ?3, ?4, ?4)", clanId, steamId, roleId, ClanUtility.Timestamp());
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public List<ClanMember> ListMembers(long clanId)
@@ -279,7 +279,7 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("\r\n            SELECT m.user_id, m.role_id, m.joined, m.seen, m.notes, m.notes_timestamp\r\n            FROM members m\r\n            LEFT JOIN roles r ON r.clan_id = ?1 AND r.role_id = m.role_id\r\n            WHERE m.clan_id = ?1\r\n            ORDER BY r.rank ASC, joined ASC\r\n        ");
 		Database.Bind(stmHandle, 1, clanId);
 		List<ClanMember> list = Pool.Get<List<ClanMember>>();
-		ExecuteAndReadQueryResults<ClanMember>(stmHandle, list, delegate(IntPtr stm)
+		ExecuteAndReadQueryResults(stmHandle, list, (Func<IntPtr, ClanMember>)((IntPtr stm) =>
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
@@ -292,32 +292,32 @@ public class LocalClanDatabase : Database
 				Notes = Database.GetColumnValue<string>(stm, 4),
 				NotesTimestamp = Database.GetColumnValue<long>(stm, 5)
 			};
-		});
+		}));
 		return list;
 	}
 
 	public bool UpdateMemberLastSeen(long clanId, ulong steamId)
 	{
 		Execute("UPDATE members SET seen = ? WHERE clan_id = ? AND user_id = ?", ClanUtility.Timestamp(), clanId, steamId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool UpdateMemberRole(long clanId, ulong steamId, int newRoleId)
 	{
 		Execute("UPDATE members SET role_id = ? WHERE clan_id = ? AND user_id = ?", newRoleId, clanId, steamId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool UpdateMemberNotes(long clanId, ulong steamId, string newNotes)
 	{
 		Execute("UPDATE members SET notes = ?, notes_timestamp = ? WHERE clan_id = ? AND user_id = ?", newNotes, ClanUtility.Timestamp(), clanId, steamId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool DeleteMember(long clanId, ulong steamId)
 	{
 		Execute("DELETE FROM members WHERE clan_id = ? AND user_id = ?", clanId, steamId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	private void CreateRolesTable()
@@ -362,7 +362,7 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("\r\n            SELECT role_id, rank, name, can_set_motd, can_set_logo, can_invite, can_kick, can_promote, can_demote, can_set_player_notes, can_access_logs, can_access_score_events\r\n            FROM roles\r\n            WHERE clan_id = ?\r\n            ORDER BY rank ASC, role_id ASC\r\n        ");
 		Database.Bind(stmHandle, 1, clanId);
 		List<ClanRole> list = Pool.Get<List<ClanRole>>();
-		ExecuteAndReadQueryResults<ClanRole>(stmHandle, list, delegate(IntPtr stm)
+		ExecuteAndReadQueryResults(stmHandle, list, (Func<IntPtr, ClanRole>)((IntPtr stm) =>
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
@@ -381,7 +381,7 @@ public class LocalClanDatabase : Database
 				CanAccessLogs = Database.GetColumnValue<bool>(stm, 10),
 				CanAccessScoreEvents = Database.GetColumnValue<bool>(stm, 11)
 			};
-		});
+		}));
 		return list;
 	}
 
@@ -412,13 +412,13 @@ public class LocalClanDatabase : Database
 		Database.Bind(stmHandle, 11, role.CanAccessLogs);
 		Database.Bind(stmHandle, 12, role.CanAccessScoreEvents);
 		ExecuteQuery(stmHandle);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool UpdateRoleName(long clanId, int roleId, string newRoleName)
 	{
 		Execute("UPDATE OR IGNORE roles SET name = ?3 WHERE clan_id = ?1 AND role_id = ?2", clanId, roleId, newRoleName);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	public bool SwapRoleRanks(long clanId, int roleIdA, int roleIdB)
@@ -434,13 +434,13 @@ public class LocalClanDatabase : Database
 				return false;
 			}
 			Execute("UPDATE OR IGNORE roles SET rank = ?3 WHERE clan_id = ?1 AND role_id = ?2", clanId, roleIdA, num2);
-			if (base.AffectedRows != 1)
+			if (AffectedRows != 1)
 			{
 				Rollback();
 				return false;
 			}
 			Execute("UPDATE OR IGNORE roles SET rank = ?3 WHERE clan_id = ?1 AND role_id = ?2", clanId, roleIdB, num);
-			if (base.AffectedRows != 1)
+			if (AffectedRows != 1)
 			{
 				Rollback();
 				return false;
@@ -458,7 +458,7 @@ public class LocalClanDatabase : Database
 	public bool DeleteRole(long clanId, int roleId)
 	{
 		Execute("DELETE FROM roles WHERE clan_id = ? AND role_id = ?", clanId, roleId);
-		return base.AffectedRows > 0;
+		return AffectedRows > 0;
 	}
 
 	private void CreateScoreEventsTable()
@@ -503,7 +503,7 @@ public class LocalClanDatabase : Database
 		Database.Bind(stmHandle, 1, clanId);
 		Database.Bind(stmHandle, 2, Mathf.Clamp(limit, 10, 1000));
 		List<ClanScoreEvent> list = Pool.Get<List<ClanScoreEvent>>();
-		ExecuteAndReadQueryResults<ClanScoreEvent>(stmHandle, list, delegate(IntPtr stm)
+		ExecuteAndReadQueryResults(stmHandle, list, (Func<IntPtr, ClanScoreEvent>)((IntPtr stm) =>
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
@@ -520,7 +520,7 @@ public class LocalClanDatabase : Database
 				Arg1 = Database.GetColumnValue<string>(stm, 7),
 				Arg2 = Database.GetColumnValue<string>(stm, 8)
 			};
-		});
+		}));
 		return list;
 	}
 

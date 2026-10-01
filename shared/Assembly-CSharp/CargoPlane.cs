@@ -19,7 +19,7 @@ public class CargoPlane : BaseEntity
 
 	public bool dropped;
 
-	public Vector3 dropPosition;
+	public Vector3 dropPosition = Vector3.zero;
 
 	public override void ServerInit()
 	{
@@ -115,7 +115,7 @@ public class CargoPlane : BaseEntity
 		float y = TerrainMeta.HighestPoint.y + 250f;
 		startPos = Vector3Ex.Range(-1f, 1f);
 		startPos.y = 0f;
-		((Vector3)(ref startPos)).Normalize();
+		startPos.Normalize();
 		startPos *= x * 2f;
 		startPos.y = y;
 		endPos = startPos * -1f;
@@ -138,7 +138,7 @@ public class CargoPlane : BaseEntity
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -172,7 +172,7 @@ public class CargoPlane : BaseEntity
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		if (base.isServer && info.forDisk)
+		if (isServer && info.forDisk)
 		{
 			info.msg.cargoPlane = Pool.Get<CargoPlane>();
 			info.msg.cargoPlane.startPos = startPos;
@@ -193,7 +193,7 @@ public class CargoPlane : BaseEntity
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (base.isServer && info.fromDisk && info.msg.cargoPlane != null)
+		if (isServer && info.fromDisk && info.msg.cargoPlane != null)
 		{
 			startPos = info.msg.cargoPlane.startPos;
 			endPos = info.msg.cargoPlane.endPos;
@@ -208,7 +208,5 @@ public class CargoPlane : BaseEntity
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		dropPosition = Vector3.zero;
-		base._002Ector();
 	}
 }

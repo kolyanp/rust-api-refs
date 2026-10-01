@@ -12,9 +12,9 @@ namespace WaterLevelJobs;
 public static class WaterLevelBurst
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void GetBuoyancyWaterInfoBatched_000085F0_0024PostfixBurstDelegate(in NativeArray<Vector3> allPositions, in NativeArray<Vector2> allUVPositions, in NativeArray<float> pointTerrainHeightNativeArray, in NativeArray<float> pointWaterHeightNativeArray, in NativeArray<bool> doDeepWaterChecksStateNativeArray, ref NativeArray<WaterLevel.WaterInfo> pointWaterInfoNativeArray, in NativeArray<int> instancePointCountNativeArray, in int instanceCount, in TerrainTopologyMap.TopologyQueryStructure topologyMap, in NativeArray<bool> waterIgnoreStates, ref NativeArray<bool> needsDeepWaterChecks, bool isDeepSea, out bool hasAnyDeepWaterChecks);
+	internal delegate void GetBuoyancyWaterInfoBatched_00008A88_0024PostfixBurstDelegate(in NativeArray<Vector3> allPositions, in NativeArray<Vector2> allUVPositions, in NativeArray<float> pointTerrainHeightNativeArray, in NativeArray<float> pointWaterHeightNativeArray, in NativeArray<bool> doDeepWaterChecksStateNativeArray, ref NativeArray<WaterLevel.WaterInfo> pointWaterInfoNativeArray, in NativeArray<int> instancePointCountNativeArray, in int instanceCount, in TerrainTopologyMap.TopologyQueryStructure topologyMap, in NativeArray<bool> waterIgnoreStates, ref NativeArray<bool> needsDeepWaterChecks, bool isDeepSea, out bool hasAnyDeepWaterChecks);
 
-	internal static class GetBuoyancyWaterInfoBatched_000085F0_0024BurstDirectCall
+	internal static class GetBuoyancyWaterInfoBatched_00008A88_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -25,7 +25,7 @@ public static class WaterLevelBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<GetBuoyancyWaterInfoBatched_000085F0_0024PostfixBurstDelegate>((GetBuoyancyWaterInfoBatched_000085F0_0024PostfixBurstDelegate)GetBuoyancyWaterInfoBatched).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<GetBuoyancyWaterInfoBatched_00008A88_0024PostfixBurstDelegate>((GetBuoyancyWaterInfoBatched_00008A88_0024PostfixBurstDelegate)GetBuoyancyWaterInfoBatched).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -53,9 +53,9 @@ public static class WaterLevelBurst
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void ConstructDeepWaterCommands_000085F1_0024PostfixBurstDelegate(in NativeArray<Vector3> allPositions, in NativeArray<WaterLevel.WaterInfo> pointWaterInfoNativeArray, in NativeArray<bool> needsDeepWaterChecks, out NativeList<RaycastCommand> deepWaterCasts, out NativeList<int> raycastPointIndices, Allocator allocator);
+	internal delegate void ConstructDeepWaterCommands_00008A89_0024PostfixBurstDelegate(in NativeArray<Vector3> allPositions, in NativeArray<WaterLevel.WaterInfo> pointWaterInfoNativeArray, in NativeArray<bool> needsDeepWaterChecks, out NativeList<RaycastCommand> deepWaterCasts, out NativeList<int> raycastPointIndices, Allocator allocator);
 
-	internal static class ConstructDeepWaterCommands_000085F1_0024BurstDirectCall
+	internal static class ConstructDeepWaterCommands_00008A89_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -66,7 +66,7 @@ public static class WaterLevelBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<ConstructDeepWaterCommands_000085F1_0024PostfixBurstDelegate>((ConstructDeepWaterCommands_000085F1_0024PostfixBurstDelegate)ConstructDeepWaterCommands).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<ConstructDeepWaterCommands_00008A89_0024PostfixBurstDelegate>((ConstructDeepWaterCommands_00008A89_0024PostfixBurstDelegate)ConstructDeepWaterCommands).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -95,19 +95,19 @@ public static class WaterLevelBurst
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(WaterLevelJobs_002EGetBuoyancyWaterInfoBatched_000085F0_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(WaterLevelJobs_002EGetBuoyancyWaterInfoBatched_00008A88_0024PostfixBurstDelegate))]
 	public static void GetBuoyancyWaterInfoBatched(in NativeArray<Vector3> allPositions, in NativeArray<Vector2> allUVPositions, in NativeArray<float> pointTerrainHeightNativeArray, in NativeArray<float> pointWaterHeightNativeArray, in NativeArray<bool> doDeepWaterChecksStateNativeArray, ref NativeArray<WaterLevel.WaterInfo> pointWaterInfoNativeArray, in NativeArray<int> instancePointCountNativeArray, in int instanceCount, in TerrainTopologyMap.TopologyQueryStructure topologyMap, in NativeArray<bool> waterIgnoreStates, ref NativeArray<bool> needsDeepWaterChecks, bool isDeepSea, out bool hasAnyDeepWaterChecks)
 	{
-		GetBuoyancyWaterInfoBatched_000085F0_0024BurstDirectCall.Invoke(in allPositions, in allUVPositions, in pointTerrainHeightNativeArray, in pointWaterHeightNativeArray, in doDeepWaterChecksStateNativeArray, ref pointWaterInfoNativeArray, in instancePointCountNativeArray, in instanceCount, in topologyMap, in waterIgnoreStates, ref needsDeepWaterChecks, isDeepSea, out hasAnyDeepWaterChecks);
+		GetBuoyancyWaterInfoBatched_00008A88_0024BurstDirectCall.Invoke(in allPositions, in allUVPositions, in pointTerrainHeightNativeArray, in pointWaterHeightNativeArray, in doDeepWaterChecksStateNativeArray, ref pointWaterInfoNativeArray, in instancePointCountNativeArray, in instanceCount, in topologyMap, in waterIgnoreStates, ref needsDeepWaterChecks, isDeepSea, out hasAnyDeepWaterChecks);
 	}
 
-	[MonoPInvokeCallback(typeof(WaterLevelJobs_002EConstructDeepWaterCommands_000085F1_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(WaterLevelJobs_002EConstructDeepWaterCommands_00008A89_0024PostfixBurstDelegate))]
 	public static void ConstructDeepWaterCommands(in NativeArray<Vector3> allPositions, in NativeArray<WaterLevel.WaterInfo> pointWaterInfoNativeArray, in NativeArray<bool> needsDeepWaterChecks, out NativeList<RaycastCommand> deepWaterCasts, out NativeList<int> raycastPointIndices, Allocator allocator)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		ConstructDeepWaterCommands_000085F1_0024BurstDirectCall.Invoke(in allPositions, in pointWaterInfoNativeArray, in needsDeepWaterChecks, out deepWaterCasts, out raycastPointIndices, allocator);
+		ConstructDeepWaterCommands_00008A89_0024BurstDirectCall.Invoke(in allPositions, in pointWaterInfoNativeArray, in needsDeepWaterChecks, out deepWaterCasts, out raycastPointIndices, allocator);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -151,7 +151,7 @@ public static class WaterLevelBurst
 				Vector3 position = allPositions[j];
 				Vector2 uv = allUVPositions[j];
 				float num5 = pointWaterHeightNativeArray[j];
-				WaterLevel.WaterInfo waterInfo = default(WaterLevel.WaterInfo);
+				WaterLevel.WaterInfo waterInfo = default;
 				if (position.y > num5 && WaterVolumeBurst.TestBurst(in position, out var info))
 				{
 					pointWaterInfoNativeArray[j] = info;
@@ -213,6 +213,7 @@ public static class WaterLevelBurst
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		deepWaterCasts = new NativeList<RaycastCommand>(32, AllocatorHandle.op_Implicit(allocator));
 		raycastPointIndices = new NativeList<int>(32, AllocatorHandle.op_Implicit((Allocator)2));
 		QueryParameters val = new QueryParameters
@@ -220,13 +221,12 @@ public static class WaterLevelBurst
 			hitTriggers = (QueryTriggerInteraction)2,
 			layerMask = 16
 		};
-		RaycastCommand val3 = default(RaycastCommand);
 		for (int i = 0; i < needsDeepWaterChecks.Length; i++)
 		{
 			if (needsDeepWaterChecks[i])
 			{
 				Vector3 val2 = allPositions[i];
-				((RaycastCommand)(ref val3))._002Ector(val2, Vector3.up, val, float.MaxValue);
+				RaycastCommand val3 = new RaycastCommand(val2, Vector3.up, val, float.MaxValue);
 				deepWaterCasts.Add(ref val3);
 				raycastPointIndices.Add(ref i);
 			}

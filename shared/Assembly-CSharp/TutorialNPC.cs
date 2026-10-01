@@ -125,7 +125,7 @@ public class TutorialNPC : NPCMissionProvider
 			val.attackerName = "bear";
 			if (playerToKill.IsGod())
 			{
-				playerToKill.net.connection.info.Set("global.god", "0");
+				playerToKill.ServerSetGod(wants: false);
 			}
 			playerToKill.SetOverrideDeathBlow(val);
 			playerToKill.Hurt(9999f);

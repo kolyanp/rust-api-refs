@@ -14,6 +14,7 @@ namespace ConVar;
 [Factory("inventory")]
 public class Inventory : ConsoleSystem
 {
+	[JsonModel]
 	public class LoadoutFileInfo
 	{
 		[JsonProperty("fileName")]
@@ -35,12 +36,17 @@ public class Inventory : ConsoleSystem
 		public SavedLoadout.SavedItem[] wear;
 	}
 
+	[JsonModel]
 	public class SavedLoadout
 	{
-		public struct SavedItem
+		[JsonModel]
+		public class SavedItem
 		{
 			[JsonProperty("id")]
 			public int id;
+
+			[JsonProperty("position")]
+			public int position = -1;
 
 			[JsonProperty("amount")]
 			public int amount;
@@ -105,9 +111,10 @@ public class Inventory : ConsoleSystem
 				{
 					continue;
 				}
-				SavedItem item = new SavedItem
+				SavedItem savedItem = new SavedItem
 				{
 					id = slot.info.itemid,
+					position = slot.position,
 					amount = slot.amount,
 					skin = slot.skin,
 					blueprintTarget = slot.blueprintTarget
@@ -115,13 +122,13 @@ public class Inventory : ConsoleSystem
 				if (slot.contents != null && slot.contents.itemList != null)
 				{
 					List<int> list2 = new List<int>();
-					foreach (Item item2 in slot.contents.itemList)
+					foreach (Item item in slot.contents.itemList)
 					{
-						list2.Add(item2.info.itemid);
+						list2.Add(item.info.itemid);
 					}
-					item.containedItems = list2.ToArray();
+					savedItem.containedItems = list2.ToArray();
 				}
-				list.Add(item);
+				list.Add(savedItem);
 			}
 			return list.ToArray();
 		}
@@ -129,20 +136,21 @@ public class Inventory : ConsoleSystem
 		private static SavedItem[] SaveItems(List<PlayerInventoryProperties.ItemAmountSkinned> items)
 		{
 			List<SavedItem> list = new List<SavedItem>();
-			foreach (PlayerInventoryProperties.ItemAmountSkinned item2 in items)
+			foreach (PlayerInventoryProperties.ItemAmountSkinned item in items)
 			{
-				SavedItem item = new SavedItem
+				SavedItem savedItem = new SavedItem
 				{
-					id = item2.itemid,
-					amount = (int)item2.amount,
-					skin = item2.skinOverride
+					id = item.itemid,
+					amount = (int)item.amount,
+					position = -1,
+					skin = item.skinOverride
 				};
-				if (item2.blueprint)
+				if (item.blueprint)
 				{
-					item.blueprintTarget = item.id;
-					item.id = ItemManager.blueprintBaseDef.itemid;
+					savedItem.blueprintTarget = savedItem.id;
+					savedItem.id = ItemManager.blueprintBaseDef.itemid;
 				}
-				list.Add(item);
+				list.Add(savedItem);
 			}
 			return list.ToArray();
 		}
@@ -169,9 +177,9 @@ public class Inventory : ConsoleSystem
 			player.inventory.SendSnapshot();
 			void LoadItems(SavedItem[] items, ItemContainer container)
 			{
-				foreach (SavedItem item in items)
+				foreach (SavedItem savedItem in items)
 				{
-					player.inventory.GiveItem(LoadItem(item), container);
+					LoadItem(savedItem).MoveToContainer(container, savedItem.position);
 				}
 			}
 		}
@@ -577,7 +585,7 @@ public class Inventory : ConsoleSystem
 				ItemDefinition itemDefinition = ItemManager.FindItemDefinition(itemId);
 				ply.Command($"give {itemDefinition.shortname} 1 1 {skinId}");
 			}
-			InvokeHandler.Invoke((Behaviour)(object)ply, delegate
+			InvokeHandler.Invoke((Behaviour)(object)ply, () =>
 			{
 				ply.Command($"inventory.selectitem {itemId} {skinId}");
 			}, 0.2f);
@@ -705,7 +713,7 @@ public class Inventory : ConsoleSystem
 		{
 			return false;
 		}
-		ItemModContainerArmorSlot itemModContainerArmorSlot = default(ItemModContainerArmorSlot);
+		ItemModContainerArmorSlot itemModContainerArmorSlot = default;
 		if (!((Component)sourceItem.info).TryGetComponent<ItemModContainerArmorSlot>(ref itemModContainerArmorSlot))
 		{
 			return false;
@@ -1043,16 +1051,15 @@ public class Inventory : ConsoleSystem
 			return 0;
 		}
 		int num = 0;
-		for (int i = 0; i < items.Length; i++)
+		foreach (SavedLoadout.SavedItem savedItem in items)
 		{
-			SavedLoadout.SavedItem savedItem = items[i];
 			num += ((savedItem.amount <= 1) ? 1 : savedItem.amount);
 		}
 		return num;
 	}
 
-	[ServerVar(Help = "(Generated) Prints the names of all Steam inventory item definitions currently loaded from the Steam backend; useful for verifying skin/item definition state")]
 	[ClientVar(Help = "(Generated) Prints the names of all Steam inventory item definitions currently loaded from the Steam backend; useful for verifying skin/item definition state")]
+	[ServerVar(Help = "(Generated) Prints the names of all Steam inventory item definitions currently loaded from the Steam backend; useful for verifying skin/item definition state")]
 	public static void defs(Arg arg)
 	{
 		if (SteamInventory.Definitions == null)
@@ -1128,7 +1135,7 @@ public class Inventory : ConsoleSystem
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		ItemId itemID = default(ItemId);
+		ItemId itemID = default;
 		for (int i = 0; i < player.inventory.containerBelt.itemList.Count; i++)
 		{
 			if (player.inventory.containerBelt.itemList[i] != null && i == slot)

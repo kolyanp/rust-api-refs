@@ -23,46 +23,36 @@ public class AmbienceDefinition : ScriptableObject
 	public List<SoundDefinition> sounds;
 
 	[Horizontal(2, -1)]
-	public ValueRange stingFrequency;
+	public ValueRange stingFrequency = new ValueRange(15f, 30f);
 
-	[InspectorFlags]
 	[Header("Environment")]
-	public Enum biomes;
+	[InspectorFlags]
+	public Enum biomes = (Enum)(-1);
 
 	[InspectorFlags]
-	public Enum topologies;
+	public Enum topologies = (Enum)(-1);
 
-	public EnvironmentType environmentType;
+	public EnvironmentType environmentType = EnvironmentType.Underground;
 
 	public bool useEnvironmentType;
 
-	public AnimationCurve time;
+	public AnimationCurve time = AnimationCurve.Linear(0f, 0f, 24f, 0f);
 
 	[Horizontal(2, -1)]
-	public ValueRange rain;
+	public ValueRange rain = new ValueRange(0f, 1f);
 
 	[Horizontal(2, -1)]
-	public ValueRange wind;
+	public ValueRange wind = new ValueRange(0f, 1f);
 
 	[Horizontal(2, -1)]
-	public ValueRange snow;
+	public ValueRange snow = new ValueRange(0f, 1f);
 
 	[Horizontal(2, -1)]
-	public ValueRange waves;
+	public ValueRange waves = new ValueRange(0f, 10f);
 
 	public AmbienceDefinition()
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		stingFrequency = new ValueRange(15f, 30f);
-		biomes = (Enum)(-1);
-		topologies = (Enum)(-1);
-		environmentType = EnvironmentType.Underground;
-		time = AnimationCurve.Linear(0f, 0f, 24f, 0f);
-		rain = new ValueRange(0f, 1f);
-		wind = new ValueRange(0f, 1f);
-		snow = new ValueRange(0f, 1f);
-		waves = new ValueRange(0f, 10f);
-		((ScriptableObject)this)._002Ector();
 	}
 }

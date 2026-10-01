@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
@@ -71,7 +72,7 @@ public class RentableShop : BaseEntity
 			items.MoveAllItems(player.inventory.containerMain, player);
 			if (items.itemList.Count > 0)
 			{
-				ItemContainer.Drop("assets/prefabs/misc/item drop/item_drop_backpack.prefab", player.GetDropPosition(), default(Quaternion), items);
+				ItemContainer.Drop("assets/prefabs/misc/item drop/item_drop_backpack.prefab", player.GetDropPosition(), default, items);
 			}
 			items.Clear();
 		}
@@ -113,31 +114,23 @@ public class RentableShop : BaseEntity
 	public const float InitialRentHoursRequired = 12f;
 
 	[ReplicatedVar]
-	public static int ScrapPerHourRent;
+	public static int ScrapPerHourRent = 10;
 
 	[ReplicatedVar]
-	public static int InitialScrapFee;
+	public static int InitialScrapFee = 100;
 
 	[ReplicatedVar]
-	public static float ProtectionFromTakeoverHours;
+	public static float ProtectionFromTakeoverHours = 6f;
 
-	[CompilerGenerated]
-	private float _003CCurrentRentMultiplier_003Ek__BackingField;
+	public static readonly Phrase Phrase_BreakInAlreadyAuthed = new Phrase("vm_breakin_already_authed", "You already have access to this Store");
 
-	public static readonly Phrase Phrase_BreakInAlreadyAuthed;
+	public static readonly Phrase Phrase_BreakInUnoccupied = new Phrase("vm_breakin_unoccupied", "This Store is unoccupied");
 
-	public static readonly Phrase Phrase_BreakInUnoccupied;
+	private static Phrase Phrase_ShopClosedNotificationPhrase = new Phrase("rentable_shop_closed", "Your rented shop has been closed. Any remaining belongings can be retrieved from the shop.");
 
-	private static Phrase Phrase_ShopClosedNotificationPhrase;
+	public static readonly Phrase Phrase_BreakInSuccess = new Phrase("vm_breakin_success", "You broke into the Store and have temporary access");
 
-	public static readonly Phrase Phrase_BreakInSuccess;
-
-	private static Phrase Phrase_OnlyOneShopAllowedPhrase;
-
-	private static ItemDefinition _scrapDef;
-
-	[CompilerGenerated]
-	private TimeSince _003CTimeSinceShopOpened_003Ek__BackingField;
+	private static Phrase Phrase_OnlyOneShopAllowedPhrase = new Phrase("rentable_shop_one_shop_allowed", "You may only open one shop at a time.");
 
 	private Signage cachedChildSign;
 
@@ -147,17 +140,17 @@ public class RentableShop : BaseEntity
 
 	private const float RENT_INTERVAL = 3600f;
 
-	private static ListHashSet<RentableShop> AllShops;
+	private static ListHashSet<RentableShop> AllShops = new ListHashSet<RentableShop>();
 
 	private Dictionary<ulong, TimeSince> breakInStarts;
 
 	private Dictionary<ulong, TimeUntil> intruders;
 
 	[ServerVar(ShowInAdminUI = true, Saved = true, Help = "How long stores should store items (after a shop is closed) for before they are destroyed")]
-	public static int MaxStoredItemsDurationMinutes;
+	public static int MaxStoredItemsDurationMinutes = 1440;
 
 	[ServerVar(Help = "When checking the time to see if items need to be deleted, add this many hours to what it thinks the current time is")]
-	public static int AdditionalCheckTimeHoursDebug;
+	public static int AdditionalCheckTimeHoursDebug = 0;
 
 	private Dictionary<ulong, PlayerStoreContents> savedContent;
 
@@ -251,32 +244,20 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	public static ItemDefinition ScrapDef
-	{
-		get
-		{
-			if ((Object)(object)_scrapDef == (Object)null)
-			{
-				_scrapDef = ItemManager.FindItemDefinition("scrap");
-			}
-			return _scrapDef;
-		}
-	}
-
 	public TimeSince TimeSinceShopOpened
 	{
 		[CompilerGenerated]
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CTimeSinceShopOpened_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CTimeSinceShopOpened_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -614,7 +595,7 @@ public class RentableShop : BaseEntity
 		}
 		TimeSinceShopOpened = TimeSince.op_Implicit(info.msg.rentableShop.timeSinceShopOpened);
 		ShopNumber = info.msg.rentableShop.shopNumber;
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -639,7 +620,7 @@ public class RentableShop : BaseEntity
 
 	public VendingMachine GetServerVendingMachine()
 	{
-		return SpawnedVendingMachineRef.Get(base.isServer);
+		return SpawnedVendingMachineRef.Get(isServer);
 	}
 
 	public override void ServerInit()
@@ -732,12 +713,12 @@ public class RentableShop : BaseEntity
 		return false;
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
 	private void Server_OpenVendingAdmin(RPCMessage msg)
 	{
-		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
+		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(isServer);
 		if ((Object)(object)vendingMachine != (Object)null)
 		{
 			vendingMachine.RPC_OpenAdmin(msg);
@@ -754,11 +735,11 @@ public class RentableShop : BaseEntity
 		if (nextRentDue <= 0f)
 		{
 			nextRentDue += 3600f;
-			VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
+			VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(isServer);
 			int amount = Mathf.RoundToInt((float)ScrapPerHourRent * CurrentRentMultiplier);
-			if ((Object)(object)vendingMachine != (Object)null && vendingMachine.inventory.GetAmount(ScrapDef.itemid) >= amount)
+			if ((Object)(object)vendingMachine != (Object)null && vendingMachine.inventory.GetAmount(ItemManager.Items.Scrap.itemid) >= amount)
 			{
-				vendingMachine.inventory.UseAmount(ScrapDef, ref amount);
+				vendingMachine.inventory.UseAmount(ItemManager.Items.Scrap, ref amount);
 				return;
 			}
 			CloseStore();
@@ -776,7 +757,7 @@ public class RentableShop : BaseEntity
 		info.msg.rentableShop.nextRentDue = nextRentDue;
 		RentableShop rentableShop = info.msg.rentableShop;
 		TimeSince timeSinceShopOpened = TimeSinceShopOpened;
-		rentableShop.timeSinceShopOpened = ((TimeSince)(ref timeSinceShopOpened)).PassedSince(info.cachedTime.Time);
+		rentableShop.timeSinceShopOpened = timeSinceShopOpened.PassedSince(info.cachedTime.Time);
 		info.msg.rentableShop.shopNumber = ShopNumber;
 		if (info.forDisk)
 		{
@@ -803,15 +784,15 @@ public class RentableShop : BaseEntity
 	public override void PostInitShared()
 	{
 		base.PostInitShared();
-		if (base.isServer && !Application.isLoadingSave)
+		if (isServer && !Application.isLoadingSave)
 		{
 			ShopSignEntity.LockSign(null);
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_OpenStore(RPCMessage msg)
 	{
 		if (CanPlayerOpenShop(msg.player) && Interface.CallHook("OnRentableShopOpen", this, msg.player) == null)
@@ -862,11 +843,11 @@ public class RentableShop : BaseEntity
 		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
 		TimeSinceShopOpened = TimeSince.op_Implicit(0f);
 		ShopOwnerId = byPlayer.userID;
-		InvisibleVendingMachine invisibleVendingMachine = base.gameManager.CreateEntity(VendingMachinePrefab.resourcePath, ShopkeeperSpawnPoint.position, ShopkeeperSpawnPoint.rotation) as InvisibleVendingMachine;
+		InvisibleVendingMachine invisibleVendingMachine = gameManager.CreateEntity(VendingMachinePrefab.resourcePath, ShopkeeperSpawnPoint.position, ShopkeeperSpawnPoint.rotation) as InvisibleVendingMachine;
 		invisibleVendingMachine.SetParent(this, worldPositionStays: true);
 		invisibleVendingMachine.Spawn();
 		SpawnedVendingMachineRef = new EntityRef<VendingMachine>(invisibleVendingMachine.net.ID);
-		NPCShopKeeper nPCShopKeeper = base.gameManager.CreateEntity(ShopkeeperPrefab.resourcePath, ShopkeeperSpawnPoint.position, ShopkeeperSpawnPoint.rotation) as NPCShopKeeper;
+		NPCShopKeeper nPCShopKeeper = gameManager.CreateEntity(ShopkeeperPrefab.resourcePath, ShopkeeperSpawnPoint.position, ShopkeeperSpawnPoint.rotation) as NPCShopKeeper;
 		nPCShopKeeper.machine = invisibleVendingMachine;
 		nPCShopKeeper.SetParent(this, worldPositionStays: true);
 		nPCShopKeeper.Spawn();
@@ -881,14 +862,12 @@ public class RentableShop : BaseEntity
 		lastRentCheck = TimeSince.op_Implicit(0f);
 		nextRentDue = 3600f;
 		InvokeRepeating(DeductRent, 60f, 60f);
-		int amount = Mathf.RoundToInt((float)InitialScrapFee * CurrentRentMultiplier);
-		int openScrapCost = amount;
-		byPlayer.inventory.containerMain.UseAmount(ScrapDef, ref amount);
-		byPlayer.inventory.containerBelt.UseAmount(ScrapDef, ref amount);
-		byPlayer.inventory.containerWear.UseAmount(ScrapDef, ref amount);
-		int num = Mathf.RoundToInt((float)ScrapPerHourRent * 12f * CurrentRentMultiplier);
-		byPlayer.inventory.MoveItemsIntoContainer(ScrapDef, num, invisibleVendingMachine.inventory);
-		Facepunch.Rust.Analytics.Azure.OnShopOpened(this, openScrapCost, num);
+		int num = Mathf.RoundToInt((float)InitialScrapFee * CurrentRentMultiplier);
+		int openScrapCost = num;
+		byPlayer.inventory.UseAmount(ItemManager.Items.Scrap, num);
+		int num2 = Mathf.RoundToInt((float)ScrapPerHourRent * 12f * CurrentRentMultiplier);
+		byPlayer.inventory.MoveItemsIntoContainer(ItemManager.Items.Scrap, num2, invisibleVendingMachine.inventory);
+		Facepunch.Rust.Analytics.Azure.OnShopOpened(this, openScrapCost, num2);
 		Interface.CallHook("OnRentableShopOpened", this, byPlayer);
 	}
 
@@ -897,12 +876,12 @@ public class RentableShop : BaseEntity
 		Facepunch.Rust.Analytics.Azure.OnShopClosed(this);
 		if (SpawnedShopkeeperRef.IsValid(serverside: true))
 		{
-			SpawnedShopkeeperRef.Get(base.isServer).Kill();
+			SpawnedShopkeeperRef.Get(isServer).Kill();
 			SpawnedShopkeeperRef.Set(null);
 		}
 		if (SpawnedVendingMachineRef.IsValid(serverside: true))
 		{
-			VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
+			VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(isServer);
 			SaveContentsOfVendingMachineToReclaim(vendingMachine);
 			vendingMachine.Kill();
 			SpawnedVendingMachineRef.Set(null);
@@ -952,14 +931,14 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_OpenStoreInventory(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && ((ulong)msg.player.userID == ShopOwnerId || IsIntruder(msg.player.userID)))
 		{
-			VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
+			VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(isServer);
 			if ((Object)(object)vendingMachine != (Object)null)
 			{
 				vendingMachine.PlayerOpenLoot(msg.player, "", doPositionChecks: false);
@@ -995,7 +974,7 @@ public class RentableShop : BaseEntity
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void Server_Shop(RPCMessage msg)
 	{
-		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
+		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(isServer);
 		if ((Object)(object)vendingMachine != (Object)null)
 		{
 			vendingMachine.OpenShop(msg.player, vendingMachine.customerPanel);
@@ -1038,7 +1017,7 @@ public class RentableShop : BaseEntity
 		{
 			return;
 		}
-		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
+		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(isServer);
 		if ((Object)(object)vendingMachine == (Object)null)
 		{
 			return;
@@ -1277,12 +1256,12 @@ public class RentableShop : BaseEntity
 		{
 			return false;
 		}
-		if (base.isServer && DoesPlayerOwnRentableShop(player))
+		if (isServer && DoesPlayerOwnRentableShop(player))
 		{
 			player.ShowToast(GameTip.Styles.Error, Phrase_OnlyOneShopAllowedPhrase, false);
 			return false;
 		}
-		int amount = player.inventory.GetAmount(ScrapDef);
+		int amount = player.inventory.GetAmount(ItemManager.Items.Scrap);
 		CalculateScrapCosts(player, out var _, out var _, out var _, out var total);
 		int num = total;
 		return amount >= num;
@@ -1309,7 +1288,7 @@ public class RentableShop : BaseEntity
 		return (ulong)player.userID == ShopOwnerId;
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
@@ -1325,7 +1304,7 @@ public class RentableShop : BaseEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: SpawnedShopkeeperRef for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: SpawnedShopkeeperRef for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_SpawnedShopkeeperRef);
 			return true;
@@ -1333,7 +1312,7 @@ public class RentableShop : BaseEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: SpawnedVendingMachineRef for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: SpawnedVendingMachineRef for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_SpawnedVendingMachineRef);
 			return true;
@@ -1341,7 +1320,7 @@ public class RentableShop : BaseEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: ShopOwnerId for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: ShopOwnerId for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_ShopOwnerId);
 			return true;
@@ -1349,7 +1328,7 @@ public class RentableShop : BaseEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: CurrentRentMultiplier for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: CurrentRentMultiplier for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_CurrentRentMultiplier);
 			return true;
@@ -1419,10 +1398,10 @@ public class RentableShop : BaseEntity
 	{
 		return propertyName switch
 		{
-			"SpawnedShopkeeperRef" => 0, 
-			"SpawnedVendingMachineRef" => 1, 
-			"ShopOwnerId" => 2, 
-			"CurrentRentMultiplier" => 3, 
+			"SpawnedShopkeeperRef" => (byte)0, 
+			"SpawnedVendingMachineRef" => (byte)1, 
+			"ShopOwnerId" => (byte)2, 
+			"CurrentRentMultiplier" => (byte)3, 
 			_ => byte.MaxValue, 
 		};
 	}
@@ -1449,18 +1428,34 @@ public class RentableShop : BaseEntity
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -1480,8 +1475,8 @@ public class RentableShop : BaseEntity
 	protected override void ResetSyncVars()
 	{
 		base.ResetSyncVars();
-		__sync_SpawnedShopkeeperRef = default(EntityRef<NPCShopKeeper>);
-		__sync_SpawnedVendingMachineRef = default(EntityRef<VendingMachine>);
+		__sync_SpawnedShopkeeperRef = default;
+		__sync_SpawnedVendingMachineRef = default;
 		__sync_ShopOwnerId = 0uL;
 		__sync_CurrentRentMultiplier = 1f;
 	}
@@ -1511,26 +1506,14 @@ public class RentableShop : BaseEntity
 	static RentableShop()
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Expected O, but got Unknown
+		//IL_002c: Expected Obj, but got Unknown
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Expected O, but got Unknown
+		//IL_0040: Expected Obj, but got Unknown
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Expected O, but got Unknown
+		//IL_0054: Expected Obj, but got Unknown
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Expected O, but got Unknown
+		//IL_0068: Expected Obj, but got Unknown
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Expected O, but got Unknown
-		ScrapPerHourRent = 10;
-		InitialScrapFee = 100;
-		ProtectionFromTakeoverHours = 6f;
-		Phrase_BreakInAlreadyAuthed = new Phrase("vm_breakin_already_authed", "You already have access to this Store");
-		Phrase_BreakInUnoccupied = new Phrase("vm_breakin_unoccupied", "This Store is unoccupied");
-		Phrase_ShopClosedNotificationPhrase = new Phrase("rentable_shop_closed", "Your rented shop has been closed. Any remaining belongings can be retrieved from the shop.");
-		Phrase_BreakInSuccess = new Phrase("vm_breakin_success", "You broke into the Store and have temporary access");
-		Phrase_OnlyOneShopAllowedPhrase = new Phrase("rentable_shop_one_shop_allowed", "You may only open one shop at a time.");
-		_scrapDef = null;
-		AllShops = new ListHashSet<RentableShop>();
-		MaxStoredItemsDurationMinutes = 1440;
-		AdditionalCheckTimeHoursDebug = 0;
+		//IL_007c: Expected Obj, but got Unknown
 	}
 }

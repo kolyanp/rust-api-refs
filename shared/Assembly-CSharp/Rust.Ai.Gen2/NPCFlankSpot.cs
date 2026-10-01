@@ -6,7 +6,13 @@ namespace Rust.Ai.Gen2;
 
 public static class NPCFlankSpot
 {
-	private static readonly List<Quaternion> sampleRotations;
+	private static readonly List<Quaternion> sampleRotations = new List<Quaternion>
+	{
+		Quaternion.Euler(0f, 90f, 0f),
+		Quaternion.Euler(0f, -90f, 0f),
+		Quaternion.Euler(0f, 45f, 0f),
+		Quaternion.Euler(0f, -45f, 0f)
+	};
 
 	public static bool Find(RustNavMeshAgent agent, NavVector3 enemyPositionNs, RustNavMeshPath directPath, RustNavMeshPath pathToFlank, RustNavMeshPath pathFromFlankToEnemy, float flankWidth = 15f, float sampleRadius = 3.5f, float minAngle = 30f, float minSimilarity = 0.25f)
 	{
@@ -109,12 +115,5 @@ public static class NPCFlankSpot
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		sampleRotations = new List<Quaternion>
-		{
-			Quaternion.Euler(0f, 90f, 0f),
-			Quaternion.Euler(0f, -90f, 0f),
-			Quaternion.Euler(0f, 45f, 0f),
-			Quaternion.Euler(0f, -45f, 0f)
-		};
 	}
 }

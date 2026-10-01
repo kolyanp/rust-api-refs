@@ -2,22 +2,22 @@ using UnityEngine;
 
 public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 {
-	public Vector3 Size;
+	public Vector3 Size = new Vector3(100f, 10f, 100f);
 
-	public bool CopyHeightMap;
+	public bool CopyHeightMap = true;
 
-	public bool CopySplatMap;
+	public bool CopySplatMap = true;
 
-	public bool CopyBiomeMap;
+	public bool CopyBiomeMap = true;
 
-	public bool CopyAlphaMap;
+	public bool CopyAlphaMap = true;
 
-	public bool CopyTopologyMap;
+	public bool CopyTopologyMap = true;
 
-	public bool CopyWaterMap;
+	public bool CopyWaterMap = true;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private bool _hasCopied;
 
 	[HideInInspector]
@@ -28,20 +28,20 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	[SerializeField]
 	private Vector3 _copySize;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private RectInt _heightMapRect;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Color[] _heightMapData;
 
 	[SerializeField]
 	[HideInInspector]
 	private RectInt _splat0Rect;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Color[] _splat0Data;
 
 	[SerializeField]
@@ -92,13 +92,5 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		Size = new Vector3(100f, 10f, 100f);
-		CopyHeightMap = true;
-		CopySplatMap = true;
-		CopyBiomeMap = true;
-		CopyAlphaMap = true;
-		CopyTopologyMap = true;
-		CopyWaterMap = true;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

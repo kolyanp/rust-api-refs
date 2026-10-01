@@ -115,6 +115,7 @@ public class Sprinkler : IOEntity
 		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
 		//IL_031f: Unknown result type (might be due to invalid IL or missing references)
@@ -151,7 +152,7 @@ public class Sprinkler : IOEntity
 					((Component)DynamicObjectsTrigger).transform.position = val4;
 					Transform transform = ((Component)DynamicObjectsTrigger).transform;
 					Vector3 val5 = val4 - val2;
-					transform.up = ((Vector3)(ref val5)).normalized;
+					transform.up = val5.normalized;
 					SplashableGrid.UpdateMobileEntities();
 					SplashableGrid.Grid.Query(val4.x, val4.z, Server.sprinklerRadius, list);
 					if (list.Count > 0)
@@ -159,11 +160,10 @@ public class Sprinkler : IOEntity
 						Transform transform2 = ((Component)DynamicObjectsTrigger).transform;
 						Vector3 center = DynamicObjectsTrigger.Capsule.center;
 						Bounds val6 = ((Collider)DynamicObjectsTrigger.Capsule).bounds;
-						OBB val7 = default(OBB);
-						((OBB)(ref val7))._002Ector(transform2, new Bounds(center, ((Bounds)(ref val6)).extents * 2f));
+						OBB val7 = new OBB(transform2, new Bounds(center, val6.extents * 2f));
 						foreach (BaseEntity item in list)
 						{
-							if ((Object)(object)item != (Object)null && ((OBB)(ref val7)).Intersects(item.WorldSpaceBounds()) && CanEverSplashEntity(item, out var foundSplashable) && item.IsVisible(position))
+							if ((Object)(object)item != (Object)null && val7.Intersects(item.WorldSpaceBounds()) && CanEverSplashEntity(item, out var foundSplashable) && item.IsVisible(position))
 							{
 								cachedSplashables.Add(foundSplashable);
 							}

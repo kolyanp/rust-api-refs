@@ -263,15 +263,13 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 				child.SetParent((Transform)null, true);
 			}
 		}
-		if (instance.childCount >= childCount)
+		int num2 = Mathf.Min(instance.childCount, childCount);
+		for (int i = 0; i < num2; i++)
 		{
-			for (int i = 0; i < childCount; i++)
-			{
-				Transform child2 = instance.GetChild(i);
-				Transform child3 = prefab.GetChild(i);
-				RestorePose(child2, child3);
-				RestoreHierarchy(child2, child3);
-			}
+			Transform child2 = instance.GetChild(i);
+			Transform child3 = prefab.GetChild(i);
+			RestorePose(child2, child3);
+			RestoreHierarchy(child2, child3);
 		}
 	}
 
@@ -288,8 +286,8 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		if (!(instance is RectTransform))
 		{
-			Vector3 val = default(Vector3);
-			Quaternion val2 = default(Quaternion);
+			Vector3 val = default;
+			Quaternion val2 = default;
 			prefab.GetLocalPositionAndRotation(ref val, ref val2);
 			if (instance.localPosition != val || instance.localRotation != val2)
 			{
@@ -308,10 +306,6 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 		{
 			((Component)this).transform.SetParent((Transform)null, false);
 		}
-		if (restoreHierarchy)
-		{
-			RestoreHierarchy(prefab);
-		}
 		if (Pool.mode <= 1)
 		{
 			if (((Component)this).gameObject.activeSelf)
@@ -327,6 +321,10 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 			{
 				((Component)this).gameObject.SetActive(true);
 			}
+		}
+		if (restoreHierarchy)
+		{
+			RestoreHierarchy(prefab);
 		}
 		CancelAllInvokes();
 	}

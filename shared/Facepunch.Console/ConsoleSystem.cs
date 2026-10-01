@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Facepunch;
@@ -111,11 +110,11 @@ public class ConsoleSystem
 				StringView val = StringView.op_Implicit(command);
 				if (num3 > 0)
 				{
-					FullString = ((StringView)(ref val)).Substring(num3 + 1);
-					FullString = ((StringView)(ref FullString)).Trim();
+					FullString = val.Substring(num3 + 1);
+					FullString = FullString.Trim();
 					Args = StringExtensions.SplitQuotesStrings(FullString, 16);
 				}
-				StringView strName = ((StringView)(ref val)).Substring(0, num4);
+				StringView strName = val.Substring(0, num4);
 				if (cmd == null && Option.IsClient)
 				{
 					cmd = Index.Client.Find(strName, flag);
@@ -142,7 +141,7 @@ public class ConsoleSystem
 			{
 				if (Option.IsFromServer && !cmd.AllowRunFromServer)
 				{
-					Debug.Log((object)("Server tried to run command \"" + ((object)Unsafe.As<StringView, StringView>(ref FullString)/*cast due to constrained. prefix*/).ToString() + "\", but we blocked it."));
+					Debug.Log((object)("Server tried to run command \"" + RawCommand + "\", but we blocked it."));
 					return false;
 				}
 				if (cmd.ClientAdmin)
@@ -242,7 +241,7 @@ public class ConsoleSystem
 			}
 			if (remove)
 			{
-				Args = Args.Where(delegate(StringView x)
+				Args = Args.Where((StringView x) =>
 				{
 					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -259,7 +258,7 @@ public class ConsoleSystem
 				return false;
 			}
 			int num = Args.Length;
-			Args = Args.Where(delegate(StringView x)
+			Args = Args.Where((StringView x) =>
 			{
 				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -281,7 +280,7 @@ public class ConsoleSystem
 				ref string reference = ref _cachedArgs[iArg];
 				if (reference == null)
 				{
-					reference = ((object)Unsafe.As<StringView, StringView>(ref Args[iArg])/*cast due to constrained. prefix*/).ToString();
+					reference = ((object)Args[iArg]/*cast due to constrained. prefix*/).ToString();
 				}
 				return _cachedArgs[iArg];
 			}
@@ -305,7 +304,7 @@ public class ConsoleSystem
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				return def;
 			}
@@ -322,7 +321,7 @@ public class ConsoleSystem
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				return def;
 			}
@@ -339,7 +338,7 @@ public class ConsoleSystem
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				return def;
 			}
@@ -356,7 +355,7 @@ public class ConsoleSystem
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				value = 0u;
 				return false;
@@ -379,7 +378,7 @@ public class ConsoleSystem
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				return def;
 			}
@@ -396,7 +395,7 @@ public class ConsoleSystem
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				return def;
 			}
@@ -416,7 +415,7 @@ public class ConsoleSystem
 			//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				return def;
 			}
@@ -424,23 +423,23 @@ public class ConsoleSystem
 			{
 				return false;
 			}
-			if (((StringView)(ref stringView)).Equals("f", StringComparison.InvariantCultureIgnoreCase))
+			if (stringView.Equals("f", StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}
-			if (((StringView)(ref stringView)).Equals("false", StringComparison.InvariantCultureIgnoreCase))
+			if (stringView.Equals("false", StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}
-			if (((StringView)(ref stringView)).Equals("no", StringComparison.InvariantCultureIgnoreCase))
+			if (stringView.Equals("no", StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}
-			if (((StringView)(ref stringView)).Equals("none", StringComparison.InvariantCultureIgnoreCase))
+			if (stringView.Equals("none", StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}
-			if (((StringView)(ref stringView)).Equals("null", StringComparison.InvariantCultureIgnoreCase))
+			if (stringView.Equals("null", StringComparison.InvariantCultureIgnoreCase))
 			{
 				return false;
 			}
@@ -455,14 +454,14 @@ public class ConsoleSystem
 			//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 			StringView val = GetStringView(iArg);
-			if (((StringView)(ref val)).Length == 0)
+			if (val.Length == 0)
 			{
 				return def;
 			}
 			int num = 3600;
-			if (((StringView)(ref val)).Length > 1 && char.IsLetter(((StringView)(ref val))[((StringView)(ref val)).Length - 1]))
+			if (val.Length > 1 && char.IsLetter(val[val.Length - 1]))
 			{
-				switch (((StringView)(ref val))[((StringView)(ref val)).Length - 1])
+				switch (val[val.Length - 1])
 				{
 				case 's':
 					num = 1;
@@ -486,7 +485,7 @@ public class ConsoleSystem
 					num = 31536000;
 					break;
 				}
-				val = ((StringView)(ref val)).Substring(0, ((StringView)(ref val)).Length - 1);
+				val = val.Substring(0, val.Length - 1);
 			}
 			if (long.TryParse(StringView.op_Implicit(val), out var result))
 			{
@@ -507,14 +506,14 @@ public class ConsoleSystem
 			//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 			StringView val = GetStringView(iArg);
-			if (((StringView)(ref val)).Length == 0)
+			if (val.Length == 0)
 			{
 				return def;
 			}
 			int num = 3600;
-			if (((StringView)(ref val)).Length > 1 && char.IsLetter(((StringView)(ref val))[((StringView)(ref val)).Length - 1]))
+			if (val.Length > 1 && char.IsLetter(val[val.Length - 1]))
 			{
-				switch (((StringView)(ref val))[((StringView)(ref val)).Length - 1])
+				switch (val[val.Length - 1])
 				{
 				case 's':
 					num = 1;
@@ -538,7 +537,7 @@ public class ConsoleSystem
 					num = 31536000;
 					break;
 				}
-				val = ((StringView)(ref val)).Substring(0, ((StringView)(ref val)).Length - 1);
+				val = val.Substring(0, val.Length - 1);
 			}
 			if (long.TryParse(StringView.op_Implicit(val), out var result))
 			{
@@ -569,7 +568,7 @@ public class ConsoleSystem
 			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				return def;
 			}
@@ -584,7 +583,7 @@ public class ConsoleSystem
 			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 			StringView stringView = GetStringView(iArg);
-			if (((StringView)(ref stringView)).Length == 0)
+			if (stringView.Length == 0)
 			{
 				return def;
 			}
@@ -768,16 +767,16 @@ public class ConsoleSystem
 
 			public static List<Command> Replicated = new List<Command>();
 
-			public unsafe static Command Find(StringView strName)
+			public static Command Find(StringView strName)
 			{
 				//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 				//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-				bool flag = ((StringView)(ref strName)).Contains(StringView.op_Implicit("."));
+				bool flag = strName.Contains(StringView.op_Implicit("."));
 				if (!flag)
 				{
-					strName = StringView.op_Implicit("global." + ((object)(*(StringView*)(&strName))/*cast due to constrained. prefix*/).ToString());
+					strName = StringView.op_Implicit("global." + ((object)strName/*cast due to constrained. prefix*/).ToString());
 				}
 				return Find(strName, !flag);
 			}
@@ -793,9 +792,9 @@ public class ConsoleSystem
 				{
 					return value;
 				}
-				if (allowGlobalFallback && ((StringView)(ref strName)).StartsWith(StringView.op_Implicit("global.")))
+				if (allowGlobalFallback && strName.StartsWith(StringView.op_Implicit("global.")))
 				{
-					StringView key = ((StringView)(ref strName)).Substring("global.".Length);
+					StringView key = strName.Substring("global.".Length);
 					GlobalDict.TryGetValue(key, out value);
 					return value;
 				}
@@ -816,7 +815,7 @@ public class ConsoleSystem
 				//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 				//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-				bool flag = ((StringView)(ref strName)).Contains(StringView.op_Implicit("."));
+				bool flag = strName.Contains(StringView.op_Implicit("."));
 				if (!flag)
 				{
 					strName = WithGlobal.Get(strName);
@@ -835,9 +834,9 @@ public class ConsoleSystem
 				{
 					return value;
 				}
-				if (allowGlobalFallback && ((StringView)(ref strName)).StartsWith(StringView.op_Implicit("global.")))
+				if (allowGlobalFallback && strName.StartsWith(StringView.op_Implicit("global.")))
 				{
-					StringView key = ((StringView)(ref strName)).Substring("global.".Length);
+					StringView key = strName.Substring("global.".Length);
 					GlobalDict.TryGetValue(key, out value);
 					return value;
 				}
@@ -845,11 +844,11 @@ public class ConsoleSystem
 			}
 		}
 
-		private unsafe static readonly Memoized<StringView, StringView> WithGlobal = new Memoized<StringView, StringView>((Func<StringView, StringView>)delegate(StringView s)
+		private static readonly Memoized<StringView, StringView> WithGlobal = new Memoized<StringView, StringView>((Func<StringView, StringView>)((StringView s) =>
 		{
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			return StringView.op_Implicit("global." + ((object)(*(StringView*)(&s))/*cast due to constrained. prefix*/).ToString());
-		});
+			return StringView.op_Implicit("global." + ((object)s/*cast due to constrained. prefix*/).ToString());
+		}));
 
 		public static Command[] All { get; set; }
 
@@ -906,7 +905,7 @@ public class ConsoleSystem
 						else
 						{
 							Server.Replicated.Add(command2);
-							command2.OnValueChanged += delegate(Command command3)
+							command2.OnValueChanged += (Command command3) =>
 							{
 								OnReplicatedVarChanged?.Invoke(command3.FullName, command3.String);
 							};
@@ -929,7 +928,7 @@ public class ConsoleSystem
 					}
 				}
 			}
-			Input.RunBind += delegate(string strCommand, bool pressed)
+			Input.RunBind += (string strCommand, bool pressed) =>
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				Command command3 = Client.Find(StringView.op_Implicit(strCommand));
@@ -1204,6 +1203,7 @@ public class ConsoleSystem
 			}
 		}
 		await (await GetLogStream()).DisposeAsync();
+		_logWriter = null;
 	}
 
 	private static async Task<StreamWriter> GetLogStream()
@@ -1214,6 +1214,7 @@ public class ConsoleSystem
 			if (_logWriter != null)
 			{
 				await _logWriter.DisposeAsync();
+				_logWriter = null;
 			}
 			_logTimestamp = today;
 			_logWriter = OpenLogFile();

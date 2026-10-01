@@ -67,12 +67,12 @@ public class RustExtension : Extension
 
 	public override void Load()
 	{
-		base.Manager.RegisterLibrary("Rust", new Oxide.Game.Rust.Libraries.Rust());
-		base.Manager.RegisterLibrary("Command", new Command());
-		base.Manager.RegisterLibrary("Item", new Oxide.Game.Rust.Libraries.Item());
-		base.Manager.RegisterLibrary("Player", new Player());
-		base.Manager.RegisterLibrary("Server", new Server());
-		base.Manager.RegisterPluginLoader(new RustPluginLoader());
+		Manager.RegisterLibrary("Rust", new Oxide.Game.Rust.Libraries.Rust());
+		Manager.RegisterLibrary("Command", new Command());
+		Manager.RegisterLibrary("Item", new Oxide.Game.Rust.Libraries.Item());
+		Manager.RegisterLibrary("Player", new Player());
+		Manager.RegisterLibrary("Server", new Server());
+		Manager.RegisterPluginLoader(new RustPluginLoader());
 		WebClient.Headers["User-Agent"] = $"Oxide.Rust {Version}";
 	}
 
@@ -96,7 +96,7 @@ public class RustExtension : Extension
 			callback(LatestExtVersion, null);
 			return;
 		}
-		GetLatestExtensionVersion().ContinueWith(delegate(Task<VersionNumber> task)
+		GetLatestExtensionVersion().ContinueWith((Task<VersionNumber> task) =>
 		{
 			if (task.Exception == null)
 			{
@@ -108,17 +108,17 @@ public class RustExtension : Extension
 
 	private async Task<VersionNumber> GetLatestExtensionVersion()
 	{
-		string obj = await WebClient.DownloadStringTaskAsync("https://api.github.com/repos/OxideMod/Oxide.Rust/releases");
-		if (string.IsNullOrWhiteSpace(obj))
+		string text = await WebClient.DownloadStringTaskAsync("https://api.github.com/repos/OxideMod/Oxide.Rust/releases");
+		if (string.IsNullOrWhiteSpace(text))
 		{
 			throw new Exception("Could not retrieve latest Oxide.Rust version from GitHub API");
 		}
-		string text = Array.Parse(obj)[0].Obj.GetString("tag_name", "");
-		if (string.IsNullOrWhiteSpace(text))
+		string text2 = Array.Parse(text)[0].Obj.GetString("tag_name", "");
+		if (string.IsNullOrWhiteSpace(text2))
 		{
 			throw new Exception("Tag name is undefined");
 		}
-		return ParseVersionNumber(text);
+		return ParseVersionNumber(text2);
 	}
 
 	private VersionNumber ParseVersionNumber(string versionString)

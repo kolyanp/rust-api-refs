@@ -9,10 +9,22 @@ public class State_PlayAnimationRM : State_PlayAnimationBase
 	[SerializeField]
 	public RootMotionData Animation;
 
+	public bool HasAnimation
+	{
+		get
+		{
+			if (Animation != null)
+			{
+				return (Object)(object)Animation.inPlaceAnimation != (Object)null;
+			}
+			return false;
+		}
+	}
+
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		EFSMStateStatus result = base.OnStateEnter(payload);
-		animState = base.AnimPlayer.PlayServerAndTakeFromPool(GetAnimation());
+		animState = AnimPlayer.PlayServerAndTakeFromPool(GetAnimation());
 		return result;
 	}
 

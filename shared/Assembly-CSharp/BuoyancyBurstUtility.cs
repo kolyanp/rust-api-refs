@@ -10,9 +10,9 @@ using UnityEngine;
 public class BuoyancyBurstUtility
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void FillPointData_000058F8_0024PostfixBurstDelegate(in int pointIndexOffset, ref NativeArray<Vector2> pointPositionArray, ref NativeArray<Vector2> pointPositionUVArray, in Matrix4x4 rootToWorld, ref NativeArray<Buoyancy.BuoyancyPointData> pointData, in Bounds deepSeaBounds, in Vector3 terrainPosition, in Vector3 terrainOneOverSize, in bool isDeepSea, ref NativeArray<Vector3> allPositions3D, out int pointCount);
+	internal delegate void FillPointData_00005CAF_0024PostfixBurstDelegate(in int pointIndexOffset, ref NativeArray<Vector2> pointPositionArray, ref NativeArray<Vector2> pointPositionUVArray, in Matrix4x4 rootToWorld, ref NativeArray<Buoyancy.BuoyancyPointData> pointData, in Bounds deepSeaBounds, in Vector3 terrainPosition, in Vector3 terrainOneOverSize, in bool isDeepSea, ref NativeArray<Vector3> allPositions3D, out int pointCount);
 
-	internal static class FillPointData_000058F8_0024BurstDirectCall
+	internal static class FillPointData_00005CAF_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -23,7 +23,7 @@ public class BuoyancyBurstUtility
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<FillPointData_000058F8_0024PostfixBurstDelegate>((FillPointData_000058F8_0024PostfixBurstDelegate)FillPointData).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<FillPointData_00005CAF_0024PostfixBurstDelegate>((FillPointData_00005CAF_0024PostfixBurstDelegate)FillPointData).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -50,11 +50,11 @@ public class BuoyancyBurstUtility
 		}
 	}
 
+	[MonoPInvokeCallback(typeof(FillPointData_00005CAF_0024PostfixBurstDelegate))]
 	[BurstCompile]
-	[MonoPInvokeCallback(typeof(FillPointData_000058F8_0024PostfixBurstDelegate))]
 	public static void FillPointData(in int pointIndexOffset, ref NativeArray<Vector2> pointPositionArray, ref NativeArray<Vector2> pointPositionUVArray, in Matrix4x4 rootToWorld, ref NativeArray<Buoyancy.BuoyancyPointData> pointData, in Bounds deepSeaBounds, in Vector3 terrainPosition, in Vector3 terrainOneOverSize, in bool isDeepSea, ref NativeArray<Vector3> allPositions3D, out int pointCount)
 	{
-		FillPointData_000058F8_0024BurstDirectCall.Invoke(in pointIndexOffset, ref pointPositionArray, ref pointPositionUVArray, in rootToWorld, ref pointData, in deepSeaBounds, in terrainPosition, in terrainOneOverSize, in isDeepSea, ref allPositions3D, out pointCount);
+		FillPointData_00005CAF_0024BurstDirectCall.Invoke(in pointIndexOffset, ref pointPositionArray, ref pointPositionUVArray, in rootToWorld, ref pointData, in deepSeaBounds, in terrainPosition, in terrainOneOverSize, in isDeepSea, ref allPositions3D, out pointCount);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -83,10 +83,10 @@ public class BuoyancyBurstUtility
 		float z2;
 		if (isDeepSea)
 		{
-			x = ((Bounds)(ref deepSeaBounds)).min.x;
-			z = ((Bounds)(ref deepSeaBounds)).min.z;
-			x2 = Vector3Ex.Inverse(((Bounds)(ref deepSeaBounds)).size).x;
-			z2 = Vector3Ex.Inverse(((Bounds)(ref deepSeaBounds)).size).z;
+			x = deepSeaBounds.min.x;
+			z = deepSeaBounds.min.z;
+			x2 = Vector3Ex.Inverse(deepSeaBounds.size).x;
+			z2 = Vector3Ex.Inverse(deepSeaBounds.size).z;
 		}
 		else
 		{
@@ -97,7 +97,7 @@ public class BuoyancyBurstUtility
 		}
 		for (int i = 0; i < pointData.Length; i++)
 		{
-			Vector3 val = ((Matrix4x4)(ref rootToWorld)).MultiplyPoint3x4(pointData[i].rootToPoint);
+			Vector3 val = rootToWorld.MultiplyPoint3x4(pointData[i].rootToPoint);
 			float num = (val.x - x) * x2;
 			float num2 = (val.z - z) * z2;
 			pointPositionArray[i + pointIndexOffset] = new Vector2(val.x, val.z);

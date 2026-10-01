@@ -328,7 +328,7 @@ public class SpinUpWeapon : BaseProjectile, ITurretNotify
 
 	private void FakeBullet()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			FireFakeBulletServer(aimCone * 3f);
 		}

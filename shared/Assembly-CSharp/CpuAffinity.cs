@@ -54,12 +54,12 @@ public class CpuAffinity
 			JObject val2 = (JObject)(object)((item is JObject) ? item : null);
 			if (val2 != null)
 			{
-				JToken obj3 = val2["Cpu"];
-				string text = ((obj3 != null) ? Extensions.Value<string>((IEnumerable<JToken>)obj3) : null);
-				JToken obj4 = val2["Min"];
-				int? num = ((obj4 != null) ? new int?(Extensions.Value<int>((IEnumerable<JToken>)obj4)) : ((int?)null));
-				JToken obj5 = val2["Max"];
-				int? num2 = ((obj5 != null) ? new int?(Extensions.Value<int>((IEnumerable<JToken>)obj5)) : ((int?)null));
+				JToken val3 = val2["Cpu"];
+				string text = ((val3 != null) ? Extensions.Value<string>((IEnumerable<JToken>)val3) : null);
+				JToken val4 = val2["Min"];
+				int? num = ((val4 != null) ? new int?(Extensions.Value<int>((IEnumerable<JToken>)val4)) : ((int?)null));
+				JToken val5 = val2["Max"];
+				int? num2 = ((val5 != null) ? new int?(Extensions.Value<int>((IEnumerable<JToken>)val5)) : ((int?)null));
 				if (text != null && num.HasValue && num2.HasValue)
 				{
 					list.Add((text, num.Value, num2.Value));

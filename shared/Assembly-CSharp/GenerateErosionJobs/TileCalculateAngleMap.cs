@@ -8,8 +8,8 @@ namespace GenerateErosionJobs;
 [BurstCompile(/*Could not decode attribute arguments.*/)]
 internal struct TileCalculateAngleMap : IJobParallelFor
 {
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<float> AngleMap;
 
 	[ReadOnly]
@@ -27,6 +27,8 @@ internal struct TileCalculateAngleMap : IJobParallelFor
 
 	public void Execute(int index)
 	{
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
@@ -58,14 +60,12 @@ internal struct TileCalculateAngleMap : IJobParallelFor
 		int num4 = math.max(num2 * TileSizeZ, 1);
 		int num5 = math.min(num3 + TileSizeX, Res - 1);
 		int num6 = math.min(num4 + TileSizeZ, Res - 1);
-		int4 val = default(int4);
-		((int4)(ref val))._002Ector(Res);
-		int2 val2 = default(int2);
-		((int2)(ref val2))._002Ector(1, -1);
+		int4 val = new int4(Res);
+		int2 val2 = new int2(1, -1);
 		for (int i = num4; i < num6; i++)
 		{
 			int2 val3 = new int2(i) + val2;
-			int4 val4 = ((int2)(ref val3)).yyxy * val;
+			int4 val4 = val3.yyxy * val;
 			for (int j = num3; j < num5; j++)
 			{
 				float4 val5 = float4.op_Implicit(val4 + new int4(j + 1, j - 1, j - 1, j - 1));

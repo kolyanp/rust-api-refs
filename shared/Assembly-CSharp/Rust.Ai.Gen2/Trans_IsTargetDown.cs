@@ -7,7 +7,7 @@ public class Trans_IsTargetDown : FSMTransitionBase
 {
 	protected override bool EvaluateInternal(ref FSMPayload payload)
 	{
-		if (!base.Senses.FindTarget(out var target))
+		if (!Senses.FindTarget(out var target))
 		{
 			return false;
 		}

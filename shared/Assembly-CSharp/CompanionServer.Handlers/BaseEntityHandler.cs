@@ -21,18 +21,18 @@ public abstract class BaseEntityHandler<T> : BasePlayerHandler<T> where T : clas
 		{
 			return validationResult;
 		}
-		AppIOEntity appIOEntity = BaseNetworkable.serverEntities.Find(base.Request.entityId) as AppIOEntity;
+		AppIOEntity appIOEntity = BaseNetworkable.serverEntities.Find(Request.entityId) as AppIOEntity;
 		if ((Object)(object)appIOEntity == (Object)null)
 		{
 			return ValidationResult.NotFound;
 		}
 		BuildingPrivlidge buildingPrivilege = appIOEntity.GetBuildingPrivilege();
-		if ((Object)(object)buildingPrivilege != (Object)null && !buildingPrivilege.IsAuthed(base.UserId))
+		if ((Object)(object)buildingPrivilege != (Object)null && !buildingPrivilege.IsAuthed(UserId))
 		{
 			return ValidationResult.NotFound;
 		}
 		Entity = appIOEntity;
-		base.Client.Subscribe(new EntityTarget(base.Request.entityId));
+		Client.Subscribe(new EntityTarget(Request.entityId));
 		return ValidationResult.Success;
 	}
 }

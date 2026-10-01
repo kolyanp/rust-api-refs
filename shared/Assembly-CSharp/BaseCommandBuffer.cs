@@ -11,7 +11,7 @@ public class BaseCommandBuffer : MonoBehaviour
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Expected I4, but got Unknown
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Expected I4, but got Unknown
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)

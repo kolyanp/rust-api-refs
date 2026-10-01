@@ -26,16 +26,22 @@ public class MetabolismAttribute
 
 	public float value;
 
+	[NonSerialized]
+	public float bonusMax;
+
 	public float lastValue;
 
 	internal float lastGreatFraction;
 
 	private const float greatInterval = 0.1f;
 
+	public float EffectiveMax => max + bonusMax;
+
 	public float greatFraction => Mathf.Floor(Fraction() / 0.1f) / 10f;
 
 	public void Reset()
 	{
+		bonusMax = 0f;
 		value = Mathf.Clamp(Random.Range(startMin, startMax), min, max);
 	}
 
@@ -49,24 +55,33 @@ public class MetabolismAttribute
 		return 1f - Fraction();
 	}
 
+	public float OverfillFraction()
+	{
+		if (max <= 0f)
+		{
+			return 0f;
+		}
+		return Mathf.Clamp01((value - max) / max);
+	}
+
 	public void Add(float val)
 	{
-		value = Mathf.Clamp(value + val, min, max);
+		value = Mathf.Clamp(value + val, min, EffectiveMax);
 	}
 
 	public void Subtract(float val)
 	{
-		value = Mathf.Clamp(value - val, min, max);
+		value = Mathf.Clamp(value - val, min, EffectiveMax);
 	}
 
 	public void Set(float val)
 	{
-		value = Mathf.Clamp(val, min, max);
+		value = Mathf.Clamp(val, min, EffectiveMax);
 	}
 
 	public void Increase(float fTarget)
 	{
-		fTarget = Mathf.Clamp(fTarget, min, max);
+		fTarget = Mathf.Clamp(fTarget, min, EffectiveMax);
 		if (!(fTarget <= value))
 		{
 			value = fTarget;
@@ -77,24 +92,24 @@ public class MetabolismAttribute
 	{
 		if (fRate != 0f)
 		{
-			value = Mathf.Clamp(Mathf.MoveTowards(value, fTarget, fRate), min, max);
+			value = Mathf.Clamp(Mathf.MoveTowards(value, fTarget, fRate), min, EffectiveMax);
 		}
 	}
 
 	public bool HasChanged()
 	{
-		bool num = Mathf.Abs(lastValue - value) > 0.01f;
-		if (num)
+		bool flag = Mathf.Abs(lastValue - value) > 0.01f;
+		if (flag)
 		{
 			lastValue = value;
 		}
-		return num;
+		return flag;
 	}
 
 	public bool HasGreatlyChanged()
 	{
 		float num = greatFraction;
-		bool result = lastGreatFraction != num || ((value == min || value == max) && value != lastValue);
+		bool result = lastGreatFraction != num || ((value == min || value == EffectiveMax) && value != lastValue);
 		lastGreatFraction = num;
 		lastValue = value;
 		return result;

@@ -101,7 +101,7 @@ public abstract class RustPlugin : CSharpPlugin
 	[HookMethod("OnPlayerDisconnected")]
 	private void base_OnPlayerDisconnected(BasePlayer player, string reason)
 	{
-		NextTick(delegate
+		NextTick(() =>
 		{
 			foreach (PluginFieldInfo onlinePlayerField in onlinePlayerFields)
 			{

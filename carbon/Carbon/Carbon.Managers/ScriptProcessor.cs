@@ -25,7 +25,7 @@ public class ScriptProcessor : BaseProcessor, IScriptProcessor, IBaseProcessor, 
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Error clearing " + base.File, ex);
+				Logger.Error("Error clearing " + File, ex);
 			}
 		}
 
@@ -37,7 +37,7 @@ public class ScriptProcessor : BaseProcessor, IScriptProcessor, IBaseProcessor, 
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Error disposing " + base.File, ex);
+				Logger.Error("Error disposing " + File, ex);
 			}
 		}
 
@@ -45,7 +45,7 @@ public class ScriptProcessor : BaseProcessor, IScriptProcessor, IBaseProcessor, 
 		{
 			try
 			{
-				ModLoader.GetCompilationResult(base.File).Clear();
+				ModLoader.GetCompilationResult(File).Clear();
 				Loader = new ScriptLoader
 				{
 					Parser = Parser,
@@ -54,16 +54,16 @@ public class ScriptProcessor : BaseProcessor, IScriptProcessor, IBaseProcessor, 
 				};
 				Loader.Sources.Add(new BaseSource
 				{
-					FilePath = base.File,
-					FileName = Path.GetFileName(base.File),
-					ContextFilePath = base.File,
-					ContextFileName = Path.GetFileName(base.File)
+					FilePath = File,
+					FileName = Path.GetFileName(File),
+					ContextFilePath = File,
+					ContextFileName = Path.GetFileName(File)
 				});
 				Loader.Load();
 			}
 			catch (Exception arg)
 			{
-				Logger.Warn($"Failed processing {Path.GetFileNameWithoutExtension(base.File)}:\n{arg}");
+				Logger.Warn($"Failed processing {Path.GetFileNameWithoutExtension(File)}:\n{arg}");
 			}
 		}
 	}
@@ -96,14 +96,14 @@ public class ScriptProcessor : BaseProcessor, IScriptProcessor, IBaseProcessor, 
 
 	public override void Start()
 	{
-		base.BlacklistPattern = new string[3] { "backups", "debug", "cszip_dev" };
-		base.IncludeSubdirectories = Community.Runtime.Config.Watchers.ScriptWatcherOption == SearchOption.AllDirectories;
+		BlacklistPattern = new string[3] { "backups", "debug", "cszip_dev" };
+		IncludeSubdirectories = Community.Runtime.Config.Watchers.ScriptWatcherOption == SearchOption.AllDirectories;
 		base.Start();
 	}
 
 	public bool AllPendingScriptsComplete()
 	{
-		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in base.InstanceBuffer)
+		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in InstanceBuffer)
 		{
 			if (item.Value is Script { Loader: not null } script && !script.Loader.HasFinished)
 			{
@@ -115,7 +115,7 @@ public class ScriptProcessor : BaseProcessor, IScriptProcessor, IBaseProcessor, 
 
 	public bool AllNonRequiresScriptsComplete()
 	{
-		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in base.InstanceBuffer)
+		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in InstanceBuffer)
 		{
 			if (item.Value is Script { Loader: not null } script && !script.Loader.HasRequires && !script.Loader.HasFinished)
 			{
@@ -127,7 +127,7 @@ public class ScriptProcessor : BaseProcessor, IScriptProcessor, IBaseProcessor, 
 
 	public bool AllExtensionsComplete()
 	{
-		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in base.InstanceBuffer)
+		foreach (KeyValuePair<string, IBaseProcessor.IProcess> item in InstanceBuffer)
 		{
 			if (item.Value is Script { Loader: not null } script && !script.Loader.IsExtension && !script.Loader.HasFinished)
 			{

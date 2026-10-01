@@ -176,8 +176,28 @@ public static class TimeEx
 		double num6 = Math.Floor(num5 / 24.0);
 		double num7 = Math.Floor(num6 / 7.0);
 		text += ((num7 > 1.0) ? (num7.ToString(integerFormat) + ":") : "");
-		text += ((num6 % 7.0 > 1.0) ? (num6.ToString(integerFormat) + ":") : ((num7 > 0.0) ? (num6.ToString(integerFormat) + ":") : ""));
-		text += ((num5 % 24.0 > 0.0) ? (num5.ToString(integerFormat) + ":") : ((num6 > 0.0 || num7 > 0.0) ? (num5.ToString(integerFormat) + ":") : ""));
+		string text2 = text;
+		string? text3;
+		if (num6 % 7.0 > 1.0)
+		{
+			text3 = num6.ToString(integerFormat) + ":";
+		}
+		else
+		{
+			text3 = ((num7 > 0.0) ? (num6.ToString(integerFormat) + ":") : "");
+		}
+		text = text2 + text3;
+		string text4 = text;
+		string? text5;
+		if (num5 % 24.0 > 0.0)
+		{
+			text5 = num5.ToString(integerFormat) + ":";
+		}
+		else
+		{
+			text5 = ((num6 > 0.0 || num7 > 0.0) ? (num5.ToString(integerFormat) + ":") : "");
+		}
+		text = text4 + text5;
 		text = text + (num4 % 60.0).ToString(integerFormat) + ":";
 		text += (num3 % 60).ToString(integerFormat);
 		if (showMiliseconds)

@@ -8,7 +8,7 @@ public class PlayerDetectedAIEvent : BaseAIEvent
 	public PlayerDetectedAIEvent()
 		: base(AIEventType.PlayerDetected)
 	{
-		base.Rate = ExecuteRate.Slow;
+		Rate = ExecuteRate.Slow;
 	}
 
 	public override void Init(AIEventData data, BaseEntity owner)
@@ -21,32 +21,32 @@ public class PlayerDetectedAIEvent : BaseAIEvent
 	public override AIEventData ToProto()
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
-		AIEventData obj = base.ToProto();
-		obj.playerDetectedData = new PlayerDetectedAIEventData();
-		obj.playerDetectedData.range = Range;
-		return obj;
+		//IL_0011: Expected Obj, but got Unknown
+		AIEventData val = base.ToProto();
+		val.playerDetectedData = new PlayerDetectedAIEventData();
+		val.playerDetectedData.range = Range;
+		return val;
 	}
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
-		base.Result = false;
+		Result = false;
 		BaseEntity nearestPlayer = senses.GetNearestPlayer(Range);
-		if (base.Inverted)
+		if (Inverted)
 		{
-			if ((Object)(object)nearestPlayer == (Object)null && base.ShouldSetOutputEntityMemory)
+			if ((Object)(object)nearestPlayer == (Object)null && ShouldSetOutputEntityMemory)
 			{
-				memory.Entity.Remove(base.OutputEntityMemorySlot);
+				memory.Entity.Remove(OutputEntityMemorySlot);
 			}
-			base.Result = (Object)(object)nearestPlayer == (Object)null;
+			Result = (Object)(object)nearestPlayer == (Object)null;
 		}
 		else
 		{
-			if ((Object)(object)nearestPlayer != (Object)null && base.ShouldSetOutputEntityMemory)
+			if ((Object)(object)nearestPlayer != (Object)null && ShouldSetOutputEntityMemory)
 			{
-				memory.Entity.Set(nearestPlayer, base.OutputEntityMemorySlot);
+				memory.Entity.Set(nearestPlayer, OutputEntityMemorySlot);
 			}
-			base.Result = (Object)(object)nearestPlayer != (Object)null;
+			Result = (Object)(object)nearestPlayer != (Object)null;
 		}
 	}
 }

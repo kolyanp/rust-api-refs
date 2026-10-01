@@ -3,18 +3,18 @@ using UnityEngine.Events;
 
 public class GenericSpawnPoint : BaseSpawnPoint
 {
-	public bool dropToGround;
+	public bool dropToGround = true;
 
 	public bool randomRot;
 
 	[Range(1f, 180f)]
-	public float randomRotSnapDegrees;
+	public float randomRotSnapDegrees = 1f;
 
 	public GameObjectRef spawnEffect;
 
-	public UnityEvent OnObjectSpawnedEvent;
+	public UnityEvent OnObjectSpawnedEvent = new UnityEvent();
 
-	public UnityEvent OnObjectRetiredEvent;
+	public UnityEvent OnObjectRetiredEvent = new UnityEvent();
 
 	public Quaternion GetRandomRotation()
 	{
@@ -75,13 +75,8 @@ public class GenericSpawnPoint : BaseSpawnPoint
 	public GenericSpawnPoint()
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Expected O, but got Unknown
+		//IL_001d: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		dropToGround = true;
-		randomRotSnapDegrees = 1f;
-		OnObjectSpawnedEvent = new UnityEvent();
-		OnObjectRetiredEvent = new UnityEvent();
-		base._002Ector();
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

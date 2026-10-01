@@ -20,11 +20,11 @@ public class Trans_IsMuzzleClear_Slow : FSMSlowTransitionBase
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Trans_IsMuzzleClear_Slow"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return false;
 			}
-			if (!base.Senses.FindLKP(target, out var lkp))
+			if (!Senses.FindLKP(target, out var lkp))
 			{
 				return false;
 			}

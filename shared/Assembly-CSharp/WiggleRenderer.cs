@@ -24,11 +24,11 @@ public class WiggleRenderer : PostProcessEffectRenderer<Wiggle>
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		CommandBuffer command = context.command;
 		command.BeginSample("Wiggle");
-		timer += base.settings.speed.value * Time.deltaTime;
+		timer += settings.speed.value * Time.deltaTime;
 		PropertySheet propertySheet = context.propertySheets.Get(wiggleShader);
 		propertySheet.properties.Clear();
 		propertySheet.properties.SetFloat(timerProperty, timer);
-		propertySheet.properties.SetFloat(scaleProperty, base.settings.scale.value);
+		propertySheet.properties.SetFloat(scaleProperty, settings.scale.value);
 		context.command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 0);
 		command.EndSample("Wiggle");
 	}

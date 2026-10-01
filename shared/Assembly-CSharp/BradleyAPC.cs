@@ -107,9 +107,9 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public SoundDefinition chasisLurchSoundDef;
 
-	public float chasisLurchAngleDelta;
+	public float chasisLurchAngleDelta = 2f;
 
-	public float chasisLurchSpeedDelta;
+	public float chasisLurchSpeedDelta = 2f;
 
 	public float lastAngle;
 
@@ -117,19 +117,19 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public SoundDefinition turretTurnLoopDef;
 
-	public float turretLoopGainSpeed;
+	public float turretLoopGainSpeed = 3f;
 
-	public float turretLoopPitchSpeed;
+	public float turretLoopPitchSpeed = 3f;
 
 	public float turretLoopMinAngleDelta;
 
-	public float turretLoopMaxAngleDelta;
+	public float turretLoopMaxAngleDelta = 10f;
 
-	public float turretLoopPitchMin;
+	public float turretLoopPitchMin = 0.5f;
 
-	public float turretLoopPitchMax;
+	public float turretLoopPitchMax = 1f;
 
-	public float turretLoopGainThreshold;
+	public float turretLoopGainThreshold = 0.0001f;
 
 	private Sound turretTurnLoop;
 
@@ -137,9 +137,9 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	private SoundModulation.Modulator turretTurnLoopPitch;
 
-	public float enginePitch;
+	public float enginePitch = 0.9f;
 
-	public float rpmMultiplier;
+	public float rpmMultiplier = 0.6f;
 
 	private TreadAnimator treadAnimator;
 
@@ -152,11 +152,11 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	private bool followingSpine;
 
-	private int splineId;
+	private int splineId = -1;
 
 	private WorldSpline spline;
 
-	private int entryDirection;
+	private int entryDirection = 1;
 
 	private TimeSince lastJoinedSpline;
 
@@ -169,15 +169,15 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public GameObjectRef RoadScientistPrefab;
 
-	public int ScientistSpawnCount;
+	public int ScientistSpawnCount = 4;
 
-	public float ScientistSpawnRadius;
+	public float ScientistSpawnRadius = 3f;
 
-	public List<GameObject> ScientistSpawnPoints;
+	public List<GameObject> ScientistSpawnPoints = new List<GameObject>();
 
-	public List<ScientistSpawnGroup> ScientistSpawns;
+	public List<ScientistSpawnGroup> ScientistSpawns = new List<ScientistSpawnGroup>();
 
-	public bool SetScientistChaseBasedOnWeapon;
+	public bool SetScientistChaseBasedOnWeapon = true;
 
 	[ServerVar]
 	public static float DeployHealthRangeMin = 0.4f;
@@ -213,13 +213,13 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	public static bool KillScientistsOnBradleyDeath = false;
 
 	[HideInInspector]
-	public bool RoadSpawned;
+	public bool RoadSpawned = true;
 
-	private List<ScientistNPC> activeScientists;
+	private List<ScientistNPC> activeScientists = new List<ScientistNPC>();
 
-	private List<GameObjectRef> mountedScientistPrefabs;
+	private List<GameObjectRef> mountedScientistPrefabs = new List<GameObjectRef>();
 
-	private List<Vector3> scientistSpawnPositions;
+	private List<Vector3> scientistSpawnPositions = new List<Vector3>();
 
 	private int numberOfScientistsToSpawn;
 
@@ -239,40 +239,40 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	private bool deployingScientists;
 
-	private Dictionary<uint, GameObjectRef> scientistPrefabLookUp;
+	private Dictionary<uint, GameObjectRef> scientistPrefabLookUp = new Dictionary<uint, GameObjectRef>();
 
 	[Header("Targeting")]
-	public float viewDistance;
+	public float viewDistance = 100f;
 
-	public float searchRange;
+	public float searchRange = 100f;
 
-	public float searchFrequency;
+	public float searchFrequency = 2f;
 
-	public float memoryDuration;
+	public float memoryDuration = 20f;
 
 	public static float sightUpdateRate = 0.5f;
 
-	public List<TargetInfo> targetList;
+	public List<TargetInfo> targetList = new List<TargetInfo>();
 
 	public BaseCombatEntity mainGunTarget;
 
 	[Header("Coax")]
-	public float coaxFireRate;
+	public float coaxFireRate = 0.06667f;
 
-	public int coaxBurstLength;
+	public int coaxBurstLength = 10;
 
-	public float coaxAimCone;
+	public float coaxAimCone = 3f;
 
-	public float bulletDamage;
+	public float bulletDamage = 15f;
 
 	[Header("TopTurret")]
-	public float topTurretFireRate;
+	public float topTurretFireRate = 0.25f;
 
 	public float nextCoaxTime;
 
 	public int numCoaxBursted;
 
-	public float nextTopTurretTime;
+	public float nextTopTurretTime = 0.3f;
 
 	public GameObjectRef gun_fire_effect;
 
@@ -286,22 +286,22 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	public WheelCollider[] rightWheels;
 
 	[Header("Movement Config")]
-	public float moveForceMax;
+	public float moveForceMax = 2000f;
 
-	public float brakeForce;
+	public float brakeForce = 100f;
 
-	public float turnForce;
+	public float turnForce = 2000f;
 
-	public float sideStiffnessMax;
+	public float sideStiffnessMax = 1f;
 
-	public float sideStiffnessMin;
+	public float sideStiffnessMin = 0.5f;
 
 	public Transform centerOfMass;
 
-	public float stoppingDist;
+	public float stoppingDist = 5f;
 
 	[Header("Control")]
-	public float throttle;
+	public float throttle = 1f;
 
 	public float turning;
 
@@ -347,13 +347,13 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public GameObjectRef SmokeGrenadePrefab;
 
-	public Vector3 turretAimVector;
+	public Vector3 turretAimVector = Vector3.forward;
 
-	public Vector3 desiredAimVector;
+	public Vector3 desiredAimVector = Vector3.forward;
 
-	public Vector3 topTurretAimVector;
+	public Vector3 topTurretAimVector = Vector3.forward;
 
-	public Vector3 desiredTopTurretAimVector;
+	public Vector3 desiredTopTurretAimVector = Vector3.forward;
 
 	[Header("Effects")]
 	public GameObjectRef explosionEffect;
@@ -370,7 +370,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	public int maxCratesToSpawn;
 
 	[Header("Spline")]
-	public float splineMovementSpeed;
+	public float splineMovementSpeed = 2f;
 
 	public Vector3 splineOffset;
 
@@ -379,13 +379,13 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public IAIPath patrolPath;
 
-	public bool DoAI;
+	public bool DoAI = true;
 
 	public GameObjectRef mainCannonMuzzleFlash;
 
 	public GameObjectRef mainCannonProjectile;
 
-	public float recoilScale;
+	public float recoilScale = 200f;
 
 	public RustNavMeshPath navMeshPath;
 
@@ -401,7 +401,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public const string PREFAB_PATH = "assets/prefabs/npc/m2bradley/bradleyapc.prefab";
 
-	public float nextFireTime;
+	public float nextFireTime = 10f;
 
 	public int numBursted;
 
@@ -474,9 +474,9 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			if (targetInfo.IsValid() && targetInfo.IsVisible())
 			{
 				Vector3 val = targetInfo.lastSeenPosition - ((Component)this).transform.position;
-				Vector3 normalized = ((Vector3)(ref val)).normalized;
+				Vector3 normalized = val.normalized;
 				val = ((Component)spline).transform.position - ((Component)this).transform.position;
-				float num = Vector3.Dot(((Vector3)(ref val)).normalized, normalized);
+				float num = Vector3.Dot(val.normalized, normalized);
 				if (num > 0f)
 				{
 					return true;
@@ -661,7 +661,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			val2 = currentPath[index];
 		}
 		Vector3 val3 = val2 - val;
-		return ((Vector3)(ref val3)).normalized;
+		return val3.normalized;
 	}
 
 	public Vector3 IdealPathPosition()
@@ -742,7 +742,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		foreach (IAIPathNode item in start.Linked)
 		{
 			val = item.Position - start.Position;
-			float num2 = Vector3.Dot(forward, ((Vector3)(ref val)).normalized);
+			float num2 = Vector3.Dot(forward, val.normalized);
 			if (num2 > num)
 			{
 				num = num2;
@@ -758,7 +758,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			}
 			IAIPathNode start2 = iAIPathNode;
 			val = iAIPathNode.Position - start.Position;
-			return GetPathToClosestTurnableNode(start2, ((Vector3)(ref val)).normalized, ref nodes);
+			return GetPathToClosestTurnableNode(start2, val.normalized, ref nodes);
 		}
 		return false;
 	}
@@ -777,7 +777,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		IAIPathNode closestToPoint = patrolPath.GetClosestToPoint(((Component)this).transform.position);
 		Vector3 val = closestToPoint.Position - ((Component)this).transform.position;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		if (Vector3.Dot(((Component)this).transform.forward, normalized) > 0f)
 		{
 			nodes.Add(closestToPoint);
@@ -842,7 +842,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		List<ScientistSpawnGroup> list = Pool.Get<List<ScientistSpawnGroup>>();
 		foreach (ScientistSpawnGroup scientistSpawn in ScientistSpawns)
 		{
-			if (!scientistSpawn.Spawned && !(base.healthFraction > scientistSpawn.BradleyHealth))
+			if (!scientistSpawn.Spawned && !(healthFraction > scientistSpawn.BradleyHealth))
 			{
 				list.Add(scientistSpawn);
 			}
@@ -910,7 +910,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			{
 				flag = true;
 			}
-			else if (base.SecondsSinceAttacked > MountAfterNotAttackedDuration && TimeSince.op_Implicit(timeSinceScientistDeploy) > MountAfterNotAttackedDuration)
+			else if (SecondsSinceAttacked > MountAfterNotAttackedDuration && TimeSince.op_Implicit(timeSinceScientistDeploy) > MountAfterNotAttackedDuration)
 			{
 				flag = true;
 			}
@@ -992,10 +992,10 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
 		object obj = Interface.CallHook("CanDeployScientists", this, attacker, scientistPrefabs, spawnPositions);
 		if (obj is bool)
 		{
@@ -1011,12 +1011,12 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		int num = 0;
 		int num2 = 0;
 		int num3 = 8454144;
-		RaycastHit val = default(RaycastHit);
+		RaycastHit val = default;
 		while (!flag)
 		{
-			if (Physics.Raycast(ScientistSpawnPoints[num2 % ScientistSpawnPoints.Count].transform.position + Vector3.up * 1f, Vector3.down, ref val, 2f, num3) && RustNavMeshHelpers.SamplePosition(((RaycastHit)(ref val)).point + Vector3.up * 0.3f, out var _, 6f, walkableAreaMask))
+			if (Physics.Raycast(ScientistSpawnPoints[num2 % ScientistSpawnPoints.Count].transform.position + Vector3.up * 1f, Vector3.down, ref val, 2f, num3) && RustNavMeshHelpers.SamplePosition(val.point + Vector3.up * 0.3f, out var _, 6f, walkableAreaMask))
 			{
-				spawnPositions.Add(((RaycastHit)(ref val)).point + Vector3.up * 0.1f);
+				spawnPositions.Add(val.point + Vector3.up * 0.1f);
 				num2++;
 				if (num2 >= count)
 				{
@@ -1037,7 +1037,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	private IEnumerator DeployScientists(BasePlayer triggerPlayer, List<GameObjectRef> scientistPrefabs, List<Vector3> spawnPositions)
 	{
-		if (base.isClient || spawnPositions == null || spawnPositions.Count == 0)
+		if (isClient || spawnPositions == null || spawnPositions.Count == 0)
 		{
 			Pool.FreeUnmanaged<GameObjectRef>(ref scientistPrefabs);
 			yield break;
@@ -1318,7 +1318,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
@@ -1353,7 +1353,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			flag = IsVisible(basePlayer.eyes.position, position) || IsVisible(((Component)basePlayer).transform.position + Vector3.up * 0.1f, position);
 			if (!flag && basePlayer.isMounted && (Object)(object)basePlayer.GetMounted().VehicleParent() != (Object)null && basePlayer.GetMounted().VehicleParent().AlwaysAllowBradleyTargeting)
 			{
-				flag = IsVisible(((Bounds)(ref basePlayer.GetMounted().VehicleParent().bounds)).center, position);
+				flag = IsVisible(basePlayer.GetMounted().VehicleParent().bounds.center, position);
 			}
 			if (flag)
 			{
@@ -1362,7 +1362,6 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		}
 		else
 		{
-			Debug.LogWarning((object)"Standard vis test!");
 			flag = IsVisible(ent.CenterPoint());
 		}
 		object obj = Interface.CallHook("CanBradleyApcTarget", this, ent);
@@ -1412,7 +1411,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		else
 		{
 			val = GetAimPoint(mainGunTarget) - ((Component)mainTurretEyePos).transform.position;
-			normalized = ((Vector3)(ref val)).normalized;
+			normalized = val.normalized;
 		}
 		desiredAimVector = normalized;
 		BaseEntity baseEntity = null;
@@ -1435,7 +1434,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		else
 		{
 			val = GetAimPoint(baseEntity) - ((Component)topTurretEyePos).transform.position;
-			val2 = ((Vector3)(ref val)).normalized;
+			val2 = val.normalized;
 		}
 		desiredTopTurretAimVector = val2;
 	}
@@ -1456,7 +1455,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		{
 			Vector3 val = turretAimVector;
 			Vector3 val2 = GetAimPoint(mainGunTarget) - ((Component)mainTurretEyePos).transform.position;
-			if (Vector3.Dot(val, ((Vector3)(ref val2)).normalized) >= 0.99f)
+			if (Vector3.Dot(val, val2.normalized) >= 0.99f)
 			{
 				bool flag = VisibilityTest(mainGunTarget);
 				float num = Vector3.Distance(((Component)mainGunTarget).transform.position, ((Component)this).transform.position);
@@ -1526,7 +1525,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		Transform val = (isCoax ? coaxMuzzle : topTurretMuzzle);
 		Vector3 val2 = ((Component)val).transform.position - val.forward * 0.25f;
 		Vector3 val3 = targetPos - val2;
-		Vector3 normalized = ((Vector3)(ref val3)).normalized;
+		Vector3 normalized = val3.normalized;
 		Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(aimCone, normalized);
 		targetPos = val2 + modifiedAimConeDirection * 300f;
 		List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
@@ -1540,11 +1539,11 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 				BaseCombatEntity baseCombatEntity = entity as BaseCombatEntity;
 				if ((Object)(object)baseCombatEntity != (Object)null)
 				{
-					ApplyDamage(baseCombatEntity, ((RaycastHit)(ref hit)).point, modifiedAimConeDirection);
+					ApplyDamage(baseCombatEntity, hit.point, modifiedAimConeDirection);
 				}
 				if (!((Object)(object)entity != (Object)null) || entity.ShouldBlockProjectiles())
 				{
-					targetPos = ((RaycastHit)(ref hit)).point;
+					targetPos = hit.point;
 					break;
 				}
 			}
@@ -1600,10 +1599,10 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		Vector3 val = direction;
 		val = weaponYaw.parent.InverseTransformDirection(val);
 		Quaternion localRotation = Quaternion.LookRotation(val);
-		Vector3 eulerAngles = ((Quaternion)(ref localRotation)).eulerAngles;
+		Vector3 eulerAngles = localRotation.eulerAngles;
 		for (int i = 0; i < 3; i++)
 		{
-			((Vector3)(ref eulerAngles))[i] = ((Vector3)(ref eulerAngles))[i] - ((((Vector3)(ref eulerAngles))[i] > 180f) ? 360f : 0f);
+			eulerAngles[i] -= ((eulerAngles[i] > 180f) ? 360f : 0f);
 		}
 		Quaternion localRotation2 = Quaternion.Euler(0f, Mathf.Clamp(eulerAngles.y, 0f - maxYaw, maxYaw), 0f);
 		Quaternion localRotation3 = Quaternion.Euler(Mathf.Clamp(eulerAngles.x, minPitch, maxPitch), 0f, 0f);
@@ -1640,7 +1639,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
 		float num = Time.time - lastLateUpdate;
 		lastLateUpdate = Time.time;
-		if (base.isServer)
+		if (isServer)
 		{
 			float num2 = MathF.PI * 2f / 3f;
 			turretAimVector = Vector3.RotateTowards(turretAimVector, desiredAimVector, num2 * num, 0f);
@@ -1939,7 +1938,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = new Vector3(aimAt.x, 0f, aimAt.z) - new Vector3(aimFrom.x, 0f, aimFrom.z);
-		return ((Vector3)(ref val)).normalized;
+		return val.normalized;
 	}
 
 	public bool IsAtDestination()
@@ -2031,7 +2030,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		}
 		Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(2f, CannonMuzzle.rotation * Vector3.forward);
 		Vector3 val = ((Component)CannonPitch).transform.rotation * Vector3.back + ((Component)this).transform.up * -1f;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		myRigidBody.AddForceAtPosition(normalized * recoilScale, ((Component)CannonPitch).transform.position, (ForceMode)1);
 		Effect.server.Run(mainCannonMuzzleFlash.resourcePath, this, StringPool.Get(((Object)((Component)CannonMuzzle).gameObject).name), Vector3.zero, Vector3.zero);
 		BaseEntity baseEntity = GameManager.server.CreateEntity(mainCannonProjectile.resourcePath, ((Component)CannonMuzzle).transform.position, Quaternion.LookRotation(modifiedAimConeDirection));
@@ -2042,7 +2041,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			{
 				component.InitializeVelocity(modifiedAimConeDirection * component.speed);
 			}
-			TimedExplosive timedExplosive = default(TimedExplosive);
+			TimedExplosive timedExplosive = default;
 			if (((Component)baseEntity).TryGetComponent<TimedExplosive>(ref timedExplosive))
 			{
 				timedExplosive.creatorEntity = this;
@@ -2163,7 +2162,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -2175,7 +2174,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			if (targetInfo.IsValid() && targetInfo.IsVisible())
 			{
 				tangent = targetInfo.lastSeenPosition - ((Component)this).transform.position;
-				Vector3 normalized = ((Vector3)(ref tangent)).normalized;
+				Vector3 normalized = tangent.normalized;
 				float num = Vector3.Dot(((Component)this).transform.forward, normalized);
 				if (num > 0f)
 				{
@@ -2191,7 +2190,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		splineTranslator.GetCurrentPositionAndTangent(out var position, out tangent);
 		((Component)this).transform.position = Vector3.Lerp(((Component)this).transform.position, position, Time.deltaTime * splineMovementSpeed * 10f);
 		tangent = splineTranslator.PeekNextPosition(0.1f, entryDirection) - position;
-		Vector3 normalized2 = ((Vector3)(ref tangent)).normalized;
+		Vector3 normalized2 = tangent.normalized;
 		((Component)this).transform.forward = normalized2;
 		if (Math.Abs(splineTranslator.CurrentDistance - splineTranslator.GetEnd()) < 1f)
 		{
@@ -2331,7 +2330,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0222: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -2460,6 +2459,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
@@ -2474,19 +2474,18 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
-		Ray ray = default(Ray);
-		((Ray)(ref ray))._002Ector(((Component)this).transform.position + ((Component)this).transform.forward * (((Bounds)(ref bounds)).extents.z - 1f), ((Component)this).transform.forward);
+		Ray ray = new Ray(((Component)this).transform.position + ((Component)this).transform.forward * (bounds.extents.z - 1f), ((Component)this).transform.forward);
 		if (!GamePhysics.Trace(ray, 3f, out var hitInfo, 20f, LayerMask.op_Implicit(obstacleHitMask), (QueryTriggerInteraction)1, this))
 		{
 			return;
 		}
-		if (((RaycastHit)(ref hitInfo)).point == Vector3.zero)
+		if (hitInfo.point == Vector3.zero)
 		{
-			((RaycastHit)(ref hitInfo)).point = ((RaycastHit)(ref hitInfo)).collider.ClosestPointOnBounds(((Ray)(ref ray)).origin);
+			hitInfo.point = hitInfo.collider.ClosestPointOnBounds(ray.origin);
 		}
-		float num = ((Component)this).transform.AngleToPos(((RaycastHit)(ref hitInfo)).point);
+		float num = ((Component)this).transform.AngleToPos(hitInfo.point);
 		float num2 = Mathf.Abs(num);
-		if (num2 > 75f || !(GameObjectEx.ToBaseEntity(((RaycastHit)(ref hitInfo)).collider) is BradleyAPC))
+		if (num2 > 75f || !(GameObjectEx.ToBaseEntity(hitInfo.collider) is BradleyAPC))
 		{
 			return;
 		}
@@ -2494,7 +2493,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		if (num2 < 5f)
 		{
 			float num3 = ((throttle < 0f) ? 150f : 50f);
-			if (Vector3.SqrMagnitude(((Component)this).transform.position - ((RaycastHit)(ref hitInfo)).point) < num3)
+			if (Vector3.SqrMagnitude(((Component)this).transform.position - hitInfo.point) < num3)
 			{
 				flag = true;
 			}
@@ -2542,7 +2541,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0303: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0308: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}
@@ -2579,7 +2578,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			{
 				IAIPathSpeedZone iAIPathSpeedZone = speedZones[i];
 				OBB val = iAIPathSpeedZone.WorldSpaceBounds();
-				if (((OBB)(ref val)).Contains(((Component)this).transform.position))
+				if (val.Contains(((Component)this).transform.position))
 				{
 					num6 = Mathf.Min(num6, iAIPathSpeedZone.GetMaxSpeed());
 				}
@@ -2591,20 +2590,20 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		{
 			num2 = 0f;
 		}
-		brake = ((Vector3)(ref linearVelocity)).magnitude >= num2;
+		brake = linearVelocity.magnitude >= num2;
 		ApplyBrakes(brake ? 1f : 0f);
 		float num7 = throttle;
 		leftThrottle = Mathf.Clamp(leftThrottle + num7, -1f, 1f);
 		rightThrottle = Mathf.Clamp(rightThrottle + num7, -1f, 1f);
-		float num8 = Mathf.InverseLerp(2f, 1f, ((Vector3)(ref linearVelocity)).magnitude * Mathf.Abs(Vector3.Dot(((Vector3)(ref linearVelocity)).normalized, ((Component)this).transform.forward)));
+		float num8 = Mathf.InverseLerp(2f, 1f, linearVelocity.magnitude * Mathf.Abs(Vector3.Dot(linearVelocity.normalized, ((Component)this).transform.forward)));
 		float torqueAmount = Mathf.Lerp(moveForceMax, turnForce, num8);
-		float num9 = Mathf.InverseLerp(5f, 1.5f, ((Vector3)(ref linearVelocity)).magnitude * Mathf.Abs(Vector3.Dot(((Vector3)(ref linearVelocity)).normalized, ((Component)this).transform.forward)));
+		float num9 = Mathf.InverseLerp(5f, 1.5f, linearVelocity.magnitude * Mathf.Abs(Vector3.Dot(linearVelocity.normalized, ((Component)this).transform.forward)));
 		ScaleSidewaysFriction(1f - num9);
 		SetMotorTorque(leftThrottle, rightSide: false, torqueAmount);
 		SetMotorTorque(rightThrottle, rightSide: true, torqueAmount);
 		TriggerHurtEx triggerHurtEx = impactDamager;
 		Vector3 linearVelocity2 = myRigidBody.linearVelocity;
-		triggerHurtEx.damageEnabled = ((Vector3)(ref linearVelocity2)).magnitude > 2f;
+		triggerHurtEx.damageEnabled = linearVelocity2.magnitude > 2f;
 	}
 
 	public void ApplyBrakes(float amount)
@@ -2637,14 +2636,14 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		foreach (WheelCollider obj in array)
 		{
 			WheelFrictionCurve sidewaysFriction = obj.sidewaysFriction;
-			((WheelFrictionCurve)(ref sidewaysFriction)).stiffness = stiffness;
+			sidewaysFriction.stiffness = stiffness;
 			obj.sidewaysFriction = sidewaysFriction;
 		}
 		array = leftWheels;
 		foreach (WheelCollider obj2 in array)
 		{
 			WheelFrictionCurve sidewaysFriction2 = obj2.sidewaysFriction;
-			((WheelFrictionCurve)(ref sidewaysFriction2)).stiffness = stiffness;
+			sidewaysFriction2.stiffness = stiffness;
 			obj2.sidewaysFriction = sidewaysFriction2;
 		}
 	}
@@ -2656,7 +2655,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		int num2 = (rightSide ? rightWheels.Length : leftWheels.Length);
 		int num3 = 0;
 		WheelCollider[] array = (rightSide ? rightWheels : leftWheels);
-		WheelHit val = default(WheelHit);
+		WheelHit val = default;
 		for (int i = 0; i < array.Length; i++)
 		{
 			if (array[i].GetGroundHit(ref val))
@@ -2670,7 +2669,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			num4 = num2 / num3;
 		}
 		array = (rightSide ? rightWheels : leftWheels);
-		WheelHit val3 = default(WheelHit);
+		WheelHit val3 = default;
 		foreach (WheelCollider val2 in array)
 		{
 			if (val2.GetGroundHit(ref val3))
@@ -2744,7 +2743,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_02fe: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0302: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0308: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isClient || Interface.CallHook("OnEntityDestroy", this) != null)
+		if (isClient || Interface.CallHook("OnEntityDestroy", this) != null)
 		{
 			return;
 		}
@@ -2777,7 +2776,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		{
 			Vector3 onUnitSphere2 = Random.onUnitSphere;
 			onUnitSphere2.y = 0f;
-			((Vector3)(ref onUnitSphere2)).Normalize();
+			onUnitSphere2.Normalize();
 			Vector3 pos = ((Component)this).transform.position + new Vector3(0f, 1.5f, 0f) + onUnitSphere2 * Random.Range(2f, 3f);
 			BaseEntity baseEntity2 = GameManager.server.CreateEntity(crateToDrop.resourcePath, pos, Quaternion.LookRotation(onUnitSphere2));
 			baseEntity2.Spawn();
@@ -2820,7 +2819,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		base.OnAttacked(info);
-		if (!base.isClient && !IsDead())
+		if (!isClient && !IsDead())
 		{
 			BasePlayer basePlayer = info.Initiator as BasePlayer;
 			if (!(basePlayer is ScientistNPC) && (Object)(object)basePlayer != (Object)null)
@@ -2842,26 +2841,26 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	public override void OnHealthChanged(float oldvalue, float newvalue)
 	{
 		base.OnHealthChanged(oldvalue, newvalue);
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved2, base.healthFraction <= 0.75f);
-		flagsUpdateScope.Set(Flags.Reserved3, base.healthFraction < 0.4f);
+		flagsUpdateScope.Set(Flags.Reserved2, healthFraction <= 0.75f);
+		flagsUpdateScope.Set(Flags.Reserved3, healthFraction < 0.4f);
 	}
 
 	public void DoHealing()
 	{
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.isClient && base.SecondsSinceAttacked > 600f)
+		if (!isClient && SecondsSinceAttacked > 600f)
 		{
-			if (base.healthFraction < 1f)
+			if (healthFraction < 1f)
 			{
 				float amount = MaxHealth() / 300f * Time.fixedDeltaTime;
 				Heal(amount);
 			}
-			if (numberOfScientistsToSpawn < ScientistSpawnCount && base.healthFraction >= 0.95f && TimeSince.op_Implicit(timeSinceScientistDeploy) > 30f)
+			if (numberOfScientistsToSpawn < ScientistSpawnCount && healthFraction >= 0.95f && TimeSince.op_Implicit(timeSinceScientistDeploy) > 30f)
 			{
 				numberOfScientistsToSpawn = ScientistSpawnCount;
 			}
@@ -2904,54 +2903,5 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
-		chasisLurchAngleDelta = 2f;
-		chasisLurchSpeedDelta = 2f;
-		turretLoopGainSpeed = 3f;
-		turretLoopPitchSpeed = 3f;
-		turretLoopMaxAngleDelta = 10f;
-		turretLoopPitchMin = 0.5f;
-		turretLoopPitchMax = 1f;
-		turretLoopGainThreshold = 0.0001f;
-		enginePitch = 0.9f;
-		rpmMultiplier = 0.6f;
-		splineId = -1;
-		entryDirection = 1;
-		ScientistSpawnCount = 4;
-		ScientistSpawnRadius = 3f;
-		ScientistSpawnPoints = new List<GameObject>();
-		ScientistSpawns = new List<ScientistSpawnGroup>();
-		SetScientistChaseBasedOnWeapon = true;
-		RoadSpawned = true;
-		activeScientists = new List<ScientistNPC>();
-		mountedScientistPrefabs = new List<GameObjectRef>();
-		scientistSpawnPositions = new List<Vector3>();
-		scientistPrefabLookUp = new Dictionary<uint, GameObjectRef>();
-		viewDistance = 100f;
-		searchRange = 100f;
-		searchFrequency = 2f;
-		memoryDuration = 20f;
-		targetList = new List<TargetInfo>();
-		coaxFireRate = 0.06667f;
-		coaxBurstLength = 10;
-		coaxAimCone = 3f;
-		bulletDamage = 15f;
-		topTurretFireRate = 0.25f;
-		nextTopTurretTime = 0.3f;
-		moveForceMax = 2000f;
-		brakeForce = 100f;
-		turnForce = 2000f;
-		sideStiffnessMax = 1f;
-		sideStiffnessMin = 0.5f;
-		stoppingDist = 5f;
-		throttle = 1f;
-		turretAimVector = Vector3.forward;
-		desiredAimVector = Vector3.forward;
-		topTurretAimVector = Vector3.forward;
-		desiredTopTurretAimVector = Vector3.forward;
-		splineMovementSpeed = 2f;
-		DoAI = true;
-		recoilScale = 200f;
-		nextFireTime = 10f;
-		base._002Ector();
 	}
 }

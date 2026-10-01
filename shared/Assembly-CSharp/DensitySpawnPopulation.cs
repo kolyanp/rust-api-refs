@@ -10,10 +10,10 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(menuName = "Rust/Density Spawn Population")]
 public class DensitySpawnPopulation : SpawnPopulationBase
 {
-	[FormerlySerializedAs("TargetDensity")]
 	[Header("Spawn Info")]
 	[Tooltip("Usually per square km")]
 	[SerializeField]
+	[FormerlySerializedAs("TargetDensity")]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;
@@ -44,6 +44,9 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 
 	public float NpcRadiusCheckDistance;
 
+	[Tooltip("Only NPCs spawned by these populations block a spawn within NpcRadiusCheckDistance. Empty = any NPC blocks it")]
+	public SpawnPopulationBase[] NpcRadiusCheckPopulations;
+
 	[Tooltip("Reject spawn positions further than this from actual water (0 = disabled). Topology like Swamp can be painted on terrain with no water body, so water-dependent NPCs need a real water check.")]
 	public float MaxDistanceFromWater;
 
@@ -60,27 +63,27 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0299: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0258: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0270: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
 		float num = Mathf.Max((float)ClusterSizeMax, distribution.GetGridCellArea() * GetMaximumSpawnDensity());
 		UpdateWeights(distribution, GetTargetCount(distribution));
 		int num2 = (initialSpawn ? (numToFill * SpawnAttemptsInitial) : (numToFill * SpawnAttemptsRepeating));
@@ -92,9 +95,9 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 			for (int i = 0; i < num3; i++)
 			{
 				bool flag = distribution.Sample(out var spawnPos, out var spawnRot, node, AlignToNormal, ClusterDithering, 0f, Filter, FilterCutoff);
-				if (flag && FilterOutTutorialIslands && ((Bounds)(ref TutorialIsland.WorldBoundsMinusTutorialIslands)).size != Vector3.zero)
+				if (flag && FilterOutTutorialIslands && TutorialIsland.WorldBoundsMinusTutorialIslands.size != Vector3.zero)
 				{
-					flag = ((Bounds)(ref TutorialIsland.WorldBoundsMinusTutorialIslands)).Contains(spawnPos);
+					flag = TutorialIsland.WorldBoundsMinusTutorialIslands.Contains(spawnPos);
 				}
 				if (flag && FilterRadius > 0f)
 				{
@@ -102,16 +105,7 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 				}
 				if (flag && NpcRadiusCheckDistance > 0f)
 				{
-					PooledList<BaseNPC2> val = Pool.Get<PooledList<BaseNPC2>>();
-					try
-					{
-						BaseEntity.Query.Server.GetBrainsInSphere(spawnPos, NpcRadiusCheckDistance, (List<BaseNPC2>)(object)val);
-						flag = ((List<BaseNPC2>)(object)val).Count == 0;
-					}
-					finally
-					{
-						((IDisposable)val)?.Dispose();
-					}
+					flag = !AnyBlockingNpcInRadius(spawnPos);
 				}
 				if (flag && MaxDistanceFromWater > 0f)
 				{
@@ -159,6 +153,33 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 				}
 				num2--;
 			}
+		}
+	}
+
+	private bool AnyBlockingNpcInRadius(Vector3 spawnPos)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<BaseNPC2> val = Pool.Get<PooledList<BaseNPC2>>();
+		try
+		{
+			BaseEntity.Query.Server.GetBrainsInSphere(spawnPos, NpcRadiusCheckDistance, (List<BaseNPC2>)(object)val);
+			if (NpcRadiusCheckPopulations == null || NpcRadiusCheckPopulations.Length == 0)
+			{
+				return ((List<BaseNPC2>)(object)val).Count > 0;
+			}
+			Spawnable spawnable = default;
+			foreach (BaseNPC2 item in (List<BaseNPC2>)(object)val)
+			{
+				if (((Component)item).TryGetComponent<Spawnable>(ref spawnable) && Array.IndexOf(NpcRadiusCheckPopulations, spawnable.Population) >= 0)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 
@@ -263,7 +284,7 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 		byte[] baseValues = new byte[populationRes * populationRes];
 		SpawnFilter filter = Filter;
 		float cutoff = FilterCutoff;
-		Parallel.For(0, populationRes, delegate(int z)
+		Parallel.For(0, populationRes, (int z) =>
 		{
 			for (int i = 0; i < populationRes; i++)
 			{

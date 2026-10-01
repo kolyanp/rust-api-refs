@@ -4,10 +4,10 @@ using UnityEngine.Rendering;
 
 namespace VLB;
 
-[ExecuteInEditMode]
-[HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
 [AddComponentMenu("")]
-public class BeamGeometry : MonoBehaviour
+[HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
+[ExecuteInEditMode]
+public class BeamGeometry : MonoBehaviour, IOnParentDestroying
 {
 	private VolumetricLightBeam m_Master;
 
@@ -77,12 +77,25 @@ public class BeamGeometry : MonoBehaviour
 		}
 	}
 
+	public void OnParentDestroying()
+	{
+		if ((Object)(object)m_Master != (Object)null)
+		{
+			m_Master.ReleaseBeamGeometry();
+		}
+		if ((Object)(object)((Component)this).transform.parent != (Object)null)
+		{
+			((Component)this).transform.SetParent((Transform)null, false);
+		}
+		Object.Destroy((Object)(object)((Component)this).gameObject);
+	}
+
 	public void Initialize(VolumetricLightBeam master, Shader shader)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Expected O, but got Unknown
+		//IL_002b: Expected Obj, but got Unknown
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
@@ -152,6 +165,7 @@ public class BeamGeometry : MonoBehaviour
 	{
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
@@ -165,8 +179,7 @@ public class BeamGeometry : MonoBehaviour
 		material.renderQueue = Config.Instance.geometryRenderQueue;
 		float num = m_Master.coneAngle * (MathF.PI / 180f) / 2f;
 		material.SetVector("_ConeSlopeCosSin", Vector4.op_Implicit(new Vector2(Mathf.Cos(num), Mathf.Sin(num))));
-		Vector2 val = default(Vector2);
-		((Vector2)(ref val))._002Ector(Mathf.Max(m_Master.coneRadiusStart, 0.0001f), Mathf.Max(m_Master.coneRadiusEnd, 0.0001f));
+		Vector2 val = new Vector2(Mathf.Max(m_Master.coneRadiusStart, 0.0001f), Mathf.Max(m_Master.coneRadiusEnd, 0.0001f));
 		material.SetVector("_ConeRadius", Vector4.op_Implicit(val));
 		float num2 = Mathf.Sign(m_Master.coneApexOffsetZ) * Mathf.Max(Mathf.Abs(m_Master.coneApexOffsetZ), 0.0001f);
 		material.SetFloat("_ConeApexOffsetZ", num2);
@@ -234,9 +247,9 @@ public class BeamGeometry : MonoBehaviour
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normal = ((Plane)(ref planeWS)).normal;
+		Vector3 normal = planeWS.normal;
 		material.EnableKeyword("VLB_CLIPPING_PLANE");
-		material.SetVector("_ClippingPlaneWS", new Vector4(normal.x, normal.y, normal.z, ((Plane)(ref planeWS)).distance));
+		material.SetVector("_ClippingPlaneWS", new Vector4(normal.x, normal.y, normal.z, planeWS.distance));
 	}
 
 	public void SetClippingPlaneOff()

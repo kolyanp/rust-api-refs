@@ -129,18 +129,18 @@ public class AiMountedWeaponController : FacepunchBehaviour
 		}
 		Vector3 position = _mountedWeapon.PitchPivot.position;
 		Vector3 val = ((Component)baseEntity).transform.position + _offset - position;
-		if (!(Mathf.Abs(((Vector3)(ref val)).magnitude) < 0.1f) && !(Mathf.Abs(((Vector3)(ref val)).sqrMagnitude) > _maxAttackDistance * _maxAttackDistance))
+		if (!(Mathf.Abs(val.magnitude) < 0.1f) && !(Mathf.Abs(val.sqrMagnitude) > _maxAttackDistance * _maxAttackDistance))
 		{
 			if (!_mountedWeapon.IsReloading)
 			{
-				Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(_accuracy, ((Vector3)(ref val)).normalized);
+				Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(_accuracy, val.normalized);
 				_mountedWeapon.AimAt(_mountedWeapon.PitchPivot.position, modifiedAimConeDirection, _flipPitch);
 			}
 			if (Time.time - lastBurstTime > burst_length + time_between_bursts && GamePhysics.LineOfSight(_mountedWeapon.PitchPivot.position, ((Component)baseEntity).transform.position, 1218519297, _mountedWeapon))
 			{
 				lastBurstTime = Time.time;
 			}
-			if (Time.time < lastBurstTime + burst_length && Time.time - lastFireTime >= fire_rate && Vector3.Dot(_invertedForward ? (-_mountedWeapon.PitchPivot.forward) : _mountedWeapon.PitchPivot.forward, ((Vector3)(ref val)).normalized) >= 0.9f)
+			if (Time.time < lastBurstTime + burst_length && Time.time - lastFireTime >= fire_rate && Vector3.Dot(_invertedForward ? (-_mountedWeapon.PitchPivot.forward) : _mountedWeapon.PitchPivot.forward, val.normalized) >= 0.9f)
 			{
 				lastFireTime = Time.time;
 				_mountedWeapon.Fire(isAi: true);

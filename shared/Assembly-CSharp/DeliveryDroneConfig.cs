@@ -4,15 +4,15 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rust/Delivery Drone Config")]
 public class DeliveryDroneConfig : BaseScriptableObject
 {
-	public Vector3 vendingMachineOffset;
+	public Vector3 vendingMachineOffset = new Vector3(0f, 1f, 1f);
 
-	public float maxDistanceFromVendingMachine;
+	public float maxDistanceFromVendingMachine = 1f;
 
-	public Vector3 halfExtents;
+	public Vector3 halfExtents = new Vector3(0.5f, 0.5f, 0.5f);
 
-	public float testHeight;
+	public float testHeight = 200f;
 
-	public LayerMask layerMask;
+	public LayerMask layerMask = LayerMask.op_Implicit(161546496);
 
 	public void FindDescentPoints(VendingMachine vendingMachine, float currentY, out Vector3 waitPosition, out Vector3 descendPosition)
 	{
@@ -48,7 +48,7 @@ public class DeliveryDroneConfig : BaseScriptableObject
 		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		float num = maxDistanceFromVendingMachine / 4f;
-		RaycastHit val4 = default(RaycastHit);
+		RaycastHit val4 = default;
 		for (int i = 0; i <= 4; i++)
 		{
 			Vector3 val = Vector3.forward * (num * (float)i);
@@ -62,7 +62,7 @@ public class DeliveryDroneConfig : BaseScriptableObject
 			}
 			if (i == 4)
 			{
-				waitPosition = val3 + Vector3.down * (((RaycastHit)(ref val4)).distance - halfExtents.y * 2f);
+				waitPosition = val3 + Vector3.down * (val4.distance - halfExtents.y * 2f);
 				descendPosition = Vector3Ex.WithY(val3, currentY);
 				return;
 			}
@@ -100,11 +100,5 @@ public class DeliveryDroneConfig : BaseScriptableObject
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		vendingMachineOffset = new Vector3(0f, 1f, 1f);
-		maxDistanceFromVendingMachine = 1f;
-		halfExtents = new Vector3(0.5f, 0.5f, 0.5f);
-		testHeight = 200f;
-		layerMask = LayerMask.op_Implicit(161546496);
-		base._002Ector();
 	}
 }

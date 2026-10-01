@@ -38,7 +38,7 @@ public class PlaceDecorRoadside : ProceduralComponent
 	[Tooltip("Dithered positions to try per side before giving up on this road step")]
 	public int PlacementAttempts = 1;
 
-	private static Quaternion rot90;
+	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
 
 	protected List<Vector3> placedPositions = new List<Vector3>();
 
@@ -160,7 +160,7 @@ public class PlaceDecorRoadside : ProceduralComponent
 		{
 			Vector3 val = (road.Spline ? path.GetPointCubicHermite(num6) : path.GetPoint(num6));
 			Vector3 val2 = Vector3Ex.XZ3D(path.GetTangent(num6));
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			Vector3 val3 = rot90 * normalized;
 			int num7 = SeedRandom.Range(ref seed, 0, 2);
 			Prefab random = ArrayEx.GetRandom(prefabs, ref seed);
@@ -258,6 +258,5 @@ public class PlaceDecorRoadside : ProceduralComponent
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		rot90 = Quaternion.Euler(0f, 90f, 0f);
 	}
 }

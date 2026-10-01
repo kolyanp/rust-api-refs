@@ -17,22 +17,14 @@ namespace CompanionServer;
 
 public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 {
-	private struct Message
+	private struct Message(Connection connection, MemoryBuffer buffer)
 	{
-		public readonly Connection Connection;
+		public readonly Connection Connection = connection;
 
-		public readonly MemoryBuffer Buffer;
-
-		public Message(Connection connection, MemoryBuffer buffer)
-		{
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			Connection = connection;
-			Buffer = buffer;
-		}
+		public readonly MemoryBuffer Buffer = buffer;
 	}
 
-	private static readonly ByteArrayStream Stream;
+	private static readonly ByteArrayStream Stream = new ByteArrayStream();
 
 	private readonly TokenBucketList<IPAddress> _ipTokenBuckets;
 
@@ -69,8 +61,7 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 	public Listener(IPAddress ipAddress, int port)
 	{
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Expected O, but got Unknown
-		base._002Ector();
+		//IL_00bf: Expected Obj, but got Unknown
 		Address = ipAddress;
 		Port = port;
 		_ipTokenBuckets = new TokenBucketList<IPAddress>(50.0, 15.0);
@@ -80,14 +71,14 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		_messageQueue = new Queue<Message>();
 		_syncContext = SynchronizationContext.Current;
 		_server = new WebSocketServer($"ws://{Address}:{Port}/", true, 100, App.maxconnections, App.maxconnectionsperip);
-		_server.Start((Action<IWebSocketConnection>)delegate(IWebSocketConnection socket)
+		_server.Start((Action<IWebSocketConnection>)((IWebSocketConnection socket) =>
 		{
 			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0056: Expected O, but got Unknown
+			//IL_0056: Expected Obj, but got Unknown
 			//IL_017e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0188: Expected O, but got Unknown
+			//IL_0188: Expected Obj, but got Unknown
 			//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f8: Expected O, but got Unknown
+			//IL_00f8: Expected Obj, but got Unknown
 			IPAddress clientIpAddress = socket.ConnectionInfo.ClientIpAddress;
 			if (_ipBans.IsBanned(clientIpAddress))
 			{
@@ -95,14 +86,14 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 			}
 			else
 			{
-				socket.OnPing = (BinaryDataHandler)delegate(Span<byte> data)
+				socket.OnPing = (Span<byte> data) =>
 				{
+					//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 					//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-					MemoryBuffer val = default(MemoryBuffer);
-					((MemoryBuffer)(ref val))._002Ector(data.Length);
+					MemoryBuffer val = new MemoryBuffer(data.Length);
 					data.CopyTo(MemoryBuffer.op_Implicit(val));
-					socket.SendPong(((MemoryBuffer)(ref val)).Slice(data.Length));
+					socket.SendPong(val.Slice(data.Length));
 				};
 				string path = socket.ConnectionInfo.Path;
 				if (path != null && path.StartsWith("/backhaul/", StringComparison.Ordinal))
@@ -114,10 +105,10 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 					else
 					{
 						BackhaulConnection backhaul = new BackhaulConnection(this, socket, _syncContext);
-						socket.OnBinary = new BinaryDataHandler(backhaul.OnMessage);
-						socket.OnClose = delegate
+						socket.OnBinary = backhaul.OnMessage;
+						socket.OnClose = () =>
 						{
-							_syncContext.Post(delegate(object c)
+							_syncContext.Post((object c) =>
 							{
 								((BackhaulConnection)c).OnBackhaulClosed();
 							}, backhaul);
@@ -129,18 +120,18 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 				{
 					long connectionId = NextConnectionId();
 					Connection conn = new Connection(connectionId, this, new FleckTransport(socket), 0uL);
-					socket.OnClose = delegate
+					socket.OnClose = () =>
 					{
-						_syncContext.Post(delegate(object c)
+						_syncContext.Post((object c) =>
 						{
 							((Connection)c).OnClose();
 						}, conn);
 					};
-					socket.OnBinary = new BinaryDataHandler(conn.OnMessage);
+					socket.OnBinary = conn.OnMessage;
 					socket.OnError = LogSocketError;
 				}
 			}
-		});
+		}));
 		_stopwatch = new Stopwatch();
 		PlayerSubscribers = new SubscriberList<PlayerTarget, AppBroadcast>(this);
 		EntitySubscribers = new SubscriberList<EntityTarget, AppBroadcast>(this);
@@ -196,7 +187,7 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		{
 			if (!App.update || _messageQueue.Count >= App.queuelimit)
 			{
-				((MemoryBuffer)(ref data)).Dispose();
+				data.Dispose();
 				return;
 			}
 			Message item = new Message(connection, data);
@@ -252,9 +243,9 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		{
 			ByteArrayStream stream = Stream;
 			MemoryBuffer buffer2 = message.Buffer;
-			byte[] data = ((MemoryBuffer)(ref buffer2)).Data;
+			byte[] data = buffer2.Data;
 			buffer2 = message.Buffer;
-			stream.SetData(data, 0, ((MemoryBuffer)(ref buffer2)).Length);
+			stream.SetData(data, 0, buffer2.Length);
 			val = Pool.Get<AppRequest>();
 			ProtoStreamExtensions.ReadFromStream((IProto)(object)val, (Stream)(object)Stream, false, 1048576);
 		}
@@ -266,7 +257,7 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		}
 		finally
 		{
-			((MemoryBuffer)(ref buffer)).Dispose();
+			buffer.Dispose();
 		}
 		if (!Handle<AppEmpty, Info>(val.getInfo, message.Connection, val) && !Handle<AppEmpty, CompanionServer.Handlers.Time>(val.getTime, message.Connection, val) && !Handle<AppEmpty, Map>(val.getMap, message.Connection, val) && !Handle<AppEmpty, TeamInfo>(val.getTeamInfo, message.Connection, val) && !Handle<AppEmpty, TeamChat>(val.getTeamChat, message.Connection, val) && !Handle<AppSendMessage, SendTeamChat>(val.sendTeamMessage, message.Connection, val) && !Handle<AppEmpty, EntityInfo>(val.getEntityInfo, message.Connection, val) && !Handle<AppSetEntityValue, SetEntityValue>(val.setEntityValue, message.Connection, val) && !Handle<AppEmpty, CheckSubscription>(val.checkSubscription, message.Connection, val) && !Handle<AppFlag, SetSubscription>(val.setSubscription, message.Connection, val) && !Handle<AppEmpty, MapMarkers>(val.getMapMarkers, message.Connection, val) && !Handle<AppPromoteToLeader, PromoteToLeader>(val.promoteToLeader, message.Connection, val) && !Handle<AppEmpty, ClanInfo>(val.getClanInfo, message.Connection, val) && !Handle<AppEmpty, ClanChat>(val.getClanChat, message.Connection, val) && !Handle<AppSendMessage, SetClanMotd>(val.setClanMotd, message.Connection, val) && !Handle<AppSendMessage, SendClanChat>(val.sendClanMessage, message.Connection, val) && !Handle<AppGetNexusAuth, NexusAuth>(val.getNexusAuth, message.Connection, val) && !Handle<AppCameraSubscribe, CameraSubscribe>(val.cameraSubscribe, message.Connection, val) && !Handle<AppEmpty, CameraUnsubscribe>(val.cameraUnsubscribe, message.Connection, val) && !Handle<AppCameraInput, CameraInput>(val.cameraInput, message.Connection, val) && !Handle<AppTeamKick, TeamKick>(val.kickFromTeam, message.Connection, val))
 		{
@@ -349,9 +340,9 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		MemoryBuffer broadcastBuffer = GetBroadcastBuffer(broadcast);
 		foreach (Connection target in targets)
 		{
-			target.SendRaw(((MemoryBuffer)(ref broadcastBuffer)).DontDispose());
+			target.SendRaw(broadcastBuffer.DontDispose());
 		}
-		((MemoryBuffer)(ref broadcastBuffer)).Dispose();
+		broadcastBuffer.Dispose();
 	}
 
 	private static MemoryBuffer GetBroadcastBuffer(AppBroadcast broadcast)
@@ -370,8 +361,8 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 				val2.broadcast = broadcast;
 				val2.WriteToStream(val);
 				MemoryBuffer val3 = new MemoryBuffer(val.Length);
-				val.GetBuffer().CopyTo(((MemoryBuffer)(ref val3)).Data, 0);
-				return ((MemoryBuffer)(ref val3)).Slice(val.Length);
+				val.GetBuffer().CopyTo(val3.Data, 0);
+				return val3.Slice(val.Length);
 			}
 			finally
 			{
@@ -392,7 +383,6 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 	static Listener()
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Expected O, but got Unknown
-		Stream = new ByteArrayStream();
+		//IL_000a: Expected Obj, but got Unknown
 	}
 }

@@ -100,7 +100,6 @@ public class CopyPaste : ConsoleSystem
 			//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-			base._002Ector();
 			Resources = request.resources;
 			NPCs = request.npcs;
 			Vehicles = request.vehicles;
@@ -235,8 +234,8 @@ public class CopyPaste : ConsoleSystem
 			Entity val = toLoad.entities[i];
 			if (!hashSet.Add(val.baseNetworkable.uid))
 			{
-				GameObject obj = GameManager.server.FindPrefab(val.baseNetworkable.prefabID);
-				BaseEntity baseEntity = ((obj != null) ? obj.GetComponent<BaseEntity>() : null);
+				GameObject val2 = GameManager.server.FindPrefab(val.baseNetworkable.prefabID);
+				BaseEntity baseEntity = ((val2 != null) ? val2.GetComponent<BaseEntity>() : null);
 				Debug.LogWarning((object)string.Format("Skipping entity [{0}/{1}]: duplicate entity in paste, please re-save", val.baseNetworkable.uid, ((Object)(object)baseEntity == (Object)null) ? "unknown" : baseEntity.ShortPrefabName));
 				toLoad.entities.RemoveAt(i);
 				i--;
@@ -282,8 +281,8 @@ public class CopyPaste : ConsoleSystem
 			{
 				item2.Protobuf.baseEntity.pos = transform.TransformPoint(item2.Protobuf.baseEntity.pos);
 				BaseEntity baseEntity2 = item2.Protobuf.baseEntity;
-				Quaternion val2 = transform.rotation * Quaternion.Euler(item2.Protobuf.baseEntity.rot);
-				baseEntity2.rot = ((Quaternion)(ref val2)).eulerAngles;
+				Quaternion val3 = transform.rotation * Quaternion.Euler(item2.Protobuf.baseEntity.rot);
+				baseEntity2.rot = val3.eulerAngles;
 			}
 		}
 		if (Application.isPlaying)
@@ -354,7 +353,7 @@ public class CopyPaste : ConsoleSystem
 				num4 = ((!Application.isPlaying) ? 0f : TerrainMeta.HeightMap.GetHeight(position));
 				if (GamePhysics.Trace(new Ray(new Vector3(position.x, num4, position.z) + new Vector3(0f, 100f, 0f), Vector3.down), 0f, out var hitInfo, 100f, 8454160, (QueryTriggerInteraction)0))
 				{
-					num4 = ((RaycastHit)(ref hitInfo)).point.y;
+					num4 = hitInfo.point.y;
 				}
 			}
 			if (num3 > num4)
@@ -380,6 +379,7 @@ public class CopyPaste : ConsoleSystem
 	private static void ApplyAutoSnap(List<BaseEntity> entities, PasteOptions options)
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
@@ -397,8 +397,7 @@ public class CopyPaste : ConsoleSystem
 		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = default(Vector3);
-		((Vector3)(ref val))._002Ector(0f, ComputeAutoSnapOffsetY(entities, options, Vector3.zero), 0f);
+		Vector3 val = new Vector3(0f, ComputeAutoSnapOffsetY(entities, options, Vector3.zero), 0f);
 		val += options.HeightOffset;
 		if (!(val != Vector3.zero))
 		{
@@ -594,7 +593,7 @@ public class CopyPaste : ConsoleSystem
 			_ = alignObject.rotation * ((Component)baseEntity).transform.rotation;
 			BaseEntity baseEntity2 = info.msg.baseEntity;
 			Quaternion val = Quaternion.Inverse(((Component)alignObject).transform.rotation) * ((Component)baseEntity).transform.rotation;
-			baseEntity2.rot = ((Quaternion)(ref val)).eulerAngles;
+			baseEntity2.rot = val.eulerAngles;
 		}
 		toSave.entities.Add(info.msg);
 	}
@@ -664,44 +663,48 @@ public class CopyPaste : ConsoleSystem
 	public static bool CanPrefabBePasted(uint prefabId, PasteOptions options)
 	{
 		GameObject val = GameManager.server.FindPrefab(prefabId);
-		if ((Object)(object)val == (Object)null)
+		if ((Object)(object)val != (Object)null)
+		{
+			return CanPrefabBePasted(val.GetComponent<BaseEntity>(), options);
+		}
+		return false;
+	}
+
+	public static bool CanPrefabBePasted(BaseEntity entity, PasteOptions options)
+	{
+		if ((Object)(object)entity == (Object)null)
 		{
 			return false;
 		}
-		BaseEntity component = val.GetComponent<BaseEntity>();
-		if ((Object)(object)component == (Object)null)
+		if (options.FoundationsOnly && entity.ShortPrefabName != "foundation" && entity.ShortPrefabName != "foundation.triangle")
 		{
 			return false;
 		}
-		if (options.FoundationsOnly && component.ShortPrefabName != "foundation" && component.ShortPrefabName != "foundation.triangle")
+		if (options.BuildingBlocksOnly && !(entity is BuildingBlock))
 		{
 			return false;
 		}
-		if (options.BuildingBlocksOnly && !(component is BuildingBlock))
+		if (entity is DecayEntity && !(entity is BuildingBlock) && !options.Deployables)
 		{
 			return false;
 		}
-		if (component is DecayEntity && !(component is BuildingBlock) && !options.Deployables)
+		if (entity is BasePlayer { IsNpc: false } && !options.Players)
 		{
 			return false;
 		}
-		if (component is BasePlayer { IsNpc: false } && !options.Players)
+		if (entity is PointEntity || entity is RelationshipManager)
 		{
 			return false;
 		}
-		if (component is PointEntity || component is RelationshipManager)
+		if ((entity is ResourceEntity || entity is BushEntity) && !options.Resources)
 		{
 			return false;
 		}
-		if ((component is ResourceEntity || component is BushEntity) && !options.Resources)
+		if ((entity is BaseNpc || entity is RidableHorse) && !options.NPCs)
 		{
 			return false;
 		}
-		if ((component is BaseNpc || component is RidableHorse) && !options.NPCs)
-		{
-			return false;
-		}
-		if (component is BaseVehicle && !(component is RidableHorse) && !options.Vehicles)
+		if (entity is BaseVehicle && !(entity is RidableHorse) && !options.Vehicles)
 		{
 			return false;
 		}

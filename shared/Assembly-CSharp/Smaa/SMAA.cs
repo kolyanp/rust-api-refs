@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Smaa;
 
-[AddComponentMenu("Image Effects/Subpixel Morphological Antialiasing")]
-[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Camera))]
+[AddComponentMenu("Image Effects/Subpixel Morphological Antialiasing")]
 public class SMAA : MonoBehaviour
 {
 	public DebugPass DebugPass;
@@ -42,7 +42,7 @@ public class SMAA : MonoBehaviour
 		get
 		{
 			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001f: Expected O, but got Unknown
+			//IL_001f: Expected Obj, but got Unknown
 			if ((Object)(object)m_Material == (Object)null)
 			{
 				m_Material = new Material(Shader);

@@ -68,12 +68,12 @@ public class State_AttackUnreachable : FSMStateBase
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.Senses.FindTarget(out var target) || !(target is BasePlayer basePlayer))
+		if (!Senses.FindTarget(out var target) || !(target is BasePlayer basePlayer))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		destination = ((Component)target).transform.position;
-		if (!basePlayer.IsOnGround() && !SampleGroundPositionUnderTarget(base.Agent, basePlayer, out destination))
+		if (!basePlayer.IsOnGround() && !SampleGroundPositionUnderTarget(Agent, basePlayer, out destination))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -81,10 +81,10 @@ public class State_AttackUnreachable : FSMStateBase
 		{
 			return EFSMStateStatus.Failure;
 		}
-		base.Agent.Pause(this);
+		Agent.Pause(this);
 		elapsedTime = 0f;
-		targetLock = base.Senses.LockCurrentTarget();
-		animState = base.AnimPlayer.PlayServerAndTakeFromPool(animClip.inPlaceAnimation);
+		targetLock = Senses.LockCurrentTarget();
+		animState = AnimPlayer.PlayServerAndTakeFromPool(animClip.inPlaceAnimation);
 		SetPhase(Phase.PreJump);
 		return base.OnStateEnter(payload);
 	}
@@ -113,18 +113,18 @@ public class State_AttackUnreachable : FSMStateBase
 		previousOffsetZ = animClip.zMotionCurve.Evaluate(elapsedTime);
 		if (phase == Phase.Jump)
 		{
-			if (base.Senses.FindTarget(out var target) && target is BasePlayer targetAsPlayer)
+			if (Senses.FindTarget(out var target) && target is BasePlayer targetAsPlayer)
 			{
-				SampleGroundPositionUnderTarget(base.Agent, targetAsPlayer, out destination);
+				SampleGroundPositionUnderTarget(Agent, targetAsPlayer, out destination);
 			}
 			startLocation = ((Component)Owner).transform.position;
 			((Component)Owner).transform.rotation = Quaternion.LookRotation(Vector3Ex.WithY(destination - ((Component)Owner).transform.position, 0f));
-			base.Agent.IsJumping = true;
+			Agent.IsJumping = true;
 		}
 		else if (phase == Phase.Attack)
 		{
 			startRotation = ((Component)Owner).transform.rotation;
-			if (base.Senses.FindTarget(out var target2))
+			if (Senses.FindTarget(out var target2))
 			{
 				if (target2 is BaseCombatEntity baseCombatEntity && Vector3.Distance(((Component)Owner).transform.position, ((Component)baseCombatEntity).transform.position) <= 1.7f)
 				{
@@ -138,7 +138,7 @@ public class State_AttackUnreachable : FSMStateBase
 		}
 		else if (phase == Phase.PostJumpBack)
 		{
-			base.Agent.IsJumping = false;
+			Agent.IsJumping = false;
 		}
 	}
 
@@ -274,12 +274,12 @@ public class State_AttackUnreachable : FSMStateBase
 
 	public override void OnStateExit()
 	{
-		base.AnimPlayer.StopServerAndReturnToPool(ref animState);
-		base.Senses.UnlockTarget(ref targetLock);
-		base.Agent.Unpause(this);
+		AnimPlayer.StopServerAndReturnToPool(ref animState);
+		Senses.UnlockTarget(ref targetLock);
+		Agent.Unpause(this);
 		if (phase != Phase.PostJumpBack)
 		{
-			base.Agent.IsJumping = false;
+			Agent.IsJumping = false;
 		}
 		base.OnStateExit();
 	}

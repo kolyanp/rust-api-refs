@@ -63,8 +63,8 @@ public class BaseBoat : BaseVehicle
 
 	public static int secondsBetweenShoreDrift = 120;
 
-	[Help("Shore drift speed in metres per second")]
 	[ServerVar]
+	[Help("Shore drift speed in metres per second")]
 	public static float drift_speed = 1f;
 
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about AI ejection events when passengers are removed from boat seats")]
@@ -86,8 +86,8 @@ public class BaseBoat : BaseVehicle
 
 	protected virtual bool SkipBoatForcedUpdate => false;
 
-	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
 	[ServerVar]
+	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
 	public static int seconds_until_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);
@@ -95,8 +95,8 @@ public class BaseBoat : BaseVehicle
 		return secondsUntilShoreDrift;
 	}
 
-	[Help("Seconds between shore drift teleport ticks")]
 	[ServerVar]
+	[Help("Seconds between shore drift teleport ticks")]
 	public static int seconds_between_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsBetweenShoreDrift = arg.GetInt(0, secondsBetweenShoreDrift);
@@ -147,7 +147,7 @@ public class BaseBoat : BaseVehicle
 			Debug.LogWarning((object)"Boats require 3 plane fit points");
 			return;
 		}
-		worldAnchors = (Vector3[])(object)new Vector3[3];
+		worldAnchors = new Vector3[3];
 		pidController = new PidQuaternionController(wavePID.x, wavePID.y, wavePID.z);
 		if (Application.isLoadingSave)
 		{
@@ -167,7 +167,7 @@ public class BaseBoat : BaseVehicle
 		}
 		else
 		{
-			aiInputProvider.OnTick(this, TimeSince.op_Implicit(base.TimeSinceLastAIUpdate), ref steering, ref gasPedal);
+			aiInputProvider.OnTick(this, TimeSince.op_Implicit(TimeSinceLastAIUpdate), ref steering, ref gasPedal);
 		}
 	}
 
@@ -244,7 +244,7 @@ public class BaseBoat : BaseVehicle
 	{
 		if (EngineOn() && !IsFlipped())
 		{
-			return base.healthFraction > 0f;
+			return healthFraction > 0f;
 		}
 		return false;
 	}
@@ -285,7 +285,7 @@ public class BaseBoat : BaseVehicle
 			if (gasPedal != 0f && buoyancy.submergedFraction > 0.3f && WaterLevel.Test(thrustPoint.position, waves: true, volumes: true, this))
 			{
 				Vector3 val = ((Component)this).transform.forward + ((Component)this).transform.right * (steering * steeringScale);
-				Vector3 val2 = ((Vector3)(ref val)).normalized * (gasPedal * engineThrust);
+				Vector3 val2 = val.normalized * (gasPedal * engineThrust);
 				rigidBody.AddForceAtPosition(val2, thrustPoint.position, (ForceMode)0);
 			}
 			if (AnyMounted() && IsFlipped())
@@ -295,7 +295,7 @@ public class BaseBoat : BaseVehicle
 					Debug.LogWarning((object)$"Ejecting players from flipped boat {this}");
 					object arg = ((Component)this).transform.position;
 					Quaternion rotation = ((Component)this).transform.rotation;
-					Debug.LogWarning((object)$"Boat was in state / pos {arg} / rot {((Quaternion)(ref rotation)).eulerAngles}");
+					Debug.LogWarning((object)$"Boat was in state / pos {arg} / rot {rotation.eulerAngles}");
 				}
 				DismountAllPlayers();
 			}
@@ -360,14 +360,14 @@ public class BaseBoat : BaseVehicle
 		{
 			if (applyCorrectionForces && planeFitPoints != null && planeFitPoints.Length == 3 && EngineOn() && !(buoyancy.submergedFraction < 0.5f))
 			{
-				Vector3 val = default(Vector3);
-				Quaternion currentOrientation = default(Quaternion);
+				Vector3 val = default;
+				Quaternion currentOrientation = default;
 				((Component)this).transform.GetPositionAndRotation(ref val, ref currentOrientation);
-				Vector3 eulerAngles = ((Quaternion)(ref currentOrientation)).eulerAngles;
+				Vector3 eulerAngles = currentOrientation.eulerAngles;
 				Matrix4x4 val2 = Matrix4x4.TRS(val, Quaternion.Euler(0f, eulerAngles.y, 0f), Vector3.one);
 				for (int i = 0; i < planeFitPoints.Length; i++)
 				{
-					Vector3 val3 = ((Matrix4x4)(ref val2)).MultiplyPoint(planeFitPoints[i].localPosition);
+					Vector3 val3 = val2.MultiplyPoint(planeFitPoints[i].localPosition);
 					val3.y = WaterLevel.GetWaterLevel(val3, waves: true);
 					worldAnchors[i] = val3;
 				}
@@ -561,8 +561,8 @@ public class BaseBoat : BaseVehicle
 				return;
 			}
 			float maxDistance = num2 - num;
-			Vector3 val = ((Component)this).transform.position + ((Bounds)(ref bounds)).center + item * (num + 1f);
-			Vector3 val2 = ((Component)this).transform.position + ((Bounds)(ref bounds)).center + item * num2;
+			Vector3 val = ((Component)this).transform.position + bounds.center + item * (num + 1f);
+			Vector3 val2 = ((Component)this).transform.position + bounds.center + item * num2;
 			Ray ray = new Ray(val, item);
 			List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
 			GamePhysics.TraceAll(ray, num, list, maxDistance, 1235583233, (QueryTriggerInteraction)1, this);
@@ -571,27 +571,27 @@ public class BaseBoat : BaseVehicle
 				foreach (RaycastHit item3 in list)
 				{
 					RaycastHit current = item3;
-					if ((Object)(object)((RaycastHit)(ref current)).collider != (Object)null)
+					if ((Object)(object)current.collider != (Object)null)
 					{
-						BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((RaycastHit)(ref current)).collider);
+						BaseEntity baseEntity = GameObjectEx.ToBaseEntity(current.collider);
 						if ((Object)(object)baseEntity != (Object)null && baseEntity.HasEntityInParents(this))
 						{
 							continue;
 						}
 					}
-					if (((RaycastHit)(ref current)).distance <= num3)
+					if (current.distance <= num3)
 					{
-						lastDriftCheckStatus = string.Format("Was blocked by {0}:{1} at {2}", ((Object)(object)((RaycastHit)(ref current)).transform.parent != (Object)null) ? ((Object)((RaycastHit)(ref current)).transform.parent).name : "", ((Object)((RaycastHit)(ref current)).transform).name, ((RaycastHit)(ref current)).transform.position);
+						lastDriftCheckStatus = string.Format("Was blocked by {0}:{1} at {2}", ((Object)(object)current.transform.parent != (Object)null) ? ((Object)current.transform.parent).name : "", ((Object)current.transform).name, current.transform.position);
 						Pool.FreeUnmanaged<RaycastHit>(ref list);
 						return;
 					}
-					val2 = ((RaycastHit)(ref current)).point - item * num3;
-					val2.y = ((Component)this).transform.position.y + ((Bounds)(ref bounds)).center.y;
+					val2 = current.point - item * num3;
+					val2.y = ((Component)this).transform.position.y + bounds.center.y;
 					break;
 				}
 			}
 			Vector3 position = ((Component)this).transform.position;
-			((Component)this).transform.position = val2 - ((Bounds)(ref bounds)).center;
+			((Component)this).transform.position = val2 - bounds.center;
 			if (!rigidBody.isKinematic)
 			{
 				rigidBody.linearVelocity = Vector3.zero;
@@ -647,7 +647,7 @@ public class BaseBoat : BaseVehicle
 	{
 		base.Save(info);
 		info.msg.baseBoat = Pool.Get<BaseBoat>();
-		info.msg.baseBoat.shoreDriftTimerValue = ((TimeSince)(ref shoreDriftTimer)).PassedSince(info.cachedTime.Time);
+		info.msg.baseBoat.shoreDriftTimerValue = shoreDriftTimer.PassedSince(info.cachedTime.Time);
 	}
 
 	public override void Load(LoadInfo info)
@@ -655,7 +655,7 @@ public class BaseBoat : BaseVehicle
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (info.msg.baseBoat != null && base.isServer)
+		if (info.msg.baseBoat != null && isServer)
 		{
 			shoreDriftTimer = TimeSince.op_Implicit(info.msg.baseBoat.shoreDriftTimerValue);
 		}
@@ -742,7 +742,7 @@ public class BaseBoat : BaseVehicle
 		float num7 = 4f;
 		float num8 = 200f;
 		bool flag = true;
-		RaycastHit val9 = default(RaycastHit);
+		RaycastHit val9 = default;
 		for (int j = 0; (j < AI.ocean_patrol_path_iterations) & flag; j++)
 		{
 			flag = false;
@@ -755,7 +755,7 @@ public class BaseBoat : BaseVehicle
 				Vector3 val3 = list[index];
 				Vector3 val4 = val;
 				Vector3 val5 = Vector3.zero - val;
-				Vector3 normalized = ((Vector3)(ref val5)).normalized;
+				Vector3 normalized = val5.normalized;
 				Vector3 val6 = val + normalized * num7;
 				if (Vector3.Distance(val6, val2) > num8 || Vector3.Distance(val6, val3) > num8)
 				{
@@ -767,19 +767,19 @@ public class BaseBoat : BaseVehicle
 				{
 					float num10 = (float)l / (float)num9 * 360f;
 					val5 = new Vector3(Mathf.Sin(num10 * (MathF.PI / 180f)), num5, Mathf.Cos(num10 * (MathF.PI / 180f)));
-					Vector3 normalized2 = ((Vector3)(ref val5)).normalized;
+					Vector3 normalized2 = val5.normalized;
 					Vector3 val7 = val6 + normalized2 * 1f;
 					Vector3 val8 = normalized;
 					if (val7 != Vector3.zero)
 					{
 						val5 = val7 - val6;
-						val8 = ((Vector3)(ref val5)).normalized;
+						val8 = val5.normalized;
 					}
 					if (!Physics.SphereCast(val4, 3f, val8, ref val9, minDistanceFromShore, 1084293377))
 					{
 						continue;
 					}
-					Collider collider = ((RaycastHit)(ref val9)).collider;
+					Collider collider = val9.collider;
 					if ((Object)(object)collider != (Object)null && !ColliderEx.IsOnLayer(collider, (Layer)23))
 					{
 						MonumentInfo monument = ColliderEx.GetMonument(collider);

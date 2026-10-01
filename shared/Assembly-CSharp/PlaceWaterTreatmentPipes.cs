@@ -38,10 +38,10 @@ public class PlaceWaterTreatmentPipes : PlaceDecorRoadside
 		{
 			float num = PreventBuildingPadding + preventBuildingVolume.Radius;
 			Vector3 val = pos - preventBuildingVolume.Obb.position;
-			if (!(((Vector3)(ref val)).sqrMagnitude > num * num))
+			if (!(val.sqrMagnitude > num * num))
 			{
 				OBB obb = preventBuildingVolume.Obb;
-				if (((OBB)(ref obb)).Distance(pos) < PreventBuildingPadding)
+				if (obb.Distance(pos) < PreventBuildingPadding)
 				{
 					return false;
 				}
@@ -80,7 +80,7 @@ public class PlaceWaterTreatmentPipes : PlaceDecorRoadside
 					preventBuildingVolumes.Add(new BlockedVolume
 					{
 						Obb = result,
-						Radius = ((Vector3)(ref result.extents)).magnitude
+						Radius = result.extents.magnitude
 					});
 				}
 			}

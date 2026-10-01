@@ -4,9 +4,9 @@ using UnityEngine;
 namespace VLB;
 
 [ExecuteInEditMode]
-[DisallowMultipleComponent]
-[HelpURL("http://saladgamer.com/vlb-doc/comp-dynocclusion/")]
 [RequireComponent(typeof(VolumetricLightBeam))]
+[HelpURL("http://saladgamer.com/vlb-doc/comp-dynocclusion/")]
+[DisallowMultipleComponent]
 public class DynamicOcclusion : MonoBehaviour
 {
 	private enum Direction
@@ -17,25 +17,25 @@ public class DynamicOcclusion : MonoBehaviour
 		Left
 	}
 
-	public LayerMask layerMask;
+	public LayerMask layerMask = LayerMask.op_Implicit(-1);
 
 	public float minOccluderArea;
 
-	public int waitFrameCount;
+	public int waitFrameCount = 3;
 
-	public float minSurfaceRatio;
+	public float minSurfaceRatio = 0.5f;
 
-	public float maxSurfaceDot;
+	public float maxSurfaceDot = 0.25f;
 
 	public PlaneAlignment planeAlignment;
 
-	public float planeOffset;
+	public float planeOffset = 0.1f;
 
 	private VolumetricLightBeam m_Master;
 
 	private int m_FrameCountToWait;
 
-	private float m_RangeMultiplier;
+	private float m_RangeMultiplier = 1f;
 
 	private uint m_PrevNonSubHitDirectionId;
 
@@ -95,14 +95,14 @@ public class DynamicOcclusion : MonoBehaviour
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit[] array = Physics.RaycastAll(rayPos, rayDir, m_Master.fadeEnd * m_RangeMultiplier, ((LayerMask)(ref layerMask)).value);
+		RaycastHit[] array = Physics.RaycastAll(rayPos, rayDir, m_Master.fadeEnd * m_RangeMultiplier, layerMask.value);
 		int num = -1;
 		float num2 = float.MaxValue;
 		for (int i = 0; i < array.Length; i++)
 		{
-			if (!((RaycastHit)(ref array[i])).collider.isTrigger && Utils.GetMaxArea2D(((RaycastHit)(ref array[i])).collider.bounds) >= minOccluderArea && ((RaycastHit)(ref array[i])).distance < num2)
+			if (!array[i].collider.isTrigger && Utils.GetMaxArea2D(array[i].collider.bounds) >= minOccluderArea && array[i].distance < num2)
 			{
-				num2 = ((RaycastHit)(ref array[i])).distance;
+				num2 = array[i].distance;
 				num = i;
 			}
 		}
@@ -110,7 +110,7 @@ public class DynamicOcclusion : MonoBehaviour
 		{
 			return array[num];
 		}
-		return default(RaycastHit);
+		return default;
 	}
 
 	private Vector3 GetDirection(uint dirInt)
@@ -123,14 +123,14 @@ public class DynamicOcclusion : MonoBehaviour
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		dirInt %= (uint)Enum.GetValues(typeof(Direction)).Length;
-		return (Vector3)(dirInt switch
+		return dirInt switch
 		{
 			0u => ((Component)this).transform.up, 
 			1u => ((Component)this).transform.right, 
 			2u => -((Component)this).transform.up, 
 			3u => -((Component)this).transform.right, 
 			_ => Vector3.zero, 
-		});
+		};
 	}
 
 	private bool IsHitValid(RaycastHit hit)
@@ -138,9 +138,9 @@ public class DynamicOcclusion : MonoBehaviour
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		if (Object.op_Implicit((Object)(object)((RaycastHit)(ref hit)).collider))
+		if (Object.op_Implicit((Object)(object)hit.collider))
 		{
-			return Vector3.Dot(((RaycastHit)(ref hit)).normal, -((Component)this).transform.forward) >= maxSurfaceDot;
+			return Vector3.Dot(hit.normal, -((Component)this).transform.forward) >= maxSurfaceDot;
 		}
 		return false;
 	}
@@ -192,7 +192,7 @@ public class DynamicOcclusion : MonoBehaviour
 					RaycastHit bestHit = GetBestHit(val, val2 - val);
 					if (IsHitValid(bestHit))
 					{
-						if (((RaycastHit)(ref bestHit)).distance > ((RaycastHit)(ref hit)).distance)
+						if (bestHit.distance > hit.distance)
 						{
 							hit = bestHit;
 						}
@@ -223,11 +223,11 @@ public class DynamicOcclusion : MonoBehaviour
 		PlaneAlignment planeAlignment = this.planeAlignment;
 		if (planeAlignment != PlaneAlignment.Surface && planeAlignment == PlaneAlignment.Beam)
 		{
-			SetClippingPlane(new Plane(-((Component)this).transform.forward, ((RaycastHit)(ref hit)).point));
+			SetClippingPlane(new Plane(-((Component)this).transform.forward, hit.point));
 		}
 		else
 		{
-			SetClippingPlane(new Plane(((RaycastHit)(ref hit)).normal, ((RaycastHit)(ref hit)).point));
+			SetClippingPlane(new Plane(hit.normal, hit.point));
 		}
 	}
 
@@ -244,7 +244,7 @@ public class DynamicOcclusion : MonoBehaviour
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		planeWS = Utils.TranslateCustom(planeWS, ((Plane)(ref planeWS)).normal * planeOffset);
+		planeWS = Utils.TranslateCustom(planeWS, planeWS.normal * planeOffset);
 		m_Master.SetClippingPlane(planeWS);
 	}
 
@@ -257,12 +257,5 @@ public class DynamicOcclusion : MonoBehaviour
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		layerMask = LayerMask.op_Implicit(-1);
-		waitFrameCount = 3;
-		minSurfaceRatio = 0.5f;
-		maxSurfaceDot = 0.25f;
-		planeOffset = 0.1f;
-		m_RangeMultiplier = 1f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

@@ -15,14 +15,14 @@ public class Category_Clan
 	public class Clan_LocalClanDisbandd72
 	{
 		[Patch("OnClanDisbanded", "OnClanDisbanded", "LocalClan/<Disband>d__72", "MoveNext", new string[] { })]
-		[Identifier("95dad18b4c4b4218958fc7d50648639f")]
+		[Identifier("7ecaa35ea9584fa28095a7d7ceb54e48")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "LocalClan", false)]
-		[Parameter("self", "LocalClan+<Disband>d__72", false)]
+		[Parameter("bySteamId", "System.UInt64", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Clan")]
 		[Assembly("Rust.Clans.Local.dll")]
-		public class Clan_LocalClanDisbandd72_95dad18b4c4b4218958fc7d50648639f : Patch
+		public class Clan_LocalClanDisbandd72_7ecaa35ea9584fa28095a7d7ceb54e48 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -55,14 +55,14 @@ public class Category_Clan
 	public class Clan_LocalClanBackendCreated11
 	{
 		[Patch("OnClanCreated", "OnClanCreated", "LocalClanBackend", "Create", new string[] { "System.UInt64", "System.String" })]
-		[Identifier("40094d3e9c7249449b957fb80d198f1c")]
+		[Identifier("630ead323d214832b386f49b2f6cf4e6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("clan", "LocalClan", false)]
 		[Parameter("leaderSteamId", "System.UInt64", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Clan")]
 		[Assembly("Rust.Clans.Local.dll")]
-		public class Clan_LocalClanBackendCreated11_40094d3e9c7249449b957fb80d198f1c : Patch
+		public class Clan_LocalClanBackendCreated11_630ead323d214832b386f49b2f6cf4e6 : Patch
 		{
 			public static void Postfix(ulong leaderSteamId, ref ValueTask<ClanValueResult<IClan>> __result)
 			{
@@ -89,12 +89,12 @@ public class Category_Clan
 	public class Clan_LocalClanDatabase
 	{
 		[Patch("OnClanMemberAdded", "OnClanMemberAdded", "LocalClanDatabase", "AcceptInvite", new string[] { "System.Int64", "System.UInt64" })]
-		[Identifier("3212de39065047c8bfe82298dd515e1b")]
+		[Identifier("7a090a647d1845e79b7b6a45cc83b13b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Clan")]
 		[Assembly("Rust.Clans.Local.dll")]
-		public class Clan_LocalClanDatabase_3212de39065047c8bfe82298dd515e1b : Patch
+		public class Clan_LocalClanDatabase_7a090a647d1845e79b7b6a45cc83b13b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -127,14 +127,14 @@ public class Category_Clan
 	public class Clan_LocalClanKickd65
 	{
 		[Patch("OnClanMemberLeft", "OnClanMemberLeft", "LocalClan/<Kick>d__65", "MoveNext", new string[] { })]
-		[Identifier("e56ad83b8cd448bf93b660a3a8785502")]
+		[Identifier("eeae9c530c5c477f96594bb1d5d06881")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "LocalClan", false)]
-		[Parameter("self", "LocalClan+<Kick>d__65", false)]
+		[Parameter("steamId", "System.UInt64", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Clan")]
 		[Assembly("Rust.Clans.Local.dll")]
-		public class Clan_LocalClanKickd65_e56ad83b8cd448bf93b660a3a8785502 : Patch
+		public class Clan_LocalClanKickd65_eeae9c530c5c477f96594bb1d5d06881 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -164,16 +164,16 @@ public class Category_Clan
 		}
 
 		[Patch("OnClanMemberKicked", "OnClanMemberKicked", "LocalClan/<Kick>d__65", "MoveNext", new string[] { })]
-		[Identifier("282fc4f8f47e445db6c0300cfdfd8a99")]
+		[Identifier("454198062c5947d2a42c9895d08ffb0b")]
 		[Dependencies(new string[] { "OnClanMemberLeft" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "LocalClan", false)]
-		[Parameter("self", "LocalClan+<Kick>d__65", false)]
-		[Parameter("self1", "LocalClan+<Kick>d__65", false)]
+		[Parameter("steamId", "System.UInt64", false)]
+		[Parameter("bySteamId", "System.UInt64", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Clan")]
 		[Assembly("Rust.Clans.Local.dll")]
-		public class Clan_LocalClanKickd65_282fc4f8f47e445db6c0300cfdfd8a99 : Patch
+		public class Clan_LocalClanKickd65_454198062c5947d2a42c9895d08ffb0b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -210,15 +210,15 @@ public class Category_Clan
 	public class Clan_LocalClanSetColord61
 	{
 		[Patch("OnClanColorChanged", "OnClanColorChanged", "LocalClan/<SetColor>d__61", "MoveNext", new string[] { })]
-		[Identifier("e6d233b6fef847918276b4f92daef671")]
+		[Identifier("2472d62a7ca349688a3ba13a361941e6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "LocalClan", false)]
-		[Parameter("self", "LocalClan+<SetColor>d__61", false)]
-		[Parameter("self1", "LocalClan+<SetColor>d__61", false)]
+		[Parameter("newColor", "UnityEngine.Color32", false)]
+		[Parameter("bySteamId", "System.UInt64", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Clan")]
 		[Assembly("Rust.Clans.Local.dll")]
-		public class Clan_LocalClanSetColord61_e6d233b6fef847918276b4f92daef671 : Patch
+		public class Clan_LocalClanSetColord61_2472d62a7ca349688a3ba13a361941e6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -255,15 +255,15 @@ public class Category_Clan
 	public class Clan_LocalClanSetLogod60
 	{
 		[Patch("OnClanLogoChanged", "OnClanLogoChanged", "LocalClan/<SetLogo>d__60", "MoveNext", new string[] { })]
-		[Identifier("a64c802620964a249ce2d17efd588cdf")]
+		[Identifier("cf6e53d82d314d73b3da78a6c0399ec2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "LocalClan", false)]
-		[Parameter("self", "LocalClan+<SetLogo>d__60", false)]
-		[Parameter("self1", "LocalClan+<SetLogo>d__60", false)]
+		[Parameter("newLogo", "System.Byte[]", false)]
+		[Parameter("bySteamId", "System.UInt64", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Clan")]
 		[Assembly("Rust.Clans.Local.dll")]
-		public class Clan_LocalClanSetLogod60_a64c802620964a249ce2d17efd588cdf : Patch
+		public class Clan_LocalClanSetLogod60_cf6e53d82d314d73b3da78a6c0399ec2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -296,11 +296,11 @@ public class Category_Clan
 		}
 
 		[Patch("OnClanLogoChanged [patch]", "OnClanLogoChanged [patch]", "LocalClan/<SetLogo>d__60", "MoveNext", new string[] { })]
-		[Identifier("1b9b326d16f149f1a044e51b6637f14f")]
+		[Identifier("c4a257b01ed349098edb8414c3d04c4a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Clan")]
 		[Assembly("Rust.Clans.Local.dll")]
-		public class Clan_LocalClanSetLogod60_1b9b326d16f149f1a044e51b6637f14f : Patch
+		public class Clan_LocalClanSetLogod60_c4a257b01ed349098edb8414c3d04c4a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

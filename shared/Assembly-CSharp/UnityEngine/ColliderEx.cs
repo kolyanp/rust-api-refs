@@ -63,7 +63,7 @@ public static class ColliderEx
 		if (val3 != null)
 		{
 			Bounds bounds = ((Collider)val3).bounds;
-			Vector3 size = ((Bounds)(ref bounds)).size;
+			Vector3 size = bounds.size;
 			return size.x * lossyScale.x * size.y * lossyScale.y * size.z * lossyScale.z;
 		}
 		CapsuleCollider val4 = (CapsuleCollider)(object)((collider is CapsuleCollider) ? collider : null);
@@ -141,7 +141,7 @@ public static class ColliderEx
 					if (val4 != null)
 					{
 						Bounds bounds = ((Collider)val4).bounds;
-						result = Vector3Ex.Max(Vector3.Scale(((Bounds)(ref bounds)).size, transformScale)) * 0.5f;
+						result = Vector3Ex.Max(Vector3.Scale(bounds.size, transformScale)) * 0.5f;
 					}
 				}
 			}

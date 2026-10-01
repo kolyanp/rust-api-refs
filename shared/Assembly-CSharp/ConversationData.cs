@@ -161,6 +161,32 @@ public class ConversationData : ScriptableObject
 	}
 
 	[Serializable]
+	public class SellAnimalsSpeechNodeData : AbstractSpeechNodeData
+	{
+		public const int MaxAnimalOptions = 4;
+
+		public Phrase statement;
+
+		public string animalSelectedResultingNode;
+
+		public override string StatementTranslated => statement.translated;
+	}
+
+	[Serializable]
+	public class AnimalSalePreviewSpeechNodeData : AbstractSpeechNodeData
+	{
+		public Phrase statement;
+
+		[Tooltip("Said instead for the second offer onwards, where the first line's wording no longer fits. Optional.")]
+		public Phrase repeatStatement;
+
+		[Tooltip("Said instead when the vendor has rolled a generous offer, so an unusually good one reads as one. Optional.")]
+		public Phrase generousStatement;
+
+		public override string StatementTranslated => statement.translated;
+	}
+
+	[Serializable]
 	public class BranchNodeData : AbstractConversationNodeData
 	{
 		public ConversationCondition condition = new ConversationCondition();
@@ -236,7 +262,13 @@ public class ConversationData : ScriptableObject
 			CanAffordApartment = 18,
 			CanAffordUpgrade = 19,
 			IsAnyApartmentAvailable = 20,
-			CanAffordMasterKey = 21
+			CanAffordMasterKey = 21,
+			HasAnimalsAvailableToSell = 22,
+			HasOfferRemaining = 23,
+			AnnoyedAboutSelection = 24,
+			HasWoolToSell = 25,
+			VehiclePadRepaired = 26,
+			SaleHasChanged = 27
 		}
 
 		public ConditionType conditionType;
@@ -278,13 +310,13 @@ public class ConversationData : ScriptableObject
 				flag = GetNPCConvar(conditionString);
 				break;
 			case ConditionType.ProviderHasMissionAvailable:
-				flag = provider is IMissionProvider missionProvider2 && missionProvider2.Server_HasMissionAvailable(player);
+				flag = provider is IMissionProvider missionProvider && missionProvider.Server_HasMissionAvailable(player);
 				break;
 			case ConditionType.PlayerHasAnyMissionActive:
 				flag = player.IsAnyMissionActive();
 				break;
 			case ConditionType.PlayerHasRecentlyCompletedMission:
-				flag = provider is IMissionProvider missionProvider && missionProvider.HasPlayerRecentlyCompletedMission(player);
+				flag = provider is IMissionProvider missionProvider2 && missionProvider2.HasPlayerRecentlyCompletedMission(player);
 				break;
 			case ConditionType.PlayerHasPaidFoodToll:
 			{
@@ -299,51 +331,87 @@ public class ConversationData : ScriptableObject
 				flag = (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null && DeepSeaManager.IsInsideDeepSea((BaseNetworkable)provider.GetEntity());
 				break;
 			case ConditionType.CanUpgradeApartment:
-				if (provider is ApartmentVendor apartmentVendor7)
+				if (provider is ApartmentVendor apartmentVendor)
 				{
-					flag = apartmentVendor7.Conversation_CanUpgradeApartment(player, (int)conditionAmount);
+					flag = apartmentVendor.Conversation_CanUpgradeApartment(player, (int)conditionAmount);
 				}
 				break;
 			case ConditionType.CanPurchaseApartment:
-				if (provider is ApartmentVendor apartmentVendor6)
+				if (provider is ApartmentVendor apartmentVendor7)
 				{
-					flag = apartmentVendor6.Conversation_CanPurchaseApartment(player, (int)conditionAmount);
+					flag = apartmentVendor7.Conversation_CanPurchaseApartment(player, (int)conditionAmount);
 				}
 				break;
 			case ConditionType.CanCheckoutApartment:
-				if (provider is ApartmentVendor apartmentVendor5)
+				if (provider is ApartmentVendor apartmentVendor6)
 				{
-					flag = apartmentVendor5.Conversation_CanCheckoutApartment(player);
+					flag = apartmentVendor6.Conversation_CanCheckoutApartment(player);
 				}
 				break;
 			case ConditionType.OwnsApartment:
-				if (provider is ApartmentVendor apartmentVendor4)
+				if (provider is ApartmentVendor apartmentVendor5)
 				{
-					flag = apartmentVendor4.Conversation_OwnsApartment(player, (ApartmentSize)conditionAmount);
+					flag = apartmentVendor5.Conversation_OwnsApartment(player, (ApartmentSize)conditionAmount);
 				}
 				break;
 			case ConditionType.CanAffordApartment:
-				if (provider is ApartmentVendor apartmentVendor3)
+				if (provider is ApartmentVendor apartmentVendor4)
 				{
-					flag = apartmentVendor3.Conversation_CanAffordApartment(player, (ApartmentSize)conditionAmount);
+					flag = apartmentVendor4.Conversation_CanAffordApartment(player, (ApartmentSize)conditionAmount);
 				}
 				break;
 			case ConditionType.CanAffordUpgrade:
-				if (provider is ApartmentVendor apartmentVendor2)
+				if (provider is ApartmentVendor apartmentVendor3)
 				{
-					flag = apartmentVendor2.Conversation_CanAffordUpgrade(player, (ApartmentVendor.ApartmentConversationUpgrade)conditionAmount);
+					flag = apartmentVendor3.Conversation_CanAffordUpgrade(player, (ApartmentVendor.ApartmentConversationUpgrade)conditionAmount);
 				}
 				break;
 			case ConditionType.IsAnyApartmentAvailable:
-				if (provider is ApartmentVendor apartmentVendor)
+				if (provider is ApartmentVendor apartmentVendor2)
 				{
-					flag = apartmentVendor.Conversation_HasAnyRoomAvailable();
+					flag = apartmentVendor2.Conversation_HasAnyRoomAvailable();
 				}
 				break;
 			case ConditionType.CanAffordMasterKey:
 				if (provider is NPCApartmentSecurity nPCApartmentSecurity)
 				{
 					flag = nPCApartmentSecurity.Conversation_CanAffordMasterKey(player);
+				}
+				break;
+			case ConditionType.HasAnimalsAvailableToSell:
+				if (provider is LivestockVendor livestockVendor5)
+				{
+					flag = livestockVendor5.TriggerHasAnimalsToSell(player);
+				}
+				break;
+			case ConditionType.HasOfferRemaining:
+				if (provider is LivestockVendor livestockVendor4)
+				{
+					flag = livestockVendor4.Server_HasOfferRemaining(player);
+				}
+				break;
+			case ConditionType.AnnoyedAboutSelection:
+				if (provider is LivestockVendor livestockVendor3)
+				{
+					flag = livestockVendor3.Server_IsAnnoyedAboutSelection(player);
+				}
+				break;
+			case ConditionType.HasWoolToSell:
+				if (provider is LivestockVendor livestockVendor2)
+				{
+					flag = livestockVendor2.Server_HasWoolToSell(player);
+				}
+				break;
+			case ConditionType.SaleHasChanged:
+				if (provider is LivestockVendor livestockVendor)
+				{
+					flag = livestockVendor.Server_HasSaleChanged(player);
+				}
+				break;
+			case ConditionType.VehiclePadRepaired:
+				if (provider is VehicleVendor vehicleVendor)
+				{
+					flag = vehicleVendor.Conversation_IsPadUsable();
 				}
 				break;
 			}
@@ -488,21 +556,12 @@ public class ConversationData : ScriptableObject
 		AbstractSpeechNodeData[] array = speechNodes;
 		foreach (AbstractSpeechNodeData abstractSpeechNodeData in array)
 		{
-			if (abstractSpeechNodeData is MissionListSpeechNodeData)
+			if (abstractSpeechNodeData is MissionListSpeechNodeData || abstractSpeechNodeData is SellAnimalsSpeechNodeData)
 			{
 				continue;
 			}
-			ResponseNode[] array2 = null;
-			if (abstractSpeechNodeData is SpeechNodeData speechNodeData)
-			{
-				array2 = speechNodeData.responses;
-			}
-			else if (abstractSpeechNodeData is MissionPreviewSpeechNodeData missionPreviewSpeechNodeData)
-			{
-				array2 = missionPreviewSpeechNodeData.responses;
-			}
-			ResponseNode[] array3 = array2;
-			foreach (ResponseNode responseNode in array3)
+			ResponseNode[] responses = abstractSpeechNodeData.responses;
+			foreach (ResponseNode responseNode in responses)
 			{
 				if (responseNode.actionType == ResponseNode.ActionType.AssignMission && responseNode.actionMission != null)
 				{

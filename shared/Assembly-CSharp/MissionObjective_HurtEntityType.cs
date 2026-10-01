@@ -6,15 +6,15 @@ public class MissionObjective_HurtEntityType : MissionObjective
 {
 	public BaseEntityRef[] targetEntities;
 
-	public LayerMask targetLayerMask;
+	public LayerMask targetLayerMask = LayerMask.op_Implicit(-1);
 
-	public float targetDamage;
+	public float targetDamage = 1f;
 
-	public bool shouldUpdateMissionLocation;
+	public bool shouldUpdateMissionLocation = true;
 
 	private bool isInitalized;
 
-	private readonly HashSet<uint> targetPrefabIDs;
+	private readonly HashSet<uint> targetPrefabIDs = new HashSet<uint>();
 
 	private void EnsureInitialized()
 	{
@@ -86,10 +86,5 @@ public class MissionObjective_HurtEntityType : MissionObjective
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		targetLayerMask = LayerMask.op_Implicit(-1);
-		targetDamage = 1f;
-		shouldUpdateMissionLocation = true;
-		targetPrefabIDs = new HashSet<uint>();
-		base._002Ector();
 	}
 }

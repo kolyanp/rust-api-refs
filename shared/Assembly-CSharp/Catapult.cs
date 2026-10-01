@@ -34,8 +34,8 @@ public class Catapult : BaseSiegeWeapon
 
 	private readonly float progressTickRate = 0.1f;
 
-	[Header("Catapult")]
 	[SerializeField]
+	[Header("Catapult")]
 	private Animator animator;
 
 	[SerializeField]
@@ -335,7 +335,7 @@ public class Catapult : BaseSiegeWeapon
 			if (GamePhysics.Trace(new Ray(val, muzzle.position - val), 0f, out var hitInfo, 10f, 1236994833, (QueryTriggerInteraction)1))
 			{
 				flag = false;
-				firingPos = ((RaycastHit)(ref hitInfo)).point - Vector3.up;
+				firingPos = hitInfo.point - Vector3.up;
 			}
 		}
 		ServerProjectile projectile2;
@@ -366,7 +366,7 @@ public class Catapult : BaseSiegeWeapon
 			}
 			loadedAmmoItem.UseItem();
 		}
-		else if (TryFireProjectile(ammoStorageRef.Get(base.isServer), (AmmoTypes)8192, firingPos, muzzle.forward, shooter, 0.25f, 30f * num2, out projectile2))
+		else if (TryFireProjectile(ammoStorageRef.Get(isServer), (AmmoTypes)8192, firingPos, muzzle.forward, shooter, 0.25f, 30f * num2, out projectile2))
 		{
 			projectile2.ignoreEntity = this;
 			if (!flag)
@@ -380,8 +380,8 @@ public class Catapult : BaseSiegeWeapon
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_WantsFire(RPCMessage msg)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
@@ -421,7 +421,7 @@ public class Catapult : BaseSiegeWeapon
 		BasePlayer player = msg.player;
 		if (CanBeLooted(player))
 		{
-			ammoStorageRef.Get(base.isServer).PlayerOpenLoot(player);
+			ammoStorageRef.Get(isServer).PlayerOpenLoot(player);
 		}
 	}
 
@@ -450,16 +450,16 @@ public class Catapult : BaseSiegeWeapon
 				rigidBody.WakeUp();
 			}
 			Vector3 val = Vector3.ProjectOnPlane(((Component)this).transform.forward, ((Component)this).transform.up);
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			rigidBody.AddForce(normalized * rigidBody.mass * (carPhysics.HasHandbrake() ? 5f : 1f), (ForceMode)1);
 			rigidBody.AddForceAtPosition(Vector3.up * rigidBody.mass * 1.5f, centreOfMassTransform.position + ((Component)this).transform.forward * 1f, (ForceMode)1);
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanReload())
@@ -474,10 +474,10 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)(object)reloadingPlayer)
@@ -507,7 +507,7 @@ public class Catapult : BaseSiegeWeapon
 
 	public void AdminReload(int ammo)
 	{
-		foreach (MountPointInfo allMountPoint in base.allMountPoints)
+		foreach (MountPointInfo allMountPoint in allMountPoints)
 		{
 			BasePlayer mounted = allMountPoint.mountable.GetMounted();
 			if ((Object)(object)mounted != (Object)null && !mounted.IsBot)
@@ -524,13 +524,13 @@ public class Catapult : BaseSiegeWeapon
 		switch (ammo)
 		{
 		case 5:
-			ammoStorageRef.Get(base.isServer).inventory.Clear();
+			ammoStorageRef.Get(isServer).inventory.Clear();
 			SpawnAndMountBotPlayer();
 			break;
 		default:
 		{
-			ammoStorageRef.Get(base.isServer).inventory.Clear();
-			foreach (MountPointInfo allMountPoint2 in base.allMountPoints)
+			ammoStorageRef.Get(isServer).inventory.Clear();
+			foreach (MountPointInfo allMountPoint2 in allMountPoints)
 			{
 				BasePlayer mounted2 = allMountPoint2.mountable.GetMounted();
 				if ((Object)(object)mounted2 != (Object)null && mounted2.IsBot)
@@ -555,7 +555,7 @@ public class Catapult : BaseSiegeWeapon
 				itemToCreate = ItemManager.FindItemDefinition("catapult.ammo.bee");
 				break;
 			}
-			ammoStorageRef.Get(base.isServer).inventory.AddItem(itemToCreate, 1, 0uL);
+			ammoStorageRef.Get(isServer).inventory.AddItem(itemToCreate, 1, 0uL);
 			break;
 		}
 		case 0:
@@ -571,7 +571,7 @@ public class Catapult : BaseSiegeWeapon
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		foreach (MountPointInfo allMountPoint in base.allMountPoints)
+		foreach (MountPointInfo allMountPoint in allMountPoints)
 		{
 			BasePlayer basePlayer = GameManager.server.CreateEntity("assets/prefabs/player/player.prefab") as BasePlayer;
 			basePlayer.Spawn();
@@ -721,7 +721,7 @@ public class Catapult : BaseSiegeWeapon
 	public override void InitShared()
 	{
 		base.InitShared();
-		Invoke(delegate
+		Invoke(() =>
 		{
 			animator.SetFloat("Reload", reloadProgress);
 		}, 0.25f);
@@ -784,7 +784,7 @@ public class Catapult : BaseSiegeWeapon
 	{
 		animator.ResetTrigger("Fire");
 		animator.SetTrigger("Fire");
-		Invoke(delegate
+		Invoke(() =>
 		{
 			reloadProgress = 0f;
 			animator.SetFloat("Reload", reloadProgress);

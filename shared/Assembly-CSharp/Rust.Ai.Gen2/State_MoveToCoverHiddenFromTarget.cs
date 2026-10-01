@@ -51,36 +51,36 @@ public class State_MoveToCoverHiddenFromTarget : FSMStateBase
 		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0227: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0239: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0372: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
+		//IL_037c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0381: Unknown result type (might be due to invalid IL or missing references)
 		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0252: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0257: Unknown result type (might be due to invalid IL or missing references)
 		//IL_025c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0261: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)payload.entity != (Object)null)
 		{
-			base.Senses.TrySetTarget(payload.entity);
-			base.Senses.ForgetAllNoises();
+			Senses.TrySetTarget(payload.entity);
+			Senses.ForgetAllNoises();
 		}
-		if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: true))
+		if (!Senses.FindTargetLKP(out var lkp, applyHeightOffset: true))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		NavVector3 navVector = base.Agent.WorldToNavSpace(lkp);
-		NavVector3 nextPosition = base.Agent.nextPosition;
+		NavVector3 navVector = Agent.WorldToNavSpace(lkp);
+		NavVector3 nextPosition = Agent.nextPosition;
 		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius * 0.5f, 16);
+			bool flag = Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius * 0.5f, 16);
 			float num = NavVector3.Distance(navVector, nextPosition);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
-				RustNavMeshAgent rustNavMeshAgent = default(RustNavMeshAgent);
+				RustNavMeshAgent rustNavMeshAgent = default;
 				foreach (NavVector3 item2 in (List<NavVector3>)(object)val)
 				{
 					float num2 = 0f;
@@ -109,17 +109,17 @@ public class State_MoveToCoverHiddenFromTarget : FSMStateBase
 					NavVector3 navVector2 = item;
 					if (!flag)
 					{
-						if (!base.Agent.SamplePosition(item, out var hitNS2, 3.5f))
+						if (!Agent.SamplePosition(item, out var hitNS2, 3.5f))
 						{
 							continue;
 						}
 						navVector2 = hitNS2.position;
 					}
-					Vector3 val2 = base.Agent.NavToWorldSpace(navVector2);
-					if (NpcZoneComponent.IsPointInsideZone(val2) && !base.Agent.IsInWater(val2) && !base.Senses.CanBeSeenAtFrom(val2 + 1.1f * Vector3.up, lkp, "navigation") && base.Agent.CalculatePath(navVector2, Path) && (int)Path.status == 0)
+					Vector3 val2 = Agent.NavToWorldSpace(navVector2);
+					if (NpcZoneComponent.IsPointInsideZone(val2) && !Agent.IsInWater(val2) && !Senses.CanBeSeenAtFrom(val2 + 1.1f * Vector3.up, lkp, "navigation") && Agent.CalculatePath(navVector2, Path) && (int)Path.status == 0)
 					{
 						float pathLength = Path.GetPathLength();
-						if (!(pathLength < 0.5f) && !(pathLength > searchRadius * 3f) && base.Agent.SetDestinationWithParams(navVector2, autoBraking: true, speed))
+						if (!(pathLength < 0.5f) && !(pathLength > searchRadius * 3f) && Agent.SetDestinationWithParams(navVector2, autoBraking: true, speed))
 						{
 							remainingWalkBeforeSprintTime = walkDurationBeforeSprint;
 							lastChosenHidingSpotNS = navVector2;
@@ -134,8 +134,8 @@ public class State_MoveToCoverHiddenFromTarget : FSMStateBase
 				AICoverPoint bestCoverPoint = InfoZone.GetBestCoverPoint(((Component)Owner).transform.position, lkp, 0f, searchRadius, Owner);
 				if ((Object)(object)bestCoverPoint != (Object)null && NpcZoneComponent.IsPointInsideZone(((Component)bestCoverPoint).transform.position))
 				{
-					NavVector3 targetPositionNS = base.Agent.WorldToNavSpace(((Component)bestCoverPoint).transform.position);
-					if (base.Agent.SetDestinationWithParams(targetPositionNS, autoBraking: true, speed))
+					NavVector3 targetPositionNS = Agent.WorldToNavSpace(((Component)bestCoverPoint).transform.position);
+					if (Agent.SetDestinationWithParams(targetPositionNS, autoBraking: true, speed))
 					{
 						heldCover = bestCoverPoint;
 						heldCover.SetUsedBy(Owner);
@@ -158,7 +158,7 @@ public class State_MoveToCoverHiddenFromTarget : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		if (!base.Agent.hasPath)
+		if (!Agent.hasPath)
 		{
 			return EFSMStateStatus.Success;
 		}
@@ -167,7 +167,7 @@ public class State_MoveToCoverHiddenFromTarget : FSMStateBase
 			remainingWalkBeforeSprintTime -= deltaTime;
 			if (remainingWalkBeforeSprintTime <= 0.0)
 			{
-				base.Agent.SetGait(RustNavMeshAgent.Speeds.Sprint);
+				Agent.SetGait(RustNavMeshAgent.Speeds.Sprint);
 				remainingWalkBeforeSprintTime = null;
 			}
 		}
@@ -182,7 +182,7 @@ public class State_MoveToCoverHiddenFromTarget : FSMStateBase
 			heldCover = null;
 		}
 		remainingWalkBeforeSprintTime = null;
-		base.Agent.ResetPath();
+		Agent.ResetPath();
 		base.OnStateExit();
 	}
 }

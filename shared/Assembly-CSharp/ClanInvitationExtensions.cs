@@ -16,9 +16,9 @@ public static class ClanInvitationExtensions
 		{
 			list.Add(ToProto(invitation));
 		}
-		ClanInvitations obj = Pool.Get<ClanInvitations>();
-		obj.invitations = list;
-		return obj;
+		ClanInvitations val = Pool.Get<ClanInvitations>();
+		val.invitations = list;
+		return val;
 	}
 
 	[PoolAnalyzerGetWrapper]
@@ -27,10 +27,10 @@ public static class ClanInvitationExtensions
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		Invitation obj = Pool.Get<Invitation>();
-		obj.clanId = invitation.ClanId;
-		obj.recruiter = invitation.Recruiter;
-		obj.timestamp = invitation.Timestamp;
-		return obj;
+		Invitation val = Pool.Get<Invitation>();
+		val.clanId = invitation.ClanId;
+		val.recruiter = invitation.Recruiter;
+		val.timestamp = invitation.Timestamp;
+		return val;
 	}
 }

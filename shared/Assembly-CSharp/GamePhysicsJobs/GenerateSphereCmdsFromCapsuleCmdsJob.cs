@@ -24,13 +24,13 @@ public struct GenerateSphereCmdsFromCapsuleCmdsJob : IJob
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		OverlapSphereCommand val2 = default(OverlapSphereCommand);
 		for (int i = 0; i < Indices.Length; i++)
 		{
 			int num = Indices[i];
 			OverlapCapsuleCommand val = Commands[num];
-			((OverlapSphereCommand)(ref val2))._002Ector(((OverlapCapsuleCommand)(ref val)).point0, ((OverlapCapsuleCommand)(ref val)).radius, val.queryParameters);
+			OverlapSphereCommand val2 = new OverlapSphereCommand(val.point0, val.radius, val.queryParameters);
 			SphereCommands[i] = val2;
 		}
 	}

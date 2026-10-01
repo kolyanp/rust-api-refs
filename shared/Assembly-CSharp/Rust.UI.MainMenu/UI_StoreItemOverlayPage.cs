@@ -1,6 +1,5 @@
 using System;
 using Facepunch.Flexbox;
-using Facepunch.Models;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
@@ -21,15 +20,23 @@ public class UI_StoreItemOverlayPage : UI_Window
 
 		public string videoURL;
 
-		public Sprite FullscreenSprite;
+		public DynamicResourceRef<Sprite> DynamicFullscreenSprite;
 
-		public Sprite GallerySprite;
+		public DynamicResourceRef<Sprite> DynamicGallerySprite;
 
-		[NonSerialized]
-		public string FullscreenImageUrl;
+		public string FullscreenSpriteUrl;
 
-		[NonSerialized]
-		public string GalleryImageUrl;
+		public string GallerySpriteUrl;
+
+		public string FullscreenSpriteBlurHash;
+
+		public string GallerySpriteBlurHash;
+
+		public DynamicResourceRef<Sprite> DynamicFullscreenLightSprite;
+
+		public string FullscreenLightSpriteUrl;
+
+		public string FullscreenLightSpriteBlurHash;
 
 		[Min(0f)]
 		public int VariantCount;
@@ -41,77 +48,6 @@ public class UI_StoreItemOverlayPage : UI_Window
 		public Sprite ItemIcon;
 
 		public bool UseSkinViewer;
-
-		public Phrase GetTitle()
-		{
-			if (Name != null && !string.IsNullOrEmpty(Name.english))
-			{
-				return Name;
-			}
-			if ((Object)(object)Item != (Object)null)
-			{
-				return Item.displayName;
-			}
-			return Phrase.op_Implicit(string.Empty);
-		}
-
-		public Phrase GetRedirectItemName()
-		{
-			if ((Object)(object)Item != (Object)null && (Object)(object)Item.isRedirectOf != (Object)null && !Item.isRedirectOf.hidden)
-			{
-				return Item.isRedirectOf.displayName;
-			}
-			if (overrideItem)
-			{
-				return ItemName;
-			}
-			return null;
-		}
-
-		public Sprite GetRedirectItemIcon()
-		{
-			if ((Object)(object)Item != (Object)null && (Object)(object)Item.isRedirectOf != (Object)null && !Item.isRedirectOf.hidden)
-			{
-				return Item.isRedirectOf.iconSprite;
-			}
-			if (overrideItem)
-			{
-				return ItemIcon;
-			}
-			return null;
-		}
-
-		public PageElement OverrideWith(ElementOverride overrideElement)
-		{
-			PageElement result = this;
-			if (!string.IsNullOrEmpty(overrideElement.Name))
-			{
-				result.Name = Phrase.op_Implicit(overrideElement.Name);
-			}
-			if (!string.IsNullOrEmpty(overrideElement.ItemShortname))
-			{
-				result.Item = ItemManager.FindItemDefinition(overrideElement.ItemShortname);
-			}
-			if (!string.IsNullOrEmpty(overrideElement.ImageUrl))
-			{
-				result.FullscreenImageUrl = overrideElement.ImageUrl;
-			}
-			if (!string.IsNullOrEmpty(overrideElement.GalleryImageUrl))
-			{
-				result.GalleryImageUrl = overrideElement.GalleryImageUrl;
-			}
-			if (!string.IsNullOrEmpty(overrideElement.VideoUrl))
-			{
-				result.videoURL = overrideElement.VideoUrl;
-				result.isVideo = true;
-			}
-			if (overrideElement.VariantCount > 0)
-			{
-				result.VariantCount = overrideElement.VariantCount;
-			}
-			result.UseSkinViewer = overrideElement.UseSkinViewer;
-			return result;
-		}
 	}
 
 	[Serializable]
@@ -164,8 +100,11 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private RustText variantCoutText;
 
+	[SerializeField]
+	private UI_StoreFlashlightReveal flashlightReveal;
+
 	[Header("Gallery")]
-	public SpriteAtlas SmallAtlas;
+	public DynamicResourceRef<SpriteAtlas> DynamicSmallAtlas;
 
 	[SerializeField]
 	private Transform galleryParent;
@@ -211,4 +150,6 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[Space]
 	[SerializeField]
 	private PageContent pageContent;
+
+	public bool HasFlashlightReveal => (Object)(object)flashlightReveal != (Object)null;
 }

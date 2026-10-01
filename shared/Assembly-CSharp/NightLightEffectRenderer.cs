@@ -26,9 +26,9 @@ public class NightLightEffectRenderer : PostProcessEffectRenderer<NightLightEffe
 		command.BeginSample("NightLight");
 		PropertySheet propertySheet = context.propertySheets.Get(nightlightShader);
 		propertySheet.properties.Clear();
-		propertySheet.properties.SetFloat(distanceProperty, base.settings.distance.value);
-		propertySheet.properties.SetFloat(fadeFractionProperty, base.settings.fadeFraction.value);
-		propertySheet.properties.SetFloat(brightnessProperty, base.settings.brightness.value);
+		propertySheet.properties.SetFloat(distanceProperty, settings.distance.value);
+		propertySheet.properties.SetFloat(fadeFractionProperty, settings.fadeFraction.value);
+		propertySheet.properties.SetFloat(brightnessProperty, settings.brightness.value);
 		command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 0);
 		command.EndSample("NightLight");
 	}

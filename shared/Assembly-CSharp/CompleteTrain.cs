@@ -40,7 +40,7 @@ public class CompleteTrain : IDisposable
 
 	public const float MIN_COLLISION_FORCE = 70000f;
 
-	public float lastMovingTime;
+	public float lastMovingTime = float.MinValue;
 
 	public const float SLEEP_SPEED = 0.1f;
 
@@ -74,21 +74,21 @@ public class CompleteTrain : IDisposable
 
 	private Vector3 shuntDirection;
 
-	private Vector2 shuntStartPos2D;
+	private Vector2 shuntStartPos2D = Vector2.zero;
 
-	private Vector2 shuntTargetPos2D;
+	private Vector2 shuntTargetPos2D = Vector2.zero;
 
 	private TrainCar shuntTarget;
 
 	public StaticCollisionState staticCollidingAtFront;
 
-	private HashSet<GameObject> monitoredStaticContentF;
+	private HashSet<GameObject> monitoredStaticContentF = new HashSet<GameObject>();
 
 	public StaticCollisionState staticCollidingAtRear;
 
-	private HashSet<GameObject> monitoredStaticContentR;
+	private HashSet<GameObject> monitoredStaticContentR = new HashSet<GameObject>();
 
-	public Dictionary<Rigidbody, float> prevTrackSpeeds;
+	public Dictionary<Rigidbody, float> prevTrackSpeeds = new Dictionary<Rigidbody, float>();
 
 	public TrainCar PrimaryTrainCar { get; set; }
 
@@ -100,7 +100,7 @@ public class CompleteTrain : IDisposable
 
 	public int NumTrainCars => trainCars.Count;
 
-	public int LinedUpToUnload { get; private set; }
+	public int LinedUpToUnload { get; private set; } = -1;
 
 	public bool IsLinedUpToUnload => LinedUpToUnload >= 0;
 
@@ -122,14 +122,6 @@ public class CompleteTrain : IDisposable
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		LinedUpToUnload = -1;
-		lastMovingTime = float.MinValue;
-		shuntStartPos2D = Vector2.zero;
-		shuntTargetPos2D = Vector2.zero;
-		monitoredStaticContentF = new HashSet<GameObject>();
-		monitoredStaticContentR = new HashSet<GameObject>();
-		prevTrackSpeeds = new Dictionary<Rigidbody, float>();
-		base._002Ector();
 		List<TrainCar> list = Pool.Get<List<TrainCar>>();
 		list.Add(trainCar);
 		Init(list);
@@ -141,14 +133,6 @@ public class CompleteTrain : IDisposable
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		LinedUpToUnload = -1;
-		lastMovingTime = float.MinValue;
-		shuntStartPos2D = Vector2.zero;
-		shuntTargetPos2D = Vector2.zero;
-		monitoredStaticContentF = new HashSet<GameObject>();
-		monitoredStaticContentR = new HashSet<GameObject>();
-		prevTrackSpeeds = new Dictionary<Rigidbody, float>();
-		base._002Ector();
 		Init(allTrainCars);
 	}
 
@@ -958,7 +942,7 @@ public class CompleteTrain : IDisposable
 		{
 			flag = true;
 		}
-		float num = (flag ? (((Vector3)(ref val)).magnitude * Mathf.Clamp(ourTotalMass, 1f, 13000f)) : 0f);
+		float num = (flag ? (val.magnitude * Mathf.Clamp(ourTotalMass, 1f, 13000f)) : 0f);
 		trackSpeed = HandleStaticCollisions(flag, atOurFront, trackSpeed, ref wasStaticColliding, trigger);
 		if (!flag && otherEndStaticColliding == StaticCollisionState.Free)
 		{
@@ -1078,7 +1062,7 @@ public class CompleteTrain : IDisposable
 		Vector3 val = (front ? forwardVector : (-forwardVector));
 		float num = Vector3.Angle(val, ((Component)theirTrain).transform.forward);
 		Vector3 val2 = ((Component)theirTrain).transform.position - ourTransform.position;
-		float num2 = Vector3.Dot(val, ((Vector3)(ref val2)).normalized);
+		float num2 = Vector3.Dot(val, val2.normalized);
 		if ((num > 40f && num < 140f) || Mathf.Abs(num2) < 0.95f)
 		{
 			trackSpeed = (front ? (-0.5f) : 0.5f);
@@ -1216,9 +1200,9 @@ public class CompleteTrain : IDisposable
 			num += TotalForces;
 		}
 		prevTrains.Add(this);
-		bool num2 = Vector3.Dot(ourForward, pushDirection) >= 0f;
-		TriggerTrainCollisions triggerTrainCollisions = (num2 ? frontCollisionTrigger : rearCollisionTrigger);
-		if (!num2)
+		bool flag = Vector3.Dot(ourForward, pushDirection) >= 0f;
+		TriggerTrainCollisions triggerTrainCollisions = (flag ? frontCollisionTrigger : rearCollisionTrigger);
+		if (!flag)
 		{
 			num *= -1f;
 		}

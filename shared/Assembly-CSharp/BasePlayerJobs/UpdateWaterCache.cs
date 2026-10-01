@@ -29,7 +29,6 @@ internal struct UpdateWaterCache : IJob
 			ref BasePlayer.CachedState reference = ref UnsafeUtility.ArrayElementAsRef<BasePlayer.CachedState>(NativeArrayUnsafeUtility.GetUnsafePtr<BasePlayer.CachedState>(States), num);
 			reference.WaterFactor = Factors[num];
 			reference.WaterInfo = Infos[num];
-			reference.IsSwimming = BasePlayer.IsSwimming(reference.WaterFactor);
 		}
 	}
 }

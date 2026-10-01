@@ -2,7 +2,7 @@ namespace UnityEngine;
 
 public static class TextureEx
 {
-	private static Color32[] buffer = (Color32[])(object)new Color32[8192];
+	private static Color32[] buffer = new Color32[8192];
 
 	public static void Clear(this Texture2D tex, Color32 color)
 	{

@@ -29,6 +29,6 @@ public class PermissionStoreless : Permission
 		{
 			CreateGroup(moderatorDefaultGroup, moderatorDefaultGroup.ToCamelCase(), 1);
 		}
-		base.IsLoaded = true;
+		IsLoaded = true;
 	}
 }

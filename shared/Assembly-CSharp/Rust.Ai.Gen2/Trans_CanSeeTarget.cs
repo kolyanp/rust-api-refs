@@ -6,11 +6,11 @@ public class Trans_CanSeeTarget : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_CanSeeTarget"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return false;
 			}
-			if (!base.Senses.GetVisibilityStatus(target, out var status))
+			if (!Senses.GetVisibilityStatus(target, out var status))
 			{
 				return false;
 			}

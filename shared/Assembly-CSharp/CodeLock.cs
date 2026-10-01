@@ -42,13 +42,13 @@ public class CodeLock : BaseLock, IReskinCallback
 
 	public const Flags Flag_CodeEntryBlocked = Flags.Reserved11;
 
-	public static readonly Phrase blockwarning;
+	public static readonly Phrase blockwarning = new Phrase("codelock.blockwarning", "Further failed attempts will block code entry for some time");
 
 	[ServerVar(Help = "(Generated) Maximum number of failed code entry attempts on a code lock before the player is locked out; default 8")]
-	public static float maxFailedAttempts;
+	public static float maxFailedAttempts = 8f;
 
 	[ServerVar(Help = "(Generated) Duration in seconds a player is locked out from attempting the code lock after exceeding maxFailedAttempts; default 900s (15 minutes)")]
-	public static float lockoutCooldown;
+	public static float lockoutCooldown = 900f;
 
 	public bool hasGuestCode;
 
@@ -378,8 +378,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		MarkGroupUpkeepDirty();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void TryUnlock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && IsLocked() && Interface.CallHook("CanUnlock", rpc.player, this) == null && !IsCodeEntryBlocked() && whitelistPlayers.Contains(rpc.player.userID))
@@ -390,8 +390,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void TryLock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && !IsLocked() && code.Length == 4 && Interface.CallHook("CanLock", rpc.player, this) == null && whitelistPlayers.Contains(rpc.player.userID))
@@ -411,8 +411,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		wrongCodes = 0;
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void UnlockWithCode(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract() || !IsLocked() || IsCodeEntryBlocked())
@@ -539,9 +539,6 @@ public class CodeLock : BaseLock, IReskinCallback
 	static CodeLock()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		blockwarning = new Phrase("codelock.blockwarning", "Further failed attempts will block code entry for some time");
-		maxFailedAttempts = 8f;
-		lockoutCooldown = 900f;
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

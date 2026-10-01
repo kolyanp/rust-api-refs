@@ -37,7 +37,7 @@ public static class ComponentEx
 		if (val4 != null)
 		{
 			EmissionModule emission = val4.emission;
-			return ((EmissionModule)(ref emission)).enabled;
+			return emission.enabled;
 		}
 		LODGroup val5 = (LODGroup)(object)((component is LODGroup) ? component : null);
 		if (val5 != null)

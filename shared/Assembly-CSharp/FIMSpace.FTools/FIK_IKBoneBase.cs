@@ -6,11 +6,11 @@ namespace FIMSpace.FTools;
 [Serializable]
 public abstract class FIK_IKBoneBase
 {
-	public float sqrMagn;
+	public float sqrMagn = 0.1f;
 
-	public float BoneLength;
+	public float BoneLength = 0.1f;
 
-	public float MotionWeight;
+	public float MotionWeight = 1f;
 
 	public Vector3 InitialLocalPosition;
 
@@ -30,10 +30,6 @@ public abstract class FIK_IKBoneBase
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		sqrMagn = 0.1f;
-		BoneLength = 0.1f;
-		MotionWeight = 1f;
-		base._002Ector();
 		transform = t;
 		if (Object.op_Implicit((Object)(object)transform))
 		{
@@ -57,9 +53,9 @@ public abstract class FIK_IKBoneBase
 		{
 			Child = child;
 			Vector3 val = child.transform.position - transform.position;
-			sqrMagn = ((Vector3)(ref val)).sqrMagnitude;
+			sqrMagn = val.sqrMagnitude;
 			val = child.transform.position - transform.position;
-			BoneLength = ((Vector3)(ref val)).sqrMagnitude;
+			BoneLength = val.sqrMagnitude;
 		}
 	}
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DeployVolumeOBB : DeployVolume
 {
-	public Bounds bounds;
+	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
 
 	public DeployVolumeOBB(Bounds bounds, LayerMask layers)
 	{
@@ -16,8 +16,6 @@ public class DeployVolumeOBB : DeployVolume
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		this.bounds = new Bounds(Vector3.zero, Vector3.one);
-		base._002Ector();
 		this.bounds = bounds;
 		base.layers = layers;
 	}
@@ -41,8 +39,8 @@ public class DeployVolumeOBB : DeployVolume
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		position += rotation * (worldRotation * ((Bounds)(ref bounds)).center + worldPosition);
-		if (DeployVolume.CheckOBB(new OBB(position, ((Bounds)(ref bounds)).size, rotation * worldRotation), LayerMask.op_Implicit(layers) & mask, this))
+		position += rotation * (worldRotation * bounds.center + worldPosition);
+		if (DeployVolume.CheckOBB(new OBB(position, bounds.size, rotation * worldRotation), LayerMask.op_Implicit(layers) & mask, this))
 		{
 			return true;
 		}
@@ -68,8 +66,8 @@ public class DeployVolumeOBB : DeployVolume
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		position += rotation * (worldRotation * ((Bounds)(ref bounds)).center + worldPosition);
-		if (DeployVolume.CheckOBB(new OBB(position, ((Bounds)(ref bounds)).size, rotation * worldRotation), LayerMask.op_Implicit(layers) & mask, this, types, filterMode, ignoredEntity, ignoreChildrenOfEntity))
+		position += rotation * (worldRotation * bounds.center + worldPosition);
+		if (DeployVolume.CheckOBB(new OBB(position, bounds.size, rotation * worldRotation), LayerMask.op_Implicit(layers) & mask, this, types, filterMode, ignoredEntity, ignoreChildrenOfEntity))
 		{
 			return true;
 		}
@@ -93,12 +91,12 @@ public class DeployVolumeOBB : DeployVolume
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		position += rotation * (worldRotation * ((Bounds)(ref bounds)).center + worldPosition);
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(position, ((Bounds)(ref bounds)).size, rotation * worldRotation);
-		if ((LayerMask.op_Implicit(layers) & mask) != 0 && ((OBB)(ref val)).Intersects(test))
+		position += rotation * (worldRotation * bounds.center + worldPosition);
+		OBB val = new OBB(position, bounds.size, rotation * worldRotation);
+		if ((LayerMask.op_Implicit(layers) & mask) != 0 && val.Intersects(test))
 		{
 			return true;
 		}

@@ -121,7 +121,7 @@ public class ConfettiCannon : DecayEntity, IIgniteable
 
 	public void Ignite(Vector3 fromPos)
 	{
-		Blast(default(RPCMessage));
+		Blast(default);
 	}
 
 	public bool CanIgnite()
@@ -132,9 +132,9 @@ public class ConfettiCannon : DecayEntity, IIgniteable
 	public override void OnAttacked(HitInfo info)
 	{
 		base.OnAttacked(info);
-		if (base.isServer && info.damageTypes.Has(DamageType.Heat))
+		if (isServer && info.damageTypes.Has(DamageType.Heat))
 		{
-			Blast(default(RPCMessage));
+			Blast(default);
 		}
 	}
 }

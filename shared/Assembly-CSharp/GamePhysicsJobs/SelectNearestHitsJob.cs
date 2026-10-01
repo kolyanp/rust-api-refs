@@ -39,13 +39,13 @@ public struct SelectNearestHitsJob : IJob
 			for (int j = 0; j < HitsPerBatch; j++)
 			{
 				RaycastHit val = Hits[i * HitsPerBatch + j];
-				if (((RaycastHit)(ref val)).normal == Vector3.zero)
+				if (val.normal == Vector3.zero)
 				{
 					break;
 				}
-				if (((RaycastHit)(ref val)).distance < num3)
+				if (val.distance < num3)
 				{
-					num3 = ((RaycastHit)(ref val)).distance;
+					num3 = val.distance;
 					num2 = j;
 				}
 			}
@@ -55,7 +55,7 @@ public struct SelectNearestHitsJob : IJob
 			}
 			else
 			{
-				Results[i] = default(RaycastHit);
+				Results[i] = default;
 			}
 		}
 	}

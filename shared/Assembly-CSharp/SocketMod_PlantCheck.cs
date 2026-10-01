@@ -35,7 +35,7 @@ public class SocketMod_PlantCheck : SocketMod
 		}
 		Vector3 position = place.position + place.rotation * worldPosition;
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
-		Vis.Entities(position, sphereRadius, list, ((LayerMask)(ref layerMask)).value, queryTriggers);
+		Vis.Entities(position, sphereRadius, list, layerMask.value, queryTriggers);
 		if (isServer)
 		{
 			List<BaseEntity> list2 = Pool.Get<List<BaseEntity>>();

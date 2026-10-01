@@ -25,6 +25,7 @@ public class PlaceDecorUniform : ProceduralComponent
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
@@ -72,7 +73,6 @@ public class PlaceDecorUniform : ProceduralComponent
 		float z = position.z;
 		float num = position.x + size.x;
 		float num2 = position.z + size.z;
-		Vector3 pos = default(Vector3);
 		for (float num3 = z; num3 < num2; num3 += ObjectDistance)
 		{
 			for (float num4 = x; num4 < num; num4 += ObjectDistance)
@@ -92,7 +92,7 @@ public class PlaceDecorUniform : ProceduralComponent
 					}
 				}
 				float height = heightMap.GetHeight(normX, normZ);
-				((Vector3)(ref pos))._002Ector(num5, height, num6);
+				Vector3 pos = new Vector3(num5, height, num6);
 				Quaternion rot = random.Object.transform.localRotation;
 				Vector3 scale = random.Object.transform.localScale;
 				random.ApplyDecorComponents(ref pos, ref rot, ref scale);

@@ -32,7 +32,7 @@ public class GhostShip : JunkPileWater, IDeepSeaSpawner
 			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-			if (!((NavMeshDataInstance)(ref navMeshInst)).valid)
+			if (!navMeshInst.valid)
 			{
 				return base.WorldToNavMeshSpace;
 			}
@@ -48,11 +48,11 @@ public class GhostShip : JunkPileWater, IDeepSeaSpawner
 			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-			if (!((NavMeshDataInstance)(ref navMeshInst)).valid)
+			if (!navMeshInst.valid)
 			{
 				return base.WorldToNavMeshSpace;
 			}
-			return ((Component)this).transform.localToWorldMatrix * ((Matrix4x4)(ref navMeshTransf)).inverse;
+			return ((Component)this).transform.localToWorldMatrix * navMeshTransf.inverse;
 		}
 	}
 
@@ -81,7 +81,7 @@ public class GhostShip : JunkPileWater, IDeepSeaSpawner
 		DeepSeaManager.ServerGhostShips.Add(this);
 		if (mapMarkerPrefab.isValid)
 		{
-			spawnedMapMarker = base.gameManager.CreateEntity(mapMarkerPrefab.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation);
+			spawnedMapMarker = gameManager.CreateEntity(mapMarkerPrefab.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation);
 			spawnedMapMarker.Spawn();
 		}
 		if (AI.useUnityNavmesh)
@@ -92,7 +92,7 @@ public class GhostShip : JunkPileWater, IDeepSeaSpawner
 				Vector3 position = ((Component)this).transform.position;
 				Quaternion rotation = ((Component)this).transform.rotation;
 				navMeshInst = NavMesh.AddNavMeshData(componentInChildren.navMeshData, position, rotation);
-				((NavMeshDataInstance)(ref navMeshInst)).owner = (Object)(object)this;
+				navMeshInst.owner = (Object)(object)this;
 				navMeshTransf = Matrix4x4.TRS(position, rotation, Vector3.one);
 				if ((Object)(object)SingletonComponent<DynamicNavMesh>.Instance != (Object)null)
 				{
@@ -113,7 +113,7 @@ public class GhostShip : JunkPileWater, IDeepSeaSpawner
 		DeepSeaManager.ServerGhostShips.Remove(this);
 		if (AI.useUnityNavmesh)
 		{
-			if (((NavMeshDataInstance)(ref navMeshInst)).valid)
+			if (navMeshInst.valid)
 			{
 				NavMesh.RemoveNavMeshData(navMeshInst);
 			}

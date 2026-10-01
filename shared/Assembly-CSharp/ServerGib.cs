@@ -63,9 +63,9 @@ public class ServerGib : BaseCombatEntity
 		{
 			MeshFilter component = ((Component)val).GetComponent<MeshFilter>();
 			Vector3 val2 = ((Component)val).transform.localPosition;
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			Vector3 normalized = val2.normalized;
 			Matrix4x4 localToWorldMatrix = creator.transform.localToWorldMatrix;
-			Vector3 val3 = ((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint(((Component)val).transform.localPosition) + normalized * 0.5f;
+			Vector3 val3 = localToWorldMatrix.MultiplyPoint(((Component)val).transform.localPosition) + normalized * 0.5f;
 			Quaternion val4 = creator.transform.rotation * ((Component)val).transform.localRotation;
 			BaseEntity baseEntity = GameManager.server.CreateEntity(entityToCreatePath, val3, val4);
 			if (Object.op_Implicit((Object)(object)baseEntity))
@@ -77,11 +77,11 @@ public class ServerGib : BaseCombatEntity
 				Mesh physicsMesh = (((Object)(object)component3 != (Object)null) ? component3.sharedMesh : component.sharedMesh);
 				component2.PhysicsInit(physicsMesh);
 				val2 = ((Component)val).transform.localPosition;
-				Vector3 val5 = ((Vector3)(ref val2)).normalized * spreadVelocity;
+				Vector3 val5 = val2.normalized * spreadVelocity;
 				component2.rigidBody.linearVelocity = inheritVelocity + val5;
-				Rigidbody obj = component2.rigidBody;
+				Rigidbody val6 = component2.rigidBody;
 				val2 = Vector3Ex.Range(-1f, 1f);
-				obj.angularVelocity = ((Vector3)(ref val2)).normalized * 1f;
+				val6.angularVelocity = val2.normalized * 1f;
 				component2.rigidBody.WakeUp();
 				component2.enableSaving = true;
 				component2.Spawn();
@@ -164,21 +164,21 @@ public class ServerGib : BaseCombatEntity
 		Rigidbody val = ((Component)this).gameObject.AddComponent<Rigidbody>();
 		val.useGravity = true;
 		Bounds val2 = ((Collider)meshCollider).bounds;
-		Vector3 size = ((Bounds)(ref val2)).size;
-		float magnitude = ((Vector3)(ref size)).magnitude;
+		Vector3 size = val2.size;
+		float magnitude = size.magnitude;
 		val2 = ((Collider)meshCollider).bounds;
-		size = ((Bounds)(ref val2)).size;
-		val.mass = Mathf.Clamp(magnitude * ((Vector3)(ref size)).magnitude * 20f, 10f, 2000f);
+		size = val2.size;
+		val.mass = Mathf.Clamp(magnitude * size.magnitude * 20f, 10f, 2000f);
 		val.interpolation = (RigidbodyInterpolation)1;
 		val.collisionDetectionMode = (CollisionDetectionMode)(useContinuousCollision ? 2 : 0);
-		if (base.isServer)
+		if (isServer)
 		{
 			val.linearDamping = 0.1f;
 			val.angularDamping = 0.1f;
 		}
 		rigidBody = val;
 		((Component)this).gameObject.layer = LayerMask.NameToLayer("Default");
-		if (base.isClient)
+		if (isClient)
 		{
 			val.isKinematic = true;
 		}

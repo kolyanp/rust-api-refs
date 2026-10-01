@@ -18,9 +18,9 @@ public class EntityTimedDestroy : EntityComponent<BaseEntity>
 
 	private void TimedDestroy()
 	{
-		if ((Object)(object)base.baseEntity != (Object)null)
+		if ((Object)(object)baseEntity != (Object)null)
 		{
-			base.baseEntity.Kill();
+			baseEntity.Kill();
 		}
 		else
 		{

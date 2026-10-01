@@ -92,7 +92,7 @@ public class ReclaimManager : BaseEntity
 			}
 			if (wearInventory.itemList.Count + beltInventory.itemList.Count + mainInventory.itemList.Count + backpackInventory.itemList.Count > 0)
 			{
-				ItemContainer.Drop("assets/prefabs/misc/item drop/item_drop_backpack.prefab", player.GetDropPosition(), default(Quaternion), wearInventory, beltInventory, mainInventory, backpackInventory);
+				ItemContainer.Drop("assets/prefabs/misc/item drop/item_drop_backpack.prefab", player.GetDropPosition(), default, wearInventory, beltInventory, mainInventory, backpackInventory);
 			}
 		}
 	}

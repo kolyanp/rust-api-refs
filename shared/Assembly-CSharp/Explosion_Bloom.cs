@@ -2,21 +2,21 @@ using System;
 using UnityEngine;
 
 [ExecuteInEditMode]
-[RequireComponent(typeof(Camera))]
-[AddComponentMenu("KriptoFX/Explosion_Bloom")]
 [ImageEffectAllowedInSceneView]
+[AddComponentMenu("KriptoFX/Explosion_Bloom")]
+[RequireComponent(typeof(Camera))]
 public class Explosion_Bloom : MonoBehaviour
 {
 	[Serializable]
 	public struct Settings
 	{
-		[Tooltip("Filters out pixels under this level of brightness.")]
 		[SerializeField]
+		[Tooltip("Filters out pixels under this level of brightness.")]
 		public float threshold;
 
 		[Range(0f, 1f)]
-		[Tooltip("Makes transition between under/over-threshold gradual.")]
 		[SerializeField]
+		[Tooltip("Makes transition between under/over-threshold gradual.")]
 		public float softKnee;
 
 		[SerializeField]
@@ -28,8 +28,8 @@ public class Explosion_Bloom : MonoBehaviour
 		[Tooltip("Blend factor of the result image.")]
 		public float intensity;
 
-		[Tooltip("Controls filter quality and buffer resolution.")]
 		[SerializeField]
+		[Tooltip("Controls filter quality and buffer resolution.")]
 		public bool highQuality;
 
 		[Tooltip("Reduces flashing noise with an additional filter.")]
@@ -82,9 +82,9 @@ public class Explosion_Bloom : MonoBehaviour
 
 	private const int kMaxIterations = 16;
 
-	private RenderTexture[] m_blurBuffer1 = (RenderTexture[])(object)new RenderTexture[16];
+	private RenderTexture[] m_blurBuffer1 = new RenderTexture[16];
 
-	private RenderTexture[] m_blurBuffer2 = (RenderTexture[])(object)new RenderTexture[16];
+	private RenderTexture[] m_blurBuffer2 = new RenderTexture[16];
 
 	private int m_Threshold;
 
@@ -163,7 +163,7 @@ public class Explosion_Bloom : MonoBehaviour
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Expected O, but got Unknown
+		//IL_0022: Expected Obj, but got Unknown
 		if ((Object)(object)s == (Object)null || !s.isSupported)
 		{
 			return null;
@@ -204,6 +204,7 @@ public class Explosion_Bloom : MonoBehaviour
 	private void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
@@ -224,8 +225,7 @@ public class Explosion_Bloom : MonoBehaviour
 		float thresholdLinear = settings.thresholdLinear;
 		material.SetFloat(m_Threshold, thresholdLinear);
 		float num6 = thresholdLinear * settings.softKnee + 1E-05f;
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector(thresholdLinear - num6, num6 * 2f, 0.25f / num6);
+		Vector3 val2 = new Vector3(thresholdLinear - num6, num6 * 2f, 0.25f / num6);
 		material.SetVector(m_Curve, Vector4.op_Implicit(val2));
 		bool flag = !settings.highQuality && settings.antiFlicker;
 		material.SetFloat(m_PrefilterOffs, flag ? (-0.5f) : 0f);
@@ -237,21 +237,33 @@ public class Explosion_Bloom : MonoBehaviour
 		for (int i = 0; i < num5; i++)
 		{
 			m_blurBuffer1[i] = RenderTexture.GetTemporary(((Texture)val3).width / 2, ((Texture)val3).height / 2, 0, val);
-			Graphics.Blit((Texture)(object)val3, m_blurBuffer1[i], material, (i == 0) ? (settings.antiFlicker ? 3 : 2) : 4);
+			RenderTexture val4 = val3;
+			RenderTexture obj = m_blurBuffer1[i];
+			Material val5 = material;
+			int num7;
+			if (i != 0)
+			{
+				num7 = 4;
+			}
+			else
+			{
+				num7 = (settings.antiFlicker ? 3 : 2);
+			}
+			Graphics.Blit((Texture)(object)val4, obj, val5, num7);
 			val3 = m_blurBuffer1[i];
 		}
-		for (int num7 = num5 - 2; num7 >= 0; num7--)
+		for (int num8 = num5 - 2; num8 >= 0; num8--)
 		{
-			RenderTexture val4 = m_blurBuffer1[num7];
-			material.SetTexture(m_BaseTex, (Texture)(object)val4);
-			m_blurBuffer2[num7] = RenderTexture.GetTemporary(((Texture)val4).width, ((Texture)val4).height, 0, val);
-			Graphics.Blit((Texture)(object)val3, m_blurBuffer2[num7], material, settings.highQuality ? 6 : 5);
-			val3 = m_blurBuffer2[num7];
+			RenderTexture val6 = m_blurBuffer1[num8];
+			material.SetTexture(m_BaseTex, (Texture)(object)val6);
+			m_blurBuffer2[num8] = RenderTexture.GetTemporary(((Texture)val6).width, ((Texture)val6).height, 0, val);
+			Graphics.Blit((Texture)(object)val3, m_blurBuffer2[num8], material, settings.highQuality ? 6 : 5);
+			val3 = m_blurBuffer2[num8];
 		}
-		int num8 = 7;
-		num8 += (settings.highQuality ? 1 : 0);
+		int num9 = 7;
+		num9 += (settings.highQuality ? 1 : 0);
 		material.SetTexture(m_BaseTex, (Texture)(object)source);
-		Graphics.Blit((Texture)(object)val3, destination, material, num8);
+		Graphics.Blit((Texture)(object)val3, destination, material, num9);
 		for (int j = 0; j < 16; j++)
 		{
 			if ((Object)(object)m_blurBuffer1[j] != (Object)null)

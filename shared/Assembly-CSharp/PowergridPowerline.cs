@@ -22,8 +22,8 @@ public class PowergridPowerline : BaseEntity
 		{
 			if (!World.LoadedFromSave)
 			{
-				Vector3 pos = default(Vector3);
-				Quaternion rot = default(Quaternion);
+				Vector3 pos = default;
+				Quaternion rot = default;
 				spawnAccessPointHere.GetPositionAndRotation(ref pos, ref rot);
 				BaseEntity baseEntity = GameManager.server.CreateEntity(accessPointPrefab.resourcePath, pos, rot);
 				if ((Object)(object)baseEntity == (Object)null)

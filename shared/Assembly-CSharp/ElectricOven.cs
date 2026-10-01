@@ -138,10 +138,10 @@ public class ElectricOven : BaseOven
 	private void PauseCooking()
 	{
 		UpdateAttachmentTemperature();
-		if (base.inventory != null)
+		if (inventory != null)
 		{
-			base.inventory.temperature = 15f;
-			foreach (Item item in base.inventory.itemList)
+			inventory.temperature = 15f;
+			foreach (Item item in inventory.itemList)
 			{
 				if (item.HasFlag(Item.Flag.OnFire))
 				{
@@ -159,9 +159,9 @@ public class ElectricOven : BaseOven
 		flagsUpdateScope.Set(Flags.Reserved8, b: true);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool bAdded)
+	public override void OnItemAddedOrRemoved(Item item, bool bAdded, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, bAdded);
+		base.OnItemAddedOrRemoved(item, bAdded, sourcePlayer);
 		if (item == null || bAdded || !HasFlag(Flags.Reserved8))
 		{
 			return;

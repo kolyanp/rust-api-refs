@@ -5,64 +5,7 @@ namespace FIMSpace.FTools;
 
 public class UniRotateBone
 {
-	[CompilerGenerated]
-	private Vector3 _003CinitialLocalPosition_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Quaternion _003CinitialLocalRotation_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CinitialLocalPositionInRootSpace_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Quaternion _003CinitialLocalRotationInRootSpace_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003Cright_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003Cup_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003Cforward_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003Cdright_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003Cdup_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003Cdforward_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CfromParentForward_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CfromParentCross_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CkeyframedPosition_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Quaternion _003CkeyframedRotation_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Quaternion _003Cmapping_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Quaternion _003Cdmapping_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CforwardReference_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CupReference_003Ek__BackingField;
-
-	[CompilerGenerated]
-	private Vector3 _003CrightCrossReference_003Ek__BackingField;
-
-	private Vector3 dynamicUpReference;
+	private Vector3 dynamicUpReference = Vector3.up;
 
 	public Transform transform { get; protected set; }
 
@@ -72,14 +15,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CinitialLocalPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CinitialLocalPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -89,14 +32,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CinitialLocalRotation_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CinitialLocalRotation_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -106,14 +49,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CinitialLocalPositionInRootSpace_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CinitialLocalPositionInRootSpace_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -123,14 +66,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CinitialLocalRotationInRootSpace_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CinitialLocalRotationInRootSpace_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -140,14 +83,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cright_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cright_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -157,14 +100,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cup_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cup_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -174,14 +117,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cforward_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cforward_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -191,14 +134,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cdright_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cdright_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -208,14 +151,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cdup_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cdup_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -225,14 +168,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cdforward_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cdforward_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -242,14 +185,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CfromParentForward_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CfromParentForward_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -259,14 +202,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CfromParentCross_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CfromParentCross_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -276,14 +219,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CkeyframedPosition_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CkeyframedPosition_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -293,14 +236,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CkeyframedRotation_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CkeyframedRotation_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -310,14 +253,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cmapping_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cmapping_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -327,14 +270,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003Cdmapping_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		protected set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003Cdmapping_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -346,14 +289,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CforwardReference_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CforwardReference_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -363,14 +306,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CupReference_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CupReference_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -380,14 +323,14 @@ public class UniRotateBone
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CrightCrossReference_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		private set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CrightCrossReference_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 
@@ -447,8 +390,6 @@ public class UniRotateBone
 		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
-		dynamicUpReference = Vector3.up;
-		base._002Ector();
 		transform = t;
 		initialLocalPosition = transform.localPosition;
 		initialLocalRotation = transform.localRotation;
@@ -466,7 +407,7 @@ public class UniRotateBone
 		if (Object.op_Implicit((Object)(object)t.parent))
 		{
 			Vector3 val = GetFromParentForward();
-			fromParentForward = ((Vector3)(ref val)).normalized;
+			fromParentForward = val.normalized;
 		}
 		else
 		{
@@ -641,7 +582,7 @@ public class UniRotateBone
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = Quaternion.Inverse(transform.parent.rotation) * ((Vector3)(ref direction)).normalized;
+		Vector3 val = Quaternion.Inverse(transform.parent.rotation) * direction.normalized;
 		Vector2 zero = Vector2.zero;
 		zero.y = AngleAroundAxis(orientationsReference.forwardReference, val, orientationsReference.upReference);
 		Vector3 axis = Vector3.Cross(orientationsReference.upReference, val);
@@ -944,8 +885,8 @@ public class UniRotateBone
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		Transform obj = transform;
-		obj.rotation *= Quaternion.AngleAxis(angle, right);
+		Transform val = transform;
+		val.rotation *= Quaternion.AngleAxis(angle, right);
 	}
 
 	public void RotateYBy(float angle)
@@ -954,8 +895,8 @@ public class UniRotateBone
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		Transform obj = transform;
-		obj.rotation *= Quaternion.AngleAxis(angle, up);
+		Transform val = transform;
+		val.rotation *= Quaternion.AngleAxis(angle, up);
 	}
 
 	public void RotateZBy(float angle)
@@ -964,8 +905,8 @@ public class UniRotateBone
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		Transform obj = transform;
-		obj.rotation *= Quaternion.AngleAxis(angle, forward);
+		Transform val = transform;
+		val.rotation *= Quaternion.AngleAxis(angle, forward);
 	}
 
 	public void PreCalibrate()
@@ -987,7 +928,7 @@ public class UniRotateBone
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = transform.TransformDirection(fromParentForward);
-		return Quaternion.FromToRotation(((Vector3)(ref val)).normalized, ((Vector3)(ref toDir)).normalized) * transform.rotation;
+		return Quaternion.FromToRotation(val.normalized, toDir.normalized) * transform.rotation;
 	}
 
 	public Quaternion RotationTowardsDynamic(Vector3 toDir)
@@ -1002,7 +943,7 @@ public class UniRotateBone
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = transform.position - transform.parent.position;
-		return Quaternion.FromToRotation(((Vector3)(ref val)).normalized, ((Vector3)(ref toDir)).normalized) * transform.rotation;
+		return Quaternion.FromToRotation(val.normalized, toDir.normalized) * transform.rotation;
 	}
 
 	public static float BlendAngle(float angle, float blend)

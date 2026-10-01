@@ -194,12 +194,12 @@ public class MortarEntityOld : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.inventory.canAcceptItem = CanAcceptItem;
+		inventory.canAcceptItem = CanAcceptItem;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Open, b: false);
 		}
-		base.inventory.capacity = 1;
+		inventory.capacity = 1;
 	}
 
 	public bool CanAcceptItem(BasePlayer player, Item item, int slot)
@@ -207,8 +207,8 @@ public class MortarEntityOld : StorageContainer
 		return IsMortarAmmo(item);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void FireGun(RPCMessage rpc)
 	{
 		if (!CanFireGun())
@@ -269,7 +269,7 @@ public class MortarEntityOld : StorageContainer
 		component.drag = DragOverride;
 		component.InitializeVelocity(overrideVel);
 		baseEntity.Spawn();
-		Debug.Log((object)$"Launching mortar with velocity of {Math.Round(((Vector3)(ref overrideVel)).magnitude, 1)}m/s with drag of {component.drag} and gravity of {component.gravityModifier}");
+		Debug.Log((object)$"Launching mortar with velocity of {Math.Round(overrideVel.magnitude, 1)}m/s with drag of {component.drag} and gravity of {component.gravityModifier}");
 	}
 
 	[RPC_Server]
@@ -280,8 +280,8 @@ public class MortarEntityOld : StorageContainer
 		flagsUpdateScope.Set(IsIncreasingAngleFlag, !HasFlag(IsIncreasingAngleFlag));
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void AdjustAngle(RPCMessage rpc)
 	{
 		bool flag = rpc.read.Bool();
@@ -290,8 +290,8 @@ public class MortarEntityOld : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SetAdjustmentMode(RPCMessage rpc)
 	{
 		bool b = rpc.read.Bool();

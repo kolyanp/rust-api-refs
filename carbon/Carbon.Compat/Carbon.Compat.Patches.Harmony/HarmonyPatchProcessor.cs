@@ -40,7 +40,7 @@ public class HarmonyPatchProcessor : BaseHarmonyPatch
 		{
 			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-			MethodDefinition val = type.Methods.FirstOrDefault((MethodDefinition x) => x.CustomAttributes.Any(delegate(CustomAttribute y)
+			MethodDefinition val = type.Methods.FirstOrDefault((MethodDefinition x) => x.CustomAttributes.Any((CustomAttribute y) =>
 			{
 				if (((IMethodDefOrRef)y.Constructor).DeclaringType.Name == "HarmonyTargetMethods")
 				{
@@ -73,7 +73,7 @@ public class HarmonyPatchProcessor : BaseHarmonyPatch
 	public override void Apply(ModuleDefinition asm, ReferenceImporter importer, ref BaseConverter.Context context)
 	{
 		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d4: Expected O, but got Unknown
+		//IL_01d4: Expected Obj, but got Unknown
 		foreach (TypeDefinition allType in asm.GetAllTypes())
 		{
 			bool flag = false;

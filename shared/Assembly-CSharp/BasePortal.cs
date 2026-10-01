@@ -116,7 +116,7 @@ public class BasePortal : BaseCombatEntity
 		{
 			targetID = targetPortal.net.ID;
 		}
-		if ((Object)(object)targetPortal == (Object)null && ((NetworkableId)(ref targetID)).IsValid)
+		if ((Object)(object)targetPortal == (Object)null && targetID.IsValid)
 		{
 			BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(targetID);
 			if ((Object)(object)baseNetworkable != (Object)null)

@@ -95,42 +95,42 @@ public class MusicTheme : ScriptableObject
 	}
 
 	[Header("Basic info")]
-	public float tempo;
+	public float tempo = 80f;
 
-	public int intensityHoldBars;
+	public int intensityHoldBars = 4;
 
 	public int lengthInBars;
 
 	[Header("Playback restrictions")]
-	public bool canPlayInMenus;
+	public bool canPlayInMenus = true;
 
 	[Horizontal(2, -1)]
-	public ValueRange rain;
+	public ValueRange rain = new ValueRange(0f, 1f);
 
 	[Horizontal(2, -1)]
-	public ValueRange wind;
+	public ValueRange wind = new ValueRange(0f, 1f);
 
 	[Horizontal(2, -1)]
-	public ValueRange snow;
+	public ValueRange snow = new ValueRange(0f, 1f);
 
 	[InspectorFlags]
-	public Enum biomes;
+	public Enum biomes = (Enum)(-1);
 
 	[InspectorFlags]
-	public Enum topologies;
+	public Enum topologies = (Enum)(-1);
 
-	public AnimationCurve time;
+	public AnimationCurve time = AnimationCurve.Linear(0f, 0f, 24f, 0f);
 
 	[Header("Clip data")]
-	public List<PositionedClip> clips;
+	public List<PositionedClip> clips = new List<PositionedClip>();
 
-	public List<Layer> layers;
+	public List<Layer> layers = new List<Layer>();
 
-	private Dictionary<int, List<PositionedClip>> activeClips;
+	private Dictionary<int, List<PositionedClip>> activeClips = new Dictionary<int, List<PositionedClip>>();
 
-	private List<AudioClip> firstAudioClips;
+	private List<AudioClip> firstAudioClips = new List<AudioClip>();
 
-	private Dictionary<AudioClip, bool> audioClipDict;
+	private Dictionary<AudioClip, bool> audioClipDict = new Dictionary<AudioClip, bool>();
 
 	public int layerCount => layers.Count;
 
@@ -282,20 +282,5 @@ public class MusicTheme : ScriptableObject
 	{
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		tempo = 80f;
-		intensityHoldBars = 4;
-		canPlayInMenus = true;
-		rain = new ValueRange(0f, 1f);
-		wind = new ValueRange(0f, 1f);
-		snow = new ValueRange(0f, 1f);
-		biomes = (Enum)(-1);
-		topologies = (Enum)(-1);
-		time = AnimationCurve.Linear(0f, 0f, 24f, 0f);
-		clips = new List<PositionedClip>();
-		layers = new List<Layer>();
-		activeClips = new Dictionary<int, List<PositionedClip>>();
-		firstAudioClips = new List<AudioClip>();
-		audioClipDict = new Dictionary<AudioClip, bool>();
-		((ScriptableObject)this)._002Ector();
 	}
 }

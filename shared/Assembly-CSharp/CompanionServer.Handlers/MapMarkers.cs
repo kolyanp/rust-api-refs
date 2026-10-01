@@ -15,11 +15,11 @@ public class MapMarkers : BasePlayerHandler<AppEmpty>
 		if (!ConVar.Server.mapenabled || ConVar.Server.fogofwar)
 		{
 			SendError("no_map");
-			return default(ValueTask);
+			return default;
 		}
 		AppMapMarkers val = Pool.Get<AppMapMarkers>();
 		val.markers = Pool.Get<List<AppMarker>>();
-		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(base.UserId);
+		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(UserId);
 		if (playerTeam != null)
 		{
 			foreach (ulong member in playerTeam.members)
@@ -31,9 +31,9 @@ public class MapMarkers : BasePlayerHandler<AppEmpty>
 				}
 			}
 		}
-		else if ((Object)(object)base.Player != (Object)null)
+		else if ((Object)(object)Player != (Object)null)
 		{
-			val.markers.Add(GetPlayerMarker(base.Player));
+			val.markers.Add(GetPlayerMarker(Player));
 		}
 		foreach (MapMarker serverMapMarker in MapMarker.serverMapMarkers)
 		{
@@ -45,7 +45,7 @@ public class MapMarkers : BasePlayerHandler<AppEmpty>
 		AppResponse val2 = Pool.Get<AppResponse>();
 		val2.mapMarkers = val;
 		Send(val2);
-		return default(ValueTask);
+		return default;
 	}
 
 	private static AppMarker GetPlayerMarker(BasePlayer player)
@@ -58,13 +58,13 @@ public class MapMarkers : BasePlayerHandler<AppEmpty>
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		AppMarker obj = Pool.Get<AppMarker>();
-		Vector2 val = Util.WorldToMap(((Component)player).transform.position);
-		obj.id = player.net.ID;
-		obj.type = (AppMarkerType)1;
-		obj.x = val.x;
-		obj.y = val.y;
-		obj.steamId = player.userID;
-		return obj;
+		AppMarker val = Pool.Get<AppMarker>();
+		Vector2 val2 = Util.WorldToMap(((Component)player).transform.position);
+		val.id = player.net.ID;
+		val.type = (AppMarkerType)1;
+		val.x = val2.x;
+		val.y = val2.y;
+		val.steamId = player.userID;
+		return val;
 	}
 }

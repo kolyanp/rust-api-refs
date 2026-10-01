@@ -15,8 +15,8 @@ public class TrainCarUnloadable : TrainCar
 		Fuel
 	}
 
-	[SerializeField]
 	[Header("Train Car Unloadable")]
+	[SerializeField]
 	private GameObjectRef storagePrefab;
 
 	[SerializeField]
@@ -36,7 +36,7 @@ public class TrainCarUnloadable : TrainCar
 
 	[SerializeField]
 	[Range(0f, 1f)]
-	public float vacuumStretchPercent;
+	public float vacuumStretchPercent = 0.5f;
 
 	[SerializeField]
 	private ParticleSystemContainer unloadingFXContainer;
@@ -46,11 +46,11 @@ public class TrainCarUnloadable : TrainCar
 
 	public WagonType wagonType;
 
-	private int lootTypeIndex;
+	private int lootTypeIndex = -1;
 
-	internal List<EntityRef<LootContainer>> lootContainers;
+	internal List<EntityRef<LootContainer>> lootContainers = new List<EntityRef<LootContainer>>();
 
-	private Vector3 _oreScale;
+	private Vector3 _oreScale = Vector3.one;
 
 	private float animPercent;
 
@@ -111,7 +111,7 @@ public class TrainCarUnloadable : TrainCar
 		base.OnFlagsChanged(old, next);
 		if ((old & Flags.Reserved4) == Flags.Reserved4 != ((next & Flags.Reserved4) == Flags.Reserved4) && (Object)(object)fuelHatches != (Object)null)
 		{
-			fuelHatches.LinedUpStateChanged(base.LinedUpToUnload);
+			fuelHatches.LinedUpStateChanged(LinedUpToUnload);
 		}
 	}
 
@@ -119,16 +119,16 @@ public class TrainCarUnloadable : TrainCar
 	{
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		base.OnChildAdded(child);
-		if (IsDead() || base.IsDestroyed)
+		if (IsDead() || IsDestroyed)
 		{
 			return;
 		}
-		LootContainer lootContainer = default(LootContainer);
-		if (((Component)child).TryGetComponent<LootContainer>(ref lootContainer) && !(lootContainer is LockedByEntCrate) && base.isServer && Application.isLoadingSave)
+		LootContainer lootContainer = default;
+		if (((Component)child).TryGetComponent<LootContainer>(ref lootContainer) && !(lootContainer is LockedByEntCrate) && isServer && Application.isLoadingSave)
 		{
 			lootContainers.Add(new EntityRef<LootContainer>(lootContainer.net.ID));
 		}
-		if (base.isServer && child.prefabID == storagePrefab.GetEntity().prefabID)
+		if (isServer && child.prefabID == storagePrefab.GetEntity().prefabID)
 		{
 			StorageContainer storageContainer = (StorageContainer)child;
 			storageInstance.Set(storageContainer);
@@ -145,7 +145,7 @@ public class TrainCarUnloadable : TrainCar
 		if (info.msg.baseTrain != null)
 		{
 			lootTypeIndex = info.msg.baseTrain.lootTypeIndex;
-			if (base.isServer)
+			if (isServer)
 			{
 				SetVisualOreLevel(info.msg.baseTrain.lootPercent);
 			}
@@ -190,12 +190,12 @@ public class TrainCarUnloadable : TrainCar
 		{
 			_oreScale.y = Mathf.Clamp01(percent);
 			orePlaneColliderDetailed.localScale = _oreScale;
-			if (base.isClient)
+			if (isClient)
 			{
 				orePlaneVisuals.localScale = _oreScale;
 				((Component)orePlaneVisuals).gameObject.SetActive(percent > 0f);
 			}
-			if (base.isServer)
+			if (isServer)
 			{
 				orePlaneColliderWorld.localScale = _oreScale;
 			}
@@ -206,7 +206,7 @@ public class TrainCarUnloadable : TrainCar
 	{
 		prevAnimTime = Time.time;
 		animPercent = startPercent;
-		if (base.isClient && (Object)(object)unloadingFXContainer != (Object)null)
+		if (isClient && (Object)(object)unloadingFXContainer != (Object)null)
 		{
 			unloadingFXContainer.Play();
 		}
@@ -226,7 +226,7 @@ public class TrainCarUnloadable : TrainCar
 
 	private void EndUnloadAnim()
 	{
-		if (base.isClient && (Object)(object)unloadingFXContainer != (Object)null)
+		if (isClient && (Object)(object)unloadingFXContainer != (Object)null)
 		{
 			unloadingFXContainer.Stop();
 		}
@@ -235,7 +235,7 @@ public class TrainCarUnloadable : TrainCar
 
 	public float GetOrePercent()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return TrainWagonLootData.GetOrePercent(lootTypeIndex, GetStorageContainer());
 		}
@@ -255,7 +255,7 @@ public class TrainCarUnloadable : TrainCar
 		{
 			foreach (EntityRef<LootContainer> lootContainer2 in lootContainers)
 			{
-				LootContainer lootContainer = lootContainer2.Get(base.isServer);
+				LootContainer lootContainer = lootContainer2.Get(isServer);
 				if ((Object)(object)lootContainer != (Object)null && lootContainer.inventory != null && !lootContainer.inventory.IsLocked())
 				{
 					lootContainer.DropItems();
@@ -274,7 +274,7 @@ public class TrainCarUnloadable : TrainCar
 		foreach (BoxCollider val in array)
 		{
 			Bounds val2 = ((Collider)unloaderBounds).bounds;
-			if (((Bounds)(ref val2)).Intersects(((Collider)val).bounds))
+			if (val2.Intersects(((Collider)val).bounds))
 			{
 				return true;
 			}
@@ -318,7 +318,7 @@ public class TrainCarUnloadable : TrainCar
 			lootTypeIndex = -1;
 			foreach (EntityRef<LootContainer> lootContainer2 in lootContainers)
 			{
-				LootContainer lootContainer = lootContainer2.Get(base.isServer);
+				LootContainer lootContainer = lootContainer2.Get(isServer);
 				if ((Object)(object)lootContainer != (Object)null && lootContainer.inventory != null)
 				{
 					lootContainer.inventory.SetLocked(isLocked: false);
@@ -332,7 +332,7 @@ public class TrainCarUnloadable : TrainCar
 
 	public StorageContainer GetStorageContainer()
 	{
-		StorageContainer storageContainer = storageInstance.Get(base.isServer);
+		StorageContainer storageContainer = storageInstance.Get(isServer);
 		if (storageContainer.IsValid())
 		{
 			return storageContainer;
@@ -433,10 +433,5 @@ public class TrainCarUnloadable : TrainCar
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		vacuumStretchPercent = 0.5f;
-		lootTypeIndex = -1;
-		lootContainers = new List<EntityRef<LootContainer>>();
-		_oreScale = Vector3.one;
-		base._002Ector();
 	}
 }

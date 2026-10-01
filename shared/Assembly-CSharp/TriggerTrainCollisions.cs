@@ -76,9 +76,9 @@ public class TriggerTrainCollisions : TriggerBase
 			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(obj);
 			if ((Object)(object)baseEntity != (Object)null)
 			{
-				Vector3 val = ((Component)baseEntity).transform.position + ((Component)baseEntity).transform.rotation * Vector3.Scale(obj.transform.lossyScale, ((Bounds)(ref baseEntity.bounds)).center);
+				Vector3 val = ((Component)baseEntity).transform.position + ((Component)baseEntity).transform.rotation * Vector3.Scale(obj.transform.lossyScale, baseEntity.bounds.center);
 				Bounds bounds = triggerCollider.bounds;
-				Vector3 center = ((Bounds)(ref bounds)).center;
+				Vector3 center = bounds.center;
 				Vector3 val2 = val - center;
 				bool flag = Vector3.Dot(((Component)owner).transform.forward, val2) > 0f;
 				if ((location == Location.Front && !flag) || ((location == Location.Rear) & flag))

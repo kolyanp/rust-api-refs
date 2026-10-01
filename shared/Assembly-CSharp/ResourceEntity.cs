@@ -34,7 +34,7 @@ public class ResourceEntity : BaseEntity
 	public override void InitShared()
 	{
 		base.InitShared();
-		if (base.isServer && !skipDecorComponents)
+		if (isServer && !skipDecorComponents)
 		{
 			DecorComponent[] components = PrefabAttribute.server.FindAll<DecorComponent>(prefabID);
 			((Component)this).transform.ApplyDecorComponentsScaleOnly(components);
@@ -77,7 +77,7 @@ public class ResourceEntity : BaseEntity
 
 	public override void OnAttacked(HitInfo info)
 	{
-		if (!base.isServer || isKilled || Interface.CallHook("OnEntityTakeDamage", this, info) != null)
+		if (!isServer || isKilled || Interface.CallHook("OnEntityTakeDamage", this, info) != null)
 		{
 			return;
 		}

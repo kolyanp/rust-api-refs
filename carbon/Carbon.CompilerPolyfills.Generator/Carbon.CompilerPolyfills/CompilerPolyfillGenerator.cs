@@ -16,15 +16,15 @@ public sealed class CompilerPolyfillGenerator : ISourceGenerator
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		string value = default(string);
-		bool result = default(bool);
-		bool forceDesignTimePolyfills = (((GeneratorExecutionContext)(ref context)).AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.DesignTimeBuild", ref value) && bool.TryParse(value, out result)) & result;
-		string a = default(string);
-		string accessibility = ((((GeneratorExecutionContext)(ref context)).AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.CarbonCompilerPolyfillsAccessibility", ref a) && string.Equals(a, "internal", StringComparison.OrdinalIgnoreCase)) ? "internal" : "public");
-		string text = CompilerPolyfillCatalog.BuildSource((string metadataName) => IsAvailable(((GeneratorExecutionContext)(ref context)).Compilation.GetTypeByMetadataName(metadataName), accessibility), forceDesignTimePolyfills, accessibility);
+		string value = default;
+		bool result = default;
+		bool forceDesignTimePolyfills = (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.DesignTimeBuild", ref value) && bool.TryParse(value, out result)) & result;
+		string a = default;
+		string accessibility = ((context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.CarbonCompilerPolyfillsAccessibility", ref a) && string.Equals(a, "internal", StringComparison.OrdinalIgnoreCase)) ? "internal" : "public");
+		string text = CompilerPolyfillCatalog.BuildSource((string metadataName) => IsAvailable(context.Compilation.GetTypeByMetadataName(metadataName), accessibility), forceDesignTimePolyfills, accessibility);
 		if (text.Length != 0)
 		{
-			((GeneratorExecutionContext)(ref context)).AddSource("Carbon.CompilerPolyfills.g.cs", SourceText.From(text, Encoding.UTF8, (SourceHashAlgorithm)1));
+			context.AddSource("Carbon.CompilerPolyfills.g.cs", SourceText.From(text, Encoding.UTF8, (SourceHashAlgorithm)1));
 		}
 	}
 

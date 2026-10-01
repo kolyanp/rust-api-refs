@@ -13,7 +13,7 @@ public class BaseLadder : BaseCombatEntity
 	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);
-		if (base.isServer && Object.op_Implicit((Object)(object)triggerParent))
+		if (isServer && Object.op_Implicit((Object)(object)triggerParent))
 		{
 			BaseVehicle baseVehicle = parent as BaseVehicle;
 			bool flag = (Object)(object)baseVehicle != (Object)null;

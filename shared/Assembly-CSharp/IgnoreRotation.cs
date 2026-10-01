@@ -46,25 +46,25 @@ public class IgnoreRotation : MonoBehaviour
 			{
 				Transform transform = ((Component)this).transform;
 				localRotation = parent.localRotation;
-				float y = ((Quaternion)(ref localRotation)).eulerAngles.y;
+				float y = localRotation.eulerAngles.y;
 				localRotation = parent.localRotation;
-				transform.localRotation = Quaternion.Euler(0f, y, ((Quaternion)(ref localRotation)).eulerAngles.z);
+				transform.localRotation = Quaternion.Euler(0f, y, localRotation.eulerAngles.z);
 			}
 			else if (ignoreType == RotationType.Y)
 			{
 				Transform transform2 = ((Component)this).transform;
 				localRotation = parent.localRotation;
-				float x = ((Quaternion)(ref localRotation)).eulerAngles.x;
+				float x = localRotation.eulerAngles.x;
 				localRotation = parent.localRotation;
-				transform2.localRotation = Quaternion.Euler(x, 0f, ((Quaternion)(ref localRotation)).eulerAngles.z);
+				transform2.localRotation = Quaternion.Euler(x, 0f, localRotation.eulerAngles.z);
 			}
 			else if (ignoreType == RotationType.Z)
 			{
 				Transform transform3 = ((Component)this).transform;
 				localRotation = parent.localRotation;
-				float x2 = ((Quaternion)(ref localRotation)).eulerAngles.x;
+				float x2 = localRotation.eulerAngles.x;
 				localRotation = parent.localRotation;
-				transform3.localRotation = Quaternion.Euler(x2, ((Quaternion)(ref localRotation)).eulerAngles.y, 0f);
+				transform3.localRotation = Quaternion.Euler(x2, localRotation.eulerAngles.y, 0f);
 			}
 		}
 	}

@@ -6,9 +6,6 @@ namespace Oxide.Game.Rust.Cui;
 
 public class CuiDraggableComponent : ICuiComponent, ICuiEnableable
 {
-	[CompilerGenerated]
-	private DraggablePositionSendType _003CPositionRPC_003Ek__BackingField;
-
 	public string Type => "Draggable";
 
 	[JsonProperty("limitToParent")]
@@ -49,14 +46,14 @@ public class CuiDraggableComponent : ICuiComponent, ICuiEnableable
 		get
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return _003CPositionRPC_003Ek__BackingField;
+			return field;
 		}
 		[CompilerGenerated]
 		set
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			_003CPositionRPC_003Ek__BackingField = value;
+			field = value;
 		}
 	}
 

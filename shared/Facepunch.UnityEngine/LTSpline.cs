@@ -62,7 +62,7 @@ public class LTSpline
 			LeanTween.logError("LeanTween - When passing values for a spline path, you must pass four or more values!");
 			return;
 		}
-		this.pts = (Vector3[])(object)new Vector3[pts.Length];
+		this.pts = new Vector3[pts.Length];
 		Array.Copy(pts, this.pts, pts.Length);
 		numSections = pts.Length - 3;
 		float num = float.PositiveInfinity;
@@ -88,7 +88,7 @@ public class LTSpline
 		{
 			num5 = 2;
 		}
-		ptsAdj = (Vector3[])(object)new Vector3[num5];
+		ptsAdj = new Vector3[num5];
 		val = interp(0f);
 		int num6 = 1;
 		ptsAdj[0] = val;
@@ -376,7 +376,7 @@ public class LTSpline
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		if (arr.Length >= 4)
 		{
-			Vector3[] array = (Vector3[])(object)new Vector3[arr.Length];
+			Vector3[] array = new Vector3[arr.Length];
 			for (int i = 0; i < arr.Length; i++)
 			{
 				array[i] = arr[i].position;

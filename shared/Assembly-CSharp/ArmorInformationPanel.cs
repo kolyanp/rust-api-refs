@@ -33,6 +33,8 @@ public class ArmorInformationPanel : ItemInformationPanel
 
 	public ItemTextValue eggVision;
 
+	public ItemTextValue candyVision;
+
 	public ItemIcon[] insertIcons;
 
 	public GridLayoutGroup informationGridLayout;

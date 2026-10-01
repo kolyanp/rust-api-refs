@@ -56,7 +56,7 @@ public class ServerBrowserTag : MonoBehaviour
 			foreach (StringView tag in tags)
 			{
 				StringView current = tag;
-				if (((StringView)(ref current)).Contains(StringView.op_Implicit(CompactTag)))
+				if (current.Contains(StringView.op_Implicit(CompactTag)))
 				{
 					return true;
 				}

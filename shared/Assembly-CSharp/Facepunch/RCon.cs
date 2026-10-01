@@ -473,7 +473,7 @@ public class RCon
 			val.AddColumns(new string[4] { "address", "prefix", "netmask", "cidr" });
 			foreach (Listener.IPNetwork item in bannedNetworks)
 			{
-				string[] obj = new string[4]
+				string[] array = new string[4]
 				{
 					item.NetworkAddress().ToString(),
 					null,
@@ -481,10 +481,10 @@ public class RCon
 					null
 				};
 				byte prefixLength = item.PrefixLength;
-				obj[1] = prefixLength.ToString();
-				obj[2] = item.Netmask().ToString();
-				obj[3] = item.ToString();
-				val.AddRow(obj);
+				array[1] = prefixLength.ToString();
+				array[2] = item.Netmask().ToString();
+				array[3] = item.ToString();
+				val.AddRow(array);
 			}
 			arg.ReplyWith(flag ? val.ToJson(true) : ((object)val).ToString());
 		}
@@ -609,7 +609,7 @@ public class RCon
 			listenerNew.Port = Port;
 			listenerNew.SslCertificate = CommandLine.GetSwitch("-rcon.ssl", CommandLine.GetSwitch("+rcon.ssl", (string)null));
 			listenerNew.SslCertificatePassword = CommandLine.GetSwitch("-rcon.sslpwd", CommandLine.GetSwitch("+rcon.sslpwd", (string)null));
-			listenerNew.OnMessage = delegate(IPAddress ip, int id, string msg)
+			listenerNew.OnMessage = (IPAddress ip, int id, string msg) =>
 			{
 				Command item = JsonConvert.DeserializeObject<Command>(msg);
 				item.Ip = ip;

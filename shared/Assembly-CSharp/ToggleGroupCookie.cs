@@ -74,7 +74,7 @@ public class ToggleGroupCookie : MonoBehaviour
 	private static Transform FindChild(Transform parent, string name)
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Expected O, but got Unknown
+		//IL_0015: Expected Obj, but got Unknown
 		foreach (Transform item in parent)
 		{
 			Transform val = item;

@@ -86,10 +86,10 @@ public class CollateTrainTracks : ProceduralComponent
 							if (NodesConnect(ourPos, endpoint.position, ourTangent, theirTangent))
 							{
 								TrainTrackSpline trainTrackSpline2 = ((Component)ourSpline).gameObject.AddComponent<TrainTrackSpline>();
-								Vector3[] array4 = (Vector3[])(object)new Vector3[ourSpline.points.Length - nodeIndex];
-								Vector3[] array5 = (Vector3[])(object)new Vector3[ourSpline.points.Length - nodeIndex];
-								Vector3[] array6 = (Vector3[])(object)new Vector3[nodeIndex + 1];
-								Vector3[] array7 = (Vector3[])(object)new Vector3[nodeIndex + 1];
+								Vector3[] array4 = new Vector3[ourSpline.points.Length - nodeIndex];
+								Vector3[] array5 = new Vector3[ourSpline.points.Length - nodeIndex];
+								Vector3[] array6 = new Vector3[nodeIndex + 1];
+								Vector3[] array7 = new Vector3[nodeIndex + 1];
 								for (int num2 = ourSpline.points.Length - 1; num2 >= 0; num2--)
 								{
 									if (num2 >= nodeIndex)

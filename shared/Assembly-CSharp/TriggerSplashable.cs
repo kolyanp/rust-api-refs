@@ -41,7 +41,7 @@ public class TriggerSplashable : TriggerBase
 		if (visibleState.ContainsKey(ent))
 		{
 			Vector3 val = visibleState[ent].Item2 - position;
-			return ((Vector3)(ref val)).sqrMagnitude > 1f;
+			return val.sqrMagnitude > 1f;
 		}
 		return true;
 	}

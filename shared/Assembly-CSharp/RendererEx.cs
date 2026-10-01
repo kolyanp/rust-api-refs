@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class RendererEx
 {
-	private static readonly Memoized<Material[], int> ArrayCache = new Memoized<Material[], int>((Func<int, Material[]>)((int n) => (Material[])(object)new Material[n]));
+	private static readonly Memoized<Material[], int> ArrayCache = new Memoized<Material[], int>((Func<int, Material[]>)((int n) => new Material[n]));
 
 	public static void SetSharedMaterials(this Renderer renderer, List<Material> materials)
 	{
@@ -26,7 +26,7 @@ public static class RendererEx
 	public static MaterialPropertyBlock[] GetMaterialPropertyBlocksUnsafe(this Renderer renderer, MaterialPropertyBlock[] per_material_blocks)
 	{
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Expected O, but got Unknown
+		//IL_0045: Expected Obj, but got Unknown
 		if (!renderer.HasPropertyBlock())
 		{
 			return null;
@@ -57,7 +57,7 @@ public static class RendererEx
 	public static MaterialPropertyBlock GetRendererPropertyBlock(this Renderer renderer)
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000e: Expected O, but got Unknown
+		//IL_000e: Expected Obj, but got Unknown
 		if (renderer.HasPropertyBlock())
 		{
 			MaterialPropertyBlock val = new MaterialPropertyBlock();
@@ -70,10 +70,10 @@ public static class RendererEx
 	public static MaterialPropertyBlock[] GetMaterialPropertyBlocks(this Renderer renderer)
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Expected O, but got Unknown
+		//IL_0033: Expected Obj, but got Unknown
 		if (renderer.HasPropertyBlock() && renderer.sharedMaterials != null && renderer.sharedMaterials.Length != 0)
 		{
-			MaterialPropertyBlock[] array = (MaterialPropertyBlock[])(object)new MaterialPropertyBlock[renderer.sharedMaterials.Length];
+			MaterialPropertyBlock[] array = new MaterialPropertyBlock[renderer.sharedMaterials.Length];
 			for (int i = 0; i < renderer.sharedMaterials.Length; i++)
 			{
 				array[i] = new MaterialPropertyBlock();

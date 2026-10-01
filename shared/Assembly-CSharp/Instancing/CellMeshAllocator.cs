@@ -198,7 +198,7 @@ public class CellMeshAllocator
 		value2.Add(data.VirtualMeshId);
 		CullData[num] = data;
 		PositionData[num] = localToWorld;
-		OverrideArray[num] = default(MeshOverrideData);
+		OverrideArray[num] = default;
 		if (Render.computebuffer_setdata_immediate)
 		{
 			CullingDataBuffer.SetData(CullData, num, num, 1);
@@ -232,7 +232,7 @@ public class CellMeshAllocator
 		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
 		if (!meshLookup.TryGetValue(virtualMeshId, out var value))
 		{
-			removedData = default(InstancedCullData);
+			removedData = default;
 			return false;
 		}
 		removedData = CullData[value];
@@ -261,7 +261,7 @@ public class CellMeshAllocator
 				dirty = true;
 			}
 		}
-		CullData[num] = default(InstancedCullData);
+		CullData[num] = default;
 		if (Render.computebuffer_setdata_immediate)
 		{
 			CullingDataBuffer.SetData(CullData, num, num, 1);

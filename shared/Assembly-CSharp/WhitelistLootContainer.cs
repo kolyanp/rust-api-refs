@@ -5,7 +5,7 @@ using ProtoBuf;
 
 public class WhitelistLootContainer : LootContainer
 {
-	public static readonly Phrase CantLootToast;
+	public static readonly Phrase CantLootToast = new Phrase("whitelistcontainer.noloot", "You are not authorized to access this box");
 
 	[NonSerialized]
 	public List<ulong> whitelist = new List<ulong>();
@@ -72,7 +72,6 @@ public class WhitelistLootContainer : LootContainer
 	static WhitelistLootContainer()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
-		CantLootToast = new Phrase("whitelistcontainer.noloot", "You are not authorized to access this box");
+		//IL_0014: Expected Obj, but got Unknown
 	}
 }

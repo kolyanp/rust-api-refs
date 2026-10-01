@@ -118,7 +118,7 @@ public class Creative : ConsoleSystem
 		if (!((Object)(object)basePlayer == (Object)null) && basePlayer.IsInCreativeMode)
 		{
 			bool alwaysOn = arg.GetBool(0);
-			RaycastHit hit = default(RaycastHit);
+			RaycastHit hit = default;
 			if (Physics.Raycast(basePlayer.eyes.position, basePlayer.eyes.HeadForward(), ref hit, 5f, 1218652417, (QueryTriggerInteraction)1) && RaycastHitEx.GetEntity(hit) is IAlwaysOn alwaysOn2)
 			{
 				alwaysOn2.SetAlwaysOn(alwaysOn);

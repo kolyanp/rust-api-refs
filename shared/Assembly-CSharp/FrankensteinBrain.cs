@@ -110,10 +110,10 @@ public class FrankensteinBrain : PetBrain
 	public override void InitializeAI()
 	{
 		base.InitializeAI();
-		base.ThinkMode = AIThinkMode.Interval;
+		ThinkMode = AIThinkMode.Interval;
 		thinkRate = 0.25f;
-		base.PathFinder = new HumanPathFinder();
-		((HumanPathFinder)base.PathFinder).Init(GetBaseEntity());
+		PathFinder = new HumanPathFinder();
+		((HumanPathFinder)PathFinder).Init(GetBaseEntity());
 	}
 
 	public FrankensteinPet GetEntity()

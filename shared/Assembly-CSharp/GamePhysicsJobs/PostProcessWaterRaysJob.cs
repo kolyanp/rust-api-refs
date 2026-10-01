@@ -52,17 +52,17 @@ internal struct PostProcessWaterRaysJob : IJob
 			{
 				Vector3 val2 = positionsSub[num2];
 				Ray val3 = rays[num2];
-				val4 = default(RaycastHit);
-				((RaycastHit)(ref val4)).point = val2;
-				((RaycastHit)(ref val4)).normal = normalsSub[num2];
-				Vector3 val5 = val2 - ((Ray)(ref val3)).origin;
-				((RaycastHit)(ref val4)).distance = ((Vector3)(ref val5)).magnitude;
+				val4 = default;
+				val4.point = val2;
+				val4.normal = normalsSub[num2];
+				Vector3 val5 = val2 - val3.origin;
+				val4.distance = val5.magnitude;
 				RaycastHit val6 = val4;
 				hits[x++] = val6;
 			}
 			if (x < y)
 			{
-				val4 = (hits[x] = default(RaycastHit));
+				val4 = (hits[x] = default);
 			}
 		}
 	}

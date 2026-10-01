@@ -25,10 +25,10 @@ public static class BoundsCheckEx
 		{
 			return true;
 		}
-		OBB obb = new OBB(pos + rot * Vector3.Scale(((Bounds)(ref entity.bounds)).center, scale), Vector3.Scale(((Bounds)(ref entity.bounds)).extents, scale), rot);
+		OBB obb = new OBB(pos + rot * Vector3.Scale(entity.bounds.center, scale), Vector3.Scale(entity.bounds.extents, scale), rot);
 		List<Collider> list = Pool.Get<List<Collider>>();
 		GamePhysics.OverlapOBB(obb, list, 0x40000 | LayerMask.op_Implicit(rejectOnLayer), (QueryTriggerInteraction)2);
-		SpawnableBoundsBlocker spawnableBoundsBlocker = default(SpawnableBoundsBlocker);
+		SpawnableBoundsBlocker spawnableBoundsBlocker = default;
 		foreach (Collider item in list)
 		{
 			if (!item.isTrigger && (((Component)item).gameObject.layer & LayerMask.op_Implicit(rejectOnLayer)) != 0)

@@ -30,10 +30,10 @@ public static class ClanLogExtensions
 			val.arg4 = entry.Arg4;
 			list.Add(val);
 		}
-		ClanLog obj = Pool.Get<ClanLog>();
-		obj.clanId = clanLogs.ClanId;
-		obj.logEntries = list;
-		return obj;
+		ClanLog val2 = Pool.Get<ClanLog>();
+		val2.clanId = clanLogs.ClanId;
+		val2.logEntries = list;
+		return val2;
 	}
 
 	public static ClanScoreEvents ToProto(this ClanScoreEvents clanScoreEvents)
@@ -65,9 +65,9 @@ public static class ClanLogExtensions
 			val.arg2 = scoreEvent.Arg2;
 			list.Add(val);
 		}
-		ClanScoreEvents obj = Pool.Get<ClanScoreEvents>();
-		obj.clanId = clanScoreEvents.ClanId;
-		obj.scoreEvents = list;
-		return obj;
+		ClanScoreEvents val2 = Pool.Get<ClanScoreEvents>();
+		val2.clanId = clanScoreEvents.ClanId;
+		val2.scoreEvents = list;
+		return val2;
 	}
 }

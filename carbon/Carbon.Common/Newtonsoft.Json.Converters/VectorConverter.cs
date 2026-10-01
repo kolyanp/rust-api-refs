@@ -135,7 +135,7 @@ public class VectorConverter : JsonConverter
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Invalid comparison between Unknown and I4
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		Vector2 result = default(Vector2);
+		Vector2 result = default;
 		if ((int)reader.TokenType != 11)
 		{
 			JObject val = JObject.Load(reader);
@@ -151,7 +151,7 @@ public class VectorConverter : JsonConverter
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Invalid comparison between Unknown and I4
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 result = default(Vector3);
+		Vector3 result = default;
 		if ((int)reader.TokenType != 11)
 		{
 			JObject val = JObject.Load(reader);
@@ -168,7 +168,7 @@ public class VectorConverter : JsonConverter
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Invalid comparison between Unknown and I4
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		Vector4 result = default(Vector4);
+		Vector4 result = default;
 		if ((int)reader.TokenType != 11)
 		{
 			JObject val = JObject.Load(reader);

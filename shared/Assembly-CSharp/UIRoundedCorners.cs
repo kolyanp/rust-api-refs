@@ -20,8 +20,8 @@ public class UIRoundedCorners : BaseMeshEffect
 	[SerializeField]
 	private float bottomLeft = 16f;
 
-	[SerializeField]
 	[Range(1f, 32f)]
+	[SerializeField]
 	private int segmentsPerCorner = 8;
 
 	private static readonly List<UIVertex> stream = new List<UIVertex>();
@@ -93,7 +93,7 @@ public class UIRoundedCorners : BaseMeshEffect
 		points.Clear();
 		RoundedRect.AppendPerimeter(points, rect, topLeft, topRight, bottomRight, bottomLeft, segmentsPerCorner);
 		vh.Clear();
-		vh.AddVert(MakeVert(((Rect)(ref rect)).center, color, rect, val, val2));
+		vh.AddVert(MakeVert(rect.center, color, rect, val, val2));
 		foreach (Vector2 point in points)
 		{
 			vh.AddVert(MakeVert(point, color, rect, val, val2));
@@ -127,8 +127,8 @@ public class UIRoundedCorners : BaseMeshEffect
 		UIVertex simpleVert = UIVertex.simpleVert;
 		simpleVert.position = Vector2.op_Implicit(pos);
 		simpleVert.color = color;
-		float num = Mathf.InverseLerp(((Rect)(ref rect)).xMin, ((Rect)(ref rect)).xMax, pos.x);
-		float num2 = Mathf.InverseLerp(((Rect)(ref rect)).yMin, ((Rect)(ref rect)).yMax, pos.y);
+		float num = Mathf.InverseLerp(rect.xMin, rect.xMax, pos.x);
+		float num2 = Mathf.InverseLerp(rect.yMin, rect.yMax, pos.y);
 		simpleVert.uv0 = Vector4.op_Implicit(new Vector2(Mathf.Lerp(uvMin.x, uvMax.x, num), Mathf.Lerp(uvMin.y, uvMax.y, num2)));
 		return simpleVert;
 	}

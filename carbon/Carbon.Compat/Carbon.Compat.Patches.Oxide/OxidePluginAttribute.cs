@@ -15,15 +15,15 @@ public class OxidePluginAttribute : BaseOxidePatch
 	public override void Apply(ModuleDefinition assembly, ReferenceImporter importer, ref BaseConverter.Context context)
 	{
 		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0148: Expected O, but got Unknown
+		//IL_0148: Expected Obj, but got Unknown
 		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017e: Expected O, but got Unknown
+		//IL_017e: Expected Obj, but got Unknown
 		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Expected O, but got Unknown
+		//IL_0192: Expected Obj, but got Unknown
 		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b3: Expected O, but got Unknown
+		//IL_01b3: Expected Obj, but got Unknown
 		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bd: Expected O, but got Unknown
+		//IL_01bd: Expected Obj, but got Unknown
 		string text = context.Author ?? "CCL";
 		foreach (TypeDefinition allType in assembly.GetAllTypes())
 		{
@@ -39,13 +39,13 @@ public class OxidePluginAttribute : BaseOxidePatch
 				if (val == null)
 				{
 					IList<CustomAttribute> customAttributes = allType.CustomAttributes;
-					CustomAttribute val2 = new CustomAttribute((ICustomAttributeType)(object)TypeDescriptorExtensions.CreateMemberReference((IMemberRefParent)(object)importer.ImportType(typeof(InfoAttribute)), ".ctor", (MemberSignature)(object)MethodSignature.CreateInstance((TypeSignature)(object)assembly.CorLibTypeFactory.Void, (TypeSignature[])(object)new TypeSignature[3]
+					CustomAttribute val2 = new CustomAttribute((ICustomAttributeType)(object)TypeDescriptorExtensions.CreateMemberReference((IMemberRefParent)(object)importer.ImportType(typeof(InfoAttribute)), ".ctor", (MemberSignature)(object)MethodSignature.CreateInstance((TypeSignature)(object)assembly.CorLibTypeFactory.Void, new TypeSignature[3]
 					{
 						(TypeSignature)assembly.CorLibTypeFactory.String,
 						(TypeSignature)assembly.CorLibTypeFactory.String,
 						(TypeSignature)assembly.CorLibTypeFactory.Double
 					})).ImportWith(importer));
-					val2.Signature = new CustomAttributeSignature((CustomAttributeArgument[])(object)new CustomAttributeArgument[3]
+					val2.Signature = new CustomAttributeSignature(new CustomAttributeArgument[3]
 					{
 						new CustomAttributeArgument((TypeSignature)(object)assembly.CorLibTypeFactory.String, (object)$"{((AssemblyDescriptor)assembly.Assembly).Name}-{allType.Name}"),
 						new CustomAttributeArgument((TypeSignature)(object)assembly.CorLibTypeFactory.String, (object)text),

@@ -54,7 +54,7 @@ public static class UnityProfiler
 		}
 		List<ProfilerRecorderHandle> list = new List<ProfilerRecorderHandle>();
 		ProfilerRecorderHandle.GetAvailable(list);
-		foreach (ProfilerRecorderDescription item2 in list.Select(delegate(ProfilerRecorderHandle x)
+		foreach (ProfilerRecorderDescription item2 in list.Select((ProfilerRecorderHandle x) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
@@ -62,12 +62,12 @@ public static class UnityProfiler
 		}).ToList())
 		{
 			ProfilerRecorderDescription current = item2;
-			if ((int)((ProfilerRecorderDescription)(ref current)).UnitType == 1 && ProfilerCategory.op_Implicit(((ProfilerRecorderDescription)(ref current)).Category) == ProfilerCategory.op_Implicit(ProfilerCategory.Scripts))
+			if ((int)current.UnitType == 1 && ProfilerCategory.op_Implicit(current.Category) == ProfilerCategory.op_Implicit(ProfilerCategory.Scripts))
 			{
-				ProfilerRecorder recorder = ProfilerRecorder.StartNew(((ProfilerRecorderDescription)(ref current)).Category, ((ProfilerRecorderDescription)(ref current)).Name, 2, (ProfilerRecorderOptions)24);
+				ProfilerRecorder recorder = ProfilerRecorder.StartNew(current.Category, current.Name, 2, (ProfilerRecorderOptions)24);
 				RecorderInfo item = new RecorderInfo
 				{
-					MethodName = ((ProfilerRecorderDescription)(ref current)).Name,
+					MethodName = current.Name,
 					Recorder = recorder
 				};
 				ActiveRecorders.Add(item);
@@ -82,7 +82,7 @@ public static class UnityProfiler
 		foreach (RecorderInfo activeRecorder in ActiveRecorders)
 		{
 			ProfilerRecorder recorder = activeRecorder.Recorder;
-			((ProfilerRecorder)(ref recorder)).Dispose();
+			recorder.Dispose();
 		}
 		ActiveRecorders.Clear();
 	}
@@ -102,12 +102,12 @@ public static class UnityProfiler
 			foreach (RecorderInfo activeRecorder in ActiveRecorders)
 			{
 				ProfilerRecorder recorder = activeRecorder.Recorder;
-				if (((ProfilerRecorder)(ref recorder)).LastValue != 0L)
+				if (recorder.LastValue != 0L)
 				{
 					EventRecord eventRecord = EventRecord.CSV();
 					EventRecord eventRecord2 = eventRecord.AddField("", frameIndex).AddField("", timestamp).AddField("", activeRecorder.MethodName);
 					recorder = activeRecorder.Recorder;
-					eventRecord2.AddField("", ((ProfilerRecorder)(ref recorder)).LastValue).AddField("", Server.server_id);
+					eventRecord2.AddField("", recorder.LastValue).AddField("", Server.server_id);
 					table.Append(eventRecord);
 				}
 			}

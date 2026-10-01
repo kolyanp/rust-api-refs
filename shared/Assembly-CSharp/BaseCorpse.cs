@@ -58,7 +58,7 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 		get
 		{
 			int num = 0;
-			ResourceDispenser resourceDispenser = default(ResourceDispenser);
+			ResourceDispenser resourceDispenser = default;
 			if (((Component)this).TryGetComponent<ResourceDispenser>(ref resourceDispenser))
 			{
 				num += resourceDispenser.containedItems.Count;
@@ -103,6 +103,11 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 		}
 	}
 
+	public virtual bool FillHeadData(HeadEntity head)
+	{
+		return false;
+	}
+
 	public virtual bool CanRemove()
 	{
 		return true;
@@ -123,7 +128,7 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			SingletonComponent<NpcFoodManager>.Instance.Remove(this);
 		}
@@ -205,9 +210,9 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 		{
 			return ((Component)this).GetComponent<Rigidbody>();
 		}
-		if (base.isServer)
+		if (isServer)
 		{
-			GameObject val = base.gameManager.FindPrefab(prefabRagdoll.resourcePath);
+			GameObject val = gameManager.FindPrefab(prefabRagdoll.resourcePath);
 			if ((Object)(object)val == (Object)null)
 			{
 				return null;
@@ -230,37 +235,37 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 					Debug.LogError((object)"Ragdoll has unsupported primary collider (make it supported) ", (Object)(object)component);
 					return null;
 				}
-				BoxCollider obj = ((Component)this).gameObject.AddComponent<BoxCollider>();
-				obj.size = component2.size * 2f;
-				obj.center = component2.center;
-				((Collider)obj).sharedMaterial = ((Collider)component2).sharedMaterial;
+				BoxCollider val2 = ((Component)this).gameObject.AddComponent<BoxCollider>();
+				val2.size = component2.size * 2f;
+				val2.center = component2.center;
+				((Collider)val2).sharedMaterial = ((Collider)component2).sharedMaterial;
 			}
 		}
-		Rigidbody val2 = ((Component)this).GetComponent<Rigidbody>();
-		if ((Object)(object)val2 == (Object)null)
+		Rigidbody val3 = ((Component)this).GetComponent<Rigidbody>();
+		if ((Object)(object)val3 == (Object)null)
 		{
-			val2 = ((Component)this).gameObject.AddComponent<Rigidbody>();
-			val2.mass = 10f;
-			val2.linearDamping = 0.5f;
-			val2.angularDamping = 0.5f;
+			val3 = ((Component)this).gameObject.AddComponent<Rigidbody>();
+			val3.mass = 10f;
+			val3.linearDamping = 0.5f;
+			val3.angularDamping = 0.5f;
 		}
-		val2.useGravity = true;
-		val2.collisionDetectionMode = (CollisionDetectionMode)0;
-		val2.sleepThreshold = Mathf.Max(0.05f, Physics.sleepThreshold);
-		if (base.isServer)
+		val3.useGravity = true;
+		val3.collisionDetectionMode = (CollisionDetectionMode)0;
+		val3.sleepThreshold = Mathf.Max(0.05f, Physics.sleepThreshold);
+		if (isServer)
 		{
 			Buoyancy component3 = ((Component)this).GetComponent<Buoyancy>();
 			if ((Object)(object)component3 != (Object)null)
 			{
-				component3.rigidBody = val2;
+				component3.rigidBody = val3;
 			}
 			Vector3 linearVelocity = Vector3Ex.Range(-1f, 1f);
 			linearVelocity.y++;
-			val2.linearVelocity = linearVelocity;
-			val2.collisionDetectionMode = (CollisionDetectionMode)3;
-			val2.angularVelocity = Vector3Ex.Range(-10f, 10f);
+			val3.linearVelocity = linearVelocity;
+			val3.collisionDetectionMode = (CollisionDetectionMode)3;
+			val3.angularVelocity = Vector3Ex.Range(-10f, 10f);
 		}
-		return val2;
+		return val3;
 	}
 
 	public override void Load(LoadInfo info)
@@ -275,16 +280,16 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 	private void Load(Corpse corpse)
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		if (base.isServer)
+		if (isServer)
 		{
 			parentEnt = BaseNetworkable.serverEntities.Find(corpse.parentID) as BaseEntity;
 		}
-		_ = base.isClient;
+		_ = isClient;
 	}
 
 	public override void OnAttacked(HitInfo info)
 	{
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -358,7 +363,7 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 		{
 			flagsUpdateScope.Set(Flags.Reserved1, b: true);
 		}
-		Collider val = default(Collider);
+		Collider val = default;
 		if (((Component)this).TryGetComponent<Collider>(ref val))
 		{
 			val.enabled = false;
@@ -371,7 +376,7 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 		{
 			flagsUpdateScope.Set(Flags.Reserved1, b: false);
 		}
-		Collider val = default(Collider);
+		Collider val = default;
 		if (((Component)this).TryGetComponent<Collider>(ref val))
 		{
 			val.enabled = true;
@@ -383,7 +388,7 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		ResourceDispenser resourceDispenser = default(ResourceDispenser);
+		ResourceDispenser resourceDispenser = default;
 		if (((Component)this).TryGetComponent<ResourceDispenser>(ref resourceDispenser))
 		{
 			foreach (ItemAmount containedItem in resourceDispenser.containedItems)

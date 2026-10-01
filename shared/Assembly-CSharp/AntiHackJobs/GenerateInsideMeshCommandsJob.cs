@@ -18,12 +18,12 @@ public struct GenerateInsideMeshCommandsJob : IJobFor
 
 	public void Execute(int index)
 	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		QueryParameters val = default(QueryParameters);
-		((QueryParameters)(ref val))._002Ector(65536, false, (QueryTriggerInteraction)0, true);
+		QueryParameters val = new QueryParameters(65536, false, (QueryTriggerInteraction)0, true);
 		Commands[index] = new RaycastCommand(Posi[index], Vector3.up, val, Distance);
 	}
 }

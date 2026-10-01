@@ -96,12 +96,12 @@ public class Detonator : HeldEntity, IRFObject
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetOwnerPlayer()))
 		{
-			bool num = HasFlag(Flags.On);
-			bool flag = msg.read.Bit();
-			InternalSetPressed(flag);
-			if (num != flag)
+			bool flag = HasFlag(Flags.On);
+			bool flag2 = msg.read.Bit();
+			InternalSetPressed(flag2);
+			if (flag != flag2)
 			{
-				Effect.server.Run(flag ? attackEffect.resourcePath : unAttackEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
+				Effect.server.Run(flag2 ? attackEffect.resourcePath : unAttackEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
 			}
 		}
 	}
@@ -155,7 +155,7 @@ public class Detonator : HeldEntity, IRFObject
 	public void ServerSetFrequency(BasePlayer player, int freq)
 	{
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Expected O, but got Unknown
+		//IL_00a3: Expected Obj, but got Unknown
 		if ((Object)(object)player == (Object)null || (Object)(object)GetOwnerPlayer() != (Object)(object)player || Time.time < nextChangeTime)
 		{
 			return;

@@ -47,7 +47,7 @@ public static class DamageUtil
 			for (int i = 0; i < list4.Count; i++)
 			{
 				BaseEntity baseEntity2 = list4[i];
-				if (!baseEntity2.isServer || (Object)(object)ignoreEntity == (Object)(object)baseEntity2 || list2.Contains(baseEntity2) || (!includeBoatBuildingPieces && (baseEntity2 is BoatBuildingBlock || baseEntity2 is global::IBoatBuildingPiece)))
+				if (!baseEntity2.isServer || (Object)(object)ignoreEntity == (Object)(object)baseEntity2 || list2.Contains(baseEntity2) || (!includeBoatBuildingPieces && (baseEntity2 is BoatBuildingBlock || baseEntity2 is IBoatBuildingPiece)))
 				{
 					continue;
 				}
@@ -80,7 +80,7 @@ public static class DamageUtil
 				if (useLineOfSight && baseEntity2 is BasePlayer basePlayer && basePlayer.IsDucked())
 				{
 					Bounds colliderBounds = basePlayer.GetColliderBounds();
-					if (((Bounds)(ref colliderBounds)).max.y - val.y < 0.1f && !GamePhysics.LineOfSight(pos, Vector3Ex.WithY(((Bounds)(ref colliderBounds)).center, ((Bounds)(ref colliderBounds)).max.y - 0.1f), 1218519041, baseEntity2))
+					if (colliderBounds.max.y - val.y < 0.1f && !GamePhysics.LineOfSight(pos, Vector3Ex.WithY(colliderBounds.center, colliderBounds.max.y - 0.1f), 1218519041, baseEntity2))
 					{
 						continue;
 					}
@@ -99,7 +99,7 @@ public static class DamageUtil
 				hitInfo.damageTypes.ScaleAll(amount);
 				hitInfo.HitPositionWorld = val;
 				Vector3 val2 = pos - val;
-				hitInfo.HitNormalWorld = ((Vector3)(ref val2)).normalized;
+				hitInfo.HitNormalWorld = val2.normalized;
 				hitInfo.PointStart = pos;
 				hitInfo.PointEnd = hitInfo.HitPositionWorld;
 				list.Add(hitInfo);
@@ -135,7 +135,7 @@ public static class DamageUtil
 		{
 			if (!(hitEnt is BoatBuildingBlock))
 			{
-				return hitEnt is global::IBoatBuildingPiece;
+				return hitEnt is IBoatBuildingPiece;
 			}
 			return true;
 		}

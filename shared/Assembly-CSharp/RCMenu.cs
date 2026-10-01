@@ -10,7 +10,7 @@ public class RCMenu : ComputerMenu
 
 	public NeedsCursor needsCursor;
 
-	public float hiddenOffset;
+	public float hiddenOffset = -256f;
 
 	public RectTransform devicesPanel;
 
@@ -22,9 +22,9 @@ public class RCMenu : ComputerMenu
 
 	public CanvasGroup interference;
 
-	public float interferenceFadeDuration;
+	public float interferenceFadeDuration = 0.2f;
 
-	public float rangeInterferenceScale;
+	public float rangeInterferenceScale = 10000f;
 
 	public Text timeText;
 
@@ -57,37 +57,27 @@ public class RCMenu : ComputerMenu
 
 	public GameObject generalCrosshair;
 
-	public float fogOverrideDensity;
+	public float fogOverrideDensity = 0.1f;
 
-	public float autoTurretFogDistance;
+	public float autoTurretFogDistance = 30f;
 
-	public float autoTurretDotBaseScale;
+	public float autoTurretDotBaseScale = 2f;
 
-	public float autoTurretDotGrowScale;
+	public float autoTurretDotGrowScale = 4f;
 
 	public PingManager PingManager;
 
 	public ScrollRectSettable scrollRect;
 
-	public Phrase Phrase_NoSignal;
+	public Phrase Phrase_NoSignal = new Phrase("no_signal", "No Signal");
 
-	public Phrase Phrase_CameraDisabled;
+	public Phrase Phrase_CameraDisabled = new Phrase("weak_signal", "Weak Signal");
 
 	public RCMenu()
 	{
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Expected O, but got Unknown
+		//IL_0062: Expected Obj, but got Unknown
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Expected O, but got Unknown
-		hiddenOffset = -256f;
-		interferenceFadeDuration = 0.2f;
-		rangeInterferenceScale = 10000f;
-		fogOverrideDensity = 0.1f;
-		autoTurretFogDistance = 30f;
-		autoTurretDotBaseScale = 2f;
-		autoTurretDotGrowScale = 4f;
-		Phrase_NoSignal = new Phrase("no_signal", "No Signal");
-		Phrase_CameraDisabled = new Phrase("weak_signal", "Weak Signal");
-		base._002Ector();
+		//IL_0077: Expected Obj, but got Unknown
 	}
 }

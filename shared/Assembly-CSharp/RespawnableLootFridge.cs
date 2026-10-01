@@ -15,23 +15,21 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 	public LootContainer.LootSpawnSlot[] fullLootSpawnSlots;
 
 	[Tooltip("Minimum seconds between refreshes. Each refresh is a reduced spawn, apart from every Nth one (controlled by reducedRefreshesForFullRefresh) which is a full spawn instead.")]
-	public float minSecondsBetweenRefresh;
+	public float minSecondsBetweenRefresh = 900f;
 
 	[Tooltip("Maximum seconds between refreshes.")]
-	public float maxSecondsBetweenRefresh;
+	public float maxSecondsBetweenRefresh = 900f;
 
 	[Min(1f)]
 	[Tooltip("A full spawn replaces every Nth reduced refresh.")]
-	public int refreshesForFullRefresh;
+	public int refreshesForFullRefresh = 4;
 
 	[Tooltip("Do a full loot spawn as soon as the fridge spawns (ignored when restoring from a save).")]
-	public bool initialLootSpawn;
+	public bool initialLootSpawn = true;
 
 	public bool blockPlayerItemInput;
 
 	public bool requiresPowerToOpen;
-
-	public ClanScoreEventType clanScoreEventForFirstLooter;
 
 	[NonSerialized]
 	public bool HasBeenLooted;
@@ -120,9 +118,9 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 		{
 			SpawnFullLoot();
 		}
-		if (blockPlayerItemInput && !Application.isLoadingSave && base.inventory != null)
+		if (blockPlayerItemInput && !Application.isLoadingSave && inventory != null)
 		{
-			base.inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+			inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 		}
 	}
 
@@ -143,9 +141,9 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		if (blockPlayerItemInput && base.inventory != null)
+		if (blockPlayerItemInput && inventory != null)
 		{
-			base.inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+			inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 		}
 	}
 
@@ -155,9 +153,9 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 		base.DoServerDestroy();
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		if (!added)
 		{
 			HasBeenLooted = true;
@@ -166,7 +164,7 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 
 	public ItemContainer GetInventory()
 	{
-		return base.inventory;
+		return inventory;
 	}
 
 	public void SpawnFullLoot()
@@ -194,7 +192,7 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 
 	private void RefreshLoot(bool fullSpawn)
 	{
-		if (base.IsDestroyed || base.inventory == null)
+		if (IsDestroyed || inventory == null)
 		{
 			return;
 		}
@@ -211,9 +209,10 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 				return;
 			}
 		}
-		base.inventory.Clear();
+		inventory.Clear();
 		ItemManager.DoRemoves();
 		PopulateLoot(fullSpawn);
+		FirstLooterId = 0uL;
 		if (fullSpawn)
 		{
 			openedSinceFullSpawn = IsOpen();
@@ -261,28 +260,25 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 
 	public void PopulateLoot(bool fullSpawn)
 	{
-		if (base.inventory != null)
+		if (inventory != null)
 		{
-			Func<BasePlayer, Item, int, bool> canAcceptItem = base.inventory.canAcceptItem;
-			base.inventory.canAcceptItem = null;
+			Func<BasePlayer, Item, int, bool> canAcceptItem = inventory.canAcceptItem;
+			inventory.canAcceptItem = null;
 			if (fullSpawn)
 			{
-				LootContainer.FillLoot(base.inventory, null, 0, fullLootSpawnSlots);
+				LootContainer.FillLoot(inventory, null, 0, fullLootSpawnSlots);
 			}
 			else
 			{
-				LootContainer.FillLoot(base.inventory, null, 0, reducedLootSpawnSlots);
+				LootContainer.FillLoot(inventory, null, 0, reducedLootSpawnSlots);
 			}
-			base.inventory.canAcceptItem = canAcceptItem;
+			inventory.canAcceptItem = canAcceptItem;
 			HasBeenLooted = false;
 		}
 	}
 
 	public override bool OnStartBeingLooted(BasePlayer player)
 	{
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Invalid comparison between Unknown and I4
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		if (!player.isInvisible)
 		{
 			openedSinceFullSpawn = true;
@@ -291,13 +287,9 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 		{
 			FirstLooterId = player.userID;
 			Analytics.Azure.OnFirstLooted(this, player);
-			if ((int)clanScoreEventForFirstLooter != -1)
+			if (inventory != null && inventory.itemList != null)
 			{
-				player.AddClanScore(clanScoreEventForFirstLooter);
-			}
-			if (base.inventory != null && base.inventory.itemList != null)
-			{
-				foreach (Item item in base.inventory.itemList)
+				foreach (Item item in inventory.itemList)
 				{
 					item?.SetItemOwnership(player, ItemOwnershipPhrases.LootedPhrase);
 				}
@@ -354,16 +346,5 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 				StartLootRefreshCountdown();
 			}
 		}
-	}
-
-	public RespawnableLootFridge()
-	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		minSecondsBetweenRefresh = 900f;
-		maxSecondsBetweenRefresh = 900f;
-		refreshesForFullRefresh = 4;
-		initialLootSpawn = true;
-		clanScoreEventForFirstLooter = (ClanScoreEventType)(-1);
-		base._002Ector();
 	}
 }

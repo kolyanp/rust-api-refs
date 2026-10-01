@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -255,7 +256,7 @@ public class PartyBalloon : BaseCombatEntity
 		}
 		if (IsLocked())
 		{
-			return (ulong)player.userID == base.OwnerID;
+			return (ulong)player.userID == OwnerID;
 		}
 		return true;
 	}
@@ -287,9 +288,9 @@ public class PartyBalloon : BaseCombatEntity
 		TextColour = Color.white;
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	public void RPC_ConfigureBalloon(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -323,15 +324,15 @@ public class PartyBalloon : BaseCombatEntity
 		TextColour = colour;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void LockBalloon(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUpdateBalloon(msg.player))
 		{
 			SetFlagLocal(Flags.Locked, b: true);
 			SendNetworkUpdate();
-			base.OwnerID = msg.player.userID;
+			OwnerID = msg.player.userID;
 		}
 	}
 
@@ -346,7 +347,7 @@ public class PartyBalloon : BaseCombatEntity
 		}
 	}
 
-	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -362,7 +363,7 @@ public class PartyBalloon : BaseCombatEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: BalloonText for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: BalloonText for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_BalloonText);
 			return true;
@@ -370,7 +371,7 @@ public class PartyBalloon : BaseCombatEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: BalloonColour for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: BalloonColour for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<Color>(writer, __sync_BalloonColour);
 			return true;
@@ -378,7 +379,7 @@ public class PartyBalloon : BaseCombatEntity
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: TextColour for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: TextColour for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite<Color>(writer, __sync_TextColour);
 			return true;
@@ -446,9 +447,9 @@ public class PartyBalloon : BaseCombatEntity
 	{
 		return propertyName switch
 		{
-			"BalloonText" => 0, 
-			"BalloonColour" => 1, 
-			"TextColour" => 2, 
+			"BalloonText" => (byte)0, 
+			"BalloonColour" => (byte)1, 
+			"TextColour" => (byte)2, 
 			_ => byte.MaxValue, 
 		};
 	}
@@ -473,18 +474,34 @@ public class PartyBalloon : BaseCombatEntity
 	{
 		NetWrite netWrite = Net.sv.StartWrite();
 		WriteAutoSaveSyncVars(netWrite);
-		var (src, num) = netWrite.GetBuffer();
-		if (_autosaveBuffer == null)
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
 		{
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
 		}
-		if (_autosaveBuffer.Length < num)
-		{
-			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
-			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
-		}
-		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
-		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
 		Pool.Free<NetWrite>(ref netWrite);
 		return true;
 	}
@@ -507,8 +524,8 @@ public class PartyBalloon : BaseCombatEntity
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		base.ResetSyncVars();
 		__sync_BalloonText = null;
-		__sync_BalloonColour = default(Color);
-		__sync_TextColour = default(Color);
+		__sync_BalloonColour = default;
+		__sync_TextColour = default;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)

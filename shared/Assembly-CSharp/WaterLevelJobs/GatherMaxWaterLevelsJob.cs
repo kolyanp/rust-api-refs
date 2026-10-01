@@ -24,7 +24,7 @@ public struct GatherMaxWaterLevelsJob : IJob
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		for (int i = 0; i < Positions.Length; i++)
 		{
-			WaterLevels[i] = (((Bounds)(ref DeepSeaBounds)).Contains(Positions[i]) ? waterLevelDeep : waterLevelMain);
+			WaterLevels[i] = (DeepSeaBounds.Contains(Positions[i]) ? waterLevelDeep : waterLevelMain);
 		}
 	}
 }

@@ -100,9 +100,9 @@ public struct RpcTarget
 
 	public static RpcTarget FromFlags(RpcTargetFlags rpcTargetFlags, string funcName, BasePlayer player)
 	{
-		if (!player.IsValid() || rpcTargetFlags == (RpcTargetFlags)0)
+		if (!player.IsValid() || rpcTargetFlags == 0)
 		{
-			return default(RpcTarget);
+			return default;
 		}
 		List<Connection> list = Pool.Get<List<Connection>>();
 		HashSet<Connection> hashSet = Pool.Get<HashSet<Connection>>();

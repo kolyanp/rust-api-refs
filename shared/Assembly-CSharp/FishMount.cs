@@ -8,7 +8,7 @@ using UnityEngine.Assertions;
 
 public class FishMount : StorageContainer
 {
-	public Animator[] FishRoots = (Animator[])(object)new Animator[0];
+	public Animator[] FishRoots = new Animator[0];
 
 	public GameObjectRef FishInteractSound = new GameObjectRef();
 
@@ -22,8 +22,8 @@ public class FishMount : StorageContainer
 	{
 		get
 		{
-			Item slot = base.inventory.GetSlot(0);
-			ItemModFishable itemModFishable = default(ItemModFishable);
+			Item slot = inventory.GetSlot(0);
+			ItemModFishable itemModFishable = default;
 			if (slot != null && ((Component)slot.info).TryGetComponent<ItemModFishable>(ref itemModFishable))
 			{
 				return itemModFishable.FishMountIndex;
@@ -89,7 +89,7 @@ public class FishMount : StorageContainer
 
 	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		ItemModFishable itemModFishable = default(ItemModFishable);
+		ItemModFishable itemModFishable = default;
 		if (((Component)item.info).TryGetComponent<ItemModFishable>(ref itemModFishable) && itemModFishable.CanBeMounted)
 		{
 			return true;
@@ -105,9 +105,9 @@ public class FishMount : StorageContainer
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		currentFishItemIndex = GetCurrentFishItemIndex;
 		SetFlagLocal(Flags.Reserved1, currentFishItemIndex >= 0);
 		SendNetworkUpdate();

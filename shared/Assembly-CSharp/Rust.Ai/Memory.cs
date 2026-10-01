@@ -53,7 +53,7 @@ public class Memory
 		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		extendedInfo = default(ExtendedInfo);
+		extendedInfo = default;
 		bool flag = false;
 		for (int i = 0; i < AllExtended.Count; i++)
 		{
@@ -180,7 +180,7 @@ public class Memory
 				return item;
 			}
 		}
-		return default(SeenInfo);
+		return default;
 	}
 
 	public SeenInfo GetInfo(Vector3 position)
@@ -192,12 +192,12 @@ public class Memory
 		foreach (SeenInfo item in All)
 		{
 			Vector3 val = item.Position - position;
-			if (((Vector3)(ref val)).sqrMagnitude < 1f)
+			if (val.sqrMagnitude < 1f)
 			{
 				return item;
 			}
 		}
-		return default(SeenInfo);
+		return default;
 	}
 
 	public ExtendedInfo GetExtendedInfo(BaseEntity entity)
@@ -209,7 +209,7 @@ public class Memory
 				return item;
 			}
 		}
-		return default(ExtendedInfo);
+		return default;
 	}
 
 	internal void Forget(float maxSecondsOld)

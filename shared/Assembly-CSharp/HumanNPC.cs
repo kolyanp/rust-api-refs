@@ -15,7 +15,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 	public LootContainer.LootSpawnSlot[] LootSpawnSlots;
 
 	[Header("Damage")]
-	public float aimConeScale;
+	public float aimConeScale = 2f;
 
 	public float lastDismountTime;
 
@@ -30,7 +30,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 
 	private float lastAimSetTime;
 
-	public Vector3 aimOverridePosition;
+	public Vector3 aimOverridePosition = Vector3.zero;
 
 	public ScientistBrain Brain { get; set; }
 
@@ -62,7 +62,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 	{
 		base.ServerInit();
 		Brain = ((Component)this).GetComponent<ScientistBrain>();
-		if (!base.isClient)
+		if (!isClient)
 		{
 			AIThinkManager.Add(this);
 		}
@@ -171,9 +171,9 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		{
 			return;
 		}
-		Vector3 val = base.eyes.BodyForward();
-		Vector3 val2 = target.CenterPoint() - base.eyes.position;
-		float num = Vector3.Dot(val, ((Vector3)(ref val2)).normalized);
+		Vector3 val = eyes.BodyForward();
+		Vector3 val2 = target.CenterPoint() - eyes.position;
+		float num = Vector3.Dot(val, val2.normalized);
 		if (targetIsLOS)
 		{
 			if (num > 0.2f)
@@ -219,7 +219,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 
 	public override void Hurt(HitInfo info)
 	{
-		if (base.isMounted)
+		if (isMounted)
 		{
 			info.damageTypes.ScaleAll(0.1f);
 		}
@@ -296,6 +296,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
@@ -320,7 +321,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
-		if (newAim == Vector3.zero || ObjectEx.IsUnityNull(base.eyes) || ObjectEx.IsUnityNull<Transform>(((Component)this).transform))
+		if (newAim == Vector3.zero || ObjectEx.IsUnityNull(eyes) || ObjectEx.IsUnityNull<Transform>(((Component)this).transform))
 		{
 			return;
 		}
@@ -332,18 +333,18 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 			newAim = attackEntity.ModifyAIAim(newAim, GetAimSwayScalar());
 		}
 		Quaternion val;
-		if (base.isMounted)
+		if (isMounted)
 		{
 			BaseMountable baseMountable = GetMounted();
 			Vector3 eulerAngles = ((Component)baseMountable).transform.eulerAngles;
 			val = Quaternion.LookRotation(newAim, ((Component)baseMountable).transform.up);
-			Quaternion val2 = Quaternion.Euler(((Quaternion)(ref val)).eulerAngles);
+			Quaternion val2 = Quaternion.Euler(val.eulerAngles);
 			Quaternion val3 = Quaternion.LookRotation(((Component)this).transform.InverseTransformDirection(val2 * Vector3.forward), ((Component)this).transform.up);
-			Vector3 eulerAngles2 = ((Quaternion)(ref val3)).eulerAngles;
+			Vector3 eulerAngles2 = val3.eulerAngles;
 			eulerAngles2 = BaseMountable.ConvertVector(eulerAngles2);
 			Quaternion val4 = Quaternion.Euler(Mathf.Clamp(eulerAngles2.x, baseMountable.pitchClamp.x, baseMountable.pitchClamp.y), Mathf.Clamp(eulerAngles2.y, baseMountable.yawClamp.x, baseMountable.yawClamp.y), eulerAngles.z);
 			Quaternion val5 = Quaternion.LookRotation(((Component)this).transform.TransformDirection(val4 * Vector3.forward), ((Component)this).transform.up);
-			newAim = BaseMountable.ConvertVector(((Quaternion)(ref val5)).eulerAngles);
+			newAim = BaseMountable.ConvertVector(val5.eulerAngles);
 		}
 		else
 		{
@@ -351,19 +352,18 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 			if (!ObjectEx.IsUnityNull(baseEntity))
 			{
 				Vector3 val6 = ((Component)baseEntity).transform.InverseTransformDirection(newAim);
-				Vector3 val7 = default(Vector3);
-				((Vector3)(ref val7))._002Ector(newAim.x, val6.y, newAim.z);
-				base.eyes.rotation = Quaternion.Lerp(base.eyes.rotation, Quaternion.LookRotation(val7, ((Component)baseEntity).transform.up), num * 25f);
-				val = base.eyes.bodyRotation;
-				viewAngles = ((Quaternion)(ref val)).eulerAngles;
-				ServerRotation = base.eyes.bodyRotation;
+				Vector3 val7 = new Vector3(newAim.x, val6.y, newAim.z);
+				eyes.rotation = Quaternion.Lerp(eyes.rotation, Quaternion.LookRotation(val7, ((Component)baseEntity).transform.up), num * 25f);
+				val = eyes.bodyRotation;
+				viewAngles = val.eulerAngles;
+				ServerRotation = eyes.bodyRotation;
 				return;
 			}
 		}
-		base.eyes.rotation = (base.isMounted ? Quaternion.Slerp(base.eyes.rotation, Quaternion.Euler(newAim), num * 70f) : Quaternion.Lerp(base.eyes.rotation, Quaternion.LookRotation(newAim, ((Component)this).transform.up), num * 25f));
-		val = base.eyes.rotation;
-		viewAngles = ((Quaternion)(ref val)).eulerAngles;
-		ServerRotation = base.eyes.rotation;
+		eyes.rotation = (isMounted ? Quaternion.Slerp(eyes.rotation, Quaternion.Euler(newAim), num * 70f) : Quaternion.Lerp(eyes.rotation, Quaternion.LookRotation(newAim, ((Component)this).transform.up), num * 25f));
+		val = eyes.rotation;
+		viewAngles = val.eulerAngles;
+		ServerRotation = eyes.rotation;
 	}
 
 	public void SetStationaryAimPoint(Vector3 aimAt)
@@ -388,7 +388,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 	public override void AttackerInfo(DeathInfo info)
 	{
 		base.AttackerInfo(info);
-		if (base.inventory.containerBelt.GetSlot(0) == null)
+		if (inventory.containerBelt.GetSlot(0) == null)
 		{
 			BaseMountable baseMountable = GetMounted();
 			if ((Object)(object)baseMountable != (Object)null && baseMountable is MountedWeaponSeat { Owner: var owner })
@@ -398,7 +398,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		}
 		else
 		{
-			info.inflictorName = base.inventory.containerBelt.GetSlot(0).info.shortname;
+			info.inflictorName = inventory.containerBelt.GetSlot(0).info.shortname;
 		}
 		if (DeathIconOverride != null && DeathIconOverride.isValid)
 		{
@@ -406,7 +406,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		}
 		else
 		{
-			info.attackerName = base.ShortPrefabName;
+			info.attackerName = ShortPrefabName;
 		}
 	}
 
@@ -528,8 +528,8 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 			{
 				float num2 = Vector3.Distance(((Component)player).transform.position, ((Component)this).transform.position);
 				float num3 = 1f - Mathf.InverseLerp(1f, Brain.SenseRange, num2);
-				Vector3 val = ((Component)player).transform.position - base.eyes.position;
-				float num4 = Vector3.Dot(((Vector3)(ref val)).normalized, base.eyes.BodyForward());
+				Vector3 val = ((Component)player).transform.position - eyes.position;
+				float num4 = Vector3.Dot(val.normalized, eyes.BodyForward());
 				num3 += Mathf.InverseLerp(Brain.VisionCone, 1f, num4) / 2f;
 				num3 += (Brain.Senses.Memory.IsLOS(player) ? 2f : 0f);
 				if (num3 > num)
@@ -578,13 +578,13 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		{
 			return null;
 		}
-		if ((Object)(object)base.inventory == (Object)null || base.inventory.containerBelt == null)
+		if ((Object)(object)inventory == (Object)null || inventory.containerBelt == null)
 		{
 			return null;
 		}
-		for (int i = 0; i < base.inventory.containerBelt.capacity; i++)
+		for (int i = 0; i < inventory.containerBelt.capacity; i++)
 		{
-			Item slot = base.inventory.containerBelt.GetSlot(i);
+			Item slot = inventory.containerBelt.GetSlot(i);
 			if (slot != null && slot.amount > 1 && (Object)(object)(slot.GetHeldEntity() as MedicalTool) != (Object)null)
 			{
 				return slot;
@@ -633,8 +633,5 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		aimConeScale = 2f;
-		aimOverridePosition = Vector3.zero;
-		base._002Ector();
 	}
 }

@@ -50,7 +50,7 @@ public class Effect : EffectData
 				{
 					normLocal = val.TransformDirection(normLocal);
 					Vector3 val2 = ((Component)ent).transform.InverseTransformDirection(normLocal);
-					normLocal = ((Vector3)(ref val2)).normalized;
+					normLocal = val2.normalized;
 					posLocal = val.TransformPoint(posLocal);
 					posLocal = ((Component)ent).transform.InverseTransformPoint(posLocal);
 					boneID = 0u;
@@ -177,8 +177,8 @@ public class Effect : EffectData
 			}
 			else
 			{
-				Run(strName, info.HitPositionWorld, info.HitNormalWorld, default(Vector3), type, number, ignoreMaxSpawnDistance);
-				Run(decal, info.HitPositionWorld, info.HitNormalWorld, default(Vector3), type, number, ignoreMaxSpawnDistance);
+				Run(strName, info.HitPositionWorld, info.HitNormalWorld, default, type, number, ignoreMaxSpawnDistance);
+				Run(decal, info.HitPositionWorld, info.HitNormalWorld, default, type, number, ignoreMaxSpawnDistance);
 			}
 			if (info.WeaponPrefab is BaseMelee baseMelee)
 			{
@@ -324,13 +324,13 @@ public class Effect : EffectData
 			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 			Bounds bounds = info.HitEntity.bounds;
 			float num = info.HitEntity.AntiHackPadding();
-			((Bounds)(ref bounds)).extents = ((Bounds)(ref bounds)).extents + new Vector3(num, num, num);
-			if (!((Bounds)(ref bounds)).Contains(info.HitPositionLocal))
+			bounds.extents += new Vector3(num, num, num);
+			if (!bounds.Contains(info.HitPositionLocal))
 			{
 				BasePlayer initiatorPlayer = info.InitiatorPlayer;
 				if ((Object)(object)initiatorPlayer != (Object)null && ((object)initiatorPlayer).GetType() == typeof(BasePlayer))
 				{
-					float num2 = Mathf.Sqrt(((Bounds)(ref bounds)).SqrDistance(info.HitPositionLocal));
+					float num2 = Mathf.Sqrt(bounds.SqrDistance(info.HitPositionLocal));
 					if (num2 > ConVar.AntiHack.impact_effect_distance_forgiveness)
 					{
 						AntiHack.Log(initiatorPlayer, AntiHackType.EffectHack, $"Tried to run an impact effect outside of entity '{info.HitEntity.ShortPrefabName}' bounds by {num2}m");
@@ -426,7 +426,6 @@ public class Effect : EffectData
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		((EffectData)this)._002Ector();
 		Init(Type.Generic, posWorld, normWorld, sourceConnection);
 		pooledString = effectName;
 	}
@@ -435,7 +434,6 @@ public class Effect : EffectData
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		((EffectData)this)._002Ector();
 		Init(Type.Generic, ent, boneID, posLocal, normLocal, sourceConnection);
 		pooledString = effectName;
 	}
@@ -459,7 +457,7 @@ public class Effect : EffectData
 		{
 			Debug.LogWarning((object)"Effect.Init - invalid entity");
 		}
-		base.entity = (NetworkableId)(ent.IsValid() ? ent.net.ID : default(NetworkableId));
+		base.entity = (ent.IsValid() ? ent.net.ID : default(NetworkableId));
 		base.source = sourceConnection?.userid ?? 0;
 		base.bone = boneID;
 	}
@@ -495,7 +493,7 @@ public class Effect : EffectData
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		Init(fxtype, posWorld, normWorld, sourceConnection);
-		base.sourceEntity = (NetworkableId)(sourceEntity.IsValid() ? sourceEntity.net.ID : default(NetworkableId));
+		base.sourceEntity = (sourceEntity.IsValid() ? sourceEntity.net.ID : default(NetworkableId));
 	}
 
 	public void Clear()
@@ -513,15 +511,15 @@ public class Effect : EffectData
 		base.type = 0u;
 		base.pooledstringid = 0u;
 		base.number = 0;
-		base.origin = default(Vector3);
-		base.normal = default(Vector3);
+		base.origin = default;
+		base.normal = default;
 		base.scale = 0f;
-		base.entity = default(NetworkableId);
+		base.entity = default;
 		base.bone = 0u;
 		base.source = 0uL;
 		base.distanceOverride = 0f;
 		base.ignoreMaxSpawnDistance = false;
-		base.sourceEntity = default(NetworkableId);
+		base.sourceEntity = default;
 		upDir = Vector3.zero;
 		worldPos = Vector3.zero;
 		worldNrm = Vector3.zero;

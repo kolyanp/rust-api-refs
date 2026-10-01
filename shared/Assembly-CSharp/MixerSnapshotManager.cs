@@ -34,7 +34,7 @@ public class MixerSnapshotManager : SingletonComponent<MixerSnapshotManager>, IC
 
 	public AudioMixerSnapshot predatorNearbySnapshot;
 
-	public AudioMixerSnapshot heavyHelmetSnapshot;
-
 	public float deafness;
+
+	public float headgearMuffle;
 }

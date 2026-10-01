@@ -7,7 +7,7 @@ public static class AnimationGenerateUtils
 	public static AnimationCurve ReduceKeyframes(AnimationCurve curve, float maxError)
 	{
 		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0166: Expected O, but got Unknown
+		//IL_0166: Expected Obj, but got Unknown
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
@@ -18,13 +18,13 @@ public static class AnimationGenerateUtils
 		int num = 1;
 		while (array.Length > 2 && num < array.Length - 1)
 		{
-			Keyframe[] array2 = (Keyframe[])(object)new Keyframe[array.Length - 1];
+			Keyframe[] array2 = new Keyframe[array.Length - 1];
 			int num2 = 0;
 			for (int i = 0; i < array.Length; i++)
 			{
 				if (num != i)
 				{
-					array2[num2] = new Keyframe(((Keyframe)(ref array[i])).time, ((Keyframe)(ref array[i])).value, ((Keyframe)(ref array[i])).inTangent, ((Keyframe)(ref array[i])).outTangent);
+					array2[num2] = new Keyframe(array[i].time, array[i].value, array[i].inTangent, array[i].outTangent);
 					num2++;
 				}
 			}
@@ -32,9 +32,9 @@ public static class AnimationGenerateUtils
 			{
 				keys = array2
 			};
-			float num3 = Mathf.Abs(val.Evaluate(((Keyframe)(ref array[num])).time) - ((Keyframe)(ref array[num])).value);
-			float num4 = ((Keyframe)(ref array[num])).time + (((Keyframe)(ref array[num - 1])).time - ((Keyframe)(ref array[num])).time) * 0.5f;
-			float num5 = ((Keyframe)(ref array[num])).time + (((Keyframe)(ref array[num + 1])).time - ((Keyframe)(ref array[num])).time) * 0.5f;
+			float num3 = Mathf.Abs(val.Evaluate(array[num].time) - array[num].value);
+			float num4 = array[num].time + (array[num - 1].time - array[num].time) * 0.5f;
+			float num5 = array[num].time + (array[num + 1].time - array[num].time) * 0.5f;
 			float num6 = Mathf.Abs(val.Evaluate(num4) - curve.Evaluate(num4));
 			float num7 = Mathf.Abs(val.Evaluate(num5) - curve.Evaluate(num5));
 			if (num3 < maxError && num6 < maxError && num7 < maxError)
@@ -66,7 +66,7 @@ public static class AnimationGenerateUtils
 		float num = 0f;
 		if (curve.keys.Length != 0)
 		{
-			num = ((Keyframe)(ref curve.keys[0])).value;
+			num = curve.keys[0].value;
 		}
 		if (!endTime.HasValue)
 		{
@@ -78,16 +78,16 @@ public static class AnimationGenerateUtils
 			}
 			if (curve.keys.Length == 1)
 			{
-				curve.AddKey(new Keyframe(Mathf.Max(1f, ((Keyframe)(ref curve.keys[0])).time + 0.5f), num));
+				curve.AddKey(new Keyframe(Mathf.Max(1f, curve.keys[0].time + 0.5f), num));
 				return;
 			}
 			float num2 = num;
 			if (averageBoth)
 			{
-				num2 = Mathf.Lerp(num, ((Keyframe)(ref curve.keys[curve.keys.Length - 1])).value, 0.5f);
+				num2 = Mathf.Lerp(num, curve.keys[curve.keys.Length - 1].value, 0.5f);
 			}
-			curve.MoveKey(0, new Keyframe(((Keyframe)(ref curve.keys[0])).time, num2));
-			curve.MoveKey(curve.keys.Length - 1, new Keyframe(((Keyframe)(ref curve.keys[curve.keys.Length - 1])).time, num2));
+			curve.MoveKey(0, new Keyframe(curve.keys[0].time, num2));
+			curve.MoveKey(curve.keys.Length - 1, new Keyframe(curve.keys[curve.keys.Length - 1].time, num2));
 			return;
 		}
 		float value = endTime.Value;
@@ -105,30 +105,30 @@ public static class AnimationGenerateUtils
 		float num3 = num;
 		if (averageBoth)
 		{
-			num3 = Mathf.Lerp(num, ((Keyframe)(ref curve.keys[curve.keys.Length - 1])).value, 0.5f);
+			num3 = Mathf.Lerp(num, curve.keys[curve.keys.Length - 1].value, 0.5f);
 		}
 		Keyframe val = curve.keys[curve.keys.Length - 1];
-		float num4 = ((Keyframe)(ref val)).time;
+		float num4 = val.time;
 		if (num4 != value && num4 < value && value - num4 < value * 0.1f)
 		{
 			num4 = value;
 		}
-		curve.MoveKey(0, new Keyframe(((Keyframe)(ref curve.keys[0])).time, num3));
+		curve.MoveKey(0, new Keyframe(curve.keys[0].time, num3));
 		curve.MoveKey(curve.keys.Length - 1, new Keyframe(num4, num3));
 	}
 
 	public static void DistrubuteCurveOnTime(ref AnimationCurve curve, float startTime, float endTime)
 	{
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Expected O, but got Unknown
+		//IL_0054: Expected Obj, but got Unknown
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
-		float time = ((Keyframe)(ref curve.keys[0])).time;
-		float time2 = ((Keyframe)(ref curve.keys[curve.keys.Length - 1])).time;
-		Keyframe[] array = (Keyframe[])(object)new Keyframe[curve.keys.Length];
+		float time = curve.keys[0].time;
+		float time2 = curve.keys[curve.keys.Length - 1].time;
+		Keyframe[] array = new Keyframe[curve.keys.Length];
 		curve.keys.CopyTo(array, 0);
 		AnimationCurve val = new AnimationCurve(array);
 		while (curve.keys.Length != 0)
@@ -139,7 +139,7 @@ public static class AnimationGenerateUtils
 		{
 			Keyframe val2 = val.keys[i];
 			Keyframe val3 = val2;
-			((Keyframe)(ref val3)).time = Mathf.Lerp(startTime, endTime, Mathf.InverseLerp(time, time2, ((Keyframe)(ref val2)).time));
+			val3.time = Mathf.Lerp(startTime, endTime, Mathf.InverseLerp(time, time2, val2.time));
 			curve.AddKey(val3);
 		}
 	}
@@ -150,6 +150,7 @@ public static class AnimationGenerateUtils
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
@@ -158,6 +159,7 @@ public static class AnimationGenerateUtils
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
@@ -166,6 +168,7 @@ public static class AnimationGenerateUtils
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
@@ -174,21 +177,18 @@ public static class AnimationGenerateUtils
 		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		Quaternion val = default(Quaternion);
-		((Quaternion)(ref val))._002Ector(0f - targetRot.x, 0f - targetRot.y, 0f - targetRot.z, 0f - targetRot.w);
-		Quaternion val2 = default(Quaternion);
-		((Quaternion)(ref val2))._002Ector(Mathf.LerpUnclamped(latestRot.x, targetRot.x, 0.5f), Mathf.LerpUnclamped(latestRot.y, targetRot.y, 0.5f), Mathf.LerpUnclamped(latestRot.z, targetRot.z, 0.5f), Mathf.LerpUnclamped(latestRot.w, targetRot.w, 0.5f));
-		Quaternion val3 = default(Quaternion);
-		((Quaternion)(ref val3))._002Ector(Mathf.LerpUnclamped(latestRot.x, val.x, 0.5f), Mathf.LerpUnclamped(latestRot.y, val.y, 0.5f), Mathf.LerpUnclamped(latestRot.z, val.z, 0.5f), Mathf.LerpUnclamped(latestRot.w, val.w, 0.5f));
+		Quaternion val = new Quaternion(0f - targetRot.x, 0f - targetRot.y, 0f - targetRot.z, 0f - targetRot.w);
+		Quaternion val2 = new Quaternion(Mathf.LerpUnclamped(latestRot.x, targetRot.x, 0.5f), Mathf.LerpUnclamped(latestRot.y, targetRot.y, 0.5f), Mathf.LerpUnclamped(latestRot.z, targetRot.z, 0.5f), Mathf.LerpUnclamped(latestRot.w, targetRot.w, 0.5f));
+		Quaternion val3 = new Quaternion(Mathf.LerpUnclamped(latestRot.x, val.x, 0.5f), Mathf.LerpUnclamped(latestRot.y, val.y, 0.5f), Mathf.LerpUnclamped(latestRot.z, val.z, 0.5f), Mathf.LerpUnclamped(latestRot.w, val.w, 0.5f));
 		float num = Quaternion.Angle(latestRot, val2);
 		float num2 = Quaternion.Angle(latestRot, val3);
 		if (normalize)
 		{
 			if (!(num2 < num))
 			{
-				return ((Quaternion)(ref targetRot)).normalized;
+				return targetRot.normalized;
 			}
-			return ((Quaternion)(ref val)).normalized;
+			return val.normalized;
 		}
 		if (!(num2 < num))
 		{

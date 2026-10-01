@@ -21,14 +21,45 @@ public class State_PlayAnimLoop : State_PlayAnimationBase
 	[SerializeField]
 	public float MaxDuration = 14f;
 
+	[SerializeField]
+	[Range(0.5f, 1f)]
+	[Tooltip("How far through a clip to hand over to the next one, as a fraction of its length. Has to beat the animator's own exit time back to the default state, or the pose visibly blends to standing between loops.")]
+	private float handoverFraction = 0.8f;
+
 	private float duration;
+
+	public bool HasAnimation
+	{
+		get
+		{
+			if ((Object)(object)Start != (Object)null && (Object)(object)Loop != (Object)null)
+			{
+				return (Object)(object)Stop != (Object)null;
+			}
+			return false;
+		}
+	}
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		EFSMStateStatus result = base.OnStateEnter(payload);
 		duration = Random.Range(MinDuration, MaxDuration);
-		animState = base.AnimPlayer.PlayServerAndTakeFromPool(Start);
+		animState = AnimPlayer.PlayServerAndTakeFromPool(Start);
 		return result;
+	}
+
+	private bool ReadyToHandOver()
+	{
+		if (animState == null || !animState.isPlaying)
+		{
+			return true;
+		}
+		float animLength = animState.GetAnimLength();
+		if (!(animLength <= 0f))
+		{
+			return animState.elapsedTime >= animLength * handoverFraction;
+		}
+		return true;
 	}
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
@@ -38,13 +69,13 @@ public class State_PlayAnimLoop : State_PlayAnimationBase
 			duration -= deltaTime;
 			if (duration <= 0f)
 			{
-				base.AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
-				animState = base.AnimPlayer.PlayServerAndTakeFromPool(Stop);
+				AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
+				animState = AnimPlayer.PlayServerAndTakeFromPool(Stop);
 			}
-			else if (!animState.isPlaying)
+			else if (ReadyToHandOver())
 			{
-				base.AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
-				animState = base.AnimPlayer.PlayServerAndTakeFromPool(Loop);
+				AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
+				animState = AnimPlayer.PlayServerAndTakeFromPool(Loop);
 			}
 		}
 		return base.OnStateUpdate(deltaTime);

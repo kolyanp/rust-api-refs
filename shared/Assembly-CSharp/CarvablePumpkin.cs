@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -37,18 +38,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		}
 	}
 
-	public int TextureCount
-	{
-		get
-		{
-			MeshPaintableSource[] array = paintableSources;
-			if (array == null)
-			{
-				return 0;
-			}
-			return array.Length;
-		}
-	}
+	public int TextureCount => paintableSources?.Length ?? 0;
 
 	public FileStorage.Type FileType => FileStorage.Type.png;
 
@@ -254,6 +244,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 				FileStorage.server.RemoveExact(textureIDs[num], FileStorage.Type.png, net.ID, (uint)num);
 			}
 			textureIDs[num] = FileStorage.server.Store(array, FileStorage.Type.png, net.ID, (uint)num);
+			Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, this, "pumpkin", array.Length, num);
 		}
 		LogEdit(msg.player);
 		SendNetworkUpdate();
@@ -297,7 +288,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		}
 		if (IsLocked())
 		{
-			return (ulong)player.userID == base.OwnerID;
+			return (ulong)player.userID == OwnerID;
 		}
 		return true;
 	}
@@ -346,7 +337,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 				textureIDs[0] = info.msg.sign.imageid;
 			}
 		}
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}
@@ -403,12 +394,12 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		{
 			SetFlagLocal(Flags.Locked, b: true);
 			SendNetworkUpdate();
-			base.OwnerID = msg.player.userID;
+			OwnerID = msg.player.userID;
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void UnLockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUnlockSign(msg.player))
@@ -474,7 +465,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 				break;
 			}
 		}
-		ItemModSign itemModSign = default(ItemModSign);
+		ItemModSign itemModSign = default;
 		if (flag && ((Component)createdItem.info).TryGetComponent<ItemModSign>(ref itemModSign))
 		{
 			itemModSign.OnSignPickedUp(this, this, createdItem);
@@ -484,7 +475,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);
-		ItemModSign itemModSign = default(ItemModSign);
+		ItemModSign itemModSign = default;
 		if (((Component)fromItem.info).TryGetComponent<ItemModSign>(ref itemModSign))
 		{
 			SignContent associatedEntity = ItemModAssociatedEntity<SignContent>.GetAssociatedEntity(fromItem);

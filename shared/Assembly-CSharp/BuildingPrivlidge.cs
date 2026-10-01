@@ -288,7 +288,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	private void OnDestroyShared_Softcore()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			raidStatusSet?.Remove(this);
 		}
@@ -296,7 +296,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	private void SetDeployedBy(BasePlayer player)
 	{
-		if (!base.isClient && BaseGameMode.GetActiveGameMode(serverside: true) is GameModeSoftcore)
+		if (!isClient && BaseGameMode.GetActiveGameMode(serverside: true) is GameModeSoftcore)
 		{
 			timePlaced = GetNetworkTime();
 		}
@@ -348,7 +348,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public float CalculateUpkeepPeriodMinutes()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return ConVar.Decay.upkeep_period_minutes;
 		}
@@ -357,7 +357,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public float CalculateUpkeepCostFraction(bool doors)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return (doors ? CalculateDoorTaxRate() : CalculateBuildingTaxRate()) * cachedGroupUpkeepMultiplier;
 		}
@@ -416,7 +416,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public float GetProtectedMinutes(bool force = false)
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			if (!force && Time.realtimeSinceStartup < nextProtectedCalcTime)
 			{
@@ -454,7 +454,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		CalculateUpkeepCostAmounts(list);
 		float num = CalculateUpkeepPeriodMinutes();
 		float num2 = -1f;
-		if (base.inventory != null)
+		if (inventory != null)
 		{
 			PooledList<Item> val = Pool.Get<PooledList<Item>>();
 			try
@@ -462,7 +462,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 				foreach (ItemAmount item in list)
 				{
 					((List<Item>)(object)val).Clear();
-					base.inventory.FindItemsByItemID((List<Item>)(object)val, item.itemid);
+					inventory.FindItemsByItemID((List<Item>)(object)val, item.itemid);
 					int num3 = ((IEnumerable<Item>)val).Sum((Item x) => x.amount);
 					if (num3 > 0 && item.amount > 0f)
 					{
@@ -500,7 +500,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			bool flag = false;
 			foreach (ClanMember item in members)
 			{
-				if (item.SteamId == base.OwnerID)
+				if (item.SteamId == OwnerID)
 				{
 					flag = true;
 					break;
@@ -531,7 +531,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	{
 		try
 		{
-			ClanValueResult<IClan> val = await ClanManager.ServerInstance.Backend.GetByMember(base.OwnerID);
+			ClanValueResult<IClan> val = await ClanManager.ServerInstance.Backend.GetByMember(OwnerID);
 			IClan val2 = (val.IsSuccess ? val.Value : null);
 			if (val2 != null)
 			{
@@ -559,7 +559,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		else
 		{
 			bool flag = true;
-			BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(base.isServer);
+			BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(isServer);
 			if ((Object)(object)activeGameMode != (Object)null && activeGameMode is GameModeSoftcore && GetParentEntity() is ContainerCorpse)
 			{
 				flag = false;
@@ -839,7 +839,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			{
 				continue;
 			}
-			base.inventory.Take(list, itemAmount.itemid, num);
+			inventory.Take(list, itemAmount.itemid, num);
 			Facepunch.Rust.Analytics.Azure.AddPendingItems(this, itemAmount.itemDef.shortname, num, "upkeep", consumed: true, perEntity: true);
 			foreach (Item item in list)
 			{
@@ -891,7 +891,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		for (int i = 0; i < itemAmounts.Count; i++)
 		{
 			ItemAmount itemAmount = itemAmounts[i];
-			if ((float)base.inventory.GetAmount(itemAmount.itemid, onlyUsableAmounts: true) < itemAmount.amount)
+			if ((float)inventory.GetAmount(itemAmount.itemid, onlyUsableAmounts: true) < itemAmount.amount)
 			{
 				if (IsDebugging())
 				{
@@ -911,11 +911,11 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		float multiplier = GetEntityUpkeepMultiplier(entity, buildingFraction, doorFraction) * deltaTime / num;
 		List<ItemAmount> itemAmounts = Pool.Get<List<ItemAmount>>();
 		entity.CalculateUpkeepCostAmounts(itemAmounts, multiplier);
-		bool num2 = CanAffordUpkeepPayment(itemAmounts);
+		bool flag = CanAffordUpkeepPayment(itemAmounts);
 		QueueUpkeepPayment(itemAmounts);
 		Pool.FreeUnmanaged<ItemAmount>(ref itemAmounts);
 		ApplyUpkeepPayment();
-		if (!num2)
+		if (!flag)
 		{
 			return 0f;
 		}
@@ -1030,7 +1030,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		authorizedPlayers.Clear();
 		cachedGroupUpkeepMultiplier = 1f;
 		cachedGroupAuthCount = 0;
-		if (base.isServer)
+		if (isServer)
 		{
 			recentGroupMembers.Clear();
 		}
@@ -1115,7 +1115,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			if (!flag && targetSlot == -1)
 			{
 				int num = 0;
-				foreach (Item item2 in base.inventory.itemList)
+				foreach (Item item2 in inventory.itemList)
 				{
 					if (!allowedConstructionItems.Contains(item2.info) && ((Object)(object)item2.info != (Object)(object)item.info || item2.amount == item2.MaxStackable()))
 					{
@@ -1212,7 +1212,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 		else
 		{
-			if (!base.isServer)
+			if (!isServer)
 			{
 				return;
 			}
@@ -1230,7 +1230,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public void BuildingDirty()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			AddDelayedUpdate();
 		}
@@ -1259,9 +1259,9 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		AddDelayedUpdate();
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool bAdded)
+	public override void OnItemAddedOrRemoved(Item item, bool bAdded, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, bAdded);
+		base.OnItemAddedOrRemoved(item, bAdded, sourcePlayer);
 		AddDelayedUpdate();
 	}
 
@@ -1294,8 +1294,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		return baseLock.OnTryToOpen(player);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void AddAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player))
@@ -1334,8 +1334,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player) && Interface.CallHook("OnCupboardDeauthorize", this, rpc.player) == null)
@@ -1345,8 +1345,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void ClearList(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player) && Interface.CallHook("OnCupboardClearList", this, rpc.player) == null)
@@ -1407,7 +1407,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			}
 			for (int i = 24; i <= 27; i++)
 			{
-				if (base.inventory.GetSlot(i) == null)
+				if (inventory.GetSlot(i) == null)
 				{
 					return i;
 				}
@@ -1473,6 +1473,11 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
+	}
+
+	public override bool SupportsRoomOcclusion()
+	{
+		return false;
 	}
 
 	public override void Reskin_Preserve(ref SprayCan.ReskinPreserveInfo preserveInfo)

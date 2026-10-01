@@ -90,17 +90,17 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 
 	public Func<Item, int, bool> slotIsReserved;
 
-	public Action<Item, bool> onItemAddedRemoved;
+	public Action<Item, bool, BasePlayer> onItemAddedRemoved;
 
-	public Action<Item, int, int> onItemPositionChanged;
+	public Action<Item, int, int, BasePlayer> onItemPositionChanged;
 
-	public Action<Item, bool> onItemContentsChanged;
+	public Action<Item, bool, BasePlayer> onItemContentsChanged;
 
-	public Action<Item, int> onItemAddedToStack;
+	public Action<Item, int, BasePlayer> onItemAddedToStack;
 
-	public Action<Item, int> onItemRemovedFromStack;
+	public Action<Item, int, BasePlayer> onItemRemovedFromStack;
 
-	public Action<Item> onPreItemRemove;
+	public Action<Item, BasePlayer> onPreItemRemove;
 
 	public Action<Item, float> onItemRadiationChanged;
 
@@ -233,11 +233,11 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		blockedItems = null;
 		availableSlots.Clear();
 		capacity = 2;
-		if (((ItemContainerId)(ref uid)).IsValid && Net.sv != null)
+		if (uid.IsValid && Net.sv != null)
 		{
 			Net.sv.ReturnUID(uid.Value);
 		}
-		uid = default(ItemContainerId);
+		uid = default;
 		temperature = 15f;
 		parent = null;
 		playerOwner = null;
@@ -277,9 +277,9 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		parent = parentItem;
 		capacity = iMaxCapacity;
-		uid = default(ItemContainerId);
+		uid = default;
 		isServer = true;
-		if (allowedContents == (ContentsType)0)
+		if (allowedContents == 0)
 		{
 			allowedContents = ContentsType.Generic;
 		}
@@ -291,7 +291,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		Assert.IsTrue(!((ItemContainerId)(ref uid)).IsValid, "Calling GiveUID - but already has a uid!");
+		Assert.IsTrue(!uid.IsValid, "Calling GiveUID - but already has a uid!");
 		uid = new ItemContainerId(Net.sv.TakeUID());
 	}
 
@@ -542,7 +542,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 	}
 
-	public bool Insert(Item item)
+	internal bool Insert(Item item, BasePlayer sourcePlayer = null)
 	{
 		if (itemList.Contains(item))
 		{
@@ -561,7 +561,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		MarkDirty();
 		if (onItemAddedRemoved != null)
 		{
-			onItemAddedRemoved(item, arg2: true);
+			onItemAddedRemoved(item, arg2: true, sourcePlayer);
 		}
 		if (item.HasOnCycle)
 		{
@@ -574,9 +574,9 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		ItemContainer itemContainer = parent?.parent;
 		if (itemContainer != null && itemContainer.onItemContentsChanged != null)
 		{
-			itemContainer.onItemContentsChanged(item, arg2: true);
+			itemContainer.onItemContentsChanged(item, arg2: true, sourcePlayer);
 		}
-		Interface.CallHook("OnItemAddedToContainer", this, item);
+		Interface.CallHook("OnItemAddedToContainer", this, item, sourcePlayer);
 		return true;
 	}
 
@@ -716,17 +716,17 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 	}
 
-	public bool Remove(Item item)
+	internal bool Remove(Item item, BasePlayer sourcePlayer = null)
 	{
 		if (!itemList.Contains(item))
 		{
 			return false;
 		}
-		onPreItemRemove?.Invoke(item);
+		onPreItemRemove?.Invoke(item, sourcePlayer);
 		itemList.Remove(item);
 		item.parent = null;
 		onItemParentChanged?.Invoke(parent, item);
-		onItemAddedRemoved?.Invoke(item, arg2: false);
+		onItemAddedRemoved?.Invoke(item, arg2: false, sourcePlayer);
 		if (item.HasOnCycle)
 		{
 			itemsWithOnCycle.Remove(item);
@@ -738,27 +738,26 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		ItemContainer itemContainer = parent?.parent;
 		if (itemContainer != null && itemContainer.onItemContentsChanged != null)
 		{
-			itemContainer.onItemContentsChanged(item, arg2: false);
+			itemContainer.onItemContentsChanged(item, arg2: false, sourcePlayer);
 		}
 		MarkDirty();
-		Interface.CallHook("OnItemRemovedFromContainer", this, item);
+		Interface.CallHook("OnItemRemovedFromContainer", this, item, sourcePlayer);
 		return true;
 	}
 
 	public void UseAmount(ItemDefinition def, ref int amount)
 	{
-		int num = 60;
-		int num2 = 0;
-		while (amount > 0 && num2 < num)
+		int num = itemList.Count - 1;
+		while (num >= 0 && amount > 0)
 		{
-			num2++;
-			Item item = FindItemByItemID(def.itemid);
-			if (item != null)
+			Item item = itemList[num];
+			if (item != null && item.amount > 0 && item.info.itemid == def.itemid)
 			{
-				int num3 = Mathf.Min(amount, item.amount);
-				item.UseItem(num3);
-				amount -= num3;
+				int num2 = Mathf.Min(amount, item.amount);
+				item.UseItem(num2);
+				amount -= num2;
 			}
+			num--;
 		}
 	}
 
@@ -770,14 +769,14 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 		foreach (Item item in itemList)
 		{
-			onPreItemRemove?.Invoke(item);
+			onPreItemRemove?.Invoke(item, null);
 			item.parent = null;
 			item.Remove();
-			onItemAddedRemoved?.Invoke(item, arg2: false);
+			onItemAddedRemoved?.Invoke(item, arg2: false, null);
 			ItemContainer itemContainer = parent?.parent;
 			if (itemContainer != null && itemContainer.onItemContentsChanged != null)
 			{
-				itemContainer.onItemContentsChanged(item, arg2: false);
+				itemContainer.onItemContentsChanged(item, arg2: false, null);
 			}
 		}
 		itemList.Clear();
@@ -799,10 +798,10 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		onItemAddedRemoved = null;
 		onItemContentsChanged = null;
 		onPreItemRemove = null;
-		if (((ItemContainerId)(ref uid)).IsValid && Net.sv != null)
+		if (uid.IsValid && Net.sv != null)
 		{
 			Net.sv.ReturnUID(uid.Value);
-			uid = default(ItemContainerId);
+			uid = default;
 		}
 		Clear();
 	}
@@ -880,7 +879,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	{
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		if (!((NetworkableId)(ref subEntityID)).IsValid)
+		if (!subEntityID.IsValid)
 		{
 			return null;
 		}
@@ -920,6 +919,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public ItemContainer Save(bool bIncludeContainer = true, bool stripBelt = false)
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
@@ -931,7 +931,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = stripBelt && ConVar.AntiHack.hotbar_network_mode == 1;
-		ItemId val = (ItemId)((flag && (Object)(object)playerOwner != (Object)null) ? playerOwner.svActiveItemID : default(ItemId));
+		ItemId val = ((flag && (Object)(object)playerOwner != (Object)null) ? playerOwner.svActiveItemID : default(ItemId));
 		ItemContainer val2 = Pool.Get<ItemContainer>();
 		val2.contents = Pool.Get<List<Item>>();
 		val2.UID = uid;
@@ -1401,7 +1401,15 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		{
 			return;
 		}
-		int num2 = ((limitStack != LimitStack.All) ? int.MaxValue : ((!allowItemsToIncreaseToMaxStackSize) ? Mathf.Min(itemToCreate.stackable, ContainerMaxStackSize()) : Mathf.Max(itemToCreate.stackable, ContainerMaxStackSize())));
+		int num2;
+		if (limitStack != LimitStack.All)
+		{
+			num2 = int.MaxValue;
+		}
+		else
+		{
+			num2 = ((!allowItemsToIncreaseToMaxStackSize) ? Mathf.Min(itemToCreate.stackable, ContainerMaxStackSize()) : Mathf.Max(itemToCreate.stackable, ContainerMaxStackSize()));
+		}
 		if (num2 <= 0)
 		{
 			return;
@@ -1625,7 +1633,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 		if (isServer && availableSlots != null && availableSlots.Count > 0)
 		{
-			if (item.info.occupySlots == (ItemSlot)0 || item.info.occupySlots == ItemSlot.None)
+			if (item.info.occupySlots == 0 || item.info.occupySlots == ItemSlot.None)
 			{
 				return CanAcceptResult.CannotAccept;
 			}

@@ -7,13 +7,13 @@ namespace Rust.Water5;
 
 internal struct NativeOceanDisplacementShort3 : IDisposable
 {
-	public readonly struct ReadOnly
+	public readonly struct ReadOnly(ReadOnly<OceanDisplacementShort3> oceanDisplacementShort3s, int spectrumCount, int frameCount)
 	{
-		private readonly ReadOnly<OceanDisplacementShort3> oceanDisplacementShort3S;
+		private readonly ReadOnly<OceanDisplacementShort3> oceanDisplacementShort3S = oceanDisplacementShort3s;
 
-		private readonly int spectrumCount;
+		private readonly int spectrumCount = spectrumCount;
 
-		private readonly int frameCount;
+		private readonly int frameCount = frameCount;
 
 		public OceanDisplacementShort3 this[int x, int y, int z]
 		{
@@ -24,15 +24,6 @@ internal struct NativeOceanDisplacementShort3 : IDisposable
 				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 				return oceanDisplacementShort3S[z * spectrumCount * frameCount + y * spectrumCount + x];
 			}
-		}
-
-		public ReadOnly(ReadOnly<OceanDisplacementShort3> oceanDisplacementShort3s, int spectrumCount, int frameCount)
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			oceanDisplacementShort3S = oceanDisplacementShort3s;
-			this.spectrumCount = spectrumCount;
-			this.frameCount = frameCount;
 		}
 	}
 
@@ -57,11 +48,11 @@ internal struct NativeOceanDisplacementShort3 : IDisposable
 
 	public int Length => _arr.Length;
 
-	public static Rust.Water5.NativeOceanDisplacementShort3 Create(int x, int y, int z)
+	public static NativeOceanDisplacementShort3 Create(int x, int y, int z)
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		return new Rust.Water5.NativeOceanDisplacementShort3
+		return new NativeOceanDisplacementShort3
 		{
 			_arr = new NativeArray<OceanDisplacementShort3>(x * y * z, (Allocator)4, (NativeArrayOptions)0),
 			spectrumCount = x,
@@ -69,11 +60,11 @@ internal struct NativeOceanDisplacementShort3 : IDisposable
 		};
 	}
 
-	public static Rust.Water5.NativeOceanDisplacementShort3 Create(OceanDisplacementShort3[,,] simData)
+	public static NativeOceanDisplacementShort3 Create(OceanDisplacementShort3[,,] simData)
 	{
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		Rust.Water5.NativeOceanDisplacementShort3 result = new Rust.Water5.NativeOceanDisplacementShort3
+		NativeOceanDisplacementShort3 result = new NativeOceanDisplacementShort3
 		{
 			_arr = new NativeArray<OceanDisplacementShort3>(simData.Length, (Allocator)4, (NativeArrayOptions)1),
 			spectrumCount = simData.GetLength(0),

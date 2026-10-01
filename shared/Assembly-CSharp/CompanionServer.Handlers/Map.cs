@@ -24,15 +24,15 @@ public class Map : BasePlayerHandler<AppEmpty>
 
 	public override ValueTask Execute()
 	{
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
 		if (_imageData == null || !ConVar.Server.mapenabled || ConVar.Server.fogofwar)
 		{
 			SendError("no_map");
-			return default(ValueTask);
+			return default;
 		}
 		AppMap val = Pool.Get<AppMap>();
 		val.width = (uint)_width;
@@ -49,9 +49,18 @@ public class Map : BasePlayerHandler<AppEmpty>
 				{
 					Vector2 val2 = Util.WorldToMap(((Component)landmark).transform.position);
 					Monument val3 = Pool.Get<Monument>();
-					val3.token = (landmark.displayPhrase.IsValid() ? landmark.displayPhrase.token : ((Object)((Component)landmark).transform.root).name);
 					val3.x = val2.x;
 					val3.y = val2.y;
+					if (landmark.displayPhrase.IsValid())
+					{
+						val3.token = landmark.displayPhrase.token;
+						val3.isCustomName = false;
+					}
+					else
+					{
+						val3.token = landmark.GetFallbackName();
+						val3.isCustomName = true;
+					}
 					val.monuments.Add(val3);
 				}
 			}
@@ -59,7 +68,7 @@ public class Map : BasePlayerHandler<AppEmpty>
 		AppResponse val4 = Pool.Get<AppResponse>();
 		val4.map = val;
 		Send(val4);
-		return default(ValueTask);
+		return default;
 	}
 
 	public static void PopulateCache()

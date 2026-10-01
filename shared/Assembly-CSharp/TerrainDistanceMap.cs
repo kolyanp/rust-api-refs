@@ -41,12 +41,12 @@ public class TerrainDistanceMap : TerrainMap<byte>
 	public void GenerateTextures()
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Expected O, but got Unknown
+		//IL_0027: Expected Obj, but got Unknown
 		DistanceTexture = new Texture2D(res, res, (TextureFormat)4, true, true);
 		((Object)DistanceTexture).name = "DistanceTexture";
 		((Texture)DistanceTexture).wrapMode = (TextureWrapMode)1;
-		Color32[] cols = (Color32[])(object)new Color32[res * res];
-		Parallel.For(0, res, delegate(int z)
+		Color32[] cols = new Color32[res * res];
+		Parallel.For(0, res, (int z) =>
 		{
 			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0026: Unknown result type (might be due to invalid IL or missing references)

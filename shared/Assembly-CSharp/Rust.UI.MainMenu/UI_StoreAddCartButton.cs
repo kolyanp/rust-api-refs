@@ -22,8 +22,8 @@ public class UI_StoreAddCartButton : ListComponent<UI_StoreAddCartButton>
 	[SerializeField]
 	private RustText discountText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Animator animator;
 
 	[SerializeField]

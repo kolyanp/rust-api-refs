@@ -45,7 +45,7 @@ public static class EnumerableEx
 			}
 			num++;
 		}
-		return default(T);
+		return default;
 	}
 
 	public static ulong SumULong<TSource>(this IEnumerable<TSource> source, Func<TSource, ulong> selector)

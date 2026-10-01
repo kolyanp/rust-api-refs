@@ -101,7 +101,7 @@ public class PagerEntity : BaseEntity, IRFObject
 
 	public void RFSignalUpdate(bool on)
 	{
-		if (base.IsDestroyed)
+		if (IsDestroyed)
 		{
 			return;
 		}
@@ -166,7 +166,7 @@ public class PagerEntity : BaseEntity, IRFObject
 
 	public void OnParentDestroying()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			((Component)this).transform.parent = null;
 		}
@@ -179,7 +179,7 @@ public class PagerEntity : BaseEntity, IRFObject
 		{
 			frequency = info.msg.ioEntity.genericInt1;
 		}
-		if (base.isServer && info.fromDisk)
+		if (isServer && info.fromDisk)
 		{
 			ChangeFrequency(frequency);
 		}

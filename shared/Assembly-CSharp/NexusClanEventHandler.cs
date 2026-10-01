@@ -22,9 +22,9 @@ public class NexusClanEventHandler : INexusClanEventListener
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		IClanChangeSink changeSink = _changeSink;
 		ClanDisbandedEvent val = args;
-		changeSink.ClanDisbanded(((ClanDisbandedEvent)(ref val)).ClanId);
+		changeSink.ClanDisbanded(val.ClanId);
 		val = args;
-		foreach (ulong member in ((ClanDisbandedEvent)(ref val)).Members)
+		foreach (ulong member in val.Members)
 		{
 			_changeSink.MembershipChanged(member, (long?)null);
 		}
@@ -38,9 +38,9 @@ public class NexusClanEventHandler : INexusClanEventListener
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		IClanChangeSink changeSink = _changeSink;
 		ClanInvitedEvent val = args;
-		ulong playerId = ((ClanInvitedEvent)(ref val)).PlayerId;
+		ulong playerId = val.PlayerId;
 		val = args;
-		changeSink.InvitationCreated(playerId, ((ClanInvitedEvent)(ref val)).ClanId);
+		changeSink.InvitationCreated(playerId, val.ClanId);
 	}
 
 	public void OnJoined(in ClanJoinedEvent args)
@@ -51,9 +51,9 @@ public class NexusClanEventHandler : INexusClanEventListener
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		IClanChangeSink changeSink = _changeSink;
 		ClanJoinedEvent val = args;
-		ulong playerId = ((ClanJoinedEvent)(ref val)).PlayerId;
+		ulong playerId = val.PlayerId;
 		val = args;
-		changeSink.MembershipChanged(playerId, (long?)((ClanJoinedEvent)(ref val)).ClanId);
+		changeSink.MembershipChanged(playerId, (long?)val.ClanId);
 	}
 
 	public void OnKicked(in ClanKickedEvent args)
@@ -62,7 +62,7 @@ public class NexusClanEventHandler : INexusClanEventListener
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		IClanChangeSink changeSink = _changeSink;
 		ClanKickedEvent val = args;
-		changeSink.MembershipChanged(((ClanKickedEvent)(ref val)).PlayerId, (long?)null);
+		changeSink.MembershipChanged(val.PlayerId, (long?)null);
 	}
 
 	public void OnChanged(in ClanChangedEvent args)
@@ -73,10 +73,10 @@ public class NexusClanEventHandler : INexusClanEventListener
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		NexusClanBackend backend = _backend;
 		ClanChangedEvent val = args;
-		backend.UpdateWrapper(((ClanChangedEvent)(ref val)).ClanId);
+		backend.UpdateWrapper(val.ClanId);
 		IClanChangeSink changeSink = _changeSink;
 		val = args;
-		changeSink.ClanChanged(((ClanChangedEvent)(ref val)).ClanId, (ClanDataSource)(-1));
+		changeSink.ClanChanged(val.ClanId, (ClanDataSource)(-1));
 	}
 
 	public void OnUnload(in long clanId)

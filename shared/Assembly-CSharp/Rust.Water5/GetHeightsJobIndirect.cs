@@ -28,7 +28,7 @@ internal struct GetHeightsJobIndirect : IJob
 	public float OneOverOctave0Scale;
 
 	[ReadOnly]
-	public Rust.Water5.NativeOceanDisplacementShort3 SimData;
+	public NativeOceanDisplacementShort3 SimData;
 
 	[ReadOnly]
 	public int Spectrum0;

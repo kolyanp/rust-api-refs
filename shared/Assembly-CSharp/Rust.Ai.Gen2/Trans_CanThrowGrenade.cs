@@ -11,11 +11,11 @@ public class Trans_CanThrowGrenade : FSMSlowTransitionBase
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		if (!State_ThrowGrenade.FindPotentialLandingPoint(base.Senses, out var landingPoint, out var throwVelocity))
+		if (!State_ThrowGrenade.FindPotentialLandingPoint(Senses, out var landingPoint, out var throwVelocity))
 		{
 			return false;
 		}
-		if (!State_ThrowGrenade.ValidateLandingPoint(Owner, base.Senses.EyePosition, landingPoint, throwVelocity, out var _))
+		if (!State_ThrowGrenade.ValidateLandingPoint(Owner, Senses.EyePosition, landingPoint, throwVelocity, out var _))
 		{
 			return false;
 		}

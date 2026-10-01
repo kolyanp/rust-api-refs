@@ -28,7 +28,7 @@ public class LAM_RedirectRaycasting : LegsAnimatorControlModuleBase
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		Quaternion val = Quaternion.Euler(_LocalDirection.GetVector3());
-		Matrix4x4 mx = Matrix4x4.TRS(base.LA.BaseTransform.position, val * base.LA.BaseTransform.rotation, base.LA.BaseTransform.lossyScale);
-		base.LA.User_OverwriteCastMatrix(mx);
+		Matrix4x4 mx = Matrix4x4.TRS(LA.BaseTransform.position, val * LA.BaseTransform.rotation, LA.BaseTransform.lossyScale);
+		LA.User_OverwriteCastMatrix(mx);
 	}
 }

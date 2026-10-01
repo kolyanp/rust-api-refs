@@ -6,8 +6,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_StoreCheckoutResultPage : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private FlexTransition crossFadeTransition;
 
 	[SerializeField]
@@ -29,8 +29,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]
@@ -58,8 +58,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	private UI_StoreTakeover localTakeovers;
 
 	[Space]
-	[Header("Skin Viewer")]
 	[SerializeField]
+	[Header("Skin Viewer")]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]

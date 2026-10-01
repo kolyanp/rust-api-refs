@@ -260,7 +260,7 @@ public class CommunityEntity : PointEntity
 
 	public override void InitShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			ServerInstance = this;
 		}
@@ -274,7 +274,7 @@ public class CommunityEntity : PointEntity
 	public override void DestroyShared()
 	{
 		base.DestroyShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			ServerInstance = null;
 		}

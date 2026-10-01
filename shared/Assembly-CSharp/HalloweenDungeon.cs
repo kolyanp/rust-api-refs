@@ -54,7 +54,7 @@ public class HalloweenDungeon : BasePortal
 
 	public void Update()
 	{
-		if (!base.isClient)
+		if (!isClient)
 		{
 			if (secondsUsed > 0f)
 			{

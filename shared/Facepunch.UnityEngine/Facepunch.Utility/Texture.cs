@@ -16,7 +16,7 @@ public static class Texture
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		Color val = default(Color);
+		Color val = default;
 		for (int i = 0; i < ((Texture)tex).width; i++)
 		{
 			for (int j = 0; j < ((Texture)tex).height; j++)
@@ -40,7 +40,7 @@ public static class Texture
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		Color val = default(Color);
+		Color val = default;
 		for (int i = 0; i < ((Texture)tex).width; i++)
 		{
 			for (int j = 0; j < ((Texture)tex).height; j++)
@@ -73,9 +73,9 @@ public static class Texture
 		}
 		if (array == null)
 		{
-			Texture2D obj = CreateReadableCopy(val);
-			array = ImageConversion.EncodeToPNG(obj);
-			Object.DestroyImmediate((Object)(object)obj);
+			Texture2D val2 = CreateReadableCopy(val);
+			array = ImageConversion.EncodeToPNG(val2);
+			Object.DestroyImmediate((Object)(object)val2);
 		}
 		if (array == null)
 		{
@@ -92,13 +92,13 @@ public static class Texture
 	public static Texture2D CreateReadableCopy(Texture2D texture, int width = 0, int height = 0, bool linear = false)
 	{
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Expected O, but got Unknown
+		//IL_002a: Expected Obj, but got Unknown
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Expected O, but got Unknown
+		//IL_0085: Expected Obj, but got Unknown
 		if (width <= 0)
 		{
 			width = ((Texture)texture).width;

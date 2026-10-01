@@ -22,8 +22,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 
 	private MarchingCubesGenerator[] generators;
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static bool DebugLog = false;
 
 	private static int _generatorPoolCount;
@@ -36,7 +36,7 @@ public class MarchingCubesManager : FacepunchBehaviour
 		{
 			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001d: Expected O, but got Unknown
+			//IL_001d: Expected Obj, but got Unknown
 			if (instance != null)
 			{
 				return instance;
@@ -48,8 +48,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 		}
 	}
 
-	[ServerVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
 	[ClientVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
+	[ServerVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
 	public static int GeneratorPoolCount
 	{
 		get
@@ -63,8 +63,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 		}
 	}
 
-	[ServerVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
 	[ClientVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
+	[ServerVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
 	public static int ColliderMipLevel
 	{
 		get
@@ -137,8 +137,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 		}
 		using (TimeWarning.New("PhysicsBakeComplete"))
 		{
-			((JobHandle)(ref physicsBakeHandle)).Complete();
-			physicsBakeHandle = default(JobHandle);
+			physicsBakeHandle.Complete();
+			physicsBakeHandle = default;
 		}
 		using (TimeWarning.New("PhysicsMeshAssign"))
 		{
@@ -296,7 +296,7 @@ public class MarchingCubesManager : FacepunchBehaviour
 			}
 			using (TimeWarning.New("Schedule Physics Bake"))
 			{
-				physicsBakeHandle = IJobParallelForExtensions.Schedule<UtilityJobs.BakePhysicsMeshesJob>(new UtilityJobs.BakePhysicsMeshesJob
+				physicsBakeHandle = IJobParallelForExtensions.Schedule<BakePhysicsMeshesJob>(new BakePhysicsMeshesJob
 				{
 					MeshIds = val5.AsReadOnly(),
 					Convex = val6.AsReadOnly()

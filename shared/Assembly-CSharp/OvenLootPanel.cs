@@ -24,11 +24,11 @@ public class OvenLootPanel : MonoBehaviour
 
 	public Color OnTextColor;
 
-	private Phrase OffPhrase;
+	private Phrase OffPhrase = new Phrase("off", "off");
 
-	private Phrase OnPhrase;
+	private Phrase OnPhrase = new Phrase("on", "on");
 
-	private Phrase NoFuelPhrase;
+	private Phrase NoFuelPhrase = new Phrase("no_fuel", "No Fuel");
 
 	public GameObject FuelRowPrefab;
 
@@ -44,20 +44,15 @@ public class OvenLootPanel : MonoBehaviour
 
 	public GameObject Contents;
 
-	public GameObject[] ElectricDisableRoots;
+	public GameObject[] ElectricDisableRoots = new GameObject[0];
 
 	public OvenLootPanel()
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Expected O, but got Unknown
+		//IL_0015: Expected Obj, but got Unknown
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Expected O, but got Unknown
+		//IL_002a: Expected Obj, but got Unknown
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Expected O, but got Unknown
-		OffPhrase = new Phrase("off", "off");
-		OnPhrase = new Phrase("on", "on");
-		NoFuelPhrase = new Phrase("no_fuel", "No Fuel");
-		ElectricDisableRoots = (GameObject[])(object)new GameObject[0];
-		((MonoBehaviour)this)._002Ector();
+		//IL_003f: Expected Obj, but got Unknown
 	}
 }

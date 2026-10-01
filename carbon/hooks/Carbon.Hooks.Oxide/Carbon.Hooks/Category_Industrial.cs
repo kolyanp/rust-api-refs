@@ -14,7 +14,7 @@ public class Category_Industrial
 	public class Industrial_IndustrialConveyor
 	{
 		[Patch("OnConveyorFiltersChange", "OnConveyorFiltersChange", "IndustrialConveyor", "RPC_ChangeFilters", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("228b708beabb4d1cade1a7121a9ec7d7")]
+		[Identifier("e6206ed4479741538f8f364d31d1d943")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "IndustrialConveyor", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -22,7 +22,7 @@ public class Category_Industrial
 		[Return(typeof(void))]
 		[Category("Industrial")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Industrial_IndustrialConveyor_228b708beabb4d1cade1a7121a9ec7d7 : Patch
+		public class Industrial_IndustrialConveyor_e6206ed4479741538f8f364d31d1d943 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -62,14 +62,14 @@ public class Category_Industrial
 	public class Industrial_IndustrialCrafter
 	{
 		[Patch("OnItemCraft", "OnItemCraft [IndustrialCrafter]", "IndustrialCrafter", "RunJob", new string[] { })]
-		[Identifier("8996a05e327341f99b61e2729844a291")]
+		[Identifier("1daa968974604d66b69d167ea2d2bdc1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "IndustrialCrafter", false)]
 		[Parameter("local2", "ItemBlueprint", false)]
 		[Return(typeof(void))]
 		[Category("Industrial")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Industrial_IndustrialCrafter_8996a05e327341f99b61e2729844a291 : Patch
+		public class Industrial_IndustrialCrafter_1daa968974604d66b69d167ea2d2bdc1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

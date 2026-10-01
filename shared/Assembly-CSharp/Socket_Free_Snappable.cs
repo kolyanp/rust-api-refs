@@ -44,9 +44,9 @@ public class Socket_Free_Snappable : Socket_Free
 	[ClientVar(Help = "(Generated) When enabled, draws debug visualisations for deployable snapping calculations showing candidate snap points and distances")]
 	public static bool DebugSnapping = false;
 
+	[Header("Snapping - General")]
 	[Range(-1f, 1f)]
 	[SerializeField]
-	[Header("Snapping - General")]
 	private float generalPadding;
 
 	[Range(-1f, 1f)]
@@ -62,12 +62,12 @@ public class Socket_Free_Snappable : Socket_Free
 	[Range(-1f, 1f)]
 	private float cornerPadding = -0.01f;
 
-	[SerializeField]
 	[Header("Snapping - Same Deployable")]
+	[SerializeField]
 	private bool allowSnappingToSameDeployable = true;
 
-	[Range(-1f, 1f)]
 	[SerializeField]
+	[Range(-1f, 1f)]
 	private float sameDeployablePadding;
 
 	private BaseEntity staticEntity;
@@ -152,7 +152,7 @@ public class Socket_Free_Snappable : Socket_Free
 		Vector3 val;
 		if (rayAligned)
 		{
-			direction = ((Ray)(ref target.ray)).direction;
+			direction = target.ray.direction;
 			direction -= up * Vector3.Dot(direction, up);
 			val = -Vector3.Cross(direction, up);
 		}
@@ -244,12 +244,12 @@ public class Socket_Free_Snappable : Socket_Free
 					foreach (RaycastHit item in (List<RaycastHit>)(object)val3)
 					{
 						RaycastHit current = item;
-						if (GamePhysics.LineOfSight(((Ray)(ref target.ray)).origin, ((RaycastHit)(ref current)).point + up * 0.1f, 136314880) && !(Vector3Ex.Distance2D(((Ray)(ref target.ray)).origin, ((RaycastHit)(ref current)).point) > staticConstruction.maxplaceDistance))
+						if (GamePhysics.LineOfSight(target.ray.origin, current.point + up * 0.1f, 136314880) && !(Vector3Ex.Distance2D(target.ray.origin, current.point) > staticConstruction.maxplaceDistance))
 						{
-							float num = ((Bounds)(ref staticEntity.bounds)).extents.y - ((Bounds)(ref staticEntity.bounds)).center.y;
+							float num = staticEntity.bounds.extents.y - staticEntity.bounds.center.y;
 							Vector3 val4 = up * num;
-							target.position = ((RaycastHit)(ref current)).point + val4;
-							float buildingBlockPadding = GetBuildingBlockPadding(((Object)((RaycastHit)(ref current)).collider).name, yPadding: true, ((Component)((RaycastHit)(ref current)).collider).transform, ((RaycastHit)(ref current)).normal);
+							target.position = current.point + val4;
+							float buildingBlockPadding = GetBuildingBlockPadding(((Object)current.collider).name, yPadding: true, ((Component)current.collider).transform, current.normal);
 							ref Vector3 reference = ref target.position;
 							reference += up * buildingBlockPadding;
 						}
@@ -339,7 +339,7 @@ public class Socket_Free_Snappable : Socket_Free
 			return true;
 		}
 		Matrix4x4 worldToLocalMatrix = buildingBlockTransform.worldToLocalMatrix;
-		Vector3 val = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyVector(-rayNormal);
+		Vector3 val = worldToLocalMatrix.MultiplyVector(-rayNormal);
 		float num = Vector3Ex.DotDegrees(worldForward, val);
 		return type switch
 		{
@@ -370,7 +370,7 @@ public class Socket_Free_Snappable : Socket_Free
 			{
 				Quaternion targetRotation = ComputeSnappedRotation(target, bestHit);
 				Vector3 val = ComputeSnappedPosition(target, bestHit, targetRotation);
-				float score = Vector3Ex.Distance2D(target.position, ((RaycastHit)(ref bestHit)).point);
+				float score = Vector3Ex.Distance2D(target.position, bestHit.point);
 				return new SnapResult
 				{
 					Valid = true,
@@ -401,6 +401,7 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
@@ -413,7 +414,7 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
-		bestHit = default(RaycastHit);
+		bestHit = default;
 		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
 		try
 		{
@@ -423,10 +424,9 @@ public class Socket_Free_Snappable : Socket_Free
 			PooledList<RaycastHit> val3 = Pool.Get<PooledList<RaycastHit>>();
 			try
 			{
-				Ray ray = default(Ray);
 				foreach (Vector3 item in (List<Vector3>)(object)val)
 				{
-					((Ray)(ref ray))._002Ector(val2, item);
+					Ray ray = new Ray(val2, item);
 					PooledList<RaycastHit> val4 = Pool.Get<PooledList<RaycastHit>>();
 					try
 					{
@@ -449,9 +449,9 @@ public class Socket_Free_Snappable : Socket_Free
 				foreach (RaycastHit item3 in (List<RaycastHit>)(object)val3)
 				{
 					RaycastHit current3 = item3;
-					if (!(Vector3.Distance(((RaycastHit)(ref current3)).point, ((Ray)(ref target.ray)).origin) > staticConstruction.maxplaceDistance))
+					if (!(Vector3.Distance(current3.point, target.ray.origin) > staticConstruction.maxplaceDistance))
 					{
-						float num2 = Vector3Ex.Distance2D(val2, ((RaycastHit)(ref current3)).point);
+						float num2 = Vector3Ex.Distance2D(val2, current3.point);
 						if (num2 < num)
 						{
 							num = num2;
@@ -531,15 +531,15 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 up = GetUp(target);
-		Vector3 normal = ((RaycastHit)(ref bestHit)).normal;
+		Vector3 normal = bestHit.normal;
 		Quaternion val = ((normal == Vector3.zero) ? Quaternion.identity : Quaternion.LookRotation(normal, up));
-		Vector3 val2 = ((RaycastHit)(ref bestHit)).point - ((Ray)(ref target.ray)).origin;
-		Vector3 val3 = -((Vector3)(ref val2)).normalized;
+		Vector3 val2 = bestHit.point - target.ray.origin;
+		Vector3 val3 = -val2.normalized;
 		val3 -= up * Vector3.Dot(val3, up);
 		Quaternion val4 = Quaternion.LookRotation(val3, up) * Quaternion.Euler(target.rotation);
 		Quaternion val5 = val * Quaternion.Euler(target.rotation);
-		Vector3 val6 = val5 * ((RaycastHit)(ref bestHit)).normal;
-		Vector3 val7 = val4 * ((RaycastHit)(ref bestHit)).normal;
+		Vector3 val6 = val5 * bestHit.normal;
+		Vector3 val7 = val4 * bestHit.normal;
 		if (Mathf.Abs(Vector3.Dot(val7, val6)) < 0.5f)
 		{
 			Quaternion val8 = Quaternion.AngleAxis(Mathf.Round(Vector3.SignedAngle(val6, val7, up) / 90f) * 90f, up);
@@ -614,19 +614,19 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 up = GetUp(target);
-		Vector3 normal = ((RaycastHit)(ref bestHit)).normal;
+		Vector3 normal = bestHit.normal;
 		Matrix4x4 val = Matrix4x4.TRS(target.position, targetRotation, ((Component)staticEntity).transform.lossyScale);
-		Matrix4x4 inverse = ((Matrix4x4)(ref val)).inverse;
-		Vector3 val2 = Vector3.Scale(((Matrix4x4)(ref inverse)).MultiplyVector(normal), ((Bounds)(ref staticEntity.bounds)).extents);
-		Vector3 val3 = ((Matrix4x4)(ref val)).MultiplyVector(val2);
-		Vector3 val4 = targetRotation * ((Bounds)(ref staticEntity.bounds)).center;
+		Matrix4x4 inverse = val.inverse;
+		Vector3 val2 = Vector3.Scale(inverse.MultiplyVector(normal), staticEntity.bounds.extents);
+		Vector3 val3 = val.MultiplyVector(val2);
+		Vector3 val4 = targetRotation * staticEntity.bounds.center;
 		val4 -= up * Vector3.Dot(val4, up);
 		float num = Vector3.Dot(val4, normal);
-		Vector3 val5 = ((RaycastHit)(ref bestHit)).point + normal * snappingPadding + val3 - normal * num;
+		Vector3 val5 = bestHit.point + normal * snappingPadding + val3 - normal * num;
 		val5 += normal * generalPadding;
-		if ((Object)(object)((RaycastHit)(ref bestHit)).collider != (Object)null)
+		if ((Object)(object)bestHit.collider != (Object)null)
 		{
-			float buildingBlockPadding = GetBuildingBlockPadding(((Object)((RaycastHit)(ref bestHit)).collider).name, yPadding: false, ((Component)((RaycastHit)(ref bestHit)).collider).transform, ((RaycastHit)(ref bestHit)).normal);
+			float buildingBlockPadding = GetBuildingBlockPadding(((Object)bestHit.collider).name, yPadding: false, ((Component)bestHit.collider).transform, bestHit.normal);
 			val5 += normal * buildingBlockPadding;
 		}
 		float num2 = Vector3.Dot(target.position, up);
@@ -667,11 +667,11 @@ public class Socket_Free_Snappable : Socket_Free
 		{
 			if (TryFindCornerHits(target, out var hitA, out var hitB))
 			{
-				RaycastHit bestHit = ((Vector3Ex.Distance2D(target.position, ((RaycastHit)(ref hitA)).point) < Vector3Ex.Distance2D(target.position, ((RaycastHit)(ref hitB)).point)) ? hitA : hitB);
+				RaycastHit bestHit = ((Vector3Ex.Distance2D(target.position, hitA.point) < Vector3Ex.Distance2D(target.position, hitB.point)) ? hitA : hitB);
 				Quaternion targetRotation = ComputeSnappedRotation(target, bestHit);
 				Vector3 val = ComputeCornerSnappedPosition(target, hitA, hitB, targetRotation);
-				float num = Vector3Ex.Distance2D(target.position, ((RaycastHit)(ref hitA)).point);
-				float num2 = Vector3Ex.Distance2D(target.position, ((RaycastHit)(ref hitB)).point);
+				float num = Vector3Ex.Distance2D(target.position, hitA.point);
+				float num2 = Vector3Ex.Distance2D(target.position, hitB.point);
 				float num3 = Mathf.Min(num, num2);
 				num3 *= 0.7f;
 				return new SnapResult
@@ -705,6 +705,7 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
@@ -735,8 +736,8 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0213: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
-		hitA = default(RaycastHit);
-		hitB = default(RaycastHit);
+		hitA = default;
+		hitB = default;
 		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
 		try
 		{
@@ -747,10 +748,9 @@ public class Socket_Free_Snappable : Socket_Free
 			PooledList<RaycastHit> val3 = Pool.Get<PooledList<RaycastHit>>();
 			try
 			{
-				Ray ray = default(Ray);
 				foreach (Vector3 item in (List<Vector3>)(object)val)
 				{
-					((Ray)(ref ray))._002Ector(val2, item);
+					Ray ray = new Ray(val2, item);
 					PooledList<RaycastHit> val4 = Pool.Get<PooledList<RaycastHit>>();
 					try
 					{
@@ -782,15 +782,15 @@ public class Socket_Free_Snappable : Socket_Free
 						if (!((Object)(object)entity2 == (Object)null) && entity2.net != null && !(entity.net.ID == entity2.net.ID))
 						{
 							RaycastHit val5 = ((List<RaycastHit>)(object)val3)[i];
-							Vector3 normal = ((RaycastHit)(ref val5)).normal;
+							Vector3 normal = val5.normal;
 							val5 = ((List<RaycastHit>)(object)val3)[j];
-							Vector3 normal2 = ((RaycastHit)(ref val5)).normal;
-							float num2 = Mathf.Abs(Vector3.Dot(((Vector3)(ref normal)).normalized, ((Vector3)(ref normal2)).normalized));
+							Vector3 normal2 = val5.normal;
+							float num2 = Mathf.Abs(Vector3.Dot(normal.normalized, normal2.normalized));
 							val5 = ((List<RaycastHit>)(object)val3)[i];
-							float num3 = Vector3Ex.Distance2D(val2, ((RaycastHit)(ref val5)).point);
+							float num3 = Vector3Ex.Distance2D(val2, val5.point);
 							float num4 = num3;
 							val5 = ((List<RaycastHit>)(object)val3)[j];
-							num3 = num4 + Vector3Ex.Distance2D(val2, ((RaycastHit)(ref val5)).point);
+							num3 = num4 + Vector3Ex.Distance2D(val2, val5.point);
 							if (num2 < 0.3f && num3 < num)
 							{
 								hitA = ((List<RaycastHit>)(object)val3)[i];
@@ -835,14 +835,14 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3.Cross(normal1, normal2);
-		if (((Vector3)(ref val)).sqrMagnitude < Mathf.Epsilon)
+		if (val.sqrMagnitude < Mathf.Epsilon)
 		{
 			return Vector3.zero;
 		}
 		float num = Vector3.Dot(normal1, point1);
 		float num2 = Vector3.Dot(normal2, point2);
 		Vector3 val2 = Vector3.Cross(normal2, val) * num + Vector3.Cross(val, normal1) * num2;
-		float num3 = ((Vector3)(ref val)).magnitude * ((Vector3)(ref val)).magnitude;
+		float num3 = val.magnitude * val.magnitude;
 		return val2 / num3;
 	}
 
@@ -936,33 +936,33 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0207: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normal = ((RaycastHit)(ref hitA)).normal;
-		Vector3 normal2 = ((RaycastHit)(ref hitB)).normal;
+		Vector3 normal = hitA.normal;
+		Vector3 normal2 = hitB.normal;
 		Vector3 up = GetUp(target);
 		normal -= up * Vector3.Dot(normal, up);
 		normal2 -= up * Vector3.Dot(normal2, up);
-		Vector3 planeIntersectionPoint = GetPlaneIntersectionPoint(normal, ((RaycastHit)(ref hitA)).point, normal2, ((RaycastHit)(ref hitB)).point);
+		Vector3 planeIntersectionPoint = GetPlaneIntersectionPoint(normal, hitA.point, normal2, hitB.point);
 		float num = Vector3.Dot(target.position, up);
 		float num2 = Vector3.Dot(planeIntersectionPoint, up);
 		Vector3 val = planeIntersectionPoint + up * (num - num2);
 		Vector3 val2 = normal + normal2;
-		Vector3 normalized = ((Vector3)(ref val2)).normalized;
-		Vector3 val3 = targetRotation * ((Bounds)(ref staticEntity.bounds)).center;
+		Vector3 normalized = val2.normalized;
+		Vector3 val3 = targetRotation * staticEntity.bounds.center;
 		Matrix4x4 val4 = Matrix4x4.TRS(val + val3, targetRotation, ((Component)staticEntity).transform.lossyScale);
-		Matrix4x4 inverse = ((Matrix4x4)(ref val4)).inverse;
-		Vector3 val5 = Vector3.Scale(((Matrix4x4)(ref inverse)).MultiplyVector(normal), ((Bounds)(ref staticEntity.bounds)).extents);
-		inverse = ((Matrix4x4)(ref val4)).inverse;
-		Vector3 val6 = Vector3.Scale(((Matrix4x4)(ref inverse)).MultiplyVector(normal2), ((Bounds)(ref staticEntity.bounds)).extents);
-		Vector3 val7 = ((Matrix4x4)(ref val4)).MultiplyVector(val5 + val6);
+		Matrix4x4 inverse = val4.inverse;
+		Vector3 val5 = Vector3.Scale(inverse.MultiplyVector(normal), staticEntity.bounds.extents);
+		inverse = val4.inverse;
+		Vector3 val6 = Vector3.Scale(inverse.MultiplyVector(normal2), staticEntity.bounds.extents);
+		Vector3 val7 = val4.MultiplyVector(val5 + val6);
 		Vector3 val8 = val + val7 + normalized * cornerPadding + normalized * generalPadding;
 		float num3 = 0f;
-		if ((Object)(object)((RaycastHit)(ref hitA)).collider != (Object)null)
+		if ((Object)(object)hitA.collider != (Object)null)
 		{
-			num3 = Mathf.Max(num3, GetBuildingBlockPadding(((Object)((RaycastHit)(ref hitA)).collider).name, yPadding: false, ((Component)((RaycastHit)(ref hitA)).collider).transform, ((RaycastHit)(ref hitA)).normal));
+			num3 = Mathf.Max(num3, GetBuildingBlockPadding(((Object)hitA.collider).name, yPadding: false, ((Component)hitA.collider).transform, hitA.normal));
 		}
-		if ((Object)(object)((RaycastHit)(ref hitB)).collider != (Object)null)
+		if ((Object)(object)hitB.collider != (Object)null)
 		{
-			num3 = Mathf.Max(num3, GetBuildingBlockPadding(((Object)((RaycastHit)(ref hitB)).collider).name, yPadding: false, ((Component)((RaycastHit)(ref hitB)).collider).transform, ((RaycastHit)(ref hitB)).normal));
+			num3 = Mathf.Max(num3, GetBuildingBlockPadding(((Object)hitB.collider).name, yPadding: false, ((Component)hitB.collider).transform, hitB.normal));
 		}
 		Vector3 val9 = val8 + normalized * num3;
 		float num4 = Vector3.Dot(target.position, up);
@@ -992,9 +992,9 @@ public class Socket_Free_Snappable : Socket_Free
 		{
 			if (TryFindMatchingDeployables(target, out var bestHit))
 			{
-				Quaternion targetRotation = ((RaycastHit)(ref bestHit)).transform.rotation;
+				Quaternion targetRotation = bestHit.transform.rotation;
 				Vector3 val = ComputeSnappedMatchingDeployablePosition(target, bestHit, targetRotation);
-				float num = Vector3Ex.Distance2D(target.position, ((RaycastHit)(ref bestHit)).point);
+				float num = Vector3Ex.Distance2D(target.position, bestHit.point);
 				if (target.entity.prefabID == staticEntity.prefabID)
 				{
 					num *= 0.9f;
@@ -1104,10 +1104,10 @@ public class Socket_Free_Snappable : Socket_Free
 			return target.position;
 		}
 		OBB val = entity.WorldSpaceBounds();
-		Vector3 val2 = ((RaycastHit)(ref bestHit)).point - val.position;
+		Vector3 val2 = bestHit.point - val.position;
 		Vector3 up = GetUp(target);
 		val2 -= up * Vector3.Dot(val2, up);
-		Vector3[] obj = new Vector3[4]
+		Vector3[] array = new Vector3[4]
 		{
 			val.right,
 			-val.right,
@@ -1116,8 +1116,8 @@ public class Socket_Free_Snappable : Socket_Free
 		};
 		Vector3 val3 = val.forward;
 		float num = -1f;
-		Vector3[] array = (Vector3[])(object)obj;
-		foreach (Vector3 val4 in array)
+		Vector3[] array2 = array;
+		foreach (Vector3 val4 in array2)
 		{
 			float num2 = Vector3.Dot(val2, val4);
 			if (num2 > num)
@@ -1127,10 +1127,10 @@ public class Socket_Free_Snappable : Socket_Free
 			}
 		}
 		Matrix4x4 val5 = Matrix4x4.TRS(target.position, targetRotation, ((Component)staticEntity).transform.lossyScale);
-		Matrix4x4 inverse = ((Matrix4x4)(ref val5)).inverse;
-		Vector3 val6 = Vector3.Scale(((Matrix4x4)(ref inverse)).MultiplyVector(((Vector3)(ref val3)).normalized), ((Bounds)(ref staticEntity.bounds)).size);
-		Vector3 val7 = ((Matrix4x4)(ref val5)).MultiplyVector(val6);
-		Vector3 val8 = targetRotation * ((Bounds)(ref staticEntity.bounds)).center;
+		Matrix4x4 inverse = val5.inverse;
+		Vector3 val6 = Vector3.Scale(inverse.MultiplyVector(val3.normalized), staticEntity.bounds.size);
+		Vector3 val7 = val5.MultiplyVector(val6);
+		Vector3 val8 = targetRotation * staticEntity.bounds.center;
 		val8 -= up * Vector3.Dot(val8, up);
 		float num3 = Vector3.Dot(val8, val3);
 		return ((Component)entity).transform.position + val3 * sameDeployablePadding + val7 - val3 * num3 + val3 * generalPadding;
@@ -1150,6 +1150,7 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
@@ -1163,7 +1164,7 @@ public class Socket_Free_Snappable : Socket_Free
 		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		bestHit = default(RaycastHit);
+		bestHit = default;
 		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
 		try
 		{
@@ -1173,10 +1174,9 @@ public class Socket_Free_Snappable : Socket_Free
 			PooledList<RaycastHit> val3 = Pool.Get<PooledList<RaycastHit>>();
 			try
 			{
-				Ray ray = default(Ray);
 				foreach (Vector3 item in (List<Vector3>)(object)val)
 				{
-					((Ray)(ref ray))._002Ector(val2, item);
+					Ray ray = new Ray(val2, item);
 					PooledList<RaycastHit> val4 = Pool.Get<PooledList<RaycastHit>>();
 					try
 					{
@@ -1188,7 +1188,7 @@ public class Socket_Free_Snappable : Socket_Free
 						foreach (RaycastHit item2 in (List<RaycastHit>)(object)val4)
 						{
 							RaycastHit current2 = item2;
-							if (!((Object)(object)((RaycastHit)(ref current2)).collider == (Object)null))
+							if (!((Object)(object)current2.collider == (Object)null))
 							{
 								BaseEntity entity = RaycastHitEx.GetEntity(current2);
 								if (!((Object)(object)entity == (Object)null) && ShouldDeployableSnap(staticEntity, entity))
@@ -1207,9 +1207,9 @@ public class Socket_Free_Snappable : Socket_Free
 				foreach (RaycastHit item3 in (List<RaycastHit>)(object)val3)
 				{
 					RaycastHit current3 = item3;
-					if (!(Vector3.Distance(((RaycastHit)(ref current3)).point, ((Ray)(ref target.ray)).origin) > staticConstruction.maxplaceDistance))
+					if (!(Vector3.Distance(current3.point, target.ray.origin) > staticConstruction.maxplaceDistance))
 					{
-						float num2 = Vector3Ex.Distance2D(val2, ((RaycastHit)(ref current3)).point);
+						float num2 = Vector3Ex.Distance2D(val2, current3.point);
 						if (num2 < num)
 						{
 							num = num2;
@@ -1249,9 +1249,9 @@ public class Socket_Free_Snappable : Socket_Free
 			{
 				return false;
 			}
-			ItemDefinition obj = (((Object)(object)pickup.itemTarget.isRedirectOf == (Object)null) ? pickup.itemTarget : pickup.itemTarget.isRedirectOf);
-			ItemDefinition itemDefinition = (((Object)(object)pickup2.itemTarget.isRedirectOf == (Object)null) ? pickup2.itemTarget : pickup2.itemTarget.isRedirectOf);
-			return (Object)(object)obj == (Object)(object)itemDefinition;
+			ItemDefinition itemDefinition = (((Object)(object)pickup.itemTarget.isRedirectOf == (Object)null) ? pickup.itemTarget : pickup.itemTarget.isRedirectOf);
+			ItemDefinition itemDefinition2 = (((Object)(object)pickup2.itemTarget.isRedirectOf == (Object)null) ? pickup2.itemTarget : pickup2.itemTarget.isRedirectOf);
+			return (Object)(object)itemDefinition == (Object)(object)itemDefinition2;
 		}
 		return ent.prefabID == other.prefabID;
 	}

@@ -157,7 +157,7 @@ public class Plugin : BaseHookable, IDisposable
 			{
 				foreach (string item in requirees)
 				{
-					Logger.Warn(" [" + base.Name + "] Loading '" + Path.GetFileNameWithoutExtension(item) + "' to parent's request: '" + ToPrettyString() + "'");
+					Logger.Warn(" [" + Name + "] Loading '" + Path.GetFileNameWithoutExtension(item) + "' to parent's request: '" + ToPrettyString() + "'");
 					Community.Runtime.ScriptProcessor.Prepare(item);
 					Community.Runtime.ZipScriptProcessor.Prepare(item);
 				}
@@ -189,7 +189,7 @@ public class Plugin : BaseHookable, IDisposable
 						Community.Runtime.HookManager.Unsubscribe(HookStringPool.GetOrAdd(hook), FileName);
 					}
 				}
-				MethodInfo[] methods = base.HookableType.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
+				MethodInfo[] methods = HookableType.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
 				foreach (MethodInfo methodInfo in methods)
 				{
 					InternalHooks.Handle(methodInfo.Name, subscribed: false);
@@ -200,7 +200,7 @@ public class Plugin : BaseHookable, IDisposable
 		{
 			Logger.Error($"Failed calling Plugin.IUnload.UnprocessHooks on {this}", ex);
 		}
-		base.HasInitialized = false;
+		HasInitialized = false;
 	}
 
 	internal bool InternalApplyPluginReferences()
@@ -236,7 +236,7 @@ public class Plugin : BaseHookable, IDisposable
 					VersionNumber versionNumber = new VersionNumber(pluginReference.MinVersion);
 					if (versionNumber.IsValid() && plugin.Version < versionNumber)
 					{
-						Logger.Warn(string.Format("Plugin '{0} by {1} v{2}' references a required plugin which is outdated: {3} by {4} v{5} < v{6}", new object[7] { base.Name, Author, Version, plugin.Name, plugin.Author, plugin.Version, versionNumber }));
+						Logger.Warn(string.Format("Plugin '{0} by {1} v{2}' references a required plugin which is outdated: {3} by {4} v{5} < v{6}", new object[7] { Name, Author, Version, plugin.Name, plugin.Author, plugin.Version, versionNumber }));
 						return false;
 					}
 					field.SetValue(this, plugin);
@@ -252,7 +252,7 @@ public class Plugin : BaseHookable, IDisposable
 					{
 						ModLoader.PostBatchFailedRequirees.Add(FilePath);
 						ModLoader.AddPendingRequiree(initial, FilePath);
-						Logger.Warn(string.Format("Plugin '{0} by {1} v{2}' references a required plugin which is not loaded: {3}", new object[4] { base.Name, Author, Version, text }));
+						Logger.Warn(string.Format("Plugin '{0} by {1} v{2}' references a required plugin which is not loaded: {3}", new object[4] { Name, Author, Version, text }));
 						return false;
 					}
 				}
@@ -280,7 +280,7 @@ public class Plugin : BaseHookable, IDisposable
 					list2.AddRange(package.Plugins);
 					foreach (Plugin item in list2.Where((Plugin plugin2) => plugin2.Requires != null && plugin2.Requires.Contains(this)))
 					{
-						Logger.Warn(" [" + base.Name + "] Unloading '" + item.ToPrettyString() + "' because parent '" + ToPrettyString() + "' has been unloaded.");
+						Logger.Warn(" [" + Name + "] Unloading '" + item.ToPrettyString() + "' because parent '" + ToPrettyString() + "' has been unloaded.");
 						ModLoader.AddPendingRequiree(this, item);
 						IBaseProcessor processor = item.Processor;
 						if (processor is IScriptProcessor scriptProcessor)
@@ -664,7 +664,7 @@ public class Plugin : BaseHookable, IDisposable
 
 	public void QueueWorkerThread(Action<object> callback)
 	{
-		ThreadPool.QueueUserWorkItem(delegate(object context)
+		ThreadPool.QueueUserWorkItem((object context) =>
 		{
 			try
 			{
@@ -672,14 +672,14 @@ public class Plugin : BaseHookable, IDisposable
 			}
 			catch (Exception ex)
 			{
-				Logger.Error($"Worker thread callback failed in '{base.Name} v{Version}'", ex);
+				Logger.Error($"Worker thread callback failed in '{Name} v{Version}'", ex);
 			}
 		});
 	}
 
 	protected virtual void LoadConfig()
 	{
-		Config = new DynamicConfigFile(Path.Combine(Manager.ConfigPath, base.Name + ".json"));
+		Config = new DynamicConfigFile(Path.Combine(Manager.ConfigPath, Name + ".json"));
 		if (!Config.Exists())
 		{
 			CallHook("LoadDefaultConfig");
@@ -741,6 +741,7 @@ public class Plugin : BaseHookable, IDisposable
 				Hooks = null;
 				HookMethods = null;
 				PluginReferences = null;
+				HookSubscriberIndex.Invalidate();
 			}
 		}
 		catch (Exception ex)

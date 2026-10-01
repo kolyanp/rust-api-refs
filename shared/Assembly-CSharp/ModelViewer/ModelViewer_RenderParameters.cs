@@ -29,130 +29,130 @@ public class ModelViewer_RenderParameters
 	}
 
 	[Header("Anti Aliasing")]
-	public PostProcessLayer.Antialiasing antialiasing;
+	public PostProcessLayer.Antialiasing antialiasing = PostProcessLayer.Antialiasing.TemporalAntialiasing;
 
-	[Range(1f, 4f)]
 	[Header("Shadows")]
-	public int shadowCascades;
+	[Range(1f, 4f)]
+	public int shadowCascades = 4;
 
 	[Range(1f, 3f)]
-	public int shadowLights;
+	public int shadowLights = 3;
 
 	[Range(1f, 4f)]
-	public int shadowMode;
+	public int shadowMode = 4;
 
-	public float shadowDistance;
+	public float shadowDistance = 50f;
 
 	[Range(0f, 3f)]
-	public int shadowQuality;
+	public int shadowQuality = 3;
 
 	[Range(0f, 0.02f)]
-	public float shadowSoftness;
+	public float shadowSoftness = 0.01f;
 
 	[Range(0f, 2f)]
-	public float sunShadowBias;
+	public float sunShadowBias = 0.01f;
 
 	[Header("Contact Shadows")]
 	[Header("                ")]
-	public bool enableContactShadows;
+	public bool enableContactShadows = true;
 
 	[Range(0f, 1f)]
-	public float blendStrength;
+	public float blendStrength = 1f;
 
 	[Range(0f, 1f)]
-	public float accumulation;
+	public float accumulation = 0.9f;
 
 	[Range(0.1f, 5f)]
-	public float lengthFade;
+	public float lengthFade = 0.7f;
 
 	[Range(0.01f, 5f)]
-	public float range;
+	public float range = 0.7f;
 
 	[Range(0f, 1f)]
-	public float zThickness;
+	public float zThickness = 0.1f;
 
 	[Range(2f, 92f)]
-	public int samples;
+	public int samples = 32;
 
 	[Range(0.5f, 4f)]
-	public float nearSampleQuality;
+	public float nearSampleQuality = 1.5f;
 
 	[Range(0f, 1f)]
-	public float traceBias;
+	public float traceBias = 0.03f;
 
 	[Header("                ")]
 	[Header("Ambient Occlusion")]
-	public bool enableAmbientOcclusion;
+	public bool enableAmbientOcclusion = true;
 
-	public SampleCountLevel SampleCount;
+	public SampleCountLevel SampleCount = SampleCountLevel.Medium;
 
-	public float Intensity;
+	public float Intensity = 1f;
 
-	public Color Tint;
+	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
-	public float Radius;
+	[Range(0f, 32f)]
+	public float Radius = 2f;
 
-	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
-	public float PowerExponent;
+	[Tooltip("Power exponent attenuation of the occlusion.")]
+	public float PowerExponent = 1.8f;
 
 	[Tooltip("Controls the initial occlusion contribution offset.")]
 	[Range(0f, 0.99f)]
-	public float Bias;
+	public float Bias = 0.05f;
 
 	[Tooltip("Controls the thickness occlusion contribution.")]
 	[Range(0f, 1f)]
-	public float Thickness;
+	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
-	public bool Downsample;
+	public bool Downsample = true;
 
 	[Tooltip("Control parameters at faraway.")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance in Unity unities that start to fade.")]
-	public float FadeStart;
+	public float FadeStart = 100f;
 
 	[Tooltip("Length distance to performe the transition.")]
-	public float FadeLength;
+	public float FadeLength = 50f;
 
-	[Tooltip("Final Intensity parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Intensity parameter.")]
 	public float FadeToIntensity;
 
-	public Color FadeToTint;
+	public Color FadeToTint = Color.black;
 
 	[Range(0f, 32f)]
 	[Tooltip("Final Radius parameter.")]
-	public float FadeToRadius;
+	public float FadeToRadius = 2f;
 
 	[Range(0f, 16f)]
 	[Tooltip("Final PowerExponent parameter.")]
-	public float FadeToPowerExponent;
+	public float FadeToPowerExponent = 1.8f;
 
 	[Tooltip("Final Thickness parameter.")]
 	[Range(0f, 1f)]
-	public float FadeToThickness;
+	public float FadeToThickness = 1f;
 
 	[Header("Reflections")]
 	[Header("                ")]
-	public ReflectionProbeMode Type;
+	public ReflectionProbeMode Type = (ReflectionProbeMode)1;
 
-	public ReflectionProbeRefreshMode RefreshMode;
+	public ReflectionProbeRefreshMode RefreshMode = (ReflectionProbeRefreshMode)1;
 
-	public ReflectionProbeTimeSlicingMode TimeSlicing;
+	public ReflectionProbeTimeSlicingMode TimeSlicing = (ReflectionProbeTimeSlicingMode)1;
 
 	public renderResolution resolution;
 
-	public float reflectionShadowDistance;
+	public float reflectionShadowDistance = 100f;
 
 	public LayerMask cullingMask;
 
-	public float reflectionClippingPlaneNear;
+	public float reflectionClippingPlaneNear = 0.1f;
 
-	public float reflectionClippingPlaneFar;
+	public float reflectionClippingPlaneFar = 100f;
 
 	public ModelViewer_RenderParameters()
 	{
@@ -163,44 +163,5 @@ public class ModelViewer_RenderParameters
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		antialiasing = PostProcessLayer.Antialiasing.TemporalAntialiasing;
-		shadowCascades = 4;
-		shadowLights = 3;
-		shadowMode = 4;
-		shadowDistance = 50f;
-		shadowQuality = 3;
-		shadowSoftness = 0.01f;
-		sunShadowBias = 0.01f;
-		enableContactShadows = true;
-		blendStrength = 1f;
-		accumulation = 0.9f;
-		lengthFade = 0.7f;
-		range = 0.7f;
-		zThickness = 0.1f;
-		samples = 32;
-		nearSampleQuality = 1.5f;
-		traceBias = 0.03f;
-		enableAmbientOcclusion = true;
-		SampleCount = SampleCountLevel.Medium;
-		Intensity = 1f;
-		Tint = Color.black;
-		Radius = 2f;
-		PowerExponent = 1.8f;
-		Bias = 0.05f;
-		Thickness = 1f;
-		Downsample = true;
-		FadeStart = 100f;
-		FadeLength = 50f;
-		FadeToTint = Color.black;
-		FadeToRadius = 2f;
-		FadeToPowerExponent = 1.8f;
-		FadeToThickness = 1f;
-		Type = (ReflectionProbeMode)1;
-		RefreshMode = (ReflectionProbeRefreshMode)1;
-		TimeSlicing = (ReflectionProbeTimeSlicingMode)1;
-		reflectionShadowDistance = 100f;
-		reflectionClippingPlaneNear = 0.1f;
-		reflectionClippingPlaneFar = 100f;
-		base._002Ector();
 	}
 }

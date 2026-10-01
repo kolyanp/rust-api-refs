@@ -26,7 +26,7 @@ internal sealed class HookManager : AddonManager
 			if (extension == ".dll")
 			{
 				Assembly assembly = _loader.Load(file, requester, _directories)?.Assembly ?? throw new ReflectionTypeLoadException(null, null, null);
-				if (!base.AssemblyManager.IsType<Patch>(assembly, out var _))
+				if (!AssemblyManager.IsType<Patch>(assembly, out var _))
 				{
 					throw new Exception("Unsupported assembly type");
 				}

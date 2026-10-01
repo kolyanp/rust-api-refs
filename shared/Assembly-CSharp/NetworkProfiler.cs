@@ -13,9 +13,9 @@ public static class NetworkProfiler
 
 	private static uint ResolvePrefabId(ulong entityId, bool serverRealm)
 	{
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		NetworkableId uid = default(NetworkableId);
-		((NetworkableId)(ref uid))._002Ector(entityId);
+		NetworkableId uid = new NetworkableId(entityId);
 		if (serverRealm)
 		{
 			BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(uid);
@@ -47,7 +47,7 @@ public static class NetworkProfiler
 		num = Mathf.Clamp(num, 0.1f, 1000f);
 		NetProfileCapture.Start(num);
 		Chat.Broadcast($"Server is taking a network snapshot for {num} seconds...", "SERVER", "#eee", 0uL);
-		InvokeHandler.Invoke((Behaviour)(object)SingletonComponent<InvokeHandler>.Instance, delegate
+		InvokeHandler.Invoke((Behaviour)(object)SingletonComponent<InvokeHandler>.Instance, () =>
 		{
 			Chat.Broadcast("Done!", "SERVER", "#eee", 0uL);
 			ExportProfile();

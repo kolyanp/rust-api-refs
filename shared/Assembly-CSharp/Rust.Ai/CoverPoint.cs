@@ -117,7 +117,7 @@ public class CoverPoint
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Position - point;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		return Vector3.Dot(Normal, normalized) < arcThreshold;
 	}
 }

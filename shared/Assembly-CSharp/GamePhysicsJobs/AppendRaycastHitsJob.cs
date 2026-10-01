@@ -32,13 +32,13 @@ internal struct AppendRaycastHitsJob : IJob
 		int num = Src.Length / SrcMaxHitsPerBatch;
 		for (int i = 0; i < num; i++)
 		{
-			int num2 = GamePhysicsJobs.Util.FindFreeSlot(i, in Dst, DstMaxHitsPerBatch, out var endInd);
+			int num2 = Util.FindFreeSlot(i, in Dst, DstMaxHitsPerBatch, out var endInd);
 			int num3 = i * SrcMaxHitsPerBatch;
 			int num4 = num3 + SrcMaxHitsPerBatch;
 			while (num2 < endInd && num3 < num4)
 			{
 				RaycastHit val = Src[num3++];
-				if (((RaycastHit)(ref val)).normal == Vector3.zero)
+				if (val.normal == Vector3.zero)
 				{
 					break;
 				}
@@ -46,7 +46,7 @@ internal struct AppendRaycastHitsJob : IJob
 			}
 			if (num2 < endInd)
 			{
-				Dst[num2] = default(RaycastHit);
+				Dst[num2] = default;
 			}
 		}
 	}

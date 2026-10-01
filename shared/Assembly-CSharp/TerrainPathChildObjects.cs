@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TerrainPathChildObjects : MonoBehaviour
 {
-	public bool Spline;
+	public bool Spline = true;
 
 	public float Width;
 
@@ -12,17 +12,17 @@ public class TerrainPathChildObjects : MonoBehaviour
 	public float Fade;
 
 	[InspectorFlags]
-	public Enum Splat;
+	public Enum Splat = (Enum)1;
 
 	[InspectorFlags]
-	public Enum Topology;
+	public Enum Topology = (Enum)2048;
 
 	public InfrastructureType Type;
 
 	protected void Awake()
 	{
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Expected O, but got Unknown
+		//IL_0034: Expected Obj, but got Unknown
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010f: Expected I4, but got Unknown
@@ -111,9 +111,5 @@ public class TerrainPathChildObjects : MonoBehaviour
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		Spline = true;
-		Splat = (Enum)1;
-		Topology = (Enum)2048;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

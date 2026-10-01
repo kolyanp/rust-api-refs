@@ -9,24 +9,13 @@ using UnityEngine;
 
 public class GenerateErosion : ProceduralComponent
 {
-	public struct SplatPaintingData : IDisposable
+	public struct SplatPaintingData(NativeArray<float> heightMapDelta, NativeArray<float> angleMap) : IDisposable
 	{
-		public bool IsValid;
+		public bool IsValid = true;
 
-		public readonly NativeArray<float> HeightMapDelta;
+		public readonly NativeArray<float> HeightMapDelta = heightMapDelta;
 
-		public readonly NativeArray<float> AngleMap;
-
-		public SplatPaintingData(NativeArray<float> heightMapDelta, NativeArray<float> angleMap)
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			HeightMapDelta = heightMapDelta;
-			AngleMap = angleMap;
-			IsValid = true;
-		}
+		public readonly NativeArray<float> AngleMap = angleMap;
 
 		public void Dispose()
 		{
@@ -312,10 +301,10 @@ public class GenerateErosion : ProceduralComponent
 			float invGridCellSquareSize = 1f / num;
 			float pipeLength = 1f;
 			float pipeArea = 1f;
-			JobHandle val3 = default(JobHandle);
+			JobHandle val3 = default;
 			NativeArray<float> val4 = new NativeArray<float>(src.Length, (Allocator)4, (NativeArrayOptions)1);
 			NativeArray<float> val5 = new NativeArray<float>(val4, (Allocator)4);
-			val3 = IJobParallelForBatchExtensions.Schedule<GenerateErosionJobs.PrepareMapJob>(new GenerateErosionJobs.PrepareMapJob
+			val3 = IJobParallelForBatchExtensions.Schedule<PrepareMapJob>(new PrepareMapJob
 			{
 				HeightMapAsShort = src.AsReadOnly(),
 				HeightMapAsFloat = val4,
@@ -324,7 +313,7 @@ public class GenerateErosion : ProceduralComponent
 				TerrainPositionY = TerrainMeta.Position.y,
 				TerrainSizeY = TerrainMeta.Size.y
 			}, src.Length, GetBatchSize(src.Length), val3);
-			val3 = IJobParallelForExtensions.Schedule<GenerateErosionJobs.CalcMinHeightMapJob>(new GenerateErosionJobs.CalcMinHeightMapJob
+			val3 = IJobParallelForExtensions.Schedule<CalcMinHeightMapJob>(new CalcMinHeightMapJob
 			{
 				TerrainHeightMap = val4.AsReadOnly(),
 				MinTerrainHeightMap = minTerrainHeightMap,
@@ -334,20 +323,20 @@ public class GenerateErosion : ProceduralComponent
 				OceanHeight = WaterSystem.OceanLevel,
 				TerrainOneOverSizeX = TerrainMeta.OneOverSize.x
 			}, val4.Length, GetBatchSize(val4.Length), val3);
-			((JobHandle)(ref val3)).Complete();
-			val3 = default(JobHandle);
+			val3.Complete();
+			val3 = default;
 			NativeArray<float> copyTarget2 = new NativeArray<float>(src.Length, (Allocator)4, (NativeArrayOptions)1);
-			GenerateErosionJobs.CopyArrayJob<float> obj = new GenerateErosionJobs.CopyArrayJob<float>
+			CopyArrayJob<float> copyArrayJob = new CopyArrayJob<float>
 			{
 				CopyTarget = copyTarget2,
 				CopySource = val4
 			};
-			GenerateErosionJobs.CopyArrayJob<float> copyArrayJob = new GenerateErosionJobs.CopyArrayJob<float>
+			CopyArrayJob<float> copyArrayJob2 = new CopyArrayJob<float>
 			{
 				CopyTarget = val5,
 				CopySource = val4
 			};
-			val3 = JobHandle.CombineDependencies(IJobExtensions.Schedule<GenerateErosionJobs.CopyArrayJob<float>>(obj, val3), IJobExtensions.Schedule<GenerateErosionJobs.CopyArrayJob<float>>(copyArrayJob, val3));
+			val3 = JobHandle.CombineDependencies(IJobExtensions.Schedule<CopyArrayJob<float>>(copyArrayJob, val3), IJobExtensions.Schedule<CopyArrayJob<float>>(copyArrayJob2, val3));
 			int num2 = 32;
 			int num3 = 32;
 			int num4 = (heightMap.res + num2 - 1) / num2;
@@ -355,22 +344,22 @@ public class GenerateErosion : ProceduralComponent
 			int num6 = num4 * num5;
 			for (int i = 0; i < 512; i++)
 			{
-				GenerateErosionJobs.RefillOceanJob refillOceanJob = new GenerateErosionJobs.RefillOceanJob
+				RefillOceanJob refillOceanJob = new RefillOceanJob
 				{
 					OceanIndices = val.AsReadOnly(),
 					HeightMap = val4.AsReadOnly(),
 					OceanLevel = WaterSystem.OceanLevel,
 					WaterMap = waterMap
 				};
-				val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.RefillOceanJob>(ref refillOceanJob, val.Length, GetBatchSize(val.Length), val3);
-				GenerateErosionJobs.WaterIncrementationJob waterIncrementationJob = new GenerateErosionJobs.WaterIncrementationJob
+				val3 = IJobParallelForExtensions.ScheduleByRef<RefillOceanJob>(ref refillOceanJob, val.Length, GetBatchSize(val.Length), val3);
+				WaterIncrementationJob waterIncrementationJob = new WaterIncrementationJob
 				{
 					WaterMap = waterMap,
 					WaterFillRate = 0.04f,
 					DT = 0.06f
 				};
-				val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.WaterIncrementationJob>(ref waterIncrementationJob, waterMap.Length, GetBatchSize(waterMap.Length), val3);
-				GenerateErosionJobs.CalculateOutputFluxJob calculateOutputFluxJob = new GenerateErosionJobs.CalculateOutputFluxJob
+				val3 = IJobParallelForExtensions.ScheduleByRef<WaterIncrementationJob>(ref waterIncrementationJob, waterMap.Length, GetBatchSize(waterMap.Length), val3);
+				CalculateOutputFluxJob calculateOutputFluxJob = new CalculateOutputFluxJob
 				{
 					TerrainHeightMapFloatVal = val4.AsReadOnly(),
 					WaterMap = waterMap.AsReadOnly(),
@@ -381,8 +370,8 @@ public class GenerateErosion : ProceduralComponent
 					PipeLength = pipeLength,
 					PipeArea = pipeArea
 				};
-				val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.CalculateOutputFluxJob>(ref calculateOutputFluxJob, fluxMap.Length, GetBatchSize(fluxMap.Length), val3);
-				GenerateErosionJobs.AdjustWaterHeightByFluxJob adjustWaterHeightByFluxJob = new GenerateErosionJobs.AdjustWaterHeightByFluxJob
+				val3 = IJobParallelForExtensions.ScheduleByRef<CalculateOutputFluxJob>(ref calculateOutputFluxJob, fluxMap.Length, GetBatchSize(fluxMap.Length), val3);
+				AdjustWaterHeightByFluxJob adjustWaterHeightByFluxJob = new AdjustWaterHeightByFluxJob
 				{
 					WaterMap = waterMap,
 					VelocityMap = velocityMap,
@@ -391,8 +380,8 @@ public class GenerateErosion : ProceduralComponent
 					DT = 0.06f,
 					InvGridCellSquareSize = invGridCellSquareSize
 				};
-				val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.AdjustWaterHeightByFluxJob>(ref adjustWaterHeightByFluxJob, waterMap.Length, GetBatchSize(waterMap.Length), val3);
-				GenerateErosionJobs.TileCalculateAngleMap tileCalculateAngleMap = new GenerateErosionJobs.TileCalculateAngleMap
+				val3 = IJobParallelForExtensions.ScheduleByRef<AdjustWaterHeightByFluxJob>(ref adjustWaterHeightByFluxJob, waterMap.Length, GetBatchSize(waterMap.Length), val3);
+				TileCalculateAngleMap tileCalculateAngleMap = new TileCalculateAngleMap
 				{
 					AngleMap = angleMap,
 					TerrainHeightMapSrcFloat = val4.AsReadOnly(),
@@ -402,8 +391,8 @@ public class GenerateErosion : ProceduralComponent
 					TileSizeZ = num3,
 					NumXTiles = num4
 				};
-				val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.TileCalculateAngleMap>(ref tileCalculateAngleMap, num6, num6 / JobsUtility.JobWorkerCount, val3);
-				GenerateErosionJobs.ErosionAndDepositionJob erosionAndDepositionJob = new GenerateErosionJobs.ErosionAndDepositionJob
+				val3 = IJobParallelForExtensions.ScheduleByRef<TileCalculateAngleMap>(ref tileCalculateAngleMap, num6, num6 / JobsUtility.JobWorkerCount, val3);
+				ErosionAndDepositionJob erosionAndDepositionJob = new ErosionAndDepositionJob
 				{
 					SedimentMap = val2,
 					MinTerrainHeightMap = minTerrainHeightMap.AsReadOnly(),
@@ -414,19 +403,19 @@ public class GenerateErosion : ProceduralComponent
 					AngleMap = angleMap.AsReadOnly(),
 					DT = 0.06f
 				};
-				val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.ErosionAndDepositionJob>(ref erosionAndDepositionJob, val2.Length, GetBatchSize(val2.Length), val3);
-				GenerateErosionJobs.CopyArrayJob<float> copyArrayJob2 = new GenerateErosionJobs.CopyArrayJob<float>
+				val3 = IJobParallelForExtensions.ScheduleByRef<ErosionAndDepositionJob>(ref erosionAndDepositionJob, val2.Length, GetBatchSize(val2.Length), val3);
+				CopyArrayJob<float> copyArrayJob3 = new CopyArrayJob<float>
 				{
 					CopyTarget = copyTarget,
 					CopySource = val2
 				};
-				val3 = IJobExtensions.ScheduleByRef<GenerateErosionJobs.CopyArrayJob<float>>(ref copyArrayJob2, val3);
-				GenerateErosionJobs.CopyArrayJob<float> copyArrayJob3 = new GenerateErosionJobs.CopyArrayJob<float>
+				val3 = IJobExtensions.ScheduleByRef<CopyArrayJob<float>>(ref copyArrayJob3, val3);
+				CopyArrayJob<float> copyArrayJob4 = new CopyArrayJob<float>
 				{
 					CopyTarget = val4,
 					CopySource = val5
 				};
-				GenerateErosionJobs.TransportSedimentJob transportSedimentJob = new GenerateErosionJobs.TransportSedimentJob
+				TransportSedimentJob transportSedimentJob = new TransportSedimentJob
 				{
 					SedimentMap = val2,
 					SedimentReadOnlyMap = copyTarget.AsReadOnly(),
@@ -434,31 +423,31 @@ public class GenerateErosion : ProceduralComponent
 					Res = heightMap.res,
 					DT = 0.06f
 				};
-				val3 = JobHandle.CombineDependencies(IJobExtensions.ScheduleByRef<GenerateErosionJobs.CopyArrayJob<float>>(ref copyArrayJob3, val3), IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.TransportSedimentJob>(ref transportSedimentJob, val2.Length, GetBatchSize(val2.Length), val3));
-				GenerateErosionJobs.EvaporationJob evaporationJob = new GenerateErosionJobs.EvaporationJob
+				val3 = JobHandle.CombineDependencies(IJobExtensions.ScheduleByRef<CopyArrayJob<float>>(ref copyArrayJob4, val3), IJobParallelForExtensions.ScheduleByRef<TransportSedimentJob>(ref transportSedimentJob, val2.Length, GetBatchSize(val2.Length), val3));
+				EvaporationJob evaporationJob = new EvaporationJob
 				{
 					WaterMap = waterMap,
 					DT = 0.06f,
 					EvaporationRate = 0.015f
 				};
-				val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.EvaporationJob>(ref evaporationJob, waterMap.Length, GetBatchSize(waterMap.Length), val3);
+				val3 = IJobParallelForExtensions.ScheduleByRef<EvaporationJob>(ref evaporationJob, waterMap.Length, GetBatchSize(waterMap.Length), val3);
 			}
-			GenerateErosionJobs.CopyBackFloatHeightToShortHeightJob copyBackFloatHeightToShortHeightJob = new GenerateErosionJobs.CopyBackFloatHeightToShortHeightJob
+			CopyBackFloatHeightToShortHeightJob copyBackFloatHeightToShortHeightJob = new CopyBackFloatHeightToShortHeightJob
 			{
 				HeightMapAsFloat = val4.AsReadOnly(),
 				HeightMapAsShort = dst,
 				TerrainOneOverSizeY = TerrainMeta.OneOverSize.y,
 				TerrainPositionY = TerrainMeta.Position.y
 			};
-			val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.CopyBackFloatHeightToShortHeightJob>(ref copyBackFloatHeightToShortHeightJob, val4.Length, GetBatchSize(val4.Length), val3);
+			val3 = IJobParallelForExtensions.ScheduleByRef<CopyBackFloatHeightToShortHeightJob>(ref copyBackFloatHeightToShortHeightJob, val4.Length, GetBatchSize(val4.Length), val3);
 			NativeArray<float> val6 = new NativeArray<float>(val4.Length, (Allocator)4, (NativeArrayOptions)1);
-			GenerateErosionJobs.PopulateDeltaHeightJob populateDeltaHeightJob = new GenerateErosionJobs.PopulateDeltaHeightJob
+			PopulateDeltaHeightJob populateDeltaHeightJob = new PopulateDeltaHeightJob
 			{
 				HeightMapOriginal = copyTarget2.AsReadOnly(),
 				HeightMap = val4.AsReadOnly(),
 				DeltaHeightMap = val6
 			};
-			val3 = IJobParallelForExtensions.ScheduleByRef<GenerateErosionJobs.PopulateDeltaHeightJob>(ref populateDeltaHeightJob, val6.Length, GetBatchSize(val6.Length), val3);
+			val3 = IJobParallelForExtensions.ScheduleByRef<PopulateDeltaHeightJob>(ref populateDeltaHeightJob, val6.Length, GetBatchSize(val6.Length), val3);
 			minTerrainHeightMap.Dispose(val3);
 			waterMap.Dispose(val3);
 			fluxMap.Dispose(val3);
@@ -469,7 +458,7 @@ public class GenerateErosion : ProceduralComponent
 			val5.Dispose(val3);
 			val.Dispose(val3);
 			copyTarget2.Dispose(val3);
-			((JobHandle)(ref val3)).Complete();
+			val3.Complete();
 			heightMap.Pop();
 			splatPaintingData = new SplatPaintingData(val6, angleMap);
 		}
@@ -491,6 +480,7 @@ public class GenerateErosion : ProceduralComponent
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0365: Unknown result type (might be due to invalid IL or missing references)
 		//IL_036f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
@@ -535,12 +525,11 @@ public class GenerateErosion : ProceduralComponent
 		float[] erosion = new float[erosion_res * erosion_res];
 		int deposit_res = splatmap.res;
 		float[] deposit = new float[deposit_res * deposit_res];
-		Vector3 val = default(Vector3);
 		for (float num = TerrainMeta.Position.z; num < TerrainMeta.Position.z + TerrainMeta.Size.z; num += 10f)
 		{
 			for (float num2 = TerrainMeta.Position.x; num2 < TerrainMeta.Position.x + TerrainMeta.Size.x; num2 += 10f)
 			{
-				((Vector3)(ref val))._002Ector(num2, 0f, num);
+				Vector3 val = new Vector3(num2, 0f, num);
 				float num3 = (val.y = heightmap.GetHeight(val));
 				if (val.y <= 15f)
 				{
@@ -552,7 +541,7 @@ public class GenerateErosion : ProceduralComponent
 					continue;
 				}
 				Vector2 val2 = Vector3Ex.XZ2D(normal);
-				Vector2 normalized = ((Vector2)(ref val2)).normalized;
+				Vector2 normalized = val2.normalized;
 				Vector2 val3 = normalized;
 				float num4 = 0f;
 				float num5 = 0f;
@@ -581,8 +570,8 @@ public class GenerateErosion : ProceduralComponent
 					normal = heightmap.GetNormal(val);
 					Vector2 val4 = normalized;
 					val2 = Vector3Ex.XZ2D(normal);
-					val2 = Vector2.Lerp(val4, ((Vector2)(ref val2)).normalized, 0.5f);
-					normalized = ((Vector2)(ref val2)).normalized;
+					val2 = Vector2.Lerp(val4, val2.normalized, 0.5f);
+					normalized = val2.normalized;
 					num3 = num8;
 					float num9 = 0f;
 					float num10 = 0f;
@@ -610,7 +599,7 @@ public class GenerateErosion : ProceduralComponent
 				}
 			}
 		}
-		Parallel.For(1, erosion_res - 1, delegate(int z)
+		Parallel.For(1, erosion_res - 1, (int z) =>
 		{
 			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 			for (int j = 1; j < erosion_res - 1; j++)
@@ -620,7 +609,7 @@ public class GenerateErosion : ProceduralComponent
 				heightmap.AddHeight(j, z, delta);
 			}
 		});
-		Parallel.For(1, deposit_res - 1, delegate(int z)
+		Parallel.For(1, deposit_res - 1, (int z) =>
 		{
 			for (int j = 1; j < deposit_res - 1; j++)
 			{

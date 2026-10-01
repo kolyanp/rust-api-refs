@@ -6,17 +6,17 @@ public class VolumeCloudsCameraContext : RustRendererFeatureCameraContext
 {
 	public int currUpdate;
 
-	public bool firstFrame;
+	public bool firstFrame = true;
 
-	public Matrix4x4 lastViewProj;
+	public Matrix4x4 lastViewProj = Matrix4x4.identity;
 
-	public Matrix4x4 currViewProj;
+	public Matrix4x4 currViewProj = Matrix4x4.identity;
 
-	public Matrix4x4 projMat;
+	public Matrix4x4 projMat = Matrix4x4.identity;
 
-	public Matrix4x4 inverseViewMat;
+	public Matrix4x4 inverseViewMat = Matrix4x4.identity;
 
-	public Matrix4x4 projToWorld;
+	public Matrix4x4 projToWorld = Matrix4x4.identity;
 
 	public RenderTexture upscaledOutputRT;
 
@@ -44,12 +44,5 @@ public class VolumeCloudsCameraContext : RustRendererFeatureCameraContext
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		firstFrame = true;
-		lastViewProj = Matrix4x4.identity;
-		currViewProj = Matrix4x4.identity;
-		projMat = Matrix4x4.identity;
-		inverseViewMat = Matrix4x4.identity;
-		projToWorld = Matrix4x4.identity;
-		((RustRendererFeatureCameraContext)this)._002Ector();
 	}
 }

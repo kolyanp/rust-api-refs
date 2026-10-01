@@ -435,7 +435,7 @@ public abstract class BaseNetwork
 	{
 		if (delayedReadCount <= 0)
 		{
-			item = default(DelayedRead);
+			item = default;
 			return false;
 		}
 		item = delayedReads[delayedReadHead];

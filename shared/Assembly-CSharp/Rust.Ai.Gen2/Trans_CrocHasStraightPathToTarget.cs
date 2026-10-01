@@ -17,17 +17,17 @@ internal class Trans_CrocHasStraightPathToTarget : FSMTransitionBase
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("Trans_CrocHasStraightPathToTarget"))
 		{
-			if (!base.Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target))
 			{
 				return false;
 			}
 			Vector3 targetPositionWS = ((Component)target).transform.position;
-			if (target.IsNonNpcPlayer() && base.Agent.canSwim && base.Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
+			if (target.IsNonNpcPlayer() && Agent.canSwim && Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
 			{
 				targetPositionWS = Vector3Ex.WithY(((Component)target).transform.position, status.lastWaterInfo.Value.terrainHeight);
 			}
 			NavMeshHit hitWS;
-			return !base.Agent.Raycast(targetPositionWS, out hitWS);
+			return !Agent.Raycast(targetPositionWS, out hitWS);
 		}
 	}
 }

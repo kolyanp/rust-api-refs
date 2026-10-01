@@ -4,7 +4,7 @@ public class TriggerVehiclePush : TriggerBase, IServerComponent
 {
 	public BaseEntity thisEntity;
 
-	public float maxPushVelocity;
+	public float maxPushVelocity = 10f;
 
 	public float minRadius;
 
@@ -12,7 +12,7 @@ public class TriggerVehiclePush : TriggerBase, IServerComponent
 
 	public bool snapToAxis;
 
-	public Vector3 axisToSnapTo;
+	public Vector3 axisToSnapTo = Vector3.right;
 
 	public bool allowParentRigidbody;
 
@@ -110,7 +110,7 @@ public class TriggerVehiclePush : TriggerBase, IServerComponent
 			if (Object.op_Implicit((Object)(object)val) && !val.isKinematic)
 			{
 				float num = Vector3Ex.Distance2D(useRigidbodyPosition ? ((Component)val).transform.position : ((Component)entityContent).transform.position, ((Component)this).transform.position);
-				float num2 = (((Bounds)(ref entityContent.bounds)).extents.x + ((Bounds)(ref entityContent.bounds)).extents.z) / 2f;
+				float num2 = (entityContent.bounds.extents.x + entityContent.bounds.extents.z) / 2f;
 				num -= num2;
 				float num3 = 1f - Mathf.InverseLerp(minRadius, maxRadius, num);
 				float num4 = 1f - Mathf.InverseLerp(minRadius - 1f, minRadius, num);
@@ -163,8 +163,5 @@ public class TriggerVehiclePush : TriggerBase, IServerComponent
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		maxPushVelocity = 10f;
-		axisToSnapTo = Vector3.right;
-		base._002Ector();
 	}
 }

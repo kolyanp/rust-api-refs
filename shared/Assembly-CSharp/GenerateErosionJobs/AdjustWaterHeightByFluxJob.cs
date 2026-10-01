@@ -31,6 +31,7 @@ internal struct AdjustWaterHeightByFluxJob : IJobParallelFor
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
@@ -75,8 +76,7 @@ internal struct AdjustWaterHeightByFluxJob : IJobParallelFor
 		}
 		float4 val = FluxMap[index];
 		float num3 = math.csum(val);
-		int4x2 val2 = default(int4x2);
-		((int4x2)(ref val2))._002Ector(new int4(num - 1, num + 1, num, num), new int4(num2, num2, num2 + 1, num2 - 1));
+		int4x2 val2 = new int4x2(new int4(num - 1, num + 1, num, num), new int4(num2, num2, num2 + 1, num2 - 1));
 		val2.c0 = val2.c1 * Res + val2.c0;
 		float y = FluxMap[val2.c0.x].y;
 		float x = FluxMap[val2.c0.y].x;

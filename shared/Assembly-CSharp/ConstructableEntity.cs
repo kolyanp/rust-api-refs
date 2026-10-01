@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConVar;
@@ -11,6 +12,10 @@ public class ConstructableEntity : StorageContainer
 	public List<ItemAmount> ingredients = new List<ItemAmount>();
 
 	private int[] currentMaterials;
+
+	[Tooltip("Fewest hammer hits this can be finished in.")]
+	[Min(1f)]
+	public int hitsToComplete = 10;
 
 	public GameObjectRef entityToSpawn;
 
@@ -30,7 +35,11 @@ public class ConstructableEntity : StorageContainer
 
 	private int currentState;
 
+	private int hitsToCompleteClamped => Mathf.Max(1, hitsToComplete);
+
 	public override bool ValidateMeleeColliderAntihack => false;
+
+	public virtual bool AcceptsRepairs => true;
 
 	private void SetState(int index)
 	{
@@ -63,11 +72,19 @@ public class ConstructableEntity : StorageContainer
 		num = Mathf.Clamp(num, 0, states.Length - 1);
 		if (num != currentState)
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				timePlaced = GetNetworkTime();
 			}
 			SetState(num);
+		}
+	}
+
+	private void EnsureCurrentMaterialsValid()
+	{
+		if (currentMaterials == null || currentMaterials.Length != ingredients.Count)
+		{
+			Array.Resize(ref currentMaterials, ingredients.Count);
 		}
 	}
 
@@ -94,7 +111,7 @@ public class ConstructableEntity : StorageContainer
 			float num = Mathf.Max(0f, ingredients[i].amount - (float)currentMaterials[i]);
 			if (!(num <= 0f))
 			{
-				int num2 = Mathf.CeilToInt(ingredients[i].amount / 10f);
+				int num2 = Mathf.CeilToInt(ingredients[i].amount / (float)hitsToCompleteClamped);
 				if (num > (float)num2)
 				{
 					return false;
@@ -104,20 +121,38 @@ public class ConstructableEntity : StorageContainer
 		return true;
 	}
 
+	public bool IsFullyBuilt()
+	{
+		for (int i = 0; i < ingredients.Count; i++)
+		{
+			if ((float)currentMaterials[i] < ingredients[i].amount)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public override void ServerInit()
 	{
+		EnsureCurrentMaterialsValid();
 		SetState(0);
 		base.ServerInit();
 	}
 
 	public override void OnRepairFinished(BasePlayer player)
 	{
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
 		base.OnRepairFinished(player);
-		ulong ownerID = base.OwnerID;
+		OnConstructionComplete(player);
+	}
+
+	protected virtual void OnConstructionComplete(BasePlayer player)
+	{
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		ulong ownerID = OwnerID;
 		Kill();
 		BaseEntity baseEntity = GameManager.server.CreateEntity(entityToSpawn.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation);
 		baseEntity.OwnerID = ownerID;
@@ -133,9 +168,19 @@ public class ConstructableEntity : StorageContainer
 		return 5f;
 	}
 
+	public void ForceBuildProgress(bool complete)
+	{
+		for (int i = 0; i < ingredients.Count; i++)
+		{
+			currentMaterials[i] = (complete ? Mathf.CeilToInt(ingredients[i].amount) : 0);
+		}
+		UpdateState();
+		SendNetworkUpdate();
+	}
+
 	public override void DoRepair(BasePlayer player)
 	{
-		if (!CanRepair(player))
+		if (!AcceptsRepairs || !CanRepair(player))
 		{
 			return;
 		}
@@ -147,7 +192,7 @@ public class ConstructableEntity : StorageContainer
 			float num2 = Mathf.Max(0f, itemAmount.amount - (float)currentMaterials[i]);
 			if (num2 != 0f)
 			{
-				int num3 = Mathf.CeilToInt(itemAmount.amount / 10f);
+				int num3 = Mathf.CeilToInt(itemAmount.amount / (float)hitsToCompleteClamped);
 				int num4 = player.inventory.GetAmount(itemAmount.itemid);
 				if (player.IsInCreativeMode && Creative.freeRepair)
 				{
@@ -201,18 +246,6 @@ public class ConstructableEntity : StorageContainer
 		}
 	}
 
-	private bool IsFullyBuilt()
-	{
-		for (int i = 0; i < ingredients.Count; i++)
-		{
-			if ((float)currentMaterials[i] < ingredients[i].amount)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
 	private float GetTotalRequiredMaterials()
 	{
 		float num = 0f;
@@ -255,14 +288,6 @@ public class ConstructableEntity : StorageContainer
 	{
 		base.Save(info);
 		info.msg.constructableEntity = Pool.Get<ConstructableEntity>();
-		if (currentMaterials == null || CollectionEx.IsEmpty(currentMaterials))
-		{
-			currentMaterials = new int[ingredients.Count];
-			for (int i = 0; i < ingredients.Count; i++)
-			{
-				currentMaterials[i] = 0;
-			}
-		}
 		info.msg.constructableEntity.addedResources = currentMaterials.ToList();
 	}
 

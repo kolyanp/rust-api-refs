@@ -29,9 +29,9 @@ public class EnumListUI : MonoBehaviour
 		}
 		foreach (object value in values)
 		{
-			Transform obj = Object.Instantiate<Transform>(PrefabItem);
-			obj.SetParent(Container, false);
-			((Component)obj).GetComponent<EnumListItemUI>().Init(value, value.ToString(), this);
+			Transform val = Object.Instantiate<Transform>(PrefabItem);
+			val.SetParent(Container, false);
+			((Component)val).GetComponent<EnumListItemUI>().Init(value, value.ToString(), this);
 		}
 	}
 

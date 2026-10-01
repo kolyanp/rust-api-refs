@@ -66,14 +66,14 @@ public static class GamePhysics
 					{
 						num = (_003C_003E1__state = 0);
 						_003C_003Eu__1 = awaiter;
-						((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter, _003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T>>(ref awaiter, ref this);
+						_003C_003Et__builder.AwaitUnsafeOnCompleted<UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter, _003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T>>(ref awaiter, ref this);
 						return;
 					}
 				}
 				else
 				{
 					awaiter = _003C_003Eu__1;
-					_003C_003Eu__1 = default(UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter);
+					_003C_003Eu__1 = default;
 					num = (_003C_003E1__state = -1);
 				}
 				awaiter.GetResult();
@@ -104,11 +104,11 @@ public static class GamePhysics
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
-				((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				_003C_003Et__builder.SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
-			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+			_003C_003Et__builder.SetResult();
 		}
 
 		void IAsyncStateMachine.MoveNext()
@@ -120,7 +120,7 @@ public static class GamePhysics
 		[DebuggerHidden]
 		private void SetStateMachine(IAsyncStateMachine stateMachine)
 		{
-			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+			_003C_003Et__builder.SetStateMachine(stateMachine);
 		}
 
 		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
@@ -132,11 +132,11 @@ public static class GamePhysics
 
 	public const int BufferLength = 32768;
 
-	private static RaycastHit[] hitBuffer = (RaycastHit[])(object)new RaycastHit[32768];
+	private static RaycastHit[] hitBuffer = new RaycastHit[32768];
 
-	private static RaycastHit[] hitBufferB = (RaycastHit[])(object)new RaycastHit[32768];
+	private static RaycastHit[] hitBufferB = new RaycastHit[32768];
 
-	private static Collider[] colBuffer = (Collider[])(object)new Collider[32768];
+	private static Collider[] colBuffer = new Collider[32768];
 
 	[ServerVar(Help = "How many results to collect per command - DONT set this too low or you'll risk missing results", Default = "48")]
 	public static int DefaultMaxResultsPerQuery = 48;
@@ -261,6 +261,7 @@ public static class GamePhysics
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
@@ -298,13 +299,12 @@ public static class GamePhysics
 		using (TimeWarning.New("GamePhysics.CheckCapsules"))
 		{
 			ReadOnly<int> layerMasks2 = layerMasks;
-			NativeArray<int> array = default(NativeArray<int>);
+			NativeArray<int> array = default;
 			if (validate != MasksToValidate.None)
 			{
 				array = new NativeArray<int>(layerMasks.Length, (Allocator)3, (NativeArrayOptions)0);
 				layerMasks.CopyTo(array);
-				NativeArray<Vector3> results2 = default(NativeArray<Vector3>);
-				results2._002Ector(starts.Length, (Allocator)3, (NativeArrayOptions)0);
+				NativeArray<Vector3> results2 = new NativeArray<Vector3>(starts.Length, (Allocator)3, (NativeArrayOptions)0);
 				CalcMidpoingJob calcMidpoingJob = new CalcMidpoingJob
 				{
 					Results = results2,
@@ -331,7 +331,7 @@ public static class GamePhysics
 			IJobExtensions.RunByRef<GenerateOverlapCapsuleCommandsJob>(ref generateOverlapCapsuleCommandsJob);
 			NativeArrayEx.SafeDispose(ref array);
 			NativeArray<ColliderHit> hits = new NativeArray<ColliderHit>(starts.Length, (Allocator)3, (NativeArrayOptions)0);
-			JobHandle val2 = default(JobHandle);
+			JobHandle val2 = default;
 			val2 = ((!mitigateSpheres) ? ExecuteOverlapCapsuleCommands(val, hits, 1) : MitigateSphereCapsuleCommands(val, hits, 1));
 			val.Dispose(val2);
 			CheckHitsJob checkHitsJob = new CheckHitsJob
@@ -391,8 +391,8 @@ public static class GamePhysics
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		layerMask = HandleIgnoreCollision(((Bounds)(ref bounds)).center, layerMask);
-		return Physics.CheckBox(((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).extents, Quaternion.identity, layerMask, triggerInteraction);
+		layerMask = HandleIgnoreCollision(bounds.center, layerMask);
+		return Physics.CheckBox(bounds.center, bounds.extents, Quaternion.identity, layerMask, triggerInteraction);
 	}
 
 	public static void CheckBounds(ReadOnly<Vector3> centers, ReadOnly<Vector3> halfExtents, ReadOnly<int> layerMasks, NativeArray<bool> results, QueryTriggerInteraction triggerInteraction = (QueryTriggerInteraction)1, MasksToValidate validate = MasksToValidate.All)
@@ -400,6 +400,7 @@ public static class GamePhysics
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
@@ -410,6 +411,7 @@ public static class GamePhysics
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
@@ -418,22 +420,22 @@ public static class GamePhysics
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		ReadOnly<int> layerMasks2 = layerMasks;
-		NativeArray<int> array = default(NativeArray<int>);
+		NativeArray<int> array = default;
 		if (validate != MasksToValidate.None)
 		{
-			array._002Ector(layerMasks.Length, (Allocator)3, (NativeArrayOptions)0);
+			array = new NativeArray<int>(layerMasks.Length, (Allocator)3, (NativeArrayOptions)0);
 			layerMasks.CopyTo(array);
 			HandleIgnoreCollision(centers, array, validate);
 			layerMasks2 = array.AsReadOnly();
 		}
-		NativeArray<OverlapBoxCommand> val = default(NativeArray<OverlapBoxCommand>);
-		val._002Ector(centers.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<OverlapBoxCommand> val = new NativeArray<OverlapBoxCommand>(centers.Length, (Allocator)3, (NativeArrayOptions)0);
 		IJobExtensions.Run<GenerateOverlapBoxCommandsJob>(new GenerateOverlapBoxCommandsJob
 		{
 			BoxCommands = val,
@@ -445,10 +447,9 @@ public static class GamePhysics
 			HitMultipleFaces = false
 		});
 		NativeArrayEx.SafeDispose(ref array);
-		NativeArray<ColliderHit> hits = default(NativeArray<ColliderHit>);
-		hits._002Ector(centers.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<ColliderHit> hits = new NativeArray<ColliderHit>(centers.Length, (Allocator)3, (NativeArrayOptions)0);
 		JobHandle val2 = ExecuteOverlapBoxCommands(val, hits, 1);
-		((JobHandle)(ref val2)).Complete();
+		val2.Complete();
 		val.Dispose();
 		CheckHitsJob checkHitsJob = new CheckHitsJob
 		{
@@ -467,6 +468,7 @@ public static class GamePhysics
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -477,8 +479,7 @@ public static class GamePhysics
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		if (Debug.isDebugBuild)
 		{
-			NativeList<int> invalidIndices = default(NativeList<int>);
-			invalidIndices._002Ector(commands.Length, AllocatorHandle.op_Implicit((Allocator)3));
+			NativeList<int> invalidIndices = new NativeList<int>(commands.Length, AllocatorHandle.op_Implicit((Allocator)3));
 			ValidateOverlapBoxCommandsJob validateOverlapBoxCommandsJob = new ValidateOverlapBoxCommandsJob
 			{
 				InvalidIndices = invalidIndices,
@@ -489,7 +490,7 @@ public static class GamePhysics
 			{
 				int num = invalidIndices[0];
 				OverlapBoxCommand val = commands[num];
-				Debug.LogError((object)string.Concat(string.Concat(string.Concat($"OverlapBox has {invalidIndices.Length} invalid box commands!" + $"\nFirst one was at index {num}:", $"\n\tCenter: {((OverlapBoxCommand)(ref val)).center}"), $"\n\tExtents: {((OverlapBoxCommand)(ref val)).halfExtents}"), "\nThese queries will be skipped!"));
+				Debug.LogError((object)string.Concat(string.Concat(string.Concat($"OverlapBox has {invalidIndices.Length} invalid box commands!" + $"\nFirst one was at index {num}:", $"\n\tCenter: {val.center}"), $"\n\tExtents: {val.halfExtents}"), "\nThese queries will be skipped!"));
 			}
 			invalidIndices.Dispose();
 		}
@@ -522,7 +523,7 @@ public static class GamePhysics
 		{
 			for (int j = 0; j < num2; j++)
 			{
-				if ((Object)(object)((RaycastHit)(ref hitBuffer[i])).collider == (Object)(object)((RaycastHit)(ref hitBufferB[j])).collider)
+				if ((Object)(object)hitBuffer[i].collider == (Object)(object)hitBufferB[j].collider)
 				{
 					Physics.queriesHitBackfaces = queriesHitBackfaces;
 					return true;
@@ -626,7 +627,7 @@ public static class GamePhysics
 		using (TimeWarning.New("GamePhysics.OverlapSpheres"))
 		{
 			ReadOnly<int> layerMasks2 = layerMasks;
-			NativeArray<int> array = default(NativeArray<int>);
+			NativeArray<int> array = default;
 			if (validate != MasksToValidate.None)
 			{
 				array = new NativeArray<int>(layerMasks.Length, (Allocator)3, (NativeArrayOptions)0);
@@ -660,6 +661,7 @@ public static class GamePhysics
 		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -672,20 +674,19 @@ public static class GamePhysics
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		if (Debug.isDebugBuild)
 		{
-			NativeList<int> invalidIndices = default(NativeList<int>);
-			invalidIndices._002Ector(commands.Length, AllocatorHandle.op_Implicit((Allocator)3));
+			NativeList<int> invalidIndices = new NativeList<int>(commands.Length, AllocatorHandle.op_Implicit((Allocator)3));
 			ValidateOverlapSphereCommandsJob validateOverlapSphereCommandsJob = new ValidateOverlapSphereCommandsJob
 			{
 				InvalidIndices = invalidIndices,
 				Commands = commands.AsReadOnly()
 			};
 			JobHandle val = IJobExtensions.ScheduleByRef<ValidateOverlapSphereCommandsJob>(ref validateOverlapSphereCommandsJob, dependsOn);
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			if (!invalidIndices.IsEmpty)
 			{
 				int num = invalidIndices[0];
 				OverlapSphereCommand val2 = commands[num];
-				Debug.LogError((object)string.Concat(string.Concat(string.Concat($"OverlapSpheres has {invalidIndices.Length} invalid sphere commands!" + $"\nFirst one was at index {num}:", $"\n\tPos: {((OverlapSphereCommand)(ref val2)).point}"), $"\n\tRadius: {((OverlapSphereCommand)(ref val2)).radius}"), "\nThese queries will be skipped!"));
+				Debug.LogError((object)string.Concat(string.Concat(string.Concat($"OverlapSpheres has {invalidIndices.Length} invalid sphere commands!" + $"\nFirst one was at index {num}:", $"\n\tPos: {val2.point}"), $"\n\tRadius: {val2.radius}"), "\nThese queries will be skipped!"));
 			}
 			invalidIndices.Dispose();
 		}
@@ -785,7 +786,7 @@ public static class GamePhysics
 		using (TimeWarning.New("GamePhysics.OverlapCapsules"))
 		{
 			ReadOnly<int> layerMasks2 = layerMasks;
-			NativeArray<int> array = default(NativeArray<int>);
+			NativeArray<int> array = default;
 			if (validate != MasksToValidate.None)
 			{
 				array = new NativeArray<int>(layerMasks.Length, (Allocator)3, (NativeArrayOptions)0);
@@ -808,7 +809,7 @@ public static class GamePhysics
 			};
 			IJobExtensions.RunByRef<GenerateOverlapCapsuleCommandsJob>(ref generateOverlapCapsuleCommandsJob);
 			NativeArrayEx.SafeDispose(ref array);
-			JobHandle val2 = default(JobHandle);
+			JobHandle val2 = default;
 			val2 = ((!mitigateSpheres) ? ExecuteOverlapCapsuleCommands(val, hits, maxResPerCast) : MitigateSphereCapsuleCommands(val, hits, maxResPerCast));
 			val.Dispose(val2);
 			return val2;
@@ -818,10 +819,13 @@ public static class GamePhysics
 	private static JobHandle MitigateSphereCapsuleCommands(NativeArray<OverlapCapsuleCommand> commands, NativeArray<ColliderHit> hits, int maxResPerCast)
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
@@ -853,6 +857,7 @@ public static class GamePhysics
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
@@ -860,6 +865,7 @@ public static class GamePhysics
 		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
@@ -895,8 +901,7 @@ public static class GamePhysics
 		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
-		NativeList<int> val = default(NativeList<int>);
-		val._002Ector(commands.Length, AllocatorHandle.op_Implicit((Allocator)3));
+		NativeList<int> val = new NativeList<int>(commands.Length, AllocatorHandle.op_Implicit((Allocator)3));
 		FindSphereCmdsInCapsuleCmdsJob findSphereCmdsInCapsuleCmdsJob = new FindSphereCmdsInCapsuleCmdsJob
 		{
 			SphereIndices = val,
@@ -909,11 +914,9 @@ public static class GamePhysics
 			return ExecuteOverlapCapsuleCommands(commands, hits, maxResPerCast);
 		}
 		int num = Math.Max(val.Length, commands.Length - val.Length);
-		NativeArray<ColliderHit> hits2 = default(NativeArray<ColliderHit>);
-		hits2._002Ector(num * maxResPerCast, (Allocator)3, (NativeArrayOptions)0);
-		bool num2 = val.Length != commands.Length;
-		NativeArray<OverlapSphereCommand> val2 = default(NativeArray<OverlapSphereCommand>);
-		val2._002Ector(val.Length, (Allocator)3, (NativeArrayOptions)1);
+		NativeArray<ColliderHit> hits2 = new NativeArray<ColliderHit>(num * maxResPerCast, (Allocator)3, (NativeArrayOptions)0);
+		bool flag = val.Length != commands.Length;
+		NativeArray<OverlapSphereCommand> val2 = new NativeArray<OverlapSphereCommand>(val.Length, (Allocator)3, (NativeArrayOptions)1);
 		GenerateSphereCmdsFromCapsuleCmdsJob generateSphereCmdsFromCapsuleCmdsJob = new GenerateSphereCmdsFromCapsuleCmdsJob
 		{
 			SphereCommands = val2,
@@ -930,24 +933,22 @@ public static class GamePhysics
 			MaxHitsPerRay = maxResPerCast
 		};
 		JobHandle val4 = IJobExtensions.ScheduleByRef<ScatterColliderHitsJob>(ref scatterColliderHitsJob, val3);
-		if (!num2)
+		if (!flag)
 		{
 			val.Dispose(val4);
 			hits2.Dispose(val4);
 			return val4;
 		}
-		NativeArray<bool> workBuffer = default(NativeArray<bool>);
-		workBuffer._002Ector(commands.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<bool> workBuffer = new NativeArray<bool>(commands.Length, (Allocator)3, (NativeArrayOptions)0);
 		InvertIndexListJob invertIndexListJob = new InvertIndexListJob
 		{
 			Indices = val,
 			WorkBuffer = workBuffer
 		};
 		JobHandle val5 = IJobExtensions.ScheduleByRef<InvertIndexListJob>(ref invertIndexListJob, val4);
-		((JobHandle)(ref val5)).Complete();
+		val5.Complete();
 		workBuffer.Dispose();
-		NativeArray<OverlapCapsuleCommand> val6 = default(NativeArray<OverlapCapsuleCommand>);
-		val6._002Ector(val.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<OverlapCapsuleCommand> val6 = new NativeArray<OverlapCapsuleCommand>(val.Length, (Allocator)3, (NativeArrayOptions)0);
 		GatherJob<OverlapCapsuleCommand> gatherJob = new GatherJob<OverlapCapsuleCommand>
 		{
 			Results = val6,
@@ -977,6 +978,7 @@ public static class GamePhysics
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
@@ -990,20 +992,19 @@ public static class GamePhysics
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 		if (Debug.isDebugBuild)
 		{
-			NativeList<int> invalidIndices = default(NativeList<int>);
-			invalidIndices._002Ector(commands.Length, AllocatorHandle.op_Implicit((Allocator)3));
+			NativeList<int> invalidIndices = new NativeList<int>(commands.Length, AllocatorHandle.op_Implicit((Allocator)3));
 			ValidateOverlapCapsuleCommandsJob validateOverlapCapsuleCommandsJob = new ValidateOverlapCapsuleCommandsJob
 			{
 				InvalidIndices = invalidIndices,
 				Commands = commands.AsReadOnly()
 			};
 			JobHandle val = IJobExtensions.ScheduleByRef<ValidateOverlapCapsuleCommandsJob>(ref validateOverlapCapsuleCommandsJob, dependsOn);
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			if (!invalidIndices.IsEmpty)
 			{
 				int num = invalidIndices[0];
 				OverlapCapsuleCommand val2 = commands[num];
-				Debug.LogError((object)string.Concat(string.Concat(string.Concat(string.Concat($"OverlapCapsules has {invalidIndices.Length} invalid sphere commands!" + $"\nFirst one was at index {num}:", $"\n\tPoint0: {((OverlapCapsuleCommand)(ref val2)).point0}"), $"\n\tPoint1: {((OverlapCapsuleCommand)(ref val2)).point1}"), $"\n\tRadius: {((OverlapCapsuleCommand)(ref val2)).radius}"), "\nThese queries will be skipped!"));
+				Debug.LogError((object)string.Concat(string.Concat(string.Concat(string.Concat($"OverlapCapsules has {invalidIndices.Length} invalid sphere commands!" + $"\nFirst one was at index {num}:", $"\n\tPoint0: {val2.point0}"), $"\n\tPoint1: {val2.point1}"), $"\n\tRadius: {val2.radius}"), "\nThese queries will be skipped!"));
 			}
 			invalidIndices.Dispose();
 		}
@@ -1033,6 +1034,7 @@ public static class GamePhysics
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
@@ -1048,7 +1050,9 @@ public static class GamePhysics
 		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
@@ -1058,13 +1062,12 @@ public static class GamePhysics
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		ReadOnly<int> layerMasks2 = layerMasks;
-		NativeArray<int> array = default(NativeArray<int>);
+		NativeArray<int> array = default;
 		if (validate != MasksToValidate.None)
 		{
-			array._002Ector(layerMasks.Length, (Allocator)3, (NativeArrayOptions)0);
+			array = new NativeArray<int>(layerMasks.Length, (Allocator)3, (NativeArrayOptions)0);
 			layerMasks.CopyTo(array);
-			NativeArray<Vector3> posi = default(NativeArray<Vector3>);
-			posi._002Ector(obbs.Length, (Allocator)3, (NativeArrayOptions)0);
+			NativeArray<Vector3> posi = new NativeArray<Vector3>(obbs.Length, (Allocator)3, (NativeArrayOptions)0);
 			try
 			{
 				GatherPosFromOBBsJob gatherPosFromOBBsJob = new GatherPosFromOBBsJob
@@ -1081,8 +1084,7 @@ public static class GamePhysics
 				((IDisposable)posi/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
-		NativeArray<OverlapBoxCommand> val = default(NativeArray<OverlapBoxCommand>);
-		val._002Ector(obbs.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<OverlapBoxCommand> val = new NativeArray<OverlapBoxCommand>(obbs.Length, (Allocator)3, (NativeArrayOptions)0);
 		IJobExtensions.Run<GenerateOverlapBoxCommandsFromOBBsJob>(new GenerateOverlapBoxCommandsFromOBBsJob
 		{
 			BoxCommands = val,
@@ -1106,8 +1108,8 @@ public static class GamePhysics
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		layerMask = HandleIgnoreCollision(((Bounds)(ref bounds)).center, layerMask);
-		int count = Physics.OverlapBoxNonAlloc(((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).extents, colBuffer, Quaternion.identity, layerMask, triggerInteraction);
+		layerMask = HandleIgnoreCollision(bounds.center, layerMask);
+		int count = Physics.OverlapBoxNonAlloc(bounds.center, bounds.extents, colBuffer, Quaternion.identity, layerMask, triggerInteraction);
 		BufferToList(colBuffer, count, list);
 	}
 
@@ -1151,7 +1153,7 @@ public static class GamePhysics
 			try
 			{
 				JobHandle val = OverlapSpheres(positions, radii, layerMasks, hits, maxResPerCast, triggerInteraction, validate);
-				((JobHandle)(ref val)).Complete();
+				val.Complete();
 				FindComponent<T>(hits.AsReadOnly(), maxResPerCast, results);
 			}
 			finally
@@ -1193,7 +1195,7 @@ public static class GamePhysics
 		{
 			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-			T val3 = default(T);
+			T val3 = default;
 			for (int j = start; j < num4; j++)
 			{
 				bool flag = false;
@@ -1201,11 +1203,11 @@ public static class GamePhysics
 				for (int k = 0; k < num6; k++)
 				{
 					ColliderHit val = val2[num5 + k];
-					if (((ColliderHit)(ref val)).instanceID == 0)
+					if (val.instanceID == 0)
 					{
 						break;
 					}
-					if (((Component)((ColliderHit)(ref val)).collider).TryGetComponent<T>(ref val3))
+					if (((Component)val.collider).TryGetComponent<T>(ref val3))
 					{
 						flag = true;
 						break;
@@ -1224,7 +1226,7 @@ public static class GamePhysics
 			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-			_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T> obj = default(_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T>);
+			_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T> obj = default;
 			obj._003C_003Et__builder = AsyncUniTaskMethodBuilder.Create();
 			obj.hits = hits2;
 			obj.start = start;
@@ -1232,8 +1234,8 @@ public static class GamePhysics
 			obj.maxResPerCast = maxResPerCast2;
 			obj.results = results2;
 			obj._003C_003E1__state = -1;
-			((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T>>(ref obj);
-			return ((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+			obj._003C_003Et__builder.Start<_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T>>(ref obj);
+			return obj._003C_003Et__builder.Task;
 		}
 	}
 
@@ -1273,7 +1275,7 @@ public static class GamePhysics
 
 	private static bool CheckComponent<T>(List<Collider> list)
 	{
-		T val = default(T);
+		T val = default;
 		for (int i = 0; i < list.Count; i++)
 		{
 			if (((Component)list[i]).gameObject.TryGetComponent<T>(ref val))
@@ -1313,10 +1315,10 @@ public static class GamePhysics
 		{
 			NativeArray<ColliderHit> hits = new NativeArray<ColliderHit>(starts.Length * maxResPerCast, (Allocator)3, (NativeArrayOptions)0);
 			JobHandle val = OverlapCapsules(starts, ends, radii, layerMasks, hits, maxResPerCast, triggerInteraction, validate, mitigateSpheres);
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			using (TimeWarning.New("FindComponent"))
 			{
-				T val3 = default(T);
+				T val3 = default;
 				for (int i = 0; i < starts.Length; i++)
 				{
 					bool flag = false;
@@ -1324,11 +1326,11 @@ public static class GamePhysics
 					for (int j = 0; j < maxResPerCast; j++)
 					{
 						ColliderHit val2 = hits[num + j];
-						if (((ColliderHit)(ref val2)).instanceID == 0)
+						if (val2.instanceID == 0)
 						{
 							break;
 						}
-						if (((Component)((ColliderHit)(ref val2)).collider).TryGetComponent<T>(ref val3))
+						if (((Component)val2.collider).TryGetComponent<T>(ref val3))
 						{
 							flag = true;
 							break;
@@ -1380,15 +1382,15 @@ public static class GamePhysics
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		layerMask = HandleIgnoreCollision(((Bounds)(ref bounds)).center, layerMask);
-		int count = Physics.OverlapBoxNonAlloc(((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).extents, colBuffer, Quaternion.identity, layerMask, triggerInteraction);
+		layerMask = HandleIgnoreCollision(bounds.center, layerMask);
+		int count = Physics.OverlapBoxNonAlloc(bounds.center, bounds.extents, colBuffer, Quaternion.identity, layerMask, triggerInteraction);
 		BufferToList(colBuffer, count, list);
 	}
 
 	[PoolAnalyzerNonCaching]
 	private static void BufferToList<T>(Collider[] buffer, int count, List<T> list) where T : Component
 	{
-		T item = default(T);
+		T item = default;
 		for (int i = 0; i < count; i++)
 		{
 			if (((Component)buffer[i]).TryGetComponent<T>(ref item))
@@ -1425,7 +1427,7 @@ public static class GamePhysics
 			hitInfo = hitInfo2;
 			return true;
 		}
-		hitInfo = default(RaycastHit);
+		hitInfo = default;
 		return false;
 	}
 
@@ -1463,17 +1465,17 @@ public static class GamePhysics
 		TraceAllUnordered(ray, radius, list, maxDistance, layerMask, triggerInteraction, ignoreEntity);
 		if (list.Count == 0)
 		{
-			hitInfo = default(RaycastHit);
+			hitInfo = default;
 			Pool.FreeUnmanaged<RaycastHit>(ref list);
 			return false;
 		}
 		RaycastHit val = list[0];
-		float num = ((RaycastHit)(ref val)).distance;
+		float num = val.distance;
 		int index = 0;
 		for (int i = 1; i < list.Count; i++)
 		{
 			val = list[i];
-			float distance = ((RaycastHit)(ref val)).distance;
+			float distance = val.distance;
 			if (distance < num)
 			{
 				num = distance;
@@ -1521,11 +1523,11 @@ public static class GamePhysics
 		int num = ((radius != 0f) ? Physics.SphereCastNonAlloc(ray, radius, hitBuffer, maxDistance, layerMask, triggerInteraction) : Physics.RaycastNonAlloc(ray, hitBuffer, maxDistance, layerMask, triggerInteraction));
 		if (num < hitBuffer.Length && (layerMask & 0x10) != 0 && WaterSystem.Trace(ray, out var position, out var normal, maxDistance))
 		{
-			RaycastHit val = default(RaycastHit);
-			((RaycastHit)(ref val)).point = position;
-			((RaycastHit)(ref val)).normal = normal;
-			Vector3 val2 = position - ((Ray)(ref ray)).origin;
-			((RaycastHit)(ref val)).distance = ((Vector3)(ref val2)).magnitude;
+			RaycastHit val = default;
+			val.point = position;
+			val.normal = normal;
+			Vector3 val2 = position - ray.origin;
+			val.distance = val2.magnitude;
 			RaycastHit val3 = val;
 			hitBuffer[num++] = val3;
 		}
@@ -1540,7 +1542,7 @@ public static class GamePhysics
 		for (int i = 0; i < num; i++)
 		{
 			RaycastHit val4 = hitBuffer[i];
-			if (Verify(val4, ((Ray)(ref ray)).origin, ignoreEntity))
+			if (Verify(val4, ray.origin, ignoreEntity))
 			{
 				hits.Add(val4);
 			}
@@ -1562,6 +1564,7 @@ public static class GamePhysics
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
@@ -1590,18 +1593,17 @@ public static class GamePhysics
 				if (false)
 				{
 					JobHandle.ScheduleBatchedJobs();
-					NativeArray<RaycastHit> hits2;
-					hits2._002Ector(rays.Length, (Allocator)3, (NativeArrayOptions)1);
-					JobHandle val2 = TraceWaterRaysDeferred(hits2, rays, 1, default(JobHandle));
+					NativeArray<RaycastHit> hits2 = new NativeArray<RaycastHit>(rays.Length, (Allocator)3, (NativeArrayOptions)1);
+					JobHandle val2 = TraceWaterRaysDeferred(hits2, rays, 1, default);
 					JobHandle val3 = JobHandle.CombineDependencies(val, val2);
-					GamePhysicsJobs.AppendRaycastHitsJob appendRaycastHitsJob = new GamePhysicsJobs.AppendRaycastHitsJob
+					AppendRaycastHitsJob appendRaycastHitsJob = new AppendRaycastHitsJob
 					{
 						Dst = hits,
 						Src = hits2.AsReadOnly(),
 						DstMaxHitsPerBatch = maxHitsPerTrace,
 						SrcMaxHitsPerBatch = 1
 					};
-					val = IJobExtensions.ScheduleByRef<GamePhysicsJobs.AppendRaycastHitsJob>(ref appendRaycastHitsJob, val3);
+					val = IJobExtensions.ScheduleByRef<AppendRaycastHitsJob>(ref appendRaycastHitsJob, val3);
 					hits2.Dispose(val);
 				}
 				else
@@ -1609,7 +1611,7 @@ public static class GamePhysics
 					val = TraceWaterRaysDeferred(hits, rays, maxHitsPerTrace, val);
 				}
 			}
-			((JobHandle)(ref val)).Complete();
+			val.Complete();
 			VerifyRays(hits, rays, maxHitsPerTrace, ignoreEntities);
 		}
 	}
@@ -1715,7 +1717,7 @@ public static class GamePhysics
 			NativeArray<float> val3 = new NativeArray<float>(rays.Length, (Allocator)3, (NativeArrayOptions)0);
 			NativeArray<Vector3> val4 = new NativeArray<Vector3>(rays.Length, (Allocator)3, (NativeArrayOptions)0);
 			NativeArray<Vector3> val5 = new NativeArray<Vector3>(rays.Length, (Allocator)3, (NativeArrayOptions)0);
-			GamePhysicsJobs.PreProcessWaterRaysJob preProcessWaterRaysJob = new GamePhysicsJobs.PreProcessWaterRaysJob
+			PreProcessWaterRaysJob preProcessWaterRaysJob = new PreProcessWaterRaysJob
 			{
 				hits = hits.AsReadOnly(),
 				rays = rays.AsReadOnly(),
@@ -1727,9 +1729,9 @@ public static class GamePhysics
 				MainIndices = mainIndices,
 				DeepSeaBounds = DeepSeaManager.DeepSeaBounds
 			};
-			inputDeps = IJobExtensions.ScheduleByRef<GamePhysicsJobs.PreProcessWaterRaysJob>(ref preProcessWaterRaysJob, inputDeps);
+			inputDeps = IJobExtensions.ScheduleByRef<PreProcessWaterRaysJob>(ref preProcessWaterRaysJob, inputDeps);
 			inputDeps = WaterSystem.ScheduleTraceBatchDefer(val, val3, val2, val4, val5, deepIndices, mainIndices, inputDeps);
-			GamePhysicsJobs.PostProcessWaterRaysJob postProcessWaterRaysJob = new GamePhysicsJobs.PostProcessWaterRaysJob
+			PostProcessWaterRaysJob postProcessWaterRaysJob = new PostProcessWaterRaysJob
 			{
 				hits = hits,
 				rays = val.AsDeferredJobArray(),
@@ -1738,7 +1740,7 @@ public static class GamePhysics
 				positionsSub = val4,
 				normalsSub = val5
 			};
-			inputDeps = IJobExtensions.ScheduleByRef<GamePhysicsJobs.PostProcessWaterRaysJob>(ref postProcessWaterRaysJob, inputDeps);
+			inputDeps = IJobExtensions.ScheduleByRef<PostProcessWaterRaysJob>(ref postProcessWaterRaysJob, inputDeps);
 			waterIndices.Dispose(inputDeps);
 			val.Dispose(inputDeps);
 			deepIndices.Dispose(inputDeps);
@@ -1872,15 +1874,15 @@ public static class GamePhysics
 									{
 										RaycastHit val = colliderHits[i];
 										int num = colliderIndices[i];
-										Collider collider = ((RaycastHit)(ref val)).collider;
+										Collider collider = val.collider;
 										if (collider is TerrainCollider)
 										{
-											Vector3 val2 = ((RaycastHit)(ref val)).point;
-											if (val2 == Vector3.zero && ((RaycastHit)(ref val)).distance == 0f)
+											Vector3 val2 = val.point;
+											if (val2 == Vector3.zero && val.distance == 0f)
 											{
 												int num2 = num / maxHitsPerCast;
 												RaycastCommand val3 = rays[num2];
-												val2 = ((RaycastCommand)(ref val3)).from;
+												val2 = val3.from;
 											}
 											waterHits.AddNoResize(val2);
 											waterIndices.AddNoResize(num);
@@ -2061,6 +2063,7 @@ public static class GamePhysics
 
 	public static void TraceRays(NativeArray<RaycastCommand> rays, NativeArray<RaycastHit> hits, int maxHitsPerTrace, bool traceWater = true, ReadOnlySpan<BaseEntity> ignoreEntities = default(ReadOnlySpan<BaseEntity>))
 	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
@@ -2072,14 +2075,13 @@ public static class GamePhysics
 		if (rays.Length != 0)
 		{
 			int num = Mathf.Max(32, maxHitsPerTrace * 2);
-			NativeArray<RaycastHit> val = default(NativeArray<RaycastHit>);
-			val._002Ector(rays.Length * num, (Allocator)3, (NativeArrayOptions)0);
+			NativeArray<RaycastHit> val = new NativeArray<RaycastHit>(rays.Length * num, (Allocator)3, (NativeArrayOptions)0);
 			TraceRaysUnordered(rays, val, num, traceWater, ignoreEntities);
 			NativeArray<RaycastHit> val2 = val;
 			int length = rays.Length;
-			JobHandle dependsOn = default(JobHandle);
+			JobHandle dependsOn = default;
 			dependsOn = SelectNearest(maxHitsPerTrace, val2, hits, length, num, dependsOn);
-			((JobHandle)(ref dependsOn)).Complete();
+			dependsOn.Complete();
 			val.Dispose();
 		}
 	}
@@ -2107,7 +2109,7 @@ public static class GamePhysics
 			{
 				inputDeps = TraceWaterSpheresDeferred(hits, spheres, maxHitsPerTrace, inputDeps);
 			}
-			((JobHandle)(ref inputDeps)).Complete();
+			inputDeps.Complete();
 			VerifySpheres(hits, spheres, maxHitsPerTrace, ignoreEntities);
 		}
 	}
@@ -2213,7 +2215,7 @@ public static class GamePhysics
 			NativeArray<float> val3 = new NativeArray<float>(spheres.Length, (Allocator)3, (NativeArrayOptions)0);
 			NativeArray<Vector3> val4 = new NativeArray<Vector3>(spheres.Length, (Allocator)3, (NativeArrayOptions)0);
 			NativeArray<Vector3> val5 = new NativeArray<Vector3>(spheres.Length, (Allocator)3, (NativeArrayOptions)0);
-			GamePhysicsJobs.PreProcessWaterSpheresJob preProcessWaterSpheresJob = new GamePhysicsJobs.PreProcessWaterSpheresJob
+			PreProcessWaterSpheresJob preProcessWaterSpheresJob = new PreProcessWaterSpheresJob
 			{
 				hits = hits.AsReadOnly(),
 				rays = spheres.AsReadOnly(),
@@ -2225,9 +2227,9 @@ public static class GamePhysics
 				MainIndices = mainIndices,
 				DeepSeaBounds = DeepSeaManager.DeepSeaBounds
 			};
-			inputDeps = IJobExtensions.ScheduleByRef<GamePhysicsJobs.PreProcessWaterSpheresJob>(ref preProcessWaterSpheresJob, inputDeps);
+			inputDeps = IJobExtensions.ScheduleByRef<PreProcessWaterSpheresJob>(ref preProcessWaterSpheresJob, inputDeps);
 			inputDeps = WaterSystem.ScheduleTraceBatchDefer(val, val3, val2, val4, val5, deepIndices, mainIndices, inputDeps);
-			GamePhysicsJobs.PostProcessWaterRaysJob postProcessWaterRaysJob = new GamePhysicsJobs.PostProcessWaterRaysJob
+			PostProcessWaterRaysJob postProcessWaterRaysJob = new PostProcessWaterRaysJob
 			{
 				hits = hits,
 				rays = val.AsDeferredJobArray(),
@@ -2236,7 +2238,7 @@ public static class GamePhysics
 				positionsSub = val4,
 				normalsSub = val5
 			};
-			inputDeps = IJobExtensions.ScheduleByRef<GamePhysicsJobs.PostProcessWaterRaysJob>(ref postProcessWaterRaysJob, inputDeps);
+			inputDeps = IJobExtensions.ScheduleByRef<PostProcessWaterRaysJob>(ref postProcessWaterRaysJob, inputDeps);
 			waterIndices.Dispose(inputDeps);
 			val.Dispose(inputDeps);
 			deepIndices.Dispose(inputDeps);
@@ -2370,15 +2372,15 @@ public static class GamePhysics
 									{
 										RaycastHit val = colliderHits[i];
 										int num = colliderIndices[i];
-										Collider collider = ((RaycastHit)(ref val)).collider;
+										Collider collider = val.collider;
 										if (collider is TerrainCollider)
 										{
-											Vector3 val2 = ((RaycastHit)(ref val)).point;
-											if (val2 == Vector3.zero && ((RaycastHit)(ref val)).distance == 0f)
+											Vector3 val2 = val.point;
+											if (val2 == Vector3.zero && val.distance == 0f)
 											{
 												int num2 = num / maxHitsPerCast;
 												SpherecastCommand val3 = spheres[num2];
-												val2 = ((SpherecastCommand)(ref val3)).origin;
+												val2 = val3.origin;
 											}
 											waterHits.AddNoResize(val2);
 											waterIndices.AddNoResize(num);
@@ -2455,6 +2457,7 @@ public static class GamePhysics
 
 	public static void TraceSpheres(NativeArray<SpherecastCommand> spheres, NativeArray<RaycastHit> hits, int maxHitsPerTrace, bool traceWater = true, ReadOnlySpan<BaseEntity> ignoreEntities = default(ReadOnlySpan<BaseEntity>))
 	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
@@ -2466,14 +2469,13 @@ public static class GamePhysics
 		if (spheres.Length != 0)
 		{
 			int num = Mathf.Max(32, maxHitsPerTrace * 2);
-			NativeArray<RaycastHit> val = default(NativeArray<RaycastHit>);
-			val._002Ector(spheres.Length * num, (Allocator)3, (NativeArrayOptions)0);
+			NativeArray<RaycastHit> val = new NativeArray<RaycastHit>(spheres.Length * num, (Allocator)3, (NativeArrayOptions)0);
 			TraceSpheresUnordered(spheres, val, num, traceWater, ignoreEntities);
 			NativeArray<RaycastHit> val2 = val;
 			int length = spheres.Length;
-			JobHandle dependsOn = default(JobHandle);
+			JobHandle dependsOn = default;
 			dependsOn = SelectNearest(maxHitsPerTrace, val2, hits, length, num, dependsOn);
-			((JobHandle)(ref dependsOn)).Complete();
+			dependsOn.Complete();
 			val.Dispose();
 		}
 	}
@@ -2536,6 +2538,7 @@ public static class GamePhysics
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
@@ -2557,17 +2560,16 @@ public static class GamePhysics
 			return false;
 		}
 		Vector3 val = p1 - p0;
-		float magnitude = ((Vector3)(ref val)).magnitude;
+		float magnitude = val.magnitude;
 		if (magnitude <= padding0 + padding1)
 		{
 			return true;
 		}
 		Vector3 val2 = val / magnitude;
-		Ray val3 = default(Ray);
-		((Ray)(ref val3))._002Ector(p0 + val2 * padding0, val2);
+		Ray val3 = new Ray(p0 + val2 * padding0, val2);
 		float num = magnitude - padding0 - padding1;
 		bool flag;
-		RaycastHit hitInfo = default(RaycastHit);
+		RaycastHit hitInfo = default;
 		if (!ignoreEntity.IsRealNull() || (layerMask & 0x800000) != 0)
 		{
 			flag = Trace(val3, 0f, out hitInfo, num, layerMask, (QueryTriggerInteraction)1, ignoreEntity);
@@ -2595,7 +2597,7 @@ public static class GamePhysics
 		if (ConVar.Vis.lineofsight)
 		{
 			ConsoleNetwork.BroadcastToAllClients("ddraw.line", 60f, Color.red, p0, p1);
-			ConsoleNetwork.BroadcastToAllClients("ddraw.text", 60f, Color.white, ((RaycastHit)(ref hitInfo)).point, ((Object)((RaycastHit)(ref hitInfo)).collider).name);
+			ConsoleNetwork.BroadcastToAllClients("ddraw.text", 60f, Color.white, hitInfo.point, ((Object)hitInfo.collider).name);
 		}
 		return false;
 	}
@@ -2609,12 +2611,12 @@ public static class GamePhysics
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = ((RaycastHit)(ref hitInfo)).point;
-		if (((RaycastHit)(ref hitInfo)).collider is TerrainCollider && val == Vector3.zero && ((RaycastHit)(ref hitInfo)).distance == 0f)
+		Vector3 val = hitInfo.point;
+		if (hitInfo.collider is TerrainCollider && val == Vector3.zero && hitInfo.distance == 0f)
 		{
 			val = rayOrigin;
 		}
-		return Verify(((RaycastHit)(ref hitInfo)).collider, val, ignoreEntity);
+		return Verify(hitInfo.collider, val, ignoreEntity);
 	}
 
 	public static bool Verify(Collider collider, Vector3 point, BaseEntity ignoreEntity = null)
@@ -2676,13 +2678,13 @@ public static class GamePhysics
 
 	public static void HandleIgnoreTerrain(ReadOnly<Vector3> positions, NativeArray<bool> hitIgnoreVolumes)
 	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		NativeArray<float> values = default(NativeArray<float>);
-		values._002Ector(positions.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<float> values = new NativeArray<float>(positions.Length, (Allocator)3, (NativeArrayOptions)0);
 		FillJob<float> fillJob = new FillJob<float>
 		{
 			Values = values,
@@ -2695,13 +2697,13 @@ public static class GamePhysics
 
 	public static void HandleIgnoreWater(ReadOnly<Vector3> positions, NativeArray<bool> hitIgnoreVolumes)
 	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		NativeArray<float> values = default(NativeArray<float>);
-		values._002Ector(positions.Length, (Allocator)3, (NativeArrayOptions)0);
+		NativeArray<float> values = new NativeArray<float>(positions.Length, (Allocator)3, (NativeArrayOptions)0);
 		FillJob<float> fillJob = new FillJob<float>
 		{
 			Values = values,
@@ -2714,12 +2716,14 @@ public static class GamePhysics
 
 	public static void HandleIgnoreCollision(ReadOnly<Vector3> positions, NativeArray<int> layerMasks, MasksToValidate validate = MasksToValidate.All)
 	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
@@ -2728,8 +2732,7 @@ public static class GamePhysics
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		if ((validate & MasksToValidate.Terrain) == MasksToValidate.Terrain)
 		{
-			NativeArray<bool> hitIgnoreVolumes = default(NativeArray<bool>);
-			hitIgnoreVolumes._002Ector(positions.Length, (Allocator)3, (NativeArrayOptions)0);
+			NativeArray<bool> hitIgnoreVolumes = new NativeArray<bool>(positions.Length, (Allocator)3, (NativeArrayOptions)0);
 			HandleIgnoreTerrain(positions, hitIgnoreVolumes);
 			RemoveLayerMaskJob removeLayerMaskJob = new RemoveLayerMaskJob
 			{
@@ -2742,8 +2745,7 @@ public static class GamePhysics
 		}
 		if ((validate & MasksToValidate.Water) == MasksToValidate.Water)
 		{
-			NativeArray<bool> hitIgnoreVolumes2 = default(NativeArray<bool>);
-			hitIgnoreVolumes2._002Ector(positions.Length, (Allocator)3, (NativeArrayOptions)0);
+			NativeArray<bool> hitIgnoreVolumes2 = new NativeArray<bool>(positions.Length, (Allocator)3, (NativeArrayOptions)0);
 			HandleIgnoreWater(positions, hitIgnoreVolumes2);
 			RemoveLayerMaskJob removeLayerMaskJob2 = new RemoveLayerMaskJob
 			{
@@ -2759,12 +2761,12 @@ public static class GamePhysics
 	[PoolAnalyzerNonCaching]
 	public static void Sort(List<RaycastHit> hits)
 	{
-		hits.Sort((RaycastHit a, RaycastHit b) => ((RaycastHit)(ref a)).distance.CompareTo(((RaycastHit)(ref b)).distance));
+		hits.Sort((RaycastHit a, RaycastHit b) => a.distance.CompareTo(b.distance));
 	}
 
 	public static void Sort(RaycastHit[] hits)
 	{
-		Array.Sort(hits, (RaycastHit a, RaycastHit b) => ((RaycastHit)(ref a)).distance.CompareTo(((RaycastHit)(ref b)).distance));
+		Array.Sort(hits, (RaycastHit a, RaycastHit b) => a.distance.CompareTo(b.distance));
 	}
 
 	public static void Sort(NativeArray<RaycastHit> hits, int queryCount, int maxHitsPerQuery)
@@ -2776,9 +2778,9 @@ public static class GamePhysics
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("GamePhysics.Sort"))
 		{
-			JobHandle dependsOn = default(JobHandle);
+			JobHandle dependsOn = default;
 			dependsOn = SortDeferred(hits, queryCount, maxHitsPerQuery, dependsOn);
-			((JobHandle)(ref dependsOn)).Complete();
+			dependsOn.Complete();
 		}
 	}
 
@@ -2796,7 +2798,7 @@ public static class GamePhysics
 			{
 				Hits = hits,
 				MaxHitsPerRay = maxHitsPerQuery,
-				Comp = default(RaycastHitComparer)
+				Comp = default
 			};
 			int batchSize = ThreadUtils.GetBatchSize(queryCount);
 			return IJobForExtensions.ScheduleParallelByRef<SortHitsJob<RaycastHitComparer>>(ref sortHitsJob, queryCount, batchSize, dependsOn);
@@ -2842,5 +2844,32 @@ public static class GamePhysics
 			SelectCount = nearestCount
 		};
 		return IJobExtensions.ScheduleByRef<SelectNearestNHitsJob>(ref selectNearestNHitsJob, val);
+	}
+
+	[CompilerGenerated]
+	internal static void _003CFindComponent_003Eg__FindComp_007C36_1<T>(ReadOnly<ColliderHit> hits, int start, int end, int maxResPerCast, NativeArray<bool> results)
+	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		T val2 = default;
+		for (int i = start; i < end; i++)
+		{
+			bool flag = false;
+			int num = i * maxResPerCast;
+			for (int j = 0; j < maxResPerCast; j++)
+			{
+				ColliderHit val = hits[num + j];
+				if (val.instanceID == 0)
+				{
+					break;
+				}
+				if (((Component)val.collider).TryGetComponent<T>(ref val2))
+				{
+					flag = true;
+					break;
+				}
+			}
+			results[i] = flag;
+		}
 	}
 }

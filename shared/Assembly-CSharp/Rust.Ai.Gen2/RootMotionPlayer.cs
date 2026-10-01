@@ -1,5 +1,6 @@
 using System;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using UnityEngine;
 
@@ -8,25 +9,15 @@ namespace Rust.Ai.Gen2;
 [SoftRequireComponent(typeof(RustNavMeshAgent))]
 public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 {
-	public struct Warp
+	public struct Warp(float startTime, float endTime, Vector3 translationScale, float rotationScale = 1f)
 	{
-		public float startTime;
+		public float startTime = startTime;
 
-		public float endTime;
+		public float endTime = endTime;
 
-		public Vector3 translationScale;
+		public Vector3 translationScale = translationScale;
 
-		public float rotationScale;
-
-		public Warp(float startTime, float endTime, Vector3 translationScale, float rotationScale = 1f)
-		{
-			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-			this.startTime = startTime;
-			this.endTime = endTime;
-			this.translationScale = translationScale;
-			this.rotationScale = rotationScale;
-		}
+		public float rotationScale = rotationScale;
 	}
 
 	public class PlayServerState : IPooled
@@ -53,13 +44,19 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 
 		public bool isPlaying;
 
+		public bool pauseAgent = true;
+
+		public float playbackSpeed = 1f;
+
 		public void Reset()
 		{
-			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 			isPlaying = false;
+			pauseAgent = true;
+			playbackSpeed = 1f;
 			rmData = null;
 			animClip = null;
 			initialRotation = Quaternion.identity;
@@ -81,6 +78,7 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 			Reset();
 		}
 
+		[PoolAnalyzerGetWrapper]
 		public static PlayServerState TakeFromPool(RootMotionData data, Transform transform)
 		{
 			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
@@ -91,10 +89,30 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 			playServerState.rmData = data;
 			playServerState.initialLocation = transform.position;
 			playServerState.initialRotation = transform.rotation;
+			playServerState.SeedMotionAccumulators();
 			return playServerState;
 		}
 
-		public static PlayServerState TakeFromPool(AnimationClip data, Transform transform)
+		private void SeedMotionAccumulators()
+		{
+			//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+			if (!(rmData == null))
+			{
+				lastUnscaledOffset = new Vector3(Sample(rmData.xMotionCurve), Sample(rmData.yMotionCurve), Sample(rmData.zMotionCurve));
+				lastUnscaledRotation = Sample(rmData.yRotationCurve);
+			}
+			static float Sample(AnimationCurve curve)
+			{
+				if (curve != null && curve.length != 0)
+				{
+					return curve.Evaluate(0f);
+				}
+				return 0f;
+			}
+		}
+
+		public static PlayServerState TakeFromPool(AnimationClip data, Transform transform, float playbackSpeed = 1f, bool pauseAgent = true)
 		{
 			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
@@ -104,6 +122,8 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 			playServerState.animClip = data;
 			playServerState.initialLocation = transform.position;
 			playServerState.initialRotation = transform.rotation;
+			playServerState.playbackSpeed = ((playbackSpeed > 0f) ? playbackSpeed : 1f);
+			playServerState.pauseAgent = pauseAgent;
 			return playServerState;
 		}
 
@@ -135,51 +155,52 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 
 		public bool Step(float deltaTime, ref Vector3 location, ref Quaternion rotation, float rootBoneLocalZOffset = 0f)
 		{
-			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-			//IL_018a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_018f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0199: Unknown result type (might be due to invalid IL or missing references)
-			//IL_019f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+			//IL_019b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01da: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01df: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0201: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0209: Unknown result type (might be due to invalid IL or missing references)
-			//IL_020e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0213: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0218: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0134: Unknown result type (might be due to invalid IL or missing references)
-			//IL_014b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0200: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0207: Unknown result type (might be due to invalid IL or missing references)
+			//IL_020d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0212: Unknown result type (might be due to invalid IL or missing references)
+			//IL_021a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_021f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0224: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0229: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+			//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0173: Unknown result type (might be due to invalid IL or missing references)
 			if (elapsedTime >= GetAnimLength())
 			{
 				return false;
 			}
+			deltaTime *= playbackSpeed;
 			if (rmData == null)
 			{
 				elapsedTime += deltaTime;
-				return elapsedTime < GetAnimLength() - 0.25f;
+				return elapsedTime < GetAnimLength() - 0.25f * playbackSpeed;
 			}
 			Vector3 zero = Vector3.zero;
 			zero.x = rmData.xMotionCurve.Evaluate(elapsedTime);
@@ -211,7 +232,7 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 			rotation *= Quaternion.Euler(0f, num2, 0f);
 			location += rotation * (Vector3.forward * (0f - rootBoneLocalZOffset));
 			elapsedTime += deltaTime;
-			return elapsedTime < GetAnimLength() - 0.25f;
+			return elapsedTime < GetAnimLength() - 0.25f * playbackSpeed;
 		}
 
 		public Quaternion Track(Vector3 ownerPos, Vector3 targetPos, Quaternion rotation, float trackingSpeed, float deltaTime)
@@ -251,29 +272,32 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 
 	private Action _playServerTickAction;
 
-	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)base.baseEntity).GetComponent<RustNavMeshAgent>());
+	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)baseEntity).GetComponent<RustNavMeshAgent>());
 
 	private Action PlayServerTickAction => PlayServerTick;
 
 	public PlayServerState PlayServerAndTakeFromPool(RootMotionData data)
 	{
-		PlayServerState playServerState = PlayServerState.TakeFromPool(data, ((Component)base.baseEntity).transform);
+		PlayServerState playServerState = PlayServerState.TakeFromPool(data, ((Component)baseEntity).transform);
 		PlayServer(playServerState);
 		return playServerState;
 	}
 
-	public PlayServerState PlayServerAndTakeFromPool(AnimationClip data)
+	public PlayServerState PlayServerAndTakeFromPool(AnimationClip data, float playbackSpeed = 1f, bool pauseAgent = true)
 	{
-		PlayServerState playServerState = PlayServerState.TakeFromPool(data, ((Component)base.baseEntity).transform);
+		PlayServerState playServerState = PlayServerState.TakeFromPool(data, ((Component)baseEntity).transform, playbackSpeed, pauseAgent);
 		PlayServer(playServerState);
 		return playServerState;
 	}
 
 	public void PlayServer(PlayServerState state)
 	{
-		if (AI.logIssues && state.rmData == null && (Object)(object)state.animClip == (Object)null)
+		if (state.rmData == null && (Object)(object)state.animClip == (Object)null)
 		{
-			Debug.LogError((object)"RootMotionPlayer.PlayServer: state.rmData and state.animClip are both null");
+			if (AI.logIssues)
+			{
+				Debug.LogError((object)"RootMotionPlayer.PlayServer: state.rmData and state.animClip are both null");
+			}
 			return;
 		}
 		if (currentPlayState != null)
@@ -282,14 +306,17 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 		}
 		currentPlayState = state;
 		currentPlayState.isPlaying = true;
-		base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayMontageDelayed"), currentPlayState.GetAnimHash());
-		Agent.Pause(this);
-		base.baseEntity.InvokeRepeating(PlayServerTickAction, 0f, 0f);
+		baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayMontageDelayed"), currentPlayState.GetAnimHash());
+		if (currentPlayState.pauseAgent)
+		{
+			Agent.Pause(this);
+		}
+		baseEntity.InvokeRepeating(PlayServerTickAction, 0f, 0f);
 	}
 
 	public void PlayServerAdditive(AnimationClip animClip)
 	{
-		base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayAdditiveMontage"), Animator.StringToHash(((Object)animClip).name));
+		baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayAdditiveMontage"), Animator.StringToHash(((Object)animClip).name));
 	}
 
 	private void PlayServerTick()
@@ -304,22 +331,22 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RootMotionPlayer:PlayServerTick"))
 		{
-			Vector3 location = ((Component)base.baseEntity).transform.position;
-			Quaternion rotation = ((Component)base.baseEntity).transform.rotation;
-			bool num = !currentPlayState.Step(Time.deltaTime, ref location, ref rotation, rootBoneLocalZOffset);
+			Vector3 location = ((Component)baseEntity).transform.position;
+			Quaternion rotation = ((Component)baseEntity).transform.rotation;
+			bool flag = !currentPlayState.Step(Time.deltaTime, ref location, ref rotation, rootBoneLocalZOffset);
 			if (currentPlayState.rmData != null)
 			{
 				if (currentPlayState.constrainToNavmesh)
 				{
-					Agent.Move(Agent.WorldToNavSpace(location) - Agent.WorldToNavSpace(((Component)base.baseEntity).transform.position));
+					Agent.Move(Agent.WorldToNavSpace(location) - Agent.WorldToNavSpace(((Component)baseEntity).transform.position));
 				}
 				else
 				{
-					((Component)base.baseEntity).transform.position = location;
+					((Component)baseEntity).transform.position = location;
 				}
-				((Component)base.baseEntity).transform.rotation = rotation;
+				((Component)baseEntity).transform.rotation = rotation;
 			}
-			if (num)
+			if (flag)
 			{
 				StopServer(currentPlayState, interrupt: false);
 				currentPlayState = null;
@@ -339,7 +366,7 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 			{
 				timeStep = Time.deltaTime;
 			}
-			((Component)base.baseEntity).transform.rotation = currentPlayState.Track(((Component)this).transform.position, targetPos, ((Component)base.baseEntity).transform.rotation, trackingSpeed, timeStep.Value);
+			((Component)baseEntity).transform.rotation = currentPlayState.Track(((Component)this).transform.position, targetPos, ((Component)baseEntity).transform.rotation, trackingSpeed, timeStep.Value);
 		}
 	}
 
@@ -350,13 +377,13 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 			state.isPlaying = false;
 			if (state == currentPlayState)
 			{
-				base.baseEntity.CancelInvoke(PlayServerTickAction);
+				baseEntity.CancelInvoke(PlayServerTickAction);
 				Agent.Unpause(this);
 				currentPlayState = null;
 			}
 			if (interrupt)
 			{
-				base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_StopMontage"));
+				baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_StopMontage"));
 			}
 		}
 	}

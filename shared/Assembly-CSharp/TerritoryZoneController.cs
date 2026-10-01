@@ -105,7 +105,7 @@ public class TerritoryZoneController : PointEntity<TerritoryZoneController>
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		if (faction <= 0 || faction >= FactionColors.Length)
 		{
-			return default(Color32);
+			return default;
 		}
 		return Unpack(FactionColors[faction]);
 	}
@@ -157,7 +157,7 @@ public class TerritoryZoneController : PointEntity<TerritoryZoneController>
 			}
 		}
 		StateVersion++;
-		if (base.isServer)
+		if (isServer)
 		{
 			Territory.SyncFromController(this);
 		}
@@ -311,7 +311,7 @@ public class TerritoryZoneController : PointEntity<TerritoryZoneController>
 				for (int j = 0; j < 6; j++)
 				{
 					Vector2Int val = HexGridLayout.NeighbourDirs[j];
-					int num3 = HexGridLayout.AxialToCell(q + ((Vector2Int)(ref val)).x, r + ((Vector2Int)(ref val)).y, HexSize);
+					int num3 = HexGridLayout.AxialToCell(q + val.x, r + val.y, HexSize);
 					if (num3 >= 0 && num3 < CellFactions.Length && !array[num3] && CellFactions[num3] == faction)
 					{
 						array[num3] = true;

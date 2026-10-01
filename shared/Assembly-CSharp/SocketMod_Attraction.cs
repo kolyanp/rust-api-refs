@@ -177,7 +177,7 @@ public class SocketMod_Attraction : SocketMod
 				}
 				Vector3 val2 = ((Component)item).transform.position + ((Component)item).transform.rotation * attractionPoint.worldPosition;
 				Vector3 val3 = val2 - val;
-				float magnitude = ((Vector3)(ref val3)).magnitude;
+				float magnitude = val3.magnitude;
 				if (ignoreRotationForRadiusCheck)
 				{
 					Vector3 val4 = ((Component)item).transform.TransformPoint(Vector3.LerpUnclamped(Vector3.zero, Vector3Ex.WithY(attractionPoint.worldPosition, 0f), 2f));
@@ -207,7 +207,7 @@ public class SocketMod_Attraction : SocketMod
 					}
 					else
 					{
-						Vector3 eulerAngles = ((Quaternion)(ref place.rotation)).eulerAngles;
+						Vector3 eulerAngles = place.rotation.eulerAngles;
 						eulerAngles -= new Vector3(eulerAngles.x % 90f, eulerAngles.y % 90f, eulerAngles.z % 90f);
 						place.rotation = Quaternion.Euler(eulerAngles + ((Component)item).transform.eulerAngles);
 					}

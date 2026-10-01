@@ -59,7 +59,7 @@ public class Spawn : ConsoleSystem
 	}
 
 	[ServerVar(Help = "(Generated) Deletes all spawned entities belonging to the named population(s); pass one or more population names as arguments to target specific groups")]
-	public unsafe static void delete_populations(Arg args)
+	public static void delete_populations(Arg args)
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
@@ -72,7 +72,7 @@ public class Spawn : ConsoleSystem
 		for (int i = 0; i < args2.Length; i++)
 		{
 			StringView val = args2[i];
-			SingletonComponent<SpawnHandler>.Instance?.DeletePopulation(((object)(*(StringView*)(&val))/*cast due to constrained. prefix*/).ToString());
+			SingletonComponent<SpawnHandler>.Instance?.DeletePopulation(((object)val/*cast due to constrained. prefix*/).ToString());
 		}
 	}
 
@@ -95,7 +95,7 @@ public class Spawn : ConsoleSystem
 		int num = Mathf.Clamp(args.GetInt(0, 100), 1, 10000);
 		List<ILootContainer> list = new List<ILootContainer>();
 		global::Vis.Entities(((Component)player).transform.position, 5f, list, -1, (QueryTriggerInteraction)1);
-		ILootContainer lootContainer = list.OrderBy(delegate(ILootContainer x)
+		ILootContainer lootContainer = list.OrderBy((ILootContainer x) =>
 		{
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)

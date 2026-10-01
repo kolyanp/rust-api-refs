@@ -10,7 +10,7 @@ public class Trans_TargetIsInSafeZone : FSMTransitionBase
 		using (TimeWarning.New("Trans_TargetIsInSafeZone"))
 		{
 			BaseEntity target;
-			return base.Senses.FindTarget(out target) && target.InSafeZone();
+			return Senses.FindTarget(out target) && target.InSafeZone();
 		}
 	}
 }

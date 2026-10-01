@@ -64,11 +64,11 @@ public class VisualizeTexelDensity : MonoBehaviour
 	{
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Expected O, but got Unknown
+		//IL_004e: Expected Obj, but got Unknown
 		if ((Object)(object)texelDensityGradTex == (Object)null)
 		{
-			Object obj = Resources.Load("TexelDensityGrad");
-			texelDensityGradTex = (Texture)(object)((obj is Texture) ? obj : null);
+			Object val = Resources.Load("TexelDensityGrad");
+			texelDensityGradTex = (Texture)(object)((val is Texture) ? val : null);
 		}
 		if ((Object)(object)texelDensityOverlayMat == (Object)null)
 		{
@@ -113,12 +113,12 @@ public class VisualizeTexelDensity : MonoBehaviour
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Expected O, but got Unknown
+		//IL_0037: Expected Obj, but got Unknown
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013a: Expected O, but got Unknown
+		//IL_013a: Expected Obj, but got Unknown
 		if ((Object)(object)texelDensityCamera == (Object)null)
 		{
 			GameObject val = new GameObject("Texel Density Camera", new Type[1] { typeof(Camera) })
@@ -230,21 +230,21 @@ public class VisualizeTexelDensity : MonoBehaviour
 		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f8: Expected O, but got Unknown
+		//IL_00f8: Expected Obj, but got Unknown
 		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Expected O, but got Unknown
+		//IL_010e: Expected Obj, but got Unknown
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011d: Expected O, but got Unknown
+		//IL_011d: Expected Obj, but got Unknown
 		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012c: Expected O, but got Unknown
+		//IL_012c: Expected Obj, but got Unknown
 		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Expected O, but got Unknown
+		//IL_013b: Expected Obj, but got Unknown
 		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0144: Unknown result type (might be due to invalid IL or missing references)

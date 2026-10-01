@@ -22,7 +22,7 @@ public class GenerateRoadTopology : ProceduralComponent
 		TerrainTopologyMap topomap = TerrainMeta.TopologyMap;
 		NativeArray<int> map = topomap.dst;
 		int res = topomap.res;
-		ImageProcessing.Dilate2D(map, res, res, 6144, 6, delegate(int x, int y)
+		ImageProcessing.Dilate2D(map, res, res, 6144, 6, (int x, int y) =>
 		{
 			if ((map[x * res + y] & 0x31) != 0)
 			{

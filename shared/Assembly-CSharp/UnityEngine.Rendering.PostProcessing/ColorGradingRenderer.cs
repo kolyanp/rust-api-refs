@@ -15,7 +15,7 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 
 	private Texture2D m_GradingCurves;
 
-	private readonly Color[] m_Pixels = (Color[])(object)new Color[256];
+	private readonly Color[] m_Pixels = new Color[256];
 
 	private RenderTexture m_InternalLdrLut;
 
@@ -33,7 +33,7 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		//IL_003e: Invalid comparison between Unknown and I4
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Invalid comparison between Unknown and I4
-		GradingMode value = base.settings.gradingMode.value;
+		GradingMode value = settings.gradingMode.value;
 		bool flag = SystemInfo.supports3DRenderTextures && SystemInfo.supportsComputeShaders && (Object)(object)context.resources.computeShaders.lut3DBaker != (Object)null && (int)SystemInfo.graphicsDeviceType != 17 && (int)SystemInfo.graphicsDeviceType != 11;
 		if (value == GradingMode.External)
 		{
@@ -57,16 +57,16 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 	{
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		Texture value = base.settings.externalLut.value;
+		Texture value = settings.externalLut.value;
 		if (!((Object)(object)value == (Object)null))
 		{
 			PropertySheet uberSheet = context.uberSheet;
 			uberSheet.EnableKeyword("COLOR_GRADING_HDR_3D");
-			uberSheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut3D, value);
-			uberSheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut3D_Params, Vector4.op_Implicit(new Vector2(1f / (float)value.width, (float)value.width - 1f)));
-			uberSheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.PostExposure, RuntimeUtilities.Exp2(base.settings.postExposure.value));
-			uberSheet.properties.SetInt(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaskMode, (int)base.settings.maskMode.value);
-			uberSheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaskIntensity, base.settings.maskIntensity.value);
+			uberSheet.properties.SetTexture(ShaderIDs.Lut3D, value);
+			uberSheet.properties.SetVector(ShaderIDs.Lut3D_Params, Vector4.op_Implicit(new Vector2(1f / (float)value.width, (float)value.width - 1f)));
+			uberSheet.properties.SetFloat(ShaderIDs.PostExposure, RuntimeUtilities.Exp2(settings.postExposure.value));
+			uberSheet.properties.SetInt(ShaderIDs.MaskMode, (int)settings.maskMode.value);
+			uberSheet.properties.SetFloat(ShaderIDs.MaskIntensity, settings.maskIntensity.value);
 			context.logLut = value;
 		}
 	}
@@ -82,6 +82,9 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
 		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_025c: Unknown result type (might be due to invalid IL or missing references)
@@ -125,7 +128,7 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		CheckInternalLogLut();
 		ComputeShader lut3DBaker = context.resources.computeShaders.lut3DBaker;
 		int num = 0;
-		switch (base.settings.tonemapper.value)
+		switch (settings.tonemapper.value)
 		{
 		case Tonemapper.None:
 			num = lut3DBaker.FindKernel("KGenLut3D_NoTonemap");
@@ -143,32 +146,29 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		CommandBuffer command = context.command;
 		command.SetComputeTextureParam(lut3DBaker, num, "_Output", RenderTargetIdentifier.op_Implicit((Texture)(object)m_InternalLogLut));
 		command.SetComputeVectorParam(lut3DBaker, "_Size", new Vector4(33f, 1f / 32f, 0f, 0f));
-		Vector3 val = ColorUtilities.ComputeColorBalance(base.settings.temperature.value, base.settings.tint.value);
+		Vector3 val = ColorUtilities.ComputeColorBalance(settings.temperature.value, settings.tint.value);
 		command.SetComputeVectorParam(lut3DBaker, "_ColorBalance", Vector4.op_Implicit(val));
-		command.SetComputeVectorParam(lut3DBaker, "_ColorFilter", Color.op_Implicit(base.settings.colorFilter.value));
-		float num2 = base.settings.hueShift.value / 360f;
-		float num3 = base.settings.saturation.value / 100f + 1f;
-		float num4 = base.settings.contrast.value / 100f + 1f;
+		command.SetComputeVectorParam(lut3DBaker, "_ColorFilter", Color.op_Implicit(settings.colorFilter.value));
+		float num2 = settings.hueShift.value / 360f;
+		float num3 = settings.saturation.value / 100f + 1f;
+		float num4 = settings.contrast.value / 100f + 1f;
 		command.SetComputeVectorParam(lut3DBaker, "_HueSatCon", new Vector4(num2, num3, num4, 0f));
-		Vector4 val2 = default(Vector4);
-		((Vector4)(ref val2))._002Ector((float)base.settings.mixerRedOutRedIn, (float)base.settings.mixerRedOutGreenIn, (float)base.settings.mixerRedOutBlueIn, 0f);
-		Vector4 val3 = default(Vector4);
-		((Vector4)(ref val3))._002Ector((float)base.settings.mixerGreenOutRedIn, (float)base.settings.mixerGreenOutGreenIn, (float)base.settings.mixerGreenOutBlueIn, 0f);
-		Vector4 val4 = default(Vector4);
-		((Vector4)(ref val4))._002Ector((float)base.settings.mixerBlueOutRedIn, (float)base.settings.mixerBlueOutGreenIn, (float)base.settings.mixerBlueOutBlueIn, 0f);
+		Vector4 val2 = new Vector4((float)settings.mixerRedOutRedIn, (float)settings.mixerRedOutGreenIn, (float)settings.mixerRedOutBlueIn, 0f);
+		Vector4 val3 = new Vector4((float)settings.mixerGreenOutRedIn, (float)settings.mixerGreenOutGreenIn, (float)settings.mixerGreenOutBlueIn, 0f);
+		Vector4 val4 = new Vector4((float)settings.mixerBlueOutRedIn, (float)settings.mixerBlueOutGreenIn, (float)settings.mixerBlueOutBlueIn, 0f);
 		command.SetComputeVectorParam(lut3DBaker, "_ChannelMixerRed", val2 / 100f);
 		command.SetComputeVectorParam(lut3DBaker, "_ChannelMixerGreen", val3 / 100f);
 		command.SetComputeVectorParam(lut3DBaker, "_ChannelMixerBlue", val4 / 100f);
-		Vector3 val5 = ColorUtilities.ColorToLift(base.settings.lift.value * 0.2f);
-		Vector3 val6 = ColorUtilities.ColorToGain(base.settings.gain.value * 0.8f);
-		Vector3 val7 = ColorUtilities.ColorToInverseGamma(base.settings.gamma.value * 0.8f);
+		Vector3 val5 = ColorUtilities.ColorToLift(settings.lift.value * 0.2f);
+		Vector3 val6 = ColorUtilities.ColorToGain(settings.gain.value * 0.8f);
+		Vector3 val7 = ColorUtilities.ColorToInverseGamma(settings.gamma.value * 0.8f);
 		command.SetComputeVectorParam(lut3DBaker, "_Lift", new Vector4(val5.x, val5.y, val5.z, 0f));
 		command.SetComputeVectorParam(lut3DBaker, "_InvGamma", new Vector4(val7.x, val7.y, val7.z, 0f));
 		command.SetComputeVectorParam(lut3DBaker, "_Gain", new Vector4(val6.x, val6.y, val6.z, 0f));
 		command.SetComputeTextureParam(lut3DBaker, num, "_Curves", RenderTargetIdentifier.op_Implicit((Texture)(object)GetCurveTexture(hdr: true)));
-		if (base.settings.tonemapper.value == Tonemapper.Custom)
+		if (settings.tonemapper.value == Tonemapper.Custom)
 		{
-			m_HableCurve.Init(base.settings.toneCurveToeStrength.value, base.settings.toneCurveToeLength.value, base.settings.toneCurveShoulderStrength.value, base.settings.toneCurveShoulderLength.value, base.settings.toneCurveShoulderAngle.value, base.settings.toneCurveGamma.value);
+			m_HableCurve.Init(settings.toneCurveToeStrength.value, settings.toneCurveToeLength.value, settings.toneCurveShoulderStrength.value, settings.toneCurveShoulderLength.value, settings.toneCurveShoulderAngle.value, settings.toneCurveGamma.value);
 			command.SetComputeVectorParam(lut3DBaker, "_CustomToneCurve", m_HableCurve.uniforms.curve);
 			command.SetComputeVectorParam(lut3DBaker, "_ToeSegmentA", m_HableCurve.uniforms.toeSegmentA);
 			command.SetComputeVectorParam(lut3DBaker, "_ToeSegmentB", m_HableCurve.uniforms.toeSegmentB);
@@ -184,11 +184,11 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		RenderTexture internalLogLut = m_InternalLogLut;
 		PropertySheet uberSheet = context.uberSheet;
 		uberSheet.EnableKeyword("COLOR_GRADING_HDR_3D");
-		uberSheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut3D, (Texture)(object)internalLogLut);
-		uberSheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut3D_Params, Vector4.op_Implicit(new Vector2(1f / (float)((Texture)internalLogLut).width, (float)((Texture)internalLogLut).width - 1f)));
-		uberSheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.PostExposure, RuntimeUtilities.Exp2(base.settings.postExposure.value));
-		uberSheet.properties.SetInt(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaskMode, (int)base.settings.maskMode.value);
-		uberSheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaskIntensity, base.settings.maskIntensity.value);
+		uberSheet.properties.SetTexture(ShaderIDs.Lut3D, (Texture)(object)internalLogLut);
+		uberSheet.properties.SetVector(ShaderIDs.Lut3D_Params, Vector4.op_Implicit(new Vector2(1f / (float)((Texture)internalLogLut).width, (float)((Texture)internalLogLut).width - 1f)));
+		uberSheet.properties.SetFloat(ShaderIDs.PostExposure, RuntimeUtilities.Exp2(settings.postExposure.value));
+		uberSheet.properties.SetInt(ShaderIDs.MaskMode, (int)settings.maskMode.value);
+		uberSheet.properties.SetFloat(ShaderIDs.MaskIntensity, settings.maskIntensity.value);
 		context.logLut = (Texture)(object)internalLogLut;
 	}
 
@@ -203,6 +203,9 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
@@ -244,42 +247,39 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		CheckInternalStripLut();
 		PropertySheet propertySheet = context.propertySheets.Get(context.resources.shaders.lut2DBaker);
 		propertySheet.ClearKeywords();
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut2D_Params, new Vector4(32f, 0.00048828125f, 1f / 64f, 1.032258f));
-		Vector3 val = ColorUtilities.ComputeColorBalance(base.settings.temperature.value, base.settings.tint.value);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ColorBalance, Vector4.op_Implicit(val));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ColorFilter, Color.op_Implicit(base.settings.colorFilter.value));
-		float num = base.settings.hueShift.value / 360f;
-		float num2 = base.settings.saturation.value / 100f + 1f;
-		float num3 = base.settings.contrast.value / 100f + 1f;
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.HueSatCon, Vector4.op_Implicit(new Vector3(num, num2, num3)));
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector((float)base.settings.mixerRedOutRedIn, (float)base.settings.mixerRedOutGreenIn, (float)base.settings.mixerRedOutBlueIn);
-		Vector3 val3 = default(Vector3);
-		((Vector3)(ref val3))._002Ector((float)base.settings.mixerGreenOutRedIn, (float)base.settings.mixerGreenOutGreenIn, (float)base.settings.mixerGreenOutBlueIn);
-		Vector3 val4 = default(Vector3);
-		((Vector3)(ref val4))._002Ector((float)base.settings.mixerBlueOutRedIn, (float)base.settings.mixerBlueOutGreenIn, (float)base.settings.mixerBlueOutBlueIn);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ChannelMixerRed, Vector4.op_Implicit(val2 / 100f));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ChannelMixerGreen, Vector4.op_Implicit(val3 / 100f));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ChannelMixerBlue, Vector4.op_Implicit(val4 / 100f));
-		Vector3 val5 = ColorUtilities.ColorToLift(base.settings.lift.value * 0.2f);
-		Vector3 val6 = ColorUtilities.ColorToGain(base.settings.gain.value * 0.8f);
-		Vector3 val7 = ColorUtilities.ColorToInverseGamma(base.settings.gamma.value * 0.8f);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lift, Vector4.op_Implicit(val5));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.InvGamma, Vector4.op_Implicit(val7));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Gain, Vector4.op_Implicit(val6));
-		propertySheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.Curves, (Texture)(object)GetCurveTexture(hdr: true));
-		switch (base.settings.tonemapper.value)
+		propertySheet.properties.SetVector(ShaderIDs.Lut2D_Params, new Vector4(32f, 2f / 4096f, 1f / 64f, 1.032258f));
+		Vector3 val = ColorUtilities.ComputeColorBalance(settings.temperature.value, settings.tint.value);
+		propertySheet.properties.SetVector(ShaderIDs.ColorBalance, Vector4.op_Implicit(val));
+		propertySheet.properties.SetVector(ShaderIDs.ColorFilter, Color.op_Implicit(settings.colorFilter.value));
+		float num = settings.hueShift.value / 360f;
+		float num2 = settings.saturation.value / 100f + 1f;
+		float num3 = settings.contrast.value / 100f + 1f;
+		propertySheet.properties.SetVector(ShaderIDs.HueSatCon, Vector4.op_Implicit(new Vector3(num, num2, num3)));
+		Vector3 val2 = new Vector3((float)settings.mixerRedOutRedIn, (float)settings.mixerRedOutGreenIn, (float)settings.mixerRedOutBlueIn);
+		Vector3 val3 = new Vector3((float)settings.mixerGreenOutRedIn, (float)settings.mixerGreenOutGreenIn, (float)settings.mixerGreenOutBlueIn);
+		Vector3 val4 = new Vector3((float)settings.mixerBlueOutRedIn, (float)settings.mixerBlueOutGreenIn, (float)settings.mixerBlueOutBlueIn);
+		propertySheet.properties.SetVector(ShaderIDs.ChannelMixerRed, Vector4.op_Implicit(val2 / 100f));
+		propertySheet.properties.SetVector(ShaderIDs.ChannelMixerGreen, Vector4.op_Implicit(val3 / 100f));
+		propertySheet.properties.SetVector(ShaderIDs.ChannelMixerBlue, Vector4.op_Implicit(val4 / 100f));
+		Vector3 val5 = ColorUtilities.ColorToLift(settings.lift.value * 0.2f);
+		Vector3 val6 = ColorUtilities.ColorToGain(settings.gain.value * 0.8f);
+		Vector3 val7 = ColorUtilities.ColorToInverseGamma(settings.gamma.value * 0.8f);
+		propertySheet.properties.SetVector(ShaderIDs.Lift, Vector4.op_Implicit(val5));
+		propertySheet.properties.SetVector(ShaderIDs.InvGamma, Vector4.op_Implicit(val7));
+		propertySheet.properties.SetVector(ShaderIDs.Gain, Vector4.op_Implicit(val6));
+		propertySheet.properties.SetTexture(ShaderIDs.Curves, (Texture)(object)GetCurveTexture(hdr: true));
+		switch (settings.tonemapper.value)
 		{
 		case Tonemapper.Custom:
 			propertySheet.EnableKeyword("TONEMAPPING_CUSTOM");
-			m_HableCurve.Init(base.settings.toneCurveToeStrength.value, base.settings.toneCurveToeLength.value, base.settings.toneCurveShoulderStrength.value, base.settings.toneCurveShoulderLength.value, base.settings.toneCurveShoulderAngle.value, base.settings.toneCurveGamma.value);
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.CustomToneCurve, m_HableCurve.uniforms.curve);
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ToeSegmentA, m_HableCurve.uniforms.toeSegmentA);
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ToeSegmentB, m_HableCurve.uniforms.toeSegmentB);
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.MidSegmentA, m_HableCurve.uniforms.midSegmentA);
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.MidSegmentB, m_HableCurve.uniforms.midSegmentB);
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ShoSegmentA, m_HableCurve.uniforms.shoSegmentA);
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ShoSegmentB, m_HableCurve.uniforms.shoSegmentB);
+			m_HableCurve.Init(settings.toneCurveToeStrength.value, settings.toneCurveToeLength.value, settings.toneCurveShoulderStrength.value, settings.toneCurveShoulderLength.value, settings.toneCurveShoulderAngle.value, settings.toneCurveGamma.value);
+			propertySheet.properties.SetVector(ShaderIDs.CustomToneCurve, m_HableCurve.uniforms.curve);
+			propertySheet.properties.SetVector(ShaderIDs.ToeSegmentA, m_HableCurve.uniforms.toeSegmentA);
+			propertySheet.properties.SetVector(ShaderIDs.ToeSegmentB, m_HableCurve.uniforms.toeSegmentB);
+			propertySheet.properties.SetVector(ShaderIDs.MidSegmentA, m_HableCurve.uniforms.midSegmentA);
+			propertySheet.properties.SetVector(ShaderIDs.MidSegmentB, m_HableCurve.uniforms.midSegmentB);
+			propertySheet.properties.SetVector(ShaderIDs.ShoSegmentA, m_HableCurve.uniforms.shoSegmentA);
+			propertySheet.properties.SetVector(ShaderIDs.ShoSegmentB, m_HableCurve.uniforms.shoSegmentB);
 			break;
 		case Tonemapper.ACES:
 			propertySheet.EnableKeyword("TONEMAPPING_ACES");
@@ -294,11 +294,11 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		RenderTexture internalLdrLut = m_InternalLdrLut;
 		PropertySheet uberSheet = context.uberSheet;
 		uberSheet.EnableKeyword("COLOR_GRADING_HDR_2D");
-		uberSheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut2D_Params, Vector4.op_Implicit(new Vector3(1f / (float)((Texture)internalLdrLut).width, 1f / (float)((Texture)internalLdrLut).height, (float)((Texture)internalLdrLut).height - 1f)));
-		uberSheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut2D, (Texture)(object)internalLdrLut);
-		uberSheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.PostExposure, RuntimeUtilities.Exp2(base.settings.postExposure.value));
-		uberSheet.properties.SetInt(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaskMode, (int)base.settings.maskMode.value);
-		uberSheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaskIntensity, base.settings.maskIntensity.value);
+		uberSheet.properties.SetVector(ShaderIDs.Lut2D_Params, Vector4.op_Implicit(new Vector3(1f / (float)((Texture)internalLdrLut).width, 1f / (float)((Texture)internalLdrLut).height, (float)((Texture)internalLdrLut).height - 1f)));
+		uberSheet.properties.SetTexture(ShaderIDs.Lut2D, (Texture)(object)internalLdrLut);
+		uberSheet.properties.SetFloat(ShaderIDs.PostExposure, RuntimeUtilities.Exp2(settings.postExposure.value));
+		uberSheet.properties.SetInt(ShaderIDs.MaskMode, (int)settings.maskMode.value);
+		uberSheet.properties.SetFloat(ShaderIDs.MaskIntensity, settings.maskIntensity.value);
 	}
 
 	private void RenderLDRPipeline2D(PostProcessRenderContext context)
@@ -312,6 +312,9 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
@@ -346,50 +349,47 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		CheckInternalStripLut();
 		PropertySheet propertySheet = context.propertySheets.Get(context.resources.shaders.lut2DBaker);
 		propertySheet.ClearKeywords();
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut2D_Params, new Vector4(32f, 0.00048828125f, 1f / 64f, 1.032258f));
-		Vector3 val = ColorUtilities.ComputeColorBalance(base.settings.temperature.value, base.settings.tint.value);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ColorBalance, Vector4.op_Implicit(val));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ColorFilter, Color.op_Implicit(base.settings.colorFilter.value));
-		float num = base.settings.hueShift.value / 360f;
-		float num2 = base.settings.saturation.value / 100f + 1f;
-		float num3 = base.settings.contrast.value / 100f + 1f;
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.HueSatCon, Vector4.op_Implicit(new Vector3(num, num2, num3)));
-		Vector3 val2 = default(Vector3);
-		((Vector3)(ref val2))._002Ector((float)base.settings.mixerRedOutRedIn, (float)base.settings.mixerRedOutGreenIn, (float)base.settings.mixerRedOutBlueIn);
-		Vector3 val3 = default(Vector3);
-		((Vector3)(ref val3))._002Ector((float)base.settings.mixerGreenOutRedIn, (float)base.settings.mixerGreenOutGreenIn, (float)base.settings.mixerGreenOutBlueIn);
-		Vector3 val4 = default(Vector3);
-		((Vector3)(ref val4))._002Ector((float)base.settings.mixerBlueOutRedIn, (float)base.settings.mixerBlueOutGreenIn, (float)base.settings.mixerBlueOutBlueIn);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ChannelMixerRed, Vector4.op_Implicit(val2 / 100f));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ChannelMixerGreen, Vector4.op_Implicit(val3 / 100f));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.ChannelMixerBlue, Vector4.op_Implicit(val4 / 100f));
-		Vector3 val5 = ColorUtilities.ColorToLift(base.settings.lift.value);
-		Vector3 val6 = ColorUtilities.ColorToGain(base.settings.gain.value);
-		Vector3 val7 = ColorUtilities.ColorToInverseGamma(base.settings.gamma.value);
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lift, Vector4.op_Implicit(val5));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.InvGamma, Vector4.op_Implicit(val7));
-		propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Gain, Vector4.op_Implicit(val6));
-		propertySheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.Brightness, (base.settings.brightness.value + 100f) / 100f);
-		propertySheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.Curves, (Texture)(object)GetCurveTexture(hdr: false));
+		propertySheet.properties.SetVector(ShaderIDs.Lut2D_Params, new Vector4(32f, 2f / 4096f, 1f / 64f, 1.032258f));
+		Vector3 val = ColorUtilities.ComputeColorBalance(settings.temperature.value, settings.tint.value);
+		propertySheet.properties.SetVector(ShaderIDs.ColorBalance, Vector4.op_Implicit(val));
+		propertySheet.properties.SetVector(ShaderIDs.ColorFilter, Color.op_Implicit(settings.colorFilter.value));
+		float num = settings.hueShift.value / 360f;
+		float num2 = settings.saturation.value / 100f + 1f;
+		float num3 = settings.contrast.value / 100f + 1f;
+		propertySheet.properties.SetVector(ShaderIDs.HueSatCon, Vector4.op_Implicit(new Vector3(num, num2, num3)));
+		Vector3 val2 = new Vector3((float)settings.mixerRedOutRedIn, (float)settings.mixerRedOutGreenIn, (float)settings.mixerRedOutBlueIn);
+		Vector3 val3 = new Vector3((float)settings.mixerGreenOutRedIn, (float)settings.mixerGreenOutGreenIn, (float)settings.mixerGreenOutBlueIn);
+		Vector3 val4 = new Vector3((float)settings.mixerBlueOutRedIn, (float)settings.mixerBlueOutGreenIn, (float)settings.mixerBlueOutBlueIn);
+		propertySheet.properties.SetVector(ShaderIDs.ChannelMixerRed, Vector4.op_Implicit(val2 / 100f));
+		propertySheet.properties.SetVector(ShaderIDs.ChannelMixerGreen, Vector4.op_Implicit(val3 / 100f));
+		propertySheet.properties.SetVector(ShaderIDs.ChannelMixerBlue, Vector4.op_Implicit(val4 / 100f));
+		Vector3 val5 = ColorUtilities.ColorToLift(settings.lift.value);
+		Vector3 val6 = ColorUtilities.ColorToGain(settings.gain.value);
+		Vector3 val7 = ColorUtilities.ColorToInverseGamma(settings.gamma.value);
+		propertySheet.properties.SetVector(ShaderIDs.Lift, Vector4.op_Implicit(val5));
+		propertySheet.properties.SetVector(ShaderIDs.InvGamma, Vector4.op_Implicit(val7));
+		propertySheet.properties.SetVector(ShaderIDs.Gain, Vector4.op_Implicit(val6));
+		propertySheet.properties.SetFloat(ShaderIDs.Brightness, (settings.brightness.value + 100f) / 100f);
+		propertySheet.properties.SetTexture(ShaderIDs.Curves, (Texture)(object)GetCurveTexture(hdr: false));
 		context.command.BeginSample("LdrColorGradingLut2D");
-		Texture value = base.settings.ldrLut.value;
+		Texture value = settings.ldrLut.value;
 		if ((Object)(object)value == (Object)null || value.width != value.height * value.height)
 		{
 			context.command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)0), RenderTargetIdentifier.op_Implicit((Texture)(object)m_InternalLdrLut), propertySheet, 0);
 		}
 		else
 		{
-			propertySheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.UserLut2D_Params, new Vector4(1f / (float)value.width, 1f / (float)value.height, (float)value.height - 1f, (float)base.settings.ldrLutContribution));
+			propertySheet.properties.SetVector(ShaderIDs.UserLut2D_Params, new Vector4(1f / (float)value.width, 1f / (float)value.height, (float)value.height - 1f, (float)settings.ldrLutContribution));
 			context.command.BlitFullscreenTriangle(RenderTargetIdentifier.op_Implicit(value), RenderTargetIdentifier.op_Implicit((Texture)(object)m_InternalLdrLut), propertySheet, 1);
 		}
 		context.command.EndSample("LdrColorGradingLut2D");
 		RenderTexture internalLdrLut = m_InternalLdrLut;
 		PropertySheet uberSheet = context.uberSheet;
 		uberSheet.EnableKeyword("COLOR_GRADING_LDR_2D");
-		uberSheet.properties.SetVector(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut2D_Params, Vector4.op_Implicit(new Vector3(1f / (float)((Texture)internalLdrLut).width, 1f / (float)((Texture)internalLdrLut).height, (float)((Texture)internalLdrLut).height - 1f)));
-		uberSheet.properties.SetTexture(UnityEngine.Rendering.PostProcessing.ShaderIDs.Lut2D, (Texture)(object)internalLdrLut);
-		uberSheet.properties.SetInt(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaskMode, (int)base.settings.maskMode.value);
-		uberSheet.properties.SetFloat(UnityEngine.Rendering.PostProcessing.ShaderIDs.MaskIntensity, base.settings.maskIntensity.value);
+		uberSheet.properties.SetVector(ShaderIDs.Lut2D_Params, Vector4.op_Implicit(new Vector3(1f / (float)((Texture)internalLdrLut).width, 1f / (float)((Texture)internalLdrLut).height, (float)((Texture)internalLdrLut).height - 1f)));
+		uberSheet.properties.SetTexture(ShaderIDs.Lut2D, (Texture)(object)internalLdrLut);
+		uberSheet.properties.SetInt(ShaderIDs.MaskMode, (int)settings.maskMode.value);
+		uberSheet.properties.SetFloat(ShaderIDs.MaskIntensity, settings.maskIntensity.value);
 	}
 
 	private void CheckInternalLogLut()
@@ -408,7 +408,7 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Expected O, but got Unknown
+		//IL_008a: Expected Obj, but got Unknown
 		if ((Object)(object)m_InternalLogLut == (Object)null || !m_InternalLogLut.IsCreated())
 		{
 			RuntimeUtilities.Destroy((Object)(object)m_InternalLogLut);
@@ -443,7 +443,7 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Expected O, but got Unknown
+		//IL_0077: Expected Obj, but got Unknown
 		if ((Object)(object)m_InternalLdrLut == (Object)null || !m_InternalLdrLut.IsCreated())
 		{
 			RuntimeUtilities.Destroy((Object)(object)m_InternalLdrLut);
@@ -473,7 +473,7 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Expected O, but got Unknown
+		//IL_0052: Expected Obj, but got Unknown
 		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
@@ -490,14 +490,14 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 				filterMode = (FilterMode)1
 			};
 		}
-		Spline value = base.settings.hueVsHueCurve.value;
-		Spline value2 = base.settings.hueVsSatCurve.value;
-		Spline value3 = base.settings.satVsSatCurve.value;
-		Spline value4 = base.settings.lumVsSatCurve.value;
-		Spline value5 = base.settings.masterCurve.value;
-		Spline value6 = base.settings.redCurve.value;
-		Spline value7 = base.settings.greenCurve.value;
-		Spline value8 = base.settings.blueCurve.value;
+		Spline value = settings.hueVsHueCurve.value;
+		Spline value2 = settings.hueVsSatCurve.value;
+		Spline value3 = settings.satVsSatCurve.value;
+		Spline value4 = settings.lumVsSatCurve.value;
+		Spline value5 = settings.masterCurve.value;
+		Spline value6 = settings.redCurve.value;
+		Spline value7 = settings.greenCurve.value;
+		Spline value8 = settings.blueCurve.value;
 		Color[] pixels = m_Pixels;
 		for (int i = 0; i < 128; i++)
 		{

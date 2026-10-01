@@ -80,7 +80,7 @@ public class BorderGraphic : MaskableGraphic
 		outer.Clear();
 		inner.Clear();
 		RoundedRect.AppendPerimeter(outer, rect, topLeft, topRight, bottomRight, bottomLeft, segmentsPerCorner);
-		Rect rect2 = Rect.MinMaxRect(((Rect)(ref rect)).xMin + left, ((Rect)(ref rect)).yMin + bottom, ((Rect)(ref rect)).xMax - right, ((Rect)(ref rect)).yMax - top);
+		Rect rect2 = Rect.MinMaxRect(rect.xMin + left, rect.yMin + bottom, rect.xMax - right, rect.yMax - top);
 		float num = Mathf.Max(0f, topLeft - Mathf.Max(top, left));
 		float num2 = Mathf.Max(0f, topRight - Mathf.Max(top, right));
 		float num3 = Mathf.Max(0f, bottomRight - Mathf.Max(bottom, right));
@@ -116,10 +116,10 @@ public class BorderGraphic : MaskableGraphic
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		float xMin = ((Rect)(ref rect)).xMin;
-		float xMax = ((Rect)(ref rect)).xMax;
-		float yMin = ((Rect)(ref rect)).yMin;
-		float yMax = ((Rect)(ref rect)).yMax;
+		float xMin = rect.xMin;
+		float xMax = rect.xMax;
+		float yMin = rect.yMin;
+		float yMax = rect.yMax;
 		Color color = ((Graphic)this).color;
 		if (top > 0f)
 		{

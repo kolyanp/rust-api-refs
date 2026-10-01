@@ -52,9 +52,9 @@ public class PaddlingPool : LiquidContainer, ISplashable
 		Sprinkler.SplashableGrid.OnParentChanged(this, oldParent, newParent);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
 		float normalisedFillLevel = GetNormalisedFillLevel();
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
@@ -74,7 +74,7 @@ public class PaddlingPool : LiquidContainer, ISplashable
 
 	public bool WantsSplash(ItemDefinition splashType, int amount)
 	{
-		if (base.IsDestroyed)
+		if (IsDestroyed)
 		{
 			return false;
 		}
@@ -94,7 +94,7 @@ public class PaddlingPool : LiquidContainer, ISplashable
 	public int DoSplash(ItemDefinition splashType, int amount)
 	{
 		int amount2 = Mathf.Clamp(Mathf.RoundToInt((float)amount * 0.66f), 1, amount);
-		base.inventory.AddItem(splashType, amount2, 0uL);
+		inventory.AddItem(splashType, amount2, 0uL);
 		return amount;
 	}
 
@@ -107,11 +107,11 @@ public class PaddlingPool : LiquidContainer, ISplashable
 
 	private float GetNormalisedFillLevel()
 	{
-		if (base.inventory.itemList.Count <= 0 || base.inventory.itemList[0] == null)
+		if (inventory.itemList.Count <= 0 || inventory.itemList[0] == null)
 		{
 			return 0f;
 		}
-		return (float)base.inventory.itemList[0].amount / (float)maxStackSize;
+		return (float)inventory.itemList[0].amount / (float)maxStackSize;
 	}
 
 	private void UpdatePoolFillAmount(float normalisedAmount)
@@ -154,7 +154,7 @@ public class PaddlingPool : LiquidContainer, ISplashable
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		base.DestroyShared();
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}

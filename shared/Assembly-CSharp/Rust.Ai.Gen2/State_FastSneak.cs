@@ -7,7 +7,7 @@ public class State_FastSneak : State_CircleDynamic
 {
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		base.Agent.deceleration.Value = 10f;
+		Agent.deceleration.Value = 10f;
 		return base.OnStateEnter(payload);
 	}
 
@@ -19,23 +19,23 @@ public class State_FastSneak : State_CircleDynamic
 		}
 		else if (distToTarget > 50f)
 		{
-			base.Agent.speed = 8.25f;
+			Agent.speed = 8.25f;
 		}
 		else if (player.modelState.sprinting && distToTarget < 20f)
 		{
-			base.Agent.speed = 6.875f;
+			Agent.speed = 6.875f;
 		}
 		else if (player.modelState.sprinting)
 		{
-			base.Agent.speed = 8.25f;
+			Agent.speed = 8.25f;
 		}
 		else if (player.modelState.ducked || player.estimatedSpeed < 0.1f)
 		{
-			base.Agent.speed = 1.7f;
+			Agent.speed = 1.7f;
 		}
 		else
 		{
-			base.Agent.speed = 3.5f;
+			Agent.speed = 3.5f;
 		}
 	}
 }

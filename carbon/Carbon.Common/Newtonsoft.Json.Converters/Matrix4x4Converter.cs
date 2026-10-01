@@ -22,7 +22,7 @@ public class Matrix4x4Converter : JsonConverter
 			for (int j = 0; j < 4; j++)
 			{
 				writer.WritePropertyName($"m{i}{j}");
-				writer.WriteValue(((Matrix4x4)(ref val))[i, j]);
+				writer.WriteValue(val[i, j]);
 			}
 		}
 		writer.WriteEnd();
@@ -41,12 +41,12 @@ public class Matrix4x4Converter : JsonConverter
 			return (object)default(Matrix4x4);
 		}
 		JObject val = JObject.Load(reader);
-		Matrix4x4 val2 = default(Matrix4x4);
+		Matrix4x4 val2 = default;
 		for (int i = 0; i < 4; i++)
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				((Matrix4x4)(ref val2))[i, j] = (float)val[$"m{i}{j}"];
+				val2[i, j] = (float)val[$"m{i}{j}"];
 			}
 		}
 		return val2;

@@ -33,7 +33,7 @@ internal sealed class AssemblyLoader : IDisposable
 
 	internal byte[] _checksumBuffer = new byte[20];
 
-	internal IReadOnlyList<byte> _needleBuffer = new global::_003C_003Ez__ReadOnlyArray<byte>(new byte[4] { 1, 220, 127, 1 });
+	internal IReadOnlyList<byte> _needleBuffer = new _003C_003Ez__ReadOnlyArray<byte>(new byte[4] { 1, 220, 127, 1 });
 
 	private bool _disposing;
 

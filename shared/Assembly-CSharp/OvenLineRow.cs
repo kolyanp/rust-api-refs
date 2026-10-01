@@ -10,23 +10,23 @@ public class OvenLineRow : MonoBehaviour
 
 	public Transform Container;
 
-	public Color Color;
+	public Color Color = Color.white;
 
 	public Sprite TriangleSprite;
 
-	public int LineWidth;
+	public int LineWidth = 2;
 
-	public int ArrowWidth;
+	public int ArrowWidth = 6;
 
-	public int ArrowHeight;
+	public int ArrowHeight = 4;
 
-	public int Padding;
+	public int Padding = 2;
 
 	private int _topCount;
 
 	private int _bottomCount;
 
-	private List<GameObject> images;
+	private List<GameObject> images = new List<GameObject>();
 
 	private void Update()
 	{
@@ -88,68 +88,61 @@ public class OvenLineRow : MonoBehaviour
 			{
 				if (i == 0 || i == num - 1)
 				{
-					Image obj = CreateImage();
-					((Graphic)obj).rectTransform.anchorMin = new Vector2(0.5f, above ? 0.5f : 0f);
-					((Graphic)obj).rectTransform.anchorMax = new Vector2(0.5f, above ? 1f : 0.5f);
-					((Graphic)obj).rectTransform.offsetMin = new Vector2(0f - num4 + (float)i * num3 - (float)(LineWidth / 2), (float)(above ? (LineWidth / 2) : Padding));
-					((Graphic)obj).rectTransform.offsetMax = new Vector2(0f - num4 + (float)i * num3 + (float)(LineWidth / 2), (float)(above ? (-Padding) : (-LineWidth / 2)));
+					Image val = CreateImage();
+					((Graphic)val).rectTransform.anchorMin = new Vector2(0.5f, above ? 0.5f : 0f);
+					((Graphic)val).rectTransform.anchorMax = new Vector2(0.5f, above ? 1f : 0.5f);
+					((Graphic)val).rectTransform.offsetMin = new Vector2(0f - num4 + (float)i * num3 - (float)(LineWidth / 2), (float)(above ? (LineWidth / 2) : Padding));
+					((Graphic)val).rectTransform.offsetMax = new Vector2(0f - num4 + (float)i * num3 + (float)(LineWidth / 2), (float)(above ? (-Padding) : (-LineWidth / 2)));
 				}
 			}
 		}
 		else
 		{
-			Image obj2 = CreateImage();
-			((Graphic)obj2).rectTransform.anchorMin = new Vector2(0.5f, 0f);
-			((Graphic)obj2).rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-			((Graphic)obj2).rectTransform.offsetMin = new Vector2((float)(-LineWidth / 2), (float)Padding);
-			((Graphic)obj2).rectTransform.offsetMax = new Vector2((float)(LineWidth / 2), (float)(-LineWidth / 2));
-			Image obj3 = CreateImage();
-			obj3.sprite = TriangleSprite;
-			((Object)((Component)obj3).gameObject).name = "triangle";
-			obj3.useSpriteMesh = true;
-			((Transform)((Graphic)obj3).rectTransform).localRotation = Quaternion.Euler(0f, 0f, 180f);
-			((Graphic)obj3).rectTransform.anchorMin = new Vector2(0.5f, 0f);
-			((Graphic)obj3).rectTransform.anchorMax = new Vector2(0.5f, 0f);
-			((Graphic)obj3).rectTransform.pivot = new Vector2(0.5f, 0f);
-			((Graphic)obj3).rectTransform.offsetMin = new Vector2((float)(-ArrowWidth / 2), 0f);
-			((Graphic)obj3).rectTransform.offsetMax = new Vector2((float)(ArrowWidth / 2), (float)ArrowHeight);
+			Image val2 = CreateImage();
+			((Graphic)val2).rectTransform.anchorMin = new Vector2(0.5f, 0f);
+			((Graphic)val2).rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+			((Graphic)val2).rectTransform.offsetMin = new Vector2((float)(-LineWidth / 2), (float)Padding);
+			((Graphic)val2).rectTransform.offsetMax = new Vector2((float)(LineWidth / 2), (float)(-LineWidth / 2));
+			Image val3 = CreateImage();
+			val3.sprite = TriangleSprite;
+			((Object)((Component)val3).gameObject).name = "triangle";
+			val3.useSpriteMesh = true;
+			((Transform)((Graphic)val3).rectTransform).localRotation = Quaternion.Euler(0f, 0f, 180f);
+			((Graphic)val3).rectTransform.anchorMin = new Vector2(0.5f, 0f);
+			((Graphic)val3).rectTransform.anchorMax = new Vector2(0.5f, 0f);
+			((Graphic)val3).rectTransform.pivot = new Vector2(0.5f, 0f);
+			((Graphic)val3).rectTransform.offsetMin = new Vector2((float)(-ArrowWidth / 2), 0f);
+			((Graphic)val3).rectTransform.offsetMax = new Vector2((float)(ArrowWidth / 2), (float)ArrowHeight);
 		}
 		if (above && num2 >= 1)
 		{
 			float num5 = num3 * (float)(num2 - 1) + (float)LineWidth;
-			Image obj4 = CreateImage();
-			((Graphic)obj4).rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-			((Graphic)obj4).rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-			((Graphic)obj4).rectTransform.offsetMin = new Vector2(num5 / -2f, (float)(-LineWidth / 2));
-			((Graphic)obj4).rectTransform.offsetMax = new Vector2(num5 / 2f, (float)(LineWidth / 2));
+			Image val4 = CreateImage();
+			((Graphic)val4).rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+			((Graphic)val4).rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+			((Graphic)val4).rectTransform.offsetMin = new Vector2(num5 / -2f, (float)(-LineWidth / 2));
+			((Graphic)val4).rectTransform.offsetMax = new Vector2(num5 / 2f, (float)(LineWidth / 2));
 		}
 	}
 
 	private Image CreateImage()
 	{
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected O, but got Unknown
+		//IL_000b: Expected Obj, but got Unknown
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		GameObject val = new GameObject("Line");
-		Image obj = val.AddComponent<Image>();
+		Image val2 = val.AddComponent<Image>();
 		images.Add(val);
-		((Transform)((Graphic)obj).rectTransform).SetParent(Container ?? ((Component)this).transform);
-		((Component)obj).transform.localScale = Vector3.one;
-		((Graphic)obj).color = Color;
-		return obj;
+		((Transform)((Graphic)val2).rectTransform).SetParent(Container ?? ((Component)this).transform);
+		((Component)val2).transform.localScale = Vector3.one;
+		((Graphic)val2).color = Color;
+		return val2;
 	}
 
 	public OvenLineRow()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		Color = Color.white;
-		LineWidth = 2;
-		ArrowWidth = 6;
-		ArrowHeight = 4;
-		Padding = 2;
-		images = new List<GameObject>();
-		((MonoBehaviour)this)._002Ector();
 	}
 }

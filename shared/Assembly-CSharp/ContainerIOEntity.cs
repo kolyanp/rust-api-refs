@@ -13,21 +13,21 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 	[Header("ContainerIOEntity")]
 	public ItemDefinition onlyAllowedItem;
 
-	public ItemContainer.ContentsType allowedContents;
+	public ItemContainer.ContentsType allowedContents = ItemContainer.ContentsType.Generic;
 
-	public int maxStackSize;
+	public int maxStackSize = 1;
 
 	public int numSlots;
 
-	public string lootPanelName;
+	public string lootPanelName = "generic";
 
-	public Phrase panelTitle;
+	public Phrase panelTitle = new Phrase("loot", "Loot");
 
 	public bool needsBuildingPrivilegeToUse;
 
 	public bool requireAuthIfNotLocked;
 
-	public bool isLootable;
+	public bool isLootable = true;
 
 	public bool isMonitorable;
 
@@ -134,7 +134,7 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 			pickupErrorToFormat.format = PickupErrors.ItemHasLock;
 			return false;
 		}
-		if (children.Count != 0)
+		if (HasAttachments())
 		{
 			pickupErrorToFormat = (format: PickupErrors.ItemHasAttachment, arg0: pickup.itemTarget.displayName);
 			return false;
@@ -145,6 +145,11 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 			return false;
 		}
 		return base.CanCompletePickup(player);
+	}
+
+	protected virtual bool HasAttachments()
+	{
+		return children.Count != 0;
 	}
 
 	public override void ServerInit()
@@ -172,7 +177,7 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		if (_inventory != null && !((ItemContainerId)(ref _inventory.uid)).IsValid)
+		if (_inventory != null && !_inventory.uid.IsValid)
 		{
 			_inventory.GiveUID();
 		}
@@ -185,7 +190,7 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 		Debug.Assert(_inventory == null, "Double init of inventory!");
 		_inventory = Pool.Get<ItemContainer>();
 		_inventory.entityOwner = this;
-		_inventory.allowedContents = ((allowedContents == (ItemContainer.ContentsType)0) ? ItemContainer.ContentsType.Generic : allowedContents);
+		_inventory.allowedContents = ((allowedContents == 0) ? ItemContainer.ContentsType.Generic : allowedContents);
 		_inventory.SetOnlyAllowedItem(onlyAllowedItem);
 		_inventory.maxStackSize = maxStackSize;
 		_inventory.ServerInitialize(null, numSlots);
@@ -245,7 +250,7 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 	{
 	}
 
-	public virtual void OnItemAddedOrRemoved(Item item, bool added)
+	public virtual void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 	}
 
@@ -269,8 +274,8 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 		StorageContainer.DropItems(this, initiator);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (_inventory != null)
@@ -358,7 +363,7 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		return default(ItemContainerId);
+		return default;
 	}
 
 	public virtual void DropBonusItems(BaseEntity initiator, ItemContainer container)
@@ -483,12 +488,6 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 	public ContainerIOEntity()
 	{
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Expected O, but got Unknown
-		allowedContents = ItemContainer.ContentsType.Generic;
-		maxStackSize = 1;
-		lootPanelName = "generic";
-		panelTitle = new Phrase("loot", "Loot");
-		isLootable = true;
-		base._002Ector();
+		//IL_002e: Expected Obj, but got Unknown
 	}
 }

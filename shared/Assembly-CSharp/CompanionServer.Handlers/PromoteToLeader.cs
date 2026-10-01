@@ -7,29 +7,29 @@ public class PromoteToLeader : BasePlayerHandler<AppPromoteToLeader>
 {
 	public override ValueTask Execute()
 	{
-		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(base.UserId);
+		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(UserId);
 		if (playerTeam == null)
 		{
 			SendError("no_team");
-			return default(ValueTask);
+			return default;
 		}
-		if (playerTeam.teamLeader != base.UserId)
+		if (playerTeam.teamLeader != UserId)
 		{
 			SendError("access_denied");
-			return default(ValueTask);
+			return default;
 		}
-		if (playerTeam.teamLeader == base.Proto.steamId)
+		if (playerTeam.teamLeader == Proto.steamId)
 		{
 			SendSuccess();
-			return default(ValueTask);
+			return default;
 		}
-		if (!playerTeam.members.Contains(base.Proto.steamId))
+		if (!playerTeam.members.Contains(Proto.steamId))
 		{
 			SendError("not_found");
-			return default(ValueTask);
+			return default;
 		}
-		playerTeam.SetTeamLeader(base.Proto.steamId);
+		playerTeam.SetTeamLeader(Proto.steamId);
 		SendSuccess();
-		return default(ValueTask);
+		return default;
 	}
 }

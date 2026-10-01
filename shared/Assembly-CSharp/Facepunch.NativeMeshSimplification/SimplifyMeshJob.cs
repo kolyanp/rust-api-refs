@@ -53,7 +53,9 @@ internal struct SimplifyMeshJob : IJob
 	public void Execute()
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
@@ -70,18 +72,16 @@ internal struct SimplifyMeshJob : IJob
 		//IL_0295: Unknown result type (might be due to invalid IL or missing references)
 		//IL_029a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_029e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02bd: Unknown result type (might be due to invalid IL or missing references)
 		Refs.Clear();
-		NativeList<int> deleted = default(NativeList<int>);
-		deleted._002Ector(AllocatorHandle.op_Implicit((Allocator)2));
-		NativeList<int> deleted2 = default(NativeList<int>);
-		deleted2._002Ector(AllocatorHandle.op_Implicit((Allocator)2));
+		NativeList<int> deleted = new NativeList<int>(AllocatorHandle.op_Implicit((Allocator)2));
+		NativeList<int> deleted2 = new NativeList<int>(AllocatorHandle.op_Implicit((Allocator)2));
 		int deletedTriangles = 0;
 		int length = Triangles.Length;
 		int num = (int)((float)length * ReductionTarget);
-		NativeSlice<NativeMeshSimplifier.Ref> val2 = default(NativeSlice<NativeMeshSimplifier.Ref>);
-		NativeSlice<NativeMeshSimplifier.Ref> val3 = default(NativeSlice<NativeMeshSimplifier.Ref>);
 		for (int i = 0; i < MaxIterations; i++)
 		{
 			k_Iteration.Begin();
@@ -105,21 +105,21 @@ internal struct SimplifyMeshJob : IJob
 			{
 				ref readonly NativeMeshSimplifier.Triangle reference = ref NativeListAccessExtensions.GetReadonly(in Triangles, k);
 				float4 err = reference.err;
-				if (math.any(new bool3(((float4)(ref err))[3] > num2, reference.deleted, reference.dirty)))
+				if (math.any(new bool3(err[3] > num2, reference.deleted, reference.dirty)))
 				{
 					continue;
 				}
 				for (int l = 0; l < 3; l++)
 				{
 					err = reference.err;
-					if (((float4)(ref err))[l] > num2)
+					if (err[l] > num2)
 					{
 						continue;
 					}
 					int3 vIndex = reference.vIndex;
-					int num3 = ((int3)(ref vIndex))[l];
+					int num3 = vIndex[l];
 					vIndex = reference.vIndex;
-					int num4 = ((int3)(ref vIndex))[(l + 1) % 3];
+					int num4 = vIndex[(l + 1) % 3];
 					ref NativeMeshSimplifier.Vertex reference2 = ref NativeListAccessExtensions.Get(in Vertices, num3);
 					ref readonly NativeMeshSimplifier.Vertex reference3 = ref NativeListAccessExtensions.GetReadonly(in Vertices, num4);
 					if (reference2.border != reference3.border)
@@ -147,8 +147,8 @@ internal struct SimplifyMeshJob : IJob
 						{
 							k_MemCpy.Begin();
 							NativeArray<NativeMeshSimplifier.Ref> val = Refs.AsArray();
-							val2._002Ector(val, reference2.tStart, num5);
-							val3._002Ector(val, length2, num5);
+							NativeSlice<NativeMeshSimplifier.Ref> val2 = new NativeSlice<NativeMeshSimplifier.Ref>(val, reference2.tStart, num5);
+							NativeSlice<NativeMeshSimplifier.Ref> val3 = new NativeSlice<NativeMeshSimplifier.Ref>(val, length2, num5);
 							val2.CopyFrom(val3);
 							k_MemCpy.End();
 						}
@@ -207,7 +207,7 @@ internal struct SimplifyMeshJob : IJob
 		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
-		pResult = default(float3);
+		pResult = default;
 		NativeMeshSimplifier.SymmetricMatrix q = v1.q + v2.q;
 		bool flag = v1.border & v2.border;
 		float num = 0f;
@@ -276,9 +276,9 @@ internal struct SimplifyMeshJob : IJob
 			}
 			int tVertex = reference.tVertex;
 			int3 vIndex = reference2.vIndex;
-			int num = ((int3)(ref vIndex))[(tVertex + 1) % 3];
+			int num = vIndex[(tVertex + 1) % 3];
 			vIndex = reference2.vIndex;
-			int num2 = ((int3)(ref vIndex))[(tVertex + 2) % 3];
+			int num2 = vIndex[(tVertex + 2) % 3];
 			if (num == i1 || num2 == i1)
 			{
 				deleted[j] = 1;
@@ -321,15 +321,15 @@ internal struct SimplifyMeshJob : IJob
 					deletedTriangles++;
 					continue;
 				}
-				ref readonly NativeMeshSimplifier.Vertex reference3 = ref NativeListAccessExtensions.GetReadonly(in Vertices, ((int3)(ref reference2.vIndex))[0]);
-				ref readonly NativeMeshSimplifier.Vertex reference4 = ref NativeListAccessExtensions.GetReadonly(in Vertices, ((int3)(ref reference2.vIndex))[1]);
-				ref readonly NativeMeshSimplifier.Vertex reference5 = ref NativeListAccessExtensions.GetReadonly(in Vertices, ((int3)(ref reference2.vIndex))[2]);
-				((int3)(ref reference2.vIndex))[reference.tVertex] = i0;
+				ref readonly NativeMeshSimplifier.Vertex reference3 = ref NativeListAccessExtensions.GetReadonly(in Vertices, reference2.vIndex[0]);
+				ref readonly NativeMeshSimplifier.Vertex reference4 = ref NativeListAccessExtensions.GetReadonly(in Vertices, reference2.vIndex[1]);
+				ref readonly NativeMeshSimplifier.Vertex reference5 = ref NativeListAccessExtensions.GetReadonly(in Vertices, reference2.vIndex[2]);
+				reference2.vIndex[reference.tVertex] = i0;
 				reference2.dirty = true;
-				((float4)(ref reference2.err))[0] = CalculateError(in reference3, in reference4, out var pResult);
-				((float4)(ref reference2.err))[1] = CalculateError(in reference4, in reference5, out pResult);
-				((float4)(ref reference2.err))[2] = CalculateError(in reference5, in reference3, out pResult);
-				((float4)(ref reference2.err))[3] = math.cmin(((float4)(ref reference2.err)).xyz);
+				reference2.err[0] = CalculateError(in reference3, in reference4, out var pResult);
+				reference2.err[1] = CalculateError(in reference4, in reference5, out pResult);
+				reference2.err[2] = CalculateError(in reference5, in reference3, out pResult);
+				reference2.err[3] = math.cmin(reference2.err.xyz);
 				Refs.Add(ref reference);
 			}
 		}
@@ -340,7 +340,9 @@ internal struct SimplifyMeshJob : IJob
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0353: Unknown result type (might be due to invalid IL or missing references)
@@ -395,7 +397,7 @@ internal struct SimplifyMeshJob : IJob
 			{
 				ref NativeList<NativeMeshSimplifier.Vertex> vertices = ref Vertices;
 				vIndex = reference3.vIndex;
-				NativeListAccessExtensions.Get(in vertices, ((int3)(ref vIndex))[l]).tCount++;
+				NativeListAccessExtensions.Get(in vertices, vIndex[l]).tCount++;
 			}
 		}
 		int num = 0;
@@ -414,7 +416,7 @@ internal struct SimplifyMeshJob : IJob
 			{
 				ref NativeList<NativeMeshSimplifier.Vertex> vertices2 = ref Vertices;
 				vIndex = reference5.vIndex;
-				ref NativeMeshSimplifier.Vertex reference6 = ref NativeListAccessExtensions.Get(in vertices2, ((int3)(ref vIndex))[num2]);
+				ref NativeMeshSimplifier.Vertex reference6 = ref NativeListAccessExtensions.Get(in vertices2, vIndex[num2]);
 				ref NativeMeshSimplifier.Ref reference7 = ref NativeListAccessExtensions.Get(in Refs, reference6.tStart + reference6.tCount);
 				reference7.tId = n;
 				reference7.tVertex = num2;
@@ -426,10 +428,8 @@ internal struct SimplifyMeshJob : IJob
 			return;
 		}
 		k_FirstUpdate.Begin();
-		NativeList<int> list = default(NativeList<int>);
-		list._002Ector(AllocatorHandle.op_Implicit((Allocator)2));
-		NativeList<int> val = default(NativeList<int>);
-		val._002Ector(AllocatorHandle.op_Implicit((Allocator)2));
+		NativeList<int> list = new NativeList<int>(AllocatorHandle.op_Implicit((Allocator)2));
+		NativeList<int> val = new NativeList<int>(AllocatorHandle.op_Implicit((Allocator)2));
 		for (int num3 = 0; num3 < Vertices.Length; num3++)
 		{
 			ref readonly NativeMeshSimplifier.Vertex reference8 = ref NativeListAccessExtensions.GetReadonly(in Vertices, num3);
@@ -443,7 +443,7 @@ internal struct SimplifyMeshJob : IJob
 					int num6 = 0;
 					vIndex = reference9.vIndex;
 					int num7;
-					for (num7 = ((int3)(ref vIndex))[num5]; num6 < list.Length && val[num6] != num7; num6++)
+					for (num7 = vIndex[num5]; num6 < list.Length && val[num6] != num7; num6++)
 					{
 					}
 					if (num6 == list.Length)
@@ -468,20 +468,20 @@ internal struct SimplifyMeshJob : IJob
 		}
 		list.Dispose();
 		val.Dispose();
-		float3 val2 = default(float3);
-		float3x3 val3 = default(float3x3);
+		float3 val2 = default;
+		float3x3 val3 = default;
 		for (int num10 = 0; num10 < Triangles.Length; num10++)
 		{
 			ref NativeMeshSimplifier.Triangle reference10 = ref NativeListAccessExtensions.Get(in Triangles, num10);
 			for (int num11 = 0; num11 < 3; num11++)
 			{
-				ref readonly NativeMeshSimplifier.Vertex reference11 = ref NativeListAccessExtensions.GetReadonly(in Vertices, ((int3)(ref reference10.vIndex))[num11]);
-				((float3x3)(ref val3))[num11] = reference11.p;
+				ref readonly NativeMeshSimplifier.Vertex reference11 = ref NativeListAccessExtensions.GetReadonly(in Vertices, reference10.vIndex[num11]);
+				val3[num11] = reference11.p;
 			}
-			val2 = (reference10.n = math.normalizesafe(math.cross(((float3x3)(ref val3))[1] - ((float3x3)(ref val3))[0], ((float3x3)(ref val3))[2] - ((float3x3)(ref val3))[0]), math.right()));
+			val2 = (reference10.n = math.normalizesafe(math.cross(val3[1] - val3[0], val3[2] - val3[0]), math.right()));
 			for (int num12 = 0; num12 < 3; num12++)
 			{
-				NativeListAccessExtensions.Get(in Vertices, ((int3)(ref reference10.vIndex))[num12]).q += NativeMeshSimplifier.SymmetricMatrix.Plane(val2.x, val2.y, val2.z, 0f - math.dot(val2, ((float3x3)(ref val3))[0]));
+				NativeListAccessExtensions.Get(in Vertices, reference10.vIndex[num12]).q += NativeMeshSimplifier.SymmetricMatrix.Plane(val2.x, val2.y, val2.z, 0f - math.dot(val2, val3[0]));
 			}
 		}
 		for (int num13 = 0; num13 < Triangles.Length; num13++)
@@ -489,9 +489,9 @@ internal struct SimplifyMeshJob : IJob
 			ref NativeMeshSimplifier.Triangle reference12 = ref NativeListAccessExtensions.Get(in Triangles, num13);
 			for (int num14 = 0; num14 < 3; num14++)
 			{
-				((float4)(ref reference12.err))[num14] = CalculateError(((int3)(ref reference12.vIndex))[num14], ((int3)(ref reference12.vIndex))[(num14 + 1) % 3]);
+				reference12.err[num14] = CalculateError(reference12.vIndex[num14], reference12.vIndex[(num14 + 1) % 3]);
 			}
-			((float4)(ref reference12.err))[3] = math.cmin(((float4)(ref reference12.err)).xyz);
+			reference12.err[3] = math.cmin(reference12.err.xyz);
 		}
 		k_FirstUpdate.End();
 	}
@@ -517,7 +517,7 @@ internal struct SimplifyMeshJob : IJob
 				{
 					ref NativeList<NativeMeshSimplifier.Vertex> vertices = ref Vertices;
 					int3 vIndex = reference.vIndex;
-					NativeListAccessExtensions.Get(in vertices, ((int3)(ref vIndex))[k]).tCount = 1;
+					NativeListAccessExtensions.Get(in vertices, vIndex[k]).tCount = 1;
 				}
 			}
 		}
@@ -538,7 +538,7 @@ internal struct SimplifyMeshJob : IJob
 			ref NativeMeshSimplifier.Triangle reference3 = ref NativeListAccessExtensions.Get(in Triangles, m);
 			for (int n = 0; n < 3; n++)
 			{
-				((int3)(ref reference3.vIndex))[n] = Vertices[((int3)(ref reference3.vIndex))[n]].tStart;
+				reference3.vIndex[n] = Vertices[reference3.vIndex[n]].tStart;
 			}
 		}
 		Vertices.Length = length;

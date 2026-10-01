@@ -29,7 +29,7 @@ public class WaterPump : LiquidContainer
 			ItemDefinition itemDefinition = WaterResource.SV_GetAtPoint(WaterResourceLocation.position);
 			if ((Object)(object)itemDefinition != (Object)null && Interface.CallHook("OnWaterCollect", this, itemDefinition) == null)
 			{
-				base.inventory.AddItem(itemDefinition, AmountPerPump, 0uL);
+				inventory.AddItem(itemDefinition, AmountPerPump, 0uL);
 				UpdateOnFlag();
 			}
 		}
@@ -39,7 +39,7 @@ public class WaterPump : LiquidContainer
 	{
 		base.OnFlagsChanged(old, next);
 		bool flag = (next & Flags.Reserved8) == Flags.Reserved8;
-		if (!base.isServer || (old & Flags.Reserved8) == Flags.Reserved8 == flag)
+		if (!isServer || (old & Flags.Reserved8) == Flags.Reserved8 == flag)
 		{
 			return;
 		}
@@ -71,11 +71,11 @@ public class WaterPump : LiquidContainer
 
 	public bool IsFull()
 	{
-		if (base.inventory.itemList.Count == 0)
+		if (inventory.itemList.Count == 0)
 		{
 			return false;
 		}
-		if (base.inventory.itemList[0].amount < base.inventory.maxStackSize)
+		if (inventory.itemList[0].amount < inventory.maxStackSize)
 		{
 			return false;
 		}

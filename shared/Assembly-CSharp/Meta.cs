@@ -59,7 +59,7 @@ public class Meta : ConsoleSystem
 	public static void reset_cycle(Arg args)
 	{
 		string text = args.GetString(0);
-		List<ComboPart> list = default(List<ComboPart>);
+		List<ComboPart> list = default;
 		KeyCombos.TryParse(ref text, ref list);
 		Button button = Input.GetButton(text);
 		if (button == null)

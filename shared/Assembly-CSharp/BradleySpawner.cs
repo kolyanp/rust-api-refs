@@ -61,7 +61,7 @@ public class BradleySpawner : MonoBehaviour, IServerComponent
 		pendingRespawn = false;
 	}
 
-	public unsafe void SpawnBradley()
+	public void SpawnBradley()
 	{
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
@@ -87,7 +87,7 @@ public class BradleySpawner : MonoBehaviour, IServerComponent
 			{
 				baseEntity.Kill();
 			}
-			Debug.Log((object)("BradleyAPC Spawned at :" + ((object)(*(Vector3*)(&position))/*cast due to constrained. prefix*/).ToString()));
+			Debug.Log((object)("BradleyAPC Spawned at :" + ((object)position/*cast due to constrained. prefix*/).ToString()));
 			spawned = component;
 		}
 	}

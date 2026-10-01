@@ -23,7 +23,7 @@ public class State_DragCorpse : FSMStateBase
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		if (!base.Senses.FindFood(out var food))
+		if (!Senses.FindFood(out var food))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -31,7 +31,7 @@ public class State_DragCorpse : FSMStateBase
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Senses.FindTarget(out var _))
+		if (!Senses.FindTarget(out var _))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -45,7 +45,7 @@ public class State_DragCorpse : FSMStateBase
 			flagsUpdateScope.Set(BaseEntity.Flags.Reserved3, b: true);
 		}
 		Owner.InvokeRepeatingFixedTime(UpdateCorpsePositionAction);
-		animState = base.AnimPlayer.PlayServerAndTakeFromPool(Animation);
+		animState = AnimPlayer.PlayServerAndTakeFromPool(Animation);
 		return base.OnStateEnter(payload);
 	}
 
@@ -66,7 +66,7 @@ public class State_DragCorpse : FSMStateBase
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Senses.FindTargetPosition(out var targetPosition))
+		if (!Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -83,8 +83,8 @@ public class State_DragCorpse : FSMStateBase
 			{
 				return EFSMStateStatus.Success;
 			}
-			base.AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
-			animState = base.AnimPlayer.PlayServerAndTakeFromPool(Animation);
+			AnimPlayer.StopServerAndReturnToPool(ref animState, interrupt: false);
+			animState = AnimPlayer.PlayServerAndTakeFromPool(Animation);
 		}
 		return base.OnStateUpdate(deltaTime);
 	}
@@ -115,7 +115,7 @@ public class State_DragCorpse : FSMStateBase
 	public override void OnStateExit()
 	{
 		base.OnStateExit();
-		base.AnimPlayer.StopServerAndReturnToPool(ref animState);
+		AnimPlayer.StopServerAndReturnToPool(ref animState);
 		currentLoop = 0;
 		if (corpse.IsValid())
 		{

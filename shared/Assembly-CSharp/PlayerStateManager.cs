@@ -37,7 +37,7 @@ public class PlayerStateManager
 	{
 		using (TimeWarning.New("PlayerStateManager.Get"))
 		{
-			PlayerState result = default(PlayerState);
+			PlayerState result = default;
 			if (_cache.TryGetValue(playerId, ref result))
 			{
 				return result;
@@ -66,7 +66,7 @@ public class PlayerStateManager
 
 	public PlayerState GetCached(ulong playerId)
 	{
-		PlayerState result = default(PlayerState);
+		PlayerState result = default;
 		if (_cache.TryGetValueReadOnly(playerId, ref result))
 		{
 			return result;
@@ -76,7 +76,7 @@ public class PlayerStateManager
 
 	public void Save(ulong playerId)
 	{
-		PlayerState state = default(PlayerState);
+		PlayerState state = default;
 		if (_cache.TryGetValue(playerId, ref state))
 		{
 			SaveState(playerId, state);

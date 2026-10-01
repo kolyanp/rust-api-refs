@@ -6,13 +6,13 @@ public class MissionObjective_IgniteOven : MissionObjective
 {
 	public BaseEntityRef TargetOven;
 
-	public LayerMask targetLayerMask;
+	public LayerMask targetLayerMask = LayerMask.op_Implicit(-1);
 
 	public bool PingTarget;
 
 	[FormerlySerializedAs("PingType")]
 	[SerializeField]
-	private BasePlayer.PingType pingType;
+	private BasePlayer.PingType pingType = BasePlayer.PingType.GoTo;
 
 	public override BasePlayer.PingType PingType => pingType;
 
@@ -74,8 +74,5 @@ public class MissionObjective_IgniteOven : MissionObjective
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		targetLayerMask = LayerMask.op_Implicit(-1);
-		pingType = BasePlayer.PingType.GoTo;
-		base._002Ector();
 	}
 }

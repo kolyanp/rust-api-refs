@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class TubeRenderer : FacepunchBehaviour
 {
-	[Range(3f, 64f)]
 	[Header("Settings")]
+	[Range(3f, 64f)]
 	public int Segments = 12;
 
 	public float Radius = 0.1f;
@@ -53,7 +53,7 @@ public class TubeRenderer : FacepunchBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected O, but got Unknown
+		//IL_0016: Expected Obj, but got Unknown
 		mesh = new Mesh
 		{
 			name = "Tube Mesh"
@@ -216,20 +216,20 @@ public class TubeRenderer : FacepunchBehaviour
 		if (points.Count >= 2)
 		{
 			Vector3 val = points[1] - points[0];
-			Vector3 val2 = ((Vector3)(ref val)).normalized;
+			Vector3 val2 = val.normalized;
 			Vector3 val3 = ((Mathf.Abs(Vector3.Dot(val2, Vector3.up)) < 0.99f) ? Vector3.up : Vector3.right);
 			val = Vector3.Cross(val2, val3);
-			Vector3 val4 = ((Vector3)(ref val)).normalized;
+			Vector3 val4 = val.normalized;
 			val = Vector3.Cross(val2, val4);
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
+			Vector3 normalized = val.normalized;
 			rotations.Add(Quaternion.LookRotation(val2, normalized));
 			for (int i = 1; i < points.Count; i++)
 			{
 				val = points[i] - points[i - 1];
-				Vector3 normalized2 = ((Vector3)(ref val)).normalized;
+				Vector3 normalized2 = val.normalized;
 				Vector3 val5 = Quaternion.FromToRotation(val2, normalized2) * val4;
 				val = Vector3.Cross(normalized2, val5);
-				Vector3 normalized3 = ((Vector3)(ref val)).normalized;
+				Vector3 normalized3 = val.normalized;
 				rotations.Add(Quaternion.LookRotation(normalized2, normalized3));
 				val2 = normalized2;
 				val4 = val5;
@@ -355,6 +355,7 @@ public class TubeRenderer : FacepunchBehaviour
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
@@ -367,7 +368,6 @@ public class TubeRenderer : FacepunchBehaviour
 		position = (useLocalPositions ? position : ((Component)this).transform.InverseTransformPoint(position));
 		List<Vector3> list = Pool.Get<List<Vector3>>();
 		List<Vector2> list2 = Pool.Get<List<Vector2>>();
-		Vector3 val = default(Vector3);
 		for (int i = 0; i <= rings; i++)
 		{
 			float num = (float)i / (float)rings * MathF.PI / 2f;
@@ -375,7 +375,7 @@ public class TubeRenderer : FacepunchBehaviour
 			{
 				float num2 = (float)j / (float)segments * MathF.PI * 2f;
 				float num3 = Mathf.Sin(num);
-				((Vector3)(ref val))._002Ector(Mathf.Cos(num2) * num3, Mathf.Sin(num2) * num3, Mathf.Cos(num) * (float)direction);
+				Vector3 val = new Vector3(Mathf.Cos(num2) * num3, Mathf.Sin(num2) * num3, Mathf.Cos(num) * (float)direction);
 				Vector3 item = rotation * (val * radius) + position;
 				list.Add(item);
 				float num4 = Mathf.Cos(num2) * num3 * 0.5f + 0.5f;

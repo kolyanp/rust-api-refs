@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class SocketMod_RoadCheck : SocketMod
 {
-	public float sphereRadius;
+	public float sphereRadius = 1f;
 
 	public bool wantsCollide;
 
-	public LayerMask layerMask;
+	public LayerMask layerMask = LayerMask.op_Implicit(65536);
 
 	protected override Phrase ErrorPhrase
 	{
@@ -31,7 +31,7 @@ public class SocketMod_RoadCheck : SocketMod
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 position = place.position + place.rotation * worldPosition;
 		List<Collider> list = Pool.Get<List<Collider>>();
-		GamePhysics.OverlapSphere(position, sphereRadius, list, ((LayerMask)(ref layerMask)).value, (QueryTriggerInteraction)2);
+		GamePhysics.OverlapSphere(position, sphereRadius, list, layerMask.value, (QueryTriggerInteraction)2);
 		bool flag = false;
 		for (int i = 0; i < list.Count; i++)
 		{
@@ -42,9 +42,9 @@ public class SocketMod_RoadCheck : SocketMod
 				break;
 			}
 		}
-		bool num = wantsCollide == flag;
+		bool flag2 = wantsCollide == flag;
 		Pool.FreeUnmanaged<Collider>(ref list);
-		if (num)
+		if (flag2)
 		{
 			return true;
 		}
@@ -55,8 +55,5 @@ public class SocketMod_RoadCheck : SocketMod
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		sphereRadius = 1f;
-		layerMask = LayerMask.op_Implicit(65536);
-		base._002Ector();
 	}
 }

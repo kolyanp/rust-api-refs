@@ -21,29 +21,29 @@ public class CameraInput : BaseHandler<AppCameraInput>
 		if (!CameraRenderer.enabled)
 		{
 			SendError("not_enabled");
-			return default(ValueTask);
+			return default;
 		}
-		if (base.Client.CurrentCamera == null || !base.Client.IsControllingCamera)
+		if (Client.CurrentCamera == null || !Client.IsControllingCamera)
 		{
 			SendError("no_camera");
-			return default(ValueTask);
+			return default;
 		}
-		InputState inputState = base.Client.InputState;
+		InputState inputState = Client.InputState;
 		if (inputState == null)
 		{
 			inputState = new InputState();
-			base.Client.InputState = inputState;
+			Client.InputState = inputState;
 		}
 		InputMessage val = Pool.Get<InputMessage>();
-		val.buttons = base.Proto.buttons;
-		val.mouseDelta = Sanitize(Vector2.op_Implicit(base.Proto.mouseDelta));
+		val.buttons = Proto.buttons;
+		val.mouseDelta = Sanitize(Vector2.op_Implicit(Proto.mouseDelta));
 		val.aimAngles = Vector3.zero;
 		inputState.Flip(val);
 		val.Dispose();
 		val = null;
-		base.Client.CurrentCamera.UserInput(inputState, new CameraViewerId(base.Client.ControllingSteamId, base.Client.ConnectionId));
+		Client.CurrentCamera.UserInput(inputState, new CameraViewerId(Client.ControllingSteamId, Client.ConnectionId));
 		SendSuccess();
-		return default(ValueTask);
+		return default;
 	}
 
 	private static Vector3 Sanitize(Vector3 value)

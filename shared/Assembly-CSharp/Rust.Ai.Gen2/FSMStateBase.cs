@@ -72,10 +72,10 @@ public abstract class FSMStateBase
 
 	public virtual FSMStateBase Clone()
 	{
-		FSMStateBase obj = (FSMStateBase)MemberwiseClone();
-		obj.transitions = new List<(FSMTransitionBase, FSMStateBase)>();
-		obj.endTransitions = new List<(FSMTransitionBase, FSMStateBase, EFSMStateStatus)>();
-		return obj;
+		FSMStateBase fSMStateBase = (FSMStateBase)MemberwiseClone();
+		fSMStateBase.transitions = new List<(FSMTransitionBase, FSMStateBase)>();
+		fSMStateBase.endTransitions = new List<(FSMTransitionBase, FSMStateBase, EFSMStateStatus)>();
+		return fSMStateBase;
 	}
 
 	public void FindAncestry(List<FSMStateBase> ancestry)

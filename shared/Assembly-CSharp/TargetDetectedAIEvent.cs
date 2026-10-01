@@ -8,7 +8,7 @@ public class TargetDetectedAIEvent : BaseAIEvent
 	public TargetDetectedAIEvent()
 		: base(AIEventType.TargetDetected)
 	{
-		base.Rate = ExecuteRate.Slow;
+		Rate = ExecuteRate.Slow;
 	}
 
 	public override void Init(AIEventData data, BaseEntity owner)
@@ -21,32 +21,32 @@ public class TargetDetectedAIEvent : BaseAIEvent
 	public override AIEventData ToProto()
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Expected O, but got Unknown
-		AIEventData obj = base.ToProto();
-		obj.targetDetectedData = new TargetDetectedAIEventData();
-		obj.targetDetectedData.range = Range;
-		return obj;
+		//IL_0011: Expected Obj, but got Unknown
+		AIEventData val = base.ToProto();
+		val.targetDetectedData = new TargetDetectedAIEventData();
+		val.targetDetectedData.range = Range;
+		return val;
 	}
 
 	public override void Execute(AIMemory memory, AIBrainSenses senses, StateStatus stateStatus)
 	{
-		base.Result = base.Inverted;
+		Result = Inverted;
 		BaseEntity nearestTarget = senses.GetNearestTarget(Range);
-		if (base.Inverted)
+		if (Inverted)
 		{
-			if ((Object)(object)nearestTarget == (Object)null && base.ShouldSetOutputEntityMemory)
+			if ((Object)(object)nearestTarget == (Object)null && ShouldSetOutputEntityMemory)
 			{
-				memory.Entity.Remove(base.OutputEntityMemorySlot);
+				memory.Entity.Remove(OutputEntityMemorySlot);
 			}
-			base.Result = (Object)(object)nearestTarget == (Object)null;
+			Result = (Object)(object)nearestTarget == (Object)null;
 		}
 		else
 		{
-			if ((Object)(object)nearestTarget != (Object)null && base.ShouldSetOutputEntityMemory)
+			if ((Object)(object)nearestTarget != (Object)null && ShouldSetOutputEntityMemory)
 			{
-				memory.Entity.Set(nearestTarget, base.OutputEntityMemorySlot);
+				memory.Entity.Set(nearestTarget, OutputEntityMemorySlot);
 			}
-			base.Result = (Object)(object)nearestTarget != (Object)null;
+			Result = (Object)(object)nearestTarget != (Object)null;
 		}
 	}
 }

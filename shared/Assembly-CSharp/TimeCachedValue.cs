@@ -35,7 +35,7 @@ public class TimeCachedValue<T>
 		}
 		else
 		{
-			cachedValue = default(T);
+			cachedValue = default;
 		}
 		return cachedValue;
 	}
@@ -58,7 +58,7 @@ public class TimeCachedValue<T>
 		}
 		else
 		{
-			cachedValue = default(T);
+			cachedValue = default;
 		}
 	}
 }

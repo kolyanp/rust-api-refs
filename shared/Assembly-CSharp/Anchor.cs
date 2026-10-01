@@ -5,7 +5,7 @@ using Rust;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class Anchor : DecayEntity, global::IBoatBuildingPiece
+public class Anchor : DecayEntity, IBoatBuildingPiece
 {
 	public interface IAnchorable
 	{
@@ -155,7 +155,7 @@ public class Anchor : DecayEntity, global::IBoatBuildingPiece
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (base.isServer && info.fromDisk)
+		if (isServer && info.fromDisk)
 		{
 			LowerAnchor(null, instant: true);
 		}
@@ -223,8 +223,8 @@ public class Anchor : DecayEntity, global::IBoatBuildingPiece
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void LowerAnchor(RPCMessage msg)
 	{
 		LowerAnchor(msg.player);
@@ -278,9 +278,9 @@ public class Anchor : DecayEntity, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RaiseAnchor(RPCMessage msg)
 	{
 		RaiseAnchor(msg.player);
@@ -319,7 +319,7 @@ public class Anchor : DecayEntity, global::IBoatBuildingPiece
 	private void OnRaisedOrLowered()
 	{
 		RefreshAnchoring();
-		BaseEntity baseEntity = parentEntity.Get(base.isServer);
+		BaseEntity baseEntity = parentEntity.Get(isServer);
 		if (baseEntity.IsValid() && baseEntity is IAnchorable anchorable)
 		{
 			anchorable.OnAnchoredChanged();
@@ -339,7 +339,7 @@ public class Anchor : DecayEntity, global::IBoatBuildingPiece
 		}
 	}
 
-	void global::IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
+	void IBoatBuildingPiece.OnAddedToBoat(PlayerBoat boat)
 	{
 		if (!Application.isLoadingSave)
 		{

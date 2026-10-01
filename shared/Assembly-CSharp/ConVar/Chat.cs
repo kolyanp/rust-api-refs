@@ -58,8 +58,8 @@ public class Chat : ConsoleSystem
 	[ReplicatedVar]
 	public static bool hideChatInTutorial = true;
 
-	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled = true;
 
 	[ServerVar(Help = "Number of messages to keep in memory for chat history")]
@@ -124,9 +124,9 @@ public class Chat : ConsoleSystem
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		string obj = (((Object)(object)subjectA != (Object)null) ? subjectA.displayName : "SERVER");
-		string text3 = (((Object)(object)subjectB != (Object)null) ? subjectB.displayName : "SERVER");
-		RecordPlayerAction(obj + middle + text3 + suffix, subjectA);
+		string text3 = (((Object)(object)subjectA != (Object)null) ? subjectA.displayName : "SERVER");
+		string text4 = (((Object)(object)subjectB != (Object)null) ? subjectB.displayName : "SERVER");
+		RecordPlayerAction(text3 + middle + text4 + suffix, subjectA);
 	}
 
 	private static void RecordPlayerAction(string message, BasePlayer subject)
@@ -239,7 +239,7 @@ public class Chat : ConsoleSystem
 			return;
 		}
 		Task<bool> task = valueTask.AsTask();
-		task.GetAwaiter().OnCompleted(delegate
+		task.GetAwaiter().OnCompleted(() =>
 		{
 			try
 			{
@@ -259,13 +259,13 @@ public class Chat : ConsoleSystem
 	{
 		ServerUsers.UserGroup userGroup = ServerUsers.Get(userId)?.group ?? ServerUsers.UserGroup.None;
 		bool flag = userGroup == ServerUsers.UserGroup.Owner || userGroup == ServerUsers.UserGroup.Moderator;
-		bool num = (((Object)(object)player != (Object)null) ? player.IsDeveloper : DeveloperList.Contains(userId));
+		bool flag2 = (((Object)(object)player != (Object)null) ? player.IsDeveloper : DeveloperList.Contains(userId));
 		string result = "#5af";
 		if (flag)
 		{
 			result = "#af5";
 		}
-		if (num)
+		if (flag2)
 		{
 			result = "#fa5";
 		}
@@ -318,7 +318,8 @@ public class Chat : ConsoleSystem
 			TmProEmojiRedirector.FindEmojiSubstitutions(strChatText, RustEmojiLibrary.Instance, list, richText: false, isServer: true);
 			foreach (var item in list)
 			{
-				if (!item.Item1.targetEmojiResult.CanBeUsedBy(player, player.userID))
+				RustEmojiLibrary.EmojiSource targetEmojiResult = item.Item1.targetEmojiResult;
+				if (!targetEmojiResult.CanBeUsedBy(player, player.userID))
 				{
 					strChatText = strChatText.Replace(":" + item.Item1.targetEmoji + ":", string.Empty);
 				}
@@ -387,7 +388,7 @@ public class Chat : ConsoleSystem
 				{
 					BasePlayer current2 = enumerator2.Current;
 					Vector3 val3 = ((Component)current2).transform.position - ((Component)player).transform.position;
-					float sqrMagnitude = ((Vector3)(ref val3)).sqrMagnitude;
+					float sqrMagnitude = val3.sqrMagnitude;
 					if (!(sqrMagnitude > num))
 					{
 						ConsoleNetwork.SendClientCommand(current2.net.connection, "chat.add2", 4, userId, strChatText, strName, nameColor, Mathf.Clamp01(sqrMagnitude / num + 0.2f));

@@ -8,60 +8,60 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 {
 	[Header("In playmode you will find this object in DontDestroyOnLoad")]
 	[FPD_Header("Main Wind Setings", 2f, 4f, 2)]
-	public float power;
+	public float power = 1f;
 
-	public float additionalTurbulence;
+	public float additionalTurbulence = 1f;
 
-	public float additionalTurbSpeed;
+	public float additionalTurbSpeed = 1f;
 
 	[Space(7f)]
 	public WindZone SyncWithUnityWindZone;
 
-	public float UnityWindZonePowerMul;
+	public float UnityWindZonePowerMul = 2f;
 
-	public float UnityWindZoneTurbMul;
+	public float UnityWindZoneTurbMul = 1f;
 
 	[Header("Overriding wind if value below different than 0,0,0")]
-	public Vector3 overrideWind;
+	public Vector3 overrideWind = Vector3.zero;
 
 	[FPD_Header("Procedural Wind Settings (if not syncing and not overriding)", 6f, 4f, 2)]
 	[Range(0.1f, 1f)]
-	public float rapidness;
+	public float rapidness = 0.95f;
 
 	[FPD_Suffix(0f, 360f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
-	public float changesPower;
+	public float changesPower = 90f;
 
-	[Range(0f, 10f)]
 	[Header("Extra")]
-	public float turbulenceSpeed;
+	[Range(0f, 10f)]
+	public float turbulenceSpeed = 1f;
 
 	[Tooltip("Increase to make objects next to each other wave in slightly different way")]
 	[FPD_Header("World Position Turbulence", 6f, 4f, 2)]
-	public float worldTurb;
+	public float worldTurb = 1f;
 
 	[Tooltip("If higher no performance cost, it is just a number")]
-	public float worldTurbScale;
+	public float worldTurbScale = 512f;
 
-	public float worldTurbSpeed;
+	public float worldTurbSpeed = 5f;
 
 	[FPD_Header("Tail Compoenents Related", 6f, 4f, 2)]
 	[Tooltip("When tail is longer then power of wind should be higher")]
-	public bool powerDependOnTailLength;
+	public bool powerDependOnTailLength = true;
 
 	[Tooltip("Don't destroy on load")]
 	public bool persistThroughAllScenes;
 
-	private Vector3 targetWind;
+	private Vector3 targetWind = Vector3.zero;
 
-	private Vector3 smoothWind;
+	private Vector3 smoothWind = Vector3.zero;
 
-	private Vector3 windVeloHelper;
+	private Vector3 windVeloHelper = Vector3.zero;
 
-	private Quaternion windOrientation;
+	private Quaternion windOrientation = Quaternion.identity;
 
-	private Quaternion smoothWindOrient;
+	private Quaternion smoothWindOrient = Quaternion.identity;
 
-	private Quaternion smoothWindOrientHelper;
+	private Quaternion smoothWindOrientHelper = Quaternion.identity;
 
 	private float[] randNumbers;
 
@@ -69,13 +69,13 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 
 	private float[] randSpeeds;
 
-	private int frameOffset;
+	private int frameOffset = 2;
 
-	private Vector3 finalAddTurbulence;
+	private Vector3 finalAddTurbulence = Vector3.zero;
 
-	private Vector3 addTurbHelper;
+	private Vector3 addTurbHelper = Vector3.zero;
 
-	private Vector3 smoothAddTurbulence;
+	private Vector3 smoothAddTurbulence = Vector3.zero;
 
 	public string EditorIconPath => "Tail Animator/TailAnimatorWindIconSmall";
 
@@ -245,7 +245,7 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 			float num2 = -1f + Mathf.PerlinNoise(0f - randTimes[1], 55f + randTimes[2]) * 2f;
 			float num3 = -1f + Mathf.PerlinNoise(0f - randTimes[3], 55f + randTimes[0]) * 2f;
 			val2 *= Quaternion.Euler(new Vector3(0f, num2, 0f) * changesPower);
-			val2 = Quaternion.Euler(num * (changesPower / 6f), ((Quaternion)(ref val2)).eulerAngles.y, num3 * (changesPower / 6f));
+			val2 = Quaternion.Euler(num * (changesPower / 6f), val2.eulerAngles.y, num3 * (changesPower / 6f));
 			smoothWindOrient = FEngineering.SmoothDampRotation(smoothWindOrient, val2, ref smoothWindOrientHelper, 1f - rapidness, Time.deltaTime);
 			((Component)this).transform.rotation = smoothWindOrient;
 			val = smoothWindOrient * Vector3.forward;
@@ -302,29 +302,5 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
-		power = 1f;
-		additionalTurbulence = 1f;
-		additionalTurbSpeed = 1f;
-		UnityWindZonePowerMul = 2f;
-		UnityWindZoneTurbMul = 1f;
-		overrideWind = Vector3.zero;
-		rapidness = 0.95f;
-		changesPower = 90f;
-		turbulenceSpeed = 1f;
-		worldTurb = 1f;
-		worldTurbScale = 512f;
-		worldTurbSpeed = 5f;
-		powerDependOnTailLength = true;
-		targetWind = Vector3.zero;
-		smoothWind = Vector3.zero;
-		windVeloHelper = Vector3.zero;
-		windOrientation = Quaternion.identity;
-		smoothWindOrient = Quaternion.identity;
-		smoothWindOrientHelper = Quaternion.identity;
-		frameOffset = 2;
-		finalAddTurbulence = Vector3.zero;
-		addTurbHelper = Vector3.zero;
-		smoothAddTurbulence = Vector3.zero;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

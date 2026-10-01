@@ -64,17 +64,17 @@ public class TriggerDeepSeaPortal : TriggerBase
 			}
 			if (Portal.PortalMode == DeepSeaPortal.PortalModeEnum.Entrance)
 			{
-				ExtensionMethods.NextFrames((MonoBehaviour)(object)Portal, (Action)delegate
+				ExtensionMethods.NextFrames((MonoBehaviour)(object)Portal, (Action)(() =>
 				{
 					PointEntity<DeepSeaManager>.ServerInstance.MoveToDeepSea(ent);
-				}, 1);
+				}), 1);
 			}
 			else
 			{
-				ExtensionMethods.NextFrames((MonoBehaviour)(object)Portal, (Action)delegate
+				ExtensionMethods.NextFrames((MonoBehaviour)(object)Portal, (Action)(() =>
 				{
 					PointEntity<DeepSeaManager>.ServerInstance.MoveToMainIsland(ent);
-				}, 1);
+				}), 1);
 			}
 		}
 	}

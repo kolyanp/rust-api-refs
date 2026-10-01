@@ -26,6 +26,6 @@ public class Server : Library
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		Option server = Option.Server;
-		ConsoleSystem.Run(((Option)(ref server)).FromServerConsole(), command, args);
+		ConsoleSystem.Run(server.FromServerConsole(), command, args);
 	}
 }

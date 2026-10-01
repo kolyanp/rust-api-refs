@@ -35,9 +35,9 @@ public class ElectricalBlocker : IOEntity
 
 	public virtual void UpdateBlocked()
 	{
-		bool num = IsOn();
+		bool flag = IsOn();
 		SetFlagLocal(Flags.On, input1Amount > 0);
-		if (num != IsOn())
+		if (flag != IsOn())
 		{
 			MarkDirty();
 		}

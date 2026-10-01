@@ -15,7 +15,7 @@ public static class RustProxies
 	}
 
 	[Obsolete("Use BaseEntity.StartSetFlags or BaseEntity.SetFlagLocal instead.")]
-	public unsafe static void SetFlag(this BaseEntity entity, Flags f, bool b, bool recursive = false, bool networkupdate = true)
+	public static void SetFlag(this BaseEntity entity, Flags f, bool b, bool recursive = false, bool networkupdate = true)
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
@@ -23,11 +23,11 @@ public static class RustProxies
 		FlagsUpdateScope val = entity.StartSetFlags((FlagsUpdateMode)(networkupdate ? 2 : 0));
 		try
 		{
-			((FlagsUpdateScope)(ref val)).Set(f, b, recursive);
+			val.Set(f, b, recursive);
 		}
 		finally
 		{
-			((IDisposable)(*(FlagsUpdateScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 }

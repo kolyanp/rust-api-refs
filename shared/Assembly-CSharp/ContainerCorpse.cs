@@ -106,7 +106,7 @@ public class ContainerCorpse : ConstructableEntity
 		Construction.Target target = new Construction.Target
 		{
 			position = point,
-			rotation = ((Quaternion)(ref rotation)).eulerAngles,
+			rotation = rotation.eulerAngles,
 			onTerrain = (Mathf.Abs(TerrainMeta.HeightMap.GetHeight(point) - point.y) < 0.05f)
 		};
 		Construction.Placement placement = new Construction.Placement(target)
@@ -136,7 +136,7 @@ public class ContainerCorpse : ConstructableEntity
 	protected override bool ShouldDisplayPickupOption(BasePlayer player)
 	{
 		bool flag = false;
-		if (base.isServer)
+		if (isServer)
 		{
 			flag = IsOwner(player);
 		}
@@ -163,13 +163,13 @@ public class ContainerCorpse : ConstructableEntity
 	public override void OnInventoryFirstCreated(ItemContainer container)
 	{
 		base.OnInventoryFirstCreated(container);
-		base.inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+		inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 	}
 
 	public void TakeFrom(ItemContainer[] source, float savePercent = 0f)
 	{
-		DroppedItemContainer.TakeFractionOfItems(source, base.inventory, savePercent);
-		base.inventory.capacity = base.inventory.itemList.Count;
+		DroppedItemContainer.TakeFractionOfItems(source, inventory, savePercent);
+		inventory.capacity = inventory.itemList.Count;
 	}
 
 	protected override bool CanRepair(BasePlayer player)
@@ -216,8 +216,8 @@ public class ContainerCorpse : ConstructableEntity
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		GameObject obj = entityToSpawn.Get();
-		BaseEntity baseEntity = ((obj != null) ? obj.GetComponent<BaseEntity>() : null);
+		GameObject val = entityToSpawn.Get();
+		BaseEntity baseEntity = ((val != null) ? val.GetComponent<BaseEntity>() : null);
 		if ((Object)(object)baseEntity == (Object)null)
 		{
 			Debug.LogError((object)("Prefab not found for '" + entityToSpawn.resourcePath + "'"));
@@ -252,23 +252,23 @@ public class ContainerCorpse : ConstructableEntity
 		{
 			baseEntity.SetParent(GetParentEntity(), worldPositionStays: true);
 		}
-		baseEntity.OwnerID = base.OwnerID;
+		baseEntity.OwnerID = OwnerID;
 		baseEntity.skinID = skinID;
 		baseEntity.Spawn();
 		if (baseEntity is StorageContainer storageContainer)
 		{
-			storageContainer.MoveAllInventoryItems(base.inventory);
+			storageContainer.MoveAllInventoryItems(inventory);
 		}
 		else if (baseEntity is ContainerIOEntity containerIOEntity)
 		{
-			containerIOEntity.MoveAllInventoryItems(base.inventory);
+			containerIOEntity.MoveAllInventoryItems(inventory);
 		}
 		if (baseEntity is BuildingPrivlidge buildingPrivlidge)
 		{
 			BuildingPrivlidge componentInChildren = ((Component)this).GetComponentInChildren<BuildingPrivlidge>();
 			if ((Object)(object)componentInChildren == (Object)null)
 			{
-				Debug.LogError((object)("Can't copy auth list from corpse to TC: no BuildingPrivilege found in '" + base.PrefabName + "'"));
+				Debug.LogError((object)("Can't copy auth list from corpse to TC: no BuildingPrivilege found in '" + PrefabName + "'"));
 			}
 			else
 			{
@@ -352,10 +352,10 @@ public class ContainerCorpse : ConstructableEntity
 		parent.SetSlot(Slot.Lock, baseEntity);
 	}
 
-	public override void OnItemAddedOrRemoved(Item item, bool added)
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		base.OnItemAddedOrRemoved(item, added);
-		if (base.inventory.IsEmpty())
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
+		if (inventory.IsEmpty())
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
@@ -365,8 +365,8 @@ public class ContainerCorpse : ConstructableEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	private void SERVER_RequestOwnerData(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -383,7 +383,7 @@ public class ContainerCorpse : ConstructableEntity
 
 	public bool IsOwner(BasePlayer player)
 	{
-		if ((ulong)player.userID == base.OwnerID)
+		if ((ulong)player.userID == OwnerID)
 		{
 			return true;
 		}
@@ -423,10 +423,10 @@ public class ContainerCorpse : ConstructableEntity
 		base.Save(info);
 		if (info.forDisk)
 		{
-			if (base.inventory != null)
+			if (inventory != null)
 			{
 				info.msg.storageBox = Pool.Get<StorageBox>();
-				info.msg.storageBox.contents = base.inventory.Save();
+				info.msg.storageBox.contents = inventory.Save();
 			}
 			ContainerCorpseData val = Pool.Get<ContainerCorpseData>();
 			info.msg.containerCorpse = val;

@@ -10,11 +10,11 @@ using UnityEngine.Assertions;
 
 public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 {
-	public static readonly Phrase OpenLootTitle;
+	public static readonly Phrase OpenLootTitle = new Phrase("open_loot", "Open");
 
-	public static readonly Phrase PickUpTitle;
+	public static readonly Phrase PickUpTitle = new Phrase("pick_up", "Pick Up");
 
-	public static readonly Phrase HoldToPickupPhrase;
+	public static readonly Phrase HoldToPickupPhrase = new Phrase("hold_use_to_pickup", "Hold [USE] to pickup");
 
 	private float pickupStartTime;
 
@@ -24,7 +24,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 
 	protected float caloriesPerSecond = 1f;
 
-	private static readonly Phrase NotYourBackPackError;
+	private static readonly Phrase NotYourBackPackError = new Phrase("error.notyourbackpack", "Cannot move item: Not your backpack!");
 
 	[Header("WorldItem")]
 	public bool allowPickup = true;
@@ -202,8 +202,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void Pickup(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && this.item != null && allowPickup && Interface.CallHook("OnItemPickup", this.item, msg.player, this) == null && CanOpenInSafeZone(msg.player))
@@ -339,7 +339,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 			((Object)this).name = item.info.shortname + " (world)";
 			item.SetWorldEntity(this);
 			OnItemDirty(item);
-			if (base.isServer)
+			if (isServer)
 			{
 				SingletonComponent<NpcFoodManager>.Instance.Add(this);
 			}
@@ -350,7 +350,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 	{
 		if (item != null)
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				SingletonComponent<NpcFoodManager>.Instance.Remove(this);
 			}
@@ -363,7 +363,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 	{
 		if (item != null)
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				SingletonComponent<NpcFoodManager>.Instance.Remove(this);
 			}
@@ -388,7 +388,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		base.Load(info);
 		if (info.msg.worldItem != null && info.msg.worldItem.item != null)
 		{
-			Item item = ItemManager.Load(info.msg.worldItem.item, this.item, base.isServer);
+			Item item = ItemManager.Load(info.msg.worldItem.item, this.item, isServer);
 			if (item != null)
 			{
 				InitializeItem(item);
@@ -403,13 +403,13 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		if (_name == null)
 		{
-			if (base.isServer)
+			if (isServer)
 			{
-				_name = string.Format("{1}[{0}] {2}", (object)(NetworkableId)(((_003F?)net?.ID) ?? default(NetworkableId)), base.ShortPrefabName, ObjectEx.IsUnityNull(this) ? "NULL" : ((Object)this).name);
+				_name = string.Format("{1}[{0}] {2}", net?.ID ?? default(NetworkableId), ShortPrefabName, ObjectEx.IsUnityNull(this) ? "NULL" : ((Object)this).name);
 			}
 			else
 			{
-				_name = base.ShortPrefabName;
+				_name = ShortPrefabName;
 			}
 		}
 		return _name;
@@ -418,16 +418,12 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 	static WorldItem()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
+		//IL_0028: Expected Obj, but got Unknown
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Expected O, but got Unknown
+		//IL_003c: Expected Obj, but got Unknown
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Expected O, but got Unknown
-		OpenLootTitle = new Phrase("open_loot", "Open");
-		PickUpTitle = new Phrase("pick_up", "Pick Up");
-		HoldToPickupPhrase = new Phrase("hold_use_to_pickup", "Hold [USE] to pickup");
-		NotYourBackPackError = new Phrase("error.notyourbackpack", "Cannot move item: Not your backpack!");
+		//IL_0050: Expected Obj, but got Unknown
 	}
 }

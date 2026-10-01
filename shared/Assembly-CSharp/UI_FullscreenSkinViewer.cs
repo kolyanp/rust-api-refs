@@ -30,6 +30,9 @@ public class UI_FullscreenSkinViewer : UI_Window
 
 	public RustButton worldmodelButton;
 
+	[SerializeField]
+	private RustButton animatorToggleButton;
+
 	[Space]
 	[SerializeField]
 	private UI_SkinInfoPanel skinInfoPanel;
@@ -37,43 +40,43 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject navButtonsGroup;
 
-	[SerializeField]
 	[Header("Drag")]
-	private float inertiaDecay;
+	[SerializeField]
+	private float inertiaDecay = 5f;
 
 	[Header("Pan")]
 	[SerializeField]
-	private Vector2 panLimitX;
+	private Vector2 panLimitX = new Vector2(-0.2f, 0.2f);
 
 	[SerializeField]
-	private Vector2 panLimitY;
+	private Vector2 panLimitY = new Vector2(-0.2f, 0.2f);
 
 	[SerializeField]
-	private float panSpeed;
+	private float panSpeed = 0.0001f;
 
 	[SerializeField]
 	[Header("Zoom")]
-	private float zoomSpeed;
+	private float zoomSpeed = 0.1f;
 
 	[SerializeField]
-	private Vector2 minMaxFov;
+	private Vector2 minMaxFov = new Vector2(20f, 8f);
 
 	[SerializeField]
 	[Header("Idle")]
-	private float idleSwaySpeed;
+	private float idleSwaySpeed = 0.1f;
 
 	[SerializeField]
-	private float idleSwayAmount;
+	private float idleSwayAmount = 12f;
 
 	[SerializeField]
-	private float swayEaseSpeed;
+	private float swayEaseSpeed = 0.05f;
 
 	[SerializeField]
-	private float swayDelay;
+	private float swayDelay = 0.3f;
 
 	private UI_SkinViewerControls source;
 
@@ -89,16 +92,5 @@ public class UI_FullscreenSkinViewer : UI_Window
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		inertiaDecay = 5f;
-		panLimitX = new Vector2(-0.2f, 0.2f);
-		panLimitY = new Vector2(-0.2f, 0.2f);
-		panSpeed = 0.0001f;
-		zoomSpeed = 0.1f;
-		minMaxFov = new Vector2(20f, 8f);
-		idleSwaySpeed = 0.1f;
-		idleSwayAmount = 12f;
-		swayEaseSpeed = 0.05f;
-		swayDelay = 0.3f;
-		base._002Ector();
 	}
 }

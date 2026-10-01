@@ -10,9 +10,9 @@ using UnityEngine;
 public static class EnvironmentVolumeMath
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void CalculateTransformationBoundsBurst_0000602A_0024PostfixBurstDelegate(in float4x4 transformationMatrix, in bool capsule, out Bounds bounds);
+	internal delegate void CalculateTransformationBoundsBurst_00006410_0024PostfixBurstDelegate(in float4x4 transformationMatrix, in bool capsule, out Bounds bounds);
 
-	internal static class CalculateTransformationBoundsBurst_0000602A_0024BurstDirectCall
+	internal static class CalculateTransformationBoundsBurst_00006410_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -23,7 +23,7 @@ public static class EnvironmentVolumeMath
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<CalculateTransformationBoundsBurst_0000602A_0024PostfixBurstDelegate>((CalculateTransformationBoundsBurst_0000602A_0024PostfixBurstDelegate)CalculateTransformationBoundsBurst).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<CalculateTransformationBoundsBurst_00006410_0024PostfixBurstDelegate>((CalculateTransformationBoundsBurst_00006410_0024PostfixBurstDelegate)CalculateTransformationBoundsBurst).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -51,9 +51,9 @@ public static class EnvironmentVolumeMath
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void MultiplyPoint3X4_0000602B_0024PostfixBurstDelegate(in float4x4 transformationMatrix, in float3 point, out float3 result);
+	internal delegate void MultiplyPoint3X4_00006411_0024PostfixBurstDelegate(in float4x4 transformationMatrix, in float3 point, out float3 result);
 
-	internal static class MultiplyPoint3X4_0000602B_0024BurstDirectCall
+	internal static class MultiplyPoint3X4_00006411_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -64,7 +64,7 @@ public static class EnvironmentVolumeMath
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<MultiplyPoint3X4_0000602B_0024PostfixBurstDelegate>((MultiplyPoint3X4_0000602B_0024PostfixBurstDelegate)MultiplyPoint3X4).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<MultiplyPoint3X4_00006411_0024PostfixBurstDelegate>((MultiplyPoint3X4_00006411_0024PostfixBurstDelegate)MultiplyPoint3X4).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -92,9 +92,9 @@ public static class EnvironmentVolumeMath
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void UpdateVolumeTransformationAndBoundsBurst_0000602C_0024PostfixBurstDelegate(in float3 size, in float3 center, in float4x4 localToWorldMatrix, in bool isCapsule, out float4x4 volumeTransformation, out float4x4 volumeTransformationInverse, out float3 volumePosition, out Bounds volumeBounds);
+	internal delegate void UpdateVolumeTransformationAndBoundsBurst_00006412_0024PostfixBurstDelegate(in float3 size, in float3 center, in float4x4 localToWorldMatrix, in bool isCapsule, out float4x4 volumeTransformation, out float4x4 volumeTransformationInverse, out float3 volumePosition, out Bounds volumeBounds);
 
-	internal static class UpdateVolumeTransformationAndBoundsBurst_0000602C_0024BurstDirectCall
+	internal static class UpdateVolumeTransformationAndBoundsBurst_00006412_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -105,7 +105,7 @@ public static class EnvironmentVolumeMath
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<UpdateVolumeTransformationAndBoundsBurst_0000602C_0024PostfixBurstDelegate>((UpdateVolumeTransformationAndBoundsBurst_0000602C_0024PostfixBurstDelegate)UpdateVolumeTransformationAndBoundsBurst).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<UpdateVolumeTransformationAndBoundsBurst_00006412_0024PostfixBurstDelegate>((UpdateVolumeTransformationAndBoundsBurst_00006412_0024PostfixBurstDelegate)UpdateVolumeTransformationAndBoundsBurst).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -132,31 +132,33 @@ public static class EnvironmentVolumeMath
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(CalculateTransformationBoundsBurst_0000602A_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(CalculateTransformationBoundsBurst_00006410_0024PostfixBurstDelegate))]
 	private static void CalculateTransformationBoundsBurst(in float4x4 transformationMatrix, in bool capsule, out Bounds bounds)
 	{
-		CalculateTransformationBoundsBurst_0000602A_0024BurstDirectCall.Invoke(in transformationMatrix, in capsule, out bounds);
+		CalculateTransformationBoundsBurst_00006410_0024BurstDirectCall.Invoke(in transformationMatrix, in capsule, out bounds);
 	}
 
-	[MonoPInvokeCallback(typeof(MultiplyPoint3X4_0000602B_0024PostfixBurstDelegate))]
+	[MonoPInvokeCallback(typeof(MultiplyPoint3X4_00006411_0024PostfixBurstDelegate))]
 	[BurstCompile]
 	private static void MultiplyPoint3X4(in float4x4 transformationMatrix, in float3 point, out float3 result)
 	{
-		MultiplyPoint3X4_0000602B_0024BurstDirectCall.Invoke(in transformationMatrix, in point, out result);
+		MultiplyPoint3X4_00006411_0024BurstDirectCall.Invoke(in transformationMatrix, in point, out result);
 	}
 
-	[MonoPInvokeCallback(typeof(UpdateVolumeTransformationAndBoundsBurst_0000602C_0024PostfixBurstDelegate))]
+	[MonoPInvokeCallback(typeof(UpdateVolumeTransformationAndBoundsBurst_00006412_0024PostfixBurstDelegate))]
 	[BurstCompile]
 	public static void UpdateVolumeTransformationAndBoundsBurst(in float3 size, in float3 center, in float4x4 localToWorldMatrix, in bool isCapsule, out float4x4 volumeTransformation, out float4x4 volumeTransformationInverse, out float3 volumePosition, out Bounds volumeBounds)
 	{
-		UpdateVolumeTransformationAndBoundsBurst_0000602C_0024BurstDirectCall.Invoke(in size, in center, in localToWorldMatrix, in isCapsule, out volumeTransformation, out volumeTransformationInverse, out volumePosition, out volumeBounds);
+		UpdateVolumeTransformationAndBoundsBurst_00006412_0024BurstDirectCall.Invoke(in size, in center, in localToWorldMatrix, in isCapsule, out volumeTransformation, out volumeTransformationInverse, out volumePosition, out volumeBounds);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	[BurstCompile]
-	internal unsafe static void CalculateTransformationBoundsBurst_0024BurstManaged(in float4x4 transformationMatrix, in bool capsule, out Bounds bounds)
+	internal static void CalculateTransformationBoundsBurst_0024BurstManaged(in float4x4 transformationMatrix, in bool capsule, out Bounds bounds)
 	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
@@ -191,11 +193,9 @@ public static class EnvironmentVolumeMath
 		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-		float3 val = default(float3);
-		((float3)(ref val))._002Ector(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
-		float3 val2 = default(float3);
-		((float3)(ref val2))._002Ector(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
-		ReadOnlySpan<float3> readOnlySpan = (Span<float3>)stackalloc float3[8]
+		float3 val = new float3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+		float3 val2 = new float3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+		ReadOnlySpan<float3> readOnlySpan = stackalloc float3[8]
 		{
 			new float3(-0.5f, -0.5f, -0.5f),
 			new float3(0.5f, -0.5f, -0.5f),
@@ -219,7 +219,7 @@ public static class EnvironmentVolumeMath
 			val2.y += num;
 		}
 		bounds = new Bounds(Vector3.zero, Vector3.one);
-		((Bounds)(ref bounds)).SetMinMax(float3.op_Implicit(val), float3.op_Implicit(val2));
+		bounds.SetMinMax(float3.op_Implicit(val), float3.op_Implicit(val2));
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

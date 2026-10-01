@@ -38,12 +38,12 @@ public class NPCDwelling : BaseEntity
 
 	public override void DestroyShared()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			CleanupSpawned();
 		}
 		base.DestroyShared();
-		if (base.isServer)
+		if (isServer)
 		{
 			UpdateInformationZone(remove: true);
 		}

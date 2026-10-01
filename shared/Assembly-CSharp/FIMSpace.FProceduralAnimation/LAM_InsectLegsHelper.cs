@@ -60,14 +60,14 @@ public class LAM_InsectLegsHelper : LegsAnimatorControlModuleBase
 		_afterFullCulldownV = hlp.RequestVariable(waitV, 0f);
 		_modeV = hlp.RequestVariable(modeV, 0);
 		legHelpers = new List<LegHelper>();
-		for (int i = 0; i < base.LA.Legs.Count; i++)
+		for (int i = 0; i < LA.Legs.Count; i++)
 		{
-			LegHelper item = new LegHelper(base.LA.Legs[i]);
+			LegHelper item = new LegHelper(LA.Legs[i]);
 			legHelpers.Add(item);
 		}
-		if (_onOneSideV.GetInt() >= base.LA.Legs.Count)
+		if (_onOneSideV.GetInt() >= LA.Legs.Count)
 		{
-			_onOneSideV.SetValue(base.LA.Legs.Count / 2);
+			_onOneSideV.SetValue(LA.Legs.Count / 2);
 		}
 	}
 
@@ -115,9 +115,9 @@ public class LAM_InsectLegsHelper : LegsAnimatorControlModuleBase
 	{
 		if (legHelpers != null)
 		{
-			mainCulldown -= base.LA.DeltaTime;
-			sideLCulldown -= base.LA.DeltaTime;
-			sideRCulldown -= base.LA.DeltaTime;
+			mainCulldown -= LA.DeltaTime;
+			sideLCulldown -= LA.DeltaTime;
+			sideRCulldown -= LA.DeltaTime;
 		}
 	}
 

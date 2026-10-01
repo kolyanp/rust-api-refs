@@ -63,7 +63,7 @@ public class ReclaimTerminal : StorageContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		base.inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+		inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
@@ -87,9 +87,9 @@ public class ReclaimTerminal : StorageContainer
 		List<ReclaimManager.PlayerReclaimEntry> list = Pool.Get<List<ReclaimManager.PlayerReclaimEntry>>();
 		ReclaimManager.instance.GetReclaim(player.userID);
 		itemCount = 0;
-		for (int i = 0; i < base.inventory.capacity; i++)
+		for (int i = 0; i < inventory.capacity; i++)
 		{
-			if (base.inventory.GetSlot(i) != null)
+			if (inventory.GetSlot(i) != null)
 			{
 				itemCount++;
 			}
@@ -100,7 +100,7 @@ public class ReclaimTerminal : StorageContainer
 			{
 				Item item = item2.mainInventory.itemList[num];
 				itemCount++;
-				item.MoveToContainer(base.inventory);
+				item.MoveToContainer(inventory);
 			}
 		}
 		Pool.Free<ReclaimManager.PlayerReclaimEntry>(ref list, false);
@@ -121,9 +121,9 @@ public class ReclaimTerminal : StorageContainer
 	{
 		if (!((Object)(object)ReclaimManager.instance == (Object)null))
 		{
-			if (base.inventory.itemList.Count > 0)
+			if (inventory.itemList.Count > 0)
 			{
-				ReclaimManager.instance.AddPlayerReclaim(player.userID, null, null, base.inventory.itemList, null);
+				ReclaimManager.instance.AddPlayerReclaim(player.userID, null, null, inventory.itemList, null);
 			}
 			base.PlayerStoppedLooting(player);
 		}

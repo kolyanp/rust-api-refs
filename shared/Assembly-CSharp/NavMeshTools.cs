@@ -36,7 +36,7 @@ public static class NavMeshTools
 			{
 				if (hasFootprint)
 				{
-					((Bounds)(ref footprint)).Encapsulate(val.bounds);
+					footprint.Encapsulate(val.bounds);
 					continue;
 				}
 				footprint = val.bounds;
@@ -69,10 +69,10 @@ public static class NavMeshTools
 		{
 			foreach (Transform ignoreRoot in ignoreRoots)
 			{
-				val = default(NavMeshBuildMarkup);
-				((NavMeshBuildMarkup)(ref val)).root = ignoreRoot;
-				((NavMeshBuildMarkup)(ref val)).ignoreFromBuild = true;
-				((NavMeshBuildMarkup)(ref val)).overrideIgnore = true;
+				val = default;
+				val.root = ignoreRoot;
+				val.ignoreFromBuild = true;
+				val.overrideIgnore = true;
 				NavMeshBuildMarkup item = val;
 				list.Add(item);
 			}
@@ -84,19 +84,19 @@ public static class NavMeshTools
 			RustNavmeshModifierVolume.AllModifierVolumes.GetInBounds(bounds, (List<RustNavmeshModifierVolume>)(object)modifierVolumes);
 			foreach (RustNavmeshModifierVolume item3 in (List<RustNavmeshModifierVolume>)(object)modifierVolumes)
 			{
-				val = default(NavMeshBuildMarkup);
-				((NavMeshBuildMarkup)(ref val)).root = ((Component)item3).transform;
-				((NavMeshBuildMarkup)(ref val)).overrideArea = true;
-				((NavMeshBuildMarkup)(ref val)).area = areaFromName;
+				val = default;
+				val.root = ((Component)item3).transform;
+				val.overrideArea = true;
+				val.area = areaFromName;
 				NavMeshBuildMarkup item2 = val;
 				list.Add(item2);
 			}
 			NavMeshBuilder.CollectSources(bounds, mask, geometry, area, list, sources);
 			if (useBakedTerrainMesh && (Object)(object)TerrainMeta.HeightMap != (Object)null)
 			{
-				for (float x = 0f - ((Bounds)(ref bounds)).extents.x; x < ((Bounds)(ref bounds)).extents.x - (float)(cellSize / 2); x += (float)cellSize)
+				for (float x = 0f - bounds.extents.x; x < bounds.extents.x - (float)(cellSize / 2); x += (float)cellSize)
 				{
-					for (float z = 0f - ((Bounds)(ref bounds)).extents.z; z < ((Bounds)(ref bounds)).extents.z - (float)(cellSize / 2); z += (float)cellSize)
+					for (float z = 0f - bounds.extents.z; z < bounds.extents.z - (float)(cellSize / 2); z += (float)cellSize)
 					{
 						AsyncTerrainNavMeshBake terrainSource = new AsyncTerrainNavMeshBake(new Vector3(x, 0f, z), cellSize, cellSize, normal: false, alpha: true);
 						yield return terrainSource;

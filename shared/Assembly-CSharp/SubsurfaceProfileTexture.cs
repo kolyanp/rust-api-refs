@@ -22,7 +22,7 @@ public class SubsurfaceProfileTexture
 
 	private Texture2D texture;
 
-	private Vector4[] transmissionTints = (Vector4[])(object)new Vector4[16];
+	private Vector4[] transmissionTints = new Vector4[16];
 
 	private const int KernelSize0 = 24;
 
@@ -75,7 +75,7 @@ public class SubsurfaceProfileTexture
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		Color result = default(Color);
+		Color result = default;
 		result.r = Mathf.Clamp(color.r, min, max);
 		result.g = Mathf.Clamp(color.g, min, max);
 		result.b = Mathf.Clamp(color.b, min, max);
@@ -126,7 +126,7 @@ public class SubsurfaceProfileTexture
 	private void CreateResources()
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Expected O, but got Unknown
+		//IL_003e: Expected Obj, but got Unknown
 		if (entries.Count <= 0)
 		{
 			return;
@@ -138,7 +138,7 @@ public class SubsurfaceProfileTexture
 		((Texture)texture).wrapMode = (TextureWrapMode)1;
 		((Texture)texture).filterMode = (FilterMode)1;
 		Color[] pixels = texture.GetPixels(0);
-		Color[] kernel = (Color[])(object)new Color[49];
+		Color[] kernel = new Color[49];
 		int num2 = num - 1;
 		int id = 0;
 		WriteKernel(ref pixels, ref kernel, id++, num2--, SubsurfaceProfileData.Default);
@@ -172,7 +172,7 @@ public class SubsurfaceProfileTexture
 				Vector4[] array = transmissionTints;
 				int num = i;
 				SubsurfaceProfileData subsurfaceProfileData = SubsurfaceProfileData.Default;
-				array[num] = Color.op_Implicit(((Color)(ref subsurfaceProfileData.TransmissionTint)).linear);
+				array[num] = Color.op_Implicit(subsurfaceProfileData.TransmissionTint.linear);
 			}
 		}
 	}

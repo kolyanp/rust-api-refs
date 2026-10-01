@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Rust.Json;
@@ -9,32 +8,58 @@ public class RayConverter : JsonConverter<Ray>
 {
 	public override void WriteJson(JsonWriter writer, Ray value, JsonSerializer serializer)
 	{
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		writer.WriteStartObject();
 		writer.WritePropertyName("origin");
-		serializer.Serialize(writer, (object)((Ray)(ref value)).origin);
+		UnityJsonConverters.WriteVector3(writer, value.origin);
 		writer.WritePropertyName("direction");
-		serializer.Serialize(writer, (object)((Ray)(ref value)).direction);
+		UnityJsonConverters.WriteVector3(writer, value.direction);
 		writer.WriteEndObject();
 	}
 
 	public override Ray ReadJson(JsonReader reader, Type objectType, Ray existingValue, bool hasExistingValue, JsonSerializer serializer)
 	{
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		JObject obj = JObject.Load(reader);
-		JToken obj2 = obj["origin"];
-		Vector3 val = ((obj2 != null) ? obj2.ToObject<Vector3>(serializer) : Vector3.zero);
-		JToken obj3 = obj["direction"];
-		Vector3 val2 = ((obj3 != null) ? obj3.ToObject<Vector3>(serializer) : Vector3.forward);
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		if (!UnityJsonConverters.BeginObject(reader, "Ray"))
+		{
+			return default;
+		}
+		Vector3 val = Vector3.zero;
+		Vector3 val2 = Vector3.forward;
+		string name;
+		while (UnityJsonConverters.NextProperty(reader, out name))
+		{
+			if (!(name == "origin"))
+			{
+				if (name == "direction")
+				{
+					val2 = (UnityJsonConverters.NextValue(reader) ? UnityJsonConverters.ReadVector3(reader) : Vector3.forward);
+				}
+				else
+				{
+					reader.Skip();
+				}
+			}
+			else
+			{
+				val = (UnityJsonConverters.NextValue(reader) ? UnityJsonConverters.ReadVector3(reader) : Vector3.zero);
+			}
+		}
 		return new Ray(val, val2);
 	}
 }

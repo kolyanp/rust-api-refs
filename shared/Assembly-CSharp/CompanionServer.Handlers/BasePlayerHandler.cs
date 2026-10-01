@@ -20,12 +20,12 @@ public abstract class BasePlayerHandler<T> : BaseHandler<T> where T : class
 		{
 			return validationResult;
 		}
-		if (base.Client.ChannelSteamId != 0L && base.Client.ChannelSteamId != base.Request.playerId)
+		if (Client.ChannelSteamId != 0L && Client.ChannelSteamId != Request.playerId)
 		{
 			return ValidationResult.NotFound;
 		}
-		int orGenerateAppToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(base.Request.playerId, out var locked);
-		if (base.Request.playerId == 0L || base.Request.playerToken != orGenerateAppToken)
+		int orGenerateAppToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(Request.playerId, out var locked);
+		if (Request.playerId == 0L || Request.playerToken != orGenerateAppToken)
 		{
 			return ValidationResult.NotFound;
 		}
@@ -33,11 +33,11 @@ public abstract class BasePlayerHandler<T> : BaseHandler<T> where T : class
 		{
 			return ValidationResult.Banned;
 		}
-		if ((ServerUsers.Get(base.Request.playerId)?.group ?? ServerUsers.UserGroup.None) == ServerUsers.UserGroup.Banned)
+		if ((ServerUsers.Get(Request.playerId)?.group ?? ServerUsers.UserGroup.None) == ServerUsers.UserGroup.Banned)
 		{
 			return ValidationResult.Banned;
 		}
-		TokenBucket tokenBucket = base.PlayerBuckets?.Get(base.Request.playerId);
+		TokenBucket tokenBucket = PlayerBuckets?.Get(Request.playerId);
 		if (tokenBucket == null || !tokenBucket.TryTake(TokenCost))
 		{
 			if (tokenBucket == null || !tokenBucket.IsNaughty)
@@ -46,9 +46,9 @@ public abstract class BasePlayerHandler<T> : BaseHandler<T> where T : class
 			}
 			return ValidationResult.Rejected;
 		}
-		UserId = base.Request.playerId;
+		UserId = Request.playerId;
 		Player = BasePlayer.FindByID(UserId) ?? BasePlayer.FindSleeping(UserId);
-		base.Client.Subscribe(new PlayerTarget(UserId));
+		Client.Subscribe(new PlayerTarget(UserId));
 		return ValidationResult.Success;
 	}
 }

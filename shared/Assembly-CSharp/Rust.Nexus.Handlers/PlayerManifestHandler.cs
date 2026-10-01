@@ -6,6 +6,6 @@ public class PlayerManifestHandler : BaseNexusRequestHandler<PlayerManifestReque
 {
 	protected override void Handle()
 	{
-		NexusServer.AddZonePlayerManifest(base.FromZone.Key, base.Request.userIds);
+		NexusServer.AddZonePlayerManifest(FromZone.Key, Request.userIds);
 	}
 }

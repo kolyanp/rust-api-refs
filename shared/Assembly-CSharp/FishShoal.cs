@@ -71,6 +71,10 @@ public class FishShoal : IDisposable
 		public float distance;
 
 		public float seed;
+
+		public float moveToggle;
+
+		public float legPhase;
 	}
 
 	public struct FishCollisionGatherJob : IJob
@@ -93,6 +97,7 @@ public class FishShoal : IDisposable
 
 		public void Execute()
 		{
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0087: Unknown result type (might be due to invalid IL or missing references)
@@ -101,28 +106,27 @@ public class FishShoal : IDisposable
 			//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-			Random val = default(Random);
-			((Random)(ref val))._002Ector(seed);
+			Random val = new Random(seed);
 			int length = castCommands.Length;
 			for (int i = 0; i < length; i++)
 			{
 				RaycastCommand val2;
 				if (i >= castCount)
 				{
-					val2 = (castCommands[i] = default(RaycastCommand));
+					val2 = (castCommands[i] = default);
 					continue;
 				}
-				int num = ((Random)(ref val)).NextInt(0, fishCount);
+				int num = val.NextInt(0, fishCount);
 				FishData fishData = fishDataArray[num];
 				FishRenderData fishRenderData = fishRenderDataArray[num];
 				ref NativeArray<RaycastCommand> reference = ref castCommands;
 				int num2 = i;
-				val2 = default(RaycastCommand);
-				((RaycastCommand)(ref val2)).from = float3.op_Implicit(fishRenderData.position);
-				((RaycastCommand)(ref val2)).direction = float3.op_Implicit(new float3(fishData.directionX, 0f, fishData.directionZ));
-				((RaycastCommand)(ref val2)).distance = 4f;
-				((RaycastCommand)(ref val2)).layerMask = layerMask;
-				((RaycastCommand)(ref val2)).maxHits = 1;
+				val2 = default;
+				val2.from = float3.op_Implicit(fishRenderData.position);
+				val2.direction = float3.op_Implicit(new float3(fishData.directionX, 0f, fishData.directionZ));
+				val2.distance = 4f;
+				val2.layerMask = layerMask;
+				val2.maxHits = 1;
 				reference[num2] = val2;
 				fishCastIndices[i] = num;
 			}
@@ -174,18 +178,18 @@ public class FishShoal : IDisposable
 			for (int i = 0; i < castCount; i++)
 			{
 				RaycastHit val = castResults[i];
-				if (((RaycastHit)(ref val)).normal != default(Vector3))
+				if (val.normal != default(Vector3))
 				{
 					int num = fishCastIndices[i];
 					FishData fishData = fishDataArray[num];
 					if (fishData.startleTime <= 0f)
 					{
 						FishRenderData fishRenderData = fishRenderDataArray[num];
-						float2 xz = ((float3)(ref fishRenderData.position)).xz;
+						float2 xz = fishRenderData.position.xz;
 						val = castResults[i];
-						float x = ((RaycastHit)(ref val)).point.x;
+						float x = val.point.x;
 						val = castResults[i];
-						float2 val2 = math.normalize(new float2(x, ((RaycastHit)(ref val)).point.z) - xz);
+						float2 val2 = math.normalize(new float2(x, val.point.z) - xz);
 						float2 val3 = xz - val2 * 8f;
 						fishData.destinationX = val3.x;
 						fishData.destinationZ = val3.y;
@@ -224,6 +228,9 @@ public class FishShoal : IDisposable
 		[ReadOnly]
 		public float minDepth;
 
+		[ReadOnly]
+		public float legSpeed;
+
 		[NativeDisableUnsafePtrRestriction]
 		public unsafe FishData* fishDataArray;
 
@@ -232,8 +239,10 @@ public class FishShoal : IDisposable
 
 		public unsafe void Execute(int i)
 		{
+			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0100: Unknown result type (might be due to invalid IL or missing references)
@@ -260,8 +269,7 @@ public class FishShoal : IDisposable
 			//IL_0248: Unknown result type (might be due to invalid IL or missing references)
 			FishData* ptr = fishDataArray + i;
 			FishRenderData* ptr2 = fishRenderDataArray + i;
-			Random random = default(Random);
-			((Random)(ref random))._002Ector((uint)(i * 3245 + seed));
+			Random random = new Random((uint)(i * 3245 + seed));
 			float num = math.distancesq(cameraPosition, ptr2->position);
 			bool flag = ptr->startleTime > 0f;
 			if (num > math.pow(40f, 2f) || ((float3)(&ptr2->position)).y > minDepth)
@@ -274,8 +282,7 @@ public class FishShoal : IDisposable
 				ptr->startleTime = 2f;
 				flag = true;
 			}
-			float3 val = default(float3);
-			((float3)(ref val))._002Ector(ptr->destinationX, ((float3)(&ptr2->position)).y, ptr->destinationZ);
+			float3 val = new float3(ptr->destinationX, ((float3)(&ptr2->position)).y, ptr->destinationZ);
 			if (ptr->updateTime >= 8f || math.distancesq(val, ptr2->position) < 1f)
 			{
 				float3 target = GetTarget(new float3(ptr->spawnX, 0f, ptr->spawnZ), ref random);
@@ -298,6 +305,7 @@ public class FishShoal : IDisposable
 			Unsafe.Write(position, *position + zero * ptr->speed * dt);
 			ptr2->rotation = 0f - ptr2->rotation + MathF.PI / 2f;
 			ptr2->distance += ptr->speed * dt;
+			ptr2->legPhase += legSpeed * dt;
 			ptr->updateTime += dt;
 			ptr->startleTime -= dt;
 		}
@@ -375,10 +383,9 @@ public class FishShoal : IDisposable
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Expected O, but got Unknown
+		//IL_0090: Expected Obj, but got Unknown
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Expected O, but got Unknown
-		base._002Ector();
+		//IL_009b: Expected Obj, but got Unknown
 		this.fishType = fishType;
 		castCommands = new NativeArray<RaycastCommand>(fishType.castsPerFrame, (Allocator)4, (NativeArrayOptions)1);
 		castResults = new NativeArray<RaycastHit>(fishType.castsPerFrame, (Allocator)4, (NativeArrayOptions)1);
@@ -402,8 +409,8 @@ public class FishShoal : IDisposable
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		float2 val = ((Random)(ref random)).NextFloat2Direction();
-		return spawnPos + new float3(val.x, 0f, val.y) * ((Random)(ref random)).NextFloat(10f, 15f);
+		float2 val = random.NextFloat2Direction();
+		return spawnPos + new float3(val.x, 0f, val.y) * random.NextFloat(10f, 15f);
 	}
 
 	private int GetPopulationScaleForPoint(float3 cameraPosition)
@@ -416,6 +423,7 @@ public class FishShoal : IDisposable
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
@@ -463,12 +471,11 @@ public class FishShoal : IDisposable
 		uint num3 = (uint)(Time.frameCount + fishType.mesh.vertexCount);
 		int num4 = fishCount[0];
 		int num5 = math.min(num4 + num2, fishType.maxCount);
-		Random random = default(Random);
 		for (int i = num4; i < num5; i++)
 		{
-			((Random)(ref random))._002Ector((uint)(i * 3245 + num3));
-			float3 val = cameraPosition + ((Random)(ref random)).NextFloat3Direction() * ((Random)(ref random)).NextFloat(40f);
-			val.y = ((Random)(ref random)).NextFloat(math.max(item2 + 1f, cameraPosition.y - 30f), math.min(item, cameraPosition.y + 30f));
+			Random random = new Random((uint)(i * 3245 + num3));
+			float3 val = cameraPosition + random.NextFloat3Direction() * random.NextFloat(40f);
+			val.y = random.NextFloat(math.max(item2 + 1f, cameraPosition.y - 30f), math.min(item, cameraPosition.y + 30f));
 			if (!((Object)(object)WaterSystem.Instance == (Object)null) && WaterLevel.Test(float3.op_Implicit(val), waves: false, volumes: false) && !(TerrainMeta.HeightMap.GetHeight(float3.op_Implicit(val)) > val.y) && !EnvironmentManager.Check(float3.op_Implicit(val), EnvironmentType.UnderwaterLab, 30f))
 			{
 				float3 target = GetTarget(val, ref random);
@@ -480,14 +487,16 @@ public class FishShoal : IDisposable
 					spawnZ = val.z,
 					destinationX = target.x,
 					destinationZ = target.z,
-					scale = ((Random)(ref random)).NextFloat(fishType.minScale, fishType.maxScale)
+					scale = random.NextFloat(fishType.minScale, fishType.maxScale)
 				};
 				fishRenderData[num] = new FishRenderData
 				{
 					position = val,
 					rotation = math.atan2(val2.z, val2.x),
 					scale = 0f,
-					seed = ((Random)(ref random)).NextFloat(0f, 2f)
+					seed = random.NextFloat(0f, 2f),
+					moveToggle = 1f,
+					legPhase = random.NextFloat(0f, MathF.PI * 2f)
 				};
 				num++;
 			}
@@ -525,31 +534,31 @@ public class FishShoal : IDisposable
 		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0234: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0239: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
-		((JobHandle)(ref jobHandle)).Complete();
+		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0235: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0254: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0259: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0271: Unknown result type (might be due to invalid IL or missing references)
+		jobHandle.Complete();
 		int num = fishCount[0];
 		if (num != 0)
 		{
@@ -587,7 +596,8 @@ public class FishShoal : IDisposable
 				maxTurnSpeed = fishType.maxTurnSpeed,
 				fishDataArray = (FishData*)NativeArrayUnsafeUtility.GetUnsafePtr<FishData>(fishData),
 				fishRenderDataArray = (FishRenderData*)NativeArrayUnsafeUtility.GetUnsafePtr<FishRenderData>(fishRenderData),
-				minDepth = item - 3f
+				minDepth = item - 3f,
+				legSpeed = CritterLegSpeed.FromMaterial(fishType.material).Evaluate(1f)
 			};
 			KillFish killFish = new KillFish
 			{
@@ -609,13 +619,13 @@ public class FishShoal : IDisposable
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		((JobHandle)(ref jobHandle)).Complete();
+		jobHandle.Complete();
 		if (fishCount[0] != 0)
 		{
-			Bounds val = default(Bounds);
-			((Bounds)(ref val))._002Ector(float3.op_Implicit(cameraPosition), Vector3.one * 40f);
+			Bounds val = new Bounds(float3.op_Implicit(cameraPosition), Vector3.one * 40f);
 			fishBuffer.SetData<FishRenderData>(fishRenderData);
 			Graphics.DrawMeshInstancedProcedural(fishType.mesh, 0, fishType.material, val, fishCount[0], materialPropertyBlock, (ShadowCastingMode)1, true, 0, (Camera)null, (LightProbeUsage)1, (LightProbeProxyVolume)null);
 		}
@@ -623,7 +633,7 @@ public class FishShoal : IDisposable
 
 	public void Dispose()
 	{
-		((JobHandle)(ref jobHandle)).Complete();
+		jobHandle.Complete();
 		castCommands.Dispose();
 		castResults.Dispose();
 		fishCastIndices.Dispose();
@@ -635,7 +645,7 @@ public class FishShoal : IDisposable
 
 	public void OnDrawGizmosSelected()
 	{
-		((JobHandle)(ref jobHandle)).Complete();
+		jobHandle.Complete();
 		_ = fishCount[0];
 	}
 }

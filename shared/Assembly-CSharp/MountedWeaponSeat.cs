@@ -49,7 +49,7 @@ public class MountedWeaponSeat : BaseVehicleSeat
 	public override void InitShared()
 	{
 		base.InitShared();
-		Invoke(delegate
+		Invoke(() =>
 		{
 			if ((Object)(object)Owner != (Object)null)
 			{

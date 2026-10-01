@@ -23,7 +23,7 @@ public class BatteringRamHead : BaseCombatEntity
 
 	public bool CanBeUsed()
 	{
-		return base.health > brokenHealthThreshold;
+		return health > brokenHealthThreshold;
 	}
 
 	public override void OnRepair()
@@ -47,7 +47,7 @@ public class BatteringRamHead : BaseCombatEntity
 	private void UpdateDamageFlags()
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		float num = base.healthFraction;
+		float num = healthFraction;
 		flagsUpdateScope.Set(Flags.Reserved6, b: false);
 		flagsUpdateScope.Set(Flags.Reserved7, b: false);
 		flagsUpdateScope.Set(Flags.Reserved8, b: false);
@@ -85,7 +85,7 @@ public class BatteringRamHead : BaseCombatEntity
 
 	public void TakeDamage(float damage)
 	{
-		damage = Mathf.Min(damage, base.health - 10f);
+		damage = Mathf.Min(damage, health - 10f);
 		Hurt(damage, DamageType.Blunt, this, useProtection: false);
 		if (!CanBeUsed())
 		{

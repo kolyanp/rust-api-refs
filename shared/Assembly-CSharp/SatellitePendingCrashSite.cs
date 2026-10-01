@@ -7,7 +7,7 @@ public class SatellitePendingCrashSite : BaseEntity
 
 	private void DespawnSelf()
 	{
-		if (!base.IsDestroyed)
+		if (!IsDestroyed)
 		{
 			Kill();
 		}

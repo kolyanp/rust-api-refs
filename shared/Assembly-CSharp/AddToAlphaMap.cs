@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class AddToAlphaMap : ProceduralObject
 {
-	public Bounds bounds;
+	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
 
 	public override void Process()
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
@@ -19,13 +20,12 @@ public class AddToAlphaMap : ProceduralObject
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		OBB val = default(OBB);
-		((OBB)(ref val))._002Ector(((Component)this).transform, bounds);
-		Vector3 point = ((OBB)(ref val)).GetPoint(-1f, 0f, -1f);
-		Vector3 point2 = ((OBB)(ref val)).GetPoint(1f, 0f, -1f);
-		Vector3 point3 = ((OBB)(ref val)).GetPoint(-1f, 0f, 1f);
-		Vector3 point4 = ((OBB)(ref val)).GetPoint(1f, 0f, 1f);
-		TerrainMeta.AlphaMap.ForEachParallel(point, point2, point3, point4, delegate(int x, int z)
+		OBB val = new OBB(((Component)this).transform, bounds);
+		Vector3 point = val.GetPoint(-1f, 0f, -1f);
+		Vector3 point2 = val.GetPoint(1f, 0f, -1f);
+		Vector3 point3 = val.GetPoint(-1f, 0f, 1f);
+		Vector3 point4 = val.GetPoint(1f, 0f, 1f);
+		TerrainMeta.AlphaMap.ForEachParallel(point, point2, point3, point4, (int x, int z) =>
 		{
 			TerrainMeta.AlphaMap.SetAlpha(x, z, 0f);
 		});
@@ -38,7 +38,5 @@ public class AddToAlphaMap : ProceduralObject
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		bounds = new Bounds(Vector3.zero, Vector3.one);
-		base._002Ector();
 	}
 }

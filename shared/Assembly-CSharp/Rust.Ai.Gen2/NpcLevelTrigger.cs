@@ -50,7 +50,7 @@ public class NpcLevelTrigger : TriggerBase, IServerComponent
 
 	private void OnDrawGizmosSelected()
 	{
-		NpcLevelScript npcLevelScript = default(NpcLevelScript);
+		NpcLevelScript npcLevelScript = default;
 		if (!((Object)(object)((Component)this).transform.parent == (Object)null) && ((Component)((Component)this).transform.parent).TryGetComponent<NpcLevelScript>(ref npcLevelScript))
 		{
 			npcLevelScript.OnDrawGizmosSelected();
@@ -59,7 +59,7 @@ public class NpcLevelTrigger : TriggerBase, IServerComponent
 
 	private void OnValidate()
 	{
-		NpcLevelScript npcLevelScript = default(NpcLevelScript);
+		NpcLevelScript npcLevelScript = default;
 		if (!((Object)(object)((Component)this).transform.parent == (Object)null) && ((Component)((Component)this).transform.parent).TryGetComponent<NpcLevelScript>(ref npcLevelScript) && !npcLevelScript.linkedTriggers.Contains(this))
 		{
 			npcLevelScript.linkedTriggers.Add(this);

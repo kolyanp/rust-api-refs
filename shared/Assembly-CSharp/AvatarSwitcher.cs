@@ -11,7 +11,7 @@ public class AvatarSwitcher : StateMachineBehaviour
 		if ((Object)(object)ToApply != (Object)null)
 		{
 			animator.avatar = ToApply;
-			animator.Play(((AnimatorStateInfo)(ref stateInfo)).shortNameHash, layerIndex);
+			animator.Play(stateInfo.shortNameHash, layerIndex);
 		}
 	}
 }

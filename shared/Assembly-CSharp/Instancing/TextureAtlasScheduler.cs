@@ -30,7 +30,7 @@ public class TextureAtlasScheduler
 	{
 		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Expected O, but got Unknown
+		//IL_00a3: Expected Obj, but got Unknown
 		int num = atlas.Textures.FindIndex((TextureAtlasItem x) => !x.Occupied);
 		if (num == -1)
 		{
@@ -71,7 +71,7 @@ public class TextureAtlasScheduler
 	private TextureAtlas GetOrCreateAtlas(int width, int height)
 	{
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Expected O, but got Unknown
+		//IL_003b: Expected Obj, but got Unknown
 		if (width != height)
 		{
 			throw new NotSupportedException("Textures must be the same width and height");

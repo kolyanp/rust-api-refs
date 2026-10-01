@@ -143,11 +143,11 @@ public class HitTest : IPooled
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		hasLifetimeSetup = false;
 		type = Type.Generic;
-		AttackRay = default(Ray);
+		AttackRay = default;
 		Radius = 0f;
 		Forgiveness = 0f;
 		MaxDistance = 0f;
-		RayHit = default(RaycastHit);
+		RayHit = default;
 		MultiHit = false;
 		BestHit = false;
 		DidHit = false;
@@ -156,8 +156,8 @@ public class HitTest : IPooled
 		collider = null;
 		ignoreEntity = null;
 		HitEntity = null;
-		HitPoint = default(Vector3);
-		HitNormal = default(Vector3);
+		HitPoint = default;
+		HitNormal = default;
 		HitDistance = 0f;
 		HitTransform = null;
 		HitPart = 0u;

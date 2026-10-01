@@ -13,11 +13,11 @@ public class ItemModContainerRads : ItemModContainer
 			ItemContainer contents2 = item.contents;
 			contents2.onItemRadiationChanged = (Action<Item, float>)Delegate.Combine(contents2.onItemRadiationChanged, new Action<Item, float>(OnItemRadiationChanged));
 			ItemContainer contents3 = item.contents;
-			contents3.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(contents3.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			contents3.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Combine(contents3.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedRemoved));
 			ItemContainer contents4 = item.contents;
-			contents4.onItemAddedToStack = (Action<Item, int>)Delegate.Combine(contents4.onItemAddedToStack, new Action<Item, int>(OnItemAddedToStack));
+			contents4.onItemAddedToStack = (Action<Item, int, BasePlayer>)Delegate.Combine(contents4.onItemAddedToStack, new Action<Item, int, BasePlayer>(OnItemAddedToStack));
 			ItemContainer contents5 = item.contents;
-			contents5.onItemRemovedFromStack = (Action<Item, int>)Delegate.Combine(contents5.onItemRemovedFromStack, new Action<Item, int>(OnItemRemovedFromStack));
+			contents5.onItemRemovedFromStack = (Action<Item, int, BasePlayer>)Delegate.Combine(contents5.onItemRemovedFromStack, new Action<Item, int, BasePlayer>(OnItemRemovedFromStack));
 		}
 	}
 
@@ -31,11 +31,11 @@ public class ItemModContainerRads : ItemModContainer
 			ItemContainer contents2 = item.contents;
 			contents2.onItemRadiationChanged = (Action<Item, float>)Delegate.Remove(contents2.onItemRadiationChanged, new Action<Item, float>(OnItemRadiationChanged));
 			ItemContainer contents3 = item.contents;
-			contents3.onItemAddedRemoved = (Action<Item, bool>)Delegate.Remove(contents3.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			contents3.onItemAddedRemoved = (Action<Item, bool, BasePlayer>)Delegate.Remove(contents3.onItemAddedRemoved, new Action<Item, bool, BasePlayer>(OnItemAddedRemoved));
 			ItemContainer contents4 = item.contents;
-			contents4.onItemAddedToStack = (Action<Item, int>)Delegate.Remove(contents4.onItemAddedToStack, new Action<Item, int>(OnItemAddedToStack));
+			contents4.onItemAddedToStack = (Action<Item, int, BasePlayer>)Delegate.Remove(contents4.onItemAddedToStack, new Action<Item, int, BasePlayer>(OnItemAddedToStack));
 			ItemContainer contents5 = item.contents;
-			contents5.onItemRemovedFromStack = (Action<Item, int>)Delegate.Remove(contents5.onItemRemovedFromStack, new Action<Item, int>(OnItemRemovedFromStack));
+			contents5.onItemRemovedFromStack = (Action<Item, int, BasePlayer>)Delegate.Remove(contents5.onItemRemovedFromStack, new Action<Item, int, BasePlayer>(OnItemRemovedFromStack));
 		}
 	}
 
@@ -54,7 +54,7 @@ public class ItemModContainerRads : ItemModContainer
 		ProcessRadCountFromChild(item);
 	}
 
-	private void OnItemAddedRemoved(Item childItem, bool added)
+	private void OnItemAddedRemoved(Item childItem, bool added, BasePlayer sourcePlayer)
 	{
 		if (childItem != null)
 		{
@@ -62,12 +62,12 @@ public class ItemModContainerRads : ItemModContainer
 		}
 	}
 
-	private void OnItemRemovedFromStack(Item childItem, int amount)
+	private void OnItemRemovedFromStack(Item childItem, int amount, BasePlayer sourcePlayer)
 	{
 		ProcessRadCountFromChild(childItem);
 	}
 
-	private void OnItemAddedToStack(Item childItem, int amount)
+	private void OnItemAddedToStack(Item childItem, int amount, BasePlayer sourcePlayer)
 	{
 		ProcessRadCountFromChild(childItem);
 	}

@@ -23,7 +23,7 @@ public class ItemModPaintballOveralls : ItemModSpriteConfig
 	private void OnWorn(Item item, BasePlayer player)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Expected O, but got Unknown
+		//IL_001d: Expected Obj, but got Unknown
 		if (player.TryGetHeldEntity(out PaintballGun _))
 		{
 			if (item.instanceData == null)

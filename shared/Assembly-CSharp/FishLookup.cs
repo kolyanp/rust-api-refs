@@ -48,8 +48,8 @@ public class FishLookup : BaseScriptableObject
 		List<ItemModFishable> list = Pool.Get<List<ItemModFishable>>();
 		List<ItemDefinition> list2 = Pool.Get<List<ItemDefinition>>();
 		List<ItemModFishable> list3 = Pool.Get<List<ItemModFishable>>();
-		ItemModFishable itemModFishable = default(ItemModFishable);
-		ItemModCompostable itemModCompostable = default(ItemModCompostable);
+		ItemModFishable itemModFishable = default;
+		ItemModCompostable itemModCompostable = default;
 		foreach (ItemDefinition item in ItemManager.itemList)
 		{
 			if (((Component)item).TryGetComponent<ItemModFishable>(ref itemModFishable))
@@ -107,7 +107,7 @@ public class FishLookup : BaseScriptableObject
 				return ((Component)JunkItems[num]).GetComponent<ItemDefinition>();
 			}
 		}
-		ItemModCompostable itemModCompostable = default(ItemModCompostable);
+		ItemModCompostable itemModCompostable = default;
 		float num2 = (((Component)lure.info).TryGetComponent<ItemModCompostable>(ref itemModCompostable) ? itemModCompostable.BaitValue : 0f);
 		if ((Object)(object)itemModCompostable != (Object)null && itemModCompostable.MaxBaitStack > 0)
 		{

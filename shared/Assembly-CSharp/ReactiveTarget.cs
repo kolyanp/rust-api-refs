@@ -15,27 +15,27 @@ public class ReactiveTarget : Signage
 
 	public GameObjectRef knockdownEffect;
 
-	public float activationPowerTime;
+	public float activationPowerTime = 0.5f;
 
-	public int activationPowerAmount;
+	public int activationPowerAmount = 1;
 
-	public string mainBoneCollider;
+	public string mainBoneCollider = "target_collider";
 
-	public string bullseyeBoneCollider;
+	public string bullseyeBoneCollider = "target_collider_bullseye";
 
 	public bool isPaintableTarget;
 
 	public Transform movableColliderRoot;
 
-	public Vector3 movableColliderKnockedDownAngle;
+	public Vector3 movableColliderKnockedDownAngle = new Vector3(-55f, 0f, 0f);
 
 	public GameObject movablePlayerForceTrigger;
 
-	private float lastToggleTime;
+	private float lastToggleTime = float.NegativeInfinity;
 
 	public const Flags Flag_KnockedDown = Flags.Reserved1;
 
-	public float knockdownHealth;
+	public float knockdownHealth = 100f;
 
 	private int inputAmountReset;
 
@@ -140,28 +140,39 @@ public class ReactiveTarget : Signage
 
 	public void OnHitShared(HitInfo info)
 	{
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
 		if (IsKnockedDown() || IsLowered())
 		{
 			return;
 		}
-		bool num = info.HitBone == StringPool.Get(mainBoneCollider);
-		bool flag = info.HitBone == StringPool.Get(bullseyeBoneCollider);
-		if ((!num && !flag) || !base.isServer)
+		bool flag = info.HitBone == StringPool.Get(mainBoneCollider);
+		bool flag2 = info.HitBone == StringPool.Get(bullseyeBoneCollider);
+		if (isServer && info.HitBone == 0 && info.Initiator is AutoTurret && (info.damageTypes.Has(DamageType.Bullet) || info.damageTypes.Has(DamageType.Arrow)))
+		{
+			flag = IsHitOnCollider(info.HitPositionWorld, mainBoneCollider);
+			flag2 = IsHitOnCollider(info.HitPositionWorld, bullseyeBoneCollider);
+		}
+		if ((!flag && !flag2) || !isServer)
 		{
 			return;
 		}
-		float num2 = info.damageTypes.Total();
-		if (flag)
+		float num = info.damageTypes.Total();
+		if (info.Initiator is AutoTurret && info.Weapon is BaseProjectile { turretDamageScale: >0f } baseProjectile)
 		{
-			num2 *= 2f;
+			num /= baseProjectile.turretDamageScale;
+		}
+		if (flag2)
+		{
+			num *= 2f;
 			Effect.server.Run(bullseyeEffect.resourcePath, this, StringPool.Get(bullseyeBoneCollider), Vector3.zero, Vector3.zero);
 		}
-		knockdownHealth -= num2;
+		knockdownHealth -= num;
 		if (knockdownHealth <= 0f)
 		{
 			Effect.server.Run(knockdownEffect.resourcePath, this, StringPool.Get(bullseyeBoneCollider), Vector3.zero, Vector3.zero);
@@ -179,6 +190,26 @@ public class ReactiveTarget : Signage
 			ClientRPC(RpcTarget.NetworkGroup("HitEffect"), info.Initiator.net.ID);
 		}
 		Hurt(1f, DamageType.Suicide, info.Initiator, useProtection: false);
+	}
+
+	private bool IsHitOnCollider(Vector3 hitPosition, string boneName)
+	{
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)model == (Object)null || !model.HasBone(boneName, out var bone))
+		{
+			return false;
+		}
+		Collider val = default;
+		if (!((Component)bone).TryGetComponent<Collider>(ref val) || !val.enabled || !((Component)val).gameObject.activeInHierarchy)
+		{
+			return false;
+		}
+		Vector3 val2 = val.ClosestPoint(hitPosition) - hitPosition;
+		return val2.sqrMagnitude <= 0.0001f;
 	}
 
 	public bool IsKnockedDown()
@@ -264,7 +295,7 @@ public class ReactiveTarget : Signage
 	{
 		lastToggleTime = Time.time;
 		MarkDirtyForceUpdateOutputs();
-		Invoke(base.MarkDirtyForceUpdateOutputs, activationPowerTime * 1.01f);
+		Invoke(MarkDirtyForceUpdateOutputs, activationPowerTime * 1.01f);
 	}
 
 	public override int ConsumptionAmount()
@@ -346,13 +377,5 @@ public class ReactiveTarget : Signage
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		activationPowerTime = 0.5f;
-		activationPowerAmount = 1;
-		mainBoneCollider = "target_collider";
-		bullseyeBoneCollider = "target_collider_bullseye";
-		movableColliderKnockedDownAngle = new Vector3(-55f, 0f, 0f);
-		lastToggleTime = float.NegativeInfinity;
-		knockdownHealth = 100f;
-		base._002Ector();
 	}
 }

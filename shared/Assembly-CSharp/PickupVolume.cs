@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PickupVolume : PrefabAttribute
 {
-	public Bounds bounds;
+	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
 
 	protected override Type GetIndexedType()
 	{
@@ -44,8 +44,8 @@ public class PickupVolume : PrefabAttribute
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		position += rotation * (worldRotation * ((Bounds)(ref bounds)).center + worldPosition);
-		if (CheckOBB(new OBB(position, ((Bounds)(ref bounds)).size, rotation * worldRotation), mask, this, ignoreEntity))
+		position += rotation * (worldRotation * bounds.center + worldPosition);
+		if (CheckOBB(new OBB(position, bounds.size, rotation * worldRotation), mask, this, ignoreEntity))
 		{
 			return true;
 		}
@@ -89,7 +89,5 @@ public class PickupVolume : PrefabAttribute
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		bounds = new Bounds(Vector3.zero, Vector3.one);
-		base._002Ector();
 	}
 }

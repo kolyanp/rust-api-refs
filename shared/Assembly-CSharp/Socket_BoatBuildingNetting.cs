@@ -79,12 +79,12 @@ public class Socket_BoatBuildingNetting : Socket_Base
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 eulerAngles = ((Quaternion)(ref rotation)).eulerAngles;
+		Vector3 eulerAngles = rotation.eulerAngles;
 		eulerAngles.x = 0f;
 		eulerAngles.z = 0f;
-		Vector3 direction = ((Ray)(ref target.ray)).direction;
+		Vector3 direction = target.ray.direction;
 		direction.y = 0f;
-		((Vector3)(ref direction)).Normalize();
+		direction.Normalize();
 		Vector3 val = Vector3.up;
 		if (alignToNormal)
 		{

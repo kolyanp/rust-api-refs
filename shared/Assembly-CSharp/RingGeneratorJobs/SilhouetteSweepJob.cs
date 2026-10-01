@@ -12,8 +12,8 @@ public struct SilhouetteSweepJob : IJobParallelFor
 	[NativeDisableParallelForRestriction]
 	public NativeArray<float4> Segments;
 
-	[ReadOnly]
 	[NativeDisableParallelForRestriction]
+	[ReadOnly]
 	public NativeArray<float2> Bounds;
 
 	[ReadOnly]
@@ -61,8 +61,8 @@ public struct SilhouetteSweepJob : IJobParallelFor
 		for (int i = 0; i < Segments.Length; i++)
 		{
 			float4 val3 = Segments[i];
-			float2 xy = ((float4)(ref val3)).xy;
-			float2 val4 = ((float4)(ref val3)).zw - xy;
+			float2 xy = val3.xy;
+			float2 val4 = val3.zw - xy;
 			float num2 = val2.x * val4.y - val2.y * val4.x;
 			if (!(math.abs(num2) < 1E-09f))
 			{

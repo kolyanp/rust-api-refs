@@ -1,3 +1,4 @@
+using ConVar;
 using Rust.Ai;
 using UnityEngine;
 using UnityEngine.AI;
@@ -13,9 +14,9 @@ public class RealmedNavMeshObstacle : BasePrefab
 			return;
 		}
 		base.PreProcess(process, rootObj, name, serverside, clientside, bundling: false);
-		if (base.isServer && Object.op_Implicit((Object)(object)Obstacle))
+		if (isServer && Object.op_Implicit((Object)(object)Obstacle))
 		{
-			if (AiManager.nav_disable)
+			if (AiManager.nav_disable || !AI.useUnityNavmesh)
 			{
 				process.RemoveComponent((Component)(object)Obstacle);
 				Obstacle = null;

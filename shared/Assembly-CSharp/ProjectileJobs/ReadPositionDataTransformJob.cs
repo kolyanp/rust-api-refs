@@ -13,9 +13,9 @@ internal struct ReadPositionDataTransformJob : IJobParallelForTransform
 	public void Execute(int index, TransformAccess transform)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		if (((TransformAccess)(ref transform)).isValid)
+		if (transform.isValid)
 		{
-			Positions[index] = ((TransformAccess)(ref transform)).position;
+			Positions[index] = transform.position;
 		}
 	}
 }

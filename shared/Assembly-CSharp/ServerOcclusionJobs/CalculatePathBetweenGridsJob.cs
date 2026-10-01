@@ -24,12 +24,12 @@ public struct CalculatePathBetweenGridsJob : IJob
 
 	public void Execute()
 	{
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		int3 val = default(int3);
-		((int3)(ref val))._002Ector(From.x, From.y, From.z);
-		int3 to = default(int3);
-		((int3)(ref to))._002Ector(To.x, To.y, To.z);
+		int3 val = new int3(From.x, From.y, From.z);
+		int3 to = new int3(To.x, To.y, To.z);
 		PathBlocked.Value = Algorithm.Trace(val, to, in Grid, BlockedGridThreshold, NeighbourThreshold, UseNeighbourThresholds);
 	}
 }

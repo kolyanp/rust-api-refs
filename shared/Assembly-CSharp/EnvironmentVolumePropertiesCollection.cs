@@ -16,49 +16,49 @@ public class EnvironmentVolumePropertiesCollection : ScriptableObject
 	public class OceanParameters
 	{
 		[Header("Lighting")]
-		public AnimationCurve TransitionCurveLighting;
+		public AnimationCurve TransitionCurveLighting = AnimationCurve.Linear(0f, 0f, 40f, 1f);
 
 		[Range(0f, 1f)]
-		public float DirectionalLightMultiplier;
+		public float DirectionalLightMultiplier = 0.25f;
 
 		[Range(0f, 1f)]
 		public float AmbientLightMultiplier;
 
 		[Range(0f, 1f)]
-		public float ReflectionMultiplier;
+		public float ReflectionMultiplier = 1f;
 
 		[Header("Sun/Moon")]
-		public AnimationCurve TransitionCurveSunMoon;
+		public AnimationCurve TransitionCurveSunMoon = AnimationCurve.Linear(0f, 0f, 40f, 1f);
 
 		[Range(0f, 1f)]
-		public float SunMeshBrightnessMultiplier;
+		public float SunMeshBrightnessMultiplier = 1f;
 
 		[Range(0f, 1f)]
-		public float MoonMeshBrightnessMultiplier;
+		public float MoonMeshBrightnessMultiplier = 1f;
 
 		[Header("Atmosphere")]
-		public AnimationCurve TransitionCurveAtmosphere;
+		public AnimationCurve TransitionCurveAtmosphere = AnimationCurve.Linear(0f, 0f, 40f, 1f);
 
 		[Range(0f, 1f)]
-		public float AtmosphereBrightnessMultiplier;
+		public float AtmosphereBrightnessMultiplier = 1f;
 
 		[Header("Colors")]
-		public AnimationCurve TransitionCurve;
+		public AnimationCurve TransitionCurve = AnimationCurve.Linear(0f, 0f, 40f, 1f);
 
 		[Range(0f, 1f)]
-		public float LightColorMultiplier;
+		public float LightColorMultiplier = 1f;
 
-		public Color LightColor;
-
-		[Range(0f, 1f)]
-		public float SunRayColorMultiplier;
-
-		public Color SunRayColor;
+		public Color LightColor = Color.black;
 
 		[Range(0f, 1f)]
-		public float MoonRayColorMultiplier;
+		public float SunRayColorMultiplier = 1f;
 
-		public Color MoonRayColor;
+		public Color SunRayColor = Color.black;
+
+		[Range(0f, 1f)]
+		public float MoonRayColorMultiplier = 1f;
+
+		public Color MoonRayColor = Color.black;
 
 		public OceanParameters()
 		{
@@ -68,38 +68,22 @@ public class EnvironmentVolumePropertiesCollection : ScriptableObject
 			//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
-			TransitionCurveLighting = AnimationCurve.Linear(0f, 0f, 40f, 1f);
-			DirectionalLightMultiplier = 0.25f;
-			ReflectionMultiplier = 1f;
-			TransitionCurveSunMoon = AnimationCurve.Linear(0f, 0f, 40f, 1f);
-			SunMeshBrightnessMultiplier = 1f;
-			MoonMeshBrightnessMultiplier = 1f;
-			TransitionCurveAtmosphere = AnimationCurve.Linear(0f, 0f, 40f, 1f);
-			AtmosphereBrightnessMultiplier = 1f;
-			TransitionCurve = AnimationCurve.Linear(0f, 0f, 40f, 1f);
-			LightColorMultiplier = 1f;
-			LightColor = Color.black;
-			SunRayColorMultiplier = 1f;
-			SunRayColor = Color.black;
-			MoonRayColorMultiplier = 1f;
-			MoonRayColor = Color.black;
-			base._002Ector();
 		}
 	}
 
-	public float TransitionSpeed;
+	public float TransitionSpeed = 1f;
 
-	public LayerMask ReflectionMask;
+	public LayerMask ReflectionMask = LayerMask.op_Implicit(1084293120);
 
 	[Horizontal(1, 0)]
 	public EnvironmentMultiplier[] ReflectionMultipliers;
 
-	public float DefaultReflectionMultiplier;
+	public float DefaultReflectionMultiplier = 1f;
 
 	[Horizontal(1, 0)]
 	public EnvironmentMultiplier[] AmbientMultipliers;
 
-	public float DefaultAmbientMultiplier;
+	public float DefaultAmbientMultiplier = 1f;
 
 	public OceanParameters OceanOverrides;
 
@@ -109,10 +93,5 @@ public class EnvironmentVolumePropertiesCollection : ScriptableObject
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		TransitionSpeed = 1f;
-		ReflectionMask = LayerMask.op_Implicit(1084293120);
-		DefaultReflectionMultiplier = 1f;
-		DefaultAmbientMultiplier = 1f;
-		((ScriptableObject)this)._002Ector();
 	}
 }

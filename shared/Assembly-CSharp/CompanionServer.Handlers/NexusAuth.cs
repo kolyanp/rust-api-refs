@@ -19,14 +19,14 @@ public class NexusAuth : BaseHandler<AppGetNexusAuth>
 
 	public override async ValueTask Execute()
 	{
-		if (base.Request.playerId == 0L)
+		if (Request.playerId == 0L)
 		{
 			SendError("invalid_playerid");
 			return;
 		}
-		NexusPlayer val = await NexusServer.ZoneClient.GetPlayer(base.Request.playerId);
-		Variable val2 = default(Variable);
-		if (val == null || !val.TryGetVariable("appKey", ref val2) || (int)val2.Type != 1 || base.Proto.appKey != val2.GetAsString())
+		NexusPlayer val = await NexusServer.ZoneClient.GetPlayer(Request.playerId);
+		Variable val2 = default;
+		if (val == null || !val.TryGetVariable("appKey", ref val2) || (int)val2.Type != 1 || Proto.appKey != val2.GetAsString())
 		{
 			SendError("access_denied");
 			return;
@@ -34,7 +34,7 @@ public class NexusAuth : BaseHandler<AppGetNexusAuth>
 		AppResponse val3 = Pool.Get<AppResponse>();
 		val3.nexusAuth = Pool.Get<AppNexusAuth>();
 		val3.nexusAuth.serverId = App.serverid;
-		val3.nexusAuth.playerToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(base.Request.playerId, out var _);
+		val3.nexusAuth.playerToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(Request.playerId, out var _);
 		Send(val3);
 	}
 }

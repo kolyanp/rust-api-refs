@@ -70,20 +70,20 @@ public static class ClanInfoExtensions
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = role.Rank == 1;
-		Role obj = Pool.Get<Role>();
-		obj.roleId = role.RoleId;
-		obj.rank = role.Rank;
-		obj.name = role.Name;
-		obj.canSetMotd = flag || role.CanSetMotd;
-		obj.canSetLogo = flag || role.CanSetLogo;
-		obj.canInvite = flag || role.CanInvite;
-		obj.canKick = flag || role.CanKick;
-		obj.canPromote = flag || role.CanPromote;
-		obj.canDemote = flag || role.CanDemote;
-		obj.canSetPlayerNotes = flag || role.CanSetPlayerNotes;
-		obj.canAccessLogs = flag || role.CanAccessLogs;
-		obj.canAccessScoreEvents = flag || role.CanAccessScoreEvents;
-		return obj;
+		Role val = Pool.Get<Role>();
+		val.roleId = role.RoleId;
+		val.rank = role.Rank;
+		val.name = role.Name;
+		val.canSetMotd = flag || role.CanSetMotd;
+		val.canSetLogo = flag || role.CanSetLogo;
+		val.canInvite = flag || role.CanInvite;
+		val.canKick = flag || role.CanKick;
+		val.canPromote = flag || role.CanPromote;
+		val.canDemote = flag || role.CanDemote;
+		val.canSetPlayerNotes = flag || role.CanSetPlayerNotes;
+		val.canAccessLogs = flag || role.CanAccessLogs;
+		val.canAccessScoreEvents = flag || role.CanAccessScoreEvents;
+		return val;
 	}
 
 	public static ClanRole FromProto(this Role proto)
@@ -117,14 +117,14 @@ public static class ClanInfoExtensions
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		Member obj = Pool.Get<Member>();
-		obj.steamId = member.SteamId;
-		obj.roleId = member.RoleId;
-		obj.joined = member.Joined;
-		obj.lastSeen = member.LastSeen;
-		obj.notes = member.Notes;
-		obj.online = (NexusServer.Started ? NexusServer.IsOnline(member.SteamId) : ServerPlayers.IsOnline(member.SteamId));
-		return obj;
+		Member val = Pool.Get<Member>();
+		val.steamId = member.SteamId;
+		val.roleId = member.RoleId;
+		val.joined = member.Joined;
+		val.lastSeen = member.LastSeen;
+		val.notes = member.Notes;
+		val.online = (NexusServer.Started ? NexusServer.IsOnline(member.SteamId) : ServerPlayers.IsOnline(member.SteamId));
+		return val;
 	}
 
 	[PoolAnalyzerGetWrapper]
@@ -133,10 +133,10 @@ public static class ClanInfoExtensions
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		Invite obj = Pool.Get<Invite>();
-		obj.steamId = invite.SteamId;
-		obj.recruiter = invite.Recruiter;
-		obj.timestamp = invite.Timestamp;
-		return obj;
+		Invite val = Pool.Get<Invite>();
+		val.steamId = invite.SteamId;
+		val.recruiter = invite.Recruiter;
+		val.timestamp = invite.Timestamp;
+		return val;
 	}
 }

@@ -456,7 +456,7 @@ public static class GizmosUtil
 		DrawWireCircleY(a, thickness);
 		DrawWireCircleY(b, thickness);
 		Vector3 val = b - a;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
+		Vector3 normalized = val.normalized;
 		Vector3 val2 = Quaternion.Euler(0f, 90f, 0f) * normalized;
 		Gizmos.DrawLine(b + val2 * thickness, a + val2 * thickness);
 		Gizmos.DrawLine(b - val2 * thickness, a - val2 * thickness);
@@ -648,8 +648,8 @@ public static class GizmosUtil
 		Bounds bounds = TransformEx.GetBounds(transform, includeRenderers: true, includeColliders: false);
 		Vector3 lossyScale = transform.lossyScale;
 		Quaternion rotation = transform.rotation;
-		Vector3 pos = transform.position + rotation * Vector3.Scale(lossyScale, ((Bounds)(ref bounds)).center);
-		Vector3 size = Vector3.Scale(lossyScale, ((Bounds)(ref bounds)).size);
+		Vector3 pos = transform.position + rotation * Vector3.Scale(lossyScale, bounds.center);
+		Vector3 size = Vector3.Scale(lossyScale, bounds.size);
 		DrawCube(pos, size, rotation);
 		DrawWireCube(pos, size, rotation);
 	}

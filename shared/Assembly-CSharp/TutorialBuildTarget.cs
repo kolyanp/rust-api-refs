@@ -10,17 +10,17 @@ public class TutorialBuildTarget : MonoBehaviour
 
 	public GameObject VisualObject;
 
-	public Vector3 PhysCheckOffset;
+	public Vector3 PhysCheckOffset = Vector3.zero;
 
-	public bool Snap;
+	public bool Snap = true;
 
-	public float MaxDistance;
+	public float MaxDistance = 0.5f;
 
 	public BaseMission RequiredMission;
 
-	public int RequiredMissionStage;
+	public int RequiredMissionStage = -1;
 
-	public float MaxValidAngle;
+	public float MaxValidAngle = 180f;
 
 	public bool IsValid(Construction toConstruct, Construction.Target target, ref Construction.Placement placement)
 	{
@@ -163,11 +163,5 @@ public class TutorialBuildTarget : MonoBehaviour
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		PhysCheckOffset = Vector3.zero;
-		Snap = true;
-		MaxDistance = 0.5f;
-		RequiredMissionStage = -1;
-		MaxValidAngle = 180f;
-		((MonoBehaviour)this)._002Ector();
 	}
 }

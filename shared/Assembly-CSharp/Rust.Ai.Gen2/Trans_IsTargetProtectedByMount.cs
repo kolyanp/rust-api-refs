@@ -10,7 +10,7 @@ internal class Trans_IsTargetProtectedByMount : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_IsTargetProtectedByMount"))
 		{
-			if (!base.Senses.FindTarget(out var target) || !target.ToNonNpcPlayer(out var player))
+			if (!Senses.FindTarget(out var target) || !target.ToNonNpcPlayer(out var player))
 			{
 				return false;
 			}

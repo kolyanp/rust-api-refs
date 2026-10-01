@@ -27,7 +27,7 @@ public class State_GoBackToWater : State_MoveToTarget
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		if (base.Agent.IsSwimming)
+		if (Agent.IsSwimming)
 		{
 			return EFSMStateStatus.Success;
 		}
@@ -37,26 +37,26 @@ public class State_GoBackToWater : State_MoveToTarget
 			Vector3 item = coarseVectorToShore.shoreDir;
 			float item2 = coarseVectorToShore.shoreDist;
 			Vector3 val = item * item2;
-			Vector3 val2 = ((Component)Owner).transform.position + ((Vector3)(ref val)).normalized * (((Vector3)(ref val)).magnitude + 10f);
+			Vector3 val2 = ((Component)Owner).transform.position + val.normalized * (val.magnitude + 10f);
 			val2.y = TerrainMeta.HeightMap.GetHeight(val2);
 			PooledList<NavVector3> val3 = Pool.Get<PooledList<NavVector3>>();
 			try
 			{
-				bool flag = Eqs.SampleNavigablePositions(base.Agent, base.Agent.WorldToNavSpace(val2), (List<NavVector3>)(object)val3, 10f, 10f, 8);
+				bool flag = Eqs.SampleNavigablePositions(Agent, Agent.WorldToNavSpace(val2), (List<NavVector3>)(object)val3, 10f, 10f, 8);
 				ListEx.Shuffle<NavVector3>((List<NavVector3>)(object)val3, (uint)Environment.TickCount);
-				nearestWaterPoint = base.Agent.WorldToNavSpace(val2);
+				nearestWaterPoint = Agent.WorldToNavSpace(val2);
 				foreach (NavVector3 item3 in (List<NavVector3>)(object)val3)
 				{
 					NavVector3 positionNS = item3;
 					if (!flag)
 					{
-						if (!base.Agent.SamplePosition(item3, out var hitNS, 10f))
+						if (!Agent.SamplePosition(item3, out var hitNS, 10f))
 						{
 							continue;
 						}
 						positionNS = hitNS.position;
 					}
-					if (base.Agent.IsInWater(positionNS))
+					if (Agent.IsInWater(positionNS))
 					{
 						nearestWaterPoint = positionNS;
 						break;

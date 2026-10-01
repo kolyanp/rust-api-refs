@@ -25,8 +25,8 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 
 	public TimeSince timeSinceTerrainModCheck;
 
-	[Header("Snowmobile")]
 	[SerializeField]
+	[Header("Snowmobile")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -194,7 +194,7 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.SteerAngle;
 			}
@@ -206,7 +206,7 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.DriveWheelVelocity;
 			}
@@ -218,7 +218,7 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return carPhysics.DriveWheelSlip;
 			}
@@ -250,7 +250,7 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 	{
 		get
 		{
-			if (base.isServer)
+			if (isServer)
 			{
 				return rigidBody.mass;
 			}
@@ -392,16 +392,16 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 				engineController.TickFuel(fuelPerSecond);
 			}
 			engineController.CheckEngineState();
-			RaycastHit val = default(RaycastHit);
+			RaycastHit val = default;
 			if (!carPhysics.IsGrounded() && Physics.Raycast(((Component)this).transform.position, Vector3.down, ref val, 10f, 1218511105, (QueryTriggerInteraction)1))
 			{
-				Vector3 normal = ((RaycastHit)(ref val)).normal;
+				Vector3 normal = val.normal;
 				Vector3 right = ((Component)this).transform.right;
 				right.y = 0f;
 				normal = Vector3.ProjectOnPlane(normal, right);
 				float num = Vector3.Angle(normal, Vector3.up);
 				Vector3 angularVelocity = rigidBody.angularVelocity;
-				float num2 = ((Vector3)(ref angularVelocity)).magnitude * 57.29578f * airControlStability / airControlPower;
+				float num2 = angularVelocity.magnitude * 57.29578f * airControlStability / airControlPower;
 				if (num <= 45f)
 				{
 					Vector3 val2 = Vector3.Cross(Quaternion.AngleAxis(num2, rigidBody.angularVelocity) * ((Component)this).transform.up, normal) * airControlPower * airControlPower;
@@ -544,7 +544,7 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);
-		if (base.isServer && isSpawned && child.prefabID == itemStoragePrefab.GetEntity().prefabID)
+		if (isServer && isSpawned && child.prefabID == itemStoragePrefab.GetEntity().prefabID)
 		{
 			itemStorageInstance.Set((StorageContainer)child);
 		}
@@ -554,7 +554,7 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 	{
 		if (vehicle.vehiclesdroploot)
 		{
-			StorageContainer storageContainer = itemStorageInstance.Get(base.isServer);
+			StorageContainer storageContainer = itemStorageInstance.Get(isServer);
 			if ((Object)(object)storageContainer != (Object)null && storageContainer.IsValid())
 			{
 				storageContainer.DropItems();
@@ -604,7 +604,7 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 
 	public StorageContainer GetItemContainer()
 	{
-		BaseEntity baseEntity = itemStorageInstance.Get(base.isServer);
+		BaseEntity baseEntity = itemStorageInstance.Get(isServer);
 		if ((Object)(object)baseEntity != (Object)null && baseEntity.IsValid())
 		{
 			return baseEntity as StorageContainer;
@@ -616,9 +616,9 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 	{
 		if (HasDriver())
 		{
-			byte num = (byte)((ThrottleInput + 1f) * 7f);
-			byte b = (byte)(BrakeInput * 15f);
-			byte arg = (byte)(num + (b << 4));
+			byte b = (byte)((ThrottleInput + 1f) * 7f);
+			byte b2 = (byte)(BrakeInput * 15f);
+			byte arg = (byte)(b + (b2 << 4));
 			ClientRPC(RpcTarget.NetworkGroup("SnowmobileUpdate"), SteerInput, arg, DriveWheelVelocity, GetFuelFraction());
 		}
 	}
@@ -644,8 +644,8 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -704,13 +704,13 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 
 	public float GetPerformanceFraction()
 	{
-		float num = Mathf.InverseLerp(0.25f, 0.5f, base.healthFraction);
+		float num = Mathf.InverseLerp(0.25f, 0.5f, healthFraction);
 		return Mathf.Lerp(0.5f, 1f, num);
 	}
 
 	public float GetFuelFraction()
 	{
-		if (base.isServer)
+		if (isServer)
 		{
 			return engineController.FuelSystem.GetFuelFraction();
 		}
@@ -733,7 +733,7 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
 		base.OnFlagsChanged(old, next);
-		if (base.isServer && Rust.GameInfo.HasAchievements && (old & Flags.On) != Flags.On && (next & Flags.On) == Flags.On)
+		if (isServer && GameInfo.HasAchievements && (old & Flags.On) != Flags.On && (next & Flags.On) == Flags.On)
 		{
 			BasePlayer driver = GetDriver();
 			if ((Object)(object)driver != (Object)null && (Object)(object)driver.FindTrigger<TriggerSnowmobileAchievement>() != (Object)null)

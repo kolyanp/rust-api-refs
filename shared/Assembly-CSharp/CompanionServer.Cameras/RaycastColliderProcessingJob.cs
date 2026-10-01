@@ -14,14 +14,14 @@ public struct RaycastColliderProcessingJob : IJob
 
 	public void Execute()
 	{
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		int num = math.min(foundCollidersLength[0], foundColliders.Length);
 		if (num <= 1)
 		{
 			return;
 		}
 		SortAscending(ref foundColliders, 0, num - 1);
-		NativeArray<int> counts = default(NativeArray<int>);
-		counts._002Ector(num, (Allocator)2, (NativeArrayOptions)0);
+		NativeArray<int> counts = new NativeArray<int>(num, (Allocator)2, (NativeArrayOptions)0);
 		int num2 = 0;
 		int i = 0;
 		while (i < num)

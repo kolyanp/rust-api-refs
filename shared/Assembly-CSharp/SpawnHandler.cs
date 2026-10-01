@@ -230,7 +230,7 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 		byte[] map = new byte[char_res * char_res];
 		SpawnFilter filter = CharacterSpawn;
 		float cutoff = CharacterSpawnCutoff;
-		Parallel.For(0, char_res, delegate(int z)
+		Parallel.For(0, char_res, (int z) =>
 		{
 			for (int j = 0; j < char_res; j++)
 			{
@@ -540,10 +540,10 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 				continue;
 			}
 			Bounds bounds = val.bounds;
-			if (((Bounds)(ref bounds)).Contains(pos))
+			if (bounds.Contains(pos))
 			{
 				Vector3 val2 = val.ClosestPoint(pos) - pos;
-				if (((Vector3)(ref val2)).sqrMagnitude <= 0.0001f)
+				if (val2.sqrMagnitude <= 0.0001f)
 				{
 					return true;
 				}
@@ -640,7 +640,7 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 		if (LayerMask.op_Implicit(mask) != 0)
 		{
 			BaseEntity component = gameObject.GetComponent<BaseEntity>();
-			if ((Object)(object)component != (Object)null && Physics.CheckBox(pos + rot * Vector3.Scale(((Bounds)(ref component.bounds)).center, scale), Vector3.Scale(((Bounds)(ref component.bounds)).extents, scale), rot, LayerMask.op_Implicit(mask)))
+			if ((Object)(object)component != (Object)null && Physics.CheckBox(pos + rot * Vector3.Scale(component.bounds.center, scale), Vector3.Scale(component.bounds.extents, scale), rot, LayerMask.op_Implicit(mask)))
 			{
 				return false;
 			}
@@ -861,6 +861,8 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
@@ -893,13 +895,13 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 		DebugSpawner spawnHandler = new DebugSpawner(this, list);
 		spawnPopulationBase.SubFill(spawnHandler, distribution, simCount, initialSpawn: false);
 		attempts = list.Count;
-		Color val2 = default(Color);
 		foreach (var item3 in list)
 		{
 			Vector3 item = item3.Item1;
 			SpawnPopulationBase.Status item2 = item3.Item2;
 			Vector2i val = (Vector2i)(Vector3Ex.XZ2D(item) + new Vector2((float)(World.Size / 2), (float)(World.Size / 2)));
 			long num2 = (val.y * World.Size + val.x) * 3;
+			Color val2;
 			switch (item2)
 			{
 			case SpawnPopulationBase.Status.Success:
@@ -919,10 +921,10 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 				val2 = Color.cyan;
 				break;
 			case SpawnPopulationBase.Status.InvalidSpawnPosOverride:
-				((Color)(ref val2))._002Ector(1f, 0.41f, 0f);
+				val2 = new Color(1f, 0.41f, 0f);
 				break;
 			case SpawnPopulationBase.Status.DensityOverflow:
-				((Color)(ref val2))._002Ector(1f, 0f, 0.91f);
+				val2 = new Color(1f, 0f, 0.91f);
 				break;
 			default:
 				val2 = Color.magenta;
@@ -983,7 +985,7 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 			if (!((Object)(object)val3 == (Object)null))
 			{
 				Bounds bounds = val3.bounds;
-				PlotCircle(array, size, ((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).extents.x, Color.blue);
+				PlotCircle(array, size, bounds.center, bounds.extents.x, Color.blue);
 			}
 		}
 		ExportToPNG(array, size, (TextureFormat)3, "ore-nodes.png");
@@ -996,7 +998,7 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Expected O, but got Unknown
+		//IL_001d: Expected Obj, but got Unknown
 		Texture2D val = new Texture2D(size, size, format, false);
 		val.SetPixelData<byte>(data, 0, 0);
 		val.Apply();

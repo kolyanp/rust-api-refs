@@ -619,8 +619,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = TOD_Sky.Instance.Components.Sun.transform.position - checkPosition;
-		Vector3 normalized = ((Vector3)(ref val)).normalized;
-		RaycastHit val2 = default(RaycastHit);
+		Vector3 normalized = val.normalized;
+		RaycastHit val2 = default;
 		if (!Physics.Raycast(checkPosition, normalized, ref val2, 100f, 144769025))
 		{
 			return 1f;
@@ -883,7 +883,7 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 	{
 		base.ServerInit();
 		SetGrowing(state: true);
-		base.health = 10f;
+		health = 10f;
 		ResetSeason();
 		Genes.GenerateRandom(this);
 		if (!Application.isLoadingSave)
@@ -951,7 +951,7 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 			float overallQuality = CalculateOverallQuality();
 			float actualStageAgeIncrease = UpdateAge(overallQuality);
 			UpdateHealthAndYield(overallQuality, actualStageAgeIncrease);
-			if (base.health <= 0f)
+			if (health <= 0f)
 			{
 				TellPlanter();
 				Die();
@@ -978,14 +978,14 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 	{
 		if ((Object)(object)GetPlanter() == (Object)null && Random.Range(0f, 1f) <= ConVar.Server.nonPlanterDeathChancePerTick)
 		{
-			base.health = 0f;
+			health = 0f;
 			return;
 		}
 		if (overallQuality <= 0f)
 		{
 			ApplyDeathRate();
 		}
-		base.health += overallQuality * currentStage.health * growDeltaTime;
+		health += overallQuality * currentStage.health * growDeltaTime;
 		if (yieldPool > 0f)
 		{
 			float num = currentStage.yield / (currentStage.lifeLengthSeconds / growDeltaTime);
@@ -1015,7 +1015,7 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		{
 			num += 0.1f;
 		}
-		base.health -= num;
+		health -= num;
 	}
 
 	public float GetGrowthBonus(float overallQuality)
@@ -1077,17 +1077,17 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_TakeClone(RPCMessage msg)
 	{
 		TakeClones(msg.player);
 	}
 
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	public void RPC_TakeCloneAll(RPCMessage msg)
 	{
 		if ((Object)(object)GetParentEntity() != (Object)null)
@@ -1111,27 +1111,34 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 
 	public void TakeClones(BasePlayer player)
 	{
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)player == (Object)null || !CanClone(player) || Interface.CallHook("CanTakeCutting", player, this) != null)
 		{
 			return;
 		}
 		int num = Properties.BaseCloneCount + Genes.GetGeneTypeCount(GrowableGenetics.GeneType.Yield) / 2;
-		if (num > 0)
+		if (num <= 0)
 		{
-			Item item = ItemManager.Create(Properties.CloneItem, num, 0uL, isServerSide: true, 0uL);
-			item.SetItemOwnership(player, ItemOwnershipPhrases.Cloned);
-			GrowableGeneEncoding.EncodeGenesToItem(this, item);
-			Facepunch.Rust.Analytics.Azure.OnGatherItem(item.info.shortname, item.amount, this, player);
-			player.GiveItem(item, GiveItemReason.ResourceHarvested, GiveItemOptions.BackpackOverflow);
-			if (Properties.pickEffect.isValid)
-			{
-				Effect.server.Run(Properties.pickEffect.resourcePath, ((Component)this).transform.position, Vector3.up);
-			}
-			TellPlanter();
-			Die();
+			return;
 		}
+		Item item = ItemManager.Create(Properties.CloneItem, num, 0uL, isServerSide: true, 0uL);
+		item.SetItemOwnership(player, ItemOwnershipPhrases.Cloned);
+		GrowableGeneEncoding.EncodeGenesToItem(this, item);
+		if (Interface.CallHook("OnCuttingTake", this, player, item) != null)
+		{
+			item.Remove();
+			return;
+		}
+		Facepunch.Rust.Analytics.Azure.OnGatherItem(item.info.shortname, item.amount, this, player);
+		player.GiveItem(item, GiveItemReason.ResourceHarvested, GiveItemOptions.BackpackOverflow);
+		if (Properties.pickEffect.isValid)
+		{
+			Effect.server.Run(Properties.pickEffect.resourcePath, ((Component)this).transform.position, Vector3.up);
+		}
+		TellPlanter();
+		Die();
+		Interface.CallHook("OnCuttingTaken", this, player, item);
 	}
 
 	public void PickFruit(BasePlayer player, bool eat = false)
@@ -1231,24 +1238,24 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_PickFruit(RPCMessage msg)
 	{
 		PickFruit(msg.player);
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_EatFruit(RPCMessage msg)
 	{
 		PickFruit(msg.player, eat: true);
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	public void RPC_PickFruitAll(RPCMessage msg)
 	{
 		if ((Object)(object)GetParentEntity() != (Object)null)
@@ -1277,8 +1284,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		RemoveDying(msg.player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RemoveDyingAll(RPCMessage msg)
 	{
 		if ((Object)(object)GetParentEntity() != (Object)null)
@@ -1479,8 +1486,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_RequestQualityUpdate(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player != (Object)null)
@@ -1511,11 +1518,11 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 
 	private bool BlockedInDeepSea(BasePlayer player)
 	{
-		if (DeepSeaManager.IsInsideDeepSea((BaseNetworkable)this) && HasParent() && parentEntity.Get(base.isServer) is PlanterBoxStatic)
+		if (DeepSeaManager.IsInsideDeepSea((BaseNetworkable)this) && HasParent() && parentEntity.Get(isServer) is PlanterBoxStatic)
 		{
-			if ((Object)(object)DeepSeaManager.Get(base.isServer) != (Object)null)
+			if ((Object)(object)DeepSeaManager.Get(isServer) != (Object)null)
 			{
-				return !DeepSeaManager.Get(base.isServer).HasPaidFoodToll(player);
+				return !DeepSeaManager.Get(isServer).HasPaidFoodToll(player);
 			}
 			return false;
 		}
@@ -1601,12 +1608,12 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 	{
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		if (Interface.CallHook("OnGrowableStateChange", this, state) != null || (base.isServer && State == state))
+		if (Interface.CallHook("OnGrowableStateChange", this, state) != null || (isServer && State == state))
 		{
 			return;
 		}
 		State = state;
-		if (!base.isServer)
+		if (!isServer)
 		{
 			return;
 		}

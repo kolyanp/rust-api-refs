@@ -43,7 +43,7 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 	public bool CustomCollision(TrainCar train, TriggerTrainCollisions trainTrigger)
 	{
 		bool result = false;
-		if (base.baseEntity.isServer)
+		if (baseEntity.isServer)
 		{
 			float num = Mathf.Abs(train.GetTrackSpeed());
 			SetHitTrain(train, trainTrigger);
@@ -62,13 +62,13 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 
 	public bool EqualNetID(BaseNetworkable other)
 	{
-		return base.baseEntity.EqualNetID(other);
+		return baseEntity.EqualNetID(other);
 	}
 
 	public Vector3 GetWorldVelocity()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return base.baseEntity.GetWorldVelocity();
+		return baseEntity.GetWorldVelocity();
 	}
 
 	public void OnParentSpawning()
@@ -103,7 +103,7 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 
 	private void DestroyThisBarrier()
 	{
-		if (base.baseEntity.IsDead() || base.baseEntity.IsDestroyed)
+		if (baseEntity.IsDead() || baseEntity.IsDestroyed)
 		{
 			return;
 		}
@@ -112,16 +112,16 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 			hitTrain.completeTrain.ReduceSpeedBy(velReduction);
 			if (vehicle.cinematictrains)
 			{
-				hitTrain.Hurt(9999f, DamageType.Collision, base.baseEntity, useProtection: false);
+				hitTrain.Hurt(9999f, DamageType.Collision, baseEntity, useProtection: false);
 			}
 			else
 			{
 				float amount = Mathf.Abs(hitTrain.GetTrackSpeed()) * trainDamagePerMPS;
-				hitTrain.Hurt(amount, DamageType.Collision, base.baseEntity, useProtection: false);
+				hitTrain.Hurt(amount, DamageType.Collision, baseEntity, useProtection: false);
 			}
 		}
 		ClearHitTrain();
-		base.baseEntity.Kill(BaseNetworkable.DestroyMode.Gib);
+		baseEntity.Kill(BaseNetworkable.DestroyMode.Gib);
 	}
 
 	private void PushForceTick()
@@ -141,7 +141,7 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)hitTrain == (Object)null || (Object)(object)hitTrainTrigger == (Object)null || hitTrain.IsDead() || hitTrain.IsDestroyed || base.baseEntity.IsDead() || !hitTrain.IsOn())
+		if ((Object)(object)hitTrain == (Object)null || (Object)(object)hitTrainTrigger == (Object)null || hitTrain.IsDead() || hitTrain.IsDestroyed || baseEntity.IsDead() || !hitTrain.IsOn())
 		{
 			ClearHitTrain();
 			CancelInvoke(PushForceTick);
@@ -149,10 +149,10 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 		}
 		bool flag = true;
 		Bounds bounds = hitTrainTrigger.triggerCollider.bounds;
-		if (!((Bounds)(ref bounds)).Intersects(base.baseEntity.bounds))
+		if (!bounds.Intersects(baseEntity.bounds))
 		{
 			Vector3 val = ((hitTrainTrigger.location != TriggerTrainCollisions.Location.Front) ? hitTrainTrigger.owner.GetRearOfTrainPos() : hitTrainTrigger.owner.GetFrontOfTrainPos());
-			flag = Vector3.SqrMagnitude(((Component)this).transform.position + ((Bounds)(ref base.baseEntity.bounds)).ClosestPoint(val - ((Component)this).transform.position) - val) < 2f;
+			flag = Vector3.SqrMagnitude(((Component)this).transform.position + baseEntity.bounds.ClosestPoint(val - ((Component)this).transform.position) - val) < 2f;
 		}
 		if (flag)
 		{
@@ -162,8 +162,8 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 				num *= -1f;
 			}
 			num = Mathf.Max(0f, num);
-			base.baseEntity.Hurt(num * barricadeDamageMultiplier, DamageType.Generic, hitTrain);
-			if (base.baseEntity.IsDead())
+			baseEntity.Hurt(num * barricadeDamageMultiplier, DamageType.Generic, hitTrain);
+			if (baseEntity.IsDead())
 			{
 				hitTrain.completeTrain.FreeStaticCollision();
 			}
@@ -183,7 +183,7 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 
 	public override void SaveComponent(BaseNetworkable.SaveInfo info)
 	{
-		bool flag = base.baseEntity.lastAttacker is TrainCar;
+		bool flag = baseEntity.lastAttacker is TrainCar;
 		info.msg.simpleInt = Pool.Get<SimpleInt>();
 		info.msg.simpleInt.value = (flag ? 1 : 0);
 	}

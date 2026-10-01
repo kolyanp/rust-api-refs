@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class ItemModConversation : ItemMod
 {
-	public static readonly Phrase SquakTitle;
+	public static readonly Phrase SquakTitle = new Phrase("squak", "MISSING SQUAK PHRASE");
 
-	public static readonly Phrase SquakDesc;
+	public static readonly Phrase SquakDesc = new Phrase("squak_desc", "MISSING SQUAK DESC PHRASE");
 
 	public ConversationData conversationData;
 
@@ -39,10 +39,8 @@ public class ItemModConversation : ItemMod
 	static ItemModConversation()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Expected O, but got Unknown
+		//IL_0014: Expected Obj, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Expected O, but got Unknown
-		SquakTitle = new Phrase("squak", "MISSING SQUAK PHRASE");
-		SquakDesc = new Phrase("squak_desc", "MISSING SQUAK DESC PHRASE");
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

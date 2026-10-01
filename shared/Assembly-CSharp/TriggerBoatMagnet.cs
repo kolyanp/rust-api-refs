@@ -79,14 +79,14 @@ public class TriggerBoatMagnet : TriggerBase, IServerComponent
 			return;
 		}
 		PlayerBoat targetBoat = GetTargetBoat();
-		Vector3 val = default(Vector3);
-		Quaternion val2 = default(Quaternion);
+		Vector3 val = default;
+		Quaternion val2 = default;
 		((Component)this).transform.GetPositionAndRotation(ref val, ref val2);
 		if ((Object)(object)targetBoat != (Object)null && !targetBoat.Anchored && !targetBoat.rigidBody.isKinematic)
 		{
 			val.y = ((Component)targetBoat).transform.position.y;
-			Vector3 val3 = default(Vector3);
-			Quaternion val4 = default(Quaternion);
+			Vector3 val3 = default;
+			Quaternion val4 = default;
 			((Component)targetBoat).transform.GetPositionAndRotation(ref val3, ref val4);
 			float num = Mathf.InverseLerp(SphereTrigger.radius, 0f, Vector3.Distance(val3, val));
 			if (targetBoat.EngineOn())
@@ -105,8 +105,8 @@ public class TriggerBoatMagnet : TriggerBase, IServerComponent
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		PlayerBoat result = null;
 		float num = float.MaxValue;
-		Vector3 val = default(Vector3);
-		Quaternion val2 = default(Quaternion);
+		Vector3 val = default;
+		Quaternion val2 = default;
 		((Component)this).transform.GetPositionAndRotation(ref val, ref val2);
 		foreach (BaseEntity entityContent in entityContents)
 		{

@@ -16,7 +16,7 @@ public static class NexusUtil
 			return false;
 		}
 		string[] array = scheduleString.Split(ScheduleSeparators, StringSplitOptions.RemoveEmptyEntries);
-		if (!Enumerable.Contains<string>(array, zone, StringComparer.InvariantCultureIgnoreCase))
+		if (!Enumerable.Contains(array, zone, StringComparer.InvariantCultureIgnoreCase))
 		{
 			Array.Resize(ref array, array.Length + 1);
 			Array.Copy(array, 0, array, 1, array.Length - 1);
@@ -72,7 +72,7 @@ public static class NexusUtil
 	private static bool IsStarterZone(this VariableDictionary variables)
 	{
 		string value;
-		bool result = default(bool);
+		bool result = default;
 		return (TryGetString(variables, "starterZone", out value) && bool.TryParse(value, out result)) & result;
 	}
 
@@ -80,9 +80,9 @@ public static class NexusUtil
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Invalid comparison between Unknown and I4
-		if (variables != null && ((Dictionary<string, VariableData>)(object)variables).TryGetValue(key, out VariableData value2) && (int)((VariableData)(ref value2)).Type == 1 && !string.IsNullOrWhiteSpace(((VariableData)(ref value2)).Value))
+		if (variables != null && ((Dictionary<string, VariableData>)(object)variables).TryGetValue(key, out VariableData value2) && (int)value2.Type == 1 && !string.IsNullOrWhiteSpace(value2.Value))
 		{
-			value = ((VariableData)(ref value2)).Value;
+			value = value2.Value;
 			return true;
 		}
 		value = null;

@@ -12,7 +12,7 @@ public class BaseResourceExtractor : BaseCombatEntity
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
-		if (base.isClient)
+		if (isClient)
 		{
 			return;
 		}

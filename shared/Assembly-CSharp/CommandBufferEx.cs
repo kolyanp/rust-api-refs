@@ -35,6 +35,8 @@ public static class CommandBufferEx
 
 	public static void BlitArrayMip(this CommandBuffer cb, Mesh blitMesh, Texture source, int sourceMip, int sourceSlice, Texture target, int targetMip, int targetSlice, Material mat, int pass = 0)
 	{
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
@@ -42,12 +44,10 @@ public static class CommandBufferEx
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		int num = source.width >> sourceMip;
 		int num2 = source.height >> sourceMip;
-		Vector4 val = default(Vector4);
-		((Vector4)(ref val))._002Ector(1f / (float)num, 1f / (float)num2, (float)num, (float)num2);
+		Vector4 val = new Vector4(1f / (float)num, 1f / (float)num2, (float)num, (float)num2);
 		int num3 = target.width >> targetMip;
 		int num4 = target.height >> targetMip;
-		Vector4 val2 = default(Vector4);
-		((Vector4)(ref val2))._002Ector(1f / (float)num3, 1f / (float)num4, (float)num3, (float)num4);
+		Vector4 val2 = new Vector4(1f / (float)num3, 1f / (float)num4, (float)num3, (float)num4);
 		cb.SetGlobalTexture("_Source", RenderTargetIdentifier.op_Implicit(source));
 		cb.SetGlobalVector("_Source_TexelSize", val);
 		cb.SetGlobalVector("_Target_TexelSize", val2);

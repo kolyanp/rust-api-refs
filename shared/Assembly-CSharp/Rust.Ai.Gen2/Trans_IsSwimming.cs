@@ -9,7 +9,7 @@ public class Trans_IsSwimming : FSMTransitionBase
 	{
 		using (TimeWarning.New("Trans_IsSwimming"))
 		{
-			return base.Agent.canSwim && base.Agent.IsSwimming;
+			return Agent.canSwim && Agent.IsSwimming;
 		}
 	}
 }

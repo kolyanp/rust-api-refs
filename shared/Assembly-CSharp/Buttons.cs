@@ -72,7 +72,7 @@ public class Buttons
 		public void Reset()
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			_timePressed = default(TimeSince);
+			_timePressed = default;
 			IsDown = false;
 			frame = 0;
 		}
