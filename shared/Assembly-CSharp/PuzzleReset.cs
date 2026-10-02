@@ -651,7 +651,7 @@ public class PuzzleReset : FacepunchBehaviour
 	{
 		if (PlayersWithinDistance(includeSleepers: true))
 		{
-			if (!HasLockedCrateBeenActivatedBeforeRestart())
+			if (!ShouldRestartRadiation())
 			{
 				return;
 			}
@@ -671,11 +671,15 @@ public class PuzzleReset : FacepunchBehaviour
 		ResetTimer();
 	}
 
-	private bool HasLockedCrateBeenActivatedBeforeRestart()
+	private bool ShouldRestartRadiation()
 	{
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		if (danglingSpawnedInstances == null)
+		{
+			return true;
+		}
 		foreach (NetworkableId danglingSpawnedInstance in danglingSpawnedInstances)
 		{
 			if (BaseNetworkable.serverEntities.Find(danglingSpawnedInstance) is HackableLockedCrate hackableLockedCrate)
@@ -695,8 +699,8 @@ public class PuzzleReset : FacepunchBehaviour
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0201: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
 		SetRadiusRadiationAmount(0f);
 		CleanupSleepers();
 		IOEntity component = ((Component)this).GetComponent<IOEntity>();
@@ -741,9 +745,9 @@ public class PuzzleReset : FacepunchBehaviour
 			if (!((Object)(object)spawnGroup == (Object)null))
 			{
 				spawnGroup.Clear();
-				spawnGroup.DelayedSpawn();
 			}
 		}
+		Invoke(RespawnGroups, 1f);
 		OilRigResetNotification oilRigResetNotification = default;
 		foreach (GameObject resetObject in GetResetObjects())
 		{
@@ -772,6 +776,22 @@ public class PuzzleReset : FacepunchBehaviour
 			}
 		}
 		Analytics.Azure.OnPuzzleReset(this, currentResetTotalTime, timeSpentBlocked, timeSpentBlockedWithRads, timePausedUnlooted);
+	}
+
+	private void RespawnGroups()
+	{
+		foreach (SpawnGroup spawnGroup in GetSpawnGroups())
+		{
+			if (!((Object)(object)spawnGroup == (Object)null))
+			{
+				spawnGroup.Spawn();
+			}
+		}
+		BaseEntity baseEntity = default;
+		if (((Component)this).TryGetComponent<BaseEntity>(ref baseEntity))
+		{
+			baseEntity.InvalidateNetworkCache();
+		}
 	}
 
 	public void DebugApplyPuzzleResetTime(float time)

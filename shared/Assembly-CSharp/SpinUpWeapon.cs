@@ -236,8 +236,8 @@ public class SpinUpWeapon : BaseProjectile, ITurretNotify
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(8uL)]
+	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	private void Server_SetSpinButton(RPCMessage msg)
 	{

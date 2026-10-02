@@ -4585,7 +4585,7 @@ public class CorePlugin : CarbonPlugin
 
 	internal static object IOnBaseCombatEntityHurt(BaseCombatEntity entity, HitInfo hitInfo)
 	{
-		if (!(entity is BasePlayer))
+		if (!(entity is BasePlayer) && !(entity is LivestockAnimal))
 		{
 			return HookCaller.CallStaticHook(952055589u, entity, hitInfo);
 		}

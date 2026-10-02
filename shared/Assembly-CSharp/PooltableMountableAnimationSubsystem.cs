@@ -12,8 +12,8 @@ public class PooltableMountableAnimationSubsystem : ChildAnimatorSubSystem, INot
 	[SerializeField]
 	private AnimationClip StartClip;
 
-	[SerializeField]
 	[Tooltip("Blend in/out time for the one shot clips. The blend out runs past the end of the clip, so it never unwinds the follow through.")]
+	[SerializeField]
 	private float oneShotBlendTime = 0.1f;
 
 	[SerializeField]

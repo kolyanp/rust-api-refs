@@ -12,16 +12,16 @@ public class LivestockSaleTable : ScriptableObject
 	{
 		public ItemDefinition Item;
 
-		[Tooltip("How much of the item the full listing is. More than one makes it a stack the vendor can pay part of.")]
 		[Min(1f)]
+		[Tooltip("How much of the item the full listing is. More than one makes it a stack the vendor can pay part of.")]
 		public int Amount = 1;
 
 		[Range(0f, 1f)]
 		[Tooltip("What the full listing costs out of an offer's budget, where 1 is a perfect animal or a full lot of wool.")]
 		public float Cost = 0.1f;
 
-		[Range(0f, 1f)]
 		[Tooltip("The least budget left for a stack to be considered. A single item needs its whole Cost instead.")]
+		[Range(0f, 1f)]
 		public float Threshold;
 
 		[Range(0f, 1f)]

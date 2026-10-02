@@ -120,8 +120,8 @@ public class GasStationCarGarage : ModularCarGarage
 		LiftHeightState = VehicleLiftState.Up;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
 	public void RPC_ToggleLiftHeight(RPCMessage msg)
 	{

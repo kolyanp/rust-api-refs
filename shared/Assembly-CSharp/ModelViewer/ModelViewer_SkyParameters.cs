@@ -6,8 +6,8 @@ namespace ModelViewer;
 [Serializable]
 public class ModelViewer_SkyParameters
 {
-	[Header("Sky")]
 	[Range(0f, 1f)]
+	[Header("Sky")]
 	public float skyBrightness = 1f;
 
 	[Tooltip("Current hour of the day.")]
@@ -21,8 +21,8 @@ public class ModelViewer_SkyParameters
 	[Tooltip("Current month of the year.")]
 	public int Month = 5;
 
-	[Tooltip("Current year.")]
 	[TOD_Range(1f, 9999f)]
+	[Tooltip("Current year.")]
 	public int Year = 2000;
 
 	[Range(-90f, 90f)]
@@ -33,8 +33,8 @@ public class ModelViewer_SkyParameters
 	[Range(-180f, 180f)]
 	public float Longitude = -25f;
 
-	[Range(-14f, 14f)]
 	[Tooltip("UTC/GMT time zone of the current location in hours.")]
+	[Range(-14f, 14f)]
 	public float UTC;
 
 	[Header("Atmosphere")]

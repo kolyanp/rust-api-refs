@@ -76,8 +76,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	protected Animator animator;
 
-	[Tooltip("Applies all of the pitch/yaw transform in late update to allow for blending with animators.")]
 	[SerializeField]
+	[Tooltip("Applies all of the pitch/yaw transform in late update to allow for blending with animators.")]
 	protected bool runInLateUpdate;
 
 	[SerializeField]
@@ -96,15 +96,15 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	private Ammo[] ammoPrefabs;
 
-	[Header("IK")]
 	[SerializeField]
+	[Header("IK")]
 	public Transform leftHandTarget;
 
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[Header("Effects")]
 	[SerializeField]
+	[Header("Effects")]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -1163,10 +1163,10 @@ public class BallistaGun : BaseVehicleSeat
 		mounted.inventory.ServerUpdate(0f);
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.FromMounted]
 	[RPC_Server.MaxRepeatedElements(1)]
+	[RPC_Server]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -1431,9 +1431,9 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromMounted]
+	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -1460,8 +1460,8 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromMounted]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{

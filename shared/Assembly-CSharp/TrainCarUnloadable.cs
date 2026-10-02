@@ -15,8 +15,8 @@ public class TrainCarUnloadable : TrainCar
 		Fuel
 	}
 
-	[Header("Train Car Unloadable")]
 	[SerializeField]
+	[Header("Train Car Unloadable")]
 	private GameObjectRef storagePrefab;
 
 	[SerializeField]
@@ -34,8 +34,8 @@ public class TrainCarUnloadable : TrainCar
 	[SerializeField]
 	private Transform orePlaneColliderWorld;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	public float vacuumStretchPercent = 0.5f;
 
 	[SerializeField]
@@ -405,8 +405,8 @@ public class TrainCarUnloadable : TrainCar
 		return num;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Open(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -1296,7 +1296,7 @@ public class RustNavmesh : IDisposable
 		IntPtr intPtr = Marshal.AllocHGlobal(payloadSize);
 		ManagedNavPayload managedNavPayload = new ManagedNavPayload
 		{
-			payloadVersion = 5,
+			payloadVersion = 6,
 			buildParams = BuildParams,
 			buildParamsHiRes = BuildParamsHiRes,
 			currentNavmeshBounds = CurrentNavmeshBounds,
@@ -1518,9 +1518,9 @@ public class RustNavmesh : IDisposable
 					return null;
 				}
 				ManagedNavPayload payload = System.Runtime.CompilerServices.Unsafe.Read<ManagedNavPayload>((void*)managedBlob);
-				if (payload.payloadVersion != 5)
+				if (payload.payloadVersion != 6)
 				{
-					RustNavigation.LogWarning($"Saved navmesh is payload version {payload.payloadVersion}, this build wants {5}. Rebuilding from scratch.");
+					RustNavigation.LogWarning($"Saved navmesh is payload version {payload.payloadVersion}, this build wants {6}. Rebuilding from scratch.");
 					return null;
 				}
 				if (payload.pendingTileCount < 0 || managedBlobSize != System.Runtime.CompilerServices.Unsafe.SizeOf<ManagedNavPayload>() + (long)payload.pendingTileCount * 4L * 2)

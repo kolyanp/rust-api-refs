@@ -366,8 +366,8 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		Invoke(CheckPayout, SpinDuration);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Deposit(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;

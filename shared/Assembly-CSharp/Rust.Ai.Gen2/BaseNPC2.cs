@@ -64,6 +64,8 @@ public class BaseNPC2 : BaseCombatEntity
 
 	public virtual bool IsAnimal => true;
 
+	public virtual bool MovesOnNavmesh => true;
+
 	public override float RealisticMass => mass;
 
 	public string displayName

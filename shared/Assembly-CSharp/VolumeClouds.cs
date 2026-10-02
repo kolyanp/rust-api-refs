@@ -320,7 +320,7 @@ public class VolumeClouds : SingletonComponent<VolumeClouds>
 
 	public bool CloudsEnabled => _cloudsEnabled;
 
-	public static bool RenderingIcon { get; set; } = true;
+	public static bool RenderingIcon { get; set; } = false;
 
 	private void FetchShaderPropertyIDs()
 	{

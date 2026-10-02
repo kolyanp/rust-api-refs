@@ -15,12 +15,12 @@ public class Config : ScriptableObject
 
 	public bool forceSinglePass = RustRenderPipeline.IsActive();
 
-	[SerializeField]
 	[HighlightNull]
+	[SerializeField]
 	private Shader beamShader1Pass;
 
-	[SerializeField]
 	[HighlightNull]
+	[SerializeField]
 	[FormerlySerializedAs("beamShader")]
 	[FormerlySerializedAs("BeamShader")]
 	private Shader beamShader2Pass;

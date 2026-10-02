@@ -29,15 +29,24 @@ public static class RustNavDoorGates
 
 		public bool apertureRefsValid;
 
-		public NavMeshBuildVolume[] bakeVolumes;
+		public BakeCache bakeHiRes;
 
-		public Matrix4x4 bakeMatrix;
+		public BakeCache bakeLoRes;
+	}
 
-		public int bakeLeafCount;
+	private struct BakeCache
+	{
+		public NavMeshBuildVolume[] volumes;
 
-		public int bakeVolumeCount;
+		public Matrix4x4 matrix;
 
-		public bool bakeCached;
+		public float agentRadius;
+
+		public int leafCount;
+
+		public int count;
+
+		public bool cached;
 	}
 
 	public static class Profile
@@ -123,6 +132,8 @@ public static class RustNavDoorGates
 
 	public static float apertureHalfThickness = 0.5f;
 
+	public static float apertureStepOver = 0.5f;
+
 	public static bool ownershipEnabled = true;
 
 	private static readonly HashSet<Door> pendingReassertSet = new HashSet<Door>();
@@ -151,7 +162,8 @@ public static class RustNavDoorGates
 		{
 			DoorEntry value = allDoor.Value;
 			value.boundsCached = false;
-			value.bakeCached = false;
+			value.bakeHiRes.cached = false;
+			value.bakeLoRes.cached = false;
 			value.ownersValid = false;
 			value.apertureRefsValid = false;
 		}
@@ -286,31 +298,33 @@ public static class RustNavDoorGates
 		}
 	}
 
-	public static BakeVolumes GetBakeVolumes(Door door)
+	public static BakeVolumes GetBakeVolumes(Door door, bool hiRes, float agentRadius)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		Matrix4x4 localToWorld = ((Component)door).transform.localToWorldMatrix;
 		if (!allDoors.TryGetValue(door, out var value))
 		{
 			NavMeshBuildVolume[] buffer = null;
-			int count = BuildBakeVolumes(door, in localToWorld, ref buffer, out var leafCount);
+			int count = BuildBakeVolumes(door, in localToWorld, agentRadius, ref buffer, out var leafCount);
 			return new BakeVolumes(buffer, leafCount, count);
 		}
-		if (!value.bakeCached || value.bakeMatrix != localToWorld)
+		ref BakeCache reference = ref hiRes ? ref value.bakeHiRes : ref value.bakeLoRes;
+		if (!reference.cached || reference.matrix != localToWorld || reference.agentRadius != agentRadius)
 		{
-			value.bakeVolumeCount = BuildBakeVolumes(door, in localToWorld, ref value.bakeVolumes, out value.bakeLeafCount);
-			value.bakeMatrix = localToWorld;
-			value.bakeCached = true;
+			reference.count = BuildBakeVolumes(door, in localToWorld, agentRadius, ref reference.volumes, out reference.leafCount);
+			reference.matrix = localToWorld;
+			reference.agentRadius = agentRadius;
+			reference.cached = true;
 		}
-		return new BakeVolumes(value.bakeVolumes, value.bakeLeafCount, value.bakeVolumeCount);
+		return new BakeVolumes(reference.volumes, reference.leafCount, reference.count);
 	}
 
-	private static int BuildBakeVolumes(Door door, in Matrix4x4 localToWorld, ref NavMeshBuildVolume[] buffer, out int leafCount)
+	private static int BuildBakeVolumes(Door door, in Matrix4x4 localToWorld, float agentRadius, ref NavMeshBuildVolume[] buffer, out int leafCount)
 	{
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -319,7 +333,7 @@ public static class RustNavDoorGates
 		try
 		{
 			door.GetNavLeafRestSlabs((List<Bounds>)(object)val);
-			bool flag = door.TryGetNavDoorwayVolume(out var apertureLocal, out var _);
+			bool flag = door.TryGetNavDoorwayBakeVolume(agentRadius, out var bakeLocal);
 			int num = ((List<Bounds>)(object)val).Count + (flag ? 1 : 0);
 			if (num == 0)
 			{
@@ -336,7 +350,7 @@ public static class RustNavDoorGates
 			leafCount = ((List<Bounds>)(object)val).Count;
 			if (flag)
 			{
-				BuildDoorVolume(in apertureLocal, in localToWorld, 3, out buffer[leafCount]);
+				BuildDoorVolume(in bakeLocal, in localToWorld, 3, out buffer[leafCount]);
 			}
 			return num;
 		}

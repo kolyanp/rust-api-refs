@@ -60,8 +60,8 @@ public class Projectile : ListComponent<Projectile>
 
 	public float thickness;
 
-	[Header("Orientation")]
 	[Tooltip("Tick this box to be able to change the initial orientation of the projectile")]
+	[Header("Orientation")]
 	public bool changeInitialOrientation;
 
 	[Tooltip("This projectile will raycast for this many units, and then become a projectile. This is typically done for bullets.")]
@@ -111,8 +111,8 @@ public class Projectile : ListComponent<Projectile>
 
 	public bool createDecals = true;
 
-	[FormerlySerializedAs("doDefaultHitEffects")]
 	[Header("Effects")]
+	[FormerlySerializedAs("doDefaultHitEffects")]
 	public bool doHitEffects = true;
 
 	[Header("Audio")]

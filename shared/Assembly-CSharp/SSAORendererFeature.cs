@@ -5,8 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AmbientOcclusion")]
 public class SSAORendererFeature : RustRendererFeature
 {
-	[Header("Ambient Occlusion")]
 	[Tooltip("How the occlusion result is composited into the frame.")]
+	[Header("Ambient Occlusion")]
 	public ApplicationMethod ApplyMethod;
 
 	[Tooltip("Number of samples per occlusion pass.")]
@@ -15,8 +15,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("Source used for per-pixel normals.")]
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final applied intensity of the occlusion effect.")]
+	[Range(0f, 1f)]
 	public float Intensity = 1f;
 
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
@@ -30,19 +30,19 @@ public class SSAORendererFeature : RustRendererFeature
 	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
-	[Range(0f, 0.99f)]
 	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
+	[Range(0f, 0.99f)]
 	public float Bias = 0.05f;
 
-	[Tooltip("Controls thickness-based occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls thickness-based occlusion contribution.")]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute occlusion and blur at half resolution.")]
 	public bool Downsample = true;
 
-	[Header("Distance Fade")]
 	[Tooltip("Fade the effect out at a distance.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance (Unity units) where fading begins.")]
@@ -72,8 +72,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
 	public int BlurRadius = 3;
 
-	[Tooltip("Number of blur passes.")]
 	[Range(1f, 4f)]
+	[Tooltip("Number of blur passes.")]
 	public int BlurPasses = 1;
 
 	[Tooltip("0 = blurred / 1 = sharpened.")]

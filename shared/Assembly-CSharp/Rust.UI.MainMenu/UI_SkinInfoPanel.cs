@@ -26,8 +26,8 @@ public class UI_SkinInfoPanel : MonoBehaviour
 	[SerializeField]
 	private List<Tag> tagDefinitions = new List<Tag>();
 
-	[SerializeField]
 	[Header("Marketable Tag")]
+	[SerializeField]
 	private GameObject marketablePriceGroup;
 
 	[SerializeField]

@@ -10,7 +10,7 @@ using System.Security.Permissions;
 [assembly: AssemblyCopyright("Copyright © 2022-2026 Carbon Community")]
 [assembly: AssemblyDescription("A very lightweight and modular Harmony-based modding framework")]
 [assembly: AssemblyFileVersion("2026.10.01.0")]
-[assembly: AssemblyInformationalVersion("2.0.0-Release+65cd831658943999b41bad7c6e5fda7c1ef9adf4")]
+[assembly: AssemblyInformationalVersion("2.0.0-Release+ee9c635362f0ac89d675ef7f636e770af7710d80")]
 [assembly: AssemblyProduct("Carbon.Hooks.Oxide")]
 [assembly: AssemblyTitle("Carbon.Hooks.Oxide")]
 [assembly: AssemblyMetadata("RepositoryUrl", "https://github.com/CarbonCommunity/Carbon")]

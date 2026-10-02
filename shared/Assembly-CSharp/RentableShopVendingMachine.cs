@@ -394,8 +394,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		SV_RequestLongTermData(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
 	private void RPC_RequestPurchaseData(RPCMessage msg)
 	{
 		SV_RequestPurchaseData(msg);

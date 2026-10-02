@@ -34,8 +34,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 
 	private float playerMovementThreshold = 0.01f;
 
-	[Header("Siege Weapon")]
 	[SerializeField]
+	[Header("Siege Weapon")]
 	protected Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -293,8 +293,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 		base.OnDied(info);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_StartPulling(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

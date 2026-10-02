@@ -116,8 +116,8 @@ public class ApartmentTerminal : ComputerStation
 	}
 
 	[RPC_Server.FromMounted]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
 	public void SERVER_RequestProperties(RPCMessage msg)
 	{

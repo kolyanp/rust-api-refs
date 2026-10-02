@@ -136,6 +136,11 @@ public class LivestockWoolRange : LivestockGeneRange
 
 	public LivestockWoolShade ShadeFor(LivestockCoatGroup group)
 	{
+		return ShadeNamed(group?.Name);
+	}
+
+	public LivestockWoolShade ShadeNamed(string group)
+	{
 		if (Shades == null || Shades.Length == 0)
 		{
 			return null;
@@ -144,7 +149,7 @@ public class LivestockWoolRange : LivestockGeneRange
 		{
 			for (int i = 0; i < Shades.Length; i++)
 			{
-				if (Shades[i] != null && Shades[i].Group == group.Name)
+				if (Shades[i] != null && Shades[i].Group == group)
 				{
 					return Shades[i];
 				}

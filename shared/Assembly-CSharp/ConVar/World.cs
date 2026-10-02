@@ -8,8 +8,8 @@ namespace ConVar;
 [Factory("world")]
 public class World : ConsoleSystem
 {
-	[ServerVar]
 	[ClientVar(Help = "(Generated) When enabled, caches world data for faster loading; disabled by default in editor server builds to ensure fresh data during development")]
+	[ServerVar]
 	public static bool cache = true;
 
 	[ClientVar(Help = "(Generated) When enabled, world assets are streamed in and out based on proximity; disable to force all world data to stay loaded at once")]
@@ -21,8 +21,8 @@ public class World : ConsoleSystem
 	[ServerVar(Help = "(Generated) Path to a world generation config file used by the procedural map generator; used when configString is empty")]
 	public static string configFile = string.Empty;
 
-	[ServerVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
 	[ClientVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
+	[ServerVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
 	public static void monuments(Arg arg)
 	{
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)

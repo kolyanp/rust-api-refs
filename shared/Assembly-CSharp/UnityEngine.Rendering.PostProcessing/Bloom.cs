@@ -21,8 +21,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 1f
 	};
 
-	[Range(0f, 1f)]
 	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
+	[Range(0f, 1f)]
 	public FloatParameter softKnee = new FloatParameter
 	{
 		value = 0.5f
@@ -41,37 +41,37 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 7f
 	};
 
-	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	[Range(-1f, 1f)]
+	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	public FloatParameter anamorphicRatio = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[Tooltip("Global tint of the bloom filter.")]
 	[ColorUsage(false, true)]
+	[Tooltip("Global tint of the bloom filter.")]
 	public ColorParameter color = new ColorParameter
 	{
 		value = Color.white
 	};
 
-	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
 	[FormerlySerializedAs("mobileOptimized")]
+	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
 	public BoolParameter fastMode = new BoolParameter
 	{
 		value = false
 	};
 
-	[DisplayName("Texture")]
 	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
+	[DisplayName("Texture")]
 	public TextureParameter dirtTexture = new TextureParameter
 	{
 		value = null
 	};
 
-	[DisplayName("Intensity")]
-	[Tooltip("The intensity of the lens dirtiness.")]
 	[Min(0f)]
+	[Tooltip("The intensity of the lens dirtiness.")]
+	[DisplayName("Intensity")]
 	public FloatParameter dirtIntensity = new FloatParameter
 	{
 		value = 0f

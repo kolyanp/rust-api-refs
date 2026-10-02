@@ -7,8 +7,8 @@ namespace FIMSpace.FSpine;
 [AddComponentMenu("FImpossible Creations/Spine Animator Utilities/Spine Animator Queuer")]
 public class SpineAnimatorQueuer : MonoBehaviour
 {
-	[Tooltip("Can be used to fade out all spine animators")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
+	[Tooltip("Can be used to fade out all spine animators")]
 	public float SpineAnimatorsAmount = 1f;
 
 	[SerializeField]

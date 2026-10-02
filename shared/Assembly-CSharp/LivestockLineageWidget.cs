@@ -12,8 +12,8 @@ public class LivestockLineageWidget : MonoBehaviour, IClientComponent
 	public GameObject InbredHighlight;
 
 	[Range(0f, 1f)]
-	[Header("Colours")]
 	[Tooltip("How saturated a marker's colour is. Kept well clear of the gene discs' own strength so the two columns do not read as the same kind of thing.")]
+	[Header("Colours")]
 	public float MarkerSaturation = 0.5f;
 
 	[Tooltip("How bright a marker's colour is.")]

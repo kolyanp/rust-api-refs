@@ -8,8 +8,8 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FSpine;
 
-[AddComponentMenu("FImpossible Creations/Spine Animator 2")]
 [DefaultExecutionOrder(-11)]
+[AddComponentMenu("FImpossible Creations/Spine Animator 2")]
 public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	public enum EFSpineEditorCategory
@@ -836,8 +836,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Generating offset runtime only, allows you to adjust it on prefabs on scene")]
 	public bool PivotOffsetOnStart = true;
 
-	[Range(0f, 1f)]
 	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
+	[Range(0f, 1f)]
 	public float PosSmoother;
 
 	[Range(0f, 1f)]
@@ -848,12 +848,12 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float MaxStretching = 1f;
 
-	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	[Range(0f, 1f)]
+	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	public float Slithery = 1f;
 
-	[Range(1f, 91f)]
 	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
+	[Range(1f, 91f)]
 	public float AngleLimit = 40f;
 
 	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
@@ -874,8 +874,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float Springiness;
 
-	[Range(0f, 1f)]
 	[Tooltip("How much effect on spine chain should have character movement.")]
+	[Range(0f, 1f)]
 	public float MotionInfluence = 1f;
 
 	[Tooltip("Useful when your creature jumps on moving platform, so when platform moves spine is not reacting, by default world space is used (null).")]
@@ -884,8 +884,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Fade rotations to sides or rotation up/down with this parameter - can be helpful for character jump handling")]
 	public Vector2 RotationsFade = Vector2.one;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Transform mainPivotOffsetTransform;
 
 	[Tooltip("<! Most models can not need this !> Offset for bones rotations, thanks to that animation is able to rotate to segments in a correct way, like from center of mass.")]

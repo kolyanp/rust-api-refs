@@ -62,6 +62,8 @@ public abstract class SwimmingNPC : BaseNPC2
 
 	private float timeSinceLastObstacleCheck;
 
+	public override bool MovesOnNavmesh => false;
+
 	public static float swimFrameBudgetMs => AI.ocean_critters_movement_frametime;
 
 	protected virtual float ForceSurfaceAmount => 0f;

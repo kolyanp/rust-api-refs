@@ -10,8 +10,8 @@ public class ScrapTransportHelicopter : PlayerHelicopterWithFlares, TriggerHurtN
 	[SerializeField]
 	private BoxCollider parentTriggerCollider;
 
-	[SerializeField]
 	[Header("Damage Effects")]
+	[SerializeField]
 	private ParticleSystemContainer tailDamageLight;
 
 	[SerializeField]

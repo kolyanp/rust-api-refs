@@ -3,8 +3,8 @@ using Rust.RenderPipeline.Runtime;
 using UnityEngine.Rendering;
 
 [Serializable]
-[SupportedOnRenderPipeline(typeof(RustRenderPipelineAsset))]
 [VolumeComponentMenu("RRP/Flashbang")]
+[SupportedOnRenderPipeline(typeof(RustRenderPipelineAsset))]
 public class FlashbangVolumeComponent : VolumeComponent, IPostProcessComponent
 {
 	private const float ActivationThreshold = 0.001f;

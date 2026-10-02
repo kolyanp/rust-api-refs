@@ -24,6 +24,9 @@ public class Sheep : LivestockAnimal
 	[Tooltip("Optional effect played on the sheep each time a quarter of its fleece is sheared")]
 	public GameObjectRef ShearEffect;
 
+	[Tooltip("Optional wool thrown off the sheep each time a quarter of its fleece is sheared, tinted to its fleece by a LivestockWoolTint")]
+	public GameObjectRef ShearWoolEffect;
+
 	public const Flags ShearReady = Flags.Reserved9;
 
 	public const int ShearTimerId = 6;
@@ -242,6 +245,8 @@ public class Sheep : LivestockAnimal
 	{
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		if (!CanBeSheared(player))
 		{
 			return false;
@@ -254,6 +259,10 @@ public class Sheep : LivestockAnimal
 		if (ShearEffect != null && ShearEffect.isValid)
 		{
 			Effect.server.Run(ShearEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
+		}
+		if (ShearWoolEffect != null && ShearWoolEffect.isValid)
+		{
+			Effect.server.Run(ShearWoolEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
 		}
 		GiveShearItems(player);
 		if (!IsTame)

@@ -19,8 +19,8 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 
 	public Vector3 endPointOffset;
 
-	[Range(2f, 100f)]
 	[Header("Settings")]
+	[Range(2f, 100f)]
 	public int linePoints = 10;
 
 	[Tooltip("Value highly dependent on use case, a metal cable would have high stiffness, a rubber rope would have a low one")]
@@ -35,8 +35,8 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 	[Tooltip("The Rope width set at start (changing this value during run time will produce no effect)")]
 	public float ropeWidth = 0.1f;
 
-	[Tooltip("Adjust the middle control point weight for the Rational Bezier curve")]
 	[Range(1f, 15f)]
+	[Tooltip("Adjust the middle control point weight for the Rational Bezier curve")]
 	public float midPointWeight = 1f;
 
 	[Tooltip("Use local positions instead of world positions (relative to this object)")]
@@ -52,7 +52,7 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 
 	public float windAmplitude;
 
-	protected Vector3 EndPointPosition
+	protected virtual Vector3 EndPointPosition
 	{
 		get
 		{

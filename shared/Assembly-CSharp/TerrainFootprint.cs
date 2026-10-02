@@ -21,8 +21,8 @@ public class TerrainFootprint : PrefabAttribute
 	[Header("Seating")]
 	public float FillOffset;
 
-	[Header("Fill")]
 	[Tooltip("Safety ceiling on the raise, in metres. A backstop, not a tuning dial: set it below the deepest gutter you want bridged and the gutter stops short, leaving a step.")]
+	[Header("Fill")]
 	public float MaxFill = 4f;
 
 	[Tooltip("Reject the placement when the ground has to rise further than this to meet the rock, in metres. 0 (the default) never rejects, so the footprint only ever fills.")]

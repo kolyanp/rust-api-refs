@@ -31,12 +31,12 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 	[Tooltip("Sensitivity value for rotating camera around following object")]
 	public float RotationSensitivity = 10f;
 
-	[Range(0.1f, 1f)]
 	[Header("If you want camera rotation to be smooth")]
+	[Range(0.1f, 1f)]
 	public float RotationSpeed = 1f;
 
-	[Header("If you want camera to follow target with some smoothness")]
 	[Range(0f, 1f)]
+	[Header("If you want camera to follow target with some smoothness")]
 	public float HardFollowValue = 1f;
 
 	[Header("If you want to hold cursor (cursor switch on TAB)")]

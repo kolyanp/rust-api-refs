@@ -56,8 +56,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[ItemSelector]
 	[SerializeField]
+	[ItemSelector]
 	private ItemDefinition _ammoItem;
 
 	[SerializeField]
@@ -82,15 +82,15 @@ public class MountedWeapon : StorageContainer
 	[ItemSelector]
 	public ItemDefinition AmmoDef;
 
-	[Header("Mounted Weapon - Second Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon - Second Weapon")]
 	private ItemDefinition _weapon2;
 
 	[SerializeField]
 	private Transform _attachPoint2;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Player General Animation")]
+	[SerializeField]
 	private int _turretAnimationType;
 
 	[SerializeField]
@@ -123,8 +123,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _forceSeatPositionUpdates;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Player Camera Animation")]
+	[SerializeField]
 	private Transform _cameraAnimation;
 
 	[SerializeField]
@@ -133,15 +133,15 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private float _fovMultiplier = 1f;
 
-	[Header("Mounted Weapon - Viewmodel")]
 	[SerializeField]
+	[Header("Mounted Weapon - Viewmodel")]
 	private bool _useViewmodel;
 
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[Header("Mounted Weapon - Aim Movement Sounds")]
 	[SerializeField]
+	[Header("Mounted Weapon - Aim Movement Sounds")]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]
@@ -1404,8 +1404,8 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(100uL)]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{

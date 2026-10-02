@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
+using Rust;
 using UnityEngine;
 
 public class VehicleSpawner : BaseEntity
@@ -85,6 +86,10 @@ public class VehicleSpawner : BaseEntity
 	{
 		base.ServerInit();
 		FindRepairableVehiclePad();
+		if (!Application.isLoadingSave)
+		{
+			LinkVehicleVendors();
+		}
 	}
 
 	public bool IsPadOccupied()
@@ -128,6 +133,34 @@ public class VehicleSpawner : BaseEntity
 			}
 		}
 		Pool.FreeUnmanaged<RepairableVehiclePad>(ref list);
+	}
+
+	private void LinkVehicleVendors()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		List<VehicleVendor> list = Pool.Get<List<VehicleVendor>>();
+		Vis.Entities(((Component)this).transform.position, 40f, list, 1218652417, (QueryTriggerInteraction)2);
+		foreach (VehicleVendor item in list)
+		{
+			if (!item.isClient && item.IsValid())
+			{
+				item.FindVehicleSpawner();
+			}
+		}
+		Pool.FreeUnmanaged<VehicleVendor>(ref list);
+	}
+
+	public bool SpawnsFor(string message)
+	{
+		SpawnPair[] array = objectsToSpawn;
+		for (int i = 0; i < array.Length; i++)
+		{
+			if (array[i].message == message)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public override void OnEntityMessage(BaseEntity from, string msg)

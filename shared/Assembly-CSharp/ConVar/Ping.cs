@@ -5,8 +5,8 @@ namespace ConVar;
 [Factory("ping")]
 public class Ping : ConsoleSystem
 {
-	[ClientVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
 	[ServerVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
+	[ClientVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
 	public static int ping_samples
 	{
 		get
@@ -75,8 +75,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) When enabled, the ping estimator collects latency samples to regional servers; disable to suppress background ping traffic")]
 	[ClientVar(Help = "(Generated) When enabled, the ping estimator collects latency samples to regional servers; disable to suppress background ping traffic")]
+	[ServerVar(Help = "(Generated) When enabled, the ping estimator collects latency samples to regional servers; disable to suppress background ping traffic")]
 	public static bool ping_estimation
 	{
 		get

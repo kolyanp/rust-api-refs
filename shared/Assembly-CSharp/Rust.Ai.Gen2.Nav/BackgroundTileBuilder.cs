@@ -724,7 +724,7 @@ public class BackgroundTileBuilder : IDisposable
 						int num5 = 0;
 						foreach (Door item3 in (HashSet<Door>)(object)val2)
 						{
-							RustNavDoorGates.BakeVolumes bakeVolumes = RustNavDoorGates.GetBakeVolumes(item3);
+							RustNavDoorGates.BakeVolumes bakeVolumes = RustNavDoorGates.GetBakeVolumes(item3, flag, buildParams.agentRadius);
 							((List<RustNavDoorGates.BakeVolumes>)(object)val3).Add(bakeVolumes);
 							num5 += bakeVolumes.Count;
 						}

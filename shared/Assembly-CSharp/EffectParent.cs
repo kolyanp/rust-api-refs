@@ -7,7 +7,7 @@ public class EffectParent : EntityComponent<BaseEntity>, IClientComponent
 	[Tooltip("If true the effect isn't our direct child and is in another hierarchy - USE WITH CAUTION")]
 	public bool separatedEffect;
 
-	[Header("USING COLLIDERS? - COLLIDER SAFETY")]
 	[Tooltip("If true the effect will be forced to the safe layer that doesn't interact with player colliders")]
+	[Header("USING COLLIDERS? - COLLIDER SAFETY")]
 	public bool forceSafePlayerCollisionLayer;
 }

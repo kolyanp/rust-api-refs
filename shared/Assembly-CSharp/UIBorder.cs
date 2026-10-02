@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RectTransform))]
 [DisallowMultipleComponent]
 [ExecuteAlways]
-[RequireComponent(typeof(RectTransform))]
 public class UIBorder : MonoBehaviour
 {
 	private const string ChildName = "_UIBorder";
@@ -36,12 +36,12 @@ public class UIBorder : MonoBehaviour
 	[SerializeField]
 	private float bottomLeftRadius;
 
-	[Range(1f, 32f)]
 	[SerializeField]
+	[Range(1f, 32f)]
 	private int segmentsPerCorner = 8;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private BorderGraphic graphic;
 
 	public float Top

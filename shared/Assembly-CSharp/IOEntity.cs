@@ -311,12 +311,12 @@ public class IOEntity : DecayEntity
 	[ReplicatedVar(Default = "True", Help = "Allows the deployment and usage of IO entities on player boats and tugboats.")]
 	public static bool allow_on_boats;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing high priority electric io entities per server frame (monuments)")]
+	[ServerVar]
 	public static float frameBudgetElectricHighPriorityMs = 1f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
+	[ServerVar]
 	public static float frameBudgetElectricLowPriorityMs = 0.5f;
 
 	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
@@ -327,8 +327,8 @@ public class IOEntity : DecayEntity
 	[ServerVar]
 	public static float frameBudgetKineticMs = 1f;
 
-	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
 	public static float frameBudgetGenericMs = 1f;
 
 	[ServerVar]
@@ -897,8 +897,8 @@ public class IOEntity : DecayEntity
 	}
 
 	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server.IsVisible(6f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(6f)]
 	private void Server_RequestData(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

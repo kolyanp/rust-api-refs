@@ -84,12 +84,12 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private FlexGridsElement grid;
 
-	[SerializeField]
 	[Tooltip("The source of the items, for analytics")]
+	[SerializeField]
 	private StoreSource source;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreItemTile skinItemTilePrefab;
 
 	[SerializeField]
@@ -98,12 +98,12 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private int maxCellCount;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	public int cellWidth;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	public int cellHeight;
 
 	public bool fixedGrid;
@@ -133,8 +133,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 
 	public bool dynamicContent = true;
 
-	[Tooltip("Items already spawned by these grids won't spawn here again, avoids duplicates across grids")]
 	[SerializeField]
+	[Tooltip("Items already spawned by these grids won't spawn here again, avoids duplicates across grids")]
 	private List<UI_StoreItemGrid> excludeItemsFromGrids = new List<UI_StoreItemGrid>();
 
 	[SerializeField]

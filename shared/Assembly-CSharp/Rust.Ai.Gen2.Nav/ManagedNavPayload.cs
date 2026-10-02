@@ -6,7 +6,7 @@ namespace Rust.Ai.Gen2.Nav;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct ManagedNavPayload
 {
-	public const int Version = 5;
+	public const int Version = 6;
 
 	public int payloadVersion;
 

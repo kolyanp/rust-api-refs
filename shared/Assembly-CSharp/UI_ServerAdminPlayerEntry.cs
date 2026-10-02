@@ -16,8 +16,8 @@ public class UI_ServerAdminPlayerEntry : MonoBehaviour
 	[SerializeField]
 	private RustText pingText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Color evenColor;
 
 	[SerializeField]

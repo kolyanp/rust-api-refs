@@ -8,8 +8,8 @@ namespace GenerateErosionJobs;
 [BurstCompile(/*Could not decode attribute arguments.*/)]
 internal struct TileCalculateAngleMap : IJobParallelFor
 {
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<float> AngleMap;
 
 	[ReadOnly]

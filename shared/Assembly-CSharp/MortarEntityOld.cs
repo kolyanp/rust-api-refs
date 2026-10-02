@@ -272,8 +272,8 @@ public class MortarEntityOld : StorageContainer
 		Debug.Log((object)$"Launching mortar with velocity of {Math.Round(overrideVel.magnitude, 1)}m/s with drag of {component.drag} and gravity of {component.gravityModifier}");
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SwitchAdjustmentAngle(RPCMessage rpc)
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
@@ -290,8 +290,8 @@ public class MortarEntityOld : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SetAdjustmentMode(RPCMessage rpc)
 	{
 		bool b = rpc.read.Bool();

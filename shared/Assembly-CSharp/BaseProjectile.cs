@@ -101,8 +101,8 @@ public class BaseProjectile : AttackEntity
 	[Header("NPC Info")]
 	public float NoiseRadius = 100f;
 
-	[Header("Projectile")]
 	[Tooltip("Scales the damage of the projectile across all ranges.")]
+	[Header("Projectile")]
 	public float damageScale = 1f;
 
 	[Tooltip("Scales the damage falloff window of the projectile.")]
@@ -1484,8 +1484,8 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(2uL)]
 	private void ToggleFireMode(RPCMessage msg)
 	{
@@ -1715,10 +1715,10 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxRepeatedElements(64)]
-	[RPC_Server.FromOwner]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.MaxRepeatedElements(64)]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)

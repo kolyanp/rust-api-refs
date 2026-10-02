@@ -29,8 +29,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private Action CheckWagonLineUpCB;
 
-	[SerializeField]
 	[Header("Coaling Tower")]
+	[SerializeField]
 	private BoxCollider unloadingBounds;
 
 	[SerializeField]
@@ -57,8 +57,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private float vacuumStartDelay = 2f;
 
-	[SerializeField]
 	[FormerlySerializedAs("unloadingFXContainer")]
+	[SerializeField]
 	private ParticleSystemContainer unloadingFXContainerOre;
 
 	[SerializeField]
@@ -595,8 +595,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Prev(RPCMessage msg)
 	{
 		if (TryShuntTrain(next: false, out var attemptStatus))

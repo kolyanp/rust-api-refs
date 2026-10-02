@@ -42,15 +42,15 @@ public class UI_DeveloperTools : UI_Window
 	[SerializeField]
 	private NeedsKeyboard needsKeyboard;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private List<Tab> tabs;
 
 	[SerializeField]
 	private RectTransform tabContentParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Image blurImage;
 
 	[SerializeField]

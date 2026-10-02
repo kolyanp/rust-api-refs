@@ -47,8 +47,8 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 	[NonSerialized]
 	public Bounds VolumeBounds;
 
-	[field: SerializeField]
 	[field: Tooltip("Controls the falloff amount of the positive axes of spatially aware volumes.")]
+	[field: SerializeField]
 	public Vector3 FalloffPositive
 	{
 		[CompilerGenerated]
@@ -66,8 +66,8 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 		}
 	}
 
-	[field: SerializeField]
 	[field: Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
+	[field: SerializeField]
 	public Vector3 FalloffNegative
 	{
 		[CompilerGenerated]

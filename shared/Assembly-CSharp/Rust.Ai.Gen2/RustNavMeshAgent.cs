@@ -280,8 +280,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 
 	private const float ReachSnapDropRange = 0.35f;
 
-	[Header("Base fields")]
 	[SerializeField]
+	[Header("Base fields")]
 	private int _agentTypeID;
 
 	[SerializeField]
@@ -1484,6 +1484,22 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		}
 	}
 
+	public bool HasStraightPathTo(Vector3 locationWS)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		return HasStraightPathTo(WorldToNavSpace(locationWS));
+	}
+
+	public bool HasStraightPathTo(NavVector3 locationNS)
+	{
+		using (TimeWarning.New("RustNavMeshAgent.HasStraightPathTo"))
+		{
+			NavHit hitNS;
+			NavHit hitNS2;
+			return SampleReachTarget(locationNS, out hitNS) && !Raycast(hitNS.position, out hitNS2);
+		}
+	}
+
 	public bool SetDestinationWithParams(Vector3 targetPositionWS, bool autoBraking = true, Speeds? gait = null, float? acceleration = null, float? deceleration = null, float? deviation = null, float? swimDepth = null, float? stoppingDistance = null)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -1714,8 +1730,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0232: Unknown result type (might be due to invalid IL or missing references)
-		//IL_033f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0222: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032f: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
 			using (TimeWarning.New("RustNavMeshAgent.Tick"))
@@ -1771,7 +1787,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 					}
 				}
 				bool flag = !letUnityMoveAgentIfPossible && canSteer;
-				float num = (flag ? Mathf.Max(maxTurnRadius, currentStoppingDistance) : currentStoppingDistance);
+				float num = RestingDistance(currentStoppingDistance);
 				NavVector3 navVector;
 				float num2;
 				if (AI.useUnityNavmesh)
@@ -2916,6 +2932,15 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		{
 			currentSpeed = GetPathFollowingSpeed(shouldStopAtDestination, remainingDistance, stoppingDistance).Advance(dt, out var _);
 		}
+	}
+
+	public float RestingDistance(float stoppingDistance)
+	{
+		if (letUnityMoveAgentIfPossible || !canSteer)
+		{
+			return stoppingDistance;
+		}
+		return Mathf.Max(maxTurnRadius, stoppingDistance);
 	}
 
 	public NavVector3 AdjustMovementForSteering(NavVector3 deltaNS)

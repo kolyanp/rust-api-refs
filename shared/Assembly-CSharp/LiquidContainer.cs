@@ -29,8 +29,8 @@ public class LiquidContainer : ContainerIOEntity
 
 	public ItemDefinition[] ValidItems;
 
-	[Tooltip("Replicate how full this container is. Turn it on for containers that show a water level mesh, and leave it off everywhere else: water moves through a barrel every tick and the updates are only worth paying for when something is showing the level.")]
 	[Header("Water Level Mesh")]
+	[Tooltip("Replicate how full this container is. Turn it on for containers that show a water level mesh, and leave it off everywhere else: water moves through a barrel every tick and the updates are only worth paying for when something is showing the level.")]
 	public bool replicateWaterLevel;
 
 	[Tooltip("Mesh shown while there is liquid in here, posed between the empty and full values below to match how full the container is.")]
@@ -429,8 +429,8 @@ public class LiquidContainer : ContainerIOEntity
 		return GetLiquidItem().amount;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SVDrink(RPCMessage rpc)
 	{
 		if (!rpc.player.metabolism.CanConsume() || Interface.CallHook("OnPlayerDrink", rpc.player, this) != null)

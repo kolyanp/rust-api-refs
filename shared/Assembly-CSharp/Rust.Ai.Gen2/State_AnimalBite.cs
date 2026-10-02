@@ -16,17 +16,17 @@ public class State_AnimalBite : State_AnimalChase
 	[SerializeField]
 	public DamageType DamageType = DamageType.Bite;
 
-	[SerializeField]
 	[Tooltip("How long to hold the state when there is no clip to play.")]
+	[SerializeField]
 	public float FallbackDuration = 1f;
 
-	[SerializeField]
 	[Tooltip("Rate the clip plays at. Must match the m_Speed on the animator state of the same name, because the client reads that one and the server reads this one.")]
+	[SerializeField]
 	public float PlaybackSpeed = 1f;
 
-	[Range(0f, 0.9f)]
-	[SerializeField]
 	[Tooltip("Where in the bite the damage lands, as a fraction of the clip. A fraction rather than seconds so it stays on the same frame of the animation whatever length the clip is and whatever rate PlaybackSpeed runs it at.")]
+	[SerializeField]
+	[Range(0f, 0.9f)]
 	public float DamageAtClipFraction = 0.35f;
 
 	[NonSerialized]

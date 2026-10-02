@@ -193,8 +193,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float conditionUnsentHealth;
 
-	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
 	[Header("Day activity")]
+	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
 	[Range(0f, 1f)]
 	public float StarvingThreshold = 0.2f;
 
@@ -245,8 +245,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float lastDefendedAttack = float.NegativeInfinity;
 
-	[Range(0f, 1f)]
 	[Header("Old age")]
+	[Range(0f, 1f)]
 	[Tooltip("How far through its life an animal drops a whole gait, so it jogs where it used to run. A tier rather than a multiplier: the animations are authored at the gait speeds, so anything in between reads as sliding.")]
 	public float OldAgeSlowFraction = 0.55f;
 
@@ -254,8 +254,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Range(0f, 1f)]
 	public float OldAgeVerySlowFraction = 0.8f;
 
-	[Range(0.05f, 1f)]
 	[Tooltip("How much of its roaming range an animal still has at the very end of its life, so an old one keeps close to home and mostly only moves to get back to it.")]
+	[Range(0.05f, 1f)]
 	public float OldAgeRangeFactor = 0.15f;
 
 	[Tooltip("How much longer an old animal rests than one in its prime. 4 means a lie down at the end of its life lasts four times as long.")]
@@ -272,12 +272,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private TimeSince lastAdoptionCheck;
 
-	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
 	[Header("Hydration")]
+	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
 	public float HydrationFillRate = 0.25f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Where a freshly spawned animal's hydration starts. Full, so a new animal has one thing less to go and sort out before it settles in.")]
+	[Range(0f, 1f)]
 	public float StartingHydration = 1f;
 
 	[Tooltip("How much hydration drains per second while the animal is up and about in daylight. Tiny, because one mouthful refills the animal completely: this sets how often it goes for a drink rather than how long it stands there. At 0.00001 a full animal is down to the ConsumeThreshold of 0.95 after about 5000 seconds of daylight, which is one trip to the water in a shipped waking day.")]
@@ -302,8 +302,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private static readonly HashSet<string> reportedLongNames = new HashSet<string>();
 
-	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
 	[Header("Sleep")]
+	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
 	public float SleepTimeVariance = 45f;
 
 	[Tooltip("How far (in metres) from the middle of the herd is close enough to lie down. Further out than this and the animal walks in first, so the herd sleeps as a group.")]
@@ -315,10 +315,16 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("The same for bedding down, which is the lie down plus the settle into sleep. The cow's cow_lay_down into cow_sleep_in is 8.2s.")]
 	public float BedDownDuration = 8.2f;
 
+	[Tooltip("How long (in seconds) the animator takes to stand up once the lying flag clears, after it has finished whatever was left of the lie down. The cow's cow_stand_up is 3s.")]
+	public float StandUpDuration = 3f;
+
+	[Tooltip("The same out of a sleep, which is the wake and then the stand up. The cow's cow_wake_up into cow_stand_up is 6.5s.")]
+	public float WakeUpDuration = 6.5f;
+
 	private float sleepFraction;
 
-	[Tooltip("How far (in metres) the animal looks for herd mates. Herd identity rather than personal space: the regroup, the flee centroid and the distress broadcast all use it.")]
 	[Header("PersonalSpace")]
+	[Tooltip("How far (in metres) the animal looks for herd mates. Herd identity rather than personal space: the regroup, the flee centroid and the distress broadcast all use it.")]
 	public float SocialSearchRadius = 20f;
 
 	[Tooltip("How many herd mates of the same species within Social Search Radius the animal is content surrounded by. Past this the herd is too big to keep producing at full rate.")]
@@ -374,6 +380,16 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private TimeSince[] shieldSlotClaimed;
 
+	private const float RestingSearchRadius = 30f;
+
+	private const float RestingGap = 0.25f;
+
+	private RustNavMeshAgent restingAgent;
+
+	private const float AbreastSearchRadius = 10f;
+
+	private const float InLineTolerance = 0.01f;
+
 	private const float HerdFleeHeadingLifetime = 10f;
 
 	private Vector3 herdFleeHeading;
@@ -418,6 +434,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public const Flags Tame = Flags.Reserved16;
 
+	public const Flags LyingIn = Flags.Reserved17;
+
 	public const int AgeTimerId = 1;
 
 	public const int PregnancyTimerId = 2;
@@ -434,8 +452,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How long (in seconds) this animal stays at its current age stage. When it elapses an infant grows into the adult named by its Species asset and an adult dies of old age. Zero disables aging.")]
 	public float TimeToGrow;
 
-	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	[Range(0f, 1f)]
+	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	public float GrowTimeVariance = 0.1f;
 
 	[Tooltip("Optional effect played on the new animal when it grows into the next stage.")]
@@ -464,8 +482,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How much fullness drains per second while the animal is up and about in daylight. Against FullnessFillRate this sets how much of its standing time a well fed animal spends eating: 0.001 against 0.004 is a quarter of it. Slow, because the dip below ConsumeThreshold while the animal walks over is what a keeper sees. Lying down and sleeping drain at SleepingDecayScale.")]
 	public float FullnessDecayRate = 0.001f;
 
-	[Tooltip("Where a freshly spawned animal's fullness starts. At the trough ceiling, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to it.")]
 	[Range(0f, 1f)]
+	[Tooltip("Where a freshly spawned animal's fullness starts. At the trough ceiling, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to it.")]
 	public float StartingFullness = 0.8f;
 
 	[Tooltip("Scales the drain while the animal is asleep or the sun is down. Feeding is daytime work, so a full night at the waking rate would be a debt the day could not pay off.")]
@@ -477,8 +495,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far (in metres) the animal looks for somewhere to feed itself - a trough, a water barrel, open grass or a river bank.")]
 	public float ConsumeSearchRadius = 25f;
 
-	[Tooltip("A need at or below this share of the most it can get sends the animal off to top it up. Fullness is measured against the trough ceiling while a trough is what feeds it, and against full otherwise. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it: about 0.75 to 0.8 on troughs and 0.95 to 1 on grass. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
 	[Range(0f, 1f)]
+	[Tooltip("A need at or below this share of the most it can get sends the animal off to top it up. Fullness is measured against the trough ceiling while a trough is what feeds it, and against full otherwise. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it: about 0.75 to 0.8 on troughs and 0.95 to 1 on grass. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
 	public float ConsumeThreshold = 0.95f;
 
 	[Tooltip("The most fullness a trough will ever put back. Grass still fills an animal completely, so a herd living out of a trough sits permanently a little short and everything reading Condition pays for it.")]
@@ -486,7 +504,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public float TroughFullnessCeiling = 0.8f;
 
 	[Tooltip("How much fullness each calorie of trough food is worth. The animal grazes a trough item down before it takes the next, so richer food lasts longer, the way it does for a horse.")]
-	public float TroughFullnessPerCalorie = 0.0024f;
+	public float TroughFullnessPerCalorie = 0.0021f;
 
 	[Tooltip("How long (in seconds) the animal takes to raise its head once it stops grazing or drinking. Clearing the flag only STARTS the head coming up, so for this long it is still visibly head down. The cow's cow_eat_out is 1.7s and the sheep's sheep_eat_exit 1.5s.")]
 	public float RaiseHeadDuration = 1.7f;
@@ -494,6 +512,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public const float StartingPersonalSpaceNeed = 1f;
 
 	private TimeSince poseHeldFor;
+
+	private TimeUntil onItsFeetIn;
 
 	private TimeSince headComingUpFor;
 
@@ -868,6 +888,18 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				return !IsAdult();
 			}
 			return true;
+		}
+	}
+
+	private RustNavMeshAgent RestingAgent
+	{
+		get
+		{
+			if (!((Object)(object)restingAgent != (Object)null))
+			{
+				return restingAgent = ((Component)this).GetComponent<RustNavMeshAgent>();
+			}
+			return restingAgent;
 		}
 	}
 
@@ -3157,6 +3189,161 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
+	public void GatherRestingFootprints(Vector3 around, PooledList<LivestockFootprint> footprints)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			Query.Server.GetBrainsInSphere(around, 30f, (List<LivestockAnimal>)(object)val);
+			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
+			{
+				if (!((Object)(object)item == (Object)(object)this) && !item.IsDead())
+				{
+					((List<LivestockFootprint>)(object)footprints).Add(item.RestingFootprint());
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public LivestockFootprint RestingFootprint()
+	{
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		RustNavMeshAgent rustNavMeshAgent = RestingAgent;
+		if ((Object)(object)rustNavMeshAgent == (Object)null || !rustNavMeshAgent.hasPath)
+		{
+			return LivestockFootprint.Of(this);
+		}
+		return RestingFootprintFor(rustNavMeshAgent.destinationWS, rustNavMeshAgent.currentStoppingDistance);
+	}
+
+	public LivestockFootprint RestingFootprintFor(Vector3 destination, float stoppingDistance)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		RustNavMeshAgent rustNavMeshAgent = RestingAgent;
+		Vector3 val = Vector3Ex.WithY(destination - ((Component)this).transform.position, 0f);
+		float magnitude = val.magnitude;
+		float num = (((Object)(object)rustNavMeshAgent != (Object)null) ? rustNavMeshAgent.RestingDistance(stoppingDistance) : stoppingDistance);
+		if (magnitude <= num)
+		{
+			return LivestockFootprint.Of(this);
+		}
+		return LivestockFootprint.Of(this, destination - val * (num / magnitude), val);
+	}
+
+	public static float ClearanceOf(PooledList<LivestockFootprint> footprints, in LivestockFootprint footprint)
+	{
+		float num = float.MaxValue;
+		foreach (LivestockFootprint item in (List<LivestockFootprint>)(object)footprints)
+		{
+			num = Mathf.Min(num, 0f - LivestockFootprint.Penetration(in footprint, item));
+		}
+		return num;
+	}
+
+	public static bool IsClear(float clearance)
+	{
+		return clearance >= 0.25f;
+	}
+
+	public bool IsWalkingAfter(BasePlayer player)
+	{
+		if ((Object)(object)player != (Object)null)
+		{
+			if (!IsFollowing(player))
+			{
+				return (Object)(object)CuriousAbout == (Object)(object)player;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public void CountWalkingAbreast(BasePlayer player, out int onLeft, out int onRight)
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		onLeft = 0;
+		onRight = 0;
+		if ((Object)(object)player == (Object)null)
+		{
+			return;
+		}
+		Vector3 position = ((Component)player).transform.position;
+		Vector3 position2 = ((Component)this).transform.position;
+		Vector3 val = Vector3Ex.WithY(position - position2, 0f);
+		PooledList<LivestockAnimal> val2 = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			Query.Server.GetBrainsInSphere(position, 10f, (List<LivestockAnimal>)(object)val2);
+			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val2)
+			{
+				if ((Object)(object)item == (Object)(object)this || !item.IsWalkingAfter(player))
+				{
+					continue;
+				}
+				Vector3 position3 = ((Component)item).transform.position;
+				if (!(Vector3.Dot(Vector3Ex.WithY(position3 - position, 0f), Vector3Ex.WithY(position2 - position, 0f)) <= 0f))
+				{
+					float num = Vector3.Cross(val, Vector3Ex.WithY(position3 - position2, 0f)).y;
+					if (Mathf.Abs(num) < 0.01f)
+					{
+						num = ((item.net.ID.Value < net.ID.Value) ? (-1f) : 1f);
+					}
+					if (num < 0f)
+					{
+						onLeft++;
+					}
+					else
+					{
+						onRight++;
+					}
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)val2)?.Dispose();
+		}
+	}
+
 	public bool TryFindSecludedSpot(RustNavMeshAgent agent, LivestockAnimal partner, float minDistance, float maxDistance, float clearRadius, out Vector3 spot)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3862,6 +4049,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return HasFlag(Flags.Reserved14);
 	}
 
+	public bool IsLyingIn()
+	{
+		return HasFlag(Flags.Reserved17);
+	}
+
 	public bool IsFrisky()
 	{
 		return HasFlag(Flags.Reserved15);
@@ -3870,12 +4062,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public bool IsLyingDown()
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		if (IsSleeping())
 		{
 			return TimeSince.op_Implicit(poseHeldFor) >= Mathf.Max(0f, BedDownDuration);
 		}
-		if (IsResting())
+		if (IsResting() || IsLyingIn())
 		{
 			return TimeSince.op_Implicit(poseHeldFor) >= Mathf.Max(0f, LieDownDuration);
 		}
@@ -3884,11 +4076,46 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool IsSettlingDown()
 	{
-		if (IsSleeping() || IsResting())
+		if (IsHoldingAPoseFlag())
 		{
 			return !IsLyingDown();
 		}
 		return false;
+	}
+
+	private bool IsHoldingAPoseFlag()
+	{
+		if (!IsSleeping() && !IsResting())
+		{
+			return IsLyingIn();
+		}
+		return true;
+	}
+
+	public bool IsOffItsFeet()
+	{
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		if (!IsHoldingAPoseFlag())
+		{
+			return TimeUntil.op_Implicit(onItsFeetIn) > 0f;
+		}
+		return true;
+	}
+
+	public void MarkOnItsFeet()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		onItsFeetIn = TimeUntil.op_Implicit(0f);
+	}
+
+	private void StartGettingUp(float settleDuration, float riseDuration)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		float num = Mathf.Max(0f, Mathf.Max(0f, settleDuration) - TimeSince.op_Implicit(poseHeldFor));
+		onItsFeetIn = TimeUntil.op_Implicit(num + Mathf.Max(0f, riseDuration));
 	}
 
 	public bool IsHeadDown()
@@ -4280,8 +4507,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Lead(RPCMessage msg)
 	{
@@ -4354,8 +4581,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	}
 
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
@@ -4394,6 +4621,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		finally
 		{
 			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public override void ScaleDamage(HitInfo info)
+	{
+		base.ScaleDamage(info);
+		if ((Object)(object)info.Initiator != (Object)null && (Object)(object)info.Initiator != (Object)(object)this && InSafeZone())
+		{
+			info.damageTypes.ScaleAll(0f);
 		}
 	}
 
@@ -4754,7 +4990,29 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			{
 				poseHeldFor = TimeSince.op_Implicit(0f);
 			}
+			else
+			{
+				StartGettingUp(LieDownDuration, StandUpDuration);
+			}
 			SetNetworkedFlag(Flags.Reserved14, resting);
+		}
+	}
+
+	public void SetLyingIn(bool lyingIn)
+	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		if (IsLyingIn() != lyingIn)
+		{
+			if (lyingIn)
+			{
+				poseHeldFor = TimeSince.op_Implicit(0f);
+			}
+			else
+			{
+				StartGettingUp(LieDownDuration, StandUpDuration);
+			}
+			SetNetworkedFlag(Flags.Reserved17, lyingIn);
 		}
 	}
 
@@ -4775,6 +5033,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			if (sleeping)
 			{
 				poseHeldFor = TimeSince.op_Implicit(0f);
+			}
+			else
+			{
+				StartGettingUp(BedDownDuration, WakeUpDuration);
 			}
 			SetNetworkedFlag(Flags.Reserved11, sleeping);
 		}
@@ -4868,6 +5130,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public void FinishPregnancy()
 	{
 		hasCalved = false;
+		SetLyingIn(lyingIn: false);
 		SetNetworkedFlag(Flags.Reserved10, value: false);
 	}
 

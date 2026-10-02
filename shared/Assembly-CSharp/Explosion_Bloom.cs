@@ -14,9 +14,9 @@ public class Explosion_Bloom : MonoBehaviour
 		[Tooltip("Filters out pixels under this level of brightness.")]
 		public float threshold;
 
-		[Range(0f, 1f)]
 		[SerializeField]
 		[Tooltip("Makes transition between under/over-threshold gradual.")]
+		[Range(0f, 1f)]
 		public float softKnee;
 
 		[SerializeField]
@@ -32,8 +32,8 @@ public class Explosion_Bloom : MonoBehaviour
 		[Tooltip("Controls filter quality and buffer resolution.")]
 		public bool highQuality;
 
-		[Tooltip("Reduces flashing noise with an additional filter.")]
 		[SerializeField]
+		[Tooltip("Reduces flashing noise with an additional filter.")]
 		public bool antiFlicker;
 
 		public float thresholdGamma
@@ -74,8 +74,8 @@ public class Explosion_Bloom : MonoBehaviour
 	[SerializeField]
 	public Settings settings = Settings.defaultSettings;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Shader m_Shader;
 
 	private Material m_Material;

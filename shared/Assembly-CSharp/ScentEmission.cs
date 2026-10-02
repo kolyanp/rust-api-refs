@@ -24,8 +24,8 @@ public class ScentEmission : EntityComponent<BaseCombatEntity>, IClientComponent
 	[SerializeField]
 	private float wiggleIntensity = 1f;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private LineRenderer[] lineRenderers;
 
 	[SerializeField]

@@ -249,11 +249,6 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 		ObjectsRemoved++;
 	}
 
-	public void DelayedSpawn()
-	{
-		Invoke(Spawn, 1f);
-	}
-
 	public void Spawn()
 	{
 		if (isSpawnerActive)

@@ -56,9 +56,9 @@ public class UI_StoreItemOverlayPage : UI_Window
 		public PageElement[] Elements;
 	}
 
-	[Space]
 	[Header("Page Content")]
 	[SerializeField]
+	[Space]
 	private CanvasGroup bodyCanvasGroup;
 
 	[SerializeField]
@@ -133,15 +133,15 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private GameObject ownedButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private bool autoCycleEnabled = true;
 
 	[SerializeField]
 	private float autoCycleInterval = 10f;
 
-	[SerializeField]
 	[Header("Skin Viewer")]
+	[SerializeField]
 	private UI_SkinViewerControls skinViewerControls;
 
 	[SerializeField]

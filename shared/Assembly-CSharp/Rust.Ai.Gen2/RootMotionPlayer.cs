@@ -274,6 +274,18 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 
 	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)baseEntity).GetComponent<RustNavMeshAgent>());
 
+	private bool MovesOnNavmesh
+	{
+		get
+		{
+			if (baseEntity is BaseNPC2 baseNPC)
+			{
+				return baseNPC.MovesOnNavmesh;
+			}
+			return true;
+		}
+	}
+
 	private Action PlayServerTickAction => PlayServerTick;
 
 	public PlayServerState PlayServerAndTakeFromPool(RootMotionData data)
@@ -307,7 +319,7 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 		currentPlayState = state;
 		currentPlayState.isPlaying = true;
 		baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_PlayMontageDelayed"), currentPlayState.GetAnimHash());
-		if (currentPlayState.pauseAgent)
+		if (currentPlayState.pauseAgent && MovesOnNavmesh)
 		{
 			Agent.Pause(this);
 		}

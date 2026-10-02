@@ -34,12 +34,12 @@ public struct NavMeshBuildParams
 	[Min(0f)]
 	public float agentMaxClimb;
 
-	[Range(0f, 90f)]
 	[Tooltip("The maximum slope that is considered walkable. [Limits: 0 <= value < 90] [Units: Degrees]")]
+	[Range(0f, 90f)]
 	public float agentMaxSlope;
 
-	[Range(16f, 1024f)]
 	[Tooltip("The width/height size of tile's on the xz-plane. [Limit: >= 0] [Units: vx]")]
+	[Range(16f, 1024f)]
 	public float tileSize;
 
 	[Tooltip("The type of partitioning used for NavMesh generation")]

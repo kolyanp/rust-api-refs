@@ -199,10 +199,10 @@ public class Cannon : BallistaGun
 		return false;
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	[UsedImplicitly]
 	public virtual void RequestLightFuse(RPCMessage msg)
 	{

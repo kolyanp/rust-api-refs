@@ -16,8 +16,8 @@ public class UI_VendingMachineAdminDialog : UIDialog
 	[SerializeField]
 	private GameObjectRef statsPanelRef;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_FakeInventory fakeInventory;
 
 	[Space]
