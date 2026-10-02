@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class UI_SystemInfo : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RustText systemText;
 
 	[SerializeField]

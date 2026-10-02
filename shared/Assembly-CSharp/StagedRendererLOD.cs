@@ -33,14 +33,14 @@ public class StagedRendererLOD : InstancedLODComponent, IHLODMeshSource
 		public bool disableShadows;
 	}
 
-	[Header("Target Renderer")]
 	[Tooltip("The single renderer everything is drawn through. Its mesh and materials are swapped at runtime.")]
+	[Header("Target Renderer")]
 	public MeshRenderer TargetRenderer;
 
 	public MeshFilter TargetFilter;
 
-	[Header("LOD Levels")]
 	[Tooltip("Distance at which each LOD level becomes active. LOD levels the active stage has no mesh for are culled.")]
+	[Header("LOD Levels")]
 	public State[] States = Array.Empty<State>();
 
 	public StagedDestructionEntityInfo FindStageInfo()

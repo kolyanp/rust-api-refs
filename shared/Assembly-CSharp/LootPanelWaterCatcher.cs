@@ -1,3 +1,4 @@
+using Rust.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,4 +21,8 @@ public class LootPanelWaterCatcher : LootPanel
 	public GameObject vehicleTransferOnly;
 
 	public GameObject carLiftInfo;
+
+	public GameObject oilWarmUpInfo;
+
+	public RustText oilWarmUpTimeText;
 }

@@ -71,8 +71,8 @@ public class Admin : ConsoleSystem
 		public ulong EntityId;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerInfoOutput
 	{
 		public string Hostname;
@@ -116,8 +116,8 @@ public class Admin : ConsoleSystem
 		public string Protocol;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerConvarInfo
 	{
 		public string FullName;

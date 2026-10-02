@@ -1034,6 +1034,26 @@ public class RustCore : CSPlugin
 		return null;
 	}
 
+	[HookMethod("IOnNpcTarget")]
+	private object IOnNpcTarget(WildlifeHazard hazard, BasePlayer player)
+	{
+		if (Interface.CallHook("OnNpcTarget", hazard, player) == null)
+		{
+			return null;
+		}
+		return false;
+	}
+
+	[HookMethod("IOnNpcTarget")]
+	private object IOnNpcTarget(BoatAI boatAI, BasePlayer player)
+	{
+		if (Interface.CallHook("OnNpcTarget", boatAI, player) == null)
+		{
+			return null;
+		}
+		return false;
+	}
+
 	[HookMethod("IOnEntitySaved")]
 	private void IOnEntitySaved(BaseNetworkable baseNetworkable, BaseNetworkable.SaveInfo saveInfo)
 	{

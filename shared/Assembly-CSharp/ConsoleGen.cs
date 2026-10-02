@@ -15,7 +15,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2423]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2425]
 	{
 		new ConsoleSystem.Command
 		{
@@ -14193,6 +14193,20 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "breedonlyathome",
+			Parent = "livestock",
+			FullName = "livestock.breedonlyathome",
+			ServerAdmin = true,
+			Description = "Whether livestock breed only while a cupboard is their home",
+			Variable = true,
+			GetOveride = () => Livestock.breedOnlyAtHome.ToString(),
+			SetOveride = (string str) =>
+			{
+				Livestock.breedOnlyAtHome = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "breedpausecondition",
 			Parent = "livestock",
 			FullName = "livestock.breedpausecondition",
@@ -14367,6 +14381,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "cullexcess",
+			Parent = "livestock",
+			FullName = "livestock.cullexcess",
+			ServerAdmin = true,
+			Description = "Kills livestock past livestock.maxPerSpecies, cattle and sheep counted apart: untamed animals first, then tame ones with no cupboard for a home, then the oldest and worst bred. An optional head count culls down to that instead.",
+			Variable = false,
+			Call = (ConsoleSystem.Arg arg) =>
+			{
+				Livestock.cullexcess(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "curiousbreakdistance",
 			Parent = "livestock",
 			FullName = "livestock.curiousbreakdistance",
@@ -14391,20 +14418,6 @@ public class ConsoleGen
 			SetOveride = (string str) =>
 			{
 				Livestock.curiousChance = StringExtensions.ToFloat(str, 0f);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "curiousfamiliarityscale",
-			Parent = "livestock",
-			FullName = "livestock.curiousfamiliarityscale",
-			ServerAdmin = true,
-			Description = "How much faster a curious cow or calf builds familiarity than the rest of the herd",
-			Variable = true,
-			GetOveride = () => Livestock.curiousFamiliarityScale.ToString(),
-			SetOveride = (string str) =>
-			{
-				Livestock.curiousFamiliarityScale = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command
@@ -14643,16 +14656,16 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "familiarityforgettime",
+			Name = "familiarityforgetscale",
 			Parent = "livestock",
-			FullName = "livestock.familiarityforgettime",
+			FullName = "livestock.familiarityforgetscale",
 			ServerAdmin = true,
-			Description = "How long (in seconds) a player has to stay away from a livestock animal to lose trust just short of a bond. Less trust fades sooner, bonded trust never fades, 0 never forgets",
+			Description = "How many seconds a player has to stay away from a livestock animal short of a full bond for it to forget one second they spent near it, so at 3 fourteen minutes are gone in forty two. A full bond never fades, 0 never forgets",
 			Variable = true,
-			GetOveride = () => Livestock.familiarityForgetTime.ToString(),
+			GetOveride = () => Livestock.familiarityForgetScale.ToString(),
 			SetOveride = (string str) =>
 			{
-				Livestock.familiarityForgetTime = StringExtensions.ToFloat(str, 0f);
+				Livestock.familiarityForgetScale = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command
@@ -15081,6 +15094,38 @@ public class ConsoleGen
 			SetOveride = (string str) =>
 			{
 				Livestock.maxLitterSize = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maxperspecies",
+			Parent = "livestock",
+			FullName = "livestock.maxperspecies",
+			ServerAdmin = true,
+			Description = "How many livestock animals of one species a server holds before none of that species breeds. Cattle and sheep are counted apart against the same number, 0 never caps",
+			Variable = true,
+			GetOveride = () =>
+			{
+				int maxPerSpecies = Livestock.maxPerSpecies;
+				return (maxPerSpecies < -1 || maxPerSpecies > 127) ? maxPerSpecies.ToString() : Memoized.IntToString.Get(maxPerSpecies);
+			},
+			SetOveride = (string str) =>
+			{
+				Livestock.maxPerSpecies = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maxtrust",
+			Parent = "livestock",
+			FullName = "livestock.maxtrust",
+			ServerAdmin = true,
+			Description = "The most seconds of trust a player can build with a livestock animal, which is the full bond: it can breed, standing in your cupboard makes that its home, your trust stops fading and a bull defends you",
+			Variable = true,
+			GetOveride = () => Livestock.maxTrust.ToString(),
+			SetOveride = (string str) =>
+			{
+				Livestock.maxTrust = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command
@@ -15583,6 +15628,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "showhome",
+			Parent = "livestock",
+			FullName = "livestock.showhome",
+			ServerAdmin = true,
+			Description = "Draws an arrow from the livestock animal you are looking at, or the nearest one, to the cupboard it lives at, or to its wild anchor when it has none. Optional search radius in metres (default 20) and seconds to draw for (default 10).",
+			Variable = false,
+			Call = (ConsoleSystem.Arg arg) =>
+			{
+				Livestock.showhome(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "spawnspecial",
 			Parent = "livestock",
 			FullName = "livestock.spawnspecial",
@@ -15636,20 +15694,6 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "trustcap",
-			Parent = "livestock",
-			FullName = "livestock.trustcap",
-			ServerAdmin = true,
-			Description = "The most seconds of familiarity one player can bank with a livestock animal",
-			Variable = true,
-			GetOveride = () => Livestock.trustCap.ToString(),
-			SetOveride = (string str) =>
-			{
-				Livestock.trustCap = StringExtensions.ToFloat(str, 0f);
-			}
-		},
-		new ConsoleSystem.Command
-		{
 			Name = "trustfloor",
 			Parent = "livestock",
 			FullName = "livestock.trustfloor",
@@ -15664,34 +15708,6 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "trusttobond",
-			Parent = "livestock",
-			FullName = "livestock.trusttobond",
-			ServerAdmin = true,
-			Description = "How many seconds near a livestock animal before you can lead it, and before standing in your cupboard makes that its home",
-			Variable = true,
-			GetOveride = () => Livestock.trustToBond.ToString(),
-			SetOveride = (string str) =>
-			{
-				Livestock.trustToBond = StringExtensions.ToFloat(str, 0f);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "trusttodefend",
-			Parent = "livestock",
-			FullName = "livestock.trusttodefend",
-			ServerAdmin = true,
-			Description = "How many seconds near a livestock animal before a bull counts you as one of his herd and defends you",
-			Variable = true,
-			GetOveride = () => Livestock.trustToDefend.ToString(),
-			SetOveride = (string str) =>
-			{
-				Livestock.trustToDefend = StringExtensions.ToFloat(str, 0f);
-			}
-		},
-		new ConsoleSystem.Command
-		{
 			Name = "trusttofollow",
 			Parent = "livestock",
 			FullName = "livestock.trusttofollow",
@@ -15702,6 +15718,20 @@ public class ConsoleGen
 			SetOveride = (string str) =>
 			{
 				Livestock.trustToFollow = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "trusttolead",
+			Parent = "livestock",
+			FullName = "livestock.trusttolead",
+			ServerAdmin = true,
+			Description = "How many seconds near a livestock animal before you can lead it, after which it also ages, can starve and gives dung, milk or wool",
+			Variable = true,
+			GetOveride = () => Livestock.trustToLead.ToString(),
+			SetOveride = (string str) =>
+			{
+				Livestock.trustToLead = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command
@@ -15866,7 +15896,7 @@ public class ConsoleGen
 			Parent = "livestock",
 			FullName = "livestock.wildconditionfloor",
 			ServerAdmin = true,
-			Description = "Lowest condition a livestock animal nobody has tamed falls to from neglect, so wildlife never dies of it",
+			Description = "Lowest condition a livestock animal nobody can lead falls to from neglect, so wildlife never dies of it",
 			Variable = true,
 			GetOveride = () => Livestock.wildConditionFloor.ToString(),
 			SetOveride = (string str) =>

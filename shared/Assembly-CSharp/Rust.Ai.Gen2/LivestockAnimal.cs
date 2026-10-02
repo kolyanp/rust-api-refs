@@ -52,6 +52,45 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		Debug
 	}
 
+	private struct CullCandidate : IComparable<CullCandidate>
+	{
+		public readonly LivestockAnimal Animal;
+
+		private readonly int group;
+
+		private readonly float worth;
+
+		public CullCandidate(LivestockAnimal animal)
+		{
+			Animal = animal;
+			BuildingPrivlidge cupboard;
+			if (!animal.IsFullyBonded)
+			{
+				group = 0;
+			}
+			else if (!animal.TryGetHomeCupboard(out cupboard))
+			{
+				group = 1;
+			}
+			else
+			{
+				group = 2;
+			}
+			worth = animal.SaleValueScale;
+		}
+
+		public int CompareTo(CullCandidate other)
+		{
+			if (group != other.group)
+			{
+				int num = group;
+				return num.CompareTo(other.group);
+			}
+			float num2 = worth;
+			return num2.CompareTo(other.worth);
+		}
+	}
+
 	public enum AgeStage
 	{
 		Infant,
@@ -203,8 +242,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float[] activityWeights;
 
-	[Header("Dung")]
 	[Tooltip("The item dropped each time the animal dungs. Leave empty to disable it, which is how an age stage that shouldn't dung - a calf, say - opts out.")]
+	[Header("Dung")]
 	public ItemDefinition DungItem;
 
 	[Tooltip("How long (in seconds) between dung drops. Zero disables it.")]
@@ -245,21 +284,21 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float lastDefendedAttack = float.NegativeInfinity;
 
-	[Header("Old age")]
 	[Range(0f, 1f)]
+	[Header("Old age")]
 	[Tooltip("How far through its life an animal drops a whole gait, so it jogs where it used to run. A tier rather than a multiplier: the animations are authored at the gait speeds, so anything in between reads as sliding.")]
 	public float OldAgeSlowFraction = 0.55f;
 
-	[Tooltip("How far through its life it drops a second gait. Never goes below a walk.")]
 	[Range(0f, 1f)]
+	[Tooltip("How far through its life it drops a second gait. Never goes below a walk.")]
 	public float OldAgeVerySlowFraction = 0.8f;
 
-	[Tooltip("How much of its roaming range an animal still has at the very end of its life, so an old one keeps close to home and mostly only moves to get back to it.")]
 	[Range(0.05f, 1f)]
+	[Tooltip("How much of its roaming range an animal still has at the very end of its life, so an old one keeps close to home and mostly only moves to get back to it.")]
 	public float OldAgeRangeFactor = 0.15f;
 
-	[Tooltip("How much longer an old animal rests than one in its prime. 4 means a lie down at the end of its life lasts four times as long.")]
 	[Range(1f, 10f)]
+	[Tooltip("How much longer an old animal rests than one in its prime. 4 means a lie down at the end of its life lasts four times as long.")]
 	public float OldAgeRestDurationScale = 4f;
 
 	private RustNavMeshAgent frailtyAgent;
@@ -272,12 +311,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private TimeSince lastAdoptionCheck;
 
-	[Header("Hydration")]
 	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
+	[Header("Hydration")]
 	public float HydrationFillRate = 0.25f;
 
-	[Tooltip("Where a freshly spawned animal's hydration starts. Full, so a new animal has one thing less to go and sort out before it settles in.")]
 	[Range(0f, 1f)]
+	[Tooltip("Where a freshly spawned animal's hydration starts. Full, so a new animal has one thing less to go and sort out before it settles in.")]
 	public float StartingHydration = 1f;
 
 	[Tooltip("How much hydration drains per second while the animal is up and about in daylight. Tiny, because one mouthful refills the animal completely: this sets how often it goes for a drink rather than how long it stands there. At 0.00001 a full animal is down to the ConsumeThreshold of 0.95 after about 5000 seconds of daylight, which is one trip to the water in a shipped waking day.")]
@@ -302,6 +341,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private static readonly HashSet<string> reportedLongNames = new HashSet<string>();
 
+	private static readonly Dictionary<LivestockSpecies, int> populationBySpecies = new Dictionary<LivestockSpecies, int>();
+
 	[Header("Sleep")]
 	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
 	public float SleepTimeVariance = 45f;
@@ -323,8 +364,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float sleepFraction;
 
-	[Header("PersonalSpace")]
 	[Tooltip("How far (in metres) the animal looks for herd mates. Herd identity rather than personal space: the regroup, the flee centroid and the distress broadcast all use it.")]
+	[Header("PersonalSpace")]
 	public float SocialSearchRadius = 20f;
 
 	[Tooltip("How many herd mates of the same species within Social Search Radius the animal is content surrounded by. Past this the herd is too big to keep producing at full rate.")]
@@ -352,8 +393,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public float SeverePacking = 9f;
 
 	[FormerlySerializedAs("SocialChangeRate")]
-	[FormerlySerializedAs("CrowdingChangeRate")]
 	[Tooltip("How much personal space moves per second, towards whichever of the two pressures is worse. Zero disables the need.")]
+	[FormerlySerializedAs("CrowdingChangeRate")]
 	public float PersonalSpaceChangeRate = 0.01f;
 
 	[Tooltip("How far a hurt animal's distress carries to the rest of its herd. Deliberately wider than SocialSearchRadius: that one is about who counts as company, this is about how far away a bull should still answer for one of his being shot. Only queried on a hit, so it can afford to be generous.")]
@@ -432,7 +473,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public const Flags Frisky = Flags.Reserved15;
 
-	public const Flags Tame = Flags.Reserved16;
+	public const Flags Leadable = Flags.Reserved16;
 
 	public const Flags LyingIn = Flags.Reserved17;
 
@@ -452,8 +493,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How long (in seconds) this animal stays at its current age stage. When it elapses an infant grows into the adult named by its Species asset and an adult dies of old age. Zero disables aging.")]
 	public float TimeToGrow;
 
-	[Range(0f, 1f)]
 	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
+	[Range(0f, 1f)]
 	public float GrowTimeVariance = 0.1f;
 
 	[Tooltip("Optional effect played on the new animal when it grows into the next stage.")]
@@ -468,22 +509,22 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far from the mother the newborn is placed, so it doesn't spawn inside her.")]
 	public float ChildSpawnDistance = 1f;
 
-	[Header("Sex")]
 	[Tooltip("Which sex this prefab represents. Infants and species that use one prefab for both sexes stay at Either and roll for it; a prefab that is specifically the male or female form of its species says so here, and must be the one its Species asset names.")]
+	[Header("Sex")]
 	public SexForm Form;
 
 	[Tooltip("The species this animal belongs to. Shared by every prefab of the species - both sexes and every age stage - so it identifies mates and tells an infant which adult to grow into.")]
 	public LivestockSpecies Species;
 
-	[Tooltip("How much fullness a second of grazing puts back. Deliberately slow: grazing is meant to be what the animal spends its day doing, not a top up it finishes in a few seconds.")]
 	[Header("Needs")]
+	[Tooltip("How much fullness a second of grazing puts back. Deliberately slow: grazing is meant to be what the animal spends its day doing, not a top up it finishes in a few seconds.")]
 	public float FullnessFillRate = 0.004f;
 
 	[Tooltip("How much fullness drains per second while the animal is up and about in daylight. Against FullnessFillRate this sets how much of its standing time a well fed animal spends eating: 0.001 against 0.004 is a quarter of it. Slow, because the dip below ConsumeThreshold while the animal walks over is what a keeper sees. Lying down and sleeping drain at SleepingDecayScale.")]
 	public float FullnessDecayRate = 0.001f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Where a freshly spawned animal's fullness starts. At the trough ceiling, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to it.")]
+	[Range(0f, 1f)]
 	public float StartingFullness = 0.8f;
 
 	[Tooltip("Scales the drain while the animal is asleep or the sun is down. Feeding is daytime work, so a full night at the waking rate would be a debt the day could not pay off.")]
@@ -495,12 +536,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far (in metres) the animal looks for somewhere to feed itself - a trough, a water barrel, open grass or a river bank.")]
 	public float ConsumeSearchRadius = 25f;
 
-	[Range(0f, 1f)]
 	[Tooltip("A need at or below this share of the most it can get sends the animal off to top it up. Fullness is measured against the trough ceiling while a trough is what feeds it, and against full otherwise. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it: about 0.75 to 0.8 on troughs and 0.95 to 1 on grass. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
+	[Range(0f, 1f)]
 	public float ConsumeThreshold = 0.95f;
 
-	[Tooltip("The most fullness a trough will ever put back. Grass still fills an animal completely, so a herd living out of a trough sits permanently a little short and everything reading Condition pays for it.")]
 	[Range(0f, 1f)]
+	[Tooltip("The most fullness a trough will ever put back. Grass still fills an animal completely, so a herd living out of a trough sits permanently a little short and everything reading Condition pays for it.")]
 	public float TroughFullnessCeiling = 0.8f;
 
 	[Tooltip("How much fullness each calorie of trough food is worth. The animal grazes a trough item down before it takes the next, so richer food lasts longer, the way it does for a horse.")]
@@ -628,7 +669,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			if (AgingEnabled)
 			{
-				return IsTame;
+				return DecayStarted;
 			}
 			return false;
 		}
@@ -756,7 +797,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		get
 		{
-			if (IsTame && !IsStarving())
+			if (IsLeadable && !IsStarving())
 			{
 				return Condition >= Livestock.dungConditionFloor;
 			}
@@ -778,25 +819,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	public bool IsTame
-	{
-		get
-		{
-			if (acquaintances == null)
-			{
-				return false;
-			}
-			float trustToBond = Livestock.trustToBond;
-			for (int i = 0; i < acquaintances.Length; i++)
-			{
-				if (acquaintances[i].userId != 0L && acquaintances[i].seconds >= trustToBond)
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-	}
+	public bool IsLeadable => AnyAcquaintanceAt(Livestock.trustToLead);
+
+	public bool IsFullyBonded => AnyAcquaintanceAt(Livestock.maxTrust);
+
+	public bool DecayStarted { get; private set; }
 
 	private static float TrustedNearbyTimeout => SenseComponent.maxRefreshIntervalSeconds * 2f;
 
@@ -876,6 +903,19 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public string LineStem { get; set; }
 
 	public bool HeirNamed { get; set; }
+
+	public bool SpeciesAtCap
+	{
+		get
+		{
+			int maxPerSpecies = Livestock.maxPerSpecies;
+			if (maxPerSpecies > 0)
+			{
+				return PopulationOf(Species) >= maxPerSpecies;
+			}
+			return false;
+		}
+	}
 
 	public float SleepOffset => sleepFraction * Mathf.Max(0f, SleepTimeVariance);
 
@@ -1177,6 +1217,23 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool OnBreedingCooldown => breedCooldown.IsRunning;
 
+	private bool MayBreed
+	{
+		get
+		{
+			if (IsFullyBonded && !BreedingPaused && !SpeciesAtCap)
+			{
+				BuildingPrivlidge cupboard;
+				if (Livestock.breedOnlyAtHome)
+				{
+					return TryGetHomeCupboard(out cupboard);
+				}
+				return true;
+			}
+			return false;
+		}
+	}
+
 	public bool HasCalved => hasCalved;
 
 	public bool IsAboutToCalve
@@ -1316,6 +1373,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		ageTimer = new PersistentTimer(timers, 1)
 		{
 			onElapsed = OnAgeTimerElapsed,
+			onStarted = OnAgeTimerStarted,
 			carryOnReplace = false
 		};
 		if (IsAging)
@@ -1345,8 +1403,14 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
+	private void OnAgeTimerStarted()
+	{
+		DecayStarted = true;
+	}
+
 	private void OnAgeTimerElapsed()
 	{
+		DecayStarted = true;
 		if (!IsDead() && AgingEnabled && !AdvanceAgeStage() && !HasAdultForm)
 		{
 			Debug.LogWarning((object)(Categorize() + " (" + PrefabName + ") is an Infant whose Species asset names no adult form; it will not age."));
@@ -1437,6 +1501,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		next.HeirNamed = HeirNamed;
 		next.Mother = Mother;
 		next.Father = Father;
+		next.DecayStarted = DecayStarted;
 		TransferFamiliarityTo(next);
 		next.Genes = Genes;
 		next.RestartLifespanForGenes();
@@ -1467,7 +1532,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		float num = Mathf.Max(0.01f, Livestock.conditionFullContentment / GeneScale(LivestockGene.Hardiness));
 		float num2 = Mathf.InverseLerp(0f, num, Contentment);
-		if (!IsTame)
+		if (!DecayStarted)
 		{
 			num2 = Mathf.Max(num2, Mathf.Clamp01(Livestock.wildConditionFloor));
 		}
@@ -1737,12 +1802,38 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 	}
 
+	private bool AnyAcquaintanceAt(float seconds)
+	{
+		if (acquaintances == null)
+		{
+			return false;
+		}
+		for (int i = 0; i < acquaintances.Length; i++)
+		{
+			if (acquaintances[i].userId != 0L && acquaintances[i].seconds >= seconds)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public bool TrustsToHandle(BasePlayer player)
+	{
+		if ((Object)(object)player != (Object)null)
+		{
+			return TrustOf(player) >= Livestock.trustToLead;
+		}
+		return false;
+	}
+
 	private void RefreshHusbandryClocks()
 	{
-		bool isTame = IsTame;
-		SetNetworkedFlag(Flags.Reserved16, isTame);
-		if (isTame)
+		bool isLeadable = IsLeadable;
+		SetNetworkedFlag(Flags.Reserved16, isLeadable);
+		if (isLeadable)
 		{
+			DecayStarted = true;
 			StartAgeTimerIfIdle();
 		}
 	}
@@ -1807,7 +1898,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return 0f;
 		}
-		float trustToBond = Livestock.trustToBond;
+		float trustToLead = Livestock.trustToLead;
 		if (TryGetHomeCupboard(out var cupboard))
 		{
 			if (cupboard.IsAuthed(player.userID))
@@ -1826,7 +1917,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 		for (int i = 0; i < acquaintances.Length; i++)
 		{
-			if (acquaintances[i].userId != 0L && !(acquaintances[i].seconds < trustToBond))
+			if (acquaintances[i].userId != 0L && !(acquaintances[i].seconds < trustToLead))
 			{
 				RelationshipManager.PlayerTeam playerTeam = serverInstance.FindPlayersTeam(acquaintances[i].userId);
 				if (playerTeam != null && playerTeam.teamID == player.currentTeam)
@@ -1858,11 +1949,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		if (Interface.CallHook("OnLivestockAnimalFamiliarityAdd", this, userId, seconds, reason) == null)
 		{
-			bool isTame = IsTame;
+			bool isLeadable = IsLeadable;
 			CreditFamiliarity(userId, seconds);
 			RefreshHusbandryClocks();
 			Interface.CallHook("OnLivestockAnimalFamiliarityAdded", this, userId, seconds, reason);
-			if (!isTame && IsTame && (reason == FamiliarityReason.Handled || reason == FamiliarityReason.Purchased))
+			if (!isLeadable && IsLeadable && (reason == FamiliarityReason.Handled || reason == FamiliarityReason.Purchased))
 			{
 				Facepunch.Rust.Analytics.Azure.OnLivestockAcquired(userId, this, reason);
 			}
@@ -1886,7 +1977,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return;
 		}
-		float trustCap = Livestock.trustCap;
+		float maxTrust = Livestock.maxTrust;
 		if (acquaintances == null)
 		{
 			acquaintances = new Acquaintance[8];
@@ -1897,7 +1988,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			if (acquaintances[i].userId == userId)
 			{
-				acquaintances[i].seconds = Mathf.Clamp(acquaintances[i].seconds + seconds, 0f, trustCap);
+				acquaintances[i].seconds = Mathf.Clamp(acquaintances[i].seconds + seconds, 0f, maxTrust);
 				if (seconds > 0f)
 				{
 					acquaintances[i].sinceCredited = TimeSince.op_Implicit(0f);
@@ -1925,7 +2016,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			acquaintances[num] = new Acquaintance
 			{
 				userId = userId,
-				seconds = Mathf.Min(seconds, trustCap),
+				seconds = Mathf.Min(seconds, maxTrust),
 				sinceCredited = TimeSince.op_Implicit(0f)
 			};
 			return;
@@ -1942,7 +2033,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			};
 		}
 		probationCredited = TimeSince.op_Implicit(0f);
-		probation.seconds = Mathf.Min(probation.seconds + seconds, trustCap);
+		probation.seconds = Mathf.Min(probation.seconds + seconds, maxTrust);
 		if (probation.seconds > acquaintances[num2].seconds)
 		{
 			acquaintances[num2] = probation;
@@ -1984,33 +2075,39 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
 		float num = TimeSince.op_Implicit(lastFamiliarityTick);
 		lastFamiliarityTick = TimeSince.op_Implicit(0f);
-		float familiarityForgetTime = Livestock.familiarityForgetTime;
-		float trustToBond = Livestock.trustToBond;
-		if (acquaintances == null || num <= 0f || familiarityForgetTime <= 0f || trustToBond <= 0f)
+		float familiarityForgetScale = Livestock.familiarityForgetScale;
+		float maxTrust = Livestock.maxTrust;
+		if (acquaintances == null || num <= 0f || familiarityForgetScale <= 0f)
 		{
 			return;
 		}
-		float num2 = trustToBond / familiarityForgetTime * num;
+		float num2 = num / familiarityForgetScale;
 		float trustedNearbyTimeout = TrustedNearbyTimeout;
+		bool flag = false;
 		for (int i = 0; i < acquaintances.Length; i++)
 		{
 			ref Acquaintance reference = ref acquaintances[i];
-			if (reference.userId != 0L && !(reference.seconds >= trustToBond) && !(TimeSince.op_Implicit(reference.sinceCredited) <= trustedNearbyTimeout))
+			if (reference.userId != 0L && !(reference.seconds >= maxTrust) && !(TimeSince.op_Implicit(reference.sinceCredited) <= trustedNearbyTimeout))
 			{
 				reference.seconds -= num2;
+				flag = true;
 				if (reference.seconds <= 0f)
 				{
 					reference = default;
 				}
 			}
 		}
-		if (probation.userId != 0L && !(probation.seconds >= trustToBond) && !(TimeSince.op_Implicit(probationCredited) <= trustedNearbyTimeout))
+		if (flag)
+		{
+			RefreshHusbandryClocks();
+		}
+		if (probation.userId != 0L && !(probation.seconds >= maxTrust) && !(TimeSince.op_Implicit(probationCredited) <= trustedNearbyTimeout))
 		{
 			probation.seconds -= num2;
 			if (probation.seconds <= 0f)
@@ -2044,10 +2141,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		if (!(num > familiarityRadius * familiarityRadius))
 		{
 			float num2 = Mathf.Max(0f, Livestock.familiarityRate);
-			if (ActsCurious)
-			{
-				num2 *= Mathf.Max(0f, Livestock.curiousFamiliarityScale);
-			}
 			if ((Object)(object)player.modifiers != (Object)null)
 			{
 				num2 *= 1f + Mathf.Max(0f, player.modifiers.GetValue(Modifier.ModifierType.LivestockHandling));
@@ -2118,8 +2211,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return;
 		}
-		float trustToDefend = Livestock.trustToDefend;
-		if (!(trustToDefend <= 0f) && !(TrustOf(player) < trustToDefend))
+		float maxTrust = Livestock.maxTrust;
+		if (!(maxTrust <= 0f) && !(TrustOf(player) < maxTrust))
 		{
 			float defendReactionTime = Livestock.defendReactionTime;
 			if (!(defendReactionTime <= 0f) && !(player.SecondsSinceAttacked > defendReactionTime) && !(player.lastAttackedTime <= lastDefendedAttack))
@@ -2145,10 +2238,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return false;
 		}
-		float trustToDefend = Livestock.trustToDefend;
-		if (trustToDefend > 0f)
+		float maxTrust = Livestock.maxTrust;
+		if (maxTrust > 0f)
 		{
-			return TrustOf(basePlayer) >= trustToDefend;
+			return TrustOf(basePlayer) >= maxTrust;
 		}
 		return false;
 	}
@@ -2211,11 +2304,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return;
 		}
-		float trustToBond = Livestock.trustToBond;
+		float trustToLead = Livestock.trustToLead;
 		int num = 0;
 		for (int i = 0; i < acquaintances.Length; i++)
 		{
-			if (acquaintances[i].userId != 0L && !(acquaintances[i].seconds < trustToBond))
+			if (acquaintances[i].userId != 0L)
 			{
 				if (num == 0)
 				{
@@ -2224,7 +2317,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				calf.acquaintances[num++] = new Acquaintance
 				{
 					userId = acquaintances[i].userId,
-					seconds = trustToBond
+					seconds = Mathf.Min(acquaintances[i].seconds, trustToLead)
 				};
 			}
 		}
@@ -2237,8 +2330,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			TrustTier.Known => Livestock.trustToFollow, 
 			TrustTier.Tolerated => Livestock.trustToTolerate, 
-			TrustTier.Bonded => Livestock.trustToBond, 
-			TrustTier.Herd => Livestock.trustToDefend, 
+			TrustTier.Bonded => Livestock.trustToLead, 
+			TrustTier.Herd => Livestock.maxTrust, 
 			_ => 0f, 
 		};
 	}
@@ -2261,11 +2354,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public static TrustTier TierFor(float seconds)
 	{
-		if (seconds >= Livestock.trustToDefend)
+		if (seconds >= Livestock.maxTrust)
 		{
 			return TrustTier.Herd;
 		}
-		if (seconds >= Livestock.trustToBond)
+		if (seconds >= Livestock.trustToLead)
 		{
 			return TrustTier.Bonded;
 		}
@@ -2282,11 +2375,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public static string TrustTierName(float seconds)
 	{
-		if (seconds >= Livestock.trustToDefend)
+		if (seconds >= Livestock.maxTrust)
 		{
 			return "herd";
 		}
-		if (seconds >= Livestock.trustToBond)
+		if (seconds >= Livestock.trustToLead)
 		{
 			return "bonded";
 		}
@@ -2508,7 +2601,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		if (!(TrustOf(player) < Livestock.trustToBond) && !(TimeSince.op_Implicit(lastAdoptionCheck) < 5f))
+		if (!(TrustOf(player) < Livestock.maxTrust) && !(TimeSince.op_Implicit(lastAdoptionCheck) < 5f))
 		{
 			lastAdoptionCheck = TimeSince.op_Implicit(0f);
 			BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege(cached: true);
@@ -2848,6 +2941,68 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		NameLocale = save.nameLocale;
 		LineStem = save.lineStem;
 		HeirNamed = save.heirNamed;
+	}
+
+	public static int PopulationOf(LivestockSpecies species)
+	{
+		if ((Object)(object)species == (Object)null || !populationBySpecies.TryGetValue(species, out var value))
+		{
+			return 0;
+		}
+		return value;
+	}
+
+	private void JoinPopulation()
+	{
+		if (!((Object)(object)Species == (Object)null))
+		{
+			populationBySpecies.TryGetValue(Species, out var value);
+			populationBySpecies[Species] = value + 1;
+		}
+	}
+
+	private void LeavePopulation()
+	{
+		if (!((Object)(object)Species == (Object)null) && populationBySpecies.TryGetValue(Species, out var value))
+		{
+			populationBySpecies[Species] = Mathf.Max(0, value - 1);
+		}
+	}
+
+	public static int CullPast(int max)
+	{
+		if (max < 0)
+		{
+			return 0;
+		}
+		PooledList<CullCandidate> val = Pool.Get<PooledList<CullCandidate>>();
+		try
+		{
+			LivestockAnimal[] array = Util.FindAll<LivestockAnimal>();
+			foreach (LivestockAnimal livestockAnimal in array)
+			{
+				if (!((Object)(object)livestockAnimal == (Object)null) && !livestockAnimal.IsDestroyed && !livestockAnimal.IsDead() && livestockAnimal.isServer && !((Object)(object)livestockAnimal.Species == (Object)null))
+				{
+					((List<CullCandidate>)(object)val).Add(new CullCandidate(livestockAnimal));
+				}
+			}
+			((List<CullCandidate>)(object)val).Sort();
+			int num = 0;
+			for (int j = 0; j < ((List<CullCandidate>)(object)val).Count; j++)
+			{
+				LivestockAnimal animal = ((List<CullCandidate>)(object)val)[j].Animal;
+				if (PopulationOf(animal.Species) > max)
+				{
+					animal.Kill();
+					num++;
+				}
+			}
+			return num;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	public void SetSleepFraction(float fraction)
@@ -4212,16 +4367,16 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public override void ServerInit()
 	{
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		timers = new PersistentTimerSet(this);
 		pregnancyTimer = new PersistentTimer(timers, 2)
@@ -4237,6 +4392,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		};
 		breedCooldown = new PersistentTimer(timers, 3);
 		((PersistentObjectWorkQueue<LivestockAnimal>)NeedsQueue).Add(this);
+		JoinPopulation();
 		lastLoudNoise = TimeSince.op_Implicit(100f);
 		lastHerdDistress = TimeSince.op_Implicit(100f);
 		lastAggression = TimeSince.op_Implicit(float.MaxValue);
@@ -4273,6 +4429,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 		base.DoServerDestroy();
 		((PersistentObjectWorkQueue<LivestockAnimal>)NeedsQueue).Remove(this);
+		LeavePopulation();
 		ForgetSpecial();
 	}
 
@@ -4340,7 +4497,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		if ((Object)(object)player != (Object)null && !player.IsDead() && !IsDead() && !IsSoreAt(player) && !IsMounted)
 		{
-			return TrustOf(player) >= Livestock.trustToBond;
+			return TrustsToHandle(player);
 		}
 		return false;
 	}
@@ -4507,9 +4664,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_Lead(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null))
@@ -4580,9 +4737,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
@@ -5078,18 +5235,18 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool CanBePregnant()
 	{
-		if (IsAdult() && IsFemale && !IsDead() && !IsPregnant() && !OnBreedingCooldown && IsTame)
+		if (IsAdult() && IsFemale && !IsDead() && !IsPregnant() && !OnBreedingCooldown)
 		{
-			return !BreedingPaused;
+			return MayBreed;
 		}
 		return false;
 	}
 
 	public bool CanBreed()
 	{
-		if (IsAdult() && IsMale && !IsDead() && !IsLeading() && !OnBreedingCooldown && IsTame)
+		if (IsAdult() && IsMale && !IsDead() && !IsLeading() && !OnBreedingCooldown)
 		{
-			return !BreedingPaused;
+			return MayBreed;
 		}
 		return false;
 	}

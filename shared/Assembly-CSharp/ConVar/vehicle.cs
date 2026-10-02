@@ -10,8 +10,8 @@ public class vehicle : ConsoleSystem
 	[ReplicatedVar(Saved = true, Help = "Whether repairable vehicle pads (eg. the Air Wolf helipad) have to be rebuilt with a hammer before their vendor will sell. When disabled, pads spawn already rebuilt and players cannot repair them.")]
 	public static bool padrepairsrequired = true;
 
-	[ServerVar]
 	[Help("how long until boat corpses despawn (excluding tugboat - use tugboat_corpse_seconds)")]
+	[ServerVar]
 	public static float boat_corpse_seconds = 300f;
 
 	[ServerVar(Help = "(Generated) When enabled, wheel colliders are disabled on vehicles that have gone to sleep in the physics engine, reducing CPU overhead for parked vehicles")]

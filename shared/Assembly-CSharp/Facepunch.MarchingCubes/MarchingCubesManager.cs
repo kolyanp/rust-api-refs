@@ -22,8 +22,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 
 	private MarchingCubesGenerator[] generators;
 
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static bool DebugLog = false;
 
 	private static int _generatorPoolCount;
@@ -48,8 +48,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 		}
 	}
 
-	[ServerVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
 	[ClientVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
+	[ServerVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
 	public static int GeneratorPoolCount
 	{
 		get

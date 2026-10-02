@@ -36,15 +36,15 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private Tooltip _distanceTooltip;
 
-	[Header("References - Last Played")]
 	[SerializeField]
+	[Header("References - Last Played")]
 	private RustText _lastPlayedText;
 
 	[SerializeField]
 	private GameObject _lastPlayedObject;
 
-	[SerializeField]
 	[Header("References - Friends")]
+	[SerializeField]
 	private RustText _friendsText;
 
 	[SerializeField]
@@ -53,15 +53,15 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private Tooltip _friendsTooltip;
 
-	[Header("References - Queue")]
 	[SerializeField]
+	[Header("References - Queue")]
 	private RustText _queueText;
 
 	[SerializeField]
 	private GameObject _queueObject;
 
-	[SerializeField]
 	[Header("References - Favourites")]
+	[SerializeField]
 	private RustButton _favouritesButton;
 
 	[SerializeField]

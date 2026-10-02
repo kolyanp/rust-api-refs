@@ -26,8 +26,8 @@ public class ItemModConsumable : MonoBehaviour
 
 	public string steamStatIncrementWhenEaten;
 
-	[Tooltip("Replaces the calories used by the biofuel generator, zero stops it accepting this item")]
 	[Header("Biofuel")]
+	[Tooltip("Replaces the calories used by the biofuel generator, zero stops it accepting this item")]
 	public bool overrideBiofuelCalories;
 
 	[Min(0f)]

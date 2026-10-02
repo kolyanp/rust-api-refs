@@ -629,8 +629,8 @@ public class TreeManager : BaseEntity
 		RustLog.Log(RustLog.EntryType.Network, 1, ((Component)player).gameObject, "Took {0}ms to send {1} global trees to {2}", stopwatch.Elapsed.TotalMilliseconds, values.Count, player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(0uL)]
+	[RPC_Server]
 	private void SERVER_RequestTrees(RPCMessage msg)
 	{
 		if (EnableTreeStreaming)

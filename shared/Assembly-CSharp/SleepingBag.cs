@@ -1324,8 +1324,8 @@ public class SleepingBag : DecayEntity
 		NotifyPlayer(deployerUserID);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_ShowOnCompass(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && deployerUserID == (ulong)msg.player.userID)

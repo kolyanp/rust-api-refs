@@ -713,9 +713,9 @@ public class RentableShop : BaseEntity
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	private void Server_OpenVendingAdmin(RPCMessage msg)
 	{
 		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(isServer);
@@ -969,8 +969,8 @@ public class RentableShop : BaseEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void Server_Shop(RPCMessage msg)
 	{

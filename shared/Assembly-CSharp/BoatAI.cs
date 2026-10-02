@@ -7,6 +7,7 @@ using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
+using Oxide.Core;
 using Rust;
 using Rust.Ai;
 using Rust.Assertions;
@@ -768,8 +769,8 @@ public class BoatAI : BaseEntity
 
 	private const int CONTEXT_RESOLUTION = 8;
 
-	[SerializeField]
 	[Header("Boat AI - Scientists")]
+	[SerializeField]
 	private bool _autoFillWithScientists;
 
 	[SerializeField]
@@ -809,8 +810,8 @@ public class BoatAI : BaseEntity
 	[Header("Boat AI")]
 	private BaseBoat _boat;
 
-	[SerializeField]
 	[Header("Boat AI - General")]
+	[SerializeField]
 	private bool _autoInit;
 
 	[SerializeField]
@@ -829,8 +830,8 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _awarenessDistance;
 
-	[Header("Boat AI - Debug")]
 	[SerializeField]
+	[Header("Boat AI - Debug")]
 	private Transform _debugMoveTo;
 
 	[ServerVar(Help = "(Generated) When enabled, draws DDraw visualisations of boat AI steering, avoidance, and pathfinding state")]
@@ -1676,7 +1677,7 @@ public class BoatAI : BaseEntity
 
 	public bool IsPlayerTargetValid(BasePlayer ply)
 	{
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)ply == (Object)null)
 		{
 			if (PRINT_DEBUGS)
@@ -1708,6 +1709,11 @@ public class BoatAI : BaseEntity
 				Debug.LogWarning((object)("[BoatAI] Invalid target: " + ply.displayName + " not valid attack target"));
 			}
 			return false;
+		}
+		object obj = Interface.CallHook("IOnNpcTarget", this, ply);
+		if (obj is bool)
+		{
+			return (bool)obj;
 		}
 		if (Check.SimplyOnTerrainAt(((Component)ply).transform.position))
 		{

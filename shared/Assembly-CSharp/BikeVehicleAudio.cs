@@ -6,8 +6,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private EngineAudioSet engineAudioSet;
 
-	[SerializeField]
 	[Header("Suspension")]
+	[SerializeField]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]

@@ -21,7 +21,7 @@ public class LivestockSpecial
 	[Tooltip("Lets this entry force an allele below Ok. Off by default so a freshly added array element, which defaults to Bad, is caught rather than shipped.")]
 	public bool AllowBadGenes;
 
-	[Min(0f)]
 	[Tooltip("How likely this one is relative to the others, once the rarity roll has passed at all.")]
+	[Min(0f)]
 	public float Weight = 1f;
 }

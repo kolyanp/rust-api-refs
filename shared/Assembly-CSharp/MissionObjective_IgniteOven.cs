@@ -10,8 +10,8 @@ public class MissionObjective_IgniteOven : MissionObjective
 
 	public bool PingTarget;
 
-	[SerializeField]
 	[FormerlySerializedAs("PingType")]
+	[SerializeField]
 	private BasePlayer.PingType pingType = BasePlayer.PingType.GoTo;
 
 	public override BasePlayer.PingType PingType => pingType;

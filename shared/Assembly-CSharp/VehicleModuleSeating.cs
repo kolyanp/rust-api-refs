@@ -22,8 +22,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 		[Header("Seating & Controls")]
 		public bool doorsAreLockable = true;
 
-		[Obsolete("Use BaseVehicle.mountPoints instead")]
 		[HideInInspector]
+		[Obsolete("Use BaseVehicle.mountPoints instead")]
 		public MountPointInfo[] mountPoints;
 
 		public Transform steeringWheel;
@@ -87,12 +87,12 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[SerializeField]
 	private Vector3 speedometerAngle;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 fuelAngle;
 
-	[SerializeField]
 	[Header("Horn")]
+	[SerializeField]
 	private SoundDefinition hornLoop;
 
 	[SerializeField]
@@ -333,8 +333,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_DestroyLock(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

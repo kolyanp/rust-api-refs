@@ -7,10 +7,10 @@ using UnityEngine.Scripting;
 
 namespace UnityEngine.Rendering.PostProcessing;
 
+[AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [ExecuteAlways]
 [DisallowMultipleComponent]
 [ImageEffectAllowedInSceneView]
-[AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [RequireComponent(typeof(Camera))]
 public class PostProcessLayer : MonoBehaviour
 {

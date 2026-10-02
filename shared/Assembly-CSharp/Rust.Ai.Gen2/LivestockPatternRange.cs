@@ -55,8 +55,8 @@ public class LivestockPatternRange : LivestockGeneRange
 	[Tooltip("Bias strength at Inbred 0 (x) and Inbred 1 (y), the only two a shipped animal lands on. 1 holds the patches to the bias map and 0 ignores the map.")]
 	public Vector2 BiasStrength = new Vector2(1f, 0f);
 
-	[Min(0.01f)]
 	[Tooltip("Size of the warp features relative to the texture. Smaller crinkles the edges, larger bends whole blobs.")]
+	[Min(0.01f)]
 	public float EdgeWarpSize = 0.33f;
 
 	private const int WarpSeedMix = 1540483477;

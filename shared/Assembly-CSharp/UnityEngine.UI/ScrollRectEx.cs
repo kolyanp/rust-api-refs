@@ -5,8 +5,8 @@ using UnityEngine.Events;
 
 namespace UnityEngine.UI;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(RectTransform))]
+[ExecuteInEditMode]
 [SelectionBase]
 [AddComponentMenu("UI/Scroll Rect Ex", 37)]
 public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEventSystemHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IScrollHandler, ICanvasElement, ILayoutGroup, ILayoutController

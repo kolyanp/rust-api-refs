@@ -37,16 +37,16 @@ public class Pooltable : BaseCombatEntity
 	private WorldSpline worldSpline;
 
 	[SerializeField]
-	[Range(0f, 0.75f)]
 	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
+	[Range(0f, 0.75f)]
 	private float splineTableCloseness = 0.25f;
 
-	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	[SerializeField]
+	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	private bool runWalkClippingChecks = true;
 
-	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
 	[SerializeField]
+	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
 	private Bounds walkAreaCheck = new Bounds(new Vector3(0f, 0f, 0.24f), new Vector3(0.55f, 1.3f, 0.44f));
 
 	[SerializeField]
@@ -56,8 +56,8 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private GameObjectRef winEffect;
 
-	[SerializeField]
 	[Header("Client")]
+	[SerializeField]
 	private List<GameObject> clientRenderingPoolBalls;
 
 	[SerializeField]
@@ -87,8 +87,8 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private float ballCollisionSoundInterval = 0.02f;
 
-	[SerializeField]
 	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
+	[SerializeField]
 	[Header("Ball Return")]
 	private WorldSpline ballReturnPath;
 
@@ -495,8 +495,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -505,8 +505,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -563,8 +563,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_RequestMount(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null && gameController.HasGame && gameController.CanMount(msg.player.userID))
@@ -601,8 +601,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestShoot(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -647,8 +647,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestCancelGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanCancelGame(msg.player))

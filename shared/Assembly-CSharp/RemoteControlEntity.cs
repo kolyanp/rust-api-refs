@@ -275,8 +275,8 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void Server_SetID(RPCMessage msg)
 	{
 		string oldID = msg.read.String();
@@ -284,8 +284,8 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 		SetID(msg.player, oldID, newID);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_AdminUpdateIdentifier(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && (msg.player.IsAdmin || msg.player.IsDeveloper))

@@ -24,8 +24,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public float Radius = 2f;
 
 	[NonSerialized]
-	[Tooltip("Max sampling range in pixels.")]
 	[Range(32f, 1024f)]
+	[Tooltip("Max sampling range in pixels.")]
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
@@ -33,16 +33,16 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 2f)]
 	public float RadiusIntensity = 1f;
 
-	[Range(0f, 16f)]
 	[Tooltip("Power exponent attenuation of the occlusion.")]
+	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
 	[Tooltip("Controls the initial occlusion contribution offset.")]
 	[Range(0f, 0.99f)]
 	public float Bias = 0.05f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the thickness occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -58,8 +58,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength = 50f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Intensity parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToIntensity;
 
 	public Color FadeToTint = Color.black;
@@ -68,8 +68,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Final Radius parameter.")]
 	public float FadeToRadius = 2f;
 
-	[Tooltip("Final PowerExponent parameter.")]
 	[Range(0f, 16f)]
+	[Tooltip("Final PowerExponent parameter.")]
 	public float FadeToPowerExponent = 1.8f;
 
 	[Tooltip("Final Thickness parameter.")]
@@ -83,12 +83,12 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(1f, 4f)]
 	public int BlurRadius = 3;
 
-	[Range(1f, 4f)]
 	[Tooltip("Number of times that the Blur will repeat.")]
+	[Range(1f, 4f)]
 	public int BlurPasses = 1;
 
-	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	[Range(0f, 20f)]
+	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	public float BlurSharpness = 10f;
 
 	[Tooltip("Accumulates the effect over the time.")]

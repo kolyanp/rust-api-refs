@@ -17,8 +17,8 @@ public class TerrainFootprint : PrefabAttribute
 	[HideInInspector]
 	public bool[] RunClosed = Array.Empty<bool>();
 
-	[Tooltip("Where the fill stops, relative to the ring: 0 lands the ground on the line, positive buries the base. Metres, never scaled by the prefab or by tilt.")]
 	[Header("Seating")]
+	[Tooltip("Where the fill stops, relative to the ring: 0 lands the ground on the line, positive buries the base. Metres, never scaled by the prefab or by tilt.")]
 	public float FillOffset;
 
 	[Tooltip("Safety ceiling on the raise, in metres. A backstop, not a tuning dial: set it below the deepest gutter you want bridged and the gutter stops short, leaving a step.")]

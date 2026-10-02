@@ -11,8 +11,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RustSlider powerBar;
 
-	[Header("Instructions")]
 	[SerializeField]
+	[Header("Instructions")]
 	private GameObject holdInstruction;
 
 	[SerializeField]
@@ -34,8 +34,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RawImage opponentAvatar;
 
-	[Header("Current Turn")]
 	[SerializeField]
+	[Header("Current Turn")]
 	private GameObject localTurnBall;
 
 	[SerializeField]

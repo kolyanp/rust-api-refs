@@ -37,8 +37,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	private bool wasOnSurface;
 
-	[Header("Submarine Main")]
 	[SerializeField]
+	[Header("Submarine Main")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -68,8 +68,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	private GameObjectRef fuelStoragePrefab;
 
-	[Header("Submarine Engine & Fuel")]
 	[SerializeField]
+	[Header("Submarine Engine & Fuel")]
 	public float engineKW = 200f;
 
 	[SerializeField]
@@ -90,12 +90,12 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	public float maxFuelPerSec = 0.15f;
 
-	[SerializeField]
 	[FormerlySerializedAs("internalAccessFuelTank")]
+	[SerializeField]
 	private bool internalAccessStorage;
 
-	[Header("Submarine Weaponry")]
 	[SerializeField]
+	[Header("Submarine Weaponry")]
 	public GameObjectRef torpedoStoragePrefab;
 
 	[SerializeField]
@@ -926,8 +926,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

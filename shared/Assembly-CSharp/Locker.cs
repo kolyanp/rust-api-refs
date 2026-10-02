@@ -143,8 +143,8 @@ public class Locker : StorageContainer
 		return (slot - 7) % 14 == 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Equip(RPCMessage msg)
 	{
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)

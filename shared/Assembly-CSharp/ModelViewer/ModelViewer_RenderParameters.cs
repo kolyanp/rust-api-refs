@@ -31,8 +31,8 @@ public class ModelViewer_RenderParameters
 	[Header("Anti Aliasing")]
 	public PostProcessLayer.Antialiasing antialiasing = PostProcessLayer.Antialiasing.TemporalAntialiasing;
 
-	[Header("Shadows")]
 	[Range(1f, 4f)]
+	[Header("Shadows")]
 	public int shadowCascades = 4;
 
 	[Range(1f, 3f)]
@@ -80,8 +80,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 1f)]
 	public float traceBias = 0.03f;
 
-	[Header("Ambient Occlusion")]
 	[Header("                ")]
+	[Header("Ambient Occlusion")]
 	public bool enableAmbientOcclusion = true;
 
 	public SampleCountLevel SampleCount = SampleCountLevel.Medium;
@@ -90,8 +90,8 @@ public class ModelViewer_RenderParameters
 
 	public Color Tint = Color.black;
 
-	[Tooltip("Radius spread of the occlusion.")]
 	[Range(0f, 32f)]
+	[Tooltip("Radius spread of the occlusion.")]
 	public float Radius = 2f;
 
 	[Range(0f, 16f)]
@@ -102,8 +102,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 0.99f)]
 	public float Bias = 0.05f;
 
-	[Tooltip("Controls the thickness occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the thickness occlusion contribution.")]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -136,8 +136,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 1f)]
 	public float FadeToThickness = 1f;
 
-	[Header("                ")]
 	[Header("Reflections")]
+	[Header("                ")]
 	public ReflectionProbeMode Type = (ReflectionProbeMode)1;
 
 	public ReflectionProbeRefreshMode RefreshMode = (ReflectionProbeRefreshMode)1;

@@ -27,8 +27,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Image gestureIcon;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform wheelCenter;
 
 	[SerializeField]
@@ -41,8 +41,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]
@@ -51,8 +51,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private UI_SettingsGesturePack packPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	public RectTransform dragAndDropCanvas;
 
 	[SerializeField]

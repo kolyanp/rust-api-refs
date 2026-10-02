@@ -443,8 +443,8 @@ public class ChickenCoop : StorageContainer
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)

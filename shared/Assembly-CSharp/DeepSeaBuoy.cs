@@ -5,12 +5,12 @@ public class DeepSeaBuoy : MonoBehaviour
 	[SerializeField]
 	private MeshRenderer[] meshRenderers;
 
-	[SerializeField]
 	[ColorUsage(true, true)]
+	[SerializeField]
 	private Color colorOpen = Color.green;
 
-	[SerializeField]
 	[ColorUsage(true, true)]
+	[SerializeField]
 	private Color colorClosed = Color.red;
 
 	[SerializeField]

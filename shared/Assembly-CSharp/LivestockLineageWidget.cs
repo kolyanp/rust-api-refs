@@ -11,13 +11,13 @@ public class LivestockLineageWidget : MonoBehaviour, IClientComponent
 	[Tooltip("A box drawn round this column while the animal is inbred. Stretched to the column, so it surrounds one disc or two depending on whether the second marker is showing.")]
 	public GameObject InbredHighlight;
 
-	[Range(0f, 1f)]
-	[Tooltip("How saturated a marker's colour is. Kept well clear of the gene discs' own strength so the two columns do not read as the same kind of thing.")]
 	[Header("Colours")]
+	[Tooltip("How saturated a marker's colour is. Kept well clear of the gene discs' own strength so the two columns do not read as the same kind of thing.")]
+	[Range(0f, 1f)]
 	public float MarkerSaturation = 0.5f;
 
-	[Tooltip("How bright a marker's colour is.")]
 	[Range(0f, 1f)]
+	[Tooltip("How bright a marker's colour is.")]
 	public float MarkerValue = 0.72f;
 
 	public Color TextColour = new Color(0.898f, 0.886f, 0.874f, 1f);

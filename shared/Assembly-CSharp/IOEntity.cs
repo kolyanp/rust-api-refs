@@ -331,8 +331,8 @@ public class IOEntity : DecayEntity
 	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
 	public static float frameBudgetGenericMs = 1f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing industrial entities per server frame")]
+	[ServerVar]
 	public static float frameBudgetIndustrialMs = 0.25f;
 
 	[ServerVar(Help = "(Generated) Minimum interval in seconds between IO entity logic updates; controls how quickly electrical signals propagate through the network")]
@@ -896,8 +896,8 @@ public class IOEntity : DecayEntity
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.IsVisible(6f)]
 	private void Server_RequestData(RPCMessage msg)
 	{

@@ -89,8 +89,8 @@ public class AttackHelicopter : PlayerHelicopter
 	[SerializeField]
 	private Material monitorStaticSafeZone;
 
-	[Header("Heli Pilot Flares")]
 	[SerializeField]
+	[Header("Heli Pilot Flares")]
 	public GameObjectRef flareFireFX;
 
 	[SerializeField]
@@ -105,8 +105,8 @@ public class AttackHelicopter : PlayerHelicopter
 	[SerializeField]
 	public float flareLaunchVel = 10f;
 
-	[Header("Heli Pilot Lights")]
 	[SerializeField]
+	[Header("Heli Pilot Lights")]
 	private Renderer rocketLightOff;
 
 	[SerializeField]
@@ -805,8 +805,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -838,8 +838,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: true);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_CloseGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -851,8 +851,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_SetRocketAmmoType(RPCMessage msg)
 	{
 		if (!((Object)(object)GetDriver() != (Object)(object)msg.player))

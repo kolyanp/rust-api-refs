@@ -6,8 +6,8 @@ public class UI_ServerAdminUGCEntryStub : MonoBehaviour
 	[SerializeField]
 	private RustText prefabNameText;
 
-	[SerializeField]
 	[Header("Widgets")]
+	[SerializeField]
 	private UI_ServerAdminUGCEntryImage imageWidget;
 
 	[SerializeField]

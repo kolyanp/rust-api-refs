@@ -24,8 +24,8 @@ public class State_Roam : FSMStateBase
 	[SerializeField]
 	private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Sprint;
 
-	[SerializeField]
 	[Tooltip("When determining the speed to roam at, does the interpolation start from the minimum distance range (true), or from 0 (false)")]
+	[SerializeField]
 	private bool useDistanceRangeMinforMinSpeed;
 
 	[SerializeField]

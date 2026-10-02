@@ -154,8 +154,8 @@ public class UI_Settings : UI_Page
 	[SerializeField]
 	private GameObject searchButtonGroup;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject gestureGroup;
 
 	[SerializeField]
@@ -176,8 +176,8 @@ public class UI_Settings : UI_Page
 	[SerializeField]
 	private CoverVideo tooltipVideo;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private ScrollRect scrollRect;
 
 	[SerializeField]

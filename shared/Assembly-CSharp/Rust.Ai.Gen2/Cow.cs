@@ -122,8 +122,8 @@ public class Cow : LivestockAnimal
 		SetMilkReady(IsFemale);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void MilkCow(RPCMessage msg)
 	{
@@ -132,13 +132,13 @@ public class Cow : LivestockAnimal
 
 	public bool TryMilk(BasePlayer player)
 	{
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		if (!CanBeMilked(player))
 		{
 			return false;
 		}
-		if (!IsTame)
+		if (!TrustsToHandle(player))
 		{
 			OnGrabbedBy(player);
 			return false;

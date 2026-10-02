@@ -265,7 +265,7 @@ public class Sheep : LivestockAnimal
 			Effect.server.Run(ShearWoolEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
 		}
 		GiveShearItems(player);
-		if (!IsTame)
+		if (!TrustsToHandle(player))
 		{
 			OnGrabbedBy(player);
 		}

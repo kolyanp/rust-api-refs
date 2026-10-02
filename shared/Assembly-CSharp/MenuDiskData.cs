@@ -15,7 +15,7 @@ public static class MenuDiskData
 
 		public string Address { get; set; }
 
-		public int QueryPort { get; set; }
+		public int ConnectionPort { get; set; }
 
 		public uint LastConnected { get; set; }
 	}
@@ -55,6 +55,7 @@ public static class MenuDiskData
 				{
 					_menuData = new MenuData();
 				}
+				_menuData.SavedServers.RemoveAll((ServerSaveData s) => s.ConnectionPort == 0);
 			}
 			else
 			{
@@ -105,16 +106,16 @@ public static class MenuDiskData
 		}
 	}
 
-	public static void AddRecentServer(string name, string address, int queryPort)
+	public static void AddRecentServer(string name, string address, int connectionPort)
 	{
 		ServerSaveData item = new ServerSaveData
 		{
 			Name = name,
 			Address = address,
-			QueryPort = queryPort,
+			ConnectionPort = connectionPort,
 			LastConnected = (uint)Epoch.Current
 		};
-		Data.SavedServers.RemoveAll((ServerSaveData s) => s.Address.Equals(address, StringComparison.OrdinalIgnoreCase) && s.QueryPort == queryPort);
+		Data.SavedServers.RemoveAll((ServerSaveData s) => s.Address.Equals(address, StringComparison.OrdinalIgnoreCase) && s.ConnectionPort == connectionPort);
 		Data.SavedServers.Insert(0, item);
 		if (Data.SavedServers.Count > 3)
 		{

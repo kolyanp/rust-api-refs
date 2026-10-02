@@ -42,8 +42,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
 	[ClientVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
+	[ServerVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
 	public static int incremental_milliseconds
 	{
 		get
@@ -56,8 +56,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled
 	{
 		get

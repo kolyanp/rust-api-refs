@@ -6,8 +6,8 @@ namespace FIMSpace.FTail;
 [AddComponentMenu("FImpossible Creations/Tail Animator Utilities/Tail Animator Wind")]
 public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon
 {
-	[Header("In playmode you will find this object in DontDestroyOnLoad")]
 	[FPD_Header("Main Wind Setings", 2f, 4f, 2)]
+	[Header("In playmode you will find this object in DontDestroyOnLoad")]
 	public float power = 1f;
 
 	public float additionalTurbulence = 1f;

@@ -27,8 +27,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float gearMissCooldown = 5f;
 
-	[SerializeField]
 	[Header("Suspension")]
+	[SerializeField]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]

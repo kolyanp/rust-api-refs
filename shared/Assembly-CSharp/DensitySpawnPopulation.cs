@@ -10,10 +10,10 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(menuName = "Rust/Density Spawn Population")]
 public class DensitySpawnPopulation : SpawnPopulationBase
 {
-	[Tooltip("Usually per square km")]
+	[FormerlySerializedAs("TargetDensity")]
 	[SerializeField]
 	[Header("Spawn Info")]
-	[FormerlySerializedAs("TargetDensity")]
+	[Tooltip("Usually per square km")]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;

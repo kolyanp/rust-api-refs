@@ -153,8 +153,8 @@ public class SeismicSensor : IOEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_SetRange(RPCMessage msg)
 	{

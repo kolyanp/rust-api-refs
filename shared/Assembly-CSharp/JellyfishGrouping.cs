@@ -15,8 +15,8 @@ public class JellyfishGrouping : IDisposable
 
 		public Material material;
 
-		[Tooltip("How many jellyfish have their local water column re-sampled each update. Sampled as one batch, so raising this is cheap.")]
 		[Header("Population")]
+		[Tooltip("How many jellyfish have their local water column re-sampled each update. Sampled as one batch, so raising this is cheap.")]
 		public int samplesPerFrame;
 
 		public int maxCount;
@@ -24,8 +24,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("How far from the entity the jellyfish spread out. They turn back when they reach the edge rather than despawning.")]
 		public float swarmRadius;
 
-		[Tooltip("Speed while drifting around. Jellyfish have no hurried state, this is the only speed.")]
 		[Header("Movement")]
+		[Tooltip("Speed while drifting around. Jellyfish have no hurried state, this is the only speed.")]
 		public float speed;
 
 		[Tooltip("Turn rate while drifting.")]
@@ -37,8 +37,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Random speed spread per jellyfish, on top of size. 0.25 means each is up to 25 percent faster or slower than its size alone suggests.")]
 		public float speedRandomness;
 
-		[Header("Tilt")]
 		[Tooltip("How far a jellyfish leans into a climb or dive, in degrees. This is the tilt at full tiltReferenceSpeed, reached only in a steep climb.")]
+		[Header("Tilt")]
 		public float maxTiltAngle;
 
 		[Tooltip("Climb rate that earns the full maxTiltAngle, in metres per second. Lower tilts the swarm harder on gentle drifts.")]
@@ -54,15 +54,15 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Speed at which a jellyfish pulses at its full authored rate. Below this the pulse slows towards pulseRateAtRest, above it does not speed up further.")]
 		public float pulseReferenceSpeed;
 
-		[Header("Following")]
 		[Tooltip("How close to the entity each jellyfish wants to stay, as a fraction of the swarm radius. Rolled per jellyfish, so some shadow the entity closely while others hang back near the edge.")]
+		[Header("Following")]
 		public Vector2 followTightnessRange;
 
 		[Tooltip("Random variation in how long a jellyfish dawdles before setting off after the entity, in seconds. Stops the swarm surging as one block.")]
 		public Vector2 catchUpDelayRange;
 
-		[Tooltip("How far a jellyfish travels in one trip, as a fraction of the swarm radius. Picked randomly per trip.")]
 		[Header("Wandering")]
+		[Tooltip("How far a jellyfish travels in one trip, as a fraction of the swarm radius. Picked randomly per trip.")]
 		public Vector2 wanderDistanceRange;
 
 		[Tooltip("How long a jellyfish hangs still after finishing a trip, in seconds. Higher means a calmer swarm.")]

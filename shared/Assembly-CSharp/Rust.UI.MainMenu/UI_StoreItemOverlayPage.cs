@@ -56,9 +56,9 @@ public class UI_StoreItemOverlayPage : UI_Window
 		public PageElement[] Elements;
 	}
 
-	[Header("Page Content")]
-	[SerializeField]
 	[Space]
+	[SerializeField]
+	[Header("Page Content")]
 	private CanvasGroup bodyCanvasGroup;
 
 	[SerializeField]

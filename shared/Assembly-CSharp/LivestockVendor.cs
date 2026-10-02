@@ -659,21 +659,20 @@ public class LivestockVendor : NPCTalking
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		if (targetPlayer.inventory.GetAmount(ItemManager.Items.Scrap) >= cost)
 		{
-			LivestockAnimal livestockAnimal = gameManager.CreateEntity(toCreate.resourcePath, ((Component)targetPlayer).transform.position + -((Component)targetPlayer).transform.forward * 2f) as LivestockAnimal;
+			LivestockAnimal livestockAnimal = gameManager.CreateEntity(toCreate.resourcePath, ((Component)this).transform.position + ((Component)this).transform.forward * 2f) as LivestockAnimal;
 			if (!((Object)(object)livestockAnimal == (Object)null))
 			{
 				targetPlayer.inventory.UseAmount(ItemManager.Items.Scrap, cost);
 				livestockAnimal.IsBeingPurchased = true;
 				livestockAnimal.IsMale = isMale;
 				livestockAnimal.Spawn();
-				livestockAnimal.SetFamiliarity(targetPlayer.userID, Livestock.trustToBond, LivestockAnimal.FamiliarityReason.Purchased);
+				livestockAnimal.SetFamiliarity(targetPlayer.userID, Livestock.trustToLead, LivestockAnimal.FamiliarityReason.Purchased);
 				livestockAnimal.TryLead(targetPlayer, wantsLead: true);
 				livestockAnimal.SendNetworkUpdate();
 			}

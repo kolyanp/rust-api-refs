@@ -11,8 +11,8 @@ public class Manifest
 		return Application.Manifest;
 	}
 
-	[ClientVar(Help = "(Generated) Prints the raw contents of the Facepunch manifest file as an unformatted string")]
 	[ServerVar(Help = "(Generated) Prints the raw contents of the Facepunch manifest file as an unformatted string")]
+	[ClientVar(Help = "(Generated) Prints the raw contents of the Facepunch manifest file as an unformatted string")]
 	public static object PrintManifestRaw()
 	{
 		return Manifest.Contents;

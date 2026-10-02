@@ -66,8 +66,8 @@ public class ReclaimTerminal : StorageContainer
 		inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
 	public void RPC_ReloadLoot(RPCMessage msg)
 	{

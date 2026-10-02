@@ -22,6 +22,8 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	public const Flags Flag_Dripping = Flags.Reserved9;
 
+	public const Flags Flag_OilWarmingUp = Flags.Reserved6;
+
 	[Header("Water Catcher")]
 	public ItemDefinition itemToCreate;
 
@@ -92,6 +94,8 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 	private TimeUntil oilProductionWarmUp;
 
 	private float savedOilProductionWarmUp = -1f;
+
+	private Action updateOilWarmUpFlag;
 
 	private Action clearWaterMovedFlag;
 
@@ -372,6 +376,36 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 			savedOilProductionWarmUp = -1f;
 		}
 		ToggleProducing(newValue > 0f);
+		UpdateOilWarmUpFlag();
+	}
+
+	private void UpdateOilWarmUpFlag()
+	{
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = IsOilWarmingUp();
+		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+		{
+			flagsUpdateScope.Set(Flags.Reserved6, flag);
+		}
+		if (updateOilWarmUpFlag == null)
+		{
+			updateOilWarmUpFlag = UpdateOilWarmUpFlag;
+		}
+		CancelInvoke(updateOilWarmUpFlag);
+		if (flag)
+		{
+			Invoke(updateOilWarmUpFlag, TimeUntil.op_Implicit(oilProductionWarmUp) + 0.1f);
+		}
+	}
+
+	private bool IsOilWarmingUp()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		if (requireOilSwitchActive && currentOilRigMultiplier > 0f)
+		{
+			return TimeUntil.op_Implicit(oilProductionWarmUp) > 0f;
+		}
+		return false;
 	}
 
 	protected override void OnWaterMoved(int amount)
@@ -402,28 +436,38 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		base.PostServerLoad();
 		if (HasFlag(Flags.Reserved10))
 		{
-			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
-			{
-				flagsUpdateScope.Set(Flags.Reserved10, b: false);
-			}
+			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local);
+			flagsUpdateScope.Set(Flags.Reserved10, b: false);
+		}
+		if (requireOilSwitchActive)
+		{
+			UpdateOilWarmUpFlag();
 		}
 	}
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		if (info.forDisk && requireOilSwitchActive)
+		if (requireOilSwitchActive)
 		{
-			float num = TimeUntil.op_Implicit(oilProductionWarmUp);
-			info.msg.ioEntity.genericFloat1 = ((currentOilRigMultiplier > 0f) ? Mathf.Max(0f, num) : savedOilProductionWarmUp);
+			if (info.forDisk)
+			{
+				float num = TimeUntil.op_Implicit(oilProductionWarmUp);
+				info.msg.ioEntity.genericFloat1 = ((currentOilRigMultiplier > 0f) ? Mathf.Max(0f, num) : savedOilProductionWarmUp);
+			}
+			else
+			{
+				info.msg.ioEntity.genericFloat1 = (IsOilWarmingUp() ? TimeUntil.op_Implicit(oilProductionWarmUp) : 0f);
+			}
 		}
 	}
 
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.fromDisk && requireOilSwitchActive && info.msg.ioEntity != null)
+		if (requireOilSwitchActive && info.msg.ioEntity != null && info.fromDisk)
 		{
 			savedOilProductionWarmUp = info.msg.ioEntity.genericFloat1;
 		}

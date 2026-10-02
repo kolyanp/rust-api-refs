@@ -21,15 +21,15 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private HttpImage httpImage;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject gaugeParent;
 
 	[SerializeField]
 	private Image gaugeImage;
 
 	[SerializeField]
-	[Header("Animation")]
 	[Space]
+	[Header("Animation")]
 	private CanvasGroup canvasGroup;
 }

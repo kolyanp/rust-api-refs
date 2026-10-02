@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using ConVar;
 using Network;
+using Oxide.Core;
 using Rust;
 using UnityEngine;
 
@@ -183,6 +184,11 @@ public class WildlifeHazard : BaseCombatEntity, IReceivePlayerTickListener
 		if (SingularInteraction && (Object)(object)SingularInteractionPlayer != (Object)null)
 		{
 			return false;
+		}
+		object obj = Interface.CallHook("IOnNpcTarget", this, player);
+		if (obj is bool)
+		{
+			return (bool)obj;
 		}
 		if (!CanSeeTarget(((Component)player).transform))
 		{

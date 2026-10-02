@@ -40,8 +40,8 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 	[SerializeField]
 	private float _pageBackgroundOverlayAlpha = 0.98f;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SafeZoneWarning _safeZoneWarningPopup;
 
 	public static Action OnOpenStateChanged;

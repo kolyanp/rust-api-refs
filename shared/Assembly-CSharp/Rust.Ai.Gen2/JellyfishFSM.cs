@@ -8,8 +8,8 @@ public class JellyfishFSM : SwimmingNPCFSM
 	[Serializable]
 	public class State_Drift : FSMStateBase
 	{
-		[SerializeField]
 		[Tooltip("How long the swarm hangs in the current before setting off on its next leg, in seconds.")]
+		[SerializeField]
 		private Vector2 driftDurationRange = new Vector2(4f, 12f);
 
 		private TimeUntil driftEndTime;

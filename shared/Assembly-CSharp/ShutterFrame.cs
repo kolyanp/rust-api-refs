@@ -169,8 +169,8 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(6f)]
 	public void RPC_ToggleShutter(RPCMessage msg)
 	{

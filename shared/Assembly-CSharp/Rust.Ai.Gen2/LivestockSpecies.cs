@@ -21,12 +21,12 @@ public class LivestockSpecies : ScriptableObject
 	public GameObjectRef ChildMale;
 
 	[Min(0f)]
-	[Header("Value")]
 	[Tooltip("What a perfectly kept adult of this species fetches at a livestock vendor, as a multiple of that vendor's reward amount. Cattle are the reference at 1.")]
+	[Header("Value")]
 	public float SaleValueScale = 1f;
 
-	[Tooltip("Shows this species' gene discs and inbred warning on the status panel whatever livestock.panelGenes says. A species left unticked follows the convar.")]
 	[Header("Status Panel")]
+	[Tooltip("Shows this species' gene discs and inbred warning on the status panel whatever livestock.panelGenes says. A species left unticked follows the convar.")]
 	public bool AlwaysShowGenes;
 
 	[NonSerialized]

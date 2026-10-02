@@ -64,12 +64,12 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 
 	public Menu.Option UpgradeMenu;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private float openAnimLength = 4f;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private float closeAnimLength = 4f;
 
 	public const Flags ReverseOpen = Flags.Reserved1;
@@ -1446,8 +1446,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_CloseDoor(RPCMessage rpc)
 	{
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
@@ -1483,8 +1483,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 	{
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_KnockDoor(RPCMessage rpc)
 	{
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
@@ -1508,8 +1508,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		Interface.CallHook("OnDoorKnocked", this, rpc.player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_ToggleHatch(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract(usableWhileCrawling: true) || !hasHatch)
@@ -1935,9 +1935,9 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		SimpleUpgrade.DoUpgrade(this, player, upgradeItem);
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	public void DoSimpleUpgrade(RPCMessage msg)
 	{
 		if (SecondsSinceAttacked < 30f)

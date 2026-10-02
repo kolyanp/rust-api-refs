@@ -12,8 +12,8 @@ public struct SliceMeshJob : IJobParallelForBatch
 	[ReadOnly]
 	public NativeArray<float3> Vertices;
 
-	[ReadOnly]
 	[NativeDisableParallelForRestriction]
+	[ReadOnly]
 	public NativeArray<int> Indices;
 
 	public float4x4 ToLocal;

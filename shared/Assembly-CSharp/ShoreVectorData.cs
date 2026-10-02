@@ -12,16 +12,16 @@ public class ShoreVectorData : BaseScriptableObject
 	[ReadOnly]
 	public Vector4[] Vectors;
 
-	[ReadOnly]
 	[Header("Slope Data")]
+	[ReadOnly]
 	public Vector2[] SlopeData;
 
-	[ReadOnly]
 	[Header("WaterHeight")]
+	[ReadOnly]
 	public float[] WaterHeightData;
 
-	[Header("HeightData")]
 	[ReadOnly]
+	[Header("HeightData")]
 	public short[] HeightData;
 
 	[ReadOnly]

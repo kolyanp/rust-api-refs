@@ -4,8 +4,8 @@ namespace FIMSpace.Basics;
 
 public class FBasic_FreeCameraBehaviour : MonoBehaviour
 {
-	[Header("> Hold right mouse button to rotate camera <")]
 	[Tooltip("How fast camera should fly")]
+	[Header("> Hold right mouse button to rotate camera <")]
 	public float SpeedMultiplier = 10f;
 
 	[Tooltip("Value of acceleration smoothness")]

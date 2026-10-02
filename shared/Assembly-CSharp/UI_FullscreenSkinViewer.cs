@@ -44,8 +44,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private GameObject navButtonsGroup;
 
-	[SerializeField]
 	[Header("Drag")]
+	[SerializeField]
 	private float inertiaDecay = 5f;
 
 	[Header("Pan")]
@@ -58,8 +58,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private float panSpeed = 0.0001f;
 
-	[SerializeField]
 	[Header("Zoom")]
+	[SerializeField]
 	private float zoomSpeed = 0.1f;
 
 	[SerializeField]

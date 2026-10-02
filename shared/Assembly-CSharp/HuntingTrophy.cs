@@ -223,8 +223,8 @@ public class HuntingTrophy : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ServerRequestClear(RPCMessage msg)
 	{
 		if (CurrentTrophyData != null)

@@ -107,8 +107,8 @@ public class ToggleableLightWeapon : BaseMelee
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	protected void Extinguish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())

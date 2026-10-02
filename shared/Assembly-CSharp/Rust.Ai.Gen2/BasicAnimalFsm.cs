@@ -26,34 +26,34 @@ public class BasicAnimalFsm : FSMComponent
 		public const string Dead = "Dead";
 	}
 
+	[Header("Basic animal")]
 	[SerializeField]
 	[Tooltip("How close the animal has to get to bite, measured from its attack point. Also the distance the chase stops at, so it doubles as how close the animal comes to what it fights.")]
-	[Header("Basic animal")]
 	private float attackRange = 2f;
 
-	[SerializeField]
 	[Tooltip("Where the bite reaches from, relative to the animal. Rotates with the animal, so a bear reaches further forwards than sideways.")]
+	[SerializeField]
 	private Vector3 attackOffset = Vector3.zero;
 
-	[SerializeField]
 	[Tooltip("Minimum seconds between two bites.")]
+	[SerializeField]
 	private float attackIntervalSeconds = 1.5f;
 
-	[SerializeField]
 	[Tooltip("How long the animal commits to one chase before backing off.")]
+	[SerializeField]
 	private float chaseGiveUpSeconds = 20f;
 
-	[SerializeField]
 	[Tooltip("How long the animal stays uninterested after backing off, before it roams again.")]
+	[SerializeField]
 	private float cooldownSeconds = 5f;
 
-	[SerializeField]
 	[Tooltip("Health fraction below which the animal breaks off a fight.")]
+	[SerializeField]
 	private float fleeBelowHealthFraction = 0.3f;
 
-	[Tooltip("Chance of napping rather than idling at the end of a roam leg. Keep it low, a sleeping animal is a sitting duck.")]
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
+	[Tooltip("Chance of napping rather than idling at the end of a roam leg. Keep it low, a sleeping animal is a sitting duck.")]
 	private float sleepChance = 0.05f;
 
 	public State_Roam roam = new State_Roam();

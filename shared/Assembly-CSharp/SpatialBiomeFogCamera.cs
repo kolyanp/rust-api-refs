@@ -1,8 +1,8 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
-[RequireComponent(typeof(Camera))]
 [ExecuteAlways]
+[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(CommandBufferManager))]
 public class SpatialBiomeFogCamera : MonoBehaviour
 {
 }

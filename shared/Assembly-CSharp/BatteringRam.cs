@@ -73,8 +73,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private ImpactEffect[] impactEffects;
 
-	[SerializeField]
 	[Header("IK")]
+	[SerializeField]
 	private Transform leftHandTarget;
 
 	[SerializeField]
@@ -109,8 +109,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[ServerVar(ClientAdmin = true, Default = "2", Help = "(Generated) Maximum building block upgrade grade (0=twig,1=wood,2=stone,3=metal,4=top tier) that the battering ram can damage; default 2 (stone)")]
 	public static int maxBuildingBlockGrade = 2;
 
-	[Header("Door")]
 	[SerializeField]
+	[Header("Door")]
 	private Transform doorTransform;
 
 	[SerializeField]
@@ -133,8 +133,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public GameObjectRef closeEndEffect;
 
-	[Header("Effects")]
 	[Tooltip("Effect played at local 0,0,0 in addition to the impact effects")]
+	[Header("Effects")]
 	public GameObjectRef hitEffect;
 
 	public VehicleLight[] vehicleLights;
@@ -439,8 +439,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		ComponentExtensions.SetActive<Transform>(doorTransform, false);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	protected void RPC_OpenDoor(RPCMessage rpc)
 	{
@@ -450,9 +450,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	protected void RPC_CloseDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanCloseDoor() && Interface.CallHook("OnSiegeWeaponDoorClose", this, rpc.player) == null)
@@ -748,8 +748,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_WantsAttack(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -762,7 +762,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		Invoke(() =>
 		{
 			ScanEntities(driver);
-		}, 2f);
+		}, SwingDelay(2f));
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Busy, b: true);
@@ -808,7 +808,12 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		Invoke(() =>
 		{
 			OnRamImpact(driver, entities);
-		}, 0.5f);
+		}, SwingDelay(0.5f));
+	}
+
+	private static float SwingDelay(float seconds)
+	{
+		return seconds;
 	}
 
 	private bool CanHeadReach(BaseEntity ent, Vector3 origin)

@@ -69,12 +69,12 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 	[Range(0.1f, 0.95f)]
 	public float liftDotMax = 0.75f;
 
-	[SerializeField]
 	[Range(0.1f, 0.95f)]
+	[SerializeField]
 	public float altForceDotMin = 0.85f;
 
-	[Range(0.1f, 0.95f)]
 	[SerializeField]
+	[Range(0.1f, 0.95f)]
 	public float liftFraction = 0.25f;
 
 	[SerializeField]

@@ -111,8 +111,8 @@ public class LivestockMountable : NPCMountable
 	}
 
 	[BaseEntity.RPC_Server]
-	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	[BaseEntity.RPC_Server.CallsPerSecond(1uL)]
+	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	private void RPC_LoadAnimal(BaseEntity.RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && Livestock.allowMounting)
@@ -125,9 +125,9 @@ public class LivestockMountable : NPCMountable
 		}
 	}
 
-	[BaseEntity.RPC_Server]
-	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	[BaseEntity.RPC_Server.CallsPerSecond(1uL)]
+	[BaseEntity.RPC_Server.MaxDistance(3f)]
+	[BaseEntity.RPC_Server]
 	private void RPC_UnloadAnimal(BaseEntity.RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null))

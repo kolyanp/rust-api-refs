@@ -48,6 +48,12 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "Whether livestock look for a mate on their own; disabling it leaves livestock.makepregnant working")]
 	public static bool breedingEnabled = true;
 
+	[ServerVar(Help = "How many livestock animals of one species a server holds before none of that species breeds. Cattle and sheep are counted apart against the same number, 0 never caps")]
+	public static int maxPerSpecies = 300;
+
+	[ServerVar(Help = "Whether livestock breed only while a cupboard is their home")]
+	public static bool breedOnlyAtHome = false;
+
 	[ServerVar(Help = "How far (in metres) a male livestock animal looks for a mate")]
 	public static float breedSearchRadius = 30f;
 
@@ -75,8 +81,8 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "Multiplies how fast livestock familiarity builds up; 20 makes a five minute bond take fifteen seconds. For testing, leave at 1 for play")]
 	public static float familiarityRate = 1f;
 
-	[ServerVar(Help = "How long (in seconds) a player has to stay away from a livestock animal to lose trust just short of a bond. Less trust fades sooner, bonded trust never fades, 0 never forgets")]
-	public static float familiarityForgetTime = 1200f;
+	[ServerVar(Help = "How many seconds a player has to stay away from a livestock animal short of a full bond for it to forget one second they spent near it, so at 3 fourteen minutes are gone in forty two. A full bond never fades, 0 never forgets")]
+	public static float familiarityForgetScale = 3f;
 
 	[ServerVar(Help = "How many seconds near a livestock animal before a curious one follows you without a lead")]
 	public static float trustToFollow = 5f;
@@ -84,11 +90,11 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "How many seconds near a livestock animal before a bull stops squaring up at you")]
 	public static float trustToTolerate = 30f;
 
-	[ServerVar(Help = "How many seconds near a livestock animal before you can lead it, and before standing in your cupboard makes that its home")]
-	public static float trustToBond = 300f;
+	[ServerVar(Help = "How many seconds near a livestock animal before you can lead it, after which it also ages, can starve and gives dung, milk or wool")]
+	public static float trustToLead = 300f;
 
-	[ServerVar(Help = "How many seconds near a livestock animal before a bull counts you as one of his herd and defends you")]
-	public static float trustToDefend = 900f;
+	[ServerVar(Help = "The most seconds of trust a player can build with a livestock animal, which is the full bond: it can breed, standing in your cupboard makes that its home, your trust stops fading and a bull defends you")]
+	public static float maxTrust = 900f;
 
 	[ServerVar(Help = "How recently (in seconds) a player the herd counts as one of its own must have been attacked for a bull to come after whoever is doing it; 0 stops him defending players")]
 	public static float defendReactionTime = 5f;
@@ -98,9 +104,6 @@ public class Livestock : ConsoleSystem
 
 	[ServerVar(Help = "The seconds a livestock animal credits to a player under a livestock handling effect; kept inside the tolerated band on purpose")]
 	public static float calmedTrustFloor = 60f;
-
-	[ServerVar(Help = "The most seconds of familiarity one player can bank with a livestock animal")]
-	public static float trustCap = 960f;
 
 	[ServerVar(Help = "How many seconds of familiarity a player loses with a livestock animal they hurt")]
 	public static float familiarityHurtPenalty = 60f;
@@ -116,9 +119,6 @@ public class Livestock : ConsoleSystem
 
 	[ServerVar(Help = "How far (in metres) a player can get from an animal they are leading before the lead breaks. 0 never breaks it")]
 	public static float leadBreakDistance = 7f;
-
-	[ServerVar(Help = "How much faster a curious cow or calf builds familiarity than the rest of the herd")]
-	public static float curiousFamiliarityScale = 2f;
 
 	[ServerVar(Help = "Whether grass a herd has eaten bare stops feeding them until it grows back")]
 	public static bool overgrazingEnabled = true;
@@ -150,7 +150,7 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "How many seconds a well kept livestock animal takes to heal from nothing back to full health")]
 	public static float conditionRiseSeconds = 3600f;
 
-	[ServerVar(Help = "Lowest condition a livestock animal nobody has tamed falls to from neglect, so wildlife never dies of it")]
+	[ServerVar(Help = "Lowest condition a livestock animal nobody can lead falls to from neglect, so wildlife never dies of it")]
 	public static float wildConditionFloor = 0.5f;
 
 	[ServerVar(Help = "Condition below which a livestock animal stops dunging at all. A starving animal never dungs whatever this says")]
@@ -348,7 +348,7 @@ public class Livestock : ConsoleSystem
 		}
 		else
 		{
-			args.ReplyWith($"{closestLivestockAnimal.Categorize()} ({closestLivestockAnimal.Age}) at {closestDistance:0.0}m cannot be made pregnant " + $"(kept by somebody {closestLivestockAnimal.IsTame}, willing {!closestLivestockAnimal.BreedingPaused} at condition {closestLivestockAnimal.Condition:0.00}).");
+			args.ReplyWith($"{closestLivestockAnimal.Categorize()} ({closestLivestockAnimal.Age}) at {closestDistance:0.0}m cannot be made pregnant " + $"(fully bonded {closestLivestockAnimal.IsFullyBonded}, willing {!closestLivestockAnimal.BreedingPaused} at condition {closestLivestockAnimal.Condition:0.00}).");
 		}
 	}
 
@@ -400,7 +400,7 @@ public class Livestock : ConsoleSystem
 		}
 		else if (!closestLivestockAnimal.TryDropDung())
 		{
-			args.ReplyWith($"{closestLivestockAnimal.Categorize()} at {closestDistance:0.0}m has nothing to pass " + $"(kept by somebody {closestLivestockAnimal.IsTame}, fullness {closestLivestockAnimal.Fullness.NeedValue:0.00}, " + $"condition {closestLivestockAnimal.Condition:0.00}).");
+			args.ReplyWith($"{closestLivestockAnimal.Categorize()} at {closestDistance:0.0}m has nothing to pass " + $"(leadable by somebody {closestLivestockAnimal.IsLeadable}, fullness {closestLivestockAnimal.Fullness.NeedValue:0.00}, " + $"condition {closestLivestockAnimal.Condition:0.00}).");
 		}
 		else
 		{
@@ -903,6 +903,61 @@ public class Livestock : ConsoleSystem
 		args.ReplyWith($"{num2} livestock animal(s) within {num}m now anchor here{arg}.");
 	}
 
+	[ServerVar(Help = "Draws an arrow from the livestock animal you are looking at, or the nearest one, to the cupboard it lives at, or to its wild anchor when it has none. Optional search radius in metres (default 20) and seconds to draw for (default 10).")]
+	public static void showhome(Arg args)
+	{
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer basePlayer = ArgEx.Player(args);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			args.ReplyWith("This command has to be run by a player.");
+			return;
+		}
+		float num = args.GetFloat(0, 20f);
+		float num2 = args.GetFloat(1, 10f);
+		LivestockAnimal targetedLivestockAnimal = GetTargetedLivestockAnimal(num, basePlayer, out var _);
+		if ((Object)(object)targetedLivestockAnimal == (Object)null)
+		{
+			args.ReplyWith($"No livestock animal found within {num}m.");
+			return;
+		}
+		Vector3 val = targetedLivestockAnimal.CenterPoint();
+		if (!targetedLivestockAnimal.TryGetHomeCupboard(out var cupboard))
+		{
+			Vector3 homePosition = targetedLivestockAnimal.HomePosition;
+			basePlayer.SendConsoleCommand("ddraw.arrow", num2, Color.yellow, val, homePosition, 0.5f);
+			basePlayer.SendConsoleCommand("ddraw.sphere", num2, Color.yellow, homePosition, 1f);
+			args.ReplyWith($"{targetedLivestockAnimal.Categorize()} has no cupboard. Its wild anchor is {Vector3.Distance(val, homePosition):0}m away.");
+		}
+		else
+		{
+			Vector3 val2 = cupboard.CenterPoint();
+			basePlayer.SendConsoleCommand("ddraw.arrow", num2, Color.green, val, val2, 0.5f);
+			basePlayer.SendConsoleCommand("ddraw.sphere", num2, Color.green, val2, 1f);
+			args.ReplyWith($"{targetedLivestockAnimal.Categorize()} lives at cupboard {cupboard.net.ID}, {Vector3.Distance(val, val2):0}m away.");
+		}
+	}
+
 	[ServerVar(Help = "Fills the nearest livestock animal's social need, as if it were standing in a herd the right size. Optional search radius in metres (default 20).")]
 	public static void fillsocial(Arg args)
 	{
@@ -976,6 +1031,19 @@ public class Livestock : ConsoleSystem
 		LivestockCensus.Reset();
 		LivestockProfiler.Reset();
 		args.ReplyWith("Livestock census totals and profiler reset.");
+	}
+
+	[ServerVar(Help = "Kills livestock past livestock.maxPerSpecies, cattle and sheep counted apart: untamed animals first, then tame ones with no cupboard for a home, then the oldest and worst bred. An optional head count culls down to that instead.")]
+	public static void cullexcess(Arg args)
+	{
+		int num = args.GetInt(0, maxPerSpecies);
+		if (num <= 0)
+		{
+			args.ReplyWith("There is no cap to cull down to, livestock.maxPerSpecies is 0. Give a head count instead.");
+			return;
+		}
+		int num2 = LivestockAnimal.CullPast(num);
+		args.ReplyWith($"Culled {num2} livestock, leaving at most {num} of each species.");
 	}
 
 	[ServerVar(Help = "Spawns one of the named special livestock animals in front of you, skipping the rarity roll but obeying every other rule. Usage: livestock.spawnspecial <name> [species], species being needed only for an entry that fits more than one")]

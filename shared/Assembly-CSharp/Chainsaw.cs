@@ -455,8 +455,8 @@ public class Chainsaw : BaseMelee
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void Server_StopEngine(RPCMessage msg)
 	{
 		SetEngineStatus(status: false, FlagsUpdateMode.SendNetworkUpdate_Flags);

@@ -56,8 +56,8 @@ public class SeaTurtleFSM : SwimmingNPCFSM
 		[SerializeField]
 		protected float diveBias = 0.5f;
 
-		[Tooltip("How many shorter escape points to try when fleeing would take the turtle out of the water. Higher finds a usable point nearer the shoreline at more cost.")]
 		[SerializeField]
+		[Tooltip("How many shorter escape points to try when fleeing would take the turtle out of the water. Higher finds a usable point nearer the shoreline at more cost.")]
 		private int fleeRetreatSteps = 4;
 
 		private int attempts;

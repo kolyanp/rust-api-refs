@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class BaseRagdoll : BaseMountable
 {
-	[Header("Ragdolling")]
 	[SerializeField]
+	[Header("Ragdolling")]
 	private Ragdoll Ragdoll;
 
 	[SerializeField]

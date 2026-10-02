@@ -9,13 +9,13 @@ public class PooltableMountable : BaseMountable
 	[HideInInspector]
 	public float SplineDistance;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private ViewModel poolCueViewmodel;
 
+	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	[Header("3p Cue")]
 	[SerializeField]
-	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	private Transform cueHeldProp;
 
 	[Tooltip("Grip offset in prop bone space. Mostly z: how far up the shaft the hand holds the cue, which is what the stroke rotates around.")]
@@ -26,8 +26,8 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private Vector3 cueHeldPropEulerOffset;
 
-	[SerializeField]
 	[Tooltip("One 3p cue per seat, all parented to cueHeldProp. Only the mounted player's own cue is left active.")]
+	[SerializeField]
 	private GameObject[] seatCues;
 
 	[SerializeField]
@@ -45,19 +45,19 @@ public class PooltableMountable : BaseMountable
 
 	private float currentRight;
 
-	[SerializeField]
 	[Tooltip("Metres of spline travel per unit of mouse movement. Deliberately tiny - the mouse is the fine aim, A/D is for walking round the table.")]
+	[SerializeField]
 	private float mouseAimSensitivity = 0.002f;
 
 	[SerializeField]
 	private float pullbackSensitivity = 0.01f;
 
-	[Tooltip("Normalized cue travel per second required to turn forward movement into a shot.")]
 	[SerializeField]
+	[Tooltip("Normalized cue travel per second required to turn forward movement into a shot.")]
 	private float strikeSpeedThreshold = 1f;
 
-	[Tooltip("Minimum pullback required before a fast forward movement can strike.")]
 	[SerializeField]
+	[Tooltip("Minimum pullback required before a fast forward movement can strike.")]
 	private float minimumStrikePower = 0.05f;
 
 	private float cuePullback = 0.5f;

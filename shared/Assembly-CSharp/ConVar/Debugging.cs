@@ -21,8 +21,8 @@ using UnityEngine.Diagnostics;
 
 namespace ConVar;
 
-[Factory("debug")]
 [ResetStaticFields]
+[Factory("debug")]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
@@ -34,8 +34,8 @@ public class Debugging : ConsoleSystem
 	[ServerVar(Help = "(Generated) When enabled, validates that trigger colliders are correctly parented to their entities during physics updates; helps catch mis-parenting bugs")]
 	public static bool checkparentingtriggers = true;
 
-	[ServerVar]
 	[ClientVar(Saved = false, Help = "Shows some debug info for dismount attempts.")]
+	[ServerVar]
 	public static bool DebugDismounts = false;
 
 	[ClientVar(ClientAdmin = true, Saved = false, Help = "Duration in seconds to keep ddraw for dismount attempts visible")]
@@ -2100,8 +2100,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a table of all ObjectWorkQueue instances showing name, total items processed, current queue length, and cumulative execution time")]
 	[ClientVar(ClientAdmin = true)]
+	[ServerVar(Help = "(Generated) Prints a table of all ObjectWorkQueue instances showing name, total items processed, current queue length, and cumulative execution time")]
 	public static void printqueues(Arg arg)
 	{
 		bool flag = arg.HasArg("--json");
@@ -2134,8 +2134,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	[ClientVar(Help = "Logs a test error and exception for testing error display.")]
+	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	public static void testerror(Arg arg)
 	{
 		Debug.LogError((object)"Test error message");

@@ -41,8 +41,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("Random speed spread per crab, on top of size. 0.25 means each crab is up to 25 percent faster or slower than its size alone suggests, so same sized crabs still differ.")]
 		public float speedRandomness;
 
-		[Tooltip("How close to the entity each crab wants to stay, as a fraction of the swarm radius. Rolled per crab, so some shadow the entity closely while others hang back near the edge.")]
 		[Header("Following")]
+		[Tooltip("How close to the entity each crab wants to stay, as a fraction of the swarm radius. Rolled per crab, so some shadow the entity closely while others hang back near the edge.")]
 		public Vector2 followTightnessRange;
 
 		[Tooltip("Random variation in how long a crab dawdles before setting off after the entity, in seconds. Stops the swarm surging as one block.")]
@@ -61,8 +61,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("Tallest step a crab will walk up. Crabs look ahead at this height and steer around anything they'd hit, so rocks and walls block them.")]
 		public float maxStepHeight;
 
-		[Tooltip("How long a crab stays spooked after a player gets close, in seconds.")]
 		[Header("Startle")]
+		[Tooltip("How long a crab stays spooked after a player gets close, in seconds.")]
 		public float startleDuration;
 
 		[Tooltip("A player has to get this close to startle a crab.")]
@@ -71,8 +71,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("How far a fleeing crab may stray outside the swarm radius, as a multiplier. It wanders back in once it calms down.")]
 		public float startleBoundsMultiplier;
 
-		[Tooltip("Speed at which the walk animation reaches full blend. Below this the legs scale down, at 0 speed the crab is still.")]
 		[Header("Animation")]
+		[Tooltip("Speed at which the walk animation reaches full blend. Below this the legs scale down, at 0 speed the crab is still.")]
 		public float fullAnimationSpeed;
 
 		[Tooltip("How quickly the walk animation blends in and out as the crab starts and stops.")]
@@ -218,8 +218,8 @@ public class CrabGrouping : IDisposable
 		[ReadOnly]
 		public uint seed;
 
-		[NativeDisableParallelForRestriction]
 		[ReadOnly]
+		[NativeDisableParallelForRestriction]
 		public NativeArray<float3> startlePositions;
 
 		[ReadOnly]

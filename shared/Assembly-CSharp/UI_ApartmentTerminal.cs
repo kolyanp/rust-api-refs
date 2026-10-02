@@ -38,9 +38,9 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private RustText subtitleText;
 
-	[Space]
-	[Header("CCTV")]
 	[SerializeField]
+	[Header("CCTV")]
+	[Space]
 	private RawImage feedImage;
 
 	[SerializeField]

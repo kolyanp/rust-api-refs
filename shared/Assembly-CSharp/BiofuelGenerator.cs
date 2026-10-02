@@ -510,8 +510,8 @@ public class BiofuelGenerator : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Stir(RPCMessage msg)
 	{
 		Stir(msg.player, (RPCProgressBarState)msg.read.Int32());

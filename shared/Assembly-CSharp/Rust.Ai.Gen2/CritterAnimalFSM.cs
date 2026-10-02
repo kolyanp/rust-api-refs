@@ -110,8 +110,8 @@ public class CritterAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_Idle : FSMStateBase
 	{
-		[Tooltip("How long the critter stays stopped before moving on, in seconds.")]
 		[SerializeField]
+		[Tooltip("How long the critter stays stopped before moving on, in seconds.")]
 		private Vector2 idleDurationRange = new Vector2(3f, 8f);
 
 		private TimeUntil idleEndTime;

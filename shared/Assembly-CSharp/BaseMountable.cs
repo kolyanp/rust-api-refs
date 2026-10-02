@@ -87,9 +87,9 @@ public class BaseMountable : BaseCombatEntity
 
 	public float mountLOSVertOffset = 0.5f;
 
-	[Range(0f, 1f)]
-	[Tooltip("The speed of the posde animation for this mountable.")]
 	[Header("Mount Pose")]
+	[Tooltip("The speed of the posde animation for this mountable.")]
+	[Range(0f, 1f)]
 	public float mountedAnimationSpeed;
 
 	public PlayerModel.MountPoses mountPose;

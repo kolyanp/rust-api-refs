@@ -18,8 +18,8 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		public float radius;
 	}
 
-	[Tooltip("The seats on this vehicle. An NPC takes the nearest free one.")]
 	[Header("NPC Mountable")]
+	[Tooltip("The seats on this vehicle. An NPC takes the nearest free one.")]
 	public NPCMountAnchor[] anchors;
 
 	[Tooltip("Where NPCs are put down when they get off. Same name and meaning as BaseMountable's.")]

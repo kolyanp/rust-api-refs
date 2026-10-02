@@ -6,8 +6,8 @@ public class RHIBVisuals : FacepunchBehaviour, INotifyLOD, IClientComponent
 	[SerializeField]
 	private RHIB _owner;
 
-	[Header("References")]
 	[SerializeField]
+	[Header("References")]
 	private Transform _compass;
 
 	[SerializeField]

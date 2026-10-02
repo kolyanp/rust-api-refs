@@ -375,8 +375,8 @@ public class BuildingBlock : StabilityEntity
 		health = MaxHealth();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void DoUpgradeToGrade(RPCMessage msg)
 	{
 		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
@@ -1121,8 +1121,8 @@ public class BuildingBlock : StabilityEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_PickupWallpaperStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && ShouldDisplayPickupOption(msg.player) && CanCompletePickup(msg.player))

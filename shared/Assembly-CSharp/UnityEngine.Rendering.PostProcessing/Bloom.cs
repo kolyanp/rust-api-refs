@@ -7,15 +7,15 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(BloomRenderer), "Unity/Bloom", true)]
 public sealed class Bloom : PostProcessEffectSettings
 {
-	[Min(0f)]
 	[Tooltip("Strength of the bloom filter. Values higher than 1 will make bloom contribute more energy to the final render.")]
+	[Min(0f)]
 	public FloatParameter intensity = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[Min(0f)]
 	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
+	[Min(0f)]
 	public FloatParameter threshold = new FloatParameter
 	{
 		value = 1f
@@ -34,8 +34,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 65472f
 	};
 
-	[Range(1f, 10f)]
 	[Tooltip("Changes the extent of veiling effects. For maximum quality, use integer values. Because this value changes the internal iteration count, You should not animating it as it may introduce issues with the perceived radius.")]
+	[Range(1f, 10f)]
 	public FloatParameter diffusion = new FloatParameter
 	{
 		value = 7f
@@ -48,8 +48,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[ColorUsage(false, true)]
 	[Tooltip("Global tint of the bloom filter.")]
+	[ColorUsage(false, true)]
 	public ColorParameter color = new ColorParameter
 	{
 		value = Color.white
@@ -69,9 +69,9 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = null
 	};
 
-	[Min(0f)]
-	[Tooltip("The intensity of the lens dirtiness.")]
 	[DisplayName("Intensity")]
+	[Tooltip("The intensity of the lens dirtiness.")]
+	[Min(0f)]
 	public FloatParameter dirtIntensity = new FloatParameter
 	{
 		value = 0f

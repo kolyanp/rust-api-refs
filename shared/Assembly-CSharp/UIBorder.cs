@@ -36,12 +36,12 @@ public class UIBorder : MonoBehaviour
 	[SerializeField]
 	private float bottomLeftRadius;
 
-	[SerializeField]
 	[Range(1f, 32f)]
+	[SerializeField]
 	private int segmentsPerCorner = 8;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private BorderGraphic graphic;
 
 	public float Top

@@ -20,8 +20,8 @@ public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess
 	[HideInInspector]
 	private ParticleSystemGroup[] particleGroups;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Light[] lights;
 
 	[HideInInspector]
