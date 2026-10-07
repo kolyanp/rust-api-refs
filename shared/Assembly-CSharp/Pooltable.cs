@@ -37,8 +37,8 @@ public class Pooltable : BaseCombatEntity
 	private WorldSpline worldSpline;
 
 	[SerializeField]
-	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	[Range(0f, 0.75f)]
+	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	private float splineTableCloseness = 0.25f;
 
 	[SerializeField]
@@ -505,8 +505,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -553,8 +553,8 @@ public class Pooltable : BaseCombatEntity
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_JoinGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null)
@@ -637,8 +637,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestResetGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanResetGame(msg.player))
@@ -647,8 +647,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestCancelGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanCancelGame(msg.player))

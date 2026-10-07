@@ -15,17 +15,17 @@ public class TriggerRadiation : TriggerBase
 	public bool ScaleByArmor;
 
 	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
-	[Space]
 	[Min(0f)]
+	[Space]
 	public float falloff = 0.1f;
 
 	public bool usePerAxisFalloff;
 
 	public Vector3 falloffPerAxis;
 
-	[Space]
-	[FormerlySerializedAs("UseColliderRadius")]
 	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
+	[FormerlySerializedAs("UseColliderRadius")]
+	[Space]
 	public bool DontScaleRadiationSize;
 
 	public bool UseLOSCheck;

@@ -86,12 +86,12 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCliffStatus = "pre-cliff baseline: not loaded";
 
-	[Header("Terrain source")]
 	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
+	[Header("Terrain source")]
 	public TerrainSource Source;
 
-	[Tooltip("World seed fed to the real generator, and to the pre-cliff T0 bake. Uploaded maps have the seed stripped from their name, so run `seed` on the server and paste it here; a map from the server's root folder carries it in the name and overwrites this on load. 0 = auto.")]
 	[Header("Procedural (real Rust base heightmap)")]
+	[Tooltip("World seed fed to the real generator, and to the pre-cliff T0 bake. Uploaded maps have the seed stripped from their name, so run `seed` on the server and paste it here; a map from the server's root folder carries it in the name and overwrites this on load. 0 = auto.")]
 	public uint Seed = 54321u;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
@@ -149,8 +149,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Scene the 'Bake pre-cliff T0' button drives. Must be a full generator scene (engine bootstrap + generating World Setup), e.g. the shipped 'Procedural Map' scene.")]
 	public string GenerationScenePath = "Assets/Scenes/Release/Procedural Map.unity";
 
-	[Header("Placement")]
 	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
+	[Header("Placement")]
 	public Transform cliffRoot;
 
 	[Tooltip("Anchor solve mode. PlaceCliffs uses MaximizeHeight for the first cliff of a chain.")]
@@ -201,8 +201,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Click-to-select mode: instead of drawing every gizmo in range, left-click a cliff to toggle its gizmos on, click again to turn them off. Several cliffs can be selected at once.")]
 	public bool GizmoSelectionMode = true;
 
-	[Tooltip("Spawn a player-sized capsule to judge scale against the cliffs. Drop it under the aim with 'Marker where I'm looking' or the J key.")]
 	[Header("Scale reference")]
+	[Tooltip("Spawn a player-sized capsule to judge scale against the cliffs. Drop it under the aim with 'Marker where I'm looking' or the J key.")]
 	public bool ShowPlayerScaleReference = true;
 
 	[Tooltip("Height of the scale-reference capsule in metres (Rust player is about 1.8m).")]

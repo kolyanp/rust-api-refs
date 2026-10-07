@@ -810,8 +810,8 @@ public class BoatAI : BaseEntity
 	[Header("Boat AI")]
 	private BaseBoat _boat;
 
-	[Header("Boat AI - General")]
 	[SerializeField]
+	[Header("Boat AI - General")]
 	private bool _autoInit;
 
 	[SerializeField]

@@ -4,8 +4,8 @@ using UnityEngine;
 namespace UnityStandardAssets.CinematicEffects;
 
 [ImageEffectAllowedInSceneView]
-[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 [ExecuteInEditMode]
+[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 public class TonemappingColorGrading : MonoBehaviour
 {
 	[AttributeUsage(AttributeTargets.Field)]

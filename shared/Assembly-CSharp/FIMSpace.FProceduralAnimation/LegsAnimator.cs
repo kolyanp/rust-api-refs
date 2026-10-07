@@ -6469,8 +6469,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	private float _glueingFloorLevel;
 
-	[Tooltip("If you want to push out legs out of each other if their IK points are overlapping in one placement")]
 	[Space(5f)]
+	[Tooltip("If you want to push out legs out of each other if their IK points are overlapping in one placement")]
 	public float StepPointsOverlapRadius;
 
 	public bool UseStepPointsOverlapRadiusOnMoving;
@@ -6481,8 +6481,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	public UnityEvent Event_OnStep = new UnityEvent();
 
-	[Tooltip("Increase to execute step event sooner (speed up step confirmation). Useful if step events are executed too late.")]
 	[Range(0f, 0.3f)]
+	[Tooltip("Increase to execute step event sooner (speed up step confirmation). Useful if step events are executed too late.")]
 	public float EventExecuteSooner = 0.05f;
 
 	[Tooltip("If you want to send step events also during movement idle (in case you already use animation clip events for it)")]
@@ -6494,8 +6494,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Tooltip("Enabling triggering step events when character just switched grounded state")]
 	public bool StepEventOnLanding;
 
-	[Space(5f)]
 	[Tooltip("Game Object with attached component implementing LegsAnimator.ILegStepInfoReceiver interface to receiver detailed info about leg step")]
+	[Space(5f)]
 	public Transform StepInfoReceiver;
 
 	private ILegStepReceiver _StepReceiver;
@@ -6505,8 +6505,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Tooltip("Additional pelvis position push in local space. Can be accesed for custom pelvis offset animation or for constant model pose correction.")]
 	public Vector3 ExtraPelvisOffset = Vector3.zero;
 
-	[FPD_Suffix(0f, 2f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
 	[Tooltip("Time which needs to elapse after character stop, to trigger legs repose to most relevant pose in comparison to played idle animation")]
+	[FPD_Suffix(0f, 2f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
 	public float ReposeGluingAfter;
 
 	[Tooltip("Enable if you want to use gluing only when character is idling. Useful when it's too much work needed to setup dynamic gluing during movement for your character. (it will still use feet ground align)")]

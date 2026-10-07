@@ -275,6 +275,15 @@ public class BiofuelGenerator : ContainerIOEntity
 		return 1;
 	}
 
+	public override int DesiredPower(int inputIndex = 0)
+	{
+		if (!HasFlag(Flags.Reserved3))
+		{
+			return 0;
+		}
+		return base.DesiredPower(inputIndex);
+	}
+
 	public override void ServerInit()
 	{
 		lastProcessTime = Time.time;

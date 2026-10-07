@@ -315,12 +315,12 @@ public class IOEntity : DecayEntity
 	[ServerVar]
 	public static float frameBudgetElectricHighPriorityMs = 1f;
 
-	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
 	public static float frameBudgetElectricLowPriorityMs = 0.5f;
 
-	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
 	public static float frameBudgetFluidMs = 0.25f;
 
 	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]

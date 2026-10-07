@@ -21,8 +21,8 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private RustText occupiedText;
 
-	[Space]
 	[Header("Opening")]
+	[Space]
 	[SerializeField]
 	private RectTransform crtScreen;
 
@@ -38,9 +38,9 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private RustText subtitleText;
 
+	[Space]
 	[SerializeField]
 	[Header("CCTV")]
-	[Space]
 	private RawImage feedImage;
 
 	[SerializeField]

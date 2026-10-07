@@ -7,8 +7,8 @@ namespace Rust.Ai.Gen2;
 [Serializable]
 public class Trans_HasStraightPathToTarget : FSMTransitionBase
 {
-	[Tooltip("Aim at the spot CanReach would path to rather than at the target itself, so a target standing against an obstacle does not read as behind it.")]
 	[SerializeField]
+	[Tooltip("Aim at the spot CanReach would path to rather than at the target itself, so a target standing against an obstacle does not read as behind it.")]
 	public bool ProjectTarget;
 
 	protected override bool EvaluateInternal(ref FSMPayload payload)

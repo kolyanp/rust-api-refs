@@ -214,7 +214,7 @@ public class BaseNPC2 : BaseCombatEntity
 		}
 	}
 
-	private void DieOffNavmesh()
+	public void DieOffNavmesh()
 	{
 		HitInfo hitInfo = new HitInfo();
 		hitInfo.damageTypes.Set(DamageType.Generic, MaxHealth());

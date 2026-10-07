@@ -63,8 +63,8 @@ public class BaseBoat : BaseVehicle
 
 	public static int secondsBetweenShoreDrift = 120;
 
-	[ServerVar]
 	[Help("Shore drift speed in metres per second")]
+	[ServerVar]
 	public static float drift_speed = 1f;
 
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about AI ejection events when passengers are removed from boat seats")]
@@ -86,8 +86,8 @@ public class BaseBoat : BaseVehicle
 
 	protected virtual bool SkipBoatForcedUpdate => false;
 
-	[ServerVar]
 	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
+	[ServerVar]
 	public static int seconds_until_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);

@@ -24,8 +24,8 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private float overallVolume = 1f;
 
-	[SerializeField]
 	[Header("Water")]
+	[SerializeField]
 	private SoundDefinition waterSplashSoundDef;
 
 	[SerializeField]
@@ -44,7 +44,7 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private SoundDefinition brakeStopSoundDef;
 
-	[Header("Lights")]
 	[SerializeField]
+	[Header("Lights")]
 	protected SoundDefinition lightsToggleSound;
 }

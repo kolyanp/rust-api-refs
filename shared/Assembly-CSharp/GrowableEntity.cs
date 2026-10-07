@@ -1486,8 +1486,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_RequestQualityUpdate(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player != (Object)null)

@@ -631,8 +631,8 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	public void RPC_RequestSatelliteList(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved8) && currentSatellites != null && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -642,8 +642,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_PowerUp(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved8) || HasFlag(Flags.Reserved10))
@@ -800,9 +800,9 @@ public class SatelliteControlComputer : BaseMountable
 		paidPowerCost.Clear();
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	public void RPC_OpenFuelStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -838,8 +838,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SelectSatellite(RPCMessage msg)
 	{
 		if (State == ControlState.Ready && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -1570,10 +1570,10 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[Menu.Description("satcomp.powerup_desc", "Power up the satellite terminal")]
 	[Menu.Icon("power")]
-	[Menu("satcomp.powerup", "Power Up Terminal")]
+	[Menu.Description("satcomp.powerup_desc", "Power up the satellite terminal")]
 	[Menu.ShowIf("Menu_PowerUp_ShowIf")]
+	[Menu("satcomp.powerup", "Power Up Terminal")]
 	public void Menu_PowerUp(BasePlayer player)
 	{
 	}
@@ -1583,10 +1583,10 @@ public class SatelliteControlComputer : BaseMountable
 		return IsOffline;
 	}
 
-	[Menu.ShowIf("Menu_LoadFuel_ShowIf")]
-	[Menu.Description("satcomp.loadfuel_desc", "Open the terminal's storage")]
 	[Menu("satcomp.loadfuel", "Open Inventory", Order = 10)]
+	[Menu.ShowIf("Menu_LoadFuel_ShowIf")]
 	[Menu.Icon("open")]
+	[Menu.Description("satcomp.loadfuel_desc", "Open the terminal's storage")]
 	public void Menu_LoadFuel(BasePlayer player)
 	{
 	}

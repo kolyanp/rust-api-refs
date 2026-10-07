@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ConVar;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -85,17 +86,17 @@ public class ItemModFoodSpoiling : ItemMod
 
 		public static void DeductTimeFromFoodItem(Item foodItem, float timeToApply, bool setDirty)
 		{
-			//IL_0134: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0139: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+			//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
 			if (foodItem.instanceData != null)
 			{
 				float dataFloat = foodItem.instanceData.dataFloat;
@@ -104,8 +105,11 @@ public class ItemModFoodSpoiling : ItemMod
 				{
 					ItemModConditionRefrigeratedTime.AddRefrigeratedTime(foodItem, timeToApply);
 				}
-				InstanceData instanceData = foodItem.instanceData;
-				instanceData.dataFloat -= timeToApply * spoilMultiplier;
+				if (Server.foodSpoiling)
+				{
+					InstanceData instanceData = foodItem.instanceData;
+					instanceData.dataFloat -= timeToApply * spoilMultiplier;
+				}
 				if (!(foodItem.instanceData.dataFloat <= 0f) || !(dataFloat > 0f))
 				{
 					return;

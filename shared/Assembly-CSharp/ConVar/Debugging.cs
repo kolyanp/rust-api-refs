@@ -21,8 +21,8 @@ using UnityEngine.Diagnostics;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("debug")]
+[ResetStaticFields]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";

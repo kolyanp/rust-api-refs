@@ -5,8 +5,8 @@ public class VolumeCloudsConfig : ScriptableObject
 {
 	public VolumeCloudsWeatherLayerConfig WeatherLayer = new VolumeCloudsWeatherLayerConfig();
 
-	[Range(0f, 1f)]
 	[Header("Detail")]
+	[Range(0f, 1f)]
 	public float Billows = 1f;
 
 	[Range(0f, 3f)]
@@ -101,8 +101,8 @@ public class VolumeCloudsConfig : ScriptableObject
 	[Range(0f, 3f)]
 	public float AmbientScatterContrast = 1f;
 
-	[Range(0f, 1f)]
 	[Header("Other")]
+	[Range(0f, 1f)]
 	public float CoverageScale = 1f;
 
 	[Range(0f, 1f)]

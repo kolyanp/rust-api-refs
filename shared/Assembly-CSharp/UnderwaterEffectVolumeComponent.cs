@@ -22,8 +22,8 @@ public class UnderwaterEffectVolumeComponent : VolumeComponent, IPostProcessComp
 
 	public FloatParameter waterLineBlurSize = new FloatParameter(0f, false);
 
-	[Range(0f, 2f)]
 	[Header("Blur")]
+	[Range(0f, 2f)]
 	public IntParameter downsample = new IntParameter(0, false);
 
 	[Range(1f, 4f)]

@@ -11,8 +11,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 		public Mesh Mesh;
 	}
 
-	[Header("Glyphs")]
 	[Tooltip("One pre-made mesh plane per supported letter/number, UV mapped into the shared atlas. Matching is case-insensitive.")]
+	[Header("Glyphs")]
 	public CharacterGlyph[] Glyphs;
 
 	[Tooltip("Shown for spaces and any character with no entry in Glyphs (e.g. punctuation).")]
@@ -28,12 +28,12 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Visible width of the LED screen, in local units. Determines how many glyph slots are pooled.")]
 	public float ScreenWidth = 1f;
 
-	[Range(0f, 12f)]
 	[Tooltip("Extra blank glyph slots inserted between repeats of the text so it doesn't run into itself when it loops.")]
+	[Range(0f, 12f)]
 	public int LoopGapSlots = 3;
 
-	[Tooltip("Local units per second.")]
 	[Header("Scrolling")]
+	[Tooltip("Local units per second.")]
 	public float ScrollSpeed = 0.05f;
 
 	[Tooltip("Flip travel direction (left-to-right instead of right-to-left) without touching letter order.")]
@@ -55,7 +55,7 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Optional explicit reference. Auto-found via GetComponentInParent<BoomBox>() if left unset.")]
 	public BoomBox SourceBoomBox;
 
-	[Tooltip("Vertical size of the scene-view bounds gizmo only - purely visual, has no effect on clipping (which is horizontal-only).")]
 	[Header("Editor Debug")]
+	[Tooltip("Vertical size of the scene-view bounds gizmo only - purely visual, has no effect on clipping (which is horizontal-only).")]
 	public float DebugGizmoHeight = 0.2f;
 }

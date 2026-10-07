@@ -599,8 +599,8 @@ public class DartsGameBoard : BaseCombatEntity
 		lastUsedDart = 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	public void RPC_ReceiveDartThrow(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)

@@ -277,6 +277,38 @@ public class LivestockAnimalFSM : FSMComponent
 	}
 
 	[Serializable]
+	public class Trans_Stranded : Trans_Dead
+	{
+		protected override bool EvaluateInternal(ref FSMPayload payload)
+		{
+			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+			if (AI.useUnityNavmesh)
+			{
+				NavHit hitNS;
+				if ((Object)(object)SingletonComponent<DynamicNavMesh>.Instance != (Object)null && !SingletonComponent<DynamicNavMesh>.Instance.IsBuilding)
+				{
+					return !Agent.SamplePosition(Agent.WorldToNavSpace(((Component)Owner).transform.position), out hitNS, 2f);
+				}
+				return false;
+			}
+			if (Agent.IsNavMeshBuilt)
+			{
+				return !Agent.isOnNavMesh;
+			}
+			return false;
+		}
+
+		public override void OnTransitionTaken(FSMStateBase from, FSMStateBase to)
+		{
+			base.OnTransitionTaken(from, to);
+			if (Owner is BaseNPC2 baseNPC)
+			{
+				baseNPC.DieOffNavmesh();
+			}
+		}
+	}
+
+	[Serializable]
 	public class State_CuriousFollow : State_Follow
 	{
 		[SerializeField]
@@ -4504,7 +4536,7 @@ public class LivestockAnimalFSM : FSMComponent
 									.AddEndTransition(foodSearch, foodSearchFailedTransition)
 									.AddEndTransition(roam, foodRoamTransition)
 									.AddEndTransition(rest, restTransition)
-									.AddEndTransition(randomIdle), graze.AddEndTransition(randomIdle), drink.AddEndTransition(randomIdle), roam.AddEndTransition(randomIdle), friskyCanter.AddEndTransition(randomIdle), rest.AddEndTransition(randomIdle), foodSearch.AddEndTransition(randomIdle), sleep.AddEndTransition(randomIdle)), follow.AddTickTransition(randomIdle, new Trans_IsFollowingPlayer
+									.AddEndTransition(randomIdle), graze.AddEndTransition(randomIdle), drink.AddEndTransition(randomIdle), roam.AddFailureTransition(dead, new Trans_Stranded()).AddEndTransition(randomIdle), friskyCanter.AddEndTransition(randomIdle), rest.AddEndTransition(randomIdle), foodSearch.AddEndTransition(randomIdle), sleep.AddEndTransition(randomIdle)), follow.AddTickTransition(randomIdle, new Trans_IsFollowingPlayer
 							{
 								Inverted = true
 							}), curiousFollow.AddTickTransition(randomIdle, new Trans_StillCuriousAboutPlayer

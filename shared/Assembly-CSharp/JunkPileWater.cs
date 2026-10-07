@@ -25,8 +25,8 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 
 	public static JunkpileWaterWorkQueue junkpileWaterWorkQueue = new JunkpileWaterWorkQueue();
 
-	[Help("How many milliseconds to budget for processing junk pile updates per frame")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing junk pile updates per frame")]
 	public static float framebudgetms = 0.05f;
 
 	public Transform[] buoyancyPoints;

@@ -6003,8 +6003,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_KeepAlive(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && !((Object)(object)msg.player == (Object)(object)this) && IsWounded() && Interface.CallHook("OnPlayerKeepAlive", this, msg.player) == null)
@@ -6105,13 +6105,13 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(bool),
 		typeof(Vector3),
 		typeof(NetworkableId)
 	})]
+	[RPC_Server]
 	public void RPC_StartClimb(RPCMessage msg)
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
@@ -6181,8 +6181,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	private void RequestServerEmoji()
 	{
 		RustEmojiLibrary.FindAllServerEmoji();
@@ -9546,6 +9546,7 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		note.icon = pingStyle.IconIndex;
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
@@ -9554,7 +9555,6 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	})]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
-	[RPC_Server.CallsPerSecond(3uL)]
 	private void Server_AddPing(RPCMessage msg)
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
@@ -14366,9 +14366,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return result;
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void RequestRespawnInformation(RPCMessage msg)
 	{
 		SendRespawnOptions();
@@ -14801,8 +14801,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void OnPlayerLanded(RPCMessage msg)
 	{
 		float num = msg.read.Float();
@@ -16138,8 +16138,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return net.connection.info.GetString(key, defaultVal);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	public void PerformanceReport(RPCMessage msg)
 	{
@@ -16253,9 +16253,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public async void OnPlayerReported(RPCMessage msg)
 	{
 		try
@@ -16315,8 +16315,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public async void OnFeedbackReport(RPCMessage msg)
 	{
 		try
@@ -16756,10 +16756,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		Hurt(Handcuffs.restrainedPushDamage, DamageType.Generic, player, useProtection: false);
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void RPC_ReqRemoveCuffs(RPCMessage rpc)
 	{
 		if (IsDead() || !IsRestrained)
@@ -16777,10 +16777,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_ReqRemoveHood(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -16805,9 +16805,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	private void RPC_ReqEquipHood(RPCMessage rpc)
 	{
@@ -16850,10 +16850,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		inventory.SetLockedByRestraint(flag: true);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_ReqForceMountNearest(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -18130,10 +18130,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		SendNetworkUpdate_Position();
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.CallsPerSecond(10uL)]
 	private void UpdateSpectatePositionFromDebugCamera(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)

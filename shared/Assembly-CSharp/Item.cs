@@ -1636,6 +1636,10 @@ public class Item : IPooled
 		ItemModFoodSpoiling itemModFoodSpoiling = default;
 		if (a.instanceData != null && b.instanceData != null && ((Component)a.info).TryGetComponent<ItemModFoodSpoiling>(ref itemModFoodSpoiling))
 		{
+			if (Mathf.Abs(a.instanceData.refrigeratedSeconds - b.instanceData.refrigeratedSeconds) >= ConVar.Server.maxFoodSpoilTimeDiffForItemStack && (Object)(object)((Component)a.info).GetComponentInChildren<ItemModConditionRefrigeratedTime>(true) != (Object)null)
+			{
+				return true;
+			}
 			bool flag = false;
 			float dataFloat = a.instanceData.dataFloat;
 			float dataFloat2 = b.instanceData.dataFloat;

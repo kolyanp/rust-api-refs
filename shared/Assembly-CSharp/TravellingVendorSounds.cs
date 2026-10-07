@@ -27,8 +27,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float gearMissCooldown = 5f;
 
-	[Header("Suspension")]
 	[SerializeField]
+	[Header("Suspension")]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -59,8 +59,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[SerializeField]
 	[Header("Movement")]
+	[SerializeField]
 	private SoundDefinition movementLoopDef;
 
 	[SerializeField]

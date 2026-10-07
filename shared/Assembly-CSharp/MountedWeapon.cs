@@ -40,8 +40,8 @@ public class MountedWeapon : StorageContainer
 
 	private static readonly int Up = Animator.StringToHash("up");
 
-	[SerializeField]
 	[Header("Mounted Weapon")]
+	[SerializeField]
 	private Transform _eyes;
 
 	[SerializeField]
@@ -56,8 +56,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[SerializeField]
 	[ItemSelector]
+	[SerializeField]
 	private ItemDefinition _ammoItem;
 
 	[SerializeField]
@@ -89,8 +89,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private Transform _attachPoint2;
 
-	[Header("Mounted Weapon - Player General Animation")]
 	[SerializeField]
+	[Header("Mounted Weapon - Player General Animation")]
 	private int _turretAnimationType;
 
 	[SerializeField]
@@ -123,8 +123,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _forceSeatPositionUpdates;
 
-	[Header("Mounted Weapon - Player Camera Animation")]
 	[SerializeField]
+	[Header("Mounted Weapon - Player Camera Animation")]
 	private Transform _cameraAnimation;
 
 	[SerializeField]
@@ -140,8 +140,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[Header("Mounted Weapon - Aim Movement Sounds")]
 	[SerializeField]
+	[Header("Mounted Weapon - Aim Movement Sounds")]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]
@@ -1404,9 +1404,9 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(100uL)]
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

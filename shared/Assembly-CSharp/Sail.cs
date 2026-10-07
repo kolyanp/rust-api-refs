@@ -508,8 +508,8 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void LowerSail(RPCMessage msg)
 	{
 		Lower(msg.player);
@@ -556,8 +556,8 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void RaiseSail(RPCMessage msg)
 	{
 		Raise(msg.player);
@@ -601,9 +601,9 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 		OnRaisedOrLowered();
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void RotateSail(RPCMessage msg)
 	{
 		RotateSail(msg.player);

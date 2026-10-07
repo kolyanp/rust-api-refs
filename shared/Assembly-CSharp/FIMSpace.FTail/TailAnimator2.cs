@@ -925,8 +925,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Spread gravity weight over tail segments")]
 	public bool UseGravityCurve;
 
-	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
 	[Tooltip("Spread gravity weight over tail segments")]
+	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
 	public AnimationCurve GravityCurve = AnimationCurve.EaseInOut(0f, 0.65f, 1f, 1f);
 
 	[Tooltip("Simulate gravity weight for tail logics")]

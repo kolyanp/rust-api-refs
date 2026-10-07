@@ -2249,6 +2249,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	private void SaveFamiliarity(LivestockAnimal save)
 	{
 		save.curious = IsCurious;
+		save.decayStarted = DecayStarted;
 		if (acquaintances == null)
 		{
 			return;
@@ -2269,6 +2270,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	private void LoadFamiliarity(LivestockAnimal save)
 	{
 		IsCurious = save.curious;
+		DecayStarted = DecayStarted || save.decayStarted;
 		List<LivestockAcquaintance> list = save.acquaintances;
 		if (list != null && list.Count > 0)
 		{

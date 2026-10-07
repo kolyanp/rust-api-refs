@@ -13,8 +13,8 @@ public class ConstructableEntity : StorageContainer
 
 	private int[] currentMaterials;
 
-	[Min(1f)]
 	[Tooltip("Fewest hammer hits this can be finished in.")]
+	[Min(1f)]
 	public int hitsToComplete = 10;
 
 	public GameObjectRef entityToSpawn;

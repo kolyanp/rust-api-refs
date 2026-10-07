@@ -156,7 +156,7 @@ public class BasicAnimalFsm : FSMComponent
 				{
 					Inverted = true
 				}
-			}).AddChildren(roam.AddEndTransition(sleep, new Trans_RandomChance
+			}).AddChildren(roam.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(sleep, new Trans_RandomChance
 			{
 				Chance = sleepChance
 			}).AddEndTransition(idle), sleep.AddEndTransition(roam), idle.AddEndTransition(roam)), state_Nothing7.AddTickTransition(state_Nothing2, new Trans_HasTarget

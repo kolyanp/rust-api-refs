@@ -36,8 +36,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		}
 	}
 
-	[SerializeField]
 	[Header("Helicopter")]
+	[SerializeField]
 	public float engineThrustMax;
 
 	[SerializeField]

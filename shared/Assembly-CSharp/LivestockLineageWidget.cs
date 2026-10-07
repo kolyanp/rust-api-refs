@@ -16,8 +16,8 @@ public class LivestockLineageWidget : MonoBehaviour, IClientComponent
 	[Range(0f, 1f)]
 	public float MarkerSaturation = 0.5f;
 
-	[Range(0f, 1f)]
 	[Tooltip("How bright a marker's colour is.")]
+	[Range(0f, 1f)]
 	public float MarkerValue = 0.72f;
 
 	public Color TextColour = new Color(0.898f, 0.886f, 0.874f, 1f);

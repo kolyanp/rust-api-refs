@@ -65,8 +65,8 @@ public class CarSettings
 	[Range(0.01f, 1f)]
 	public float handbrakeGripMultiplier = 0.55f;
 
-	[Range(0.01f, 1f)]
 	[Header("Drift")]
+	[Range(0.01f, 1f)]
 	public float rearTraction = 0.7f;
 
 	[Range(0.01f, 1f)]
@@ -76,7 +76,7 @@ public class CarSettings
 
 	public float driftRecoverySpeed = 20f;
 
-	[Range(0f, 1f)]
 	[Header("Front/Rear Vehicle Balance")]
+	[Range(0f, 1f)]
 	public float handlingBias = 0.5f;
 }

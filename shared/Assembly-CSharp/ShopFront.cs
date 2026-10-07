@@ -242,8 +242,8 @@ public class ShopFront : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void AcceptClicked(RPCMessage msg)
 	{
 		if (!IsTradingPlayer(msg.player) || (Object)(object)vendorPlayer == (Object)null || (Object)(object)customerPlayer == (Object)null || Interface.CallHook("OnShopAcceptClick", this, msg.player) != null)

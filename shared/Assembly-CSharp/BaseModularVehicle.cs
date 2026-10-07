@@ -20,8 +20,8 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 
 	private bool disablePhysics;
 
-	[SerializeField]
 	[Header("Modular Vehicle")]
+	[SerializeField]
 	public List<ModularVehicleSocket> moduleSockets;
 
 	[SerializeField]

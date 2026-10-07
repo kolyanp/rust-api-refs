@@ -451,8 +451,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	protected void RPC_CloseDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanCloseDoor() && Interface.CallHook("OnSiegeWeaponDoorClose", this, rpc.player) == null)

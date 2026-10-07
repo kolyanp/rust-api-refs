@@ -1224,10 +1224,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					{
 						using (TimeWarning.New("ItemModFoodSpoiling.BudgetedUpdate"))
 						{
-							if (ConVar.Server.foodSpoiling)
-							{
-								((PersistentObjectWorkQueue<Item>)ItemModFoodSpoiling.foodSpoilItems).RunList((double)ConVar.Server.foodSpoilingBudgetMs);
-							}
+							((PersistentObjectWorkQueue<Item>)ItemModFoodSpoiling.foodSpoilItems).RunList((double)ConVar.Server.foodSpoilingBudgetMs);
 						}
 					}
 					catch (Exception ex19)

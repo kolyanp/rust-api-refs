@@ -8,8 +8,8 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FSpine;
 
-[AddComponentMenu("FImpossible Creations/Spine Animator 2")]
 [DefaultExecutionOrder(-11)]
+[AddComponentMenu("FImpossible Creations/Spine Animator 2")]
 public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	public enum EFSpineEditorCategory

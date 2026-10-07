@@ -424,8 +424,8 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	[ServerVar(Help = "(Generated) Maximum angle in degrees from vertical at which building blocks can be placed on a player boat; default 30 degrees")]
 	public static float PlacementUpThreshold = 30f;
 
-	[ServerVar]
 	[Help("How long until player boat corpses despawn")]
+	[ServerVar]
 	public static float corpseseconds = 1800f;
 
 	[ServerVar(Help = "How long before a boat loses all its health while outside")]

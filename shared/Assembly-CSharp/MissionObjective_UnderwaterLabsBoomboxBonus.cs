@@ -8,8 +8,8 @@ public class MissionObjective_UnderwaterLabsBoomboxBonus : MissionObjective
 	[BaseMission.PositionGenerator.PositionPoint]
 	public string requireProximityToPosition;
 
-	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
 	[Min(0f)]
+	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
 	public float minimumDistanceToMissionPoint;
 
 	public bool shouldHideCompassMarkerWhenClose;

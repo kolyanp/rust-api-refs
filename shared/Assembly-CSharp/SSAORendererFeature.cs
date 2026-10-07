@@ -15,19 +15,19 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("Source used for per-pixel normals.")]
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Tooltip("Final applied intensity of the occlusion effect.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final applied intensity of the occlusion effect.")]
 	public float Intensity = 1f;
 
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("World-space radius of the occlusion kernel.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
-	[Range(0f, 16f)]
 	[Tooltip("Power exponent attenuation of the occlusion.")]
+	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
 	[Range(0f, 0.99f)]
@@ -72,8 +72,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Range(1f, 4f)]
 	public int BlurRadius = 3;
 
-	[Tooltip("Number of blur passes.")]
 	[Range(1f, 4f)]
+	[Tooltip("Number of blur passes.")]
 	public int BlurPasses = 1;
 
 	[Tooltip("0 = blurred / 1 = sharpened.")]
@@ -88,8 +88,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Range(0f, 1f)]
 	public float FilterBlending = 0.5f;
 
-	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
 	[Range(0f, 1f)]
+	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
 	public float FilterResponse = 0.5f;
 
 	[Header("Shaders")]

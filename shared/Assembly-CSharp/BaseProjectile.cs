@@ -1575,8 +1575,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void StartReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1715,9 +1715,9 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
+	[RPC_Server.FromOwner]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server.FromOwner]
 	[RPC_Server.MaxRepeatedElements(64)]
 	private void CLProject(RPCMessage msg)
 	{
