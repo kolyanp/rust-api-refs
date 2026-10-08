@@ -21,8 +21,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Shared material/atlas used by every glyph slot.")]
 	public Material GlyphMaterial;
 
-	[Header("Layout")]
 	[Tooltip("Horizontal distance between glyph centers, in local units.")]
+	[Header("Layout")]
 	public float GlyphSlotWidth = 0.1f;
 
 	[Tooltip("Visible width of the LED screen, in local units. Determines how many glyph slots are pooled.")]
@@ -32,8 +32,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Range(0f, 12f)]
 	public int LoopGapSlots = 3;
 
-	[Header("Scrolling")]
 	[Tooltip("Local units per second.")]
+	[Header("Scrolling")]
 	public float ScrollSpeed = 0.05f;
 
 	[Tooltip("Flip travel direction (left-to-right instead of right-to-left) without touching letter order.")]

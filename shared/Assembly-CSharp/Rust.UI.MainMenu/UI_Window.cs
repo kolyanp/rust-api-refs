@@ -16,8 +16,8 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	private bool _oneShotTransition;
 
-	[SerializeField]
 	[Header("Window - Components")]
+	[SerializeField]
 	protected CanvasGroup _group;
 
 	[SerializeField]

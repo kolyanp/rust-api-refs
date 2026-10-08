@@ -4,8 +4,8 @@ public class MissionObjective_OpenStorageContainer : MissionObjective
 {
 	public BaseEntity TargetEntity;
 
-	[Tooltip("If set, the objective world location will be set to this position.")]
 	[BaseMission.PositionGenerator.PositionPoint]
+	[Tooltip("If set, the objective world location will be set to this position.")]
 	public string SetObjectiveLocation;
 
 	[BaseMission.PositionGenerator.PositionPoint]

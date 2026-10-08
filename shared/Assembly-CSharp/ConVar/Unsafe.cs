@@ -11,8 +11,8 @@ public class Unsafe : ConsoleSystem
 
 	private const string DebugMTLockMaxFramesDoc = "How many frames of a stack to emit";
 
-	[ClientVar(Help = "Controls multithreading access to scripting API - can be fast, but unsafe. Disabling can help with instability", Default = "1")]
 	[ServerVar(Help = "Controls multithreading access to scripting API - can be fast, but unsafe. Disabling can help with instability", Default = "1")]
+	[ClientVar(Help = "Controls multithreading access to scripting API - can be fast, but unsafe. Disabling can help with instability", Default = "1")]
 	public static bool UseMultithreadedScripting
 	{
 		get

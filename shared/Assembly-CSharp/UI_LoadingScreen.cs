@@ -65,8 +65,8 @@ public class UI_LoadingScreen : SingletonComponent<UI_LoadingScreen>
 	[Header("Loading Screen References - Audio")]
 	public AudioSource music;
 
-	[Tooltip("Ping must be at least this many ms higher than the server browser ping")]
 	[Header("Loading Screen References - Settings")]
+	[Tooltip("Ping must be at least this many ms higher than the server browser ping")]
 	public int minPingDiffToShowWarning = 50;
 
 	[Tooltip("Ping must be this many times higher than the server browser ping")]

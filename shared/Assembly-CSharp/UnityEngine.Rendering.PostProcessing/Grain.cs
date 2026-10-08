@@ -19,8 +19,8 @@ public sealed class Grain : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Range(0.3f, 3f)]
 	[Tooltip("Grain particle size.")]
+	[Range(0.3f, 3f)]
 	public FloatParameter size = new FloatParameter
 	{
 		value = 1f

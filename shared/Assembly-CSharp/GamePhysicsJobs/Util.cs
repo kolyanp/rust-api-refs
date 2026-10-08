@@ -91,15 +91,15 @@ internal static class Util
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(GamePhysicsJobs_002EFindFreeSlot_00008F09_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(GamePhysicsJobs_002EFindFreeSlot_00008F09_0024PostfixBurstDelegate))]
 	public static int FindFreeSlot(int rayInd, in NativeArray<RaycastHit> hits, int maxHitsPerRay, out int endInd)
 	{
 		return FindFreeSlot_00008F09_0024BurstDirectCall.Invoke(rayInd, in hits, maxHitsPerRay, out endInd);
 	}
 
-	[BurstCompile]
 	[MonoPInvokeCallback(typeof(GamePhysicsJobs_002EFindFreeSlot_00008F0A_0024PostfixBurstDelegate))]
+	[BurstCompile]
 	public static int FindFreeSlot(int rayInd, in ReadOnly<RaycastHit> hits, int maxHitsPerRay, out int endInd)
 	{
 		return FindFreeSlot_00008F0A_0024BurstDirectCall.Invoke(rayInd, in hits, maxHitsPerRay, out endInd);

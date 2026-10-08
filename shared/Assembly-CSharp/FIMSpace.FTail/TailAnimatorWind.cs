@@ -35,8 +35,8 @@ public class TailAnimatorWind : MonoBehaviour, IDropHandler, IEventSystemHandler
 	[Header("Extra")]
 	public float turbulenceSpeed = 1f;
 
-	[Tooltip("Increase to make objects next to each other wave in slightly different way")]
 	[FPD_Header("World Position Turbulence", 6f, 4f, 2)]
+	[Tooltip("Increase to make objects next to each other wave in slightly different way")]
 	public float worldTurb = 1f;
 
 	[Tooltip("If higher no performance cost, it is just a number")]

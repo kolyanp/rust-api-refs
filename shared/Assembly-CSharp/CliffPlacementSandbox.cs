@@ -59,8 +59,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private static readonly Color FootprintInactiveColor = new Color(0.55f, 0.55f, 0.6f, 1f);
 
-	[Header("Level URL download")]
 	[Tooltip("Paste the whole thing a server's `levelurl` prints, then press Download below. The file is cached next to the project and MapFilePath is pointed at it, ready to Initialize.")]
+	[Header("Level URL download")]
 	public string LevelUrl = string.Empty;
 
 	[Tooltip("Where downloaded maps are cached. A relative path is taken from the project root, i.e. alongside Assets rather than inside it, so Unity never tries to import them.")]
@@ -86,12 +86,12 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCliffStatus = "pre-cliff baseline: not loaded";
 
-	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	[Header("Terrain source")]
+	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	public TerrainSource Source;
 
-	[Header("Procedural (real Rust base heightmap)")]
 	[Tooltip("World seed fed to the real generator, and to the pre-cliff T0 bake. Uploaded maps have the seed stripped from their name, so run `seed` on the server and paste it here; a map from the server's root folder carries it in the name and overwrites this on load. 0 = auto.")]
+	[Header("Procedural (real Rust base heightmap)")]
 	public uint Seed = 54321u;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
@@ -105,8 +105,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public int SlopeFinderMaxAngle = 65;
 
-	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	[Header("Terrain")]
+	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	public int HeightmapResolution = 513;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
@@ -118,8 +118,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Which canned height patch to seed the terrain with.")]
 	public TerrainPatch CurrentPatch = TerrainPatch.SlopeX;
 
-	[Header("Map file region (real .map crop)")]
 	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
+	[Header("Map file region (real .map crop)")]
 	public string MapFilePath = string.Empty;
 
 	[Tooltip("World-space X/Z centre of the region to crop out of the map (Y is ignored).")]
@@ -149,8 +149,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Scene the 'Bake pre-cliff T0' button drives. Must be a full generator scene (engine bootstrap + generating World Setup), e.g. the shipped 'Procedural Map' scene.")]
 	public string GenerationScenePath = "Assets/Scenes/Release/Procedural Map.unity";
 
-	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
 	[Header("Placement")]
+	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
 	public Transform cliffRoot;
 
 	[Tooltip("Anchor solve mode. PlaceCliffs uses MaximizeHeight for the first cliff of a chain.")]
@@ -201,8 +201,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Click-to-select mode: instead of drawing every gizmo in range, left-click a cliff to toggle its gizmos on, click again to turn them off. Several cliffs can be selected at once.")]
 	public bool GizmoSelectionMode = true;
 
-	[Header("Scale reference")]
 	[Tooltip("Spawn a player-sized capsule to judge scale against the cliffs. Drop it under the aim with 'Marker where I'm looking' or the J key.")]
+	[Header("Scale reference")]
 	public bool ShowPlayerScaleReference = true;
 
 	[Tooltip("Height of the scale-reference capsule in metres (Rust player is about 1.8m).")]

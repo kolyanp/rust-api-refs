@@ -729,8 +729,8 @@ public class BaseMission : BaseScriptableObject
 		[FormerlySerializedAs("targetMission")]
 		public BaseMission mission;
 
-		[FilteredEnum(0, 4)]
 		[FormerlySerializedAs("targetMissionDesiredStatus")]
+		[FilteredEnum(0, 4)]
 		public MissionStatus desiredStatus;
 
 		public uint missionID

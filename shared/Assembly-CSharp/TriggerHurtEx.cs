@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using Facepunch;
 using Rust;
 using UnityEngine;
 
@@ -197,35 +198,42 @@ public class TriggerHurtEx : TriggerBase, IServerComponent, IHurtTrigger
 
 	private void OnTick()
 	{
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		ProcessQueues();
 		if (entityInfo == null)
 		{
 			return;
 		}
-		KeyValuePair<BaseEntity, EntityTriggerInfo>[] array = entityInfo.ToArray();
-		for (int i = 0; i < array.Length; i++)
+		PooledList<KeyValuePair<BaseEntity, EntityTriggerInfo>> val = Pool.Get<PooledList<KeyValuePair<BaseEntity, EntityTriggerInfo>>>();
+		try
 		{
-			KeyValuePair<BaseEntity, EntityTriggerInfo> keyValuePair = array[i];
-			if (keyValuePair.Key.IsValid())
+			((List<KeyValuePair<BaseEntity, EntityTriggerInfo>>)(object)val).AddRange((IEnumerable<KeyValuePair<BaseEntity, EntityTriggerInfo>>)entityInfo);
+			foreach (KeyValuePair<BaseEntity, EntityTriggerInfo> item in (List<KeyValuePair<BaseEntity, EntityTriggerInfo>>)(object)val)
 			{
-				Vector3 position = ((Component)keyValuePair.Key).transform.position;
-				Vector3 val = position - keyValuePair.Value.lastPosition;
-				float magnitude = val.magnitude;
-				if (magnitude > 0.01f)
+				if (item.Key.IsValid())
 				{
-					keyValuePair.Value.lastPosition = position;
-					DoDamage(keyValuePair.Key, hurtTypeOnMove, damageOnMove, effectOnMove, magnitude);
+					Vector3 position = ((Component)item.Key).transform.position;
+					Vector3 val2 = position - item.Value.lastPosition;
+					float magnitude = val2.magnitude;
+					if (magnitude > 0.01f)
+					{
+						item.Value.lastPosition = position;
+						DoDamage(item.Key, hurtTypeOnMove, damageOnMove, effectOnMove, magnitude);
+					}
+					DoDamage(item.Key, hurtTypeOnTimer, damageOnTimer, effectOnTimer, repeatRate);
 				}
-				DoDamage(keyValuePair.Key, hurtTypeOnTimer, damageOnTimer, effectOnTimer, repeatRate);
 			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 

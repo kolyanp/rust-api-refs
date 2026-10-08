@@ -41,8 +41,8 @@ public class UI_CopyPasteFileButton : MonoBehaviour
 	[SerializeField]
 	private RustText entityCountText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject deleteButton;
 
 	[SerializeField]

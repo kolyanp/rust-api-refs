@@ -22,8 +22,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("How far from the entity the crabs spread out. They turn back when they reach the edge rather than despawning.")]
 		public float swarmRadius;
 
-		[Header("Movement")]
 		[Tooltip("Speed while wandering around.")]
+		[Header("Movement")]
 		public float minSpeed;
 
 		[Tooltip("Speed while startled, ie when the player gets close.")]
@@ -48,8 +48,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("Random variation in how long a crab dawdles before setting off after the entity, in seconds. Stops the swarm surging as one block.")]
 		public Vector2 catchUpDelayRange;
 
-		[Tooltip("How far a crab travels in one trip, as a fraction of the swarm radius. Picked randomly per trip.")]
 		[Header("Wandering")]
+		[Tooltip("How far a crab travels in one trip, as a fraction of the swarm radius. Picked randomly per trip.")]
 		public Vector2 wanderDistanceRange;
 
 		[Tooltip("How long a crab sits still after finishing a trip, in seconds. Higher means a calmer swarm.")]
@@ -61,8 +61,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("Tallest step a crab will walk up. Crabs look ahead at this height and steer around anything they'd hit, so rocks and walls block them.")]
 		public float maxStepHeight;
 
-		[Tooltip("How long a crab stays spooked after a player gets close, in seconds.")]
 		[Header("Startle")]
+		[Tooltip("How long a crab stays spooked after a player gets close, in seconds.")]
 		public float startleDuration;
 
 		[Tooltip("A player has to get this close to startle a crab.")]
@@ -71,8 +71,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("How far a fleeing crab may stray outside the swarm radius, as a multiplier. It wanders back in once it calms down.")]
 		public float startleBoundsMultiplier;
 
-		[Tooltip("Speed at which the walk animation reaches full blend. Below this the legs scale down, at 0 speed the crab is still.")]
 		[Header("Animation")]
+		[Tooltip("Speed at which the walk animation reaches full blend. Below this the legs scale down, at 0 speed the crab is still.")]
 		public float fullAnimationSpeed;
 
 		[Tooltip("How quickly the walk animation blends in and out as the crab starts and stops.")]

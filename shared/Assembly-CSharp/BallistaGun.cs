@@ -26,8 +26,8 @@ public class BallistaGun : BaseVehicleSeat
 		public GameObjectRef effectPrefab;
 	}
 
-	[Header("Ballista")]
 	[SerializeField]
+	[Header("Ballista")]
 	private bool isMountedOnVehicle = true;
 
 	[SerializeField]
@@ -103,8 +103,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[SerializeField]
 	[Header("Effects")]
+	[SerializeField]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -134,8 +134,8 @@ public class BallistaGun : BaseVehicleSeat
 
 	private SoundModulation.Modulator aimMovementPitchGainMod;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private bool runSideChecks;
 
 	[SerializeField]
@@ -1124,8 +1124,8 @@ public class BallistaGun : BaseVehicleSeat
 		((Collider)playerServerCollider).enabled = active;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void SERVER_SwitchAmmoTo(RPCMessage msg)
 	{
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
@@ -1165,8 +1165,8 @@ public class BallistaGun : BaseVehicleSeat
 
 	[RPC_Server.MaxRepeatedElements(1)]
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -1431,9 +1431,9 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromMounted]
+	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -1460,8 +1460,8 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromMounted]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{

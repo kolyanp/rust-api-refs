@@ -6,8 +6,8 @@ public class ConvarTimedPrefabSpawner : BaseMonoBehaviour, IServerComponent
 	[Tooltip("A random prefab from this list will be spawned each interval")]
 	public List<GameObjectRef> prefabsToSpawn = new List<GameObjectRef>();
 
-	[HideInInspector]
 	[ServerVar(Help = "Time in seconds between prefab spawns. Set to 0 to disable spawning.")]
+	[HideInInspector]
 	public static float prefab_spawn_interval = 0f;
 
 	[HideInInspector]
@@ -22,8 +22,8 @@ public class ConvarTimedPrefabSpawner : BaseMonoBehaviour, IServerComponent
 	[HideInInspector]
 	public static float prefab_spawn_random_position_offset = 0f;
 
-	[ServerVar(Saved = true, Help = "Time in seconds before spawned prefabs are despawned. Set to 0 to disable despawning.")]
 	[HideInInspector]
+	[ServerVar(Saved = true, Help = "Time in seconds before spawned prefabs are despawned. Set to 0 to disable despawning.")]
 	public static float prefab_despawn_time = 20f;
 
 	private TimeSince timeSinceLastSpawn;

@@ -28,8 +28,8 @@ public class Console : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Return the last x lines of the console. Default is 200")]
+	[ServerVar]
 	public static IEnumerable<Output.Entry> tail(Arg arg)
 	{
 		int num = arg.GetInt(0, 200);

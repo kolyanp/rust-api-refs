@@ -17,8 +17,8 @@ public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 	[HideInInspector]
 	protected CharacterController optionalCharContr;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected bool rootMotionRotation = true;
 
 	protected Animator rootMAnimator;

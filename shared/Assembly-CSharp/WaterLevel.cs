@@ -183,7 +183,7 @@ public static class WaterLevel
 	public static float GetWaterSurface(Vector3 pos, bool waves, bool volumes, BaseEntity forEntity = null)
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		using (TimeWarning.New("WaterLevel.GetWaterDepth"))
+		using (TimeWarning.New("WaterLevel.GetWaterSurface"))
 		{
 			return GetWaterInfo(pos, waves, volumes, forEntity).surfaceLevel;
 		}

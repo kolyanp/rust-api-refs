@@ -37,8 +37,8 @@ public class ModelViewer_MainCameraParameters
 	public float followLag;
 
 	[Header("Lens")]
-	[Header("                ")]
 	[Range(0.01f, 360f)]
+	[Header("                ")]
 	public float fieldOfView = 15f;
 
 	public float nearPlane = 0.05f;
@@ -67,14 +67,14 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
+	[Range(0f, 360f)]
 	[Header("Motion Blur")]
 	[Header("                ")]
-	[Range(0f, 360f)]
 	public float shutterAngle;
 
-	[Header("Distortion")]
-	[Header("                ")]
 	[Range(-100f, 100f)]
+	[Header("                ")]
+	[Header("Distortion")]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]
@@ -98,8 +98,8 @@ public class ModelViewer_MainCameraParameters
 
 	public float limit;
 
-	[Header("God Rays")]
 	[Header("                ")]
+	[Header("God Rays")]
 	public bool GodRays = true;
 
 	[Header("Bloom")]

@@ -19,8 +19,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private List<ServerBrowserCategoryData> _categories;
 
-	[Header("Headers")]
 	[SerializeField]
+	[Header("Headers")]
 	private List<ServerBrowserHeader> _headers;
 
 	[SerializeField]

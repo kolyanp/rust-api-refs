@@ -264,13 +264,13 @@ public class FimpIK_Limb : FIK_ProcessorBase
 	[Tooltip("3-Bones limb array")]
 	private IKBone[] IKBones;
 
-	[Space(4f)]
 	[Range(0f, 1f)]
+	[Space(4f)]
 	[Tooltip("Blend value for goal position")]
 	public float IKPositionWeight = 1f;
 
-	[Tooltip("Blend value for end bone rotation")]
 	[Range(0f, 1f)]
+	[Tooltip("Blend value for end bone rotation")]
 	public float FootRotationWeight = 1f;
 
 	[Tooltip("Flex style algorithm for different limbs")]

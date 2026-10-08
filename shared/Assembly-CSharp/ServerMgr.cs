@@ -580,6 +580,15 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		}
 	}
 
+	private static bool IsClientBranchAllowed(string serverBranch, string clientBranch)
+	{
+		if (serverBranch == "release")
+		{
+			return !(clientBranch == "main");
+		}
+		return true;
+	}
+
 	private void OnGiveUserInformation(Message packet)
 	{
 		if (packet.connection.state != Network.Connection.State.Unconnected)
@@ -614,42 +623,61 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			return;
 		}
 		string text = string.Empty;
-		string branch = ConVar.Server.branch;
+		BuildInfo current = BuildInfo.Current;
+		object obj;
+		if (current == null)
+		{
+			obj = null;
+		}
+		else
+		{
+			ScmInfo scm = current.Scm;
+			obj = ((scm != null) ? scm.Branch : null);
+		}
+		if (obj == null)
+		{
+			obj = string.Empty;
+		}
+		string text2 = (string)obj;
 		if (packet.read.Unread >= 4)
 		{
 			text = packet.read.String(128);
 		}
 		Interface.CallHook("OnClientAuth", packet.connection);
-		if (branch != string.Empty && branch != text)
+		if (!IsClientBranchAllowed(text2, text))
 		{
-			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their branch is '" + text + "' not '" + branch + "'", (StackTraceLogType)0);
-			Net.sv.Kick(packet.connection, "Wrong Steam Beta: Requires '" + branch + "' branch!");
+			if (!DeveloperList.Contains(packet.connection.userid))
+			{
+				DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their branch is '" + text + "' not '" + text2 + "'", (StackTraceLogType)0);
+				Net.sv.Kick(packet.connection, "Wrong Client Branch: Staging clients can't join release servers!");
+				return;
+			}
+			DebugEx.Log("Not kicking " + packet.connection?.ToString() + " for their branch '" + text + "' (is a developer)", (StackTraceLogType)0);
 		}
-		else if (packet.connection.protocol > 2634)
+		if (packet.connection.protocol > 2634)
 		{
 			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2634, (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Server update required!");
+			return;
 		}
-		else if (packet.connection.protocol < 2634)
+		if (packet.connection.protocol < 2634)
 		{
 			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2634, (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Client update required!");
+			return;
 		}
-		else
+		packet.connection.token = packet.read.BytesWithSize(512u);
+		if (packet.connection.token == null || packet.connection.token.Length < 1)
 		{
-			packet.connection.token = packet.read.BytesWithSize(512u);
-			if (packet.connection.token == null || packet.connection.token.Length < 1)
-			{
-				Net.sv.Kick(packet.connection, "Invalid Token");
-				return;
-			}
-			packet.connection.anticheatId = packet.read.StringRaw(128);
-			packet.connection.anticheatToken = packet.read.StringRaw(2048);
-			packet.connection.clientChangeset = packet.read.Int32();
-			packet.connection.clientBuildTime = packet.read.Int64();
-			packet.connection.language = packet.read.String();
-			auth.OnNewConnection(packet.connection);
+			Net.sv.Kick(packet.connection, "Invalid Token");
+			return;
 		}
+		packet.connection.anticheatId = packet.read.StringRaw(128);
+		packet.connection.anticheatToken = packet.read.StringRaw(2048);
+		packet.connection.clientChangeset = packet.read.Int32();
+		packet.connection.clientBuildTime = packet.read.Int64();
+		packet.connection.language = packet.read.String();
+		auth.OnNewConnection(packet.connection);
 	}
 
 	public bool Initialize(bool loadSave = true, string saveFile = "", bool allowOutOfDateSaves = false, bool skipInitialSpawn = false)

@@ -9,21 +9,21 @@ public class PooltableMountable : BaseMountable
 	[HideInInspector]
 	public float SplineDistance;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private ViewModel poolCueViewmodel;
 
 	[SerializeField]
-	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	[Header("3p Cue")]
+	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	private Transform cueHeldProp;
 
 	[Tooltip("Grip offset in prop bone space. Mostly z: how far up the shaft the hand holds the cue, which is what the stroke rotates around.")]
 	[SerializeField]
 	private Vector3 cueHeldPropPositionOffset;
 
-	[Tooltip("Cue tilt relative to the prop bone.")]
 	[SerializeField]
+	[Tooltip("Cue tilt relative to the prop bone.")]
 	private Vector3 cueHeldPropEulerOffset;
 
 	[Tooltip("One 3p cue per seat, all parented to cueHeldProp. Only the mounted player's own cue is left active.")]
@@ -33,8 +33,8 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private float movementSpeed;
 
-	[SerializeField]
 	[Tooltip("Max spline travel per second from mouse aim. Well above movementSpeed - the mouse is the fine aim and has to feel 1:1 - but bounded so a violent flick can't spin you round the table.")]
+	[SerializeField]
 	private float mouseAimMaxSpeed = 8f;
 
 	private static readonly int RightHash = Animator.StringToHash("right");
@@ -52,12 +52,12 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private float pullbackSensitivity = 0.01f;
 
-	[SerializeField]
 	[Tooltip("Normalized cue travel per second required to turn forward movement into a shot.")]
+	[SerializeField]
 	private float strikeSpeedThreshold = 1f;
 
-	[SerializeField]
 	[Tooltip("Minimum pullback required before a fast forward movement can strike.")]
+	[SerializeField]
 	private float minimumStrikePower = 0.05f;
 
 	private float cuePullback = 0.5f;

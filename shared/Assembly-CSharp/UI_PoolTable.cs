@@ -21,8 +21,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private GameObject cancelInstruction;
 
-	[Header("Players")]
 	[SerializeField]
+	[Header("Players")]
 	private RustText localPlayerNameText;
 
 	[SerializeField]
@@ -34,8 +34,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RawImage opponentAvatar;
 
-	[SerializeField]
 	[Header("Current Turn")]
+	[SerializeField]
 	private GameObject localTurnBall;
 
 	[SerializeField]

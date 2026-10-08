@@ -7,8 +7,8 @@ public class ItemModWorkbenchAccelerated : ItemModWorkbenchUpgrade
 	[Range(0f, 1f)]
 	public float speedBonusPerItem = 0.25f;
 
-	[Range(0.1f, 1f)]
 	[Tooltip("Maximum speed multiplier this upgrade can reach (e.g. 0.25 = 4x faster at cap).")]
+	[Range(0.1f, 1f)]
 	public float maxSpeedMultiplier = 0.25f;
 
 	public override float GetCraftSpeedMultiplier(ItemCraftTask task)

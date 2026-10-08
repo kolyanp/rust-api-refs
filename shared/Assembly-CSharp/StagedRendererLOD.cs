@@ -33,8 +33,8 @@ public class StagedRendererLOD : InstancedLODComponent, IHLODMeshSource
 		public bool disableShadows;
 	}
 
-	[Header("Target Renderer")]
 	[Tooltip("The single renderer everything is drawn through. Its mesh and materials are swapped at runtime.")]
+	[Header("Target Renderer")]
 	public MeshRenderer TargetRenderer;
 
 	public MeshFilter TargetFilter;

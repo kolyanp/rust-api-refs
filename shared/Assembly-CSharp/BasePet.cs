@@ -13,8 +13,8 @@ public class BasePet : NPCPlayer, IThinker
 	[ServerVar]
 	public static bool onlyQueueBaseNavMovements = true;
 
-	[Help("How many miliseconds to budget for processing pet movements per frame")]
 	[ServerVar]
+	[Help("How many miliseconds to budget for processing pet movements per frame")]
 	public static float movementupdatebudgetms = 1f;
 
 	public float BaseAttackRate = 2f;

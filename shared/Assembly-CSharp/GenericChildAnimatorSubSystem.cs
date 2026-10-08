@@ -20,7 +20,7 @@ public class GenericChildAnimatorSubSystem : ChildAnimatorSubSystem
 	[SerializeField]
 	private BaseEntity.Signal TriggerSignal;
 
-	[Tooltip("Second mask for poses that need both arms, blended by the RightArmLayerWeight and BothArmsLayerWeight animator floats")]
 	[SerializeField]
+	[Tooltip("Second mask for poses that need both arms, blended by the RightArmLayerWeight and BothArmsLayerWeight animator floats")]
 	private AvatarMask TwoHandMask;
 }

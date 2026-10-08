@@ -21,8 +21,8 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private RustText occupiedText;
 
-	[Header("Opening")]
 	[Space]
+	[Header("Opening")]
 	[SerializeField]
 	private RectTransform crtScreen;
 
@@ -38,9 +38,9 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private RustText subtitleText;
 
-	[Space]
 	[SerializeField]
 	[Header("CCTV")]
+	[Space]
 	private RawImage feedImage;
 
 	[SerializeField]
@@ -49,9 +49,9 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private GameObject feedNoSignal;
 
-	[SerializeField]
-	[Header("Tabs")]
 	[Space]
+	[Header("Tabs")]
+	[SerializeField]
 	private GameObject apartmentsPanel;
 
 	[SerializeField]

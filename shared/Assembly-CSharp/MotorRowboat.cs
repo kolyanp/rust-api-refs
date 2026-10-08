@@ -9,7 +9,7 @@ using Rust;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class MotorRowboat : BaseBoat
+public class MotorRowboat : BaseBoat, INotifyLOD
 {
 	[Header("Audio")]
 	public BlendedSoundLoops engineLoops;

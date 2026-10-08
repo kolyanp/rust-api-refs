@@ -135,8 +135,8 @@ public class CompoundBowWeapon : BowWeapon
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void RPC_StringHoldStatus(RPCMessage msg)
 	{
 		if (msg.read.Bit())

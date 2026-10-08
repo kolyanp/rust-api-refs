@@ -71,6 +71,7 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		_messageQueue = new Queue<Message>();
 		_syncContext = SynchronizationContext.Current;
 		_server = new WebSocketServer($"ws://{Address}:{Port}/", true, 100, App.maxconnections, App.maxconnectionsperip);
+		_server.RestartAfterListenError = true;
 		_server.Start((Action<IWebSocketConnection>)((IWebSocketConnection socket) =>
 		{
 			//IL_004c: Unknown result type (might be due to invalid IL or missing references)

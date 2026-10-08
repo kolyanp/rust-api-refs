@@ -9,8 +9,8 @@ public class DeepSeaBuoy : MonoBehaviour
 	[ColorUsage(true, true)]
 	private Color colorOpen = Color.green;
 
-	[SerializeField]
 	[ColorUsage(true, true)]
+	[SerializeField]
 	private Color colorClosed = Color.red;
 
 	[SerializeField]

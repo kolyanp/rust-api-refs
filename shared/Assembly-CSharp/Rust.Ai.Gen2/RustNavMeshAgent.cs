@@ -280,8 +280,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 
 	private const float ReachSnapDropRange = 0.35f;
 
-	[SerializeField]
 	[Header("Base fields")]
+	[SerializeField]
 	private int _agentTypeID;
 
 	[SerializeField]

@@ -112,8 +112,8 @@ public class StaticInstrument : BaseMountable
 		typeof(int),
 		typeof(float)
 	})]
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
 	private void Server_PlayNote(RPCMessage msg)
 	{
 		int arg = msg.read.Int32();

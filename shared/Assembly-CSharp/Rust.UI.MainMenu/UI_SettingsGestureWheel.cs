@@ -14,8 +14,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private RustButton rightArrowButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SettingsGestureWidget[] gestureWidgets;
 
 	[SerializeField]
@@ -51,8 +51,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private UI_SettingsGesturePack packPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	public RectTransform dragAndDropCanvas;
 
 	[SerializeField]

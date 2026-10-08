@@ -57,8 +57,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	}
 
 	[Space]
-	[SerializeField]
 	[Header("Page Content")]
+	[SerializeField]
 	private CanvasGroup bodyCanvasGroup;
 
 	[SerializeField]
@@ -133,22 +133,22 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private GameObject ownedButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private bool autoCycleEnabled = true;
 
 	[SerializeField]
 	private float autoCycleInterval = 10f;
 
-	[Header("Skin Viewer")]
 	[SerializeField]
+	[Header("Skin Viewer")]
 	private UI_SkinViewerControls skinViewerControls;
 
 	[SerializeField]
 	private CoverImage skinViewerImage;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private PageContent pageContent;
 
 	public bool HasFlashlightReveal => (Object)(object)flashlightReveal != (Object)null;

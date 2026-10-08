@@ -6,8 +6,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ConnectModal : UI_Window
 {
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private RustText _title;
 
 	[SerializeField]
@@ -46,8 +46,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private UI_ServerMap _map;
 
-	[Header("References - System Config")]
 	[SerializeField]
+	[Header("References - System Config")]
 	private GameObject _requiredSystemConfigSection;
 
 	[SerializeField]
@@ -62,8 +62,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private UI_TagToggle _iommuCheck;
 
-	[SerializeField]
 	[Header("References - Friends")]
+	[SerializeField]
 	private RustText _friendsText;
 
 	[SerializeField]

@@ -248,8 +248,8 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 
 	public float spawnTime = -1f;
 
-	[Header("Base Vehicle")]
 	[Tooltip("Check for vehicles clipping into our mount point as well as static stuff")]
+	[Header("Base Vehicle")]
 	public bool checkVehicleClipping;
 
 	[Tooltip("Exclude any problematic physics layers from colliding with this vehicle. Requires a DoPrepare to update")]

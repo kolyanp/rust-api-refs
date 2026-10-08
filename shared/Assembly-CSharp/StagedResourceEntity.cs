@@ -10,8 +10,8 @@ public class StagedResourceEntity : ResourceEntity
 	[Header("Staged Resource Entity")]
 	public GameObjectRef changeStageEffect;
 
-	[FormerlySerializedAs("ResourceMeshLod")]
 	[Tooltip("The LOD component whose visuals are swapped per destruction stage. Supports MeshLOD (meshes only) and StagedRendererLOD (meshes and materials).")]
+	[FormerlySerializedAs("ResourceMeshLod")]
 	public InstancedLODComponent LODComponent;
 
 	public MeshCollider[] ResourceMeshColliders = Array.Empty<MeshCollider>();

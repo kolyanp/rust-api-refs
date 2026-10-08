@@ -89,8 +89,8 @@ public class AttackHelicopter : PlayerHelicopter
 	[SerializeField]
 	private Material monitorStaticSafeZone;
 
-	[SerializeField]
 	[Header("Heli Pilot Flares")]
+	[SerializeField]
 	public GameObjectRef flareFireFX;
 
 	[SerializeField]
@@ -105,8 +105,8 @@ public class AttackHelicopter : PlayerHelicopter
 	[SerializeField]
 	public float flareLaunchVel = 10f;
 
-	[SerializeField]
 	[Header("Heli Pilot Lights")]
+	[SerializeField]
 	private Renderer rocketLightOff;
 
 	[SerializeField]
@@ -785,8 +785,8 @@ public class AttackHelicopter : PlayerHelicopter
 		GameManager.server.CreatePrefab(pilotFlare.resourcePath, rightFlareLaunchPos.position, Quaternion.identity).GetComponent<HeliPilotFlare>().Init(((Component)this).transform.right * flareLaunchVel);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenTurret(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -805,8 +805,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -825,8 +825,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -838,8 +838,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: true);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_CloseGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -851,8 +851,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetRocketAmmoType(RPCMessage msg)
 	{
 		if (!((Object)(object)GetDriver() != (Object)(object)msg.player))
@@ -862,8 +862,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_TriggerRocketReload(RPCMessage msg)
 	{
 		if (!((Object)(object)GetDriver() != (Object)(object)msg.player))

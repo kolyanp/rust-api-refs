@@ -107,12 +107,13 @@ public class App : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "Retry initializing the Rust+ companion server if it previously failed")]
+	[ServerVar(Help = "Retry initializing the Rust+ companion server if it previously failed, pass true to restart it even if it's already running")]
 	public static void retry_initialize(Arg arg)
 	{
-		if (CompanionServer.Server.IsEnabled)
+		bool flag = arg.GetBool(0);
+		if (CompanionServer.Server.IsEnabled && !flag)
 		{
-			arg.ReplyWith("Companion server is already initialized!");
+			arg.ReplyWith("Companion server is already initialized! Use 'app.retry_initialize true' to restart it anyway");
 			return;
 		}
 		if (port < 0)
@@ -127,6 +128,7 @@ public class App : ConsoleSystem
 			return;
 		}
 		arg.ReplyWith("Trying to initialize companion server...");
+		CompanionServer.Server.Shutdown();
 		CompanionServer.Server.Initialize();
 	}
 

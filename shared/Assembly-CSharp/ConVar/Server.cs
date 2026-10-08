@@ -144,9 +144,6 @@ public class Server : ConsoleSystem
 	[ServerVar(ShowInAdminUI = true, Help = "(Generated) Server website URL displayed in the server browser; leave empty to show no link")]
 	public static string url = "";
 
-	[ServerVar(Help = "(Generated) Server branch tag used by the server browser to identify modded or experimental variants; leave empty for vanilla")]
-	public static string branch = "";
-
 	[ServerVar(Help = "(Generated) Maximum number of Steam server browser queries the server will respond to per second before rate-limiting")]
 	public static int queriesPerSecond = 2000;
 

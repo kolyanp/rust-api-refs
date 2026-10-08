@@ -3,8 +3,8 @@ namespace ConVar;
 [Factory("workbench")]
 public class Workbench : ConsoleSystem
 {
-	[Help("Skip server-side upgrade clearance zone checks")]
 	[ServerVar]
+	[Help("Skip server-side upgrade clearance zone checks")]
 	public static bool skipclearancechecks = false;
 
 	[ServerVar]

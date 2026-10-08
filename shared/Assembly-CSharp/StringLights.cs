@@ -44,8 +44,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	private ItemDefinition itemToConsume;
 
-	[SerializeField]
 	[Header("Line Generation Settings")]
+	[SerializeField]
 	protected BulbSettings[] bulbSettings;
 
 	[SerializeField]
@@ -72,8 +72,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	protected bool bulbFaceNormal;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	protected LineRenderer lineRenderer;
 
 	[SerializeField]
@@ -349,8 +349,8 @@ public class StringLights : IOEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_AddPoint(RPCMessage msg)
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -425,8 +425,8 @@ public class StringLights : IOEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_RemovePoint(RPCMessage msg)
 	{
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)

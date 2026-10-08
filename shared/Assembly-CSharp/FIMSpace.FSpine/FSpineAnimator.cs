@@ -844,20 +844,20 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	public float RotSmoother;
 
-	[Range(0f, 1f)]
 	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
+	[Range(0f, 1f)]
 	public float MaxStretching = 1f;
 
-	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	[Range(0f, 1f)]
+	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	public float Slithery = 1f;
 
 	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
 	[Range(1f, 91f)]
 	public float AngleLimit = 40f;
 
-	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
 	[Range(0f, 1f)]
+	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
 	public float LimitSmoother = 0.35f;
 
 	[Range(0f, 15f)]
@@ -870,12 +870,12 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float GoBackSpeed;
 
-	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	[Range(0f, 1f)]
+	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	public float Springiness;
 
-	[Range(0f, 1f)]
 	[Tooltip("How much effect on spine chain should have character movement.")]
+	[Range(0f, 1f)]
 	public float MotionInfluence = 1f;
 
 	[Tooltip("Useful when your creature jumps on moving platform, so when platform moves spine is not reacting, by default world space is used (null).")]
@@ -923,8 +923,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If you want to continue checking collision if segment collides with one collider (very useful for example when you using gravity power with ground)")]
 	public bool DetailedCollision = true;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private bool _CheckedPivot;
 
 	private bool updateSpineAnimator;

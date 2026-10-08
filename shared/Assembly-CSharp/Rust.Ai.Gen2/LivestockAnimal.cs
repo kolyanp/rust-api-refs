@@ -242,8 +242,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float[] activityWeights;
 
-	[Tooltip("The item dropped each time the animal dungs. Leave empty to disable it, which is how an age stage that shouldn't dung - a calf, say - opts out.")]
 	[Header("Dung")]
+	[Tooltip("The item dropped each time the animal dungs. Leave empty to disable it, which is how an age stage that shouldn't dung - a calf, say - opts out.")]
 	public ItemDefinition DungItem;
 
 	[Tooltip("How long (in seconds) between dung drops. Zero disables it.")]
@@ -284,21 +284,21 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float lastDefendedAttack = float.NegativeInfinity;
 
-	[Range(0f, 1f)]
 	[Header("Old age")]
 	[Tooltip("How far through its life an animal drops a whole gait, so it jogs where it used to run. A tier rather than a multiplier: the animations are authored at the gait speeds, so anything in between reads as sliding.")]
+	[Range(0f, 1f)]
 	public float OldAgeSlowFraction = 0.55f;
 
 	[Range(0f, 1f)]
 	[Tooltip("How far through its life it drops a second gait. Never goes below a walk.")]
 	public float OldAgeVerySlowFraction = 0.8f;
 
-	[Range(0.05f, 1f)]
 	[Tooltip("How much of its roaming range an animal still has at the very end of its life, so an old one keeps close to home and mostly only moves to get back to it.")]
+	[Range(0.05f, 1f)]
 	public float OldAgeRangeFactor = 0.15f;
 
-	[Range(1f, 10f)]
 	[Tooltip("How much longer an old animal rests than one in its prime. 4 means a lie down at the end of its life lasts four times as long.")]
+	[Range(1f, 10f)]
 	public float OldAgeRestDurationScale = 4f;
 
 	private RustNavMeshAgent frailtyAgent;
@@ -311,8 +311,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private TimeSince lastAdoptionCheck;
 
-	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
 	[Header("Hydration")]
+	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
 	public float HydrationFillRate = 0.25f;
 
 	[Range(0f, 1f)]
@@ -364,8 +364,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float sleepFraction;
 
-	[Tooltip("How far (in metres) the animal looks for herd mates. Herd identity rather than personal space: the regroup, the flee centroid and the distress broadcast all use it.")]
 	[Header("PersonalSpace")]
+	[Tooltip("How far (in metres) the animal looks for herd mates. Herd identity rather than personal space: the regroup, the flee centroid and the distress broadcast all use it.")]
 	public float SocialSearchRadius = 20f;
 
 	[Tooltip("How many herd mates of the same species within Social Search Radius the animal is content surrounded by. Past this the herd is too big to keep producing at full rate.")]
@@ -393,8 +393,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public float SeverePacking = 9f;
 
 	[FormerlySerializedAs("SocialChangeRate")]
-	[Tooltip("How much personal space moves per second, towards whichever of the two pressures is worse. Zero disables the need.")]
 	[FormerlySerializedAs("CrowdingChangeRate")]
+	[Tooltip("How much personal space moves per second, towards whichever of the two pressures is worse. Zero disables the need.")]
 	public float PersonalSpaceChangeRate = 0.01f;
 
 	[Tooltip("How far a hurt animal's distress carries to the rest of its herd. Deliberately wider than SocialSearchRadius: that one is about who counts as company, this is about how far away a bull should still answer for one of his being shot. Only queried on a hit, so it can afford to be generous.")]
@@ -493,8 +493,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How long (in seconds) this animal stays at its current age stage. When it elapses an infant grows into the adult named by its Species asset and an adult dies of old age. Zero disables aging.")]
 	public float TimeToGrow;
 
-	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	[Range(0f, 1f)]
+	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	public float GrowTimeVariance = 0.1f;
 
 	[Tooltip("Optional effect played on the new animal when it grows into the next stage.")]
@@ -516,19 +516,19 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("The species this animal belongs to. Shared by every prefab of the species - both sexes and every age stage - so it identifies mates and tells an infant which adult to grow into.")]
 	public LivestockSpecies Species;
 
-	[Header("Needs")]
 	[Tooltip("How much fullness a second of grazing puts back. Deliberately slow: grazing is meant to be what the animal spends its day doing, not a top up it finishes in a few seconds.")]
+	[Header("Needs")]
 	public float FullnessFillRate = 0.004f;
 
 	[Tooltip("How much fullness drains per second while the animal is up and about in daylight. Against FullnessFillRate this sets how much of its standing time a well fed animal spends eating: 0.001 against 0.004 is a quarter of it. Slow, because the dip below ConsumeThreshold while the animal walks over is what a keeper sees. Lying down and sleeping drain at SleepingDecayScale.")]
 	public float FullnessDecayRate = 0.001f;
 
-	[Tooltip("Where a freshly spawned animal's fullness starts. At the trough ceiling, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to it.")]
 	[Range(0f, 1f)]
+	[Tooltip("Where a freshly spawned animal's fullness starts. At the trough ceiling, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to it.")]
 	public float StartingFullness = 0.8f;
 
-	[Tooltip("Scales the drain while the animal is asleep or the sun is down. Feeding is daytime work, so a full night at the waking rate would be a debt the day could not pay off.")]
 	[Range(0f, 1f)]
+	[Tooltip("Scales the drain while the animal is asleep or the sun is down. Feeding is daytime work, so a full night at the waking rate would be a debt the day could not pay off.")]
 	public float SleepingDecayScale = 0.25f;
 
 	public float NeedTickFrequency = 5f;
@@ -536,12 +536,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far (in metres) the animal looks for somewhere to feed itself - a trough, a water barrel, open grass or a river bank.")]
 	public float ConsumeSearchRadius = 25f;
 
-	[Tooltip("A need at or below this share of the most it can get sends the animal off to top it up. Fullness is measured against the trough ceiling while a trough is what feeds it, and against full otherwise. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it: about 0.75 to 0.8 on troughs and 0.95 to 1 on grass. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
 	[Range(0f, 1f)]
+	[Tooltip("A need at or below this share of the most it can get sends the animal off to top it up. Fullness is measured against the trough ceiling while a trough is what feeds it, and against full otherwise. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it: about 0.75 to 0.8 on troughs and 0.95 to 1 on grass. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
 	public float ConsumeThreshold = 0.95f;
 
-	[Range(0f, 1f)]
 	[Tooltip("The most fullness a trough will ever put back. Grass still fills an animal completely, so a herd living out of a trough sits permanently a little short and everything reading Condition pays for it.")]
+	[Range(0f, 1f)]
 	public float TroughFullnessCeiling = 0.8f;
 
 	[Tooltip("How much fullness each calorie of trough food is worth. The animal grazes a trough item down before it takes the next, so richer food lasts longer, the way it does for a horse.")]
@@ -4666,9 +4666,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Lead(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null))
@@ -4740,8 +4740,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)

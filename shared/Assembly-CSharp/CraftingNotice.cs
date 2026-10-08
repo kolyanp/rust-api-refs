@@ -1,11 +1,11 @@
-using TMPro;
+using Rust.UI;
 using UnityEngine;
 
 public class CraftingNotice : MonoBehaviour
 {
 	public CanvasGroup canvasGroup;
 
-	public TextMeshProUGUI itemName;
+	public RustText itemName;
 
-	public TextMeshProUGUI craftSeconds;
+	public RustText craftSeconds;
 }

@@ -29,28 +29,28 @@ public class ThrownWeapon : AttackEntity
 	[ShowIf("predictThrow", true)]
 	public PredictRelease predictRelease;
 
-	[Tooltip("Delay mode: seconds after the throw starts. 0 lets go at once.")]
 	[ShowIf("predictThrow", true)]
+	[Tooltip("Delay mode: seconds after the throw starts. 0 lets go at once.")]
 	[ShowIf("predictRelease", PredictRelease.Delay)]
 	public float predictReleaseDelay;
 
-	[Range(0.05f, 0.95f)]
-	[Tooltip("Hand Slows mode: lets go once the hand has dropped to this share of its fastest speed.")]
 	[ShowIf("predictThrow", true)]
+	[Range(0.05f, 0.95f)]
 	[ShowIf("predictRelease", PredictRelease.HandSlows)]
+	[Tooltip("Hand Slows mode: lets go once the hand has dropped to this share of its fastest speed.")]
 	public float predictReleaseSpeed = 0.5f;
 
-	[Tooltip("Viewmodel Event mode: the animation event that lets it go.")]
-	[ShowIf("predictRelease", PredictRelease.ViewmodelEvent)]
 	[ShowIf("predictThrow", true)]
+	[ShowIf("predictRelease", PredictRelease.ViewmodelEvent)]
+	[Tooltip("Viewmodel Event mode: the animation event that lets it go.")]
 	public string predictReleaseEvent;
 
 	[Tooltip("Backstop: it leaves the hand this long after the throw whatever the mode decides.")]
 	[ShowIf("predictThrow", true)]
 	public float predictMaxHoldTime = 0.5f;
 
-	[ShowIf("predictThrow", true)]
 	[Tooltip("What the throwable comes off when it appears.")]
+	[ShowIf("predictThrow", true)]
 	public PredictOrigin predictOrigin;
 
 	[ShowIf("predictOrigin", PredictOrigin.ViewmodelBone)]
@@ -58,13 +58,13 @@ public class ThrownWeapon : AttackEntity
 	[ShowIf("predictThrow", true)]
 	public string predictOriginBone = "r_hand";
 
-	[Tooltip("Viewmodel Bone mode: start in the bone's pose and blend to the throw's own over the blend distance.")]
-	[ShowIf("predictThrow", true)]
 	[ShowIf("predictOrigin", PredictOrigin.ViewmodelBone)]
+	[ShowIf("predictThrow", true)]
+	[Tooltip("Viewmodel Bone mode: start in the bone's pose and blend to the throw's own over the blend distance.")]
 	public bool predictOriginRotation;
 
-	[ShowIf("predictThrow", true)]
 	[Tooltip("Shifts where it appears, along the origin's own axes.")]
+	[ShowIf("predictThrow", true)]
 	public Vector3 predictOriginOffset;
 
 	[Tooltip("How far it has to travel from where it appeared before it is drawn.")]
@@ -314,8 +314,8 @@ public class ThrownWeapon : AttackEntity
 		return Mathf.Sqrt(0.5f * y3 * magnitude * magnitude / (magnitude2 * (magnitude2 * y - y2 * magnitude)));
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void DoThrow(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -440,8 +440,8 @@ public class ThrownWeapon : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void DoDrop(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

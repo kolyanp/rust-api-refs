@@ -6,9 +6,9 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(AutoExposureRenderer), "Unity/Auto Exposure", true)]
 public sealed class AutoExposure : PostProcessEffectSettings
 {
-	[Tooltip("Filters the bright and dark parts of the histogram when computing the average luminance. This is to avoid very dark pixels and very bright pixels from contributing to the auto exposure. Unit is in percent.")]
 	[DisplayName("Filtering (%)")]
 	[MinMax(1f, 99f)]
+	[Tooltip("Filters the bright and dark parts of the histogram when computing the average luminance. This is to avoid very dark pixels and very bright pixels from contributing to the auto exposure. Unit is in percent.")]
 	public Vector2Parameter filtering = new Vector2Parameter
 	{
 		value = new Vector2(50f, 95f)
@@ -23,23 +23,23 @@ public sealed class AutoExposure : PostProcessEffectSettings
 	};
 
 	[Tooltip("Maximum average luminance to consider for auto exposure. Unit is EV.")]
-	[Range(-9f, 9f)]
 	[DisplayName("Maximum (EV)")]
+	[Range(-9f, 9f)]
 	public FloatParameter maxLuminance = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[DisplayName("Exposure Compensation")]
 	[Tooltip("Use this to scale the global exposure of the scene.")]
+	[DisplayName("Exposure Compensation")]
 	[Min(0f)]
 	public FloatParameter keyValue = new FloatParameter
 	{
 		value = 1f
 	};
 
-	[DisplayName("Type")]
 	[Tooltip("Use \"Progressive\" if you want auto exposure to be animated. Use \"Fixed\" otherwise.")]
+	[DisplayName("Type")]
 	public EyeAdaptationParameter eyeAdaptation = new EyeAdaptationParameter
 	{
 		value = EyeAdaptation.Progressive
@@ -52,8 +52,8 @@ public sealed class AutoExposure : PostProcessEffectSettings
 		value = 2f
 	};
 
-	[Min(0f)]
 	[Tooltip("Adaptation speed from a light to a dark environment.")]
+	[Min(0f)]
 	public FloatParameter speedDown = new FloatParameter
 	{
 		value = 1f

@@ -15,7 +15,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2425]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2424]
 	{
 		new ConsoleSystem.Command
 		{
@@ -7502,7 +7502,7 @@ public class ConsoleGen
 			Parent = "app",
 			FullName = "app.retry_initialize",
 			ServerAdmin = true,
-			Description = "Retry initializing the Rust+ companion server if it previously failed",
+			Description = "Retry initializing the Rust+ companion server if it previously failed, pass true to restart it even if it's already running",
 			Variable = false,
 			Call = (ConsoleSystem.Arg arg) =>
 			{
@@ -15878,7 +15878,10 @@ public class ConsoleGen
 			Parent = "livestock",
 			FullName = "livestock.vendorwoolminimum",
 			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
 			Description = "How much wool a player must be carrying before a livestock vendor will haggle over it at all",
+			Replicated = true,
 			Variable = true,
 			GetOveride = () =>
 			{
@@ -15888,7 +15891,8 @@ public class ConsoleGen
 			SetOveride = (string str) =>
 			{
 				Livestock.vendorWoolMinimum = StringExtensions.ToInt(str, 0);
-			}
+			},
+			Default = "25"
 		},
 		new ConsoleSystem.Command
 		{
@@ -20923,20 +20927,6 @@ public class ConsoleGen
 			{
 				string rval = ConVar.Server.BotCount();
 				arg.ReplyWithObject(rval);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "branch",
-			Parent = "server",
-			FullName = "server.branch",
-			ServerAdmin = true,
-			Description = "(Generated) Server branch tag used by the server browser to identify modded or experimental variants; leave empty for vanilla",
-			Variable = true,
-			GetOveride = () => ConVar.Server.branch ?? "",
-			SetOveride = (string str) =>
-			{
-				ConVar.Server.branch = str;
 			}
 		},
 		new ConsoleSystem.Command

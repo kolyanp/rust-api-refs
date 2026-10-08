@@ -218,8 +218,8 @@ public class HBHFSensor : BaseDetector
 		return num;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	public void SetConfig(RPCMessage msg)
 	{

@@ -103,8 +103,8 @@ public class SatelliteControlComputer : BaseMountable
 	[Tooltip("Pre-spawned world-space monitor UI (a prefab child like the spectator screen) that shows only the countdown to impact. Initialised in ClientInit.")]
 	public SatelliteCountdownScreenUI countdownScreen;
 
-	[Header("Power")]
 	[Tooltip("Items the player must have, and which are consumed, to power up the terminal. amount is the minimum required/consumed; set maxAmount higher to roll a random cost in that range each session (leave maxAmount at -1/0 for a fixed cost).")]
+	[Header("Power")]
 	public List<ItemAmountRanged> powerCost = new List<ItemAmountRanged>();
 
 	private List<int> resolvedPowerCost = new List<int>();
@@ -800,8 +800,8 @@ public class SatelliteControlComputer : BaseMountable
 		paidPowerCost.Clear();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	public void RPC_OpenFuelStorage(RPCMessage msg)
 	{
@@ -838,8 +838,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_SelectSatellite(RPCMessage msg)
 	{
 		if (State == ControlState.Ready && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -1570,10 +1570,10 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[Menu.Icon("power")]
 	[Menu.Description("satcomp.powerup_desc", "Power up the satellite terminal")]
-	[Menu.ShowIf("Menu_PowerUp_ShowIf")]
 	[Menu("satcomp.powerup", "Power Up Terminal")]
+	[Menu.ShowIf("Menu_PowerUp_ShowIf")]
+	[Menu.Icon("power")]
 	public void Menu_PowerUp(BasePlayer player)
 	{
 	}
@@ -1584,9 +1584,9 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[Menu("satcomp.loadfuel", "Open Inventory", Order = 10)]
-	[Menu.ShowIf("Menu_LoadFuel_ShowIf")]
-	[Menu.Icon("open")]
 	[Menu.Description("satcomp.loadfuel_desc", "Open the terminal's storage")]
+	[Menu.Icon("open")]
+	[Menu.ShowIf("Menu_LoadFuel_ShowIf")]
 	public void Menu_LoadFuel(BasePlayer player)
 	{
 	}

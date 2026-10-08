@@ -21,8 +21,8 @@ public class ItemModMenuOption : ItemMod
 	[Tooltip("If true, taking this option is reported to analytics. Off by default: most item actions are not worth a row each")]
 	public bool logAnalytics;
 
-	[Space(10f)]
 	[Header("Still shows when disabled")]
+	[Space(10f)]
 	public bool showDisabled = true;
 
 	public DisabledTooltipOption disabledTooltipDescription;

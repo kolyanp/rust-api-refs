@@ -8,8 +8,8 @@ public class UI_StoreCart : UI_Window
 
 	public static readonly Phrase CartPhrase = new Phrase("store.cart.items", "Cart ({0})");
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private StyleAsset emptyStyle;
 
 	[SerializeField]
@@ -30,8 +30,8 @@ public class UI_StoreCart : UI_Window
 	[SerializeField]
 	private RustText totalValueText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform itemParent;
 
 	[SerializeField]

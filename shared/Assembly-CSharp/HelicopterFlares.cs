@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class HelicopterFlares : StorageContainer
 {
-	[Header("Helicopter Flares")]
 	[SerializeField]
+	[Header("Helicopter Flares")]
 	private ItemDefinition flareItemDef;
 
 	[SerializeField]
@@ -62,7 +62,7 @@ public class HelicopterFlares : StorageContainer
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			if (TimeSince.op_Implicit(timeSinceFlareFired) >= timeBetweenFlares)
 			{
-				return HasFlareAmmo();
+				return HasFlares;
 			}
 			return false;
 		}
@@ -74,16 +74,6 @@ public class HelicopterFlares : StorageContainer
 		{
 		}
 		return base.OnRpcMessage(player, rpc, msg);
-	}
-
-	public bool HasFlareAmmo()
-	{
-		if (isServer)
-		{
-			HasFlares = inventory.HasAny(flareItemDef);
-			return HasFlares;
-		}
-		return false;
 	}
 
 	private void ResetFiringTimes()
@@ -105,13 +95,7 @@ public class HelicopterFlares : StorageContainer
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		HasFlares = HasFlareAmmo();
-	}
-
-	public override void Save(SaveInfo info)
-	{
-		base.Save(info);
-		HasFlares = HasFlareAmmo();
+		HasFlares = FindFlareAmmo();
 	}
 
 	public bool TryFireFlare()
@@ -133,7 +117,7 @@ public class HelicopterFlares : StorageContainer
 		item.Remove();
 		timeSinceFlareFired = TimeSince.op_Implicit(0f);
 		LaunchFlare();
-		ClientRPC(RpcTarget.NetworkGroup("RPCFlareFired"), HasFlareAmmo());
+		ClientRPC(RpcTarget.NetworkGroup("RPCFlareFired"), FindFlareAmmo());
 		return true;
 	}
 
@@ -160,6 +144,21 @@ public class HelicopterFlares : StorageContainer
 		ItemDefinition itemDefinition = ItemManager.FindItemDefinition("flare");
 		int amount = itemDefinition.stackable * 2;
 		inventory.AddItem(itemDefinition, amount, 0uL, ItemContainer.LimitStack.All);
+	}
+
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
+	{
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
+		HasFlares = FindFlareAmmo();
+	}
+
+	private bool FindFlareAmmo()
+	{
+		if (isServer)
+		{
+			return inventory.HasAny(flareItemDef);
+		}
+		return false;
 	}
 
 	protected override bool WriteSyncVar(byte id, NetWrite writer)

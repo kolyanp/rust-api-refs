@@ -42,6 +42,9 @@ public class Livestock : ConsoleSystem
 	[ReplicatedVar(Help = "What every gene's slider position is multiplied by on an inbred livestock animal, for its coat and for what it produces alike. At 0.5 a Good gene looks and performs as Ok and an Ok gene falls halfway to Bad. An animal is inbred when both its lineage markers match")]
 	public static float inbredScale = 0.5f;
 
+	[ReplicatedVar(Help = "How much wool a player must be carrying before a livestock vendor will haggle over it at all")]
+	public static int vendorWoolMinimum = 25;
+
 	[ServerVar(Help = "Multiplier applied to livestock grow and old-age times; 0.5 = grow up twice as fast, 0 = disable aging entirely")]
 	public static float ageScale = 1f;
 
@@ -209,9 +212,6 @@ public class Livestock : ConsoleSystem
 
 	[ServerVar(Help = "How much wool counts as a full lot, which is a full budget for the vendor's wool table")]
 	public static int vendorWoolLotSize = 400;
-
-	[ServerVar(Help = "How much wool a player must be carrying before a livestock vendor will haggle over it at all")]
-	public static int vendorWoolMinimum = 25;
 
 	[ServerVar(Help = "Whether livestock genes do anything; off makes every animal an average one without touching the genomes they carry")]
 	public static bool genesEnabled = true;

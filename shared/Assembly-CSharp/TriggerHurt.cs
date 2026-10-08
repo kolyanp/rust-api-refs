@@ -1,4 +1,6 @@
-using System.Linq;
+using System;
+using System.Collections.Generic;
+using Facepunch;
 using Rust;
 using UnityEngine;
 
@@ -46,17 +48,25 @@ public class TriggerHurt : TriggerBase, IServerComponent, IHurtTrigger
 		{
 			return;
 		}
-		BaseEntity[] array = entityContents.ToArray();
-		foreach (BaseEntity baseEntity in array)
+		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
+		try
 		{
-			if (baseEntity.IsValid())
+			((List<BaseEntity>)(object)val).AddRange((IEnumerable<BaseEntity>)entityContents);
+			foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 			{
-				BaseCombatEntity baseCombatEntity = baseEntity as BaseCombatEntity;
-				if (!((Object)(object)baseCombatEntity == (Object)null) && CanHurt(baseCombatEntity))
+				if (item.IsValid())
 				{
-					baseCombatEntity.Hurt(DamagePerSecond * (1f / DamageTickRate), damageType, attacker);
+					BaseCombatEntity baseCombatEntity = item as BaseCombatEntity;
+					if (!((Object)(object)baseCombatEntity == (Object)null) && CanHurt(baseCombatEntity))
+					{
+						baseCombatEntity.Hurt(DamagePerSecond * (1f / DamageTickRate), damageType, attacker);
+					}
 				}
 			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 

@@ -9,8 +9,8 @@ public class RepairableVehiclePad : ConstructableEntity
 {
 	public const Flags Flag_Repaired = Flags.Reserved1;
 
-	[Header("Repairable Vehicle Pad")]
 	[Tooltip("Root holding the damaged build stages. Switched off once the pad is fully repaired.")]
+	[Header("Repairable Vehicle Pad")]
 	public GameObject damagedVisuals;
 
 	[Tooltip("Root holding the intact pad. Only shown once the pad is fully repaired.")]
