@@ -96,15 +96,15 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	private Ammo[] ammoPrefabs;
 
-	[Header("IK")]
 	[SerializeField]
+	[Header("IK")]
 	public Transform leftHandTarget;
 
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[Header("Effects")]
 	[SerializeField]
+	[Header("Effects")]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -134,8 +134,8 @@ public class BallistaGun : BaseVehicleSeat
 
 	private SoundModulation.Modulator aimMovementPitchGainMod;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private bool runSideChecks;
 
 	[SerializeField]
@@ -1165,16 +1165,16 @@ public class BallistaGun : BaseVehicleSeat
 
 	[RPC_Server.MaxRepeatedElements(1)]
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		if (IsFireRPCInvalid(msg, player, out var ammoItem, out var itemModProjectile))
 		{
@@ -1201,12 +1201,15 @@ public class BallistaGun : BaseVehicleSeat
 				else if (ValidateFirePos(player, projectile.startPos))
 				{
 					player.NoteFiredProjectile(projectile.projectileID, projectile.startPos, projectile.startVel, null, ammoItem, projectileGroupId, Vector3.zero);
-					Effect effect = new Effect();
-					effect.Init(Effect.Type.Projectile, projectile.startPos, projectile.startVel, msg.connection);
-					((EffectData)effect).scale = 1f;
-					effect.pooledString = itemModProjectile.GetOverrideProjectile(this).resourcePath;
-					((EffectData)effect).number = projectile.seed;
-					EffectNetwork.Send(effect);
+					if (player.HasFiredProjectile(projectile.projectileID))
+					{
+						Effect effect = new Effect();
+						effect.Init(Effect.Type.Projectile, projectile.startPos, projectile.startVel, msg.connection);
+						((EffectData)effect).scale = 1f;
+						effect.pooledString = itemModProjectile.GetOverrideProjectile(this).resourcePath;
+						((EffectData)effect).number = projectile.seed;
+						EffectNetwork.Send(effect);
+					}
 				}
 			}
 			val.Dispose();
@@ -1431,9 +1434,9 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromMounted]
-	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -1460,9 +1463,9 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
+	[RPC_Server.FromMounted]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.FromMounted]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

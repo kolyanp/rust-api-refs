@@ -115,9 +115,9 @@ public class ApartmentTerminal : ComputerStation
 		return cachedBuilding;
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.FromMounted]
 	public void SERVER_RequestProperties(RPCMessage msg)
 	{

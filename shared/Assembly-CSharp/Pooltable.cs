@@ -14,8 +14,8 @@ public class Pooltable : BaseCombatEntity
 
 	private TimeSince timeSinceLastMove;
 
-	[Header("Shared")]
 	[SerializeField]
+	[Header("Shared")]
 	private float ballRadius;
 
 	[SerializeField]
@@ -45,8 +45,8 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private bool runWalkClippingChecks = true;
 
-	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
 	[SerializeField]
+	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
 	private Bounds walkAreaCheck = new Bounds(new Vector3(0f, 0f, 0.24f), new Vector3(0.55f, 1.3f, 0.44f));
 
 	[Header("Server")]
@@ -87,13 +87,13 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private float ballCollisionSoundInterval = 0.02f;
 
-	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
-	[SerializeField]
 	[Header("Ball Return")]
+	[SerializeField]
+	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
 	private WorldSpline ballReturnPath;
 
-	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
 	[SerializeField]
+	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
 	private GameObject[] basketBalls;
 
 	[SerializeField]

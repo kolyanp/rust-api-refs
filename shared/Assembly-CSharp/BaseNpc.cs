@@ -116,8 +116,8 @@ public class BaseNpc : BaseCombatEntity
 		[Tooltip("How fast can we turn around")]
 		public float TurnSpeed;
 
-		[Tooltip("Determines things like how near we'll allow other species to get")]
 		[Range(0f, 1f)]
+		[Tooltip("Determines things like how near we'll allow other species to get")]
 		public float Tolerance;
 
 		[Tooltip("How far this NPC can see")]
@@ -292,8 +292,8 @@ public class BaseNpc : BaseCombatEntity
 
 	public float nextAttackTime;
 
-	[SerializeField]
 	[InspectorFlags]
+	[SerializeField]
 	public Enum topologyPreference = (Enum)96;
 
 	[InspectorFlags]

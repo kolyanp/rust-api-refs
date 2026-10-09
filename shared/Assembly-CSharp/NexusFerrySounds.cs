@@ -13,8 +13,8 @@ public class NexusFerrySounds : MonoBehaviour, IClientComponent
 
 	private float soundCullDistanceSq;
 
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private SoundDefinition engineLoopDef;
 
 	private Sound engineLoop;

@@ -1154,8 +1154,8 @@ public class RelationshipManager : BaseEntity
 	[RPC_Server]
 	public void SERVER_ReceiveMugshot(RPCMessage msg)
 	{
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
 		EncryptedValue<ulong> userID = msg.player.userID;
 		ulong num = msg.read.UInt64();
 		uint num2 = msg.read.UInt32();

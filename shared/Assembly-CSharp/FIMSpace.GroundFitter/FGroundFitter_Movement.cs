@@ -90,12 +90,12 @@ public class FGroundFitter_Movement : MonoBehaviour
 
 	private float? yAdjustPos;
 
-	[Tooltip("If you want to set some animator parameter during being grounded")]
 	[HideInInspector]
+	[Tooltip("If you want to set some animator parameter during being grounded")]
 	public string SetIsGroundedParam = "";
 
-	[Tooltip("If you want to set some animator parameter during accelerating moving")]
 	[HideInInspector]
+	[Tooltip("If you want to set some animator parameter during accelerating moving")]
 	public string SetIsMovingParam = "";
 
 	[Tooltip("If using physical move with collider, assigning to the collider sliding material")]

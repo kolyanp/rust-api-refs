@@ -116,8 +116,8 @@ public class Admin : ConsoleSystem
 		public string Protocol;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerConvarInfo
 	{
 		public string FullName;

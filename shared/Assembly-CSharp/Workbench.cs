@@ -77,8 +77,8 @@ public class Workbench : StorageContainer
 	[Tooltip("Editor-only transform holding visual placement points. Should be removed at runtime.")]
 	public Transform upgradeVisualPlacement;
 
-	[Header("Filler Visuals")]
 	[Tooltip("Active when no upgrades are installed at all. Disabled when any upgrade is present.")]
+	[Header("Filler Visuals")]
 	public Transform fullFillerVisual;
 
 	[Tooltip("Individual filler transforms that are hidden when their associated upgrade is installed.")]

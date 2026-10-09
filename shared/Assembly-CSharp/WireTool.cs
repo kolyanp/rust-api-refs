@@ -432,11 +432,11 @@ public class WireTool : HeldEntity
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = rpc.player;
 		WireConnectionMessage val = rpc.read.Proto<WireConnectionMessage>((WireConnectionMessage)null);
 		try
@@ -446,7 +446,7 @@ public class WireTool : HeldEntity
 			int outputIndex = val.outputIndex;
 			IOEntity iOEntity = new EntityRef<IOEntity>(val.inputID).Get(serverside: true);
 			IOEntity iOEntity2 = new EntityRef<IOEntity>(val.outputID).Get(serverside: true);
-			if ((Object)(object)iOEntity == (Object)null || (Object)(object)iOEntity2 == (Object)null || !CanPlayerUseWires(player, cached: false, 1f, iOEntity.CanSkipWireToolBuildAuthorisation() ? iOEntity : iOEntity2) || !SharesRootParent(iOEntity, iOEntity2) || !ValidateLine(linePoints, iOEntity, iOEntity2, player, outputIndex) || inputIndex >= iOEntity.inputs.Length || outputIndex >= iOEntity2.outputs.Length || (Object)(object)iOEntity.inputs[inputIndex].connectedTo.Get() != (Object)null || (Object)(object)iOEntity2.outputs[outputIndex].connectedTo.Get() != (Object)null || (iOEntity.inputs[inputIndex].rootConnectionsOnly && !iOEntity2.IsRootEntity()) || !CanModifyEntity(player, iOEntity) || !CanModifyEntity(player, iOEntity2))
+			if ((Object)(object)iOEntity == (Object)null || (Object)(object)iOEntity2 == (Object)null || !CanPlayerUseWires(player, cached: false, 1f, iOEntity.CanSkipWireToolBuildAuthorisation() ? iOEntity : iOEntity2) || !SharesRootParent(iOEntity, iOEntity2) || !ValidateLine(linePoints, iOEntity, iOEntity2, player, outputIndex) || inputIndex >= iOEntity.inputs.Length || inputIndex < 0 || outputIndex >= iOEntity2.outputs.Length || outputIndex < 0 || (Object)(object)iOEntity.inputs[inputIndex].connectedTo.Get() != (Object)null || (Object)(object)iOEntity2.outputs[outputIndex].connectedTo.Get() != (Object)null || iOEntity.inputs[inputIndex].type != wireType || iOEntity2.outputs[outputIndex].type != wireType || (iOEntity.inputs[inputIndex].rootConnectionsOnly && !iOEntity2.IsRootEntity()) || !CanModifyEntity(player, iOEntity) || !CanModifyEntity(player, iOEntity2))
 			{
 				return;
 			}

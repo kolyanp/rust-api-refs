@@ -11,8 +11,8 @@ internal struct RefillOceanJob : IJobParallelFor
 
 	public ReadOnly<float> HeightMap;
 
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<float> WaterMap;
 
 	public float OceanLevel;

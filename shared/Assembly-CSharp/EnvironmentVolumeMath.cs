@@ -146,8 +146,8 @@ public static class EnvironmentVolumeMath
 		MultiplyPoint3X4_0000641B_0024BurstDirectCall.Invoke(in transformationMatrix, in point, out result);
 	}
 
-	[MonoPInvokeCallback(typeof(UpdateVolumeTransformationAndBoundsBurst_0000641C_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(UpdateVolumeTransformationAndBoundsBurst_0000641C_0024PostfixBurstDelegate))]
 	public static void UpdateVolumeTransformationAndBoundsBurst(in float3 size, in float3 center, in float4x4 localToWorldMatrix, in bool isCapsule, out float4x4 volumeTransformation, out float4x4 volumeTransformationInverse, out float3 volumePosition, out Bounds volumeBounds)
 	{
 		UpdateVolumeTransformationAndBoundsBurst_0000641C_0024BurstDirectCall.Invoke(in size, in center, in localToWorldMatrix, in isCapsule, out volumeTransformation, out volumeTransformationInverse, out volumePosition, out volumeBounds);

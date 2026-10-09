@@ -6,8 +6,8 @@ namespace Rust.UI;
 
 public class UI_RustButtonGroup : MonoBehaviour
 {
-	[Header("Button Group")]
 	[SerializeField]
+	[Header("Button Group")]
 	protected List<RustButton> _buttons = new List<RustButton>();
 
 	[SerializeField]

@@ -40,8 +40,8 @@ public class MountedWeapon : StorageContainer
 
 	private static readonly int Up = Animator.StringToHash("up");
 
-	[Header("Mounted Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon")]
 	private Transform _eyes;
 
 	[SerializeField]
@@ -56,12 +56,12 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[ItemSelector]
 	[SerializeField]
+	[ItemSelector]
 	private ItemDefinition _ammoItem;
 
-	[Header("Mounted Weapon - Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon - Weapon")]
 	private ItemDefinition _weapon;
 
 	[SerializeField]
@@ -82,15 +82,15 @@ public class MountedWeapon : StorageContainer
 	[ItemSelector]
 	public ItemDefinition AmmoDef;
 
-	[Header("Mounted Weapon - Second Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon - Second Weapon")]
 	private ItemDefinition _weapon2;
 
 	[SerializeField]
 	private Transform _attachPoint2;
 
-	[Header("Mounted Weapon - Player General Animation")]
 	[SerializeField]
+	[Header("Mounted Weapon - Player General Animation")]
 	private int _turretAnimationType;
 
 	[SerializeField]
@@ -123,8 +123,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _forceSeatPositionUpdates;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Player Camera Animation")]
+	[SerializeField]
 	private Transform _cameraAnimation;
 
 	[SerializeField]
@@ -133,15 +133,15 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private float _fovMultiplier = 1f;
 
-	[Header("Mounted Weapon - Viewmodel")]
 	[SerializeField]
+	[Header("Mounted Weapon - Viewmodel")]
 	private bool _useViewmodel;
 
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Aim Movement Sounds")]
+	[SerializeField]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]

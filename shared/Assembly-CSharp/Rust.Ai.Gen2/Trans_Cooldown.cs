@@ -9,8 +9,8 @@ public class Trans_Cooldown : FSMTransitionBase
 	[SerializeField]
 	public float cooldown = 20f;
 
-	[SerializeField]
 	[Tooltip("Spend the cooldown only once the state it leads to has started, rather than on every attempt. Off by default because a cooldown is usually what rations a state that refuses on entry.")]
+	[SerializeField]
 	public bool onlyWhenStarted;
 
 	private double? lastTakenTime;

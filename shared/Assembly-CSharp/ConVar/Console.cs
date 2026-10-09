@@ -41,8 +41,8 @@ public class Console : ConsoleSystem
 		return Output.HistoryOutput.Skip(num2);
 	}
 
-	[ServerVar]
 	[Help("Search the console for a particular string")]
+	[ServerVar]
 	public static IEnumerable<Output.Entry> search(Arg arg)
 	{
 		string search = arg.GetString(0, null);

@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(RawImage))]
 [ExecuteAlways]
+[RequireComponent(typeof(RawImage))]
 public class RawImagePreserveAspect : MonoBehaviour, IClientComponent
 {
 	public RawImage rawImage;

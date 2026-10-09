@@ -1,8 +1,8 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-[ExecuteAlways]
 [RequireComponent(typeof(CommandBufferManager))]
+[ExecuteAlways]
 public class VolumeCloudsCameraComponent : MonoBehaviour
 {
 }

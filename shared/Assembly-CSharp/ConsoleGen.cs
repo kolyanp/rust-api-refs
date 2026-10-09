@@ -1526,7 +1526,7 @@ public class ConsoleGen
 			FullName = "boombox.backtracklength",
 			ServerAdmin = true,
 			Saved = true,
-			Description = "(Generated) Number of seconds of audio backtrack buffer maintained by the boombox for streaming synchronisation; default 30s",
+			Description = "How many hops a speaker or boombox will traverse to find a connection",
 			Variable = true,
 			GetOveride = () =>
 			{

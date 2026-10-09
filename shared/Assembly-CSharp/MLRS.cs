@@ -51,15 +51,15 @@ public class MLRS : BaseMountable
 
 	public static readonly Phrase RaidWindowBlockedToast = new Phrase("mlrs.raidwindowblocked", "The MLRS can only be fired during the raid window");
 
-	[Header("MLRS Components")]
 	[SerializeField]
+	[Header("MLRS Components")]
 	private GameObjectRef rocketStoragePrefab;
 
 	[SerializeField]
 	private GameObjectRef dashboardStoragePrefab;
 
-	[SerializeField]
 	[Header("MLRS Rotation")]
+	[SerializeField]
 	private Transform hRotator;
 
 	[SerializeField]
@@ -71,20 +71,20 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	public float vRotSpeed = 10f;
 
-	[Range(50f, 90f)]
 	[SerializeField]
+	[Range(50f, 90f)]
 	public float vRotMax = 85f;
 
 	[SerializeField]
 	private Transform hydraulics;
 
+	[Header("MLRS Weaponry")]
 	[SerializeField]
 	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
-	[Header("MLRS Weaponry")]
 	public float minRange = 200f;
 
-	[SerializeField]
 	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
+	[SerializeField]
 	public float targetAreaRadius = 30f;
 
 	[SerializeField]
@@ -96,8 +96,8 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	public RocketTube[] rocketTubes;
 
-	[SerializeField]
 	[Header("MLRS Dashboard/FX")]
+	[SerializeField]
 	private GameObject screensChild;
 
 	[SerializeField]

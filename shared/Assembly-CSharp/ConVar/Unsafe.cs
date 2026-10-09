@@ -39,8 +39,8 @@ public class Unsafe : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "How many frames of a stack to emit", Default = "5")]
 	[ServerVar(Help = "How many frames of a stack to emit", Default = "5")]
+	[ClientVar(Help = "How many frames of a stack to emit", Default = "5")]
 	public static int DebugMTLockMaxFrames
 	{
 		get

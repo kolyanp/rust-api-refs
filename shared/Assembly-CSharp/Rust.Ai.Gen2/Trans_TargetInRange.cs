@@ -16,8 +16,8 @@ public class Trans_TargetInRange : FSMTransitionBase
 	[SerializeField]
 	public Vector3 Offset = Vector3.zero;
 
-	[Tooltip("How far above or below us the target may be, or zero for no bound. A range measured in three dimensions counts a storey of height as ordinary reach, so an attack that cannot swing upwards needs this as well as a range.")]
 	[SerializeField]
+	[Tooltip("How far above or below us the target may be, or zero for no bound. A range measured in three dimensions counts a storey of height as ordinary reach, so an attack that cannot swing upwards needs this as well as a range.")]
 	public float MaxHeightDifference;
 
 	protected override bool EvaluateInternal(ref FSMPayload payload)

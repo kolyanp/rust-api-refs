@@ -12,8 +12,8 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Sail")]
+	[SerializeField]
 	private float maxThrust = 1000f;
 
 	public float RaiseDuration = 1.5f;

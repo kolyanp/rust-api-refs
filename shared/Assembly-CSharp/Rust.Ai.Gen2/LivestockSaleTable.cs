@@ -24,8 +24,8 @@ public class LivestockSaleTable : ScriptableObject
 		[Range(0f, 1f)]
 		public float Threshold;
 
-		[Tooltip("The largest offer this is considered for, so a big sale is not paid in cheap items. 1 never rules it out.")]
 		[Range(0f, 1f)]
+		[Tooltip("The largest offer this is considered for, so a big sale is not paid in cheap items. 1 never rules it out.")]
 		public float MaxBudget = 1f;
 
 		[Tooltip("The chance this is picked when it is affordable. Ignored when topping up a short offer.")]

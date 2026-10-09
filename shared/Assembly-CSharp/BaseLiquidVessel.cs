@@ -495,8 +495,8 @@ public class BaseLiquidVessel : AttackEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void ThrowContents(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -565,8 +565,8 @@ public class BaseLiquidVessel : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void SendFilling(RPCMessage msg)
 	{
 		bool filling = msg.read.Bit();

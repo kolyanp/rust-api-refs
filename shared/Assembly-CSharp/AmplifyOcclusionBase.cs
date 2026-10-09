@@ -24,8 +24,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public float Radius = 2f;
 
 	[NonSerialized]
-	[Range(32f, 1024f)]
 	[Tooltip("Max sampling range in pixels.")]
+	[Range(32f, 1024f)]
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
@@ -41,15 +41,15 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 0.99f)]
 	public float Bias = 0.05f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the thickness occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
 	public bool Downsample = true;
 
-	[Tooltip("Control parameters at faraway.")]
 	[Header("Distance Fade")]
+	[Tooltip("Control parameters at faraway.")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance in Unity unities that start to fade.")]
@@ -64,12 +64,12 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public Color FadeToTint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Final Radius parameter.")]
+	[Range(0f, 32f)]
 	public float FadeToRadius = 2f;
 
-	[Range(0f, 16f)]
 	[Tooltip("Final PowerExponent parameter.")]
+	[Range(0f, 16f)]
 	public float FadeToPowerExponent = 1.8f;
 
 	[Tooltip("Final Thickness parameter.")]
@@ -91,16 +91,16 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	public float BlurSharpness = 10f;
 
-	[Header("Temporal Filter")]
 	[Tooltip("Accumulates the effect over the time.")]
+	[Header("Temporal Filter")]
 	public bool FilterEnabled = true;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
+	[Range(0f, 1f)]
 	public float FilterBlending = 0.5f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
+	[Range(0f, 1f)]
 	public float FilterResponse = 0.5f;
 
 	[NonSerialized]

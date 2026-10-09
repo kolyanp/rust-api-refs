@@ -9,16 +9,16 @@ public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 	[Tooltip("Making ground fitter translate with root motion")]
 	public bool HandleRootMotion;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected Transform parentTransform;
 
 	[SerializeField]
 	[HideInInspector]
 	protected CharacterController optionalCharContr;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected bool rootMotionRotation = true;
 
 	protected Animator rootMAnimator;

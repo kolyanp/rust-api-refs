@@ -9,8 +9,8 @@ public class TickLogging
 
 	public static AnalyticsTable TickTable = new AnalyticsTable(GetTickTableName(), TimeSpan.FromSeconds((double)tick_uploader_lifetime), AnalyticsDocumentMode.CSV);
 
-	[ServerVar]
 	[Help("time (in seconds) before the tick uploader is disposed and recreated")]
+	[ServerVar]
 	public static int tick_uploader_lifetime
 	{
 		get

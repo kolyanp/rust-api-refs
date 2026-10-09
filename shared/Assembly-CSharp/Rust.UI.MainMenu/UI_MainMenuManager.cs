@@ -17,8 +17,8 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 
 	private List<UI_Page> pageInstances = new List<UI_Page>();
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_Popup _genericPopupPrefab;
 
 	[SerializeField]

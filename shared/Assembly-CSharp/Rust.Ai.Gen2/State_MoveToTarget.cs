@@ -22,8 +22,8 @@ public class State_MoveToTarget : FSMStateBase
 	[SerializeField]
 	public float decelerationOverride;
 
-	[Tooltip("How close to the destination counts as arrived, or zero for the agent's own. A chase that does not brake needs a real one, or arriving on a target means walking into them.")]
 	[SerializeField]
+	[Tooltip("How close to the destination counts as arrived, or zero for the agent's own. A chase that does not brake needs a real one, or arriving on a target means walking into them.")]
 	public float stoppingDistanceOverride;
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)

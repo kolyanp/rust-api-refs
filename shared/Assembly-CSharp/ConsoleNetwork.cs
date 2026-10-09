@@ -103,14 +103,24 @@ public static class ConsoleNetwork
 
 	public static void BroadcastToAllClients(string strCommand, params object[] args)
 	{
-		if (Net.sv.IsConnected() && Interface.CallHook("OnBroadcastCommand", strCommand, args) == null)
+		if (!Net.sv.IsConnected() || Interface.CallHook("OnBroadcastCommand", strCommand, args) != null)
 		{
-			NetWrite netWrite = Net.sv.StartWrite();
-			netWrite.PacketID(Message.Type.ConsoleCommand);
-			netWrite.String(ConsoleSystem.BuildCommand(strCommand, args));
-			NetProfileCapture.Annotate(netWrite, strCommand);
-			netWrite.Send(new SendInfo(Net.sv.connections));
+			return;
 		}
+		List<Connection> list = Pool.Get<List<Connection>>();
+		foreach (Connection connection in Net.sv.connections)
+		{
+			if (connection.connected)
+			{
+				list.Add(connection);
+			}
+		}
+		NetWrite netWrite = Net.sv.StartWrite();
+		netWrite.PacketID(Message.Type.ConsoleCommand);
+		netWrite.String(ConsoleSystem.BuildCommand(strCommand, args));
+		NetProfileCapture.Annotate(netWrite, strCommand);
+		netWrite.Send(new SendInfo(list));
+		Pool.FreeUnmanaged<Connection>(ref list);
 	}
 
 	public static void BroadcastToAdmins(string strCommand, params object[] args)
@@ -122,7 +132,7 @@ public static class ConsoleNetwork
 		List<Connection> list = Pool.Get<List<Connection>>();
 		foreach (Connection connection in Net.sv.connections)
 		{
-			if (connection.authLevel != 0)
+			if (connection.connected && connection.authLevel != 0)
 			{
 				list.Add(connection);
 			}

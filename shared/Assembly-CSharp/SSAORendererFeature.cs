@@ -5,8 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AmbientOcclusion")]
 public class SSAORendererFeature : RustRendererFeature
 {
-	[Tooltip("How the occlusion result is composited into the frame.")]
 	[Header("Ambient Occlusion")]
+	[Tooltip("How the occlusion result is composited into the frame.")]
 	public ApplicationMethod ApplyMethod;
 
 	[Tooltip("Number of samples per occlusion pass.")]
@@ -22,16 +22,16 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("World-space radius of the occlusion kernel.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
-	[Range(0f, 16f)]
 	[Tooltip("Power exponent attenuation of the occlusion.")]
+	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
-	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	[Range(0f, 0.99f)]
+	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	public float Bias = 0.05f;
 
 	[Range(0f, 1f)]
@@ -68,8 +68,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled = true;
 
-	[Range(1f, 4f)]
 	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
+	[Range(1f, 4f)]
 	public int BlurRadius = 3;
 
 	[Range(1f, 4f)]
@@ -80,16 +80,16 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("0 = blurred / 1 = sharpened.")]
 	public float BlurSharpness = 10f;
 
-	[Header("Temporal Filter")]
 	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
+	[Header("Temporal Filter")]
 	public bool FilterEnabled = true;
 
-	[Tooltip("Accumulation decay. 0 = fast update (more flicker). 1 = slow update (ghosting).")]
 	[Range(0f, 1f)]
+	[Tooltip("Accumulation decay. 0 = fast update (more flicker). 1 = slow update (ghosting).")]
 	public float FilterBlending = 0.5f;
 
-	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
 	[Range(0f, 1f)]
+	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
 	public float FilterResponse = 0.5f;
 
 	[Header("Shaders")]

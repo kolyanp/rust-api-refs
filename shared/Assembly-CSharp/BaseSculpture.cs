@@ -22,8 +22,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	private Action resetBlockExcludeLayersAction;
 
-	[SerializeField]
 	[Header("BaseSculpture")]
+	[SerializeField]
 	private MeshFilter targetMesh;
 
 	[SerializeField]

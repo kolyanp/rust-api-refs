@@ -22,8 +22,8 @@ public class BaseProjectile : AttackEntity
 			[Tooltip("Set to 0 to not use inbuilt mag")]
 			public int builtInSize;
 
-			[InspectorFlags]
 			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
+			[InspectorFlags]
 			public AmmoTypes ammoTypes;
 		}
 
@@ -101,8 +101,8 @@ public class BaseProjectile : AttackEntity
 	[Header("NPC Info")]
 	public float NoiseRadius = 100f;
 
-	[Tooltip("Scales the damage of the projectile across all ranges.")]
 	[Header("Projectile")]
+	[Tooltip("Scales the damage of the projectile across all ranges.")]
 	public float damageScale = 1f;
 
 	[Tooltip("Scales the damage falloff window of the projectile.")]
@@ -623,6 +623,7 @@ public class BaseProjectile : AttackEntity
 	public void SetAmmoCount(int newCount)
 	{
 		primaryMagazine.contents = newCount;
+		InvalidateNetworkCache();
 		GetItem()?.MarkDirty();
 	}
 
@@ -1723,14 +1724,12 @@ public class BaseProjectile : AttackEntity
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
 		//IL_026a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0357: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0366: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02e1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02ea: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0309: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0310: Unknown result type (might be due to invalid IL or missing references)
 		//IL_029d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02a4: Unknown result type (might be due to invalid IL or missing references)
@@ -1739,6 +1738,8 @@ public class BaseProjectile : AttackEntity
 		//IL_02b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0318: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031f: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		if (!VerifyClientAttack(player))
 		{
@@ -1818,7 +1819,7 @@ public class BaseProjectile : AttackEntity
 					continue;
 				}
 				player.NoteFiredProjectile(projectile.projectileID, projectile.startPos, projectile.startVel, this, primaryMagazineAmmo, projectileGroupId, positionOffset);
-				if (!player.limitNetworking)
+				if (!player.limitNetworking && player.HasFiredProjectile(projectile.projectileID))
 				{
 					CreateProjectileEffectClientside(component.GetOverrideProjectile(this).resourcePath, projectile.startPos, projectile.startVel, projectile.seed, msg.connection, IsSilenced());
 				}

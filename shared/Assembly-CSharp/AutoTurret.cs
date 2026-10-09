@@ -1198,8 +1198,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_SetID(RPCMessage msg)
 	{
 		string oldID = msg.read.String();
@@ -1228,10 +1228,10 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1485,8 +1485,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void AddSelfAuthorize(RPCMessage rpc)
 	{
 		AddSelfAuthorize(rpc.player);
@@ -1560,8 +1560,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void SERVER_AttackAll(RPCMessage rpc)
 	{
 		if (IsAuthed(rpc.player) && Interface.CallHook("OnTurretModeToggle", this, rpc.player) == null)

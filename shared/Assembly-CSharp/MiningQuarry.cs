@@ -129,6 +129,11 @@ public class MiningQuarry : BaseResourceExtractor
 		{
 			ItemContainer inventory = ((Component)fuelStoragePrefab.instance).GetComponent<StorageContainer>().inventory;
 			inventory.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(inventory.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
+			((Component)fuelStoragePrefab.instance).GetComponent<StorageContainer>().inventory.onDirty += InvalidateNetworkCache;
+			if ((Object)(object)hopperPrefab.instance != (Object)null)
+			{
+				((Component)hopperPrefab.instance).GetComponent<StorageContainer>().inventory.onDirty += InvalidateNetworkCache;
+			}
 		}
 	}
 

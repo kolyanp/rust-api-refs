@@ -123,8 +123,8 @@ public class Cow : LivestockAnimal
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void MilkCow(RPCMessage msg)
 	{
 		TryMilk(msg.player);

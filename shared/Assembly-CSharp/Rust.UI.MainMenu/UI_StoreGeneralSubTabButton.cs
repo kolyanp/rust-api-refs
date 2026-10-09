@@ -8,8 +8,8 @@ public class UI_StoreGeneralSubTabButton : BaseMonoBehaviour
 	[SerializeField]
 	private FlexTransition transition;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private FlexElement flexElement;
 
 	[SerializeField]

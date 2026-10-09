@@ -8,8 +8,8 @@ namespace ServerOcclusionJobs;
 [BurstCompile(/*Could not decode attribute arguments.*/)]
 public struct CalculateSubGridSamplePointsJob : IJobFor
 {
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<Vector3> Posi;
 
 	[ReadOnly]

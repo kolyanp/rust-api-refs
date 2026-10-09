@@ -298,6 +298,14 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	public void MarkDirty()
 	{
 		dirty = true;
+		if ((Object)(object)entityOwner != (Object)null)
+		{
+			entityOwner.InvalidateNetworkCache();
+		}
+		if ((Object)(object)playerOwner != (Object)null)
+		{
+			playerOwner.InvalidateNetworkCache();
+		}
 		parent?.MarkDirty();
 		onDirty?.Invoke();
 	}

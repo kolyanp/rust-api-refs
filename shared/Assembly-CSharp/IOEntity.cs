@@ -327,12 +327,12 @@ public class IOEntity : DecayEntity
 	[ServerVar]
 	public static float frameBudgetKineticMs = 1f;
 
-	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
 	public static float frameBudgetGenericMs = 1f;
 
-	[Help("How many milliseconds to budget for processing industrial entities per server frame")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing industrial entities per server frame")]
 	public static float frameBudgetIndustrialMs = 0.25f;
 
 	[ServerVar(Help = "(Generated) Minimum interval in seconds between IO entity logic updates; controls how quickly electrical signals propagate through the network")]
@@ -597,12 +597,12 @@ public class IOEntity : DecayEntity
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
 		if (depth <= 0)
 		{
 			return null;
@@ -613,10 +613,14 @@ public class IOEntity : DecayEntity
 			return this;
 		}
 		IOSlot[] array = inputs;
-		for (int i = 0; i < array.Length; i++)
+		foreach (IOSlot iOSlot in array)
 		{
-			IOEntity iOEntity = array[i].connectedTo.Get(isServer);
-			if ((Object)(object)iOEntity != (Object)null)
+			if (iOSlot.type != IOType.Fluidic)
+			{
+				continue;
+			}
+			IOEntity iOEntity = iOSlot.connectedTo.Get(isServer);
+			if ((Object)(object)iOEntity != (Object)null && iOEntity.outputs[iOSlot.connectedToSlot].type == IOType.Fluidic)
 			{
 				if (iOEntity.IsGravitySource)
 				{

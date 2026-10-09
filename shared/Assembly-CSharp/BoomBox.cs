@@ -36,7 +36,7 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 
 	public const BaseEntity.Flags HasCassette = BaseEntity.Flags.Reserved1;
 
-	[ServerVar(Saved = true, Help = "(Generated) Number of seconds of audio backtrack buffer maintained by the boombox for streaming synchronisation; default 30s")]
+	[ServerVar(Saved = true, Help = "How many hops a speaker or boombox will traverse to find a connection")]
 	public static int BacktrackLength = 30;
 
 	public Action<float> HurtCallback;

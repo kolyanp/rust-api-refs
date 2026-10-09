@@ -6,8 +6,8 @@ namespace Rust.UI.MainMenu;
 [RequireComponent(typeof(RectTransform))]
 public class UI_FoilShaderMouseFollow : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Foil Shader Settings")]
+	[SerializeField]
 	private RawImage _rawImage;
 
 	[SerializeField]
@@ -22,8 +22,8 @@ public class UI_FoilShaderMouseFollow : MonoBehaviour
 	[SerializeField]
 	private float _maxTilt = 10f;
 
-	[Header("Global Settings")]
 	[SerializeField]
+	[Header("Global Settings")]
 	private bool _useGlobal;
 
 	[SerializeField]

@@ -419,18 +419,18 @@ public static class ImageProcessing
 		return true;
 	}
 
-	public static bool IsValidJPG(byte[] data, int maxSizeSquare)
+	public static bool IsValidJPG(byte[] data, int maxSizeSquare, bool bypassBaselineCheck = false)
 	{
-		return IsValidJPG(data, maxSizeSquare, maxSizeSquare);
+		return IsValidJPG(data, maxSizeSquare, maxSizeSquare, bypassBaselineCheck);
 	}
 
-	public static bool IsValidJPG(byte[] data, int maxWidth, int maxHeight)
+	public static bool IsValidJPG(byte[] data, int maxWidth, int maxHeight, bool bypassBaselineCheck = false)
 	{
-		if (data.Length < 30)
+		if (data == null || data.Length < 30 || maxWidth < 1 || maxHeight < 1)
 		{
 			return false;
 		}
-		if (data.Length > 30 + maxWidth * maxHeight)
+		if (data.Length > 30 + (long)maxWidth * (long)maxHeight)
 		{
 			return false;
 		}
@@ -453,6 +453,10 @@ public static class ImageProcessing
 				return false;
 			}
 			if (data[14] != data[16] || data[15] != data[17])
+			{
+				return false;
+			}
+			if (!bypassBaselineCheck && !IsValidJPGStructure(data, maxWidth, maxHeight))
 			{
 				return false;
 			}
@@ -483,6 +487,140 @@ public static class ImageProcessing
 		{
 			return false;
 		}
+	}
+
+	private static bool IsValidJPGStructure(byte[] data, int maxWidth, int maxHeight)
+	{
+		int num = 0;
+		bool flag = false;
+		bool flag2 = false;
+		int i = 2;
+		while (i < data.Length)
+		{
+			while (flag2 && i < data.Length && data[i] != byte.MaxValue)
+			{
+				i++;
+			}
+			if (i >= data.Length || data[i++] != byte.MaxValue)
+			{
+				return false;
+			}
+			for (; i < data.Length && data[i] == byte.MaxValue; i++)
+			{
+			}
+			if (i >= data.Length)
+			{
+				return false;
+			}
+			byte b = data[i++];
+			if (flag2)
+			{
+				switch (b)
+				{
+				case 0:
+				case 208:
+				case 209:
+				case 210:
+				case 211:
+				case 212:
+				case 213:
+				case 214:
+				case 215:
+					continue;
+				}
+			}
+			flag2 = false;
+			if (b == 217)
+			{
+				if (flag)
+				{
+					return i == data.Length;
+				}
+				return false;
+			}
+			if (data.Length - i < 2)
+			{
+				return false;
+			}
+			int num2 = (data[i] << 8) | data[i + 1];
+			if (num2 < 2 || num2 > data.Length - i)
+			{
+				return false;
+			}
+			int num3 = i + num2;
+			if (b == 192)
+			{
+				if (num != 0 || num2 < 8)
+				{
+					return false;
+				}
+				int num4 = (data[i + 3] << 8) | data[i + 4];
+				int num5 = (data[i + 5] << 8) | data[i + 6];
+				num = data[i + 7];
+				if (data[i + 2] != 8 || num5 < 1 || num5 > maxWidth || num4 < 1 || num4 > maxHeight)
+				{
+					return false;
+				}
+				if (num < 1 || num > 4 || num2 != 8 + num * 3)
+				{
+					return false;
+				}
+			}
+			else if (b == 218)
+			{
+				if (((num == 0) | flag) || num2 != 6 + num * 2)
+				{
+					return false;
+				}
+				if (data[i + 2] != num || data[num3 - 3] != 0 || data[num3 - 2] != 63 || data[num3 - 1] != 0)
+				{
+					return false;
+				}
+				flag = (flag2 = true);
+			}
+			else
+			{
+				bool flag3;
+				switch (b)
+				{
+				case 196:
+				case 219:
+				case 221:
+				case 224:
+				case 225:
+				case 226:
+				case 227:
+				case 228:
+				case 229:
+				case 230:
+				case 231:
+				case 232:
+				case 233:
+				case 234:
+				case 235:
+				case 236:
+				case 237:
+				case 238:
+				case 239:
+				case 254:
+					flag3 = true;
+					break;
+				default:
+					flag3 = false;
+					break;
+				}
+				if (!flag3)
+				{
+					return false;
+				}
+			}
+			if (b == 221 && num2 != 4)
+			{
+				return false;
+			}
+			i = num3;
+		}
+		return false;
 	}
 
 	public static bool IsClear(Color32[] data)

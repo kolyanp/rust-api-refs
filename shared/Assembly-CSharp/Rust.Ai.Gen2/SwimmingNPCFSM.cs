@@ -123,16 +123,16 @@ public abstract class SwimmingNPCFSM : FSMComponent
 		[SerializeField]
 		private Vector2 distanceRange = new Vector2(10f, 25f);
 
-		[Tooltip("How far the swimmer will drift from home before its next leg is aimed back towards it.")]
 		[SerializeField]
+		[Tooltip("How far the swimmer will drift from home before its next leg is aimed back towards it.")]
 		private float homeRadius = 50f;
 
-		[Tooltip("How close counts as arrived. The swimmer steers rather than paths, so it never lands exactly on the point.")]
 		[SerializeField]
+		[Tooltip("How close counts as arrived. The swimmer steers rather than paths, so it never lands exactly on the point.")]
 		private float arriveDistance = 3f;
 
-		[SerializeField]
 		[Tooltip("Water this shallow is not worth swimming to. What passes for navigable without a navmesh.")]
+		[SerializeField]
 		private float minWaterDepth = 3f;
 
 		[SerializeField]

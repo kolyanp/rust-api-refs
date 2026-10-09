@@ -36,8 +36,8 @@ public class LivestockPatternTester : MonoBehaviour, IEditorComponent
 	[Tooltip("Scrambles where the blotch and warp textures sit on the animal. Same seed, same coat layout.")]
 	public int Seed;
 
-	[Tooltip("The ranges to tune. This is the asset the species' prefab paints from, so what is set here is what the game ships.")]
 	[Header("Coat")]
+	[Tooltip("The ranges to tune. This is the asset the species' prefab paints from, so what is set here is what the game ships.")]
 	public LivestockPatternRange Range;
 
 	private static readonly int TilingOffset1 = Shader.PropertyToID("_PatternTilingOffset1");

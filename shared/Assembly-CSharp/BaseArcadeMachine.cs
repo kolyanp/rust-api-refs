@@ -185,6 +185,10 @@ public class BaseArcadeMachine : BaseVehicle
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(2990871635u, "RequestAddScore", this, player, 1uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(2990871635u, "RequestAddScore", this, player, 3f))
 						{
 							return true;
@@ -217,19 +221,26 @@ public class BaseArcadeMachine : BaseVehicle
 
 	public void AddScore(BasePlayer player, int score)
 	{
-		ScoreEntry scoreEntry = new ScoreEntry();
-		scoreEntry.displayName = player.displayName;
-		scoreEntry.score = score;
-		scoreEntry.playerID = player.userID;
-		scores.Add(scoreEntry);
-		scores.Sort((ScoreEntry a, ScoreEntry b) => b.score.CompareTo(a.score));
-		scores.TrimExcess();
-		SendNetworkUpdate();
-		Interface.CallHook("OnArcadeScoreAdded", this, player, score);
+		if (scores.Count < 5 || score > scores[scores.Count - 1].score)
+		{
+			ScoreEntry scoreEntry = new ScoreEntry();
+			scoreEntry.displayName = player.displayName;
+			scoreEntry.score = score;
+			scoreEntry.playerID = player.userID;
+			scores.Add(scoreEntry);
+			scores.Sort((ScoreEntry a, ScoreEntry b) => b.score.CompareTo(a.score));
+			if (scores.Count > 5)
+			{
+				scores.RemoveRange(5, scores.Count - 5);
+			}
+			SendNetworkUpdate();
+			Interface.CallHook("OnArcadeScoreAdded", this, player, score);
+		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void RequestAddScore(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -359,9 +370,9 @@ public class BaseArcadeMachine : BaseVehicle
 	}
 
 	[RPC_Server]
+	[RPC_Server.MaxRepeatedElements(64)]
 	[RPC_Server.CallsPerSecond(30uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxRepeatedElements(64)]
 	public void GetSnapshotFromClient(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

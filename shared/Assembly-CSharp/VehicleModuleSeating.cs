@@ -71,8 +71,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[SerializeField]
 	private Seating seating;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 steerAngle;
 
 	[SerializeField]

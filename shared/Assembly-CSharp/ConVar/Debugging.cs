@@ -65,12 +65,12 @@ public class Debugging : ConsoleSystem
 	[ServerVar(Help = "(Generated) When true, nav mesh obstacle components on loot containers are disabled in the deep sea zone to improve performance in underwater areas")]
 	public static bool disableLootNavObstaclesInDeepSea = true;
 
-	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
+	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	public static bool callbacks = false;
 
-	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	[ServerVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
+	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	public static bool log
 	{
 		get
@@ -91,8 +91,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Generates and logs a render info report showing draw calls, batch counts, triangle counts, and shadow caster counts for the current frame")]
 	[ClientVar(ClientAdmin = true)]
+	[ServerVar(Help = "(Generated) Generates and logs a render info report showing draw calls, batch counts, triangle counts, and shadow caster counts for the current frame")]
 	public static void renderinfo(Arg arg)
 	{
 		RenderInfo.GenerateReport();
@@ -1507,8 +1507,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
 	[ServerVar]
+	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
 	public static void completeMissionStage(Arg arg)
 	{
 		int num = arg.GetInt(0, -1);
@@ -2100,8 +2100,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar(Help = "(Generated) Prints a table of all ObjectWorkQueue instances showing name, total items processed, current queue length, and cumulative execution time")]
+	[ClientVar(ClientAdmin = true)]
 	public static void printqueues(Arg arg)
 	{
 		bool flag = arg.HasArg("--json");

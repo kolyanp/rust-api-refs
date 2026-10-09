@@ -101,12 +101,12 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	public Transform torpedoFiringPoint;
 
-	[SerializeField]
 	[FormerlySerializedAs("maxFireRate")]
+	[SerializeField]
 	public float reloadTime = 1.5f;
 
-	[SerializeField]
 	[Header("Submarine Audio & FX")]
+	[SerializeField]
 	protected SubmarineAudio submarineAudio;
 
 	[SerializeField]

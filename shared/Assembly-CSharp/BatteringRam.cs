@@ -47,8 +47,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private Transform damagePoint;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private float timeBetweenFire = 2f;
 
 	[SerializeField]
@@ -73,8 +73,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private ImpactEffect[] impactEffects;
 
-	[Header("IK")]
 	[SerializeField]
+	[Header("IK")]
 	private Transform leftHandTarget;
 
 	[SerializeField]
@@ -100,8 +100,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[Header("Cockpit")]
 	public Transform fuelGauge;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 fuelAngle;
 
 	private float cachedFuelFraction;

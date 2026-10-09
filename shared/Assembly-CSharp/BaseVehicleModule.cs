@@ -40,26 +40,26 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public VisualGroup visualGroup;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private VehicleLight[] lights;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private NPCMountable npcMountable;
 
 	public LODLevel[] lodRenderers;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private List<ConditionalObject> conditionals;
 
 	[Header("Trigger Parent")]
 	[SerializeField]
 	private TriggerParent[] triggerParents;
 
-	[Header("Sliding Components")]
 	[SerializeField]
+	[Header("Sliding Components")]
 	private VehicleModuleSlidingComponent[] slidingComponents;
 
 	[SerializeField]

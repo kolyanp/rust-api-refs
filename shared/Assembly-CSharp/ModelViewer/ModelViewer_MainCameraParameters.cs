@@ -37,8 +37,8 @@ public class ModelViewer_MainCameraParameters
 	public float followLag;
 
 	[Header("Lens")]
-	[Range(0.01f, 360f)]
 	[Header("                ")]
+	[Range(0.01f, 360f)]
 	public float fieldOfView = 15f;
 
 	public float nearPlane = 0.05f;
@@ -53,8 +53,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(0.01f, 100f)]
 	public float Ratio = 3f;
 
-	[Header("                ")]
 	[Header("Focus")]
+	[Header("                ")]
 	public bool depthOfField;
 
 	public float focalLength = 3f;
@@ -67,21 +67,21 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
-	[Range(0f, 360f)]
 	[Header("Motion Blur")]
 	[Header("                ")]
+	[Range(0f, 360f)]
 	public float shutterAngle;
 
 	[Range(-100f, 100f)]
-	[Header("                ")]
 	[Header("Distortion")]
+	[Header("                ")]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]
 	public float chromaticAbberation;
 
-	[Header("                ")]
 	[Header("Post Effects")]
+	[Header("                ")]
 	public TonemappingMode ToneMapping = TonemappingMode.Neutral;
 
 	public float Exposure = 2.34f;
@@ -102,8 +102,8 @@ public class ModelViewer_MainCameraParameters
 	[Header("God Rays")]
 	public bool GodRays = true;
 
-	[Header("Bloom")]
 	[Header("                ")]
+	[Header("Bloom")]
 	public float Brightness = 0.15f;
 
 	public float Threshold = 1f;
@@ -121,8 +121,8 @@ public class ModelViewer_MainCameraParameters
 
 	public Color Color = Color.white;
 
-	[Header("Vignette")]
 	[Header("                ")]
+	[Header("Vignette")]
 	public float Darkness;
 
 	public float Sharpness;

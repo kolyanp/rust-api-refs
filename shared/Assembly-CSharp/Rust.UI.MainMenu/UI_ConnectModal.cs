@@ -46,8 +46,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private UI_ServerMap _map;
 
-	[SerializeField]
 	[Header("References - System Config")]
+	[SerializeField]
 	private GameObject _requiredSystemConfigSection;
 
 	[SerializeField]
@@ -103,8 +103,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private RustText _wipedText;
 
-	[Header("Nexus")]
 	[SerializeField]
+	[Header("Nexus")]
 	private GameObject _zoneCountObject;
 
 	[SerializeField]

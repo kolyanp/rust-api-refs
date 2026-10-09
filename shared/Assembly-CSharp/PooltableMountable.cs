@@ -13,17 +13,17 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private ViewModel poolCueViewmodel;
 
-	[SerializeField]
 	[Header("3p Cue")]
 	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
+	[SerializeField]
 	private Transform cueHeldProp;
 
 	[Tooltip("Grip offset in prop bone space. Mostly z: how far up the shaft the hand holds the cue, which is what the stroke rotates around.")]
 	[SerializeField]
 	private Vector3 cueHeldPropPositionOffset;
 
-	[SerializeField]
 	[Tooltip("Cue tilt relative to the prop bone.")]
+	[SerializeField]
 	private Vector3 cueHeldPropEulerOffset;
 
 	[Tooltip("One 3p cue per seat, all parented to cueHeldProp. Only the mounted player's own cue is left active.")]
@@ -45,8 +45,8 @@ public class PooltableMountable : BaseMountable
 
 	private float currentRight;
 
-	[Tooltip("Metres of spline travel per unit of mouse movement. Deliberately tiny - the mouse is the fine aim, A/D is for walking round the table.")]
 	[SerializeField]
+	[Tooltip("Metres of spline travel per unit of mouse movement. Deliberately tiny - the mouse is the fine aim, A/D is for walking round the table.")]
 	private float mouseAimSensitivity = 0.002f;
 
 	[SerializeField]

@@ -47,8 +47,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) When enabled, region ping estimates are automatically refreshed in the background to keep server list latency data up to date")]
 	[ClientVar(Help = "(Generated) When enabled, region ping estimates are automatically refreshed in the background to keep server list latency data up to date")]
+	[ServerVar(Help = "(Generated) When enabled, region ping estimates are automatically refreshed in the background to keep server list latency data up to date")]
 	public static bool auto_refresh_region
 	{
 		get

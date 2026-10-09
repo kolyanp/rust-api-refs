@@ -24,22 +24,22 @@ public sealed class Vignette : PostProcessEffectSettings
 		value = new Vector2(0.5f, 0.5f)
 	};
 
-	[Tooltip("Amount of vignetting on screen.")]
 	[Range(0f, 1f)]
+	[Tooltip("Amount of vignetting on screen.")]
 	public FloatParameter intensity = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[Tooltip("Smoothness of the vignette borders.")]
 	[Range(0.01f, 1f)]
+	[Tooltip("Smoothness of the vignette borders.")]
 	public FloatParameter smoothness = new FloatParameter
 	{
 		value = 0.2f
 	};
 
-	[Tooltip("Lower values will make a square-ish vignette.")]
 	[Range(0f, 1f)]
+	[Tooltip("Lower values will make a square-ish vignette.")]
 	public FloatParameter roundness = new FloatParameter
 	{
 		value = 1f
@@ -57,8 +57,8 @@ public sealed class Vignette : PostProcessEffectSettings
 		value = null
 	};
 
-	[Tooltip("Mask opacity.")]
 	[Range(0f, 1f)]
+	[Tooltip("Mask opacity.")]
 	public FloatParameter opacity = new FloatParameter
 	{
 		value = 1f

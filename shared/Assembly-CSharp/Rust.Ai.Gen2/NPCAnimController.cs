@@ -72,8 +72,8 @@ public class NPCAnimController : EntityComponent<BaseEntity>, IClientComponent
 	[Tooltip("Animator state holding the settled sleeping pose, for an animal already asleep the first time we see it. Without it a newborn calf stands up and plays its own lie down.")]
 	private string sleepingPoseState = "sleeping";
 
-	[Tooltip("Animator state holding the settled lying pose, for an animal already resting.")]
 	[SerializeField]
+	[Tooltip("Animator state holding the settled lying pose, for an animal already resting.")]
 	private string restingPoseState = "cow_lay_idle";
 
 	[SerializeField]

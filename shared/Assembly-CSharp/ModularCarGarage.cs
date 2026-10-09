@@ -39,8 +39,8 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public MagnetSnap magnetSnap;
 
-	[Header("ModularCarGarage")]
 	[SerializeField]
+	[Header("ModularCarGarage")]
 	public Transform vehicleLift;
 
 	[SerializeField]

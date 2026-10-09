@@ -380,6 +380,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		{
 			((Component)this).BroadcastMessage("OnItemChanged", (object)item, (SendMessageOptions)1);
 		}
+		InvalidateNetworkCache();
 		DoItemNetworking();
 	}
 

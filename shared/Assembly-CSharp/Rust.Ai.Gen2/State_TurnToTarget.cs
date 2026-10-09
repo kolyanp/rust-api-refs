@@ -15,8 +15,8 @@ public class State_TurnToTarget : State_PlayAnimationRM
 	[SerializeField]
 	public RootMotionData TurnAbout;
 
-	[SerializeField]
 	[Tooltip("Past this many degrees off our facing, use the about turn rather than a side turn.")]
+	[SerializeField]
 	private float aboutFaceAngle = 130f;
 
 	public bool HasTurnAnimation

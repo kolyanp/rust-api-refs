@@ -223,8 +223,8 @@ public class BaseMelee : AttackEntity
 	}
 
 	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void CLEntityThrow(RPCMessage msg)
 	{
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
@@ -323,10 +323,10 @@ public class BaseMelee : AttackEntity
 	{
 	}
 
-	[RPC_Server.FromOwner]
-	[RPC_Server.MaxRepeatedElements(1)]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.MaxRepeatedElements(1)]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
@@ -341,11 +341,11 @@ public class BaseMelee : AttackEntity
 		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0207: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0250: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0257: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0277: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0344: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		if (!VerifyClientAttack(player))
 		{
@@ -405,6 +405,21 @@ public class BaseMelee : AttackEntity
 						}
 						else if (!ValidateEyePos(player, projectile.startPos))
 						{
+							continue;
+						}
+						float magnitude = projectile.startVel.magnitude;
+						float num = component.GetMinVelocity() * (1f - ConVar.AntiHack.projectile_forgiveness);
+						float num2 = component.GetMaxVelocity() * (1f + ConVar.AntiHack.projectile_forgiveness);
+						if (magnitude < num)
+						{
+							AntiHack.Log(player, AntiHackType.ProjectileHack, $"Velocity ({ShortPrefabName} with {magnitude} < {num})");
+							player.stats.combat.LogInvalid(player, this, "projectile_minvelocity");
+							continue;
+						}
+						if (magnitude > num2)
+						{
+							AntiHack.Log(player, AntiHackType.ProjectileHack, $"Velocity ({ShortPrefabName} with {magnitude} > {num2})");
+							player.stats.combat.LogInvalid(player, this, "projectile_maxvelocity");
 							continue;
 						}
 						Item pickupItem = (ThrowFullStack ? item : ItemManager.CreateByItemID(item.info.itemid, 1, 0uL, 0uL));

@@ -232,9 +232,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float conditionUnsentHealth;
 
-	[Header("Day activity")]
-	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
 	[Range(0f, 1f)]
+	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
+	[Header("Day activity")]
 	public float StarvingThreshold = 0.2f;
 
 	[Tooltip("How many seconds of waking time the day activity read out is measured over. It only reports how the day split up, nothing reads it to decide what to do.")]
@@ -242,8 +242,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float[] activityWeights;
 
-	[Header("Dung")]
 	[Tooltip("The item dropped each time the animal dungs. Leave empty to disable it, which is how an age stage that shouldn't dung - a calf, say - opts out.")]
+	[Header("Dung")]
 	public ItemDefinition DungItem;
 
 	[Tooltip("How long (in seconds) between dung drops. Zero disables it.")]
@@ -289,8 +289,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Range(0f, 1f)]
 	public float OldAgeSlowFraction = 0.55f;
 
-	[Range(0f, 1f)]
 	[Tooltip("How far through its life it drops a second gait. Never goes below a walk.")]
+	[Range(0f, 1f)]
 	public float OldAgeVerySlowFraction = 0.8f;
 
 	[Tooltip("How much of its roaming range an animal still has at the very end of its life, so an old one keeps close to home and mostly only moves to get back to it.")]
@@ -315,8 +315,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
 	public float HydrationFillRate = 0.25f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Where a freshly spawned animal's hydration starts. Full, so a new animal has one thing less to go and sort out before it settles in.")]
+	[Range(0f, 1f)]
 	public float StartingHydration = 1f;
 
 	[Tooltip("How much hydration drains per second while the animal is up and about in daylight. Tiny, because one mouthful refills the animal completely: this sets how often it goes for a drink rather than how long it stands there. At 0.00001 a full animal is down to the ConsumeThreshold of 0.95 after about 5000 seconds of daylight, which is one trip to the water in a shipped waking day.")]
@@ -343,8 +343,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private static readonly Dictionary<LivestockSpecies, int> populationBySpecies = new Dictionary<LivestockSpecies, int>();
 
-	[Header("Sleep")]
 	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
+	[Header("Sleep")]
 	public float SleepTimeVariance = 45f;
 
 	[Tooltip("How far (in metres) from the middle of the herd is close enough to lie down. Further out than this and the animal walks in first, so the herd sleeps as a group.")]
@@ -364,8 +364,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float sleepFraction;
 
-	[Header("PersonalSpace")]
 	[Tooltip("How far (in metres) the animal looks for herd mates. Herd identity rather than personal space: the regroup, the flee centroid and the distress broadcast all use it.")]
+	[Header("PersonalSpace")]
 	public float SocialSearchRadius = 20f;
 
 	[Tooltip("How many herd mates of the same species within Social Search Radius the animal is content surrounded by. Past this the herd is too big to keep producing at full rate.")]
@@ -489,12 +489,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public LivestockSize MountType = LivestockSize.Small;
 
-	[Header("Aging")]
 	[Tooltip("How long (in seconds) this animal stays at its current age stage. When it elapses an infant grows into the adult named by its Species asset and an adult dies of old age. Zero disables aging.")]
+	[Header("Aging")]
 	public float TimeToGrow;
 
-	[Range(0f, 1f)]
 	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
+	[Range(0f, 1f)]
 	public float GrowTimeVariance = 0.1f;
 
 	[Tooltip("Optional effect played on the new animal when it grows into the next stage.")]
@@ -516,15 +516,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("The species this animal belongs to. Shared by every prefab of the species - both sexes and every age stage - so it identifies mates and tells an infant which adult to grow into.")]
 	public LivestockSpecies Species;
 
-	[Tooltip("How much fullness a second of grazing puts back. Deliberately slow: grazing is meant to be what the animal spends its day doing, not a top up it finishes in a few seconds.")]
 	[Header("Needs")]
+	[Tooltip("How much fullness a second of grazing puts back. Deliberately slow: grazing is meant to be what the animal spends its day doing, not a top up it finishes in a few seconds.")]
 	public float FullnessFillRate = 0.004f;
 
 	[Tooltip("How much fullness drains per second while the animal is up and about in daylight. Against FullnessFillRate this sets how much of its standing time a well fed animal spends eating: 0.001 against 0.004 is a quarter of it. Slow, because the dip below ConsumeThreshold while the animal walks over is what a keeper sees. Lying down and sleeping drain at SleepingDecayScale.")]
 	public float FullnessDecayRate = 0.001f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Where a freshly spawned animal's fullness starts. At the trough ceiling, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to it.")]
+	[Range(0f, 1f)]
 	public float StartingFullness = 0.8f;
 
 	[Range(0f, 1f)]
@@ -536,12 +536,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far (in metres) the animal looks for somewhere to feed itself - a trough, a water barrel, open grass or a river bank.")]
 	public float ConsumeSearchRadius = 25f;
 
-	[Range(0f, 1f)]
 	[Tooltip("A need at or below this share of the most it can get sends the animal off to top it up. Fullness is measured against the trough ceiling while a trough is what feeds it, and against full otherwise. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it: about 0.75 to 0.8 on troughs and 0.95 to 1 on grass. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
+	[Range(0f, 1f)]
 	public float ConsumeThreshold = 0.95f;
 
-	[Tooltip("The most fullness a trough will ever put back. Grass still fills an animal completely, so a herd living out of a trough sits permanently a little short and everything reading Condition pays for it.")]
 	[Range(0f, 1f)]
+	[Tooltip("The most fullness a trough will ever put back. Grass still fills an animal completely, so a herd living out of a trough sits permanently a little short and everything reading Condition pays for it.")]
 	public float TroughFullnessCeiling = 0.8f;
 
 	[Tooltip("How much fullness each calorie of trough food is worth. The animal grazes a trough item down before it takes the next, so richer food lasts longer, the way it does for a horse.")]
@@ -4667,8 +4667,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Lead(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null))
@@ -4740,8 +4740,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)

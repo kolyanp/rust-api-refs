@@ -112,8 +112,8 @@ public class SatelliteControlComputer : BaseMountable
 	[Tooltip("Child SatelliteFuelStorage prefab the player loads the power-up items into. Spawned and parented to this computer on first init.")]
 	public GameObjectRef fuelStoragePrefab;
 
-	[Tooltip("Number of satellites to generate each session")]
 	[Header("Satellites")]
+	[Tooltip("Number of satellites to generate each session")]
 	public int satelliteCount = 6;
 
 	[Header("Satellite Prefab")]
@@ -122,8 +122,8 @@ public class SatelliteControlComputer : BaseMountable
 	[Tooltip("Prevent-building volume spawned at the locked crash site to reserve the area during descent")]
 	public GameObjectRef preventBuildingPrefab;
 
-	[Tooltip("Pre-spawned child of this entity's prefab (must live inside the entity prefab, not the launch site — monument-authored references don't reach the client entity). Leave disabled in the prefab; enabled only while a satellite is descending. Optional — skipped when unset.")]
 	[Header("Siren")]
+	[Tooltip("Pre-spawned child of this entity's prefab (must live inside the entity prefab, not the launch site — monument-authored references don't reach the client entity). Leave disabled in the prefab; enabled only while a satellite is descending. Optional — skipped when unset.")]
 	public Transform launchSiren;
 
 	[Tooltip("Inverse of launchSiren — enabled whenever launchSiren is not. Same prefab rules: must be a pre-spawned child of this entity's prefab. Optional — skipped when unset.")]

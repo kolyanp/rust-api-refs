@@ -21,12 +21,12 @@ public class ModelViewer_SkyParameters
 	[Tooltip("Current month of the year.")]
 	public int Month = 5;
 
-	[Tooltip("Current year.")]
 	[TOD_Range(1f, 9999f)]
+	[Tooltip("Current year.")]
 	public int Year = 2000;
 
-	[Tooltip("Latitude of the current location in degrees.")]
 	[Range(-90f, 90f)]
+	[Tooltip("Latitude of the current location in degrees.")]
 	public float Latitude = -10f;
 
 	[Tooltip("Longitude of the current location in degrees.")]

@@ -42,8 +42,8 @@ public class BoatBuildingStation : DecayEntity
 
 	public const string ACHIEVEMENT_FINISH_BOAT_NAME = "BBS_FINISH_BOAT";
 
-	[ServerVar]
 	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
+	[ServerVar]
 	public static bool StaticStationsEnabled = true;
 
 	[ServerVar]
@@ -454,8 +454,8 @@ public class BoatBuildingStation : DecayEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void EditBoat(RPCMessage msg)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -515,9 +515,9 @@ public class BoatBuildingStation : DecayEntity
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void FinishBuilding(RPCMessage msg)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -649,9 +649,9 @@ public class BoatBuildingStation : DecayEntity
 		Pool.FreeUnmanaged<PlayerBoat>(ref playerBoats);
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void ClearArea(RPCMessage msg)
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)

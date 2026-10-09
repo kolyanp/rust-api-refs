@@ -46,8 +46,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 	[Header("Towing")]
 	public Transform towAnchor;
 
-	[SerializeField]
 	[Header("Pulling")]
+	[SerializeField]
 	private List<ModifierDefintion> pullingPlayerModifiers;
 
 	public const Flags Flag_IsPulled = Flags.Reserved12;

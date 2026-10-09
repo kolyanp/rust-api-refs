@@ -12,9 +12,9 @@ using UnityEngine.Events;
 
 namespace FIMSpace.FProceduralAnimation;
 
-[AddComponentMenu("FImpossible Creations/Legs Animator")]
-[HelpURL("https://assetstore.unity.com/packages/tools/animation/legs-animator-154245")]
 [DefaultExecutionOrder(-1301)]
+[HelpURL("https://assetstore.unity.com/packages/tools/animation/legs-animator-154245")]
+[AddComponentMenu("FImpossible Creations/Legs Animator")]
 public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon
 {
 	private struct CalibrateTransform(Transform t)
@@ -57,12 +57,12 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 		public LegsAnimatorControlModuleBase ModuleReference;
 
-		[HideInInspector]
 		[SerializeField]
+		[HideInInspector]
 		public List<string> customStringList;
 
-		[HideInInspector]
 		[SerializeField]
+		[HideInInspector]
 		public List<Object> customObjectList;
 
 		[SerializeField]
@@ -134,8 +134,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 		[Space(5f)]
 		public Vector3 HipsRotate = Vector3.zero;
 
-		[Range(0f, 1f)]
 		[Space(5f)]
+		[Range(0f, 1f)]
 		public float InheritElasticness = 0.75f;
 
 		[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0f, 1f, 1f, 1f)]
@@ -144,8 +144,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 		[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0f, 1f, 1f, 1f)]
 		public AnimationCurve YAxisMultiplyCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 1f);
 
-		[Tooltip("Local Offset Z-forward will bo rotated to face the legs animator's current desired move direction value")]
 		[Space(5f)]
+		[Tooltip("Local Offset Z-forward will bo rotated to face the legs animator's current desired move direction value")]
 		public bool AlignWithDesiredMoveDirection;
 
 		public PelvisImpulseSettings Copy()
@@ -2480,8 +2480,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 		public Vector2 GluePointOffset = Vector2.zero;
 
-		[Range(0f, 1f)]
 		[Space(3f)]
+		[Range(0f, 1f)]
 		public float LegStretchMultiplier = 1f;
 
 		[Tooltip("Motion preset for the leg to be animated with different character than the other legs ('Idle Glue Motion' settings)")]
@@ -2507,8 +2507,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 		public Transform BoneFeet;
 
-		[Tooltip("Defining how quick heel should get up if leg gets stretched (change max stretching param under IK tab to be lower value that 1.1)")]
 		[Range(0f, 1f)]
+		[Tooltip("Defining how quick heel should get up if leg gets stretched (change max stretching param under IK tab to be lower value that 1.1)")]
 		public float FeetSensitivity = 0.5f;
 
 		private bool hasOppositeleg;
@@ -5833,12 +5833,12 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 		[Tooltip("Average duration of the automatic leg animation")]
 		public float StepMoveDuration = 0.375f;
 
-		[Tooltip("Curve of ik point going towards desired position (just XZ movement, to Y - no leg rise curve)")]
 		[FPD_FixedCurveWindow(0f, 0f, 1f, 1.25f, 0.4f, 0.5f, 1f, 1f)]
+		[Tooltip("Curve of ik point going towards desired position (just XZ movement, to Y - no leg rise curve)")]
 		public AnimationCurve MoveToGoalCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
-		[FPD_FixedCurveWindow(0f, -1f, 1f, 1f, 0.4f, 0.6f, 0.9f, 1f)]
 		[Tooltip("Making foot motion move towards target not in full linear straight towards target motion but adding a bit curve back (positive value) or forward (negative values) making movement a bit more natural")]
+		[FPD_FixedCurveWindow(0f, -1f, 1f, 1f, 0.4f, 0.6f, 0.9f, 1f)]
 		public AnimationCurve SpherizeTrack = AnimationCurve.EaseInOut(0f, 0f, 1f, 0f);
 
 		[Range(0f, 2f)]
@@ -5848,17 +5848,17 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 		[Range(0f, 1f)]
 		public float MinFootRaise = 0.1f;
 
-		[Range(0f, 1f)]
 		[Tooltip("Maximum leg raise height. If distance of target step animation is very big, then foot raise is bigger - up to this maximum raise value.")]
+		[Range(0f, 1f)]
 		public float MaxFootRaise = 0.4f;
 
-		[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.5f, 1f, 0.5f, 1f)]
 		[Tooltip("Raise height step animation curve evaluated on step animation duration.")]
+		[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.5f, 1f, 0.5f, 1f)]
 		public AnimationCurve RaiseYAxisCurve;
 
+		[Space(3f)]
 		[Range(0f, 1f)]
 		[Tooltip("Allowing to speed up leg adjusting animation when leg is getting stretched, when opposite leg is requesting adjustement or when main character is rotating in place quickly")]
-		[Space(3f)]
 		public float AllowSpeedups = 0.4f;
 
 		[Tooltip("You can allow to use opposite leg before idle glue leg adjustement finishes")]
@@ -6455,8 +6455,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[NonSerialized]
 	public float MinNonRagdolledForBlendOut;
 
-	[Tooltip("Calculating leg swing velocity in order to prevent gluing foot when swinging forward during movement forward (during forward swing, foot sometimes is touching ground which can result in gluing foot too soon, especially with ground level increased)\nWhen this value is high, foot will detect gluing less oftem.")]
 	[Space(5f)]
+	[Tooltip("Calculating leg swing velocity in order to prevent gluing foot when swinging forward during movement forward (during forward swing, foot sometimes is touching ground which can result in gluing foot too soon, especially with ground level increased)\nWhen this value is high, foot will detect gluing less oftem.")]
 	[Range(0f, 1f)]
 	public float SwingHelper;
 
@@ -6469,8 +6469,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	private float _glueingFloorLevel;
 
-	[Space(5f)]
 	[Tooltip("If you want to push out legs out of each other if their IK points are overlapping in one placement")]
+	[Space(5f)]
 	public float StepPointsOverlapRadius;
 
 	public bool UseStepPointsOverlapRadiusOnMoving;
@@ -6481,8 +6481,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	public UnityEvent Event_OnStep = new UnityEvent();
 
-	[Range(0f, 0.3f)]
 	[Tooltip("Increase to execute step event sooner (speed up step confirmation). Useful if step events are executed too late.")]
+	[Range(0f, 0.3f)]
 	public float EventExecuteSooner = 0.05f;
 
 	[Tooltip("If you want to send step events also during movement idle (in case you already use animation clip events for it)")]
@@ -6505,8 +6505,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Tooltip("Additional pelvis position push in local space. Can be accesed for custom pelvis offset animation or for constant model pose correction.")]
 	public Vector3 ExtraPelvisOffset = Vector3.zero;
 
-	[FPD_Suffix(0f, 2f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
 	[Tooltip("Time which needs to elapse after character stop, to trigger legs repose to most relevant pose in comparison to played idle animation")]
+	[FPD_Suffix(0f, 2f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
 	public float ReposeGluingAfter;
 
 	[Tooltip("Enable if you want to use gluing only when character is idling. Useful when it's too much work needed to setup dynamic gluing during movement for your character. (it will still use feet ground align)")]
@@ -6534,8 +6534,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	public float ImpulsesDurationMultiplier;
 
-	[Range(0f, 1f)]
 	[Tooltip("Damping impulses which are pushing body above ground level")]
+	[Range(0f, 1f)]
 	public float ImpulsesDampUpPushes;
 
 	public PelvisImpulseSettings DebugPushHipsImpulse;
@@ -6600,8 +6600,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float HipsHeightStepBlend;
 
-	[Range(0f, 1f)]
 	[Tooltip("How fast body should adjust up/down")]
+	[Range(0f, 1f)]
 	public float HipsHeightStepSpeed;
 
 	public EHipsAdjustStyle HipsAdjustStyle;
@@ -6610,39 +6610,39 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float StabilizeCenterOfMass;
 
-	[Tooltip("Blend stability pose reference from: initial pose to: current animator pose")]
 	[Range(0f, 1f)]
+	[Tooltip("Blend stability pose reference from: initial pose to: current animator pose")]
 	public float AnimationIsStablePose;
 
-	[Tooltip("How fast body should adjust to the stability pose / to stretch preventer pose")]
 	[Range(0f, 1f)]
+	[Tooltip("How fast body should adjust to the stability pose / to stretch preventer pose")]
 	public float StabilizingSpeed;
 
-	[Tooltip("Simulating body behaviour when doing leg steps")]
 	[Range(0f, 1f)]
+	[Tooltip("Simulating body behaviour when doing leg steps")]
 	public float PushHipsOnLegMove;
 
 	[Tooltip("If your setup contains more than 2 legs it can be helpful to prevent overlapping pushes of multiple legs")]
 	public bool NormalizePush;
 
-	[Tooltip("Related with 'Push Hips On Leg Move' parameter above. How rapidly the pelvis push effect should be animated.")]
 	[Range(0f, 1f)]
+	[Tooltip("Related with 'Push Hips On Leg Move' parameter above. How rapidly the pelvis push effect should be animated.")]
 	public float PushReactionSpeed;
 
 	[Range(0f, 2f)]
 	[Tooltip("If Push in Y axis seems to be too strong, you can calm it down with this parameter")]
 	public float PushYBlend;
 
-	[Range(0f, 1f)]
-	[Space(3f)]
 	[Tooltip("Auto adjust hips to prevent leg stretching poses")]
+	[Space(3f)]
+	[Range(0f, 1f)]
 	public float HipsStretchPreventer;
 
 	public float StretchPreventerSpeed;
 
-	[Space(7f)]
-	[Tooltip("Some of the stabilizing features may be not wanted when your character is running, you can blend them automatically to desired amount with this slider (you need to implement IsGrounded/IsMoving controls to give Legs Animator information about your character movement state)")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
+	[Tooltip("Some of the stabilizing features may be not wanted when your character is running, you can blend them automatically to desired amount with this slider (you need to implement IsGrounded/IsMoving controls to give Legs Animator information about your character movement state)")]
+	[Space(7f)]
 	public float StabilizeOnIsMoving;
 
 	private Vector3 _LastAppliedHipsStabilityOffset;
@@ -6678,8 +6678,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Space(3f)]
 	public float GlueRangeThreshold;
 
-	[Tooltip("How quickly leg attachement transition should be proceeded.")]
 	[Range(0f, 1f)]
+	[Tooltip("How quickly leg attachement transition should be proceeded.")]
 	public float GlueFadeInSpeed;
 
 	[Range(0f, 1f)]
@@ -6690,14 +6690,14 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Tooltip("How quickly leg detachement transition should be proceeded.")]
 	public float GlueFadeOutSpeed;
 
-	[Space(5f)]
 	[FPD_Suffix(0f, 90f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
 	[Tooltip("If leg rotation exceeds this angle during being attach, the leg will be detached.")]
+	[Space(5f)]
 	public float UnglueOn;
 
-	[Space(1f)]
 	[Range(0f, 1f)]
 	[Tooltip("When leg glue target position is stretching leg too much it will shift leg target towards source animation leg position.")]
+	[Space(1f)]
 	public float AllowGlueDrag;
 
 	[NonSerialized]
@@ -6709,33 +6709,33 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Tooltip("Making Gluing animations only local space, which can be helpful when character is standing on the moving platform.")]
 	public bool OnlyLocalAnimation;
 
-	[Range(0f, 1f)]
 	[Tooltip("Smoothing leg align motion when sudden uneven terrain step occurs")]
+	[Range(0f, 1f)]
 	public float SmoothSuddenSteps;
 
+	[Space(3f)]
 	[Range(0f, 2f)]
 	[Tooltip("Making leg rise a bit over ground when character leg overlaps collision (it's mostly visible on steep slopes)")]
-	[Space(3f)]
 	public float LegElevateBlend;
 
 	[Range(0f, 1f)]
 	public float LegElevateHeightLimit;
 
+	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	[Tooltip("Overall foot rotation blend on the slope step align.")]
 	[Space(6f)]
-	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float FootRotationBlend;
 
-	[Space(4f)]
 	[Range(0f, 1f)]
+	[Space(4f)]
 	[Tooltip("How quickly foot should align it's rotation to the slopes")]
 	public float FootAlignRapidity;
 
 	[Tooltip("If it's human leg limb with foot, then turn it on for the foot bone animation and alignments. But if it's something like spider leg, then disable it")]
 	public bool AnimateFeet;
 
-	[Tooltip("If feet rotation is above this value, feet rotation will be limited to avoid weird foot rotation pose")]
 	[FPD_Suffix(0f, 90f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "°", true, 0)]
+	[Tooltip("If feet rotation is above this value, feet rotation will be limited to avoid weird foot rotation pose")]
 	public float LimitFeetYaw;
 
 	[Tooltip("Local space ANKLE-step height detection level. It's detail parameter to adjust feet aligning sooner/later when foot is near to ground.")]
@@ -6746,8 +6746,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	private bool _wasInstantTriggered;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private ReferencePose setupPose;
 
 	[SerializeField]
@@ -6831,14 +6831,14 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	public QueryTriggerInteraction RaycastHitTrigger;
 
-	[Tooltip("Maximum raycasting check range. Check Gizmos on the scene view")]
 	[Range(0f, 2f)]
+	[Tooltip("Maximum raycasting check range. Check Gizmos on the scene view")]
 	public float CastDistance;
 
 	public ERaycastStartHeight RaycastStartHeight;
 
-	[Tooltip("Origin height point for raycasts. Check Gizmos on the scene view")]
 	[Range(0.5f, 2.5f)]
+	[Tooltip("Origin height point for raycasts. Check Gizmos on the scene view")]
 	public float RaycastStartHeightMul;
 
 	[Tooltip("How physical raycasting should be done. Enter on the selected style to see tooltip.")]
@@ -6867,8 +6867,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	public float BodyStepDown;
 
 	[Space(3f)]
-	[Tooltip("How high whole body can be pulled up when all legs raycast hits are higher than default object position. (rare case for special character controllers).\nIt can also help out extra spine hubs to adjust on higher steps (for quadrupeds).")]
 	[Range(0f, 1f)]
+	[Tooltip("How high whole body can be pulled up when all legs raycast hits are higher than default object position. (rare case for special character controllers).\nIt can also help out extra spine hubs to adjust on higher steps (for quadrupeds).")]
 	public float MaxBodyStepUp;
 
 	[Space(3f)]
@@ -6885,8 +6885,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	private float _lastMainBlend;
 
-	[Tooltip("Total blend of the plugin effects. When zero it disables most of the calculations (but not all)")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
+	[Tooltip("Total blend of the plugin effects. When zero it disables most of the calculations (but not all)")]
 	public float LegsAnimatorBlend;
 
 	protected float cullingBlend;

@@ -38,8 +38,8 @@ internal struct OceanTraceJob : IJobParallelForDefer
 
 	public float OneOverOctave0Scale;
 
-	[ReadOnly]
 	[NativeDisableParallelForRestriction]
+	[ReadOnly]
 	public NativeOceanDisplacementShort3 SimData;
 
 	public int Spectrum0;

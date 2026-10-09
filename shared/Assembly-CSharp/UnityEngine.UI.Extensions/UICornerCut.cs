@@ -22,8 +22,8 @@ public class UICornerCut : UIPrimitiveBase
 	[Tooltip("Up-Down colors become Left-Right colors")]
 	private bool m_makeColumns;
 
-	[SerializeField]
 	[Header("Color the cut bars differently")]
+	[SerializeField]
 	private bool m_useColorUp;
 
 	[SerializeField]

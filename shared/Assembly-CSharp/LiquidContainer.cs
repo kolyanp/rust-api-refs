@@ -29,8 +29,8 @@ public class LiquidContainer : ContainerIOEntity
 
 	public ItemDefinition[] ValidItems;
 
-	[Tooltip("Replicate how full this container is. Turn it on for containers that show a water level mesh, and leave it off everywhere else: water moves through a barrel every tick and the updates are only worth paying for when something is showing the level.")]
 	[Header("Water Level Mesh")]
+	[Tooltip("Replicate how full this container is. Turn it on for containers that show a water level mesh, and leave it off everywhere else: water moves through a barrel every tick and the updates are only worth paying for when something is showing the level.")]
 	public bool replicateWaterLevel;
 
 	[Tooltip("Mesh shown while there is liquid in here, posed between the empty and full values below to match how full the container is.")]
@@ -66,7 +66,7 @@ public class LiquidContainer : ContainerIOEntity
 
 	private float lastOutputDrainUpdate;
 
-	private static HashSet<IOEntity> pushLiquidCheckEntityHash = new HashSet<IOEntity>();
+	protected static HashSet<IOEntity> recursiveEntityHash = new HashSet<IOEntity>();
 
 	private byte __sync_WaterLevel;
 
@@ -303,18 +303,23 @@ public class LiquidContainer : ContainerIOEntity
 
 	private void UpdateDrainAmount()
 	{
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		int amount = 0;
 		Item liquidItem = GetLiquidItem();
+		recursiveEntityHash.Clear();
 		if (liquidItem != null)
 		{
 			IOSlot[] array = outputs;
 			foreach (IOSlot iOSlot in array)
 			{
-				if ((Object)(object)iOSlot.connectedTo.Get() != (Object)null)
+				if (iOSlot.type == IOType.Fluidic)
 				{
-					CalculateDrain(iOSlot.connectedTo.Get(), ((Component)this).transform.TransformPoint(iOSlot.handlePosition), IOEntity.backtracking * 2, ref amount, this, liquidItem?.info);
+					IOEntity iOEntity = iOSlot.connectedTo.Get();
+					if (!((Object)(object)iOEntity == (Object)null) && iOEntity.inputs[iOSlot.connectedToSlot].type == IOType.Fluidic)
+					{
+						CalculateDrain(iOEntity, ((Component)this).transform.TransformPoint(iOSlot.handlePosition), IOEntity.backtracking * 2, ref amount, this, liquidItem?.info, recursiveEntityHash);
+					}
 				}
 			}
 		}
@@ -329,12 +334,12 @@ public class LiquidContainer : ContainerIOEntity
 		}
 	}
 
-	private void CalculateDrain(IOEntity ent, Vector3 fromSlotWorld, int depth, ref int amount, IOEntity lastEntity, ItemDefinition waterType)
+	private void CalculateDrain(IOEntity ent, Vector3 fromSlotWorld, int depth, ref int amount, IOEntity lastEntity, ItemDefinition waterType, HashSet<IOEntity> checkedEntities)
 	{
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)ent == (Object)(object)this || depth <= 0 || (Object)(object)ent == (Object)null || (Object)(object)lastEntity == (Object)null || ent is LiquidContainer)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)ent == (Object)(object)this || depth <= 0 || (Object)(object)ent == (Object)null || (Object)(object)lastEntity == (Object)null || ent is LiquidContainer || checkedEntities.Contains(ent))
 		{
 			return;
 		}
@@ -352,9 +357,13 @@ public class LiquidContainer : ContainerIOEntity
 		IOSlot[] array = ent.outputs;
 		foreach (IOSlot iOSlot in array)
 		{
-			if ((Object)(object)iOSlot.connectedTo.Get() != (Object)null && (Object)(object)iOSlot.connectedTo.Get() != (Object)(object)ent)
+			if (iOSlot.type == IOType.Fluidic)
 			{
-				CalculateDrain(iOSlot.connectedTo.Get(), ((Component)ent).transform.TransformPoint(iOSlot.handlePosition), depth - 1, ref amount, ent, waterType);
+				IOEntity iOEntity = iOSlot.connectedTo.Get();
+				if ((Object)(object)iOEntity != (Object)null && (Object)(object)iOEntity != (Object)(object)ent && checkedEntities.Add(iOEntity) && iOEntity.inputs[iOSlot.connectedToSlot].type == IOType.Fluidic)
+				{
+					CalculateDrain(iOEntity, ((Component)ent).transform.TransformPoint(iOSlot.handlePosition), depth - 1, ref amount, ent, waterType, checkedEntities);
+				}
 			}
 		}
 	}
@@ -456,7 +465,7 @@ public class LiquidContainer : ContainerIOEntity
 			return;
 		}
 		Item liquidItem = GetLiquidItem();
-		pushLiquidCheckEntityHash.Clear();
+		recursiveEntityHash.Clear();
 		using (TimeWarning.New("UpdatePushTargets"))
 		{
 			IOSlot[] array = outputs;
@@ -465,9 +474,9 @@ public class LiquidContainer : ContainerIOEntity
 				if (iOSlot.type == IOType.Fluidic)
 				{
 					IOEntity iOEntity = iOSlot.connectedTo.Get();
-					if ((Object)(object)iOEntity != (Object)null)
+					if ((Object)(object)iOEntity != (Object)null && iOEntity.inputs[iOSlot.connectedToSlot].type == IOType.Fluidic)
 					{
-						CheckPushLiquid(iOEntity, liquidItem, this, IOEntity.backtracking * 4, pushLiquidCheckEntityHash);
+						CheckPushLiquid(iOEntity, liquidItem, this, IOEntity.backtracking * 4, recursiveEntityHash);
 					}
 				}
 			}
@@ -557,10 +566,10 @@ public class LiquidContainer : ContainerIOEntity
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
 		if (depth <= 0 || ourFuel.amount <= 0)
 		{
 			return;
@@ -580,7 +589,7 @@ public class LiquidContainer : ContainerIOEntity
 		foreach (IOSlot iOSlot in array)
 		{
 			IOEntity iOEntity2 = iOSlot.connectedTo.Get();
-			if (!((Object)(object)iOEntity2 != (Object)null) || !((Object)(object)iOEntity2 != (Object)(object)fromSource) || !checkEntities.Add(iOEntity2))
+			if (!((Object)(object)iOEntity2 != (Object)null) || !((Object)(object)iOEntity2 != (Object)(object)fromSource) || iOEntity2.inputs[iOSlot.connectedToSlot].type != IOType.Fluidic || !checkEntities.Add(iOEntity2))
 			{
 				continue;
 			}

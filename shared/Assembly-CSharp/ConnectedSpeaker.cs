@@ -21,8 +21,8 @@ public class ConnectedSpeaker : IOEntity
 
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		base.OnFlagsChanged(old, next);
 		if (!isServer || (old & Flags.Reserved8) == Flags.Reserved8 == ((next & Flags.Reserved8) == Flags.Reserved8))
 		{
@@ -30,7 +30,8 @@ public class ConnectedSpeaker : IOEntity
 		}
 		if ((next & Flags.Reserved8) == Flags.Reserved8)
 		{
-			IAudioConnectionSource connectionSource = GetConnectionSource(this, BoomBox.BacktrackLength);
+			int depth = BoomBox.BacktrackLength;
+			IAudioConnectionSource connectionSource = GetConnectionSource(this, ref depth);
 			if (connectionSource != null)
 			{
 				ClientRPC(RpcTarget.NetworkGroup("Client_PlayAudioFrom"), connectionSource.ToEntity().net.ID);
@@ -54,7 +55,7 @@ public class ConnectedSpeaker : IOEntity
 		}
 	}
 
-	private IAudioConnectionSource GetConnectionSource(IOEntity entity, int depth)
+	private IAudioConnectionSource GetConnectionSource(IOEntity entity, ref int depth)
 	{
 		if (depth <= 0)
 		{
@@ -74,7 +75,8 @@ public class ConnectedSpeaker : IOEntity
 			}
 			if ((Object)(object)iOEntity != (Object)null)
 			{
-				IAudioConnectionSource connectionSource = GetConnectionSource(iOEntity, depth - 1);
+				depth--;
+				IAudioConnectionSource connectionSource = GetConnectionSource(iOEntity, ref depth);
 				if (connectionSource != null)
 				{
 					return connectionSource;

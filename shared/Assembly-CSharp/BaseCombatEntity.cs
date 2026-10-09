@@ -165,8 +165,8 @@ public class BaseCombatEntity : BaseEntity
 		Horror
 	}
 
-	[Header("Deployable Corpse")]
 	[InspectorName("Spawn Corpse")]
+	[Header("Deployable Corpse")]
 	public bool spawnDeployableCorpseOnDeath;
 
 	[InspectorName("Corpse Prefab")]

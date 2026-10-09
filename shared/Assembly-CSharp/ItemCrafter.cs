@@ -90,6 +90,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			{
 				value.endTime = 0f;
 			}
+			owner.InvalidateNetworkCache();
 		}
 	}
 
@@ -296,6 +297,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			}
 			itemCraftTask.takenItems.Clear();
 		}
+		owner.InvalidateNetworkCache();
 		return true;
 	}
 

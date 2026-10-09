@@ -132,7 +132,7 @@ public class RustEmojiLibrary : BaseScriptableObject
 
 	public static void FindAllServerEmoji()
 	{
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		if (hasLoaded)
 		{
 			return;
@@ -160,7 +160,7 @@ public class RustEmojiLibrary : BaseScriptableObject
 				{
 					Debug.Log((object)(item + " is an invalid png"));
 				}
-				else if (flag2 && !ImageProcessing.IsValidJPG(data, 256))
+				else if (flag2 && !ImageProcessing.IsValidJPG(data, 256, bypassBaselineCheck: true))
 				{
 					Debug.Log((object)(item + " is an invalid jpg"));
 				}

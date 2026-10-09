@@ -4,8 +4,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_SafeModeWarning : UI_Popup, IClientComponent
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject yesButton;
 
 	[SerializeField]

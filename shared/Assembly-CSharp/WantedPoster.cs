@@ -125,7 +125,7 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 				{
 					using (TimeWarning.New("Conditions"))
 					{
-						if (!RPC_Server.CallsPerSecond.Test(657465493u, "UpdatePoster", this, player, 5uL))
+						if (!RPC_Server.CallsPerSecond.Test(657465493u, "UpdatePoster", this, player, 2uL))
 						{
 							return true;
 						}
@@ -161,12 +161,14 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	private void UpdatePoster(RPCMessage msg)
 	{
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)msg.player == (Object)null || !CanUpdateSign(msg.player))
 		{
 			return;
@@ -187,7 +189,7 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		}
 		else
 		{
-			if (!ImageProcessing.IsValidJPG(array, 1024, 1024))
+			if (!ImageProcessing.IsValidJPG(array, TextureSize.x, TextureSize.y))
 			{
 				return;
 			}
