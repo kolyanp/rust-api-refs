@@ -2,6 +2,7 @@ using System;
 using ConVar;
 using Facepunch.Rust;
 using Network;
+using Oxide.Core;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -132,8 +133,8 @@ public class Cow : LivestockAnimal
 
 	public bool TryMilk(BasePlayer player)
 	{
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		if (!CanBeMilked(player))
 		{
 			return false;
@@ -146,12 +147,24 @@ public class Cow : LivestockAnimal
 		if ((Object)(object)MilkDef != (Object)null)
 		{
 			int num = MilkedAmount();
-			player.GiveItem(ItemManager.Create(MilkDef, num, 0uL, isServerSide: true, 0uL));
+			Item item = ItemManager.Create(MilkDef, num, 0uL, isServerSide: true, 0uL);
+			object obj = Interface.CallHook("OnCowMilk", this, player, item);
+			if (obj != null)
+			{
+				item.Remove();
+				if (!(obj is bool))
+				{
+					return false;
+				}
+				return (bool)obj;
+			}
+			player.GiveItem(item);
 			if (MilkEffect != null && MilkEffect.isValid)
 			{
 				Effect.server.Run(MilkEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
 			}
-			Analytics.Azure.OnLivestockCowMilked(player, this, num);
+			Interface.CallHook("OnCowMilked", this, player, item);
+			Facepunch.Rust.Analytics.Azure.OnLivestockCowMilked(player, this, num);
 		}
 		milkTimer.Start(MilkCooldown / GeneScale(LivestockGene.Yield));
 		return true;

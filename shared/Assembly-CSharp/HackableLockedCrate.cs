@@ -278,7 +278,7 @@ public class HackableLockedCrate : LootContainer
 	[RPC_Server]
 	public void RPC_Hack(RPCMessage msg)
 	{
-		if (!IsBeingHacked() && Interface.CallHook("CanHackCrate", msg.player, this) == null)
+		if (!IsBeingHacked() && !IsFullyHacked() && Interface.CallHook("CanHackCrate", msg.player, this) == null)
 		{
 			Facepunch.Rust.Analytics.Azure.OnLockedCrateStarted(msg.player, this);
 			originalHackerPlayerId = msg.player.userID;
