@@ -126,8 +126,8 @@ public class CustomDoorManipulator : DoorManipulator
 		return null;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_DoPair(RPCMessage msg)
 	{
 		Door door = targetDoor;

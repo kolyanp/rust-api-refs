@@ -27,8 +27,8 @@ public class Global : ConsoleSystem
 	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
-	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
+	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	public static bool forceUnloadBundles = true;
 
 	[ServerVar(Help = "(Generated) When true, the server network position is updated to match the debug camera world position while spectating; useful for testing position-dependent server logic from the spectator view")]
@@ -38,8 +38,8 @@ public class Global : ConsoleSystem
 
 	public static readonly string UndergroundFlag = "--underground";
 
-	[ServerVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	[ClientVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
+	[ServerVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	public static int perf = 0;
 
 	[ClientVar(Saved = true, ClientAdmin = true, Help = "Media: This can be used to disable the performance text info when GC gets triggered")]
@@ -49,8 +49,8 @@ public class Global : ConsoleSystem
 
 	private static bool _forceOffAdminStatusOverlay = false;
 
-	[ClientVar]
 	[ServerVar(ClientAdmin = true, ServerAdmin = true, Help = "When enabled a player wearing a gingerbread suit will gib like the gingerbread NPC's")]
+	[ClientVar]
 	public static bool cinematicGingerbreadCorpses = false;
 
 	private static uint _gingerbreadMaterialID = 0u;
@@ -79,8 +79,8 @@ public class Global : ConsoleSystem
 	[ClientVar(Saved = true, Help = "Displays any emoji rendering errors in the console")]
 	public static bool showEmojiErrors = false;
 
-	[ServerVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
 	[ClientVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
+	[ServerVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
 	public static int developer
 	{
 		get
@@ -94,8 +94,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	[ClientVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
+	[ServerVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	public static int job_system_threads
 	{
 		get
@@ -146,8 +146,8 @@ public class Global : ConsoleSystem
 		ServerMgr.RestartServer(args.GetString(1, string.Empty), args.GetInt(0, 300));
 	}
 
-	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	[ClientVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
+	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	public static void quit(Arg args)
 	{
 		if (args != null && args.HasArgs())
@@ -791,8 +791,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Teleport to the current closest entity matching the first argument name. Add second int argument to teleport to the nth closest entity (teleport2nearest horse 2 will teleport to the 3rd closest horse)")]
+	[ServerVar]
 	public static void teleport2nearest(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -1305,8 +1305,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
 	[ServerVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
+	[ClientVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
 	public static void free(Arg args)
 	{
 		Pool.clear_prefabs(args);
@@ -1330,8 +1330,8 @@ public class Global : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	[ClientVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
+	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	public static void sysinfo(Arg arg)
 	{
 		arg.ReplyWith(SystemInfoGeneralText.currentInfo);
@@ -1369,8 +1369,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	[ClientVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
+	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	public static void subscriptions(Arg arg)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -1572,8 +1572,8 @@ public class Global : ConsoleSystem
 		Pool.FreeUnmanaged<DroppedItem>(ref list);
 	}
 
-	[ClientVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
+	[ClientVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	public static string printAllScenesInBuild(Arg args)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

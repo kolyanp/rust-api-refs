@@ -6,8 +6,8 @@ public class UI_ServerAdminUGCEntryAudio : UI_ServerAdminUGCEntry
 	[SerializeField]
 	private AudioSource audioSpeaker;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RustText playbackText;
 
 	[SerializeField]

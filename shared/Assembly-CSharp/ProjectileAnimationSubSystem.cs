@@ -3,8 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(BaseProjectile))]
 public class ProjectileAnimationSubSystem : GenericChildAnimatorSubSystem, IPrefabPreProcess
 {
-	[SerializeField]
 	[Tooltip("Length of the 3p reload clip, baked from the child controller during preprocess")]
+	[SerializeField]
 	private float ReloadClipLength;
 
 	public bool CanRunDuringBundling => true;

@@ -4,8 +4,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_KeyBindConflictPopup : UI_Popup
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private RustText keyText;
 
 	[SerializeField]

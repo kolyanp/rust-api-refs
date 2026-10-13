@@ -14,8 +14,8 @@ public class Pooltable : BaseCombatEntity
 
 	private TimeSince timeSinceLastMove;
 
-	[SerializeField]
 	[Header("Shared")]
+	[SerializeField]
 	private float ballRadius;
 
 	[SerializeField]
@@ -36,9 +36,9 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private WorldSpline worldSpline;
 
+	[SerializeField]
 	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	[Range(0f, 0.75f)]
-	[SerializeField]
 	private float splineTableCloseness = 0.25f;
 
 	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
@@ -56,8 +56,8 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private GameObjectRef winEffect;
 
-	[SerializeField]
 	[Header("Client")]
+	[SerializeField]
 	private List<GameObject> clientRenderingPoolBalls;
 
 	[SerializeField]
@@ -92,8 +92,8 @@ public class Pooltable : BaseCombatEntity
 	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
 	private WorldSpline ballReturnPath;
 
-	[SerializeField]
 	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
+	[SerializeField]
 	private GameObject[] basketBalls;
 
 	[SerializeField]

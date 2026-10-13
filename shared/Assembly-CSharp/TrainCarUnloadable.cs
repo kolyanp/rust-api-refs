@@ -34,8 +34,8 @@ public class TrainCarUnloadable : TrainCar
 	[SerializeField]
 	private Transform orePlaneColliderWorld;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	public float vacuumStretchPercent = 0.5f;
 
 	[SerializeField]

@@ -64,8 +64,8 @@ public class ModularCarGarage : ContainerIOEntity
 	[SerializeField]
 	public Transform vehicleLiftPos;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	public float recycleEfficiency = 0.5f;
 
 	[SerializeField]

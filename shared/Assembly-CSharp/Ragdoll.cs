@@ -63,8 +63,8 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	[ReadOnly]
 	private Vector3[] genericBonePos;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Quaternion[] genericBoneRot;
 
 	[SerializeField]

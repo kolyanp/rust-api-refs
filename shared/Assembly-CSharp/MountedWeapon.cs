@@ -56,12 +56,12 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[SerializeField]
 	[ItemSelector]
+	[SerializeField]
 	private ItemDefinition _ammoItem;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Weapon")]
+	[SerializeField]
 	private ItemDefinition _weapon;
 
 	[SerializeField]
@@ -82,15 +82,15 @@ public class MountedWeapon : StorageContainer
 	[ItemSelector]
 	public ItemDefinition AmmoDef;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Second Weapon")]
+	[SerializeField]
 	private ItemDefinition _weapon2;
 
 	[SerializeField]
 	private Transform _attachPoint2;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Player General Animation")]
+	[SerializeField]
 	private int _turretAnimationType;
 
 	[SerializeField]
@@ -133,15 +133,15 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private float _fovMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Viewmodel")]
+	[SerializeField]
 	private bool _useViewmodel;
 
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[Header("Mounted Weapon - Aim Movement Sounds")]
 	[SerializeField]
+	[Header("Mounted Weapon - Aim Movement Sounds")]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]

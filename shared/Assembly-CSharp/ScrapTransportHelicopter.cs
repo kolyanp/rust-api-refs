@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class ScrapTransportHelicopter : PlayerHelicopterWithFlares, TriggerHurtNotChild.IHurtTriggerUser
 {
-	[SerializeField]
 	[Header("Scrap Transport Helicopter Specific")]
+	[SerializeField]
 	private Transform searchlightEye;
 
 	[SerializeField]
 	private BoxCollider parentTriggerCollider;
 
-	[Header("Damage Effects")]
 	[SerializeField]
+	[Header("Damage Effects")]
 	private ParticleSystemContainer tailDamageLight;
 
 	[SerializeField]

@@ -12,9 +12,32 @@ public class MaterialEffect : ScriptableObject
 		public GameObjectRef Effect;
 
 		public SoundDefinition SoundDefinition;
+
+		[NonSerialized]
+		public EffectSpawnRule EffectRule;
+	}
+
+	public enum EffectSpawnRule
+	{
+		Unknown,
+		Always,
+		WhenMusicIsOn,
+		Never
+	}
+
+	public struct RayGround
+	{
+		public PhysicsMaterial Material;
+
+		public Vector3 Normal;
+
+		public bool IsTerrain;
 	}
 
 	public GameObjectRef DefaultEffect;
+
+	[NonSerialized]
+	private EffectSpawnRule defaultEffectRule;
 
 	public SoundDefinition DefaultSoundDefinition;
 
@@ -68,40 +91,35 @@ public class MaterialEffect : ScriptableObject
 		return null;
 	}
 
-	public void SpawnOnRay(Ray ray, int mask, float length = 0.5f, Vector3 forward = default(Vector3), float speed = 0f)
+	public RayGround SpawnOnRay(Ray ray, int mask, float length = 0.5f, Vector3 forward = default(Vector3), float speed = 0f)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0198: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		if (!GamePhysics.Trace(ray, 0f, out var hitInfo, length, mask, (QueryTriggerInteraction)0))
 		{
-			Effect.client.Run(DefaultEffect.resourcePath, ray.origin, ray.direction * -1f, forward);
-			if ((Object)(object)DefaultSoundDefinition != (Object)null)
+			if (ShouldSpawnEffect(DefaultEffect, ref defaultEffectRule))
 			{
-				PlaySound(DefaultSoundDefinition, hitInfo.point, speed);
+				Effect.client.Run(DefaultEffect.resourcePath, ray.origin, ray.direction * -1f, forward);
 			}
-			return;
+			return default;
 		}
 		WaterLevel.WaterInfo waterInfo = WaterLevel.GetWaterInfo(ray.origin, waves: true, volumes: false);
 		if (waterInfo.isValid)
@@ -116,34 +134,77 @@ public class MaterialEffect : ScriptableObject
 			{
 				waterEntry = deepWaterEntry;
 			}
-			if (waterEntry != null)
+			if (waterEntry == null)
 			{
-				Effect.client.Run(waterEntry.Effect.resourcePath, val, Vector3.up);
-				if ((Object)(object)waterEntry.SoundDefinition != (Object)null)
-				{
-					PlaySound(waterEntry.SoundDefinition, val, speed);
-				}
+				return default;
 			}
-			return;
+			Effect.client.Run(waterEntry.Effect.resourcePath, val, Vector3.up);
+			if ((Object)(object)waterEntry.SoundDefinition != (Object)null)
+			{
+				PlaySound(waterEntry.SoundDefinition, val, speed);
+			}
+			return default;
 		}
 		PhysicsMaterial materialAt = ColliderEx.GetMaterialAt(hitInfo.collider, hitInfo.point);
-		Entry entryFromMaterial = GetEntryFromMaterial(materialAt);
+		SpawnOnMaterial(materialAt, hitInfo.point, hitInfo.normal, forward, speed);
+		return new RayGround
+		{
+			Material = materialAt,
+			Normal = hitInfo.normal,
+			IsTerrain = (hitInfo.collider is TerrainCollider)
+		};
+	}
+
+	public void SpawnOnTerrain(Vector3 position, Vector3 forward, float speed)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		position.y = TerrainMeta.HeightMap.GetHeight(position);
+		SpawnOnMaterial(TerrainMeta.Physics.GetMaterial(position), position, TerrainMeta.HeightMap.GetNormal(position), forward, speed);
+	}
+
+	public void SpawnOnMaterial(PhysicsMaterial material, Vector3 point, Vector3 normal, Vector3 forward, float speed)
+	{
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		Entry entryFromMaterial = GetEntryFromMaterial(material);
 		if (entryFromMaterial == null)
 		{
-			Effect.client.Run(DefaultEffect.resourcePath, hitInfo.point, hitInfo.normal, forward);
+			if (ShouldSpawnEffect(DefaultEffect, ref defaultEffectRule))
+			{
+				Effect.client.Run(DefaultEffect.resourcePath, point, normal, forward);
+			}
 			if ((Object)(object)DefaultSoundDefinition != (Object)null)
 			{
-				PlaySound(DefaultSoundDefinition, hitInfo.point, speed);
+				PlaySound(DefaultSoundDefinition, point, speed);
 			}
 		}
 		else
 		{
-			Effect.client.Run(entryFromMaterial.Effect.resourcePath, hitInfo.point, hitInfo.normal, forward);
+			if (ShouldSpawnEffect(entryFromMaterial.Effect, ref entryFromMaterial.EffectRule))
+			{
+				Effect.client.Run(entryFromMaterial.Effect.resourcePath, point, normal, forward);
+			}
 			if ((Object)(object)entryFromMaterial.SoundDefinition != (Object)null)
 			{
-				PlaySound(entryFromMaterial.SoundDefinition, hitInfo.point, speed);
+				PlaySound(entryFromMaterial.SoundDefinition, point, speed);
 			}
 		}
+	}
+
+	private static bool ShouldSpawnEffect(GameObjectRef effect, ref EffectSpawnRule rule)
+	{
+		return true;
 	}
 
 	public void PlaySound(SoundDefinition definition, Vector3 position, float velocity = 0f)

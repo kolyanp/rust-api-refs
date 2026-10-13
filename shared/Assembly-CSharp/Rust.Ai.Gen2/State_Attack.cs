@@ -17,8 +17,8 @@ public class State_Attack : State_PlayAnimationRM
 	[SerializeField]
 	public DamageType DamageType = DamageType.Bite;
 
-	[SerializeField]
 	[Tooltip("Line the attack up on the target as it starts. Turn off for an attack that deliberately does not face what it hits, such as a backwards kick.")]
+	[SerializeField]
 	public bool AlignToTarget = true;
 
 	private Action _doDamageAction;

@@ -21,8 +21,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 1f
 	};
 
-	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
 	[Range(0f, 1f)]
+	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
 	public FloatParameter softKnee = new FloatParameter
 	{
 		value = 0.5f
@@ -62,8 +62,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = false
 	};
 
-	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
 	[DisplayName("Texture")]
+	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
 	public TextureParameter dirtTexture = new TextureParameter
 	{
 		value = null

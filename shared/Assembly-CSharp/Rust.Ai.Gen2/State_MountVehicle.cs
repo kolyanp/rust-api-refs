@@ -7,12 +7,12 @@ namespace Rust.Ai.Gen2;
 [Serializable]
 public class State_MountVehicle : State_MoveToTarget
 {
-	[SerializeField]
 	[Tooltip("Optional montage for climbing aboard. Without one the animal is placed on the anchor when it arrives.")]
+	[SerializeField]
 	public RootMotionData Animation;
 
-	[SerializeField]
 	[Tooltip("The slice of the montage that carries the animal up onto the anchor. Leave zeroed to warp the whole clip.")]
+	[SerializeField]
 	public MountMontageWindow travelWindow = MountMontageWindow.Whole;
 
 	private const float navmeshSampleRadius = 5f;

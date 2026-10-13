@@ -71,8 +71,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[SerializeField]
 	private Seating seating;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 steerAngle;
 
 	[SerializeField]
@@ -91,8 +91,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[HideInInspector]
 	private Vector3 fuelAngle;
 
-	[Header("Horn")]
 	[SerializeField]
+	[Header("Horn")]
 	private SoundDefinition hornLoop;
 
 	[SerializeField]

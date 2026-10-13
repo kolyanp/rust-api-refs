@@ -47,13 +47,13 @@ public class BasicAnimalFsm : FSMComponent
 	[SerializeField]
 	private float cooldownSeconds = 5f;
 
-	[SerializeField]
 	[Tooltip("Health fraction below which the animal breaks off a fight.")]
+	[SerializeField]
 	private float fleeBelowHealthFraction = 0.3f;
 
-	[Tooltip("Chance of napping rather than idling at the end of a roam leg. Keep it low, a sleeping animal is a sitting duck.")]
 	[Range(0f, 1f)]
 	[SerializeField]
+	[Tooltip("Chance of napping rather than idling at the end of a roam leg. Keep it low, a sleeping animal is a sitting duck.")]
 	private float sleepChance = 0.05f;
 
 	public State_Roam roam = new State_Roam();

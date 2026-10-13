@@ -13,8 +13,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final applied intensity of the occlusion effect.")]
+	[Range(0f, 1f)]
 	public float Intensity = 1f;
 
 	public Color Tint = Color.black;
@@ -29,8 +29,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
-	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	[Range(0f, 2f)]
+	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	public float RadiusIntensity = 1f;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
@@ -58,8 +58,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength = 50f;
 
-	[Tooltip("Final Intensity parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Intensity parameter.")]
 	public float FadeToIntensity;
 
 	public Color FadeToTint = Color.black;
@@ -87,16 +87,16 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(1f, 4f)]
 	public int BlurPasses = 1;
 
-	[Range(0f, 20f)]
 	[Tooltip("0 - Blured, 1 - Sharpened.")]
+	[Range(0f, 20f)]
 	public float BlurSharpness = 10f;
 
 	[Tooltip("Accumulates the effect over the time.")]
 	[Header("Temporal Filter")]
 	public bool FilterEnabled = true;
 
-	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
 	public float FilterBlending = 0.5f;
 
 	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]

@@ -17,8 +17,8 @@ public class LivestockAnimalStatusWidget : MonoBehaviour, IClientComponent
 
 	public GameObject PregnantIcon;
 
-	[Tooltip("Gated behind livestock.panelAge, along with its row.")]
 	[Header("Facts")]
+	[Tooltip("Gated behind livestock.panelAge, along with its row.")]
 	public InfoBar AgeBar;
 
 	[Tooltip("Gated behind livestock.panelTrust, along with its row.")]

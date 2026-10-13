@@ -101,8 +101,8 @@ public class BaseProjectile : AttackEntity
 	[Header("NPC Info")]
 	public float NoiseRadius = 100f;
 
-	[Header("Projectile")]
 	[Tooltip("Scales the damage of the projectile across all ranges.")]
+	[Header("Projectile")]
 	public float damageScale = 1f;
 
 	[Tooltip("Scales the damage falloff window of the projectile.")]
@@ -127,8 +127,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride = -1f;
 
-	[Tooltip("How far away this attack effect can be heard")]
 	[Header("Effects")]
+	[Tooltip("How far away this attack effect can be heard")]
 	public float maxAttackEffectDistance = 400f;
 
 	public GameObjectRef attackFX;
@@ -1486,8 +1486,8 @@ public class BaseProjectile : AttackEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsActiveItem]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1716,10 +1716,10 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
-	[RPC_Server.FromOwner]
-	[RPC_Server]
 	[RPC_Server.MaxRepeatedElements(64)]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)

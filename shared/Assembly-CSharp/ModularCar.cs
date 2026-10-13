@@ -128,8 +128,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	private BoxCollider mainChassisCollider;
 
-	[Header("Towing")]
 	[SerializeField]
+	[Header("Towing")]
 	private TriggerTowing towingTrigger;
 
 	[SerializeField]

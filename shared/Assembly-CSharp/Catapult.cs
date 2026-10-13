@@ -34,8 +34,8 @@ public class Catapult : BaseSiegeWeapon
 
 	private readonly float progressTickRate = 0.1f;
 
-	[Header("Catapult")]
 	[SerializeField]
+	[Header("Catapult")]
 	private Animator animator;
 
 	[SerializeField]
@@ -70,8 +70,8 @@ public class Catapult : BaseSiegeWeapon
 
 	private TimeSince timeSinceLastFire;
 
-	[Header("Effects")]
 	[SerializeField]
+	[Header("Effects")]
 	public GameObjectRef dryFireEffectPrefab;
 
 	[SerializeField]
@@ -474,8 +474,8 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)

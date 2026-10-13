@@ -54,16 +54,16 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 
 	public float cellSize;
 
-	[Range(0f, 4f)]
 	[SerializeField]
+	[Range(0f, 4f)]
 	protected int colliderVertexReduction;
 
-	[Range(0f, 4f)]
 	[SerializeField]
+	[Range(0f, 4f)]
 	protected int vertexDensity;
 
-	[Range(0f, 4f)]
 	[SerializeField]
+	[Range(0f, 4f)]
 	protected int vertexDensityReduction;
 
 	public bool debugCullingOn = true;

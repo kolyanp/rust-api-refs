@@ -136,8 +136,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	{
 		public NativeArray<MovementTransformUpdate> updates;
 
-		[NativeDisableParallelForRestriction]
 		[ReadOnly]
+		[NativeDisableParallelForRestriction]
 		public NativeArray<IntPtr> queries;
 
 		public float deltaTime;
@@ -280,8 +280,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 
 	private const float ReachSnapDropRange = 0.35f;
 
-	[Header("Base fields")]
 	[SerializeField]
+	[Header("Base fields")]
 	private int _agentTypeID;
 
 	[SerializeField]

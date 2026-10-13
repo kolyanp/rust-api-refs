@@ -311,20 +311,20 @@ public class IOEntity : DecayEntity
 	[ReplicatedVar(Default = "True", Help = "Allows the deployment and usage of IO entities on player boats and tugboats.")]
 	public static bool allow_on_boats;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing high priority electric io entities per server frame (monuments)")]
+	[ServerVar]
 	public static float frameBudgetElectricHighPriorityMs = 1f;
 
 	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
 	[ServerVar]
 	public static float frameBudgetElectricLowPriorityMs = 0.5f;
 
-	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
 	public static float frameBudgetFluidMs = 0.25f;
 
-	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]
 	public static float frameBudgetKineticMs = 1f;
 
 	[ServerVar]

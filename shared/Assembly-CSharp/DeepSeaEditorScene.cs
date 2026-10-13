@@ -3,8 +3,8 @@ using UnityEngine;
 [ExecuteAlways]
 public class DeepSeaEditorScene : SingletonComponent<DeepSeaEditorScene>, IEditorComponent
 {
-	[Tooltip("When emulating deepsea with source terrain, need to use main textures since deepsea shore textures/data don't exist yet")]
 	[SerializeField]
+	[Tooltip("When emulating deepsea with source terrain, need to use main textures since deepsea shore textures/data don't exist yet")]
 	private bool terrainIgnoreDeepseaFlag;
 
 	private SpawnGroup[] spawnGroups;

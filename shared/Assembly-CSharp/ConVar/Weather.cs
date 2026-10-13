@@ -1268,8 +1268,8 @@ public class Weather : ConsoleSystem
 	{
 	}
 
-	[ServerVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
 	[ClientVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
+	[ServerVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
 	public static void load_cloud_config(Arg args)
 	{
 		if (!Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))

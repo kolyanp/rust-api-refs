@@ -1076,8 +1076,8 @@ public class Inventory : ConsoleSystem
 		arg.ReplyWith(obj);
 	}
 
-	[ServerVar(Help = "(Generated) Forces a reload of all Steam inventory item definitions from the Steam backend; use if definitions appear stale or missing after a store update")]
 	[ClientVar(Help = "(Generated) Forces a reload of all Steam inventory item definitions from the Steam backend; use if definitions appear stale or missing after a store update")]
+	[ServerVar(Help = "(Generated) Forces a reload of all Steam inventory item definitions from the Steam backend; use if definitions appear stale or missing after a store update")]
 	public static void reloaddefs(Arg arg)
 	{
 		SteamInventory.LoadItemDefinitions();

@@ -304,8 +304,8 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		info.msg.camperModule.storageID = activeStorage.uid;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenLocker(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -323,8 +323,8 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

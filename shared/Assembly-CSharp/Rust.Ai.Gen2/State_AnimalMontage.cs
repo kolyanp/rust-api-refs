@@ -7,12 +7,12 @@ namespace Rust.Ai.Gen2;
 [SoftRequireComponent(typeof(RootMotionPlayer))]
 public abstract class State_AnimalMontage : FSMStateBase
 {
-	[SerializeField]
 	[Tooltip("How long to hold the state when there is no clip to play.")]
+	[SerializeField]
 	public float FallbackDuration = 1f;
 
-	[SerializeField]
 	[Tooltip("Rate the clip plays at. Must match the m_Speed on the animator state of the same name, because the client reads that one and the server reads this one.")]
+	[SerializeField]
 	public float PlaybackSpeed = 1f;
 
 	protected RootMotionPlayer.PlayServerState animState;

@@ -134,8 +134,8 @@ public class RecorderTool : ThrownWeapon, ICassettePlayer
 		return (Object)(object)cachedCassette != (Object)null;
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.FromOwner]
 	public void Server_TogglePlaying(RPCMessage msg)
 	{
@@ -174,9 +174,9 @@ public class RecorderTool : ThrownWeapon, ICassettePlayer
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromOwner]
-	[RPC_Server]
 	public void OnCassetteRecordingEnded(RPCMessage rpc)
 	{
 		if (GetItem() != null)

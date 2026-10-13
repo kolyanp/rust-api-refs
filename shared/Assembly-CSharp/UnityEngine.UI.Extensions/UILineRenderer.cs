@@ -4,8 +4,8 @@ using UnityEngine.Sprites;
 
 namespace UnityEngine.UI.Extensions;
 
-[AddComponentMenu("UI/Extensions/Primitives/UILineRenderer")]
 [RequireComponent(typeof(RectTransform))]
+[AddComponentMenu("UI/Extensions/Primitives/UILineRenderer")]
 public class UILineRenderer : UIPrimitiveBase
 {
 	private enum SegmentType
@@ -59,28 +59,28 @@ public class UILineRenderer : UIPrimitiveBase
 
 	private static Vector2[] fullUvs;
 
-	[Tooltip("Points to draw lines between\n Can be improved using the Resolution Option")]
 	[SerializeField]
+	[Tooltip("Points to draw lines between\n Can be improved using the Resolution Option")]
 	internal Vector2[] m_points;
 
 	[Tooltip("Segments to be drawn\n This is a list of arrays of points")]
 	[SerializeField]
 	internal List<Vector2[]> m_segments;
 
-	[SerializeField]
 	[Tooltip("Thickness of the line")]
+	[SerializeField]
 	internal float lineThickness = 2f;
 
 	[Tooltip("Use the relative bounds of the Rect Transform (0,0 -> 0,1) or screen space coordinates")]
 	[SerializeField]
 	internal bool relativeSize;
 
-	[SerializeField]
 	[Tooltip("Do the points identify a single line or split pairs of lines")]
+	[SerializeField]
 	internal bool lineList;
 
-	[Tooltip("Add end caps to each line\nMultiple caps when used with Line List")]
 	[SerializeField]
+	[Tooltip("Add end caps to each line\nMultiple caps when used with Line List")]
 	internal bool lineCaps;
 
 	[Tooltip("Resolution of the Bezier curve, different to line Resolution")]

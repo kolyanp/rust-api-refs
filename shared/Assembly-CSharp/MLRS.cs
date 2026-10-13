@@ -58,8 +58,8 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	private GameObjectRef dashboardStoragePrefab;
 
-	[Header("MLRS Rotation")]
 	[SerializeField]
+	[Header("MLRS Rotation")]
 	private Transform hRotator;
 
 	[SerializeField]
@@ -79,12 +79,12 @@ public class MLRS : BaseMountable
 	private Transform hydraulics;
 
 	[Header("MLRS Weaponry")]
-	[SerializeField]
 	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
+	[SerializeField]
 	public float minRange = 200f;
 
-	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
 	[SerializeField]
+	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
 	public float targetAreaRadius = 30f;
 
 	[SerializeField]

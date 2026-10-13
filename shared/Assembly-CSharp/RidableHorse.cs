@@ -122,8 +122,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[NonSerialized]
 	public HorseModifiers modifiers;
 
-	[Help("Scale all rideable animal dung production rates by this value. 0 will disable dung production.")]
 	[ServerVar]
+	[Help("Scale all rideable animal dung production rates by this value. 0 will disable dung production.")]
 	public static float dungTimeScale = 1f;
 
 	private float nextEatTime;
@@ -220,8 +220,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[SerializeField]
 	private float baseDrag;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private float baseAngularDrag;
 
 	private HorseAvoidanceState currentAvoidanceState;
@@ -242,8 +242,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private float nextDecayTime;
 
-	[Header("Horse")]
 	[SerializeField]
+	[Header("Horse")]
 	private Animator animator;
 
 	[SerializeField]
@@ -303,21 +303,21 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public AnimationCurve slopeAngleSpeedFactor;
 
-	[SerializeField]
-	[Header("Collision Damage")]
 	[Space]
+	[Header("Collision Damage")]
+	[SerializeField]
 	private GameObjectRef collisionEffect;
 
-	[SerializeField]
 	[Tooltip("Ignore low magnitude so e.g. Players running into stationary vehicles doesn't trigger damage or FX")]
+	[SerializeField]
 	private float minCollisionDamageForce = 20000f;
 
 	[SerializeField]
 	[Tooltip("Cap max magnitude so unusual events can't cause mega damage")]
 	private float maxCollisionDamageForce = 2500000f;
 
-	[SerializeField]
 	[Tooltip("Adjust this away from 1.0 if collision damage to this vehicle seems too high or low")]
+	[SerializeField]
 	private float collisionDamageMultiplier = 1f;
 
 	[SerializeField]
@@ -384,8 +384,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public Sprite SwapToDoubleIcon;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected bool[] hasItemTokenCache;
 
 	[Space]
@@ -399,8 +399,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public GameObjectRef ragdollPrefab;
 
-	[SerializeField]
 	[Header("Pulling")]
+	[SerializeField]
 	private List<ModifierDefintion> pullingPlayerModifiers;
 
 	[Header("Avoidance")]
@@ -422,8 +422,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[HideInInspector]
 	public float normalVariation;
 
-	[Header("Healing")]
 	[Min(0f)]
+	[Header("Healing")]
 	public float healingMultiplier = 4f;
 
 	[Tooltip("How much stamina to replenish when healing. Value is not final - scaled further if we have a high stamina core.")]

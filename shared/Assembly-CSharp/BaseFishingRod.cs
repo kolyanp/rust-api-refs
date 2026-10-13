@@ -290,8 +290,8 @@ public class BaseFishingRod : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	private void Server_RequestCast(RPCMessage msg)
 	{
@@ -386,8 +386,8 @@ public class BaseFishingRod : HeldEntity
 		ClientRPC(RpcTarget.NetworkGroup("Client_ResetLine"), (int)reason);
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_OverfishingCheck(RPCMessage msg)
@@ -672,8 +672,8 @@ public class BaseFishingRod : HeldEntity
 		Server_Cancel(FailReason.Success);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void Server_Cancel(RPCMessage msg)
 	{
 		if (CurrentState != CatchState.Caught)

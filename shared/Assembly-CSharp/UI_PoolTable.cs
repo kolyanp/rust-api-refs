@@ -11,8 +11,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RustSlider powerBar;
 
-	[Header("Instructions")]
 	[SerializeField]
+	[Header("Instructions")]
 	private GameObject holdInstruction;
 
 	[SerializeField]
@@ -21,8 +21,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private GameObject cancelInstruction;
 
-	[SerializeField]
 	[Header("Players")]
+	[SerializeField]
 	private RustText localPlayerNameText;
 
 	[SerializeField]

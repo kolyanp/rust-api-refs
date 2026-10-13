@@ -4,8 +4,8 @@ namespace ConVar;
 
 public class Manifest
 {
-	[ClientVar(Help = "(Generated) Prints the Facepunch application manifest in a formatted summary showing app name, version, and platform details")]
 	[ServerVar(Help = "(Generated) Prints the Facepunch application manifest in a formatted summary showing app name, version, and platform details")]
+	[ClientVar(Help = "(Generated) Prints the Facepunch application manifest in a formatted summary showing app name, version, and platform details")]
 	public static object PrintManifest()
 	{
 		return Application.Manifest;

@@ -8,21 +8,21 @@ public class Compass : HeldEntity
 
 	private const string ADMIRE_ANIMEVENT_TAP2 = "AdmireTap2";
 
+	[Tooltip("Change this if it does not feel like the needle direction is accurate.")]
 	[Header("Compass")]
 	[SerializeField]
-	[Tooltip("Change this if it does not feel like the needle direction is accurate.")]
 	private float needleYawAngleOffset;
 
 	[SerializeField]
 	[Min(0f)]
 	private float needleStiffness = 50f;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float needleDamping = 0.5f;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float maxAcceleration = 1500f;
 
 	[Min(0f)]
@@ -40,8 +40,8 @@ public class Compass : HeldEntity
 	[SerializeField]
 	private float wiggleFrequency = 1.5f;
 
-	[Min(0f)]
-	[SerializeField]
 	[Tooltip("Velocity change when the admire animation taps the needle")]
+	[SerializeField]
+	[Min(0f)]
 	private float admireTapNeedleVelocity = 300f;
 }

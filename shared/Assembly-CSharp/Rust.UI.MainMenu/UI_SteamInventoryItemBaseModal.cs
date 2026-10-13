@@ -21,8 +21,8 @@ public class UI_SteamInventoryItemBaseModal : UI_Window
 	[SerializeField]
 	protected UI_SkinInfoPanel skinInfoPanel;
 
-	[SerializeField]
 	[Header("Gallery")]
+	[SerializeField]
 	private GameObject gallery;
 
 	[SerializeField]

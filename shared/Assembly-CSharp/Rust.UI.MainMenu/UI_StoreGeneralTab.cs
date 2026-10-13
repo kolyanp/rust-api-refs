@@ -29,8 +29,8 @@ public class UI_StoreGeneralTab : UI_StoreTabBase
 	[SerializeField]
 	private FlexElement scrollRectContentFlex;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Section[] sections;
 
 	[SerializeField]

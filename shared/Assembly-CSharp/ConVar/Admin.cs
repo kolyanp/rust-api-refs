@@ -127,8 +127,8 @@ public class Admin : ConsoleSystem
 		public string Help;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerUGCInfo(IUGCBrowserEntity fromEntity)
 	{
 		public ulong entityId = fromEntity.UgcEntity.net.ID.Value;

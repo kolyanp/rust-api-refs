@@ -20,8 +20,8 @@ public class UI_VendingMachineAdminDialog : UIDialog
 	[SerializeField]
 	private UI_FakeInventory fakeInventory;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Transform existingSellOrderParent;
 
 	[SerializeField]
@@ -39,8 +39,8 @@ public class UI_VendingMachineAdminDialog : UIDialog
 	[SerializeField]
 	private FlexTransition transition;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_TagToggle droneAccessTag;
 
 	[SerializeField]

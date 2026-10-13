@@ -31,8 +31,8 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 	[Space(10f)]
 	public float RotationSensitivity = 10f;
 
-	[Header("If you want camera rotation to be smooth")]
 	[Range(0.1f, 1f)]
+	[Header("If you want camera rotation to be smooth")]
 	public float RotationSpeed = 1f;
 
 	[Header("If you want camera to follow target with some smoothness")]

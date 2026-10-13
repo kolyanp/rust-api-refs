@@ -834,9 +834,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SV_RequestPurchaseData(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -1475,9 +1475,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_CancelVendingSounds"));
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void BuyItemRentableShop(RPCMessage rpc)
 	{
 		if (GetParentEntity() is RentableShop)
@@ -1486,8 +1486,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	public void BuyItem(RPCMessage rpc)
 	{
@@ -1811,8 +1811,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public virtual void RPC_UpdateShopName(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1896,8 +1896,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		PlayerOpenLoot(ply, panelName);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenShopNoLOS(RPCMessage msg)
 	{
 		if (OccupiedCheck(msg.player))
@@ -2010,8 +2010,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return ((Component)this).transform.TransformPoint(localDropPosition);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_DeleteSellOrder(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -2032,8 +2032,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_DeleteAllSellOrders(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -2091,8 +2091,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_AddSellOrder(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

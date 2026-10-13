@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_Popup : UI_Window
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private Canvas canvas;
 
 	[SerializeField]

@@ -68,12 +68,12 @@ public class NPCAnimController : EntityComponent<BaseEntity>, IClientComponent
 	[SerializeField]
 	public bool forceDisableGroundSnap;
 
-	[SerializeField]
 	[Tooltip("Animator state holding the settled sleeping pose, for an animal already asleep the first time we see it. Without it a newborn calf stands up and plays its own lie down.")]
+	[SerializeField]
 	private string sleepingPoseState = "sleeping";
 
-	[SerializeField]
 	[Tooltip("Animator state holding the settled lying pose, for an animal already resting.")]
+	[SerializeField]
 	private string restingPoseState = "cow_lay_idle";
 
 	[SerializeField]

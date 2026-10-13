@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class Powergrid : ConsoleSystem
 {
-	[Help("If disabled power grid functionality will be disabled.")]
 	[ReplicatedVar]
+	[Help("If disabled power grid functionality will be disabled.")]
 	public static bool enabled = true;
 
 	[Help("Required powergrid stage for green recyclers to return to baseline efficiency. If < 0 then will use the default values.")]

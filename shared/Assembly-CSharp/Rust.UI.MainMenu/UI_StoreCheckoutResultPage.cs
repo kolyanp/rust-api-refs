@@ -29,8 +29,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]

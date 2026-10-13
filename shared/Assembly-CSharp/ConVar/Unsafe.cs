@@ -25,8 +25,8 @@ public class Unsafe : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
 	[ClientVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
+	[ServerVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
 	public static bool EnableDebugMTLock
 	{
 		get

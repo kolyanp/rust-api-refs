@@ -234,8 +234,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "Network.Server.txt", stringBuilder.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
 	public static void dumpObjects(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -742,8 +742,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
 	public static void dumpWarmup(Arg args)
 	{
 		string targetFolder = GetTargetFolder();

@@ -6,8 +6,8 @@ public class ModularCarAudio : GroundVehicleAudio
 {
 	public bool showDebug;
 
-	[Header("Skid")]
 	[SerializeField]
+	[Header("Skid")]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]

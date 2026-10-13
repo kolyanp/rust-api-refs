@@ -4,8 +4,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_InteractionToast : UI_Window
 {
-	[SerializeField]
 	[Header("Interaction Modal")]
+	[SerializeField]
 	private RustText _text;
 
 	[SerializeField]

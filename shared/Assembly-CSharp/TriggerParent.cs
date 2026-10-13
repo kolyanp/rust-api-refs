@@ -274,8 +274,8 @@ public class TriggerParent : TriggerBase, IServerComponent
 	public int StableIndex = -1;
 
 	[Header("General")]
-	[Tooltip("Deparent if the parented entity clips into an obstacle")]
 	[SerializeField]
+	[Tooltip("Deparent if the parented entity clips into an obstacle")]
 	protected bool doClippingCheck;
 
 	[Tooltip("If deparenting via clipping, this will be used (if assigned) to also move the entity to a valid dismount position")]

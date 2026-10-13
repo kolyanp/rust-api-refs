@@ -27,22 +27,22 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private AnimationCurve saddleMovementGainCurve;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private MaterialEffect footstepEffects;
 
 	[SerializeField]
 	private Transform[] feet;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObjectRef swimmingSloshEffect;
 
 	[SerializeField]
 	private string BaseFolder;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private SoundDefinition skidLoopSoundDef;
 
 	[SerializeField]

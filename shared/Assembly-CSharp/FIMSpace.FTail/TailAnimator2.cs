@@ -9,9 +9,9 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FTail;
 
-[HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
 [AddComponentMenu("FImpossible Creations/Tail Animator 2")]
 [DefaultExecutionOrder(-4)]
+[HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
 public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	[Serializable]
@@ -861,12 +861,12 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float IKBlend = 1f;
 
-	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	[Tooltip("If syncing with animator then applying motion of keyframe animation for IK")]
+	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float IKAnimatorBlend = 0.5f;
 
-	[Tooltip("How much iterations should do CCDIK algorithm in one frame")]
 	[Range(1f, 32f)]
+	[Tooltip("How much iterations should do CCDIK algorithm in one frame")]
 	public int IKReactionQuality = 2;
 
 	[Tooltip("Smoothing reactions in CCD IK algorithm")]
@@ -925,8 +925,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Spread gravity weight over tail segments")]
 	public bool UseGravityCurve;
 
-	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
 	[Tooltip("Spread gravity weight over tail segments")]
+	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
 	public AnimationCurve GravityCurve = AnimationCurve.EaseInOut(0f, 0.65f, 1f, 1f);
 
 	[Tooltip("Simulate gravity weight for tail logics")]
@@ -1029,8 +1029,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Offsetting point from which we want to measure distance to target")]
 	public Vector3 DistanceMeasurePoint;
 
-	[Tooltip("Disable fade duration in seconds")]
 	[Range(0.25f, 2f)]
+	[Tooltip("Disable fade duration in seconds")]
 	public float FadeDuration = 0.75f;
 
 	private bool maxDistanceExceed;
@@ -1097,8 +1097,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool fixedAllow = true;
 
-	[Range(0f, 1f)]
 	[Tooltip("Making tail segment deflection influence back segments")]
+	[Range(0f, 1f)]
 	public float Deflection;
 
 	[FPD_Suffix(1f, 89f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
@@ -1194,16 +1194,16 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("If you want limit axes symmetrically leave this parameter unchanged, if you want limit one direction of axis more than reversed, tweak this parameter")]
 	public Vector2 LimitAxisRange = Vector2.zero;
 
-	[Range(0f, 1f)]
 	[Tooltip("If limiting shouldn't be too rapidly performed")]
+	[Range(0f, 1f)]
 	public float LimitSmoothing = 0.5f;
 
-	[Tooltip("If your object moves very fast making tail influenced by speed too much then you can controll it with this parameter")]
 	[FPD_Suffix(0f, 1.5f, FPD_SuffixAttribute.SuffixMode.PercentageUnclamped, "%", true, 0)]
+	[Tooltip("If your object moves very fast making tail influenced by speed too much then you can controll it with this parameter")]
 	public float MotionInfluence = 1f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Additional Y influence controll useful when your character is jumping (works only when MotionInfluence value is other than 100%)")]
+	[Range(0f, 1f)]
 	public float MotionInfluenceInY = 1f;
 
 	[Tooltip("If first bone of chain should also be affected with whole chain")]
@@ -1217,12 +1217,12 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float ReactionSpeed = 0.9f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
+	[Range(0f, 1f)]
 	public float Sustain;
 
-	[Range(0f, 1f)]
 	[Tooltip("Rotation speed is defining how fast tail segments will return to target rotation, it gives animation more lazy feeling if it's lower")]
+	[Range(0f, 1f)]
 	public float RotationRelevancy = 1f;
 
 	[Tooltip("Smoothing motion values change over time style to be applied for 'Reaction Speed' and 'Rotation Relevancy' parameters")]

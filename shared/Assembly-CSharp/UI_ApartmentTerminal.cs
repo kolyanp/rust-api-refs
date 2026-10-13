@@ -38,8 +38,8 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private RustText subtitleText;
 
-	[SerializeField]
 	[Header("CCTV")]
+	[SerializeField]
 	[Space]
 	private RawImage feedImage;
 
@@ -49,8 +49,8 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private GameObject feedNoSignal;
 
-	[Space]
 	[Header("Tabs")]
+	[Space]
 	[SerializeField]
 	private GameObject apartmentsPanel;
 
@@ -58,8 +58,8 @@ public class UI_ApartmentTerminal : UI_Window
 	private GameObject shopsPanel;
 
 	[Space]
-	[Header("Shops")]
 	[SerializeField]
+	[Header("Shops")]
 	private RectTransform shopList;
 
 	[SerializeField]

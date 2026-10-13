@@ -20,8 +20,8 @@ public class ShoreVectorData : BaseScriptableObject
 	[ReadOnly]
 	public float[] WaterHeightData;
 
-	[ReadOnly]
 	[Header("HeightData")]
+	[ReadOnly]
 	public short[] HeightData;
 
 	[ReadOnly]

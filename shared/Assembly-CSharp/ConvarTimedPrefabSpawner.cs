@@ -10,20 +10,20 @@ public class ConvarTimedPrefabSpawner : BaseMonoBehaviour, IServerComponent
 	[HideInInspector]
 	public static float prefab_spawn_interval = 0f;
 
-	[HideInInspector]
 	[ServerVar(Saved = true, Help = "Variance in seconds to add/subtract from the spawn interval")]
+	[HideInInspector]
 	public static float prefab_spawn_interval_variance = 3f;
 
 	[ServerVar(Saved = true, Help = "If true, spawned prefabs will have a random rotation")]
 	[HideInInspector]
 	public static bool prefab_spawn_random_rotation = true;
 
-	[ServerVar(Saved = true, Help = "Maximum random offset (sphere radius) from the spawner's position when spawning prefabs")]
 	[HideInInspector]
+	[ServerVar(Saved = true, Help = "Maximum random offset (sphere radius) from the spawner's position when spawning prefabs")]
 	public static float prefab_spawn_random_position_offset = 0f;
 
-	[HideInInspector]
 	[ServerVar(Saved = true, Help = "Time in seconds before spawned prefabs are despawned. Set to 0 to disable despawning.")]
+	[HideInInspector]
 	public static float prefab_despawn_time = 20f;
 
 	private TimeSince timeSinceLastSpawn;

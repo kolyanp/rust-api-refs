@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class BikeVehicleAudio : GroundVehicleAudio
 {
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private EngineAudioSet engineAudioSet;
 
-	[Header("Suspension")]
 	[SerializeField]
+	[Header("Suspension")]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]

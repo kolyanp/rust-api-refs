@@ -2142,8 +2142,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 
 	private const int DRIVING = 64;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing life story updates per frame")]
+	[ServerVar]
 	public static float lifeStoryFramebudgetms = 0.25f;
 
 	[NonSerialized]
@@ -5974,8 +5974,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return false;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_LootPlayer(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -6003,8 +6003,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_KeepAlive(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && !((Object)(object)msg.player == (Object)(object)this) && IsWounded() && Interface.CallHook("OnPlayerKeepAlive", this, msg.player) == null)
@@ -6040,10 +6040,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
-	[RPC_Server.InputValidation(new Type[] { })]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.InputValidation(new Type[] { })]
 	private void Server_RequestLootCountdowns(RPCMessage msg)
 	{
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
@@ -6105,13 +6105,13 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(bool),
 		typeof(Vector3),
 		typeof(NetworkableId)
 	})]
-	[RPC_Server]
 	public void RPC_StartClimb(RPCMessage msg)
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
@@ -7086,9 +7086,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.CallsPerSecond(16uL)]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(16uL)]
 	public void FogImageUpdate(RPCMessage msg)
 	{
 		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
@@ -7224,8 +7224,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server.FromOwner]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	public void Server_StartGesture(RPCMessage msg)
 	{
 		if (!IsGestureBlocked())
@@ -7310,9 +7310,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		currentGesture = null;
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(10uL)]
 	public void Server_CancelGesture()
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -7469,8 +7469,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		Debug.Log((object)$"Bot randomly selected {selectedRpsOption}");
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void SelectedRPSOption(RPCMessage msg)
 	{
 		selectedRpsOption = msg.read.Int32();
@@ -7970,8 +7970,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		LightToggleItem(itemUID);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void ReqLightToggleEntity(RPCMessage msg)
 	{
 		ulong itemUID = msg.read.UInt64();
@@ -8011,9 +8011,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(8uL)]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(8uL)]
 	public void Server_AddMarker(RPCMessage msg)
 	{
 		MapNote val = msg.read.Proto<MapNote>((MapNote)null);
@@ -8100,9 +8100,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.FromOwner]
-	[RPC_Server]
 	public void Server_UpdateMarker(RPCMessage msg)
 	{
 		if (State.pointsOfInterest == null)
@@ -8137,9 +8137,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(10uL)]
 	public void Server_RemovePointOfInterest(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -8153,17 +8153,17 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
+	[RPC_Server.FromOwner]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.FromOwner]
 	public void Server_RequestMarkers(RPCMessage msg)
 	{
 		SendMarkersToClient();
 	}
 
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	public void Server_ClearMapMarkers(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnMapMarkersClear", this, State.pointsOfInterest) != null)
@@ -8192,8 +8192,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		Interface.CallHook("OnMapMarkersCleared", this);
 	}
 
-	[RPC_Server.CallsPerSecond(8uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(8uL)]
 	[RPC_Server.FromOwner]
 	public void Server_ClearPointsOfInterest(RPCMessage msg)
 	{
@@ -8710,8 +8710,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void Server_RequestValidMissionsUpdate(RPCMessage _)
 	{
 		if (IsNpc)
@@ -9546,15 +9546,15 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		note.icon = pingStyle.IconIndex;
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
 		typeof(int),
 		typeof(bool)
 	})]
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void Server_AddPing(RPCMessage msg)
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
@@ -9662,8 +9662,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromOwner]
 	private void Server_RemovePing(RPCMessage msg)
 	{
 		if (State.pings == null)
@@ -10171,8 +10171,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		OBB obb = new OBB(position, rotation, bounds);
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
@@ -10199,8 +10199,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	public bool CanBuild(OBB obb, bool cached)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
 			return false;
@@ -10222,17 +10222,17 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return IsBuildingBlocked(PrivilegeCacheDefaultValue());
 	}
 
-	public bool IsBuildingBlocked(bool cached)
+	public bool IsBuildingBlocked(bool cached, bool ignorePosition = false)
 	{
-		if (IsBuildingBlockedByVehicle(cached))
+		if (IsBuildingBlockedByVehicle(cached, 1f, ignorePosition))
 		{
 			return true;
 		}
-		if (IsBuildingBlockedByEntity(cached))
+		if (IsBuildingBlockedByEntity(cached, 1f, ignorePosition))
 		{
 			return true;
 		}
-		BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege(cached);
+		BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege(cached, 1f, ignorePosition);
 		if ((Object)(object)buildingPrivilege == (Object)null)
 		{
 			return false;
@@ -10255,8 +10255,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		OBB obb = new OBB(position, rotation, bounds);
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
@@ -10283,8 +10283,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	public bool IsBuildingBlocked(OBB obb, bool cached)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
 			return true;
@@ -10306,17 +10306,17 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return IsBuildingAuthed(PrivilegeCacheDefaultValue());
 	}
 
-	public bool IsBuildingAuthed(bool cached, float cacheDuration = 1f)
+	public bool IsBuildingAuthed(bool cached, float cacheDuration = 1f, bool ignorePosition = false)
 	{
-		if (IsBuildingBlockedByVehicle(cached, cacheDuration))
+		if (IsBuildingBlockedByVehicle(cached, cacheDuration, ignorePosition))
 		{
 			return false;
 		}
-		if (IsBuildingBlockedByEntity(cached, cacheDuration))
+		if (IsBuildingBlockedByEntity(cached, cacheDuration, ignorePosition))
 		{
 			return false;
 		}
-		BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege(cached, cacheDuration);
+		BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege(cached, cacheDuration, ignorePosition);
 		if ((Object)(object)buildingPrivilege == (Object)null)
 		{
 			return false;
@@ -10339,8 +10339,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		OBB obb = new OBB(position, rotation, bounds);
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
@@ -10367,8 +10367,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	public bool IsBuildingAuthed(OBB obb, bool cached)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
 			return false;
@@ -10418,8 +10418,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		OBB obb = new OBB(position, rotation, bounds);
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
@@ -10441,8 +10441,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	public bool CanPlaceBuildingPrivilege(OBB obb, bool cached)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
 			return false;
@@ -10496,8 +10496,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		OBB obb = new OBB(position, rotation, bounds);
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
@@ -10528,8 +10528,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	public bool IsNearEnemyBase(OBB obb, bool cached)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (IsBuildingBlockedByVehicle(obb, cached))
 		{
 			return true;
@@ -10555,10 +10555,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return IsBuildingBlockedByVehicle(PrivilegeCacheDefaultValue());
 	}
 
-	public bool IsBuildingBlockedByVehicle(bool cached, float cacheDuration = 1f)
+	public bool IsBuildingBlockedByVehicle(bool cached, float cacheDuration = 1f, bool ignorePosition = false)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		return IsBuildingBlockedByVehicle(WorldSpaceBounds(), cached);
+		return IsBuildingBlockedByVehicle(WorldSpaceBounds(), cached, 1f, ignorePosition);
 	}
 
 	public BaseEntity GetVehicleBuildingPrivilege(bool cached, float cacheDuration = 1f)
@@ -10572,15 +10572,15 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		if (cached && BaseEntity.IsCacheValid(cachedVehicleBuildingPrivilegeTime, cacheDuration, cachedVehicleBuildingPrivilegePosition, obb.position))
 		{
 			return cachedVehicleBuildingPrivilege;
@@ -10618,13 +10618,13 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return cachedVehicleBuildingPrivilege;
 	}
 
-	private bool IsBuildingBlockedByVehicle(OBB obb, bool cached, float cacheDuration = 1f)
+	private bool IsBuildingBlockedByVehicle(OBB obb, bool cached, float cacheDuration = 1f, bool ignorePosition = false)
 	{
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		if (cached && BaseEntity.IsCacheValid(cachedVehicleBuildingPrivilegeTime, cacheDuration, cachedVehicleBuildingPrivilegePosition, obb.position))
+		if (cached && BaseEntity.IsCacheValid(cachedVehicleBuildingPrivilegeTime, cacheDuration, cachedVehicleBuildingPrivilegePosition, obb.position, ignorePosition))
 		{
 			if ((Object)(object)cachedVehicleBuildingPrivilege != (Object)null)
 			{
@@ -10644,24 +10644,24 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return IsBuildingBlockedByEntity(PrivilegeCacheDefaultValue());
 	}
 
-	public bool IsBuildingBlockedByEntity(bool cached, float cacheDuration = 1f)
+	public bool IsBuildingBlockedByEntity(bool cached, float cacheDuration = 1f, bool ignorePosition = false)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		return IsBuildingBlockedByEntity(WorldSpaceBounds(), cached, cacheDuration);
+		return IsBuildingBlockedByEntity(WorldSpaceBounds(), cached, cacheDuration, ignorePosition);
 	}
 
-	private bool IsBuildingBlockedByEntity(OBB obb, bool cached, float cacheDuration = 1f)
+	private bool IsBuildingBlockedByEntity(OBB obb, bool cached, float cacheDuration = 1f, bool ignorePosition = false)
 	{
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		if (cached && BaseEntity.IsCacheValid(cachedEntityBuildingPrivilegeTime, cacheDuration, cachedEntityBuildingPrivilegePosition, obb.position))
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		if (cached && BaseEntity.IsCacheValid(cachedEntityBuildingPrivilegeTime, cacheDuration, cachedEntityBuildingPrivilegePosition, obb.position, ignorePosition))
 		{
 			if ((Object)(object)cachedEntityBuildingPrivilege != (Object)null)
 			{
@@ -10702,15 +10702,15 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return HasPrivilegeFromOther(PrivilegeCacheDefaultValue());
 	}
 
-	public bool HasPrivilegeFromOther(bool cached)
+	public bool HasPrivilegeFromOther(bool cached, bool ignorePosition = false)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		if (IsBuildingBlockedByVehicle(WorldSpaceBounds(), cached))
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		if (IsBuildingBlockedByVehicle(WorldSpaceBounds(), cached, 1f, ignorePosition))
 		{
 			return false;
 		}
-		if (IsBuildingBlockedByEntity(WorldSpaceBounds(), cached))
+		if (IsBuildingBlockedByEntity(WorldSpaceBounds(), cached, 1f, ignorePosition))
 		{
 			return false;
 		}
@@ -11569,8 +11569,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void OnProjectileUpdate(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -12846,10 +12846,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 
 	public void UpdateTimeCategory()
 	{
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("UpdateTimeCategory"))
 		{
 			waitingForLifeStoryUpdate = false;
@@ -14093,8 +14093,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void ClientKeepConnectionAlive(RPCMessage msg)
 	{
 		lastTickTime = Time.time;
@@ -14397,9 +14397,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return result;
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void RequestRespawnInformation(RPCMessage msg)
 	{
 		SendRespawnOptions();
@@ -16169,8 +16169,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return net.connection.info.GetString(key, defaultVal);
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(1uL)]
 	public void PerformanceReport(RPCMessage msg)
 	{
@@ -16284,9 +16284,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public async void OnPlayerReported(RPCMessage msg)
 	{
 		try
@@ -16345,9 +16345,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
-	[RPC_Server.CallsPerSecond(1uL)]
 	public async void OnFeedbackReport(RPCMessage msg)
 	{
 		try
@@ -16741,10 +16741,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		ClientRPC(RpcTarget.Player("ReceiveCargoPatrolPath", this), cachedOceanPaths);
 	}
 
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(3f)]
 	private void RPC_ReqDoRestrainedPush(RPCMessage rpc)
 	{
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
@@ -16787,10 +16787,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		Hurt(Handcuffs.restrainedPushDamage, DamageType.Generic, player, useProtection: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_ReqRemoveCuffs(RPCMessage rpc)
 	{
 		if (IsDead() || !IsRestrained)
@@ -16808,10 +16808,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	private void RPC_ReqRemoveHood(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -16837,9 +16837,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_ReqEquipHood(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -16881,10 +16881,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		inventory.SetLockedByRestraint(flag: true);
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_ReqForceMountNearest(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -16952,10 +16952,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		Pool.FreeUnmanaged<BaseMountable>(ref list);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_ReqForceSwapSeat(RPCMessage rpc)
 	{
 		if (!isMounted || !IsRestrained || IsDead() || IsSleeping() || IsWounded() || (Object)(object)rpc.player == (Object)null)
@@ -18161,10 +18161,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		SendNetworkUpdate_Position();
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.FromOwner]
 	private void UpdateSpectatePositionFromDebugCamera(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)

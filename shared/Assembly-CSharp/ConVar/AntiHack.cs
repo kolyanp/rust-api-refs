@@ -19,64 +19,64 @@ public class AntiHack : ConsoleSystem
 	[Help("are admins allowed to use their admin cheat")]
 	public static bool admincheat = true;
 
-	[Help("use antihack to verify object placement by players")]
 	[ServerVar]
+	[Help("use antihack to verify object placement by players")]
 	public static bool objectplacement = true;
 
 	[ServerVar]
 	[Help("use antihack to verify model state sent by players")]
 	public static bool modelstate = true;
 
-	[ServerVar]
 	[Help("whether or not to force the position on the client")]
+	[ServerVar]
 	public static bool forceposition = true;
 
 	[ServerVar]
 	[Help("0 == allow RPCs from stalled players, 1 == ignore RPCs from currently stalled players, 2 == ignore RPCs from recently stalled players")]
 	public static int rpcstallmode = 1;
 
-	[ServerVar]
 	[Help("time in seconds before player is no longer treated as wasStalled")]
+	[ServerVar]
 	public static float rpcstallfade = 2.5f;
 
-	[Help("time in seconds we can receive no ticks for before player is considered stalling")]
 	[ServerVar]
+	[Help("time in seconds we can receive no ticks for before player is considered stalling")]
 	public static float rpcstallthreshold = 0.8f;
 
-	[Help("whether or not to restrict entity position packets to non-stalled players")]
 	[ServerVar]
+	[Help("whether or not to restrict entity position packets to non-stalled players")]
 	public static bool stall_position_restrictions = true;
 
 	[ServerVar]
 	[Help("0 == users, 1 == admins, 2 == developers")]
 	public static int userlevel = 2;
 
-	[Help("0 == no enforcement, 1 == kick, 2 == ban (DISABLED)")]
 	[ServerVar]
+	[Help("0 == no enforcement, 1 == kick, 2 == ban (DISABLED)")]
 	public static int enforcementlevel = 1;
 
-	[Help("max allowed client desync, lower value = more false positives")]
 	[ServerVar]
+	[Help("max allowed client desync, lower value = more false positives")]
 	public static float maxdesync = 0.8f;
 
 	[ServerVar]
 	[Help("max allowed client tick interval delta time, lower value = more false positives")]
 	public static float maxdeltatime = 1f;
 
-	[Help("for how many seconds to keep a tick history to use for distance checks")]
 	[ServerVar]
+	[Help("for how many seconds to keep a tick history to use for distance checks")]
 	public static float tickhistorytime = 0.5f;
 
 	[ServerVar]
 	[Help("how much forgiveness to add when checking the distance from the player tick history")]
 	public static float tickhistoryforgiveness = 0.1f;
 
-	[ServerVar]
 	[Help("use parent position history for mounted player projectile validation (more accurate, uses ~192 bytes per mounted player)")]
+	[ServerVar]
 	public static bool parenthistory = true;
 
-	[Help("the rate at which violation values go back down")]
 	[ServerVar]
+	[Help("the rate at which violation values go back down")]
 	public static float relaxationrate = 0.1f;
 
 	[ServerVar]
@@ -91,12 +91,12 @@ public class AntiHack : ConsoleSystem
 	[Help("0 == disabled, 1 == enabled")]
 	public static int terrain_protection = 1;
 
-	[Help("how many slices to subdivide players into for the terrain check")]
 	[ServerVar]
+	[Help("how many slices to subdivide players into for the terrain check")]
 	public static int terrain_timeslice = 64;
 
-	[ServerVar]
 	[Help("how far to penetrate the terrain before violating")]
+	[ServerVar]
 	public static float terrain_padding = 0.3f;
 
 	[ServerVar]
@@ -111,8 +111,8 @@ public class AntiHack : ConsoleSystem
 	[ServerVar]
 	public static bool terrain_kill = true;
 
-	[ServerVar]
 	[Help("whether or not to check for player inside geometry like rocks as well as base terrain")]
+	[ServerVar]
 	public static bool terrain_check_geometry = false;
 
 	[ServerVar]
@@ -123,12 +123,12 @@ public class AntiHack : ConsoleSystem
 	[Help("whether or not to reject movement when noclip is detected")]
 	public static bool noclip_reject = true;
 
-	[Help("violation penalty to hand out when noclip is detected")]
 	[ServerVar]
+	[Help("violation penalty to hand out when noclip is detected")]
 	public static float noclip_penalty = 0f;
 
-	[Help("collider margin when checking for noclipping")]
 	[ServerVar]
+	[Help("collider margin when checking for noclipping")]
 	public static float noclip_margin = 0.16f;
 
 	[ServerVar]
@@ -139,20 +139,20 @@ public class AntiHack : ConsoleSystem
 	[Help("movement curve max steps, lower value = more false positives")]
 	public static int noclip_maxsteps = 15;
 
-	[ServerVar]
 	[Help("0 == disabled, 1 == simple, 2 == advanced, 3 == vertical swim protection")]
+	[ServerVar]
 	public static int speedhack_protection = 3;
 
-	[ServerVar]
 	[Help("whether or not to reject movement when speedhack is detected")]
+	[ServerVar]
 	public static bool speedhack_reject = true;
 
 	[ServerVar]
 	[Help("violation penalty to hand out when speedhack is detected")]
 	public static float speedhack_penalty = 0f;
 
-	[ServerVar]
 	[Help("speed threshold to assume speedhacking, lower value = more false positives")]
+	[ServerVar]
 	public static float speedhack_forgiveness = 2f;
 
 	[ServerVar]
@@ -163,48 +163,48 @@ public class AntiHack : ConsoleSystem
 	[ServerVar]
 	public static float speedhack_slopespeed = 10f;
 
-	[ServerVar]
 	[Help("server threshold before we consider a client might be swimming in water (to account for client/server waterfactor mismatch")]
+	[ServerVar]
 	public static float speedhack_water_threshold = 0.4f;
 
 	[Help("0 == disabled, 1 == client, 2 == capsule, 3 == curve")]
 	[ServerVar]
 	public static int flyhack_protection = 3;
 
-	[Help("whether or not to reject movement when flyhack is detected")]
 	[ServerVar]
+	[Help("whether or not to reject movement when flyhack is detected")]
 	public static bool flyhack_reject = true;
 
-	[Help("violation penalty to hand out when flyhack is detected")]
 	[ServerVar]
+	[Help("violation penalty to hand out when flyhack is detected")]
 	public static float flyhack_penalty = 100f;
 
-	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	[ServerVar]
+	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	public static float flyhack_forgiveness_vertical = 1f;
 
-	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	[ServerVar]
+	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	public static float flyhack_forgiveness_vertical_inertia = 7f;
 
 	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	[ServerVar]
 	public static float flyhack_forgiveness_horizontal = 1.5f;
 
-	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	[ServerVar]
+	[Help("distance threshold to assume flyhacking, lower value = more false positives")]
 	public static float flyhack_forgiveness_horizontal_inertia = 10f;
 
 	[ServerVar]
 	[Help("collider downwards extrusion when checking for flyhacking")]
 	public static float flyhack_extrusion = 2f;
 
-	[ServerVar]
 	[Help("collider margin when checking for flyhacking")]
+	[ServerVar]
 	public static float flyhack_margin = 0.1f;
 
-	[ServerVar]
 	[Help("movement curve step size, lower value = less false positives")]
+	[ServerVar]
 	public static float flyhack_stepsize = 0.1f;
 
 	[Help("movement curve max steps, lower value = more false positives")]
@@ -219,12 +219,12 @@ public class AntiHack : ConsoleSystem
 	[Help("violation penalty to hand out when projectile hack is detected")]
 	public static float projectile_penalty = 0f;
 
-	[ServerVar]
 	[Help("projectile speed forgiveness in percent, lower value = more false positives")]
+	[ServerVar]
 	public static float projectile_forgiveness = 0.5f;
 
-	[ServerVar]
 	[Help("projectile server frames to include in delay, lower value = more false positives")]
+	[ServerVar]
 	public static float projectile_serverframes = 2f;
 
 	[ServerVar]
@@ -235,8 +235,8 @@ public class AntiHack : ConsoleSystem
 	[Help("projectile trajectory forgiveness, lower value = more false positives")]
 	public static float projectile_trajectory = 2f;
 
-	[ServerVar]
 	[Help("projectile trajectory forgiveness for projectile updates, lower value = more false positives")]
+	[ServerVar]
 	public static float projectile_trajectory_update = 0.02f;
 
 	[ServerVar]
@@ -259,32 +259,32 @@ public class AntiHack : ConsoleSystem
 	[Help("line of sight directional forgiveness when checking eye or center position")]
 	public static float projectile_losforgiveness = 0.2f;
 
-	[ServerVar]
 	[Help("how often a projectile is allowed to penetrate something before its damage is ignored")]
+	[ServerVar]
 	public static int projectile_damagedepth = 2;
 
 	[Help("how often a projectile is allowed to penetrate something before its impact spawn is ignored")]
 	[ServerVar]
 	public static int projectile_impactspawndepth = 1;
 
-	[Help("whether or not to include terrain in the projectile LOS checks")]
 	[ServerVar]
+	[Help("whether or not to include terrain in the projectile LOS checks")]
 	public static bool projectile_terraincheck = true;
 
-	[Help("whether or not to include vehicles in the projectile LOS checks")]
 	[ServerVar]
+	[Help("whether or not to include vehicles in the projectile LOS checks")]
 	public static bool projectile_vehiclecheck = true;
 
-	[Help("whether or not to include default layer in the projectile LOS checks")]
 	[ServerVar]
+	[Help("whether or not to include default layer in the projectile LOS checks")]
 	public static bool projectile_defaultcheck = true;
 
 	[Help("whether or not to include deployed layer in the projectile LOS checks")]
 	[ServerVar]
 	public static bool projectile_deployedcheck = true;
 
-	[Help("whether or not to compensate for the client / server vehicle position offset")]
 	[ServerVar]
+	[Help("whether or not to compensate for the client / server vehicle position offset")]
 	public static bool projectile_positionoffset = true;
 
 	[Help("minimum distance before we verify client projectile distance mismatch, lower value = more false positives")]
@@ -299,20 +299,20 @@ public class AntiHack : ConsoleSystem
 	[Help("0 == disabled, 1 == initiator, 2 == initiator + target, 3 == initiator + target + LOS, 4 == initiator + target + LOS + tickhistory, 5 == entity collider Overlap Sphere (bounds validation)")]
 	public static int melee_protection = 5;
 
-	[Help("violation penalty to hand out when melee hack is detected")]
 	[ServerVar]
+	[Help("violation penalty to hand out when melee hack is detected")]
 	public static float melee_penalty = 0f;
 
 	[ServerVar]
 	[Help("melee distance forgiveness in percent, lower value = more false positives")]
 	public static float melee_forgiveness = 0.5f;
 
-	[ServerVar]
 	[Help("melee server frames to include in delay, lower value = more false positives")]
+	[ServerVar]
 	public static float melee_serverframes = 2f;
 
-	[Help("melee client frames to include in delay, lower value = more false positives")]
 	[ServerVar]
+	[Help("melee client frames to include in delay, lower value = more false positives")]
 	public static float melee_clientframes = 2f;
 
 	[ServerVar]
@@ -323,12 +323,12 @@ public class AntiHack : ConsoleSystem
 	[Help("line of sight directional forgiveness when checking eye or center position")]
 	public static float melee_losforgiveness = 0.2f;
 
-	[ServerVar]
 	[Help("whether or not to include terrain in the melee LOS checks")]
+	[ServerVar]
 	public static bool melee_terraincheck = true;
 
-	[ServerVar]
 	[Help("whether or not to include vehicles in the melee LOS checks")]
+	[ServerVar]
 	public static bool melee_vehiclecheck = true;
 
 	[Help("melee collider bounds validation radius for hit entities, higher value = more forgiveness")]
@@ -343,8 +343,8 @@ public class AntiHack : ConsoleSystem
 	[Help("max tolerance for distance between hit pos and closest bound pos")]
 	public static float melee_los_entity_realpos_distance = 1.3f;
 
-	[ServerVar]
 	[Help("0 == disabled, 1 == distance, 2 == distance + LOS, 3 = distance + LOS + altitude, 4 = distance + LOS + altitude + noclip, 5 = distance + LOS + altitude + noclip + history")]
+	[ServerVar]
 	public static int eye_protection = 4;
 
 	[ServerVar]
@@ -355,12 +355,12 @@ public class AntiHack : ConsoleSystem
 	[Help("eye distance forgiveness, lower value = more false positives")]
 	public static float eye_forgiveness = 0.4f;
 
-	[ServerVar]
 	[Help("eye distance forgiveness for parented or mounted players, lower value = more false positives")]
+	[ServerVar]
 	public static float eye_distance_parented_mounted_forgiveness = 2f;
 
-	[ServerVar]
 	[Help("eye server frames to include in delay, lower value = more false positives")]
+	[ServerVar]
 	public static float eye_serverframes = 2f;
 
 	[Help("eye client frames to include in delay, lower value = more false positives")]
@@ -371,56 +371,56 @@ public class AntiHack : ConsoleSystem
 	[ServerVar]
 	public static bool eye_terraincheck = true;
 
-	[Help("whether or not to include vehicles in the eye LOS checks")]
 	[ServerVar]
+	[Help("whether or not to include vehicles in the eye LOS checks")]
 	public static bool eye_vehiclecheck = true;
 
-	[ServerVar]
 	[Help("distance at which to start testing eye noclipping")]
+	[ServerVar]
 	public static float eye_noclip_cutoff = 0.06f;
 
 	[ServerVar]
 	[Help("collider margin when checking for noclipping")]
 	public static float eye_noclip_margin = 0.25f;
 
-	[Help("collider backtracking when checking for noclipping")]
 	[ServerVar]
+	[Help("collider backtracking when checking for noclipping")]
 	public static float eye_noclip_backtracking = 0.01f;
 
-	[Help("line of sight sphere cast radius, 0 == raycast")]
 	[ServerVar]
+	[Help("line of sight sphere cast radius, 0 == raycast")]
 	public static float eye_losradius = 0.158f;
 
-	[ServerVar]
 	[Help("violation penalty to hand out when eye history mismatch is detected")]
+	[ServerVar]
 	public static float eye_history_penalty = 100f;
 
 	[Help("how much forgiveness to add when checking the distance between player tick history and player eye history")]
 	[ServerVar]
 	public static float eye_history_forgiveness = 0.1f;
 
-	[Help("maximum distance an impact effect can be from the entities bounds")]
 	[ServerVar]
+	[Help("maximum distance an impact effect can be from the entities bounds")]
 	public static float impact_effect_distance_forgiveness = 0.45f;
 
 	[ServerVar]
 	[Help("line of sight sphere cast radius, 0 == raycast")]
 	public static float build_losradius = 0.01f;
 
-	[Help("line of sight sphere cast radius, 0 == raycast")]
 	[ServerVar]
+	[Help("line of sight sphere cast radius, 0 == raycast")]
 	public static float build_losradius_sleepingbag = 0.3f;
 
-	[ServerVar]
 	[Help("whether or not to include terrain in the build LOS checks")]
+	[ServerVar]
 	public static bool build_terraincheck = true;
 
-	[Help("whether or not to include vehicles in the build LOS checks")]
 	[ServerVar]
+	[Help("whether or not to include vehicles in the build LOS checks")]
 	public static bool build_vehiclecheck = true;
 
-	[Help("whether or not to check for building being done on the wrong side of something (e.g. inside rocks). 0 = Disabled, 1 = Info only, 2 = Enabled")]
 	[ServerVar]
+	[Help("whether or not to check for building being done on the wrong side of something (e.g. inside rocks). 0 = Disabled, 1 = Info only, 2 = Enabled")]
 	public static int build_inside_check = 2;
 
 	[ServerVar]
@@ -431,8 +431,8 @@ public class AntiHack : ConsoleSystem
 	[Help("use the older, simpler is inside check. has several loopholes that aren't properly catered to")]
 	public static bool use_legacy_mesh_inside_check = true;
 
-	[ServerVar]
 	[Help("whether or not to ensure players are always networked to server administrators")]
+	[ServerVar]
 	public static bool server_occlusion_admin_bypass = false;
 
 	[ServerVar]
@@ -455,8 +455,8 @@ public class AntiHack : ConsoleSystem
 	[Help("whether to use neighbour threshold limitations")]
 	public static bool server_occlusion_use_neighbour_thresholds = false;
 
-	[Help("whether or not to skip the line-of-sight process, this will effectively disable server occlusion")]
 	[ServerVar]
+	[Help("whether or not to skip the line-of-sight process, this will effectively disable server occlusion")]
 	public static bool server_occlusion_disable_los = false;
 
 	[Help("whether or not to skip the line-of-sight process for sleepers")]
@@ -467,16 +467,16 @@ public class AntiHack : ConsoleSystem
 	[Help("How far a player is allowed to move in a single tick")]
 	public static float tick_max_distance = 1.1f;
 
-	[Help("How far a player is allowed to move in a single tick when falling")]
 	[ServerVar]
+	[Help("How far a player is allowed to move in a single tick when falling")]
 	public static float tick_max_distance_falling = 4f;
 
 	[Help("How far a player is allowed to move in a single tick when parented")]
 	[ServerVar]
 	public static float tick_max_distance_parented = 3f;
 
-	[ServerVar]
 	[Help("Whether or not to enable additional tick validation measures")]
+	[ServerVar]
 	public static bool tick_buffer_preventions = true;
 
 	[ServerVar]
@@ -491,8 +491,8 @@ public class AntiHack : ConsoleSystem
 	[Help("How long it should take for a server to process a frame before we decide to skip additional tick validation measures")]
 	public static float tick_buffer_server_lag_threshold = 0.3f;
 
-	[Help("How far a player is allowed to move in forgiveness scenarios")]
 	[ServerVar]
+	[Help("How far a player is allowed to move in forgiveness scenarios")]
 	public static float tick_distance_forgiveness = 5f;
 
 	[ServerVar(Help = "Should explosives parented to vehicles damage deployables")]
@@ -502,8 +502,8 @@ public class AntiHack : ConsoleSystem
 	[Help("How long, in seconds, can the clients progress timer deviate from the servers")]
 	public static float rpc_timer_forgiveness = 1f;
 
-	[Help("Should we do extra physics checks when mounting vehicles to prevent players clipping through small gaps. 0 = off, 1 = bypass switch seats, 2 = always")]
 	[ServerVar]
+	[Help("Should we do extra physics checks when mounting vehicles to prevent players clipping through small gaps. 0 = off, 1 = bypass switch seats, 2 = always")]
 	public static int strict_mount_checks = 1;
 
 	[ServerVar]

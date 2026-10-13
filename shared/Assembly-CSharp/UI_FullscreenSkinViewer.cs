@@ -65,8 +65,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private Vector2 minMaxFov = new Vector2(20f, 8f);
 
-	[SerializeField]
 	[Header("Idle")]
+	[SerializeField]
 	private float idleSwaySpeed = 0.1f;
 
 	[SerializeField]

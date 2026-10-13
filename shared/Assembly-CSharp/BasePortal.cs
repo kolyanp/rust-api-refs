@@ -244,8 +244,8 @@ public class BasePortal : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void RPC_UsePortal(RPCMessage msg)
 	{

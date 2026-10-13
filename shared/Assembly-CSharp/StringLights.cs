@@ -44,8 +44,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	private ItemDefinition itemToConsume;
 
-	[Header("Line Generation Settings")]
 	[SerializeField]
+	[Header("Line Generation Settings")]
 	protected BulbSettings[] bulbSettings;
 
 	[SerializeField]
@@ -72,8 +72,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	protected bool bulbFaceNormal;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected LineRenderer lineRenderer;
 
 	[SerializeField]

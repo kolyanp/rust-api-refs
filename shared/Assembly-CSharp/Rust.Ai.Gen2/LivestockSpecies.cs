@@ -13,16 +13,16 @@ public class LivestockSpecies : ScriptableObject
 	[Tooltip("The adult male. Set to the same prefab as Adult Female when one prefab covers both sexes.")]
 	public GameObjectRef AdultMale;
 
-	[Tooltip("The newborn female. Set to the same prefab as Child Male unless the sexes need different models this young.")]
 	[Header("Child")]
+	[Tooltip("The newborn female. Set to the same prefab as Child Male unless the sexes need different models this young.")]
 	public GameObjectRef ChildFemale;
 
 	[Tooltip("The newborn male. Set to the same prefab as Child Female unless the sexes need different models this young.")]
 	public GameObjectRef ChildMale;
 
-	[Header("Value")]
-	[Tooltip("What a perfectly kept adult of this species fetches at a livestock vendor, as a multiple of that vendor's reward amount. Cattle are the reference at 1.")]
 	[Min(0f)]
+	[Tooltip("What a perfectly kept adult of this species fetches at a livestock vendor, as a multiple of that vendor's reward amount. Cattle are the reference at 1.")]
+	[Header("Value")]
 	public float SaleValueScale = 1f;
 
 	[Header("Status Panel")]

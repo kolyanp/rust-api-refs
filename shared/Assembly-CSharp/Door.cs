@@ -64,8 +64,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 
 	public Menu.Option UpgradeMenu;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private float openAnimLength = 4f;
 
 	[SerializeField]

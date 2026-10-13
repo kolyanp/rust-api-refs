@@ -132,8 +132,8 @@ public static class EnvironmentVolumeMath
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(CalculateTransformationBoundsBurst_0000641A_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(CalculateTransformationBoundsBurst_0000641A_0024PostfixBurstDelegate))]
 	private static void CalculateTransformationBoundsBurst(in float4x4 transformationMatrix, in bool capsule, out Bounds bounds)
 	{
 		CalculateTransformationBoundsBurst_0000641A_0024BurstDirectCall.Invoke(in transformationMatrix, in capsule, out bounds);

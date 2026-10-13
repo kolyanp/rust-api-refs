@@ -13,8 +13,8 @@ public class UI_SteamInventoryCrafting : MonoBehaviour
 	[SerializeField]
 	private RustText metalAmountText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject craftingLoading;
 
 	[SerializeField]
@@ -29,8 +29,8 @@ public class UI_SteamInventoryCrafting : MonoBehaviour
 	[SerializeField]
 	private UI_SteamInventoryCraftingModal craftingModal;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SteamInventoryPlayerItemModal bagOpeningModal;
 
 	[SerializeField]

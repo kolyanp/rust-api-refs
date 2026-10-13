@@ -29,20 +29,20 @@ public class ThrownWeapon : AttackEntity
 	[ShowIf("predictThrow", true)]
 	public PredictRelease predictRelease;
 
+	[ShowIf("predictRelease", PredictRelease.Delay)]
 	[ShowIf("predictThrow", true)]
 	[Tooltip("Delay mode: seconds after the throw starts. 0 lets go at once.")]
-	[ShowIf("predictRelease", PredictRelease.Delay)]
 	public float predictReleaseDelay;
 
-	[ShowIf("predictThrow", true)]
 	[Range(0.05f, 0.95f)]
 	[ShowIf("predictRelease", PredictRelease.HandSlows)]
 	[Tooltip("Hand Slows mode: lets go once the hand has dropped to this share of its fastest speed.")]
+	[ShowIf("predictThrow", true)]
 	public float predictReleaseSpeed = 0.5f;
 
-	[ShowIf("predictThrow", true)]
 	[ShowIf("predictRelease", PredictRelease.ViewmodelEvent)]
 	[Tooltip("Viewmodel Event mode: the animation event that lets it go.")]
+	[ShowIf("predictThrow", true)]
 	public string predictReleaseEvent;
 
 	[Tooltip("Backstop: it leaves the hand this long after the throw whatever the mode decides.")]
@@ -53,9 +53,9 @@ public class ThrownWeapon : AttackEntity
 	[ShowIf("predictThrow", true)]
 	public PredictOrigin predictOrigin;
 
-	[ShowIf("predictOrigin", PredictOrigin.ViewmodelBone)]
-	[Tooltip("Viewmodel Bone mode: the viewmodel bone to follow.")]
 	[ShowIf("predictThrow", true)]
+	[Tooltip("Viewmodel Bone mode: the viewmodel bone to follow.")]
+	[ShowIf("predictOrigin", PredictOrigin.ViewmodelBone)]
 	public string predictOriginBone = "r_hand";
 
 	[ShowIf("predictOrigin", PredictOrigin.ViewmodelBone)]

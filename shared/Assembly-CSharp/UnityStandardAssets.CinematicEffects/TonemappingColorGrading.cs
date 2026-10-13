@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects;
 
-[ExecuteInEditMode]
-[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 [ImageEffectAllowedInSceneView]
+[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
+[ExecuteInEditMode]
 public class TonemappingColorGrading : MonoBehaviour
 {
 	[AttributeUsage(AttributeTargets.Field)]
@@ -205,16 +205,16 @@ public class TonemappingColorGrading : MonoBehaviour
 	[Serializable]
 	public struct BasicsSettings
 	{
-		[Tooltip("Sets the white balance to a custom color temperature.")]
 		[Range(-2f, 2f)]
+		[Tooltip("Sets the white balance to a custom color temperature.")]
 		public float temperatureShift;
 
 		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		[Range(-2f, 2f)]
 		public float tint;
 
-		[Range(-0.5f, 0.5f)]
 		[Tooltip("Shift the hue of all colors.")]
+		[Range(-0.5f, 0.5f)]
 		[Space]
 		public float hue;
 
@@ -230,17 +230,17 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Range(0f, 10f)]
 		public float value;
 
-		[Tooltip("Expands or shrinks the overall range of tonal values.")]
 		[Range(0f, 2f)]
 		[Space]
+		[Tooltip("Expands or shrinks the overall range of tonal values.")]
 		public float contrast;
 
 		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 		[Range(0.01f, 5f)]
 		public float gain;
 
-		[Tooltip("Applies a pow function to the source.")]
 		[Range(0.01f, 5f)]
+		[Tooltip("Applies a pow function to the source.")]
 		public float gamma;
 
 		public static BasicsSettings defaultSettings => new BasicsSettings
@@ -344,8 +344,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Internal LUT precision. \"Normal\" is 256x16, \"High\" is 1024x32. Prefer \"Normal\" on mobile devices.")]
 		public ColorGradingPrecision precision;
 
-		[ColorWheelGroup]
 		[Space]
+		[ColorWheelGroup]
 		public ColorWheelsSettings colorWheels;
 
 		[Space]
@@ -356,8 +356,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Space]
 		public ChannelMixerSettings channelMixer;
 
-		[Space]
 		[IndentedGroup]
+		[Space]
 		public CurvesSettings curves;
 
 		[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
@@ -385,8 +385,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		}
 	}
 
-	[SettingsGroup]
 	[SerializeField]
+	[SettingsGroup]
 	private EyeAdaptationSettings m_EyeAdaptation = EyeAdaptationSettings.defaultSettings;
 
 	[SettingsGroup]
@@ -397,8 +397,8 @@ public class TonemappingColorGrading : MonoBehaviour
 	[SettingsGroup]
 	private ColorGradingSettings m_ColorGrading = ColorGradingSettings.defaultSettings;
 
-	[SettingsGroup]
 	[SerializeField]
+	[SettingsGroup]
 	private LUTSettings m_Lut = LUTSettings.defaultSettings;
 
 	[SerializeField]

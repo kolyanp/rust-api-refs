@@ -2702,13 +2702,17 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return false;
 	}
 
-	protected static bool IsCacheValid(float cacheTime, float cacheDuration, Vector3 cachedPosition, Vector3 queryPosition)
+	protected static bool IsCacheValid(float cacheTime, float cacheDuration, Vector3 cachedPosition, Vector3 queryPosition, bool ignorePosition = false)
 	{
-		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		if (IsCacheValid(cacheTime, cacheDuration))
 		{
-			return cachedPosition == queryPosition;
+			if (!ignorePosition)
+			{
+				return cachedPosition == queryPosition;
+			}
+			return true;
 		}
 		return false;
 	}
@@ -2723,9 +2727,9 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return GetNearestBuildingPrivilege(PrivilegeCacheDefaultValue());
 	}
 
-	public virtual BuildingPrivlidge GetBuildingPrivilege(bool cached, float cacheDuration = 1f)
+	public virtual BuildingPrivlidge GetBuildingPrivilege(bool cached, float cacheDuration = 1f, bool ignorePosition = false)
 	{
-		return GetNearestBuildingPrivilege(cached, cacheDuration);
+		return GetNearestBuildingPrivilege(cached, cacheDuration, ignorePosition);
 	}
 
 	public BuildingPrivlidge GetNearestBuildingPrivilege()
@@ -2733,10 +2737,10 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return GetBuildingPrivilege(PrivilegeCacheDefaultValue());
 	}
 
-	public BuildingPrivlidge GetNearestBuildingPrivilege(bool cached, float cacheDuration = 1f)
+	public BuildingPrivlidge GetNearestBuildingPrivilege(bool cached, float cacheDuration = 1f, bool ignorePosition = false)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		return GetBuildingPrivilege(WorldSpaceBounds(), cached, cacheDuration);
+		return GetBuildingPrivilege(WorldSpaceBounds(), cached, cacheDuration, null, ignorePosition);
 	}
 
 	public BuildingPrivlidge GetBuildingPrivilege(OBB obb)
@@ -2745,30 +2749,30 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return GetBuildingPrivilege(obb, PrivilegeCacheDefaultValue());
 	}
 
-	public BuildingPrivlidge GetBuildingPrivilege(OBB obb, bool cached, float cacheDuration = 1f, BuildingPrivlidge exclude = null)
+	public BuildingPrivlidge GetBuildingPrivilege(OBB obb, bool cached, float cacheDuration = 1f, BuildingPrivlidge exclude = null, bool ignorePosition = false)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
-		object obj = Interface.CallHook("OnBuildingPrivilege", this, obb, cached, cacheDuration, exclude);
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0249: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+		object obj = Interface.CallHook("OnBuildingPrivilege", this, obb, cached, cacheDuration, exclude, ignorePosition);
 		if (obj is BuildingPrivlidge)
 		{
 			return (BuildingPrivlidge)obj;
 		}
-		if (cached && IsCacheValid(cachedBuildingPrivilegeTime, cacheDuration, cachedBuildingPrivilegePosition, obb.position))
+		if (cached && IsCacheValid(cachedBuildingPrivilegeTime, cacheDuration, cachedBuildingPrivilegePosition, obb.position, ignorePosition))
 		{
 			return cachedBuildingPrivilege;
 		}
@@ -3870,8 +3874,8 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return axis;
 	}
 
-	[RPC_Server.FromOwnerOrMounted]
 	[RPC_Server]
+	[RPC_Server.FromOwnerOrMounted]
 	private void BroadcastSignalFromClient(RPCMessage msg)
 	{
 		uint num = StringPool.Get("BroadcastSignalFromClient");
