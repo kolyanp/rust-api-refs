@@ -50,8 +50,8 @@ public class HitchTrough : StorageContainer
 
 	public float caloriesToDecaySeconds = 36f;
 
-	[Header("Water")]
 	[Tooltip("The liquid container spawned into the water end of the trough. It owns the water, the trough owns the food.")]
+	[Header("Water")]
 	public GameObjectRef waterStoragePrefab;
 
 	[Tooltip("Where the water container sits, in the trough's local space.")]

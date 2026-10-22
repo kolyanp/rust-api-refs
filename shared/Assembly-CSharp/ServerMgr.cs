@@ -654,15 +654,15 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			}
 			DebugEx.Log("Not kicking " + packet.connection?.ToString() + " for their branch '" + text + "' (is a developer)", (StackTraceLogType)0);
 		}
-		if (packet.connection.protocol > 2634)
+		if (packet.connection.protocol > 2635)
 		{
-			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2634, (StackTraceLogType)0);
+			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2635, (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Server update required!");
 			return;
 		}
-		if (packet.connection.protocol < 2634)
+		if (packet.connection.protocol < 2635)
 		{
-			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2634, (StackTraceLogType)0);
+			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2635, (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Client update required!");
 			return;
 		}
@@ -1977,7 +1977,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				Net.sv.ProtocolId,
 				SingletonComponent<ServerMgr>.Instance.connectionQueue.Queued,
 				text11,
-				2634,
+				2635,
 				text4,
 				text6,
 				text2,

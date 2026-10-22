@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Facepunch;
+using Network;
+using Network.Visibility;
 using ProtoBuf;
 using Rust;
 using UnityEngine;
@@ -35,6 +38,8 @@ public class ProceduralDynamicDungeon : BaseEntity
 
 	public static readonly List<ProceduralDynamicDungeon> dungeons = new List<ProceduralDynamicDungeon>();
 
+	private const float NetworkGroupFloorHeight = 25f;
+
 	public ProceduralDungeonCell entranceHack;
 
 	public override void InitShared()
@@ -68,57 +73,125 @@ public class ProceduralDynamicDungeon : BaseEntity
 		base.DestroyShared();
 	}
 
-	public bool ContainsAnyPlayers()
+	public static bool TryFindFreeNetworkGroup(out Vector3 spawnPoint)
 	{
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		Bounds val = new Bounds(((Component)this).transform.position, new Vector3((float)gridResolution * gridSpacing, 20f, (float)gridResolution * gridSpacing));
-		for (int i = 0; i < BasePlayer.activePlayerList.Count; i++)
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
+		Bounds worldBounds = SingletonComponent<ValidBounds>.Instance.worldBounds;
+		Bounds area = default;
+		area.SetMinMax(Vector3.Max(TerrainMeta.Position, worldBounds.min), Vector3.Min(TerrainMeta.Max, worldBounds.max));
+		HashSet<Group> hashSet = Pool.Get<HashSet<Group>>();
+		foreach (ProceduralDynamicDungeon dungeon in dungeons)
 		{
-			BasePlayer basePlayer = BasePlayer.activePlayerList[i];
-			if (val.Contains(((Component)basePlayer).transform.position))
+			if ((Object)(object)dungeon != (Object)null && dungeon.isServer && dungeon.net?.group != null)
 			{
-				return true;
+				hashSet.Add(dungeon.net.group);
 			}
 		}
-		for (int j = 0; j < BasePlayer.sleepingPlayerList.Count; j++)
+		ListHashSet<Group> val = Pool.Get<ListHashSet<Group>>();
+		spawnPoint = Vector3.zero;
+		for (int i = 10; i < 15; i++)
 		{
-			BasePlayer basePlayer2 = BasePlayer.sleepingPlayerList[j];
-			if (val.Contains(((Component)basePlayer2).transform.position))
+			if (!(spawnPoint == Vector3.zero))
 			{
-				return true;
+				break;
+			}
+			val.Clear();
+			Net.sv.visibility.AddGroups(i, area, val, create: true);
+			Enumerator<Group> enumerator2 = val.GetEnumerator();
+			try
+			{
+				while (enumerator2.MoveNext())
+				{
+					Group current2 = enumerator2.Current;
+					if (!hashSet.Contains(current2))
+					{
+						spawnPoint = current2.bounds.center;
+						spawnPoint.y = current2.bounds.min.y + 25f;
+						break;
+					}
+				}
+			}
+			finally
+			{
+				((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
 			}
 		}
-		return false;
+		Pool.FreeUnmanaged<Group>(ref val);
+		Pool.FreeUnmanaged<Group>(ref hashSet);
+		return spawnPoint != Vector3.zero;
+	}
+
+	public void GetEntitiesInside<T>(List<T> results) where T : BaseNetworkable
+	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		if (net?.group?.networkables == null)
+		{
+			return;
+		}
+		Enumerator<Networkable> enumerator = net.group.networkables.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current.handler is T item)
+				{
+					results.Add(item);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+	}
+
+	public bool ContainsAnyPlayers(bool includeSleepers)
+	{
+		List<BasePlayer> list = Pool.Get<List<BasePlayer>>();
+		GetEntitiesInside(list);
+		bool result = false;
+		foreach (BasePlayer item in list)
+		{
+			if (includeSleepers || item.IsConnected)
+			{
+				result = true;
+				break;
+			}
+		}
+		Pool.FreeUnmanaged<BasePlayer>(ref list);
+		return result;
 	}
 
 	public void KillPlayers()
 	{
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		Bounds val = new Bounds(((Component)this).transform.position, new Vector3((float)gridResolution * gridSpacing, 20f, (float)gridResolution * gridSpacing));
-		for (int i = 0; i < BasePlayer.activePlayerList.Count; i++)
+		List<BasePlayer> list = Pool.Get<List<BasePlayer>>();
+		GetEntitiesInside(list);
+		foreach (BasePlayer item in list)
 		{
-			BasePlayer basePlayer = BasePlayer.activePlayerList[i];
-			if (val.Contains(((Component)basePlayer).transform.position))
-			{
-				basePlayer.Hurt(10000f, DamageType.Suicide, null, useProtection: false);
-			}
+			item.Hurt(10000f, DamageType.Suicide, null, useProtection: false);
 		}
-		for (int j = 0; j < BasePlayer.sleepingPlayerList.Count; j++)
-		{
-			BasePlayer basePlayer2 = BasePlayer.sleepingPlayerList[j];
-			if (val.Contains(((Component)basePlayer2).transform.position))
-			{
-				basePlayer2.Hurt(10000f, DamageType.Suicide, null, useProtection: false);
-			}
-		}
+		Pool.FreeUnmanaged<BasePlayer>(ref list);
 	}
 
 	internal override void DoServerDestroy()
@@ -133,13 +206,11 @@ public class ProceduralDynamicDungeon : BaseEntity
 
 	public override void ServerInit()
 	{
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		if (!Application.isLoadingSave)
 		{
 			baseseed = (seed = (uint)Random.Range(0, 12345567));
-			int num = (int)seed;
-			Debug.Log((object)("Spawning dungeon with seed :" + num));
 		}
 		base.ServerInit();
 		bool flag = false;
@@ -158,7 +229,6 @@ public class ProceduralDynamicDungeon : BaseEntity
 		CreateAIZ();
 		if (isServer)
 		{
-			Debug.Log((object)"Server DoGeneration,calling routine update nav mesh");
 			((MonoBehaviour)this).StartCoroutine(UpdateNavMesh());
 		}
 		Invoke(InitSpawnGroups, 1f);
@@ -166,10 +236,19 @@ public class ProceduralDynamicDungeon : BaseEntity
 
 	private void CreateAIZ()
 	{
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		AIInformationZone aIInformationZone = ((Component)this).gameObject.AddComponent<AIInformationZone>();
 		aIInformationZone.UseCalculatedCoverDistances = false;
-		aIInformationZone.bounds.extents = new Vector3((float)gridResolution * gridSpacing * 0.75f, 10f, (float)gridResolution * gridSpacing * 0.75f);
+		Bounds val = Net.sv.visibility.GetGroup(((Component)this).transform.position, networkRange).bounds;
+		aIInformationZone.bounds = new Bounds(val.center - ((Component)this).transform.position, val.size);
 		aIInformationZone.Init();
 	}
 
@@ -181,9 +260,7 @@ public class ProceduralDynamicDungeon : BaseEntity
 
 	public IEnumerator UpdateNavMesh()
 	{
-		Debug.Log((object)"Dungeon Building navmesh");
 		yield return ((MonoBehaviour)this).StartCoroutine(monumentNavMesh.UpdateNavMeshAndWait());
-		Debug.Log((object)"Dungeon done!");
 	}
 
 	public override void Save(SaveInfo info)

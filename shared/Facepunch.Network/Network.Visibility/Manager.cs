@@ -130,4 +130,10 @@ public class Manager : IDisposable
 	{
 		provider.AddGroups(layer, groups, create);
 	}
+
+	public void AddGroups(int layer, Bounds area, ListHashSet<Group> groups, bool create)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		provider.AddGroups(layer, area, groups, create);
+	}
 }

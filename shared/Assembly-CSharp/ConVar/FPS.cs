@@ -9,8 +9,8 @@ public class FPS : ConsoleSystem
 
 	private static int m_graph;
 
-	[ClientVar(Saved = true, Help = "(Generated) Target application frame rate cap; 0 = unlimited; on client clamped to 240; on server limits tick dispatch rate; saved between sessions")]
 	[ServerVar(Saved = true)]
+	[ClientVar(Saved = true, Help = "(Generated) Target application frame rate cap; 0 = unlimited; on client clamped to 240; on server limits tick dispatch rate; saved between sessions")]
 	public static int limit
 	{
 		get

@@ -65,7 +65,7 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 
 	private int agentTypeId;
 
-	private bool isOffMainLand;
+	private bool outsideDefaultNavmesh;
 
 	private IndependantNavmesh independantNavmesh;
 
@@ -81,7 +81,7 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 				}
 				return true;
 			}
-			if (!isOffMainLand)
+			if (!outsideDefaultNavmesh)
 			{
 				return !RustNavigation.Instance.IsDefaultNavmeshBuilt();
 			}
@@ -121,7 +121,9 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 
 	private void OnEnable()
 	{
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
@@ -137,7 +139,8 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 		}
 		else
 		{
-			isOffMainLand = TerrainMeta.OutOfBounds(((Component)this).transform.position);
+			Bounds defaultNavmeshBounds = RustNavmesh.DefaultNavmeshBounds;
+			outsideDefaultNavmesh = !defaultNavmeshBounds.Contains(((Component)this).transform.position);
 		}
 	}
 
@@ -225,7 +228,7 @@ public class MonumentNavMesh : FacepunchBehaviour, IServerComponent
 				FinishBuildingNavmesh();
 			}
 		}
-		else if (isOffMainLand)
+		else if (outsideDefaultNavmesh)
 		{
 			if (!((Component)this).TryGetComponent<IndependantNavmesh>(ref this.independantNavmesh))
 			{

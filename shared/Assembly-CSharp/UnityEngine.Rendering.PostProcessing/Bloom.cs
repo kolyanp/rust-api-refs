@@ -14,8 +14,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
 	[Min(0f)]
+	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
 	public FloatParameter threshold = new FloatParameter
 	{
 		value = 1f
@@ -55,23 +55,23 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = Color.white
 	};
 
-	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
 	[FormerlySerializedAs("mobileOptimized")]
+	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
 	public BoolParameter fastMode = new BoolParameter
 	{
 		value = false
 	};
 
-	[DisplayName("Texture")]
 	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
+	[DisplayName("Texture")]
 	public TextureParameter dirtTexture = new TextureParameter
 	{
 		value = null
 	};
 
-	[Min(0f)]
-	[Tooltip("The intensity of the lens dirtiness.")]
 	[DisplayName("Intensity")]
+	[Tooltip("The intensity of the lens dirtiness.")]
+	[Min(0f)]
 	public FloatParameter dirtIntensity = new FloatParameter
 	{
 		value = 0f

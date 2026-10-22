@@ -169,12 +169,12 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 		width = lineWidth;
 	}
 
-	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
 		typeof(Vector3)
 	})]
+	[RPC_Server]
 	private void Server_AddPointMidSpray(RPCMessage msg)
 	{
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)

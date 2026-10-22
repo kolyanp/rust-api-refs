@@ -34,8 +34,8 @@ public class UnderwaterPostEffect : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Range(0f, 2f)]
 	[Header("Blur")]
+	[Range(0f, 2f)]
 	public FixedIntParameter downsample = new FixedIntParameter
 	{
 		value = 0

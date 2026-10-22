@@ -1,3 +1,4 @@
+using System;
 using ConVar;
 using Network;
 using UnityEngine;
@@ -52,5 +53,38 @@ public static class NetworkProfiler
 			Chat.Broadcast("Done!", "SERVER", "#eee", 0uL);
 			ExportProfile();
 		}, num);
+	}
+
+	[ServerVar(Name = "packet_capture", Help = "networkprofiler.packet_capture [max size(in MB), min(1), max(10000), float] [max duration(in seconds), min(1), max(3600), float]", ServerAdmin = true)]
+	public static void PacketCapture(ConsoleSystem.Arg arg)
+	{
+		if (!arg.HasArgs(2))
+		{
+			arg.ReplyWith("Usage: networkprofiler.packet_capture <max size in MB> <max duration in seconds>");
+			return;
+		}
+		NetPacketCapture packetCapture = Net.sv.PacketCapture;
+		if (packetCapture != null)
+		{
+			arg.ReplyWith("A packet capture is already running: " + packetCapture.FilePath);
+			return;
+		}
+		float num = Mathf.Clamp(arg.GetFloat(0), 1f, 10000f);
+		float num2 = Mathf.Clamp(arg.GetFloat(1), 1f, 3600f);
+		NetPacketCapture netPacketCapture = NetPacketCapture.Start(Net.sv, NetPacketCapture.DefaultPath(), (long)(num * 1024f * 1024f), TimeSpan.FromSeconds(num2));
+		arg.ReplyWith($"Capturing packets for up to {num2} seconds or {num} MB to: {netPacketCapture.FilePath}");
+	}
+
+	[ServerVar(Name = "stop_packet_capture", Help = "networkprofiler.stop_packet_capture - ends the running packet capture early", ServerAdmin = true)]
+	public static void PacketCaptureStop(ConsoleSystem.Arg arg)
+	{
+		NetPacketCapture packetCapture = Net.sv.PacketCapture;
+		if (packetCapture == null)
+		{
+			arg.ReplyWith("No packet capture is running");
+			return;
+		}
+		packetCapture.RequestStop();
+		arg.ReplyWith("Stopping packet capture: " + packetCapture.FilePath);
 	}
 }

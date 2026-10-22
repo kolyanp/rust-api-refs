@@ -13,21 +13,21 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private ViewModel poolCueViewmodel;
 
+	[Header("3p Cue")]
 	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	[SerializeField]
-	[Header("3p Cue")]
 	private Transform cueHeldProp;
 
-	[Tooltip("Grip offset in prop bone space. Mostly z: how far up the shaft the hand holds the cue, which is what the stroke rotates around.")]
 	[SerializeField]
+	[Tooltip("Grip offset in prop bone space. Mostly z: how far up the shaft the hand holds the cue, which is what the stroke rotates around.")]
 	private Vector3 cueHeldPropPositionOffset;
 
-	[Tooltip("Cue tilt relative to the prop bone.")]
 	[SerializeField]
+	[Tooltip("Cue tilt relative to the prop bone.")]
 	private Vector3 cueHeldPropEulerOffset;
 
-	[SerializeField]
 	[Tooltip("One 3p cue per seat, all parented to cueHeldProp. Only the mounted player's own cue is left active.")]
+	[SerializeField]
 	private GameObject[] seatCues;
 
 	[SerializeField]
@@ -210,8 +210,8 @@ public class PooltableMountable : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(30uL)]
 	public void RPC_UpdateSplineDistance(RPCMessage msg)
 	{

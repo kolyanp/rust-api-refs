@@ -28,8 +28,8 @@ public class UI_Hero_InfoBox : FacepunchBehaviour
 	[SerializeField]
 	protected Image _blackout;
 
-	[Header("Settings")]
 	[SerializeField]
+	[Header("Settings")]
 	private Phrase _titlePhrase;
 
 	[SerializeField]

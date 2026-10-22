@@ -41,12 +41,12 @@ public class Mortar : Cannon
 	[SerializeField]
 	private float remoteAimDirSmoothSpeed;
 
-	[Header("Condition")]
 	[SerializeField]
+	[Header("Condition")]
 	private float conditionLossPerShot;
 
-	[SerializeField]
 	[Header("Recoil")]
+	[SerializeField]
 	private AnimationClip recoilLowAnimation;
 
 	[SerializeField]

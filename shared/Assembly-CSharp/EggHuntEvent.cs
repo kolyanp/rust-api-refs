@@ -173,7 +173,7 @@ public class EggHuntEvent : BaseHuntEvent
 		{
 			playerList = GetCombinedPlayerList(wantBots: true);
 		}
-		while (initialSpawnIndex != playerList.Count)
+		while (initialSpawnIndex < playerList.Count)
 		{
 			stopwatch.Reset();
 			stopwatch.Start();
@@ -181,6 +181,7 @@ public class EggHuntEvent : BaseHuntEvent
 			for (int i = initialSpawnIndex; i < playerList.Count; i++)
 			{
 				BasePlayer basePlayer = playerList[i];
+				initialSpawnIndex++;
 				if (basePlayer.isInvisible)
 				{
 					continue;
@@ -199,7 +200,6 @@ public class EggHuntEvent : BaseHuntEvent
 						break;
 					}
 				}
-				initialSpawnIndex++;
 				if (commandIndex >= 1024 || stopwatch.Elapsed.TotalMilliseconds >= (double)eggSpawningFrameBudget)
 				{
 					break;

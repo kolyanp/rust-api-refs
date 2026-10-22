@@ -277,8 +277,8 @@ public class FrankensteinTable : StorageContainer
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void CreateFrankenstein(RPCMessage msg)
 	{
 	}
@@ -294,6 +294,10 @@ public class FrankensteinTable : StorageContainer
 			return false;
 		}
 		if ((Object)(object)player.PetEntity != (Object)null)
+		{
+			return false;
+		}
+		if (needsBuildingPrivilegeToUse && !player.CanBuild())
 		{
 			return false;
 		}
@@ -396,9 +400,9 @@ public class FrankensteinTable : StorageContainer
 
 	private void SleepFrankenstein(BasePlayer owner)
 	{
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		if (IsInventoryEmpty() && !((Object)(object)owner == (Object)null) && !((Object)(object)owner.PetEntity == (Object)null))
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		if (IsInventoryEmpty() && !((Object)(object)owner == (Object)null) && (!needsBuildingPrivilegeToUse || owner.CanBuild()) && !((Object)(object)owner.PetEntity == (Object)null))
 		{
 			FrankensteinPet frankensteinPet = owner.PetEntity as FrankensteinPet;
 			if (!((Object)(object)frankensteinPet == (Object)null) && !(Vector3.Distance(((Component)this).transform.position, ((Component)frankensteinPet).transform.position) >= 5f) && Interface.CallHook("OnFrankensteinPetSleep", frankensteinPet, this, owner) == null)

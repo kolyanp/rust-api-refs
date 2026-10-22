@@ -125,11 +125,10 @@ public class NetWrite : Stream, IPooled
 		if (BaseNetwork.Multithreading)
 		{
 			peer.EnqueueWrite(this);
+			return;
 		}
-		else
-		{
-			peer.ProcessWrite(this);
-		}
+		peer.PacketCapture?.Capture(this);
+		peer.ProcessWrite(this);
 	}
 
 	public void SendImmediate(SendInfo info)

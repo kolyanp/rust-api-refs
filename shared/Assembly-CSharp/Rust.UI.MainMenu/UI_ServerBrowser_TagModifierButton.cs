@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ServerBrowser_TagModifierButton : RustButton
 {
-	[Header("Tag Modifier Button")]
 	[SerializeField]
+	[Header("Tag Modifier Button")]
 	private string _serverTag;
 
 	[SerializeField]

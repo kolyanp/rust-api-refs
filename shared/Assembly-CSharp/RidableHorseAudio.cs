@@ -27,8 +27,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private AnimationCurve saddleMovementGainCurve;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private MaterialEffect footstepEffects;
 
 	[SerializeField]
@@ -41,8 +41,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private string BaseFolder;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private SoundDefinition skidLoopSoundDef;
 
 	[SerializeField]

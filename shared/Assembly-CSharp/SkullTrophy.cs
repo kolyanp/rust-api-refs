@@ -22,7 +22,9 @@ public class SkullTrophy : StorageContainer
 
 	public float SunriseTime = 5f;
 
-	public RendererLOD SkullRenderer;
+	public MeshRenderer SkullRenderer;
+
+	public MeshLOD SkullLOD;
 
 	public Material[] DaySkull;
 
@@ -35,8 +37,8 @@ public class SkullTrophy : StorageContainer
 	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
-		SetFlagLocal(Flags.Reserved1, inventory.GetSlot(0) != null);
-		SendNetworkUpdate();
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
+		flagsUpdateScope.Set(Flags.Reserved1, inventory.GetSlot(0) != null);
 	}
 
 	public override void Save(SaveInfo info)

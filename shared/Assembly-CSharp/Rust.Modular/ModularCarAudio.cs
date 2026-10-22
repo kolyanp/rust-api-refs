@@ -6,8 +6,8 @@ public class ModularCarAudio : GroundVehicleAudio
 {
 	public bool showDebug;
 
-	[SerializeField]
 	[Header("Skid")]
+	[SerializeField]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]
@@ -53,8 +53,8 @@ public class ModularCarAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionLurchMinTimeBetweenSounds = 0.25f;
 
-	[Header("Wheels")]
 	[SerializeField]
+	[Header("Wheels")]
 	private SoundDefinition tyreRollingSoundDef;
 
 	[SerializeField]

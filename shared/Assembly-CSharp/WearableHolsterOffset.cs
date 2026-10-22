@@ -9,7 +9,8 @@ public class WearableHolsterOffset : MonoBehaviour
 		public enum OverrideBone
 		{
 			None,
-			Spine4
+			Spine4,
+			Custom
 		}
 
 		public HeldEntity.HolsterInfo.HolsterSlot type;
@@ -25,6 +26,9 @@ public class WearableHolsterOffset : MonoBehaviour
 		public Vector3 rightBackpackSlotRotationOffset;
 
 		public OverrideBone overrideBone;
+
+		[Tooltip("Bone added by this wearable's BoneRetargets, offset and rotationOffset then place the regular spine3 holster position relative to this bone")]
+		public string customBoneName;
 	}
 
 	public offsetInfo[] Offsets;

@@ -15,7 +15,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2424]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2426]
 	{
 		new ConsoleSystem.Command
 		{
@@ -31277,6 +31277,32 @@ public class ConsoleGen
 				MountedWeapon.ENABLE_CLIENT_AUTHORITY = StringExtensions.ToBool(str);
 			},
 			Default = "True"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "packet_capture",
+			Parent = "networkprofiler",
+			FullName = "networkprofiler.packet_capture",
+			ServerAdmin = true,
+			Description = "networkprofiler.packet_capture [max size(in MB), min(1), max(10000), float] [max duration(in seconds), min(1), max(3600), float]",
+			Variable = false,
+			Call = (ConsoleSystem.Arg arg) =>
+			{
+				NetworkProfiler.PacketCapture(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "stop_packet_capture",
+			Parent = "networkprofiler",
+			FullName = "networkprofiler.stop_packet_capture",
+			ServerAdmin = true,
+			Description = "networkprofiler.stop_packet_capture - ends the running packet capture early",
+			Variable = false,
+			Call = (ConsoleSystem.Arg arg) =>
+			{
+				NetworkProfiler.PacketCaptureStop(arg);
+			}
 		},
 		new ConsoleSystem.Command
 		{

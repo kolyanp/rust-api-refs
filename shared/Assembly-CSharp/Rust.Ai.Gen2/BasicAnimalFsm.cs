@@ -27,8 +27,8 @@ public class BasicAnimalFsm : FSMComponent
 	}
 
 	[Header("Basic animal")]
-	[SerializeField]
 	[Tooltip("How close the animal has to get to bite, measured from its attack point. Also the distance the chase stops at, so it doubles as how close the animal comes to what it fights.")]
+	[SerializeField]
 	private float attackRange = 2f;
 
 	[Tooltip("Where the bite reaches from, relative to the animal. Rotates with the animal, so a bear reaches further forwards than sideways.")]
@@ -39,12 +39,12 @@ public class BasicAnimalFsm : FSMComponent
 	[SerializeField]
 	private float attackIntervalSeconds = 1.5f;
 
-	[Tooltip("How long the animal commits to one chase before backing off.")]
 	[SerializeField]
+	[Tooltip("How long the animal commits to one chase before backing off.")]
 	private float chaseGiveUpSeconds = 20f;
 
-	[Tooltip("How long the animal stays uninterested after backing off, before it roams again.")]
 	[SerializeField]
+	[Tooltip("How long the animal stays uninterested after backing off, before it roams again.")]
 	private float cooldownSeconds = 5f;
 
 	[Tooltip("Health fraction below which the animal breaks off a fight.")]
@@ -52,8 +52,8 @@ public class BasicAnimalFsm : FSMComponent
 	private float fleeBelowHealthFraction = 0.3f;
 
 	[Range(0f, 1f)]
-	[SerializeField]
 	[Tooltip("Chance of napping rather than idling at the end of a roam leg. Keep it low, a sleeping animal is a sitting duck.")]
+	[SerializeField]
 	private float sleepChance = 0.05f;
 
 	public State_Roam roam = new State_Roam();

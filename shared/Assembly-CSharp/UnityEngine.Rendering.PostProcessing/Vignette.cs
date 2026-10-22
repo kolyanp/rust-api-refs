@@ -31,8 +31,8 @@ public sealed class Vignette : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Range(0.01f, 1f)]
 	[Tooltip("Smoothness of the vignette borders.")]
+	[Range(0.01f, 1f)]
 	public FloatParameter smoothness = new FloatParameter
 	{
 		value = 0.2f
@@ -57,8 +57,8 @@ public sealed class Vignette : PostProcessEffectSettings
 		value = null
 	};
 
-	[Tooltip("Mask opacity.")]
 	[Range(0f, 1f)]
+	[Tooltip("Mask opacity.")]
 	public FloatParameter opacity = new FloatParameter
 	{
 		value = 1f

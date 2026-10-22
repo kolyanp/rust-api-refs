@@ -9,9 +9,9 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FTail;
 
-[AddComponentMenu("FImpossible Creations/Tail Animator 2")]
-[DefaultExecutionOrder(-4)]
 [HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
+[DefaultExecutionOrder(-4)]
+[AddComponentMenu("FImpossible Creations/Tail Animator 2")]
 public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	[Serializable]
@@ -857,8 +857,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Inverting ik iteration order to generate different pose results - more straight towards target")]
 	public bool IkInvertOrder;
 
-	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
+	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
 	public float IKBlend = 1f;
 
 	[Tooltip("If syncing with animator then applying motion of keyframe animation for IK")]
@@ -925,8 +925,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Spread gravity weight over tail segments")]
 	public bool UseGravityCurve;
 
-	[Tooltip("Spread gravity weight over tail segments")]
 	[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 0.85f, 0.35f, 0.25f, 0.85f)]
+	[Tooltip("Spread gravity weight over tail segments")]
 	public AnimationCurve GravityCurve = AnimationCurve.EaseInOut(0f, 0.65f, 1f, 1f);
 
 	[Tooltip("Simulate gravity weight for tail logics")]
@@ -1097,8 +1097,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool fixedAllow = true;
 
-	[Tooltip("Making tail segment deflection influence back segments")]
 	[Range(0f, 1f)]
+	[Tooltip("Making tail segment deflection influence back segments")]
 	public float Deflection;
 
 	[FPD_Suffix(1f, 89f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
@@ -1172,8 +1172,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1.2f)]
 	public float Slithery = 1f;
 
-	[Tooltip("How curly motion should be applied to tail segments")]
 	[Range(0f, 1f)]
+	[Tooltip("How curly motion should be applied to tail segments")]
 	public float Curling = 0.5f;
 
 	[Tooltip("Elastic spring effect making motion more 'meaty'")]
@@ -1217,12 +1217,12 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float ReactionSpeed = 0.9f;
 
-	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
 	[Range(0f, 1f)]
+	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
 	public float Sustain;
 
-	[Tooltip("Rotation speed is defining how fast tail segments will return to target rotation, it gives animation more lazy feeling if it's lower")]
 	[Range(0f, 1f)]
+	[Tooltip("Rotation speed is defining how fast tail segments will return to target rotation, it gives animation more lazy feeling if it's lower")]
 	public float RotationRelevancy = 1f;
 
 	[Tooltip("Smoothing motion values change over time style to be applied for 'Reaction Speed' and 'Rotation Relevancy' parameters")]
@@ -1256,15 +1256,15 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("If tail movement should not move in depth you can use this parameter")]
 	public int Axis2D;
 
-	[Tooltip("[Experimental: Works only with Slithery Blend set to >= 1] Making each segment go to target pose in front of parent segment creating new animation effect")]
 	[Range(-1f, 1f)]
+	[Tooltip("[Experimental: Works only with Slithery Blend set to >= 1] Making each segment go to target pose in front of parent segment creating new animation effect")]
 	public float Tangle;
 
 	[Tooltip("Making tail animate also roll rotation like it was done in Tail Animator V1 ! Use Rotation Relevancy Parameter (set lower than 0.5) !")]
 	public bool AnimateRoll;
 
-	[Tooltip("Overriding keyframe animation with just Tail Animator option (keyframe animation treated as t-pose bones rotations)")]
 	[Range(0f, 1f)]
+	[Tooltip("Overriding keyframe animation with just Tail Animator option (keyframe animation treated as t-pose bones rotations)")]
 	public float OverrideKeyframeAnimation;
 
 	private Transform _baseTransform;

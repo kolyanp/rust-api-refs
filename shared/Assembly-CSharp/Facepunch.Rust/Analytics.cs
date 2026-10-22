@@ -616,7 +616,7 @@ public static class Analytics
 			dictionary["changeset"] = ((current != null) ? current.Scm.ChangeId : null) ?? "editor";
 			BuildInfo current2 = BuildInfo.Current;
 			dictionary["branch"] = ((current2 != null) ? current2.Scm.Branch : null) ?? "editor";
-			dictionary["network_version"] = 2634.ToString();
+			dictionary["network_version"] = 2635.ToString();
 			dictionary["eos_sdk"] = ((object)VersionInterface.GetVersion())?.ToString() ?? "disabled";
 			return dictionary;
 		}
@@ -962,7 +962,7 @@ public static class Analytics
 					.AddField("ip_convar", Net.sv.ip)
 					.AddField("port_convar", Net.sv.port)
 					.AddField("net_protocol", Net.sv.ProtocolId)
-					.AddField("protocol_network", 2634)
+					.AddField("protocol_network", 2635)
 					.AddField("protocol_save", 289);
 				BuildInfo current = BuildInfo.Current;
 				EventRecord eventRecord2 = eventRecord.AddField("changeset", ((current != null) ? current.Scm.ChangeId : null) ?? "0").AddField("unity_version", Application.unityVersion);
@@ -1719,7 +1719,7 @@ public static class Analytics
 					.AddField("message", message);
 				if (BuildInfo.Current != null)
 				{
-					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2634);
+					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2635);
 				}
 				switch (type)
 				{

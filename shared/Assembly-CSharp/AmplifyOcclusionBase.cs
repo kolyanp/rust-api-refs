@@ -13,24 +13,24 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Tooltip("Final applied intensity of the occlusion effect.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final applied intensity of the occlusion effect.")]
 	public float Intensity = 1f;
 
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
 	[NonSerialized]
-	[Tooltip("Max sampling range in pixels.")]
 	[Range(32f, 1024f)]
+	[Tooltip("Max sampling range in pixels.")]
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
-	[Range(0f, 2f)]
 	[Tooltip("Occlusion contribution amount on relation to radius.")]
+	[Range(0f, 2f)]
 	public float RadiusIntensity = 1f;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
@@ -48,8 +48,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
 	public bool Downsample = true;
 
-	[Header("Distance Fade")]
 	[Tooltip("Control parameters at faraway.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance in Unity unities that start to fade.")]
@@ -99,8 +99,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
 	public float FilterBlending = 0.5f;
 
-	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	public float FilterResponse = 0.5f;
 
 	[NonSerialized]

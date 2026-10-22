@@ -620,8 +620,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		GameController?.LeaveTable(msg.player.userID);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -55,21 +55,21 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 		public void SetupGroup(Group group)
 		{
-			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-			//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-			//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+			//IL_015e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-			//IL_016c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0172: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0174: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0166: Unknown result type (might be due to invalid IL or missing references)
 			(int x, int y, int layer) tuple = _grid.DeconstructGroupId((int)group.ID);
 			int item = tuple.x;
 			int item2 = tuple.y;
-			Vector3 val = new Vector3(GridToPosition(item) - HalfCellSize, 0f, GridToPosition(item2) - HalfCellSize);
+			Vector3 val = new Vector3(GridToPosition(item), 0f, GridToPosition(item2));
 			Vector3 max = new Vector3(val.x + CellSize, 0f, val.z + CellSize);
 			if (LayerIndex >= 10)
 			{
@@ -158,6 +158,8 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	public float dynamicDungeonsInterval = 100f;
 
+	public float dynamicDungeonsCellSize = 200f;
+
 	public int gizmoLayer;
 
 	private Group[] _hardcodedGroups;
@@ -180,7 +182,7 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 
 	public float DeepSeaCellSize => (float)baseCellSize * 2f;
 
-	public float DynamicDungeonCellSize => dynamicDungeonsInterval;
+	public float DynamicDungeonCellSize => dynamicDungeonsCellSize;
 
 	public ulong MaxPositionalGroupId => (ulong)(startID + EncodeCoord(16383, 16383, 14));
 
@@ -267,19 +269,21 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 	private void OnDrawGizmosSelected()
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		if (gizmoLayer >= 0 && gizmoLayer < _layers.Length && _layers[gizmoLayer] != null)
 		{
 			Gizmos.color = Color.blue;
 			Layer layer = _layers[gizmoLayer];
+			float num = layer.GridToPosition(0);
+			float num2 = layer.GridToPosition(layer.CellCount);
 			for (int i = 0; i <= layer.CellCount; i++)
 			{
-				float num = 0f - layer.HalfGridSize + (float)i * layer.CellSize - layer.HalfCellSize;
-				Gizmos.DrawLine(new Vector3(layer.HalfGridSize, 0f, num), new Vector3(0f - layer.HalfGridSize, 0f, num));
-				Gizmos.DrawLine(new Vector3(num, 0f, layer.HalfGridSize), new Vector3(num, 0f, 0f - layer.HalfGridSize));
+				float num3 = layer.GridToPosition(i);
+				Gizmos.DrawLine(new Vector3(num2, 0f, num3), new Vector3(num, 0f, num3));
+				Gizmos.DrawLine(new Vector3(num3, 0f, num2), new Vector3(num3, 0f, num));
 			}
 		}
 	}
@@ -465,6 +469,35 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 				obj = GetOrCreateFromLayer(x, y, layer);
 			}
 			groups.TryAdd(obj);
+		}
+	}
+
+	public void AddGroups(int layerInd, Bounds area, ListHashSet<Group> groups, bool create)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		Layer layer = _layers[layerInd];
+		int num = Mathf.Max(Mathf.CeilToInt((area.min.x + layer.HalfGridSize) / layer.CellSize), 0);
+		int num2 = Mathf.Max(Mathf.CeilToInt((area.min.z + layer.HalfGridSize) / layer.CellSize), 0);
+		int num3 = Mathf.Min(Mathf.FloorToInt((area.max.x + layer.HalfGridSize) / layer.CellSize), layer.CellCount) - 1;
+		int num4 = Mathf.Min(Mathf.FloorToInt((area.max.z + layer.HalfGridSize) / layer.CellSize), layer.CellCount) - 1;
+		for (int i = num2; i <= num4; i++)
+		{
+			for (int j = num; j <= num3; j++)
+			{
+				Group obj = layer.Groups[i * layer.CellCount + j];
+				if (obj == null)
+				{
+					if (!create)
+					{
+						continue;
+					}
+					obj = GetOrCreateFromLayer(j, i, layer);
+				}
+				groups.TryAdd(obj);
+			}
 		}
 	}
 

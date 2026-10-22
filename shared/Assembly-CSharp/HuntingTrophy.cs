@@ -184,8 +184,8 @@ public class HuntingTrophy : StorageContainer
 		return base.ItemFilter(player, item, targetSlot);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ServerRequestSubmit()
 	{
 		Item slot = inventory.GetSlot(0);

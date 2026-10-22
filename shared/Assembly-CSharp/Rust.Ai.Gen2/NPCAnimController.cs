@@ -76,8 +76,8 @@ public class NPCAnimController : EntityComponent<BaseEntity>, IClientComponent
 	[SerializeField]
 	private string restingPoseState = "cow_lay_idle";
 
-	[SerializeField]
 	[Tooltip("Animator state holding the settled lying pose of a pregnant animal.")]
+	[SerializeField]
 	private string pregnantPoseState = "cow_lay_idle_moo";
 
 	[SerializeField]

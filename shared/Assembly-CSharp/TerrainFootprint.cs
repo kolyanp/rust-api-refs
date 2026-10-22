@@ -41,8 +41,8 @@ public class TerrainFootprint : PrefabAttribute
 	[Tooltip("Fill the whole interior of a closed ring, not just the band at its edge. Off leaves a gutter's banks raised with the trench between them, so turn it off only for arches and overhangs.")]
 	public bool FillInterior = true;
 
-	[Header("Tilt")]
 	[Tooltip("Above this tilt the footprint does nothing: a tilted rock swings out past the captured ring, so the silhouette stops describing where it meets ground. Costs coverage, not correctness.")]
+	[Header("Tilt")]
 	public float MaxTiltDegrees = 35f;
 
 	[NonSerialized]

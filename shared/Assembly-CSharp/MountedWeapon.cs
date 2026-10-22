@@ -40,8 +40,8 @@ public class MountedWeapon : StorageContainer
 
 	private static readonly int Up = Animator.StringToHash("up");
 
-	[SerializeField]
 	[Header("Mounted Weapon")]
+	[SerializeField]
 	private Transform _eyes;
 
 	[SerializeField]
@@ -56,12 +56,12 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[ItemSelector]
 	[SerializeField]
+	[ItemSelector]
 	private ItemDefinition _ammoItem;
 
-	[Header("Mounted Weapon - Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon - Weapon")]
 	private ItemDefinition _weapon;
 
 	[SerializeField]
@@ -123,8 +123,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _forceSeatPositionUpdates;
 
-	[Header("Mounted Weapon - Player Camera Animation")]
 	[SerializeField]
+	[Header("Mounted Weapon - Player Camera Animation")]
 	private Transform _cameraAnimation;
 
 	[SerializeField]
@@ -140,8 +140,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Aim Movement Sounds")]
+	[SerializeField]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]

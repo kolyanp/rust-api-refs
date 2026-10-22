@@ -127,8 +127,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride = -1f;
 
-	[Header("Effects")]
 	[Tooltip("How far away this attack effect can be heard")]
+	[Header("Effects")]
 	public float maxAttackEffectDistance = 400f;
 
 	public GameObjectRef attackFX;
@@ -1485,9 +1485,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1533,8 +1533,8 @@ public class BaseProjectile : AttackEntity
 		return true;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void SwitchAmmoTo(RPCMessage msg)
 	{
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
@@ -1718,8 +1718,8 @@ public class BaseProjectile : AttackEntity
 
 	[RPC_Server.MaxRepeatedElements(64)]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)

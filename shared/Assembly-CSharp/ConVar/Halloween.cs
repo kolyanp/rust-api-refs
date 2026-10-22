@@ -4,13 +4,13 @@ namespace ConVar;
 public class Halloween : ConsoleSystem
 {
 	[ServerVar(Help = "(Generated) Enables the Halloween event on the server, activating Halloween-themed loot spawns, NPC variants, and event-specific mechanics")]
-	public static bool enabled = false;
+	public static bool enabled = true;
 
 	[ServerVar(Help = "Population active on the server, per square km")]
 	public static float murdererpopulation = 0f;
 
 	[ServerVar(Help = "Population active on the server, per square km")]
-	public static float scarecrowpopulation = 0f;
+	public static float scarecrowpopulation = 2f;
 
 	[ServerVar(Help = "Scarecrows can throw beancans (Default: true).")]
 	public static bool scarecrows_throw_beancans = true;

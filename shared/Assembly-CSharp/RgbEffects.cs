@@ -31,8 +31,8 @@ public class RgbEffects : SingletonComponent<RgbEffects>
 
 	public Color comfortedColor;
 
-	[EditorBrowsable(EditorBrowsableState.Never)]
 	[ClientVar(Name = "static", Help = "(Generated) Sets all RGB lighting devices to a static colour; takes an RGBA colour argument and applies it to the RGB controller instance")]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static void ConVar_Static(ConsoleSystem.Arg args)
 	{
 	}

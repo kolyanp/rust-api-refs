@@ -33,8 +33,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private RustButton animatorToggleButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SkinInfoPanel skinInfoPanel;
 
 	[SerializeField]
@@ -44,8 +44,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private GameObject navButtonsGroup;
 
-	[SerializeField]
 	[Header("Drag")]
+	[SerializeField]
 	private float inertiaDecay = 5f;
 
 	[Header("Pan")]

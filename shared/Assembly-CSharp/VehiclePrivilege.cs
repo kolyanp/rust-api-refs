@@ -235,8 +235,8 @@ public class VehiclePrivilege : SimplePrivilege
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void AddSelfAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanModifyAuth(rpc.player) && Interface.CallHook("OnCupboardAuthorize", this, rpc.player) == null)
@@ -246,8 +246,8 @@ public class VehiclePrivilege : SimplePrivilege
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void AddAuthorize(RPCMessage rpc)
 	{
 		if (SupportFriendListAdd && rpc.player.CanInteract() && IsAuthed(rpc.player) && CanModifyAuth(rpc.player))

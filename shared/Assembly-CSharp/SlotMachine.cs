@@ -321,8 +321,8 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		return component.inventory.GetSlot(0)?.amount ?? 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Spin(RPCMessage rpc)
 	{
 		if (IsSpinning || (Object)(object)rpc.player != (Object)(object)GetMounted())

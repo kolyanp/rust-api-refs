@@ -12,15 +12,15 @@ public sealed class AmbientOcclusion : PostProcessEffectSettings
 		value = AmbientOcclusionMode.MultiScaleVolumetricObscurance
 	};
 
-	[Range(0f, 4f)]
 	[Tooltip("The degree of darkness added by ambient occlusion. Higher values produce darker areas.")]
+	[Range(0f, 4f)]
 	public FloatParameter intensity = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[ColorUsage(false)]
 	[Tooltip("The custom color to use for the ambient occlusion. The default is black.")]
+	[ColorUsage(false)]
 	public ColorParameter color = new ColorParameter
 	{
 		value = Color.black

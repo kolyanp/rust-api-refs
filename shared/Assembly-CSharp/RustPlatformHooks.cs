@@ -32,7 +32,7 @@ public class RustPlatformHooks : IPlatformHooks
 			{
 				iPAddress = IPAddress.Parse(ConVar.Server.ip);
 			}
-			return new ServerParameters("rust", "Rust", 2634.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ResolveQueryPort());
+			return new ServerParameters("rust", "Rust", 2635.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ResolveQueryPort());
 		}
 	}
 

@@ -13,8 +13,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	public LegsAnimator legsAnimator;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Transform backHipTransform;
 
 	[SerializeField]
@@ -23,8 +23,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3 skiddingHipRotation;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	[Header("Head")]
 	private float headBlend = 1f;
 
@@ -61,8 +61,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public float spineYawInertiaFactor = 150f;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Quaternion[] targetNeckRotations;
 
 	[SerializeField]
@@ -77,8 +77,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[ReadOnly]
 	private Vector3 originalHipPosition;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion originalHipRotation;
 
 	public Vector3 spineOffset;

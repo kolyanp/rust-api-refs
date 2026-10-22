@@ -122,8 +122,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[NonSerialized]
 	public HorseModifiers modifiers;
 
-	[ServerVar]
 	[Help("Scale all rideable animal dung production rates by this value. 0 will disable dung production.")]
+	[ServerVar]
 	public static float dungTimeScale = 1f;
 
 	private float nextEatTime;
@@ -216,8 +216,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private bool isSubmerged;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private float baseDrag;
 
 	[HideInInspector]
@@ -242,8 +242,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private float nextDecayTime;
 
-	[SerializeField]
 	[Header("Horse")]
+	[SerializeField]
 	private Animator animator;
 
 	[SerializeField]
@@ -303,13 +303,13 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public AnimationCurve slopeAngleSpeedFactor;
 
+	[SerializeField]
 	[Space]
 	[Header("Collision Damage")]
-	[SerializeField]
 	private GameObjectRef collisionEffect;
 
-	[Tooltip("Ignore low magnitude so e.g. Players running into stationary vehicles doesn't trigger damage or FX")]
 	[SerializeField]
+	[Tooltip("Ignore low magnitude so e.g. Players running into stationary vehicles doesn't trigger damage or FX")]
 	private float minCollisionDamageForce = 20000f;
 
 	[SerializeField]
@@ -399,8 +399,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public GameObjectRef ragdollPrefab;
 
-	[Header("Pulling")]
 	[SerializeField]
+	[Header("Pulling")]
 	private List<ModifierDefintion> pullingPlayerModifiers;
 
 	[Header("Avoidance")]
@@ -1037,8 +1037,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SERVER_OpenLoot(RPCMessage rpc)
 	{
 		if (storageInventory == null)
@@ -1063,8 +1063,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SERVER_RequestSaddleSwap(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -3077,9 +3077,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	public void SERVER_Lead(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -3558,10 +3558,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_RequestDetach(RPCMessage msg)
 	{
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)

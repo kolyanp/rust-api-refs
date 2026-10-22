@@ -7,23 +7,23 @@ namespace FIMSpace.GroundFitter;
 
 public abstract class FGroundFitter_Base : MonoBehaviour
 {
+	[Space(4f, order = 1)]
 	[Header("> Main Variables <", order = 0)]
 	[Tooltip("How quick rotation should be corrected to target")]
 	[Range(1f, 30f)]
-	[Space(4f, order = 1)]
 	public float FittingSpeed = 6f;
 
-	[Tooltip("Smoothing whole rotation motion")]
 	[Range(0f, 1f)]
+	[Tooltip("Smoothing whole rotation motion")]
 	public float TotalSmoother;
 
-	[Space(3f)]
 	[HideInInspector]
+	[Space(3f)]
 	[Tooltip("Transform which will be rotated by script, usually it can be the same transform as component's")]
 	public Transform TransformToRotate;
 
-	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	[Space(3f)]
+	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	public bool GlueToGround;
 
 	[Space(4f, order = 1)]
@@ -32,12 +32,12 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Header("> Tweaking Settings <", order = 0)]
 	public float MildForwardValue;
 
-	[Range(0f, 90f)]
 	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
+	[Range(0f, 90f)]
 	public float MaxForwardRotation = 90f;
 
-	[Range(0f, 1f)]
 	[Space(5f)]
+	[Range(0f, 1f)]
 	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
 	public float MildHorizontalValue;
 

@@ -116,8 +116,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	[SerializeField]
 	private VehicleLight[] movingForwardLights;
 
-	[SerializeField]
 	[FormerlySerializedAs("movingBackwardsLights")]
+	[SerializeField]
 	private VehicleLight[] movingBackwardLights;
 
 	[SerializeField]

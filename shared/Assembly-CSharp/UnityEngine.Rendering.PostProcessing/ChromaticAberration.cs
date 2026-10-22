@@ -13,8 +13,8 @@ public sealed class ChromaticAberration : PostProcessEffectSettings
 		value = null
 	};
 
-	[Range(0f, 1f)]
 	[Tooltip("Amount of tangential distortion.")]
+	[Range(0f, 1f)]
 	public FloatParameter intensity = new FloatParameter
 	{
 		value = 0f

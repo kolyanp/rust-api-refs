@@ -11,7 +11,7 @@ public class HalloweenDungeon : BasePortal
 	public EntityRef<ProceduralDynamicDungeon> dungeonInstance;
 
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]
-	public static float population = 0f;
+	public static float population = 1f;
 
 	[ServerVar(Help = "How long each active dungeon should last before dying", ShowInAdminUI = true)]
 	public static float lifetime = 600f;
@@ -74,7 +74,7 @@ public class HalloweenDungeon : BasePortal
 			}
 			else if (timeAlive > 3600f && secondsUsed == 0f)
 			{
-				ClearAllEntitiesInRadius(80f);
+				ClearAllEntitiesInDungeon();
 				Kill();
 			}
 		}
@@ -84,14 +84,13 @@ public class HalloweenDungeon : BasePortal
 	{
 		if (!AnyPlayersInside())
 		{
-			ClearAllEntitiesInRadius(80f);
+			ClearAllEntitiesInDungeon();
 			Kill();
 		}
 	}
 
 	public bool AnyPlayersInside()
 	{
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		ProceduralDynamicDungeon proceduralDynamicDungeon = dungeonInstance.Get(serverside: true);
 		if ((Object)(object)proceduralDynamicDungeon == (Object)null)
 		{
@@ -100,21 +99,20 @@ public class HalloweenDungeon : BasePortal
 		else if (Time.time > nextPlayerCheckTime)
 		{
 			nextPlayerCheckTime = Time.time + 10f;
-			anyplayers_cached = BaseNetworkable.HasCloseConnections(((Component)proceduralDynamicDungeon).transform.position, 80f);
+			anyplayers_cached = proceduralDynamicDungeon.ContainsAnyPlayers(includeSleepers: false);
 		}
 		return anyplayers_cached;
 	}
 
-	private void ClearAllEntitiesInRadius(float radius)
+	private void ClearAllEntitiesInDungeon()
 	{
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		ProceduralDynamicDungeon proceduralDynamicDungeon = dungeonInstance.Get(serverside: true);
 		if ((Object)(object)proceduralDynamicDungeon == (Object)null)
 		{
 			return;
 		}
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
-		Vis.Entities(((Component)proceduralDynamicDungeon).transform.position, radius, list, -1, (QueryTriggerInteraction)2);
+		proceduralDynamicDungeon.GetEntitiesInside(list);
 		foreach (BaseEntity item in list)
 		{
 			if (item.IsValid() && !item.IsDestroyed)
@@ -193,16 +191,21 @@ public class HalloweenDungeon : BasePortal
 
 	public void CheckBlocked()
 	{
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)GetBuildingPrivilege(cached: true) != (Object)null)
+		{
+			Kill();
+			return;
+		}
 		float num = 0.5f;
 		float num2 = 1.8f;
 		Vector3 position = localEntryExitPos.position;
@@ -212,52 +215,6 @@ public class HalloweenDungeon : BasePortal
 		{
 			Kill();
 		}
-	}
-
-	public static Vector3 GetDungeonSpawnPoint()
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		float num = Mathf.Floor(TerrainMeta.Size.x / 200f);
-		float num2 = 1000f;
-		Vector3 zero = Vector3.zero;
-		zero.x = 0f - Mathf.Min(TerrainMeta.Size.x * 0.5f, 4000f) + 200f;
-		zero.y = 1025f;
-		zero.z = 0f - Mathf.Min(TerrainMeta.Size.z * 0.5f, 4000f) + 200f;
-		_ = Vector3.zero;
-		for (int i = 0; (float)i < num2; i++)
-		{
-			for (int j = 0; (float)j < num; j++)
-			{
-				Vector3 val = zero + new Vector3((float)j * 200f, (float)i * 100f, 0f);
-				bool flag = false;
-				foreach (ProceduralDynamicDungeon dungeon in ProceduralDynamicDungeon.dungeons)
-				{
-					if ((Object)(object)dungeon != (Object)null && dungeon.isServer && Vector3.Distance(((Component)dungeon).transform.position, val) < 10f)
-					{
-						flag = true;
-						break;
-					}
-				}
-				if (!flag)
-				{
-					return val;
-				}
-			}
-		}
-		return Vector3.zero;
 	}
 
 	internal override void DoServerDestroy()
@@ -276,26 +233,21 @@ public class HalloweenDungeon : BasePortal
 
 	public void SpawnSubEntities()
 	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 dungeonSpawnPoint = GetDungeonSpawnPoint();
-		if (dungeonSpawnPoint == Vector3.zero)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		if (!ProceduralDynamicDungeon.TryFindFreeNetworkGroup(out var spawnPoint))
 		{
 			Debug.LogError((object)"No dungeon spawn point");
 			Invoke(DelayedDestroy, 5f);
 			return;
 		}
-		BaseEntity baseEntity = GameManager.server.CreateEntity(dungeonPrefab.resourcePath, dungeonSpawnPoint, Quaternion.identity);
+		BaseEntity baseEntity = GameManager.server.CreateEntity(dungeonPrefab.resourcePath, spawnPoint, Quaternion.identity);
 		ProceduralDynamicDungeon component = ((Component)baseEntity).GetComponent<ProceduralDynamicDungeon>();
-		component.mapOffset = ((Component)this).transform.position - dungeonSpawnPoint;
+		component.mapOffset = ((Component)this).transform.position - spawnPoint;
 		baseEntity.Spawn();
 		dungeonInstance.Set(component);
 		BasePortal basePortal = (targetPortal = component.GetExitPortal());

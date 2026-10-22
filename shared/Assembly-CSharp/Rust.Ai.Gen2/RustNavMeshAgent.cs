@@ -136,8 +136,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	{
 		public NativeArray<MovementTransformUpdate> updates;
 
-		[ReadOnly]
 		[NativeDisableParallelForRestriction]
+		[ReadOnly]
 		public NativeArray<IntPtr> queries;
 
 		public float deltaTime;

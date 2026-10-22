@@ -34,4 +34,6 @@ public interface Provider
 	void ForEach(int layer, Action<Group> callback);
 
 	void AddGroups(int layer, ListHashSet<Group> groups, bool create);
+
+	void AddGroups(int layer, Bounds area, ListHashSet<Group> groups, bool create);
 }

@@ -6,8 +6,8 @@ namespace Rust.Ai.Gen2;
 [Serializable]
 public class State_DismountVehicle : FSMStateBase
 {
-	[Tooltip("Optional montage for climbing down. Without one the animal is placed on the dismount point, which is what the CH47 has always done.")]
 	[SerializeField]
+	[Tooltip("Optional montage for climbing down. Without one the animal is placed on the dismount point, which is what the CH47 has always done.")]
 	public RootMotionData Animation;
 
 	[SerializeField]

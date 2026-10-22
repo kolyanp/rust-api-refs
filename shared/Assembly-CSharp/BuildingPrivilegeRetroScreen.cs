@@ -35,14 +35,14 @@ public class BuildingPrivilegeRetroScreen : FacepunchBehaviour, INotifyLOD, ICli
 
 	public GameObject decayingGroup;
 
-	[Header("UPKEEP")]
 	[Space]
+	[Header("UPKEEP")]
 	public VirtualItemIcon[] costIcons;
 
 	public RustText[] paginationTexts;
 
-	[Header("BLOCKS")]
 	[Space]
+	[Header("BLOCKS")]
 	public GameObject[] blocksType;
 
 	public RustText blockCountText;

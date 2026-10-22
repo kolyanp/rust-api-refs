@@ -12,12 +12,12 @@ public class LivestockSaleTable : ScriptableObject
 	{
 		public ItemDefinition Item;
 
-		[Tooltip("How much of the item the full listing is. More than one makes it a stack the vendor can pay part of.")]
 		[Min(1f)]
+		[Tooltip("How much of the item the full listing is. More than one makes it a stack the vendor can pay part of.")]
 		public int Amount = 1;
 
-		[Range(0f, 1f)]
 		[Tooltip("What the full listing costs out of an offer's budget, where 1 is a perfect animal or a full lot of wool.")]
+		[Range(0f, 1f)]
 		public float Cost = 0.1f;
 
 		[Tooltip("The least budget left for a stack to be considered. A single item needs its whole Cost instead.")]
@@ -32,8 +32,8 @@ public class LivestockSaleTable : ScriptableObject
 		[Range(0f, 1f)]
 		public float Chance = 1f;
 
-		[Tooltip("Part stacks are rounded down to a multiple of this, so an offer reads 100 rather than 97.")]
 		[Min(1f)]
+		[Tooltip("Part stacks are rounded down to a multiple of this, so an offer reads 100 rather than 97.")]
 		public int RoundTo = 1;
 
 		public bool IsStack => Amount > 1;

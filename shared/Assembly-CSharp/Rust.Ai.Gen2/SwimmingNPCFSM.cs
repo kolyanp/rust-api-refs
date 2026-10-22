@@ -123,8 +123,8 @@ public abstract class SwimmingNPCFSM : FSMComponent
 		[SerializeField]
 		private Vector2 distanceRange = new Vector2(10f, 25f);
 
-		[Tooltip("How far the swimmer will drift from home before its next leg is aimed back towards it.")]
 		[SerializeField]
+		[Tooltip("How far the swimmer will drift from home before its next leg is aimed back towards it.")]
 		private float homeRadius = 50f;
 
 		[Tooltip("How close counts as arrived. The swimmer steers rather than paths, so it never lands exactly on the point.")]
@@ -135,14 +135,14 @@ public abstract class SwimmingNPCFSM : FSMComponent
 		[Tooltip("Water this shallow is not worth swimming to. What passes for navigable without a navmesh.")]
 		private float minWaterDepth = 3f;
 
+		[Range(0f, 1f)]
 		[Tooltip("How far down the swimmer aims to swim, as a fraction of the water depth at its destination. 0 hugs the surface and 1 hugs the floor. Without this the destination inherits whatever height the swimmer already had, so it never recovers depth once it sinks.")]
 		[SerializeField]
-		[Range(0f, 1f)]
 		private float targetDepthFraction = 0.3f;
 
 		[SerializeField]
-		[Range(0f, 0.5f)]
 		[Tooltip("How much each leg's depth varies around the target, as a fraction of local depth, so the swimmer does not swim at one fixed height. WaterClamp keeps it in bounds.")]
+		[Range(0f, 0.5f)]
 		private float depthJitterFraction = 0.15f;
 
 		[SerializeField]

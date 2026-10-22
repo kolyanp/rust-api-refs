@@ -24,28 +24,28 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	[SerializeField]
 	private bool _isUndo;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 _copySize;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private RectInt _heightMapRect;
 
 	[SerializeField]
 	[HideInInspector]
 	private Color[] _heightMapData;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private RectInt _splat0Rect;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Color[] _splat0Data;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private RectInt _splat1Rect;
 
 	[SerializeField]
@@ -80,8 +80,8 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	[SerializeField]
 	private RectInt _waterRect;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Color[] _waterData;
 
 	public bool HasCopied => _hasCopied;

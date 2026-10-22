@@ -37,12 +37,12 @@ public class Pooltable : BaseCombatEntity
 	private WorldSpline worldSpline;
 
 	[SerializeField]
-	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	[Range(0f, 0.75f)]
+	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	private float splineTableCloseness = 0.25f;
 
-	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	[SerializeField]
+	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	private bool runWalkClippingChecks = true;
 
 	[SerializeField]
@@ -87,9 +87,9 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private float ballCollisionSoundInterval = 0.02f;
 
-	[Header("Ball Return")]
-	[SerializeField]
 	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
+	[SerializeField]
+	[Header("Ball Return")]
 	private WorldSpline ballReturnPath;
 
 	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
@@ -553,8 +553,8 @@ public class Pooltable : BaseCombatEntity
 		return false;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_JoinGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null)
@@ -601,8 +601,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestShoot(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -637,8 +637,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestResetGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanResetGame(msg.player))

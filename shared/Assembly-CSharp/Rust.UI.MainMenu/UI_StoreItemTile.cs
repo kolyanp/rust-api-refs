@@ -16,8 +16,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private RustText itemTypeText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private CanvasGroup imageGroup;
 
 	[SerializeField]
@@ -30,8 +30,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	public CoverImage coverImage;
 
 	[Space]
-	[SerializeField]
 	[Header("Header")]
+	[SerializeField]
 	private GameObject headerTextGroup;
 
 	[SerializeField]

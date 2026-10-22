@@ -13,8 +13,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 
 	private float soundCullDistanceSq;
 
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private SoundDefinition engineLoopDef;
 
 	private Sound engineLoop;
@@ -47,8 +47,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Transform bridgeControlsTransform;
 
-	[SerializeField]
 	[Header("Water")]
+	[SerializeField]
 	private SoundDefinition waterIdleDef;
 
 	[SerializeField]
@@ -134,18 +134,18 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private SoundDefinition hornStop;
 
-	[Tooltip("The maximum amount of time a looped horn can last. If 0s then this is ignored.")]
 	[SerializeField]
+	[Tooltip("The maximum amount of time a looped horn can last. If 0s then this is ignored.")]
 	[Min(0f)]
 	private float maxHornTime;
 
-	[Min(0f)]
 	[SerializeField]
 	[Tooltip("Used for rate limiting. This defines the maximum number of horn spams that can be invoked one after another.")]
+	[Min(0f)]
 	private int hornTokenCapacity = 3;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	[Tooltip("Used for rate limiting. This defines how quickly a new token regenerates, permitting another horn honk.")]
 	private float hornTokenRegenerationTime = 1f;
 

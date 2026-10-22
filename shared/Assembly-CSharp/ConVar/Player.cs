@@ -123,8 +123,8 @@ public class Player : ConsoleSystem
 		}
 	}
 
-	[ServerUserVar]
 	[ClientVar(AllowRunFromServer = true)]
+	[ServerUserVar]
 	public static void cinematic_stop(Arg arg)
 	{
 		if (!arg.IsServerside)

@@ -57,9 +57,9 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private UI_StoreTakeover localTakeovers;
 
-	[Space]
-	[Header("Skin Viewer")]
 	[SerializeField]
+	[Header("Skin Viewer")]
+	[Space]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]

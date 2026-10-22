@@ -40,23 +40,23 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	private float throttleInput;
 
-	[SerializeField]
 	[Header("Battering Ram")]
+	[SerializeField]
 	private Animator animator;
 
 	[SerializeField]
 	private Transform damagePoint;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private float timeBetweenFire = 2f;
 
 	[SerializeField]
 	private float maxForwardSpeed = 1.5f;
 
 	[SerializeField]
-	[Header("Head")]
 	[Space]
+	[Header("Head")]
 	private BatteringRamHead headPrefab;
 
 	[SerializeField]
@@ -73,8 +73,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private ImpactEffect[] impactEffects;
 
-	[SerializeField]
 	[Header("IK")]
+	[SerializeField]
 	private Transform leftHandTarget;
 
 	[SerializeField]
@@ -439,9 +439,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		ComponentExtensions.SetActive<Transform>(doorTransform, false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	protected void RPC_OpenDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanOpenDoor() && Interface.CallHook("OnSiegeWeaponDoorOpen", this, rpc.player) == null)
@@ -450,9 +450,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	protected void RPC_CloseDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanCloseDoor() && Interface.CallHook("OnSiegeWeaponDoorClose", this, rpc.player) == null)
@@ -748,8 +748,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_WantsAttack(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

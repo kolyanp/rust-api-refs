@@ -8,8 +8,8 @@ public class PooltableMountableAnimationSubsystem : ChildAnimatorSubSystem, INot
 	[SerializeField]
 	private bool hitUpperBodyOnly = true;
 
-	[Tooltip("Played full body when the player mounts - the 3p equivalent of the viewmodel deploy.")]
 	[SerializeField]
+	[Tooltip("Played full body when the player mounts - the 3p equivalent of the viewmodel deploy.")]
 	private AnimationClip StartClip;
 
 	[Tooltip("Blend in/out time for the one shot clips. The blend out runs past the end of the clip, so it never unwinds the follow through.")]

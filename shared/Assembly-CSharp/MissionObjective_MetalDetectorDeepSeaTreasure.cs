@@ -6,8 +6,8 @@ public class MissionObjective_MetalDetectorDeepSeaTreasure : MissionObjective
 
 	public Phrase notePhrase;
 
-	[Tooltip("Player must have dug this many metal detector sources already for the treasure to spawn.")]
 	[Min(0f)]
+	[Tooltip("Player must have dug this many metal detector sources already for the treasure to spawn.")]
 	public int minimumDigAttempts;
 
 	[Min(0f)]

@@ -323,12 +323,12 @@ public class IOEntity : DecayEntity
 	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
 	public static float frameBudgetFluidMs = 0.25f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]
+	[ServerVar]
 	public static float frameBudgetKineticMs = 1f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
+	[ServerVar]
 	public static float frameBudgetGenericMs = 1f;
 
 	[ServerVar]
@@ -900,9 +900,9 @@ public class IOEntity : DecayEntity
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(6f)]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server.IsVisible(6f)]
+	[RPC_Server]
 	private void Server_RequestData(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

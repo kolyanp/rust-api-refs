@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class SubmarineAudio : MonoBehaviour
 {
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -37,8 +37,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private SoundDefinition waterSubmergeSoundDef;
 
-	[Header("Interior")]
 	[SerializeField]
+	[Header("Interior")]
 	private SoundDefinition activeLoopDef;
 
 	[SerializeField]

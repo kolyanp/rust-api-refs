@@ -11,6 +11,9 @@ public class BasePortal : BaseCombatEntity
 {
 	public bool isUsablePortal = true;
 
+	[Tooltip("Shows \"Exit\" instead of \"Enter\" on the interact menu")]
+	public bool isExitPortal;
+
 	private Vector3 destination_pos;
 
 	private Quaternion destination_rot;
@@ -129,7 +132,6 @@ public class BasePortal : BaseCombatEntity
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
-		Debug.Log((object)"Post server load");
 		LinkPortal();
 	}
 
@@ -244,9 +246,9 @@ public class BasePortal : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_UsePortal(RPCMessage msg)
 	{
 		if (IsActive())

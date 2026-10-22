@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class RHIBVisuals : FacepunchBehaviour, INotifyLOD, IClientComponent
 {
-	[Header("RHIB")]
 	[SerializeField]
+	[Header("RHIB")]
 	private RHIB _owner;
 
 	[SerializeField]

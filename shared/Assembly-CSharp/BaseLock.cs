@@ -88,8 +88,8 @@ public class BaseLock : BaseEntity
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	public void RPC_TakeLock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanRemove && Interface.CallHook("CanPickupLock", rpc.player, this) == null && !IsLocked())

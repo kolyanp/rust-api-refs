@@ -21,8 +21,8 @@ public class ItemModWearable : ItemMod
 
 	public UIBlackoutOverlay.blackoutType occlusionType = UIBlackoutOverlay.blackoutType.NONE;
 
-	[Tooltip("Muffles world audio for the local player while this is worn. Drives the head gear lowpass, layering over the active snapshot.")]
 	[Range(0f, 1f)]
+	[Tooltip("Muffles world audio for the local player while this is worn. Drives the head gear lowpass, layering over the active snapshot.")]
 	public float audioMuffleAmount;
 
 	public bool blocksAiming;
@@ -76,6 +76,67 @@ public class ItemModWearable : ItemMod
 		if (entityPrefab.isValid && (Object)(object)targetWearable == (Object)null)
 		{
 			Debug.LogWarning((object)("ItemModWearable: entityPrefab doesn't have a Wearable component! " + (object)((Component)this).gameObject), (Object)(object)entityPrefab.Get());
+		}
+		ValidateViewmodelRandomisation();
+	}
+
+	private void ValidateViewmodelRandomisation()
+	{
+		if (viewmodelAddition == null || !viewmodelAddition.isValid)
+		{
+			return;
+		}
+		GameObject val = viewmodelAddition.Get();
+		ViewmodelClothingRandomiser viewmodelClothingRandomiser = default;
+		if (!((Object)(object)val == (Object)null) && val.TryGetComponent<ViewmodelClothingRandomiser>(ref viewmodelClothingRandomiser))
+		{
+			if (viewmodelClothingRandomiser.randomSkins == null || viewmodelClothingRandomiser.randomSkins.Length == 0)
+			{
+				Debug.LogWarning((object)("ItemModWearable: viewmodelAddition has a ViewmodelClothingRandomiser with no sets! " + (object)((Component)this).gameObject), (Object)(object)val);
+				return;
+			}
+			ValidateViewmodelRandomisation(viewmodelClothingRandomiser, entityPrefab);
+			ValidateViewmodelRandomisation(viewmodelClothingRandomiser, entityPrefabFemale);
+		}
+	}
+
+	private void ValidateViewmodelRandomisation(ViewmodelClothingRandomiser randomiser, GameObjectRef wearablePrefab)
+	{
+		if (wearablePrefab == null || !wearablePrefab.isValid)
+		{
+			return;
+		}
+		GameObject val = wearablePrefab.Get();
+		Wearable wearable = default;
+		if ((Object)(object)val == (Object)null || !val.TryGetComponent<Wearable>(ref wearable))
+		{
+			return;
+		}
+		Wearable.PartRandomizer[] randomParts = wearable.randomParts;
+		int num = randomParts?.Length ?? 0;
+		if (randomiser.randomSkins.Length > num)
+		{
+			Debug.LogWarning((object)($"ItemModWearable: ViewmodelClothingRandomiser has {randomiser.randomSkins.Length} set(s) but {((Object)val).name} only has {num} - the extra sets line up with nothing! " + (object)((Component)this).gameObject), (Object)(object)val);
+			return;
+		}
+		for (int i = 0; i < randomiser.randomSkins.Length; i++)
+		{
+			ViewmodelClothingRandomiser.SkinCollection[] groups = randomiser.randomSkins[i].groups;
+			if (groups != null && groups.Length != 0)
+			{
+				int num2 = randomParts[i].groups?.Length ?? 0;
+				if (num2 != groups.Length)
+				{
+					Debug.LogWarning((object)(string.Format("ItemModWearable: ViewmodelClothingRandomiser set {0} has {1} group(s) but randomParts[{2}] on {3} has {4} - first person won't match third person! ", new object[5]
+					{
+						i,
+						groups.Length,
+						i,
+						((Object)val).name,
+						num2
+					}) + (object)((Component)this).gameObject), (Object)(object)val);
+				}
+			}
 		}
 	}
 

@@ -15,16 +15,16 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private UI_Window _shockbyteWindow;
 
-	[Header("Categories")]
 	[SerializeField]
+	[Header("Categories")]
 	private List<ServerBrowserCategoryData> _categories;
 
-	[Header("Headers")]
 	[SerializeField]
+	[Header("Headers")]
 	private List<ServerBrowserHeader> _headers;
 
-	[SerializeField]
 	[Header("Filters")]
+	[SerializeField]
 	private RustButton _showEmptyToggle;
 
 	[SerializeField]

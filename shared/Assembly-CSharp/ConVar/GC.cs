@@ -42,8 +42,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
 	[ClientVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
+	[ServerVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
 	public static int incremental_milliseconds
 	{
 		get
@@ -70,8 +70,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Triggers an immediate full managed garbage collection pass; useful after large allocations for memory profiling")]
 	[ClientVar(Help = "(Generated) Triggers an immediate full managed garbage collection pass; useful after large allocations for memory profiling")]
+	[ServerVar(Help = "(Generated) Triggers an immediate full managed garbage collection pass; useful after large allocations for memory profiling")]
 	public static void collect()
 	{
 		Rust.GC.Collect();

@@ -110,8 +110,8 @@ public class LivestockMountable : NPCMountable
 		return false;
 	}
 
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
+	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.CallsPerSecond(1uL)]
 	private void RPC_LoadAnimal(BaseEntity.RPCMessage msg)
 	{

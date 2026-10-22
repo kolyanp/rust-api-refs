@@ -90,6 +90,17 @@ public class RustNavmesh : IDisposable
 
 	private const int RenameRetryDelayMs = 100;
 
+	public static Bounds DefaultNavmeshBounds
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			return new Bounds(TerrainMeta.Center, TerrainMeta.Size);
+		}
+	}
+
 	public int NumBuiltTiles => numBuiltTiles;
 
 	public int TotalTiles
@@ -125,16 +136,14 @@ public class RustNavmesh : IDisposable
 	{
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
 		if (AI.useUnityNavmesh)
 		{
 			return;
@@ -153,7 +162,7 @@ public class RustNavmesh : IDisposable
 		}
 		else
 		{
-			CurrentNavmeshBounds = new Bounds(TerrainMeta.Center, TerrainMeta.Size);
+			CurrentNavmeshBounds = DefaultNavmeshBounds;
 		}
 		if (buildParamsOverride.HasValue)
 		{

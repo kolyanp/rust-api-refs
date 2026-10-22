@@ -25,8 +25,8 @@ public class Admin : ConsoleSystem
 		Downgrade
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct PlayerInfo
 	{
 		public string SteamID;
@@ -56,8 +56,8 @@ public class Admin : ConsoleSystem
 		public ulong TeamID;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct PlayerIDInfo
 	{
 		public string SteamID;
@@ -181,7 +181,7 @@ public class Admin : ConsoleSystem
 		if (!flag && text.Length == 0)
 		{
 			text2 = text2 + "hostname: " + Server.hostname + "\n";
-			text2 = text2 + "version : " + 2634 + " secure (secure mode enabled, connected to Steam3)\n";
+			text2 = text2 + "version : " + 2635 + " secure (secure mode enabled, connected to Steam3)\n";
 			text2 = text2 + "map     : " + Server.level + "\n";
 			text2 += string.Format("players : {0} ({1} max) ({2} queued) ({3} joining)\n\n", new object[4]
 			{
@@ -2748,7 +2748,7 @@ public class Admin : ConsoleSystem
 			NetworkOut = (int)((Net.sv != null) ? Net.sv.GetStat(null, BaseNetwork.StatTypeLong.BytesSent_LastSecond) : 0),
 			Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 			SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(),
-			Version = 2634,
+			Version = 2635,
 			Protocol = Protocol.printable
 		};
 	}

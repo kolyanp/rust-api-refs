@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using ConVar;
 using Rust.Ai;
 using Rust.Ai.Gen2;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -944,7 +945,7 @@ public class BaseNavigator : BaseMonoBehaviour
 
 	private Vector3 GetNextPathPosition()
 	{
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		if (currentAStarPath != null && currentAStarPath.Count > 0)
@@ -956,7 +957,7 @@ public class BaseNavigator : BaseMonoBehaviour
 			}
 			return iAIPathNode.Position;
 		}
-		return Agent.nextPositionWS;
+		return Agent.NavToWorldSpace(Agent.nextPosition + NavVector3.up * Agent.baseOffset);
 	}
 
 	private bool ValidateNextPosition(ref Vector3 moveToPosition)

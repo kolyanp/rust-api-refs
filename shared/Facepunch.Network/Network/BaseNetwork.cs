@@ -127,6 +127,8 @@ public abstract class BaseNetwork
 
 	public int DecryptQueueBytes => decryptQueueSizeInBytes;
 
+	public NetPacketCapture PacketCapture { get; internal set; }
+
 	protected void MultithreadingInit(IServerCallback callbacks)
 	{
 		if (readThread != null)
@@ -322,6 +324,7 @@ public abstract class BaseNetwork
 
 	private void WriteThreadCycle()
 	{
+		PacketCapture?.Tick();
 		NetWrite result;
 		while (writeQueue.TryDequeue(out result))
 		{
@@ -334,6 +337,7 @@ public abstract class BaseNetwork
 				{
 					break;
 				}
+				PacketCapture?.Capture(result);
 				ProcessWrite(result);
 			}
 		}
@@ -396,6 +400,7 @@ public abstract class BaseNetwork
 		}
 		else
 		{
+			PacketCapture?.Tick();
 			stopwatch.Restart();
 			while (IsConnected() && Receive() && !(stopwatch.Elapsed.TotalMilliseconds > (double)MaxReceiveTimeValue))
 			{

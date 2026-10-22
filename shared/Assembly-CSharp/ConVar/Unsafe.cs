@@ -11,8 +11,8 @@ public class Unsafe : ConsoleSystem
 
 	private const string DebugMTLockMaxFramesDoc = "How many frames of a stack to emit";
 
-	[ServerVar(Help = "Controls multithreading access to scripting API - can be fast, but unsafe. Disabling can help with instability", Default = "1")]
 	[ClientVar(Help = "Controls multithreading access to scripting API - can be fast, but unsafe. Disabling can help with instability", Default = "1")]
+	[ServerVar(Help = "Controls multithreading access to scripting API - can be fast, but unsafe. Disabling can help with instability", Default = "1")]
 	public static bool UseMultithreadedScripting
 	{
 		get
@@ -25,8 +25,8 @@ public class Unsafe : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
 	[ServerVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
+	[ClientVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
 	public static bool EnableDebugMTLock
 	{
 		get
@@ -39,8 +39,8 @@ public class Unsafe : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "How many frames of a stack to emit", Default = "5")]
 	[ClientVar(Help = "How many frames of a stack to emit", Default = "5")]
+	[ServerVar(Help = "How many frames of a stack to emit", Default = "5")]
 	public static int DebugMTLockMaxFrames
 	{
 		get

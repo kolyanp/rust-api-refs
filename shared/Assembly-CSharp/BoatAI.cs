@@ -806,12 +806,12 @@ public class BoatAI : BaseEntity
 
 	public const string DeepSeaPTBoatPath = "assets/content/vehicles/boats/ptboat/ptboat.deepsea.prefab";
 
-	[Header("Boat AI")]
 	[SerializeField]
+	[Header("Boat AI")]
 	private BaseBoat _boat;
 
-	[SerializeField]
 	[Header("Boat AI - General")]
+	[SerializeField]
 	private bool _autoInit;
 
 	[SerializeField]

@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class ItemModWorkbenchEfficiency : ItemModWorkbenchUpgrade
 {
-	[Header("Efficiency")]
 	[Range(0f, 1f)]
 	[Tooltip("Probability (0-1) of producing a free extra item per craft tick.")]
+	[Header("Efficiency")]
 	public float bonusChance = 0.1f;
 
 	[Tooltip("Items that are excluded from the bonus.")]

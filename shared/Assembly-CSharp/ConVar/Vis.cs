@@ -16,9 +16,9 @@ public class Vis : ConsoleSystem
 	[Help("Turns on debug display of attacks")]
 	public static bool attack;
 
+	[ServerVar]
 	[ClientVar]
 	[Help("Turns on debug display of protection")]
-	[ServerVar]
 	public static bool protection;
 
 	[ServerVar]
@@ -37,7 +37,7 @@ public class Vis : ConsoleSystem
 	[Help("Turns on debug display of line of sight checks")]
 	public static bool lineofsight;
 
-	[Help("Turns on debug display of senses, which are received by Ai")]
 	[ServerVar]
+	[Help("Turns on debug display of senses, which are received by Ai")]
 	public static bool sense;
 }
