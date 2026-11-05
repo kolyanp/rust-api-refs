@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class TorpedoServerProjectile : ServerProjectile
 {
-	[Tooltip("Make sure to leave some allowance for waves, which affect the true depth.")]
 	[SerializeField]
+	[Tooltip("Make sure to leave some allowance for waves, which affect the true depth.")]
 	private float minWaterDepth = 0.5f;
 
 	[SerializeField]
@@ -17,7 +17,7 @@ public class TorpedoServerProjectile : ServerProjectile
 
 	public override bool HasRangeLimit => false;
 
-	protected override int mask => 1237003009;
+	protected override int mask => base.mask & -17;
 
 	public override bool DoMovement()
 	{

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Unity.Jobs.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace ConVar;
@@ -9,10 +10,14 @@ namespace ConVar;
 [ConsoleSystem.Factory("system")]
 public static class SystemCommands
 {
-	public static bool appliedManualCpuAffinity;
+	public static bool appliedManualCpuAffinity = false;
 
-	[ServerVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
+	private static int unlimitedJobWorkerCount = -1;
+
+	private static int limitedJobWorkerCount = -1;
+
 	[ClientVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
+	[ServerVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
 	public static void cpu_affinity(ConsoleSystem.Arg arg)
 	{
 		if (!arg.HasArgs())
@@ -90,6 +95,7 @@ public static class SystemCommands
 		try
 		{
 			WindowsAffinityShim.SetProcessAffinityMask(Process.GetCurrentProcess().Handle, (IntPtr)(long)affinityMask);
+			LimitJobWorkersToAffinity(affinityMask);
 			return true;
 		}
 		catch (Exception arg)
@@ -99,8 +105,28 @@ public static class SystemCommands
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
+	private static void LimitJobWorkersToAffinity(ulong affinityMask)
+	{
+		int jobWorkerCount = JobsUtility.JobWorkerCount;
+		if (jobWorkerCount != limitedJobWorkerCount)
+		{
+			unlimitedJobWorkerCount = jobWorkerCount;
+		}
+		int num = 0;
+		for (ulong num2 = affinityMask; num2 != 0L; num2 &= num2 - 1)
+		{
+			num++;
+		}
+		int num3 = (limitedJobWorkerCount = Mathf.Min(Mathf.Max(num - 1, 1), unlimitedJobWorkerCount));
+		if (num3 != jobWorkerCount)
+		{
+			JobsUtility.JobWorkerCount = num3;
+			Debug.Log((object)$"Set job worker threads to {num3} to match CPU affinity");
+		}
+	}
+
 	[ClientVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
+	[ServerVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
 	public static void cpu_priority(ConsoleSystem.Arg arg)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)

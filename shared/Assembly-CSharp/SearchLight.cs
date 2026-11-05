@@ -58,6 +58,12 @@ public class SearchLight : IOEntity
 
 	public BasePlayer mountedPlayer;
 
+	private const float AimSendAngle = 0.2f;
+
+	private Vector3 lastSentAimDir;
+
+	private Flags lastSentFlags;
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("SearchLight.OnRpcMessage"))
@@ -167,6 +173,12 @@ public class SearchLight : IOEntity
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)mountedPlayer == (Object)null || mountedPlayer.IsSleeping() || !mountedPlayer.IsAlive() || mountedPlayer.IsWounded() || Vector3.Distance(((Component)mountedPlayer).transform.position, ((Component)this).transform.position) > 2f)
 		{
 			PlayerExit();
@@ -174,7 +186,18 @@ public class SearchLight : IOEntity
 		}
 		Vector3 targetAimpoint = eyePoint.transform.position + mountedPlayer.eyes.BodyForward() * 100f;
 		SetTargetAimpoint(targetAimpoint);
-		SendNetworkUpdate();
+		if (lastSentAimDir == Vector3.zero || Vector3.Angle(aimDir, lastSentAimDir) > 0.2f || flags != lastSentFlags)
+		{
+			lastSentAimDir = aimDir;
+			lastSentFlags = flags;
+			SendNetworkUpdate();
+		}
+	}
+
+	public override void SendIONetworkUpdate()
+	{
+		base.SendIONetworkUpdate();
+		lastSentFlags = flags;
 	}
 
 	public void SetTargetAimpoint(Vector3 worldPos)

@@ -9,7 +9,7 @@ public class NetProfileSession
 {
 	public const double BucketInterval = 0.1;
 
-	public const int TypeCount = 29;
+	public const int TypeCount = 30;
 
 	public const int RealmCount = 2;
 
@@ -25,7 +25,7 @@ public class NetProfileSession
 
 	public const int FieldWireBytesOut = 4;
 
-	public const int BucketStride = 290;
+	public const int BucketStride = 300;
 
 	public const int BucketClearMargin = 64;
 
@@ -94,9 +94,9 @@ public class NetProfileSession
 	public NetProfileSession(int bucketCapacity, int eventCapacity)
 	{
 		BucketCapacity = bucketCapacity;
-		Buckets = new int[bucketCapacity * 290];
+		Buckets = new int[bucketCapacity * 300];
 		Events = new NetProfileEvent[eventCapacity];
-		Totals = new long[290];
+		Totals = new long[300];
 		StartedUtc = DateTime.UtcNow;
 		StartTimestamp = Stopwatch.GetTimestamp();
 		InvFrequency = 1.0 / (double)Stopwatch.Frequency;
@@ -106,12 +106,12 @@ public class NetProfileSession
 
 	public static int BucketOffset(long bucketIndex, int bucketCapacity, bool serverRealm, int type, int field)
 	{
-		return (int)(bucketIndex % bucketCapacity) * 290 + CellOffset(serverRealm, type, field);
+		return (int)(bucketIndex % bucketCapacity) * 300 + CellOffset(serverRealm, type, field);
 	}
 
 	public static int CellOffset(bool serverRealm, int type, int field)
 	{
-		return (serverRealm ? 1 : 0) * 29 * 5 + type * 5 + field;
+		return (serverRealm ? 1 : 0) * 30 * 5 + type * 5 + field;
 	}
 
 	public int CopyEvents(long fromIndex, NetProfileEvent[] dest, int destOffset = 0)

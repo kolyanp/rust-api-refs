@@ -38,6 +38,8 @@ public static class Server
 
 	internal static string Secret;
 
+	private static readonly Func<AppIOEntity, Connection, bool> CanReceiveEntityBroadcast = (AppIOEntity entity, Connection connection) => entity.CanAppAccess(connection.SubscribedSteamId);
+
 	public static Listener Listener { get; private set; }
 
 	public static bool IsEnabled
@@ -106,9 +108,12 @@ public static class Server
 	}
 
 	[PoolAnalyzerNonCaching]
-	public static void Broadcast(EntityTarget target, AppBroadcast broadcast)
+	public static void Broadcast(AppIOEntity entity, AppBroadcast broadcast)
 	{
-		Listener?.EntitySubscribers?.Send(target, broadcast);
+		if (!((Object)(object)entity == (Object)null))
+		{
+			Listener?.EntitySubscribers?.Send(entity.GetTarget(), broadcast, entity, CanReceiveEntityBroadcast);
+		}
 	}
 
 	[PoolAnalyzerNonCaching]

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -21,13 +20,12 @@ internal class Trans_CrocHasStraightPathToTarget : FSMTransitionBase
 			{
 				return false;
 			}
-			Vector3 targetPositionWS = ((Component)target).transform.position;
+			Vector3 locationWS = ((Component)target).transform.position;
 			if (target.IsNonNpcPlayer() && Agent.canSwim && Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
 			{
-				targetPositionWS = Vector3Ex.WithY(((Component)target).transform.position, status.lastWaterInfo.Value.terrainHeight);
+				locationWS = Vector3Ex.WithY(((Component)target).transform.position, status.lastWaterInfo.Value.terrainHeight);
 			}
-			NavMeshHit hitWS;
-			return !Agent.Raycast(targetPositionWS, out hitWS);
+			return Agent.HasStraightPathTo(locationWS);
 		}
 	}
 }

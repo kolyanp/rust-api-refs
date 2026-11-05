@@ -64,6 +64,9 @@ public class AIBrainSenses
 	[NonSerialized]
 	public bool ignoreTutorialPlayers;
 
+	[NonSerialized]
+	public Func<BasePlayer, bool> ignorePlayer;
+
 	public EntityType senseTypes;
 
 	public IAIAttack ownerAttack;
@@ -194,11 +197,11 @@ public class AIBrainSenses
 
 	private bool AiCaresAbout(BaseEntity entity)
 	{
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019b: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)entity == (Object)null)
 		{
 			return false;
@@ -232,6 +235,10 @@ public class AIBrainSenses
 				return false;
 			}
 			if (ignoreTutorialPlayers && basePlayer.IsInTutorial)
+			{
+				return false;
+			}
+			if (ignorePlayer != null && ignorePlayer(basePlayer))
 			{
 				return false;
 			}

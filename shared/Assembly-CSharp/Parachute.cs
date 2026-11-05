@@ -101,7 +101,7 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 
 	private float distanceTravelled;
 
-	private Vector3 lastPosition = Vector3.zero;
+	private Vector3 lastTravelPosition = Vector3.zero;
 
 	private Vector2 lerpedInput = Vector2.zero;
 
@@ -154,9 +154,9 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 		base.PlayerServerInput(inputState, player);
 		player.PlayHeavyLandingAnimation = true;
 		Vector3 position = ((Component)this).transform.position;
-		float num = Vector3.Distance(lastPosition, position);
+		float num = Vector3.Distance(lastTravelPosition, position);
 		distanceTravelled += num;
-		lastPosition = position;
+		lastTravelPosition = position;
 		if (WaterLevel.Test(((Component)this).transform.position, waves: true, volumes: true, this))
 		{
 			DismountAllPlayers();

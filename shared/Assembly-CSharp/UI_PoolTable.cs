@@ -11,8 +11,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RustSlider powerBar;
 
-	[SerializeField]
 	[Header("Instructions")]
+	[SerializeField]
 	private GameObject holdInstruction;
 
 	[SerializeField]
@@ -47,8 +47,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private GameObject opponentTurnHighlight;
 
-	[SerializeField]
 	[Header("Ball Display")]
+	[SerializeField]
 	private Color localBallColour = new Color(0.11f, 0.37f, 0.58f, 1f);
 
 	[SerializeField]

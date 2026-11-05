@@ -17,6 +17,8 @@ public class Portal : IPooled
 
 	public bool FillerBlocksVision;
 
+	public bool FillerAlwaysClosed;
+
 	public bool? OverrideOpen;
 
 	public const float SpanDepth = 0.1f;
@@ -29,7 +31,8 @@ public class Portal : IPooled
 		{
 			return OverrideOpen.Value;
 		}
-		return ComputeOpen(PermanentlyOpen, (Object)(object)Filler != (Object)null, FillerBlocksVision, (Object)(object)Filler != (Object)null && Filler.IsOpen());
+		bool fillerIsOpen = (Object)(object)Filler != (Object)null && !FillerAlwaysClosed && Filler.IsOpen();
+		return ComputeOpen(PermanentlyOpen, (Object)(object)Filler != (Object)null, FillerBlocksVision, fillerIsOpen);
 	}
 
 	public static bool ComputeOpen(bool permanentlyOpen, bool hasFiller, bool fillerBlocksVision, bool fillerIsOpen)
@@ -121,6 +124,7 @@ public class Portal : IPooled
 		PermanentlyOpen = false;
 		Filler = null;
 		FillerBlocksVision = false;
+		FillerAlwaysClosed = false;
 		OverrideOpen = null;
 	}
 

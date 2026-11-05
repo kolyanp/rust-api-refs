@@ -68,14 +68,14 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public override void Load(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		string value = File.ReadAllText(filename);
 		_keyvalues = JsonConvert.DeserializeObject<Dictionary<string, object>>(value, _settings);
 	}
 
 	public T ReadObject<T>(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		T val;
 		if (Exists(filename))
 		{
@@ -91,7 +91,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public override void Save(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		string directoryName = Utility.GetDirectoryName(filename);
 		if (directoryName != null && !Directory.Exists(directoryName))
 		{
@@ -102,7 +102,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public void WriteObject<T>(T config, bool sync = false, string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		string directoryName = Utility.GetDirectoryName(filename);
 		if (directoryName != null && !Directory.Exists(directoryName))
 		{
@@ -118,7 +118,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public bool Exists(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		string directoryName = Utility.GetDirectoryName(filename);
 		if (directoryName != null && !Directory.Exists(directoryName))
 		{
@@ -129,7 +129,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	public void Delete(string filename = null)
 	{
-		filename = CheckPath(filename ?? base.Filename);
+		filename = CheckPath(filename ?? Filename);
 		if (Exists(filename))
 		{
 			File.Delete(filename);

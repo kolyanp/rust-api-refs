@@ -295,6 +295,8 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 	[Header("Base Vehicle - Priv")]
 	public bool HasBuildingPrivilege;
 
+	public static HashSet<BaseVehicle> SpawnedWithBuildingPrivilege = new HashSet<BaseVehicle>();
+
 	protected const Flags Flag_AnyMounted = Flags.InUse;
 
 	private readonly List<BaseVehicle> childVehicles = new List<BaseVehicle>(0);
@@ -436,8 +438,8 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		if (runCallbacks && aiInputProvider != null)
 		{
 			aiInputProvider.OnRemove(this);
-			aiInputProvider = null;
 		}
+		aiInputProvider = null;
 		if (IsInvoking(AIDriverUpdateAction))
 		{
 			CancelInvoke(AIDriverUpdateAction);
@@ -1833,30 +1835,6 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 	{
 	}
 
-	public void DisableMountedSyncForAllSeats()
-	{
-		foreach (MountPointInfo mountPoint in mountPoints)
-		{
-			BaseMountable mountable = mountPoint.mountable;
-			if (!((Object)(object)mountable == (Object)null))
-			{
-				mountable.DisableMountedPlayerSync();
-			}
-		}
-	}
-
-	public void EnableMountedSyncForAllSeats()
-	{
-		foreach (MountPointInfo mountPoint in mountPoints)
-		{
-			BaseMountable mountable = mountPoint.mountable;
-			if (!((Object)(object)mountable == (Object)null))
-			{
-				mountable.EnableMountedPlayerSync();
-			}
-		}
-	}
-
 	[PoolAnalyzerNonCaching]
 	public static void GetPassengersForVehicle(BaseEntity entity, List<BasePlayer> passengers)
 	{
@@ -1886,6 +1864,21 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 	public bool IsMoving()
 	{
 		return !HasFlag(Flags.Reserved7);
+	}
+
+	public override void InitShared()
+	{
+		base.InitShared();
+		if (HasBuildingPrivilege)
+		{
+			SpawnedWithBuildingPrivilege.Add(this);
+		}
+	}
+
+	public override void DestroyShared()
+	{
+		base.DestroyShared();
+		SpawnedWithBuildingPrivilege.Remove(this);
 	}
 
 	public virtual bool IsAuthedForBuilding(BasePlayer player)

@@ -13,7 +13,6 @@ using ProtoBuf;
 using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Serialization;
 
 namespace Rust.Ai.Gen2;
 
@@ -29,11 +28,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public enum TrustTier
 	{
-		Stranger,
-		Known,
-		Tolerated,
-		Bonded,
-		Herd
+		Hostile,
+		Neutral,
+		Trusted,
+		Bonded
 	}
 
 	private struct Acquaintance
@@ -41,43 +39,48 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		public ulong userId;
 
 		public float seconds;
-
-		public TimeSince sinceCredited;
 	}
 
-	public enum FamiliarityReason
+	public enum Personality
 	{
-		Handled,
+		Curious,
+		Sleepy
+	}
+
+	public enum SlotState
+	{
+		Free,
+		Held,
+		BlockedByIdler,
+		Blocked,
+		HitchedOver,
+		CannotBeCleared
+	}
+
+	private struct SlotQueue
+	{
+		public EntityRef<BaseEntity> Owner;
+
+		public TimeSince Waited;
+
+		public TimeSince Renewed;
+	}
+
+	public enum OwnerChangeReason
+	{
 		Purchased,
+		Trough,
+		Birth,
 		Debug
 	}
 
-	private struct CullCandidate : IComparable<CullCandidate>
+	private struct CullCandidate(LivestockAnimal animal) : IComparable<CullCandidate>
 	{
-		public readonly LivestockAnimal Animal;
+		public readonly LivestockAnimal Animal = animal;
 
-		private readonly int group;
+		private readonly int group = (animal.HasOwner ? 1 : 0);
 
-		private readonly float worth;
-
-		public CullCandidate(LivestockAnimal animal)
-		{
-			Animal = animal;
-			BuildingPrivlidge cupboard;
-			if (!animal.IsFullyBonded)
-			{
-				group = 0;
-			}
-			else if (!animal.TryGetHomeCupboard(out cupboard))
-			{
-				group = 1;
-			}
-			else
-			{
-				group = 2;
-			}
-			worth = animal.SaleValueScale;
-		}
+		private readonly float worth = animal.SaleValueScale;
 
 		public int CompareTo(CullCandidate other)
 		{
@@ -89,6 +92,23 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			float num2 = worth;
 			return num2.CompareTo(other.worth);
 		}
+	}
+
+	public struct FormationSlot
+	{
+		public bool InFormation;
+
+		public Vector3 Back;
+
+		public Vector3 Right;
+
+		public float Across;
+
+		public int Row;
+
+		public int GroupSize;
+
+		public float Longest;
 	}
 
 	public enum AgeStage
@@ -121,7 +141,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		Fullness,
 		PersonalSpace,
-		Hydration
+		Hydration,
+		Grass,
+		Sun
 	}
 
 	public struct TickableNeed(float startingValue)
@@ -148,6 +170,21 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public class LivestockNeedsQueue : PersistentObjectWorkQueue<LivestockAnimal>
 	{
+		public int CountLedBy(BasePlayer player)
+		{
+			int num = 0;
+			LivestockAnimal[] buffer = base.workList.Values.Buffer;
+			for (int i = 0; i < base.workList.Count; i++)
+			{
+				LivestockAnimal livestockAnimal = buffer[i];
+				if ((Object)(object)livestockAnimal != (Object)null && !livestockAnimal.IsDestroyed && !livestockAnimal.IsDead() && livestockAnimal.IsFollowing(player))
+				{
+					num++;
+				}
+			}
+			return num;
+		}
+
 		protected override void RunJob(LivestockAnimal entity)
 		{
 			if ((Object)(object)entity == (Object)null || entity.IsDestroyed)
@@ -159,8 +196,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				entity.TickNeeds();
 				if (!entity.IsDead())
 				{
-					entity.TickFamiliarity();
-					entity.TickFrailty();
 					entity.TickLead();
 				}
 			}
@@ -218,11 +253,17 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private PersistentTimer ageTimer;
 
+	private float ageLived;
+
 	private LivestockPattern pattern;
 
 	private LivestockSexParts sexParts;
 
 	private bool breedingPaused;
+
+	public const float StarvationFloorHealth = 1f;
+
+	private bool starvedDown;
 
 	private float conditionSecondsSpent;
 
@@ -232,9 +273,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float conditionUnsentHealth;
 
+	[Header("Day activity")]
 	[Range(0f, 1f)]
 	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
-	[Header("Day activity")]
 	public float StarvingThreshold = 0.2f;
 
 	[Tooltip("How many seconds of waking time the day activity read out is measured over. It only reports how the day split up, nothing reads it to decide what to do.")]
@@ -243,24 +284,28 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	private float[] activityWeights;
 
 	[Header("Dung")]
-	[Tooltip("The item dropped each time the animal dungs. Leave empty to disable it, which is how an age stage that shouldn't dung - a calf, say - opts out.")]
+	[Tooltip("Leave empty for an age stage that shouldn't dung, like a calf.")]
 	public ItemDefinition DungItem;
 
-	[Tooltip("How long (in seconds) between dung drops. Zero disables it.")]
+	[Tooltip("Seconds between drops. Zero disables it.")]
 	public float DungInterval;
 
+	[Tooltip("Fraction of DungInterval each wait is randomised by, so a herd doesn't drop in lockstep. 0.2 is +/-20%.")]
 	[Range(0f, 1f)]
-	[Tooltip("Random variance applied to DungInterval, as a fraction of it. 0.2 means +/-20%, so a herd doesn't drop in lockstep.")]
 	public float DungIntervalVariance = 0.2f;
 
-	[Tooltip("Where the dung drops from. Falls back to the animal's origin when unset.")]
+	[Tooltip("Falls back to the animal's origin when unset.")]
 	public Transform DungSpawnPoint;
 
 	private PersistentTimer dungTimer;
 
+	private float dungBoostUntil;
+
+	private float dungBoostRate = 1f;
+
 	public const int MaxAcquaintances = 8;
 
-	public const int TrustTiersAboveStranger = 4;
+	public const int TrustTiersAboveHostile = 3;
 
 	private Acquaintance[] acquaintances;
 
@@ -269,8 +314,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	private TimeSince probationCredited;
 
 	private const float ProbationTimeout = 60f;
-
-	private TimeSince lastFamiliarityTick;
 
 	private EntityRef<BasePlayer> trustedNearby;
 
@@ -284,22 +327,57 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float lastDefendedAttack = float.NegativeInfinity;
 
-	[Tooltip("How far through its life an animal drops a whole gait, so it jogs where it used to run. A tier rather than a multiplier: the animations are authored at the gait speeds, so anything in between reads as sliding.")]
-	[Header("Old age")]
-	[Range(0f, 1f)]
-	public float OldAgeSlowFraction = 0.55f;
+	[Tooltip("How far the nose reaches while eating from a trough, as a share of how far it reaches standing, so a slot stands the animal with its nose where the slot says. The trough eating clips measure 0.92 for a cow and 0.86 for a sheep, and 0.9 puts both within 4cm.")]
+	[Header("Feeding slots")]
+	public float TroughReachScale = 0.9f;
 
-	[Tooltip("How far through its life it drops a second gait. Never goes below a walk.")]
-	[Range(0f, 1f)]
-	public float OldAgeVerySlowFraction = 0.8f;
+	public const float SlotSearchRadius = 30f;
 
-	[Range(0.05f, 1f)]
-	[Tooltip("How much of its roaming range an animal still has at the very end of its life, so an old one keeps close to home and mostly only moves to get back to it.")]
-	public float OldAgeRangeFactor = 0.15f;
+	private const float QueueLifetime = 20f;
 
-	[Tooltip("How much longer an old animal rests than one in its prime. 4 means a lie down at the end of its life lasts four times as long.")]
-	[Range(1f, 10f)]
-	public float OldAgeRestDurationScale = 4f;
+	private const float VacateLifetime = 30f;
+
+	private const float FailedSlotCooldown = 15f;
+
+	private const float NoWayOutCooldown = 30f;
+
+	private EntityRef<BaseEntity> slotOwner;
+
+	private EntityRef<BaseEntity> slotSource;
+
+	private int slotIndex = -1;
+
+	private Vector3 slotStandingPoint;
+
+	private Vector3 slotFacing;
+
+	private LivestockFootprint slotFootprint;
+
+	private LivestockFeedingSlots.Serves slotNeed;
+
+	private bool slotInUse;
+
+	private bool askedToVacate;
+
+	private TimeSince slotLeft;
+
+	private SlotQueue foodQueue;
+
+	private SlotQueue waterQueue;
+
+	private EntityRef<BaseEntity> failedSlotOwner;
+
+	private int failedSlotIndex = -1;
+
+	private TimeSince failedSlotAt;
+
+	private EntityRef<BaseEntity> noWayOutOwner;
+
+	private TimeSince noWayOutAt;
+
+	private bool slotSearchFailing;
+
+	private TimeSince slotSearchFailedAt;
 
 	private RustNavMeshAgent frailtyAgent;
 
@@ -331,6 +409,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How much water a drink from completely dry takes out of a barrel. A drink takes its share of this for the hydration it puts back, so topping up often costs no more water than waiting until empty. 200 makes the daily top up from 0.95 cost 10.")]
 	public int BarrelWaterPerDrink = 200;
 
+	private Phrase wildCategoryLabel;
+
 	public const int MaxGeneration = 20;
 
 	private const string EnglishSecond = "{0} Junior";
@@ -341,10 +421,28 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private static readonly HashSet<string> reportedLongNames = new HashSet<string>();
 
+	private ulong offlineOwnerNameId;
+
+	private string offlineOwnerName;
+
+	private static readonly Phrase NotTrustedPhrase = new Phrase("livestock.handle.untrusted", "{0} doesn't trust you yet");
+
+	private static readonly Phrase NotTrustedWildPhrase = new Phrase("livestock.handle.untrusted.wild", "This animal doesn't trust you yet");
+
 	private static readonly Dictionary<LivestockSpecies, int> populationBySpecies = new Dictionary<LivestockSpecies, int>();
 
-	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
+	private float potentialFromServer;
+
+	private int potentialTrendFromServer;
+
+	private const float PotentialTrendDeadband = 0.01f;
+
+	private const float PotentialFullHappiness = 0.8f;
+
+	private float potential;
+
 	[Header("Sleep")]
+	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
 	public float SleepTimeVariance = 45f;
 
 	[Tooltip("How far (in metres) from the middle of the herd is close enough to lie down. Further out than this and the animal walks in first, so the herd sleeps as a group.")]
@@ -362,40 +460,21 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("The same out of a sleep, which is the wake and then the stand up. The cow's cow_wake_up into cow_stand_up is 6.5s.")]
 	public float WakeUpDuration = 6.5f;
 
+	[Tooltip("The ground the body covers from lying down to standing back up, in the animal's own space. Zero size uses the standing bounds.")]
+	public Bounds LyingBounds;
+
+	private const float LyingSpotInnerRadius = 2.5f;
+
+	private const float LyingSpotOuterRadius = 6f;
+
 	private float sleepFraction;
 
 	[Header("PersonalSpace")]
-	[Tooltip("How far (in metres) the animal looks for herd mates. Herd identity rather than personal space: the regroup, the flee centroid and the distress broadcast all use it.")]
+	[Tooltip("How far (in metres) the animal looks for herd mates: the ones it answers for, the floor it can share with them and, on open ground, how big a free range herd it counts itself part of.")]
 	public float SocialSearchRadius = 20f;
 
-	[Tooltip("How many herd mates of the same species within Social Search Radius the animal is content surrounded by. Past this the herd is too big to keep producing at full rate.")]
-	public int ComfortableHerdSize = 8;
-
-	[Tooltip("How many herd mates it takes for the herd load pressure to bottom out. Herd size alone never reaches the neglect band, so a big provisioned herd stops growing rather than dying.")]
-	public int CrowdedHerdSize = 12;
-
-	[Tooltip("How close (in metres) another animal has to stand to count as packed against this one. Measured flat, with a height filter, so a herd on the floor above is not in here.")]
-	public float PackingRadius = 2.5f;
-
-	[Tooltip("How far apart (in metres) two animals have to be vertically before neither is packed against the other. Under a storey, so a barn's two floors are separate spaces.")]
-	public float PackingHeight = 2f;
-
-	[Tooltip("How much room this animal takes up, in adult equivalents. A calf takes up less than a cow.")]
-	public float AdultEquivalent = 1f;
-
-	[Tooltip("How many adult equivalents can stand inside Packing Radius before it starts to bite.")]
-	public float ComfortablePacking = 2f;
-
-	[Tooltip("The packing at which the pressure has fallen as far as a merely oversized herd ever takes it.")]
-	public float CrowdedPacking = 5f;
-
-	[Tooltip("The packing at which the pressure bottoms out, which is deep enough to be neglect.")]
-	public float SeverePacking = 9f;
-
-	[FormerlySerializedAs("SocialChangeRate")]
-	[FormerlySerializedAs("CrowdingChangeRate")]
-	[Tooltip("How much personal space moves per second, towards whichever of the two pressures is worse. Zero disables the need.")]
-	public float PersonalSpaceChangeRate = 0.01f;
+	[Tooltip("Whether the animal has the personal space need at all. Without it the need stays full, while the room to breed rule still applies.")]
+	public bool HasPersonalSpace = true;
 
 	[Tooltip("How far a hurt animal's distress carries to the rest of its herd. Deliberately wider than SocialSearchRadius: that one is about who counts as company, this is about how far away a bull should still answer for one of his being shot. Only queried on a hit, so it can afford to be generous.")]
 	public float DistressRadius = 40f;
@@ -408,6 +487,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	[Tooltip("How close (in metres) a calf has to be to a mother who is standing her ground before it shelters behind her instead of bolting. Keep it under the FSM's strayDistance, or a calf can shelter from further away than it is willing to stand. Zero has calves always run.")]
 	public float MotherShelterDistance = 12f;
+
+	private static int lastFreeRangeHerdSearch;
+
+	private int freeRangeHerdSearch;
+
+	private float freeRangeHerdCountedAt = float.NegativeInfinity;
 
 	private bool playerLingeringOverCalf;
 
@@ -425,11 +510,19 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private const float RestingGap = 0.25f;
 
-	private RustNavMeshAgent restingAgent;
+	private const int RestingSpotSamples = 16;
 
-	private const float AbreastSearchRadius = 10f;
+	private const float LonelySpotInnerRadius = 4f;
 
-	private const float InLineTolerance = 0.01f;
+	private const float LonelySpotOuterRadius = 12f;
+
+	private const float LonelierBy = 2f;
+
+	private const float FormationSearchRadius = 20f;
+
+	private const float InLineTolerance = 0.1f;
+
+	private const int FilesAbreast = 3;
 
 	private const float HerdFleeHeadingLifetime = 10f;
 
@@ -439,13 +532,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private bool hasHerdFleeHeading;
 
-	public const float HerdLoadFloor = 0.3f;
+	private LivestockFloor floor;
 
-	public const float PackingFloor = 0f;
+	private int freeRangeHerdMates;
 
-	private float lastHerdLoadTarget = 1f;
-
-	private float lastPackingTarget = 1f;
+	private int freeRangeHerdUnborn;
 
 	private static readonly Dictionary<string, LivestockAnimal> livingSpecials = new Dictionary<string, LivestockAnimal>();
 
@@ -473,9 +564,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public const Flags Frisky = Flags.Reserved15;
 
-	public const Flags Leadable = Flags.Reserved16;
-
 	public const Flags LyingIn = Flags.Reserved17;
+
+	public const Flags AtTrough = Flags.Reserved18;
+
+	public const Flags RecentlyPetted = Flags.Reserved19;
 
 	public const int AgeTimerId = 1;
 
@@ -489,15 +582,14 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public LivestockSize MountType = LivestockSize.Small;
 
-	[Tooltip("How long (in seconds) this animal stays at its current age stage. When it elapses an infant grows into the adult named by its Species asset and an adult dies of old age. Zero disables aging.")]
 	[Header("Aging")]
+	[Tooltip("How long (in seconds) an infant takes to grow into the adult named by its Species asset. Infants only: an adult never ages out of its stage, so its own is zero.")]
 	public float TimeToGrow;
 
 	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	[Range(0f, 1f)]
 	public float GrowTimeVariance = 0.1f;
 
-	[Tooltip("Optional effect played on the new animal when it grows into the next stage.")]
 	public GameObjectRef GrowEffect;
 
 	[Tooltip("How long (in seconds) this animal takes to give birth once pregnant")]
@@ -509,8 +601,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far from the mother the newborn is placed, so it doesn't spawn inside her.")]
 	public float ChildSpawnDistance = 1f;
 
-	[Header("Sex")]
 	[Tooltip("Which sex this prefab represents. Infants and species that use one prefab for both sexes stay at Either and roll for it; a prefab that is specifically the male or female form of its species says so here, and must be the one its Species asset names.")]
+	[Header("Sex")]
 	public SexForm Form;
 
 	[Tooltip("The species this animal belongs to. Shared by every prefab of the species - both sexes and every age stage - so it identifies mates and tells an infant which adult to grow into.")]
@@ -523,9 +615,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How much fullness drains per second while the animal is up and about in daylight. Against FullnessFillRate this sets how much of its standing time a well fed animal spends eating: 0.001 against 0.004 is a quarter of it. Slow, because the dip below ConsumeThreshold while the animal walks over is what a keeper sees. Lying down and sleeping drain at SleepingDecayScale.")]
 	public float FullnessDecayRate = 0.001f;
 
-	[Tooltip("Where a freshly spawned animal's fullness starts. At the trough ceiling, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to it.")]
 	[Range(0f, 1f)]
-	public float StartingFullness = 0.8f;
+	[Tooltip("Where a freshly spawned animal's fullness starts. Full, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to the top of its bar.")]
+	public float StartingFullness = 1f;
 
 	[Tooltip("Scales the drain while the animal is asleep or the sun is down. Feeding is daytime work, so a full night at the waking rate would be a debt the day could not pay off.")]
 	[Range(0f, 1f)]
@@ -536,19 +628,21 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far (in metres) the animal looks for somewhere to feed itself - a trough, a water barrel, open grass or a river bank.")]
 	public float ConsumeSearchRadius = 25f;
 
-	[Tooltip("A need at or below this share of the most it can get sends the animal off to top it up. Fullness is measured against the trough ceiling while a trough is what feeds it, and against full otherwise. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it: about 0.75 to 0.8 on troughs and 0.95 to 1 on grass. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
+	[Tooltip("A need at or below this sends the animal off to top it up, and grass, a trough or water all fill it back to full. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it, about 0.93 to 1 whatever feeds it. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
 	[Range(0f, 1f)]
 	public float ConsumeThreshold = 0.95f;
-
-	[Range(0f, 1f)]
-	[Tooltip("The most fullness a trough will ever put back. Grass still fills an animal completely, so a herd living out of a trough sits permanently a little short and everything reading Condition pays for it.")]
-	public float TroughFullnessCeiling = 0.8f;
 
 	[Tooltip("How much fullness each calorie of trough food is worth. The animal grazes a trough item down before it takes the next, so richer food lasts longer, the way it does for a horse.")]
 	public float TroughFullnessPerCalorie = 0.0021f;
 
+	[Tooltip("The share of its food an animal whose grass need reads full takes off the grass. Its meals alternate between the grass and a stocked trough in reach to match, and the grass alone fills its bar no higher than this, so at 0.5 a herd on full grass with no trough sits half full.")]
+	[Range(0f, 1f)]
+	public float GrassFoodShare = 0.5f;
+
 	[Tooltip("How long (in seconds) the animal takes to raise its head once it stops grazing or drinking. Clearing the flag only STARTS the head coming up, so for this long it is still visibly head down. The cow's cow_eat_out is 1.7s and the sheep's sheep_eat_exit 1.5s.")]
 	public float RaiseHeadDuration = 1.7f;
+
+	public GestureConfig PettingGesture;
 
 	public const float StartingPersonalSpaceNeed = 1f;
 
@@ -559,6 +653,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	private TimeSince headComingUpFor;
 
 	private TickableNeed[] needs = Array.Empty<TickableNeed>();
+
+	public const float NoTroughFoodMinutes = -1f;
 
 	private TimeSince lastLoudNoise;
 
@@ -574,13 +670,41 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private EntityRef<LivestockAnimal> Mother;
 
+	private string pregnantPartnerName;
+
+	private FarmableAnimal.NameSource pregnantPartnerNameSource;
+
+	private ulong pregnantPartnerNameAuthorId;
+
 	private bool findingItsFeet;
 
 	private EntityRef<LivestockAnimal> newbornCalf;
 
 	public static LivestockNeedsQueue NeedsQueue = new LivestockNeedsQueue();
 
+	private const int SaveVersion = 2;
+
+	public const int MostLedByOnePlayer = 9;
+
+	private static readonly Phrase LeadingTooManyPhrase = new Phrase("livestock.lead.toomany", "Leading too many animals");
+
+	private static readonly Phrase LeadOwnedPhrase = new Phrase("livestock.lead.owned", "{0} is {1}'s");
+
+	private float leadSlack;
+
+	private bool leadTrusted;
+
+	private TimeSince untrustedLeadHeld;
+
+	public const float UntrustedLeadHold = 1.5f;
+
 	private bool startled;
+
+	private TimeSince lastProvoked;
+
+	private EntityRef<BasePlayer> provokedBy;
+
+	public const float ProvokedFor = 10f;
 
 	private EntityRef<BasePlayer> leaderBeforeMount;
 
@@ -601,6 +725,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	};
 
+	private Action clearPettedFlagAction;
+
 	public const int MaxAnimalNameLength = 24;
 
 	private Vector3 lastLoudNoisePosition;
@@ -619,9 +745,13 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private bool calfEverThreatened;
 
+	private TimeSince lastBondThreat;
+
+	private bool bondEverThreatened;
+
 	private const float NeedFlashPrecision = 0.01f;
 
-	private const float AgeFlashPrecision = 0.01f;
+	private const float AgeFlashPrecision = 0.1f;
 
 	private const float FamiliarityFlashPrecision = 1f;
 
@@ -631,37 +761,27 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float troughFullnessStored;
 
+	private ItemModConsumable troughFullnessFood;
+
 	private bool hasCalved;
 
 	private const int BirthCandidates = 8;
 
-	private bool lastHelpingFromTrough;
+	public const float SupplySearchRadius = 27f;
+
+	private float? grassShareOfFullness;
 
 	private bool __sync_IsMale;
 
-	private EntityRef<LivestockAnimal> __sync_PregnantPartner;
+	private int __sync_NameAuthorSourceSync;
 
 	private string __sync_AnimalName;
 
 	private EntityRef<BasePlayer> __sync_LeadingPlayer;
 
-	private EntityRef<BuildingPrivlidge> __sync_HomeTc;
-
 	private int __sync_Genes;
 
-	private int __sync_PregnantPartnerGenes;
-
-	public bool AgingEnabled
-	{
-		get
-		{
-			if (TimeToGrow > 0f)
-			{
-				return Livestock.ageScale > 0f;
-			}
-			return false;
-		}
-	}
+	public bool AgingEnabled => Livestock.ageScale > 0f;
 
 	public bool IsAging
 	{
@@ -669,49 +789,25 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			if (AgingEnabled)
 			{
-				return DecayStarted;
+				return HasOwner;
 			}
 			return false;
 		}
 	}
 
-	private float AgeLifetime => TimeToGrow * LifespanScale * Livestock.ageScale;
-
-	private float LifespanScale
+	public bool CanGrowUp
 	{
 		get
 		{
-			if (!IsAdult())
+			if (IsInfant() && TimeToGrow > 0f)
 			{
-				return 1f;
+				return HasAdultForm;
 			}
-			return GeneScale(LivestockGene.Longevity);
+			return false;
 		}
 	}
 
-	public float AgeFraction
-	{
-		get
-		{
-			if (!AgingEnabled || !IsAdult() || !ageTimer.IsRunning || !(AgeLifetime > 0f))
-			{
-				return 0f;
-			}
-			return Mathf.Clamp01(1f - ageTimer.Remaining / AgeLifetime);
-		}
-	}
-
-	public float AgeSeconds
-	{
-		get
-		{
-			if (!AgingEnabled || !ageTimer.IsRunning)
-			{
-				return 0f;
-			}
-			return Mathf.Max(0f, AgeLifetime - ageTimer.Remaining);
-		}
-	}
+	public float AgeSeconds => ageLived;
 
 	private GameObjectRef AdultForm
 	{
@@ -739,6 +835,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
+	public int CoatSeed { get; set; }
+
 	public virtual int ShornFleece => 0;
 
 	public LivestockSexParts SexPartSet
@@ -761,7 +859,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			{
 				return "none";
 			}
-			return (((Object)(object)PatternSet.Range != (Object)null) ? PatternSet.Range.ShadeNameOf(Genes) : null) ?? $"pattern {LivestockPattern.SeedFor(AnimalName):X8}";
+			return (((Object)(object)PatternSet.Range != (Object)null) ? PatternSet.Range.ShadeNameOf(Genes) : null) ?? $"pattern {CoatSeed:X8}";
 		}
 	}
 
@@ -781,6 +879,48 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool BreedingPaused => breedingPaused;
 
+	public bool IsAtConditionFloor => Health() <= 1.01f;
+
+	public bool IsStarved
+	{
+		get
+		{
+			if (IsAtConditionFloor)
+			{
+				if (!(Fullness.NeedValue <= 0f))
+				{
+					return Hydration.NeedValue <= 0f;
+				}
+				return true;
+			}
+			return false;
+		}
+	}
+
+	public bool IsAsleep
+	{
+		get
+		{
+			if (IsSleeping())
+			{
+				return !starvedDown;
+			}
+			return false;
+		}
+	}
+
+	private float ConditionFloorHealth
+	{
+		get
+		{
+			if (!(PersonalSpace.NeedValue <= 0f))
+			{
+				return 1f;
+			}
+			return 0f;
+		}
+	}
+
 	public bool DungEnabled
 	{
 		get
@@ -797,9 +937,23 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		get
 		{
-			if (IsLeadable && !IsStarving())
+			if (HasOwner && !IsStarving())
 			{
 				return Condition >= Livestock.dungConditionFloor;
+			}
+			return false;
+		}
+	}
+
+	private float DungBoostTimeLeft => Mathf.Max(0f, dungBoostUntil - Time.time);
+
+	public bool WantsDungBoost
+	{
+		get
+		{
+			if (DungEnabled && CanDung)
+			{
+				return DungBoostTimeLeft <= 0f;
 			}
 			return false;
 		}
@@ -819,11 +973,33 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	public bool IsLeadable => AnyAcquaintanceAt(Livestock.trustToLead);
+	public bool ActsCuriousAdult
+	{
+		get
+		{
+			if (ActsCurious)
+			{
+				return IsAdult();
+			}
+			return false;
+		}
+	}
 
-	public bool IsFullyBonded => AnyAcquaintanceAt(Livestock.maxTrust);
+	public bool IsSleepy { get; private set; }
 
-	public bool DecayStarted { get; private set; }
+	public bool ActsSleepy
+	{
+		get
+		{
+			if (IsSleepy)
+			{
+				return IsAdult();
+			}
+			return false;
+		}
+	}
+
+	private static float NonOwnerTrustCap => Livestock.maxTrust * Mathf.Clamp01(Livestock.nonOwnerTrustShare);
 
 	private static float TrustedNearbyTimeout => SenseComponent.maxRefreshIntervalSeconds * 2f;
 
@@ -853,28 +1029,32 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
+	public LivestockFootprint HeldSlotFootprint => slotFootprint;
+
+	public float SlotSearchFailedFor
+	{
+		get
+		{
+			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			if (!slotSearchFailing)
+			{
+				return 0f;
+			}
+			return TimeSince.op_Implicit(slotSearchFailedAt);
+		}
+	}
+
 	public int AgeGaitPenalty
 	{
 		get
 		{
-			if (IsInfant())
-			{
-				return -1;
-			}
-			float ageFraction = AgeFraction;
-			if (ageFraction >= Mathf.Max(OldAgeSlowFraction, OldAgeVerySlowFraction))
-			{
-				return 2;
-			}
-			if (!(ageFraction >= OldAgeSlowFraction))
+			if (!IsInfant())
 			{
 				return 0;
 			}
-			return 1;
+			return -1;
 		}
 	}
-
-	public float AgeRestDurationScale => Mathf.Lerp(1f, Mathf.Max(1f, OldAgeRestDurationScale), AgeFraction);
 
 	public bool IsInbred => LivestockGenome.IsInbred(Genes);
 
@@ -882,19 +1062,28 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool IsGodClone => LivestockGenome.IsGodGenome(Genes);
 
+	public bool HidesBadAllele => LivestockGenome.HidesBad(Genes);
+
+	public float NeedScale => 1f / GeneScale(LivestockGene.Hardiness);
+
+	public float ShelterNeedScale => Mathf.Min(1f, NeedScale * (Livestock.genesEnabled ? Mathf.Max(0.01f, Livestock.geneHardinessBad) : 1f));
+
 	public Vector3 HomePosition
 	{
 		get
 		{
-			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-			if (!HomeTc.TryGet(isServer, out var entity) || !((Object)(object)entity != (Object)null))
-			{
-				return homePosition;
-			}
-			return ((Component)entity).transform.position;
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return homePosition;
 		}
 	}
+
+	public EntityRef<BuildingPrivlidge> HomeTc { get; set; }
+
+	public FarmableAnimal.NameSource NameAuthorSource => (FarmableAnimal.NameSource)NameAuthorSourceSync;
+
+	public bool HasSpecialAuthoredName => NameAuthorSource == FarmableAnimal.NameSource.Special;
+
+	public bool HasPlayerAuthoredName => NameAuthorSource == FarmableAnimal.NameSource.Player;
 
 	public int Generation { get; set; }
 
@@ -903,6 +1092,27 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public string LineStem { get; set; }
 
 	public bool HeirNamed { get; set; }
+
+	public ulong NameAuthorId { get; private set; }
+
+	public bool HasOwner => OwnerID != 0;
+
+	public bool IsOwnersLead
+	{
+		get
+		{
+			if (!HasOwner || !IsLeading())
+			{
+				return false;
+			}
+			BasePlayer basePlayer = LeadingPlayer.Get(isServer);
+			if ((Object)(object)basePlayer != (Object)null)
+			{
+				return (ulong)basePlayer.userID == OwnerID;
+			}
+			return false;
+		}
+	}
 
 	public bool SpeciesAtCap
 	{
@@ -914,6 +1124,83 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				return PopulationOf(Species) >= maxPerSpecies;
 			}
 			return false;
+		}
+	}
+
+	public int PotentialTrend
+	{
+		get
+		{
+			if (isServer)
+			{
+				if (!IsEarningPotential)
+				{
+					return 0;
+				}
+				float num = PotentialTarget - Potential;
+				if (!(Mathf.Abs(num) < 0.01f))
+				{
+					return (int)Mathf.Sign(num);
+				}
+				return 0;
+			}
+			return potentialTrendFromServer;
+		}
+	}
+
+	public float Potential
+	{
+		get
+		{
+			if (isServer)
+			{
+				return Mathf.Min(potential, PotentialCeiling);
+			}
+			return potentialFromServer;
+		}
+	}
+
+	private bool IsEarningPotential
+	{
+		get
+		{
+			if (IsInfant() && IsAging)
+			{
+				return !IsDead();
+			}
+			return false;
+		}
+	}
+
+	private float PotentialCeiling
+	{
+		get
+		{
+			if (!Mother.IsSet)
+			{
+				return Mathf.Clamp01(Livestock.potentialUnbredCap);
+			}
+			return 1f;
+		}
+	}
+
+	private float Happiness => Mathf.InverseLerp(0f, Mathf.Max(0.01f, Livestock.conditionFullContentment), Contentment);
+
+	private float PotentialTarget => Mathf.Min(Mathf.InverseLerp(0f, 0.8f, Happiness), PotentialCeiling);
+
+	private Bounds LyingBody
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+			if (!(LyingBounds.size == Vector3.zero))
+			{
+				return LyingBounds;
+			}
+			return bounds;
 		}
 	}
 
@@ -931,21 +1218,140 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	private RustNavMeshAgent RestingAgent
+	internal bool CountsFreeRangeHerd
 	{
 		get
 		{
-			if (!((Object)(object)restingAgent != (Object)null))
+			if (Livestock.maxFreeRangeHerd > 0 && HasOwner && !StandsInAPen)
 			{
-				return restingAgent = ((Component)this).GetComponent<RustNavMeshAgent>();
+				return !IsDead();
 			}
-			return restingAgent;
+			return false;
 		}
 	}
 
-	public float LastHerdLoadTarget => lastHerdLoadTarget;
+	internal RustNavMeshAgent NavAgent => frailtyAgent;
 
-	public float LastPackingTarget => lastPackingTarget;
+	public float LitterHeads => (float)MaxLitterSize() * NeedScale;
+
+	private int LitterOnTheWay
+	{
+		get
+		{
+			if (!IsPregnant())
+			{
+				return 0;
+			}
+			return MaxLitterSize();
+		}
+	}
+
+	public float RoomTarget => PackingTarget(FloorPerHead);
+
+	public float FloorPerHead
+	{
+		get
+		{
+			if (floor != null && !floor.IsField)
+			{
+				return floor.Area / Mathf.Max(floor.Heads, 0.01f);
+			}
+			return float.PositiveInfinity;
+		}
+	}
+
+	public bool StandsInAField
+	{
+		get
+		{
+			if (floor != null)
+			{
+				return floor.IsField;
+			}
+			return false;
+		}
+	}
+
+	public bool StandsInAPen
+	{
+		get
+		{
+			if (floor != null)
+			{
+				return !floor.IsField;
+			}
+			return false;
+		}
+	}
+
+	public int FreeRangeHerd => freeRangeHerdMates + 1;
+
+	public int ProjectedFreeRangeHerd => FreeRangeHerd + freeRangeHerdUnborn + LitterOnTheWay;
+
+	internal LivestockFloor Floor => floor;
+
+	internal LivestockFloor CurrentFloor
+	{
+		get
+		{
+			RustNavMeshAgent navAgent = NavAgent;
+			if (floor == null || !((Object)(object)navAgent != (Object)null) || !floor.IsCurrent(navAgent))
+			{
+				return null;
+			}
+			return floor;
+		}
+	}
+
+	internal bool CanStandOnAFloor
+	{
+		get
+		{
+			if (!IsDestroyed && !IsDead() && !IsMounted)
+			{
+				return !IsWild;
+			}
+			return false;
+		}
+	}
+
+	internal bool IsWild
+	{
+		get
+		{
+			if (!HasOwner)
+			{
+				return IsPopulationSpawn();
+			}
+			return false;
+		}
+	}
+
+	public bool HasRoomToBreed
+	{
+		get
+		{
+			RemeasureIfChanged();
+			if (floor == null || floor.IsField)
+			{
+				if (Livestock.maxFreeRangeHerd <= 0)
+				{
+					return true;
+				}
+				return Livestock.maxFreeRangeHerd - ProjectedFreeRangeHerd >= ((!IsFemale) ? 1 : MaxLitterSize());
+			}
+			float projectedHeads = floor.ProjectedHeads;
+			if (floor.Area / Mathf.Max(projectedHeads, 0.01f) < LivestockFloor.BreedingFloorPerHead)
+			{
+				return false;
+			}
+			if (IsFemale)
+			{
+				return floor.Area / (projectedHeads + LitterHeads) > Livestock.lethalFloorPerHead;
+			}
+			return true;
+		}
+	}
 
 	public float SaleValueScale
 	{
@@ -953,15 +1359,13 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			if (isServer)
 			{
-				return SpeciesSaleScale() * GeneSaleScale() * ConditionSaleScale() * AgeSaleScale() * OriginSaleScale();
+				return SpeciesSaleScale() * GeneSaleScale() * ConditionSaleScale() * Potential;
 			}
 			return saleValueScale;
 		}
 	}
 
 	public float SaleQuality => Mathf.Clamp01(SaleValueScale / Mathf.Max(0.01f, Livestock.priceFullQualityScale));
-
-	public bool IsBred => Mother.IsSet;
 
 	[Sync(Autosave = true)]
 	public bool IsMale
@@ -984,20 +1388,20 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	}
 
 	[Sync(Autosave = true)]
-	public EntityRef<LivestockAnimal> PregnantPartner
+	private int NameAuthorSourceSync
 	{
 		[CompilerGenerated]
 		get
 		{
-			return __sync_PregnantPartner;
+			return __sync_NameAuthorSourceSync;
 		}
 		[CompilerGenerated]
 		set
 		{
-			if (!IsSyncVarEqual(__sync_PregnantPartner, value))
+			if (!IsSyncVarEqual(__sync_NameAuthorSourceSync, value))
 			{
-				__sync_PregnantPartner = value;
-				byte nameID = __GetWeaverID("PregnantPartner");
+				__sync_NameAuthorSourceSync = value;
+				byte nameID = __GetWeaverID("NameAuthorSourceSync");
 				QueueSyncVar(nameID);
 			}
 		}
@@ -1044,26 +1448,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	}
 
 	[Sync(Autosave = true)]
-	public EntityRef<BuildingPrivlidge> HomeTc
-	{
-		[CompilerGenerated]
-		get
-		{
-			return __sync_HomeTc;
-		}
-		[CompilerGenerated]
-		set
-		{
-			if (!IsSyncVarEqual(__sync_HomeTc, value))
-			{
-				__sync_HomeTc = value;
-				byte nameID = __GetWeaverID("HomeTc");
-				QueueSyncVar(nameID);
-			}
-		}
-	}
-
-	[Sync(Autosave = true)]
 	public int Genes
 	{
 		[CompilerGenerated]
@@ -1083,26 +1467,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	[Sync(Autosave = true)]
-	public int PregnantPartnerGenes
-	{
-		[CompilerGenerated]
-		get
-		{
-			return __sync_PregnantPartnerGenes;
-		}
-		[CompilerGenerated]
-		set
-		{
-			if (!IsSyncVarEqual(__sync_PregnantPartnerGenes, value))
-			{
-				__sync_PregnantPartnerGenes = value;
-				byte nameID = __GetWeaverID("PregnantPartnerGenes");
-				QueueSyncVar(nameID);
-			}
-		}
-	}
-
 	public bool IsFemale => !IsMale;
 
 	public TickableNeed Fullness => GetNeed(Need.Fullness);
@@ -1111,19 +1475,24 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public TickableNeed Hydration => GetNeed(Need.Hydration);
 
-	public bool IsHappy
+	public TickableNeed Grass => GetNeed(Need.Grass);
+
+	public TickableNeed Sun => GetNeed(Need.Sun);
+
+	public float GrazingShare => Mathf.Clamp01(GrassFoodShare) * Grass.NeedValue;
+
+	public bool IsHappy => Contentment > 0.5f;
+
+	public float Contentment
 	{
 		get
 		{
-			if (Fullness.NeedValue > 0.5f && PersonalSpace.NeedValue > 0.5f)
-			{
-				return Hydration.NeedValue > 0.5f;
-			}
-			return false;
+			float shelterNeedFloor = Livestock.shelterNeedFloor;
+			return Mathf.Min(Mathf.Min(Mathf.Min(Mathf.Min(Fullness.NeedValue, Hydration.NeedValue), PersonalSpace.NeedValue), Mathf.Max(shelterNeedFloor, Grass.NeedValue)), Mathf.Max(shelterNeedFloor, Sun.NeedValue));
 		}
 	}
 
-	public float Contentment => Mathf.Min(Fullness.NeedValue, Mathf.Min(PersonalSpace.NeedValue, Hydration.NeedValue));
+	public int MilkCharges { get; protected set; }
 
 	public bool RecentlyHeardLoudNoise
 	{
@@ -1134,6 +1503,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
+	public EntityRef<LivestockAnimal> PregnantPartner { get; set; }
+
+	public int PregnantPartnerGenes { get; set; }
+
 	public bool IsVeryHappy => Contentment >= Livestock.friskyThreshold;
 
 	public bool IsFindingItsFeet => findingItsFeet;
@@ -1141,6 +1514,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public LivestockAnimal MotherAnimal => Mother.Get(isServer);
 
 	public bool IsBeingPurchased { get; set; }
+
+	public bool LeadTrusted => leadTrusted;
 
 	public bool StandsItsGround
 	{
@@ -1150,9 +1525,21 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			{
 				if (!IsMale)
 				{
-					return IsProtectiveOfCalf;
+					return IsProtective;
 				}
 				return true;
+			}
+			return false;
+		}
+	}
+
+	public virtual bool ProducesYield
+	{
+		get
+		{
+			if (HasOwner && !IsInfant())
+			{
+				return !IsDead();
 			}
 			return false;
 		}
@@ -1178,6 +1565,32 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				return HasDependentsNearby();
 			}
 			return false;
+		}
+	}
+
+	public bool IsProtectiveOfPlayer
+	{
+		get
+		{
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			float motherlyDuration = Livestock.motherlyDuration;
+			if (motherlyDuration > 0f && bondEverThreatened)
+			{
+				return TimeSince.op_Implicit(lastBondThreat) < motherlyDuration;
+			}
+			return false;
+		}
+	}
+
+	public bool IsProtective
+	{
+		get
+		{
+			if (!IsProtectiveOfCalf)
+			{
+				return IsProtectiveOfPlayer;
+			}
+			return true;
 		}
 	}
 
@@ -1221,14 +1634,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		get
 		{
-			if (IsFullyBonded && !BreedingPaused && !SpeciesAtCap)
+			if (HasOwner && !BreedingPaused && !SpeciesAtCap)
 			{
-				BuildingPrivlidge cupboard;
-				if (Livestock.breedOnlyAtHome)
-				{
-					return TryGetHomeCupboard(out cupboard);
-				}
-				return true;
+				return HasRoomToBreed;
 			}
 			return false;
 		}
@@ -1266,15 +1674,33 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	public float ExpectedFullnessCeiling
+	public float TroughCaloriesPerSecond
 	{
 		get
 		{
-			if (!lastHelpingFromTrough)
+			if (!(TroughFullnessPerCalorie > 0f))
 			{
-				return 1f;
+				return 0f;
 			}
-			return Mathf.Clamp01(TroughFullnessCeiling);
+			return DrainPerSecond(Need.Fullness) * (1f - GrazingShare) / TroughFullnessPerCalorie;
+		}
+	}
+
+	private float GrassShareOfFullness => grassShareOfFullness ?? GrazingShare;
+
+	public float GrassRoom => Mathf.Max(0f, GrazingShare - Fullness.NeedValue * GrassShareOfFullness);
+
+	public bool GrassCanFeed => GrassRoom >= 1f - ConsumeThreshold;
+
+	public bool HasGrazedItsShare
+	{
+		get
+		{
+			if (GrazingShare > 0f)
+			{
+				return !GrassCanFeed;
+			}
+			return false;
 		}
 	}
 
@@ -1323,6 +1749,47 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				}
 				return true;
 			}
+			if (rpc == 3115049114u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - RequestNameChange"));
+				}
+				using (TimeWarning.New("RequestNameChange"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.CallsPerSecond.Test(3115049114u, "RequestNameChange", this, player, 5uL))
+						{
+							return true;
+						}
+						if (!RPC_Server.MaxDistance.Test(3115049114u, "RequestNameChange", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg3 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							RequestNameChange(msg3);
+						}
+					}
+					catch (Exception ex2)
+					{
+						Debug.LogException(ex2);
+						player.Kick("RPC Error in RequestNameChange");
+					}
+				}
+				return true;
+			}
 			if (rpc == 3653170552u && (Object)(object)player != (Object)null)
 			{
 				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
@@ -1347,19 +1814,60 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg3 = new RPCMessage
+							RPCMessage msg4 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							RPC_Lead(msg3);
+							RPC_Lead(msg4);
 						}
 					}
-					catch (Exception ex2)
+					catch (Exception ex3)
 					{
-						Debug.LogException(ex2);
+						Debug.LogException(ex3);
 						player.Kick("RPC Error in RPC_Lead");
+					}
+				}
+				return true;
+			}
+			if (rpc == 3752731948u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - ServerPet"));
+				}
+				using (TimeWarning.New("ServerPet"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.CallsPerSecond.Test(3752731948u, "ServerPet", this, player, 1uL))
+						{
+							return true;
+						}
+						if (!RPC_Server.IsVisible.Test(3752731948u, "ServerPet", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg5 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							ServerPet(msg5);
+						}
+					}
+					catch (Exception ex4)
+					{
+						Debug.LogException(ex4);
+						player.Kick("RPC Error in ServerPet");
 					}
 				}
 				return true;
@@ -1373,7 +1881,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		ageTimer = new PersistentTimer(timers, 1)
 		{
 			onElapsed = OnAgeTimerElapsed,
-			onStarted = OnAgeTimerStarted,
 			carryOnReplace = false
 		};
 		if (IsAging)
@@ -1392,53 +1899,53 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void StartAgeTimer()
 	{
-		ageTimer.Start(TimeToGrow * LifespanScale * Random.Range(1f - GrowTimeVariance, 1f + GrowTimeVariance) * Livestock.ageScale);
-	}
-
-	private void RestartLifespanForGenes()
-	{
-		if (IsAging && IsAdult())
+		if (CanGrowUp)
 		{
-			StartAgeTimer();
+			ageTimer.Start(TimeToGrow * Rng.Range(1f - GrowTimeVariance, 1f + GrowTimeVariance) * Livestock.ageScale);
 		}
 	}
 
-	private void OnAgeTimerStarted()
+	private void TakeAgeFrom(LivestockAnimal previous)
 	{
-		DecayStarted = true;
+		ageLived = previous.ageLived;
+		if (Age == previous.Age)
+		{
+			previous.ageTimer.CopyTo(ageTimer);
+		}
+	}
+
+	private void FoldSavedAdultStage()
+	{
+		if (IsAdult() && ageTimer.IsRunning)
+		{
+			ageLived += ageTimer.Elapsed;
+			ageTimer.Stop();
+		}
 	}
 
 	private void OnAgeTimerElapsed()
 	{
-		DecayStarted = true;
-		if (!IsDead() && AgingEnabled && !AdvanceAgeStage() && !HasAdultForm)
+		if (!IsDead() && IsInfant() && IsAging)
 		{
-			Debug.LogWarning((object)(Categorize() + " (" + PrefabName + ") is an Infant whose Species asset names no adult form; it will not age."));
+			if (!HasAdultForm)
+			{
+				Debug.LogWarning((object)(Categorize() + " (" + PrefabName + ") is an Infant whose Species asset names no adult form; it will not age."));
+			}
+			else
+			{
+				GrowIntoAdult();
+			}
 		}
 	}
 
 	public bool ForceAgeUp()
 	{
-		if (IsDead())
+		if (IsDead() || !IsInfant() || !HasAdultForm)
 		{
 			return false;
 		}
 		ageTimer.Stop();
-		return AdvanceAgeStage();
-	}
-
-	private bool AdvanceAgeStage()
-	{
-		if (IsInfant())
-		{
-			if (HasAdultForm)
-			{
-				return (Object)(object)GrowIntoAdult() != (Object)null;
-			}
-			return false;
-		}
-		DieOfOldAge();
-		return true;
+		return (Object)(object)GrowIntoAdult() != (Object)null;
 	}
 
 	public LivestockAnimal GrowIntoAdult()
@@ -1483,6 +1990,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	protected virtual void TransferStateTo(LivestockAnimal next)
 	{
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		next.health = next.MaxHealth() * healthFraction;
 		if (next.Form == SexForm.Either)
 		{
@@ -1490,34 +1999,55 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 		next.SetLeading(IsLeading());
 		next.LeadingPlayer = LeadingPlayer;
+		next.leadSlack = leadSlack;
+		next.leadTrusted = leadTrusted;
+		next.untrustedLeadHeld = untrustedLeadHeld;
 		next.leaderBeforeMount = leaderBeforeMount;
 		leaderBeforeMount = default;
 		HandOverMountTo(next);
 		timers.CopyTo(next.timers);
 		next.PregnantPartner = PregnantPartner;
+		next.pregnantPartnerName = pregnantPartnerName;
+		next.pregnantPartnerNameSource = pregnantPartnerNameSource;
+		next.pregnantPartnerNameAuthorId = pregnantPartnerNameAuthorId;
 		next.sleepFraction = sleepFraction;
-		next.AnimalName = AnimalName;
+		next.GiveName(AnimalName, NameAuthorSource, NameAuthorId);
 		next.TakeLineageFrom(this);
 		next.HeirNamed = HeirNamed;
 		next.Mother = Mother;
 		next.Father = Father;
-		next.DecayStarted = DecayStarted;
 		TransferFamiliarityTo(next);
 		next.Genes = Genes;
-		next.RestartLifespanForGenes();
+		next.CoatSeed = CoatSeed;
+		next.TakeAgeFrom(this);
 		next.RestartDungForGenes();
+		next.RestartProductionForGenes();
 		for (int i = 0; i < needs.Length && i < next.needs.Length; i++)
 		{
 			next.needs[i] = needs[i];
 		}
+		next.StandOn(floor);
 		TransferConditionTo(next);
+		TransferPotentialTo(next);
 		next.TakeHomeFrom(this);
 	}
 
-	private void DieOfOldAge()
+	private void LoadCoatSeed(int seed)
 	{
-		LogEntry(RustLog.EntryType.Combat, 2, "died of old age");
-		Die();
+		if (seed != CoatSeed)
+		{
+			CoatSeed = seed;
+		}
+	}
+
+	private int CoatSeedOfAnOlderSave()
+	{
+		int num = LivestockPattern.SeedFor(AnimalName);
+		if (num == 0)
+		{
+			return (int)Rng.NextSeed();
+		}
+		return num;
 	}
 
 	private void InitCondition()
@@ -1530,13 +2060,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float ConditionTarget()
 	{
-		float num = Mathf.Max(0.01f, Livestock.conditionFullContentment / GeneScale(LivestockGene.Hardiness));
-		float num2 = Mathf.InverseLerp(0f, num, Contentment);
-		if (!DecayStarted)
-		{
-			num2 = Mathf.Max(num2, Mathf.Clamp01(Livestock.wildConditionFloor));
-		}
-		return num2;
+		return Mathf.InverseLerp(0f, Mathf.Max(0.01f, Livestock.conditionFullContentment), Contentment);
+	}
+
+	public void SetStarvedDown(bool down)
+	{
+		starvedDown = down;
 	}
 
 	private void TickCondition(float deltaTime)
@@ -1546,7 +2075,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			return;
 		}
 		UpdateBreedingPause();
-		if (TOD_Sky.Instance.IsNight || IsSleeping())
+		if (TOD_Sky.Instance.IsNight || IsAsleep)
 		{
 			conditionSecondsSkipped += deltaTime;
 			return;
@@ -1571,20 +2100,24 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			return;
 		}
 		conditionSecondsSpent += deltaTime;
-		num3 = Mathf.MoveTowards(num3, num2, num / num4 * deltaTime);
+		float conditionFloorHealth = ConditionFloorHealth;
+		num3 = Mathf.Max(Mathf.MoveTowards(num3, num2, num / num4 * deltaTime), conditionFloorHealth);
 		conditionUnsentHealth = num3 - Health();
-		if (!(Mathf.Abs(conditionUnsentHealth) < num * 0.05f) || !(num3 > 0f) || !(num3 < num))
+		if (!(Mathf.Abs(conditionUnsentHealth) < num * 0.05f) || !(num3 > conditionFloorHealth) || !(num3 < num))
 		{
 			conditionUnsentHealth = 0f;
-			SetHealth(num3);
+			if (!Mathf.Approximately(num3, Health()))
+			{
+				SetHealth(num3);
+			}
 			if (Health() <= 0f)
 			{
-				DieOfNeglect();
+				DieOfCrowding();
 			}
 		}
 	}
 
-	private void DieOfNeglect()
+	private void DieOfCrowding()
 	{
 		HitInfo hitInfo = new HitInfo();
 		hitInfo.damageTypes.Set(DamageType.Hunger, MaxHealth());
@@ -1607,7 +2140,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public void SetCondition(float value)
 	{
 		conditionUnsentHealth = 0f;
-		SetHealth(Mathf.Clamp01(value) * MaxHealth());
+		SetHealth(Mathf.Max(Mathf.Clamp01(value) * MaxHealth(), 1f));
 		UpdateBreedingPause();
 	}
 
@@ -1700,7 +2233,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void StartDungTimer()
 	{
-		dungTimer.Start(DungInterval / GeneScale(LivestockGene.Dung) * DungIntervalConditionScale() * Random.Range(1f - DungIntervalVariance, 1f + DungIntervalVariance));
+		dungTimer.Start(BoostedWait(DungInterval / GeneScale(LivestockGene.Dung) * DungIntervalConditionScale() * Rng.Range(1f - DungIntervalVariance, 1f + DungIntervalVariance)));
 	}
 
 	private float DungIntervalConditionScale()
@@ -1733,6 +2266,65 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return true;
 	}
 
+	public static bool IsDungBoostFood(ItemModConsumable food)
+	{
+		foreach (ModifierDefintion modifier in food.modifiers)
+		{
+			if (modifier.type == Modifier.ModifierType.HorseDungProductionBoost)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void ApplyDungBoost(ItemModConsumable food)
+	{
+		if ((Object)(object)food == (Object)null || !DungEnabled || !dungTimer.IsRunning)
+		{
+			return;
+		}
+		foreach (ModifierDefintion modifier in food.modifiers)
+		{
+			if (modifier.type == Modifier.ModifierType.HorseDungProductionBoost)
+			{
+				float wait = UnboostedWait(dungTimer.Remaining);
+				dungBoostRate = Mathf.Max((DungBoostTimeLeft > 0f) ? dungBoostRate : 1f, modifier.value);
+				dungBoostUntil = Mathf.Max(dungBoostUntil, Time.time + modifier.duration);
+				dungTimer.Reschedule(BoostedWait(wait));
+			}
+		}
+	}
+
+	public void RenewDungBoost(ItemModConsumable food)
+	{
+		if (DungBoostTimeLeft <= 0f)
+		{
+			ApplyDungBoost(food);
+		}
+	}
+
+	private float BoostedWait(float wait)
+	{
+		float dungBoostTimeLeft = DungBoostTimeLeft;
+		float num = dungBoostTimeLeft * dungBoostRate;
+		if (!(wait <= num))
+		{
+			return dungBoostTimeLeft + (wait - num);
+		}
+		return wait / dungBoostRate;
+	}
+
+	private float UnboostedWait(float realWait)
+	{
+		float dungBoostTimeLeft = DungBoostTimeLeft;
+		if (!(realWait <= dungBoostTimeLeft))
+		{
+			return dungBoostTimeLeft * dungBoostRate + (realWait - dungBoostTimeLeft);
+		}
+		return realWait * dungBoostRate;
+	}
+
 	public float NextDungInterval()
 	{
 		return DungInterval / GeneScale(LivestockGene.Dung) * DungIntervalConditionScale();
@@ -1751,27 +2343,75 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public void SpawnDung()
 	{
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)DungItem == (Object)null))
 		{
 			Item item = ItemManager.Create(DungItem, 1, 0uL, isServerSide: true, 0uL);
 			if (item != null)
 			{
-				item.SetItemOwnership(string.IsNullOrEmpty(AnimalName) ? Categorize() : AnimalName, ItemOwnershipPhrases.Pooped);
+				item.SetItemOwnership(NameOrLabel(), ItemOwnershipPhrases.Pooped);
 				Vector3 val = (((Object)(object)DungSpawnPoint != (Object)null) ? DungSpawnPoint.position : ((Component)this).transform.position);
-				item.Drop(vVelocity: new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-3f, -1f), Random.Range(-0.5f, 0.5f)), vPos: val + Random.insideUnitSphere * 0.1f, rotation: Random.rotationUniform);
+				item.Drop(vVelocity: new Vector3(Rng.Range(-0.5f, 0.5f), Rng.Range(-3f, -1f), Rng.Range(-0.5f, 0.5f)), vPos: val + Rng.InsideUnitSphere * 0.1f, rotation: Rng.RotationUniform);
 				LivestockCensus.RecordDung(val);
 			}
+		}
+	}
+
+	public static float ThresholdFor(TrustTier tier)
+	{
+		return tier switch
+		{
+			TrustTier.Neutral => Livestock.trustToTolerate, 
+			TrustTier.Trusted => Livestock.trustToLead, 
+			TrustTier.Bonded => Livestock.maxTrust, 
+			_ => 0f, 
+		};
+	}
+
+	public bool ActsAsAdult(Personality personality)
+	{
+		if (personality != Personality.Sleepy)
+		{
+			return ActsCuriousAdult;
+		}
+		return ActsSleepy;
+	}
+
+	private bool HerdHasAdult(Personality personality, PooledList<LivestockAnimal> neighbours, LivestockAnimal ignore, bool onlyLowerId)
+	{
+		if (floor != null && !floor.IsField)
+		{
+			return floor.HasAdultOtherThan(this, personality, onlyLowerId);
+		}
+		foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)neighbours)
+		{
+			if (!((Object)(object)item == (Object)(object)ignore) && IsHerdMate(item) && item.ActsAsAdult(personality) && (!onlyLowerId || item.net.ID.Value < net.ID.Value))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void KeepOnePerHerd(PooledList<LivestockAnimal> neighbours)
+	{
+		if (ActsCuriousAdult && HerdHasAdult(Personality.Curious, neighbours, null, onlyLowerId: true))
+		{
+			IsCurious = false;
+		}
+		if (ActsSleepy && HerdHasAdult(Personality.Sleepy, neighbours, null, onlyLowerId: true))
+		{
+			IsSleepy = false;
 		}
 	}
 
@@ -1781,14 +2421,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		probationCredited = TimeSince.op_Implicit(float.MaxValue);
 		trustedNearbySeen = TimeSince.op_Implicit(float.MaxValue);
-		lastFamiliarityTick = TimeSince.op_Implicit(0f);
 		if (!Application.isLoadingSave)
 		{
-			IsCurious = Random.value < Livestock.curiousChance;
+			IsCurious = Rng.Value < Livestock.curiousChance;
+			IsSleepy = !IsCurious && Livestock.sleepyChance > 0f && Rng.Value < Livestock.sleepyChance;
 		}
 		ValidateFamiliarityTuning();
 	}
@@ -1796,26 +2434,23 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public void SetCurious(bool curious)
 	{
 		IsCurious = curious;
+		if (curious)
+		{
+			IsSleepy = false;
+		}
+	}
+
+	public void SetSleepy(bool sleepy)
+	{
+		IsSleepy = sleepy;
+		if (sleepy)
+		{
+			IsCurious = false;
+		}
 	}
 
 	private void ValidateFamiliarityTuning()
 	{
-	}
-
-	private bool AnyAcquaintanceAt(float seconds)
-	{
-		if (acquaintances == null)
-		{
-			return false;
-		}
-		for (int i = 0; i < acquaintances.Length; i++)
-		{
-			if (acquaintances[i].userId != 0L && acquaintances[i].seconds >= seconds)
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public bool TrustsToHandle(BasePlayer player)
@@ -1825,17 +2460,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			return TrustOf(player) >= Livestock.trustToLead;
 		}
 		return false;
-	}
-
-	private void RefreshHusbandryClocks()
-	{
-		bool isLeadable = IsLeadable;
-		SetNetworkedFlag(Flags.Reserved16, isLeadable);
-		if (isLeadable)
-		{
-			DecayStarted = true;
-			StartAgeTimerIfIdle();
-		}
 	}
 
 	public float TrustOf(BasePlayer player)
@@ -1848,7 +2472,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return 0f;
 		}
-		return Mathf.Max(StoredSecondsFor(player.userID), PartialCreditFor(player));
+		float num = Mathf.Max(StoredSecondsFor(player.userID), PartialCreditFor(player));
+		if ((ulong)player.userID != OwnerID)
+		{
+			return Mathf.Min(num, NonOwnerTrustCap);
+		}
+		return num;
 	}
 
 	public bool IsSoreAt(BaseEntity entity)
@@ -1858,6 +2487,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			return false;
 		}
 		if (TryGetRememberedAggressor(out var attacker) && (Object)(object)attacker == (Object)(object)entity)
+		{
+			return true;
+		}
+		if (IsProvokedBy(entity))
 		{
 			return true;
 		}
@@ -1874,7 +2507,16 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return 0f;
 		}
-		return Mathf.Max(HousemateCreditFor(player), HandlingCreditFor(player));
+		return Mathf.Max(OwnerCreditFor(player), Mathf.Max(HousemateCreditFor(player), HandlingCreditFor(player)));
+	}
+
+	private float OwnerCreditFor(BasePlayer player)
+	{
+		if (!HasOwner || (ulong)player.userID != OwnerID)
+		{
+			return 0f;
+		}
+		return Livestock.trustToLead;
 	}
 
 	private float HandlingCreditFor(BasePlayer player)
@@ -1894,11 +2536,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	private float HousemateCreditFor(BasePlayer player)
 	{
 		float trustFloor = Livestock.trustFloor;
-		if (trustFloor <= 0f || acquaintances == null || (Object)(object)player == (Object)null)
+		if (trustFloor <= 0f || (Object)(object)player == (Object)null)
 		{
 			return 0f;
 		}
-		float trustToLead = Livestock.trustToLead;
 		if (TryGetHomeCupboard(out var cupboard))
 		{
 			if (cupboard.IsAuthed(player.userID))
@@ -1911,22 +2552,16 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			}
 		}
 		RelationshipManager serverInstance = RelationshipManager.ServerInstance;
-		if ((Object)(object)serverInstance == (Object)null || player.currentTeam == 0L)
+		if ((Object)(object)serverInstance == (Object)null || !HasOwner || player.currentTeam == 0L)
 		{
 			return 0f;
 		}
-		for (int i = 0; i < acquaintances.Length; i++)
+		RelationshipManager.PlayerTeam playerTeam = serverInstance.FindPlayersTeam(OwnerID);
+		if (playerTeam == null || playerTeam.teamID != player.currentTeam)
 		{
-			if (acquaintances[i].userId != 0L && !(acquaintances[i].seconds < trustToLead))
-			{
-				RelationshipManager.PlayerTeam playerTeam = serverInstance.FindPlayersTeam(acquaintances[i].userId);
-				if (playerTeam != null && playerTeam.teamID == player.currentTeam)
-				{
-					return trustFloor;
-				}
-			}
+			return 0f;
 		}
-		return 0f;
+		return trustFloor;
 	}
 
 	public float StoredSecondsFor(ulong userId)
@@ -1945,35 +2580,14 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return 0f;
 	}
 
-	public void AddFamiliarity(ulong userId, float seconds, FamiliarityReason reason = FamiliarityReason.Handled)
+	public void AddFamiliarity(ulong userId, float seconds)
 	{
-		if (Interface.CallHook("OnLivestockAnimalFamiliarityAdd", this, userId, seconds, reason) == null)
-		{
-			bool isLeadable = IsLeadable;
-			CreditFamiliarity(userId, seconds);
-			RefreshHusbandryClocks();
-			Interface.CallHook("OnLivestockAnimalFamiliarityAdded", this, userId, seconds, reason);
-			if (!isLeadable && IsLeadable && (reason == FamiliarityReason.Handled || reason == FamiliarityReason.Purchased))
-			{
-				Facepunch.Rust.Analytics.Azure.OnLivestockAcquired(userId, this, reason);
-			}
-		}
-	}
-
-	private void CreditFamiliarity(ulong userId, float seconds)
-	{
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
-		if (userId == 0L || Mathf.Approximately(seconds, 0f))
+		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0208: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
+		if (userId == 0L || Mathf.Approximately(seconds, 0f) || Interface.CallHook("OnLivestockAnimalFamiliarityAdd", this, userId, seconds) != null)
 		{
 			return;
 		}
@@ -1989,10 +2603,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			if (acquaintances[i].userId == userId)
 			{
 				acquaintances[i].seconds = Mathf.Clamp(acquaintances[i].seconds + seconds, 0f, maxTrust);
-				if (seconds > 0f)
-				{
-					acquaintances[i].sinceCredited = TimeSince.op_Implicit(0f);
-				}
+				Interface.CallHook("OnLivestockAnimalFamiliarityAdded", this, userId, seconds);
 				return;
 			}
 			if (acquaintances[i].userId == 0L)
@@ -2016,9 +2627,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			acquaintances[num] = new Acquaintance
 			{
 				userId = userId,
-				seconds = Mathf.Min(seconds, maxTrust),
-				sinceCredited = TimeSince.op_Implicit(0f)
+				seconds = Mathf.Min(seconds, maxTrust)
 			};
+			Interface.CallHook("OnLivestockAnimalFamiliarityAdded", this, userId, seconds);
 			return;
 		}
 		if (probation.userId != userId)
@@ -2037,17 +2648,17 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		if (probation.seconds > acquaintances[num2].seconds)
 		{
 			acquaintances[num2] = probation;
-			acquaintances[num2].sinceCredited = TimeSince.op_Implicit(0f);
 			probation = default;
 			probationCredited = TimeSince.op_Implicit(float.MaxValue);
 		}
+		Interface.CallHook("OnLivestockAnimalFamiliarityAdded", this, userId, seconds);
 	}
 
-	public void SetFamiliarity(ulong userId, float seconds, FamiliarityReason reason = FamiliarityReason.Handled)
+	public void SetFamiliarity(ulong userId, float seconds)
 	{
 		if (userId != 0L)
 		{
-			AddFamiliarity(userId, seconds - StoredSecondsFor(userId), reason);
+			AddFamiliarity(userId, seconds - StoredSecondsFor(userId));
 		}
 	}
 
@@ -2068,54 +2679,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			}
 		}
 		return num;
-	}
-
-	private void TickFamiliarity()
-	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
-		float num = TimeSince.op_Implicit(lastFamiliarityTick);
-		lastFamiliarityTick = TimeSince.op_Implicit(0f);
-		float familiarityForgetScale = Livestock.familiarityForgetScale;
-		float maxTrust = Livestock.maxTrust;
-		if (acquaintances == null || num <= 0f || familiarityForgetScale <= 0f)
-		{
-			return;
-		}
-		float num2 = num / familiarityForgetScale;
-		float trustedNearbyTimeout = TrustedNearbyTimeout;
-		bool flag = false;
-		for (int i = 0; i < acquaintances.Length; i++)
-		{
-			ref Acquaintance reference = ref acquaintances[i];
-			if (reference.userId != 0L && !(reference.seconds >= maxTrust) && !(TimeSince.op_Implicit(reference.sinceCredited) <= trustedNearbyTimeout))
-			{
-				reference.seconds -= num2;
-				flag = true;
-				if (reference.seconds <= 0f)
-				{
-					reference = default;
-				}
-			}
-		}
-		if (flag)
-		{
-			RefreshHusbandryClocks();
-		}
-		if (probation.userId != 0L && !(probation.seconds >= maxTrust) && !(TimeSince.op_Implicit(probationCredited) <= trustedNearbyTimeout))
-		{
-			probation.seconds -= num2;
-			if (probation.seconds <= 0f)
-			{
-				probation = default;
-				probationCredited = TimeSince.op_Implicit(float.MaxValue);
-			}
-		}
 	}
 
 	public void OnPlayerSensed(BasePlayer player, float deltaTime)
@@ -2207,19 +2770,24 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void TryDefendSensedPlayer(BasePlayer player)
 	{
-		if (!IsMale || !IsAdult() || IsDead())
+		if (!IsAdult() || IsDead())
 		{
 			return;
 		}
 		float maxTrust = Livestock.maxTrust;
-		if (!(maxTrust <= 0f) && !(TrustOf(player) < maxTrust))
+		if (maxTrust <= 0f || TrustOf(player) < maxTrust)
 		{
-			float defendReactionTime = Livestock.defendReactionTime;
-			if (!(defendReactionTime <= 0f) && !(player.SecondsSinceAttacked > defendReactionTime) && !(player.lastAttackedTime <= lastDefendedAttack))
+			return;
+		}
+		float defendReactionTime = Livestock.defendReactionTime;
+		if (!(defendReactionTime <= 0f) && !(player.SecondsSinceAttacked > defendReactionTime) && !(player.lastAttackedTime <= lastDefendedAttack))
+		{
+			if (!InSafeZone() && CanBeAnsweredFor(player.lastAttacker, out var _))
 			{
-				OnHerdMateHurt(player.lastAttacker, null);
-				lastDefendedAttack = player.lastAttackedTime;
+				OnBondThreatened();
 			}
+			OnHerdMateHurt(player.lastAttacker, null);
+			lastDefendedAttack = player.lastAttackedTime;
 		}
 	}
 
@@ -2234,7 +2802,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return (bool)obj;
 		}
-		if (!IsMale || !IsAdult())
+		if (!IsAdult())
 		{
 			return false;
 		}
@@ -2249,7 +2817,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	private void SaveFamiliarity(LivestockAnimal save)
 	{
 		save.curious = IsCurious;
-		save.decayStarted = DecayStarted;
+		save.sleepy = IsSleepy;
 		if (acquaintances == null)
 		{
 			return;
@@ -2270,7 +2838,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	private void LoadFamiliarity(LivestockAnimal save)
 	{
 		IsCurious = save.curious;
-		DecayStarted = DecayStarted || save.decayStarted;
+		IsSleepy = save.sleepy;
 		List<LivestockAcquaintance> list = save.acquaintances;
 		if (list != null && list.Count > 0)
 		{
@@ -2281,13 +2849,26 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				acquaintances[i].seconds = list[i].seconds;
 			}
 		}
-		RefreshHusbandryClocks();
 	}
 
 	private void TransferFamiliarityTo(LivestockAnimal grown)
 	{
-		grown.IsCurious = IsCurious;
-		CopyAcquaintancesTo(grown);
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			if (SocialSearchRadius > 0f)
+			{
+				Query.Server.GetBrainsInSphere(((Component)this).transform.position, SocialSearchRadius, (List<LivestockAnimal>)(object)val);
+			}
+			grown.IsCurious = IsCurious && !HerdHasAdult(Personality.Curious, val, grown, onlyLowerId: false);
+			grown.IsSleepy = IsSleepy && !HerdHasAdult(Personality.Sleepy, val, grown, onlyLowerId: false);
+			CopyAcquaintancesTo(grown);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	private void CopyAcquaintancesTo(LivestockAnimal other)
@@ -2296,7 +2877,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			other.acquaintances = new Acquaintance[8];
 			Array.Copy(acquaintances, other.acquaintances, 8);
-			other.RefreshHusbandryClocks();
 		}
 	}
 
@@ -2323,106 +2903,425 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				};
 			}
 		}
-		calf.RefreshHusbandryClocks();
 	}
 
-	public static float ThresholdFor(TrustTier tier)
+	public static float LadderProgress(float seconds)
 	{
-		return tier switch
-		{
-			TrustTier.Known => Livestock.trustToFollow, 
-			TrustTier.Tolerated => Livestock.trustToTolerate, 
-			TrustTier.Bonded => Livestock.trustToLead, 
-			TrustTier.Herd => Livestock.maxTrust, 
-			_ => 0f, 
-		};
-	}
-
-	public static float ProgressInTier(float seconds)
-	{
-		TrustTier trustTier = TierFor(seconds);
-		if (trustTier == TrustTier.Herd)
+		float maxTrust = Livestock.maxTrust;
+		if (!(maxTrust > 0f))
 		{
 			return 1f;
 		}
-		float num = ThresholdFor(trustTier);
-		float num2 = ThresholdFor(trustTier + 1);
-		if (!(num2 > num))
-		{
-			return 0f;
-		}
-		return Mathf.Clamp01((seconds - num) / (num2 - num));
+		return Mathf.Clamp01(seconds / maxTrust);
 	}
 
 	public static TrustTier TierFor(float seconds)
 	{
 		if (seconds >= Livestock.maxTrust)
 		{
-			return TrustTier.Herd;
+			return TrustTier.Bonded;
 		}
 		if (seconds >= Livestock.trustToLead)
 		{
-			return TrustTier.Bonded;
+			return TrustTier.Trusted;
 		}
 		if (seconds >= Livestock.trustToTolerate)
 		{
-			return TrustTier.Tolerated;
+			return TrustTier.Neutral;
 		}
-		if (seconds >= Livestock.trustToFollow)
-		{
-			return TrustTier.Known;
-		}
-		return TrustTier.Stranger;
+		return TrustTier.Hostile;
 	}
 
 	public static string TrustTierName(float seconds)
 	{
-		if (seconds >= Livestock.maxTrust)
+		return TierFor(seconds) switch
 		{
-			return "herd";
-		}
-		if (seconds >= Livestock.trustToLead)
-		{
-			return "bonded";
-		}
-		if (seconds >= Livestock.trustToTolerate)
-		{
-			return "tolerated";
-		}
-		if (seconds >= Livestock.trustToFollow)
-		{
-			return "known";
-		}
-		return "stranger";
+			TrustTier.Bonded => "bonded", 
+			TrustTier.Trusted => "trusts you", 
+			TrustTier.Neutral => "neutral", 
+			_ => "hostile", 
+		};
 	}
 
 	public string GetFamiliarityDebugInfo()
 	{
 		float num = BestFamiliarity(out var userId);
-		string text = (ActsCurious ? " curious" : string.Empty);
+		string text;
+		if (ActsCurious)
+		{
+			text = " curious";
+		}
+		else
+		{
+			text = (ActsSleepy ? " sleepy" : string.Empty);
+		}
 		if (userId != 0L)
 		{
 			return $"fam {num:0}s {TrustTierName(num)}{text}";
 		}
-		return "fam none stranger" + text;
+		return "fam none hostile" + text;
+	}
+
+	public void HoldSlot(BaseEntity owner, BaseEntity source, int index, Vector3 standingPoint, Vector3 facing, LivestockFeedingSlots.Serves need)
+	{
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		slotOwner.Set(owner);
+		slotSource.Set(source);
+		slotIndex = index;
+		slotStandingPoint = standingPoint;
+		slotFacing = facing;
+		slotFootprint = LivestockFootprint.Of((BaseEntity)this, standingPoint, facing);
+		slotNeed = need;
+		slotInUse = true;
+		askedToVacate = false;
+		LeaveQueue(need);
+	}
+
+	public void FinishWithSlot()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		if (slotInUse)
+		{
+			slotInUse = false;
+			slotLeft = TimeSince.op_Implicit(0f);
+		}
+	}
+
+	public void ForgetSlot()
+	{
+		slotIndex = -1;
+		slotInUse = false;
+		askedToVacate = false;
+	}
+
+	public bool HoldsAnySlotAt(BaseEntity owner)
+	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		if (slotIndex < 0 || (Object)(object)owner == (Object)null || (Object)(object)slotOwner.Get(serverside: true) != (Object)(object)owner)
+		{
+			return false;
+		}
+		if (!slotInUse)
+		{
+			if (TimeSince.op_Implicit(slotLeft) < 30f)
+			{
+				return IsStillInSlot();
+			}
+			return false;
+		}
+		return true;
+	}
+
+	private bool IsStillInSlot()
+	{
+		return LivestockFootprint.Penetration(LivestockFootprint.Of(this), HeldSlotFootprint) > 0f;
+	}
+
+	public bool ShouldVacateSlot()
+	{
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		if (slotIndex < 0 || slotInUse)
+		{
+			return false;
+		}
+		BaseEntity baseEntity = slotOwner.Get(serverside: true);
+		if ((Object)(object)baseEntity == (Object)null || baseEntity.IsDestroyed || TimeSince.op_Implicit(slotLeft) >= 30f || !IsStillInSlot())
+		{
+			ForgetSlot();
+			return false;
+		}
+		if (!askedToVacate && WantsMoreFrom(slotSource.Get(serverside: true), slotNeed))
+		{
+			return IsAnyoneQueuedAt(baseEntity, slotNeed);
+		}
+		return true;
+	}
+
+	public bool TryGetSlotToVacate(out BaseEntity owner, out Vector3 standingPoint, out Vector3 facing)
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		owner = slotOwner.Get(serverside: true);
+		standingPoint = slotStandingPoint;
+		facing = slotFacing;
+		if (slotIndex >= 0 && !slotInUse)
+		{
+			return (Object)(object)owner != (Object)null;
+		}
+		return false;
+	}
+
+	public void AskToVacate(BaseEntity owner, int index, Vector3 standingPoint, Vector3 facing, in LivestockFootprint needed)
+	{
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		if (!slotInUse && !FoundNoWayOutAt(owner))
+		{
+			slotOwner.Set(owner);
+			slotSource.Set(null);
+			slotIndex = index;
+			slotStandingPoint = standingPoint;
+			slotFacing = facing;
+			slotFootprint = needed;
+			slotNeed = (LivestockFeedingSlots.Serves)0;
+			askedToVacate = true;
+			slotLeft = TimeSince.op_Implicit(0f);
+		}
+	}
+
+	public bool WantsMoreFrom(BaseEntity source, LivestockFeedingSlots.Serves need)
+	{
+		if ((need & LivestockFeedingSlots.Serves.Food) != 0)
+		{
+			if (NeedsFood() && source is HitchTrough trough)
+			{
+				Item foundItem;
+				return CanEatFrom(trough, out foundItem);
+			}
+			return false;
+		}
+		if ((need & LivestockFeedingSlots.Serves.Water) != 0)
+		{
+			if (NeedsWater() && source is LiquidContainer container)
+			{
+				return CanDrinkFrom(container);
+			}
+			return false;
+		}
+		return false;
+	}
+
+	public SlotState SlotStateFor(BaseEntity owner, int index, in LivestockFootprint footprint, PooledList<LivestockAnimal> neighbours, out LivestockAnimal blocker)
+	{
+		blocker = null;
+		if (LivestockFeedingSlots.IsHitchedOver(owner, in footprint))
+		{
+			return SlotState.HitchedOver;
+		}
+		SlotState result = SlotState.Free;
+		foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)neighbours)
+		{
+			if ((Object)(object)item == (Object)(object)this || item.IsDestroyed || item.IsDead())
+			{
+				continue;
+			}
+			if (item.HoldsAnySlotAt(owner) && (item.slotIndex == index || LivestockFootprint.Penetration(in footprint, item.HeldSlotFootprint) > 0f))
+			{
+				blocker = item;
+				return SlotState.Held;
+			}
+			if (!(LivestockFootprint.Penetration(in footprint, item.RestingFootprint()) <= 0f))
+			{
+				if (item.FoundNoWayOutAt(owner))
+				{
+					blocker = item;
+					return SlotState.CannotBeCleared;
+				}
+				if (!item.IsStandingIdle())
+				{
+					blocker = item;
+					return SlotState.Blocked;
+				}
+				if ((Object)(object)blocker == (Object)null)
+				{
+					blocker = item;
+					result = SlotState.BlockedByIdler;
+				}
+			}
+		}
+		return result;
+	}
+
+	public void SetAtTrough(bool atTrough)
+	{
+		SetNetworkedFlag(Flags.Reserved18, atTrough);
+	}
+
+	public bool IsStandingIdle()
+	{
+		LivestockAnimalFSM livestockAnimalFSM = frailtyFsm;
+		RustNavMeshAgent navAgent = NavAgent;
+		if ((Object)(object)livestockAnimalFSM != (Object)null && livestockAnimalFSM.CurrentState == livestockAnimalFSM.randomIdle && !IsOffItsFeet() && !IsHeadDown())
+		{
+			if (!((Object)(object)navAgent == (Object)null))
+			{
+				return !navAgent.hasPath;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private ref SlotQueue QueueFor(LivestockFeedingSlots.Serves need)
+	{
+		if ((need & LivestockFeedingSlots.Serves.Water) != 0)
+		{
+			return ref waterQueue;
+		}
+		return ref foodQueue;
+	}
+
+	public void JoinQueue(BaseEntity owner, LivestockFeedingSlots.Serves need)
+	{
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		ref SlotQueue reference = ref QueueFor(need);
+		if (!IsQueuedAt(owner, need))
+		{
+			reference.Waited = TimeSince.op_Implicit(0f);
+		}
+		reference.Owner.Set(owner);
+		reference.Renewed = TimeSince.op_Implicit(0f);
+	}
+
+	public void LeaveQueue(LivestockFeedingSlots.Serves need)
+	{
+		QueueFor(need).Owner.Set(null);
+	}
+
+	public void LeaveQueues()
+	{
+		LeaveQueue(LivestockFeedingSlots.Serves.Food);
+		LeaveQueue(LivestockFeedingSlots.Serves.Water);
+	}
+
+	public bool IsQueuedAt(BaseEntity owner, LivestockFeedingSlots.Serves need)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)owner == (Object)null || need == 0)
+		{
+			return false;
+		}
+		ref SlotQueue reference = ref QueueFor(need);
+		if (TimeSince.op_Implicit(reference.Renewed) < 20f)
+		{
+			return (Object)(object)reference.Owner.Get(serverside: true) == (Object)(object)owner;
+		}
+		return false;
+	}
+
+	public float QueuedFor(BaseEntity owner, LivestockFeedingSlots.Serves need)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		if (!IsQueuedAt(owner, need))
+		{
+			return 0f;
+		}
+		return TimeSince.op_Implicit(QueueFor(need).Waited);
+	}
+
+	public int CountQueuedAhead(BaseEntity owner, LivestockFeedingSlots.Serves need, PooledList<LivestockAnimal> neighbours)
+	{
+		bool flag = IsQueuedAt(owner, need);
+		float num = QueuedFor(owner, need);
+		int num2 = 0;
+		foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)neighbours)
+		{
+			if (!((Object)(object)item == (Object)(object)this) && !item.IsDestroyed && !item.IsDead() && item.IsQueuedAt(owner, need) && (!flag || item.QueuedFor(owner, need) > num))
+			{
+				num2++;
+			}
+		}
+		return num2;
+	}
+
+	public bool IsAnyoneQueuedAt(BaseEntity owner, LivestockFeedingSlots.Serves need)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			Query.Server.GetBrainsInSphere(((Component)owner).transform.position, 30f, (List<LivestockAnimal>)(object)val);
+			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
+			{
+				if ((Object)(object)item != (Object)(object)this && !item.IsDestroyed && !item.IsDead() && item.IsQueuedAt(owner, need))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public void MarkSlotFailed()
+	{
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		failedSlotOwner = slotOwner;
+		failedSlotIndex = slotIndex;
+		failedSlotAt = TimeSince.op_Implicit(0f);
+	}
+
+	public bool RecentlyFailedAt(BaseEntity owner, int index)
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		if (failedSlotIndex == index && TimeSince.op_Implicit(failedSlotAt) < 15f)
+		{
+			return (Object)(object)failedSlotOwner.Get(serverside: true) == (Object)(object)owner;
+		}
+		return false;
+	}
+
+	public void FoundNoWayOut(BaseEntity owner)
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		noWayOutOwner.Set(owner);
+		noWayOutAt = TimeSince.op_Implicit(0f);
+		ForgetSlot();
+	}
+
+	public bool FoundNoWayOutAt(BaseEntity owner)
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)owner != (Object)null && TimeSince.op_Implicit(noWayOutAt) < 30f)
+		{
+			return (Object)(object)noWayOutOwner.Get(serverside: true) == (Object)(object)owner;
+		}
+		return false;
+	}
+
+	public void NoteSlotSearchFailed()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		if (!slotSearchFailing)
+		{
+			slotSearchFailing = true;
+			slotSearchFailedAt = TimeSince.op_Implicit(0f);
+		}
+	}
+
+	public void NoteSlotSearchSettled()
+	{
+		slotSearchFailing = false;
 	}
 
 	private void InitFrailty()
 	{
 		((Component)this).TryGetComponent<LivestockAnimalFSM>(ref frailtyFsm);
 		((Component)this).TryGetComponent<RustNavMeshAgent>(ref frailtyAgent);
-		TickFrailty();
-	}
-
-	private void TickFrailty()
-	{
 		if ((Object)(object)frailtyAgent != (Object)null)
 		{
 			frailtyAgent.gaitPenalty = AgeGaitPenalty;
-		}
-		if ((Object)(object)frailtyFsm != (Object)null)
-		{
-			frailtyFsm.roam.SetHomeRadiusScale(Mathf.Lerp(1f, OldAgeRangeFactor, AgeFraction));
 		}
 	}
 
@@ -2460,11 +3359,29 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return GeneScaleOf(Genes, gene);
 	}
 
+	public float DrainPerSecond(Need need)
+	{
+		return DecayRatePerSecond(need) * NeedScale;
+	}
+
 	public static float GeneScaleOf(int genome, LivestockGene gene)
 	{
-		float num = LivestockGeneRange.TraitFor(genome, gene);
-		float num2 = ((num < 0.5f) ? Mathf.Lerp(BadScaleFor(gene), 1f, num * 2f) : Mathf.Lerp(1f, GoodScaleFor(gene), num * 2f - 1f));
-		return Mathf.Max(0.01f, num2);
+		return ScaleAt(gene, LivestockGeneRange.TraitFor(genome, gene));
+	}
+
+	public float CarriedGeneScale(LivestockGene gene)
+	{
+		if (!Livestock.genesEnabled)
+		{
+			return 1f;
+		}
+		return ScaleAt(gene, LivestockGeneRange.TraitOf(Genes, Carried(gene)));
+	}
+
+	private static float ScaleAt(LivestockGene gene, float trait)
+	{
+		float num = ((trait < 0.5f) ? Mathf.Lerp(BadScaleFor(gene), 1f, trait * 2f) : Mathf.Lerp(1f, GoodScaleFor(gene), trait * 2f - 1f));
+		return Mathf.Max(0.01f, num);
 	}
 
 	private static float BadScaleFor(LivestockGene gene)
@@ -2472,7 +3389,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return gene switch
 		{
 			LivestockGene.Dung => Livestock.geneDungBad, 
-			LivestockGene.Longevity => Livestock.geneLongevityBad, 
 			LivestockGene.Yield => Livestock.geneYieldBad, 
 			LivestockGene.Fertility => Livestock.geneFertilityBad, 
 			_ => Livestock.geneHardinessBad, 
@@ -2484,7 +3400,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return gene switch
 		{
 			LivestockGene.Dung => Livestock.geneDungGood, 
-			LivestockGene.Longevity => Livestock.geneLongevityGood, 
 			LivestockGene.Yield => Livestock.geneYieldGood, 
 			LivestockGene.Fertility => Livestock.geneFertilityGood, 
 			_ => Livestock.geneHardinessGood, 
@@ -2493,29 +3408,35 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void InitGenes()
 	{
-		Genes = RollGenome();
+		Genes = RollGenome(Rng);
 	}
 
-	public static int RollGenome()
+	public static int RollGenome(NpcRandom random)
 	{
-		return LivestockGenome.Roll();
+		return LivestockGenome.Roll(random);
 	}
 
 	private int InheritedGenome(int fatherGenes)
 	{
 		int father = ((fatherGenes != 0) ? fatherGenes : Genes);
-		return LivestockGenome.Combine(Genes, father, Livestock.geneMutationChance);
+		return LivestockGenome.Combine(Rng, Genes, father, Livestock.geneMutationChance);
 	}
 
 	public int LitterSize()
 	{
 		float num = Mathf.Max(0f, GeneScale(LivestockGene.Fertility) - 1f);
 		int num2 = Mathf.FloorToInt(num);
-		if (Random.value < num - (float)num2)
+		if (Rng.Value < num - (float)num2)
 		{
 			num2++;
 		}
 		return Mathf.Clamp(1 + num2, 1, Mathf.Max(1, Livestock.maxLitterSize));
+	}
+
+	public int MaxLitterSize()
+	{
+		float num = Mathf.Max(0f, GeneScale(LivestockGene.Fertility) - 1f);
+		return Mathf.Clamp(1 + Mathf.CeilToInt(num), 1, Mathf.Max(1, Livestock.maxLitterSize));
 	}
 
 	public void SetGene(LivestockGene gene, LivestockAllele first, LivestockAllele second)
@@ -2599,38 +3520,58 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void TryAdoptHome(BasePlayer player)
 	{
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		if (!(TrustOf(player) < Livestock.maxTrust) && !(TimeSince.op_Implicit(lastAdoptionCheck) < 5f))
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		if (!HasOwner || (ulong)player.userID != OwnerID || TimeSince.op_Implicit(lastAdoptionCheck) < 5f)
 		{
-			lastAdoptionCheck = TimeSince.op_Implicit(0f);
-			BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege(cached: true);
-			if (!((Object)(object)buildingPrivilege == (Object)null) && buildingPrivilege.IsAuthed(player))
-			{
-				HomeTc = new EntityRef<BuildingPrivlidge>(buildingPrivilege.net.ID);
-			}
+			return;
 		}
+		lastAdoptionCheck = TimeSince.op_Implicit(0f);
+		BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege(cached: true);
+		if (!((Object)(object)buildingPrivilege == (Object)null) && buildingPrivilege.IsAuthed(player))
+		{
+			if ((Object)(object)HomeTc.Get(isServer) != (Object)(object)buildingPrivilege)
+			{
+				SetHomePosition(((Component)buildingPrivilege).transform.position);
+			}
+			HomeTc = new EntityRef<BuildingPrivlidge>(buildingPrivilege.net.ID);
+		}
+	}
+
+	private void AdoptHomeOf(HitchTrough trough)
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		BuildingPrivlidge buildingPrivilege = trough.GetBuildingPrivilege();
+		HomeTc = (((Object)(object)buildingPrivilege != (Object)null) ? new EntityRef<BuildingPrivlidge>(buildingPrivilege.net.ID) : default(EntityRef<BuildingPrivlidge>));
+		SetHomePosition(((Component)trough).transform.position);
 	}
 
 	private void SaveHome(LivestockAnimal save)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		save.homePosition = homePosition;
+		save.homeTc = HomeTc.uid;
 	}
 
 	private void LoadHome(LivestockAnimal save)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		if (save.homePosition != Vector3.zero)
 		{
 			homePosition = save.homePosition;
 		}
+		HomeTc = new EntityRef<BuildingPrivlidge>(save.homeTc);
 	}
 
 	public bool TryGetBedtimeHome(out Vector3 home)
@@ -2666,7 +3607,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public void FindDrinkBarrels(List<BaseEntity> results)
 	{
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (ConsumeSearchRadius <= 0f)
 		{
 			return;
@@ -2674,7 +3616,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		PooledList<LiquidContainer> val = Pool.Get<PooledList<LiquidContainer>>();
 		try
 		{
-			Query.Server.GetInSphere(((Component)this).transform.position, ConsumeSearchRadius, (List<LiquidContainer>)(object)val);
+			LivestockFloor currentFloor = CurrentFloor;
+			if (currentFloor != null)
+			{
+				currentFloor.ContainersWithin(((Component)this).transform.position, ConsumeSearchRadius, (List<LiquidContainer>)(object)val);
+			}
+			else
+			{
+				Query.Server.GetInSphere(((Component)this).transform.position, ConsumeSearchRadius, (List<LiquidContainer>)(object)val);
+			}
 			foreach (LiquidContainer item in (List<LiquidContainer>)(object)val)
 			{
 				if (CanDrinkFrom(item))
@@ -2711,12 +3661,17 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return false;
 		}
+		return FreshWaterIn(container) >= WaterForADrink();
+	}
+
+	public static int FreshWaterIn(LiquidContainer container)
+	{
 		Item liquidItem = container.GetLiquidItem();
-		if (liquidItem != null && (Object)(object)liquidItem.info == (Object)(object)WaterTypes.WaterItemDef)
+		if (liquidItem == null || !((Object)(object)liquidItem.info == (Object)(object)WaterTypes.WaterItemDef))
 		{
-			return liquidItem.amount >= WaterForADrink();
+			return 0;
 		}
-		return false;
+		return liquidItem.amount;
 	}
 
 	public int WaterForADrink()
@@ -2749,39 +3704,173 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return false;
 	}
 
-	private void InitName()
+	public string NameOrLabel()
 	{
-		if (!Application.isLoadingSave && string.IsNullOrEmpty(AnimalName))
+		if (!string.IsNullOrEmpty(AnimalName))
 		{
-			AnimalName = RollAnimalName(IsMale, out var locale);
-			FoundLine(locale);
+			return AnimalName;
 		}
+		return WildLabel().english;
 	}
 
-	public static string RollAnimalName(bool male, out string locale)
+	protected virtual Phrase WildLabel()
 	{
-		if (Random.value < Livestock.devNameChance && LivestockNames.HasPack("devs"))
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Expected Obj, but got Unknown
+		//IL_0022: Expected Obj, but got Unknown
+		Phrase val = wildCategoryLabel;
+		if (val == null)
+		{
+			Phrase val2 = new Phrase(string.Empty, Categorize());
+			Phrase val3 = val2;
+			wildCategoryLabel = val2;
+			val = val3;
+		}
+		return val;
+	}
+
+	private void NameForOwner(ulong ownerId, string familyLocale)
+	{
+		string locale = (LivestockNames.IsDrawable(familyLocale) ? familyLocale : LocaleFor(ownerId));
+		if (Rng.Value < Livestock.devNameChance && LivestockNames.HasPack("devs"))
 		{
 			locale = "devs";
-			return DrawFrom(male, locale);
 		}
-		locale = LivestockLocaleWeights.Roll();
-		return DrawFrom(male, locale);
+		GiveName(RollAnimalName(Rng, IsMale, locale), FarmableAnimal.NameSource.Game, 0uL);
+		FoundLine(locale);
 	}
 
-	public static string RollAnimalName(bool male, string locale)
+	private void GiveName(string name, FarmableAnimal.NameSource source, ulong authorId = 0uL)
 	{
-		return DrawFrom(male, locale);
+		ForgetSpecial(AnimalName);
+		NameAuthorSourceSync = (int)source;
+		NameAuthorId = ((source == FarmableAnimal.NameSource.Player) ? authorId : 0);
+		AnimalName = name;
+		if (HasSpecialAuthoredName)
+		{
+			RememberSpecial(name, discovered: false);
+		}
 	}
 
-	private static string DrawFrom(bool male, string locale)
+	public void UpdateNameFromPlayer(string name, string locale, ulong authorId)
+	{
+		GiveName(name, FarmableAnimal.NameSource.Player, authorId);
+		FoundLine(locale);
+	}
+
+	public bool CanBeRenamedBy(BasePlayer player)
+	{
+		if ((Object)(object)player == (Object)null || IsDead() || HasSpecialAuthoredName || !TrustsToHandle(player))
+		{
+			return false;
+		}
+		BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege(cached: true);
+		if ((Object)(object)buildingPrivilege != (Object)null)
+		{
+			return buildingPrivilege.IsAuthed(player);
+		}
+		if (HasOwner && (ulong)player.userID == OwnerID)
+		{
+			return true;
+		}
+		if (TryGetHomeCupboard(out var cupboard))
+		{
+			return cupboard.IsAuthed(player);
+		}
+		return false;
+	}
+
+	public bool TryRename(BasePlayer player, string requestedName)
+	{
+		if (!CanBeRenamedBy(player))
+		{
+			return false;
+		}
+		string text = FarmableAnimal.CleanPlayerName(requestedName);
+		if (text == null)
+		{
+			return false;
+		}
+		if (text == AnimalName)
+		{
+			return true;
+		}
+		UpdateNameFromPlayer(text, LocaleFor(player.userID), player.userID);
+		return true;
+	}
+
+	public string GetNameOrLabelAsViewedBy(BasePlayer viewer)
+	{
+		if (string.IsNullOrEmpty(AnimalName) || !HidesNameFrom(viewer, NameAuthorSource, NameAuthorId))
+		{
+			return NameOrLabel();
+		}
+		return RandomUsernames.GetCapitalized(net.ID.Value);
+	}
+
+	public string GetFatherNameAsViewedBy(BasePlayer viewer)
+	{
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		if (string.IsNullOrEmpty(pregnantPartnerName))
+		{
+			return null;
+		}
+		if (!HidesNameFrom(viewer, pregnantPartnerNameSource, pregnantPartnerNameAuthorId))
+		{
+			return pregnantPartnerName;
+		}
+		return RandomUsernames.GetCapitalized(PregnantPartner.uid.Value);
+	}
+
+	private static bool HidesNameFrom(BasePlayer viewer, FarmableAnimal.NameSource source, ulong authorId)
+	{
+		if ((Object)(object)viewer == (Object)null || !viewer.IsConnected || !viewer.net.connection.info.GetBool("global.streamermode"))
+		{
+			return false;
+		}
+		if (FarmableAnimal.StreamerCanHideNameFromSource(source))
+		{
+			return (ulong)viewer.userID != authorId;
+		}
+		return false;
+	}
+
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
+	private void RequestNameChange(RPCMessage msg)
+	{
+		if (!((Object)(object)msg.player == (Object)null) && !TryRename(msg.player, msg.read.String(12)))
+		{
+			ClientRPC(RpcTarget.Player("Client_NameChangeRejected", msg.player));
+		}
+	}
+
+	public static string LocaleFor(ulong userId)
+	{
+		BasePlayer basePlayer = BasePlayer.FindByID(userId);
+		Connection connection = (((Object)(object)basePlayer != (Object)null && basePlayer.net != null) ? basePlayer.net.connection : null);
+		if (connection == null)
+		{
+			return LivestockNames.HouseLocale();
+		}
+		string text = Translate.ValidateServerLanguage(connection.language);
+		if (!LivestockNames.IsDrawable(text))
+		{
+			return LivestockNames.HouseLocale();
+		}
+		return text;
+	}
+
+	public static string RollAnimalName(NpcRandom random, bool male, string locale)
 	{
 		string[] array = LivestockNames.PoolFor(male, locale);
 		if (array.Length == 0)
 		{
 			return string.Empty;
 		}
-		string text = array[Random.Range(0, array.Length)];
+		string text = array[random.Range(0, array.Length)];
 		if (string.IsNullOrEmpty(text))
 		{
 			return string.Empty;
@@ -2824,7 +3913,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			ReportTooLong(text);
 			return false;
 		}
-		AnimalName = text;
+		FarmableAnimal.NameSource source = ((livestockAnimal.NameAuthorSource != FarmableAnimal.NameSource.Player) ? FarmableAnimal.NameSource.Game : FarmableAnimal.NameSource.Player);
+		GiveName(text, source, livestockAnimal.NameAuthorId);
 		livestockAnimal.HeirNamed = true;
 		TakeLineageFrom(livestockAnimal);
 		Generation = num;
@@ -2935,6 +4025,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		save.nameLocale = NameLocale;
 		save.lineStem = LineStem;
 		save.heirNamed = HeirNamed;
+		save.nameAuthorId = NameAuthorId;
 	}
 
 	private void LoadName(LivestockAnimal save)
@@ -2943,6 +4034,97 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		NameLocale = save.nameLocale;
 		LineStem = save.lineStem;
 		HeirNamed = save.heirNamed;
+		NameAuthorId = save.nameAuthorId;
+		if (HasSpecialAuthoredName)
+		{
+			RememberSpecial(AnimalName, discovered: false);
+		}
+	}
+
+	public void ReactToUntrustedHandling(BasePlayer player)
+	{
+		OnGrabbedBy(player);
+		if (!((Object)(object)player == (Object)null) && player.IsConnected)
+		{
+			if (string.IsNullOrEmpty(AnimalName))
+			{
+				player.ShowToast(GameTip.Styles.Error, NotTrustedWildPhrase, false);
+				return;
+			}
+			player.ShowToast(GameTip.Styles.Error, NotTrustedPhrase, false, GetNameOrLabelAsViewedBy(player));
+		}
+	}
+
+	public bool SetOwner(ulong userId, OwnerChangeReason reason, string familyLocale = null)
+	{
+		if (userId == 0L || userId == OwnerID)
+		{
+			return false;
+		}
+		OwnerID = userId;
+		if (string.IsNullOrEmpty(AnimalName))
+		{
+			NameForOwner(userId, familyLocale);
+		}
+		StartAgeTimerIfIdle();
+		RefreshProduction();
+		if (reason != OwnerChangeReason.Debug)
+		{
+			Facepunch.Rust.Analytics.Azure.OnLivestockAcquired(userId, this, reason);
+		}
+		return true;
+	}
+
+	protected virtual void RefreshProduction()
+	{
+	}
+
+	public virtual void RestartProductionForGenes()
+	{
+	}
+
+	public void ClaimByTrough(HitchTrough trough)
+	{
+		if (!((Object)(object)trough == (Object)null) && trough.OwnerID != 0L && Interface.CallHook("OnLivestockAnimalClaim", this, trough) == null)
+		{
+			SetOwner(trough.OwnerID, OwnerChangeReason.Trough);
+			AdoptHomeOf(trough);
+		}
+	}
+
+	public string OwnerNameFor(BasePlayer viewer)
+	{
+		if (!HasOwner)
+		{
+			return string.Empty;
+		}
+		BasePlayer basePlayer = BasePlayer.FindByID(OwnerID);
+		bool flag = (Object)(object)viewer != (Object)null && viewer.IsConnected;
+		if ((Object)(object)basePlayer != (Object)null)
+		{
+			if (!flag)
+			{
+				return basePlayer.displayName;
+			}
+			return NameHelper.GetPlayerNameStreamSafe(viewer, basePlayer);
+		}
+		if (flag && viewer.net.connection.info.GetBool("global.streamermode"))
+		{
+			return RandomUsernames.Get(OwnerID);
+		}
+		return OfflineOwnerName();
+	}
+
+	private string OfflineOwnerName()
+	{
+		if (offlineOwnerNameId == OwnerID)
+		{
+			return offlineOwnerName;
+		}
+		ServerMgr instance = SingletonComponent<ServerMgr>.Instance;
+		offlineOwnerNameId = OwnerID;
+		offlineOwnerName = (((Object)(object)instance != (Object)null && instance.persistance != null) ? (instance.persistance.GetPlayerName(OwnerID) ?? string.Empty) : string.Empty);
+		return offlineOwnerName;
 	}
 
 	public static int PopulationOf(LivestockSpecies species)
@@ -3007,6 +4189,71 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
+	private void TickPotential(float deltaTime)
+	{
+		if (!(deltaTime <= 0f) && IsEarningPotential)
+		{
+			potential = Mathf.Min(potential, PotentialCeiling);
+			float potentialTarget = PotentialTarget;
+			float num = ((potentialTarget > potential) ? Livestock.potentialRiseSeconds : Livestock.potentialFallSeconds);
+			if (num <= 0f)
+			{
+				potential = potentialTarget;
+			}
+			else
+			{
+				potential = Mathf.MoveTowards(potential, potentialTarget, deltaTime / num);
+			}
+		}
+	}
+
+	public void SetPotential(float value)
+	{
+		potential = Mathf.Clamp01(value);
+	}
+
+	private void SavePotential(LivestockAnimal msg)
+	{
+		msg.potential = potential;
+	}
+
+	private void LoadPotential(LivestockAnimal msg)
+	{
+		potential = Mathf.Clamp01(msg.potential);
+	}
+
+	private void TransferPotentialTo(LivestockAnimal next)
+	{
+		next.potential = potential;
+	}
+
+	public bool LiesInsideWallsAt(Vector3 position, Vector3 forward)
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		RustNavMeshAgent navAgent = NavAgent;
+		if (!((Object)(object)navAgent == (Object)null))
+		{
+			return navAgent.BoxInsideWalls(LyingBody, position, forward);
+		}
+		return true;
+	}
+
+	public bool TryFindLyingSpotNearby(out Vector3 spot)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		spot = default;
+		if (LiesInsideWallsAt(((Component)this).transform.position, ((Component)this).transform.forward))
+		{
+			return false;
+		}
+		return TryFindLyingSpotNear(((Component)this).transform.position, 2.5f, 6f, out spot);
+	}
+
 	public void SetSleepFraction(float fraction)
 	{
 		sleepFraction = Mathf.Clamp01(fraction);
@@ -3014,9 +4261,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void InitSleep()
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		sleepFraction = Random.value;
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		sleepFraction = Rng.Value;
 		poseHeldFor = TimeSince.op_Implicit(float.MaxValue);
 	}
 
@@ -3067,53 +4314,104 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return false;
 	}
 
-	public int CountHerdMates()
+	private void TrackHerdMates(PooledList<LivestockAnimal> candidates)
 	{
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		if (SocialSearchRadius <= 0f)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		LivestockAnimal livestockAnimal = null;
+		float num = float.MaxValue;
+		foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)candidates)
 		{
-			return 0;
+			if (IsMyDependent(item))
+			{
+				Vector3 val = ((Component)item).transform.position - ((Component)this).transform.position;
+				float sqrMagnitude = val.sqrMagnitude;
+				if (!(sqrMagnitude >= num))
+				{
+					livestockAnimal = item;
+					num = sqrMagnitude;
+				}
+			}
+		}
+		if ((Object)(object)livestockAnimal != (Object)null)
+		{
+			RememberShielded(livestockAnimal);
+		}
+		TickCalfProximity(livestockAnimal);
+		if (Time.time - freeRangeHerdCountedAt >= NeedTickFrequency)
+		{
+			CountFreeRangeHerd();
+		}
+	}
+
+	private void CountFreeRangeHerd()
+	{
+		if (!CountsFreeRangeHerd)
+		{
+			return;
 		}
 		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
 		try
 		{
-			Query.Server.GetBrainsInSphere(((Component)this).transform.position, SocialSearchRadius, (List<LivestockAnimal>)(object)val);
-			int num = 0;
-			LivestockAnimal livestockAnimal = null;
-			float num2 = float.MaxValue;
+			int num = GatherFreeRangeHerd(Livestock.maxFreeRangeHerd, (List<LivestockAnimal>)(object)val);
+			float time = Time.time;
 			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
 			{
-				if (!IsHerdMate(item))
-				{
-					continue;
-				}
-				num++;
-				if (IsMyDependent(item))
-				{
-					Vector3 val2 = ((Component)item).transform.position - ((Component)this).transform.position;
-					float sqrMagnitude = val2.sqrMagnitude;
-					if (!(sqrMagnitude >= num2))
-					{
-						livestockAnimal = item;
-						num2 = sqrMagnitude;
-					}
-				}
+				item.freeRangeHerdMates = ((List<LivestockAnimal>)(object)val).Count - 1;
+				item.freeRangeHerdUnborn = num - item.LitterOnTheWay;
+				item.freeRangeHerdCountedAt = time;
 			}
-			if ((Object)(object)livestockAnimal != (Object)null)
-			{
-				RememberShielded(livestockAnimal);
-			}
-			TickCalfProximity(livestockAnimal);
-			return num;
 		}
 		finally
 		{
 			((IDisposable)val)?.Dispose();
 		}
+	}
+
+	internal int GatherFreeRangeHerd(int limit, List<LivestockAnimal> herd)
+	{
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			float freeRangeLinkRadius = Livestock.freeRangeLinkRadius;
+			int num = ++lastFreeRangeHerdSearch;
+			int num2 = JoinFreeRangeSearch(this, num, herd);
+			for (int i = 0; i < herd.Count; i++)
+			{
+				if (herd.Count + num2 >= limit)
+				{
+					break;
+				}
+				if (!(freeRangeLinkRadius > 0f))
+				{
+					break;
+				}
+				((List<LivestockAnimal>)(object)val).Clear();
+				Query.Server.GetBrainsInSphere(((Component)herd[i]).transform.position, freeRangeLinkRadius, (List<LivestockAnimal>)(object)val);
+				foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
+				{
+					if (item.freeRangeHerdSearch != num && IsHerdMate(item) && !item.StandsInAPen)
+					{
+						num2 += JoinFreeRangeSearch(item, num, herd);
+					}
+				}
+			}
+			return num2;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private static int JoinFreeRangeSearch(LivestockAnimal animal, int search, List<LivestockAnimal> herd)
+	{
+		animal.freeRangeHerdSearch = search;
+		herd.Add(animal);
+		return animal.LitterOnTheWay;
 	}
 
 	private void TickCalfProximity(LivestockAnimal dependent)
@@ -3348,57 +4646,145 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public void GatherRestingFootprints(Vector3 around, PooledList<LivestockFootprint> footprints)
 	{
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
-		try
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		using (LivestockProfiler.Sample(LivestockProfiler.Section.Gather))
 		{
-			Query.Server.GetBrainsInSphere(around, 30f, (List<LivestockAnimal>)(object)val);
-			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
+			PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+			try
 			{
-				if (!((Object)(object)item == (Object)(object)this) && !item.IsDead())
+				Query.Server.GetBrainsInSphere(around, 30f, (List<LivestockAnimal>)(object)val);
+				foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
 				{
-					((List<LivestockFootprint>)(object)footprints).Add(item.RestingFootprint());
+					if (!((Object)(object)item == (Object)(object)this) && !item.IsDead())
+					{
+						((List<LivestockFootprint>)(object)footprints).Add(item.RestingFootprint());
+						if (item.TryGetTurningRestingFootprint(out var footprint))
+						{
+							((List<LivestockFootprint>)(object)footprints).Add(footprint);
+						}
+					}
 				}
 			}
-		}
-		finally
-		{
-			((IDisposable)val)?.Dispose();
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
 		}
 	}
 
 	public LivestockFootprint RestingFootprint()
 	{
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		RustNavMeshAgent rustNavMeshAgent = RestingAgent;
-		if ((Object)(object)rustNavMeshAgent == (Object)null || !rustNavMeshAgent.hasPath)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		RustNavMeshAgent navAgent = NavAgent;
+		if ((Object)(object)navAgent != (Object)null && navAgent.TryGetArrival(out var standWS, out var facingWS))
+		{
+			return LivestockFootprint.Of((BaseEntity)this, standWS, facingWS);
+		}
+		if ((Object)(object)navAgent == (Object)null || !navAgent.hasPath)
 		{
 			return LivestockFootprint.Of(this);
 		}
-		return RestingFootprintFor(rustNavMeshAgent.destinationWS, rustNavMeshAgent.currentStoppingDistance);
+		if (navAgent.TryGetRestingPoint(navAgent.RestingDistance(navAgent.currentStoppingDistance), out var pointWS, out var headingWS))
+		{
+			return LivestockFootprint.Of((BaseEntity)this, pointWS, headingWS);
+		}
+		return RestingFootprintFor(navAgent.destinationWS, navAgent.currentStoppingDistance);
+	}
+
+	public bool TryGetTurningRestingFootprint(out LivestockFootprint footprint)
+	{
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		footprint = default;
+		RustNavMeshAgent navAgent = NavAgent;
+		if ((Object)(object)navAgent == (Object)null || navAgent.TryGetArrival(out var _, out var _))
+		{
+			return false;
+		}
+		if (!navAgent.TryGetTurningRestingPoint(navAgent.RestingDistance(navAgent.currentStoppingDistance), out var pointWS, out var headingWS))
+		{
+			return false;
+		}
+		footprint = LivestockFootprint.Of((BaseEntity)this, pointWS, headingWS);
+		return true;
 	}
 
 	public LivestockFootprint RestingFootprintFor(Vector3 destination, float stoppingDistance)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		RestingPoseFor(destination, stoppingDistance, out var position, out var forward);
+		return LivestockFootprint.Of((BaseEntity)this, position, forward);
+	}
+
+	private void RestingPoseFor(Vector3 destination, float stoppingDistance, out Vector3 position, out Vector3 forward)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		RustNavMeshAgent rustNavMeshAgent = RestingAgent;
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		RustNavMeshAgent navAgent = NavAgent;
 		Vector3 val = Vector3Ex.WithY(destination - ((Component)this).transform.position, 0f);
 		float magnitude = val.magnitude;
-		float num = (((Object)(object)rustNavMeshAgent != (Object)null) ? rustNavMeshAgent.RestingDistance(stoppingDistance) : stoppingDistance);
+		float num = (((Object)(object)navAgent != (Object)null) ? navAgent.RestingDistance(stoppingDistance) : stoppingDistance);
 		if (magnitude <= num)
 		{
-			return LivestockFootprint.Of(this);
+			position = ((Component)this).transform.position;
+			forward = ((Component)this).transform.forward;
 		}
-		return LivestockFootprint.Of(this, destination - val * (num / magnitude), val);
+		else
+		{
+			position = destination - val * (num / magnitude);
+			forward = val;
+		}
+	}
+
+	public bool TryGetTurningFootprintFor(Vector3 destination, float stoppingDistance, bool braking, out LivestockFootprint footprint)
+	{
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		footprint = default;
+		if (!TryGetTurningPoseFor(destination, stoppingDistance, braking, out var rest, out var heading))
+		{
+			return false;
+		}
+		footprint = LivestockFootprint.Of((BaseEntity)this, rest, heading);
+		return true;
+	}
+
+	private bool TryGetTurningPoseFor(Vector3 destination, float stoppingDistance, bool braking, out Vector3 rest, out Vector3 heading)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		rest = default;
+		heading = default;
+		RustNavMeshAgent navAgent = NavAgent;
+		if ((Object)(object)navAgent != (Object)null)
+		{
+			return navAgent.TryPredictTurningRest(((Component)this).transform.position, ((Component)this).transform.forward, destination, stoppingDistance, braking, out rest, out heading);
+		}
+		return false;
 	}
 
 	public static float ClearanceOf(PooledList<LivestockFootprint> footprints, in LivestockFootprint footprint)
@@ -3416,9 +4802,418 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return clearance >= 0.25f;
 	}
 
+	public float ClearanceWhereItStands()
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<LivestockFootprint> val = Pool.Get<PooledList<LivestockFootprint>>();
+		try
+		{
+			GatherRestingFootprints(((Component)this).transform.position, val);
+			return ClearanceOf(val, LivestockFootprint.Of(this));
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public int PickRestingSpot(PooledList<LivestockFootprint> taken, PooledList<Vector3> spots, float stoppingDistance, bool braking = true, bool lyingDown = false)
+	{
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		using (LivestockProfiler.Sample(LivestockProfiler.Section.Pick))
+		{
+			int result = -1;
+			float num = float.MinValue;
+			for (int i = 0; i < ((List<Vector3>)(object)spots).Count; i++)
+			{
+				RestingPoseFor(((List<Vector3>)(object)spots)[i], stoppingDistance, out var position, out var forward);
+				float num2 = ClearanceOf(taken, LivestockFootprint.Of((BaseEntity)this, position, forward));
+				if (num2 <= num || (lyingDown && !LiesInsideWallsAt(position, forward)))
+				{
+					continue;
+				}
+				if (TryGetTurningPoseFor(((List<Vector3>)(object)spots)[i], stoppingDistance, braking, out var rest, out var heading))
+				{
+					if (lyingDown && !LiesInsideWallsAt(rest, heading))
+					{
+						continue;
+					}
+					num2 = Mathf.Min(num2, ClearanceOf(taken, LivestockFootprint.Of((BaseEntity)this, rest, heading)));
+				}
+				if (IsClear(num2))
+				{
+					return i;
+				}
+				if (num2 > num)
+				{
+					num = num2;
+					result = i;
+				}
+			}
+			return result;
+		}
+	}
+
+	public static int PickPlacement(PooledList<LivestockFootprint> taken, BaseEntity body, PooledList<Vector3> spots, Vector3 facing)
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		int result = -1;
+		float num = float.MinValue;
+		for (int i = 0; i < ((List<Vector3>)(object)spots).Count; i++)
+		{
+			float num2 = ClearanceOf(taken, LivestockFootprint.Of(body, ((List<Vector3>)(object)spots)[i], facing));
+			if (IsClear(num2))
+			{
+				return i;
+			}
+			if (num2 > num)
+			{
+				num = num2;
+				result = i;
+			}
+		}
+		return result;
+	}
+
+	public static void SortNearestFirst(PooledList<Vector3> spots, Vector3 from)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 1; i < ((List<Vector3>)(object)spots).Count; i++)
+		{
+			Vector3 val = ((List<Vector3>)(object)spots)[i];
+			Vector3 val2 = val - from;
+			float sqrMagnitude = val2.sqrMagnitude;
+			int num;
+			for (num = i - 1; num >= 0; num--)
+			{
+				val2 = ((List<Vector3>)(object)spots)[num] - from;
+				if (!(val2.sqrMagnitude > sqrMagnitude))
+				{
+					break;
+				}
+				((List<Vector3>)(object)spots)[num + 1] = ((List<Vector3>)(object)spots)[num];
+			}
+			((List<Vector3>)(object)spots)[num + 1] = val;
+		}
+	}
+
+	private static void SortLeastTurnFirst(PooledList<Vector3> spots, Vector3 from, Vector3 forward)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<float> val = Pool.Get<PooledList<float>>();
+		try
+		{
+			foreach (Vector3 item in (List<Vector3>)(object)spots)
+			{
+				((List<float>)(object)val).Add(Vector3.Angle(Vector3Ex.WithY(forward, 0f), Vector3Ex.WithY(item - from, 0f)));
+			}
+			for (int i = 1; i < ((List<Vector3>)(object)spots).Count; i++)
+			{
+				Vector3 value = ((List<Vector3>)(object)spots)[i];
+				float num = ((List<float>)(object)val)[i];
+				int num2 = i - 1;
+				while (num2 >= 0 && ((List<float>)(object)val)[num2] > num)
+				{
+					((List<Vector3>)(object)spots)[num2 + 1] = ((List<Vector3>)(object)spots)[num2];
+					((List<float>)(object)val)[num2 + 1] = ((List<float>)(object)val)[num2];
+					num2--;
+				}
+				((List<Vector3>)(object)spots)[num2 + 1] = value;
+				((List<float>)(object)val)[num2 + 1] = num;
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public bool TryFindRestingSpotNear(Vector3 around, float innerRadius, float outerRadius, out Vector3 spot)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		return TryFindRestingSpotNear(around, innerRadius, outerRadius, null, out spot);
+	}
+
+	public bool TryFindRestingSpotNear(Vector3 around, float innerRadius, float outerRadius, PooledList<LivestockFootprint> keepOff, out Vector3 spot)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		return TryFindSpotNear(around, innerRadius, outerRadius, keepOff, lyingDown: false, out spot);
+	}
+
+	public bool TryFindLyingSpotNear(Vector3 around, float innerRadius, float outerRadius, out Vector3 spot)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		return TryFindSpotNear(around, innerRadius, outerRadius, null, lyingDown: true, out spot);
+	}
+
+	private bool TryFindSpotNear(Vector3 around, float innerRadius, float outerRadius, PooledList<LivestockFootprint> keepOff, bool lyingDown, out Vector3 spot)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		spot = default;
+		RustNavMeshAgent navAgent = NavAgent;
+		if ((Object)(object)navAgent == (Object)null || outerRadius <= 0f)
+		{
+			return false;
+		}
+		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+		try
+		{
+			SampleRestingSpots(navAgent, around, innerRadius, outerRadius, val);
+			if (lyingDown)
+			{
+				SortLeastTurnFirst(val, ((Component)this).transform.position, ((Component)this).transform.forward);
+			}
+			else
+			{
+				SortNearestFirst(val, ((Component)this).transform.position);
+			}
+			PooledList<LivestockFootprint> val2 = Pool.Get<PooledList<LivestockFootprint>>();
+			try
+			{
+				GatherRestingFootprints(around, val2);
+				if (keepOff != null)
+				{
+					foreach (LivestockFootprint item in (List<LivestockFootprint>)(object)keepOff)
+					{
+						((List<LivestockFootprint>)(object)val2).Add(item);
+					}
+				}
+				int num = PickRestingSpot(val2, val, navAgent.stoppingDistance, braking: true, lyingDown);
+				if (num < 0)
+				{
+					return false;
+				}
+				if (keepOff != null && ClearanceOf(keepOff, RestingFootprintFor(((List<Vector3>)(object)val)[num], navAgent.stoppingDistance)) < 0f)
+				{
+					return false;
+				}
+				spot = ((List<Vector3>)(object)val)[num];
+				return true;
+			}
+			finally
+			{
+				((IDisposable)val2)?.Dispose();
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private static void SampleRestingSpots(RustNavMeshAgent agent, Vector3 around, float innerRadius, float outerRadius, PooledList<Vector3> spots)
+	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
+		try
+		{
+			bool flag = Eqs.SampleNavigablePositions(agent, agent.WorldToNavSpace(around), (List<NavVector3>)(object)val, outerRadius, innerRadius, 16);
+			foreach (NavVector3 item in (List<NavVector3>)(object)val)
+			{
+				NavHit hitNS;
+				if (flag)
+				{
+					((List<Vector3>)(object)spots).Add(agent.NavToWorldSpace(item));
+				}
+				else if (agent.SamplePosition(item, out hitNS, outerRadius))
+				{
+					((List<Vector3>)(object)spots).Add(agent.NavToWorldSpace(hitNS.position));
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public bool TryFindLonelyRestingSpot(float homeRadius, out Vector3 spot)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		spot = default;
+		RustNavMeshAgent navAgent = NavAgent;
+		if ((Object)(object)navAgent == (Object)null || SocialSearchRadius <= 0f)
+		{
+			return false;
+		}
+		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			Query.Server.GetBrainsInSphere(((Component)this).transform.position, SocialSearchRadius, (List<LivestockAnimal>)(object)val);
+			PooledList<Vector3> val2 = Pool.Get<PooledList<Vector3>>();
+			try
+			{
+				foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
+				{
+					if (IsHerdMate(item))
+					{
+						((List<Vector3>)(object)val2).Add(item.RestingFootprint().Centre);
+					}
+				}
+				if (((List<Vector3>)(object)val2).Count == 0)
+				{
+					return false;
+				}
+				PooledList<Vector3> val3 = Pool.Get<PooledList<Vector3>>();
+				try
+				{
+					SampleRestingSpots(navAgent, ((Component)this).transform.position, 4f, 12f, val3);
+					Vector3 val4 = HomePosition;
+					float num = Mathf.Max(homeRadius, Vector3.Distance(((Component)this).transform.position, val4));
+					LivestockFloor livestockFloor = (StandsInAPen ? floor : null);
+					for (int num2 = ((List<Vector3>)(object)val3).Count - 1; num2 >= 0; num2--)
+					{
+						if (Vector3.Distance(((List<Vector3>)(object)val3)[num2], val4) > num || (livestockFloor != null && !livestockFloor.HoldsPosition(((List<Vector3>)(object)val3)[num2])))
+						{
+							((List<Vector3>)(object)val3).RemoveAt(num2);
+						}
+					}
+					PooledList<float> val5 = Pool.Get<PooledList<float>>();
+					try
+					{
+						foreach (Vector3 item2 in (List<Vector3>)(object)val3)
+						{
+							((List<float>)(object)val5).Add(DistanceToNearest(RestingFootprintFor(item2, navAgent.stoppingDistance).Centre, val2));
+						}
+						SortLoneliestFirst(val3, val5);
+						PooledList<LivestockFootprint> val6 = Pool.Get<PooledList<LivestockFootprint>>();
+						try
+						{
+							GatherRestingFootprints(((Component)this).transform.position, val6);
+							int num3 = PickRestingSpot(val6, val3, navAgent.stoppingDistance, braking: true, lyingDown: true);
+							if (num3 < 0 || ((List<float>)(object)val5)[num3] < DistanceToNearest(LivestockFootprint.Of(this).Centre, val2) + 2f)
+							{
+								return false;
+							}
+							spot = ((List<Vector3>)(object)val3)[num3];
+							return true;
+						}
+						finally
+						{
+							((IDisposable)val6)?.Dispose();
+						}
+					}
+					finally
+					{
+						((IDisposable)val5)?.Dispose();
+					}
+				}
+				finally
+				{
+					((IDisposable)val3)?.Dispose();
+				}
+			}
+			finally
+			{
+				((IDisposable)val2)?.Dispose();
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private static void SortLoneliestFirst(PooledList<Vector3> spots, PooledList<float> loneliness)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 1; i < ((List<Vector3>)(object)spots).Count; i++)
+		{
+			Vector3 value = ((List<Vector3>)(object)spots)[i];
+			float num = ((List<float>)(object)loneliness)[i];
+			int num2 = i - 1;
+			while (num2 >= 0 && ((List<float>)(object)loneliness)[num2] < num)
+			{
+				((List<Vector3>)(object)spots)[num2 + 1] = ((List<Vector3>)(object)spots)[num2];
+				((List<float>)(object)loneliness)[num2 + 1] = ((List<float>)(object)loneliness)[num2];
+				num2--;
+			}
+			((List<Vector3>)(object)spots)[num2 + 1] = value;
+			((List<float>)(object)loneliness)[num2 + 1] = num;
+		}
+	}
+
+	private static float DistanceToNearest(Vector3 point, PooledList<Vector3> others)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		float num = float.MaxValue;
+		foreach (Vector3 item in (List<Vector3>)(object)others)
+		{
+			num = Mathf.Min(num, Vector3Ex.MagnitudeXZ(item - point));
+		}
+		return num;
+	}
+
 	public bool IsWalkingAfter(BasePlayer player)
 	{
-		if ((Object)(object)player != (Object)null)
+		if ((Object)(object)player != (Object)null && !IsDead())
 		{
 			if (!IsFollowing(player))
 			{
@@ -3429,76 +5224,189 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return false;
 	}
 
-	public void CountWalkingAbreast(BasePlayer player, out int onLeft, out int onRight)
+	public static int CountLedBy(BasePlayer player)
 	{
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)player == (Object)null))
+		{
+			return NeedsQueue.CountLedBy(player);
+		}
+		return 0;
+	}
+
+	public FormationSlot FindFormationSlot(BasePlayer player, float fileWidth)
+	{
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		onLeft = 0;
-		onRight = 0;
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
+		FormationSlot result = default;
 		if ((Object)(object)player == (Object)null)
 		{
-			return;
+			return result;
 		}
 		Vector3 position = ((Component)player).transform.position;
-		Vector3 position2 = ((Component)this).transform.position;
-		Vector3 val = Vector3Ex.WithY(position - position2, 0f);
+		Vector3 val = Vector3Ex.WithY(((Component)this).transform.position - position, 0f);
+		if (val.sqrMagnitude < 0.0001f)
+		{
+			return result;
+		}
 		PooledList<LivestockAnimal> val2 = Pool.Get<PooledList<LivestockAnimal>>();
 		try
 		{
-			Query.Server.GetBrainsInSphere(position, 10f, (List<LivestockAnimal>)(object)val2);
-			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val2)
+			Query.Server.GetBrainsInSphere(position, 20f, (List<LivestockAnimal>)(object)val2);
+			PooledList<LivestockAnimal> val3 = Pool.Get<PooledList<LivestockAnimal>>();
+			try
 			{
-				if ((Object)(object)item == (Object)(object)this || !item.IsWalkingAfter(player))
+				((List<LivestockAnimal>)(object)val3).Add(this);
+				Vector3 val4 = val;
+				result.Longest = bounds.size.z;
+				foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val2)
 				{
-					continue;
-				}
-				Vector3 position3 = ((Component)item).transform.position;
-				if (!(Vector3.Dot(Vector3Ex.WithY(position3 - position, 0f), Vector3Ex.WithY(position2 - position, 0f)) <= 0f))
-				{
-					float num = Vector3.Cross(val, Vector3Ex.WithY(position3 - position2, 0f)).y;
-					if (Mathf.Abs(num) < 0.01f)
+					if (!((Object)(object)item == (Object)(object)this) && item.IsWalkingAfter(player))
 					{
-						num = ((item.net.ID.Value < net.ID.Value) ? (-1f) : 1f);
-					}
-					if (num < 0f)
-					{
-						onLeft++;
-					}
-					else
-					{
-						onRight++;
+						Vector3 val5 = Vector3Ex.WithY(((Component)item).transform.position - position, 0f);
+						if (!(Vector3.Dot(val5, val) <= 0f))
+						{
+							((List<LivestockAnimal>)(object)val3).Add(item);
+							val4 += val5;
+							result.Longest = Mathf.Max(result.Longest, item.bounds.size.z);
+						}
 					}
 				}
+				if (((List<LivestockAnimal>)(object)val3).Count < 2)
+				{
+					return result;
+				}
+				val4 /= (float)((List<LivestockAnimal>)(object)val3).Count;
+				result.InFormation = true;
+				result.GroupSize = ((List<LivestockAnimal>)(object)val3).Count;
+				result.Back = ((val4.sqrMagnitude > 0.01f) ? val4.normalized : val.normalized);
+				result.Right = Vector3.Cross(Vector3.up, -result.Back);
+				PooledList<int> val6 = Pool.Get<PooledList<int>>();
+				try
+				{
+					PooledList<int> val7 = Pool.Get<PooledList<int>>();
+					try
+					{
+						foreach (LivestockAnimal item2 in (List<LivestockAnimal>)(object)val3)
+						{
+							((List<int>)(object)val6).Add(BandAlong(item2, position, result.Back));
+							((List<int>)(object)val7).Add(BandAlong(item2, position, result.Right));
+						}
+						int num = RankBehind(val3, val6, 0);
+						result.Row = num / 3;
+						int num2 = result.Row * 3;
+						int num3 = Mathf.Min(3, ((List<LivestockAnimal>)(object)val3).Count - num2);
+						int num4 = 0;
+						for (int i = 1; i < ((List<LivestockAnimal>)(object)val3).Count; i++)
+						{
+							int num5 = RankBehind(val3, val6, i);
+							if (num5 >= num2 && num5 < num2 + num3 && IsBefore(val3, val7, i, 0))
+							{
+								num4++;
+							}
+						}
+						result.Across = FileOffset(num4, num3, ((List<LivestockAnimal>)(object)val3).Count > 3) * fileWidth;
+						return result;
+					}
+					finally
+					{
+						((IDisposable)val7)?.Dispose();
+					}
+				}
+				finally
+				{
+					((IDisposable)val6)?.Dispose();
+				}
+			}
+			finally
+			{
+				((IDisposable)val3)?.Dispose();
 			}
 		}
 		finally
 		{
 			((IDisposable)val2)?.Dispose();
 		}
+	}
+
+	private static int RankBehind(PooledList<LivestockAnimal> members, PooledList<int> backBands, int index)
+	{
+		int num = 0;
+		for (int i = 0; i < ((List<LivestockAnimal>)(object)members).Count; i++)
+		{
+			if (i != index && IsBefore(members, backBands, i, index))
+			{
+				num++;
+			}
+		}
+		return num;
+	}
+
+	private static bool IsBefore(PooledList<LivestockAnimal> members, PooledList<int> bands, int one, int other)
+	{
+		if (((List<int>)(object)bands)[one] == ((List<int>)(object)bands)[other])
+		{
+			return ((List<LivestockAnimal>)(object)members)[one].net.ID.Value < ((List<LivestockAnimal>)(object)members)[other].net.ID.Value;
+		}
+		return ((List<int>)(object)bands)[one] < ((List<int>)(object)bands)[other];
+	}
+
+	private static int BandAlong(LivestockAnimal animal, Vector3 leader, Vector3 axis)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		return Mathf.FloorToInt(Vector3.Dot(Vector3Ex.WithY(((Component)animal).transform.position - leader, 0f), axis) / 0.1f);
+	}
+
+	private static float FileOffset(int file, int inRow, bool behindAFullRow)
+	{
+		if ((inRow == 2) & behindAFullRow)
+		{
+			if (file != 0)
+			{
+				return 1f;
+			}
+			return -1f;
+		}
+		return (float)file - (float)(inRow - 1) * 0.5f;
 	}
 
 	public bool TryFindSecludedSpot(RustNavMeshAgent agent, LivestockAnimal partner, float minDistance, float maxDistance, float clearRadius, out Vector3 spot)
@@ -3742,71 +5650,27 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		hasHerdFleeHeading = true;
 	}
 
-	public float HerdLoadTarget(int herdMates)
+	public float PackingTarget(float floorPerHead)
 	{
-		int num = Mathf.Max(0, ComfortableHerdSize);
-		int num2 = Mathf.Max(num + 1, CrowdedHerdSize);
-		if (herdMates <= num)
-		{
-			return 1f;
-		}
-		return Mathf.Lerp(1f, 0.3f, Mathf.InverseLerp((float)num, (float)num2, (float)herdMates));
+		return Mathf.InverseLerp(Livestock.lethalFloorPerHead, LivestockFloor.BreedingFloorPerHead, floorPerHead);
 	}
 
-	public float PackingTarget(float neighbours)
+	private void RemeasureIfChanged()
 	{
-		float num = Mathf.Max(0f, ComfortablePacking);
-		float num2 = Mathf.Max(num + 0.01f, CrowdedPacking);
-		float num3 = Mathf.Max(num2 + 0.01f, SeverePacking);
-		if (neighbours <= num)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		RustNavMeshAgent navAgent = NavAgent;
+		if (floor == null || (Object)(object)navAgent == (Object)null || floor.IsCurrent(navAgent))
 		{
-			return 1f;
-		}
-		if (neighbours <= num2)
-		{
-			return Mathf.Lerp(1f, 0.3f, Mathf.InverseLerp(num, num2, neighbours));
-		}
-		return Mathf.Lerp(0.3f, 0f, Mathf.InverseLerp(num2, num3, neighbours));
-	}
-
-	public float CountPackingNeighbours()
-	{
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		if (PackingRadius <= 0f)
-		{
-			return 0f;
+			return;
 		}
 		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
 		try
 		{
-			Query.Server.GetBrainsInSphere(((Component)this).transform.position, PackingRadius, (List<LivestockAnimal>)(object)val);
-			float num = PackingRadius * PackingRadius;
-			float num2 = 0f;
-			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
+			if (SocialSearchRadius > 0f)
 			{
-				if ((Object)(object)item == (Object)null || (Object)(object)item == (Object)(object)this || item.IsDestroyed || item.IsDead())
-				{
-					continue;
-				}
-				Vector3 val2 = ((Component)item).transform.position - ((Component)this).transform.position;
-				if (!(Mathf.Abs(val2.y) > PackingHeight))
-				{
-					Vector3 val3 = Vector3Ex.WithY(val2, 0f);
-					if (!(val3.sqrMagnitude > num))
-					{
-						num2 += Mathf.Max(0f, item.AdultEquivalent);
-					}
-				}
+				Query.Server.GetBrainsInSphere(((Component)this).transform.position, SocialSearchRadius, (List<LivestockAnimal>)(object)val);
 			}
-			return num2;
+			KeepFloor(val);
 		}
 		finally
 		{
@@ -3814,20 +5678,141 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	private void TickPersonalSpace(ref TickableNeed need, float seconds)
+	internal void StandOn(LivestockFloor next)
 	{
-		int herdMates = CountHerdMates();
-		if (!(PersonalSpaceChangeRate <= 0f) && !TOD_Sky.Instance.IsNight && !IsSleeping())
+		if (floor != next)
 		{
-			lastHerdLoadTarget = HerdLoadTarget(herdMates);
-			lastPackingTarget = PackingTarget(CountPackingNeighbours());
-			float num = Mathf.Min(lastHerdLoadTarget, lastPackingTarget);
-			need.NeedValue = Mathf.MoveTowards(need.NeedValue, num, PersonalSpaceChangeRate * seconds);
+			LivestockFloor livestockFloor = floor;
+			floor = next;
+			next?.Join(this);
+			livestockFloor?.Leave(this);
 		}
+	}
+
+	internal void LeaveFloor()
+	{
+		StandOn(null);
+	}
+
+	private void KeepFloor(PooledList<LivestockAnimal> neighbours)
+	{
+		RustNavMeshAgent navAgent = NavAgent;
+		ulong num = ((CanStandOnAFloor && (Object)(object)navAgent != (Object)null) ? navAgent.CurrentPolyRef : 0);
+		if (num == 0L)
+		{
+			StandOn(null);
+		}
+		else
+		{
+			if (floor != null && floor.Serves(num, navAgent))
+			{
+				return;
+			}
+			ulong num2 = navAgent.WalkablePolyRef();
+			if (num2 == 0L)
+			{
+				StandOn(null);
+			}
+			else
+			{
+				if (num2 != num && floor != null && floor.Serves(num2, navAgent))
+				{
+					return;
+				}
+				foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)neighbours)
+				{
+					LivestockFloor livestockFloor = item.floor;
+					if (livestockFloor != null && livestockFloor != floor && livestockFloor.Serves(num2, navAgent))
+					{
+						StandOn(livestockFloor);
+						return;
+					}
+				}
+				LivestockFloor livestockFloor2 = LivestockFloor.Flood(navAgent, num2, floor);
+				if (livestockFloor2 != floor)
+				{
+					StandOn(livestockFloor2);
+					livestockFloor2?.ClaimStandingAnimals();
+				}
+			}
+		}
+	}
+
+	private void TickFloorNeeds(ref TickableNeed need)
+	{
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			if (SocialSearchRadius > 0f)
+			{
+				Query.Server.GetBrainsInSphere(((Component)this).transform.position, SocialSearchRadius, (List<LivestockAnimal>)(object)val);
+				TrackHerdMates(val);
+			}
+			KeepFloor(val);
+			KeepOnePerHerd(val);
+			if (floor != null)
+			{
+				floor.Refresh();
+				floor.ResampleSunIfDue(NavAgent);
+			}
+			TickGrassAndSun();
+			if (!HasPersonalSpace)
+			{
+				need.NeedValue = 1f;
+			}
+			else if (!TOD_Sky.Instance.IsNight && !IsAsleep)
+			{
+				need.NeedValue = RoomTarget;
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private void TickGrassAndSun()
+	{
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		if (needs.Length <= 4 || IsWild)
+		{
+			return;
+		}
+		ref TickableNeed reference = ref needs[3];
+		ref TickableNeed reference2 = ref needs[4];
+		if (floor != null && floor.Classified)
+		{
+			reference.NeedValue = Mathf.Clamp01(floor.GrassArea / Mathf.Max(floor.Area * ShelterNeedScale, 0.01f));
+			reference2.NeedValue = SunNeedFor(floor.SunShare);
+		}
+		else if (floor == null || !floor.SunPending)
+		{
+			Vector3 position = ((Component)this).transform.position;
+			reference.NeedValue = ((LivestockGrass.IsGrassGround(position) && LivestockGrass.IsOnOpenGround(position)) ? 1f : 0f);
+			if (!TOD_Sky.Instance.IsNight)
+			{
+				reference2.NeedValue = ((LivestockSunPath.SeesTheSunNow(position) || GrowableEntity.CalculateArtificialLightExposure(position) > 0f) ? 1f : 0f);
+			}
+		}
+	}
+
+	public float SunNeedFor(float share)
+	{
+		return Mathf.Clamp01(share / (Mathf.Max(0.01f, Livestock.sunFullShare) * ShelterNeedScale));
 	}
 
 	public LivestockSpecial SpecialIdentity()
 	{
+		if (!HasSpecialAuthoredName)
+		{
+			return null;
+		}
 		LivestockSpecialTable instance = LivestockSpecialTable.Instance;
 		if (!((Object)(object)instance != (Object)null))
 		{
@@ -3928,7 +5913,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void TryGrantSpecial()
 	{
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		if (Application.isLoadingSave)
 		{
 			return;
@@ -3942,7 +5927,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		bool byCommand = livestockSpecial != null;
 		if (livestockSpecial == null)
 		{
-			if (!IsPopulationSpawn() || Random.value >= Livestock.specialChance)
+			if (!IsPopulationSpawn() || Rng.Value >= Livestock.specialChance)
 			{
 				return;
 			}
@@ -4021,7 +6006,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return null;
 		}
-		float num2 = Random.value * num;
+		float num2 = Rng.Value * num;
 		for (int j = 0; j < entries.Length; j++)
 		{
 			if (eligibleSpecials[j])
@@ -4038,8 +6023,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void Apply(LivestockSpecial special, bool byCommand)
 	{
-		AnimalName = special.Name;
-		FoundLine(LivestockLocaleWeights.HouseLocale());
+		GiveName(special.Name, FarmableAnimal.NameSource.Special, 0uL);
+		FoundLine(LivestockNames.HouseLocale());
 		RememberSpecial(special.Name, !byCommand);
 		ApplyGenes(special);
 	}
@@ -4051,17 +6036,17 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			ForcedGene[] genes = special.Genes;
 			foreach (ForcedGene forcedGene in genes)
 			{
-				if (forcedGene != null)
+				if (forcedGene != null && LivestockGenome.IsLive(forcedGene.Gene))
 				{
 					Genes = LivestockGenome.WithPair(Genes, forcedGene.Gene, forcedGene.First, forcedGene.Second);
 				}
 			}
 		}
-		int num = LivestockGenome.RollMarker();
-		int num2 = LivestockGenome.RollMarker();
+		int num = LivestockGenome.RollMarker(Rng);
+		int num2 = LivestockGenome.RollMarker(Rng);
 		if (num2 == num)
 		{
-			num2 = (num + 1 + Random.Range(0, 15)) % 16;
+			num2 = (num + 1 + Rng.Range(0, 15)) % 16;
 		}
 		Genes = LivestockGenome.WithMarkers(Genes, num, num2);
 	}
@@ -4077,8 +6062,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return false;
 		}
-		LivestockSpecial livestockSpecial = instance.Find(mother.AnimalName);
-		LivestockSpecial livestockSpecial2 = instance.Find(father.AnimalName);
+		LivestockSpecial livestockSpecial = mother.SpecialIdentity();
+		LivestockSpecial livestockSpecial2 = father.SpecialIdentity();
 		if (livestockSpecial == null || livestockSpecial2 == null)
 		{
 			return false;
@@ -4088,8 +6073,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return false;
 		}
-		AnimalName = livestockCross.Name;
-		FoundLine(LivestockLocaleWeights.HouseLocale());
+		GiveName(livestockCross.Name, FarmableAnimal.NameSource.Game, 0uL);
+		FoundLine(LivestockNames.HouseLocale());
 		return true;
 	}
 
@@ -4108,9 +6093,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		LivestockGene[] allGenes = LivestockGenome.AllGenes;
 		foreach (LivestockGene gene in allGenes)
 		{
-			num += GeneScale(gene);
+			num += (GeneScale(gene) + CarriedGeneScale(gene)) * 0.5f;
 		}
-		float num2 = num / 5f;
+		float num2 = num / (float)LivestockGenome.AllGenes.Length;
 		return Mathf.Max(0f, 1f + (num2 - 1f) * Livestock.priceGeneWeight);
 	}
 
@@ -4121,21 +6106,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return Mathf.Lerp(Mathf.Clamp01(Livestock.priceWorstScale), 1f, Mathf.InverseLerp(priceConditionFloor, num, Condition));
 	}
 
-	private float AgeSaleScale()
-	{
-		float num = Mathf.Clamp01(Livestock.priceAgePrime);
-		return Mathf.Lerp(1f, Mathf.Clamp01(Livestock.priceOldestScale), Mathf.InverseLerp(num, 1f, AgeFraction));
-	}
-
-	private float OriginSaleScale()
-	{
-		if (!IsBred)
-		{
-			return Mathf.Clamp01(1f - Livestock.priceWildPenalty);
-		}
-		return 1f;
-	}
-
 	private void SaveSaleValue(LivestockAnimal msg)
 	{
 		msg.saleValueScale = SaleValueScale;
@@ -4143,22 +6113,34 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public float StartingValueFor(Need need)
 	{
-		return need switch
+		switch (need)
 		{
-			Need.Fullness => Mathf.Clamp01(StartingFullness), 
-			Need.Hydration => Mathf.Clamp01(StartingHydration), 
-			_ => 1f, 
-		};
+		case Need.Fullness:
+			return Mathf.Clamp01(StartingFullness);
+		case Need.Hydration:
+			return Mathf.Clamp01(StartingHydration);
+		case Need.Grass:
+		case Need.Sun:
+			return 1f;
+		default:
+			return 1f;
+		}
 	}
 
 	public float DecayRatePerSecond(Need need)
 	{
-		return need switch
+		switch (need)
 		{
-			Need.Fullness => Mathf.Max(0f, FullnessDecayRate), 
-			Need.Hydration => Mathf.Max(0f, HydrationDecayRate), 
-			_ => 0f, 
-		};
+		case Need.Fullness:
+			return Mathf.Max(0f, FullnessDecayRate);
+		case Need.Hydration:
+			return Mathf.Max(0f, HydrationDecayRate);
+		case Need.Grass:
+		case Need.Sun:
+			return 0f;
+		default:
+			return 0f;
+		}
 	}
 
 	public bool IsInfant()
@@ -4196,6 +6178,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return HasFlag(Flags.Reserved13);
 	}
 
+	public bool IsAtTrough()
+	{
+		return HasFlag(Flags.Reserved18);
+	}
+
 	public bool IsSleeping()
 	{
 		return HasFlag(Flags.Reserved11);
@@ -4214,6 +6201,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public bool IsFrisky()
 	{
 		return HasFlag(Flags.Reserved15);
+	}
+
+	public bool WasRecentlyPetted()
+	{
+		return HasFlag(Flags.Reserved19);
 	}
 
 	public bool IsLyingDown()
@@ -4324,11 +6316,13 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	public override void InitShared()
 	{
 		base.InitShared();
-		needs = new TickableNeed[3]
+		needs = new TickableNeed[5]
 		{
 			new TickableNeed(StartingValueFor(Need.Fullness)),
 			new TickableNeed(StartingValueFor(Need.PersonalSpace)),
-			new TickableNeed(StartingValueFor(Need.Hydration))
+			new TickableNeed(StartingValueFor(Need.Hydration)),
+			new TickableNeed(StartingValueFor(Need.Grass)),
+			new TickableNeed(StartingValueFor(Need.Sun))
 		};
 	}
 
@@ -4375,10 +6369,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		timers = new PersistentTimerSet(this);
 		pregnancyTimer = new PersistentTimer(timers, 2)
@@ -4404,12 +6398,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 		else if (!Application.isLoadingSave && !IsBeingPurchased)
 		{
-			IsMale = Random.Range(0f, 1f) > 0.5f;
+			IsMale = Rng.Range(0f, 1f) > 0.5f;
 		}
 		ValidateSexForm();
 		InitGenes();
 		TryGrantSpecial();
-		InitName();
+		if (!Application.isLoadingSave)
+		{
+			CoatSeed = (int)Rng.NextSeed();
+		}
 		InitAging();
 		InitDung();
 		InitSleep();
@@ -4423,6 +6420,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		IsBeingPurchased = false;
 	}
 
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		ClearPettedFlag();
+	}
+
 	internal override void DoServerDestroy()
 	{
 		if (IsLeading())
@@ -4432,6 +6435,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		base.DoServerDestroy();
 		((PersistentObjectWorkQueue<LivestockAnimal>)NeedsQueue).Remove(this);
 		LeavePopulation();
+		LeaveFloor();
 		ForgetSpecial();
 	}
 
@@ -4441,16 +6445,21 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
+		info.msg.livestockAnimal = Pool.Get<LivestockAnimal>();
+		info.msg.livestockAnimal.coatSeed = CoatSeed;
 		if (info.forDisk)
 		{
-			info.msg.livestockAnimal = Pool.Get<LivestockAnimal>();
+			info.msg.livestockAnimal.saveVersion = 2;
 			info.msg.livestockAnimal.timers = Pool.Get<List<PersistentTimer>>();
 			timers.Save(info.msg.livestockAnimal.timers, info.cachedTime.Time);
+			info.msg.livestockAnimal.ageLived = ageLived;
 			info.msg.livestockAnimal.needs = Pool.Get<List<LivestockNeed>>();
 			TickableNeed[] array = needs;
 			foreach (TickableNeed tickableNeed in array)
@@ -4459,21 +6468,43 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			}
 			info.msg.livestockAnimal.mother = Mother.uid;
 			info.msg.livestockAnimal.father = Father.uid;
+			info.msg.livestockAnimal.fatherName = (string.IsNullOrEmpty(pregnantPartnerName) ? null : pregnantPartnerName);
+			info.msg.livestockAnimal.fatherNameSource = (int)pregnantPartnerNameSource;
+			info.msg.livestockAnimal.fatherNameAuthorId = pregnantPartnerNameAuthorId;
+			info.msg.livestockAnimal.pregnantPartner = PregnantPartner.uid;
+			info.msg.livestockAnimal.pregnantPartnerGenes = PregnantPartnerGenes;
 			SaveName(info.msg.livestockAnimal);
 			SaveFamiliarity(info.msg.livestockAnimal);
 			SaveHome(info.msg.livestockAnimal);
 			SaveCondition(info.msg.livestockAnimal);
+			SavePotential(info.msg.livestockAnimal);
 		}
 	}
 
 	public override void Load(LoadInfo info)
 	{
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
+		if (isServer && info.fromDisk)
+		{
+			MoveLegacySyncVarsIntoTheProto(info.msg);
+			AddNameSourceToTheSyncVars(info.msg);
+		}
 		base.Load(info);
+		if (info.msg.livestockAnimal != null)
+		{
+			LoadCoatSeed(info.msg.livestockAnimal.coatSeed);
+		}
+		if (isServer && info.fromDisk && CoatSeed == 0)
+		{
+			CoatSeed = CoatSeedOfAnOlderSave();
+		}
 		if (info.msg.livestockAnimal != null && isServer && info.fromDisk)
 		{
+			ageLived = info.msg.livestockAnimal.ageLived;
 			timers.Load(info.msg.livestockAnimal.timers);
+			FoldSavedAdultStage();
 			List<LivestockNeed> list = info.msg.livestockAnimal.needs;
 			if (list != null)
 			{
@@ -4484,10 +6515,18 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			}
 			Mother.uid = info.msg.livestockAnimal.mother;
 			Father.uid = info.msg.livestockAnimal.father;
+			pregnantPartnerName = info.msg.livestockAnimal.fatherName;
+			pregnantPartnerNameSource = (FarmableAnimal.NameSource)info.msg.livestockAnimal.fatherNameSource;
+			pregnantPartnerNameAuthorId = info.msg.livestockAnimal.fatherNameAuthorId;
+			PregnantPartner = new EntityRef<LivestockAnimal>(info.msg.livestockAnimal.pregnantPartner);
+			PregnantPartnerGenes = info.msg.livestockAnimal.pregnantPartnerGenes;
 			LoadName(info.msg.livestockAnimal);
 			LoadFamiliarity(info.msg.livestockAnimal);
 			LoadHome(info.msg.livestockAnimal);
 			LoadCondition(info.msg.livestockAnimal);
+			LoadPotential(info.msg.livestockAnimal);
+			StartAgeTimerIfIdle();
+			RefreshProduction();
 		}
 		if (info.fromDisk && IsLeading())
 		{
@@ -4495,9 +6534,124 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
+	private static void MoveLegacySyncVarsIntoTheProto(Entity msg)
+	{
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		LivestockAnimal livestockAnimal = msg.livestockAnimal;
+		byte[] array = msg.baseEntity?.syncVars;
+		if (livestockAnimal != null && array != null && livestockAnimal.saveVersion < 1 && array.Length >= 13)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(array);
+			netRead.Bool();
+			int num = (int)netRead.Position;
+			livestockAnimal.pregnantPartner = netRead.EntityID();
+			int num2 = (int)netRead.Position;
+			netRead.String();
+			TakeLegacyId(netRead);
+			int num3 = (int)netRead.Position;
+			livestockAnimal.homeTc = TakeLegacyId(netRead);
+			int num4 = (int)netRead.Position;
+			TakeLegacyInt(netRead);
+			int num5 = (int)netRead.Position;
+			livestockAnimal.pregnantPartnerGenes = TakeLegacyInt(netRead);
+			int num6 = (int)netRead.Position;
+			Pool.Free<NetRead>(ref netRead);
+			byte[] array2 = new byte[array.Length - (num2 - num) - (num4 - num3) - (num6 - num5)];
+			int written = AppendRange(array, 0, num, array2, 0);
+			written = AppendRange(array, num2, num3, array2, written);
+			written = AppendRange(array, num4, num5, array2, written);
+			AppendRange(array, num6, array.Length, array2, written);
+			msg.baseEntity.syncVars = array2;
+		}
+	}
+
+	private static NetworkableId TakeLegacyId(NetRead reader)
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		if (reader.Unread < 8)
+		{
+			return default;
+		}
+		return reader.EntityID();
+	}
+
+	private static int TakeLegacyInt(NetRead reader)
+	{
+		if (reader.Unread < 4)
+		{
+			return 0;
+		}
+		return reader.Int32();
+	}
+
+	private static int AppendRange(byte[] from, int start, int end, byte[] to, int written)
+	{
+		Buffer.BlockCopy(from, start, to, written, end - start);
+		return written + end - start;
+	}
+
+	private static void AddNameSourceToTheSyncVars(Entity msg)
+	{
+		LivestockAnimal livestockAnimal = msg.livestockAnimal;
+		byte[] array = msg.baseEntity?.syncVars;
+		if (livestockAnimal != null && array != null && livestockAnimal.saveVersion < 2 && array.Length >= 5)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(array);
+			netRead.Bool();
+			int num = (int)netRead.Position;
+			string name = netRead.String();
+			Pool.Free<NetRead>(ref netRead);
+			byte[] array2 = new byte[array.Length + 4];
+			int num2 = AppendRange(array, 0, num, array2, 0);
+			BitConverter.TryWriteBytes(array2.AsSpan(num2), (int)GetLegacyNameSource(name));
+			AppendRange(array, num, array.Length, array2, num2 + 4);
+			msg.baseEntity.syncVars = array2;
+		}
+	}
+
+	private static FarmableAnimal.NameSource GetLegacyNameSource(string name)
+	{
+		if (string.IsNullOrEmpty(name))
+		{
+			return FarmableAnimal.NameSource.Unknown;
+		}
+		LivestockSpecialTable instance = LivestockSpecialTable.Instance;
+		if (!((Object)(object)instance != (Object)null) || instance.Find(name) == null)
+		{
+			return FarmableAnimal.NameSource.Game;
+		}
+		return FarmableAnimal.NameSource.Special;
+	}
+
+	public void SetLeadSlack(float metres, float distanceToLeader)
+	{
+		leadSlack = Mathf.Max(Mathf.Max(0f, metres), Mathf.Min(leadSlack, distanceToLeader - 3.5f));
+	}
+
+	public static bool HasTooManyOnLeads(BasePlayer player)
+	{
+		if (CountLedBy(player) < 9)
+		{
+			return false;
+		}
+		if (player.IsConnected)
+		{
+			player.ShowToast(GameTip.Styles.Error, LeadingTooManyPhrase, false);
+		}
+		return true;
+	}
+
 	public bool CanLead(BasePlayer player)
 	{
-		if ((Object)(object)player != (Object)null && !player.IsDead() && !IsDead() && !IsSoreAt(player) && !IsMounted)
+		if ((Object)(object)player != (Object)null && !player.IsDead() && !IsDead() && !IsMounted)
 		{
 			return TrustsToHandle(player);
 		}
@@ -4513,7 +6667,7 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public void OnGrabbedBy(BasePlayer player)
 	{
-		if ((Object)(object)player == (Object)null || player.IsDead())
+		if ((Object)(object)player == (Object)null || player.IsDead() || InSafeZone())
 		{
 			return;
 		}
@@ -4552,11 +6706,28 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void Provoke(BasePlayer player)
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		lastHerdDistress = TimeSince.op_Implicit(0f);
-		herdDistressAttacker.Set(player);
-		ClearSpook();
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		if (!InSafeZone())
+		{
+			lastHerdDistress = TimeSince.op_Implicit(0f);
+			herdDistressAttacker.Set(player);
+			lastProvoked = TimeSince.op_Implicit(0f);
+			provokedBy.Set(player);
+			ClearSpook();
+		}
+	}
+
+	public bool IsProvokedBy(BaseEntity entity)
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)entity != (Object)null && TimeSince.op_Implicit(lastProvoked) < 10f)
+		{
+			return (Object)(object)provokedBy.Get(isServer) == (Object)(object)entity;
+		}
+		return false;
 	}
 
 	public void StopLeading()
@@ -4564,6 +6735,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		ReleaseLeaderSpeed();
 		SetLeading(leading: false);
 		LeadingPlayer = default;
+		leadSlack = 0f;
+		leadTrusted = false;
 	}
 
 	private void StashLeadForMount()
@@ -4579,17 +6752,19 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		BasePlayer basePlayer = leaderBeforeMount.Get(serverside: true);
 		leaderBeforeMount = default;
-		if (!((Object)(object)basePlayer == (Object)null) && CanLead(basePlayer))
+		if (!((Object)(object)basePlayer == (Object)null) && CanLead(basePlayer) && !HasTooManyOnLeads(basePlayer))
 		{
 			SetLeading(leading: true);
 			LeadingPlayer = RefTo(basePlayer);
+			leadTrusted = true;
 		}
 	}
 
 	private void TickLead()
 	{
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		if (!IsLeading())
 		{
 			return;
@@ -4600,14 +6775,20 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			StopLeading();
 			return;
 		}
+		if (!leadTrusted && TimeSince.op_Implicit(untrustedLeadHeld) >= 1.5f)
+		{
+			StopLeading();
+			ReactToUntrustedHandling(basePlayer);
+			return;
+		}
 		float num = Vector3.Distance(((Component)basePlayer).transform.position, ((Component)this).transform.position);
-		if (Livestock.leadBreakDistance > 0f && num > Livestock.leadBreakDistance)
+		if (Livestock.leadBreakDistance > 0f && num > Livestock.leadBreakDistance + leadSlack)
 		{
 			StopLeading();
 		}
 		else
 		{
-			SlowLeaderWhenTaut(basePlayer, num);
+			SlowLeaderWhenTaut(basePlayer, num - leadSlack);
 		}
 	}
 
@@ -4666,8 +6847,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	private void RPC_Lead(RPCMessage msg)
 	{
@@ -4680,27 +6861,43 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool TryLead(BasePlayer player, bool wantsLead)
 	{
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)player == (Object)null)
-		{
-			return false;
-		}
-		if (wantsLead && !CanLead(player))
-		{
-			if (!IsLeading() && !IsMounted)
-			{
-				OnGrabbedBy(player);
-			}
-			return false;
-		}
-		if (!wantsLead && !CanStopLead(player))
 		{
 			return false;
 		}
 		if (!wantsLead)
 		{
+			if (!CanStopLead(player))
+			{
+				return false;
+			}
 			StopLeading();
 			return true;
 		}
+		if (IsFollowing(player))
+		{
+			return true;
+		}
+		if (IsDead() || player.IsDead() || IsMounted)
+		{
+			return false;
+		}
+		if (IsOwnersLead && (ulong)player.userID != OwnerID)
+		{
+			if (player.IsConnected)
+			{
+				player.ShowToast(GameTip.Styles.Error, LeadOwnedPhrase, false, GetNameOrLabelAsViewedBy(player), OwnerNameFor(player));
+			}
+			return false;
+		}
+		if (HasTooManyOnLeads(player))
+		{
+			return false;
+		}
+		leadTrusted = TrustsToHandle(player);
+		untrustedLeadHeld = TimeSince.op_Implicit(0f);
 		if (IsLeading() && (Object)(object)LeadingPlayer.Get(isServer) != (Object)(object)player)
 		{
 			ReleaseLeaderSpeed();
@@ -4708,6 +6905,50 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		SetLeading(leading: true);
 		LeadingPlayer = RefTo(player);
 		return true;
+	}
+
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	private void ServerPet(RPCMessage msg)
+	{
+		BasePlayer player = msg.player;
+		if (CanPet(msg.player))
+		{
+			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+			{
+				flagsUpdateScope.Set(Flags.Reserved19, b: true);
+			}
+			if (clearPettedFlagAction == null)
+			{
+				clearPettedFlagAction = ClearPettedFlag;
+			}
+			Invoke(clearPettedFlagAction, 5f);
+			LivestockAnimalFSM livestockAnimalFSM = default;
+			if (((Component)this).TryGetComponent<LivestockAnimalFSM>(ref livestockAnimalFSM))
+			{
+				livestockAnimalFSM.OnPetted();
+			}
+			if ((Object)(object)PettingGesture != (Object)null)
+			{
+				player.Server_StartGesture(PettingGesture, BasePlayer.GestureStartSource.ServerAction, bypassOwnershipCheck: true);
+			}
+		}
+	}
+
+	private void ClearPettedFlag()
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved19, b: false);
+	}
+
+	private bool CanPet(BasePlayer player)
+	{
+		if (!WasRecentlyPetted() && !IsSleeping() && !IsLeading() && !IsMating() && (Object)(object)player != (Object)null && !player.isMounted && !player.modelState.blocking)
+		{
+			return !player.InGesture;
+		}
+		return false;
 	}
 
 	public override void OnFlagsChanged(Flags old, Flags next)
@@ -4726,25 +6967,36 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	public virtual bool TryGetYield(out ItemDefinition item, out int amount, out float interval, out float bestOfBreed)
+	public virtual bool TryGetYield(out ItemDefinition item, out int amount, out float interval)
 	{
 		item = null;
 		amount = 0;
 		interval = 0f;
-		bestOfBreed = 0f;
 		return false;
+	}
+
+	protected virtual void FillYieldProgress(LivestockAnimal update)
+	{
+	}
+
+	protected static float ProgressOf(PersistentTimer timer)
+	{
+		if (!timer.IsRunning)
+		{
+			return 0f;
+		}
+		return Mathf.Clamp01(timer.Elapsed / Mathf.Max(0.01f, timer.Duration));
 	}
 
 	public virtual void AddCorpseYield(ResourceDispenser dispenser)
 	{
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)msg.player == (Object)null)
 		{
 			return;
@@ -4752,35 +7004,76 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		LivestockAnimal val = Pool.Get<LivestockAnimal>();
 		try
 		{
-			val.needs = Pool.Get<List<LivestockNeed>>();
-			TickableNeed[] array = needs;
-			foreach (TickableNeed tickableNeed in array)
-			{
-				val.needs.Add(tickableNeed.ToSavedData());
-			}
-			val.overgrazed = OvergrazedArea.IsOvergrazed(((Component)this).transform.position);
-			float seconds = TrustOf(msg.player);
-			val.trustTier = (int)TierFor(seconds);
-			val.trustProgress = ProgressInTier(seconds);
-			val.ageSeconds = AgeSeconds;
-			val.ageFraction = AgeFraction;
-			if (TryGetYield(out var item, out var amount, out var interval, out var bestOfBreed))
-			{
-				val.yieldItemId = item.itemid;
-				val.yieldAmount = amount;
-				val.yieldInterval = interval;
-				val.yieldFraction = bestOfBreed;
-			}
-			val.dungInterval = (DungEnabled ? NextDungInterval() : 0f);
-			val.dungFraction = (DungEnabled ? DungBestOfBreed() : 0f);
-			val.dungItemId = (DungEnabled ? DungItem.itemid : 0);
-			SaveSaleValue(val);
+			FillAnimalStats(val, msg.player);
 			ClientRPC(RpcTarget.Player("OnReceivedAnimalStats", msg.player), val);
 		}
 		finally
 		{
 			((IDisposable)val)?.Dispose();
 		}
+	}
+
+	internal void FillAnimalStats(LivestockAnimal update, BasePlayer viewer)
+	{
+		update.needs = Pool.Get<List<LivestockNeed>>();
+		TickableNeed[] array = needs;
+		foreach (TickableNeed tickableNeed in array)
+		{
+			update.needs.Add(tickableNeed.ToSavedData());
+		}
+		LivestockFloor.SupplyEstimate supplyEstimate = Floor?.Supply() ?? default(LivestockFloor.SupplyEstimate);
+		update.foodMinutes = ((Floor != null && supplyEstimate.FoodMinutes <= 0f) ? (-1f) : supplyEstimate.FoodMinutes);
+		update.waterMinutes = supplyEstimate.WaterMinutes;
+		if (supplyEstimate.FoodMinutes > 0f && IsLivestockFood(supplyEstimate.FoodItem, out var food))
+		{
+			update.foodPerHour = TroughCaloriesPerSecond * LivestockFloor.StandingSecondsPerRealSecond * 3600f / food.GetIfType(MetabolismAttribute.Type.Calories);
+			update.foodItemId = supplyEstimate.FoodItem.itemid;
+		}
+		float seconds = TrustOf(viewer);
+		update.trustTier = (int)TierFor(seconds);
+		update.trustProgress = LadderProgress(seconds);
+		update.canRename = CanBeRenamedBy(viewer);
+		update.viewerAuthoredName = (((Object)(object)viewer != (Object)null && (ulong)viewer.userID == NameAuthorId) ? AnimalName : null);
+		ref ulong ownerId = ref update.ownerId;
+		ulong num;
+		if (HasOwner)
+		{
+			num = (((Object)(object)viewer != (Object)null && (ulong)viewer.userID == OwnerID) ? OwnerID : 1);
+		}
+		else
+		{
+			num = 0uL;
+		}
+		ownerId = num;
+		update.ownerName = (HasOwner ? OwnerNameFor(viewer) : null);
+		update.ageSeconds = AgeSeconds;
+		update.fatherName = GetFatherNameAsViewedBy(viewer);
+		ref float pregnancyFraction = ref update.pregnancyFraction;
+		float num2;
+		if (IsCarrying)
+		{
+			num2 = ProgressOf(pregnancyTimer);
+		}
+		else
+		{
+			num2 = (IsPregnant() ? 1f : 0f);
+		}
+		pregnancyFraction = num2;
+		update.pregnancySeconds = pregnancyTimer.Remaining;
+		if (ProducesYield && TryGetYield(out var item, out var amount, out var interval))
+		{
+			update.yieldItemId = item.itemid;
+			update.yieldAmount = amount;
+			update.yieldInterval = interval;
+			FillYieldProgress(update);
+		}
+		update.milkCharges = MilkCharges;
+		update.dungInterval = (DungEnabled ? NextDungInterval() : 0f);
+		update.dungFraction = (DungEnabled ? DungBestOfBreed() : 0f);
+		update.dungItemId = (DungEnabled ? DungItem.itemid : 0);
+		SaveSaleValue(update);
+		update.potential = Potential;
+		update.potentialTrend = PotentialTrend;
 	}
 
 	public override void ScaleDamage(HitInfo info)
@@ -4818,11 +7111,11 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public void OnHeardNoise(NpcNoiseEvent noise)
 	{
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		if (noise.Intensity >= NpcNoiseIntensity.Medium)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		if (noise.Intensity >= NpcNoiseIntensity.Medium && !InSafeZone())
 		{
 			lastLoudNoise = TimeSince.op_Implicit(0f);
 			lastLoudNoisePosition = noise.NoisePosition;
@@ -4847,9 +7140,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public void Spook()
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		lastLoudNoise = TimeSince.op_Implicit(0f);
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		if (!InSafeZone())
+		{
+			lastLoudNoise = TimeSince.op_Implicit(0f);
+		}
 	}
 
 	public void ClearSpook()
@@ -4945,11 +7241,20 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		calfEverThreatened = false;
 	}
 
+	private void OnBondThreatened()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		lastBondThreat = TimeSince.op_Implicit(0f);
+		bondEverThreatened = true;
+		ClearSpook();
+	}
+
 	public void OnHerdMateHurt(BaseEntity attacker, LivestockAnimal victim)
 	{
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		if (CanBeAnsweredFor(attacker, out var combatAttacker))
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		if (!InSafeZone() && CanBeAnsweredFor(attacker, out var combatAttacker))
 		{
 			lastHerdDistress = TimeSince.op_Implicit(0f);
 			herdDistressAttacker.Set(combatAttacker);
@@ -5009,13 +7314,20 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
 		TimeSince val = lastNeedsTick;
 		lastNeedsTick = TimeSince.op_Implicit(0f);
+		if (IsAging)
+		{
+			ageLived += TimeSince.op_Implicit(val);
+		}
 		TickCondition(TimeSince.op_Implicit(val));
+		TickPotential(TimeSince.op_Implicit(val));
 		float num = ((TOD_Sky.Instance.IsNight || IsSleeping() || IsResting()) ? SleepingDecayScale : 1f);
 		for (int i = 0; i < needs.Length; i++)
 		{
@@ -5027,26 +7339,35 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 				reference.NextTick = NeedTickFrequency;
 				if (i == 1)
 				{
-					TickPersonalSpace(ref reference, num2);
+					TickFloorNeeds(ref reference);
 				}
 				else
 				{
-					reference.NeedValue = Mathf.MoveTowards(reference.NeedValue, 0f, DecayRatePerSecond((Need)i) * num2 * num);
+					reference.NeedValue = Mathf.MoveTowards(reference.NeedValue, 0f, DrainPerSecond((Need)i) * num2 * num);
 				}
 			}
 		}
 		if (IsGrazing() && needs.Length != 0)
 		{
 			ref TickableNeed reference2 = ref needs[0];
-			float num3 = (IsGrazingFromTrough ? Mathf.Clamp01(TroughFullnessCeiling) : 1f);
-			if (reference2.NeedValue < num3)
+			if (reference2.NeedValue < 1f)
 			{
-				float num4 = Mathf.Min(FullnessFillRate * TimeSince.op_Implicit(val), num3 - reference2.NeedValue);
+				float num3 = Mathf.Min(FullnessFillRate * TimeSince.op_Implicit(val), 1f - reference2.NeedValue);
+				float num4 = reference2.NeedValue * GrassShareOfFullness;
 				if (IsGrazingFromTrough)
 				{
-					num4 = TakeTroughFullness(num4);
+					num3 = TakeTroughFullness(num3);
 				}
-				reference2.NeedValue += num4;
+				else
+				{
+					num3 = Mathf.Min(num3, GrassRoom);
+					num4 += num3;
+				}
+				reference2.NeedValue += num3;
+				if (reference2.NeedValue > 0f)
+				{
+					grassShareOfFullness = num4 / reference2.NeedValue;
+				}
 			}
 		}
 		if (IsDrinking() && needs.Length > 2)
@@ -5079,7 +7400,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		float needValue2 = Hydration.NeedValue;
 		float needValue3 = PersonalSpace.NeedValue;
 		float contentment = Contentment;
-		string text = DebugLine(DebugValue.Age, AgeFraction, 0.01f, $"age {AgeFraction:0.00}") + "\n" + DebugLine(DebugValue.Fullness, needValue, 0.01f, $"full {needValue:0.00}") + "\n" + DebugLine(DebugValue.Hydration, needValue2, 0.01f, $"hyd {needValue2:0.00}") + "\n" + DebugLine(DebugValue.PersonalSpace, needValue3, 0.01f, $"room {needValue3:0.00}") + "\n" + DebugLine(DebugValue.Mood, contentment, 0.01f, $"mood {contentment:0.00}") + "\n" + DebugLine(DebugValue.Familiarity, BestFamiliarity(out var _), 1f, GetFamiliarityDebugInfo()) + "\n" + GetHomeDebugInfo();
+		float num = AgeSeconds / 3600f;
+		string text = DebugLine(DebugValue.Age, num, 0.1f, $"age {num:0.0}h") + "\n" + DebugLine(DebugValue.Fullness, needValue, 0.01f, $"full {needValue:0.00}") + "\n" + DebugLine(DebugValue.Hydration, needValue2, 0.01f, $"hyd {needValue2:0.00}") + "\n" + DebugLine(DebugValue.PersonalSpace, needValue3, 0.01f, $"room {needValue3:0.00}") + "\n" + DebugLine(DebugValue.Mood, contentment, 0.01f, $"mood {contentment:0.00}") + "\n" + DebugLine(DebugValue.Familiarity, BestFamiliarity(out var _), 1f, GetFamiliarityDebugInfo()) + "\n" + GetHomeDebugInfo();
 		if (Livestock.debugCondition)
 		{
 			text = text + "\n" + GetConditionDebugInfo();
@@ -5262,12 +7584,16 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool MakePregnant(LivestockAnimal partner)
 	{
+		CountFreeRangeHerd();
 		if (!CanBePregnant())
 		{
 			return false;
 		}
 		PregnantPartner = RefTo(partner);
 		PregnantPartnerGenes = (((Object)(object)partner != (Object)null) ? partner.Genes : 0);
+		pregnantPartnerName = (((Object)(object)partner != (Object)null) ? partner.AnimalName : null);
+		pregnantPartnerNameSource = (((Object)(object)partner != (Object)null) ? partner.NameAuthorSource : FarmableAnimal.NameSource.Unknown);
+		pregnantPartnerNameAuthorId = (((Object)(object)partner != (Object)null) ? partner.NameAuthorId : 0);
 		pregnancyTimer.Start(PregnantDuration);
 		if ((Object)(object)partner != (Object)null)
 		{
@@ -5300,6 +7626,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		int pregnantPartnerGenes = PregnantPartnerGenes;
 		PregnantPartner = default;
 		PregnantPartnerGenes = 0;
+		pregnantPartnerName = null;
+		pregnantPartnerNameSource = FarmableAnimal.NameSource.Unknown;
+		pregnantPartnerNameAuthorId = 0uL;
 		StartCalvingCooldown();
 		int num = 0;
 		for (int i = 0; i < LitterSize(); i++)
@@ -5314,18 +7643,22 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private bool BirthOne(LivestockAnimal partner, int partnerGenes)
 	{
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		bool flag = Random.Range(0f, 1f) > 0.5f;
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = Rng.Range(0f, 1f) > 0.5f;
 		GameObjectRef gameObjectRef = (((Object)(object)Species != (Object)null) ? Species.ChildFor(flag) : null);
 		if (gameObjectRef == null || !gameObjectRef.isValid)
 		{
 			Debug.LogWarning((object)(Categorize() + " (" + PrefabName + ") gave birth but its Species asset names no child prefab."));
 			return false;
 		}
-		BaseEntity baseEntity = gameManager.CreateEntity(gameObjectRef.resourcePath, GetBirthPosition());
+		Quaternion val = Quaternion.Euler(0f, ((Component)this).transform.eulerAngles.y, 0f);
+		BaseEntity baseEntity = gameManager.CreateEntity(gameObjectRef.resourcePath, GetBirthPosition(gameObjectRef.GetEntity(), val), val);
 		if ((Object)(object)baseEntity == (Object)null)
 		{
 			return false;
@@ -5341,8 +7674,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			if (livestockAnimal2.Form == SexForm.Either)
 			{
 				livestockAnimal2.IsMale = flag;
-				livestockAnimal2.AnimalName = RollAnimalName(flag, out var locale);
-				livestockAnimal2.FoundLine(locale);
 			}
 			livestockAnimal2.Genes = InheritedGenome(partnerGenes);
 			livestockAnimal2.TakeHomeFrom(this);
@@ -5352,14 +7683,18 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			{
 				livestockAnimal2.TryInheritName(this, partner);
 			}
+			if (HasOwner)
+			{
+				livestockAnimal2.SetOwner(OwnerID, OwnerChangeReason.Birth, NameLocale);
+			}
 			newbornCalf.Set(livestockAnimal2);
 			livestockAnimal2.SendNetworkUpdateImmediate();
 		}
 		LivestockCensus.RecordBirth(((Component)this).transform.position);
 		BuildingPrivlidge cupboard;
-		if (BestFamiliarity(out var userId) > 0f && userId != 0)
+		if (HasOwner)
 		{
-			Facepunch.Rust.Analytics.Azure.OnLivestockBirth("best_familiarity", baseEntity, userId);
+			Facepunch.Rust.Analytics.Azure.OnLivestockBirth("owner", baseEntity, OwnerID);
 		}
 		else if (TryGetHomeCupboard(out cupboard))
 		{
@@ -5378,16 +7713,24 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		Mother.Set(mother);
 	}
 
-	private Vector3 GetBirthPosition()
+	private Vector3 GetBirthPosition(BaseEntity newborn, Quaternion facing)
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 		RustNavMeshAgent rustNavMeshAgent = default;
 		if (!((Component)this).TryGetComponent<RustNavMeshAgent>(ref rustNavMeshAgent))
 		{
@@ -5396,19 +7739,48 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			bool flag = Eqs.SampleNavigablePositions(rustNavMeshAgent, rustNavMeshAgent.nextPosition, (List<NavVector3>)(object)val, ChildSpawnDistance, ChildSpawnDistance, 8);
-			foreach (NavVector3 item in (List<NavVector3>)(object)val)
+			float outerRadius = (((Object)(object)newborn != (Object)null) ? (ChildSpawnDistance + newborn.bounds.size.z) : ChildSpawnDistance);
+			bool flag = Eqs.SampleNavigablePositions(rustNavMeshAgent, rustNavMeshAgent.nextPosition, (List<NavVector3>)(object)val, outerRadius, ChildSpawnDistance, ((Object)(object)newborn != (Object)null) ? 16 : 8);
+			PooledList<Vector3> val2 = Pool.Get<PooledList<Vector3>>();
+			try
 			{
-				if (flag)
+				foreach (NavVector3 item in (List<NavVector3>)(object)val)
 				{
-					return rustNavMeshAgent.NavToWorldSpace(item);
+					NavHit hitNS;
+					if (flag)
+					{
+						((List<Vector3>)(object)val2).Add(rustNavMeshAgent.NavToWorldSpace(item));
+					}
+					else if (rustNavMeshAgent.SamplePosition(item, out hitNS, ChildSpawnDistance) && rustNavMeshAgent.CanReach(hitNS.position))
+					{
+						((List<Vector3>)(object)val2).Add(rustNavMeshAgent.NavToWorldSpace(hitNS.position));
+					}
 				}
-				if (rustNavMeshAgent.SamplePosition(item, out var hitNS, ChildSpawnDistance) && rustNavMeshAgent.CanReach(hitNS.position))
+				if (((List<Vector3>)(object)val2).Count == 0)
 				{
-					return rustNavMeshAgent.NavToWorldSpace(hitNS.position);
+					return ((Component)this).transform.position;
+				}
+				if ((Object)(object)newborn == (Object)null)
+				{
+					return ((List<Vector3>)(object)val2)[0];
+				}
+				SortNearestFirst(val2, ((Component)this).transform.position);
+				PooledList<LivestockFootprint> val3 = Pool.Get<PooledList<LivestockFootprint>>();
+				try
+				{
+					GatherRestingFootprints(((Component)this).transform.position, val3);
+					((List<LivestockFootprint>)(object)val3).Add(LivestockFootprint.Of(this));
+					return ((List<Vector3>)(object)val2)[PickPlacement(val3, newborn, val2, facing * Vector3.forward)];
+				}
+				finally
+				{
+					((IDisposable)val3)?.Dispose();
 				}
 			}
-			return ((Component)this).transform.position;
+			finally
+			{
+				((IDisposable)val2)?.Dispose();
+			}
 		}
 		finally
 		{
@@ -5418,17 +7790,13 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool NeedsFood()
 	{
-		return Fullness.NeedValue <= ConsumeThreshold * ExpectedFullnessCeiling;
-	}
-
-	public void RecordHelpingSource(bool fromTrough)
-	{
-		lastHelpingFromTrough = fromTrough;
+		return Fullness.NeedValue <= ConsumeThreshold;
 	}
 
 	public void FindFoodTroughs(List<BaseEntity> results)
 	{
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (ConsumeSearchRadius <= 0f)
 		{
 			return;
@@ -5436,7 +7804,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		PooledList<HitchTrough> val = Pool.Get<PooledList<HitchTrough>>();
 		try
 		{
-			Query.Server.GetInSphere(((Component)this).transform.position, ConsumeSearchRadius, (List<HitchTrough>)(object)val);
+			LivestockFloor currentFloor = CurrentFloor;
+			if (currentFloor != null)
+			{
+				currentFloor.TroughsWithin(((Component)this).transform.position, ConsumeSearchRadius, (List<HitchTrough>)(object)val);
+			}
+			else
+			{
+				Query.Server.GetInSphere(((Component)this).transform.position, ConsumeSearchRadius, (List<HitchTrough>)(object)val);
+			}
 			foreach (HitchTrough item in (List<HitchTrough>)(object)val)
 			{
 				if (CanEatFrom(item, out var _))
@@ -5458,16 +7834,87 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		{
 			return false;
 		}
-		ItemModConsumable itemModConsumable = default;
+		bool wantsDungBoost = WantsDungBoost;
 		foreach (Item item in trough.inventory.itemList)
 		{
-			if (((Component)item.info).TryGetComponent<ItemModConsumable>(ref itemModConsumable) && itemModConsumable.chickenCoopFood && TroughFullnessOf(itemModConsumable) > 0f)
+			if (IsTroughFood(item))
 			{
-				foundItem = item;
-				return true;
+				if (wantsDungBoost && IsDungBoostFood(item.info.ItemModConsumable))
+				{
+					foundItem = item;
+					return true;
+				}
+				if (foundItem == null)
+				{
+					foundItem = item;
+				}
+				if (!wantsDungBoost)
+				{
+					return true;
+				}
 			}
 		}
+		return foundItem != null;
+	}
+
+	public static float TroughCaloriesIn(HitchTrough trough)
+	{
+		float num = 0f;
+		if ((Object)(object)trough == (Object)null || trough.IsDestroyed || trough.IsDead())
+		{
+			return num;
+		}
+		foreach (Item item in trough.inventory.itemList)
+		{
+			if (IsLivestockFood(item.info, out var food))
+			{
+				num += (float)item.amount * food.GetIfType(MetabolismAttribute.Type.Calories);
+			}
+		}
+		return num;
+	}
+
+	private bool IsTroughFood(Item item)
+	{
+		if (IsLivestockFood(item.info, out var food))
+		{
+			return TroughFullnessOf(food) > 0f;
+		}
 		return false;
+	}
+
+	public static bool IsLivestockFood(ItemDefinition item)
+	{
+		ItemModConsumable food;
+		return IsLivestockFood(item, out food);
+	}
+
+	private static bool IsLivestockFood(ItemDefinition item, out ItemModConsumable food)
+	{
+		food = null;
+		if ((Object)(object)item != (Object)null && item.category == ItemCategory.Food && ((Component)item).TryGetComponent<ItemModConsumable>(ref food))
+		{
+			return food.GetIfType(MetabolismAttribute.Type.Calories) > 0f;
+		}
+		return false;
+	}
+
+	public static void MarkSupplyDirtyNear(Vector3 position)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			Query.Server.GetBrainsInSphere(position, 27f, (List<LivestockAnimal>)(object)val);
+			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
+			{
+				item.Floor?.MarkSupplyDirty();
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	private float TroughFullnessOf(ItemModConsumable food)
@@ -5477,12 +7924,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public bool ConsumeFromTrough(HitchTrough trough)
 	{
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		if (!CanEatFrom(trough, out var foundItem))
 		{
 			return false;
 		}
-		troughFullnessStored += TroughFullnessOf(((Component)foundItem.info).GetComponent<ItemModConsumable>());
+		ItemModConsumable component = ((Component)foundItem.info).GetComponent<ItemModConsumable>();
+		troughFullnessStored += TroughFullnessOf(component);
+		troughFullnessFood = component;
+		ApplyDungBoost(component);
 		foundItem.UseItem();
 		LivestockCensus.RecordTroughItemEaten(((Component)this).transform.position);
 		return true;
@@ -5495,6 +7945,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 		float num = Mathf.Min(wanted, troughFullnessStored);
 		troughFullnessStored -= num;
+		if (num > 0f)
+		{
+			RenewDungBoost(troughFullnessFood);
+		}
 		return num;
 	}
 
@@ -5504,11 +7958,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private void OnSyncVar_AnimalName(string? oldValue, string newValue)
 	{
-		if (isServer)
-		{
-			ForgetSpecial(oldValue);
-			RememberSpecial(newValue, discovered: false);
-		}
 	}
 
 	private void OnSyncVar_LeadingPlayer(EntityRef<BasePlayer>? oldValue, EntityRef<BasePlayer> newValue)
@@ -5521,20 +7970,16 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
 		switch (id)
 		{
 		case 0:
@@ -5549,9 +7994,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: PregnantPartner for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+				Debug.Log((object)("SyncVar Writing: NameAuthorSourceSync for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
-			SyncVarNetWrite(writer, __sync_PregnantPartner);
+			SyncVarNetWrite(writer, __sync_NameAuthorSourceSync);
 			return true;
 		case 2:
 			if (Global.developer > 2)
@@ -5573,25 +8018,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			if (Global.developer > 2)
 			{
 				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: HomeTc for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
-			}
-			SyncVarNetWrite(writer, __sync_HomeTc);
-			return true;
-		case 5:
-			if (Global.developer > 2)
-			{
-				NetworkableId iD = net.ID;
 				Debug.Log((object)("SyncVar Writing: Genes for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_Genes);
-			return true;
-		case 6:
-			if (Global.developer > 2)
-			{
-				NetworkableId iD = net.ID;
-				Debug.Log((object)("SyncVar Writing: PregnantPartnerGenes for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
-			}
-			SyncVarNetWrite(writer, __sync_PregnantPartnerGenes);
 			return true;
 		default:
 			return base.WriteSyncVar(id, writer);
@@ -5605,76 +8034,64 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		case 0:
 			try
 			{
-				bool? oldValue3 = __sync_IsMale;
-				bool newValue3 = (__sync_IsMale = reader.Bool());
+				bool? oldValue2 = __sync_IsMale;
+				bool newValue2 = (__sync_IsMale = reader.Bool());
 				if (fromAutoSave)
 				{
-					oldValue3 = null;
+					oldValue2 = null;
 				}
-				OnSyncVar_IsMale(oldValue3, newValue3);
-			}
-			catch (Exception ex6)
-			{
-				Debug.LogException(ex6);
-			}
-			return true;
-		case 1:
-			try
-			{
-				_ = __sync_PregnantPartner;
-				EntityRef<LivestockAnimal> _sync_PregnantPartner = NetworkReadEx.EntityRef<LivestockAnimal>(reader);
-				__sync_PregnantPartner = _sync_PregnantPartner;
+				OnSyncVar_IsMale(oldValue2, newValue2);
 			}
 			catch (Exception ex2)
 			{
 				Debug.LogException(ex2);
 			}
 			return true;
-		case 2:
+		case 1:
 			try
 			{
-				string oldValue2 = __sync_AnimalName;
-				string newValue2 = (__sync_AnimalName = reader.String());
-				if (fromAutoSave)
-				{
-					oldValue2 = null;
-				}
-				OnSyncVar_AnimalName(oldValue2, newValue2);
+				_ = __sync_NameAuthorSourceSync;
+				int _sync_NameAuthorSourceSync = reader.Int32();
+				__sync_NameAuthorSourceSync = _sync_NameAuthorSourceSync;
 			}
 			catch (Exception ex4)
 			{
 				Debug.LogException(ex4);
 			}
 			return true;
-		case 3:
+		case 2:
 			try
 			{
-				EntityRef<BasePlayer>? oldValue4 = __sync_LeadingPlayer;
-				EntityRef<BasePlayer> newValue4 = (__sync_LeadingPlayer = NetworkReadEx.EntityRef<BasePlayer>(reader));
+				string oldValue4 = __sync_AnimalName;
+				string newValue4 = (__sync_AnimalName = reader.String());
 				if (fromAutoSave)
 				{
 					oldValue4 = null;
 				}
-				OnSyncVar_LeadingPlayer(oldValue4, newValue4);
-			}
-			catch (Exception ex7)
-			{
-				Debug.LogException(ex7);
-			}
-			return true;
-		case 4:
-			try
-			{
-				_ = __sync_HomeTc;
-				EntityRef<BuildingPrivlidge> _sync_HomeTc = NetworkReadEx.EntityRef<BuildingPrivlidge>(reader);
-				__sync_HomeTc = _sync_HomeTc;
+				OnSyncVar_AnimalName(oldValue4, newValue4);
 			}
 			catch (Exception ex5)
 			{
 				Debug.LogException(ex5);
 			}
 			return true;
-		case 5:
+		case 3:
+			try
+			{
+				EntityRef<BasePlayer>? oldValue3 = __sync_LeadingPlayer;
+				EntityRef<BasePlayer> newValue3 = (__sync_LeadingPlayer = NetworkReadEx.EntityRef<BasePlayer>(reader));
+				if (fromAutoSave)
+				{
+					oldValue3 = null;
+				}
+				OnSyncVar_LeadingPlayer(oldValue3, newValue3);
+			}
+			catch (Exception ex3)
+			{
+				Debug.LogException(ex3);
+			}
+			return true;
+		case 4:
 			try
 			{
 				int? oldValue = __sync_Genes;
@@ -5684,18 +8101,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 					oldValue = null;
 				}
 				OnSyncVar_Genes(oldValue, newValue);
-			}
-			catch (Exception ex3)
-			{
-				Debug.LogException(ex3);
-			}
-			return true;
-		case 6:
-			try
-			{
-				_ = __sync_PregnantPartnerGenes;
-				int _sync_PregnantPartnerGenes = reader.Int32();
-				__sync_PregnantPartnerGenes = _sync_PregnantPartnerGenes;
 			}
 			catch (Exception ex)
 			{
@@ -5712,12 +8117,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return propertyName switch
 		{
 			"IsMale" => (byte)0, 
-			"PregnantPartner" => (byte)1, 
+			"NameAuthorSourceSync" => (byte)1, 
 			"AnimalName" => (byte)2, 
 			"LeadingPlayer" => (byte)3, 
-			"HomeTc" => (byte)4, 
-			"Genes" => (byte)5, 
-			"PregnantPartnerGenes" => (byte)6, 
+			"Genes" => (byte)4, 
 			_ => byte.MaxValue, 
 		};
 	}
@@ -5730,8 +8133,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		WriteSyncVar(2, writer);
 		WriteSyncVar(3, writer);
 		WriteSyncVar(4, writer);
-		WriteSyncVar(5, writer);
-		WriteSyncVar(6, writer);
 	}
 
 	protected override void ReadAutoSaveSyncVars(NetRead reader)
@@ -5742,8 +8143,6 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		OnSyncVar(2, reader, fromAutoSave: true);
 		OnSyncVar(3, reader, fromAutoSave: true);
 		OnSyncVar(4, reader, fromAutoSave: true);
-		OnSyncVar(5, reader, fromAutoSave: true);
-		OnSyncVar(6, reader, fromAutoSave: true);
 	}
 
 	protected override bool AutoSaveSyncVars(SaveInfo save)
@@ -5798,12 +8197,10 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	{
 		base.ResetSyncVars();
 		__sync_IsMale = false;
-		__sync_PregnantPartner = default;
+		__sync_NameAuthorSourceSync = 0;
 		__sync_AnimalName = null;
 		__sync_LeadingPlayer = default;
-		__sync_HomeTc = default;
 		__sync_Genes = 0;
-		__sync_PregnantPartnerGenes = 0;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)
@@ -5815,9 +8212,19 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 			2 => true, 
 			3 => true, 
 			4 => true, 
-			5 => true, 
-			6 => true, 
 			_ => base.ShouldInvalidateCache(id), 
 		};
+	}
+
+	static LivestockAnimal()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Expected Obj, but got Unknown
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Expected Obj, but got Unknown
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Expected Obj, but got Unknown
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Expected Obj, but got Unknown
 	}
 }

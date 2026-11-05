@@ -572,46 +572,46 @@ public static class EACServer
 
 	public static void LogPlayerUseWeapon(BasePlayer player, BaseProjectile weapon)
 	{
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
 		if (CanSendAnalytics && player.net.connection != null)
 		{
 			using (TimeWarning.New("EAC.LogPlayerShooting"))
 			{
-				Vector3 networkPosition = player.GetNetworkPosition();
-				Quaternion networkRotation = player.GetNetworkRotation();
+				Vector3 position = player.eyes.position;
+				Quaternion rotation = player.eyes.rotation;
 				Item item = weapon.GetItem();
 				string text = ((item != null) ? item.info.shortname : "unknown");
 				LogPlayerUseWeaponOptions val = default;
 				LogPlayerUseWeaponData value = default;
 				value.PlayerHandle = GetClient(player.net.connection);
 				Vec3f value2 = default;
-				value2.x = networkPosition.x;
-				value2.y = networkPosition.y;
-				value2.z = networkPosition.z;
+				value2.x = position.x;
+				value2.y = position.y;
+				value2.z = position.z;
 				value.PlayerPosition = value2;
 				Quat value3 = default;
-				value3.w = networkRotation.w;
-				value3.x = networkRotation.x;
-				value3.y = networkRotation.y;
-				value3.z = networkRotation.z;
+				value3.w = rotation.w;
+				value3.x = rotation.x;
+				value3.y = rotation.y;
+				value3.z = rotation.z;
 				value.PlayerViewRotation = value3;
 				value.WeaponName = Utf8String.op_Implicit(text);
 				val.UseWeaponData = value;

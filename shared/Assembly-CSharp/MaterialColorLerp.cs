@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MaterialColorLerp : MonoBehaviour, IClientComponent
+public class MaterialColorLerp : MonoBehaviour, IClientComponent, IFlattenKeepsChildren
 {
 	public Color startColor;
 

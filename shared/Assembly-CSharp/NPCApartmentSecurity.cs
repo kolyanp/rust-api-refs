@@ -3,6 +3,7 @@ using System.Linq;
 using ConVar;
 using Facepunch;
 using Oxide.Core;
+using ProtoBuf;
 using UnityEngine;
 
 public class NPCApartmentSecurity : NPCTalking
@@ -80,6 +81,12 @@ public class NPCApartmentSecurity : NPCTalking
 				Interface.CallHook("OnApartmentMasterKeyPurchased", player, item);
 			}
 		}
+	}
+
+	public override void AddFormatTextValues(BasePlayer player, ConversationData.AbstractSpeechNodeData speechNode, List<FormatTextValue> values)
+	{
+		base.AddFormatTextValues(player, speechNode, values);
+		AddFormatTextValue(values, speechNode, "master_key_cost", ApartmentCommands.masterkeyprice);
 	}
 
 	public bool Conversation_CanAffordMasterKey(BasePlayer player)

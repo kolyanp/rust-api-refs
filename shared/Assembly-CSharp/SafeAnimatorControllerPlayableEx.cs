@@ -167,6 +167,17 @@ public static class SafeAnimatorControllerPlayableEx
 		}
 	}
 
+	public static void CrossFadeInFixedTime(this SafePlayable<AnimatorControllerPlayable> playable, int stateNameHash, float transitionDuration, int layer = -1, float fixedTime = 0f)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		if (playable.CanPlayOnLayer(layer))
+		{
+			AnimatorControllerPlayable raw = playable.Raw;
+			raw.CrossFadeInFixedTime(stateNameHash, transitionDuration, layer, fixedTime);
+		}
+	}
+
 	public static float GetFloat(this SafePlayable<AnimatorControllerPlayable> playable, string name)
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)

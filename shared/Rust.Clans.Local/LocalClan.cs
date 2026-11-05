@@ -485,7 +485,7 @@ public class LocalClan : IClan
 
 	public async ValueTask<ClanResult> SetPlayerRole(ulong steamId, int newRoleId, ulong bySteamId)
 	{
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
+		Nullable val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return m.SteamId;
@@ -494,7 +494,7 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)4;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;
@@ -503,7 +503,7 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)0;
 		}
-		ClanRole? val3 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val3 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;
@@ -563,7 +563,7 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)5;
 		}
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
+		Nullable val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return m.SteamId;
@@ -625,7 +625,7 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)5;
 		}
-		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;
@@ -663,7 +663,7 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)5;
 		}
-		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;
@@ -672,7 +672,7 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)4;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;
@@ -700,7 +700,7 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)5;
 		}
-		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;
@@ -841,7 +841,7 @@ public class LocalClan : IClan
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
+		Nullable val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return m.SteamId;
@@ -850,7 +850,7 @@ public class LocalClan : IClan
 		{
 			return false;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;
@@ -870,7 +870,7 @@ public class LocalClan : IClan
 	{
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
+		Nullable val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return m.SteamId;
@@ -880,7 +880,7 @@ public class LocalClan : IClan
 			rank = int.MaxValue;
 			return false;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;

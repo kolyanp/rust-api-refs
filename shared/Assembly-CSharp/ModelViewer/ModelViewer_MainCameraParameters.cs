@@ -67,9 +67,9 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
-	[Range(0f, 360f)]
-	[Header("                ")]
 	[Header("Motion Blur")]
+	[Header("                ")]
+	[Range(0f, 360f)]
 	public float shutterAngle;
 
 	[Header("Distortion")]
@@ -80,8 +80,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(0f, 1f)]
 	public float chromaticAbberation;
 
-	[Header("                ")]
 	[Header("Post Effects")]
+	[Header("                ")]
 	public TonemappingMode ToneMapping = TonemappingMode.Neutral;
 
 	public float Exposure = 2.34f;
@@ -98,12 +98,12 @@ public class ModelViewer_MainCameraParameters
 
 	public float limit;
 
-	[Header("                ")]
 	[Header("God Rays")]
+	[Header("                ")]
 	public bool GodRays = true;
 
-	[Header("                ")]
 	[Header("Bloom")]
+	[Header("                ")]
 	public float Brightness = 0.15f;
 
 	public float Threshold = 1f;
@@ -127,8 +127,8 @@ public class ModelViewer_MainCameraParameters
 
 	public float Sharpness;
 
-	[Header("Grain")]
 	[Header("                ")]
+	[Header("Grain")]
 	public bool Coloured = true;
 
 	[Range(0f, 1f)]

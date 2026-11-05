@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Rust.Ai.Gen2.Nav;
 using UnityEngine;
@@ -126,7 +127,7 @@ public class State_MoveToLastReachablePointNearTarget : State_MoveToTarget
 		{
 			return false;
 		}
-		Vector3? val = null;
+		Nullable val = null;
 		if (Agent.lastValidPath.Count > 0)
 		{
 			RustNavMeshAgent agent = Agent;

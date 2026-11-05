@@ -15,7 +15,7 @@ public abstract class BaseEntityHandler<T> : BasePlayerHandler<T> where T : clas
 	public override ValidationResult Validate()
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		ValidationResult validationResult = base.Validate();
 		if (validationResult != ValidationResult.Success)
 		{
@@ -26,8 +26,7 @@ public abstract class BaseEntityHandler<T> : BasePlayerHandler<T> where T : clas
 		{
 			return ValidationResult.NotFound;
 		}
-		BuildingPrivlidge buildingPrivilege = appIOEntity.GetBuildingPrivilege();
-		if ((Object)(object)buildingPrivilege != (Object)null && !buildingPrivilege.IsAuthed(UserId))
+		if (!appIOEntity.CanAppAccess(UserId))
 		{
 			return ValidationResult.NotFound;
 		}

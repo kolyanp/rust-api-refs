@@ -10,8 +10,8 @@ public class Mortar : Cannon
 {
 	public const string PlayerKillAchievement = "MORTAR_PLAYER_KILL";
 
-	[Header("Mortar")]
 	[SerializeField]
+	[Header("Mortar")]
 	private Vector2 minMaxDistance = new Vector2(0f, 200f);
 
 	[SerializeField]
@@ -45,8 +45,8 @@ public class Mortar : Cannon
 	[Header("Condition")]
 	private float conditionLossPerShot;
 
-	[Header("Recoil")]
 	[SerializeField]
+	[Header("Recoil")]
 	private AnimationClip recoilLowAnimation;
 
 	[SerializeField]
@@ -68,8 +68,8 @@ public class Mortar : Cannon
 	[SerializeField]
 	private AnimationCurve handleMinMaxRotation;
 
-	[SerializeField]
 	[Header("Display")]
+	[SerializeField]
 	private MortarDisplay mortarDisplayPrefab;
 
 	[ClientVar(ClientAdmin = true)]
@@ -183,9 +183,9 @@ public class Mortar : Cannon
 
 	protected override bool UnableToStartReloadServer(BasePlayer player)
 	{
-		if (!base.UnableToStartReloadServer(player))
+		if (!base.UnableToStartReloadServer(player) && CanSeeFirePoint(player, 0.05f))
 		{
-			return !CanSeeFirePoint(player, 0.05f);
+			return player.InSafeZone();
 		}
 		return true;
 	}
@@ -196,7 +196,7 @@ public class Mortar : Cannon
 
 	protected override void LoadAmmo(BasePlayer player)
 	{
-		if (!CanSeeFirePoint(player, 0.05f))
+		if (!CanSeeFirePoint(player, 0.05f) || player.InSafeZone())
 		{
 			reloadProgress = 0f;
 			return;

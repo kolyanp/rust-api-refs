@@ -1084,19 +1084,23 @@ public static class MonoProfiler
 
 	private static Action _profileWarningTimer;
 
-	public const int NATIVE_PROTOCOL = 4;
+	public const int NATIVE_PROTOCOL = 5;
 
 	public const int MANAGED_PROTOCOL = 127;
 
 	public static TimeSpan CurrentDurationTime => (_durationTimer?.Elapsed).GetValueOrDefault();
 
-	public static bool Enabled { get; }
+	public static bool Enabled { get; private set; }
 
 	public static bool IsRecording { get; private set; }
 
 	public static bool Crashed { get; }
 
 	public static bool IsCleared => AssemblyRecords.Count == 0 && CallRecords.Count == 0;
+
+	public static string ConfigPath { get; set; }
+
+	public static event Action RecordingStopped;
 
 	unsafe static MonoProfiler()
 	{
@@ -1111,9 +1115,9 @@ public static class MonoProfiler
 		try
 		{
 			ulong num = carbon_get_protocol();
-			if (num != 4)
+			if (num != 5)
 			{
-				Debug.LogError((object)$"Native protocol mismatch (native) {num} != (managed) {4}");
+				Debug.LogError((object)$"Native protocol mismatch (native) {num} != (managed) {5}");
 				Enabled = false;
 				Crashed = true;
 			}
@@ -1169,6 +1173,23 @@ public static class MonoProfiler
 		}
 	}
 
+	public unsafe static bool Start()
+	{
+		if (Enabled || Crashed || string.IsNullOrEmpty(ConfigPath))
+		{
+			return Enabled;
+		}
+		fixed (char* configPath = ConfigPath)
+		{
+			Enabled = start_profiler(configPath, ConfigPath.Length);
+		}
+		if (Enabled)
+		{
+			Debug.LogWarning((object)"[MonoProfiler] Started. Plugins loaded before now are only profiled after they are reloaded.");
+		}
+		return Enabled;
+	}
+
 	public static void Clear()
 	{
 		AssemblyRecords.Clear();
@@ -1185,16 +1206,7 @@ public static class MonoProfiler
 			Debug.LogError((object)"CarbonNative did not properly initialize. Please report to the developers.");
 			return;
 		}
-		if (_profileTimer != null)
-		{
-			HarmonyProfiler.Runner.CancelInvoke(_profileTimer);
-			_profileTimer = null;
-		}
-		if (_profileWarningTimer != null)
-		{
-			HarmonyProfiler.Runner.CancelInvoke(_profileWarningTimer);
-			_profileWarningTimer = null;
-		}
+		CancelTimers();
 		if (ToggleProfiling(args, logging) != true && logging)
 		{
 			PrintWarn();
@@ -1243,13 +1255,34 @@ public static class MonoProfiler
 		}
 	}
 
+	private static void CancelTimers()
+	{
+		if (_profileTimer != null)
+		{
+			HarmonyProfiler.Runner.CancelInvoke(_profileTimer);
+			_profileTimer = null;
+		}
+		if (_profileWarningTimer != null)
+		{
+			HarmonyProfiler.Runner.CancelInvoke(_profileWarningTimer);
+			_profileWarningTimer = null;
+		}
+	}
+
+	private static void OnRecordingStopped()
+	{
+		CancelTimers();
+		RecordingStopped?.Invoke();
+	}
+
 	public unsafe static bool? ToggleProfiling(ProfilerArgs args = ProfilerArgs.CallMemory | ProfilerArgs.AdvancedMemory | ProfilerArgs.Timings | ProfilerArgs.Calls | ProfilerArgs.GCEvents, bool logging = true)
 	{
-		if (!Enabled)
+		if (!Start())
 		{
 			Debug.Log((object)"Profiler disabled");
 			return null;
 		}
+		bool isRecording = IsRecording;
 		AssemblyRecords.Clear();
 		CallRecords.Clear();
 		MemoryRecords.Clear();
@@ -1271,6 +1304,10 @@ public static class MonoProfiler
 				Debug.LogWarning((object)"[MonoProfiler] Profiler aborted");
 			}
 			IsRecording = false;
+			if (isRecording)
+			{
+				OnRecordingStopped();
+			}
 			return false;
 		}
 		if (!flag)
@@ -1318,6 +1355,7 @@ public static class MonoProfiler
 			}
 			DurationTime = _durationTimer.Elapsed;
 			Pool.FreeUnmanaged(ref _durationTimer);
+			OnRecordingStopped();
 		}
 		return flag;
 	}
@@ -1498,7 +1536,12 @@ public static class MonoProfiler
 	private static extern void register_profiler_assembly(ModuleHandle handle);
 
 	[DllImport("CarbonNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
 	private static extern bool profiler_is_enabled();
+
+	[DllImport("CarbonNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	private unsafe static extern bool start_profiler(char* ptr, int length);
 
 	[DllImport("CarbonNative")]
 	private unsafe static extern void carbon_init_logger(delegate*<int, int, byte*, int, LogSource, void> logger);

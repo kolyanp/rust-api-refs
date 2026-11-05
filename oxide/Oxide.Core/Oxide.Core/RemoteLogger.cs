@@ -289,7 +289,7 @@ public static class RemoteLogger
 		}
 		QueuedReport queuedReport = QueuedReports[0];
 		submittingReports = true;
-		Webrequests.Enqueue(Url, queuedReport.Body, delegate(int code, string response)
+		Webrequests.Enqueue(Url, queuedReport.Body, (int code, string response) =>
 		{
 			if (code == 200)
 			{

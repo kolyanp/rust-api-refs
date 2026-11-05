@@ -17,6 +17,8 @@ public class PersistentTimer
 
 	private bool running;
 
+	private float elapsedWhenEnded;
+
 	public bool IsRunning => running;
 
 	public float Remaining
@@ -32,6 +34,20 @@ public class PersistentTimer
 		}
 	}
 
+	public float Duration { get; private set; }
+
+	public float Elapsed
+	{
+		get
+		{
+			if (!running)
+			{
+				return elapsedWhenEnded;
+			}
+			return Mathf.Max(0f, Duration - Remaining);
+		}
+	}
+
 	public PersistentTimer(PersistentTimerSet set, int id)
 	{
 		Id = id;
@@ -41,20 +57,65 @@ public class PersistentTimer
 
 	public void Start(float duration)
 	{
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		Resume(duration, duration);
+	}
+
+	public void Reschedule(float remaining)
+	{
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		if (running)
+		{
+			owner.CancelInvoke(Fire);
+			timeLeft = TimeUntil.op_Implicit(Mathf.Max(0f, remaining));
+			owner.Invoke(Fire, TimeUntil.op_Implicit(timeLeft));
+		}
+	}
+
+	public void Resume(float remaining, float duration)
+	{
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		owner.CancelInvoke(Fire);
 		running = true;
-		timeLeft = TimeUntil.op_Implicit(Mathf.Max(0f, duration));
+		Duration = duration;
+		elapsedWhenEnded = 0f;
+		timeLeft = TimeUntil.op_Implicit(Mathf.Max(0f, remaining));
 		owner.Invoke(Fire, TimeUntil.op_Implicit(timeLeft));
 		onStarted?.Invoke();
 	}
 
 	public void Stop()
 	{
+		elapsedWhenEnded = Elapsed;
 		running = false;
 		owner.CancelInvoke(Fire);
+	}
+
+	public void RunWhile(bool shouldRun, float duration)
+	{
+		if (shouldRun && !running)
+		{
+			Start(duration);
+		}
+		else if (!shouldRun && running)
+		{
+			Stop();
+		}
+	}
+
+	public void CopyTo(PersistentTimer other)
+	{
+		if (running)
+		{
+			other.Resume(Remaining, Duration);
+		}
+		else
+		{
+			other.Stop();
+		}
 	}
 
 	public float RemainingFrom(float cachedTime)
@@ -68,6 +129,7 @@ public class PersistentTimer
 
 	private void Fire()
 	{
+		elapsedWhenEnded = Duration;
 		running = false;
 		onElapsed?.Invoke();
 	}

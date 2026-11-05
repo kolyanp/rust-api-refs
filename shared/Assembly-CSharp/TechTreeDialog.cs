@@ -1,5 +1,6 @@
 using Rust.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TechTreeDialog : UIDialog, IInventoryChanged
 {
@@ -27,7 +28,11 @@ public class TechTreeDialog : UIDialog, IInventoryChanged
 
 	public GameObjectRef multiUnlockEffect;
 
-	public RustText scrapCount;
+	public GameObjectRef prototypeFailEffect;
+
+	public RustText researchItemCount;
+
+	public RawImage[] researchItemIcons;
 
 	private Vector2 startPos = Vector2.zero;
 

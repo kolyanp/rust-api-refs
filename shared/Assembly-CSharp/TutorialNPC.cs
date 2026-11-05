@@ -62,7 +62,7 @@ public class TutorialNPC : NPCMissionProvider
 		return false;
 	}
 
-	public override ConversationData GetConversationFor(BasePlayer player)
+	public override ConversationData GetInPersonConversationFor(BasePlayer player)
 	{
 		if (player.HasActiveMission())
 		{
@@ -153,9 +153,9 @@ public class TutorialNPC : NPCMissionProvider
 		flagsUpdateScope.Set(Flags.Busy, b: true);
 	}
 
-	public override void Server_OnConversationEnded(BasePlayer player)
+	public override void OnConversationEnded(BasePlayer player)
 	{
-		base.Server_OnConversationEnded(player);
+		base.OnConversationEnded(player);
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}

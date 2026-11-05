@@ -488,7 +488,7 @@ public class PuzzleReset : FacepunchBehaviour
 		}
 		foreach (BasePlayer item in enumerable)
 		{
-			if (!item.IsAlive() || item.isInvisible || (!includeSleepers && item.IsSleeping()) || ((Component)item).transform.position.y < num || Vector3.Distance(((Component)item).transform.position, origin.position) >= radius || (ignoreAboveGroundPlayers && item.IsUnderground()))
+			if (!item.IsAlive() || item.isInvisible || (!includeSleepers && item.IsSleeping()) || ((Component)item).transform.position.y < num || Vector3.Distance(((Component)item).transform.position, origin.position) >= radius || (ignoreAboveGroundPlayers && !item.IsUnderground()))
 			{
 				continue;
 			}

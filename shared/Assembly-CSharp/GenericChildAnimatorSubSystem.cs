@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class GenericChildAnimatorSubSystem : ChildAnimatorSubSystem
 {
-	[Tooltip("Bool parameter driven by the player's aiming state, leave empty to ignore")]
 	[SerializeField]
+	[Tooltip("Bool parameter driven by the player's aiming state, leave empty to ignore")]
 	private string AimingParameter = string.Empty;
 
 	[Tooltip("Bool parameter driven by a flag on the entity this system is attached to, leave empty to ignore")]
@@ -13,8 +13,8 @@ public class GenericChildAnimatorSubSystem : ChildAnimatorSubSystem
 	[SerializeField]
 	private BaseEntity.Flags Flag;
 
-	[SerializeField]
 	[Tooltip("Trigger parameter fired when the entity broadcasts TriggerSignal, leave empty to ignore")]
+	[SerializeField]
 	private string TriggerParameter = string.Empty;
 
 	[SerializeField]

@@ -337,7 +337,7 @@ public static class AntiHack
 			recheck = true;
 			return false;
 		}
-		BaseEntity baseEntity = GameObjectEx.ToBaseEntity(collider);
+		BaseEntity baseEntity = GameObjectEx.ToBaseEntity(collider, allowDestroyed: true);
 		if (((1 << ((Component)collider).gameObject.layer) & 0x2000) > 0)
 		{
 			if (baseEntity is HotAirBalloon && ply.RecentlyUnparented(5f))
@@ -1404,6 +1404,11 @@ public static class AntiHack
 	public static void ValidateAgainstTerrain(in BasePlayer.PlayerServerStates.ReadOnly playerStates)
 	{
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("ValidateAgainstTerrain"))
 		{
 			int num = Time.frameCount % ConVar.AntiHack.terrain_timeslice;
@@ -1429,6 +1434,15 @@ public static class AntiHack
 					if (flag && ConVar.AntiHack.terrain_kill)
 					{
 						Facepunch.Rust.Analytics.Azure.OnTerrainHackViolation(basePlayer);
+						Vector3 position = ((Component)basePlayer).transform.position;
+						string text = (Object.op_Implicit((Object)(object)TerrainMeta.HeightMap) ? $" terrainHeight: {TerrainMeta.HeightMap.GetHeight(position)} meshHeight: {TerrainMeta.SampleTerrainMeshHeight(position)}" : string.Empty);
+						Debug.LogWarning((object)string.Format("Killing player inside terrain: {0} pos: {1}{2} mounted: {3}", new object[4]
+						{
+							basePlayer,
+							position,
+							text,
+							basePlayer.GetMounted()
+						}));
 						basePlayer.Hurt(1000f, DamageType.Suicide, basePlayer, useProtection: false);
 					}
 				}
@@ -1459,29 +1473,21 @@ public static class AntiHack
 
 	public static bool IsInsideTerrain(BasePlayer ply)
 	{
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		if (ply.IsInTutorial || DeepSeaManager.IsInsideDeepSea((BaseNetworkable)ply))
 		{
 			return false;
 		}
-		float num = 0f;
-		if (ply.isMounted && ply.GetMounted() is BaseVehicleSeat { offsetInsideTerrainCheck: not false })
-		{
-			num += ConVar.AntiHack.terrain_vehicle_seat_padding;
-		}
-		return TestInsideTerrain(((Component)ply).transform.position + new Vector3(0f, num, 0f));
+		return TestInsideTerrain(((Component)ply).transform.position);
 	}
 
 	public static bool TestInsideTerrain(Vector3 pos)
 	{
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("AntiHack.TestInsideTerrain"))
 		{
 			if (!TerrainMeta.TerrainRenderer)
@@ -1511,7 +1517,6 @@ public static class AntiHack
 			{
 				return false;
 			}
-			Debug.Log((object)$"player pos: {pos.y} meshHeight:{num} terrainHeight: {height}");
 			return true;
 		}
 	}

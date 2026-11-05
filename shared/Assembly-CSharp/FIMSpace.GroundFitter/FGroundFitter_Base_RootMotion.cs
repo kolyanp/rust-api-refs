@@ -5,16 +5,16 @@ namespace FIMSpace.GroundFitter;
 
 public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 {
-	[HideInInspector]
 	[Tooltip("Making ground fitter translate with root motion")]
+	[HideInInspector]
 	public bool HandleRootMotion;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected Transform parentTransform;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected CharacterController optionalCharContr;
 
 	[HideInInspector]

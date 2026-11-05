@@ -40,12 +40,12 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public VisualGroup visualGroup;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private VehicleLight[] lights;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private NPCMountable npcMountable;
 
 	public LODLevel[] lodRenderers;
@@ -108,8 +108,6 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	public virtual bool HasSeating => false;
 
 	public virtual bool HasAnEngine => false;
-
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{

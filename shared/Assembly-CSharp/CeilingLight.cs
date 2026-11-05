@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using Network;
@@ -30,6 +31,23 @@ public class CeilingLight : IOEntity
 
 	public override bool ValidateMeleeColliderAntihack => false;
 
+	public OBB LightBounds
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return field;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			field = value;
+		}
+	}
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("CeilingLight.OnRpcMessage"))
@@ -45,18 +63,18 @@ public class CeilingLight : IOEntity
 
 	public override void OnAttacked(HitInfo info)
 	{
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		if (isServer)
 		{
 			float num = 3f * (info.damageTypes.Total() / 50f);
-			NetworkableId arg = (((Object)(object)info.Initiator != (Object)null && info.Initiator is BasePlayer && !info.IsPredicting) ? info.Initiator.net.ID : default(NetworkableId));
+			NetworkableId arg = (((Object)(object)info.Initiator != (Object)null && info.Initiator is BasePlayer { isInvisible: false } && !info.IsPredicting) ? info.Initiator.net.ID : default(NetworkableId));
 			ClientRPC(RpcTarget.NetworkGroup("ClientPhysPush"), arg, info.attackNormal * num, info.HitPositionWorld);
 			MarkRecentlyHit();
 		}
@@ -180,9 +198,11 @@ public class CeilingLight : IOEntity
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		Vector3 position = ((Component)this).transform.position;
 		FarmLightGrid.Add(this, position.x, position.z);
+		LightBounds = WorldSpaceBounds();
 	}
 
 	internal override void DoServerDestroy()

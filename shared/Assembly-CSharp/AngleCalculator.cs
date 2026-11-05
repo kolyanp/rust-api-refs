@@ -16,23 +16,31 @@ public static class AngleCalculator
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		float num = Vector3.Dot(normal1, normal2);
 		float num2;
 		if (num > 0.9999f)
@@ -46,12 +54,13 @@ public static class AngleCalculator
 		else
 		{
 			Vector3 intersection = GetIntersection(normal1, normal2, center1, center2);
-			Vector3 val = center1 - intersection;
-			Vector3 normalized = val.normalized;
-			val = center2 - intersection;
-			Vector3 normalized2 = val.normalized;
-			Vector3 val2 = Vector3.Cross(normalized, normal1);
-			num2 = Mathf.RoundToInt(Vector3.SignedAngle(normalized, normalized2, val2));
+			Vector3 val = Vector3.Cross(normal1, normal2);
+			Vector3 val2 = Vector3.ProjectOnPlane(center1 - intersection, val);
+			Vector3 normalized = val2.normalized;
+			val2 = Vector3.ProjectOnPlane(center2 - intersection, val);
+			Vector3 normalized2 = val2.normalized;
+			Vector3 val3 = Vector3.Cross(normalized, normal1);
+			num2 = Mathf.RoundToInt(Vector3.SignedAngle(normalized, normalized2, val3));
 		}
 		if (num2 <= 0f)
 		{

@@ -19,5 +19,17 @@ public class UI_SettingsTweakKeyBind : UI_SettingsTweakBase
 
 	public string bindString;
 
-	public static bool IsBinding { get; private set; }
+	private static UI_SettingsTweakKeyBind activeBinding;
+
+	public static bool IsBinding
+	{
+		get
+		{
+			if ((Object)(object)activeBinding != (Object)null)
+			{
+				return ((Behaviour)activeBinding).isActiveAndEnabled;
+			}
+			return false;
+		}
+	}
 }

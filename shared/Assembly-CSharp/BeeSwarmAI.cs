@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ConVar;
 using Facepunch;
 using Rust.Ai;
+using Rust.Ai.Gen2;
 using UnityEngine;
 
 public class BeeSwarmAI : BaseCombatEntity, ISplashable
@@ -271,15 +272,15 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 zero = Vector3.zero;
-		if ((Object)(object)targetPlayer.eyes == (Object)null)
+		if (targetPlayer.eyes == null)
 		{
 			return ((Component)targetPlayer).transform.position + new Vector3(0f, 1f, 0f);
 		}
@@ -289,14 +290,14 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 	private void ValidateTarget()
 	{
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		if ((Object)(object)targetPlayer == (Object)null || targetPlayer.InSafeZone() || targetPlayer.IsDead())
 		{
@@ -305,6 +306,12 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 			return;
 		}
 		if (targetPlayer.metabolism.wetness.value > waterThreshold || TimeSince.op_Implicit(targetPlayer.TimeSinceLastWaterSplash) < 1f || targetPlayer.WaterFactor() > 0.5f)
+		{
+			targetPlayer = null;
+			flagsUpdateScope.Set(Flags.Reserved14, b: false);
+			return;
+		}
+		if (Trans_TargetHasRepellent.Carries(targetPlayer))
 		{
 			targetPlayer = null;
 			flagsUpdateScope.Set(Flags.Reserved14, b: false);
@@ -427,16 +434,16 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 	public static BasePlayer FindTarget(Transform transform)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BeeSwarmAI.FindTarget"))
 		{
 			PooledList<BasePlayer> val = Pool.Get<PooledList<BasePlayer>>();
@@ -447,7 +454,7 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 				float num = float.MaxValue;
 				foreach (BasePlayer item in (List<BasePlayer>)(object)val)
 				{
-					if (SimpleAIMemory.PlayerIgnoreList.Contains(item) || item.InSafeZone() || item.IsInTutorial || item.IsDead() || item.metabolism.wetness.value > waterThreshold)
+					if (SimpleAIMemory.PlayerIgnoreList.Contains(item) || item.InSafeZone() || item.IsInTutorial || item.IsDead() || Trans_TargetHasRepellent.Carries(item) || item.metabolism.wetness.value > waterThreshold)
 					{
 						continue;
 					}

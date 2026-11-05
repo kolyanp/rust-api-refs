@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -48,6 +49,7 @@ public class MapMarkers : BasePlayerHandler<AppEmpty>
 		return default;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private static AppMarker GetPlayerMarker(BasePlayer player)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)

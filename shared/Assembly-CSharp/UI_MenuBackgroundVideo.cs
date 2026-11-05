@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using Rust;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.Video;
 
 public class UI_MenuBackgroundVideo : SingletonComponent<UI_MenuBackgroundVideo>
@@ -81,18 +79,6 @@ public class UI_MenuBackgroundVideo : SingletonComponent<UI_MenuBackgroundVideo>
 		else
 		{
 			webmVideos = Array.Empty<string>();
-		}
-	}
-
-	public void Update()
-	{
-		if (((ButtonControl)Keyboard.current[(Key)86]).wasPressedThisFrame)
-		{
-			LoadVideoList();
-		}
-		if (((ButtonControl)Keyboard.current[(Key)85]).wasPressedThisFrame)
-		{
-			NextVideo();
 		}
 	}
 

@@ -216,7 +216,7 @@ public class FireBall : BaseEntity, ISplashable
 					Effect.server.Run("assets/bundled/prefabs/fx/impacts/additive/fire.prefab", item, 0u, new Vector3(0f, 1f, 0f), Vector3.up);
 				}
 				float num = damagePerSecond * tickRate;
-				if (item is BaseSiegeWeapon || item is BallistaGun)
+				if (item is BaseSiegeWeapon || item is BaseMountedWeapon)
 				{
 					num *= siegeWeaponDamageScale;
 				}

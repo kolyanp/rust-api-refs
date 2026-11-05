@@ -54,6 +54,8 @@ public class LiquidWeapon : BaseLiquidVessel
 
 	public float StopFillingBlockDuration = 1f;
 
+	public const Flags Flag_Radioactive = Flags.Reserved1;
+
 	public float cooldownTime;
 
 	public bool HoldFireInput;
@@ -217,6 +219,7 @@ public class LiquidWeapon : BaseLiquidVessel
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
 				flagsUpdateScope.Set(Flags.On, b: true);
+				flagsUpdateScope.Set(Flags.Reserved1, GetContents().info.baseRadioactivity > 0f);
 			}
 			StartCooldown(FireRate);
 			if (isServer)
@@ -286,8 +289,8 @@ public class LiquidWeapon : BaseLiquidVessel
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void PumpWater(RPCMessage msg)
 	{
 		PumpWater();

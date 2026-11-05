@@ -9,4 +9,6 @@ public class WorldGrid : SingletonComponent<WorldGrid>, IClientComponent
 	public const float MaxRefreshDistance = 500f;
 
 	public const float MinTimeBetweenRefreshes = 1f;
+
+	private const float SweepMoveThreshold = 1f;
 }

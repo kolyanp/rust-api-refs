@@ -15,7 +15,7 @@ public class RealmedRemove : MonoBehaviour, IPrefabPreProcess
 
 	public Component[] doNotRemoveFromClient;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => true;
+	bool IPrefabPreProcess.CanPreProcessDuringBundling => true;
 
 	public void PreProcess(IPrefabProcessor process, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
@@ -50,11 +50,11 @@ public class RealmedRemove : MonoBehaviour, IPrefabPreProcess
 
 	public bool ShouldDelete(Component comp, bool client, bool server)
 	{
-		if (client && doNotRemoveFromClient != null && doNotRemoveFromClient.Contains(comp))
+		if (client && doNotRemoveFromClient != null && Enumerable.Contains(doNotRemoveFromClient, comp))
 		{
 			return false;
 		}
-		if (server && doNotRemoveFromServer != null && doNotRemoveFromServer.Contains(comp))
+		if (server && doNotRemoveFromServer != null && Enumerable.Contains(doNotRemoveFromServer, comp))
 		{
 			return false;
 		}

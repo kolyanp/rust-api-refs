@@ -34,6 +34,12 @@ public class BuildingBlock : StabilityEntity
 		}
 	}
 
+	public static readonly Phrase FlipTitle = new Phrase("flip", "Flip");
+
+	public static readonly Phrase FlipDesc = new Phrase("flip_building_desc", "Flip this block so it turns the other way");
+
+	public static readonly Phrase CantFlipAnymore = new Phrase("grade_flipblocked", "Can't flip this block anymore");
+
 	private bool forceSkinRefresh;
 
 	private ulong lastSkinID;
@@ -56,6 +62,8 @@ public class BuildingBlock : StabilityEntity
 
 	private MeshCollider placeholderCollider;
 
+	private static EntityListScriptableObject overlapDestroyList;
+
 	public static UpdateSkinWorkQueue updateSkinQueueServer = new UpdateSkinWorkQueue();
 
 	public static readonly Phrase RotateTitle = new Phrase("rotate", "Rotate");
@@ -64,13 +72,19 @@ public class BuildingBlock : StabilityEntity
 
 	private bool globalNetworkCooldown;
 
+	private float rotateWindowEnd;
+
 	public bool CullBushes;
 
 	public bool CheckForPipesOnModelChange;
 
+	public bool CheckForDeployablesOnModelChange;
+
 	public OBBComponent AlternativePipeBounds;
 
 	public bool useCastNoClipChecks;
+
+	public bool useTriangularPrismRadialDamageVisibility;
 
 	public const int WALLPAPER_MAXHEALTH = 100;
 
@@ -113,6 +127,18 @@ public class BuildingBlock : StabilityEntity
 				return null;
 			}
 			return constructionGrade;
+		}
+	}
+
+	private static EntityListScriptableObject OverlapDestroyList
+	{
+		get
+		{
+			if ((Object)(object)overlapDestroyList == (Object)null)
+			{
+				overlapDestroyList = FileSystem.Load<EntityListScriptableObject>("assets/content/properties/entitylist/alllists/buildingblock_overlap_destroy_list.asset", true);
+			}
+			return overlapDestroyList;
 		}
 	}
 
@@ -237,8 +263,112 @@ public class BuildingBlock : StabilityEntity
 				}
 				return true;
 			}
+			if (rpc == 3707730583u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - SERVER_DoFlip"));
+				}
+				using (TimeWarning.New("SERVER_DoFlip"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.CallsPerSecond.Test(3707730583u, "SERVER_DoFlip", this, player, 1uL))
+						{
+							return true;
+						}
+						if (!RPC_Server.MaxDistance.Test(3707730583u, "SERVER_DoFlip", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg5 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							SERVER_DoFlip(msg5);
+						}
+					}
+					catch (Exception ex4)
+					{
+						Debug.LogException(ex4);
+						player.Kick("RPC Error in SERVER_DoFlip");
+					}
+				}
+				return true;
+			}
 		}
 		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	private bool CanFlip(BasePlayer player)
+	{
+		if (blockDefinition.mirroredVariant.isValid && HasRotateFlag() && HasRotationPrivilege(player))
+		{
+			return !IsFlipBlocked();
+		}
+		return false;
+	}
+
+	private bool IsFlipBlocked()
+	{
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		if (children != null && children.Count > 0)
+		{
+			return true;
+		}
+		if (HasDeployablesOnTop())
+		{
+			return true;
+		}
+		if (!blockDefinition.checkVolumeOnRotate)
+		{
+			return false;
+		}
+		DeployVolume[] volumes = prefabAttribute.FindAll<DeployVolume>(blockDefinition.mirroredVariant.resourceID);
+		return DeployVolume.CheckInPlaceOf(this, ((Component)this).transform.rotation, volumes);
+	}
+
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
+	private void SERVER_DoFlip(RPCMessage msg)
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		if (msg.player.CanInteract() && CanFlip(msg.player))
+		{
+			BuildingBlock buildingBlock = GameManager.server.CreateEntity(blockDefinition.mirroredVariant.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation) as BuildingBlock;
+			if (!((Object)(object)buildingBlock == (Object)null))
+			{
+				buildingBlock.blockDefinition = PrefabAttribute.server.Find<Construction>(buildingBlock.prefabID);
+				buildingBlock.SetGrade(grade);
+				buildingBlock.skinID = skinID;
+				buildingBlock.playerCustomColourToApply = customColour;
+				buildingBlock.ResetLifeStateOnSpawn = false;
+				buildingBlock.InitializeHealth(health, buildingBlock.StartMaxHealth());
+				buildingBlock.OwnerID = OwnerID;
+				uint id = buildingID;
+				float num = lastAttackedTime;
+				float duration = rotateWindowEnd - Time.time;
+				float demolishSecondsLeft = GetDemolishSecondsLeft();
+				Kill();
+				buildingBlock.AttachToBuilding(id);
+				buildingBlock.Spawn();
+				buildingBlock.lastAttackedTime = num;
+				buildingBlock.StartBeingRotatable(duration);
+				buildingBlock.ContinueDemolishWindow(demolishSecondsLeft);
+				buildingBlock.UpdateSurroundingEntities();
+				Facepunch.Rust.Analytics.Azure.OnBuildingBlockFlipped(msg.player, buildingBlock);
+			}
+		}
 	}
 
 	public void SetConditionalModel(ulong state)
@@ -306,14 +436,12 @@ public class BuildingBlock : StabilityEntity
 
 	public bool IsUpgradeBlocked()
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		if (!blockDefinition.checkVolumeOnUpgrade)
 		{
 			return false;
 		}
 		DeployVolume[] volumes = PrefabAttribute.server.FindAll<DeployVolume>(prefabID);
-		return DeployVolume.Check(((Component)this).transform.position, ((Component)this).transform.rotation, volumes, ~(1 << ((Component)this).gameObject.layer));
+		return DeployVolume.Check(this, volumes, ~(1 << ((Component)this).gameObject.layer));
 	}
 
 	public bool CanAffordUpgrade(BuildingGrade.Enum iGrade, ulong iSkin, BasePlayer player)
@@ -351,6 +479,10 @@ public class BuildingBlock : StabilityEntity
 		grade = iGrade;
 		grade = currentGrade.gradeBase.type;
 		UpdateGrade();
+		if (isServer)
+		{
+			GetBuilding()?.RefreshUpkeepCost(this);
+		}
 	}
 
 	public void UpdateGrade()
@@ -363,6 +495,10 @@ public class BuildingBlock : StabilityEntity
 		if (oldSkinID != newSkinID)
 		{
 			skinID = newSkinID;
+			if (isServer)
+			{
+				GetBuilding()?.RefreshUpkeepCost(this);
+			}
 		}
 	}
 
@@ -665,9 +801,9 @@ public class BuildingBlock : StabilityEntity
 		{
 			currentSkin.Refresh(this);
 			OnSkinRefresh();
-			if (isServer & flag2)
+			if ((isServer & flag2) && IsFullySpawned())
 			{
-				CheckForPipes();
+				CheckForOverlaps();
 			}
 			forceSkinRefresh = false;
 		}
@@ -694,24 +830,40 @@ public class BuildingBlock : StabilityEntity
 		return grade != BuildingGrade.Enum.Twigs;
 	}
 
-	[ContextMenu("Check for pipes")]
-	public void CheckForPipes()
+	[ContextMenu("Check for overlaps")]
+	public void CheckForOverlaps()
 	{
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		if (!CheckForPipesOnModelChange || !ConVar.Server.enforcePipeChecksOnBuildingBlockChanges || Application.isLoading)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		if (ConVar.Server.enforceOverlapChecksOnBuildingBlockChanges && !Application.isLoading)
 		{
-			return;
+			Bounds val = bounds;
+			val.extents *= 0.97f;
+			OBB val2 = (OBB)(((Object)(object)AlternativePipeBounds != (Object)null) ? AlternativePipeBounds.GetObb() : new OBB(((Component)this).transform, val));
+			if (CheckForPipesOnModelChange)
+			{
+				ClearOverlappingPipes(val2);
+			}
+			if (CheckForDeployablesOnModelChange)
+			{
+				DestroyOverlappingEntities(val2);
+			}
 		}
+	}
+
+	private static void ClearOverlappingPipes(OBB b)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		List<ColliderInfo_Pipe> list = Pool.Get<List<ColliderInfo_Pipe>>();
-		Bounds val = bounds;
-		val.extents *= 0.97f;
-		Vis.Components<ColliderInfo_Pipe>((OBB)(((Object)(object)AlternativePipeBounds != (Object)null) ? AlternativePipeBounds.GetObb() : new OBB(((Component)this).transform, val)), list, 536870912, (QueryTriggerInteraction)2);
+		Vis.Components<ColliderInfo_Pipe>(b, list, 536870912, (QueryTriggerInteraction)2);
 		foreach (ColliderInfo_Pipe item in list)
 		{
 			if (!((Object)(object)item == (Object)null) && ((Component)item).gameObject.activeInHierarchy && item.HasFlag(ColliderInfo.Flags.OnlyBlockBuildingBlock) && (Object)(object)item.ParentEntity != (Object)null && item.ParentEntity.isServer)
@@ -720,6 +872,60 @@ public class BuildingBlock : StabilityEntity
 			}
 		}
 		Pool.FreeUnmanaged<ColliderInfo_Pipe>(ref list);
+	}
+
+	private void DestroyOverlappingEntities(OBB obb)
+	{
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		EntityListScriptableObject entityListScriptableObject = OverlapDestroyList;
+		if ((Object)(object)entityListScriptableObject == (Object)null || CollectionEx.IsNullOrEmpty(entityListScriptableObject.entities))
+		{
+			return;
+		}
+		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
+		Vis.Entities(obb, list, 256, (QueryTriggerInteraction)2);
+		foreach (BaseEntity item in list)
+		{
+			if ((Object)(object)item == (Object)null || !item.isServer || item.IsDestroyed)
+			{
+				continue;
+			}
+			if (obb.Contains(item.CenterPoint()) && DeployVolume.CheckEntityList(item, entityListScriptableObject.entities, trueIfAnyFound: true))
+			{
+				if (item is BaseCombatEntity baseCombatEntity)
+				{
+					baseCombatEntity.Die();
+				}
+				else
+				{
+					item.Kill(DestroyMode.Gib);
+				}
+			}
+			else
+			{
+				DestroyChildrenCutOffFromParent(item, entityListScriptableObject);
+			}
+		}
+		Pool.FreeUnmanaged<BaseEntity>(ref list);
+	}
+
+	private static void DestroyChildrenCutOffFromParent(BaseEntity parent, EntityListScriptableObject destroyList)
+	{
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
+		foreach (BaseEntity child in parent.children)
+		{
+			if (DeployVolume.CheckEntityList(child, destroyList.entities, trueIfAnyFound: true) && !Socket_Specific.HasLineOfSightToParent(child.CenterPoint(), parent))
+			{
+				list.Add(child);
+			}
+		}
+		foreach (BaseEntity item in list)
+		{
+			item.Kill(DestroyMode.Gib);
+		}
+		Pool.FreeUnmanaged<BaseEntity>(ref list);
 	}
 
 	private void OnHammered()
@@ -787,8 +993,10 @@ public class BuildingBlock : StabilityEntity
 
 	public bool IsRotationBlocked()
 	{
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		if (children != null)
 		{
 			foreach (BaseEntity child in children)
@@ -799,12 +1007,23 @@ public class BuildingBlock : StabilityEntity
 				}
 			}
 		}
+		if (HasDeployablesOnTop())
+		{
+			return true;
+		}
 		if (!blockDefinition.checkVolumeOnRotate)
 		{
 			return false;
 		}
 		DeployVolume[] volumes = PrefabAttribute.server.FindAll<DeployVolume>(prefabID);
-		return DeployVolume.Check(((Component)this).transform.position, ((Component)this).transform.rotation, volumes, ~(1 << ((Component)this).gameObject.layer));
+		return DeployVolume.CheckInPlaceOf(this, ((Component)this).transform.rotation * Quaternion.Euler(blockDefinition.rotationAmount), volumes);
+	}
+
+	private bool HasDeployablesOnTop()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		return PickupVolume.Check(((Component)this).transform.position, ((Component)this).transform.rotation, prefabAttribute.FindAll<PickupVolume>(prefabID), this);
 	}
 
 	public bool HasRotationPrivilege(BasePlayer player)
@@ -827,6 +1046,7 @@ public class BuildingBlock : StabilityEntity
 		{
 			Transform transform = ((Component)this).transform;
 			transform.localRotation *= Quaternion.Euler(blockDefinition.rotationAmount);
+			Facepunch.Rust.Analytics.Azure.OnBuildingBlockRotated(msg.player, this);
 			RefreshEntityLinks();
 			UpdateSurroundingEntities();
 			UpdateSkin(force: true);
@@ -851,19 +1071,20 @@ public class BuildingBlock : StabilityEntity
 
 	public void StopBeingRotatable()
 	{
-		SetFlagLocal(Flags.Reserved1, b: false);
-		SendNetworkUpdate();
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
+		flagsUpdateScope.Set(Flags.Reserved1, b: false);
 	}
 
-	public void StartBeingRotatable()
+	private void StartBeingRotatable(float duration = 600f)
 	{
-		if (blockDefinition.grades != null && blockDefinition.canRotateAfterPlacement)
+		if (blockDefinition.grades != null && (blockDefinition.canRotateAfterPlacement || blockDefinition.mirroredVariant.isValid))
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
 				flagsUpdateScope.Set(Flags.Reserved1, b: true);
 			}
-			Invoke(StopBeingRotatable, 600f);
+			rotateWindowEnd = Time.time + duration;
+			Invoke(StopBeingRotatable, duration);
 		}
 	}
 
@@ -875,8 +1096,8 @@ public class BuildingBlock : StabilityEntity
 		info.msg.buildingBlock.grade = (int)grade;
 		info.msg.buildingBlock.wallpaperID = wallpaperID;
 		info.msg.buildingBlock.wallpaperID2 = wallpaperID2;
-		info.msg.buildingBlock.wallpaperHealth = wallpaperHealth;
-		info.msg.buildingBlock.wallpaperHealth2 = wallpaperHealth2;
+		info.msg.buildingBlock.wallpaperHealth = Mathf.Max(wallpaperHealth, 0f);
+		info.msg.buildingBlock.wallpaperHealth2 = Mathf.Max(wallpaperHealth2, 0f);
 		info.msg.buildingBlock.wallpaperRotation = wallpaperRotation;
 		info.msg.buildingBlock.wallpaperRotation2 = wallpaperRotation2;
 		if (customColour != 0)
@@ -898,8 +1119,8 @@ public class BuildingBlock : StabilityEntity
 		{
 			wallpaperID = info.msg.buildingBlock.wallpaperID;
 			wallpaperID2 = info.msg.buildingBlock.wallpaperID2;
-			wallpaperHealth = info.msg.buildingBlock.wallpaperHealth;
-			wallpaperHealth2 = info.msg.buildingBlock.wallpaperHealth2;
+			wallpaperHealth = ((info.msg.buildingBlock.wallpaperHealth > 0f) ? info.msg.buildingBlock.wallpaperHealth : (-1f));
+			wallpaperHealth2 = ((info.msg.buildingBlock.wallpaperHealth2 > 0f) ? info.msg.buildingBlock.wallpaperHealth2 : (-1f));
 			wallpaperRotation = info.msg.buildingBlock.wallpaperRotation;
 			wallpaperRotation2 = info.msg.buildingBlock.wallpaperRotation2;
 			SetConditionalModel(info.msg.buildingBlock.model);
@@ -930,7 +1151,7 @@ public class BuildingBlock : StabilityEntity
 
 	public override void ServerInit()
 	{
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		blockDefinition = PrefabAttribute.server.Find<Construction>(prefabID);
 		if (blockDefinition == null)
 		{
@@ -1023,6 +1244,94 @@ public class BuildingBlock : StabilityEntity
 			return base.ShouldUseCastNoClipChecks();
 		}
 		return true;
+	}
+
+	public override bool IsVisibleRadialDamage(Vector3 position, float maxDistance = float.PositiveInfinity)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		if (!useTriangularPrismRadialDamageVisibility)
+		{
+			return base.IsVisibleRadialDamage(position, maxDistance);
+		}
+		float m2 = maxDistance * maxDistance;
+		OBB val = WorldSpaceBounds();
+		Vector3 extents = val.extents;
+		Triangle val2 = new Triangle(new Vector3(extents.x, 0f, 0f - extents.z), new Vector3(0f - extents.x, 0f, 0f - extents.z), new Vector3(0f, 0f, extents.z));
+		Vector3 val3 = val.position + val.rotation * val2.Center;
+		if (InRange(val3) && CanSee(position, val3))
+		{
+			return true;
+		}
+		Vector3 val4 = Quaternion.Inverse(val.rotation) * (position - val.position);
+		Vector3 val5 = val2.ClosestPoint(Vector3Ex.WithY(val4, 0f));
+		val5.y = Mathf.Clamp(val4.y, 0f - extents.y, extents.y);
+		Vector3 val6 = val.position + val.rotation * val5;
+		if (InRange(val6) && CanSee(position, val6))
+		{
+			return true;
+		}
+		return false;
+		bool InRange(Vector3 p)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			return Vector3.SqrMagnitude(p - position) <= m2;
+		}
 	}
 
 	public bool HasWallpaper()
@@ -1121,8 +1430,8 @@ public class BuildingBlock : StabilityEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_PickupWallpaperStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && ShouldDisplayPickupOption(msg.player) && CanCompletePickup(msg.player))
@@ -1447,30 +1756,36 @@ public class BuildingBlock : StabilityEntity
 
 	static BuildingBlock()
 	{
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Expected Obj, but got Unknown
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Expected Obj, but got Unknown
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected Obj, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected Obj, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected Obj, but got Unknown
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Expected Obj, but got Unknown
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Expected Obj, but got Unknown
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
 		Vector3[] array = new Vector3[5];
 		Vector3 val = new Vector3(0f, 1f, 0f);
 		array[0] = val.normalized;

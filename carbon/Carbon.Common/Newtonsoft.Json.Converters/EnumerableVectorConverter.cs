@@ -12,7 +12,8 @@ public class EnumerableVectorConverter<T> : JsonConverter
 
 	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 	{
-		T[] array = (value as IEnumerable<T>)?.ToArray();
+		IEnumerable<T> obj = value as IEnumerable<T>;
+		T[] array = ((obj != null) ? obj.ToArray() : null);
 		if (array == null)
 		{
 			writer.WriteNull();

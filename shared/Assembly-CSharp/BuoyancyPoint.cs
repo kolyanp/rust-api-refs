@@ -19,9 +19,6 @@ public class BuoyancyPoint : MonoBehaviour
 	[NonSerialized]
 	public bool wasSubmergedLastFrame;
 
-	[NonSerialized]
-	public float nexSplashTime;
-
 	private static readonly Color gizmoColour = new Color(1f, 0f, 0f, 0.25f);
 
 	public void Start()

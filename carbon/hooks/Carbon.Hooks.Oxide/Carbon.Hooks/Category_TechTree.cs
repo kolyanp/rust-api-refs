@@ -13,7 +13,7 @@ public class Category_TechTree
 	public class TechTree_Workbench
 	{
 		[Patch("OnTechTreeNodeUnlock", "OnTechTreeNodeUnlock", "Workbench", "RPC_TechTreeUnlock", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("a5be0289058e44b598befc8d10fca90a")]
+		[Identifier("89769b4ac4b244deb038ad1fd5802397")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Workbench", false)]
 		[Parameter("local5", "TechTreeData+NodeInstance", false)]
@@ -21,7 +21,7 @@ public class Category_TechTree
 		[Return(typeof(void))]
 		[Category("TechTree")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class TechTree_Workbench_a5be0289058e44b598befc8d10fca90a : Patch
+		public class TechTree_Workbench_89769b4ac4b244deb038ad1fd5802397 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -57,24 +57,24 @@ public class Category_TechTree
 		}
 
 		[Patch("OnTechTreeNodeUnlocked", "OnTechTreeNodeUnlocked", "Workbench", "RPC_TechTreeUnlock", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("255137da68da4ca79931ddd2541b965b")]
+		[Identifier("a91c3958500d4283b230740c7647c5e5")]
 		[Dependencies(new string[] { "OnTechTreeNodeUnlock" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Workbench", false)]
 		[Parameter("local5", "TechTreeData+NodeInstance", false)]
 		[Parameter("local0", "BasePlayer", false)]
-		[Parameter("local12", "PooledList`1[ItemDefinition]", false)]
+		[Parameter("local14", "PooledList`1[ItemDefinition]", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("TechTree")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class TechTree_Workbench_255137da68da4ca79931ddd2541b965b : Patch
+		public class TechTree_Workbench_a91c3958500d4283b230740c7647c5e5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 296)
+					if (x++ != 309)
 					{
 						yield return instruction;
 						continue;
@@ -83,7 +83,7 @@ public class Category_TechTree
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Ldloc_S, (object)5);
 					yield return new CodeInstruction(OpCodes.Ldloc_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldloc_S, (object)12);
+					yield return new CodeInstruction(OpCodes.Ldloc_S, (object)14);
 					yield return new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(HookCaller), "CallStaticHook", new Type[5]
 					{
 						typeof(uint),

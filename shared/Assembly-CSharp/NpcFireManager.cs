@@ -95,11 +95,11 @@ public class NpcFireManager : SingletonComponent<NpcFireManager>, IServerCompone
 
 	public bool DidMeleeWithFireRecently(BaseEntity querier, BaseEntity target, out double meleeTime, float maxDistance = 10f)
 	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("NpcFireManager.DidMeleeWithFireRecently"))
 		{
-			if (recentFireMeleeEvents.TryGetValue(target, out var value) && Vector3.Distance(((Component)querier).transform.position, ((Component)target).transform.position) <= maxDistance)
+			if (recentFireMeleeEvents.TryGetValue(target, out var value) && Time.timeAsDouble - value <= 1.0 && Vector3.Distance(((Component)querier).transform.position, ((Component)target).transform.position) <= maxDistance)
 			{
 				meleeTime = value;
 				return true;

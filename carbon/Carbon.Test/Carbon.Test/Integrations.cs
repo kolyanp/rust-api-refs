@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -147,6 +148,12 @@ public static class Integrations
 
 		public IEnumerable<Exception> Exceptions => _exceptions.AsEnumerable();
 
+		public string MethodName => _method?.Name;
+
+		public double Duration => _duration;
+
+		public string FailureMessage { get; private set; }
+
 		public void Setup(object target, Type type, MethodInfo info)
 		{
 			_type = type;
@@ -197,6 +204,7 @@ public static class Integrations
 			SetStatus(StatusTypes.None);
 			_exceptions.Clear();
 			SetDuration(default);
+			FailureMessage = null;
 		}
 
 		public bool HasFailedFatally()
@@ -226,6 +234,10 @@ public static class Integrations
 			if (IsRunning)
 			{
 				SetStatus(StatusTypes.Timeout);
+				if (FailureMessage == null)
+				{
+					string text = (FailureMessage = $"Timeout >= {Timeout:0}ms");
+				}
 				Warn($"Timeout >= {Timeout:0}ms");
 			}
 		}
@@ -265,6 +277,7 @@ public static class Integrations
 			CalculatePrettyString(out var mainString, out var spacing);
 			Logger.Console(spacing + mainString + "  " + ((message == null) ? "no message" : message.ToString()), Severity.Error, exception);
 			SetStatus(StatusTypes.Failed);
+			TrackFailure(message, exception);
 		}
 
 		public void Fatal(object message, Exception exception)
@@ -272,6 +285,31 @@ public static class Integrations
 			CalculatePrettyString(out var mainString, out var spacing);
 			Logger.Console(spacing + mainString + "  " + ((message == null) ? "no message" : message.ToString()), Severity.Error, exception);
 			SetStatus(StatusTypes.Fatal);
+			TrackFailure(message, exception);
+		}
+
+		private void TrackFailure(object message, Exception exception)
+		{
+			if (FailureMessage != null)
+			{
+				return;
+			}
+			string text = message?.ToString() ?? "no message";
+			Exception ex;
+			if (exception is TargetInvocationException)
+			{
+				Exception innerException = exception.InnerException;
+				if (innerException != null)
+				{
+					ex = innerException;
+					goto IL_0035;
+				}
+			}
+			ex = exception;
+			goto IL_0035;
+			IL_0035:
+			Exception ex2 = ex;
+			FailureMessage = ((ex2 == null) ? text : (text + " (" + ex2.GetType().Name + ": " + ex2.Message + ")"));
 		}
 
 		public virtual string ToPrettyString()
@@ -292,6 +330,10 @@ public static class Integrations
 	}
 
 	public const int DEFAULT_CHANNEL = 1;
+
+	public const string ResultMarker = "TEST_RESULT|";
+
+	private static readonly bool _reportResults = Environment.GetEnvironmentVariable("CARBON_TEST_RESULTS") == "1";
 
 	public static ILogger Logger;
 
@@ -373,6 +415,10 @@ public static class Integrations
 			if (bank.AnyTestsFailedFatally())
 			{
 				anyTestsFailedFatally = true;
+				for (int j = i + 1; j < banks.Count; j++)
+				{
+					ReportSkipped(banks[j], 0);
+				}
 				break;
 			}
 		}
@@ -407,9 +453,12 @@ public static class Integrations
 				test.RunCheck();
 				yield return null;
 			}
+			test.SetDuration(Stopwatch.Elapsed);
+			ReportResult(bank, test, test.Status.ToString());
 			if (test.HasFailedFatally())
 			{
 				Logger.Console("cancelled due to fatal status - context: " + bank.Context, Severity.Error);
+				ReportSkipped(bank, i + 1);
 				break;
 			}
 			completed++;
@@ -431,6 +480,23 @@ public static class Integrations
 			bank.Context
 		}));
 		yield return null;
+	}
+
+	private static void ReportResult(TestBank bank, Test test, string status)
+	{
+		if (_reportResults)
+		{
+			string text = test.FailureMessage?.Replace('\r', ' ').Replace('\n', ' ');
+			Logger.Console("TEST_RESULT|" + bank.Context + "|" + test.MethodName + "|" + status + "|" + test.Duration.ToString("0.###", CultureInfo.InvariantCulture) + "|" + text);
+		}
+	}
+
+	private static void ReportSkipped(TestBank bank, int startIndex)
+	{
+		for (int i = startIndex; i < bank.Count; i++)
+		{
+			ReportResult(bank, bank[i], "Skipped");
+		}
 	}
 
 	public static void Clear(int channel)

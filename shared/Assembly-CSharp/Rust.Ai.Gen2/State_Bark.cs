@@ -28,7 +28,7 @@ public class State_Bark : State_PlayAnimation
 				Owner.Invoke(() =>
 				{
 					otherWolf.Bark(targetEntity);
-				}, Mathf.Max(0f, Animation.length + Random.Range(-0.5f, 0.5f)));
+				}, Mathf.Max(0f, Animation.length + Rng.Range(-0.5f, 0.5f)));
 			}
 		}
 		finally

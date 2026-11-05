@@ -22,8 +22,8 @@ public class State_Circle : FSMStateBase
 		{
 			Senses.TrySetTarget(payload.entity);
 		}
-		radiusOffset = Random.Range(-1f, 1f);
-		clockWise = Random.value > 0.5f;
+		radiusOffset = Rng.Range(-1f, 1f);
+		clockWise = Rng.Value > 0.5f;
 		return base.OnStateEnter(payload);
 	}
 

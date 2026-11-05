@@ -1,8 +1,10 @@
+using Development.Attributes;
 using Rust.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[ResetStaticFields]
 public class UIInventory : SingletonComponent<UIInventory>
 {
 	public TextMeshProUGUI PlayerName;

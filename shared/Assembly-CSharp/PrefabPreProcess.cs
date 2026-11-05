@@ -4,6 +4,9 @@ using System.Linq;
 using ConVar;
 using Facepunch;
 using Facepunch.BurstCloth;
+using Facepunch.Extend;
+using Rust;
+using Rust.RenderPipeline.Runtime;
 using Rust.UI;
 using TMPro;
 using Unity.AI.Navigation;
@@ -17,7 +20,7 @@ using VLB;
 
 public class PrefabPreProcess : IPrefabProcessor
 {
-	public static Type[] clientsideOnlyTypes = new Type[41]
+	public static Type[] clientsideOnlyTypes = new Type[43]
 	{
 		typeof(IClientComponent),
 		typeof(SkeletonSkinLod),
@@ -28,6 +31,7 @@ public class PrefabPreProcess : IPrefabProcessor
 		typeof(VolumetricLightBeam),
 		typeof(Cloth),
 		typeof(TextMeshPro),
+		typeof(TMP_SubMesh),
 		typeof(MeshFilter),
 		typeof(Renderer),
 		typeof(AudioLowPassFilter),
@@ -37,6 +41,7 @@ public class PrefabPreProcess : IPrefabProcessor
 		typeof(ParticleSystem),
 		typeof(ParticleEmitFromParentObject),
 		typeof(ImpostorShadows),
+		typeof(RustAdditionalLightData),
 		typeof(Light),
 		typeof(LODGroup),
 		typeof(Animator),
@@ -79,13 +84,19 @@ public class PrefabPreProcess : IPrefabProcessor
 
 	public Dictionary<string, GameObject> prefabList = new Dictionary<string, GameObject>(StringComparer.OrdinalIgnoreCase);
 
+	private Dictionary<string, GameObject> foundExactCase = new Dictionary<string, GameObject>();
+
 	private GameObject parentObject;
 
 	public List<Component> destroyList = new List<Component>();
 
 	public List<GameObject> cleanupList = new List<GameObject>();
 
+	private List<(int Depth, GameObject GameObject)> cleanupOrder = new List<(int, GameObject)>();
+
 	private List<GameObject> deleteList = new List<GameObject>();
+
+	public static bool IsProcessingBundledPrefab { get; private set; }
 
 	public PrefabPreProcess(bool clientside, bool serverside, bool bundling = false)
 	{
@@ -96,13 +107,19 @@ public class PrefabPreProcess : IPrefabProcessor
 
 	public GameObject Find(string strPrefab)
 	{
-		if (prefabList.TryGetValue(strPrefab, out var value))
+		if (foundExactCase.TryGetValue(strPrefab, out var value) && (Object)(object)value != (Object)null)
+		{
+			return value;
+		}
+		if (prefabList.TryGetValue(strPrefab, out value))
 		{
 			if ((Object)(object)value == (Object)null)
 			{
 				prefabList.Remove(strPrefab);
+				foundExactCase.Clear();
 				return null;
 			}
+			foundExactCase[strPrefab] = value;
 			return value;
 		}
 		return null;
@@ -118,7 +135,7 @@ public class PrefabPreProcess : IPrefabProcessor
 		{
 			return true;
 		}
-		if (options.PostProcess && HasComponents<IPrefabPostProcess>(go.transform))
+		if (options.PostProcess && HasComponents(go.transform, (IPrefabPostProcess postProcess) => ShouldPostProcess(postProcess, options)))
 		{
 			return true;
 		}
@@ -153,18 +170,34 @@ public class PrefabPreProcess : IPrefabProcessor
 
 	public void ProcessObject(string name, GameObject go, PreProcessPrefabOptions options)
 	{
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+		bool isProcessingBundledPrefab = IsProcessingBundledPrefab;
+		IsProcessingBundledPrefab = options.PostProcessedDuringBundling;
+		try
+		{
+			ProcessPass(name, go, options);
+		}
+		finally
+		{
+			IsProcessingBundledPrefab = isProcessingBundledPrefab;
+		}
+	}
+
+	private void ProcessPass(string name, GameObject go, PreProcessPrefabOptions options)
+	{
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0286: Expected Obj, but got Unknown
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028c: Expected Obj, but got Unknown
+		//IL_03fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0407: Expected Obj, but got Unknown
 		StringPool.Get(name);
 		StripEmptyChildren stripEmptyChildren = default;
 		bool flag = go.TryGetComponent<StripEmptyChildren>(ref stripEmptyChildren) && Render.IsInstancingEnabled;
@@ -230,13 +263,13 @@ public class PrefabPreProcess : IPrefabProcessor
 		{
 			foreach (IPrefabPreProcess item5 in FindIComponents<IPrefabPreProcess>(go.transform))
 			{
-				if (!isBundling || item5.CanRunDuringBundling)
+				if (!isBundling || item5.CanPreProcessDuringBundling)
 				{
 					item5.PreProcess((IPrefabProcessor)(object)this, go, name, isServerside, isClientside, isBundling);
 					MarkPropertiesDirty((Object)item5);
 				}
 			}
-			if (isClientside && !isServerside)
+			if (isClientside && !isServerside && options.StripComponents)
 			{
 				RemoveChildEntities(go);
 			}
@@ -247,7 +280,6 @@ public class PrefabPreProcess : IPrefabProcessor
 		}
 		if (options.StripEmptyChildren)
 		{
-			BaseEntity baseEntity = default;
 			foreach (Transform item6 in list)
 			{
 				if (!Object.op_Implicit((Object)(object)item6) || !Object.op_Implicit((Object)(object)((Component)item6).gameObject))
@@ -261,9 +293,7 @@ public class PrefabPreProcess : IPrefabProcessor
 				}
 				if (isClientside)
 				{
-					bool flag2 = ((Component)item6).gameObject.CompareTag("Client Cull");
-					bool flag3 = (Object)(object)item6 != (Object)(object)go.transform && ((Component)item6).gameObject.TryGetComponent<BaseEntity>(ref baseEntity);
-					if (flag2 | flag3)
+					if (((Component)item6).gameObject.CompareTag("Client Cull"))
 					{
 						RemoveComponents(((Component)item6).gameObject);
 						NominateForDeletion(((Component)item6).gameObject);
@@ -276,21 +306,43 @@ public class PrefabPreProcess : IPrefabProcessor
 			}
 		}
 		RunCleanupQueue(go);
-		if (!options.PostProcess)
+		if (options.PostProcess)
 		{
-			return;
+			foreach (IPrefabPostProcess item7 in FindIComponents<IPrefabPostProcess>(go.transform))
+			{
+				if (ShouldPostProcess(item7, options))
+				{
+					item7.PostProcess((IPrefabProcessor)(object)this, go, name, isServerside, isClientside, isBundling);
+					MarkPropertiesDirty((Object)item7);
+				}
+			}
 		}
-		foreach (IPrefabPostProcess item7 in FindIComponents<IPrefabPostProcess>(go.transform))
+		BaseEntity baseEntity = default;
+		if (options.StripComponents && isServerside && !isClientside && go.TryGetComponent<BaseEntity>(ref baseEntity))
 		{
-			item7.PostProcess((IPrefabProcessor)(object)this, go, name, isServerside, isClientside, isBundling);
+			baseEntity.ServerPreProcessed = true;
+			MarkPropertiesDirty((Object)(object)baseEntity);
 		}
+	}
+
+	private bool ShouldPostProcess(IPrefabPostProcess postProcess, PreProcessPrefabOptions options)
+	{
+		if (isBundling)
+		{
+			return postProcess.CanPostProcessDuringBundling;
+		}
+		if (postProcess.CanPostProcessDuringBundling)
+		{
+			return !options.PostProcessedDuringBundling;
+		}
+		return true;
 	}
 
 	public void Process(string name, GameObject go, bool forceInPlace = false)
 	{
 		PreProcessPrefabOptions assetSceneRuntime = PreProcessPrefabOptions.AssetSceneRuntime;
 		GameObject val = go;
-		if (Application.isPlaying && !val.CompareTag("NoPreProcessing"))
+		if (Application.isPlaying && !Application.isQuitting && !val.CompareTag("NoPreProcessing"))
 		{
 			bool flag = PrefabNeedsCopy(val);
 			bool flag2 = NeedsProcessing(val, assetSceneRuntime);
@@ -321,11 +373,24 @@ public class PrefabPreProcess : IPrefabProcessor
 		}
 	}
 
+	public void ProcessForSpawning(BaseEntity entity)
+	{
+		if (!entity.ServerPreProcessed || !((Object)(object)((Component)entity).transform.parent == (Object)null))
+		{
+			PreProcessPrefabOptions options = (entity.ServerPreProcessed ? PreProcessPrefabOptions.AssetSceneRuntime : PreProcessPrefabOptions.Default_NoResetPosition);
+			if (NeedsProcessing(((Component)entity).gameObject, options))
+			{
+				ProcessObject(null, ((Component)entity).gameObject, options);
+			}
+		}
+	}
+
 	public void Invalidate(string name)
 	{
 		if (prefabList.TryGetValue(name, out var value))
 		{
 			prefabList.Remove(name);
+			foundExactCase.Clear();
 			if ((Object)(object)value != (Object)null)
 			{
 				Object.DestroyImmediate((Object)(object)value, true);
@@ -343,14 +408,11 @@ public class PrefabPreProcess : IPrefabProcessor
 			}
 		}
 		prefabList.Clear();
+		foundExactCase.Clear();
 	}
 
 	private void RemoveChildEntities(GameObject go)
 	{
-		if ((Object)(object)go.GetComponent<BaseNetworkable>() == (Object)null)
-		{
-			return;
-		}
 		BaseNetworkable[] componentsInChildren = go.GetComponentsInChildren<BaseNetworkable>();
 		foreach (BaseNetworkable baseNetworkable in componentsInChildren)
 		{
@@ -428,7 +490,7 @@ public class PrefabPreProcess : IPrefabProcessor
 		}
 	}
 
-	private bool ShouldExclude(Transform transform)
+	private static bool ShouldExclude(Transform transform)
 	{
 		BaseEntity baseEntity = default;
 		if (((Component)transform).TryGetComponent<BaseEntity>(ref baseEntity))
@@ -463,19 +525,41 @@ public class PrefabPreProcess : IPrefabProcessor
 		}
 	}
 
-	private bool HasComponents<T>(Transform transform)
+	private bool HasComponents<T>(Transform transform, Func<T, bool> match = null)
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Expected Obj, but got Unknown
-		T val = default;
-		if (((Component)transform).TryGetComponent<T>(ref val))
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Expected Obj, but got Unknown
+		if (match == null)
 		{
-			return true;
+			T val = default;
+			if (((Component)transform).TryGetComponent<T>(ref val))
+			{
+				return true;
+			}
 		}
-		foreach (Transform item in transform)
+		else
 		{
-			Transform transform2 = item;
-			if (!ShouldExclude(transform2) && HasComponents<T>(transform2))
+			PooledList<T> val2 = Pool.Get<PooledList<T>>();
+			try
+			{
+				((Component)transform).GetComponents<T>((List<T>)(object)val2);
+				foreach (T item in (List<T>)(object)val2)
+				{
+					if (match(item))
+					{
+						return true;
+					}
+				}
+			}
+			finally
+			{
+				((IDisposable)val2)?.Dispose();
+			}
+		}
+		foreach (Transform item2 in transform)
+		{
+			Transform transform2 = item2;
+			if (!ShouldExclude(transform2) && HasComponents(transform2, match))
 			{
 				return true;
 			}
@@ -629,12 +713,25 @@ public class PrefabPreProcess : IPrefabProcessor
 		deleteList.Clear();
 		foreach (GameObject cleanup in cleanupList)
 		{
-			if (cleanup != rootGo)
+			cleanupOrder.Add(((!((Object)(object)cleanup == (Object)null)) ? cleanup.transform.GetDepth() : 0, cleanup));
+		}
+		cleanupOrder.Sort(((int Depth, GameObject GameObject) a, (int Depth, GameObject GameObject) b) => b.Depth.CompareTo(a.Depth));
+		try
+		{
+			foreach (var item2 in cleanupOrder)
 			{
-				DoCleanup(cleanup);
+				GameObject item = item2.GameObject;
+				if (item != rootGo)
+				{
+					DoCleanup(item);
+				}
 			}
 		}
-		cleanupList.Clear();
+		finally
+		{
+			cleanupOrder.Clear();
+			cleanupList.Clear();
+		}
 	}
 
 	public void DoCleanup(GameObject go)

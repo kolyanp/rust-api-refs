@@ -76,10 +76,10 @@ public class NetProfileSnapshot
 			StartedUtc = session.StartedUtc,
 			Duration = session.Duration,
 			BucketInterval = 0.1,
-			TypeCount = 29,
+			TypeCount = 30,
 			FieldCount = 5,
 			RealmCount = 2,
-			BucketStride = 290,
+			BucketStride = 300,
 			EventsSkipped = session.EventsSkipped,
 			BucketAddsDropped = session.BucketAddsDropped,
 			InfoStrings = session.Info.ToArray(),
@@ -92,11 +92,11 @@ public class NetProfileSnapshot
 		int num3 = (int)(num - num2 + 1);
 		netProfileSnapshot.FirstBucketTime = (double)num2 * 0.1;
 		netProfileSnapshot.BucketCount = num3;
-		netProfileSnapshot.Buckets = new int[num3 * 290];
+		netProfileSnapshot.Buckets = new int[num3 * 300];
 		for (int i = 0; i < num3; i++)
 		{
-			int sourceIndex = (int)((num2 + i) % session.BucketCapacity) * 290;
-			Array.Copy(session.Buckets, sourceIndex, netProfileSnapshot.Buckets, i * 290, 290);
+			int sourceIndex = (int)((num2 + i) % session.BucketCapacity) * 300;
+			Array.Copy(session.Buckets, sourceIndex, netProfileSnapshot.Buckets, i * 300, 300);
 		}
 		netProfileSnapshot.Totals = new long[session.Totals.Length];
 		Array.Copy(session.Totals, netProfileSnapshot.Totals, session.Totals.Length);

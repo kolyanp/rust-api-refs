@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ConVar;
 using Facepunch;
 using Network;
@@ -292,6 +293,11 @@ public class HeldEntity : BaseEntity
 		cachedItem = item;
 	}
 
+	public virtual bool CanBeUsedWithShield()
+	{
+		return canBeUsedWithShield;
+	}
+
 	public virtual void SetOwnerPlayer(BasePlayer player)
 	{
 		Assert.IsTrue(isServer, "Should be server!");
@@ -451,13 +457,18 @@ public class HeldEntity : BaseEntity
 			}
 			if (flag | bHeld)
 			{
-				UpdateShieldState(bHeld && canBeUsedWithShield);
+				UpdateShieldState(bHeld && CanBeUsedWithShield());
 			}
 			limitNetworking = !bHeld;
 			flagsUpdateScope.Set(Flags.Disabled, !bHeld);
 		}
 		SendNetworkUpdate();
 		OnHeldChanged();
+	}
+
+	protected virtual bool CanDeployShield()
+	{
+		return true;
 	}
 
 	public void UpdateShieldState(bool bHeld)
@@ -477,7 +488,7 @@ public class HeldEntity : BaseEntity
 			{
 				bHeld = false;
 			}
-			if ((canBeUsedWithShield & bHeld) && (Object)(object)heldEntity != (Object)null && !ownerPlayer.WantsShieldOnBack())
+			if ((CanBeUsedWithShield() & bHeld) && CanDeployShield() && (Object)(object)heldEntity != (Object)null && !ownerPlayer.WantsShieldOnBack())
 			{
 				using (FlagsUpdateScope flagsUpdateScope2 = heldEntity.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 				{
@@ -524,8 +535,8 @@ public class HeldEntity : BaseEntity
 
 	protected Item GetOwnerItem(BasePlayer ownerPlayer)
 	{
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)ownerPlayer == (Object)null || (Object)(object)ownerPlayer.inventory == (Object)null)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)ownerPlayer == (Object)null || ownerPlayer.inventory == null)
 		{
 			return null;
 		}
@@ -656,8 +667,28 @@ public class HeldEntity : BaseEntity
 	{
 	}
 
+	public virtual float AntiHackLimbReach()
+	{
+		return 0f;
+	}
+
 	public override void SwitchParent(BaseEntity ent)
 	{
+	}
+
+	public override void OnParentChanging(BaseEntity oldParent, BaseEntity newParent)
+	{
+		base.OnParentChanging(oldParent, newParent);
+		shouldFilterSubscribers = newParent is BasePlayer basePlayer && basePlayer.isInvisible;
+	}
+
+	protected override NetworkGroupSubscribers GetFilteredSubscribers(List<Connection> subscribers)
+	{
+		if (GetParentEntity() is BasePlayer { isInvisible: not false } basePlayer)
+		{
+			return basePlayer.GetShouldNetworkToConnections(subscribers);
+		}
+		return base.GetFilteredSubscribers(subscribers);
 	}
 
 	public virtual bool IsInstrument()

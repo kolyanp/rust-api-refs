@@ -43,4 +43,6 @@ public interface IMissionProvider
 	}
 
 	bool Server_HasMissionAvailable(BasePlayer player);
+
+	void Server_HandleRewardChoice(BasePlayer player, uint missionId, int rewardChoice);
 }

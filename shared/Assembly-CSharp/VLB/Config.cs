@@ -15,14 +15,14 @@ public class Config : ScriptableObject
 
 	public bool forceSinglePass = RustRenderPipeline.IsActive();
 
-	[SerializeField]
 	[HighlightNull]
+	[SerializeField]
 	private Shader beamShader1Pass;
 
-	[FormerlySerializedAs("BeamShader")]
-	[FormerlySerializedAs("beamShader")]
 	[SerializeField]
+	[FormerlySerializedAs("BeamShader")]
 	[HighlightNull]
+	[FormerlySerializedAs("beamShader")]
 	private Shader beamShader2Pass;
 
 	public int sharedMeshSides = 24;

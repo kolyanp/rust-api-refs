@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ProtoBuf;
 using Rust;
@@ -53,15 +54,15 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 
 	public bool ShowDebugData;
 
-	[Tooltip("Automatically filled in by prefab preprocess")]
 	[ReadOnly]
+	[Tooltip("Automatically filled in by prefab preprocess")]
 	public EntityNameToItemDefinition[] EntityNameToItemDefinitions;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => true;
+	bool IPrefabPreProcess.CanPreProcessDuringBundling => true;
 
 	public void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
-		if (bundling || !FileSystem.IsBundled)
+		if (!PrefabPreProcess.IsProcessingBundledPrefab)
 		{
 			EntityNameToItemDefinitions = BuildEntityNameToItemDefinitionTable();
 		}
@@ -70,61 +71,59 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 	private static EntityNameToItemDefinition[] BuildEntityNameToItemDefinitionTable()
 	{
 		List<ItemDefinition> list = GetItemList();
-		Dictionary<string, ItemDefinition> dictionary = new Dictionary<string, ItemDefinition>(StringComparer.OrdinalIgnoreCase);
+		if (list == null)
+		{
+			Debug.LogWarning((object)"LifeInfographic.PreProcess ran before ItemManager.Initialize, so the death screen will be unable to fill out item info");
+			return Array.Empty<EntityNameToItemDefinition>();
+		}
+		Dictionary<string, ItemDefinition> entityNameToItemDefinitions = new Dictionary<string, ItemDefinition>(StringComparer.OrdinalIgnoreCase);
 		ItemModEntity itemModEntity = default;
-		ThrownWeapon thrownWeapon = default;
 		ItemModDeployable itemModDeployable = default;
 		foreach (ItemDefinition item in list)
 		{
-			dictionary.TryAdd(item.shortname, item);
-			try
+			entityNameToItemDefinitions.TryAdd(item.shortname, item);
+			if (((Component)item).TryGetComponent<ItemModEntity>(ref itemModEntity))
 			{
-				if (((Component)item).TryGetComponent<ItemModEntity>(ref itemModEntity) && itemModEntity.entityPrefab.isValid)
+				AddEntityName(itemModEntity.entityPrefab, item);
+			}
+			if (((Component)item).TryGetComponent<ItemModDeployable>(ref itemModDeployable))
+			{
+				AddEntityName(itemModDeployable.entityPrefab, item);
+			}
+			ItemModProjectile[] components = ((Component)item).GetComponents<ItemModProjectile>();
+			foreach (ItemModProjectile itemModProjectile in components)
+			{
+				AddEntityName(itemModProjectile.projectileObject, item);
+				if (itemModProjectile.SkinOverrides != null)
 				{
-					GameObject val = itemModEntity.entityPrefab.Get();
-					dictionary.TryAdd(((Object)val).name, item);
-					if (val.TryGetComponent<ThrownWeapon>(ref thrownWeapon) && thrownWeapon.prefabToThrow.isValid)
-					{
-						dictionary.TryAdd(((Object)thrownWeapon.prefabToThrow.Get()).name, item);
-					}
-				}
-				if (((Component)item).TryGetComponent<ItemModDeployable>(ref itemModDeployable) && itemModDeployable.entityPrefab != null && itemModDeployable.entityPrefab.isValid)
-				{
-					dictionary.TryAdd(((Object)itemModDeployable.entityPrefab.Get()).name, item);
-				}
-				ItemModProjectile[] components = ((Component)item).GetComponents<ItemModProjectile>();
-				foreach (ItemModProjectile itemModProjectile in components)
-				{
-					if (itemModProjectile.projectileObject != null && itemModProjectile.projectileObject.isValid)
-					{
-						dictionary.TryAdd(((Object)itemModProjectile.projectileObject.Get()).name, item);
-					}
-					if (itemModProjectile.SkinOverrides == null)
-					{
-						continue;
-					}
 					ItemModProjectile.SkinOverride[] skinOverrides = itemModProjectile.SkinOverrides;
 					for (int j = 0; j < skinOverrides.Length; j++)
 					{
-						ItemModProjectile.SkinOverride skinOverride = skinOverrides[j];
-						if ((Object)(object)skinOverride.OverrideProjectile.Get() != (Object)null)
-						{
-							dictionary.TryAdd(((Object)skinOverride.OverrideProjectile.Get()).name, item);
-						}
+						AddEntityName(skinOverrides[j].OverrideProjectile, item);
 					}
 				}
 			}
-			catch (Exception ex)
-			{
-				Debug.LogError((object)("Invalid entity found in LifeInfographic.PreProcess - likely a corrupt prefab: " + item.shortname));
-				Debug.LogError((object)ex);
-			}
 		}
-		return dictionary.Select((KeyValuePair<string, ItemDefinition> kvp) => new EntityNameToItemDefinition
+		return entityNameToItemDefinitions.Select((KeyValuePair<string, ItemDefinition> kvp) => new EntityNameToItemDefinition
 		{
 			Name = kvp.Key,
 			ItemDefinition = kvp.Value
 		}).OrderBy((EntityNameToItemDefinition x) => x.Name, StringComparer.OrdinalIgnoreCase).ToArray();
+		void AddEntityName(GameObjectRef entityPrefab, ItemDefinition itemDefinition)
+		{
+			if (entityPrefab != null && entityPrefab.isValid)
+			{
+				string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(entityPrefab.resourcePath);
+				if (string.IsNullOrEmpty(fileNameWithoutExtension))
+				{
+					Debug.LogWarning((object)("Invalid entity found in LifeInfographic.PreProcess - " + itemDefinition.shortname + " references a missing prefab (" + entityPrefab.guid + ")"));
+				}
+				else
+				{
+					entityNameToItemDefinitions.TryAdd(fileNameWithoutExtension, itemDefinition);
+				}
+			}
+		}
 		static List<ItemDefinition> GetItemList()
 		{
 			return ItemManager.itemList;

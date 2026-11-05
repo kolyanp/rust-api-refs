@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace FIMSpace;
@@ -251,7 +252,7 @@ public static class FVectorMethods
 		return new Vector3Int(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y), Mathf.RoundToInt(v.z));
 	}
 
-	public static Vector3 FlattenNormal(Quaternion orientation, Vector3? forward = null, float to = 90f)
+	public static Vector3 FlattenNormal(Quaternion orientation, Nullable forward = null, float to = 90f)
 	{
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)

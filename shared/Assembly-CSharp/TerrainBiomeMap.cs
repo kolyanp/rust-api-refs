@@ -4,6 +4,60 @@ using UnityEngine;
 
 public class TerrainBiomeMap : TerrainMap<byte>
 {
+	public struct BiomeQueryStructure
+	{
+		public ReadOnly<byte> source;
+
+		public int res;
+
+		public int num;
+
+		public readonly int GetBiomeMaxIndex(float normX, float normZ, int mask = -1)
+		{
+			return GetBiomeMaxIndex(Index(normX), Index(normZ), mask);
+		}
+
+		public readonly int GetBiomeMaxIndex(int x, int z, int mask = -1)
+		{
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+			byte b = 0;
+			int result = 0;
+			for (int i = 0; i < num; i++)
+			{
+				if ((TerrainBiome.IndexToType(i) & mask) != 0)
+				{
+					byte b2 = source[(i * res + z) * res + x];
+					if (b2 >= b)
+					{
+						b = b2;
+						result = i;
+					}
+				}
+			}
+			return result;
+		}
+
+		public readonly int GetBiomeMaxType(float normX, float normZ, int mask = -1)
+		{
+			return TerrainBiome.IndexToType(GetBiomeMaxIndex(normX, normZ, mask));
+		}
+
+		public readonly int Index(float normalized)
+		{
+			int num = (int)(normalized * (float)res);
+			if (num >= 0)
+			{
+				if (num <= res - 1)
+				{
+					return num;
+				}
+				return res - 1;
+			}
+			return 0;
+		}
+	}
+
 	public Texture2D BiomeTexture;
 
 	private bool _generatedBiomeTexture;
@@ -209,6 +263,18 @@ public class TerrainBiomeMap : TerrainMap<byte>
 	public int GetBiomeMaxType(int x, int z, int mask = -1)
 	{
 		return TerrainBiome.IndexToType(GetBiomeMaxIndex(x, z, mask));
+	}
+
+	public BiomeQueryStructure GetQueryStructure()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		return new BiomeQueryStructure
+		{
+			source = src.AsReadOnly(),
+			res = res,
+			num = num
+		};
 	}
 
 	public float GetBiome(Vector3 worldPos, int mask)

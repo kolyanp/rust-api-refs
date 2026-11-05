@@ -6,22 +6,6 @@ namespace Rust.Ai.Gen2;
 public class SeaTurtleFSM : SwimmingNPCFSM
 {
 	[Serializable]
-	public class Trans_RecentlyHurt : FSMTransitionBase
-	{
-		[SerializeField]
-		private float thresholdSeconds = 5f;
-
-		protected override bool EvaluateInternal(ref FSMPayload payload)
-		{
-			if (Owner is BaseCombatEntity { lastAttackedTime: >0f } baseCombatEntity)
-			{
-				return Time.time - baseCombatEntity.lastAttackedTime < thresholdSeconds;
-			}
-			return base.EvaluateInternal(ref payload);
-		}
-	}
-
-	[Serializable]
 	public class Trans_LoudNoiseNearby : FSMTransitionBase
 	{
 		protected override bool EvaluateInternal(ref FSMPayload payload)
@@ -212,41 +196,17 @@ public class SeaTurtleFSM : SwimmingNPCFSM
 
 	public State_Deactivate deactivate = new State_Deactivate();
 
-	public State_Dead dead = new State_Dead();
-
-	private Trans_Triggerable_HitInfo DeathTrans;
-
-	public override void InitShared()
+	protected override AliveLayout BuildAlive(State_Nothing onNavmesh)
 	{
-		base.InitShared();
-		if (baseEntity.isServer)
+		State_Nothing state_Nothing = new State_Nothing
 		{
-			DeathTrans = new Trans_Triggerable_HitInfo();
-			State_Nothing state_Nothing = new State_Nothing();
-			state_Nothing.Name = "Root";
-			State_Nothing state_Nothing2 = new State_Nothing
-			{
-				Name = "Alive"
-			};
-			State_Nothing state_Nothing3 = new State_Nothing
-			{
-				Name = "Can flee"
-			};
-			State_Nothing state_Nothing4 = new State_Nothing
-			{
-				Name = "Spawning"
-			};
-			state_Nothing.AddChildren(state_Nothing2.AddTickTransition(dead, DeathTrans), dead);
-			state_Nothing2.AddChildren(state_Nothing4.AddTickTransition(randomIdle, new Trans_AlwaysValid()), deactivate.AddTickTransition(randomIdle, ~new Trans_NoPlayerConnectionsInRange()), state_Nothing3.AddTickTransition(deactivate, new Trans_NoPlayerConnectionsInRange()).AddTickTransition(flee, new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby()).AddChildren(randomIdle.AddEndTransition(roamWater), roamWater.AddEndTransition(randomIdle)), flee.AddEndTransition(randomIdle));
-			RegisterDebugMoveTo(state_Nothing2);
-			SetState(state_Nothing4);
-			SetFsmActive(newActive: true);
-		}
-	}
-
-	public override bool OnDied(HitInfo hitInfo)
-	{
-		DeathTrans.Trigger(hitInfo);
-		return false;
+			Name = "Can flee"
+		};
+		onNavmesh.AddChildren(deactivate.AddTickTransition(randomIdle, ~new Trans_NoPlayerConnectionsInRange()), state_Nothing.AddTickTransition(deactivate, new Trans_NoPlayerConnectionsInRange()).AddTickTransition(flee, new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby()).AddChildren(randomIdle.AddEndTransition(roamWater), roamWater.AddEndTransition(randomIdle)), flee.AddEndTransition(randomIdle));
+		return new AliveLayout
+		{
+			entry = randomIdle,
+			idle = randomIdle
+		};
 	}
 }

@@ -13,7 +13,7 @@ public class ItemModPaintballOveralls : ItemModSpriteConfig
 		if (rootContainer != null)
 		{
 			BasePlayer ownerPlayer = rootContainer.GetOwnerPlayer();
-			if (!((Object)(object)ownerPlayer == (Object)null) && (Object)(object)ownerPlayer.inventory != (Object)null && ownerPlayer.inventory.containerWear != null && ownerPlayer.inventory.containerWear == item.parent)
+			if (!((Object)(object)ownerPlayer == (Object)null) && ownerPlayer.inventory != null && ownerPlayer.inventory.containerWear != null && ownerPlayer.inventory.containerWear == item.parent)
 			{
 				OnWorn(item, ownerPlayer);
 			}

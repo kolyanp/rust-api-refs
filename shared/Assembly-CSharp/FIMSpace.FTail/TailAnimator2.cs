@@ -9,9 +9,9 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FTail;
 
-[HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
-[DefaultExecutionOrder(-4)]
 [AddComponentMenu("FImpossible Creations/Tail Animator 2")]
+[DefaultExecutionOrder(-4)]
+[HelpURL("https://assetstore.unity.com/packages/tools/animation/tail-animator-121819")]
 public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	[Serializable]
@@ -861,16 +861,16 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
 	public float IKBlend = 1f;
 
-	[Tooltip("If syncing with animator then applying motion of keyframe animation for IK")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
+	[Tooltip("If syncing with animator then applying motion of keyframe animation for IK")]
 	public float IKAnimatorBlend = 0.5f;
 
 	[Range(1f, 32f)]
 	[Tooltip("How much iterations should do CCDIK algorithm in one frame")]
 	public int IKReactionQuality = 2;
 
-	[Tooltip("Smoothing reactions in CCD IK algorithm")]
 	[Range(0f, 1f)]
+	[Tooltip("Smoothing reactions in CCD IK algorithm")]
 	public float IKSmoothing;
 
 	[Range(0f, 1.5f)]
@@ -883,7 +883,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	public bool IKSelectiveChain;
 
-	private Vector3? _IKCustomPos;
+	private Nullable _IKCustomPos;
 
 	private List<TailSegment> _pp_reference;
 
@@ -1029,8 +1029,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Offsetting point from which we want to measure distance to target")]
 	public Vector3 DistanceMeasurePoint;
 
-	[Range(0.25f, 2f)]
 	[Tooltip("Disable fade duration in seconds")]
+	[Range(0.25f, 2f)]
 	public float FadeDuration = 0.75f;
 
 	private bool maxDistanceExceed;
@@ -1172,12 +1172,12 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1.2f)]
 	public float Slithery = 1f;
 
-	[Range(0f, 1f)]
 	[Tooltip("How curly motion should be applied to tail segments")]
+	[Range(0f, 1f)]
 	public float Curling = 0.5f;
 
-	[Tooltip("Elastic spring effect making motion more 'meaty'")]
 	[Range(0f, 1f)]
+	[Tooltip("Elastic spring effect making motion more 'meaty'")]
 	public float Springiness;
 
 	[Tooltip("If you want to limit stretching/gumminess of position motion when object moves fast. Recommended adjust to go with it under 0.3 value.\nValue = 1: Unlimited stretching")]
@@ -1194,16 +1194,16 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("If you want limit axes symmetrically leave this parameter unchanged, if you want limit one direction of axis more than reversed, tweak this parameter")]
 	public Vector2 LimitAxisRange = Vector2.zero;
 
-	[Tooltip("If limiting shouldn't be too rapidly performed")]
 	[Range(0f, 1f)]
+	[Tooltip("If limiting shouldn't be too rapidly performed")]
 	public float LimitSmoothing = 0.5f;
 
-	[FPD_Suffix(0f, 1.5f, FPD_SuffixAttribute.SuffixMode.PercentageUnclamped, "%", true, 0)]
 	[Tooltip("If your object moves very fast making tail influenced by speed too much then you can controll it with this parameter")]
+	[FPD_Suffix(0f, 1.5f, FPD_SuffixAttribute.SuffixMode.PercentageUnclamped, "%", true, 0)]
 	public float MotionInfluence = 1f;
 
-	[Tooltip("Additional Y influence controll useful when your character is jumping (works only when MotionInfluence value is other than 100%)")]
 	[Range(0f, 1f)]
+	[Tooltip("Additional Y influence controll useful when your character is jumping (works only when MotionInfluence value is other than 100%)")]
 	public float MotionInfluenceInY = 1f;
 
 	[Tooltip("If first bone of chain should also be affected with whole chain")]
@@ -1213,12 +1213,12 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float UnifyBendiness;
 
-	[Tooltip("Reaction Speed is defining how fast tail segments will return to target position, it gives animation more underwater/floaty feeling if it's lower")]
 	[Range(0f, 1f)]
+	[Tooltip("Reaction Speed is defining how fast tail segments will return to target position, it gives animation more underwater/floaty feeling if it's lower")]
 	public float ReactionSpeed = 0.9f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
+	[Range(0f, 1f)]
 	public float Sustain;
 
 	[Range(0f, 1f)]
@@ -1263,8 +1263,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Making tail animate also roll rotation like it was done in Tail Animator V1 ! Use Rotation Relevancy Parameter (set lower than 0.5) !")]
 	public bool AnimateRoll;
 
-	[Range(0f, 1f)]
 	[Tooltip("Overriding keyframe animation with just Tail Animator option (keyframe animation treated as t-pose bones rotations)")]
+	[Range(0f, 1f)]
 	public float OverrideKeyframeAnimation;
 
 	private Transform _baseTransform;
@@ -1822,7 +1822,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		for (int i = 0; i < IncludedColliders.Count; i++)
 		{
 			Collider col = IncludedColliders[i];
-			if (IncludedColliders.Count((Collider o) => (Object)(object)o == (Object)(object)col) > 1)
+			if (Enumerable.Count(IncludedColliders, (Collider o) => (Object)(object)o == (Object)(object)col) > 1)
 			{
 				IncludedColliders.RemoveAll((Collider o) => (Object)(object)o == (Object)(object)col);
 				IncludedColliders.Add(col);
@@ -1842,7 +1842,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		for (int i = 0; i < IncludedColliders2D.Count; i++)
 		{
 			Collider2D col = IncludedColliders2D[i];
-			if (IncludedColliders2D.Count((Collider2D o) => (Object)(object)o == (Object)(object)col) > 1)
+			if (Enumerable.Count(IncludedColliders2D, (Collider2D o) => (Object)(object)o == (Object)(object)col) > 1)
 			{
 				IncludedColliders2D.RemoveAll((Collider2D o) => (Object)(object)o == (Object)(object)col);
 				IncludedColliders2D.Add(col);
@@ -2117,7 +2117,7 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 		IK_ApplyLimitBoneSettings();
 	}
 
-	public void IKSetCustomPosition(Vector3? tgt)
+	public void IKSetCustomPosition(Nullable tgt)
 	{
 		_IKCustomPos = tgt;
 	}

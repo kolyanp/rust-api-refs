@@ -1,10 +1,11 @@
+using ConVar;
 using UnityEngine;
 
 namespace Rust.Safety;
 
 public static class Check
 {
-	public static bool EntityValid(BaseEntity entity)
+	public static bool EntityValid(this BaseEntity entity)
 	{
 		if (Object.op_Implicit((Object)(object)entity))
 		{
@@ -13,35 +14,35 @@ public static class Check
 		return false;
 	}
 
-	public static bool EntityIsServer(BaseEntity entity)
+	public static bool EntityIsServer(this BaseEntity entity)
 	{
-		if (EntityValid(entity))
+		if (entity.EntityValid())
 		{
 			return entity.isServer;
 		}
 		return false;
 	}
 
-	public static bool EntityIsClient(BaseEntity entity)
+	public static bool EntityIsClient(this BaseEntity entity)
 	{
-		if (EntityValid(entity))
+		if (entity.EntityValid())
 		{
 			return entity.isClient;
 		}
 		return false;
 	}
 
-	public static bool EntitySamePrefabs(BaseEntity entity1, BaseEntity entity2)
+	public static bool EntitySamePrefabs(this BaseEntity entity1, BaseEntity entity2)
 	{
 		return entity1.prefabID == entity2.prefabID;
 	}
 
-	public static bool RefValid<T>(ResourceRef<T> gRef) where T : Object
+	public static bool RefValid<T>(this ResourceRef<T> gRef) where T : Object
 	{
 		return gRef?.isValid ?? false;
 	}
 
-	public static bool InBuildingPrivilegeArea(BasePlayer ply)
+	public static bool InBuildingPrivilegeArea(this BasePlayer ply)
 	{
 		if (!((Object)(object)ply.GetBuildingPrivilege() != (Object)null))
 		{
@@ -50,7 +51,7 @@ public static class Check
 		return true;
 	}
 
-	public static bool InBuildingPrivilegeArea(BasePlayer ply, bool useCache, float cacheDuration = 1f)
+	public static bool InBuildingPrivilegeArea(this BasePlayer ply, bool useCache, float cacheDuration = 1f)
 	{
 		if (!((Object)(object)ply.GetBuildingPrivilege(useCache, cacheDuration) != (Object)null))
 		{
@@ -59,27 +60,27 @@ public static class Check
 		return true;
 	}
 
-	public static bool HasTCBuildingPrivilege(BasePlayer ply)
+	public static bool HasTCBuildingPrivilege(this BasePlayer ply)
 	{
 		return ply.IsBuildingAuthed();
 	}
 
-	public static bool HasTCBuildingPrivilege(BasePlayer ply, bool useCache, float cacheDuration = 1f)
+	public static bool HasTCBuildingPrivilege(this BasePlayer ply, bool useCache, float cacheDuration = 1f)
 	{
 		return ply.IsBuildingAuthed(useCache, cacheDuration);
 	}
 
-	public static bool HasOtherBuildingPrivilege(BasePlayer ply)
+	public static bool HasOtherBuildingPrivilege(this BasePlayer ply)
 	{
 		return ply.HasPrivilegeFromOther();
 	}
 
-	public static bool HasOtherBuildingPrivilege(BasePlayer ply, bool useCache)
+	public static bool HasOtherBuildingPrivilege(this BasePlayer ply, bool useCache)
 	{
 		return ply.HasPrivilegeFromOther(useCache);
 	}
 
-	public static bool HasBuildingPrivilege(BasePlayer ply)
+	public static bool HasBuildingPrivilege(this BasePlayer ply)
 	{
 		if (!ply.IsBuildingAuthed())
 		{
@@ -88,7 +89,7 @@ public static class Check
 		return true;
 	}
 
-	public static bool HasBuildingPrivilege(BasePlayer ply, bool useCache, float cacheDuration = 1f)
+	public static bool HasBuildingPrivilege(this BasePlayer ply, bool useCache, float cacheDuration = 1f)
 	{
 		if (!ply.IsBuildingAuthed(useCache, cacheDuration))
 		{
@@ -97,25 +98,25 @@ public static class Check
 		return true;
 	}
 
-	public static bool IsAuthorisedToBuild(BasePlayer ply)
+	public static bool IsAuthorisedToBuild(this BasePlayer ply)
 	{
-		if (!InBuildingPrivilegeArea(ply))
+		if (!ply.InBuildingPrivilegeArea())
 		{
 			return false;
 		}
 		return ply.CanBuild();
 	}
 
-	public static bool IsAuthorisedToBuild(BasePlayer ply, bool useCache, float cacheDuration = 1f)
+	public static bool IsAuthorisedToBuild(this BasePlayer ply, bool useCache, float cacheDuration = 1f)
 	{
-		if (!InBuildingPrivilegeArea(ply, useCache))
+		if (!ply.InBuildingPrivilegeArea(useCache))
 		{
 			return false;
 		}
 		return ply.CanBuild(useCache, cacheDuration);
 	}
 
-	public static bool IsValidAttackTarget(BasePlayer ply)
+	public static bool IsValidAttackTarget(this BasePlayer ply)
 	{
 		if ((Object)(object)ply == (Object)null)
 		{
@@ -141,6 +142,10 @@ public static class Check
 		{
 			return false;
 		}
+		if (AI.ignoreplayers)
+		{
+			return false;
+		}
 		if (ply.IsNpc || ply.IsBot || ply is HumanNPC)
 		{
 			return false;
@@ -148,7 +153,7 @@ public static class Check
 		return true;
 	}
 
-	public static bool SimplyOnTerrainAt(Vector3 point)
+	public static bool IsOnTerrainSimple(this Vector3 point)
 	{
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		float height = TerrainMeta.HeightMap.GetHeight(point);
@@ -156,7 +161,7 @@ public static class Check
 		return height > oceanLevel;
 	}
 
-	public static bool IsValidWeapon(Item item, bool checkCanUseTurret)
+	public static bool IsValidWeapon(this Item item, bool checkCanUseTurret)
 	{
 		ItemDefinition info = item.info;
 		if (item.isBroken)
@@ -178,5 +183,11 @@ public static class Check
 			return false;
 		}
 		return true;
+	}
+
+	public static bool IsInsideDeepSea(this BaseNetworkable entity)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		return DeepSeaManager.IsInsideDeepSea(((Component)entity).transform.position);
 	}
 }

@@ -1,11 +1,11 @@
-using TMPro;
+using Rust.UI;
 using UnityEngine;
 
 public class ItemPickupNotice : MonoBehaviour
 {
-	public TextMeshProUGUI Text;
+	public RustText ItemNameText;
 
-	public TextMeshProUGUI Amount;
+	public RustText AmountText;
 
-	public TextMeshProUGUI Total;
+	public RustText TotalText;
 }

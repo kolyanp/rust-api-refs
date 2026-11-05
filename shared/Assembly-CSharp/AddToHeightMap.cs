@@ -70,6 +70,16 @@ public class AddToHeightMap : ProceduralObject
 	public override void Process()
 	{
 		Apply();
+		Cleanup();
+	}
+
+	public override void ProcessCached()
+	{
+		Cleanup();
+	}
+
+	private void Cleanup()
+	{
 		if (DestroyGameObject)
 		{
 			GameManager.Destroy(((Component)this).gameObject);

@@ -22,15 +22,15 @@ public class State_EatFood : FSMStateBase
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		if (!Senses.FindFood(out var food))
 		{
 			return EFSMStateStatus.Failure;
 		}
 		Vector3 val = ((Component)food).transform.position - ((Component)Owner).transform.position;
 		val.y = 0f;
-		((Component)Owner).transform.rotation = Quaternion.LookRotation(val);
+		Agent.Face(Quaternion.LookRotation(val));
 		Senses.timeToForgetSightings.Value = 5f;
 		animState = AnimPlayer.PlayServerAndTakeFromPool(Animation);
 		return base.OnStateEnter(payload);

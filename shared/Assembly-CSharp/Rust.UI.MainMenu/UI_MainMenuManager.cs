@@ -24,8 +24,8 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 	[SerializeField]
 	private Transform _genericPopupParent;
 
-	[SerializeField]
 	[Header("Background Image Settings")]
+	[SerializeField]
 	private CanvasGroup _homeVideoOverlay;
 
 	[SerializeField]
@@ -40,9 +40,12 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 	[SerializeField]
 	private float _pageBackgroundOverlayAlpha = 0.98f;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SafeZoneWarning _safeZoneWarningPopup;
+
+	[SerializeField]
+	private GameObject storeNewTag;
 
 	public static Action OnOpenStateChanged;
 
@@ -55,6 +58,8 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 	public List<GameObject> HideInGame = new List<GameObject>();
 
 	public Transform GenericPopupParent => _genericPopupParent;
+
+	public GameObject StoreNewTag => storeNewTag;
 
 	public static bool IsLoaded => _isLoaded;
 

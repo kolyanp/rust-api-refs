@@ -50,12 +50,12 @@ public class Permission : Library
 	private void VerifyAndLoadUsersData()
 	{
 		Utility.DatafileToProto<Dictionary<string, UserData>>("oxide.users");
-		Dictionary<string, UserData> obj = ProtoStorage.Load<Dictionary<string, UserData>>(new string[1] { "oxide.users" }) ?? new Dictionary<string, UserData>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, UserData> dictionary = new Dictionary<string, UserData>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, UserData> dictionary = ProtoStorage.Load<Dictionary<string, UserData>>(new string[1] { "oxide.users" }) ?? new Dictionary<string, UserData>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, UserData> dictionary2 = new Dictionary<string, UserData>(StringComparer.OrdinalIgnoreCase);
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		bool flag = false;
-		foreach (KeyValuePair<string, UserData> item in obj)
+		foreach (KeyValuePair<string, UserData> item in dictionary)
 		{
 			UserData value = item.Value;
 			hashSet2.Clear();
@@ -70,19 +70,19 @@ public class Permission : Library
 				hashSet.Add(group);
 			}
 			value.Groups = new HashSet<string>(hashSet, StringComparer.OrdinalIgnoreCase);
-			if (dictionary.ContainsKey(item.Key))
+			if (dictionary2.ContainsKey(item.Key))
 			{
-				UserData userData = dictionary[item.Key];
+				UserData userData = dictionary2[item.Key];
 				userData.Perms.UnionWith(value.Perms);
 				userData.Groups.UnionWith(value.Groups);
 				flag = true;
 			}
 			else
 			{
-				dictionary.Add(item.Key, value);
+				dictionary2.Add(item.Key, value);
 			}
 		}
-		usersData = dictionary;
+		usersData = dictionary2;
 		if (flag)
 		{
 			SaveUsers();
@@ -92,11 +92,11 @@ public class Permission : Library
 	private void VerifyAndLoadGroupsData()
 	{
 		Utility.DatafileToProto<Dictionary<string, GroupData>>("oxide.groups");
-		Dictionary<string, GroupData> obj = ProtoStorage.Load<Dictionary<string, GroupData>>(new string[1] { "oxide.groups" }) ?? new Dictionary<string, GroupData>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, GroupData> dictionary = new Dictionary<string, GroupData>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, GroupData> dictionary = ProtoStorage.Load<Dictionary<string, GroupData>>(new string[1] { "oxide.groups" }) ?? new Dictionary<string, GroupData>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, GroupData> dictionary2 = new Dictionary<string, GroupData>(StringComparer.OrdinalIgnoreCase);
 		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		bool flag = false;
-		foreach (KeyValuePair<string, GroupData> item in obj)
+		foreach (KeyValuePair<string, GroupData> item in dictionary)
 		{
 			GroupData value = item.Value;
 			hashSet.Clear();
@@ -105,17 +105,17 @@ public class Permission : Library
 				hashSet.Add(perm);
 			}
 			value.Perms = new HashSet<string>(hashSet, StringComparer.OrdinalIgnoreCase);
-			if (dictionary.ContainsKey(item.Key))
+			if (dictionary2.ContainsKey(item.Key))
 			{
-				dictionary[item.Key].Perms.UnionWith(value.Perms);
+				dictionary2[item.Key].Perms.UnionWith(value.Perms);
 				flag = true;
 			}
 			else
 			{
-				dictionary.Add(item.Key, value);
+				dictionary2.Add(item.Key, value);
 			}
 		}
-		groupsData = dictionary;
+		groupsData = dictionary2;
 		if (flag)
 		{
 			SaveGroups();
@@ -262,7 +262,7 @@ public class Permission : Library
 					return registeredPermissions.Values.SelectMany((HashSet<string> v) => v).Any((string p) => p.StartsWith(permission.TrimEnd(new char[1] { '*' }), StringComparison.OrdinalIgnoreCase));
 				}
 			}
-			return registeredPermissions.Values.Any((HashSet<string> v) => v.Contains<string>(permission, StringComparer.OrdinalIgnoreCase));
+			return registeredPermissions.Values.Any((HashSet<string> v) => v.Contains(permission, StringComparer.OrdinalIgnoreCase));
 		}
 		if (!registeredPermissions.TryGetValue(owner, out var value))
 		{
@@ -279,7 +279,7 @@ public class Permission : Library
 				return value.Any((string p) => p.StartsWith(permission.TrimEnd(new char[1] { '*' }), StringComparison.OrdinalIgnoreCase));
 			}
 		}
-		return value.Contains<string>(permission, StringComparer.OrdinalIgnoreCase);
+		return value.Contains(permission, StringComparer.OrdinalIgnoreCase);
 	}
 
 	private void owner_OnRemovedFromManager(Plugin sender, PluginManager manager)
@@ -352,7 +352,7 @@ public class Permission : Library
 		{
 			return false;
 		}
-		if (!value.Perms.Contains<string>(permission, StringComparer.OrdinalIgnoreCase))
+		if (!value.Perms.Contains(permission, StringComparer.OrdinalIgnoreCase))
 		{
 			return GroupHasPermission(value.ParentGroup, permission);
 		}
@@ -371,7 +371,7 @@ public class Permission : Library
 			return true;
 		}
 		UserData userData = GetUserData(playerId);
-		if (userData.Perms.Contains<string>(permission, StringComparer.OrdinalIgnoreCase))
+		if (userData.Perms.Contains(permission, StringComparer.OrdinalIgnoreCase))
 		{
 			return true;
 		}
@@ -431,7 +431,7 @@ public class Permission : Library
 		HashSet<string> hashSet = new HashSet<string>();
 		foreach (KeyValuePair<string, UserData> usersDatum in usersData)
 		{
-			if (usersDatum.Value.Perms.Contains<string>(permission, StringComparer.OrdinalIgnoreCase))
+			if (usersDatum.Value.Perms.Contains(permission, StringComparer.OrdinalIgnoreCase))
 			{
 				hashSet.Add(usersDatum.Key + "(" + usersDatum.Value.LastSeenNickname + ")");
 			}
@@ -449,7 +449,7 @@ public class Permission : Library
 		HashSet<string> hashSet = new HashSet<string>();
 		foreach (KeyValuePair<string, GroupData> groupsDatum in groupsData)
 		{
-			if (groupsDatum.Value.Perms.Contains<string>(permission, StringComparer.OrdinalIgnoreCase))
+			if (groupsDatum.Value.Perms.Contains(permission, StringComparer.OrdinalIgnoreCase))
 			{
 				hashSet.Add(groupsDatum.Key);
 			}
@@ -494,7 +494,7 @@ public class Permission : Library
 		{
 			return false;
 		}
-		return GetUserData(playerId).Groups.Contains<string>(groupName, StringComparer.OrdinalIgnoreCase);
+		return GetUserData(playerId).Groups.Contains(groupName, StringComparer.OrdinalIgnoreCase);
 	}
 
 	[LibraryFunction("GroupExists")]
@@ -534,7 +534,7 @@ public class Permission : Library
 			return new string[0];
 		}
 		return (from u in usersData
-			where u.Value.Groups.Contains<string>(groupName, StringComparer.OrdinalIgnoreCase)
+			where u.Value.Groups.Contains(groupName, StringComparer.OrdinalIgnoreCase)
 			select u.Key + " (" + u.Value.LastSeenNickname + ")").ToArray();
 	}
 

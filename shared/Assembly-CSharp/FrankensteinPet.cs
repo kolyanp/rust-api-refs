@@ -18,8 +18,6 @@ public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 
 	protected override bool ShouldCorpseTakeChildren => false;
 
-	protected override bool KeepCorpseClothingIntact => false;
-
 	protected override string OverrideCorpseName => "Frankenstein";
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
@@ -42,7 +40,7 @@ public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 	public IEnumerator DelayEquipWeapon(ItemDefinition item, float delay)
 	{
 		yield return (object)new WaitForSeconds(delay);
-		if (!((Object)(object)inventory == (Object)null) && inventory.containerBelt != null && !((Object)(object)item == (Object)null))
+		if (inventory != null && inventory.containerBelt != null && !((Object)(object)item == (Object)null))
 		{
 			inventory.GiveItem(ItemManager.Create(item, 1, 0uL, isServerSide: true, 0uL), inventory.containerBelt);
 			EquipWeapon();
@@ -67,7 +65,7 @@ public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 		{
 			return attackEntity.effectiveRange * (attackEntity.aiOnlyInRange ? 1f : 2f) * Brain.AttackRangeMultiplier;
 		}
-		return Brain.SenseRange;
+		return 0f;
 	}
 
 	public bool IsThreat(BaseEntity entity)
@@ -187,7 +185,7 @@ public class FrankensteinPet : BasePet, IAISenses, IAIAttack
 			{
 				ServerRotation = Quaternion.LookRotation(val.normalized);
 			}
-			target.Hurt(BaseAttackDamge, AttackDamageType, this);
+			target.OnAttacked(BaseAttackDamge, AttackDamageType, this, ignoreShield: false);
 			SignalBroadcast(Signal.Attack);
 			ClientRPC(RpcTarget.NetworkGroup("OnAttack"));
 			nextAttackTime = Time.realtimeSinceStartup + CooldownDuration();

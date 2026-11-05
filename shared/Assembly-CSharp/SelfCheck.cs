@@ -49,7 +49,7 @@ public static class SelfCheck
 	{
 		try
 		{
-			if (!RustNative_VersionCheck(5))
+			if (!RustNative_VersionCheck(6))
 			{
 				return Failed("RustNative is wrong version!");
 			}

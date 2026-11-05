@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using Oxide.Core.Libraries.Covalence;
@@ -90,7 +88,7 @@ public class WebRequests : Library
 				}
 				if (data.Length != 0)
 				{
-					request.BeginGetRequestStream(delegate(IAsyncResult result)
+					request.BeginGetRequestStream((IAsyncResult result) =>
 					{
 						if (request != null)
 						{
@@ -131,7 +129,7 @@ public class WebRequests : Library
 
 		private void WaitForResponse()
 		{
-			IAsyncResult asyncResult = request.BeginGetResponse(delegate(IAsyncResult res)
+			IAsyncResult asyncResult = request.BeginGetResponse((IAsyncResult res) =>
 			{
 				try
 				{
@@ -197,7 +195,7 @@ public class WebRequests : Library
 		{
 			Event.Remove(ref removedFromManager);
 			registeredWaitHandle?.Unregister(waitHandle);
-			Interface.Oxide.NextTick(delegate
+			Interface.Oxide.NextTick(() =>
 			{
 				if (request != null)
 				{
@@ -271,7 +269,10 @@ public class WebRequests : Library
 	public WebRequests()
 	{
 		ServicePointManager.Expect100Continue = false;
-		ServicePointManager.ServerCertificateValidationCallback = (object _003Cp0_003E, X509Certificate _003Cp1_003E, X509Chain _003Cp2_003E, SslPolicyErrors _003Cp3_003E) => true;
+		ServicePointManager.ServerCertificateValidationCallback = delegate
+		{
+			return true;
+		};
 		ServicePointManager.DefaultConnectionLimit = 200;
 		ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
 		maxCompletionPortThreads = (int)((double)maxCompletionPortThreads * 0.6);

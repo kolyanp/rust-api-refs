@@ -10,7 +10,7 @@ public class StripRig : MonoBehaviour, IPrefabPreProcess
 
 	public bool fromServer;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => true;
+	bool IPrefabPreProcess.CanPreProcessDuringBundling => true;
 
 	public void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{

@@ -88,7 +88,7 @@ public class TriggerAchievementAdvanced : TriggerBase
 
 	private bool IsWearingRequiredItems(BasePlayer ply)
 	{
-		if ((Object)(object)ply == (Object)null || (Object)(object)ply.inventory == (Object)null || ply.inventory.containerWear == null)
+		if ((Object)(object)ply == (Object)null || ply.inventory == null || ply.inventory.containerWear == null)
 		{
 			return false;
 		}

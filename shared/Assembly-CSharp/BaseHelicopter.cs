@@ -36,8 +36,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		}
 	}
 
-	[SerializeField]
 	[Header("Helicopter")]
+	[SerializeField]
 	public float engineThrustMax;
 
 	[SerializeField]
@@ -64,9 +64,9 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 	[SerializeField]
 	public GameObjectRef crashEffect;
 
+	[Range(0.1f, 0.95f)]
 	[SerializeField]
 	[Tooltip("Lower values mean more lift is produced at high angles.")]
-	[Range(0.1f, 0.95f)]
 	public float liftDotMax = 0.75f;
 
 	[SerializeField]
@@ -167,8 +167,7 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		currentInputState.throttle -= ((inputState.IsDown(BUTTON.BACKWARD) || inputState.IsDown(BUTTON.DUCK)) ? 1f : 0f);
 		currentInputState.pitch = inputState.current.mouseDelta.y;
 		currentInputState.roll = 0f - inputState.current.mouseDelta.x;
-		currentInputState.yaw = (inputState.IsDown(BUTTON.RIGHT) ? 1f : 0f);
-		currentInputState.yaw -= (inputState.IsDown(BUTTON.LEFT) ? 1f : 0f);
+		currentInputState.yaw = inputState.SteerSummed();
 		currentInputState.pitch = MouseToBinary(currentInputState.pitch);
 		currentInputState.roll = MouseToBinary(currentInputState.roll);
 		lastPlayerInputTime = Time.time;

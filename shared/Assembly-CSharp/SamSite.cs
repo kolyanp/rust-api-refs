@@ -12,8 +12,6 @@ public class SamSite : ContainerIOEntity
 {
 	public interface ISamSiteTarget
 	{
-		static List<ISamSiteTarget> serverList;
-
 		SamTargetType SAMTargetType { get; }
 
 		bool isClient { get; }
@@ -25,11 +23,6 @@ public class SamSite : ContainerIOEntity
 		Vector3 GetWorldVelocity();
 
 		bool IsVisible(Vector3 position, float maxDistance = float.PositiveInfinity);
-
-		static ISamSiteTarget()
-		{
-			serverList = new List<ISamSiteTarget>();
-		}
 	}
 
 	public class SamTargetType
@@ -117,6 +110,8 @@ public class SamSite : ContainerIOEntity
 	public static SamTargetType targetTypeMissile;
 
 	public static SamTargetType targetTypeDrone;
+
+	public static List<ISamSiteTarget> serverTargets = new List<ISamSiteTarget>();
 
 	public ISamSiteTarget currentTarget;
 
@@ -454,11 +449,11 @@ public class SamSite : ContainerIOEntity
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		foreach (ISamSiteTarget server in ISamSiteTarget.serverList)
+		foreach (ISamSiteTarget serverTarget in serverTargets)
 		{
-			if (!(server is MLRSRocket) && Vector3.Distance(server.CenterPoint(), ((Component)eyePoint).transform.position) < scanRadius)
+			if (!(serverTarget is MLRSRocket) && Vector3.Distance(serverTarget.CenterPoint(), ((Component)eyePoint).transform.position) < scanRadius)
 			{
-				allTargets.Add(server);
+				allTargets.Add(serverTarget);
 			}
 		}
 	}
@@ -717,9 +712,9 @@ public class SamSite : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ToggleDefenderMode(RPCMessage msg)
 	{
 		if (staticRespawn)

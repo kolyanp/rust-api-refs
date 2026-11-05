@@ -1,3 +1,4 @@
+using System;
 using Facepunch.Rust;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ public class ItemModCookable : ItemMod
 	public int highTemp;
 
 	public bool setCookingFlag;
+
+	private static readonly Action<Item, float> CachedCookingDelegate = CycleCooking;
 
 	public void OnValidate()
 	{
@@ -161,7 +164,7 @@ public class ItemModCookable : ItemMod
 
 	public static void SubscribeCycleCooking(Item item)
 	{
-		item.onCycle -= CycleCooking;
-		item.onCycle += CycleCooking;
+		item.onCycle -= CachedCookingDelegate;
+		item.onCycle += CachedCookingDelegate;
 	}
 }

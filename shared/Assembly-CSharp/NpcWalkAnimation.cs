@@ -1,5 +1,7 @@
+using Development.Attributes;
 using UnityEngine;
 
+[ResetStaticFields]
 public class NpcWalkAnimation : MonoBehaviour, IClientComponent
 {
 	public Vector3 HipFudge = new Vector3(-90f, 0f, 90f);

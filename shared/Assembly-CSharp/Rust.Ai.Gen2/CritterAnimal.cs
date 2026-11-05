@@ -15,7 +15,8 @@ public class CritterAnimal : BaseNPC2, ISimpleHearingReceiver
 		Frog,
 		Rabbit,
 		Squirrel,
-		Crabs
+		Crabs,
+		Seagull
 	}
 
 	public const Flags Interested = Flags.Reserved8;
@@ -51,6 +52,8 @@ public class CritterAnimal : BaseNPC2, ISimpleHearingReceiver
 			}
 		}
 	}
+
+	public override bool HideHealthInfoWhenDead => true;
 
 	public bool RecentlyHeardLoudNoise
 	{

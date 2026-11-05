@@ -25,9 +25,9 @@ public abstract class ConfigFile
 
 	public static T Load<T>(string filename) where T : ConfigFile
 	{
-		T obj = (T)Activator.CreateInstance(typeof(T), filename);
-		obj.Load();
-		return obj;
+		T val = (T)Activator.CreateInstance(typeof(T), filename);
+		val.Load();
+		return val;
 	}
 
 	public virtual void Load(string filename = null)

@@ -166,7 +166,7 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 
 	private static void LogSocketError(Exception ex)
 	{
-		if (App.logexceptions && !(ex is WebSocketException))
+		if (App.logexceptions && !(ex is WebSocketException) && !(ex is IOException))
 		{
 			Debug.LogError((object)ex);
 		}

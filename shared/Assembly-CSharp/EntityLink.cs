@@ -46,11 +46,13 @@ public class EntityLink : IPooled
 	public void Add(EntityLink entity)
 	{
 		connections.Add(entity);
+		OnConnectionsChanged();
 	}
 
 	public void Remove(EntityLink entity)
 	{
 		connections.Remove(entity);
+		OnConnectionsChanged();
 	}
 
 	public void Clear()
@@ -60,6 +62,12 @@ public class EntityLink : IPooled
 			connections[i].Remove(this);
 		}
 		connections.Clear();
+		OnConnectionsChanged();
+	}
+
+	private void OnConnectionsChanged()
+	{
+		owner?.InvalidateSaveCache();
 	}
 
 	public bool IsEmpty()

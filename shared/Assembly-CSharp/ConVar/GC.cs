@@ -56,8 +56,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled
 	{
 		get
@@ -77,8 +77,8 @@ public class GC : ConsoleSystem
 		Rust.GC.Collect();
 	}
 
-	[ServerVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
 	[ClientVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
+	[ServerVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
 	public static void unload()
 	{
 		Resources.UnloadUnusedAssets();

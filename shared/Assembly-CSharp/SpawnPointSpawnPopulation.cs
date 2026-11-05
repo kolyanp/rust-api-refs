@@ -7,6 +7,11 @@ public class SpawnPointSpawnPopulation : SpawnPopulationBase
 	[SerializeField]
 	private BaseSpawnPoint.SpawnPointType spawnPointType;
 
+	[Range(0f, 1f)]
+	[SerializeField]
+	[Tooltip("Share of the spawn points to keep filled, rounded down. Below 1 leaves points free for spawned entities to move between.")]
+	private float fillFraction = 1f;
+
 	private SpawnFilter Filter = new SpawnFilter();
 
 	public override void SubFill(ISpawnHandler spawnHandler, SpawnDistribution distribution, int numToFill, bool initialSpawn)
@@ -59,7 +64,7 @@ public class SpawnPointSpawnPopulation : SpawnPopulationBase
 	{
 		if (TryGetSpawnPoints(out var result))
 		{
-			return result.Count;
+			return Mathf.FloorToInt((float)result.Count * fillFraction);
 		}
 		return 0;
 	}

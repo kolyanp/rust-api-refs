@@ -20,6 +20,8 @@ public class MeshRendererBatch : MeshBatch
 
 	private MeshRendererLookup meshLookup;
 
+	private HashSet<Renderer> combinedRenderers = new HashSet<Renderer>();
+
 	private static MaterialPropertyBlock propertyBlock;
 
 	public override int VertexCapacity => Batching.renderer_capacity;
@@ -46,7 +48,7 @@ public class MeshRendererBatch : MeshBatch
 		((Renderer)meshRenderer).SetPropertyBlock(propertyBlock);
 	}
 
-	public void Setup(Vector3 position, Material[] materials, ShadowCastingMode shadows, int layer, Color color)
+	public void Setup(Vector3 position, List<Material> materials, ShadowCastingMode shadows, int layer, Color color)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
@@ -60,7 +62,7 @@ public class MeshRendererBatch : MeshBatch
 		Vector3 val = (((Component)this).transform.position = position);
 		this.position = val;
 		((Component)this).gameObject.layer = layer;
-		((Renderer)meshRenderer).sharedMaterials = materials;
+		((Renderer)meshRenderer).SetSharedMaterials(materials);
 		((Renderer)meshRenderer).shadowCastingMode = shadows;
 		SetupColor(color);
 		if ((int)shadows == 3)
@@ -91,6 +93,11 @@ public class MeshRendererBatch : MeshBatch
 		AddVertices(instance.GetVertexCount());
 	}
 
+	public bool Contains(Renderer renderer)
+	{
+		return combinedRenderers.Contains(renderer);
+	}
+
 	protected override void AllocMemory()
 	{
 		meshGroup = Pool.Get<MeshRendererGroup>();
@@ -117,10 +124,15 @@ public class MeshRendererBatch : MeshBatch
 			meshBatch = AssetPool.Get<Mesh>();
 		}
 		meshLookup.Apply();
+		combinedRenderers.Clear();
+		foreach (MeshRendererLookup.LookupEntry datum in meshLookup.src.data)
+		{
+			combinedRenderers.Add(datum.renderer);
+		}
 		meshData.Apply(meshBatch, this);
 		using (TimeWarning.New("MeshRendererBatch.RecalculateUVMetrics"))
 		{
-			meshBatch.RecalculateUVDistributionMetrics(1E-09f);
+			meshBatch.RecalculateUVDistributionMetric(0, 1E-09f);
 		}
 		meshBatch.UploadMeshData(false);
 	}
@@ -177,5 +189,6 @@ public class MeshRendererBatch : MeshBatch
 		}
 		meshLookup.src.Clear();
 		meshLookup.dst.Clear();
+		combinedRenderers.Clear();
 	}
 }

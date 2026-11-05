@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CompanionServer;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -36,6 +37,16 @@ public class MapMarker : BaseEntity
 		base.DestroyShared();
 	}
 
+	public override bool ShouldIgnoreNetworkLod()
+	{
+		if (!globalBroadcast)
+		{
+			return base.ShouldIgnoreNetworkLod();
+		}
+		return true;
+	}
+
+	[PoolAnalyzerGetWrapper]
 	public virtual AppMarker GetAppMarkerData()
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)

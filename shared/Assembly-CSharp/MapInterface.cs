@@ -77,6 +77,8 @@ public class MapInterface : SingletonComponent<MapInterface>, IGameUIDisconnectC
 
 	public RustImageButton ShowSleepingBagsButton;
 
+	public RustImageButton ShowToolCupboardsButton;
+
 	public RustImageButton ShowVendingMachinesButton;
 
 	public RustImageButton ShowMissionProvidersButton;
@@ -84,4 +86,6 @@ public class MapInterface : SingletonComponent<MapInterface>, IGameUIDisconnectC
 	public UIEscapeCapture EscapeCapture;
 
 	public UI_RaidWindowStatus RaidWindowStatus;
+
+	public BindingPrompt GamepadControlsPrompt;
 }

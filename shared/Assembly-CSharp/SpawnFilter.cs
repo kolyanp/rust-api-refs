@@ -68,18 +68,34 @@ public class SpawnFilter
 		{
 			Debug.LogError((object)"Empty topology filter is invalid.");
 		}
+		else if (checkTopologyRadius > 0f)
+		{
+			TerrainTopologyMap topologyMap = TerrainMeta.TopologyMap;
+			if (num5 != 0 && topologyMap.HasTopology(normX, normZ, checkTopologyRadius, num5))
+			{
+				return 0f;
+			}
+			if (num3 != -1 && !topologyMap.HasTopology(normX, normZ, checkTopologyRadius, num3))
+			{
+				return 0f;
+			}
+			if (num4 != 0 && topologyMap.GetTopology(normX, normZ, checkTopologyRadius, num4) != num4)
+			{
+				return 0f;
+			}
+		}
 		else if (num3 != -1 || num4 != 0 || num5 != 0)
 		{
-			int num6 = ((checkTopologyRadius > 0f) ? TerrainMeta.TopologyMap.GetTopology(normX, normZ, checkTopologyRadius) : TerrainMeta.TopologyMap.GetTopology(normX, normZ));
-			if (num3 != -1 && (num6 & num3) == 0)
+			int topology = TerrainMeta.TopologyMap.GetTopology(normX, normZ);
+			if (num3 != -1 && (topology & num3) == 0)
 			{
 				return 0f;
 			}
-			if (num5 != 0 && (num6 & num5) != 0)
+			if (num5 != 0 && (topology & num5) != 0)
 			{
 				return 0f;
 			}
-			if (num4 != 0 && (num6 & num4) != num4)
+			if (num4 != 0 && (topology & num4) != num4)
 			{
 				return 0f;
 			}

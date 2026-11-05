@@ -586,19 +586,23 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 
 	public static float CalculateArtificialLightExposure(Transform forTransform)
 	{
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		return CalculateArtificialLightExposure(forTransform.position);
+	}
+
+	public static float CalculateArtificialLightExposure(Vector3 pos)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		float result = 0f;
 		List<CeilingLight> list = Pool.Get<List<CeilingLight>>();
-		Vector3 position = forTransform.position;
 		float ceilingLightGrowableRange = ConVar.Server.ceilingLightGrowableRange;
-		CeilingLight.FarmLightGrid.Query(position.x, position.z, ceilingLightGrowableRange, list);
+		CeilingLight.FarmLightGrid.Query(pos.x, pos.z, ceilingLightGrowableRange, list);
 		foreach (CeilingLight item in list)
 		{
-			if (!(item.SqrDistance(position) > ceilingLightGrowableRange * ceilingLightGrowableRange) && item.IsOn())
+			if (IsInArtificialLightRange(item.LightBounds, pos, ceilingLightGrowableRange) && item.IsOn())
 			{
 				result = 1f;
 				break;
@@ -606,6 +610,12 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 		Pool.FreeUnmanaged<CeilingLight>(ref list);
 		return result;
+	}
+
+	public static bool IsInArtificialLightRange(OBB lightBounds, Vector3 pos, float range)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		return lightBounds.SqrDistance(pos) <= range * range;
 	}
 
 	public static float SunRaycast(Vector3 checkPosition)
@@ -630,15 +640,7 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 
 	public void CalculateWaterQuality()
 	{
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Invalid comparison between Unknown and I4
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Invalid comparison between Unknown and I4
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Invalid comparison between Unknown and I4
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)GetPlanter() != (Object)null)
 		{
 			float soilSaturationFraction = planter.soilSaturationFraction;
@@ -653,25 +655,46 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 		else
 		{
-			Enum val = (Enum)TerrainMeta.BiomeMap.GetBiomeMaxType(((Component)this).transform.position);
-			if (val - 1 > 1 && (int)val != 4)
-			{
-				if ((int)val == 8)
-				{
-					WaterQuality = 0.1f;
-				}
-				else
-				{
-					WaterQuality = 0f;
-				}
-			}
-			else
-			{
-				WaterQuality = 0.3f;
-			}
+			WaterQuality = GetBiomeWaterQuality((Enum)TerrainMeta.BiomeMap.GetBiomeMaxType(((Component)this).transform.position));
 		}
 		WaterQuality = Mathf.Clamp01(WaterQuality);
 		WaterQuality = RemapValue(WaterQuality, 0f, Properties.OptimalWaterQuality, 0f, 1f);
+	}
+
+	public static float GetBiomeWaterQuality(Enum biome)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0002: Invalid comparison between Unknown and I4
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Invalid comparison between Unknown and I4
+		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Invalid comparison between Unknown and I4
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Invalid comparison between Unknown and I4
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Invalid comparison between Unknown and I4
+		if ((int)biome <= 4)
+		{
+			if (biome - 1 <= 1 || (int)biome == 4)
+			{
+				goto IL_0021;
+			}
+		}
+		else
+		{
+			if ((int)biome == 8)
+			{
+				return 0.1f;
+			}
+			if ((int)biome == 16)
+			{
+				goto IL_0021;
+			}
+		}
+		return 0f;
+		IL_0021:
+		return 0.3f;
 	}
 
 	public void CalculateGroundQuality(bool firstCheck)
@@ -1077,16 +1100,16 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_TakeClone(RPCMessage msg)
 	{
 		TakeClones(msg.player);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_TakeCloneAll(RPCMessage msg)
 	{
@@ -1245,17 +1268,17 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		PickFruit(msg.player);
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	public void RPC_EatFruit(RPCMessage msg)
 	{
 		PickFruit(msg.player, eat: true);
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_PickFruitAll(RPCMessage msg)
 	{
 		if ((Object)(object)GetParentEntity() != (Object)null)
@@ -1277,8 +1300,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		PickFruit(msg.player);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RemoveDying(RPCMessage msg)
 	{
 		RemoveDying(msg.player);
@@ -1508,6 +1531,7 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 	{
 		GrowableGeneEncoding.DecodeIntToGenes(data.dataInt, Genes);
 		GrowableGeneEncoding.DecodeIntToPreviousGenes(data.dataInt, Genes);
+		SendNetworkUpdate();
 	}
 
 	public override void ResetState()

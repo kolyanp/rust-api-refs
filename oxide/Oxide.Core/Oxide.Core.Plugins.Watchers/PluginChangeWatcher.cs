@@ -10,16 +10,16 @@ public abstract class PluginChangeWatcher
 
 	protected void FirePluginSourceChanged(string name)
 	{
-		this.OnPluginSourceChanged?.Invoke(name);
+		OnPluginSourceChanged?.Invoke(name);
 	}
 
 	protected void FirePluginAdded(string name)
 	{
-		this.OnPluginAdded?.Invoke(name);
+		OnPluginAdded?.Invoke(name);
 	}
 
 	protected void FirePluginRemoved(string name)
 	{
-		this.OnPluginRemoved?.Invoke(name);
+		OnPluginRemoved?.Invoke(name);
 	}
 }

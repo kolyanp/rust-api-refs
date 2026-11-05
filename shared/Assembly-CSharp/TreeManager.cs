@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,6 +61,8 @@ public class TreeManager : BaseEntity
 
 	public static ListHashSet<BaseEntity> entities = new ListHashSet<BaseEntity>();
 
+	private static ListHashSet<BaseEntity> deepSeaEntities = new ListHashSet<BaseEntity>();
+
 	public static TreeManager server;
 
 	[ServerVar(Help = "(Generated) When enabled, tree data is streamed to players based on proximity rather than sending all trees at connect; reduces initial bandwidth")]
@@ -87,6 +90,8 @@ public class TreeManager : BaseEntity
 
 	[NonSerialized]
 	public List<TreeCell> treesGrid;
+
+	private static readonly MemoryStream snapshotStream = new MemoryStream();
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -163,6 +168,70 @@ public class TreeManager : BaseEntity
 		};
 	}
 
+	public static void WriteTrees(List<Tree> trees, Stream stream)
+	{
+		trees.Sort((Tree a, Tree b) => a.netId.Value.CompareTo(b.netId.Value));
+		PackedTreeList val = Pool.Get<PackedTreeList>();
+		try
+		{
+			val.prefabIds = Pool.Get<List<uint>>();
+			val.netIdDeltas = Pool.Get<List<ulong>>();
+			val.prefabIndices = Pool.Get<List<uint>>();
+			val.positions = new ArraySegment<byte>(Shared.ArrayPool.Rent(trees.Count * 6), 0, trees.Count * 6);
+			val.scales = Pool.Get<List<float>>();
+			ulong num = 0uL;
+			for (int num2 = 0; num2 < trees.Count; num2++)
+			{
+				Tree val2 = trees[num2];
+				int num3 = val.prefabIds.IndexOf(val2.prefabId);
+				if (num3 < 0)
+				{
+					num3 = val.prefabIds.Count;
+					val.prefabIds.Add(val2.prefabId);
+				}
+				Span<byte> destination = val.positions.AsSpan(num2 * 6);
+				BinaryPrimitives.WriteUInt16LittleEndian(destination, (ushort)val2.position.x);
+				BinaryPrimitives.WriteUInt16LittleEndian(destination.Slice(2), (ushort)val2.position.y);
+				BinaryPrimitives.WriteUInt16LittleEndian(destination.Slice(4), (ushort)val2.position.z);
+				val.netIdDeltas.Add(val2.netId.Value - num);
+				val.prefabIndices.Add((uint)num3);
+				val.scales.Add(val2.scale);
+				num = val2.netId.Value;
+			}
+			ProtoStreamExtensions.WriteToStream((IProto)(object)val, stream, false, 2097152);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public static void ReadTrees(PackedTreeList packed, List<Tree> trees)
+	{
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		ulong num = 0uL;
+		for (int i = 0; i < packed.netIdDeltas.Count; i++)
+		{
+			num += packed.netIdDeltas[i];
+			Span<byte> span = packed.positions.AsSpan(i * 6);
+			Tree val = Pool.Get<Tree>();
+			val.netId = new NetworkableId(num);
+			val.prefabId = packed.prefabIds[(int)packed.prefabIndices[i]];
+			val.position = new Half3
+			{
+				x = BinaryPrimitives.ReadUInt16LittleEndian(span),
+				y = BinaryPrimitives.ReadUInt16LittleEndian(span.Slice(2)),
+				z = BinaryPrimitives.ReadUInt16LittleEndian(span.Slice(4))
+			};
+			val.scale = packed.scales[i];
+			trees.Add(val);
+		}
+	}
+
 	public int GetTreeCount()
 	{
 		if ((Object)(object)server == (Object)(object)this)
@@ -228,7 +297,7 @@ public class TreeManager : BaseEntity
 		}
 		foreach (TreeCell item2 in treesGrid)
 		{
-			ProtoStreamExtensions.WriteToStream((IProto)(object)item2.TreeList, (Stream)item2.SerializedCell, false, 2097152);
+			WriteTrees(item2.TreeList.trees, item2.SerializedCell);
 		}
 	}
 
@@ -373,7 +442,7 @@ public class TreeManager : BaseEntity
 				using (TimeWarning.New("LazySerialize"))
 				{
 					value.SerializedCell.SetLength(0L);
-					ProtoStreamExtensions.WriteToStream((IProto)(object)value.TreeList, (Stream)value.SerializedCell, false, 2097152);
+					WriteTrees(value.TreeList.trees, value.SerializedCell);
 					value.IsDirty = false;
 					server.treesGrid[index] = value;
 				}
@@ -393,8 +462,8 @@ public class TreeManager : BaseEntity
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		int num = server.gridSize * server.gridSize;
 		BitArray bitArray = new BitArray(num);
@@ -416,7 +485,7 @@ public class TreeManager : BaseEntity
 						using (TimeWarning.New("LazySerialize"))
 						{
 							value.SerializedCell.SetLength(0L);
-							ProtoStreamExtensions.WriteToStream((IProto)(object)value.TreeList, (Stream)value.SerializedCell, false, 2097152);
+							WriteTrees(value.TreeList.trees, value.SerializedCell);
 							value.IsDirty = false;
 							server.treesGrid[index] = value;
 						}
@@ -466,15 +535,16 @@ public class TreeManager : BaseEntity
 
 	public static void OnTreeDestroyed(BaseEntity billboardEntity)
 	{
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
 		entities.Remove(billboardEntity);
+		deepSeaEntities.Remove(billboardEntity);
 		if (Application.isLoading || Application.isQuitting)
 		{
 			return;
@@ -499,7 +569,7 @@ public class TreeManager : BaseEntity
 					else
 					{
 						value.SerializedCell.SetLength(0L);
-						ProtoStreamExtensions.WriteToStream((IProto)(object)value.TreeList, (Stream)value.SerializedCell, false, 2097152);
+						WriteTrees(value.TreeList.trees, value.SerializedCell);
 					}
 					break;
 				}
@@ -510,16 +580,22 @@ public class TreeManager : BaseEntity
 
 	public static void OnTreeSpawned(BaseEntity billboardEntity)
 	{
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		if (billboardEntity.net.group != null && billboardEntity.net.group.restricted)
 		{
 			return;
 		}
 		entities.Add(billboardEntity);
+		bool flag = DeepSeaManager.IsInsideDeepSea(billboardEntity.ServerWorldPosition);
+		if (flag)
+		{
+			deepSeaEntities.Add(billboardEntity);
+		}
 		if (Application.isLoading || Application.isQuitting)
 		{
 			return;
@@ -540,45 +616,45 @@ public class TreeManager : BaseEntity
 			else
 			{
 				value.SerializedCell.SetLength(0L);
-				ProtoStreamExtensions.WriteToStream((IProto)(object)value.TreeList, (Stream)value.SerializedCell, false, 2097152);
+				WriteTrees(value.TreeList.trees, value.SerializedCell);
 			}
-			List<Connection> subscribers = server.net.group.subscribers;
-			if (subscribers == null || CollectionEx.IsEmpty(subscribers))
+			List<Connection> list = (flag ? BaseNetworkable.DeepSeaGroup.subscribers : server.net.group.subscribers);
+			if (list == null || CollectionEx.IsEmpty(list))
 			{
 				return;
 			}
-			List<Connection> list = Pool.Get<List<Connection>>();
-			foreach (Connection item in subscribers)
+			List<Connection> list2 = Pool.Get<List<Connection>>();
+			foreach (Connection item in list)
 			{
-				bool flag = true;
+				bool flag2 = true;
 				for (int i = 0; i < server.playersToProcess.Count; i++)
 				{
 					ToProcess toProcess = server.playersToProcess[i];
 					if (toProcess.Player.Connection == item && !toProcess.SentCells[index])
 					{
-						flag = false;
+						flag2 = false;
 						break;
 					}
 				}
-				if (flag)
+				if (flag2)
 				{
-					list.Add(item);
+					list2.Add(item);
 				}
 			}
-			if (!CollectionEx.IsEmpty(list))
+			if (!CollectionEx.IsEmpty(list2))
 			{
 				Tree val3 = Pool.Get<Tree>();
 				try
 				{
 					ExtractTreeNetworkData(billboardEntity, val3);
-					server.ClientRPC(RpcTarget.Players("CLIENT_TreeSpawned", list), val3);
+					server.ClientRPC(RpcTarget.Players("CLIENT_TreeSpawned", list2), val3);
 				}
 				finally
 				{
 					((IDisposable)val3)?.Dispose();
 				}
 			}
-			Pool.FreeUnmanaged<Connection>(ref list);
+			Pool.FreeUnmanaged<Connection>(ref list2);
 		}
 	}
 
@@ -599,11 +675,22 @@ public class TreeManager : BaseEntity
 	public static void SendSnapshot(BasePlayer player)
 	{
 		Stopwatch stopwatch = Stopwatch.StartNew();
-		BufferList<BaseEntity> values = entities.Values;
+		SendTrees(player, entities.Values);
+		stopwatch.Stop();
+		RustLog.Log(RustLog.EntryType.Network, 1, ((Component)player).gameObject, "Took {0}ms to send {1} global trees to {2}", stopwatch.Elapsed.TotalMilliseconds, entities.Count, player);
+	}
+
+	public static void SendDeepSeaTrees(BasePlayer player)
+	{
+		SendTrees(player, deepSeaEntities.Values);
+	}
+
+	private static void SendTrees(BasePlayer player, BufferList<BaseEntity> billboardEntities)
+	{
 		TreeList val = null;
-		for (int i = 0; i < values.Count; i++)
+		for (int i = 0; i < billboardEntities.Count; i++)
 		{
-			BaseEntity billboardEntity = values[i];
+			BaseEntity billboardEntity = billboardEntities[i];
 			Tree val2 = Pool.Get<Tree>();
 			ExtractTreeNetworkData(billboardEntity, val2);
 			if (val == null)
@@ -614,23 +701,28 @@ public class TreeManager : BaseEntity
 			val.trees.Add(val2);
 			if (val.trees.Count >= ConVar.Server.maxpacketsize_globaltrees)
 			{
-				server.ClientRPC(RpcTarget.Player("CLIENT_ReceiveTrees", player), val);
+				SendTrees(player, val.trees);
 				val.Dispose();
 				val = null;
 			}
 		}
 		if (val != null)
 		{
-			server.ClientRPC(RpcTarget.Player("CLIENT_ReceiveTrees", player), val);
+			SendTrees(player, val.trees);
 			val.Dispose();
 			val = null;
 		}
-		stopwatch.Stop();
-		RustLog.Log(RustLog.EntryType.Network, 1, ((Component)player).gameObject, "Took {0}ms to send {1} global trees to {2}", stopwatch.Elapsed.TotalMilliseconds, values.Count, player);
 	}
 
-	[RPC_Server]
+	private static void SendTrees(BasePlayer player, List<Tree> trees)
+	{
+		snapshotStream.SetLength(0L);
+		WriteTrees(trees, snapshotStream);
+		server.ClientRPC(RpcTarget.Player("CLIENT_ReceiveTrees", player), snapshotStream);
+	}
+
 	[RPC_Server.CallsPerSecond(0uL)]
+	[RPC_Server]
 	private void SERVER_RequestTrees(RPCMessage msg)
 	{
 		if (EnableTreeStreaming)

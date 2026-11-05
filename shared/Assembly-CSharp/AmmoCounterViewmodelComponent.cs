@@ -17,8 +17,8 @@ public class AmmoCounterViewmodelComponent : MonoBehaviour, IViewmodelComponent,
 	[Min(0f)]
 	public float deployFadeInDuration = 0.5f;
 
-	[Tooltip("If ammo is less than or equal to this, then display the low ammo indicator.")]
 	[Min(0f)]
+	[Tooltip("If ammo is less than or equal to this, then display the low ammo indicator.")]
 	public int lowAmmoAmount;
 
 	[Tooltip("Recommend to use an \"In\" function here rather than \"In Out\" as the fade-in animation gets reversed upon starting a fade-out (effectively turning the In function into an Out)")]

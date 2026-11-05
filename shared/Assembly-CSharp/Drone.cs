@@ -158,7 +158,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 
 	private EntityRef<DroneStorage> storageDrop;
 
-	public Vector3? targetPosition;
+	public Nullable targetPosition;
 
 	public DroneInputState currentInput;
 
@@ -749,8 +749,8 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SV_OpenStorage(RPCMessage msg)
 	{
 		if (CanBeLooted(msg.player))

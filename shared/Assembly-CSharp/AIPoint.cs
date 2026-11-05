@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 
-public class AIPoint : BaseMonoBehaviour
+public class AIPoint : BaseMonoBehaviour, IServerComponent
 {
 	private BaseEntity currentUser;
+
+	private Action clearUsedAction;
 
 	public bool InUse()
 	{
@@ -34,8 +37,12 @@ public class AIPoint : BaseMonoBehaviour
 	public void SetUsedBy(BaseEntity user, float duration = 5f)
 	{
 		currentUser = user;
-		CancelInvoke(ClearUsed);
-		Invoke(ClearUsed, duration);
+		if (clearUsedAction == null)
+		{
+			clearUsedAction = ClearUsed;
+		}
+		CancelInvoke(clearUsedAction);
+		Invoke(clearUsedAction, duration);
 	}
 
 	public void SetUsedBy(BaseEntity user)

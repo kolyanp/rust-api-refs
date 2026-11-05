@@ -120,7 +120,7 @@ public static class ExtensionMethods
 		if (!enumerator.MoveNext())
 		{
 			ref T reference = ref current;
-			val = default(T);
+			val = default;
 			if (val == null)
 			{
 				val = reference;
@@ -133,7 +133,7 @@ public static class ExtensionMethods
 			return reference.ToString();
 		}
 		ref T reference2 = ref current;
-		val = default(T);
+		val = default;
 		object value;
 		if (val == null)
 		{

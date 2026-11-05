@@ -23,15 +23,6 @@ public class PlayerHorseInputProvider : IHorseInputProvider
 
 	public float GetSteerInput()
 	{
-		float result = 0f;
-		if (player.serverInput.IsDown(BUTTON.LEFT))
-		{
-			result = -1f;
-		}
-		else if (player.serverInput.IsDown(BUTTON.RIGHT))
-		{
-			result = 1f;
-		}
-		return result;
+		return player.serverInput.Steer();
 	}
 }

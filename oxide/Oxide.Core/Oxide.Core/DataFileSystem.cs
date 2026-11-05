@@ -64,7 +64,7 @@ public class DataFileSystem
 
 	public T ReadObject<T>(string name)
 	{
-		T val = default(T);
+		T val = default;
 		if (ExistsDatafile(name))
 		{
 			val = GetFile(name).ReadObject<T>();

@@ -410,7 +410,10 @@ public static class ModLoader
 
 	public static void AddPendingRequiree(Plugin initial, Plugin requiree)
 	{
-		AddPendingRequiree(initial.FilePath, requiree.FilePath);
+		if (!string.IsNullOrEmpty(initial.FilePath))
+		{
+			AddPendingRequiree(initial.FilePath, requiree.FilePath);
+		}
 	}
 
 	public static void AddPostBatchFailedRequiree(string requiree)
@@ -554,7 +557,7 @@ public static class ModLoader
 			Analytics.plugin_constructor_failure(plugin);
 			HookCaller.CallStaticHook(2684549964u, plugin, ex);
 			Exception innerException = ex.InnerException;
-			GetCompilationResult(plugin.FilePath).AppendError(new Trace
+			GetCompilationResult(plugin.FilePath ?? type.Name).AppendError(new Trace
 			{
 				Message = "Constructor threw an exception (" + innerException.Message + ")",
 				Number = ".ctor"

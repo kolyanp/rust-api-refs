@@ -2573,15 +2573,13 @@ public class DoorStress : ConsoleSystem
 		RustNavigation navigation = RustNavigation.Instance;
 		float shippedLo = navigation.DefaultNavmesh.BuildParams.minRegionSizeMeters;
 		float shippedHi = navigation.DefaultNavmesh.BuildParamsHiRes.minRegionSizeMeters;
-		float[] array = new float[7] { 0f, 20f, 10f, 5.76f, 2f, 1f, 0f };
-		array[0] = shippedHi;
-		float[] array2 = array;
+		float[] array = new float[7] { shippedHi, 20f, 10f, 5.76f, 2f, 1f, 0f };
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine($"===== doorstress prune sweep, shipped hi res minRegionSizeMeters {shippedHi} =====");
 		sb.AppendLine("Recast prunes any walkable region smaller than this. Lower keeps more small islands.");
 		sb.AppendLine("| minRegion m2 | total polys | aperture polys | gate doors | 0 door polys | MARKING FAILED | island pruned | drop behind | split level | bake worker ms | bake main ms |");
-		float[] array3 = array2;
-		foreach (float v in array3)
+		float[] array2 = array;
+		foreach (float v in array2)
 		{
 			NavMeshBuildParams buildParams = navigation.DefaultNavmesh.BuildParams;
 			buildParams.minRegionSizeMeters = v;

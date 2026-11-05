@@ -22,7 +22,7 @@ public class TriggerNotify : TriggerBase, IPrefabPreProcess
 		}
 	}
 
-	bool IPrefabPreProcess.CanRunDuringBundling => true;
+	bool IPrefabPreProcess.CanPreProcessDuringBundling => true;
 
 	internal override void OnObjects()
 	{

@@ -14,13 +14,13 @@ public class Category_Shop
 	public class Shop_ShopFront
 	{
 		[Patch("OnShopCompleteTrade", "OnShopCompleteTrade", "ShopFront", "CompleteTrade", new string[] { })]
-		[Identifier("b6ffcf1f967c4f37889ca1a121dbbdf7")]
+		[Identifier("bf53b95ef2b74d84999ce04a731f67bf")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ShopFront", false)]
 		[Return(typeof(void))]
 		[Category("Shop")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Shop_ShopFront_b6ffcf1f967c4f37889ca1a121dbbdf7 : Patch
+		public class Shop_ShopFront_bf53b95ef2b74d84999ce04a731f67bf : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -52,14 +52,14 @@ public class Category_Shop
 		}
 
 		[Patch("OnShopAcceptClick", "OnShopAcceptClick", "ShopFront", "AcceptClicked", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("f908dbb57167458ba97e5a8e889d2711")]
+		[Identifier("02c103c7c70344a097f6f3bd13a97105")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ShopFront", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Shop")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Shop_ShopFront_f908dbb57167458ba97e5a8e889d2711 : Patch
+		public class Shop_ShopFront_02c103c7c70344a097f6f3bd13a97105 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -94,14 +94,14 @@ public class Category_Shop
 		}
 
 		[Patch("OnShopCancelClick", "OnShopCancelClick", "ShopFront", "CancelClicked", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("fc543be37f7a4b8e97cf902bdc4ceeaa")]
+		[Identifier("dc15751130ef48cf9357c8207a0730a3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ShopFront", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Shop")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Shop_ShopFront_fc543be37f7a4b8e97cf902bdc4ceeaa : Patch
+		public class Shop_ShopFront_dc15751130ef48cf9357c8207a0730a3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -15,8 +15,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private UI_Window _shockbyteWindow;
 
-	[SerializeField]
 	[Header("Categories")]
+	[SerializeField]
 	private List<ServerBrowserCategoryData> _categories;
 
 	[SerializeField]

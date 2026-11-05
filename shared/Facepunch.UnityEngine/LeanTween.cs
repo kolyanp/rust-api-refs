@@ -773,7 +773,7 @@ public class LeanTween : MonoBehaviour
 			{
 				if (i + 1 > tweenMaxSearch)
 				{
-					tweenMaxSearch = i + 1;
+					tweenMaxSearch = Mathf.Min(i + 1, maxTweens - 1);
 				}
 				startSearch = i + 1;
 				flag = true;

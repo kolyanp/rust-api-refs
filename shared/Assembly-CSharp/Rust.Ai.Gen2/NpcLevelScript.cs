@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -94,7 +95,7 @@ public class NpcLevelScript : TriggerBase, IServerComponent
 			{
 				continue;
 			}
-			Vector3? val2 = null;
+			Nullable val2 = null;
 			float num = float.PositiveInfinity;
 			foreach (NpcLevelTrigger linkedTrigger2 in linkedTriggers)
 			{

@@ -38,26 +38,16 @@ public class SocketMod_Inside : SocketMod
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = place.position + place.rotation * baseSocket.localPosition;
-		Quaternion val2 = place.rotation * baseSocket.localRotation;
-		Vector3 pos = val + val2 * localPosition;
-		Quaternion rotation = val2 * localRotation;
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 pos = place.position + place.rotation * worldPosition;
+		Quaternion rotation = place.rotation * worldRotation;
 		bool flag = IsOutside(pos, rotation, directions);
 		return !wantsInside == flag;
 	}

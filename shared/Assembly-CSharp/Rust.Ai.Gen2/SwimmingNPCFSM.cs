@@ -127,32 +127,32 @@ public abstract class SwimmingNPCFSM : FSMComponent
 		[Tooltip("How far the swimmer will drift from home before its next leg is aimed back towards it.")]
 		private float homeRadius = 50f;
 
-		[Tooltip("How close counts as arrived. The swimmer steers rather than paths, so it never lands exactly on the point.")]
 		[SerializeField]
+		[Tooltip("How close counts as arrived. The swimmer steers rather than paths, so it never lands exactly on the point.")]
 		private float arriveDistance = 3f;
 
 		[SerializeField]
 		[Tooltip("Water this shallow is not worth swimming to. What passes for navigable without a navmesh.")]
 		private float minWaterDepth = 3f;
 
+		[SerializeField]
 		[Range(0f, 1f)]
 		[Tooltip("How far down the swimmer aims to swim, as a fraction of the water depth at its destination. 0 hugs the surface and 1 hugs the floor. Without this the destination inherits whatever height the swimmer already had, so it never recovers depth once it sinks.")]
-		[SerializeField]
 		private float targetDepthFraction = 0.3f;
 
-		[SerializeField]
-		[Tooltip("How much each leg's depth varies around the target, as a fraction of local depth, so the swimmer does not swim at one fixed height. WaterClamp keeps it in bounds.")]
 		[Range(0f, 0.5f)]
+		[Tooltip("How much each leg's depth varies around the target, as a fraction of local depth, so the swimmer does not swim at one fixed height. WaterClamp keeps it in bounds.")]
+		[SerializeField]
 		private float depthJitterFraction = 0.15f;
 
 		[SerializeField]
 		private int maxAttempts = 4;
 
-		[SerializeField]
 		[Tooltip("How long a single swim \"path\" can take before the swimmer gives up and picks another.")]
+		[SerializeField]
 		private float legTimeout = 30f;
 
-		private Vector3? spawnPosition;
+		private Nullable spawnPosition;
 
 		private TimeSince timeSinceLegStarted;
 
@@ -219,36 +219,36 @@ public abstract class SwimmingNPCFSM : FSMComponent
 			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0159: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00da: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0170: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0123: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+			//IL_011e: Unknown result type (might be due to invalid IL or missing references)
 			Vector3 position = ((Component)swimmer).transform.position;
 			Vector3 homePosition = HomePosition;
 			bool flag = Vector3.Distance(homePosition, position) > homeRadius;
-			Vector3? val = null;
+			Nullable val = null;
 			for (int i = 0; i < maxAttempts; i++)
 			{
 				float num = Mathf.Lerp(distanceRange.x, distanceRange.y, (float)i / (float)maxAttempts);
@@ -257,24 +257,24 @@ public abstract class SwimmingNPCFSM : FSMComponent
 				{
 					if (!flag)
 					{
-						Vector2 insideUnitCircle = Random.insideUnitCircle;
+						Vector2 insideUnitCircle = Rng.InsideUnitCircle;
 						val2 = Vector3Ex.XZ3D(insideUnitCircle.normalized);
 					}
 					else
 					{
-						val2 = Quaternion.Euler(0f, Random.Range(-60f, 60f), 0f) * Vector3Ex.NormalizeXZ(homePosition - position);
+						val2 = Quaternion.Euler(0f, Rng.Range(-60f, 60f), 0f) * Vector3Ex.NormalizeXZ(homePosition - position);
 					}
 				}
 				else
 				{
-					val2 = Quaternion.Euler(0f, Random.Range(-45f, 45f), 0f) * val.Value;
+					val2 = Quaternion.Euler(0f, Rng.Range(-45f, 45f), 0f) * val.Value;
 				}
 				Vector3 val3 = val2;
 				Vector3 val4 = position + val3 * num;
 				float overallWaterDepth = WaterLevel.GetOverallWaterDepth(val4, waves: false, volumes: false);
 				if (overallWaterDepth < minWaterDepth)
 				{
-					Vector3? val5 = val;
+					Nullable val5 = val;
 					if (!val5.HasValue)
 					{
 						val = GetAwayFromShore(position);
@@ -282,7 +282,7 @@ public abstract class SwimmingNPCFSM : FSMComponent
 					continue;
 				}
 				float num2 = overallWaterDepth * depthJitterFraction;
-				val4.y = GetTargetAltitude(val4) + Random.Range(0f - num2, num2);
+				val4.y = GetTargetAltitude(val4) + Rng.Range(0f - num2, num2);
 				destination = val4;
 				return true;
 			}
@@ -297,7 +297,7 @@ public abstract class SwimmingNPCFSM : FSMComponent
 			return Mathf.Lerp(num, num2, targetDepthFraction);
 		}
 
-		private static Vector3? GetAwayFromShore(Vector3 pos)
+		private static Nullable GetAwayFromShore(Vector3 pos)
 		{
 			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
@@ -331,4 +331,9 @@ public abstract class SwimmingNPCFSM : FSMComponent
 	}
 
 	protected override TickFSMWorkQueue workQueue => CritterAnimalFSM.critterWorkQueue;
+
+	protected override FSMTransitionBase NewNavmeshReadyTransition()
+	{
+		return new Trans_AlwaysValid();
+	}
 }

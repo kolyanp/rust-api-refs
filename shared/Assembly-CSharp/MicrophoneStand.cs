@@ -14,7 +14,8 @@ public class MicrophoneStand : BaseMountable
 	{
 		Normal,
 		HighPitch,
-		LowPitch
+		LowPitch,
+		Unfiltered
 	}
 
 	public VoiceProcessor VoiceProcessor;
@@ -29,6 +30,8 @@ public class MicrophoneStand : BaseMountable
 
 	public AudioMixerGroup LowPitchMix;
 
+	public AudioMixerGroup UnfilteredMix;
+
 	public Phrase NormalPhrase = new Phrase("microphone_normal", "Normal");
 
 	public Phrase NormalDescPhrase = new Phrase("microphone_normal_desc", "No voice effect");
@@ -40,6 +43,10 @@ public class MicrophoneStand : BaseMountable
 	public Phrase LowPitchPhrase = new Phrase("microphone_low", "Low");
 
 	public Phrase LowPitchDescPhrase = new Phrase("microphone_low_desc", "Low pitch voice");
+
+	public Phrase UnfilteredPhrase = new Phrase("microphone_unfiltered", "Unfiltered");
+
+	public Phrase UnfilteredDescPhrase = new Phrase("microphone_unfiltered_desc", "Voice without filtering");
 
 	public GameObjectRef IOSubEntity;
 
@@ -206,5 +213,9 @@ public class MicrophoneStand : BaseMountable
 		//IL_0069: Expected Obj, but got Unknown
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Expected Obj, but got Unknown
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Expected Obj, but got Unknown
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Expected Obj, but got Unknown
 	}
 }

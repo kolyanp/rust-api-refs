@@ -21,13 +21,13 @@
     <Reference Include="Assembly-CSharp" />
     <Reference Include="0Harmony" />
     <Reference Include="System.IO.Compression">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Compression.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="Facepunch.Steamworks.Win64" />
-    <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Facepunch.System" />
   </ItemGroup>
 </Project>

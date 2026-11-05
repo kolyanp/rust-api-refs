@@ -79,6 +79,15 @@ public class GameModeSoftcore : GameModeVanilla
 		base.OnFlagsChanged(old, next);
 	}
 
+	protected override int ApplyGatherRate(int amount)
+	{
+		if (amount <= 0)
+		{
+			return amount;
+		}
+		return Mathf.Max(1, Mathf.RoundToInt((float)amount * Mathf.Max(0f, gather_rate)));
+	}
+
 	public void UpdateRaidWindow()
 	{
 		CancelInvoke(UpdateRaidWindow);

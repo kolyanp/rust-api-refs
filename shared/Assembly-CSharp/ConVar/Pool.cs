@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -20,20 +21,24 @@ public class Pool : ConsoleSystem
 	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	public static int mode = 2;
 
-	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	[ClientVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
+	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	public static bool prewarm = true;
 
 	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled = true;
 
-	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	[ClientVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
+	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	public static bool debug = false;
 
-	[ServerVar(Help = "(Generated) Prints a table of all object pool entries showing type, capacity, active count, peak usage, hit/miss counts, and spill counts; supports --json")]
+	private const string DebugMemPoolStartHelp = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)";
+
+	private const string DebugMemPoolStopHelp = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs";
+
 	[ClientVar(Help = "(Generated) Prints a table of all object pool entries showing type, capacity, active count, peak usage, hit/miss counts, and spill counts; supports --json")]
+	[ServerVar(Help = "(Generated) Prints a table of all object pool entries showing type, capacity, active count, peak usage, hit/miss counts, and spill counts; supports --json")]
 	public static void print_memory(Arg arg)
 	{
 		if (Pool.Directory.Count == 0)
@@ -99,8 +104,8 @@ public class Pool : ConsoleSystem
 		arg.ReplyWith("Reset max item counter of pool");
 	}
 
-	[ClientVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
 	[ServerVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
+	[ClientVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
 	public static void print_arraypool(Arg arg)
 	{
 		bool flag = arg.HasArg("--json");
@@ -163,8 +168,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Prints a table of all prefab pool entries showing prefab name, miss count, current count, target capacity, and push/pop counts; supports --json")]
 	[ServerVar(Help = "(Generated) Prints a table of all prefab pool entries showing prefab name, miss count, current count, target capacity, and push/pop counts; supports --json")]
+	[ClientVar(Help = "(Generated) Prints a table of all prefab pool entries showing prefab name, miss count, current count, target capacity, and push/pop counts; supports --json")]
 	public static void print_prefabs(Arg arg)
 	{
 		PrefabPoolCollection pool = GameManager.server.pool;
@@ -249,30 +254,30 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
 	[ClientVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
+	[ServerVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
 	public static void clear_memory(Arg arg)
 	{
 		Pool.Clear(arg.GetString(0, string.Empty));
 	}
 
-	[ServerVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
 	[ClientVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
+	[ServerVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
 	public static void clear_prefabs(Arg arg)
 	{
 		string filter = arg.GetString(0, string.Empty);
 		GameManager.server.pool.Clear(filter);
 	}
 
-	[ClientVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
 	[ServerVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
+	[ClientVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
 	public static void clear_assets(Arg arg)
 	{
 		AssetPool.Clear(arg.GetString(0, string.Empty));
 	}
 
-	[ClientVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
 	[ServerVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
+	[ClientVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
 	public static void export_prefabs(Arg arg)
 	{
 		PrefabPoolCollection pool = GameManager.server.pool;
@@ -303,5 +308,64 @@ public class Pool : ConsoleSystem
 		string filter = arg.GetString(0, string.Empty);
 		int countOverride = arg.GetInt(1);
 		PrefabPoolWarmup.Run(filter, countOverride);
+	}
+
+	[ClientVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
+	[ServerVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
+	public static void debug_mem_start(Arg arg)
+	{
+		string text = arg.GetString(0, string.Empty);
+		if (string.IsNullOrEmpty(text))
+		{
+			arg.ReplyWith("Missing type name, if you want to use all(super expensive!), pass * for typeName arg");
+			return;
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.Append("Tracking: ");
+		foreach (var (type2, val2) in Pool.Directory)
+		{
+			if (text == "*" || type2.ToString().Contains(text))
+			{
+				if (text != "*")
+				{
+					stringBuilder.Append(type2.ToString() + ", ");
+				}
+				val2.StartTracking();
+			}
+		}
+		if (text == "*")
+		{
+			stringBuilder.Append("All types");
+		}
+		arg.ReplyWith(stringBuilder.ToString());
+	}
+
+	[ClientVar(Help = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs")]
+	[ServerVar(Help = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs")]
+	public static void debug_mem_stop(Arg arg)
+	{
+		int maxLogs = arg.GetInt(0, 8);
+		int logCount = 0;
+		StringBuilder builder = new StringBuilder();
+		Func<object, bool, StackTrace, bool> func = LogLeak;
+		foreach (var (_, val2) in Pool.Directory)
+		{
+			logCount = 0;
+			val2.StopTracking(func);
+		}
+		arg.ReplyWith(builder.ToString());
+		bool LogLeak(object obj, bool isTake, StackTrace trace)
+		{
+			if (isTake)
+			{
+				builder.AppendLine(obj.GetType().ToString() + " missing Pool.Get call. Callstack:\n" + trace.ToString() + "\n");
+			}
+			else
+			{
+				builder.AppendLine(obj.GetType().ToString() + " missing Pool.Free call. Callstack:\n" + trace.ToString() + "\n");
+			}
+			logCount++;
+			return logCount < maxLogs;
+		}
 	}
 }

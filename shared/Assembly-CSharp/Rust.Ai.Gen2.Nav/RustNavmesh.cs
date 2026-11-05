@@ -28,6 +28,8 @@ public class RustNavmesh : IDisposable
 
 	private static Vector3[] DonutPointsBuffer = new Vector3[64];
 
+	private static Vector3[] FloorBorderBuffer;
+
 	public NavMeshBuildParams BuildParams = new NavMeshBuildParams(true);
 
 	public NavMeshBuildParams BuildParamsHiRes = new NavMeshBuildParams(true);
@@ -82,6 +84,8 @@ public class RustNavmesh : IDisposable
 
 	public bool ForceHiRes;
 
+	private Dictionary<Door, Matrix4x4> movingGateDoors;
+
 	private static bool loggedSaveProcessorCounts;
 
 	private const int MaxSaveThreads = 32;
@@ -119,6 +123,10 @@ public class RustNavmesh : IDisposable
 
 	public bool IsSaveInFlight { get; private set; }
 
+	public IndependantNavmesh MovingOwner { get; private set; }
+
+	public bool BakesTerrain => (Object)(object)MovingOwner == (Object)null;
+
 	public bool CullTilesFarFromShore { get; private set; }
 
 	public int TileChangeVersion { get; private set; }
@@ -132,18 +140,74 @@ public class RustNavmesh : IDisposable
 		return NavMeshHandle != IntPtr.Zero;
 	}
 
-	public RustNavmesh(BackgroundTileBuilder tileBuilder, NavMeshBuildParams? buildParamsOverride = null, NavMeshBuildParams? buildParamsHiResOverride = null, Bounds? boundsOverride = null, bool shouldBuild = true, bool synchronous = false, bool forceHiRes = false, bool cullTilesFarFromShore = false)
+	public void GetMovingGateDoorsWithin(Bounds navBounds, ICollection<Door> doors)
 	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		foreach (KeyValuePair<Door, Matrix4x4> movingGateDoorPose in GetMovingGateDoorPoses())
+		{
+			Matrix4x4 value = movingGateDoorPose.Value;
+			if (navBounds.Contains(value.GetPosition()))
+			{
+				doors.Add(movingGateDoorPose.Key);
+			}
+		}
+	}
+
+	public bool TryGetMovingGateDoorPose(Door door, out Matrix4x4 localToNav)
+	{
+		return GetMovingGateDoorPoses().TryGetValue(door, out localToNav);
+	}
+
+	private Dictionary<Door, Matrix4x4> GetMovingGateDoorPoses()
+	{
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		if (movingGateDoors != null)
+		{
+			return movingGateDoors;
+		}
+		movingGateDoors = Pool.Get<Dictionary<Door, Matrix4x4>>();
+		if ((Object)(object)MovingOwner == (Object)null)
+		{
+			return movingGateDoors;
+		}
+		Matrix4x4 worldToNavMatrix = MovingOwner.WorldToNavMatrix;
+		PooledList<Door> val = Pool.Get<PooledList<Door>>();
+		try
+		{
+			((Component)((Component)MovingOwner).transform.root).GetComponentsInChildren<Door>((List<Door>)(object)val);
+			foreach (Door item in (List<Door>)(object)val)
+			{
+				if (item.isServer && item.IsNavGate)
+				{
+					movingGateDoors[item] = worldToNavMatrix * ((Component)item).transform.localToWorldMatrix;
+				}
+			}
+			return movingGateDoors;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public RustNavmesh(BackgroundTileBuilder tileBuilder, NavMeshBuildParams? buildParamsOverride = null, NavMeshBuildParams? buildParamsHiResOverride = null, Nullable boundsOverride = null, bool shouldBuild = true, bool synchronous = false, bool forceHiRes = false, bool cullTilesFarFromShore = false, IndependantNavmesh movingOwner = null)
+	{
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
 		if (AI.useUnityNavmesh)
 		{
 			return;
@@ -155,6 +219,7 @@ public class RustNavmesh : IDisposable
 		}
 		this.tileBuilder = tileBuilder;
 		ForceHiRes = forceHiRes;
+		MovingOwner = movingOwner;
 		CullTilesFarFromShore = cullTilesFarFromShore;
 		if (boundsOverride.HasValue)
 		{
@@ -867,25 +932,6 @@ public class RustNavmesh : IDisposable
 		}
 	}
 
-	public bool CorridorOptimizeAndMove(IntPtr corridor, NavVector3 optimizeNextNS, float optimizationRange, NavVector3 desiredPosNS, out NavVector3 resultPosNS, bool allowNpcDoors = false)
-	{
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		using (TimeWarning.New("RustNavmesh.CorridorOptimizeAndMove"))
-		{
-			resultPosNS = desiredPosNS;
-			if (!RustNavigation.EnsureNewNavmesh() || !IsValid())
-			{
-				return false;
-			}
-			if (!RecastWrapper.CorridorOptimizeAndMove(NavMeshHandle, corridor, in optimizeNextNS.Value, optimizationRange, in desiredPosNS.Value, out var resultPos, out var _, allowNpcDoors ? 1 : 0))
-			{
-				return false;
-			}
-			resultPosNS = new NavVector3(resultPos);
-			return true;
-		}
-	}
-
 	public bool CorridorMoveTargetPosition(IntPtr corridor, NavVector3 desiredTargetNS, out NavVector3 resultTargetNS, bool allowNpcDoors = false)
 	{
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
@@ -1016,6 +1062,79 @@ public class RustNavmesh : IDisposable
 				resultsNS.Add(new NavVector3(DonutPointsBuffer[i]));
 			}
 			return numFound > 0;
+		}
+	}
+
+	public bool FindFloor(ref ulong startRef, NavVector3 centerNS, float maxArea, ulong[] refs, out int count, uint[] tiles, out int tileCount, out float area, out NavVector3 boundsMinNS, out NavVector3 boundsMaxNS, out bool open, out uint stamp, bool allowNpcDoors = false)
+	{
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("RustNavmesh.FindFloor"))
+		{
+			count = 0;
+			tileCount = 0;
+			area = 0f;
+			boundsMinNS = default;
+			boundsMaxNS = default;
+			open = false;
+			stamp = 0u;
+			if (!RustNavigation.EnsureNewNavmesh() || !IsValid())
+			{
+				return false;
+			}
+			if (!RecastWrapper.GetFloorAroundPoly(NavMeshHandle, ref startRef, in centerNS.Value, maxArea, refs, out count, tiles, out tileCount, out area, out var boundsMin, out var boundsMax, out open, out stamp, allowNpcDoors ? 1 : 0))
+			{
+				return false;
+			}
+			boundsMinNS = new NavVector3(boundsMin);
+			boundsMaxNS = new NavVector3(boundsMax);
+			return true;
+		}
+	}
+
+	public bool TileStampsUnchangedSince(uint[] tiles, int count, uint lastStamp)
+	{
+		if (count <= 0 || !RustNavigation.EnsureNewNavmesh() || !IsValid())
+		{
+			return false;
+		}
+		return RecastWrapper.TileStampsUnchangedSince(NavMeshHandle, tiles, count, lastStamp);
+	}
+
+	public unsafe int GetWallsAround(ulong startRef, NavVector3 centerNS, float radius, float* segments, int maxSegments, uint* tiles, int maxTiles, out int tileCount, out uint stamp, bool allowNpcDoors = false)
+	{
+		tileCount = 0;
+		stamp = 0u;
+		if (!RustNavigation.EnsureNewNavmesh() || !IsValid())
+		{
+			return 0;
+		}
+		return RecastWrapper.GetWallsAround(NavMeshHandle, startRef, in centerNS.Value, radius, segments, maxSegments, tiles, maxTiles, out tileCount, out stamp, allowNpcDoors ? 1 : 0);
+	}
+
+	public unsafe bool TileStampsUnchangedSince(uint* tiles, int count, uint lastStamp)
+	{
+		if (count <= 0 || !RustNavigation.EnsureNewNavmesh() || !IsValid())
+		{
+			return false;
+		}
+		return RecastWrapper.TileStampsUnchangedSince(NavMeshHandle, tiles, count, lastStamp);
+	}
+
+	public void FloorBorder(ulong[] refs, int count, List<NavVector3> segmentsNS, bool allowNpcDoors = false)
+	{
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		if (count > 0 && RustNavigation.EnsureNewNavmesh() && IsValid())
+		{
+			if (FloorBorderBuffer == null)
+			{
+				FloorBorderBuffer = new Vector3[24576];
+			}
+			int floorBoundary = RecastWrapper.GetFloorBoundary(NavMeshHandle, refs, count, FloorBorderBuffer, allowNpcDoors ? 1 : 0);
+			for (int i = 0; i < floorBoundary * 2; i++)
+			{
+				segmentsNS.Add(new NavVector3(FloorBorderBuffer[i]));
+			}
 		}
 	}
 
@@ -1305,7 +1424,7 @@ public class RustNavmesh : IDisposable
 		IntPtr intPtr = Marshal.AllocHGlobal(payloadSize);
 		ManagedNavPayload managedNavPayload = new ManagedNavPayload
 		{
-			payloadVersion = 6,
+			payloadVersion = 7,
 			buildParams = BuildParams,
 			buildParamsHiRes = BuildParamsHiRes,
 			currentNavmeshBounds = CurrentNavmeshBounds,
@@ -1336,7 +1455,7 @@ public class RustNavmesh : IDisposable
 	{
 		int saveThreads = RustNav.saveThreads;
 		int num = ((saveThreads > 0) ? Mathf.Min(saveThreads, 32) : Mathf.Clamp(Environment.ProcessorCount / 2, 1, 4));
-		if (!loggedSaveProcessorCounts)
+		if (AI.logIssues && !loggedSaveProcessorCounts)
 		{
 			loggedSaveProcessorCounts = true;
 			RustNavigation.Log(string.Format("Navmesh save and load threads: {0} (Environment.ProcessorCount {1}, SystemInfo.processorCount {2}, rustnav.savethreads {3})", new object[4]
@@ -1471,14 +1590,13 @@ public class RustNavmesh : IDisposable
 	private static void LogSaveCompleted(NavmeshSaveStats stats)
 	{
 		double num = stats.mainMs + stats.threadMs + stats.replaceMs;
-		string message = CompletionLine(in stats, num);
 		if (RustNav.saveWarnMs > 0f && num > (double)RustNav.saveWarnMs)
 		{
-			DebugEx.LogWarning(message, (StackTraceLogType)0);
+			DebugEx.LogWarning(CompletionLine(in stats, num), (StackTraceLogType)0);
 		}
-		else
+		else if (AI.logIssues)
 		{
-			DebugEx.Log(message, (StackTraceLogType)0);
+			DebugEx.Log(CompletionLine(in stats, num), (StackTraceLogType)0);
 		}
 	}
 
@@ -1527,9 +1645,9 @@ public class RustNavmesh : IDisposable
 					return null;
 				}
 				ManagedNavPayload payload = System.Runtime.CompilerServices.Unsafe.Read<ManagedNavPayload>((void*)managedBlob);
-				if (payload.payloadVersion != 6)
+				if (payload.payloadVersion != 7)
 				{
-					RustNavigation.LogWarning($"Saved navmesh is payload version {payload.payloadVersion}, this build wants {6}. Rebuilding from scratch.");
+					RustNavigation.LogWarning($"Saved navmesh is payload version {payload.payloadVersion}, this build wants {7}. Rebuilding from scratch.");
 					return null;
 				}
 				if (payload.pendingTileCount < 0 || managedBlobSize != System.Runtime.CompilerServices.Unsafe.SizeOf<ManagedNavPayload>() + (long)payload.pendingTileCount * 4L * 2)
@@ -1657,7 +1775,7 @@ public class RustNavmesh : IDisposable
 		}
 	}
 
-	public bool FillDebugDrawProto(NavMeshData navMeshData, Bounds bounds, Matrix4x4? transform = null, Vector3? sectionPivot = null, Vector3 sectionSign = default(Vector3))
+	public bool FillDebugDrawProto(NavMeshData navMeshData, Bounds bounds, Nullable transform = null, Nullable sectionPivot = null, Vector3 sectionSign = default(Vector3))
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
@@ -1788,7 +1906,7 @@ public class RustNavmesh : IDisposable
 		}
 	}
 
-	public bool FillDebugDrawProtoForTile(NavMeshData navMeshData, int tx, int ty, Matrix4x4? transform = null, NavMeshData doorOpenData = null, NavMeshData doorClosedData = null, NavMeshData doorNpcData = null)
+	public bool FillDebugDrawProtoForTile(NavMeshData navMeshData, int tx, int ty, Nullable transform = null, NavMeshData doorOpenData = null, NavMeshData doorClosedData = null, NavMeshData doorNpcData = null)
 	{
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
@@ -1921,5 +2039,9 @@ public class RustNavmesh : IDisposable
 			NavMeshHandle = IntPtr.Zero;
 		}
 		tiles = null;
+		if (movingGateDoors != null)
+		{
+			Pool.FreeUnmanaged<Door, Matrix4x4>(ref movingGateDoors);
+		}
 	}
 }

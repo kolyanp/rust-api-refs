@@ -1,4 +1,4 @@
-using UnityEngine;
+using System;
 
 public interface IPet
 {
@@ -8,5 +8,5 @@ public interface IPet
 
 	bool IsOwnedBy(BasePlayer player);
 
-	bool IssuePetCommand(PetCommandType cmd, int param, Ray? ray);
+	bool IssuePetCommand(PetCommandType cmd, int param, Nullable ray);
 }

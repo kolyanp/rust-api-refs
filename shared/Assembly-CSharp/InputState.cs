@@ -94,30 +94,93 @@ public class InputState
 		return current.mouseDelta;
 	}
 
+	public float Steer()
+	{
+		float num = ((current != null) ? SanitiseAnalog(current.steer) : 0f);
+		if (num != 0f)
+		{
+			return num;
+		}
+		if (IsDown(BUTTON.LEFT))
+		{
+			return -1f;
+		}
+		if (IsDown(BUTTON.RIGHT))
+		{
+			return 1f;
+		}
+		return 0f;
+	}
+
+	public float SteerSummed()
+	{
+		float num = ((current != null) ? SanitiseAnalog(current.steer) : 0f);
+		if (num != 0f)
+		{
+			return num;
+		}
+		return (IsDown(BUTTON.RIGHT) ? 1f : 0f) - (IsDown(BUTTON.LEFT) ? 1f : 0f);
+	}
+
+	public float Throttle()
+	{
+		float num = ((current != null) ? SanitiseAnalog(current.throttle) : 0f);
+		if (num != 0f)
+		{
+			return num;
+		}
+		if (IsDown(BUTTON.FORWARD))
+		{
+			return 1f;
+		}
+		if (IsDown(BUTTON.BACKWARD))
+		{
+			return -1f;
+		}
+		return 0f;
+	}
+
+	private static float SanitiseAnalog(float value)
+	{
+		if (!float.IsFinite(value))
+		{
+			return 0f;
+		}
+		return Mathf.Clamp(value, -1f, 1f);
+	}
+
 	public void Flip(InputMessage newcurrent)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		SwallowedButtons = 0;
 		previous.aimAngles = current.aimAngles;
 		previous.buttons = current.buttons;
 		previous.mouseDelta = current.mouseDelta;
+		previous.steer = current.steer;
+		previous.throttle = current.throttle;
 		current.aimAngles = newcurrent.aimAngles;
 		current.buttons = newcurrent.buttons;
 		current.mouseDelta = newcurrent.mouseDelta;
+		current.steer = newcurrent.steer;
+		current.throttle = newcurrent.throttle;
 	}
 
 	public void Clear()
 	{
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		current.buttons = 0;
 		previous.buttons = 0;
+		current.steer = 0f;
+		previous.steer = 0f;
+		current.throttle = 0f;
+		previous.throttle = 0f;
 		SetMouseDelta(Vector3.zero);
 		SwallowedButtons = 0;
 	}

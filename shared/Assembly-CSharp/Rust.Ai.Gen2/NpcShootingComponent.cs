@@ -7,8 +7,8 @@ namespace Rust.Ai.Gen2;
 [SoftRequireComponent(typeof(SenseComponent))]
 public class NpcShootingComponent : EntityComponent<BaseEntity>
 {
-	[Header("Weapon Stats")]
 	[SerializeField]
+	[Header("Weapon Stats")]
 	public ItemDefinition weaponItemDefinition;
 
 	[SerializeField]
@@ -32,6 +32,8 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 	private bool toggleAttachmentLightAtNight;
 
 	private SenseComponent Senses => _senses ?? (_senses = ((Component)this).GetComponent<SenseComponent>());
+
+	private NpcRandom Rng => NpcRandom.Of(baseEntity);
 
 	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)this).GetComponent<RustNavMeshAgent>());
 
@@ -62,7 +64,7 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		weapon.TopUpAmmo();
 		if (BaseNetworkableEx.Is<BaseProjectile>((Object)(object)weapon, out BaseProjectile _) && item.contents != null)
 		{
-			Item item2 = ItemManager.CreateByName((toggleAttachmentLightAtNight = Random.Range(0, 3) == 0) ? "weapon.mod.flashlight" : "weapon.mod.lasersight", 1, 0uL);
+			Item item2 = ItemManager.CreateByName((toggleAttachmentLightAtNight = Rng.Range(0, 3) == 0) ? "weapon.mod.flashlight" : "weapon.mod.lasersight", 1, 0uL);
 			if (!item2.MoveToContainer(item.contents))
 			{
 				item2.Remove();
@@ -249,18 +251,18 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 				{
 					if (num < 0.5f)
 					{
-						burstEndTime = timeAsDouble + (double)((float)Random.Range(3, 10) * weapon.repeatDelay);
-						nextBurstBeginTime = burstEndTime + (double)Random.Range(0.3f, 0.4f);
+						burstEndTime = timeAsDouble + (double)((float)Rng.Range(3, 10) * weapon.repeatDelay);
+						nextBurstBeginTime = burstEndTime + (double)Rng.Range(0.3f, 0.4f);
 					}
 					else if (num < 1f)
 					{
-						burstEndTime = timeAsDouble + (double)((float)Random.Range(3, 6) * weapon.repeatDelay);
-						nextBurstBeginTime = burstEndTime + (double)Random.Range(0.5f, 1.2f);
+						burstEndTime = timeAsDouble + (double)((float)Rng.Range(3, 6) * weapon.repeatDelay);
+						nextBurstBeginTime = burstEndTime + (double)Rng.Range(0.5f, 1.2f);
 					}
 					else
 					{
 						burstEndTime = timeAsDouble + (double)weapon.repeatDelay;
-						nextBurstBeginTime = burstEndTime + (double)Random.Range(0.5f, 1.5f);
+						nextBurstBeginTime = burstEndTime + (double)Rng.Range(0.5f, 1.5f);
 					}
 				}
 			}
@@ -295,7 +297,7 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		{
 			num = ((!(distanceRatio < 1f)) ? 0.5f : 0.75f);
 		}
-		return Random.value > num;
+		return Rng.Value > num;
 	}
 
 	public bool CanShootFromAt(Vector3 potentialLocation, Vector3 targetLocation, string debugCategory = "shoot trace")
@@ -392,12 +394,12 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = targetPos - EyePosition;
@@ -411,7 +413,7 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		Vector3 normalized2 = val.normalized;
 		val = Vector3.Cross(normalized2, normalized);
 		Vector3 normalized3 = val.normalized;
-		float num = Random.Range(0f, MathF.PI * 2f);
+		float num = Rng.Range(0f, MathF.PI * 2f);
 		return normalized2 * Mathf.Cos(num) * spreadX + normalized3 * Mathf.Sin(num) * spreadY;
 	}
 

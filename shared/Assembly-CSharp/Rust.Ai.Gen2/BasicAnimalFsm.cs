@@ -13,8 +13,6 @@ public class BasicAnimalFsm : FSMComponent
 
 		public const string Idle = "Idle";
 
-		public const string Sleep = "Sleep";
-
 		public const string Chase = "Chase";
 
 		public const string Attack = "Attack";
@@ -26,41 +24,38 @@ public class BasicAnimalFsm : FSMComponent
 		public const string Dead = "Dead";
 	}
 
-	[Header("Basic animal")]
-	[Tooltip("How close the animal has to get to bite, measured from its attack point. Also the distance the chase stops at, so it doubles as how close the animal comes to what it fights.")]
 	[SerializeField]
+	[Tooltip("How close the animal has to get to bite, measured from its attack point. Also the distance the chase stops at, so it doubles as how close the animal comes to what it fights.")]
+	[Header("Basic animal")]
 	private float attackRange = 2f;
 
-	[Tooltip("Where the bite reaches from, relative to the animal. Rotates with the animal, so a bear reaches further forwards than sideways.")]
 	[SerializeField]
+	[Tooltip("Where the bite reaches from, relative to the animal. Rotates with the animal, so a bear reaches further forwards than sideways.")]
 	private Vector3 attackOffset = Vector3.zero;
 
 	[Tooltip("Minimum seconds between two bites.")]
 	[SerializeField]
 	private float attackIntervalSeconds = 1.5f;
 
-	[SerializeField]
 	[Tooltip("How long the animal commits to one chase before backing off.")]
+	[SerializeField]
 	private float chaseGiveUpSeconds = 20f;
 
-	[SerializeField]
 	[Tooltip("How long the animal stays uninterested after backing off, before it roams again.")]
+	[SerializeField]
 	private float cooldownSeconds = 5f;
 
-	[Tooltip("Health fraction below which the animal breaks off a fight.")]
 	[SerializeField]
+	[Tooltip("Health fraction below which the animal breaks off a fight.")]
 	private float fleeBelowHealthFraction = 0.3f;
 
-	[Range(0f, 1f)]
-	[Tooltip("Chance of napping rather than idling at the end of a roam leg. Keep it low, a sleeping animal is a sitting duck.")]
+	[Tooltip("An animal that is not already fighting runs from a hit taken from further away than this, in metres. Zero turns it off.")]
 	[SerializeField]
-	private float sleepChance = 0.05f;
+	private float fleeWhenShotBeyond = 20f;
 
 	public State_Roam roam = new State_Roam();
 
 	public State_AnimalIdle idle = new State_AnimalIdle();
-
-	public State_AnimalSleep sleep = new State_AnimalSleep();
 
 	public State_AnimalChase chase = new State_AnimalChase();
 
@@ -68,156 +63,147 @@ public class BasicAnimalFsm : FSMComponent
 
 	public State_Flee flee = new State_Flee();
 
-	public State_Dead dead = new State_Dead();
-
 	private Trans_TriggeredWithin AttackedTrans;
 
-	private Trans_Triggerable_HitInfo DeathTrans;
+	private Trans_TriggeredWithin ShotFromAfarTrans;
 
-	public override void InitShared()
+	protected override AliveLayout BuildAlive(State_Nothing onNavmesh)
 	{
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0158: Expected Obj, but got Unknown
-		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
-		if (baseEntity.isServer)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0139: Expected Obj, but got Unknown
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		State_Nothing state_Nothing = new State_Nothing
 		{
-			State_Nothing state_Nothing = new State_Nothing
-			{
-				Name = "WaitForNavmesh"
-			};
-			State_Nothing state_Nothing2 = new State_Nothing
-			{
-				Name = "Cooldown"
-			};
-			roam.Name = "Roam";
-			idle.Name = "Idle";
-			sleep.Name = "Sleep";
-			chase.Name = "Chase";
-			attack.Name = "Attack";
-			attack.Range = attackRange;
-			attack.AttackOffset = attackOffset;
-			flee.Name = "Flee";
-			dead.Name = "Dead";
-			SetCombatMovement(chase, chase.speed, attackRange);
-			SetCombatMovement(attack, chase.speed, attackRange);
-			attack.offNavmeshSampleRadius = chase.offNavmeshSampleRadius;
-			DeathTrans = new Trans_Triggerable_HitInfo();
-			AttackedTrans = new Trans_TriggeredWithin();
-			Trans_Triggerable EncounterEndTrans = new Trans_Triggerable();
-			((Component)baseEntity).GetComponent<NPCEncounterTimer>().onShouldGiveUp.AddListener((UnityAction)(() =>
-			{
-				EncounterEndTrans.Trigger();
-			}));
-			FSMTransitionBase transition = new Trans_TargetInRange
-			{
-				Range = attackRange,
-				Offset = attackOffset
-			} & new Trans_Cooldown
-			{
-				cooldown = attackIntervalSeconds
-			} & new Trans_HasStraightPathToTarget();
-			State_Nothing state_Nothing3 = new State_Nothing();
-			state_Nothing3.Name = "Root";
-			State_Nothing state_Nothing4 = new State_Nothing
-			{
-				Name = "Alive"
-			};
-			State_Nothing state_Nothing5 = new State_Nothing
-			{
-				Name = "OnNavmesh"
-			};
-			State_Nothing state_Nothing6 = new State_Nothing
-			{
-				Name = "Passive"
-			};
-			State_Nothing state_Nothing7 = new State_Nothing
-			{
-				Name = "Combat"
-			};
-			state_Nothing3.AddChildren(state_Nothing4.AddTickTransition(dead, DeathTrans).AddChildren(state_Nothing.AddTickTransition(roam, new Trans_IsNavmeshReady()), state_Nothing5.AddTickTransition(state_Nothing, new Trans_IsNavmeshReady
+			Name = "Cooldown"
+		};
+		roam.Name = "Roam";
+		idle.Name = "Idle";
+		chase.Name = "Chase";
+		attack.Name = "Attack";
+		attack.Range = attackRange;
+		attack.AttackOffset = attackOffset;
+		flee.Name = "Flee";
+		dead.Name = "Dead";
+		waitForNavMesh.Name = "WaitForNavmesh";
+		SetCombatMovement(chase, chase.speed, attackRange);
+		SetCombatMovement(attack, chase.speed, attackRange);
+		attack.offNavmeshSampleRadius = chase.offNavmeshSampleRadius;
+		AttackedTrans = new Trans_TriggeredWithin();
+		ShotFromAfarTrans = new Trans_TriggeredWithin();
+		Trans_Triggerable EncounterEndTrans = new Trans_Triggerable();
+		((Component)baseEntity).GetComponent<NPCEncounterTimer>().onShouldGiveUp.AddListener((UnityAction)(() =>
+		{
+			EncounterEndTrans.Trigger();
+		}));
+		FSMTransitionBase transition = new Trans_TargetInRange
+		{
+			Range = attackRange,
+			Offset = attackOffset
+		} & new Trans_Cooldown
+		{
+			cooldown = attackIntervalSeconds
+		} & new Trans_HasStraightPathToTarget();
+		State_Nothing state_Nothing2 = new State_Nothing
+		{
+			Name = "Passive"
+		};
+		State_Nothing state_Nothing3 = new State_Nothing
+		{
+			Name = "Combat"
+		};
+		onNavmesh.AddTickTransition(flee, Trans_TargetHasRepellent.Near()).AddChildren(state_Nothing2.AddTickTransition(flee, new Trans_And
+		{
+			new Trans_IsAfraidOfTarget(),
+			new Trans_HasTarget()
+		}).AddTickTransition(flee, new Trans_And
+		{
+			ShotFromAfarTrans,
+			new Trans_HasTarget()
+		}).AddTickTransition(chase, new Trans_And
+		{
+			new Trans_HasTarget(),
+			new Trans_TargetHasRepellent
 			{
 				Inverted = true
-			}).AddChildren(state_Nothing6.AddTickTransition(flee, new Trans_And
+			},
+			new Trans_IsInWater_Slow
 			{
-				new Trans_IsAfraidOfTarget(),
-				new Trans_HasTarget()
-			}).AddTickTransition(chase, new Trans_And
-			{
-				new Trans_HasTarget(),
-				new Trans_IsInWater_Slow
-				{
-					minDepth = 1f,
-					Inverted = true
-				},
-				new Trans_IsTargetInWater
-				{
-					Inverted = true
-				}
-			}).AddChildren(roam.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(sleep, new Trans_RandomChance
-			{
-				Chance = sleepChance
-			}).AddEndTransition(idle), sleep.AddEndTransition(roam), idle.AddEndTransition(roam)), state_Nothing7.AddTickTransition(state_Nothing2, new Trans_HasTarget
+				minDepth = 1f,
+				Inverted = true
+			},
+			new Trans_IsTargetInWater
 			{
 				Inverted = true
-			}).AddTickTransition(flee, EncounterEndTrans).AddTickTransition(flee, new Trans_IsHealthBelowPercentage
+			}
+		})
+			.AddChildren(roam.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(idle), idle.AddEndTransition(roam)), state_Nothing3.AddTickTransition(state_Nothing, new Trans_HasTarget
+		{
+			Inverted = true
+		}).AddTickTransition(flee, new Trans_TargetHasRepellent()).AddTickTransition(flee, EncounterEndTrans)
+			.AddTickTransition(flee, new Trans_IsHealthBelowPercentage
 			{
 				percentage = fleeBelowHealthFraction
 			})
-				.AddTickTransition(flee, new Trans_TargetIsInSafeZone())
-				.AddTickTransition(flee, new Trans_IsInWater_Slow
-				{
-					minDepth = 1f
-				} | new Trans_IsTargetInWater())
-				.AddChildren(chase.AddTickTransition(attack, transition).AddTickTransition(state_Nothing2, new Trans_ElapsedTime
-				{
-					Duration = chaseGiveUpSeconds
-				}).AddTickTransition(flee, ~new Trans_CanReachTarget_Slow())
-					.AddFailureTransition(flee), attack.AddEndTransition(chase)), state_Nothing2.AddTickTransition(flee, new Trans_And
+			.AddTickTransition(flee, new Trans_TargetIsInSafeZone())
+			.AddTickTransition(flee, new Trans_IsInWater_Slow
 			{
-				new Trans_IsAfraidOfTarget(),
-				new Trans_HasTarget()
-			}).AddTickTransition(chase, AttackedTrans).AddTickTransition(roam, new Trans_ElapsedTime
+				minDepth = 1f
+			} | new Trans_IsTargetInWater())
+			.AddChildren(chase.AddTickTransition(attack, transition).AddTickTransition(state_Nothing, new Trans_ElapsedTime
 			{
-				Duration = cooldownSeconds
-			}), flee.AddFailureTransition(chase, new Trans_And
+				Duration = chaseGiveUpSeconds
+			}).AddTickTransition(flee, ~new Trans_CanReachTarget_Slow())
+				.AddFailureTransition(flee), attack.AddEndTransition(chase)), state_Nothing.AddTickTransition(flee, new Trans_And
+		{
+			new Trans_IsAfraidOfTarget(),
+			new Trans_HasTarget()
+		}).AddTickTransition(chase, AttackedTrans & ~new Trans_TargetHasRepellent()).AddTickTransition(roam, new Trans_ElapsedTime
+		{
+			Duration = cooldownSeconds
+		}), flee.AddFailureTransition(chase, new Trans_And
+		{
+			new Trans_HasTarget(),
+			new Trans_TargetHasRepellent
 			{
-				new Trans_HasTarget(),
-				new Trans_CanReachTarget_Slow(),
-				new Trans_IsInWater_Slow
-				{
-					minDepth = 1f,
-					Inverted = true
-				},
-				new Trans_IsTargetInWater
-				{
-					Inverted = true
-				}
-			}).AddEndTransition(roam))), dead);
-			RegisterDebugMoveTo(state_Nothing4);
-			SetState(state_Nothing);
-			SetFsmActive(newActive: true);
-		}
+				Inverted = true
+			},
+			new Trans_CanReachTarget_Slow(),
+			new Trans_IsInWater_Slow
+			{
+				minDepth = 1f,
+				Inverted = true
+			},
+			new Trans_IsTargetInWater
+			{
+				Inverted = true
+			}
+		}).AddSuccessTransition(flee, Trans_TargetHasRepellent.StillNear()).AddEndTransition(roam));
+		return new AliveLayout
+		{
+			entry = roam,
+			idle = roam
+		};
 	}
 
 	public override void Hurt(HitInfo hitInfo)
 	{
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		if (Senses.CanTarget(hitInfo.Initiator))
 		{
 			AttackedTrans.Trigger();
+			if (fleeWhenShotBeyond > 0f && Vector3Ex.Distance2D(((Component)baseEntity).transform.position, ((Component)hitInfo.Initiator).transform.position) > fleeWhenShotBeyond)
+			{
+				ShotFromAfarTrans.Trigger();
+			}
 			if (CurrentState != dead)
 			{
 				ForceTickOnTheNextUpdate();
 			}
 		}
-	}
-
-	public override bool OnDied(HitInfo hitInfo)
-	{
-		DeathTrans.Trigger(hitInfo);
-		return false;
 	}
 
 	private static void SetCombatMovement(State_AnimalChase state, RustNavMeshAgent.Speeds gait, float stoppingDistance)

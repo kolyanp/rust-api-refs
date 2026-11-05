@@ -60,14 +60,16 @@ public class Projectile : ListComponent<Projectile>
 
 	public float thickness;
 
-	[Tooltip("Tick this box to be able to change the initial orientation of the projectile")]
 	[Header("Orientation")]
+	[Tooltip("Tick this box to be able to change the initial orientation of the projectile")]
 	public bool changeInitialOrientation;
 
 	[Tooltip("This projectile will raycast for this many units, and then become a projectile. This is typically done for bullets.")]
 	public float initialDistance;
 
 	public Vector3 initialOrientation;
+
+	public FoodVisualTarget foodVisual;
 
 	[Header("Impact Rules")]
 	public bool remainInWorld;
@@ -204,7 +206,7 @@ public class Projectile : ListComponent<Projectile>
 
 	private static uint cachedWaterString = 0u;
 
-	private Vector3? GetCustomEffectNormal()
+	private Nullable GetCustomEffectNormal()
 	{
 		return null;
 	}

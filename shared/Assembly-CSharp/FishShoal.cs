@@ -75,6 +75,10 @@ public class FishShoal : IDisposable
 		public float moveToggle;
 
 		public float legPhase;
+
+		public float3 tint;
+
+		public float tintStrength;
 	}
 
 	public struct FishCollisionGatherJob : IJob
@@ -454,6 +458,8 @@ public class FishShoal : IDisposable
 		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0227: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
 		(float, float) waterAndTerrainSurface = WaterLevel.GetWaterAndTerrainSurface(float3.op_Implicit(cameraPosition), waves: false, volumes: false);
 		float item = waterAndTerrainSurface.Item1;
 		float item2 = waterAndTerrainSurface.Item2;
@@ -496,7 +502,8 @@ public class FishShoal : IDisposable
 					scale = 0f,
 					seed = random.NextFloat(0f, 2f),
 					moveToggle = 1f,
-					legPhase = random.NextFloat(0f, MathF.PI * 2f)
+					legPhase = random.NextFloat(0f, MathF.PI * 2f),
+					tint = float3.op_Implicit(1f)
 				};
 				num++;
 			}

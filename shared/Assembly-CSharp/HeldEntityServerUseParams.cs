@@ -1,4 +1,4 @@
-using UnityEngine;
+using System;
 
 public readonly struct HeldEntityServerUseParams
 {
@@ -6,7 +6,7 @@ public readonly struct HeldEntityServerUseParams
 
 	public readonly float speedModifier;
 
-	public readonly Matrix4x4? originOverride;
+	public readonly Nullable originOverride;
 
 	public readonly bool useBulletThickness;
 
@@ -14,7 +14,7 @@ public readonly struct HeldEntityServerUseParams
 
 	public static HeldEntityServerUseParams Default => new HeldEntityServerUseParams(1f, 1f, null, true, false);
 
-	public HeldEntityServerUseParams(float damageModifier = 1f, float speedModifier = 1f, Matrix4x4? originOverride = null, bool useBulletThickness = true, bool useProtectionForNPCs = false)
+	public HeldEntityServerUseParams(float damageModifier = 1f, float speedModifier = 1f, Nullable originOverride = null, bool useBulletThickness = true, bool useProtectionForNPCs = false)
 	{
 		this.damageModifier = damageModifier;
 		this.speedModifier = speedModifier;

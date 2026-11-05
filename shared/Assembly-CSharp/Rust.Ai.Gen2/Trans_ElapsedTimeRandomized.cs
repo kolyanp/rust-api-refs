@@ -14,7 +14,7 @@ public class Trans_ElapsedTimeRandomized : Trans_ElapsedTime
 
 	public override void OnStateEnter()
 	{
-		Duration = MinDuration + (double)Random.value * (MaxDuration - MinDuration);
+		Duration = MinDuration + (double)Rng.Value * (MaxDuration - MinDuration);
 		base.OnStateEnter();
 	}
 }

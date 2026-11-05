@@ -6,9 +6,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(Camera))]
 [ResetStaticFields]
+[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(Camera))]
 public class CoverageQueries : MonoBehaviour
 {
 	public class BufferSet
@@ -120,13 +120,13 @@ public class CoverageQueries : MonoBehaviour
 			}
 		}
 
-		public void Dispatch(CommandBuffer cmd)
+		public void Dispatch(IRasterCommandBuffer cmd)
 		{
-			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 			if (inputData.Length != 0)
 			{
 				coverageMat.SetTexture("_Input", (Texture)(object)inputTexture);
-				cmd.Blit((Texture)(object)inputTexture, RenderTargetIdentifier.op_Implicit((Texture)(object)resultTexture), coverageMat, 0);
+				cmd.DrawProcedural(Matrix4x4.identity, coverageMat, 1, (MeshTopology)0, 3, 1);
 			}
 		}
 

@@ -13,8 +13,6 @@ public class PlayerModelSkin : MonoBehaviour, IPrefabPreProcess
 
 	public Renderer SkinRenderer;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
-
 	public void Setup(SkinSet skin, float hairNum)
 	{
 		if (Object.op_Implicit((Object)(object)SkinRenderer) && Object.op_Implicit((Object)(object)skin))

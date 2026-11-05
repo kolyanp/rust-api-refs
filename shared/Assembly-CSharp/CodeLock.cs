@@ -411,8 +411,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		wrongCodes = 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void UnlockWithCode(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract() || !IsLocked() || IsCodeEntryBlocked())

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public sealed class TransformTarget : IAITarget
@@ -8,7 +9,7 @@ public sealed class TransformTarget : IAITarget
 
 	public Transform Transform => _t;
 
-	public Vector3? Position
+	public Nullable Position
 	{
 		get
 		{

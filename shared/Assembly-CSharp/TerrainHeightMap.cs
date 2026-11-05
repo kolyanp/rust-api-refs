@@ -134,8 +134,8 @@ public class TerrainHeightMap : TerrainMap<short>
 
 	public Texture2D NormalTexture;
 
-	[Min(1f)]
 	[Header("Collider Sampling")]
+	[Min(1f)]
 	public int ColliderSamplesPerAxis = 1;
 
 	[Range(0f, 1f)]
@@ -433,7 +433,7 @@ public class TerrainHeightMap : TerrainMap<short>
 			return;
 		}
 		int normalres = (res - 1) / 2;
-		NormalTexture = new Texture2D(normalres, normalres, (TextureFormat)4, false, true);
+		NormalTexture = new Texture2D(normalres, normalres, (TextureFormat)4, true, true);
 		((Object)NormalTexture).name = "NormalTexture";
 		((Texture)NormalTexture).wrapMode = (TextureWrapMode)1;
 		NativeArray<Color32> normals = NormalTexture.GetPixelData<Color32>(0);

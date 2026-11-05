@@ -259,7 +259,7 @@ public abstract class Plugin
 
 	public void RaiseError(string message)
 	{
-		this.OnError?.Invoke(this, message);
+		OnError?.Invoke(this, message);
 	}
 
 	public void TrackStart()
@@ -366,7 +366,7 @@ public abstract class Plugin
 
 	public void AddCovalenceCommand(string[] commands, string callback, string[] perms = null)
 	{
-		AddCovalenceCommand(commands, perms, delegate(IPlayer caller, string text, string[] args)
+		AddCovalenceCommand(commands, perms, (IPlayer caller, string text, string[] args) =>
 		{
 			CallHook(callback, caller, text, args);
 			return true;

@@ -9,8 +9,8 @@ public class MissionObjective_GoToFloatingCity : MissionObjective
 	[Tooltip("Distance threshold to player for objective to complete (if distance is less that this value).")]
 	public float distanceForCompletion = 50f;
 
-	[Tooltip("Distance threshold to player for objective to reset (if distance is greater than this value).")]
 	[InspectorName("Distance For Reset (m)")]
+	[Tooltip("Distance threshold to player for objective to reset (if distance is greater than this value).")]
 	public float distanceForReset = 50f;
 
 	[Tooltip("If true, disregards distance on the y-plane.")]

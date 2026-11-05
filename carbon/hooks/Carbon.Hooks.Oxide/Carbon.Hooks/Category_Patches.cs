@@ -14,12 +14,12 @@ public class Category_Patches
 	public class Patches_FacepunchRConRConListener
 	{
 		[Patch("OnRconConnection [exp, patch]", "OnRconConnection [exp, patch]", "Facepunch.RCon/RConListener", "ProcessConnections", new string[] { })]
-		[Identifier("e9271237b09e45c994c0ee5e632ddb95")]
+		[Identifier("6d113a214428452db92eaf1fed6d938a")]
 		[Dependencies(new string[] { "OnRconConnection [exp]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_FacepunchRConRConListener_e9271237b09e45c994c0ee5e632ddb95 : Patch
+		public class Patches_FacepunchRConRConListener_6d113a214428452db92eaf1fed6d938a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -42,12 +42,12 @@ public class Category_Patches
 	public class Patches_PlayerLoot
 	{
 		[Patch("OnLootEntity [patch]", "OnLootEntity [patch]", "PlayerLoot", "StartLootingEntity", new string[] { "BaseEntity", "System.Boolean" })]
-		[Identifier("b71652f08dae416aa6cdbe79bb9c7836")]
+		[Identifier("1b672378e78f474a88bd10fd75a4d1c6")]
 		[Dependencies(new string[] { "OnLootEntity" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_PlayerLoot_b71652f08dae416aa6cdbe79bb9c7836 : Patch
+		public class Patches_PlayerLoot_1b672378e78f474a88bd10fd75a4d1c6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -66,12 +66,12 @@ public class Category_Patches
 		}
 
 		[Patch("OnLootItem [patch]", "OnLootItem [patch]", "PlayerLoot", "StartLootingItem", new string[] { "Item" })]
-		[Identifier("8cfe70f7419d459aadc1ce35541a442a")]
+		[Identifier("d268216d88fe459f9d7121d1ac9db206")]
 		[Dependencies(new string[] { "OnLootItem" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_PlayerLoot_8cfe70f7419d459aadc1ce35541a442a : Patch
+		public class Patches_PlayerLoot_d268216d88fe459f9d7121d1ac9db206 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -93,12 +93,12 @@ public class Category_Patches
 	public class Patches_BaseMelee
 	{
 		[Patch("OnPlayerAttack [melee, patch]", "OnPlayerAttack [melee, patch]", "BaseMelee", "DoAttackShared", new string[] { "HitInfo" })]
-		[Identifier("0ebebe68d3e9480186d47135194cc2a6")]
+		[Identifier("fca334e4b635437da2d2e133323ecb0e")]
 		[Dependencies(new string[] { "OnPlayerAttack [Melee]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_BaseMelee_0ebebe68d3e9480186d47135194cc2a6 : Patch
+		public class Patches_BaseMelee_fca334e4b635437da2d2e133323ecb0e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -120,11 +120,11 @@ public class Category_Patches
 	public class Patches_BaseEntity
 	{
 		[Patch("NoLimboGroupForPlayers [patch]", "NoLimboGroupForPlayers [patch]", "BaseEntity", "UpdateNetworkGroup", new string[] { })]
-		[Identifier("d42dbd37577d4b3daf78854a15841af2")]
+		[Identifier("17496cf88486477a9a0288074b6f8fc6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_BaseEntity_d42dbd37577d4b3daf78854a15841af2 : Patch
+		public class Patches_BaseEntity_17496cf88486477a9a0288074b6f8fc6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -152,12 +152,12 @@ public class Category_Patches
 		}
 
 		[Patch("LimitNetworkingSignalBroadcast [Patch]", "LimitNetworkingSignalBroadcast [Patch]", "BaseEntity", "SignalBroadcast", new string[] { "BaseEntity/Signal", "System.String", "Network.Connection" })]
-		[Identifier("c8893312079e4b68948847b3760c3115")]
+		[Identifier("4fdf6a26d4fe4a8d9f12adc153823d5c")]
 		[Dependencies(new string[] { "OnSignalBroadcast" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_BaseEntity_c8893312079e4b68948847b3760c3115 : Patch
+		public class Patches_BaseEntity_4fdf6a26d4fe4a8d9f12adc153823d5c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -188,12 +188,12 @@ public class Category_Patches
 	public class Patches_ItemCrafter
 	{
 		[Patch("FixItemKeyId [patch]", "FixItemKeyId [patch]", "ItemCrafter", "CraftItem", new string[] { "ItemBlueprint", "BasePlayer", "ProtoBuf.Item/InstanceData", "System.Int32", "System.Int32", "Item", "System.Boolean", "System.Int32" })]
-		[Identifier("0a436e011c0b40c18286fe6cc5906254")]
+		[Identifier("67ed0fff837a4a52a7779646b08fe80c")]
 		[Dependencies(new string[] { "OnItemCraft" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_ItemCrafter_0a436e011c0b40c18286fe6cc5906254 : Patch
+		public class Patches_ItemCrafter_67ed0fff837a4a52a7779646b08fe80c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -258,12 +258,12 @@ public class Category_Patches
 	public class Patches_SupplySignal
 	{
 		[Patch("OnCargoPlaneSignaled [Patch]", "OnCargoPlaneSignaled [Patch]", "SupplySignal", "Explode", new string[] { })]
-		[Identifier("135056092bf54a498f45776e6539218e")]
+		[Identifier("9138fbbd8fe14689971add2a66e5460d")]
 		[Dependencies(new string[] { "OnCargoPlaneSignaled" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_SupplySignal_135056092bf54a498f45776e6539218e : Patch
+		public class Patches_SupplySignal_9138fbbd8fe14689971add2a66e5460d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -293,12 +293,12 @@ public class Category_Patches
 	public class Patches_CargoPlane
 	{
 		[Patch("OnSupplyDropDropped [patch 1]", "OnSupplyDropDropped [patch 1]", "CargoPlane", "Update", new string[] { })]
-		[Identifier("3b1c57f1c6c34a74989b0def0cfc2785")]
+		[Identifier("fc4fecc6ae884d508f7169559cd04088")]
 		[Dependencies(new string[] { "OnSupplyDropDropped" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_CargoPlane_3b1c57f1c6c34a74989b0def0cfc2785 : Patch
+		public class Patches_CargoPlane_fc4fecc6ae884d508f7169559cd04088 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -325,12 +325,12 @@ public class Category_Patches
 		}
 
 		[Patch("OnSupplyDropDropped [patch 2]", "OnSupplyDropDropped [patch 2]", "CargoPlane", "Update", new string[] { })]
-		[Identifier("b64bfcf5e63e4dcd82f3e96d51561736")]
+		[Identifier("808635ecea904cdab68877c5fc908d6e")]
 		[Dependencies(new string[] { "OnSupplyDropDropped [patch 1]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_CargoPlane_b64bfcf5e63e4dcd82f3e96d51561736 : Patch
+		public class Patches_CargoPlane_808635ecea904cdab68877c5fc908d6e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -357,12 +357,12 @@ public class Category_Patches
 		}
 
 		[Patch("OnSupplyDropDropped [patch 3]", "OnSupplyDropDropped [patch 3]", "CargoPlane", "Update", new string[] { })]
-		[Identifier("d74fc6cb1f2346158f3a2d5b718c909e")]
+		[Identifier("cd1fb710944b4548b83ceaafc54e39c3")]
 		[Dependencies(new string[] { "OnSupplyDropDropped [patch 2]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_CargoPlane_d74fc6cb1f2346158f3a2d5b718c909e : Patch
+		public class Patches_CargoPlane_cd1fb710944b4548b83ceaafc54e39c3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -389,146 +389,14 @@ public class Category_Patches
 		}
 	}
 
-	public class Patches_Effectserver
-	{
-		[Patch("LimitNetworkingNoEffect [patch 1]", "LimitNetworkingNoEffect [patch 1]", "Effect/server", "ImpactEffect", new string[] { "HitInfo", "System.String" })]
-		[Identifier("f0ccee2ede40429cbf1075d51ad89920")]
-		[Dependencies(new string[] { "OnImpactEffectCreate" })]
-		[Options(/*Could not decode attribute arguments.*/)]
-		[Category("_Patches")]
-		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_Effectserver_f0ccee2ede40429cbf1075d51ad89920 : Patch
-		{
-			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
-			{
-				//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-				//IL_001e: Expected Obj, but got Unknown
-				//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0044: Expected Obj, but got Unknown
-				//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-				//IL_006a: Expected Obj, but got Unknown
-				//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-				//IL_008e: Expected Obj, but got Unknown
-				//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-				//IL_009f: Expected Obj, but got Unknown
-				//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00c5: Expected Obj, but got Unknown
-				//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00eb: Expected Obj, but got Unknown
-				//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0101: Expected Obj, but got Unknown
-				//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0112: Expected Obj, but got Unknown
-				List<CodeInstruction> list = new List<CodeInstruction>();
-				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
-				list.Add(new CodeInstruction(OpCodes.Ldarg_0, (object)null));
-				list.Add(new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("HitInfo"), "get_InitiatorPlayer", (Type[])null, (Type[])null)));
-				list.Add(new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(AccessToolsEx.TypeByName("UnityEngine.Object"), "op_Implicit", (Type[])null, (Type[])null)));
-				Label label = Generator.DefineLabel();
-				CodeInstruction val = list2[7];
-				list.Add(new CodeInstruction(OpCodes.Brfalse_S, (object)label));
-				list.Add(new CodeInstruction(OpCodes.Ldarg_0, (object)null));
-				list.Add(new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("HitInfo"), "get_InitiatorPlayer", (Type[])null, (Type[])null)));
-				list.Add(new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("BaseNetworkable"), "get_limitNetworking", (Type[])null, (Type[])null)));
-				list.Add(new CodeInstruction(OpCodes.Brfalse_S, (object)label));
-				list.Add(new CodeInstruction(OpCodes.Ret, (object)null));
-				if (list.Count > 0)
-				{
-					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[7]), list2[7]);
-				}
-				list2.InsertRange(7, list);
-				val.labels.Add(label);
-				return list2.AsEnumerable();
-			}
-		}
-	}
-
-	public class Patches_BaseProjectile
-	{
-		[Patch("LimitNetworkingNoEffect [patch 2]", "LimitNetworkingNoEffect [patch 2]", "BaseProjectile", "CLProject", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("df594c77b14a4720be4e2fd4414b9087")]
-		[Dependencies(new string[] { "OnWeaponFired" })]
-		[Options(/*Could not decode attribute arguments.*/)]
-		[Category("_Patches")]
-		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_BaseProjectile_df594c77b14a4720be4e2fd4414b9087 : Patch
-		{
-			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
-			{
-				//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004b: Expected Obj, but got Unknown
-				//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0073: Expected Obj, but got Unknown
-				List<CodeInstruction> list = new List<CodeInstruction>();
-				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
-				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 0, typeof(object)));
-				list.Add(new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("BaseNetworkable"), "get_limitNetworking", (Type[])null, (Type[])null)));
-				Label label = Generator.DefineLabel();
-				CodeInstruction val = list2[273];
-				list.Add(new CodeInstruction(OpCodes.Brtrue_S, (object)label));
-				if (list.Count > 0)
-				{
-					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[254]), list2[254]);
-				}
-				list2.InsertRange(254, list);
-				val.labels.Add(label);
-				return list2.AsEnumerable();
-			}
-		}
-	}
-
-	public class Patches_BasePlayer
-	{
-		[Patch("LimitNetworkingNoEffect [patch 3]", "LimitNetworkingNoEffect [patch 3]", "BasePlayer", "OnAttacked", new string[] { "HitInfo" })]
-		[Identifier("7ace0a4fa6004ecba0d2e95477d96452")]
-		[Dependencies(new string[] { "IOnBasePlayerAttacked" })]
-		[Options(/*Could not decode attribute arguments.*/)]
-		[Category("_Patches")]
-		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_BasePlayer_7ace0a4fa6004ecba0d2e95477d96452 : Patch
-		{
-			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
-			{
-				//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004b: Expected Obj, but got Unknown
-				//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0074: Expected Obj, but got Unknown
-				//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00b2: Expected Obj, but got Unknown
-				//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-				//IL_00dc: Expected Obj, but got Unknown
-				List<CodeInstruction> list = new List<CodeInstruction>();
-				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
-				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 8, typeof(object)));
-				list.Add(new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(AccessToolsEx.TypeByName("UnityEngine.Object"), "op_Implicit", (Type[])null, (Type[])null)));
-				Label label = Generator.DefineLabel();
-				CodeInstruction val = list2[248];
-				list.Add(new CodeInstruction(OpCodes.Brfalse_S, (object)label));
-				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 8, typeof(object)));
-				list.Add(new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("BaseNetworkable"), "get_limitNetworking", (Type[])null, (Type[])null)));
-				Label label2 = Generator.DefineLabel();
-				CodeInstruction val2 = list2[270];
-				list.Add(new CodeInstruction(OpCodes.Brtrue_S, (object)label2));
-				if (list.Count > 0)
-				{
-					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[248]), list2[248]);
-				}
-				list2.InsertRange(248, list);
-				val.labels.Add(label);
-				val2.labels.Add(label2);
-				return list2.AsEnumerable();
-			}
-		}
-	}
-
 	public class Patches_AutoTurret
 	{
 		[Patch("ContinueTargetScan [patch]", "ContinueTargetScan [patch]", "AutoTurret", "TargetScan", new string[] { })]
-		[Identifier("74e21a720c734773982b88852a62e1d8")]
+		[Identifier("ac153bed15af44b8a34fbd6e3abeab1a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_AutoTurret_74e21a720c734773982b88852a62e1d8 : Patch
+		public class Patches_AutoTurret_ac153bed15af44b8a34fbd6e3abeab1a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -556,48 +424,15 @@ public class Category_Patches
 		}
 	}
 
-	public class Patches_RelationshipManager
-	{
-		[Patch("LimitNetworkingAcquaintances [patch]", "LimitNetworkingAcquaintances [patch]", "RelationshipManager", "UpdateAcquaintancesFor", new string[] { "BasePlayer", "System.Single" })]
-		[Identifier("6d29076717954dfeabfc72ffe79e2d2e")]
-		[Options(/*Could not decode attribute arguments.*/)]
-		[Category("_Patches")]
-		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_RelationshipManager_6d29076717954dfeabfc72ffe79e2d2e : Patch
-		{
-			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
-			{
-				//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-				//IL_004b: Expected Obj, but got Unknown
-				//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0070: Expected Obj, but got Unknown
-				List<CodeInstruction> list = new List<CodeInstruction>();
-				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
-				list.Add(__GeneratorRuntime.CreateLoadLocalInstruction(Generator, Method, 3, typeof(object)));
-				list.Add(new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("BaseNetworkable"), "get_limitNetworking", (Type[])null, (Type[])null)));
-				Label label = Generator.DefineLabel();
-				CodeInstruction val = list2[111];
-				list.Add(new CodeInstruction(OpCodes.Brtrue_S, (object)label));
-				if (list.Count > 0)
-				{
-					CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(list[0], list2[35]), list2[35]);
-				}
-				list2.InsertRange(35, list);
-				val.labels.Add(label);
-				return list2.AsEnumerable();
-			}
-		}
-	}
-
 	public class Patches_CH47HelicopterAIController
 	{
 		[Patch("AllowNpcNonAdminHeliUse [patch]", "AllowNpcNonAdminHeliUse [patch]", "CH47HelicopterAIController", "AttemptMount", new string[] { "BasePlayer", "System.Boolean" })]
-		[Identifier("cb2e3efb47ba43f79d4e102ecfe16633")]
+		[Identifier("1a061c94f56f44f48c94c71d1fece324")]
 		[Dependencies(new string[] { "CanUseHelicopter" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_CH47HelicopterAIController_cb2e3efb47ba43f79d4e102ecfe16633 : Patch
+		public class Patches_CH47HelicopterAIController_1a061c94f56f44f48c94c71d1fece324 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -672,15 +507,15 @@ public class Category_Patches
 		}
 	}
 
-	public class Patches_BasePlayerOnFeedbackReportd777
+	public class Patches_BasePlayerOnFeedbackReportd801
 	{
-		[Patch("OnFeedbackReported", "OnFeedbackReported [patch]", "BasePlayer/<OnFeedbackReport>d__777", "MoveNext", new string[] { })]
-		[Identifier("2f04c5889c294cc78436d7749b8bdd7d")]
+		[Patch("OnFeedbackReported", "OnFeedbackReported [patch]", "BasePlayer/<OnFeedbackReport>d__801", "MoveNext", new string[] { })]
+		[Identifier("2ab3ab383d564b56bb37ed2ba1c1ba6b")]
 		[Dependencies(new string[] { "OnFeedbackReported" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Patches_BasePlayerOnFeedbackReportd777_2f04c5889c294cc78436d7749b8bdd7d : Patch
+		public class Patches_BasePlayerOnFeedbackReportd801_2ab3ab383d564b56bb37ed2ba1c1ba6b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -749,12 +584,12 @@ public class Category_Patches
 	public class Patches_FacepunchRconListener
 	{
 		[Patch("OnRconConnection", "OnRconConnection [web, patch]", "Facepunch.Rcon.Listener", "OnConnection", new string[] { "Fleck.IWebSocketConnection" })]
-		[Identifier("1cb74715e57247018b1995656d70182b")]
+		[Identifier("6ba676e3667542af8b43ea784519369f")]
 		[Dependencies(new string[] { "OnRconConnection [web]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Facepunch.Rcon.dll")]
-		public class Patches_FacepunchRconListener_1cb74715e57247018b1995656d70182b : Patch
+		public class Patches_FacepunchRconListener_6ba676e3667542af8b43ea784519369f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -793,11 +628,11 @@ public class Category_Patches
 	public class Patches_FacepunchSqliteDatabase
 	{
 		[Patch("NoPragmaColumnExists", "NoPragmaColumnExists [patch]", "Facepunch.Sqlite.Database", "ColumnExists", new string[] { "System.String", "System.String" })]
-		[Identifier("8f5c75ea05a9452bbefdbcaebbabb9e2")]
+		[Identifier("2dcb138f04da4dd8ae96f15a8c81a4d8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("_Patches")]
 		[Assembly("Facepunch.Sqlite.dll")]
-		public class Patches_FacepunchSqliteDatabase_8f5c75ea05a9452bbefdbcaebbabb9e2 : Patch
+		public class Patches_FacepunchSqliteDatabase_2dcb138f04da4dd8ae96f15a8c81a4d8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

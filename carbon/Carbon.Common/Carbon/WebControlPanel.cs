@@ -1021,9 +1021,9 @@ public static class WebControlPanel
 
 		private int lagSpikes = instance.Hooks.Sum((BaseHookable.CachedHook x) => x.LagSpikes);
 
-		private int asyncOverloads = instance.Hooks.Count((BaseHookable.CachedHook x) => x.IsAsync);
+		private int asyncOverloads = Enumerable.Count(instance.Hooks, (BaseHookable.CachedHook x) => x.IsAsync);
 
-		private int debuggedOverloads = instance.Hooks.Count((BaseHookable.CachedHook x) => x.IsDebugged);
+		private int debuggedOverloads = Enumerable.Count(instance.Hooks, (BaseHookable.CachedHook x) => x.IsDebugged);
 
 		public void Serialize(BridgeWrite write)
 		{
@@ -1106,7 +1106,7 @@ public static class WebControlPanel
 				NetworkOut = (int)((Net.sv != null) ? ((BaseNetwork)Net.sv).GetStat((Connection)null, (StatTypeLong)1) : 0),
 				Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 				SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(CultureInfo.CurrentCulture),
-				Version = 2634,
+				Version = 2636,
 				Protocol = Protocol.printable
 			};
 		}
@@ -2478,7 +2478,7 @@ public static class WebControlPanel
 					MonoProfiler.ToggleProfiling(MonoProfiler.ProfilerArgs.CallMemory | MonoProfiler.ProfilerArgs.AdvancedMemory | MonoProfiler.ProfilerArgs.Timings | MonoProfiler.ProfilerArgs.Calls | MonoProfiler.ProfilerArgs.GCEvents, logging: false);
 					sample.Resample();
 					DateTime now = DateTime.Now;
-					string path = Path.Combine(Defines.GetProfilesFolder(), string.Format("profile-{0}_{1}_{2}_{3}{4}{5}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, "cprf" }));
+					string path = Path.Combine(Defines.GetProfilesFolder(), string.Format("profile-{0}_{1:00}_{2:00}_{3:00}{4:00}{5:00}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, "cprf" }));
 					File.WriteAllBytes(path, sample.ToProto());
 					MonoProfiler.Clear();
 				}

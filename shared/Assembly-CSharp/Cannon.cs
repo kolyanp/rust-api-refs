@@ -7,11 +7,15 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class Cannon : BallistaGun
+public class Cannon : BaseMountedWeapon
 {
 	public GameObjectRef AmmoPrefab;
 
 	public Transform FirePoint;
+
+	public Transform barrelCheckStart;
+
+	public float barrelCheckRadius = 0.1f;
 
 	public Transform backBlockTargetHeight;
 
@@ -168,6 +172,21 @@ public class Cannon : BallistaGun
 		return false;
 	}
 
+	public bool IsBarrelBlocked()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)barrelCheckStart == (Object)null)
+		{
+			return false;
+		}
+		Vector3 position = barrelCheckStart.position;
+		Vector3 position2 = FirePoint.position;
+		return GamePhysics.CheckCapsule(position, position2, barrelCheckRadius, 1503731969, (QueryTriggerInteraction)1, this);
+	}
+
 	public override void AttemptMount(BasePlayer player, bool doMountChecks = true)
 	{
 		PlayerBoat parentPlayerBoat = PlayerBoat.GetParentPlayerBoat(this);
@@ -199,14 +218,18 @@ public class Cannon : BallistaGun
 		return false;
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	[UsedImplicitly]
-	[RPC_Server]
 	public virtual void RequestLightFuse(RPCMessage msg)
 	{
-		if (!IsFireRPCInvalid(msg, msg.player, out var _, out var _) && CanLightFuse())
+		if (IsFireRPCInvalid(msg, msg.player, out var _, out var _) || !CanLightFuse())
+		{
+			SendNetworkUpdate();
+		}
+		else
 		{
 			LightFuse(msg);
 		}
@@ -214,9 +237,9 @@ public class Cannon : BallistaGun
 
 	protected override bool IsFireRPCInvalid(RPCMessage msg, BasePlayer player, out ItemDefinition ammoItem, out ItemModProjectile itemModProjectile)
 	{
-		if (!base.IsFireRPCInvalid(msg, player, out ammoItem, out itemModProjectile))
+		if (!base.IsFireRPCInvalid(msg, player, out ammoItem, out itemModProjectile) && CanSeeFirePoint(player, 0.05f))
 		{
-			return !CanSeeFirePoint(player, 0.05f);
+			return IsBarrelBlocked();
 		}
 		return true;
 	}
@@ -249,7 +272,6 @@ public class Cannon : BallistaGun
 			{
 				Fire(msg.player);
 				flagsUpdateScope2.Set(Flags.Reserved6, b: false);
-				SignalBroadcast(Signal.Attack);
 			}
 		}, fuseLightTime);
 	}
@@ -260,7 +282,7 @@ public class Cannon : BallistaGun
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		if (FireProjectile(AmmoPrefab, FirePoint.position, FirePoint.forward, firingPlayer, 0.25f, minSpeed, out var _))
 		{
-			SERVER_OnProjectileFired(firingPlayer.Connection, firingPlayer);
+			SERVER_OnProjectileFired(null, firingPlayer);
 		}
 	}
 
@@ -274,10 +296,11 @@ public class Cannon : BallistaGun
 		Cannon[] array = Util.FindAll<Cannon>();
 		foreach (Cannon cannon in array)
 		{
-			if (cannon.IsLoaded())
+			if (!cannon.IsLoaded())
 			{
-				cannon.Fire(ArgEx.Player(arg));
+				cannon.AdminReload(0);
 			}
+			cannon.Fire(ArgEx.Player(arg));
 		}
 		return $"Fired {array.Length} cannons.";
 	}

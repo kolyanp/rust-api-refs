@@ -707,7 +707,7 @@ public class RCon
 
 	public static bool IsBanned(IPAddress addr)
 	{
-		return bannedAddresses.Count((BannedAddresses x) => x.addr == addr && x.banTime > Time.realtimeSinceStartup) > 0;
+		return Enumerable.Count(bannedAddresses, (BannedAddresses x) => x.addr == addr && x.banTime > Time.realtimeSinceStartup) > 0;
 	}
 
 	private static void OnCommand(Command cmd)

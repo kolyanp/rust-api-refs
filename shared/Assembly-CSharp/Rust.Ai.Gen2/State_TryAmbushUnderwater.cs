@@ -45,14 +45,14 @@ public class State_TryAmbushUnderwater : FSMStateBase
 
 	private EFSMStateStatus FindNewUnderwaterWaitingPosition()
 	{
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		NavVector3 nextPosition = Agent.nextPosition;
 		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			float num = Random.Range(distanceRange.x, distanceRange.y);
+			float num = Rng.Range(distanceRange.x, distanceRange.y);
 			bool flag = Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val, num, num, 8);
 			if (Vector3.Distance(divePosition, ((Component)Owner).transform.position) > maxDistFromDivingPoint)
 			{
@@ -75,7 +75,7 @@ public class State_TryAmbushUnderwater : FSMStateBase
 			}
 			else
 			{
-				ListEx.Shuffle<NavVector3>((List<NavVector3>)(object)val, (uint)Environment.TickCount);
+				ListEx.Shuffle<NavVector3>((List<NavVector3>)(object)val, Rng.NextSeed());
 			}
 			foreach (NavVector3 item3 in (List<NavVector3>)(object)val)
 			{

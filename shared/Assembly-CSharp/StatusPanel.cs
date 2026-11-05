@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 public class StatusPanel : MonoBehaviour
 {
-	[SerializeField]
 	[Header("On Status")]
+	[SerializeField]
 	private RustText onStatusText;
 
 	[SerializeField]
 	private Image onStatusImage;
 
-	[Header("Off Status")]
 	[SerializeField]
+	[Header("Off Status")]
 	private RustText offStatusText;
 
 	[SerializeField]

@@ -98,7 +98,7 @@ public class FileModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 			{
 				CuiElementContainer container = cui.CreateContainer("carbonfileui", BackgroundColor, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, needsCursor: true, needsKeyboard: false, CUI.ClientPanels.Overlay, "carbonfileui");
 				CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, "carbonfileui", "0.05 0.05 0.05 0.9", null, 0.5f, 0.5f, 0.5f, 0.5f, -300f, 300f, -250f, 250f);
-				cui.CreateText(container, pair, Cache.CUI.WhiteColor, string.Format("{0} ({1}) ({2:n0})", Title.ToUpper(), string.IsNullOrEmpty(Extension) ? "*" : Extension, Items.Count((Item x) => !x.IsDirectory)), 20, 0.03f, 1f, 0f, 0.97f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
+				cui.CreateText(container, pair, Cache.CUI.WhiteColor, string.Format("{0} ({1}) ({2:n0})", Title.ToUpper(), string.IsNullOrEmpty(Extension) ? "*" : Extension, Enumerable.Count(Items, (Item x) => !x.IsDirectory)), 20, 0.03f, 1f, 0f, 0.97f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
 				CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, Cache.CUI.BlankColor, null, 0f, 1f, 0f, 0.9f);
 				cui.CreateText(container, pair2, "1 1 1 0.2", "NAME", 12, 0.03f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 				cui.CreateText(container, pair2, "1 1 1 0.2", "INFO", 12, 0.33f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);

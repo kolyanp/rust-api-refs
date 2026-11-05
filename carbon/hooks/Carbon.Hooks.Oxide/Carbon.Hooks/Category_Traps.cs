@@ -14,13 +14,13 @@ public class Category_Traps
 	public class Traps_BaseTrapTrigger
 	{
 		[Patch("OnTrapSnapped", "OnTrapSnapped", "BaseTrapTrigger", "OnObjectAdded", new string[] { "UnityEngine.GameObject", "UnityEngine.Collider" })]
-		[Identifier("3d5b05d6d9fa4c349316559b8f954e54")]
+		[Identifier("6e5e294293f8429b906f27e8aa8bf97b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseTrapTrigger", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Traps")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Traps_BaseTrapTrigger_3d5b05d6d9fa4c349316559b8f954e54 : Patch
+		public class Traps_BaseTrapTrigger_6e5e294293f8429b906f27e8aa8bf97b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -53,14 +53,14 @@ public class Category_Traps
 	public class Traps_Landmine
 	{
 		[Patch("OnTrapDisarm", "OnTrapDisarm", "Landmine", "RPC_Disarm", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("9bd7805a7c624c0ba44b721b37152de9")]
+		[Identifier("5847ee23cc0a4d87a9e20e99abd1d12d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Landmine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Traps")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Traps_Landmine_9bd7805a7c624c0ba44b721b37152de9 : Patch
+		public class Traps_Landmine_5847ee23cc0a4d87a9e20e99abd1d12d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -95,13 +95,13 @@ public class Category_Traps
 		}
 
 		[Patch("OnTrapTrigger", "OnTrapTrigger [Landmine]", "Landmine", "ObjectEntered", new string[] { "UnityEngine.GameObject" })]
-		[Identifier("de4ffc3a482d46879f0e9cddfc9175c2")]
+		[Identifier("0169c26baf5c4965b34e0d1975333525")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Landmine", false)]
 		[Return(typeof(void))]
 		[Category("Traps")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Traps_Landmine_de4ffc3a482d46879f0e9cddfc9175c2 : Patch
+		public class Traps_Landmine_0169c26baf5c4965b34e0d1975333525 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -136,14 +136,14 @@ public class Category_Traps
 	public class Traps_BearTrap
 	{
 		[Patch("OnTrapArm", "OnTrapArm", "BearTrap", "RPC_Arm", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("ce9cc230fc5d407c8e8a1f534a355e8b")]
+		[Identifier("ab4e8c31f95b47e6a7f4401bef3f0d7c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BearTrap", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Traps")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Traps_BearTrap_ce9cc230fc5d407c8e8a1f534a355e8b : Patch
+		public class Traps_BearTrap_ab4e8c31f95b47e6a7f4401bef3f0d7c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -176,13 +176,13 @@ public class Category_Traps
 		}
 
 		[Patch("OnTrapTrigger", "OnTrapTrigger [BearTrap]", "BearTrap", "ObjectEntered", new string[] { "UnityEngine.GameObject" })]
-		[Identifier("9417b8c387374f07be591a76b5a2cdd8")]
+		[Identifier("76e325cca0c44092afc5b6387acd0fb9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BearTrap", false)]
 		[Return(typeof(void))]
 		[Category("Traps")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Traps_BearTrap_9417b8c387374f07be591a76b5a2cdd8 : Patch
+		public class Traps_BearTrap_76e325cca0c44092afc5b6387acd0fb9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -217,14 +217,14 @@ public class Category_Traps
 	public class Traps_WildlifeTrap
 	{
 		[Patch("OnWildlifeTrap", "OnWildlifeTrap", "WildlifeTrap", "TrapWildlife", new string[] { "TrappableWildlife" })]
-		[Identifier("890e66c2bc3442108d3ee16b9ad7ec8b")]
+		[Identifier("be13dd3fdfae4886aa7c6ae761afe976")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "WildlifeTrap", false)]
 		[Parameter("trapped", "TrappableWildlife", false)]
 		[Return(typeof(void))]
 		[Category("Traps")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Traps_WildlifeTrap_890e66c2bc3442108d3ee16b9ad7ec8b : Patch
+		public class Traps_WildlifeTrap_be13dd3fdfae4886aa7c6ae761afe976 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -259,14 +259,14 @@ public class Category_Traps
 	public class Traps_SurvivalFishTrap
 	{
 		[Patch("OnWildlifeTrap", "OnWildlifeTrap [SurvivalFishTrap]", "SurvivalFishTrap", "TrapThink", new string[] { })]
-		[Identifier("468d66a0d05e42e9bd5cc8eecbbb827b")]
+		[Identifier("21b1d6fd285f42b5821940a94bb6c74f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "SurvivalFishTrap", false)]
 		[Parameter("local0", "ItemDefinition", false)]
 		[Return(typeof(void))]
 		[Category("Traps")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Traps_SurvivalFishTrap_468d66a0d05e42e9bd5cc8eecbbb827b : Patch
+		public class Traps_SurvivalFishTrap_21b1d6fd285f42b5821940a94bb6c74f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

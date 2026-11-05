@@ -5,6 +5,9 @@ using UnityEngine;
 
 public static class NetworkProfiler
 {
+	[ServerVar(Name = "packet_capture_rust_relay", Help = "Include packets sent to the Rust Relay player in packet captures", ServerAdmin = true)]
+	public static bool packetCaptureRustRelay;
+
 	[RuntimeInitializeOnLoadMethod(/*Could not decode attribute arguments.*/)]
 	private static void InstallResolvers()
 	{
@@ -71,7 +74,7 @@ public static class NetworkProfiler
 		}
 		float num = Mathf.Clamp(arg.GetFloat(0), 1f, 10000f);
 		float num2 = Mathf.Clamp(arg.GetFloat(1), 1f, 3600f);
-		NetPacketCapture netPacketCapture = NetPacketCapture.Start(Net.sv, NetPacketCapture.DefaultPath(), (long)(num * 1024f * 1024f), TimeSpan.FromSeconds(num2));
+		NetPacketCapture netPacketCapture = NetPacketCapture.Start(Net.sv, NetPacketCapture.DefaultPath(), (long)(num * 1024f * 1024f), TimeSpan.FromSeconds(num2), packetCaptureRustRelay);
 		arg.ReplyWith($"Capturing packets for up to {num2} seconds or {num} MB to: {netPacketCapture.FilePath}");
 	}
 

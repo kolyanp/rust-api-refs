@@ -23,6 +23,8 @@ public class CopyPasteEntity : PointEntity
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("CopyPasteEntity.OnRpcMessage"))
 		{
 			if (rpc == 2913956655u && (Object)(object)player != (Object)null)
@@ -40,21 +42,29 @@ public class CopyPasteEntity : PointEntity
 						FieldOperationLimitSuspensionScope val2 = msg.read.SuspendProtoFieldOperationLimit();
 						try
 						{
-							using (TimeWarning.New("Call"))
+							NonFiniteValueValidationScope val3 = msg.read.SuspendProtoNonFiniteValueValidation();
+							try
 							{
-								RPCMessage rpc2 = new RPCMessage
+								using (TimeWarning.New("Call"))
 								{
-									connection = msg.connection,
-									player = player,
-									read = msg.read
-								};
-								Paste(rpc2);
+									RPCMessage rpc2 = new RPCMessage
+									{
+										connection = msg.connection,
+										player = player,
+										read = msg.read
+									};
+									Paste(rpc2);
+								}
 							}
-						}
-						catch (Exception ex)
-						{
-							Debug.LogException(ex);
-							player.Kick("RPC Error in Paste");
+							catch (Exception ex)
+							{
+								Debug.LogException(ex);
+								player.Kick("RPC Error in Paste");
+							}
+							finally
+							{
+								((IDisposable)val3/*cast due to constrained. prefix*/).Dispose();
+							}
 						}
 						finally
 						{
@@ -107,6 +117,7 @@ public class CopyPasteEntity : PointEntity
 	}
 
 	[RPC_Server]
+	[RPC_Server.IgnoreProtoNonFiniteValues]
 	[RPC_Server.IgnoreProtoFieldOrder]
 	[RPC_Server.IgnoreProtoFieldOperationLimit]
 	public void Paste(RPCMessage rpc)

@@ -146,6 +146,8 @@ public class IndustrialConveyor : IndustrialEntity
 
 	public SpriteRenderer IconTransferSprite;
 
+	public GameObject ActiveLoopSound;
+
 	private bool refreshInputOutputs;
 
 	private Action scheduleMoveAction;
@@ -546,11 +548,11 @@ public class IndustrialConveyor : IndustrialEntity
 		//IL_076f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0711: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0718: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08ef: Unknown result type (might be due to invalid IL or missing references)
 		//IL_087e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0885: Unknown result type (might be due to invalid IL or missing references)
 		//IL_082d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0834: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0938: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0a42: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0b02: Unknown result type (might be due to invalid IL or missing references)
 		if (ConVar.Server.conveyorMoveFrequency <= 0f)
@@ -807,7 +809,7 @@ public class IndustrialConveyor : IndustrialEntity
 									num5 = 1f;
 								}
 								num4 = (int)num5;
-								if (num4 <= 0 || !container2.QuickIndustrialPreCheck(key, val3, 0, out var foundSlot))
+								if (num4 <= 0)
 								{
 									continue;
 								}
@@ -818,6 +820,10 @@ public class IndustrialConveyor : IndustrialEntity
 								using (TimeWarning.New("NotifyContainerMoveEnd"))
 								{
 									notifyContainerMoveEnd.TryAdd(splitOutput);
+								}
+								if (!container2.QuickIndustrialPreCheck(key, val3, 0, out var foundSlot))
+								{
+									continue;
 								}
 								bool flag8 = false;
 								int amount = key.amount;
@@ -1218,10 +1224,10 @@ public class IndustrialConveyor : IndustrialEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxRepeatedElements(30)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_ChangeFilters(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null || !msg.player.CanBuild())
@@ -1266,8 +1272,8 @@ public class IndustrialConveyor : IndustrialEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	private void SvSwitch(RPCMessage msg)
 	{
@@ -1391,9 +1397,9 @@ public class IndustrialConveyor : IndustrialEntity
 		return inputIndex == 1;
 	}
 
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_RequestUpToDateFilters(RPCMessage msg)
 	{
 		if (!IsOn())
@@ -1417,6 +1423,11 @@ public class IndustrialConveyor : IndustrialEntity
 		{
 			((IDisposable)val)?.Dispose();
 		}
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
 	}
 
 	public override void Load(LoadInfo info)

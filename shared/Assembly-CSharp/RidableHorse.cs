@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
-using FIMSpace.FProceduralAnimation;
 using Facepunch;
+using Facepunch.Extend;
 using Facepunch.Rust;
 using Network;
 using Oxide.Core;
@@ -216,8 +218,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private bool isSubmerged;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private float baseDrag;
 
 	[HideInInspector]
@@ -242,8 +244,40 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private float nextDecayTime;
 
-	[Header("Horse")]
+	private const float MaxGroundLiftUp = 0.5f;
+
+	private const float MaxGroundLiftDown = 0.2f;
+
+	private const float HipsFollowSpeed = 12f;
+
+	private const float FrontRaiseGain = 0.75f;
+
+	private const float FrontDropGain = 0.45f;
+
+	private const float MinBoneMove = 0.001f;
+
+	private const float MinBoneTurn = 0.1f;
+
+	private float[] groundSampleHeights;
+
+	private bool[] groundSampleIsFront;
+
+	private float frontToRearSampleDistance;
+
+	private Transform seatBone;
+
+	private Vector3 rootBoneRestPosition;
+
+	private Vector3 seatBoneRestPosition;
+
+	private Quaternion seatBoneRestRotation;
+
+	private float frontGroundLift;
+
+	private float rearGroundLift;
+
 	[SerializeField]
+	[Header("Horse")]
 	private Animator animator;
 
 	[SerializeField]
@@ -254,9 +288,6 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	[SerializeField]
 	private RidableHorseAnimation horseAnimation;
-
-	[SerializeField]
-	private LegsAnimator serverLegsAnimator;
 
 	[SerializeField]
 	private ScaleBySpeed scaleBySpeedWater;
@@ -384,8 +415,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public Sprite SwapToDoubleIcon;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected bool[] hasItemTokenCache;
 
 	[Space]
@@ -399,8 +430,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public GameObjectRef ragdollPrefab;
 
-	[SerializeField]
 	[Header("Pulling")]
+	[SerializeField]
 	private List<ModifierDefintion> pullingPlayerModifiers;
 
 	[Header("Avoidance")]
@@ -487,6 +518,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private static Vector3[] bonesInitialLocalPos;
 
+	private string __sync_AnimalName;
+
 	public bool isGrounded { get; private set; }
 
 	public bool isStanding { get; private set; }
@@ -521,6 +554,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public bool IsTowingAllowed => !IsTowing;
 
+	public ulong NameAuthorId { get; private set; }
+
 	public bool HasSingleSaddle => HasFlag(Flags.Reserved9);
 
 	public bool HasDoubleSaddle => HasFlag(Flags.Reserved10);
@@ -551,10 +586,75 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public override bool IsNpc => true;
 
+	[Sync(Autosave = true)]
+	public string AnimalName
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_AnimalName;
+		}
+		[CompilerGenerated]
+		set
+		{
+			if (!IsSyncVarEqual(__sync_AnimalName, value))
+			{
+				__sync_AnimalName = value;
+				byte nameID = __GetWeaverID("AnimalName");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("RidableHorse.OnRpcMessage"))
 		{
+			if (rpc == 3115049114u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - RequestNameChange"));
+				}
+				using (TimeWarning.New("RequestNameChange"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.CallsPerSecond.Test(3115049114u, "RequestNameChange", this, player, 1uL))
+						{
+							return true;
+						}
+						if (!RPC_Server.IsVisible.Test(3115049114u, "RequestNameChange", this, player, 3f))
+						{
+							return true;
+						}
+						if (!RPC_Server.MaxDistance.Test(3115049114u, "RequestNameChange", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg2 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							RequestNameChange(msg2);
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.LogException(ex);
+						player.Kick("RPC Error in RequestNameChange");
+					}
+				}
+				return true;
+			}
 			if (rpc == 2663053610u && (Object)(object)player != (Object)null)
 			{
 				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
@@ -575,18 +675,18 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg2 = new RPCMessage
+							RPCMessage msg3 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							SERVER_Claim(msg2);
+							SERVER_Claim(msg3);
 						}
 					}
-					catch (Exception ex)
+					catch (Exception ex2)
 					{
-						Debug.LogException(ex);
+						Debug.LogException(ex2);
 						player.Kick("RPC Error in SERVER_Claim");
 					}
 				}
@@ -616,18 +716,18 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg3 = new RPCMessage
+							RPCMessage msg4 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							SERVER_Lead(msg3);
+							SERVER_Lead(msg4);
 						}
 					}
-					catch (Exception ex2)
+					catch (Exception ex3)
 					{
-						Debug.LogException(ex2);
+						Debug.LogException(ex3);
 						player.Kick("RPC Error in SERVER_Lead");
 					}
 				}
@@ -662,9 +762,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 							SERVER_OpenLoot(rpc2);
 						}
 					}
-					catch (Exception ex3)
+					catch (Exception ex4)
 					{
-						Debug.LogException(ex3);
+						Debug.LogException(ex4);
 						player.Kick("RPC Error in SERVER_OpenLoot");
 					}
 				}
@@ -698,18 +798,18 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg4 = new RPCMessage
+							RPCMessage msg5 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							SERVER_RequestDetach(msg4);
+							SERVER_RequestDetach(msg5);
 						}
 					}
-					catch (Exception ex4)
+					catch (Exception ex5)
 					{
-						Debug.LogException(ex4);
+						Debug.LogException(ex5);
 						player.Kick("RPC Error in SERVER_RequestDetach");
 					}
 				}
@@ -735,18 +835,18 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg5 = new RPCMessage
+							RPCMessage msg6 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							SERVER_RequestSaddleSwap(msg5);
+							SERVER_RequestSaddleSwap(msg6);
 						}
 					}
-					catch (Exception ex5)
+					catch (Exception ex6)
 					{
-						Debug.LogException(ex5);
+						Debug.LogException(ex6);
 						player.Kick("RPC Error in SERVER_RequestSaddleSwap");
 					}
 				}
@@ -780,18 +880,18 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg6 = new RPCMessage
+							RPCMessage msg7 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							SERVER_RequestTow(msg6);
+							SERVER_RequestTow(msg7);
 						}
 					}
-					catch (Exception ex6)
+					catch (Exception ex7)
 					{
-						Debug.LogException(ex6);
+						Debug.LogException(ex7);
 						player.Kick("RPC Error in SERVER_RequestTow");
 					}
 				}
@@ -1037,8 +1137,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void SERVER_OpenLoot(RPCMessage rpc)
 	{
 		if (storageInventory == null)
@@ -1058,13 +1158,14 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			}
 			player.inventory.loot.AddContainer(container);
 			player.inventory.loot.SendImmediate();
+			SendAuthoredNameTo(player);
 			player.ClientRPC(RpcTarget.Player("RPC_OpenLootPanel", player), arg);
 			SendNetworkUpdate();
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SERVER_RequestSaddleSwap(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1635,8 +1736,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0241: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0246: Unknown result type (might be due to invalid IL or missing references)
 		if (HasFlag(Flags.Reserved12))
 		{
 			return;
@@ -1692,13 +1793,11 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			if (rigidBody.IsSleeping())
 			{
 				wasSleeping = true;
-				((Behaviour)serverLegsAnimator).enabled = false;
 				((Collider)wheelCollider).enabled = false;
 				return;
 			}
 			((Collider)wheelCollider).enabled = true;
-			((Behaviour)serverLegsAnimator).enabled = true;
-			serverLegsAnimator.HipsHeightStepSpeed = Mathf.Lerp(0.7f, 0.05f, Mathf.InverseLerp(0f, 10f, normalVariation));
+			UpdateServerHips(Time.fixedDeltaTime);
 			if (IsTowing)
 			{
 				towingAttachment.FixedUpdate();
@@ -1708,18 +1807,17 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				Vector3 angularVelocity = rigidBody.angularVelocity;
 				if (!(Mathf.Abs(angularVelocity.magnitude) > 0.5f))
 				{
-					goto IL_02a2;
+					goto IL_0266;
 				}
 			}
 			lastMovingTime = Time.time;
-			goto IL_02a2;
-			IL_02a2:
+			goto IL_0266;
+			IL_0266:
 			float num = GetCurrentSpeed() * Time.fixedDeltaTime;
 			if (!flag && !IsLeading && !IsTowing && Time.time > lastMovingTime + 5f)
 			{
 				airTime = 0f;
 				wheelCollider.motorTorque = 0f;
-				((Behaviour)serverLegsAnimator).enabled = false;
 				((Collider)wheelCollider).enabled = false;
 				rigidBody.Sleep();
 			}
@@ -2383,50 +2481,52 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0221: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0227: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0229: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RidableHorse.UpdateGroundNormal"))
 		{
 			int num = 0;
@@ -2440,6 +2540,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				if (GamePhysics.Trace(new Ray(val3, Vector3.down), 0f, out var hitInfo, 1.2f, 1503731969, (QueryTriggerInteraction)1, this))
 				{
 					Vector3 normal = hitInfo.normal;
+					RecordGroundSampleHeight(i, hit: true, hitInfo.point);
 					num++;
 					if (i == groundSampleOffsets.Length - 1)
 					{
@@ -2451,6 +2552,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				}
 				else
 				{
+					RecordGroundSampleHeight(i, hit: false, Vector3.zero);
 					val2 += Vector3.up;
 					list.Add(Vector3.up);
 					val += Vector3.up;
@@ -2901,7 +3003,6 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		rigidBody.isKinematic = true;
 		((Collider)wheelCollider).enabled = false;
 		SetWorldColliders(enabled: false);
-		((Behaviour)serverLegsAnimator).enabled = false;
 	}
 
 	private void OnRagdollEndServer()
@@ -2920,7 +3021,6 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		lastMovingTime = Time.time;
 		SetWorldColliders(enabled: true);
 		ResetBonesPositions();
-		((Behaviour)serverLegsAnimator).enabled = true;
 		damageSinceLastTick.Clear();
 		rigidBody.WakeUp();
 	}
@@ -3171,6 +3271,18 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		CreateInventories(giveUID: false);
 	}
 
+	public override void PostServerLoad()
+	{
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		base.PostServerLoad();
+		ValidateTowableEntity();
+		TowAttach();
+		if (!IsTowing)
+		{
+			towingEntityId = default;
+		}
+	}
+
 	internal override void DoServerDestroy()
 	{
 		base.DoServerDestroy();
@@ -3322,13 +3434,11 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			((Component)playerServerColliderRear).gameObject.SetActive(true);
 		}
 		InvokeRepeating(SaveTraveledDistance, 10f, 10f);
-		InvokeRepeating(PostPlayerLateUpdate, 0f, 0f);
 	}
 
 	public override void PlayerDismounted(BasePlayer player, BaseMountable seat)
 	{
 		base.PlayerDismounted(player, seat);
-		UpdateClients(force: true);
 		if (NumMounted() == 0)
 		{
 			TryToHitch();
@@ -3337,29 +3447,18 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		{
 			((Component)playerServerCollider).gameObject.SetActive(false);
 			inputProvider = null;
+			throttleInput = 0f;
+			steerInput = 0f;
+			avoidanceSteeringInput = 0;
+			duckInputDown = false;
 		}
 		if ((Object)(object)GetPassenger() == (Object)null)
 		{
 			((Component)playerServerColliderRear).gameObject.SetActive(false);
 		}
+		UpdateClients(force: true);
 		CancelInvoke(SaveTraveledDistance);
-		CancelInvoke(PostPlayerLateUpdate);
 		lastRiddenTime = Time.time;
-	}
-
-	private void PostPlayerLateUpdate()
-	{
-		if (!AnyMounted())
-		{
-			return;
-		}
-		foreach (MountPointInfo allMountPoint in allMountPoints)
-		{
-			if (!((Object)(object)allMountPoint.mountable == (Object)null) && !((Object)(object)allMountPoint.mountable.GetMounted() == (Object)null))
-			{
-				allMountPoint.mountable.MountedPlayerSync();
-			}
-		}
 	}
 
 	private void SetSeatCount(int count)
@@ -3543,10 +3642,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}, 1f);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void SERVER_RequestTow(RPCMessage msg)
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
@@ -3559,9 +3658,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_RequestDetach(RPCMessage msg)
 	{
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
@@ -3574,6 +3673,30 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 				TowDetach();
 				Effect.server.Run(towingDetachEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
 			}
+		}
+	}
+
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	private void RequestNameChange(RPCMessage msg)
+	{
+		string text = FarmableAnimal.CleanPlayerName(msg.read.String(12));
+		if (!CanBeRenamedBy(msg.player) || text == null)
+		{
+			ClientRPC(RpcTarget.Player("Client_NameChangeRejected", msg.player));
+			return;
+		}
+		AnimalName = text;
+		NameAuthorId = msg.player.userID;
+	}
+
+	private void SendAuthoredNameTo(BasePlayer player)
+	{
+		if (!string.IsNullOrEmpty(AnimalName) && (ulong)player.userID == NameAuthorId)
+		{
+			ClientRPC(RpcTarget.Player("Client_ReceiveAuthoredName", player), AnimalName);
 		}
 	}
 
@@ -3756,10 +3879,176 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		modifiers.Add(consumable.modifiers);
 	}
 
+	private void RecordGroundSampleHeight(int sampleIndex, bool hit, Vector3 hitPoint)
+	{
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		if (groundSampleHeights == null || groundSampleHeights.Length != groundSampleOffsets.Length)
+		{
+			groundSampleHeights = new float[groundSampleOffsets.Length];
+		}
+		groundSampleHeights[sampleIndex] = (hit ? ((Component)this).transform.InverseTransformPoint(hitPoint).y : float.NaN);
+	}
+
+	private void UpdateServerHips(float deltaTime)
+	{
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
+		if (groundSampleHeights != null && !((Object)(object)rootBone == (Object)null) && (!((Object)(object)seatBone == (Object)null) || InitServerHips()))
+		{
+			float num = 12f * Mathf.Lerp(1f, 0.07f, Mathf.InverseLerp(0f, 10f, normalVariation));
+			float num2 = 1f - Mathf.Exp((0f - num) * deltaTime);
+			frontGroundLift = Mathf.Lerp(frontGroundLift, isGrounded ? AverageGroundLift(front: true) : 0f, num2);
+			rearGroundLift = Mathf.Lerp(rearGroundLift, isGrounded ? AverageGroundLift(front: false) : 0f, num2);
+			Vector3 up = ((Component)this).transform.up;
+			Vector3 val = rootBoneRestPosition + rootBone.parent.InverseTransformVector(up * rearGroundLift);
+			Vector3 val2 = rootBone.localPosition - val;
+			if (val2.sqrMagnitude > 1.0000001E-06f)
+			{
+				rootBone.localPosition = val;
+			}
+			float num3 = frontGroundLift - rearGroundLift;
+			num3 *= ((num3 > 0f) ? 0.75f : 0.45f);
+			Vector3 val3 = seatBoneRestPosition + seatBone.parent.InverseTransformVector(up * num3);
+			val2 = seatBone.localPosition - val3;
+			if (val2.sqrMagnitude > 1.0000001E-06f)
+			{
+				seatBone.localPosition = val3;
+			}
+			float num4 = Mathf.Atan2(num3, frontToRearSampleDistance) * 57.29578f;
+			Quaternion rotation = seatBone.parent.rotation;
+			Quaternion val4 = Quaternion.Inverse(rotation) * Quaternion.AngleAxis(0f - num4, ((Component)this).transform.right) * rotation * seatBoneRestRotation;
+			if (Quaternion.Angle(seatBone.localRotation, val4) > 0.1f)
+			{
+				seatBone.localRotation = val4;
+			}
+		}
+	}
+
+	private bool InitServerHips()
+	{
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		if (mountPoints.Count == 0 || groundSampleOffsets.Length < 3)
+		{
+			return false;
+		}
+		seatBone = rootBone.FindChildRecursive(mountPoints[0].bone);
+		if ((Object)(object)seatBone == (Object)null)
+		{
+			return false;
+		}
+		rootBoneRestPosition = rootBone.localPosition;
+		seatBoneRestPosition = seatBone.localPosition;
+		seatBoneRestRotation = seatBone.localRotation;
+		int num = groundSampleOffsets.Length - 1;
+		float z = ((Component)this).transform.InverseTransformPoint(groundSampleOffsets[num].position).z;
+		groundSampleIsFront = new bool[num];
+		float num2 = 0f;
+		float num3 = 0f;
+		int num4 = 0;
+		for (int i = 0; i < num; i++)
+		{
+			float z2 = ((Component)this).transform.InverseTransformPoint(groundSampleOffsets[i].position).z;
+			groundSampleIsFront[i] = z2 > z;
+			if (groundSampleIsFront[i])
+			{
+				num2 += z2;
+				num4++;
+			}
+			else
+			{
+				num3 += z2;
+			}
+		}
+		int num5 = num - num4;
+		frontToRearSampleDistance = ((num4 > 0 && num5 > 0) ? (num2 / (float)num4 - num3 / (float)num5) : 1f);
+		return true;
+	}
+
+	private float AverageGroundLift(bool front)
+	{
+		float num = 0f;
+		int num2 = 0;
+		for (int i = 0; i < groundSampleIsFront.Length; i++)
+		{
+			if (groundSampleIsFront[i] == front)
+			{
+				float num3 = groundSampleHeights[i];
+				num += (float.IsNaN(num3) ? (-0.2f) : Mathf.Clamp(num3, -0.2f, 0.5f));
+				num2++;
+			}
+		}
+		if (num2 <= 0)
+		{
+			return 0f;
+		}
+		return num / (float)num2;
+	}
+
+	public bool CanBeRenamedBy(BasePlayer player)
+	{
+		BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege();
+		if ((Object)(object)player != (Object)null && (Object)(object)buildingPrivilege != (Object)null)
+		{
+			return buildingPrivilege.IsAuthed(player);
+		}
+		return false;
+	}
+
 	public override void PreInitShared()
 	{
 		base.PreInitShared();
 		modifiers = ((Component)this).GetComponent<HorseModifiers>();
+		if ((Object)(object)horseAnimation != (Object)null && (Object)(object)horseAnimation.legsAnimator != (Object)null)
+		{
+			horseAnimation.legsAnimator.BatchRaycasts = true;
+		}
 	}
 
 	public bool HasSeatAvailable()
@@ -3870,6 +4159,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 			info.msg.horse.equipmentSpeedMod = equipmentSpeedMod;
 			info.msg.horse.playerLeadingId = playerLeadingId;
 		}
+		else
+		{
+			info.msg.horse.nameAuthorId = NameAuthorId;
+		}
 		info.msg.horse.modifiers = null;
 		if ((Object)(object)modifiers != (Object)null)
 		{
@@ -3882,23 +4175,153 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
-		if (info.msg.horse != null)
+		if (info.msg.horse == null)
 		{
-			LoadContainer(info);
-			currentStamina = info.msg.horse.stamina;
-			currentMaxStamina = info.msg.horse.maxStamina;
-			if (info.fromDisk)
-			{
-				towingEntityId = info.msg.horse.towEntityId;
-				ValidateTowableEntity();
-				TowAttach();
-			}
-			if ((Object)(object)modifiers != (Object)null)
-			{
-				modifiers.Load(info.msg.horse.modifiers, info.fromDisk);
-			}
-			ApplyBreed(info.msg.horse.breedIndex);
+			return;
 		}
+		LoadContainer(info);
+		currentStamina = info.msg.horse.stamina;
+		currentMaxStamina = info.msg.horse.maxStamina;
+		if (info.fromDisk)
+		{
+			towingEntityId = info.msg.horse.towEntityId;
+			NameAuthorId = info.msg.horse.nameAuthorId;
+			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+			flagsUpdateScope.Set(Flags.Reserved14, b: false);
+		}
+		if ((Object)(object)modifiers != (Object)null)
+		{
+			modifiers.Load(info.msg.horse.modifiers, info.fromDisk);
+		}
+		ApplyBreed(info.msg.horse.breedIndex);
+	}
+
+	private void OnSyncVar_AnimalName(string? oldValue, string newValue)
+	{
+	}
+
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		if (id == 0)
+		{
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: AnimalName for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_AnimalName);
+			return true;
+		}
+		return base.WriteSyncVar(id, writer);
+	}
+
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
+	{
+		if (id == 0)
+		{
+			try
+			{
+				string oldValue = __sync_AnimalName;
+				string newValue = (__sync_AnimalName = reader.String());
+				if (fromAutoSave)
+				{
+					oldValue = null;
+				}
+				OnSyncVar_AnimalName(oldValue, newValue);
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		}
+		return base.OnSyncVar(id, reader, fromAutoSave);
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (propertyName == "AnimalName")
+		{
+			return 0;
+		}
+		return byte.MaxValue;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
+		{
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
+		}
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_AnimalName = null;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		if (id == 0)
+		{
+			return true;
+		}
+		return base.ShouldInvalidateCache(id);
 	}
 
 	public RidableHorse()

@@ -8,6 +8,7 @@ namespace GenerateErosionJobs;
 [BurstCompile(/*Could not decode attribute arguments.*/)]
 internal struct TransportSedimentJob : IJobParallelFor
 {
+	[NativeDisableParallelForRestriction]
 	public NativeArray<float> SedimentMap;
 
 	public ReadOnly<float> SedimentReadOnlyMap;
@@ -18,19 +19,21 @@ internal struct TransportSedimentJob : IJobParallelFor
 
 	public float DT;
 
-	public void Execute(int index)
+	public void Execute(int y)
 	{
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		int num = index % Res;
-		int num2 = index / Res;
-		float2 val = VelocityMap[index];
-		int num3 = (int)((float)num - DT * val.x);
-		int num4 = (int)((float)num2 - DT * val.y);
-		num3 = math.clamp(num3, 0, Res - 1);
-		num4 = math.clamp(num4, 0, Res - 1);
-		SedimentMap[index] = SedimentReadOnlyMap[num4 * Res + num3];
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 0; i < Res; i++)
+		{
+			int num = y * Res + i;
+			float2 val = VelocityMap[num];
+			int num2 = (int)((float)i - DT * val.x);
+			int num3 = (int)((float)y - DT * val.y);
+			num2 = math.clamp(num2, 0, Res - 1);
+			num3 = math.clamp(num3, 0, Res - 1);
+			SedimentMap[num] = SedimentReadOnlyMap[num3 * Res + num2];
+		}
 	}
 }

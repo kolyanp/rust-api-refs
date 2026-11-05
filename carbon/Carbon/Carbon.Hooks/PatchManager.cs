@@ -502,7 +502,19 @@ public sealed class PatchManager : CarbonBehaviour, IPatchManager, IDisposable
 
 	internal bool IsHookLoaded(HookEx hook)
 	{
-		return LoadedHooks.Any((HookEx x) => x.HookFullName.Equals(hook.HookFullName) && x.TargetType == hook.TargetType && x.TargetMethod == hook.TargetMethod && (x.TargetMethodArgs?.SequenceEqual(hook.TargetMethodArgs) ?? true));
+		return LoadedHooks.Any((HookEx x) =>
+		{
+			if (x.HookFullName.Equals(hook.HookFullName) && x.TargetType == hook.TargetType && x.TargetMethod == hook.TargetMethod)
+			{
+				Type[] targetMethodArgs = x.TargetMethodArgs;
+				if (targetMethodArgs == null)
+				{
+					return true;
+				}
+				return Enumerable.SequenceEqual(targetMethodArgs, hook.TargetMethodArgs);
+			}
+			return false;
+		});
 	}
 
 	public bool IsHook(string hookName)
@@ -533,7 +545,7 @@ public sealed class PatchManager : CarbonBehaviour, IPatchManager, IDisposable
 
 	public int GetHookSubscriberCount(string hookName)
 	{
-		return _subscribers.Count((Subscription x) => x.Identifier.Equals(hookName));
+		return Enumerable.Count(_subscribers, (Subscription x) => x.Identifier.Equals(hookName));
 	}
 
 	private void AddSubscriber(string hookName, string subscriber)

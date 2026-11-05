@@ -8,8 +8,8 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FSpine;
 
-[AddComponentMenu("FImpossible Creations/Spine Animator 2")]
 [DefaultExecutionOrder(-11)]
+[AddComponentMenu("FImpossible Creations/Spine Animator 2")]
 public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	public enum EFSpineEditorCategory
@@ -844,12 +844,12 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float RotSmoother;
 
-	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	[Range(0f, 1f)]
+	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	public float MaxStretching = 1f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
+	[Range(0f, 1f)]
 	public float Slithery = 1f;
 
 	[Range(1f, 91f)]
@@ -860,18 +860,18 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
 	public float LimitSmoother = 0.35f;
 
-	[Range(0f, 15f)]
 	[Tooltip("How fast spine should be rotated to straight pose when your character moves.")]
+	[Range(0f, 15f)]
 	public float StraightenSpeed = 7.5f;
 
 	public bool TurboStraighten;
 
-	[Tooltip("Spine going back to straight position constantly with choosed speed intensity.")]
 	[Range(0f, 1f)]
+	[Tooltip("Spine going back to straight position constantly with choosed speed intensity.")]
 	public float GoBackSpeed;
 
-	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	[Range(0f, 1f)]
+	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	public float Springiness;
 
 	[Tooltip("How much effect on spine chain should have character movement.")]
@@ -1384,7 +1384,7 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 		for (int i = 0; i < IncludedColliders.Count; i++)
 		{
 			Collider col = IncludedColliders[i];
-			if (IncludedColliders.Count((Collider o) => (Object)(object)o == (Object)(object)col) > 1)
+			if (Enumerable.Count(IncludedColliders, (Collider o) => (Object)(object)o == (Object)(object)col) > 1)
 			{
 				IncludedColliders.RemoveAll((Collider o) => (Object)(object)o == (Object)(object)col);
 				IncludedColliders.Add(col);

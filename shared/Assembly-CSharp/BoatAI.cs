@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using ConVar;
@@ -21,7 +20,7 @@ public class BoatAI : BaseEntity
 	{
 		public Vector3 direction;
 
-		public RaycastHit? hit;
+		public Nullable hit;
 	}
 
 	public struct Context(int resolution)
@@ -266,41 +265,44 @@ public class BoatAI : BaseEntity
 			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+			//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+			//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0124: Unknown result type (might be due to invalid IL or missing references)
 			_timeSinceNewTarget = TimeSince.op_Implicit(0f);
 			_nextMacroInterval = Random.Range(60f, 150f);
 			if (boatAI.HasProtectionArea)
 			{
 				Vector3 protectionCenter = boatAI.ProtectionCenter;
 				_macroTarget = protectionCenter + new Vector3(Random.Range(0f - boatAI.ProtectionRadius, boatAI.ProtectionRadius), 0f, Random.Range(0f - boatAI.ProtectionRadius, boatAI.ProtectionRadius));
-				return;
 			}
-			if ((Object)(object)PointEntity<DeepSeaManager>.ServerInstance == (Object)null)
+			else if (!boatAI.Roaming || !TryFindRoamPoint(((Component)boatAI).transform.position, out _macroTarget))
 			{
-				_macroTarget = ((Component)boatAI).transform.position + ((Component)boatAI._boat).transform.forward * 100f;
-				return;
+				if ((Object)(object)PointEntity<DeepSeaManager>.ServerInstance == (Object)null || boatAI.Roaming)
+				{
+					_macroTarget = ((Component)boatAI).transform.position + ((Component)boatAI._boat).transform.forward * 100f;
+					return;
+				}
+				Bounds deepSeaBounds = DeepSeaManager.DeepSeaBounds;
+				Vector3 min = deepSeaBounds.min;
+				Vector3 max = deepSeaBounds.max;
+				_macroTarget = new Vector3(Random.Range(min.x, max.x), ((Component)boatAI).transform.position.y, Random.Range(min.z, max.z));
 			}
-			Bounds deepSeaBounds = DeepSeaManager.DeepSeaBounds;
-			Vector3 min = deepSeaBounds.min;
-			Vector3 max = deepSeaBounds.max;
-			_macroTarget = new Vector3(Random.Range(min.x, max.x), ((Component)boatAI).transform.position.y, Random.Range(min.z, max.z));
 		}
 
 		public override void Exit(BoatAI boatAI)
@@ -564,16 +566,17 @@ public class BoatAI : BaseEntity
 		{
 			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)boatAI._boat == (Object)null)
 			{
 				return;
@@ -582,7 +585,7 @@ public class BoatAI : BaseEntity
 			{
 				boatAI.SwitchState(boatAI._wanderState);
 			}
-			if (Vector3.Distance(((Component)boatAI).transform.position, currentOrbitTargetPoint) < 60f)
+			if (Vector3.Distance(((Component)boatAI).transform.position, currentOrbitTargetPoint) < 60f || Check.IsOnTerrainSimple(currentOrbitTargetPoint))
 			{
 				orbitPercent += 1f / 45f;
 				if (orbitPercent > 1f)
@@ -729,7 +732,7 @@ public class BoatAI : BaseEntity
 
 	private float? _closestObstacle;
 
-	private FeelerResult[] feelers = new FeelerResult[8];
+	private FeelerResult[] feelers = new FeelerResult[16];
 
 	private TimeSince timeSinceAvoidanceUpdate;
 
@@ -763,14 +766,36 @@ public class BoatAI : BaseEntity
 
 	private const float PROTECTION_AREA_PULL_STRENGTH = 0.75f;
 
+	private const float ROAM_MIN_SHORE_DISTANCE = 35f;
+
+	private const float ROAM_MAX_SHORE_DISTANCE = 400f;
+
 	private const float GROUP_COHESION_RADIUS = 30f;
 
 	private const float GROUP_PULL_STRENGTH = 0.25f;
 
-	private const int CONTEXT_RESOLUTION = 8;
+	private const float MAX_CHASE_TIME = 180f;
 
-	[SerializeField]
+	private const float MAX_CHASE_DISTANCE = 500f;
+
+	private const float GIVE_UP_IGNORE_TIME = 120f;
+
+	private const float RETARGET_INTERVAL = 1f;
+
+	private const float DRIVER_SWAP_DELAY = 3f;
+
+	private const int CONTEXT_RESOLUTION = 16;
+
+	private BasePlayer _chasedPlayer;
+
+	private Vector3 _chaseStartPosition;
+
+	private readonly Dictionary<ulong, float> _ignoredUntil = new Dictionary<ulong, float>();
+
+	private bool _isLeaving;
+
 	[Header("Boat AI - Scientists")]
+	[SerializeField]
 	private bool _autoFillWithScientists;
 
 	[SerializeField]
@@ -778,13 +803,15 @@ public class BoatAI : BaseEntity
 
 	private HumanNPC _driverNpc;
 
-	private Dictionary<HumanNPC, MountedWeaponSeat> _turretNpcs = new Dictionary<HumanNPC, MountedWeaponSeat>();
+	private bool _replacingDriver;
+
+	private TimeSince _timeSinceDriverDied;
+
+	private List<PTBoatTurret> _turrets = new List<PTBoatTurret>();
 
 	private bool _hasSpawnedScientists;
 
 	private bool _hasKilledScientists;
-
-	private List<AiMountedWeaponController> _mountedWeaponControllers;
 
 	private BoatState _currentState;
 
@@ -823,8 +850,8 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _searchRange = 50f;
 
-	[SerializeField]
 	[Header("Boat AI - Collision Avoidance")]
+	[SerializeField]
 	private float _awarenessAngle;
 
 	[SerializeField]
@@ -852,13 +879,30 @@ public class BoatAI : BaseEntity
 	[ServerVar(Saved = true, ShowInAdminUI = true, Help = "(Generated) Maximum speed as a fraction of the boat's top speed that AI-controlled boats will use; default 0.9; saved and shown in admin UI")]
 	public static float max_speed_percentage = 0.9f;
 
-	private int _driveDirection = 1;
+	[ServerVar(Help = "Minutes a roaming boat has to sail off the map before it is removed where it is")]
+	public static float roaming_egress_minutes = 10f;
 
-	private float _driveLockTimer;
+	private float _helm;
 
-	private float _stuckTimer;
+	private float _throttle;
 
-	private Vector3 _lastPos;
+	private float _stalledTime;
+
+	private float _recoverTimeLeft;
+
+	private float _recoverDirection;
+
+	private Vector3 _recoverStart;
+
+	private IAITarget _progressTarget;
+
+	private float _closestToTarget;
+
+	private float _timeSinceProgress;
+
+	private float _detourTimeLeft;
+
+	private int _detourSide;
 
 	[ServerVar(Help = "(Generated) When enabled, boat AI entities can enter a sleep state when no players are nearby; reduce CPU usage for idle boats")]
 	public static bool allow_sleeping = false;
@@ -872,6 +916,8 @@ public class BoatAI : BaseEntity
 
 	private TimeSince _timeSinceThought;
 
+	private TimeSince _timeSinceRetarget;
+
 	private TimeSince _timeSinceSleepy;
 
 	private TimeSince _timeSinceSpawned;
@@ -879,8 +925,6 @@ public class BoatAI : BaseEntity
 	private bool _isSleeping;
 
 	private bool _setupRan;
-
-	private ScientistBoatOilrigManager _oilrigManager;
 
 	public static BoatAIWorkQueue BoatWorkQueue = new BoatAIWorkQueue();
 
@@ -940,6 +984,8 @@ public class BoatAI : BaseEntity
 	}
 
 	public float ProtectionRadius { get; set; }
+
+	public bool Roaming { get; set; }
 
 	[Sync(Autosave = true)]
 	private NetworkableId BoatID
@@ -1037,7 +1083,7 @@ public class BoatAI : BaseEntity
 		for (int i = 0; i < rayCount; i++)
 		{
 			int num = i * 8;
-			RaycastHit? hit = null;
+			Nullable hit = null;
 			RaycastHit value;
 			for (int j = 0; j < 8; j++)
 			{
@@ -1047,7 +1093,7 @@ public class BoatAI : BaseEntity
 					continue;
 				}
 				BaseEntity entity = RaycastHitEx.GetEntity(val);
-				if ((Object)(object)entity == (Object)(object)this || (Object)(object)((Component)val.collider).transform.root == (Object)(object)((Component)_boat).transform || (Check.EntityValid(entity) && Check.EntityIsClient(entity)))
+				if ((Object)(object)entity == (Object)(object)this || (Object)(object)((Component)val.collider).transform.root == (Object)(object)((Component)_boat).transform || (entity.EntityValid() && entity.EntityIsClient()))
 				{
 					continue;
 				}
@@ -1090,9 +1136,8 @@ public class BoatAI : BaseEntity
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
@@ -1130,17 +1175,143 @@ public class BoatAI : BaseEntity
 					((IDisposable)val/*cast due to constrained. prefix*/).Dispose();
 				}
 			}
-			FeelerResult[] array = feelers;
-			for (int i = 0; i < array.Length; i++)
+			for (int i = 0; i < feelers.Length; i++)
 			{
-				FeelerResult feelerResult = array[i];
+				FeelerResult feelerResult = feelers[i];
 				if (feelerResult.hit.HasValue)
 				{
 					RaycastHit value = feelerResult.hit.Value;
-					float strength = Mathf.Clamp01(1f - value.distance / _awarenessDistance);
-					AddContextDanger(ctx, feelerResult.direction, strength, 0);
+					float num = Mathf.Clamp01(1f - value.distance / _awarenessDistance);
+					ctx.DangerMap[i] += num * num;
 				}
 			}
+		}
+	}
+
+	private float GetClearance(Vector3 worldDirection)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		float num = Mathf.Repeat(Vector3.SignedAngle(Vector3.forward, Vector3Ex.WithY(worldDirection, 0f), Vector3.up) / 360f * 16f, 16f);
+		int num2 = (int)num % 16;
+		return Mathf.Lerp(GetFeelerClearance(num2), GetFeelerClearance((num2 + 1) % 16), num - (float)num2);
+	}
+
+	private float GetFeelerClearance(int index)
+	{
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		Nullable hit = feelers[index].hit;
+		if (!hit.HasValue)
+		{
+			return _awarenessDistance;
+		}
+		RaycastHit value = hit.Value;
+		return value.distance;
+	}
+
+	private void DetourRoundBlockages(Context ctx, float delta)
+	{
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
+		Nullable val = ActiveTarget?.Position;
+		if (!val.HasValue || ActiveTarget != _progressTarget)
+		{
+			_progressTarget = ActiveTarget;
+			_closestToTarget = float.MaxValue;
+			_detourTimeLeft = 0f;
+			return;
+		}
+		Vector3 val2 = val.Value - ((Component)_boat).transform.position;
+		val2.y = 0f;
+		float magnitude = val2.magnitude;
+		float num = Mathf.Min(magnitude, _awarenessDistance);
+		bool flag = GetClearance(val2) < num;
+		if (magnitude < _closestToTarget - 5f)
+		{
+			_closestToTarget = magnitude;
+			_timeSinceProgress = 0f;
+			if (_detourTimeLeft <= 0f)
+			{
+				_detourSide = 0;
+			}
+		}
+		else
+		{
+			_timeSinceProgress += delta;
+		}
+		if (((_detourTimeLeft <= 0f) & flag) && _timeSinceProgress > 8f)
+		{
+			if (_detourSide == 0)
+			{
+				_detourSide = ((Vector3.SignedAngle(val2, ((Component)_boat).transform.forward, Vector3.up) >= 0f) ? 1 : (-1));
+			}
+			_detourTimeLeft = 15f;
+			_closestToTarget = magnitude;
+			_timeSinceProgress = 0f;
+		}
+		if (!(_detourTimeLeft > 0f))
+		{
+			return;
+		}
+		_detourTimeLeft = (flag ? (_detourTimeLeft - delta) : 0f);
+		Vector3 worldDirection = -val2;
+		float num2 = 0f;
+		for (int i = 1; i <= 8; i++)
+		{
+			Vector3 val3 = Quaternion.AngleAxis((float)(_detourSide * i) * 360f / 16f, Vector3.up) * val2;
+			float clearance = GetClearance(val3);
+			if (clearance > num2)
+			{
+				num2 = clearance;
+				worldDirection = val3;
+			}
+			if (clearance >= num)
+			{
+				break;
+			}
+		}
+		AddContextInterest(ctx, worldDirection, 1f);
+	}
+
+	private void AvoidShore(Context ctx)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 position = ((Component)_boat).transform.position;
+		float num = Mathf.InverseLerp(35f, 17.5f, TerrainTexturing.Instance.GetCoarseDistanceToShore(position));
+		if (!(num <= 0f))
+		{
+			Vector3 item = TerrainTexturing.Instance.GetCoarseVectorToShore(position).shoreDir;
+			AddContextDanger(ctx, item, num * 2f, 2);
+			AddContextInterest(ctx, -item, num);
 		}
 	}
 
@@ -1153,6 +1324,50 @@ public class BoatAI : BaseEntity
 	public void MoveTo(Transform t, float stopRadius = 3f)
 	{
 		SetMoveCommand(new TransformTarget(t, stopRadius));
+	}
+
+	public void LeaveAfter(float seconds)
+	{
+		InvokeRepeating(Leave, seconds, 5f);
+	}
+
+	private void Leave()
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		_isLeaving = true;
+		Vector3 position = ((Component)_boat).transform.position;
+		if (TerrainMeta.OutOfBounds(position))
+		{
+			RemoveBoat();
+		}
+		else if (ActiveTarget == null)
+		{
+			Vector3 val = Vector3Ex.WithY(position - TerrainMeta.Center, 0f);
+			Vector3 normalized = val.normalized;
+			MoveTo(position + normalized * TerrainMeta.Size.x);
+		}
+	}
+
+	private void RemoveBoat()
+	{
+		if (_boat is RHIB rHIB)
+		{
+			rHIB.AdminKillNoLoot();
+		}
 	}
 
 	private void SetMoveCommand(IAITarget t)
@@ -1221,45 +1436,23 @@ public class BoatAI : BaseEntity
 
 	private void InitialiseContextMaps()
 	{
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		if (_contextMap.Count != 8)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		if (_contextMap.Count != 16)
 		{
 			_contextMap.Clear();
-			float num = 45f;
-			for (int i = 0; i < 8; i++)
+			float num = 22.5f;
+			for (int i = 0; i < 16; i++)
 			{
 				Vector3 item = Quaternion.AngleAxis((float)i * num, Vector3.up) * Vector3.forward;
 				_contextMap.Add(item);
 			}
 		}
-		_bufferContext = new Context(8);
-	}
-
-	private int GetContextIndex(Vector3 worldDirection)
-	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 normalized = worldDirection.normalized;
-		normalized.y = 0f;
-		int result = 0;
-		float num = float.NegativeInfinity;
-		for (int i = 0; i < _contextMap.Count; i++)
-		{
-			float num2 = Vector3.Dot(normalized, _contextMap[i]);
-			if (num2 > num)
-			{
-				num = num2;
-				result = i;
-			}
-		}
-		return result;
+		_bufferContext = new Context(16);
 	}
 
 	private void BlurContext(Context ctx, int iterations = 1)
@@ -1303,11 +1496,14 @@ public class BoatAI : BaseEntity
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BoatAI.Context.GetBestContextDirection"))
 		{
 			if (_contextMap.Count == 0)
@@ -1315,57 +1511,78 @@ public class BoatAI : BaseEntity
 				return ((Component)this).transform.forward;
 			}
 			BlurContext(_bufferContext);
-			int num = -1;
-			float num2 = float.MinValue;
-			for (int i = 0; i < _bufferContext.InterestMap.Length; i++)
+			int count = _contextMap.Count;
+			float num = 0f;
+			for (int i = 0; i < count; i++)
 			{
-				float num3 = _bufferContext.InterestMap[i];
-				float num4 = _bufferContext.DangerMap[i];
-				float num5 = num3 - num4;
-				if ((double)num5 > (double)num2 + 0.05)
-				{
-					num2 = num5;
-					num = i;
-				}
+				num = Mathf.Max(num, _bufferContext.InterestMap[i]);
 			}
-			if (num == -1 || num2 <= 0.01f)
+			if (num <= 0.01f)
 			{
 				return Vector3.zero;
 			}
-			_ = _lastBestIndex;
-			_lastBestIndex = num;
-			return _contextMap[num];
+			int num2 = _lastBestIndex;
+			float num3 = GetContextScore(num2) + 0.05f;
+			for (int j = 0; j < count; j++)
+			{
+				float contextScore = GetContextScore(j);
+				if (contextScore > num3)
+				{
+					num3 = contextScore;
+					num2 = j;
+				}
+			}
+			while (GetContextScore((num2 + 1) % count) > GetContextScore(num2))
+			{
+				num2 = (num2 + 1) % count;
+			}
+			while (GetContextScore((num2 + count - 1) % count) > GetContextScore(num2))
+			{
+				num2 = (num2 + count - 1) % count;
+			}
+			_lastBestIndex = num2;
+			float contextScore2 = GetContextScore((num2 + count - 1) % count);
+			float contextScore3 = GetContextScore(num2);
+			float contextScore4 = GetContextScore((num2 + 1) % count);
+			float num4 = contextScore2 - 2f * contextScore3 + contextScore4;
+			float num5 = ((num4 < 0f) ? Mathf.Clamp(0.5f * (contextScore2 - contextScore4) / num4, -0.5f, 0.5f) : 0f);
+			return Quaternion.AngleAxis(((float)num2 + num5) * 360f / (float)count, Vector3.up) * Vector3.forward;
 		}
+	}
+
+	private float GetContextScore(int index)
+	{
+		return _bufferContext.InterestMap[index] - _bufferContext.DangerMap[index];
 	}
 
 	private void AddContextInterest(Context context, Vector3 worldDirection, float strength, int spread = 1)
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		int contextIndex = GetContextIndex(worldDirection);
-		for (int i = -spread; i <= spread; i++)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		float num = (float)(spread + 1) * 45f;
+		worldDirection.y = 0f;
+		for (int i = 0; i < context.InterestMap.Length; i++)
 		{
-			int num = (contextIndex + i + context.InterestMap.Length) % context.InterestMap.Length;
-			if (num >= 0 && num < context.InterestMap.Length)
+			float num2 = 1f - Vector3.Angle(_contextMap[i], worldDirection) / num;
+			if (num2 > 0f)
 			{
-				float num2 = 1f - (float)Mathf.Abs(i) / (float)(spread + 1);
-				float num3 = strength * num2;
-				context.InterestMap[num] += num3;
+				context.InterestMap[i] += strength * num2;
 			}
 		}
 	}
 
 	private void AddContextDanger(Context context, Vector3 worldDirection, float strength, int spread = 1)
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		int contextIndex = GetContextIndex(worldDirection);
-		for (int i = -spread; i <= spread; i++)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		float num = (float)(spread + 1) * 45f;
+		worldDirection.y = 0f;
+		for (int i = 0; i < context.DangerMap.Length; i++)
 		{
-			int num = (contextIndex + i + context.DangerMap.Length) % context.DangerMap.Length;
-			if (num >= 0 && num < context.DangerMap.Length)
+			float num2 = 1f - Vector3.Angle(_contextMap[i], worldDirection) / num;
+			if (num2 > 0f)
 			{
-				float num2 = 1f - (float)Mathf.Abs(i) / (float)(spread + 1);
-				float num3 = strength * num2;
-				context.DangerMap[num] += num3;
+				context.DangerMap[i] += strength * num2;
 			}
 		}
 	}
@@ -1377,7 +1594,7 @@ public class BoatAI : BaseEntity
 		for (int i = 0; i < _boat.mountPoints.Count; i++)
 		{
 			BaseMountable mountable = _boat.mountPoints[i].mountable;
-			if (mountable is RHIBDriver || mountable is MountedWeaponSeat)
+			if (mountable is RHIBDriver || mountable is PTBoatTurret)
 			{
 				SpawnScientist(mountable);
 				continue;
@@ -1396,22 +1613,13 @@ public class BoatAI : BaseEntity
 		CacheImportantScientists();
 		_hasSpawnedScientists = true;
 		DisableScientistBrains();
-		_mountedWeaponControllers = new List<AiMountedWeaponController>();
-		_mountedWeaponControllers = (from seat in _turretNpcs.Values
-			select seat.MountedWeaponGameObject.GetComponent<AiMountedWeaponController>() into controller
-			where (Object)(object)controller != (Object)null
-			select controller).ToList();
 	}
 
 	public void GiveMountedWeaponsExtraTarget(BasePlayer ply)
 	{
-		if (_mountedWeaponControllers == null)
+		foreach (PTBoatTurret turret in _turrets)
 		{
-			return;
-		}
-		foreach (AiMountedWeaponController mountedWeaponController in _mountedWeaponControllers)
-		{
-			mountedWeaponController.SetExtraTarget(ply);
+			turret.SetAiExtraTarget(ply);
 		}
 	}
 
@@ -1432,6 +1640,47 @@ public class BoatAI : BaseEntity
 		return true;
 	}
 
+	private bool TryReplaceDriver()
+	{
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		BaseMountable baseMountable = null;
+		HumanNPC humanNPC = null;
+		for (int i = 0; i < _boat.mountPoints.Count; i++)
+		{
+			BaseMountable mountable = _boat.mountPoints[i].mountable;
+			if (mountable is RHIBDriver)
+			{
+				baseMountable = mountable;
+			}
+			else if ((Object)(object)mountable != (Object)null && mountable.GetMounted() is HumanNPC humanNPC2 && humanNPC2.IsAlive() && ((Object)(object)humanNPC == (Object)null || humanNPC.GetMounted() is PTBoatTurret))
+			{
+				humanNPC = humanNPC2;
+			}
+		}
+		if ((Object)(object)baseMountable == (Object)null || (Object)(object)humanNPC == (Object)null)
+		{
+			return false;
+		}
+		if (!_replacingDriver)
+		{
+			_replacingDriver = true;
+			_timeSinceDriverDied = TimeSince.op_Implicit(0f);
+		}
+		if (TimeSince.op_Implicit(_timeSinceDriverDied) < 3f || baseMountable.AnyMounted())
+		{
+			return true;
+		}
+		humanNPC.GetMounted().DismountPlayer(humanNPC, lite: true);
+		baseMountable.MountPlayer(humanNPC);
+		humanNPC.inventory.containerBelt.Clear();
+		humanNPC.inventory.containerMain.Clear();
+		_driverNpc = humanNPC;
+		_replacingDriver = false;
+		return true;
+	}
+
 	private void CacheImportantScientists()
 	{
 		foreach (BaseVehicle.MountPointInfo allMountPoint in _boat.allMountPoints)
@@ -1443,11 +1692,11 @@ public class BoatAI : BaseEntity
 				mounted.inventory.containerMain.Clear();
 				_driverNpc = mounted as HumanNPC;
 			}
-			if (allMountPoint.mountable is MountedWeaponSeat)
+			if (allMountPoint.mountable is PTBoatTurret item)
 			{
 				mounted.inventory.containerBelt.Clear();
 				mounted.inventory.containerMain.Clear();
-				_turretNpcs.Add(mounted as HumanNPC, allMountPoint.mountable as MountedWeaponSeat);
+				_turrets.Add(item);
 			}
 		}
 	}
@@ -1481,8 +1730,8 @@ public class BoatAI : BaseEntity
 
 	private void SpawnScientist(BaseMountable mountable)
 	{
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		if (BaseNetworkableEx.Is<HumanNPC>((Object)(object)_scientistPrefab.GetEntity(), out HumanNPC _))
 		{
 			BaseEntity baseEntity = GameManager.server.CreateEntity(_scientistPrefab.resourcePath, _boat.mountAnchor.position, Quaternion.identity);
@@ -1492,6 +1741,19 @@ public class BoatAI : BaseEntity
 			if ((Object)(object)humanNPC.Brain != (Object)null && humanNPC.Brain.Senses != null)
 			{
 				humanNPC.Brain.Senses.ignoreTutorialPlayers = true;
+				humanNPC.Brain.Senses.ignorePlayer = IsIgnoredByCrew;
+			}
+		}
+	}
+
+	private void ShareSighting(BasePlayer ply)
+	{
+		for (int i = 0; i < _boat.mountPoints.Count; i++)
+		{
+			BaseMountable mountable = _boat.mountPoints[i].mountable;
+			if ((Object)(object)mountable != (Object)null && mountable.GetMounted() is HumanNPC humanNPC && (Object)(object)humanNPC.Brain != (Object)null && humanNPC.Brain.Senses != null)
+			{
+				humanNPC.Brain.Senses.Memory.SetKnown(ply, humanNPC, humanNPC.Brain.Senses);
 			}
 		}
 	}
@@ -1512,6 +1774,36 @@ public class BoatAI : BaseEntity
 				humanNPC.Brain.SetThinkMode(AIThinkMode.Interval);
 			}
 		}
+	}
+
+	private bool IsCrewOutOfAngle(BasePlayer target)
+	{
+		bool result = false;
+		for (int i = 0; i < _boat.mountPoints.Count; i++)
+		{
+			BaseMountable mountable = _boat.mountPoints[i].mountable;
+			if ((Object)(object)mountable == (Object)null || !(mountable.GetMounted() is HumanNPC humanNPC))
+			{
+				continue;
+			}
+			if (mountable is PTBoatTurret pTBoatTurret)
+			{
+				result = true;
+				if (pTBoatTurret.CanAiShootAt(target))
+				{
+					return false;
+				}
+			}
+			else if ((Object)(object)humanNPC.GetAttackEntity() != (Object)null && (Object)(object)humanNPC.Brain != (Object)null)
+			{
+				result = true;
+				if (humanNPC.Brain.Senses.Memory.IsLOS(target))
+				{
+					return false;
+				}
+			}
+		}
+		return result;
 	}
 
 	private void DisableScientistBrains()
@@ -1582,18 +1874,11 @@ public class BoatAI : BaseEntity
 		}
 	}
 
-	private float GetSteerToTarget(Vector3 targetPosition)
+	private float GetHelm(float headingError)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = ((Component)_boat).transform.InverseTransformPoint(targetPosition);
-		float num = Mathf.Clamp(0f - val.x, -1f, 1f);
-		if (val.z < 0f)
-		{
-			num = ((num >= 0f) ? 1f : (-1f));
-		}
-		return Mathf.Clamp(num, -1f, 1f);
+		float num = _boat.rigidBody.angularVelocity.y * 57.29578f;
+		return 0f - Mathf.Clamp((headingError - num * 0.7f) / 35f, -1f, 1f);
 	}
 
 	private void MaintainGroupCohesion(Context ctx)
@@ -1677,7 +1962,7 @@ public class BoatAI : BaseEntity
 
 	public bool IsPlayerTargetValid(BasePlayer ply)
 	{
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)ply == (Object)null)
 		{
 			if (PRINT_DEBUGS)
@@ -1702,7 +1987,15 @@ public class BoatAI : BaseEntity
 			}
 			return false;
 		}
-		if (!Check.IsValidAttackTarget(ply))
+		if (_ignoredUntil.TryGetValue(ply.userID.Get(), out var value) && Time.time < value)
+		{
+			if (PRINT_DEBUGS)
+			{
+				Debug.LogWarning((object)("[BoatAI] Invalid target: " + ply.displayName + " was given up on recently"));
+			}
+			return false;
+		}
+		if (!ply.IsValidAttackTarget())
 		{
 			if (PRINT_DEBUGS)
 			{
@@ -1715,7 +2008,7 @@ public class BoatAI : BaseEntity
 		{
 			return (bool)obj;
 		}
-		if (Check.SimplyOnTerrainAt(((Component)ply).transform.position))
+		if (Check.IsOnTerrainSimple(((Component)ply).transform.position))
 		{
 			if (PRINT_DEBUGS)
 			{
@@ -1728,9 +2021,13 @@ public class BoatAI : BaseEntity
 
 	public bool HasLineOfSightToPlayer(BasePlayer ply)
 	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		return GamePhysics.LineOfSight(((Component)_boat).transform.position, ply.eyes.position, 153092352);
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		return GamePhysics.LineOfSight(_boat.CenterPoint() + Vector3.up * _boat.bounds.extents.y, ply.eyes.position, 161546496, _boat);
 	}
 
 	public bool IsPlayerInRange(BasePlayer ply, float range)
@@ -1748,6 +2045,20 @@ public class BoatAI : BaseEntity
 			return false;
 		}
 		return (ulong)playerTarget.Player.userID == (ulong)ply.userID;
+	}
+
+	private static bool IsThreat(BasePlayer ply)
+	{
+		return ply.GetThreatLevel() > 0.5f;
+	}
+
+	private bool IsIgnoredByCrew(BasePlayer ply)
+	{
+		if (Roaming && !IsThreat(ply))
+		{
+			return !IsSameAsActiveTarget(ply);
+		}
+		return false;
 	}
 
 	public static void SpawnBoatGroup(Vector2 pos, Quaternion rot, HashSet<RHIB> ActiveRHIBS = null, bool registerWithDeepSea = false, bool spawnsPT = true)
@@ -1884,6 +2195,129 @@ public class BoatAI : BaseEntity
 		return false;
 	}
 
+	public static bool TryGetMapEdgeSpawn(out Vector3 position, out Vector3 destination)
+	{
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 0; i < 50; i++)
+		{
+			float num = Random.value * MathF.PI * 2f;
+			Vector3 val = new Vector3(Mathf.Cos(num), 0f, Mathf.Sin(num));
+			val /= Mathf.Max(Mathf.Abs(val.x), Mathf.Abs(val.z));
+			position = Vector3Ex.WithY(TerrainMeta.Center, 0f) + val * (TerrainMeta.Size.x * 0.5f - 50f);
+			if (!(TerrainTexturing.Instance.GetCoarseDistanceToShore(position) >= 35f) || BaseNetworkable.HasCloseConnections(position, 300f))
+			{
+				continue;
+			}
+			Vector3 val2 = -val.normalized;
+			for (float num2 = 0f; num2 < TerrainMeta.Size.x * 0.5f; num2 += 25f)
+			{
+				destination = position + val2 * num2;
+				if (IsRoamable(destination))
+				{
+					return true;
+				}
+			}
+		}
+		position = default;
+		destination = default;
+		return false;
+	}
+
+	public static bool TryFindRoamPoint(Vector3 from, out Vector3 position)
+	{
+		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 0; i < 20; i++)
+		{
+			Vector2 insideUnitCircle = Random.insideUnitCircle;
+			Vector2 normalized = insideUnitCircle.normalized;
+			position = from + new Vector3(normalized.x, 0f, normalized.y) * Random.Range(150f, 400f);
+			position.y = 0f;
+			if (IsRoamable(position) && IsRoamPathClear(from, position))
+			{
+				return true;
+			}
+		}
+		position = default;
+		return false;
+	}
+
+	private static bool IsRoamable(Vector3 position)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		if (TerrainMeta.OutOfBounds(position))
+		{
+			return false;
+		}
+		float coarseDistanceToShore = TerrainTexturing.Instance.GetCoarseDistanceToShore(position);
+		if (coarseDistanceToShore >= 35f)
+		{
+			return coarseDistanceToShore <= 400f;
+		}
+		return false;
+	}
+
+	private static bool IsRoamPathClear(Vector3 from, Vector3 to)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		int num = Mathf.CeilToInt(Vector3Ex.Distance2D(from, to) / 25f);
+		for (int i = 1; i < num; i++)
+		{
+			Vector3 pos = Vector3.Lerp(from, to, (float)i / (float)num);
+			if (TerrainTexturing.Instance.GetCoarseDistanceToShore(pos) < 17.5f)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private void SetupAI(BaseBoat boat)
 	{
 		if (!((Object)(object)boat == (Object)null) && !_setupRan)
@@ -1897,17 +2331,14 @@ public class BoatAI : BaseEntity
 
 	private void SetupInternal(BaseBoat boat)
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
 		_setupRan = true;
 		_boat = boat;
 		Boat = boat as MotorRowboat;
-		_lastPos = ((Component)_boat).transform.position;
 		_timeSinceSpawned = TimeSince.op_Implicit(0f);
 		_timeSinceSleepy = TimeSince.op_Implicit(seconds_until_sleep);
 		BoatAICoordination.Register(this);
@@ -1924,18 +2355,41 @@ public class BoatAI : BaseEntity
 		Invoke(NightCheck, 1f);
 		InvokeRandomized(NightCheck, 0f, 30f, 0.05f);
 		InvokeRandomized(TargetCheck, 0f, 5f, 0.1f);
-		SwitchState(_idleState);
+		SwitchState((ActiveTarget != null) ? ((BoatState)_seekState) : ((BoatState)_idleState));
 		RefreshSleeping();
 	}
 
 	private void TargetCheck()
 	{
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BoatAi.TargetCheck"))
 		{
+			bool flag = Time.time - PursuitTargetAcquireTime > 180f;
+			bool flag2 = Vector3Ex.Distance2D(((Component)_boat).transform.position, _chaseStartPosition) > 500f;
+			if (ActiveTarget is PlayerTarget playerTarget && (flag | flag2))
+			{
+				_ignoredUntil[playerTarget.Player.userID.Get()] = Time.time + 120f;
+				_chasedPlayer = null;
+			}
 			if (ActiveTarget != null && !ActiveTarget.IsValid(this))
 			{
-				ClearCurrentTarget();
+				DropTarget();
 			}
+		}
+	}
+
+	private void DropTarget()
+	{
+		BasePlayer ignore = ((ActiveTarget is PlayerTarget playerTarget) ? playerTarget.Player : null);
+		BasePlayer basePlayer = (_autoPursue ? FindClosestPlayerTarget(ignore) : null);
+		if ((Object)(object)basePlayer != (Object)null)
+		{
+			PursuePlayer(basePlayer, Time.time);
+		}
+		else
+		{
+			ClearCurrentTarget();
 		}
 	}
 
@@ -1949,9 +2403,9 @@ public class BoatAI : BaseEntity
 
 	public void OnTargetClaimAvailable(BasePlayer ply)
 	{
-		if (Check.EntityValid(ply) && ActiveTarget is PlayerTarget playerTarget && ply.userID.Get() == playerTarget.Player.userID.Get())
+		if (ply.EntityValid() && ActiveTarget is PlayerTarget playerTarget && ply.userID.Get() == playerTarget.Player.userID.Get())
 		{
-			PursuePlayer(ply);
+			PursuePlayer(ply, playerTarget.LastSeen);
 		}
 	}
 
@@ -1973,11 +2427,6 @@ public class BoatAI : BaseEntity
 	{
 		RemoveAI();
 		base.OnKilled();
-	}
-
-	public void SetOilRigManager(ScientistBoatOilrigManager manager)
-	{
-		_oilrigManager = manager;
 	}
 
 	private void OnAttached()
@@ -2026,14 +2475,11 @@ public class BoatAI : BaseEntity
 			}
 			ExitState();
 			_boat.RemoveAIDriver(runCallbacks: false);
+			_boat.BeenAttacked -= BoatAttacked;
 			BoatAICoordination.Unregister(this);
 			if (InGroup)
 			{
 				BoatAICoordination.RemoveFromGroup(this, GroupId);
-			}
-			if ((Object)(object)_oilrigManager != (Object)null)
-			{
-				_oilrigManager.AIDestroyed(_boat as RHIB);
 			}
 			EnableScientistBrains();
 			Boat = null;
@@ -2081,92 +2527,73 @@ public class BoatAI : BaseEntity
 
 	public void OnTick(BaseVehicle vehicle, float delta, ref float steering, ref float gasPedal)
 	{
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0333: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0338: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0342: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0347: Unknown result type (might be due to invalid IL or missing references)
-		//IL_035e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0375: Unknown result type (might be due to invalid IL or missing references)
-		//IL_037a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0384: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0389: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0214: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0229: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0250: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0251: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0406: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0606: Unknown result type (might be due to invalid IL or missing references)
+		//IL_040c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0411: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0417: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0421: Unknown result type (might be due to invalid IL or missing references)
+		//IL_043d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0442: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0452: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0448: Unknown result type (might be due to invalid IL or missing references)
+		//IL_044d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0457: Unknown result type (might be due to invalid IL or missing references)
-		//IL_045c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0460: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0465: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_048e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0493: Unknown result type (might be due to invalid IL or missing references)
-		//IL_049a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_049f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_064a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0656: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0660: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0665: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0693: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0585: Unknown result type (might be due to invalid IL or missing references)
-		//IL_058f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0536: Unknown result type (might be due to invalid IL or missing references)
-		//IL_053b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0545: Unknown result type (might be due to invalid IL or missing references)
-		//IL_054a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0565: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0314: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0327: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_049b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0388: Unknown result type (might be due to invalid IL or missing references)
+		//IL_038d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0397: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b7: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)_boat == (Object)null)
 		{
 			return;
@@ -2175,21 +2602,15 @@ public class BoatAI : BaseEntity
 		{
 			if (IsScientistDriverDead())
 			{
-				RemoveAI();
+				gasPedal = 0f;
+				if (!TryReplaceDriver())
+				{
+					RemoveAI();
+				}
 				return;
 			}
 			gasPedal = 0f;
-			if (TimeSince.op_Implicit(_timeSinceSpawned) < 5f)
-			{
-				return;
-			}
-			if ((_isSleeping || !BaseNetworkable.HasCloseConnections(((Component)this).transform.position, enable_mount_sync_distance)) && !HasValidPursuit())
-			{
-				_boat.DisableMountedSyncForAllSeats();
-				return;
-			}
-			_boat.EnableMountedSyncForAllSeats();
-			if (!AI.move)
+			if (TimeSince.op_Implicit(_timeSinceSpawned) < 5f || ((_isSleeping || !BaseNetworkable.HasCloseConnections(((Component)this).transform.position, enable_mount_sync_distance)) && !HasValidPursuit()) || !AI.move)
 			{
 				return;
 			}
@@ -2199,63 +2620,16 @@ public class BoatAI : BaseEntity
 			{
 				StartEngine(Boat);
 			}
+			if (ActiveTarget != null && !ActiveTarget.Position.HasValue)
+			{
+				DropTarget();
+			}
 			using (TimeWarning.New("BoatAI.OnTick.CurrentState.Update"))
 			{
 				_currentState?.Update(_bufferContext, this, delta);
+				DetourRoundBlockages(_bufferContext, delta);
 				Vector3 bestContextDirection = GetBestContextDirection();
-				Vector3 targetPosition = ((Component)_boat).transform.position + bestContextDirection.normalized * 10f;
-				float steerToTarget = GetSteerToTarget(targetPosition);
-				steering = steerToTarget;
-				float num = Vector3.Dot(((Component)_boat).transform.forward, bestContextDirection.normalized);
-				float magnitude = bestContextDirection.magnitude;
-				Vector3 position = ((Component)_boat).transform.position;
-				Vector3 val = position - _lastPos;
-				_lastPos = position;
-				val.y = 0f;
-				float num2 = val.magnitude / Mathf.Max(delta, 0.001f);
-				if (bestContextDirection.sqrMagnitude > Mathf.Epsilon && num2 < 0.6f)
-				{
-					_stuckTimer += delta;
-				}
-				else
-				{
-					_stuckTimer = 0f;
-				}
-				bool flag = _stuckTimer >= 1f;
-				if (_driveLockTimer <= 0f)
-				{
-					if (((_driveDirection == 1) & flag) && num < -0.4f)
-					{
-						_driveDirection = -1;
-						_driveLockTimer = 0.4f;
-					}
-					else if (_driveDirection == -1 && num > -0.15f)
-					{
-						_driveDirection = 1;
-						_driveLockTimer = 0.4f;
-					}
-				}
-				else
-				{
-					_driveLockTimer -= delta;
-				}
-				if (bestContextDirection == Vector3.zero)
-				{
-					gasPedal = 0f;
-				}
-				else
-				{
-					float num3 = magnitude * (float)_driveDirection;
-					gasPedal = Mathf.Clamp(num3, 0f - max_speed_percentage, max_speed_percentage);
-				}
-				if (_driveDirection < 0)
-				{
-					steering *= -1f;
-				}
-				if (ActiveTarget != null && Vector3Ex.Distance2D(((Component)_boat).transform.position, ActiveTarget.Position.Value) < 5f)
-				{
-					gasPedal = 0f;
-				}
+				Drive(bestContextDirection, delta, ref steering, ref gasPedal);
 				if (!DRAW_DEBUGS)
 				{
 					return;
@@ -2267,8 +2641,8 @@ public class BoatAI : BaseEntity
 				UnityEngine.DDraw.BroadcastSphere(((Component)_boat).transform.position + bestContextDirection, 0.5f, Color.green, 0.05f, distanceFade: false, zTest: false);
 				if (ActiveTarget != null && ActiveTarget.IsValid(this))
 				{
-					Vector3 val2 = ActiveTarget.Position.Value - ((Component)_boat).transform.position;
-					Vector3 normalized = val2.normalized;
+					Vector3 val = ActiveTarget.Position.Value - ((Component)_boat).transform.position;
+					Vector3 normalized = val.normalized;
 					normalized.y = 0f;
 					UnityEngine.DDraw.BroadcastLine(((Component)_boat).transform.position, ((Component)_boat).transform.position + normalized * 10f, Color.magenta, 0.05f, distanceFade: false, zTest: false);
 					UnityEngine.DDraw.BroadcastLine(((Component)_boat).transform.position, ActiveTarget.Position.Value, Color.white, 0.05f, distanceFade: false);
@@ -2285,12 +2659,98 @@ public class BoatAI : BaseEntity
 				UnityEngine.DDraw.BroadcastSphere(((Component)_boat).transform.position + bestContextDirection * 5f, 0.5f, Color.magenta, 0.05f, distanceFade: false, zTest: false);
 				for (int i = 0; i < _contextMap.Count; i++)
 				{
-					float num4 = _bufferContext.DangerMap[i];
-					float num5 = _bufferContext.InterestMap[i];
-					UnityEngine.DDraw.BroadcastText(((Component)_boat).transform.position + _contextMap[i] * 5f, string.Format("INDEX {0}, Dgr {1}, Int {2}", i, num4.ToString("F2"), num5.ToString("F2")), Color.black, 0.05f, distanceFade: false);
+					float num = _bufferContext.DangerMap[i];
+					float num2 = _bufferContext.InterestMap[i];
+					UnityEngine.DDraw.BroadcastText(((Component)_boat).transform.position + _contextMap[i] * 5f, string.Format("INDEX {0}, Dgr {1}, Int {2}", i, num.ToString("F2"), num2.ToString("F2")), Color.black, 0.05f, distanceFade: false);
 				}
 			}
 		}
+	}
+
+	private void Drive(Vector3 wantedDirection, float delta, ref float steering, ref float gasPedal)
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0289: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
+		Transform transform = ((Component)_boat).transform;
+		float num = ((ActiveTarget != null) ? Vector3Ex.Distance2D(transform.position, ActiveTarget.Position.Value) : float.MaxValue);
+		float num2 = Vector3.Dot(_boat.rigidBody.linearVelocity, transform.forward);
+		float num3 = 0f;
+		float num4 = 0f;
+		bool flag = false;
+		if (wantedDirection != Vector3.zero)
+		{
+			float num5 = Vector3.SignedAngle(Vector3Ex.WithY(transform.forward, 0f), wantedDirection, Vector3.up);
+			float clearance = GetClearance(transform.forward);
+			num3 = GetHelm(num5);
+			float num6 = Mathf.InverseLerp(150f, 30f, Mathf.Abs(num5));
+			float num7 = Mathf.InverseLerp(10f, 60f, clearance);
+			float num8 = ((ActiveTarget is PlayerTarget) ? Mathf.InverseLerp(5f, 40f, num) : 1f);
+			num4 = max_speed_percentage * Mathf.Lerp(0.35f, 1f, Mathf.Min(num6, num7)) * num8;
+			flag = clearance < 10f && Mathf.Abs(num5) > 60f;
+		}
+		bool flag2 = num < 5f;
+		if (flag2)
+		{
+			num4 = ((num2 > 1f) ? (-0.6f) : 0f);
+			if (num2 <= 1f && ActiveTarget is PlayerTarget playerTarget && HasLineOfSightToPlayer(playerTarget.Player) && IsCrewOutOfAngle(playerTarget.Player))
+			{
+				Vector3 val = ((Component)playerTarget.Player).transform.position - transform.position;
+				float num9 = Mathf.Sign(Vector3.Dot(transform.forward, val));
+				num4 = 0.3f * num9;
+				num3 = GetHelm(Vector3.SignedAngle(Vector3Ex.WithY(transform.forward, 0f), Vector3Ex.WithY(val, 0f), Vector3.up)) * num9;
+			}
+		}
+		if (_recoverTimeLeft > 0f)
+		{
+			_recoverTimeLeft -= delta;
+			num4 = max_speed_percentage * _recoverDirection;
+			num3 *= _recoverDirection;
+			if (Vector3Ex.Distance2D(transform.position, _recoverStart) > 8f)
+			{
+				_recoverTimeLeft = 0f;
+			}
+		}
+		else
+		{
+			bool flag3 = !flag2 && Mathf.Abs(_throttle) > 0.25f && Vector3Ex.Magnitude2D(_boat.rigidBody.linearVelocity) < 1f;
+			_stalledTime = (flag3 ? (_stalledTime + delta) : 0f);
+			if (_stalledTime > 1.5f || (flag && !flag2))
+			{
+				_stalledTime = 0f;
+				_recoverTimeLeft = 3f;
+				_recoverDirection = 0f - Mathf.Sign(_throttle);
+				_recoverStart = transform.position;
+			}
+		}
+		_helm = Mathf.MoveTowards(_helm, num3, 2f * delta);
+		_throttle = Mathf.MoveTowards(_throttle, num4, 1.5f * delta);
+		steering = ((Mathf.Abs(_helm) < 0.08f) ? 0f : _helm);
+		gasPedal = _throttle;
 	}
 
 	public void OnRemove(BaseVehicle vehicle)
@@ -2305,15 +2765,27 @@ public class BoatAI : BaseEntity
 			EnsureHasFuel();
 			Boat.DriverHeartbeat();
 			AvoidObstacles(_bufferContext);
+			if (Roaming)
+			{
+				AvoidShore(_bufferContext);
+			}
 			RunThink();
 		}
 	}
 
 	private void RunThink()
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		if (_autoPursue && TimeSince.op_Implicit(_timeSinceRetarget) >= 1f)
+		{
+			_timeSinceRetarget = TimeSince.op_Implicit(0f);
+			RefreshTarget();
+		}
 		if (TimeSince.op_Implicit(_timeSinceThought) < _thinkTime)
 		{
 			return;
@@ -2321,13 +2793,34 @@ public class BoatAI : BaseEntity
 		using (TimeWarning.New("BoatAI.RunThink"))
 		{
 			_timeSinceThought = TimeSince.op_Implicit(0f);
-			if (_autoPursue && (!HasValidPursuit() || !(ActiveTarget is PlayerTarget)))
+			if (_autoPursue && !_isLeaving && (!HasValidPursuit() || !(ActiveTarget is PlayerTarget)))
 			{
 				BasePlayer basePlayer = FindClosestPlayerTarget();
 				if ((Object)(object)basePlayer != (Object)null)
 				{
-					PursuePlayer(basePlayer);
+					PursuePlayer(basePlayer, Time.time);
 				}
+			}
+		}
+	}
+
+	private void RefreshTarget()
+	{
+		if (!HasValidPursuit() || !(ActiveTarget is PlayerTarget playerTarget))
+		{
+			return;
+		}
+		bool flag = HasLineOfSightToPlayer(playerTarget.Player);
+		if (flag)
+		{
+			ShareSighting(playerTarget.Player);
+		}
+		if (!flag || playerTarget.Player.IsWounded())
+		{
+			BasePlayer basePlayer = FindClosestPlayerTarget(playerTarget.Player);
+			if ((Object)(object)basePlayer != (Object)null && !basePlayer.IsWounded())
+			{
+				PursuePlayer(basePlayer, Time.time);
 			}
 		}
 	}
@@ -2343,95 +2836,106 @@ public class BoatAI : BaseEntity
 		}
 	}
 
-	private void PursuePlayer(BasePlayer ply, bool applyToGroup = true)
+	private void PursuePlayer(BasePlayer ply, float lastSeen, bool applyToGroup = true)
 	{
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)ply == (Object)null)
 		{
 			if (PRINT_DEBUGS)
 			{
 				Debug.LogWarning((object)(((Object)this).name + ": PursuePlayer called with null player"));
 			}
-			return;
 		}
-		if ((Object)(object)_boat == (Object)null)
+		else if ((Object)(object)_boat == (Object)null)
 		{
 			if (PRINT_DEBUGS)
 			{
 				Debug.LogWarning((object)(((Object)this).name + ": PursuePlayer called before Setup() \ufffd _boat is null"));
 			}
-			return;
 		}
-		if (_seekState == null)
+		else if (_seekState == null)
 		{
 			if (PRINT_DEBUGS)
 			{
 				Debug.LogWarning((object)(((Object)this).name + ": PursuePlayer called before SetupStateCache()"));
 			}
-			return;
 		}
-		if (!IsPlayerTargetValid(ply))
+		else if (!IsPlayerTargetValid(ply))
 		{
 			if (PRINT_DEBUGS)
 			{
 				Debug.Log((object)"Player isnt valid");
 			}
-			return;
 		}
-		if (!IsPlayerInRange(ply, _searchRange))
+		else if (!IsPlayerInRange(ply, _searchRange))
 		{
 			if (PRINT_DEBUGS)
 			{
 				Debug.Log((object)"Player isnt in range");
 			}
-			return;
 		}
-		if (ActiveTarget is PlayerTarget playerTarget)
+		else
 		{
-			BoatAICoordination.ReleaseClaim(this, playerTarget.Player);
-		}
-		bool stayClose = BoatAICoordination.TryClaimTarget(this, ply);
-		PlayerTarget moveCommand = new PlayerTarget(ply, Time.time, ((Component)_boat).transform)
-		{
-			StayClose = stayClose
-		};
-		SetMoveCommand(moveCommand);
-		PursuitTargetAcquireTime = Time.time;
-		if (!(InGroup & applyToGroup))
-		{
-			return;
-		}
-		ListHashSet<BoatAI> groupMembers = BoatAICoordination.GetGroupMembers(GroupId);
-		if (groupMembers == null)
-		{
-			return;
-		}
-		Enumerator<BoatAI> enumerator = groupMembers.GetEnumerator();
-		try
-		{
-			while (enumerator.MoveNext())
+			if (Time.time - lastSeen > 45f)
 			{
-				BoatAI current = enumerator.Current;
-				if (!((Object)(object)current == (Object)null) && !((Object)(object)current == (Object)(object)this))
+				return;
+			}
+			if (ActiveTarget is PlayerTarget playerTarget)
+			{
+				BoatAICoordination.ReleaseClaim(this, playerTarget.Player);
+			}
+			bool stayClose = BoatAICoordination.TryClaimTarget(this, ply);
+			float lastSeen2 = ((ActiveTarget is PlayerTarget playerTarget2 && (Object)(object)playerTarget2.Player == (Object)(object)ply) ? Mathf.Max(lastSeen, playerTarget2.LastSeen) : lastSeen);
+			PlayerTarget playerTarget3 = new PlayerTarget(ply, Time.time, ((Component)_boat).transform)
+			{
+				StayClose = stayClose,
+				LastSeen = lastSeen2
+			};
+			SetMoveCommand(playerTarget3);
+			if ((Object)(object)ply != (Object)(object)_chasedPlayer || Time.time - PursuitTargetAcquireTime > 180f)
+			{
+				_chasedPlayer = ply;
+				_chaseStartPosition = ((Component)_boat).transform.position;
+				PursuitTargetAcquireTime = Time.time;
+			}
+			if (!(InGroup & applyToGroup))
+			{
+				return;
+			}
+			ListHashSet<BoatAI> groupMembers = BoatAICoordination.GetGroupMembers(GroupId);
+			if (groupMembers == null)
+			{
+				return;
+			}
+			Enumerator<BoatAI> enumerator = groupMembers.GetEnumerator();
+			try
+			{
+				while (enumerator.MoveNext())
 				{
-					current.PursuePlayer(ply, applyToGroup: false);
+					BoatAI current = enumerator.Current;
+					if (!((Object)(object)current == (Object)null) && !((Object)(object)current == (Object)(object)this) && (!(current.ActiveTarget is PlayerTarget playerTarget4) || !current.HasLineOfSightToPlayer(playerTarget4.Player)))
+					{
+						current.PursuePlayer(ply, playerTarget3.LastSeen, applyToGroup: false);
+					}
 				}
 			}
-		}
-		finally
-		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			finally
+			{
+				((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			}
 		}
 	}
 
-	private BasePlayer FindClosestPlayerTarget()
+	private BasePlayer FindClosestPlayerTarget(BasePlayer ignore = null)
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BoatAI.FindTarget"))
 		{
 			PooledList<BasePlayer> val = Pool.Get<PooledList<BasePlayer>>();
@@ -2442,9 +2946,13 @@ public class BoatAI : BaseEntity
 				float num = float.MaxValue;
 				foreach (BasePlayer item in (List<BasePlayer>)(object)val)
 				{
-					if (IsPlayerTargetValid(item) && IsPlayerInRange(item, _searchRange) && !(((Component)item).transform.position.y < -5f) && !BoatAICoordination.IsTargetClaimedByAnotherGroup(this, item))
+					if (!((Object)(object)item == (Object)(object)ignore) && IsPlayerTargetValid(item) && IsPlayerInRange(item, _searchRange) && !(((Component)item).transform.position.y < -5f) && (!Roaming || IsThreat(item)) && !BoatAICoordination.IsTargetClaimedByAnotherGroup(this, item) && HasLineOfSightToPlayer(item))
 					{
 						float num2 = Vector3.SqrMagnitude(((Component)item).transform.position - ((Component)_boat).transform.position);
+						if (item.IsWounded())
+						{
+							num2 += _searchRange * _searchRange;
+						}
 						if (num2 < num)
 						{
 							num = num2;
@@ -2463,13 +2971,27 @@ public class BoatAI : BaseEntity
 
 	private void BoatAttacked(HitInfo info)
 	{
-		if ((Object)(object)info.InitiatorPlayer != (Object)null)
+		if (!((Object)(object)info.InitiatorPlayer != (Object)null))
 		{
-			BasePlayer initiatorPlayer = info.InitiatorPlayer;
-			if (IsPlayerTargetValid(initiatorPlayer))
+			return;
+		}
+		BasePlayer initiatorPlayer = info.InitiatorPlayer;
+		ulong key = initiatorPlayer.userID.Get();
+		_ignoredUntil.Remove(key);
+		ListHashSet<BoatAI> val = (InGroup ? BoatAICoordination.GetGroupMembers(GroupId) : null);
+		if (val != null)
+		{
+			for (int i = 0; i < val.Count; i++)
 			{
-				PursuePlayer(info.InitiatorPlayer);
+				if ((Object)(object)val[i] != (Object)null)
+				{
+					val[i]._ignoredUntil.Remove(key);
+				}
 			}
+		}
+		if (IsPlayerTargetValid(initiatorPlayer))
+		{
+			PursuePlayer(info.InitiatorPlayer, Time.time);
 		}
 	}
 

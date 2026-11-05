@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TerrainPathChildObjects : MonoBehaviour
+public class TerrainPathChildObjects : MonoBehaviour, IFlattenKeepsChildren
 {
 	public bool Spline = true;
 

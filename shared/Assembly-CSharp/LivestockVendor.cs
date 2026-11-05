@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using ConVar;
+using Facepunch;
 using Facepunch.Rust;
 using Network;
+using ProtoBuf;
 using Rust.Ai.Gen2;
 using UnityEngine;
 
@@ -12,6 +14,15 @@ public class LivestockVendor : NPCTalking
 	{
 		Animal,
 		Wool
+	}
+
+	public enum SaleRemark : byte
+	{
+		None,
+		HiddenDefect,
+		Inbred,
+		Prize,
+		LowPotential
 	}
 
 	public struct OfferItem
@@ -34,6 +45,10 @@ public class LivestockVendor : NPCTalking
 		public OfferItem[] items;
 
 		public bool generous;
+
+		public float potential;
+
+		public SaleRemark remark;
 
 		public int index;
 
@@ -61,6 +76,8 @@ public class LivestockVendor : NPCTalking
 		public LivestockSaleTable table;
 
 		public int lotAmount;
+
+		public SaleRemark remark;
 
 		public TimeSince lastActivity;
 
@@ -94,6 +111,8 @@ public class LivestockVendor : NPCTalking
 
 	private readonly Dictionary<ulong, NetworkableId> selectedSubjects = new Dictionary<ulong, NetworkableId>();
 
+	private readonly Dictionary<ulong, Offer> presentedOffers = new Dictionary<ulong, Offer>();
+
 	private readonly List<OfferItem> pickedItems = new List<OfferItem>();
 
 	private readonly List<NetworkableId> expired = new List<NetworkableId>();
@@ -106,8 +125,11 @@ public class LivestockVendor : NPCTalking
 	[Tooltip("The items this vendor pays with for wool, banded against how full the lot is.")]
 	public LivestockSaleTable woolSaleTable;
 
-	[Tooltip("The wool this vendor buys. Held as a definition rather than a shortname so the item can still be renamed.")]
 	public ItemDefinition woolItem;
+
+	public SoundDefinition animalSoldSound;
+
+	public SoundDefinition woolSoldSound;
 
 	public GameObjectRef MaleLambPrefab;
 
@@ -138,6 +160,24 @@ public class LivestockVendor : NPCTalking
 		return false;
 	}
 
+	public bool Server_IsSelectionUnraised(BasePlayer player)
+	{
+		if (TryGetSelectedAnimal(player, out var animal) && animal.IsAdult())
+		{
+			return !WillPayFor(animal);
+		}
+		return false;
+	}
+
+	public bool Server_IsSelectionChild(BasePlayer player)
+	{
+		if (TryGetSelectedAnimal(player, out var animal))
+		{
+			return !animal.IsAdult();
+		}
+		return false;
+	}
+
 	public bool Server_HasOfferRemaining(BasePlayer player)
 	{
 		if (TryGetSelected(player, out var negotiation, out var _))
@@ -158,7 +198,7 @@ public class LivestockVendor : NPCTalking
 
 	public int Server_WoolCarriedBy(BasePlayer player)
 	{
-		if ((Object)(object)player == (Object)null || (Object)(object)player.inventory == (Object)null || (Object)(object)woolItem == (Object)null)
+		if ((Object)(object)player == (Object)null || player.inventory == null || (Object)(object)woolItem == (Object)null)
 		{
 			return 0;
 		}
@@ -177,18 +217,23 @@ public class LivestockVendor : NPCTalking
 	public bool Server_SelectAnimal(BasePlayer player, NetworkableId animalId)
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)player == (Object)null)
 		{
 			return false;
 		}
-		if (!TryFindSellable(animalId, out var found) || !found.IsFollowing(player))
+		if (!TryFindAnimal(animalId, out var found) || !CanBeListedBy(found, player))
 		{
 			return false;
+		}
+		selectedSubjects[player.userID] = animalId;
+		if (!IsSellable(found) || !WillPayFor(found))
+		{
+			return true;
 		}
 		PruneNegotiations();
 		if (!negotiations.TryGetValue(animalId, out var value))
@@ -196,12 +241,12 @@ public class LivestockVendor : NPCTalking
 			value = new Negotiation
 			{
 				kind = SaleKind.Animal,
-				table = saleTable
+				table = saleTable,
+				remark = RemarkOn(found)
 			};
 			value.offers = RollOffers(value, animalId, NameOf(found), found.SaleQuality);
 			negotiations.Add(animalId, value);
 		}
-		selectedSubjects[player.userID] = animalId;
 		return PresentOffer(player, animalId, value);
 	}
 
@@ -252,7 +297,7 @@ public class LivestockVendor : NPCTalking
 			negotiation.lastActivity = TimeSince.op_Implicit(0f);
 			if (!negotiation.Refused)
 			{
-				SendOffer(player, subjectId, negotiation);
+				RememberOffer(player, subjectId, negotiation);
 			}
 		}
 	}
@@ -260,7 +305,7 @@ public class LivestockVendor : NPCTalking
 	public bool Server_AcceptOffer(BasePlayer player)
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
 		if (!TryGetSelected(player, out var negotiation, out var subjectId) || negotiation.Refused)
 		{
 			return false;
@@ -286,6 +331,7 @@ public class LivestockVendor : NPCTalking
 			}
 		}
 		Analytics.Azure.OnLivestockSale(player, negotiation.kind, offer, negotiation.rejections);
+		ClientRPC(RpcTarget.Player("Client_OnSale", player), (byte)negotiation.kind);
 		negotiations.Remove(subjectId);
 		selectedSubjects.Remove(player.userID);
 		return true;
@@ -332,8 +378,34 @@ public class LivestockVendor : NPCTalking
 		{
 			negotiation.lastActivity = TimeSince.op_Implicit(0f);
 		}
-		SendOffer(player, subjectId, negotiation);
+		RememberOffer(player, subjectId, negotiation);
 		return true;
+	}
+
+	public static SaleRemark RemarkOn(LivestockAnimal animal)
+	{
+		if ((Object)(object)animal == (Object)null)
+		{
+			return SaleRemark.None;
+		}
+		bool genesEnabled = Livestock.genesEnabled;
+		if (genesEnabled && animal.IsInbred)
+		{
+			return SaleRemark.Inbred;
+		}
+		if (animal.Potential < Livestock.vendorLowPotential)
+		{
+			return SaleRemark.LowPotential;
+		}
+		if (genesEnabled && animal.HidesBadAllele)
+		{
+			return SaleRemark.HiddenDefect;
+		}
+		if (genesEnabled && animal.IsGodClone)
+		{
+			return SaleRemark.Prize;
+		}
+		return SaleRemark.None;
 	}
 
 	private bool IsShortOfLot(BasePlayer player, Negotiation negotiation)
@@ -377,6 +449,17 @@ public class LivestockVendor : NPCTalking
 		if (negotiations.TryGetValue(subjectId, out negotiation))
 		{
 			return negotiation.offers != null;
+		}
+		return false;
+	}
+
+	private bool TryGetSelectedAnimal(BasePlayer player, out LivestockAnimal animal)
+	{
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		animal = null;
+		if ((Object)(object)player != (Object)null && selectedSubjects.TryGetValue(player.userID, out var value))
+		{
+			return TryFindAnimal(value, out animal);
 		}
 		return false;
 	}
@@ -448,45 +531,118 @@ public class LivestockVendor : NPCTalking
 		return pickedItems.ToArray();
 	}
 
-	private void SendOffer(BasePlayer player, NetworkableId subjectId, Negotiation negotiation)
+	private void RememberOffer(BasePlayer player, NetworkableId subjectId, Negotiation negotiation)
 	{
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)player == (Object)null) && player.net != null && player.net.connection != null)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)player == (Object)null)
 		{
-			Offer offer = negotiation.offers[negotiation.rejections];
-			NetWrite netWrite = ClientRPCStart("Client_ReceiveAnimalOffer");
-			netWrite.EntityID(subjectId);
-			netWrite.UInt8((byte)negotiation.kind);
-			netWrite.Int32(negotiation.lotAmount);
-			netWrite.UInt8((byte)negotiation.rejections);
-			netWrite.UInt8((byte)negotiation.offers.Length);
-			netWrite.Bool(offer.generous);
-			netWrite.UInt8((byte)offer.items.Length);
+			return;
+		}
+		Offer value = negotiation.offers[negotiation.rejections];
+		value.index = negotiation.rejections;
+		value.count = negotiation.offers.Length;
+		value.remark = negotiation.remark;
+		value.potential = 0f;
+		if (negotiation.kind == SaleKind.Animal)
+		{
+			Offer value2;
+			if (TryFindAnimal(subjectId, out var found))
+			{
+				value.potential = found.Potential;
+				value.subjectName = found.GetNameOrLabelAsViewedBy(player);
+			}
+			else if (presentedOffers.TryGetValue(player.userID, out value2) && value2.subjectId == subjectId)
+			{
+				value.subjectName = value2.subjectName;
+			}
+		}
+		presentedOffers[player.userID] = value;
+	}
+
+	private bool TryGetPresentedOffer(BasePlayer player, out Offer offer)
+	{
+		offer = default;
+		if ((Object)(object)player != (Object)null && presentedOffers.TryGetValue(player.userID, out offer))
+		{
+			return offer.IsValid;
+		}
+		return false;
+	}
+
+	private void AddPresentedOffer(BasePlayer player, ConversationState state)
+	{
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		if (TryGetPresentedOffer(player, out var offer))
+		{
+			AnimalOffer val = Pool.Get<AnimalOffer>();
+			val.kind = (int)offer.kind;
+			val.subjectId = offer.subjectId;
+			val.subjectName = offer.subjectName;
+			val.lotAmount = offer.lotAmount;
+			val.lotItemId = ((offer.kind == SaleKind.Wool && (Object)(object)woolItem != (Object)null) ? woolItem.itemid : 0);
+			val.index = offer.index;
+			val.count = offer.count;
+			val.generous = offer.generous;
+			val.potential = offer.potential;
+			val.remark = (int)offer.remark;
+			val.items = Pool.Get<List<AnimalOfferItem>>();
 			OfferItem[] items = offer.items;
 			for (int i = 0; i < items.Length; i++)
 			{
 				OfferItem offerItem = items[i];
-				netWrite.Int32(((Object)(object)offerItem.item != (Object)null) ? offerItem.item.itemid : 0);
-				netWrite.Int32(offerItem.amount);
+				AnimalOfferItem val2 = Pool.Get<AnimalOfferItem>();
+				val2.itemId = (((Object)(object)offerItem.item != (Object)null) ? offerItem.item.itemid : 0);
+				val2.amount = offerItem.amount;
+				val.items.Add(val2);
 			}
-			ClientRPCSend(netWrite, new SendInfo(player.net.connection));
+			state.animalOffer = val;
 		}
 	}
 
-	public static bool IsSellable(LivestockAnimal animal)
+	public override void OnConversationEnded(BasePlayer player)
 	{
-		if ((Object)(object)animal != (Object)null && !animal.IsDead() && animal.IsAdult())
+		if ((Object)(object)player != (Object)null)
+		{
+			presentedOffers.Remove(player.userID);
+		}
+		base.OnConversationEnded(player);
+	}
+
+	public static bool IsListable(LivestockAnimal animal)
+	{
+		if ((Object)(object)animal != (Object)null && !animal.IsDead())
 		{
 			return !animal.IsPregnant();
 		}
 		return false;
 	}
 
-	public static bool CanBeSoldBy(LivestockAnimal animal, BasePlayer player)
+	public static bool IsSellable(LivestockAnimal animal)
 	{
-		if (IsSellable(animal) && (Object)(object)player != (Object)null)
+		if (IsListable(animal))
+		{
+			return animal.IsAdult();
+		}
+		return false;
+	}
+
+	public static bool CanBeListedBy(LivestockAnimal animal, BasePlayer player)
+	{
+		if (IsListable(animal) && (Object)(object)player != (Object)null)
 		{
 			return animal.IsFollowing(player);
+		}
+		return false;
+	}
+
+	public static bool CanBeSoldBy(LivestockAnimal animal, BasePlayer player)
+	{
+		if (IsSellable(animal))
+		{
+			return CanBeListedBy(animal, player);
 		}
 		return false;
 	}
@@ -499,7 +655,7 @@ public class LivestockVendor : NPCTalking
 		}
 		foreach (BaseEntity entityContent in Trigger.entityContents)
 		{
-			if (entityContent is LivestockAnimal animal && CanBeSoldBy(animal, player))
+			if (entityContent is LivestockAnimal animal && CanBeListedBy(animal, player))
 			{
 				return true;
 			}
@@ -509,28 +665,33 @@ public class LivestockVendor : NPCTalking
 
 	public void GetAnimalListings(BasePlayer player, List<AnimalListing> buffer)
 	{
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		buffer.Clear();
-		if ((Object)(object)Trigger == (Object)null || Trigger.entityContents == null)
+		if (!((Object)(object)Trigger == (Object)null) && Trigger.entityContents != null)
 		{
-			return;
+			AddListings(player, buffer, sellable: true);
+			AddListings(player, buffer, sellable: false);
 		}
+	}
+
+	private void AddListings(BasePlayer player, List<AnimalListing> buffer, bool sellable)
+	{
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		foreach (BaseEntity entityContent in Trigger.entityContents)
 		{
-			if (!((Object)(object)entityContent == (Object)null) && entityContent is LivestockAnimal livestockAnimal && CanBeSoldBy(livestockAnimal, player))
+			if (buffer.Count >= 4)
+			{
+				break;
+			}
+			if (!((Object)(object)entityContent == (Object)null) && entityContent is LivestockAnimal livestockAnimal && CanBeListedBy(livestockAnimal, player) && IsSellable(livestockAnimal) == sellable)
 			{
 				buffer.Add(new AnimalListing
 				{
 					animalId = ((livestockAnimal.net != null) ? livestockAnimal.net.ID : default(NetworkableId)),
-					animalName = NameOf(livestockAnimal)
+					animalName = livestockAnimal.GetNameOrLabelAsViewedBy(player)
 				});
-				if (buffer.Count >= 4)
-				{
-					break;
-				}
 			}
 		}
 	}
@@ -571,11 +732,41 @@ public class LivestockVendor : NPCTalking
 		{
 			return string.Empty;
 		}
-		if (!string.IsNullOrEmpty(animal.AnimalName))
+		return animal.NameOrLabel();
+	}
+
+	public override void AddFormatTextValues(BasePlayer player, ConversationData.AbstractSpeechNodeData speechNode, List<FormatTextValue> values)
+	{
+		base.AddFormatTextValues(player, speechNode, values);
+		if (TryGetPresentedOffer(player, out var offer))
 		{
-			return animal.AnimalName;
+			bool flag = offer.kind == SaleKind.Wool && (Object)(object)woolItem != (Object)null;
+			string value = (flag ? woolItem.displayName.token : offer.subjectName);
+			AddFormatTextValue(values, speechNode, "animal_name", value, flag);
+			AddFormatTextValue(values, speechNode, "lot_name", value, flag);
+			AddFormatTextValue(values, speechNode, "lot_amount", offer.lotAmount);
+			AddFormatTextValue(values, speechNode, "offer_number", offer.index + 1);
+			AddFormatTextValue(values, speechNode, "offers_left", offer.count - offer.index - 1);
 		}
-		return animal.Categorize();
+		AddFormatTextValue(values, speechNode, "minimum_wool_sale", Livestock.vendorWoolMinimum);
+	}
+
+	protected override bool NeedsFormatTextValue(ConversationData.AbstractSpeechNodeData speechNode, string key)
+	{
+		if (!(speechNode is ConversationData.AnimalSalePreviewSpeechNodeData))
+		{
+			return base.NeedsFormatTextValue(speechNode, key);
+		}
+		return true;
+	}
+
+	public static bool WillPayFor(LivestockAnimal animal)
+	{
+		if ((Object)(object)animal != (Object)null)
+		{
+			return animal.Potential > 0f;
+		}
+		return false;
 	}
 
 	public int ReferenceValueFor(LivestockAnimal animal)
@@ -589,7 +780,7 @@ public class LivestockVendor : NPCTalking
 
 	public int SellForTest(LivestockAnimal animal)
 	{
-		if (!IsSellable(animal))
+		if (!IsSellable(animal) || !WillPayFor(animal))
 		{
 			return 0;
 		}
@@ -598,31 +789,32 @@ public class LivestockVendor : NPCTalking
 		return result;
 	}
 
-	protected override void Server_OnSendingSpeechNode(BasePlayer player, ConversationData.AbstractSpeechNodeData speechNode)
+	protected override void AddSpeechNodeState(BasePlayer player, ConversationData.AbstractSpeechNodeData speechNode, ConversationState state)
 	{
-		base.Server_OnSendingSpeechNode(player, speechNode);
+		base.AddSpeechNodeState(player, speechNode, state);
 		if (speechNode is ConversationData.SellAnimalsSpeechNodeData)
 		{
-			Server_SendAnimalListings(player);
+			AddAnimalListings(player, state);
+		}
+		if (speechNode is ConversationData.AnimalSalePreviewSpeechNodeData)
+		{
+			AddPresentedOffer(player, state);
 		}
 	}
 
-	private void Server_SendAnimalListings(BasePlayer player)
+	private void AddAnimalListings(BasePlayer player, ConversationState state)
 	{
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)player == (Object)null || player.net == null || player.net.connection == null)
-		{
-			return;
-		}
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		GetAnimalListings(player, listingBuffer);
-		NetWrite netWrite = ClientRPCStart("Client_ReceiveAnimalListings");
-		netWrite.UInt8((byte)listingBuffer.Count);
+		state.animalListings = Pool.Get<List<AnimalListing>>();
 		foreach (AnimalListing item in listingBuffer)
 		{
-			netWrite.EntityID(item.animalId);
-			netWrite.String(item.animalName);
+			AnimalListing val = Pool.Get<AnimalListing>();
+			val.animalId = item.animalId;
+			val.animalName = item.animalName;
+			state.animalListings.Add(val);
 		}
-		ClientRPCSend(netWrite, new SendInfo(player.net.connection));
 		listingBuffer.Clear();
 	}
 
@@ -657,13 +849,13 @@ public class LivestockVendor : NPCTalking
 
 	private void ProcessAnimalTransaction(GameObjectRef toCreate, int cost, BasePlayer targetPlayer, bool isMale)
 	{
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		if (targetPlayer.inventory.GetAmount(ItemManager.Items.Scrap) >= cost)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		if (targetPlayer.inventory.GetAmount(ItemManager.Items.Scrap) >= cost && !LivestockAnimal.HasTooManyOnLeads(targetPlayer))
 		{
 			LivestockAnimal livestockAnimal = gameManager.CreateEntity(toCreate.resourcePath, ((Component)this).transform.position + ((Component)this).transform.forward * 2f) as LivestockAnimal;
 			if (!((Object)(object)livestockAnimal == (Object)null))
@@ -672,7 +864,8 @@ public class LivestockVendor : NPCTalking
 				livestockAnimal.IsBeingPurchased = true;
 				livestockAnimal.IsMale = isMale;
 				livestockAnimal.Spawn();
-				livestockAnimal.SetFamiliarity(targetPlayer.userID, Livestock.trustToLead, LivestockAnimal.FamiliarityReason.Purchased);
+				livestockAnimal.SetOwner(targetPlayer.userID, LivestockAnimal.OwnerChangeReason.Purchased);
+				livestockAnimal.SetFamiliarity(targetPlayer.userID, Livestock.trustToLead);
 				livestockAnimal.TryLead(targetPlayer, wantsLead: true);
 				livestockAnimal.SendNetworkUpdate();
 			}

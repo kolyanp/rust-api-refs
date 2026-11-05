@@ -6,6 +6,7 @@ using System.Linq;
 using ConVar;
 using Rust;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class EventSchedule : BaseMonoBehaviour
 {
@@ -13,7 +14,8 @@ public class EventSchedule : BaseMonoBehaviour
 	public float minimumHoursBetween = 12f;
 
 	[Tooltip("The maximum amount of hours between events")]
-	public float maxmumHoursBetween = 24f;
+	[FormerlySerializedAs("maxmumHoursBetween")]
+	public float maximumHoursBetween = 24f;
 
 	[Tooltip("ID to reference this event via convars")]
 	public string Key;
@@ -25,6 +27,8 @@ public class EventSchedule : BaseMonoBehaviour
 	protected float hoursRemaining;
 
 	protected long lastRun;
+
+	public float HoursRemaining => hoursRemaining;
 
 	[ServerVar(Name = "triggerevent", Help = "(Generated) Triggers a named event schedule by partial name match; registered as eventschedule.triggerevent; lists available events if name is invalid or ambiguous")]
 	public static void TriggerEvent(ConsoleSystem.Arg arg)
@@ -88,7 +92,7 @@ public class EventSchedule : BaseMonoBehaviour
 
 	private void OnEnable()
 	{
-		hoursRemaining = Random.Range(minimumHoursBetween, maxmumHoursBetween);
+		hoursRemaining = Random.Range(minimumHoursBetween, maximumHoursBetween);
 		InvokeRepeating(RunSchedule, 1f, 1f);
 		enabledEvents.Add(this);
 	}
@@ -116,7 +120,7 @@ public class EventSchedule : BaseMonoBehaviour
 
 	public void Trigger()
 	{
-		hoursRemaining = Random.Range(minimumHoursBetween, maxmumHoursBetween);
+		hoursRemaining = Random.Range(minimumHoursBetween, maximumHoursBetween);
 		TriggeredEvent[] components = ((Component)this).GetComponents<TriggeredEvent>();
 		if (components.Length != 0)
 		{
@@ -137,6 +141,35 @@ public class EventSchedule : BaseMonoBehaviour
 				hoursRemaining -= (float)TOD_Sky.Instance.Cycle.DateTime.Subtract(DateTime.FromBinary(lastRun)).TotalSeconds / 60f / 60f;
 			}
 			lastRun = TOD_Sky.Instance.Cycle.DateTime.ToBinary();
+		}
+	}
+
+	public static Dictionary<string, float> SaveHoursRemaining()
+	{
+		Dictionary<string, float> dictionary = new Dictionary<string, float>();
+		foreach (EventSchedule enabledEvent in enabledEvents)
+		{
+			if (!string.IsNullOrEmpty(enabledEvent.Key))
+			{
+				dictionary[enabledEvent.Key] = enabledEvent.hoursRemaining;
+			}
+		}
+		return dictionary;
+	}
+
+	public static void LoadHoursRemaining(Dictionary<string, float> saved)
+	{
+		if (saved == null)
+		{
+			return;
+		}
+		foreach (EventSchedule enabledEvent in enabledEvents)
+		{
+			if (!string.IsNullOrEmpty(enabledEvent.Key) && saved.TryGetValue(enabledEvent.Key, out var value))
+			{
+				enabledEvent.hoursRemaining = Mathf.Min(value, enabledEvent.maximumHoursBetween);
+				enabledEvent.lastRun = 0L;
+			}
 		}
 	}
 }

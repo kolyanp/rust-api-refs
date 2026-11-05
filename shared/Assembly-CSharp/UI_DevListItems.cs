@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class UI_DevListItems : UI_DevListBase
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RustButton hiddenItemsToggleButton;
 }

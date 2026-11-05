@@ -107,6 +107,9 @@ public class DeepSea : ConsoleSystem
 	[ServerVar(Help = "Should the deep sea open as soon as the server wiped?")]
 	public static bool openOnServerWipe = false;
 
+	[ServerVar(Help = "Seconds between the first lighthouse repair and the deep sea opening, 0 opens it straight away")]
+	public static float lighthouseOpenDelay = 0f;
+
 	[ServerVar(Help = "0 Random, 1 North, 2 East, 3 South, 4 West")]
 	public static int forceEntrancePortalDirection = 0;
 
@@ -446,9 +449,9 @@ public class DeepSea : ConsoleSystem
 	[ServerVar(Help = "Prints the current deep sea status")]
 	public static void status(Arg arg)
 	{
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
 		DeepSeaManager serverInstance = PointEntity<DeepSeaManager>.ServerInstance;
 		if ((Object)(object)serverInstance == (Object)null)
 		{
@@ -459,6 +462,7 @@ public class DeepSea : ConsoleSystem
 		stringBuilder.AppendLine($"Open: {serverInstance.IsOpen()}");
 		stringBuilder.AppendLine($"Busy: {serverInstance.IsBusy()}");
 		stringBuilder.AppendLine($"TimeToNextOpening: {serverInstance.TimeToNextOpening}");
+		stringBuilder.AppendLine($"WaitingForLighthouse: {serverInstance.IsWaitingForLighthouse()}");
 		stringBuilder.AppendLine($"TimeToWipe: {serverInstance.TimeToWipe}");
 		stringBuilder.AppendLine($"Radiations: {serverInstance.GetWipeRadiationAmount()}");
 		stringBuilder.AppendLine();
@@ -525,10 +529,10 @@ public class DeepSea : ConsoleSystem
 		PointEntity<DeepSeaManager>.ServerInstance.GetAllDeepSeaEntities(hashSet, skipParented: false);
 		int count = hashSet.Count;
 		int num = hashSet.OfType<BasePlayer>().Count((BasePlayer p) => !p.IsNpc);
-		int num2 = hashSet.Count((BaseEntity e) => e.IsNpc);
-		int num3 = hashSet.Count((BaseEntity x) => x is BaseVehicle);
-		int num4 = hashSet.Count((BaseEntity x) => x is TreeEntity);
-		int num5 = hashSet.Count((BaseEntity x) => x is MetalDetectorSource);
+		int num2 = Enumerable.Count(hashSet, (BaseEntity e) => e.IsNpc);
+		int num3 = Enumerable.Count(hashSet, (BaseEntity x) => x is BaseVehicle);
+		int num4 = Enumerable.Count(hashSet, (BaseEntity x) => x is TreeEntity);
+		int num5 = Enumerable.Count(hashSet, (BaseEntity x) => x is MetalDetectorSource);
 		TextTable val = Pool.Get<TextTable>();
 		try
 		{
@@ -623,9 +627,9 @@ public class DeepSea : ConsoleSystem
 		}
 		HashSet<BaseEntity> hashSet = Pool.Get<HashSet<BaseEntity>>();
 		PointEntity<DeepSeaManager>.ServerInstance.GetAllDeepSeaEntities(hashSet, skipParented: false);
-		int num = hashSet.Count((BaseEntity x) => x is LootContainer);
-		int num2 = hashSet.Count((BaseEntity x) => x is TreeEntity);
-		int num3 = hashSet.Count((BaseEntity x) => x is OreResourceEntity);
+		int num = Enumerable.Count(hashSet, (BaseEntity x) => x is LootContainer);
+		int num2 = Enumerable.Count(hashSet, (BaseEntity x) => x is TreeEntity);
+		int num3 = Enumerable.Count(hashSet, (BaseEntity x) => x is OreResourceEntity);
 		TextTable val = Pool.Get<TextTable>();
 		try
 		{

@@ -275,7 +275,7 @@ public class Handcuffs : BaseMelee
 			player.SetPlayerFlag(BasePlayer.PlayerFlags.IsRestrained, flag);
 			if (handcuffsItem != null)
 			{
-				player.restraintItemId = (flag ? new ItemId?(handcuffsItem.uid) : ((ItemId?)null));
+				player.restraintItemId = (flag ? new Nullable(handcuffsItem.uid) : ((Nullable)null));
 			}
 			else
 			{
@@ -362,9 +362,9 @@ public class Handcuffs : BaseMelee
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void RPC_ReqStartUnlockMiniGame(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -383,8 +383,8 @@ public class Handcuffs : BaseMelee
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_ReqCancelUnlockMiniGame(RPCMessage rpc)
 	{
@@ -400,9 +400,9 @@ public class Handcuffs : BaseMelee
 		InterruptUnlockMiniGame();
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void RPC_ReqCompleteUnlockMiniGame(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;

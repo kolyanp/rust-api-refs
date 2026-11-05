@@ -22,8 +22,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("How far from the entity the crabs spread out. They turn back when they reach the edge rather than despawning.")]
 		public float swarmRadius;
 
-		[Tooltip("Speed while wandering around.")]
 		[Header("Movement")]
+		[Tooltip("Speed while wandering around.")]
 		public float minSpeed;
 
 		[Tooltip("Speed while startled, ie when the player gets close.")]
@@ -71,8 +71,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("How far a fleeing crab may stray outside the swarm radius, as a multiplier. It wanders back in once it calms down.")]
 		public float startleBoundsMultiplier;
 
-		[Tooltip("Speed at which the walk animation reaches full blend. Below this the legs scale down, at 0 speed the crab is still.")]
 		[Header("Animation")]
+		[Tooltip("Speed at which the walk animation reaches full blend. Below this the legs scale down, at 0 speed the crab is still.")]
 		public float fullAnimationSpeed;
 
 		[Tooltip("How quickly the walk animation blends in and out as the crab starts and stops.")]
@@ -82,6 +82,19 @@ public class CrabGrouping : IDisposable
 		public float minScale;
 
 		public float maxScale;
+
+		[Header("Tint")]
+		[Tooltip("Each crab picks a random point along this, applied where the material's colour mask is white.")]
+		public Gradient tintRange;
+
+		[Tooltip("Replaces the gradient for the odd crab, eg a rare blue one.")]
+		public Color rareTint;
+
+		[Range(0f, 1f)]
+		public float rareTintChance;
+
+		[Tooltip("Multiplies the colour mask for the rare crab, so its tint reaches further across the shell than the gradient's.")]
+		public float rareTintStrength;
 	}
 
 	public struct CrabData
@@ -134,177 +147,56 @@ public class CrabGrouping : IDisposable
 		public float moveToggle;
 
 		public float legPhase;
+
+		public float3 tint;
+
+		public float tintStrength;
 	}
 
-	public struct CrabGroundGatherJob : IJob
+	public struct CrabSettings(in CrabType crabType)
 	{
-		public int castCursor;
+		public float swarmRadius = crabType.swarmRadius;
 
-		public int castCount;
+		public float minSpeed = crabType.minSpeed;
 
-		public int crabCount;
+		public float maxSpeed = crabType.maxSpeed;
 
-		public float maxStepHeight;
+		public float minTurnSpeed = crabType.minTurnSpeed;
 
-		public NativeArray<RaycastCommand> castCommands;
+		public float maxTurnSpeed = crabType.maxTurnSpeed;
 
-		public NativeArray<RaycastCommand> obstacleCommands;
+		public float2 wanderDistanceRange = float2.op_Implicit(crabType.wanderDistanceRange);
 
-		public NativeArray<Vector3> castPositions;
+		public float2 restDurationRange = float2.op_Implicit(crabType.restDurationRange);
 
-		public NativeArray<int> crabCastIndices;
+		public float2 catchUpDelayRange = float2.op_Implicit(crabType.catchUpDelayRange);
 
-		[ReadOnly]
-		public NativeArray<CrabData> crabDataArray;
+		public float wanderTimeout = crabType.wanderTimeout;
 
-		[ReadOnly]
-		public NativeArray<CrabRenderData> crabRenderDataArray;
+		public float startleDuration = crabType.startleDuration;
 
-		public void Execute()
-		{
-		}
+		public float startleRangeSq = crabType.startleRange * crabType.startleRange;
+
+		public float startleBoundsMultiplier = crabType.startleBoundsMultiplier;
+
+		public float fullAnimationSpeed = crabType.fullAnimationSpeed;
+
+		public float animationBlendRate = crabType.animationBlendRate;
+
+		public CritterLegSpeed legSpeed = CritterLegSpeed.FromMaterial(crabType.material);
 	}
 
-	public struct CrabGroundProcessJob : IJob
-	{
-		public int castCount;
+	internal const float groundProbeHeight = 1f;
 
-		public bool hasFallbackY;
+	internal const float groundProbeDepth = 8f;
 
-		public NativeArray<CrabData> crabDataArray;
+	internal const float maxWalkableNormalY = 0.6f;
 
-		[ReadOnly]
-		public NativeArray<RaycastHit> castResults;
+	internal const float obstacleProbeDistance = 1f;
 
-		[ReadOnly]
-		public NativeArray<int> crabCastIndices;
+	internal const float obstacleSlideDistance = 2f;
 
-		[ReadOnly]
-		public NativeArray<float> crabCastFallbackY;
-
-		public void Execute()
-		{
-		}
-	}
-
-	public struct CrabObstacleProcessJob : IJob
-	{
-		public int castCount;
-
-		public NativeArray<CrabData> crabDataArray;
-
-		[ReadOnly]
-		public NativeArray<RaycastHit> obstacleResults;
-
-		[ReadOnly]
-		public NativeArray<int> crabCastIndices;
-
-		[ReadOnly]
-		public NativeArray<CrabRenderData> crabRenderDataArray;
-
-		public void Execute()
-		{
-		}
-	}
-
-	public struct CrabUpdateJob : IJobParallelFor
-	{
-		[ReadOnly]
-		public float3 swarmCenter;
-
-		[ReadOnly]
-		public int startleCount;
-
-		[ReadOnly]
-		public uint seed;
-
-		[NativeDisableParallelForRestriction]
-		[ReadOnly]
-		public NativeArray<float3> startlePositions;
-
-		[ReadOnly]
-		public float dt;
-
-		[ReadOnly]
-		public float swarmRadius;
-
-		[ReadOnly]
-		public float minSpeed;
-
-		[ReadOnly]
-		public float maxSpeed;
-
-		[ReadOnly]
-		public float minTurnSpeed;
-
-		[ReadOnly]
-		public float maxTurnSpeed;
-
-		[ReadOnly]
-		public float2 wanderDistanceRange;
-
-		[ReadOnly]
-		public float2 restDurationRange;
-
-		[ReadOnly]
-		public float2 catchUpDelayRange;
-
-		[ReadOnly]
-		public float wanderTimeout;
-
-		[ReadOnly]
-		public float startleDuration;
-
-		[ReadOnly]
-		public float startleRangeSq;
-
-		[ReadOnly]
-		public float startleBoundsMultiplier;
-
-		[ReadOnly]
-		public float fullAnimationSpeed;
-
-		[ReadOnly]
-		public float animationBlendRate;
-
-		[ReadOnly]
-		public CritterLegSpeed legSpeed;
-
-		[NativeDisableUnsafePtrRestriction]
-		public unsafe CrabData* crabDataArray;
-
-		[NativeDisableUnsafePtrRestriction]
-		public unsafe CrabRenderData* crabRenderDataArray;
-
-		public void Execute(int i)
-		{
-		}
-	}
-
-	public struct KillCrab : IJob
-	{
-		public NativeArray<CrabData> crabDataArray;
-
-		public NativeArray<CrabRenderData> crabRenderDataArray;
-
-		public NativeArray<int> crabCount;
-
-		public void Execute()
-		{
-		}
-	}
-
-	private const float groundProbeHeight = 1f;
-
-	private const float groundProbeDepth = 8f;
-
-	private const float maxWalkableNormalY = 0.6f;
-
-	private const float obstacleProbeDistance = 1f;
-
-	private const float obstacleSlideDistance = 2f;
-
-	private const float obstacleAvoidDuration = 1f;
+	internal const float obstacleAvoidDuration = 1f;
 
 	private const int maxStartlePlayers = 8;
 

@@ -1,6 +1,8 @@
+using Development.Attributes;
 using UnityEngine;
 
-public class LightGroupAtTime : FacepunchBehaviour
+[ResetStaticFields]
+public class LightGroupAtTime : FacepunchBehaviour, IFlattenKeepsChildren
 {
 	public float IntensityOverride = 1f;
 

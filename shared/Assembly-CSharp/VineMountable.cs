@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Network;
 using ProtoBuf;
@@ -32,6 +33,7 @@ public class VineMountable : BaseMountable
 			PointIndex = launchPoint.Index();
 		}
 
+		[PoolAnalyzerGetWrapper]
 		public VineDestination Save()
 		{
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -572,17 +574,6 @@ public class VineMountable : BaseMountable
 	{
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		origin.Set(originPoint);
 		currentLocation.Set(originPoint);
 		destinations.Clear();
@@ -593,7 +584,23 @@ public class VineMountable : BaseMountable
 			destinations.Add(item);
 		}
 		WorldSpaceAnchorPoint = anchor;
-		Vector3 val = ((Component)destinationPoints[0]).transform.position - ((Component)this).transform.position;
+		FaceDestination(destinationPoints[0]);
+	}
+
+	private void FaceDestination(VineLaunchPoint destination)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 val = ((Component)destination).transform.position - ((Component)this).transform.position;
 		Vector3 normalized = val.normalized;
 		((Component)this).transform.rotation = Quaternion.LookRotation(normalized, Vector3.up);
 		((Component)this).transform.localEulerAngles = Vector3Ex.WithX(((Component)this).transform.localEulerAngles, 0f);
@@ -668,14 +675,27 @@ public class VineMountable : BaseMountable
 
 	public override void PostServerLoad()
 	{
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		base.PostServerLoad();
 		VineLaunchPoint vineLaunchPoint = origin.Get(isServer);
 		if ((Object)(object)vineLaunchPoint != (Object)null)
 		{
-			((Component)this).transform.position = ((Component)vineLaunchPoint).transform.position;
-			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-			flagsUpdateScope.Set(Flags.Reserved1, b: false);
+			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+			{
+				flagsUpdateScope.Set(Flags.Reserved1, b: false);
+				flagsUpdateScope.Set(Flags.On, b: false);
+				flagsUpdateScope.Set(Flags.Reserved2, b: false);
+			}
+			if (vineLaunchPoint.FindVacantArrivalPoint(this, out var worldPos))
+			{
+				((Component)this).transform.position = worldPos;
+			}
+			currentLocation.Set(vineLaunchPoint);
+			VineLaunchPoint vineLaunchPoint2 = ((destinations.Count > 0) ? destinations[0].Get(isServer) : null);
+			if ((Object)(object)vineLaunchPoint2 != (Object)null)
+			{
+				FaceDestination(vineLaunchPoint2);
+			}
 		}
 	}
 
@@ -765,8 +785,8 @@ public class VineMountable : BaseMountable
 		StartReplicatingPos();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SV_Swing(RPCMessage msg)
 	{
 		if (!IsMounted() && ConVar.Server.allowVineSwinging)
@@ -822,7 +842,7 @@ public class VineMountable : BaseMountable
 		wantsToSyncPos = true;
 		if (stopReplicatingPosCallback == null)
 		{
-			stopReplicatingPosCallback = StopReplcatingPos;
+			stopReplicatingPosCallback = StopReplicatingPos;
 			ToggleNetworkPositionTick(isEnabled: true);
 		}
 		else if (!IsInvoking(stopReplicatingPosCallback))
@@ -831,7 +851,7 @@ public class VineMountable : BaseMountable
 		}
 	}
 
-	private void StopReplcatingPos()
+	private void StopReplicatingPos()
 	{
 		if (!wantsToSyncPos)
 		{
@@ -842,7 +862,10 @@ public class VineMountable : BaseMountable
 	private void DeferredStopReplicatingPos()
 	{
 		wantsToSyncPos = false;
-		Invoke(stopReplicatingPosCallback, 0.5f);
+		if (stopReplicatingPosCallback != null)
+		{
+			Invoke(stopReplicatingPosCallback, 0.5f);
+		}
 	}
 
 	public void Highlight(BasePlayer forPlayer)

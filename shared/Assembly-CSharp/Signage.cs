@@ -13,7 +13,7 @@ using ProtoBuf;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPaintable
+public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPaintable, IFlattenKeepsChildren, IServerFileReceiver
 {
 	private const float TextureRequestTimeout = 15f;
 
@@ -269,14 +269,13 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		}
 	}
 
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(5f)]
 	public void UpdateSign(RPCMessage msg)
 	{
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)msg.player == (Object)null || !CanUpdateSign(msg.player))
 		{
 			return;
@@ -295,10 +294,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		EnsureInitialized();
 		if (array == null)
 		{
-			if (textureIDs[num] != 0)
-			{
-				FileStorage.server.RemoveExact(textureIDs[num], FileStorage.Type.png, net.ID, (uint)num);
-			}
+			FileStorage.server.Remove(net.ID, (uint)num);
 			textureIDs[num] = 0u;
 		}
 		else
@@ -309,12 +305,9 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 			{
 				return;
 			}
-			if (textureIDs[num] != 0)
-			{
-				FileStorage.server.RemoveExact(textureIDs[num], FileStorage.Type.png, net.ID, (uint)num);
-			}
-			textureIDs[num] = FileStorage.server.Store(array, FileStorage.Type.png, net.ID, (uint)num);
+			textureIDs[num] = FileStorage.server.Store(net.ID, (uint)num, FileStorage.Type.png, array);
 			Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, this, "sign", array.Length, num);
+			UGCModeration.Send(msg.player, this, "sign", textureIDs[num], FileStorage.Type.png, num);
 		}
 		LogEdit(msg.player);
 		SendNetworkUpdate();
@@ -407,50 +400,26 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 
 	public override void Load(LoadInfo info)
 	{
-		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		EnsureInitialized();
 		bool flag = false;
-		if (info.msg.sign != null)
+		if (info.msg.sign != null && info.msg.sign.imageIds != null)
 		{
-			uint num = textureIDs[0];
-			if (info.msg.sign.imageIds != null && info.msg.sign.imageIds.Count > 0)
+			int num = Mathf.Min(info.msg.sign.imageIds.Count, textureIDs.Length);
+			for (int i = 0; i < num; i++)
 			{
-				int num2 = Mathf.Min(info.msg.sign.imageIds.Count, textureIDs.Length);
-				for (int i = 0; i < num2; i++)
-				{
-					uint num3 = info.msg.sign.imageIds[i];
-					bool flag2 = num3 != textureIDs[i];
-					flag |= flag2;
-					textureIDs[i] = num3;
-				}
-			}
-			else
-			{
-				flag = num != info.msg.sign.imageid;
-				textureIDs[0] = info.msg.sign.imageid;
+				uint num2 = info.msg.sign.imageIds[i];
+				bool flag2 = num2 != textureIDs[i];
+				flag |= flag2;
+				textureIDs[i] = num2;
 			}
 		}
 		if (!isServer)
 		{
 			return;
 		}
-		bool flag3 = false;
-		for (int j = 0; j < paintableSources.Length; j++)
-		{
-			uint num4 = textureIDs[j];
-			if (num4 != 0)
-			{
-				byte[] array = FileStorage.server.Get(num4, FileStorage.Type.png, net.ID, (uint)j);
-				if (array == null)
-				{
-					Log($"Frame {j} (id={num4}) doesn't exist, clearing");
-					textureIDs[j] = 0u;
-				}
-				flag3 = flag3 || array != null;
-			}
-		}
-		if (!flag3)
+		LoadTextureCrcs();
+		if (Array.TrueForAll(textureIDs, (uint id) => id == 0))
 		{
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope.Set(Flags.Locked, b: false);
@@ -503,8 +472,8 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void LockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUpdateSign(msg.player))
@@ -543,23 +512,20 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
-		List<uint> list = Pool.Get<List<uint>>();
-		uint[] array = textureIDs;
-		foreach (uint item in array)
-		{
-			list.Add(item);
-		}
 		info.msg.sign = Pool.Get<Sign>();
-		info.msg.sign.imageid = 0u;
-		info.msg.sign.imageIds = list;
+		if (!info.forDisk)
+		{
+			info.msg.sign.imageIds = Pool.Get<List<uint>>();
+			info.msg.sign.imageIds.AddRange(textureIDs);
+		}
 		if (editHistory == null || editHistory.Count <= 0 || !info.forDisk)
 		{
 			return;
 		}
 		info.msg.sign.editHistory = Pool.Get<List<ulong>>();
-		foreach (ulong item2 in editHistory)
+		foreach (ulong item in editHistory)
 		{
-			info.msg.sign.editHistory.Add(item2);
+			info.msg.sign.editHistory.Add(item);
 		}
 	}
 
@@ -570,7 +536,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		RemoveFromEasel();
 		if (net != null)
 		{
-			FileStorage.server.RemoveAllByEntity(net.ID);
+			FileStorage.server.RemoveAll(net.ID);
 		}
 		if (textureIDs != null)
 		{
@@ -644,11 +610,23 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		return true;
 	}
 
-	public void SetTextureCRCs(uint[] crcs)
+	public void RefreshFileCrcs()
 	{
-		textureIDs = new uint[crcs.Length];
-		crcs.CopyTo(textureIDs, 0);
+		LoadTextureCrcs();
 		SendNetworkUpdate();
+	}
+
+	private void LoadTextureCrcs()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		EnsureInitialized();
+		Dictionary<ulong, uint> dictionary = Pool.Get<Dictionary<ulong, uint>>();
+		FileStorage.server.GetCrcs(net.ID, dictionary);
+		for (int i = 0; i < textureIDs.Length; i++)
+		{
+			dictionary.TryGetValue((ulong)i, out textureIDs[i]);
+		}
+		Pool.FreeUnmanaged<ulong, uint>(ref dictionary);
 	}
 
 	public void LogEdit(BasePlayer byPlayer)
@@ -667,7 +645,9 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 
 	public void ClearContent()
 	{
-		SetTextureCRCs(Array.Empty<uint>());
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		FileStorage.server.RemoveAll(net.ID);
+		RefreshFileCrcs();
 	}
 
 	public override string Admin_Who()

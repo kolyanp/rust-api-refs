@@ -504,7 +504,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		return _targetSet.Contains(ply);
 	}
 
-	private Vector3? FindTargetWithZones(bool withOffset = true)
+	private Nullable FindTargetWithZones(bool withOffset = true)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
@@ -2176,7 +2176,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		{
 			if (use_danger_zones)
 			{
-				Vector3? val = FindTargetWithZones();
+				Nullable val = FindTargetWithZones();
 				if (val.HasValue)
 				{
 					interestZoneOrigin = val.Value;

@@ -48,6 +48,11 @@ public class ItemModWorkbenchUpgrade : ItemMod
 		return 0f;
 	}
 
+	public virtual float GetTechTreeSaveChance()
+	{
+		return 0f;
+	}
+
 	public virtual float GetBypassCostMultiplier()
 	{
 		return 1f;

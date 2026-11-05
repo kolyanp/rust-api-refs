@@ -127,6 +127,13 @@ public class ConstructionSocket : Socket_Base
 		return true;
 	}
 
+	public override uint GetLayoutHash(uint crc)
+	{
+		crc = base.GetLayoutHash(crc);
+		crc = CRC.Compute32(crc, (int)socketType);
+		return CRC.Compute32(crc, (int)blockType);
+	}
+
 	public override bool CanConnect(Vector3 position, Quaternion rotation, Socket_Base socket, Vector3 socketPosition, Quaternion socketRotation)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)

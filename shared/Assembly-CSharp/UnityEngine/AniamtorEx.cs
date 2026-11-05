@@ -11,7 +11,7 @@ public static class AniamtorEx
 			{
 				return;
 			}
-			if (num < float.Epsilon)
+			if (Mathf.Abs(num) < float.Epsilon)
 			{
 				animator.SetFloat(id, 0f);
 				return;

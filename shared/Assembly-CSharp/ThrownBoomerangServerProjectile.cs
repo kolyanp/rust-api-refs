@@ -93,11 +93,11 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 			hitInfo.HitPositionLocal = ((Component)hitInfo.HitEntity).transform.InverseTransformPoint(hitInfo.HitPositionWorld);
 			hitInfo.HitNormalLocal = ((Component)hitInfo.HitEntity).transform.InverseTransformDirection(hitInfo.HitNormalWorld);
 			Shield shield = hitInfo.HitEntity as Shield;
-			if (hitInfo.HitEntity is BasePlayer || hitInfo.HitEntity is BaseNpc || (Object)(object)shield != (Object)null)
+			if (hitInfo.HitEntity is BasePlayer || hitInfo.HitEntity.IsNpc || (Object)(object)shield != (Object)null)
 			{
 				hitInfo.HitMaterial = StringPool.Get(((Object)(object)shield != (Object)null) ? shield.GetHitMaterialString() : "Flesh");
 			}
-			if (!(hitInfo.HitEntity is BasePlayer) && !(hitInfo.HitEntity is BaseNpc))
+			if (!(hitInfo.HitEntity is BasePlayer) && !hitInfo.HitEntity.IsNpc)
 			{
 				hitInfo.damageTypes.ScaleAll(0.03f);
 			}
@@ -121,16 +121,16 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
 		List<RaycastHit> list = Pool.Get<List<RaycastHit>>();
 		List<RaycastHit> list2 = Pool.Get<List<RaycastHit>>();
 		Vector3 position = ((Component)this).transform.position;
@@ -140,7 +140,7 @@ public class ThrownBoomerangServerProjectile : ServerProjectile
 		{
 			RaycastHit current = item;
 			BaseEntity entity = RaycastHitEx.GetEntity(current);
-			if ((!((Object)(object)entity != (Object)null) || !entity.isClient) && (!IgnoreAI || !IsAnIgnoredAI(entity)) && (entity is BasePlayer || entity is BaseNpc) && IsAValidHit(entity) && GamePhysics.LineOfSight(((Component)this).transform.position, current.point, mask, 0f))
+			if ((!((Object)(object)entity != (Object)null) || !entity.isClient) && (!IgnoreAI || !IsAnIgnoredAI(entity)) && (entity is BasePlayer || ((Object)(object)entity != (Object)null && entity.IsNpc)) && IsAValidHit(entity) && GamePhysics.LineOfSight(((Component)this).transform.position, current.point, mask, 0f))
 			{
 				ProcessHit(current, entity, position);
 				Pool.FreeUnmanaged<RaycastHit>(ref list);

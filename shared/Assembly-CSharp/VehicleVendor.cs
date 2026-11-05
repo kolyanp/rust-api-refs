@@ -84,7 +84,7 @@ public class VehicleVendor : NPCTalking
 		return false;
 	}
 
-	public override ConversationData GetConversationFor(BasePlayer player)
+	public override ConversationData GetInPersonConversationFor(BasePlayer player)
 	{
 		return conversations[0];
 	}

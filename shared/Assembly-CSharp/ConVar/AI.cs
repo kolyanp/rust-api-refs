@@ -15,12 +15,6 @@ public class AI : ConsoleSystem
 	[ServerVar(Help = "How long (in seconds) a value that has just moved stays coloured in the ai.showState read-out; 0 stops it colouring at all", ShowInAdminUI = true)]
 	public static float showstateflashduration = 1.5f;
 
-	[ServerVar(Help = "Run RustNav movement, steering and corridor queries in the transform job.")]
-	public static bool batch_navmesh_pathfollowing = true;
-
-	[ServerVar(Help = "Batch RustNav agent transform updates using jobs. Disable to apply each update immediately.")]
-	public static bool batch_navmesh_transforms = true;
-
 	[ReplicatedVar(Saved = true)]
 	public static bool designingEnabled = false;
 
@@ -79,14 +73,22 @@ public class AI : ConsoleSystem
 	[ServerVar(Help = "(Generated) Target frame time budget in seconds for AI tick processing; default is 5s in production (1s in editor) to cap CPU usage per AI frame")]
 	public static float frametime = 5f;
 
-	[ServerVar(Help = "Target frame time in seconds for the default FSMComponent budget")]
-	public static float fsm_frametime = 1f;
+	[ServerVar(Help = "Frame time budget in milliseconds for scientist FSM ticks. Whatever they leave unused rolls down to the animals, then the livestock")]
+	public static float fsm_frametime_scientists = 0.5f;
 
-	[ServerVar(Help = "Target frame time in seconds for the Critters budget")]
+	[ServerVar(Help = "Frame time budget in milliseconds for wild animal FSM ticks, on top of what the scientists left unused")]
+	public static float fsm_frametime_animals = 2f;
+
+	[ServerVar(Help = "Frame time budget in milliseconds for livestock FSM ticks, on top of what the scientists and animals left unused")]
+	public static float fsm_frametime_livestock = 0.2f;
+
+	[ServerVar(Help = "Frame time budget in milliseconds for the critter FSM ticks")]
 	public static float critters_frametime = 0.2f;
 
-	[ServerVar(Help = "Target frame time in seconds for the Ocean Critters swimming movement budget")]
+	[ServerVar(Help = "Frame time budget in milliseconds for the ocean critters' swimming movement")]
 	public static float ocean_critters_movement_frametime = 0.2f;
+
+	private static int _debugSeed;
 
 	[ServerVar(Help = "How close can a player get before a critter gets startled and runs away")]
 	public static float critters_startle_distance = 0.5f;
@@ -293,6 +295,20 @@ public class AI : ConsoleSystem
 	private const float debugMoveDrawDuration = 5f;
 
 	private const float debugMoveGroundSnap = 5f;
+
+	[ServerVar(Help = "Seeds every Gen2 NPC's random numbers from this and the order it spawned in, so a run repeats. 0 seeds each one at random")]
+	public static int debug_seed
+	{
+		get
+		{
+			return _debugSeed;
+		}
+		set
+		{
+			_debugSeed = value;
+			NpcRandom.ResetSpawnOrder();
+		}
+	}
 
 	[ServerVar]
 	public static void showState(Arg arg)
@@ -980,7 +996,7 @@ public class AI : ConsoleSystem
 			{
 				return true;
 			}
-			error = DescribeNpc(npc) + "'s FSM has no debug move state registered - add a RegisterDebugMoveTo call to its InitShared.";
+			error = DescribeNpc(npc) + "'s FSM tree was never built - its server side InitShared did not run, or BuildAlive handed back a layout the base refused.";
 			return false;
 		}
 		BaseAIBrain baseAIBrain = default;

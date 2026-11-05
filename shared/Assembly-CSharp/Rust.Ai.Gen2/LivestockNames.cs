@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using ConVar;
 using Facepunch;
 using UnityEngine;
 
@@ -47,6 +48,8 @@ public static class LivestockNames
 	private const string FileNameSuffix = ".json";
 
 	private static readonly Dictionary<string, Pack> packs = new Dictionary<string, Pack>();
+
+	private static string warnedLocale;
 
 	public static string[] MaleOnly => MaleOnlyIn("en");
 
@@ -96,6 +99,31 @@ public static class LivestockNames
 			return pack.FemaleDraw.Length != 0;
 		}
 		return false;
+	}
+
+	public static bool IsDrawable(string locale)
+	{
+		if (Array.IndexOf(ShippedLocales, locale) >= 0)
+		{
+			return HasPack(locale);
+		}
+		return false;
+	}
+
+	public static string HouseLocale()
+	{
+		string namelocale = Livestock.namelocale;
+		string text = Translate.ValidateServerLanguage(namelocale);
+		if (text != namelocale && warnedLocale != namelocale)
+		{
+			warnedLocale = namelocale;
+			Debug.LogWarning((object)("livestock.namelocale is set to \"" + namelocale + "\", which is not a language this server accepts, so livestock are named in " + text + " instead. The spelling is case sensitive."));
+		}
+		if (!IsDrawable(text))
+		{
+			return "en";
+		}
+		return text;
 	}
 
 	public static string Capitalise(string name, string locale)

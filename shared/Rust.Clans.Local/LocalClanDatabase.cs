@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Sqlite;
 using Oxide.Core;
@@ -102,6 +103,7 @@ public class LocalClanDatabase : Database
 		return num;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public List<ClanLeaderboardEntry> ListTopClans(int limit)
 	{
 		IntPtr stmHandle = Prepare("SELECT clan_id, name, score FROM clans WHERE deleted IS NULL ORDER BY score DESC LIMIT ?");
@@ -154,6 +156,7 @@ public class LocalClanDatabase : Database
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public List<ClanInvite> ListInvites(long clanId)
 	{
 		IntPtr stmHandle = Prepare("SELECT user_id, recruiter, timestamp FROM invites WHERE clan_id = ? ORDER BY timestamp ASC");
@@ -173,6 +176,7 @@ public class LocalClanDatabase : Database
 		return list;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public List<ClanInvitation> ListInvitationsForPlayer(ulong steamId)
 	{
 		IntPtr stmHandle = Prepare("SELECT clan_id, recruiter, timestamp FROM invites WHERE user_id = ? ORDER BY timestamp ASC");
@@ -234,6 +238,7 @@ public class LocalClanDatabase : Database
 		Execute("INSERT INTO logs (clan_id, timestamp, event, arg1, arg2, arg3, arg4) VALUES (?, ?, ?, ?, ?, ?, ?)", clanId, ClanUtility.Timestamp(), eventKey, arg1, arg2, arg3, arg4);
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public List<ClanLogEntry> ReadLogs(long clanId, int limit)
 	{
 		IntPtr stmHandle = Prepare("SELECT timestamp, event, arg1, arg2, arg3, arg4 FROM logs WHERE clan_id = ? ORDER BY timestamp DESC LIMIT ?");
@@ -274,6 +279,7 @@ public class LocalClanDatabase : Database
 		return AffectedRows > 0;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public List<ClanMember> ListMembers(long clanId)
 	{
 		IntPtr stmHandle = Prepare("\r\n            SELECT m.user_id, m.role_id, m.joined, m.seen, m.notes, m.notes_timestamp\r\n            FROM members m\r\n            LEFT JOIN roles r ON r.clan_id = ?1 AND r.role_id = m.role_id\r\n            WHERE m.clan_id = ?1\r\n            ORDER BY r.rank ASC, joined ASC\r\n        ");
@@ -357,6 +363,7 @@ public class LocalClanDatabase : Database
 		return num;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public List<ClanRole> ListRoles(long clanId)
 	{
 		IntPtr stmHandle = Prepare("\r\n            SELECT role_id, rank, name, can_set_motd, can_set_logo, can_invite, can_kick, can_promote, can_demote, can_set_player_notes, can_access_logs, can_access_score_events\r\n            FROM roles\r\n            WHERE clan_id = ?\r\n            ORDER BY rank ASC, role_id ASC\r\n        ");
@@ -497,6 +504,7 @@ public class LocalClanDatabase : Database
 		return ExecuteAndReadQueryResult<long>(stmHandle);
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public List<ClanScoreEvent> ReadScoreEvents(long clanId, int limit)
 	{
 		IntPtr stmHandle = Prepare("SELECT timestamp, type, score, multiplier, user_id, other_user_id, other_clan_id, arg1, arg2 FROM score_events WHERE clan_id = ? ORDER BY timestamp DESC LIMIT ?");

@@ -83,7 +83,7 @@ public abstract class MissionObjective : ScriptableObject
 
 	public void CompleteObjective(int index, BaseMission.MissionInstance instance, BasePlayer playerFor)
 	{
-		if (!instance.objectiveStatuses[index].completed && !instance.objectiveStatuses[index].failed)
+		if (!instance.IsObjectiveOmitted(index) && !instance.objectiveStatuses[index].completed && !instance.objectiveStatuses[index].failed)
 		{
 			instance.objectiveStatuses[index].completed = true;
 			instance.GetMission().OnObjectiveCompleted(index, instance, playerFor);
@@ -94,7 +94,7 @@ public abstract class MissionObjective : ScriptableObject
 
 	public void FailObjective(int index, BaseMission.MissionInstance instance, BasePlayer playerFor)
 	{
-		if (!instance.objectiveStatuses[index].completed && !instance.objectiveStatuses[index].failed)
+		if (!instance.IsObjectiveOmitted(index) && !instance.objectiveStatuses[index].completed && !instance.objectiveStatuses[index].failed)
 		{
 			instance.objectiveStatuses[index].failed = true;
 			instance.GetMission().OnObjectiveFailed(index, instance, playerFor);
@@ -114,11 +114,14 @@ public abstract class MissionObjective : ScriptableObject
 
 	public void ServerThink(int index, BaseMission.MissionInstance instance, BasePlayer assignee, float timeSinceLastThink)
 	{
-		if (ArePrerequisiteObjectivesMet(index, instance) && !IsStarted(index, instance))
+		if (!instance.IsObjectiveOmitted(index))
 		{
-			ServerObjectiveStarted(assignee, index, instance);
+			if (ArePrerequisiteObjectivesMet(index, instance) && !IsStarted(index, instance))
+			{
+				ServerObjectiveStarted(assignee, index, instance);
+			}
+			DoServerThink(index, instance, assignee, timeSinceLastThink);
 		}
-		DoServerThink(index, instance, assignee, timeSinceLastThink);
 	}
 
 	protected virtual void DoServerThink(int index, BaseMission.MissionInstance instance, BasePlayer assignee, float timeSinceLastThink)

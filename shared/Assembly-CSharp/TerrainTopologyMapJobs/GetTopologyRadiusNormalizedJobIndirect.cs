@@ -10,9 +10,7 @@ internal struct GetTopologyRadiusNormalizedJobIndirect : IJobParallelFor
 {
 	public float OneOverSizeX;
 
-	public ReadOnly<int> Src;
-
-	public int Res;
+	public TerrainTopologyHierarchy.Query Topology;
 
 	public ReadOnly<Vector2> WorldNXZ;
 
@@ -25,9 +23,8 @@ internal struct GetTopologyRadiusNormalizedJobIndirect : IJobParallelFor
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		float x = WorldNXZ[index].x;
 		float y = WorldNXZ[index].y;
-		Topologies[index] = TerrainTopologyMapJobUtil.GetTopologyRadius(Src, Res, OneOverSizeX, Radii[index], x, y);
+		Topologies[index] = TerrainTopologyMapJobUtil.GetTopologyRadius(in Topology, OneOverSizeX, Radii[index], x, y);
 	}
 }

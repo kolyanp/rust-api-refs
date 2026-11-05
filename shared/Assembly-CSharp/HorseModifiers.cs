@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -31,6 +32,7 @@ public class HorseModifiers : BaseModifiers<RidableHorse>
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public HorseModifiers Save(bool forDisk)
 	{
 		HorseModifiers val = Pool.Get<HorseModifiers>();

@@ -91,6 +91,10 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 
 	private float timeInWater;
 
+	private const float SplashInterval = 0.1f;
+
+	private float nextSplashTime;
+
 	[NonSerialized]
 	public float? ArtificialHeight;
 
@@ -132,8 +136,6 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 	public float timeOutOfWater { get; private set; }
 
 	public bool InWater => submergedFraction > requiredSubmergedFraction;
-
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
 	public Priority BuoyancyPriority { get; set; }
 
@@ -688,16 +690,16 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		//IL_0748: Unknown result type (might be due to invalid IL or missing references)
 		//IL_074d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0763: Unknown result type (might be due to invalid IL or missing references)
-		//IL_086f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0887: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_080e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0813: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0815: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0817: Unknown result type (might be due to invalid IL or missing references)
+		//IL_087d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0895: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_081c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0821: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0823: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0825: Unknown result type (might be due to invalid IL or missing references)
+		//IL_082a: Unknown result type (might be due to invalid IL or missing references)
 		Bounds deepSeaBounds = DeepSeaManager.DeepSeaBounds;
 		Vector3 terrainPosition = TerrainMeta.Position;
 		Vector3 terrainOneOverSize = TerrainMeta.OneOverSize;
@@ -872,7 +874,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 				Vector3 val12 = allPositions[n];
 				WaterLevel.WaterInfo waterInfo3 = pointWaterInfo[n];
 				bool flag2 = waterInfo3.isValid && val12.y < waterInfo3.surfaceLevel;
-				if ((buoyancyPoint3.doSplashEffects && ((!buoyancyPoint3.wasSubmergedLastFrame & flag2) || (!flag2 && buoyancyPoint3.wasSubmergedLastFrame))) & flag)
+				if (((buoyancyPoint3.doSplashEffects && ((!buoyancyPoint3.wasSubmergedLastFrame & flag2) || (!flag2 && buoyancyPoint3.wasSubmergedLastFrame))) & flag) && buoyancy3.nextSplashTime < time)
 				{
 					Vector3 relativePointVelocity = val8.GetRelativePointVelocity(localPosition);
 					if (relativePointVelocity.magnitude > 1f)
@@ -880,7 +882,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 						string strName = ((array != null && array.Length != 0 && array[0].isValid) ? array[0].resourcePath : DefaultWaterImpact());
 						Vector3 val13 = new Vector3(Random.Range(-0.25f, 0.25f), 0f, Random.Range(-0.25f, 0.25f));
 						Effect.server.Run(strName, val12 + val13, Vector3.up);
-						buoyancyPoint3.nexSplashTime = time + 0.25f;
+						buoyancy3.nextSplashTime = time + 0.1f;
 					}
 				}
 				buoyancyPoint3.wasSubmergedLastFrame = flag2;
@@ -970,14 +972,14 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		//IL_03bb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0446: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0448: Unknown result type (might be due to invalid IL or missing references)
+		//IL_044d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c7: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)rigidBody == (Object)null)
 		{
 			return;
@@ -1073,7 +1075,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 				AccumulateFlowForce(ref accumForce, in pos, in waterInfo2, Mathf.Abs(pointShoreDistanceArray[j]), ref scaledBuoyancyForce, in FlowForceDisabled, in flowMovementScale);
 				rigidBody.AddForceAtPosition(accumForce, pos, (ForceMode)0);
 			}
-			if (buoyancyPoint.doSplashEffects && ((!buoyancyPoint.wasSubmergedLastFrame & flag3) || (!flag3 && buoyancyPoint.wasSubmergedLastFrame)) && doEffects)
+			if (buoyancyPoint.doSplashEffects && ((!buoyancyPoint.wasSubmergedLastFrame & flag3) || (!flag3 && buoyancyPoint.wasSubmergedLastFrame)) && doEffects && time > nextSplashTime)
 			{
 				Vector3 relativePointVelocity = rigidBody.GetRelativePointVelocity(localPosition);
 				if (relativePointVelocity.magnitude > 1f)
@@ -1081,7 +1083,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 					string strName = ((waterImpacts != null && waterImpacts.Length != 0 && waterImpacts[0].isValid) ? waterImpacts[0].resourcePath : DefaultWaterImpact());
 					Vector3 val2 = new Vector3(Random.Range(-0.25f, 0.25f), 0f, Random.Range(-0.25f, 0.25f));
 					Effect.server.Run(strName, pos + val2, Vector3.up);
-					buoyancyPoint.nexSplashTime = Time.time + 0.25f;
+					nextSplashTime = time + 0.1f;
 				}
 			}
 			buoyancyPoint.wasSubmergedLastFrame = flag3;

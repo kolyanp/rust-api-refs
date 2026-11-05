@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Rust;
 using Network;
@@ -122,6 +123,7 @@ public class RepairBench : StorageContainer
 		return GetRepairFraction(condition, maxCondition) * 0.2f;
 	}
 
+	[PoolAnalyzerNonCaching]
 	public static void GetRepairCostList(ItemBlueprint bp, List<ItemAmount> allIngredients)
 	{
 		ItemDefinition targetItem = bp.targetItem;
@@ -185,30 +187,30 @@ public class RepairBench : StorageContainer
 	[RPC_Server.IsVisible(3f)]
 	public void ChangeSkin(RPCMessage msg)
 	{
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0765: Unknown result type (might be due to invalid IL or missing references)
-		//IL_076a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0751: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0756: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
-		int inventoryId = msg.read.Int32();
+		int num = msg.read.Int32();
 		ItemId val = ((msg.read.Unread > 0) ? new ItemId(msg.read.UInt64()) : default(ItemId));
 		bool isValid = val.IsValid;
 		bool flag = !isValid || Time.realtimeSinceStartup > nextSkinChangeAudioTime;
 		Item slot = inventory.GetSlot(0);
-		if (slot == null || Interface.CallHook("OnItemSkinChange", inventoryId, slot, this, player) != null || (isValid && slot.uid != val))
+		if (slot == null || Interface.CallHook("OnItemSkinChange", num, slot, this, player) != null || (isValid && slot.uid != val))
 		{
 			return;
 		}
-		if (inventoryId != 0 && !player.blueprints.CheckSkinOwnership(inventoryId, player))
+		if (num != 0 && !player.blueprints.CheckSkinOwnership(num, player))
 		{
-			debugprint("RepairBench.ChangeSkin player does not have item :" + inventoryId + ":");
+			debugprint("RepairBench.ChangeSkin player does not have item :" + num + ":");
 			return;
 		}
-		ulong Skin = ItemDefinition.FindSkin(slot.info.itemid, inventoryId);
+		ulong Skin = ItemDefinition.FindSkin(slot.info.itemid, num);
 		if (Skin == slot.skin && (Object)(object)slot.info.isRedirectOf == (Object)null)
 		{
 			debugprint("RepairBench.ChangeSkin cannot apply same skin twice : " + Skin + ": " + slot.skin);
@@ -216,33 +218,34 @@ public class RepairBench : StorageContainer
 		}
 		ItemSkinDirectory.Skin skin = slot.info.skins.FirstOrDefault((ItemSkinDirectory.Skin x) => (ulong)x.id == Skin);
 		ItemDefinition itemDefinition = slot.info;
-		int num = 0;
+		int num2 = 0;
 		if ((Object)(object)slot.info.isRedirectOf != (Object)null)
 		{
-			Skin = ItemDefinition.FindSkin(slot.info.isRedirectOf.itemid, inventoryId);
+			Skin = ItemDefinition.FindSkin(slot.info.isRedirectOf.itemid, num);
 			skin = slot.info.isRedirectOf.skins.FirstOrDefault((ItemSkinDirectory.Skin x) => (ulong)x.id == Skin);
 			if ((Object)(object)skin.invItem == (Object)null)
 			{
-				if (slot.info.isRedirectOf.skins2.FirstOrDefault((IPlayerItemDefinition x) => x.DefinitionId == inventoryId) != null)
+				IPlayerItemDefinition itemDefinition2 = PlatformService.Instance.GetItemDefinition(num);
+				if (itemDefinition2 != null && itemDefinition2.WorkshopId != 0L && slot.info.isRedirectOf.MatchesSkinShortName(itemDefinition2.ItemShortName))
 				{
 					itemDefinition = slot.info.isRedirectOf;
-					num = inventoryId;
+					num2 = num;
 				}
 				else
 				{
 					itemDefinition = slot.info.isRedirectOf;
-					num = 0;
+					num2 = 0;
 				}
 			}
 			else
 			{
-				num = skin.invItem.id;
+				num2 = skin.invItem.id;
 				if (skin.invItem is ItemSkin itemSkin)
 				{
 					if ((Object)(object)itemSkin.Redirect != (Object)null)
 					{
 						itemDefinition = itemSkin.Redirect;
-						num = 0;
+						num2 = 0;
 					}
 					else if ((Object)(object)itemSkin.Redirect == (Object)null && (Object)(object)slot.info.isRedirectOf != (Object)null)
 					{
@@ -255,7 +258,7 @@ public class RepairBench : StorageContainer
 		{
 			itemDefinition = itemSkin2.Redirect;
 		}
-		if (((Object)(object)itemDefinition == (Object)(object)slot.info && (Object)(object)itemDefinition.isRedirectOf != (Object)null && num == 0) || ((Object)(object)itemDefinition.isRedirectOf == (Object)null && itemDefinition.hidden))
+		if (((Object)(object)itemDefinition == (Object)(object)slot.info && (Object)(object)itemDefinition.isRedirectOf != (Object)null && num2 == 0) || ((Object)(object)itemDefinition.isRedirectOf == (Object)null && itemDefinition.hidden))
 		{
 			return;
 		}
@@ -266,27 +269,27 @@ public class RepairBench : StorageContainer
 		if ((Object)(object)itemDefinition != (Object)(object)slot.info)
 		{
 			bool flag2 = false;
-			flag2 = num != 0;
+			flag2 = num2 != 0;
 			float condition = slot.condition;
 			float maxCondition = slot.maxCondition;
 			int amount = slot.amount;
 			ulong attachment = slot.attachment;
-			int num2 = 0;
 			int num3 = 0;
+			int num4 = 0;
 			ItemModContainerArmorSlot component = ((Component)slot.info).GetComponent<ItemModContainerArmorSlot>();
 			if ((Object)(object)component != (Object)null && slot.contents != null)
 			{
-				num3 = slot.contents.capacity;
+				num4 = slot.contents.capacity;
 			}
 			ItemDefinition ammoType = null;
 			if ((Object)(object)slot.GetHeldEntity() != (Object)null && slot.GetHeldEntity() is BaseProjectile { primaryMagazine: not null } baseProjectile)
 			{
-				num2 = baseProjectile.primaryMagazine.contents;
+				num3 = baseProjectile.primaryMagazine.contents;
 				ammoType = baseProjectile.primaryMagazine.ammoType;
 			}
 			if ((Object)(object)slot.GetHeldEntity() != (Object)null && slot.GetHeldEntity() is Chainsaw chainsaw)
 			{
-				num2 = chainsaw.ammo;
+				num3 = chainsaw.ammo;
 			}
 			List<Item> list = Pool.Get<List<Item>>();
 			if (slot.contents != null && slot.contents.itemList != null && slot.contents.itemList.Count > 0)
@@ -317,27 +320,27 @@ public class RepairBench : StorageContainer
 			{
 				if (baseProjectile2.primaryMagazine != null)
 				{
-					baseProjectile2.SetAmmoCount(num2);
+					baseProjectile2.SetAmmoCount(num3);
 					baseProjectile2.primaryMagazine.ammoType = ammoType;
 				}
 				baseProjectile2.ForceModsChanged();
 			}
 			if ((Object)(object)item.GetHeldEntity() != (Object)null && item.GetHeldEntity() is Chainsaw chainsaw2)
 			{
-				chainsaw2.ammo = num2;
+				chainsaw2.ammo = num3;
 			}
-			if (num3 > 0)
+			if (num4 > 0)
 			{
 				component = ((Component)item.info).GetComponent<ItemModContainerArmorSlot>();
-				component.CreateAtCapacity(num3, item);
+				component.CreateAtCapacity(num4, item);
 			}
 			if (list.Count > 0 && item.contents != null)
 			{
 				if ((Object)(object)component != (Object)null)
 				{
-					for (int num4 = 0; num4 < list.Count; num4++)
+					for (int num5 = 0; num5 < list.Count; num5++)
 					{
-						list[num4]?.MoveToContainer(item.contents, num4, allowStack: false);
+						list[num5]?.MoveToContainer(item.contents, num5, allowStack: false);
 					}
 				}
 				else

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Rust.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,4 +15,6 @@ public class SleepingBagClusterMapMarker : MonoBehaviour
 	public Tooltip SummaryTooltip;
 
 	public Image RimImage;
+
+	public RustText HeaderText;
 }

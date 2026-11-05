@@ -237,6 +237,11 @@ public class ContainerCorpse : ConstructableEntity
 				player.ShowToast(GameTip.Styles.Red_Normal, Phrase.op_Implicit("Can't stack building privileges"), false);
 				return false;
 			}
+			if (BuildingPrivlidge.HasReachedToolCupboardLimit(OwnerID))
+			{
+				player.ShowToast(GameTip.Styles.Red_Normal, BuildingPrivlidge.toolCupboardLimitReachedPhrase, false);
+				return false;
+			}
 		}
 		return true;
 	}
@@ -364,9 +369,9 @@ public class ContainerCorpse : ConstructableEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	private void SERVER_RequestOwnerData(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

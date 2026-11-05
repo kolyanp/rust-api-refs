@@ -11,6 +11,13 @@ namespace Rust.Ai.Gen2;
 [SoftRequireComponent(typeof(BlackboardComponent), typeof(NPCEncounterTimer))]
 public class FSMComponent : EntityComponent<BaseEntity>
 {
+	protected struct AliveLayout
+	{
+		public FSMStateBase entry;
+
+		public FSMStateBase idle;
+	}
+
 	public class TickFSMWorkQueue : PersistentObjectWorkQueue<FSMComponent>
 	{
 		protected override void RunJob(FSMComponent component)
@@ -60,6 +67,24 @@ public class FSMComponent : EntityComponent<BaseEntity>
 	[NonSerialized]
 	private Trans_Triggerable dismountTrans;
 
+	[Header("Death")]
+	public State_Dead dead = new State_Dead();
+
+	[NonSerialized]
+	protected State_Nothing root;
+
+	[NonSerialized]
+	protected State_Nothing alive;
+
+	[NonSerialized]
+	protected State_Nothing waitForNavMesh;
+
+	[NonSerialized]
+	protected State_Nothing onNavmesh;
+
+	[NonSerialized]
+	protected Trans_Triggerable_HitInfo DeathTrans;
+
 	private bool isRunning;
 
 	private SenseComponent _senses;
@@ -82,7 +107,20 @@ public class FSMComponent : EntityComponent<BaseEntity>
 
 	private FSMTransitionBase pendingStateChangeTransition;
 
-	public static TickFSMWorkQueue defaultWorkQueue = new TickFSMWorkQueue();
+	public static TickFSMWorkQueue scientistWorkQueue = new TickFSMWorkQueue
+	{
+		Name = "FSM.Scientists"
+	};
+
+	public static TickFSMWorkQueue animalWorkQueue = new TickFSMWorkQueue
+	{
+		Name = "FSM.Animals"
+	};
+
+	public static TickFSMWorkQueue livestockWorkQueue = new TickFSMWorkQueue
+	{
+		Name = "FSM.Livestock"
+	};
 
 	[NonSerialized]
 	private State_DebugMoveToPosition debugMoveTo;
@@ -101,9 +139,13 @@ public class FSMComponent : EntityComponent<BaseEntity>
 
 	public bool IsDismounting => CurrentState == dismountVehicle;
 
+	protected virtual bool WantsMounting => false;
+
 	public FSMStateBase CurrentState { get; private set; }
 
 	protected SenseComponent Senses => _senses ?? (_senses = ((Component)baseEntity).GetComponent<SenseComponent>());
+
+	protected NpcRandom Rng => NpcRandom.Of(baseEntity);
 
 	private float RefreshInterval
 	{
@@ -138,9 +180,23 @@ public class FSMComponent : EntityComponent<BaseEntity>
 
 	public IReadOnlyList<FSMStateBase> StatesEnteredThisTick => sameFrameStateChangesHistory;
 
-	public static float frameBudgetMs => AI.fsm_frametime;
+	public static float scientistBudgetMs => AI.fsm_frametime_scientists;
 
-	protected virtual TickFSMWorkQueue workQueue => defaultWorkQueue;
+	public static float animalBudgetMs => AI.fsm_frametime_animals;
+
+	public static float livestockBudgetMs => AI.fsm_frametime_livestock;
+
+	protected virtual TickFSMWorkQueue workQueue
+	{
+		get
+		{
+			if (!(baseEntity is BaseNPC2 { IsAnimal: not false }))
+			{
+				return scientistWorkQueue;
+			}
+			return animalWorkQueue;
+		}
+	}
 
 	public bool SupportsDebugMove => debugMoveTo != null;
 
@@ -203,6 +259,96 @@ public class FSMComponent : EntityComponent<BaseEntity>
 		}
 		SetState(mounted);
 		return true;
+	}
+
+	protected virtual AliveLayout BuildAlive(State_Nothing onNavmesh)
+	{
+		return default;
+	}
+
+	protected virtual FSMTransitionBase NewNavmeshReadyTransition()
+	{
+		return new Trans_IsNavmeshReady();
+	}
+
+	public override void InitShared()
+	{
+		base.InitShared();
+		if (!baseEntity.isServer)
+		{
+			return;
+		}
+		root = new State_Nothing
+		{
+			Name = "Root"
+		};
+		alive = new State_Nothing
+		{
+			Name = "Alive"
+		};
+		waitForNavMesh = new State_Nothing
+		{
+			Name = "WaitForNavMesh"
+		};
+		onNavmesh = new State_Nothing
+		{
+			Name = "OnNavmesh"
+		};
+		DeathTrans = new Trans_Triggerable_HitInfo();
+		root.AddChildren(alive.AddTickTransition(dead, DeathTrans).AddChildren(waitForNavMesh, onNavmesh.AddTickTransition(waitForNavMesh, ~NewNavmeshReadyTransition())), dead);
+		AliveLayout layout = BuildAlive(onNavmesh);
+		if (ValidateLayout(layout))
+		{
+			waitForNavMesh.AddTickTransition(layout.entry, NewNavmeshReadyTransition());
+			RegisterDebugMoveTo(alive);
+			if (WantsMounting)
+			{
+				RegisterMounting(alive, layout.idle);
+			}
+			SetState(waitForNavMesh);
+			SetFsmActive(newActive: true);
+		}
+	}
+
+	private bool ValidateLayout(AliveLayout layout)
+	{
+		if (!IsUnderAlive(layout.entry))
+		{
+			return Reject("entry state is missing or does not hang under alive");
+		}
+		if (layout.idle == null && WantsMounting)
+		{
+			return Reject("idle state is missing, mounting needs somewhere to hand back to");
+		}
+		if (layout.idle != null && !IsUnderAlive(layout.idle))
+		{
+			return Reject("idle state does not hang under alive");
+		}
+		return true;
+	}
+
+	private bool IsUnderAlive(FSMStateBase state)
+	{
+		for (FSMStateBase fSMStateBase = state; fSMStateBase != null; fSMStateBase = fSMStateBase.parent)
+		{
+			if (fSMStateBase == alive)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private bool Reject(string reason)
+	{
+		Debug.LogError((object)("[FSM] " + baseEntity.ShortPrefabName + ": " + reason + ", FSM left unstarted"), (Object)(object)baseEntity);
+		return false;
+	}
+
+	public override bool OnDied(HitInfo hitInfo)
+	{
+		DeathTrans.Trigger(hitInfo);
+		return false;
 	}
 
 	public void SetFsmActive(bool newActive)
@@ -302,10 +448,6 @@ public class FSMComponent : EntityComponent<BaseEntity>
 						{
 							foreach (var (fSMTransitionBase, dstState) in item.transitions)
 							{
-								if ((Object)(object)fSMTransitionBase.Owner == (Object)null)
-								{
-									fSMTransitionBase.Init(baseEntity);
-								}
 								if (fSMTransitionBase.Evaluate(ref payload) && !IsInheritedSelfTransition(item, dstState))
 								{
 									TakeTransition(fSMTransitionBase, dstState, payload);
@@ -349,24 +491,19 @@ public class FSMComponent : EntityComponent<BaseEntity>
 				{
 					foreach (var (fSMTransitionBase, dstState, eFSMStateStatus) in item.endTransitions)
 					{
-						if (eFSMStateStatus != (EFSMStateStatus.Success | EFSMStateStatus.Failure) && eFSMStateStatus != currentStateStatus)
+						if (eFSMStateStatus == (EFSMStateStatus.Success | EFSMStateStatus.Failure) || eFSMStateStatus == currentStateStatus)
 						{
-							continue;
-						}
-						bool flag = true;
-						if (fSMTransitionBase != null)
-						{
-							if ((Object)(object)fSMTransitionBase.Owner == (Object)null)
+							bool flag = true;
+							if (fSMTransitionBase != null)
 							{
-								fSMTransitionBase.Init(baseEntity);
+								flag = fSMTransitionBase.Evaluate(ref payload);
 							}
-							flag = fSMTransitionBase.Evaluate(ref payload);
-						}
-						if (flag && !IsInheritedSelfTransition(item, dstState))
-						{
-							TakeTransition(fSMTransitionBase, dstState, payload);
-							ForceTickOnTheNextUpdate();
-							return;
+							if (flag && !IsInheritedSelfTransition(item, dstState))
+							{
+								TakeTransition(fSMTransitionBase, dstState, payload);
+								ForceTickOnTheNextUpdate();
+								return;
+							}
 						}
 					}
 				}
@@ -394,7 +531,6 @@ public class FSMComponent : EntityComponent<BaseEntity>
 
 	private void TakeTransition(FSMTransitionBase transition, FSMStateBase dstState, FSMPayload payload)
 	{
-		dstState.Owner = baseEntity;
 		FSMStateBase fSMStateBase = RedirectStateChange(dstState);
 		if (fSMStateBase != dstState)
 		{
@@ -405,12 +541,47 @@ public class FSMComponent : EntityComponent<BaseEntity>
 		SetState(dstState, payload, transition);
 	}
 
+	private void BindToOwner(FSMStateBase state)
+	{
+		if (state == null || (Object)(object)state.Owner == (Object)(object)baseEntity)
+		{
+			return;
+		}
+		state.Owner = baseEntity;
+		BindToOwner(state.parent);
+		foreach (FSMStateBase child in state.children)
+		{
+			BindToOwner(child);
+		}
+		foreach (var (transition, state2) in state.transitions)
+		{
+			BindToOwner(transition);
+			BindToOwner(state2);
+		}
+		foreach (var (transition2, state3, _) in state.endTransitions)
+		{
+			BindToOwner(transition2);
+			BindToOwner(state3);
+		}
+	}
+
+	private void BindToOwner(FSMTransitionBase transition)
+	{
+		if (transition != null && (Object)(object)transition.Owner != (Object)(object)baseEntity)
+		{
+			transition.Init(baseEntity);
+		}
+	}
+
 	public void SetState(FSMStateBase newState, FSMPayload payload = default(FSMPayload), FSMTransitionBase takenBy = null)
 	{
 		using (TimeWarning.New("SetState"))
 		{
+			if (CurrentState == null)
+			{
+				BindToOwner(newState);
+			}
 			newState = RedirectStateChange(newState);
-			newState.Owner = baseEntity;
 			pendingStateChange = null;
 			pendingStateChangePayload = default;
 			pendingStateChangeTransition = null;
@@ -426,9 +597,9 @@ public class FSMComponent : EntityComponent<BaseEntity>
 				}
 				StringBuilder stringBuilder = Pool.Get<StringBuilder>();
 				stringBuilder.AppendFormat("[FSM] Possible endless recursion detected from {0} to {1} on {2}\n", CurrentState?.Name, newState.Name, baseEntity);
-				foreach (FSMStateBase item5 in sameFrameStateChangesHistory)
+				foreach (FSMStateBase item in sameFrameStateChangesHistory)
 				{
-					stringBuilder.AppendFormat("{0} -> ", item5.Name);
+					stringBuilder.AppendFormat("{0} -> ", item.Name);
 				}
 				Debug.LogWarning((object)stringBuilder);
 				Pool.FreeUnmanaged(ref stringBuilder);
@@ -442,25 +613,15 @@ public class FSMComponent : EntityComponent<BaseEntity>
 					try
 					{
 						CurrentState.FindAncestry((List<FSMStateBase>)(object)val);
-						foreach (FSMStateBase item6 in (List<FSMStateBase>)(object)val)
+						foreach (FSMStateBase item2 in (List<FSMStateBase>)(object)val)
 						{
-							foreach (var endTransition in item6.endTransitions)
+							foreach (var endTransition in item2.endTransitions)
 							{
-								FSMTransitionBase item = endTransition.transition;
-								if (item != null && (Object)(object)item.Owner == (Object)null)
-								{
-									item.Init(baseEntity);
-								}
-								item?.OnStateExit();
+								endTransition.transition?.OnStateExit();
 							}
-							foreach (var transition in item6.transitions)
+							foreach (var transition in item2.transitions)
 							{
-								FSMTransitionBase item2 = transition.transition;
-								if (item2 != null && (Object)(object)item2.Owner == (Object)null)
-								{
-									item2.Init(baseEntity);
-								}
-								item2.OnStateExit();
+								transition.transition.OnStateExit();
 							}
 						}
 					}
@@ -484,25 +645,15 @@ public class FSMComponent : EntityComponent<BaseEntity>
 				try
 				{
 					CurrentState.FindAncestry((List<FSMStateBase>)(object)val2);
-					foreach (FSMStateBase item7 in (List<FSMStateBase>)(object)val2)
+					foreach (FSMStateBase item3 in (List<FSMStateBase>)(object)val2)
 					{
-						foreach (var endTransition2 in item7.endTransitions)
+						foreach (var endTransition2 in item3.endTransitions)
 						{
-							FSMTransitionBase item3 = endTransition2.transition;
-							if (item3 != null && (Object)(object)item3.Owner == (Object)null)
-							{
-								item3.Init(baseEntity);
-							}
-							item3?.OnStateEnter();
+							endTransition2.transition?.OnStateEnter();
 						}
-						foreach (var transition2 in item7.transitions)
+						foreach (var transition2 in item3.transitions)
 						{
-							FSMTransitionBase item4 = transition2.transition;
-							if (item4 != null && (Object)(object)item4.Owner == (Object)null)
-							{
-								item4.Init(baseEntity);
-							}
-							item4.OnStateEnter();
+							transition2.transition.OnStateEnter();
 						}
 					}
 				}
@@ -525,6 +676,19 @@ public class FSMComponent : EntityComponent<BaseEntity>
 				}
 			}
 		}
+	}
+
+	public static void RunBudgetedQueues()
+	{
+		double num = RunReturningUnusedMs(scientistWorkQueue, scientistBudgetMs);
+		num = RunReturningUnusedMs(animalWorkQueue, (double)animalBudgetMs + num);
+		RunReturningUnusedMs(livestockWorkQueue, (double)livestockBudgetMs + num);
+	}
+
+	private static double RunReturningUnusedMs(TickFSMWorkQueue queue, double budgetMs)
+	{
+		((PersistentObjectWorkQueue<FSMComponent>)queue).RunList(budgetMs);
+		return Math.Max(0.0, budgetMs - ((PersistentObjectWorkQueue)queue).Stats.ExecutionTime.TotalMilliseconds);
 	}
 
 	protected void RegisterDebugMoveTo(FSMStateBase attachTo)

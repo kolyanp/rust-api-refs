@@ -71,7 +71,12 @@ public class ApartmentCommands : ConsoleSystem
 	public static void RentApartment(Arg arg)
 	{
 		string text = arg.GetString(0);
-		BasePlayer player = ArgEx.Player(arg);
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("Failed to retrieve player from command. Alternatively try apartment.fakerentroom to rent a room to a fake player.");
+			return;
+		}
 		ApartmentBuilding apartmentBuilding = GetApartmentBuilding();
 		if ((Object)(object)apartmentBuilding == (Object)null)
 		{
@@ -83,13 +88,13 @@ public class ApartmentCommands : ConsoleSystem
 		{
 			arg.ReplyWith("No room found with number '" + text + "'");
 		}
-		else if ((Object)(object)apartmentBuilding.GetPlayerApartment(player) != (Object)null)
+		else if ((Object)(object)apartmentBuilding.GetPlayerApartment(basePlayer) != (Object)null)
 		{
 			arg.ReplyWith("You already have an apartment!");
 		}
 		else
 		{
-			apartmentBuilding.GiveRoomToPlayer(player, apartmentRoom);
+			apartmentBuilding.GiveRoomToPlayer(basePlayer, apartmentRoom);
 		}
 	}
 
@@ -181,7 +186,7 @@ public class ApartmentCommands : ConsoleSystem
 	public static void CheckoutRoom(Arg arg)
 	{
 		string text = arg.GetString(0);
-		BasePlayer player = ArgEx.Player(arg);
+		BasePlayer basePlayer = ArgEx.Player(arg);
 		ApartmentBuilding apartmentBuilding = GetApartmentBuilding();
 		if ((Object)(object)apartmentBuilding == (Object)null)
 		{
@@ -200,12 +205,17 @@ public class ApartmentCommands : ConsoleSystem
 			arg.ReplyWith("You checked out room '" + apartmentRoom.RoomNumber + "'");
 			return;
 		}
-		ApartmentRoom playerApartment = apartmentBuilding.GetPlayerApartment(player);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("Failed to retrieve a room number or a player from command");
+			return;
+		}
+		ApartmentRoom playerApartment = apartmentBuilding.GetPlayerApartment(basePlayer);
 		if ((Object)(object)playerApartment == (Object)null)
 		{
 			arg.ReplyWith("You don't have an apartment room to checkout from!");
 		}
-		else if (apartmentBuilding.TryCheckout(player))
+		else if (apartmentBuilding.TryCheckout(basePlayer))
 		{
 			arg.ReplyWith("You have checked out of room '" + playerApartment.RoomNumber + "'");
 		}

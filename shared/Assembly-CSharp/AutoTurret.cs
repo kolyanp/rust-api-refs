@@ -168,8 +168,6 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public bool booting;
 
-	public Vector3 targetAimDir = Vector3.forward;
-
 	private int currentBurstShotsFired;
 
 	public const float bulletDamage = 15f;
@@ -214,6 +212,10 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public Vector3 lastSentAimDir = Vector3.forward;
 
+	private Vector3 lastSentTargetAimDir = Vector3.forward;
+
+	private float lastSentAimTime;
+
 	public static float[] visibilityOffsets = new float[3] { 0f, 0.15f, -0.15f };
 
 	public int peekIndex;
@@ -247,6 +249,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	public Transform muzzlePos;
 
 	public Vector3 aimDir;
+
+	public Vector3 targetAimDir = Vector3.forward;
 
 	public Transform gun_yaw;
 
@@ -933,7 +937,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	private void SortTurretsByInterferenceLevel(List<AutoTurret> turrets)
 	{
 		List<AutoTurret> list = Pool.Get<List<AutoTurret>>();
-		list.AddRange(turrets.OrderBy((AutoTurret x) => x.nearbyTurrets.Count((AutoTurret y) => y.IsOn() && !y.HasInterference())));
+		list.AddRange(turrets.OrderBy((AutoTurret x) => Enumerable.Count(x.nearbyTurrets, (AutoTurret y) => y.IsOn() && !y.HasInterference())));
 		turrets.Clear();
 		turrets.AddRange(list);
 		Pool.FreeUnmanaged<AutoTurret>(ref list);
@@ -1198,8 +1202,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_SetID(RPCMessage msg)
 	{
 		string oldID = msg.read.String();
@@ -1229,9 +1233,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1470,8 +1474,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		flagsUpdateScope.Set(Flags.Reserved4, b);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void FlipAim(RPCMessage rpc)
 	{
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
@@ -1517,8 +1521,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ClearList(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -1550,8 +1554,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void SERVER_Peacekeeper(RPCMessage rpc)
 	{
 		if (IsAuthed(rpc.player) && Interface.CallHook("OnTurretModeToggle", this, rpc.player) == null)
@@ -1665,22 +1669,46 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	public void SendAimDir()
 	{
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		if ((net == null || net.group == null || BaseNetworkable.HasConnections(net.group, ((Component)this).transform.position)) && (HasTarget() || Vector3.Angle(lastSentAimDir, aimDir) > 1f))
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		if (net == null || net.group == null || BaseNetworkable.HasConnections(net.group, ((Component)this).transform.position))
 		{
-			SendAimDirImmediate();
+			bool flag = IsOnline() && !IsBeingControlled && !HasTarget();
+			Vector3 val = Mathx.Lerp(lastSentAimDir, lastSentTargetAimDir, 2f, lastTickTime - lastSentAimTime);
+			if (HasTarget() || (flag && targetAimDir != lastSentTargetAimDir) || Vector3.Angle(val, aimDir) > 1f)
+			{
+				SendAimDirImmediate(flag ? targetAimDir : aimDir);
+			}
 		}
 	}
 
 	public void SendAimDirImmediate()
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		SendAimDirImmediate(aimDir);
+	}
+
+	private void SendAimDirImmediate(Vector3 clientTargetAimDir)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		lastSentAimDir = aimDir;
-		ClientRPC(RpcTarget.NetworkGroup("CLIENT_ReceiveAimDir"), aimDir);
+		lastSentTargetAimDir = clientTargetAimDir;
+		lastSentAimTime = lastTickTime;
+		ClientRPC(RpcTarget.NetworkGroup("CLIENT_ReceiveAimDir"), aimDir, clientTargetAimDir);
 	}
 
 	public void SetTarget(BaseCombatEntity targ)
@@ -1756,6 +1784,10 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
 		object obj2 = Interface.CallHook("CanBeTargeted", obj, this);
 		if (obj2 is bool)
 		{
@@ -1784,7 +1816,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			GamePhysics.TraceAll(new Ray(position, normalized), 0f, list, num * 1.1f, 1218652417, (QueryTriggerInteraction)0);
 			for (int j = 0; j < list.Count; j++)
 			{
-				BaseEntity entity = RaycastHitEx.GetEntity(list[j]);
+				RaycastHit hit = list[j];
+				BaseEntity entity = RaycastHitEx.GetEntity(hit);
 				if ((!((Object)(object)entity != (Object)null) || !entity.isClient) && (!((Object)(object)entity != (Object)null) || !((Object)(object)entity.ToPlayer() != (Object)null) || entity.EqualNetID((BaseNetworkable)obj)) && (!((Object)(object)entity != (Object)null) || !entity.EqualNetID((BaseNetworkable)this)))
 				{
 					if ((Object)(object)entity != (Object)null && ((Object)(object)entity == (Object)(object)obj || entity.EqualNetID((BaseNetworkable)obj)))
@@ -1793,7 +1826,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 						peekIndex = i;
 						return true;
 					}
-					if (!((Object)(object)entity != (Object)null) || entity.ShouldBlockProjectiles())
+					if (!((Object)(object)entity != (Object)null) || entity.ShouldBlockProjectiles() || !entity.IsVisible(position, hit.point))
 					{
 						break;
 					}
@@ -2060,9 +2093,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0198: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
 		if (!TryGetAttachedWeapon(out var baseProjectile))
 		{
 			return;
@@ -2074,28 +2107,21 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		AmmoTypes ammoTypes = baseProjectile.primaryMagazine.definition.ammoTypes;
 		if (baseProjectile.primaryMagazine.contents > 0)
 		{
-			bool flag = false;
-			if (inventory.capacity > inventory.itemList.Count)
+			ItemDefinition ammoType = baseProjectile.primaryMagazine.ammoType;
+			int num = Mathf.Min(ammoType.stackable, inventory.ContainerMaxStackSize());
+			int num2 = (inventory.capacity - inventory.itemList.Count) * num;
+			foreach (Item item in inventory.itemList)
 			{
-				flag = true;
-			}
-			else
-			{
-				int num = 0;
-				foreach (Item item in inventory.itemList)
+				if ((Object)(object)item.info == (Object)(object)ammoType)
 				{
-					if ((Object)(object)item.info == (Object)(object)baseProjectile.primaryMagazine.ammoType)
-					{
-						num += item.MaxStackable() - item.amount;
-					}
+					num2 += Mathf.Max(0, item.MaxStackable() - item.amount);
 				}
-				flag = num >= baseProjectile.primaryMagazine.contents;
 			}
-			if (!flag)
+			if (num2 < baseProjectile.primaryMagazine.contents)
 			{
 				return;
 			}
-			inventory.AddItem(baseProjectile.primaryMagazine.ammoType, baseProjectile.primaryMagazine.contents, 0uL);
+			inventory.AddItem(ammoType, baseProjectile.primaryMagazine.contents, 0uL, ItemContainer.LimitStack.All);
 			baseProjectile.SetAmmoCount(0);
 		}
 		List<Item> ammos = Pool.Get<List<Item>>();
@@ -2109,23 +2135,23 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			Effect.server.Run(reloadEffect.resourcePath, this, StringPool.Get("WeaponAttachmentPoint"), Vector3.zero, Vector3.zero);
 			totalAmmoDirty = true;
 			baseProjectile.primaryMagazine.ammoType = ammos[0].info;
-			int num2 = 0;
-			while (baseProjectile.primaryMagazine.contents < baseProjectile.primaryMagazine.capacity && num2 < ammos.Count)
+			int num3 = 0;
+			while (baseProjectile.primaryMagazine.contents < baseProjectile.primaryMagazine.capacity && num3 < ammos.Count)
 			{
-				if ((Object)(object)ammos[num2].info == (Object)(object)baseProjectile.primaryMagazine.ammoType)
+				if ((Object)(object)ammos[num3].info == (Object)(object)baseProjectile.primaryMagazine.ammoType)
 				{
-					int num3 = baseProjectile.primaryMagazine.capacity - baseProjectile.primaryMagazine.contents;
-					num3 = Mathf.Min(ammos[num2].amount, num3);
-					ammos[num2].UseItem(num3);
-					baseProjectile.ModifyAmmoCount(num3);
+					int num4 = baseProjectile.primaryMagazine.capacity - baseProjectile.primaryMagazine.contents;
+					num4 = Mathf.Min(ammos[num3].amount, num4);
+					ammos[num3].UseItem(num4);
+					baseProjectile.ModifyAmmoCount(num4);
 				}
-				num2++;
+				num3++;
 			}
 		}
-		ItemDefinition ammoType = baseProjectile.primaryMagazine.ammoType;
-		if (Object.op_Implicit((Object)(object)ammoType))
+		ItemDefinition ammoType2 = baseProjectile.primaryMagazine.ammoType;
+		if (Object.op_Implicit((Object)(object)ammoType2))
 		{
-			ItemModProjectile component = ((Component)ammoType).GetComponent<ItemModProjectile>();
+			ItemModProjectile component = ((Component)ammoType2).GetComponent<ItemModProjectile>();
 			GameObject val = component.GetOverrideProjectile(baseProjectile).Get();
 			if (Object.op_Implicit((Object)(object)val))
 			{
@@ -2454,7 +2480,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 				}
 				if (baseProjectile.primaryMagazine.contents > 0)
 				{
-					if (!target.IsRealNull() && target.GetParentEntity() is TrainCar trainCar)
+					if (!target.IsRealNull() && target.GetRootParentEntity() is TrainCar trainCar)
 					{
 						Vector3 worldVelocity = trainCar.GetWorldVelocity();
 						float magnitude = worldVelocity.magnitude;
@@ -3146,6 +3172,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 	{
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (info.msg.autoturret != null)
 		{
@@ -3159,6 +3187,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 			}
 			info.msg.autoturret.users = null;
 			aimDir = info.msg.autoturret.aimDir;
+			targetAimDir = aimDir;
 			if (isServer && ShouldApplyInterference())
 			{
 				Load_Interference(info.msg.autoturret);
@@ -3357,5 +3386,7 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 	}
 }

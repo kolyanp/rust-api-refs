@@ -303,8 +303,8 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[Tooltip("Requires associatedMountable to be set. Prevents players entering the trigger if there's something between their feet and the bottom of the parent trigger")]
 	public bool checkForObjUnderFeet;
 
-	[SerializeField]
 	[Header("You probably don't need it")]
+	[SerializeField]
 	private bool doExpensivePlayerClippingChecks;
 
 	[Tooltip("TickMode 1 only - Allow trigger to sleep if it hasn't moved on selected axis. Set to None if it should never ignore")]
@@ -1302,7 +1302,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 		Pool.FreeUnmanaged<BaseEntity>(ref list);
 	}
 
-	protected void Parent(BaseEntity ent)
+	public void Parent(BaseEntity ent)
 	{
 		BaseEntity entity = Entity;
 		if (!((Object)(object)ent.GetParentEntity() == (Object)(object)entity) && !((Object)(object)entity.GetParentEntity() == (Object)(object)ent))

@@ -29,10 +29,12 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		public string WipeId;
 
 		public string[] DiscoveredLivestockSpecials;
+
+		public Dictionary<string, float> EventHoursRemaining;
 	}
 
 	[CompilerGenerated]
-	private sealed class _003CDoAutomatedSave_003Ed__30 : IEnumerator<object>, IEnumerator, IDisposable
+	private sealed class _003CDoAutomatedSave_003Ed__32 : IEnumerator<object>, IEnumerator, IDisposable
 	{
 		private int _003C_003E1__state;
 
@@ -63,7 +65,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		}
 
 		[DebuggerHidden]
-		public _003CDoAutomatedSave_003Ed__30(int _003C_003E1__state)
+		public _003CDoAutomatedSave_003Ed__32(int _003C_003E1__state)
 		{
 			this._003C_003E1__state = _003C_003E1__state;
 		}
@@ -149,6 +151,8 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 	private static RealTimeSince TimeSinceLastSave;
 
 	private static MemoryStream SaveBuffer = new MemoryStream(33554432);
+
+	private static MemoryStream UncachedSaveBuffer = new MemoryStream();
 
 	private static Action<Stream> onSaveComplete;
 
@@ -238,15 +242,15 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 
 	public static bool Load(string strFilename = "", bool allowOutOfDateSaves = false)
 	{
-		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_041a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0255: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_038c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0398: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0364: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03bc: Unknown result type (might be due to invalid IL or missing references)
 		SaveCreatedTime = DateTime.UtcNow;
 		LivestockAnimal.LoadDiscoveredSpecials(null);
 		try
@@ -282,6 +286,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 					binaryReader.ReadChar();
 					saveExtraData = JsonConvert.DeserializeObject<SaveExtraData>(binaryReader.ReadString());
 					WipeId = saveExtraData.WipeId;
+					EventSchedule.LoadHoursRemaining(saveExtraData.EventHoursRemaining);
 				}
 				LivestockAnimal.LoadDiscoveredSpecials(saveExtraData?.DiscoveredLivestockSpecials);
 				if (binaryReader.PeekChar() == 68)
@@ -289,7 +294,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 					binaryReader.ReadChar();
 					SaveCreatedTime = Epoch.ToDateTime((long)binaryReader.ReadInt32());
 				}
-				if (binaryReader.ReadUInt32() != 289)
+				if (binaryReader.ReadUInt32() != 290)
 				{
 					if (allowOutOfDateSaves)
 					{
@@ -305,6 +310,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 				Net.sv.Reset();
 				Application.isLoadingSave = true;
 				HashSet<NetworkableId> hashSet = new HashSet<NetworkableId>();
+				HashSet<ulong> hashSet2 = new HashSet<ulong>();
 				PooledList<ulong> val = Pool.Get<PooledList<ulong>>();
 				try
 				{
@@ -313,54 +319,58 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 						RCon.Update();
 						uint num = binaryReader.ReadUInt32();
 						long position = fileStream.Position;
-						Entity entData = Pool.Get<Entity>();
+						Entity val2 = Pool.Get<Entity>();
 						try
 						{
-							ProtoStreamExtensions.ReadFromStream((IProto)(object)entData, (Stream)fileStream, (int)num, false);
+							ProtoStreamExtensions.ReadFromStream((IProto)(object)val2, (Stream)fileStream, (int)num, false);
 						}
 						catch (Exception ex)
 						{
 							Debug.LogWarning((object)("Skipping entity since it could not be deserialized - stream position: " + position + " size: " + num));
 							Debug.LogException(ex);
 							fileStream.Position = position + num;
-							entData.Dispose();
+							val2.Dispose();
 							continue;
 						}
-						if (entData.baseNetworkable.uid.IsValid && hashSet.Contains(entData.baseNetworkable.uid))
+						if (val2.baseNetworkable.uid.IsValid && hashSet.Contains(val2.baseNetworkable.uid))
 						{
 							string[] array = new string[5] { "Skipping entity ", null, null, null, null };
-							NetworkableId uid = entData.baseNetworkable.uid;
+							NetworkableId uid = val2.baseNetworkable.uid;
 							array[1] = ((object)uid/*cast due to constrained. prefix*/).ToString();
 							array[2] = " ";
-							array[3] = StringPool.Get(entData.baseNetworkable.prefabID);
+							array[3] = StringPool.Get(val2.baseNetworkable.prefabID);
 							array[4] = " - uid is used multiple times";
 							Debug.LogWarning((object)string.Concat(array));
-							entData.Dispose();
+							val2.Dispose();
 							continue;
 						}
-						if (entData.basePlayer != null)
+						if (val2.basePlayer != null)
 						{
-							if (dictionary.Any((KeyValuePair<BaseEntity, Entity> x) => x.Value.basePlayer != null && x.Value.basePlayer.userid == entData.basePlayer.userid))
+							if (hashSet2.Contains(val2.basePlayer.userid))
 							{
-								Debug.LogWarning((object)$"Skipping entity {entData.baseNetworkable.uid} - it's a player {entData.basePlayer.userid} who is in the save multiple times");
-								entData.Dispose();
+								Debug.LogWarning((object)$"Skipping entity {val2.baseNetworkable.uid} - it's a player {val2.basePlayer.userid} who is in the save multiple times");
+								val2.Dispose();
 								continue;
 							}
-							if (BasePlayer.IsBotId(entData.basePlayer.userid))
+							if (BasePlayer.IsBotId(val2.basePlayer.userid))
 							{
-								((List<ulong>)(object)val).Add(entData.basePlayer.userid);
+								((List<ulong>)(object)val).Add(val2.basePlayer.userid);
 							}
 						}
-						if (entData.baseNetworkable.uid.IsValid)
+						if (val2.baseNetworkable.uid.IsValid)
 						{
-							hashSet.Add(entData.baseNetworkable.uid);
+							hashSet.Add(val2.baseNetworkable.uid);
 						}
-						BaseEntity baseEntity = GameManager.server.CreateEntity(StringPool.Get(entData.baseNetworkable.prefabID), entData.baseEntity.pos, Quaternion.Euler(entData.baseEntity.rot));
+						BaseEntity baseEntity = GameManager.server.CreateEntity(StringPool.Get(val2.baseNetworkable.prefabID), val2.baseEntity.pos, Quaternion.Euler(val2.baseEntity.rot));
 						if (Object.op_Implicit((Object)(object)baseEntity))
 						{
-							baseEntity.InitLoad(entData.baseNetworkable.uid);
+							baseEntity.InitLoad(val2.baseNetworkable.uid);
 							baseEntity.PreServerLoad();
-							dictionary.Add(baseEntity, entData);
+							dictionary.Add(baseEntity, val2);
+							if (val2.basePlayer != null)
+							{
+								hashSet2.Add(val2.basePlayer.userid);
+							}
 						}
 					}
 					BasePlayer.ReserveBotIds((List<ulong>)(object)val);
@@ -478,7 +488,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		for (int i = 0; i < array.Length; i++)
 		{
 			BaseEntity baseEntity = array[i];
-			if (baseEntity.IsValid())
+			if (baseEntity.IsValid() && baseEntity.CanUseSaveCache())
 			{
 				baseEntity.GetSaveCache();
 				if (stopwatch.Elapsed.TotalMilliseconds > 2000.0)
@@ -494,27 +504,46 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 
 	public static void InitializeEntityLinks()
 	{
-		BaseEntity[] array = (from x in BaseNetworkable.serverEntities
+		List<BaseEntity> list = (from x in BaseNetworkable.serverEntities
 			where x is BaseEntity
-			select x as BaseEntity).ToArray();
-		if (array.Length == 0)
+			select x as BaseEntity).ToList();
+		if (list.Count > 0)
 		{
-			return;
+			DebugEx.Log("Initializing " + list.Count + " entity links", (StackTraceLogType)0);
+			DebugEx.Log("\tdone, restored " + RestoreLoadedEntityLinks(list, serverStartup: true) + " from save.", (StackTraceLogType)0);
 		}
-		DebugEx.Log("Initializing " + array.Length + " entity links", (StackTraceLogType)0);
-		Stopwatch stopwatch = Stopwatch.StartNew();
-		for (int num = 0; num < array.Length; num++)
+	}
+
+	public static int RestoreLoadedEntityLinks(List<BaseEntity> entities, bool serverStartup)
+	{
+		foreach (BaseEntity entity in entities)
 		{
-			RCon.Update();
-			array[num].RefreshEntityLinks();
-			if (stopwatch.Elapsed.TotalMilliseconds > 2000.0)
+			entity.BeginRestoreEntityLinks();
+		}
+		foreach (BaseEntity entity2 in entities)
+		{
+			entity2.RestoreEntityLinks();
+		}
+		int num = 0;
+		Stopwatch stopwatch = Stopwatch.StartNew();
+		for (int i = 0; i < entities.Count; i++)
+		{
+			BaseEntity baseEntity = entities[i];
+			if (serverStartup)
 			{
-				stopwatch.Reset();
-				stopwatch.Start();
-				DebugEx.Log("\t" + (num + 1) + " / " + array.Length, (StackTraceLogType)0);
+				RCon.Update();
+				if (stopwatch.Elapsed.TotalMilliseconds > 2000.0)
+				{
+					stopwatch.Restart();
+					DebugEx.Log("\t" + (i + 1) + " / " + entities.Count, (StackTraceLogType)0);
+				}
+			}
+			if (baseEntity.FinishRestoringEntityLinks())
+			{
+				num++;
 			}
 		}
-		DebugEx.Log("\tdone.", (StackTraceLogType)0);
+		return num;
 	}
 
 	public static void InitializeEntitySupports()
@@ -822,11 +851,11 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		}
 	}
 
-	[IteratorStateMachine(typeof(_003CDoAutomatedSave_003Ed__30))]
+	[IteratorStateMachine(typeof(_003CDoAutomatedSave_003Ed__32))]
 	private IEnumerator DoAutomatedSave(bool AndWait = false)
 	{
 		Interface.CallHook("OnServerSave");
-		return new _003CDoAutomatedSave_003Ed__30(0)
+		return new _003CDoAutomatedSave_003Ed__32(0)
 		{
 			_003C_003E4__this = this,
 			AndWait = AndWait
@@ -873,7 +902,10 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 				}
 				try
 				{
-					baseEntity.GetSaveCache();
+					if (baseEntity.CanUseSaveCache())
+					{
+						baseEntity.GetSaveCache();
+					}
 				}
 				catch (Exception ex)
 				{
@@ -902,11 +934,12 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		SaveExtraData saveExtraData = new SaveExtraData();
 		saveExtraData.WipeId = WipeId;
 		saveExtraData.DiscoveredLivestockSpecials = LivestockAnimal.DiscoveredSpecialNames();
+		saveExtraData.EventHoursRemaining = EventSchedule.SaveHoursRemaining();
 		writer.Write((sbyte)74);
 		writer.Write(JsonConvert.SerializeObject((object)saveExtraData));
 		writer.Write((sbyte)68);
 		writer.Write(Epoch.FromDateTime(SaveCreatedTime));
-		writer.Write(289u);
+		writer.Write(290u);
 	}
 
 	private static int WriteEntities(BinaryWriter writer)
@@ -922,7 +955,15 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 			MemoryStream memoryStream = null;
 			try
 			{
-				memoryStream = save.GetSaveCache();
+				if (save.CanUseSaveCache())
+				{
+					memoryStream = save.GetSaveCache();
+				}
+				else
+				{
+					save.WriteUncachedSave(UncachedSaveBuffer);
+					memoryStream = UncachedSaveBuffer;
+				}
 			}
 			catch (Exception ex)
 			{

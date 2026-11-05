@@ -171,6 +171,8 @@ public class Construction : PrefabAttribute
 	[FormerlySerializedAs("canRotate")]
 	public bool canRotateAfterPlacement;
 
+	public GameObjectRef mirroredVariant;
+
 	public bool canBeDeployedInDeepSeaWater;
 
 	public bool checkVolumeOnRotate;
@@ -307,27 +309,27 @@ public class Construction : PrefabAttribute
 		//IL_0533: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0395: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0649: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0650: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_065f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_066c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_068b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0692: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0698: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0730: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0737: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_070c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_064b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0652: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0661: Unknown result type (might be due to invalid IL or missing references)
+		//IL_066e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_068d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0694: Unknown result type (might be due to invalid IL or missing references)
+		//IL_069a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0732: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0739: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0701: Unknown result type (might be due to invalid IL or missing references)
+		//IL_070e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07c9: Unknown result type (might be due to invalid IL or missing references)
 		if (common.deployable == null && !TargetIsInteractable(target))
 		{
 			return false;
@@ -505,7 +507,7 @@ public class Construction : PrefabAttribute
 				continue;
 			}
 			DeployVolume[] volumes = PrefabAttribute.server.FindAll<DeployVolume>(prefabID);
-			if (DeployVolume.Check(placement.position, placement.rotation, volumes))
+			if (DeployVolume.Check(placement.position, placement.rotation, volumes, item))
 			{
 				transform.position = placement.position;
 				transform.rotation = placement.rotation;

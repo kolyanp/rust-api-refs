@@ -25,13 +25,11 @@ public class ServerBuildingManager : BuildingManager
 		}
 	};
 
-	private int decayTickBuildingIndex;
-
-	private int decayTickEntityIndex;
-
-	private int decayTickWorldIndex;
-
 	private int navmeshCarveTickBuildingIndex;
+
+	private readonly List<DecayTickList> decayTickLists = new List<DecayTickList>();
+
+	private TimeBudget decayBudget;
 
 	private uint maxBuildingID;
 
@@ -175,83 +173,34 @@ public class ServerBuildingManager : BuildingManager
 		}
 		using (TimeWarning.New("BuildingDecayTick"))
 		{
-			int num = 5;
-			BufferList<Building> values = buildingDictionary.Values;
-			for (int i = decayTickBuildingIndex; i < values.Count; i++)
+			decayBudget.Start((double)ConVar.Decay.tick_budget_ms);
+			for (int i = 0; i < decayTickLists.Count; i++)
 			{
-				if (num <= 0)
+				decayTickLists[i].Tick(ref decayBudget);
+			}
+		}
+		if (AI.useUnityNavmesh && AI.nav_carve_use_building_optimization)
+		{
+			using (TimeWarning.New("NavMeshCarving"))
+			{
+				int ticks = 5;
+				BufferList<Building> values = buildingDictionary.Values;
+				for (int j = navmeshCarveTickBuildingIndex; j < values.Count; j++)
 				{
-					break;
-				}
-				BufferList<DecayEntity> values2 = values[i].decayEntities.Values;
-				for (int j = decayTickEntityIndex; j < values2.Count; j++)
-				{
-					if (num <= 0)
+					if (ticks <= 0)
 					{
 						break;
 					}
-					values2[j].DecayTick();
-					num--;
-					if (num <= 0)
-					{
-						decayTickBuildingIndex = i;
-						decayTickEntityIndex = j;
-					}
+					Building building = values[j];
+					UpdateNavMeshCarver(building, ref ticks, j);
 				}
-				if (num > 0)
+				if (ticks > 0)
 				{
-					decayTickEntityIndex = 0;
+					navmeshCarveTickBuildingIndex = 0;
 				}
-			}
-			if (num > 0)
-			{
-				decayTickBuildingIndex = 0;
 			}
 		}
-		using (TimeWarning.New("WorldDecayTick"))
-		{
-			int num2 = 5;
-			BufferList<DecayEntity> values3 = decayEntities.Values;
-			for (int k = decayTickWorldIndex; k < values3.Count; k++)
-			{
-				if (num2 <= 0)
-				{
-					break;
-				}
-				values3[k].DecayTick();
-				num2--;
-				if (num2 <= 0)
-				{
-					decayTickWorldIndex = k;
-				}
-			}
-			if (num2 > 0)
-			{
-				decayTickWorldIndex = 0;
-			}
-		}
-		if (!AI.useUnityNavmesh || !AI.nav_carve_use_building_optimization)
-		{
-			return;
-		}
-		using (TimeWarning.New("NavMeshCarving"))
-		{
-			int ticks = 5;
-			BufferList<Building> values4 = buildingDictionary.Values;
-			for (int l = navmeshCarveTickBuildingIndex; l < values4.Count; l++)
-			{
-				if (ticks <= 0)
-				{
-					break;
-				}
-				Building building = values4[l];
-				UpdateNavMeshCarver(building, ref ticks, l);
-			}
-			if (ticks > 0)
-			{
-				navmeshCarveTickBuildingIndex = 0;
-			}
-		}
+		DrawPrivilegeGridDebug();
 	}
 
 	public void UpdateNavMeshCarver(Building building, ref int ticks, int i)
@@ -384,6 +333,32 @@ public class ServerBuildingManager : BuildingManager
 		{
 			navmeshCarveTickBuildingIndex = i;
 		}
+	}
+
+	public void StartDecayTick(DecayEntity ent)
+	{
+		GetDecayTickList(ent).Add(ent);
+	}
+
+	public void StopDecayTick(DecayEntity ent)
+	{
+		GetDecayTickList(ent).Remove(ent);
+	}
+
+	private DecayTickList GetDecayTickList(DecayEntity ent)
+	{
+		float decayTickOverride = ent.GetDecayTickOverride();
+		foreach (DecayTickList decayTickList2 in decayTickLists)
+		{
+			if (decayTickList2.TickOverride == decayTickOverride)
+			{
+				return decayTickList2;
+			}
+		}
+		DecayTickList decayTickList = new DecayTickList(decayTickOverride);
+		decayTickLists.Add(decayTickList);
+		decayTickLists.Sort((DecayTickList a, DecayTickList b) => a.TickOrder.CompareTo(b.TickOrder));
+		return decayTickList;
 	}
 
 	public uint NewBuildingID()

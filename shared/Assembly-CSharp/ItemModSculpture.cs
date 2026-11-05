@@ -6,13 +6,13 @@ public class ItemModSculpture : ItemModAssociatedEntity<AssociatedSculptureStora
 
 	protected override bool ShouldAutoCreateEntity => false;
 
-	public void OnSculpturePickUp(NetworkableId id, uint crc, Item item)
+	public void OnSculpturePickUp(NetworkableId id, Item item)
 	{
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		AssociatedSculptureStorage associatedSculptureStorage = CreateAssociatedEntity(item);
 		if ((Object)(object)associatedSculptureStorage != (Object)null)
 		{
-			associatedSculptureStorage.InitFromSculpture(crc, id);
+			associatedSculptureStorage.InitFromSculpture(id);
 		}
 	}
 }

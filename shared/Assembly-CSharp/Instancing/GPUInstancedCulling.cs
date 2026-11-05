@@ -148,7 +148,7 @@ public class GPUInstancedCulling
 			shader.SetBuffer(num, Param_InputBuffer, inputBuffer);
 			shader.SetBuffer(num, Param_OutputBuffer, outputBuffer);
 			shader.SetBuffer(num, Param_RenderSlices, renderSlices);
-			shader.SetBuffer<float4>(num, Param_FrustumPlanes, frustumPlanes);
+			ComputeBufferEx.SetBuffer<float4>(shader, num, Param_FrustumPlanes, frustumPlanes);
 			shader.SetVector(Param_CameraPosition, Vector4.op_Implicit(cameraPosition));
 			shader.SetFloat(Param_MaxDistance, maxDistance);
 			shader.SetFloat(Param_DistanceScale, distanceScale);

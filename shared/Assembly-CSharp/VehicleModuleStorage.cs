@@ -185,6 +185,15 @@ public class VehicleModuleStorage : VehicleModuleSeating
 			IItemContainerEntity container = GetContainer();
 			if (!ObjectEx.IsUnityNull(container))
 			{
+				for (int num = container.inventory.itemList.Count - 1; num >= 0; num--)
+				{
+					Item item = container.inventory.itemList[num];
+					if (item.HasFlag(Item.Flag.IsLocked))
+					{
+						item.RemoveFromContainer();
+						item.Remove();
+					}
+				}
 				container.DropItems();
 			}
 		}

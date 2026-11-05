@@ -14,7 +14,7 @@ public class RustPlatformHooks : IPlatformHooks
 
 	public uint SteamAppId => Rust.Defines.appID;
 
-	public ServerParameters? ServerParameters
+	public Nullable ServerParameters
 	{
 		get
 		{
@@ -32,7 +32,7 @@ public class RustPlatformHooks : IPlatformHooks
 			{
 				iPAddress = IPAddress.Parse(ConVar.Server.ip);
 			}
-			return new ServerParameters("rust", "Rust", 2635.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ResolveQueryPort());
+			return new ServerParameters("rust", "Rust", 2636.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ResolveQueryPort());
 		}
 	}
 
@@ -45,6 +45,7 @@ public class RustPlatformHooks : IPlatformHooks
 	{
 		SteamInventory.InvalidateWorkshopSkinCaches();
 		ItemManager.InvalidateWorkshopSkinCache();
+		SteamItemDefinitionWarmup.StartWarmup();
 	}
 
 	private static int ResolveQueryPort()

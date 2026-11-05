@@ -86,22 +86,31 @@ public class WeaponRackSlot
 
 	public void SetAmmoDetails(Item item)
 	{
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
 		ClearAmmoDetails();
 		BaseEntity heldEntity = item.GetHeldEntity();
-		if (!((Object)(object)heldEntity == (Object)null))
+		if ((Object)(object)heldEntity == (Object)null)
 		{
-			BaseProjectile component = ((Component)heldEntity).GetComponent<BaseProjectile>();
-			if (!((Object)(object)component == (Object)null))
-			{
-				AmmoItemDef = component.primaryMagazine.ammoType;
-				AmmoItemID = (((Object)(object)AmmoItemDef != (Object)null) ? AmmoItemDef.itemid : 0);
-				AmmoCount = component.primaryMagazine.contents;
-				AmmoMax = component.primaryMagazine.capacity;
-				AmmoTypes = component.primaryMagazine.definition.ammoTypes;
-				ReloadTime = component.GetReloadDuration();
-			}
+			return;
+		}
+		if (heldEntity is FlameThrower flameThrower)
+		{
+			AmmoItemDef = flameThrower.fuelType;
+			AmmoItemID = (((Object)(object)AmmoItemDef != (Object)null) ? AmmoItemDef.itemid : 0);
+			AmmoCount = flameThrower.ammo;
+			AmmoMax = flameThrower.maxAmmo;
+			return;
+		}
+		BaseProjectile component = ((Component)heldEntity).GetComponent<BaseProjectile>();
+		if (!((Object)(object)component == (Object)null))
+		{
+			AmmoItemDef = component.primaryMagazine.ammoType;
+			AmmoItemID = (((Object)(object)AmmoItemDef != (Object)null) ? AmmoItemDef.itemid : 0);
+			AmmoCount = component.primaryMagazine.contents;
+			AmmoMax = component.primaryMagazine.capacity;
+			AmmoTypes = component.primaryMagazine.definition.ammoTypes;
+			ReloadTime = component.GetReloadDuration();
 		}
 	}
 

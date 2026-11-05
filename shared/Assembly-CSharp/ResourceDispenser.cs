@@ -220,7 +220,8 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		{
 			int num = Mathf.CeilToInt((float)(int)finishBonu.amount * Mathf.Clamp01(fraction));
 			int num2 = CalculateGatherBonus(player, finishBonu, num);
-			Item item = ItemManager.Create(finishBonu.itemDef, ScaleGatherAmount(num + num2), 0uL, isServerSide: true, 0uL);
+			int iAmount = BaseGameMode.ScaleGatherAmount(num + num2);
+			Item item = ItemManager.Create(finishBonu.itemDef, iAmount, 0uL, isServerSide: true, 0uL);
 			if (item != null)
 			{
 				object obj = Interface.CallHook("OnDispenserBonus", this, player, item);
@@ -352,7 +353,7 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 			return;
 		}
 		int num6 = CalculateGatherBonus(entity, itemAmt, num3);
-		int iAmount = ScaleGatherAmount(Mathf.FloorToInt(num3) + num6);
+		int iAmount = BaseGameMode.ScaleGatherAmount(Mathf.FloorToInt(num3) + num6);
 		Item item = ItemManager.CreateByItemID(itemAmt.itemid, iAmount, 0uL, 0uL);
 		if (Interface.CallHook("OnDispenserGather", this, entity, item) == null && item != null)
 		{
@@ -367,20 +368,6 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 			}
 			entity.GiveItem(item, BaseEntity.GiveItemReason.ResourceHarvested, GiveItemOptions.BackpackOverflow);
 		}
-	}
-
-	private static int ScaleGatherAmount(int amount)
-	{
-		if (amount <= 0)
-		{
-			return amount;
-		}
-		float num = 1f;
-		if (BaseGameMode.GetActiveGameMode(serverside: true) is GameModeSoftcore)
-		{
-			num = Mathf.Max(0f, GameModeSoftcore.gather_rate);
-		}
-		return Mathf.Max(1, Mathf.RoundToInt((float)amount * num));
 	}
 
 	private void ApplyItemOwnership(BasePlayer player, Item item)

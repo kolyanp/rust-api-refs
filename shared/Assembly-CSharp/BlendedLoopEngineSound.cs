@@ -34,22 +34,4 @@ public class BlendedLoopEngineSound : MonoBehaviour, IClientComponent
 	{
 		return engineLoops;
 	}
-
-	public float GetLoopGain(int idx)
-	{
-		if (engineLoops != null && engineLoops[idx] != null && engineLoops[idx].gainMod != null)
-		{
-			return engineLoops[idx].gainMod.value;
-		}
-		return 0f;
-	}
-
-	public float GetLoopPitch(int idx)
-	{
-		if (engineLoops != null && engineLoops[idx] != null && engineLoops[idx].pitchMod != null)
-		{
-			return engineLoops[idx].pitchMod.value;
-		}
-		return 0f;
-	}
 }

@@ -19,7 +19,7 @@ public class MonoProfilerConfig
 
 	public bool Enabled = false;
 
-	public bool TrackCalls = false;
+	public bool TrackCalls = true;
 
 	public bool SourceViewer = false;
 
@@ -34,6 +34,12 @@ public class MonoProfilerConfig
 	public List<string> Harmony = new List<string>();
 
 	public const string Star = "*";
+
+	[JsonIgnore]
+	public HashSet<string> TemporaryPlugins = new HashSet<string>();
+
+	[JsonIgnore]
+	public HashSet<string> TemporaryHarmonyMods = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 	public static MonoProfilerConfig Instance { get; set; }
 
@@ -103,10 +109,10 @@ public class MonoProfilerConfig
 		bool result = profile switch
 		{
 			ProfileTypes.Assembly => Assemblies.Contains("*") || Assemblies.Contains(value), 
-			ProfileTypes.Plugin => Plugins.Contains("*") || Plugins.Contains(value), 
+			ProfileTypes.Plugin => Plugins.Contains("*") || Plugins.Contains(value) || TemporaryPlugins.Contains(value), 
 			ProfileTypes.Module => Modules.Contains("*") || Modules.Contains(value), 
 			ProfileTypes.Extension => Extensions.Contains("*") || Extensions.Contains(value), 
-			ProfileTypes.Harmony => Harmony.Contains("*") || Harmony.Contains(value), 
+			ProfileTypes.Harmony => Harmony.Contains("*") || Harmony.Contains(value) || TemporaryHarmonyMods.Contains(value), 
 			_ => throw new ArgumentOutOfRangeException("profile", profile, null), 
 		};
 		if (1 == 0)
@@ -117,13 +123,21 @@ public class MonoProfilerConfig
 
 	public static void Load(string filePath)
 	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Expected Obj, but got Unknown
 		if (File.Exists(filePath))
 		{
-			Instance = JsonConvert.DeserializeObject<MonoProfilerConfig>(File.ReadAllText(filePath));
-			return;
+			Instance = JsonConvert.DeserializeObject<MonoProfilerConfig>(File.ReadAllText(filePath), new JsonSerializerSettings
+			{
+				ObjectCreationHandling = (ObjectCreationHandling)2
+			});
 		}
-		Instance = new MonoProfilerConfig();
-		File.WriteAllText(filePath, JsonConvert.SerializeObject((object)Instance, (Formatting)1));
+		else
+		{
+			Instance = new MonoProfilerConfig();
+			File.WriteAllText(filePath, JsonConvert.SerializeObject((object)Instance, (Formatting)1));
+		}
 	}
 
 	public static void Save(string filePath)

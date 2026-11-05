@@ -17,7 +17,7 @@ namespace Startup;
 [SuppressUnmanagedCodeSecurity]
 public sealed class Entrypoint
 {
-	private static readonly string[] PreloadPostUpdate = new string[9]
+	private static readonly string[] PreloadPostUpdate = new string[12]
 	{
 		Path.Combine(Defines.GetLibFolder(), "0Harmony.dll"),
 		Path.Combine(Defines.GetLibFolder(), "Ben.Demystifier.dll"),
@@ -27,16 +27,16 @@ public sealed class Entrypoint
 		Path.GetFullPath(Path.Combine(Defines.GetLibFolder(), "protobuf-net.dll")),
 		Path.GetFullPath(Path.Combine(Defines.GetLibFolder(), "protobuf-net.Core.dll")),
 		Path.GetFullPath(Path.Combine(Defines.GetLibFolder(), "System.Collections.Immutable.dll")),
+		Path.GetFullPath(Path.Combine(Defines.GetLibFolder(), "System.Reflection.Metadata.dll")),
+		Path.GetFullPath(Path.Combine(Defines.GetLibFolder(), "Microsoft.CodeAnalysis.dll")),
+		Path.GetFullPath(Path.Combine(Defines.GetLibFolder(), "Microsoft.CodeAnalysis.CSharp.dll")),
 		Path.GetFullPath(Path.Combine(Defines.GetLibFolder(), "System.Diagnostics.DiagnosticSource.dll"))
 	};
 
-	private static readonly string[] Delete = new string[15]
+	private static readonly string[] Delete = new string[12]
 	{
 		Path.Combine(Defines.GetRustManagedFolder(), "x64"),
 		Path.Combine(Defines.GetRustManagedFolder(), "x86"),
-		Path.Combine(Defines.GetRustManagedFolder(), "Microsoft.CodeAnalysis.CSharp.dll"),
-		Path.Combine(Defines.GetRustManagedFolder(), "Microsoft.CodeAnalysis.dll"),
-		Path.Combine(Defines.GetRustManagedFolder(), "System.Collections.Immutable.dll"),
 		Path.Combine(Defines.GetRustManagedFolder(), "Oxide.Common.dll"),
 		Path.Combine(Defines.GetRustManagedFolder(), "Oxide.Core.dll"),
 		Path.Combine(Defines.GetRustManagedFolder(), "Oxide.CSharp.dll"),

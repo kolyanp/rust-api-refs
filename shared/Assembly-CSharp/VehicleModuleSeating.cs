@@ -71,8 +71,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[SerializeField]
 	private Seating seating;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 steerAngle;
 
 	[HideInInspector]
@@ -127,8 +127,6 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	protected bool IsOnAVehicleLockUser => VehicleLockUser != null;
 
 	public bool DoorsAreLockable => seating.doorsAreLockable;
-
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -333,8 +331,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_DestroyLock(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

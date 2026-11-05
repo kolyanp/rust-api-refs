@@ -506,6 +506,18 @@ public class NetRead : Stream, IPooled
 		return stream.SuspendFieldOperationLimit(suspend);
 	}
 
+	public NonFiniteValueValidationScope SuspendProtoNonFiniteValueValidation()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		return SuspendProtoNonFiniteValueValidation(suspend: true);
+	}
+
+	public NonFiniteValueValidationScope SuspendProtoNonFiniteValueValidation(bool suspend)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		return stream.SuspendNonFiniteValueValidation(suspend);
+	}
+
 	public override int Read(byte[] buffer, int offset, int count)
 	{
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)

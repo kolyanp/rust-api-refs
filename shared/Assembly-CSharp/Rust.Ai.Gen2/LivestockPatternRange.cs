@@ -15,8 +15,6 @@ public class LivestockPatternRange : LivestockGeneRange
 
 		public float Hardiness;
 
-		public float Longevity;
-
 		public float Inbred;
 	}
 
@@ -49,14 +47,15 @@ public class LivestockPatternRange : LivestockGeneRange
 	[Tooltip("Hair length at Hardiness Bad (x) and Good (y), in UV units.")]
 	public Vector2 HairLength = new Vector2(0f, 0.002f);
 
-	[Tooltip("Blotch size at Longevity Bad (x) and Good (y), relative to the texture. 1 is one repeat over the UV range.")]
-	public Vector2 BlotchSize = new Vector2(0.7f, 1.6f);
+	[Tooltip("Blotch size relative to the texture, the same on every animal. 1 is one repeat over the UV range.")]
+	[Min(0.01f)]
+	public float BlotchSize = 1.15f;
 
 	[Tooltip("Bias strength at Inbred 0 (x) and Inbred 1 (y), the only two a shipped animal lands on. 1 holds the patches to the bias map and 0 ignores the map.")]
 	public Vector2 BiasStrength = new Vector2(1f, 0f);
 
-	[Tooltip("Size of the warp features relative to the texture. Smaller crinkles the edges, larger bends whole blobs.")]
 	[Min(0.01f)]
+	[Tooltip("Size of the warp features relative to the texture. Smaller crinkles the edges, larger bends whole blobs.")]
 	public float EdgeWarpSize = 0.33f;
 
 	private const int WarpSeedMix = 1540483477;
@@ -91,13 +90,13 @@ public class LivestockPatternRange : LivestockGeneRange
 
 	public Values Evaluate(Traits traits, int seed)
 	{
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		float tiling = 1f / Mathf.Max(0.01f, Mathf.Lerp(BlotchSize.x, BlotchSize.y, traits.Longevity));
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		float tiling = 1f / Mathf.Max(0.01f, BlotchSize);
 		float tiling2 = 1f / Mathf.Max(0.01f, EdgeWarpSize);
 		return new Values
 		{
@@ -119,7 +118,6 @@ public class LivestockPatternRange : LivestockGeneRange
 			Dung = LivestockGeneRange.TraitFor(genome, LivestockGene.Dung),
 			Fertility = LivestockGeneRange.TraitFor(genome, LivestockGene.Fertility),
 			Hardiness = LivestockGeneRange.TraitFor(genome, LivestockGene.Hardiness),
-			Longevity = LivestockGeneRange.TraitFor(genome, LivestockGene.Longevity),
 			Inbred = LivestockGeneRange.InbredFor(genome)
 		};
 	}
@@ -185,9 +183,7 @@ public class LivestockPatternRange : LivestockGeneRange
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 	}
 }

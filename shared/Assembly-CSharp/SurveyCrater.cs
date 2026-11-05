@@ -5,7 +5,7 @@ using Oxide.Core;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class SurveyCrater : BaseCombatEntity
+public class SurveyCrater : BaseCombatEntity, IFlattenKeepsChildren
 {
 	private ResourceDispenser resourceDispenser;
 

@@ -22,7 +22,7 @@ public class TriggerNotifyEntity : TriggerBase, IPrefabPreProcess
 		}
 	}
 
-	bool IPrefabPreProcess.CanRunDuringBundling => true;
+	bool IPrefabPreProcess.CanPreProcessDuringBundling => true;
 
 	internal override void OnEntityEnter(BaseEntity ent)
 	{

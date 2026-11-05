@@ -62,22 +62,6 @@ public class WorldModelRackMountConfig : PrefabAttribute
 		return PrefabAttribute.server.Find<WorldModelRackMountConfig>(worldModelPrefab.resourceID);
 	}
 
-	public void ApplyTransformDefaults(Transform displayItem)
-	{
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)displayItem == (Object)null))
-		{
-			if (OverrideScale)
-			{
-				displayItem.localScale = Scale;
-			}
-			displayItem.localPosition = VerticalMountLocalOffset;
-			displayItem.localEulerAngles = VerticalMountLocalRotation;
-		}
-	}
-
 	public CustomPosition FindCustomRackPosition(WeaponRack.SpecialRackType rackType)
 	{
 		if (CustomPositions == null)

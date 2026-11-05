@@ -9,6 +9,14 @@ namespace Network;
 
 public abstract class Server : BaseNetwork
 {
+	public static bool BatchPackets = true;
+
+	public static int MaxBatchBytes = 1100;
+
+	private readonly List<Connection> batchedConnections = new List<Connection>();
+
+	private bool isBatching;
+
 	public static ulong MaxPacketsPerSecond = 1500uL;
 
 	public static int MaxConnectionsPerIP = 5;
@@ -88,6 +96,143 @@ public abstract class Server : BaseNetwork
 	protected override int MaxDecryptThreadWaitValue => MaxDecryptThreadWait;
 
 	public virtual string ProtocolId => "none";
+
+	public void StartBatching()
+	{
+		if (IsConnected())
+		{
+			if (BaseNetwork.Multithreading)
+			{
+				EnqueueWrite(PendingWrite.StartBatching);
+			}
+			else
+			{
+				SetBatching(enabled: true);
+			}
+		}
+	}
+
+	public void StopBatching()
+	{
+		if (IsConnected())
+		{
+			if (BaseNetwork.Multithreading)
+			{
+				EnqueueWrite(PendingWrite.StopBatching);
+			}
+			else
+			{
+				SetBatching(enabled: false);
+			}
+		}
+	}
+
+	protected override void SetBatching(bool enabled)
+	{
+		isBatching = enabled;
+		if (!enabled)
+		{
+			SendBatches();
+		}
+	}
+
+	protected abstract int SendWrite(NetWrite write, Connection connection);
+
+	protected bool TryAddToBatch(NetWrite write, Connection connection)
+	{
+		if (write.sendImmediate || !isBatching)
+		{
+			return false;
+		}
+		if (!CanBatch(write))
+		{
+			SendBatchImmediately(ref connection.orderedBatch, connection);
+			return false;
+		}
+		ref NetWrite reference = ref write.method == SendMethod.ReliableUnordered ? ref connection.unorderedBatch : ref connection.orderedBatch;
+		int num = (int)write.Length;
+		if (reference != null && reference.Length + num > MaxBatchBytes)
+		{
+			SendBatchImmediately(ref reference, connection);
+		}
+		if (reference == null)
+		{
+			reference = StartWrite();
+			reference.PacketID(Message.Type.MessageBatch);
+			reference.method = write.method;
+			reference.channel = 0;
+			reference.priority = Priority.Normal;
+			if (!connection.isQueuedForBatchFlush)
+			{
+				connection.isQueuedForBatchFlush = true;
+				batchedConnections.Add(connection);
+			}
+		}
+		reference.VarUInt32((uint)num);
+		reference.Bytes(write.GetBufferSpan());
+		return true;
+	}
+
+	private static bool CanBatch(NetWrite write)
+	{
+		if (!BatchPackets)
+		{
+			return false;
+		}
+		if (write.method == SendMethod.Unreliable || write.channel != 0)
+		{
+			return false;
+		}
+		if (write.Length > MaxBatchBytes)
+		{
+			return false;
+		}
+		int num = write.PeekPacketID() - 140;
+		if (num > 0 && num <= 29)
+		{
+			return Message.EncryptionPerType[num];
+		}
+		return false;
+	}
+
+	private void SendBatches()
+	{
+		for (int num = batchedConnections.Count - 1; num >= 0; num--)
+		{
+			NetWrite netWrite = batchedConnections[num].unorderedBatch ?? batchedConnections[num].orderedBatch;
+			if (netWrite != null)
+			{
+				netWrite.priority = Priority.Immediate;
+				break;
+			}
+		}
+		foreach (Connection batchedConnection in batchedConnections)
+		{
+			SendBatch(ref batchedConnection.orderedBatch, batchedConnection);
+			SendBatch(ref batchedConnection.unorderedBatch, batchedConnection);
+			batchedConnection.isQueuedForBatchFlush = false;
+		}
+		batchedConnections.Clear();
+	}
+
+	private void SendBatchImmediately(ref NetWrite batch, Connection connection)
+	{
+		if (batch != null)
+		{
+			batch.priority = Priority.Immediate;
+			SendBatch(ref batch, connection);
+		}
+	}
+
+	private void SendBatch(ref NetWrite batch, Connection connection)
+	{
+		if (batch != null)
+		{
+			SendWrite(batch, connection);
+			batch.RemoveReference();
+			batch = null;
+		}
+	}
 
 	public void Reset()
 	{

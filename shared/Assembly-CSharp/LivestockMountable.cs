@@ -9,7 +9,9 @@ using UnityEngine.Assertions;
 
 public class LivestockMountable : NPCMountable
 {
-	public LivestockAnimal.LivestockSizeFlags AcceptedSizes = LivestockAnimal.LivestockSizeFlags.Small;
+	private static readonly Phrase NoRoomToLoadPhrase = new Phrase("livestock_no_room_to_load", "Not enough room around the vehicle for the animal to jump on");
+
+	private static readonly Phrase NoRoomToUnloadPhrase = new Phrase("livestock_no_room_to_unload", "Nowhere for the animal to get down here");
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -101,26 +103,27 @@ public class LivestockMountable : NPCMountable
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	private bool Accepts(LivestockAnimal animal)
+	protected override bool CanSeat(BaseNPC2 npc, int index)
 	{
-		if ((Object)(object)animal != (Object)null)
+		if (npc is LivestockAnimal livestockAnimal)
 		{
-			return ((uint)AcceptedSizes & (uint)animal.MountType) != 0;
+			return ((uint)anchors[index].acceptedSizes & (uint)livestockAnimal.MountType) != 0;
 		}
 		return false;
 	}
 
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.CallsPerSecond(1uL)]
+	[BaseEntity.RPC_Server]
 	private void RPC_LoadAnimal(BaseEntity.RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && Livestock.allowMounting)
 		{
 			LivestockAnimal livestockAnimal = FindLedAnimal(msg.player);
-			if ((Object)(object)livestockAnimal != (Object)null && Accepts(livestockAnimal))
+			bool noClearApproach = default;
+			if (((Object)(object)livestockAnimal != (Object)null && !RequestMount(livestockAnimal, out noClearApproach)) & noClearApproach)
 			{
-				RequestMount(livestockAnimal);
+				msg.player.ShowToast(GameTip.Styles.Error, NoRoomToLoadPhrase, false);
 			}
 		}
 	}
@@ -130,9 +133,10 @@ public class LivestockMountable : NPCMountable
 	[BaseEntity.RPC_Server.CallsPerSecond(1uL)]
 	private void RPC_UnloadAnimal(BaseEntity.RPCMessage msg)
 	{
-		if (!((Object)(object)msg.player == (Object)null))
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)msg.player == (Object)null) && (!TryDismountOne(((Component)msg.player).transform.position, out var noDismountPoint) & noDismountPoint))
 		{
-			TryDismountOne();
+			msg.player.ShowToast(GameTip.Styles.Error, NoRoomToUnloadPhrase, false);
 		}
 	}
 
@@ -145,7 +149,7 @@ public class LivestockMountable : NPCMountable
 			BaseEntity.Query.Server.GetBrainsInSphere(((Component)player).transform.position, 12f, (List<LivestockAnimal>)(object)val);
 			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
 			{
-				if (item.CanStopLead(player) && !item.IsMounted)
+				if (item.CanStopLead(player) && !item.IsMounted && HasFreeAnchorFor(item))
 				{
 					return item;
 				}
@@ -156,5 +160,13 @@ public class LivestockMountable : NPCMountable
 		{
 			((IDisposable)val)?.Dispose();
 		}
+	}
+
+	static LivestockMountable()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected Obj, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

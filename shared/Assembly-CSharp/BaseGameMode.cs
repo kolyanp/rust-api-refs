@@ -222,6 +222,8 @@ public class BaseGameMode : BaseEntity
 
 	public ItemRestriction[] Restrictions;
 
+	private Dictionary<ItemDefinition, int> restrictionIndexByItem;
+
 	public LootTypeModifier[] LootDistributionModifiers = new LootTypeModifier[0];
 
 	public CraftingCostMultiplier[] CraftingCostModifiers = new CraftingCostMultiplier[0];
@@ -637,46 +639,49 @@ public class BaseGameMode : BaseEntity
 
 	private void DeleteEntities()
 	{
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)SingletonComponent<ServerMgr>.Instance == (Object)null || !SingletonComponent<ServerMgr>.Instance.runFrameUpdate)
 		{
 			Invoke(DeleteEntities, 5f);
 			return;
 		}
-		foreach (MonumentInfo monument in TerrainMeta.Path.Monuments)
+		if ((Object)(object)TerrainMeta.Path != (Object)null && TerrainMeta.Path.Monuments != null)
 		{
-			if ((monument.IsSafeZone || monument.Type == MonumentType.Town) && !safeZone)
+			foreach (MonumentInfo monument in TerrainMeta.Path.Monuments)
 			{
-				List<BaseEntity> list = new List<BaseEntity>();
-				Vis.Entities(new OBB(((Component)monument).transform, monument.Bounds), list, -1, (QueryTriggerInteraction)2);
-				foreach (BaseEntity item in list)
+				if ((monument.IsSafeZone || monument.Type == MonumentType.Town) && !safeZone)
 				{
-					if (item is HumanNPC || item is NPCAutoTurret || item is Marketplace)
+					List<BaseEntity> list = new List<BaseEntity>();
+					Vis.Entities(new OBB(((Component)monument).transform, monument.Bounds), list, -1, (QueryTriggerInteraction)2);
+					foreach (BaseEntity item in list)
 					{
-						item.Kill();
+						if (item is HumanNPC || item is NPCAutoTurret || item is Marketplace)
+						{
+							item.Kill();
+						}
+						else if (!missionSystem && item is NPCSimpleMissionProvider)
+						{
+							item.Kill();
+						}
 					}
-					else if (!missionSystem && item is NPCSimpleMissionProvider)
+					NPCSpawner[] componentsInChildren = ((Component)monument).GetComponentsInChildren<NPCSpawner>();
+					for (int i = 0; i < componentsInChildren.Length; i++)
 					{
-						item.Kill();
+						componentsInChildren[i].isSpawnerActive = false;
 					}
 				}
-				NPCSpawner[] componentsInChildren = ((Component)monument).GetComponentsInChildren<NPCSpawner>();
-				for (int i = 0; i < componentsInChildren.Length; i++)
+				if (mlrs)
 				{
-					componentsInChildren[i].isSpawnerActive = false;
+					continue;
 				}
-			}
-			if (mlrs)
-			{
-				continue;
-			}
-			IndividualSpawner[] componentsInChildren2 = ((Component)monument).GetComponentsInChildren<IndividualSpawner>();
-			foreach (IndividualSpawner individualSpawner in componentsInChildren2)
-			{
-				if (individualSpawner.entityPrefab.isValid && individualSpawner.entityPrefab.GetEntity() is MLRS)
+				IndividualSpawner[] componentsInChildren2 = ((Component)monument).GetComponentsInChildren<IndividualSpawner>();
+				foreach (IndividualSpawner individualSpawner in componentsInChildren2)
 				{
-					individualSpawner.isSpawnerActive = false;
+					if (individualSpawner.entityPrefab.isValid && individualSpawner.entityPrefab.GetEntity() is MLRS)
+					{
+						individualSpawner.isSpawnerActive = false;
+					}
 				}
 			}
 		}
@@ -903,6 +908,21 @@ public class BaseGameMode : BaseEntity
 	public virtual float CorpseRemovalTime(BaseCorpse corpse)
 	{
 		return ConVar.Server.corpsedespawn;
+	}
+
+	public static int ScaleGatherAmount(int amount)
+	{
+		BaseGameMode activeGameMode = GetActiveGameMode(serverside: true);
+		if (!((Object)(object)activeGameMode != (Object)null))
+		{
+			return amount;
+		}
+		return activeGameMode.ApplyGatherRate(amount);
+	}
+
+	protected virtual int ApplyGatherRate(int amount)
+	{
+		return amount;
 	}
 
 	public virtual bool InWarmup()
@@ -1565,21 +1585,37 @@ public class BaseGameMode : BaseEntity
 
 	public bool IsAllowed(ItemDefinition item, EraRestriction restriction)
 	{
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		ItemRestriction[] restrictions = Restrictions;
-		for (int i = 0; i < restrictions.Length; i++)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		if (!TryGetRestrictionIndex(item, out var index))
 		{
-			ItemRestriction itemRestriction = restrictions[i];
-			if ((Object)(object)itemRestriction.Definition == (Object)(object)item && (int)restriction != 0 && (int)itemRestriction.Restriction != 0 && (itemRestriction.Restriction & restriction) == 0)
-			{
-				return false;
-			}
+			return true;
+		}
+		ItemRestriction itemRestriction = Restrictions[index];
+		if ((int)restriction != 0 && (int)itemRestriction.Restriction != 0 && (itemRestriction.Restriction & restriction) == 0)
+		{
+			return false;
 		}
 		return true;
+	}
+
+	private bool TryGetRestrictionIndex(ItemDefinition item, out int index)
+	{
+		if (restrictionIndexByItem == null)
+		{
+			restrictionIndexByItem = new Dictionary<ItemDefinition, int>(Restrictions.Length);
+			for (int i = 0; i < Restrictions.Length; i++)
+			{
+				if ((Object)(object)Restrictions[i].Definition != (Object)null)
+				{
+					restrictionIndexByItem.TryAdd(Restrictions[i].Definition, i);
+				}
+			}
+		}
+		return restrictionIndexByItem.TryGetValue(item, out index);
 	}
 
 	public bool IsAllowed(TechTreeData techTree)

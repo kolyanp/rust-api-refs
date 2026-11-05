@@ -116,7 +116,7 @@ public static class CUIStatics
 		return cui.CreateMask(element, showMaskGraphic, update: true);
 	}
 
-	public static CuiTooltipComponent UpdateTooltip(this CUI cui, CuiElement element, string text, TooltipType? tooltipType = null, string offset = null, bool useCentre = false, DelayType? delay = null, PositionMode? position = null, string destroyUi = null, bool activeSelf = true)
+	public static CuiTooltipComponent UpdateTooltip(this CUI cui, CuiElement element, string text, Nullable tooltipType = null, string offset = null, bool useCentre = false, Nullable delay = null, Nullable position = null, string destroyUi = null, bool activeSelf = true)
 	{
 		return cui.CreateTooltip(element, text, tooltipType, offset, useCentre, delay, position, update: true);
 	}
@@ -228,7 +228,7 @@ public static class CUIStatics
 
 	public static CUI.Pair<string, CuiElement, CuiElement> Button(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string textColor, string text, int size, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, string command, TextAnchor align, CUI.Handler.FontTypes font, bool @protected, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, bool? interactable = null, bool? blocksRaycast = null)
 	{
-		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
 		if (id == null)
 		{
 			id = cui.AppendId();
@@ -642,7 +642,7 @@ public static class CUIStatics
 		return cuiMaskComponent;
 	}
 
-	public static CuiTooltipComponent Tooltip(this CUI.Handler cui, CuiElement element, string text, TooltipType? tooltipType, string offset, bool useCentre, DelayType? delay, PositionMode? position, bool update = false)
+	public static CuiTooltipComponent Tooltip(this CUI.Handler cui, CuiElement element, string text, Nullable tooltipType, string offset, bool useCentre, Nullable delay, Nullable position, bool update = false)
 	{
 		CuiTooltipComponent cuiTooltipComponent = cui.TakeFromPoolTooltip();
 		cuiTooltipComponent.Text = text;

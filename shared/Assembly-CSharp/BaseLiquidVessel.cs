@@ -10,7 +10,15 @@ public class BaseLiquidVessel : AttackEntity
 	[Header("Liquid Vessel")]
 	public GameObjectRef thrownWaterObject;
 
+	public GameObjectRef thrownWaterObjectRadioactive;
+
 	public GameObjectRef ThrowEffect3P;
+
+	public GameObjectRef ThrowEffect3PRadioactive;
+
+	public GameObjectRef ViewModelSplash;
+
+	public GameObjectRef ViewModelSplashRadioactive;
 
 	public SoundDefinition throwSound3P;
 
@@ -470,8 +478,8 @@ public class BaseLiquidVessel : AttackEntity
 		nextFreeTime = Time.realtimeSinceStartup - 1f;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void DoDrink(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract())
@@ -489,7 +497,6 @@ public class BaseLiquidVessel : AttackEntity
 			if (!((Object)(object)component == (Object)null) && component.CanDoAction(item2, msg.player))
 			{
 				component.DoAction(item2, msg.player);
-				item.contents?.onItemRemovedFromStack?.Invoke(item2, 0, msg.player);
 				break;
 			}
 		}
@@ -499,21 +506,23 @@ public class BaseLiquidVessel : AttackEntity
 	[RPC_Server]
 	private void ThrowContents(RPCMessage msg)
 	{
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer ownerPlayer = GetOwnerPlayer();
 		if (!((Object)(object)ownerPlayer == (Object)null))
 		{
+			Item contents = GetContents();
+			bool num = contents != null && contents.info.baseRadioactivity > 0f;
 			DoThrow(ownerPlayer.eyes.position + ownerPlayer.eyes.BodyForward() * 1f, ownerPlayer.estimatedVelocity + ownerPlayer.eyes.BodyForward() * throwScale);
-			Effect.server.Run(ThrowEffect3P.resourcePath, ((Component)ownerPlayer).transform.position, ownerPlayer.eyes.BodyForward(), ownerPlayer.net.connection);
+			Effect.server.Run((num ? ThrowEffect3PRadioactive : ThrowEffect3P).resourcePath, ((Component)ownerPlayer).transform.position, ownerPlayer.eyes.BodyForward(), ownerPlayer.net.connection);
 		}
 	}
 
@@ -525,10 +534,10 @@ public class BaseLiquidVessel : AttackEntity
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer ownerPlayer = GetOwnerPlayer();
 		if ((Object)(object)ownerPlayer == (Object)null)
 		{
@@ -549,7 +558,8 @@ public class BaseLiquidVessel : AttackEntity
 				num = Mathf.Clamp01(hitInfo.distance - 0.1f);
 			}
 			Vector3 point = ray.GetPoint(num);
-			WaterBall waterBall = GameManager.server.CreateEntity(thrownWaterObject.resourcePath, point, Quaternion.identity) as WaterBall;
+			GameObjectRef gameObjectRef = ((slot.info.baseRadioactivity > 0f) ? thrownWaterObjectRadioactive : thrownWaterObject);
+			WaterBall waterBall = GameManager.server.CreateEntity(gameObjectRef.resourcePath, point, Quaternion.identity) as WaterBall;
 			if (Object.op_Implicit((Object)(object)waterBall))
 			{
 				waterBall.liquidType = slot.info;
@@ -595,10 +605,10 @@ public class BaseLiquidVessel : AttackEntity
 
 	public LiquidContainer GetFacingLiquidContainer()
 	{
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer ownerPlayer = GetOwnerPlayer();
-		if (!Object.op_Implicit((Object)(object)ownerPlayer) || (Object)(object)ownerPlayer.eyes == (Object)null)
+		if (!Object.op_Implicit((Object)(object)ownerPlayer) || ownerPlayer.eyes == null)
 		{
 			return null;
 		}

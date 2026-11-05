@@ -5,6 +5,7 @@ using ConVar;
 using Facepunch;
 using Facepunch.Rust;
 using Network;
+using ProtoBuf;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -34,6 +35,12 @@ public class Sheep : LivestockAnimal
 	private const float WoolGrace = 0.12f;
 
 	private LivestockFleece fleece;
+
+	private static readonly Phrase WildSheepPhrase = new Phrase("livestock.wild.sheep", "Wild sheep");
+
+	private static readonly Phrase WildRamPhrase = new Phrase("livestock.wild.ram", "Wild ram");
+
+	private static readonly Phrase WildLambPhrase = new Phrase("livestock.wild.lamb", "Wild lamb");
 
 	private PersistentTimer shearTimer;
 
@@ -73,7 +80,7 @@ public class Sheep : LivestockAnimal
 
 	public override int ShornFleece => ShornQuadrants;
 
-	private int ShornCount
+	public int ShornCount
 	{
 		get
 		{
@@ -89,9 +96,24 @@ public class Sheep : LivestockAnimal
 		}
 	}
 
+	public float ShearInterval => ShearCooldown / GeneScale(LivestockGene.Yield);
+
 	public override string Categorize()
 	{
 		return "Sheep";
+	}
+
+	protected override Phrase WildLabel()
+	{
+		if (IsInfant())
+		{
+			return WildLambPhrase;
+		}
+		if (!IsMale)
+		{
+			return WildSheepPhrase;
+		}
+		return WildRamPhrase;
 	}
 
 	public bool HasWool(LivestockFleece.Quadrant quadrant)
@@ -101,23 +123,11 @@ public class Sheep : LivestockAnimal
 
 	public bool CanBeSheared(BasePlayer player)
 	{
-		if ((Object)(object)player == (Object)null)
+		if ((Object)(object)player != (Object)null && !IsDead() && !IsInfant())
 		{
-			return false;
+			return ShornQuadrants != 15;
 		}
-		if (IsDead())
-		{
-			return false;
-		}
-		if (IsInfant())
-		{
-			return false;
-		}
-		if (ShornQuadrants == 15)
-		{
-			return false;
-		}
-		return true;
+		return false;
 	}
 
 	public bool IsShearTool(AttackEntity weapon)
@@ -128,11 +138,7 @@ public class Sheep : LivestockAnimal
 			return false;
 		}
 		ResourceDispenser.GatherPropertyEntry gatherInfoFromIndex = baseMelee.GetGatherInfoFromIndex(ResourceDispenser.GatherType.Flesh);
-		if (gatherInfoFromIndex == null)
-		{
-			return false;
-		}
-		if (gatherInfoFromIndex.gatherDamage > 0f)
+		if (gatherInfoFromIndex != null && gatherInfoFromIndex.gatherDamage > 0f)
 		{
 			return gatherInfoFromIndex.destroyFraction <= 0f;
 		}
@@ -141,29 +147,13 @@ public class Sheep : LivestockAnimal
 
 	public bool WouldShear(HitInfo info, out LivestockFleece.Quadrant quadrant)
 	{
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		quadrant = LivestockFleece.Quadrant.FrontLeft;
-		if (info == null)
+		if (info == null || (Object)(object)info.InitiatorPlayer == (Object)null || info.IsProjectile())
 		{
 			return false;
 		}
-		if ((Object)(object)info.InitiatorPlayer == (Object)null)
-		{
-			return false;
-		}
-		if (info.IsProjectile())
-		{
-			return false;
-		}
-		if (!IsShearTool(info.Weapon))
-		{
-			return false;
-		}
-		if (!CanBeSheared(info.InitiatorPlayer))
-		{
-			return false;
-		}
-		if ((Object)(object)Fleece == (Object)null)
+		if (!IsShearTool(info.Weapon) || !CanBeSheared(info.InitiatorPlayer) || (Object)(object)Fleece == (Object)null)
 		{
 			return false;
 		}
@@ -201,12 +191,22 @@ public class Sheep : LivestockAnimal
 	{
 		if (!WouldShear(info, out var quadrant))
 		{
-			base.OnAttacked(info);
+			if (info.damageTypes.Total() <= 0f)
+			{
+				if (!IsDead())
+				{
+					DoHitNotify(info);
+				}
+			}
+			else
+			{
+				base.OnAttacked(info);
+			}
 			return;
 		}
 		if (isServer)
 		{
-			if (!Shear(info.InitiatorPlayer, quadrant))
+			if (!Shear(info.InitiatorPlayer, quadrant, WoolYieldScale(info.Weapon)))
 			{
 				base.OnAttacked(info);
 				return;
@@ -241,17 +241,28 @@ public class Sheep : LivestockAnimal
 		info.DidGather = true;
 	}
 
-	public bool Shear(BasePlayer player, LivestockFleece.Quadrant quadrant)
+	private static float WoolYieldScale(AttackEntity weapon)
 	{
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		if (!CanBeSheared(player))
+		Item item = weapon.GetItem();
+		if (item == null)
 		{
-			return false;
+			return 1f;
 		}
-		if (!HasWool(quadrant))
+		ItemModShearTool component = ((Component)item.info).GetComponent<ItemModShearTool>();
+		if (!((Object)(object)component != (Object)null))
+		{
+			return 1f;
+		}
+		return component.WoolYieldScale;
+	}
+
+	public bool Shear(BasePlayer player, LivestockFleece.Quadrant quadrant, float woolYieldScale = 1f)
+	{
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		if (!CanBeSheared(player) || !HasWool(quadrant))
 		{
 			return false;
 		}
@@ -264,14 +275,31 @@ public class Sheep : LivestockAnimal
 		{
 			Effect.server.Run(ShearWoolEffect.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
 		}
-		GiveShearItems(player);
+		GiveShearItems(player, woolYieldScale);
 		if (!TrustsToHandle(player))
 		{
-			OnGrabbedBy(player);
+			ReactToUntrustedHandling(player);
 		}
 		Analytics.Azure.OnLivestockSheepSheared(player, this);
-		shearTimer.Start(ShearCooldown / GeneScale(LivestockGene.Yield));
+		if (HasOwner)
+		{
+			StartRegrowing();
+		}
+		else
+		{
+			SyncShearReady();
+		}
 		return true;
+	}
+
+	protected override void RefreshProduction()
+	{
+		shearTimer.RunWhile(ProducesYield && ShornQuadrants != 0, ShearInterval);
+	}
+
+	private void StartRegrowing()
+	{
+		shearTimer.Start(ShearInterval);
 	}
 
 	public bool TryShear(BasePlayer player)
@@ -286,14 +314,14 @@ public class Sheep : LivestockAnimal
 		return false;
 	}
 
-	private void GiveShearItems(BasePlayer player)
+	private void GiveShearItems(BasePlayer player, float woolYieldScale)
 	{
 		ItemAmount[] shearItems = ShearItems;
 		foreach (ItemAmount itemAmount in shearItems)
 		{
 			if (itemAmount != null && !((Object)(object)itemAmount.itemDef == (Object)null))
 			{
-				int num = ShornAmount(itemAmount);
+				int num = ShornAmount(itemAmount, woolYieldScale);
 				if (num > 0)
 				{
 					Item item = ItemManager.Create(itemAmount.itemDef, num, 0uL, isServerSide: true, 0uL);
@@ -304,18 +332,18 @@ public class Sheep : LivestockAnimal
 		}
 	}
 
-	public int FleeceAmount(ItemAmount shearItem)
+	public int FleeceAmount(ItemAmount shearItem, float woolYieldScale = 1f)
 	{
 		if (shearItem.amount <= 0f)
 		{
 			return 0;
 		}
-		return Mathf.RoundToInt(shearItem.amount * GeneScale(LivestockGene.Yield));
+		return Mathf.RoundToInt(shearItem.amount * GeneScale(LivestockGene.Yield) * woolYieldScale);
 	}
 
-	public int ShornAmount(ItemAmount shearItem)
+	public int ShornAmount(ItemAmount shearItem, float woolYieldScale = 1f)
 	{
-		int total = FleeceAmount(shearItem);
+		int total = FleeceAmount(shearItem, woolYieldScale);
 		int shornCount = ShornCount;
 		if (shornCount <= 0)
 		{
@@ -355,38 +383,34 @@ public class Sheep : LivestockAnimal
 		}
 	}
 
-	public override bool TryGetYield(out ItemDefinition item, out int amount, out float interval, out float bestOfBreed)
+	public override bool TryGetYield(out ItemDefinition item, out int amount, out float interval)
 	{
 		item = null;
 		amount = 0;
-		interval = ShearCooldown / GeneScale(LivestockGene.Yield);
-		bestOfBreed = 0f;
-		float num = Mathf.Max(0.01f, Livestock.geneYieldGood);
-		int num2 = 0;
+		interval = ShearInterval;
 		ItemAmount[] shearItems = ShearItems;
 		foreach (ItemAmount itemAmount in shearItems)
 		{
 			if (itemAmount != null && !((Object)(object)itemAmount.itemDef == (Object)null))
 			{
-				int num3 = FleeceAmount(itemAmount);
-				if (num3 > amount)
+				int num = FleeceAmount(itemAmount);
+				if (num > amount)
 				{
 					item = itemAmount.itemDef;
-					amount = num3;
-					num2 = Mathf.RoundToInt(itemAmount.amount * num);
+					amount = num;
 				}
 			}
-		}
-		float num4 = ShearCooldown / num;
-		if (interval > 0f && num4 > 0f && num2 > 0)
-		{
-			bestOfBreed = Mathf.Clamp01((float)amount / interval / ((float)num2 / num4));
 		}
 		if ((Object)(object)item != (Object)null)
 		{
 			return interval > 0f;
 		}
 		return false;
+	}
+
+	protected override void FillYieldProgress(LivestockAnimal update)
+	{
+		update.yieldProgress = ((ShornQuadrants == 0) ? 1f : LivestockAnimal.ProgressOf(shearTimer));
 	}
 
 	private void SyncShearReady()
@@ -420,7 +444,7 @@ public class Sheep : LivestockAnimal
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		if (id == 7)
+		if (id == 5)
 		{
 			if (Global.developer > 2)
 			{
@@ -435,7 +459,7 @@ public class Sheep : LivestockAnimal
 
 	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
 	{
-		if (id == 7)
+		if (id == 5)
 		{
 			try
 			{
@@ -460,7 +484,7 @@ public class Sheep : LivestockAnimal
 	{
 		if (propertyName == "ShornQuadrants")
 		{
-			return 7;
+			return 5;
 		}
 		return byte.MaxValue;
 	}
@@ -468,13 +492,13 @@ public class Sheep : LivestockAnimal
 	protected override void WriteAutoSaveSyncVars(NetWrite writer)
 	{
 		base.WriteAutoSaveSyncVars(writer);
-		WriteSyncVar(7, writer);
+		WriteSyncVar(5, writer);
 	}
 
 	protected override void ReadAutoSaveSyncVars(NetRead reader)
 	{
 		base.ReadAutoSaveSyncVars(reader);
-		OnSyncVar(7, reader, fromAutoSave: true);
+		OnSyncVar(5, reader, fromAutoSave: true);
 	}
 
 	protected override bool AutoSaveSyncVars(SaveInfo save)
@@ -533,10 +557,20 @@ public class Sheep : LivestockAnimal
 
 	protected override bool ShouldInvalidateCache(byte id)
 	{
-		if (id == 7)
+		if (id == 5)
 		{
 			return true;
 		}
 		return base.ShouldInvalidateCache(id);
+	}
+
+	static Sheep()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Expected Obj, but got Unknown
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Expected Obj, but got Unknown
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Expected Obj, but got Unknown
 	}
 }

@@ -330,8 +330,8 @@ public class FrankensteinTable : StorageContainer
 		ItemManager.DoRemoves();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RequestWakeFrankenstein(RPCMessage msg)
 	{
 		WakeFrankenstein(msg.player);
@@ -376,7 +376,7 @@ public class FrankensteinTable : StorageContainer
 
 	private void EquipFrankenstein(FrankensteinPet frank)
 	{
-		if (ItemsToUse == null || (Object)(object)frank == (Object)null || (Object)(object)frank.inventory == (Object)null)
+		if (ItemsToUse == null || (Object)(object)frank == (Object)null || frank.inventory == null)
 		{
 			return;
 		}
@@ -386,13 +386,13 @@ public class FrankensteinTable : StorageContainer
 		}
 		if ((Object)(object)WeaponItem != (Object)null)
 		{
-			((MonoBehaviour)this).StartCoroutine(frank.DelayEquipWeapon(WeaponItem, 1.5f));
+			((MonoBehaviour)frank).StartCoroutine(frank.DelayEquipWeapon(WeaponItem, 1.5f));
 		}
 		ItemsToUse.Clear();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RequestSleepFrankenstein(RPCMessage msg)
 	{
 		SleepFrankenstein(msg.player);
@@ -417,7 +417,7 @@ public class FrankensteinTable : StorageContainer
 
 	private void ReturnFrankensteinItems(FrankensteinPet frank)
 	{
-		if (!((Object)(object)frank == (Object)null) && !((Object)(object)frank.inventory == (Object)null) && frank.inventory.containerWear != null)
+		if (!((Object)(object)frank == (Object)null) && frank.inventory != null && frank.inventory.containerWear != null)
 		{
 			for (int i = 0; i < frank.inventory.containerWear.capacity; i++)
 			{

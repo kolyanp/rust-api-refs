@@ -1,7 +1,10 @@
 using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using ConVar;
 using Facepunch;
+using Network;
 using Oxide.Core;
-using ProtoBuf;
 using UnityEngine;
 
 public class ElectricWindmill : IOEntity
@@ -22,7 +25,49 @@ public class ElectricWindmill : IOEntity
 
 	private float cachedHeight;
 
-	public float serverWindSpeed;
+	private float __sync_WindSpeedScale;
+
+	private float __sync_WindAimTime;
+
+	[Sync(Autosave = true)]
+	public float WindSpeedScale
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_WindSpeedScale;
+		}
+		[CompilerGenerated]
+		set
+		{
+			if (!IsSyncVarEqual(__sync_WindSpeedScale, value))
+			{
+				__sync_WindSpeedScale = value;
+				byte nameID = __GetWeaverID("WindSpeedScale");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
+
+	[Sync(Autosave = true)]
+	public float WindAimTime
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_WindAimTime;
+		}
+		[CompilerGenerated]
+		set
+		{
+			if (!IsSyncVarEqual(__sync_WindAimTime, value))
+			{
+				__sync_WindAimTime = value;
+				byte nameID = __GetWeaverID("WindAimTime");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
 
 	public override int MaximalPowerOutput()
 	{
@@ -105,15 +150,15 @@ public class ElectricWindmill : IOEntity
 	{
 		if (Interface.CallHook("OnWindmillUpdate", this) == null)
 		{
-			serverWindSpeed = (AmIVisible() ? GetWindSpeedScale() : 0f);
-			int num = Mathf.FloorToInt((float)maxPowerGeneration * serverWindSpeed);
+			WindSpeedScale = (AmIVisible() ? GetWindSpeedScale() : 0f);
+			WindAimTime = Time.time;
+			int num = Mathf.FloorToInt((float)maxPowerGeneration * WindSpeedScale);
 			bool flag = currentEnergy != num;
 			currentEnergy = num;
 			if (flag)
 			{
 				MarkDirty();
 			}
-			SendNetworkUpdate();
 			Interface.CallHook("OnWindmillUpdated", this);
 		}
 	}
@@ -143,22 +188,157 @@ public class ElectricWindmill : IOEntity
 		return currentEnergy;
 	}
 
-	public override void Save(SaveInfo info)
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
 	{
-		base.Save(info);
-		if (!info.forDisk)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		switch (id)
 		{
-			if (info.msg.ioEntity == null)
+		case 0:
+			if (Global.developer > 2)
 			{
-				info.msg.ioEntity = Pool.Get<IOEntity>();
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: WindSpeedScale for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
 			}
-			info.msg.ioEntity.genericFloat1 = info.cachedTime.Time;
-			info.msg.ioEntity.genericFloat2 = serverWindSpeed;
+			SyncVarNetWrite(writer, __sync_WindSpeedScale);
+			return true;
+		case 1:
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: WindAimTime for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_WindAimTime);
+			return true;
+		default:
+			return base.WriteSyncVar(id, writer);
 		}
 	}
 
-	public override void Load(LoadInfo info)
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
 	{
-		base.Load(info);
+		switch (id)
+		{
+		case 0:
+			try
+			{
+				_ = __sync_WindSpeedScale;
+				float _sync_WindSpeedScale = reader.Float();
+				__sync_WindSpeedScale = _sync_WindSpeedScale;
+			}
+			catch (Exception ex2)
+			{
+				Debug.LogException(ex2);
+			}
+			return true;
+		case 1:
+			try
+			{
+				_ = __sync_WindAimTime;
+				float _sync_WindAimTime = reader.Float();
+				__sync_WindAimTime = _sync_WindAimTime;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		default:
+			return base.OnSyncVar(id, reader, fromAutoSave);
+		}
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (!(propertyName == "WindSpeedScale"))
+		{
+			if (propertyName == "WindAimTime")
+			{
+				return 1;
+			}
+			return byte.MaxValue;
+		}
+		return 0;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+		WriteSyncVar(1, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+		OnSyncVar(1, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
+		{
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
+		}
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_WindSpeedScale = 0f;
+		__sync_WindAimTime = 0f;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		return id switch
+		{
+			0 => true, 
+			1 => true, 
+			_ => base.ShouldInvalidateCache(id), 
+		};
 	}
 }

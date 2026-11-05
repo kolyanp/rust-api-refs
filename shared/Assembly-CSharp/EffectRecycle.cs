@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class EffectRecycle : BaseMonoBehaviour, IClientComponent, IRagdollInhert, IEffectRecycle
+public class EffectRecycle : BaseMonoBehaviour, IClientComponent, IRagdollInhert, IEffectRecycle, IFlattenKeepsDescendants
 {
 	public enum PlayMode
 	{
@@ -21,6 +21,12 @@ public class EffectRecycle : BaseMonoBehaviour, IClientComponent, IRagdollInhert
 
 	[FormerlySerializedAs("lifeTime")]
 	public float recycleTime;
+
+	[Tooltip("Will replay this effect in place instead of popping and retiring a pooled copy every time")]
+	public bool replayInPlace;
+
+	[Tooltip("Recycle this effect before the tail sound finishes, they'll keep playing on their own after this effect is recycled")]
+	public bool recycleBeforeSoundsFinish;
 
 	public PlayMode playMode;
 

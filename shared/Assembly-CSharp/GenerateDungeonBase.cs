@@ -136,7 +136,7 @@ public class GenerateDungeonBase : ProceduralComponent
 						List<DungeonSegment> list2 = new List<DungeonSegment>();
 						list2.Add(segmentStart);
 						PlaceSegments(ref seed2, int.MaxValue, 3, 2, attachToFemale: true, attachToMale: false, list2, array2);
-						int num2 = list2.Count((DungeonSegment x) => x.link.MaxCountLocal != -1);
+						int num2 = Enumerable.Count(list2, (DungeonSegment x) => x.link.MaxCountLocal != -1);
 						if (num2 > num || (num2 == num && list2.Count > list.Count))
 						{
 							list = list2;

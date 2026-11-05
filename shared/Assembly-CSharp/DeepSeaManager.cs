@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Rust;
 using Network;
@@ -1014,7 +1015,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	private void StartServerTick()
 	{
-		if (!HasFlag(Flags.Reserved2))
+		if (!HasFlag(Flags.Reserved2) && !RepairableLighthouse.IsAnyRepaired())
 		{
 			if (DeepSea.openOnServerWipe || Application.isEditor)
 			{
@@ -1033,7 +1034,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public void ServerTick()
 	{
-		if (!IsOpen() && !IsBusy())
+		if (!IsOpen() && !IsBusy() && !IsWaitingForLighthouse())
 		{
 			if (TimeToNextOpening <= 0f)
 			{
@@ -1079,6 +1080,27 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		{
 			ComponentExtensions.SetActive<TriggerRadiation>(wipeRadiationVolume, false);
 			wipeRadiationVolume.RadiationAmountOverride = 0f;
+		}
+	}
+
+	public bool IsWaitingForLighthouse()
+	{
+		if (HasFlag(Flags.Reserved2) || DeepSea.openOnServerWipe)
+		{
+			return false;
+		}
+		if (RepairableLighthouse.server_RepairableLighthouses.Count > 0)
+		{
+			return !RepairableLighthouse.IsAnyRepaired();
+		}
+		return false;
+	}
+
+	public void OnLighthouseRepaired()
+	{
+		if (!HasFlag(Flags.Reserved2))
+		{
+			SetTimeToNextOpening(DeepSea.lighthouseOpenDelay);
 		}
 	}
 
@@ -1280,6 +1302,10 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			player.SetPlayerFlag(BasePlayer.PlayerFlags.ReceivingSnapshot, b: true);
 			player.ClientRPC(RpcTarget.Player("StartLoading", player));
 			PointEntity<DeepSeaManager>.ServerInstance.ClientRPC(RpcTarget.Player("CLIENT_PlayerEnterOrLeaveDeepSea", player), isEnterDeepSea);
+			if (isEnterDeepSea)
+			{
+				TreeManager.SendDeepSeaTrees(player);
+			}
 			if (!player.isMounted)
 			{
 				player.StartSleeping();
@@ -1457,6 +1483,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		GeneratePortalDirections();
 		((MonoBehaviour)this).StopAllCoroutines();
 		((MonoBehaviour)this).StartCoroutine(OpenDeepSeaAsync());
+		RepairableLighthouse.RepairAll();
 		SetFlagLocal(Flags.Reserved2, b: true);
 	}
 
@@ -1484,6 +1511,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		ResetWipeSteps();
 		DoOpenNotification();
 		PlanterBoxStatic.OnDeepSeaSpawned();
+		SeagullGroup.OnDeepSeaSpawned();
 		Facepunch.Rust.Analytics.Azure.OnDeepSeaToggled(toggle: true);
 		Log("Done!");
 		Interface.CallHook("OnDeepSeaOpened", this);
@@ -1615,6 +1643,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		Pool.FreeUnmanaged<BaseEntity>(ref entities);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void GetAllDeepSeaEntities(HashSet<BaseEntity> entities, bool skipParented = true)
 	{
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)

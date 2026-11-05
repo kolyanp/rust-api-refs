@@ -1,5 +1,7 @@
+using Development.Attributes;
 using UnityEngine;
 
-public class CullWhenInside : MonoBehaviour, IClientComponent
+[ResetStaticFields]
+public class CullWhenInside : MonoBehaviour, IClientComponent, IFlattenKeepsDescendants
 {
 }

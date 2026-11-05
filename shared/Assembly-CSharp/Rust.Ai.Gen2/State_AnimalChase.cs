@@ -18,16 +18,16 @@ public class State_AnimalChase : State_MoveToTarget
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		if (!Agent.hasPath && Senses.FindTargetPosition(out var targetPosition))
 		{
 			Vector3 val = Vector3Ex.NormalizeXZ(targetPosition - ((Component)Owner).transform.position);
 			if (val.sqrMagnitude > 0.001f)
 			{
-				((Component)Owner).transform.rotation = Quaternion.RotateTowards(((Component)Owner).transform.rotation, Quaternion.LookRotation(val), Agent.angularSpeed * deltaTime);
+				Agent.Face(Quaternion.RotateTowards(((Component)Owner).transform.rotation, Quaternion.LookRotation(val), Agent.angularSpeed * deltaTime));
 			}
 		}
 		return base.OnStateUpdate(deltaTime);

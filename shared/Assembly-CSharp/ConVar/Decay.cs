@@ -41,6 +41,9 @@ public class Decay : ConsoleSystem
 	[ServerVar(Help = "(Generated) Interval in seconds between decay processing ticks; default is 10 minutes; lower values cause buildings to lose health more frequently")]
 	public static float tick = 600f;
 
+	[ServerVar(Help = "Max milliseconds per frame spent on decay ticks. 0 pauses decay")]
+	public static float tick_budget_ms = 0.25f;
+
 	[ServerVar(Help = "(Generated) Multiplier applied to all decay damage per tick; 1.0 = normal, 2.0 = double decay rate, 0.0 = no decay")]
 	public static float scale = 1f;
 

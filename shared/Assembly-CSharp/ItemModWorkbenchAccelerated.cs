@@ -3,8 +3,8 @@ using UnityEngine;
 public class ItemModWorkbenchAccelerated : ItemModWorkbenchUpgrade
 {
 	[Header("Accelerated Crafting")]
-	[Range(0f, 1f)]
 	[Tooltip("Speed bonus multiplier gained per item already crafted in this batch (e.g. 0.25 = 25% faster per item).")]
+	[Range(0f, 1f)]
 	public float speedBonusPerItem = 0.25f;
 
 	[Tooltip("Maximum speed multiplier this upgrade can reach (e.g. 0.25 = 4x faster at cap).")]

@@ -39,7 +39,7 @@ public static class Analytics
 			"User-Agent",
 			$"Oxide/{OxideMod.Version} ({Environment.OSVersion}; {Environment.OSVersion.Platform})"
 		} };
-		Webrequests.Enqueue("https://www.google-analytics.com/collect", Uri.EscapeUriString(payload), delegate
+		Webrequests.Enqueue("https://www.google-analytics.com/collect", Uri.EscapeUriString(payload), (int code, string response) =>
 		{
 		}, null, RequestMethod.POST, headers);
 	}

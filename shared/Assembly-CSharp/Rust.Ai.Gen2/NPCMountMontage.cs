@@ -30,7 +30,7 @@ internal static class NPCMountMontage
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
 		GetTravelWindow(data, window, playbackSpeed, out var start, out var end, out var lastSampled);
 		Vector3 val = new Vector3(Travel(data.xMotionCurve, start, end), Travel(data.yMotionCurve, start, end), Travel(data.zMotionCurve, start, end));
 		Vector3 val2 = new Vector3(Unwarped(data.xMotionCurve, start, end, lastSampled), Unwarped(data.yMotionCurve, start, end, lastSampled), Unwarped(data.zMotionCurve, start, end, lastSampled));
@@ -38,8 +38,39 @@ internal static class NPCMountMontage
 		Vector3 translationScale = new Vector3(Scale(val3.x, val.x), Scale(val3.y, val.y), Scale(val3.z, val.z));
 		float num = Mathf.DeltaAngle(initialRotation.eulerAngles.y, toRotation.eulerAngles.y) - Unwarped(data.yRotationCurve, start, end, lastSampled);
 		float num2 = Travel(data.yRotationCurve, start, end);
+		if (Mathf.Abs(num2) >= 1f && num * num2 < 0f && Mathf.Abs(num) > 90f)
+		{
+			num += 360f * Mathf.Sign(num2);
+		}
 		float rotationScale = ((Mathf.Abs(num2) < 1f) ? 1f : (num / num2));
 		return new RootMotionPlayer.Warp(start, end, translationScale, rotationScale);
+	}
+
+	public static bool HasYaw(RootMotionData data)
+	{
+		return Mathf.Abs(Travel(data.yRotationCurve, 0f, data.inPlaceAnimation.length)) >= 1f;
+	}
+
+	public static Quaternion FacingToTravel(RootMotionData data, Vector3 direction)
+	{
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		float length = data.inPlaceAnimation.length;
+		Vector3 val = new Vector3(Travel(data.xMotionCurve, 0f, length), 0f, Travel(data.zMotionCurve, 0f, length));
+		Quaternion val2 = Quaternion.LookRotation(direction);
+		if (val.sqrMagnitude < 0.0001f)
+		{
+			return val2;
+		}
+		return val2 * Quaternion.Inverse(Quaternion.LookRotation(val));
 	}
 
 	private static void GetTravelWindow(RootMotionData data, MountMontageWindow window, float playbackSpeed, out float start, out float end, out float lastSampled)

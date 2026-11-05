@@ -141,6 +141,8 @@ public static class ConstructionErrors
 
 	public static readonly Phrase CantDemolishAnymore = new Phrase("grade_demolishblocked", "Can't demolish this block anymore");
 
+	public static readonly Phrase NeedBuildingPrivilege = new Phrase("error_needbuildingprivilege", "You need building privilege");
+
 	public static string GetTranslatedNameFromEntity(BaseEntity entity, BasePlayer fromPlayer = null)
 	{
 		if (entity is ModularCar || entity is BaseVehicleModule)
@@ -411,5 +413,7 @@ public static class ConstructionErrors
 		//IL_053c: Expected Obj, but got Unknown
 		//IL_0546: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0550: Expected Obj, but got Unknown
+		//IL_055a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0564: Expected Obj, but got Unknown
 	}
 }

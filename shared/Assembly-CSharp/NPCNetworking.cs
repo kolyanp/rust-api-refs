@@ -1,5 +1,8 @@
+using System;
 using System.Runtime.CompilerServices;
+using ConVar;
 using Facepunch;
+using Network;
 using ProtoBuf;
 using Rust.Ai.Gen2;
 using UnityEngine;
@@ -18,9 +21,13 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 
 	public const BaseEntity.Flags FLAG_IS_ALERT = BaseEntity.Flags.Reserved6;
 
+	public bool networkLookDirection = true;
+
 	private SenseComponent _senses;
 
 	private RustNavMeshAgent _agent;
+
+	private Action _sendLookDirection;
 
 	public Vector3 LookDirection
 	{
@@ -45,6 +52,16 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 
 	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)baseEntity).GetComponent<RustNavMeshAgent>());
 
+	private Action SendLookDirectionAction => SendLookDirection;
+
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	{
+		using (TimeWarning.New("NPCNetworking.OnRpcMessage"))
+		{
+		}
+		return base.OnRpcMessage(player, rpc, msg);
+	}
+
 	public override void InitShared()
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
@@ -63,8 +80,8 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 lookDirection = LookDirection;
 		float desiredSwimDepth = DesiredSwimDepth;
 		bool flag = baseEntity.HasFlag(BaseEntity.Flags.Reserved6);
@@ -72,11 +89,25 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 		LookDirection = eyeTransform.rotation * Vector3.forward;
 		DesiredSwimDepth = Agent.desiredSwimDepth.Value;
 		bool flag2 = Senses.FindTarget(out var _);
-		if (baseEntity.net != null && baseEntity.net.group != null && baseEntity.net.group.subscribers != null && baseEntity.net.group.subscribers.Count > 0 && (lookDirection != LookDirection || desiredSwimDepth != DesiredSwimDepth || flag != flag2))
+		if (baseEntity.net != null && baseEntity.net.group != null && baseEntity.net.group.subscribers != null && baseEntity.net.group.subscribers.Count > 0)
 		{
-			baseEntity.SetFlagLocal(BaseEntity.Flags.Reserved6, flag2);
-			baseEntity.SendNetworkUpdate();
+			if (desiredSwimDepth != DesiredSwimDepth || flag != flag2)
+			{
+				baseEntity.SetFlagLocal(BaseEntity.Flags.Reserved6, flag2);
+				baseEntity.SendNetworkUpdate();
+			}
+			else if (networkLookDirection && lookDirection != LookDirection && !baseEntity.IsInvoking(SendLookDirectionAction))
+			{
+				baseEntity.Invoke(SendLookDirectionAction, Player.serverTickInterval);
+			}
 		}
+	}
+
+	private void SendLookDirection()
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		baseEntity.InvalidateNetworkCache();
+		baseEntity.ClientRPC(RpcTarget.NetworkGroup("CL_ReceiveLookDirection"), LookDirection);
 	}
 
 	public override void SaveComponent(BaseNetworkable.SaveInfo info)

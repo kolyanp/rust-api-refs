@@ -943,7 +943,7 @@ public class ConsoleSystem
 			};
 		}
 
-		public static void Reset()
+		public static void Reset(Predicate<Command> filter = null)
 		{
 			if (All == null)
 			{
@@ -952,7 +952,7 @@ public class ConsoleSystem
 			Command[] all = All;
 			foreach (Command command in all)
 			{
-				if (command.Variable && command.Default != null)
+				if (command.Variable && command.Default != null && (filter == null || filter(command)))
 				{
 					try
 					{

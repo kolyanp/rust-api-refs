@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess
+public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess, IFlattenKeepsChildren
 {
 	[Serializable]
 	public struct ParticleSystemGroup
@@ -16,8 +16,8 @@ public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess
 
 	public bool includeLights;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private ParticleSystemGroup[] particleGroups;
 
 	[SerializeField]
@@ -27,8 +27,6 @@ public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess
 	[HideInInspector]
 	[SerializeField]
 	private LightEx[] lightExs;
-
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
 	[UnityEvent]
 	public void Play()

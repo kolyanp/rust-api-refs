@@ -22,8 +22,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RustText itemSubtitleText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreCheckoutResultButton carrouselButtonPrefab;
 
 	[SerializeField]
@@ -57,9 +57,9 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private UI_StoreTakeover localTakeovers;
 
-	[SerializeField]
-	[Header("Skin Viewer")]
 	[Space]
+	[Header("Skin Viewer")]
+	[SerializeField]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]
@@ -74,8 +74,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	protected HttpImage iconImage;
 
-	[SerializeField]
 	[Header("Intro Sequence")]
+	[SerializeField]
 	private CanvasGroup fadeOverlay;
 
 	[SerializeField]

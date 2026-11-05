@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
+public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess, IFlattenKeepsDescendants
 {
 	public enum VolumeShape
 	{
@@ -47,8 +47,8 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 	[NonSerialized]
 	public Bounds VolumeBounds;
 
-	[field: SerializeField]
 	[field: Tooltip("Controls the falloff amount of the positive axes of spatially aware volumes.")]
+	[field: SerializeField]
 	public Vector3 FalloffPositive
 	{
 		[CompilerGenerated]
@@ -66,8 +66,8 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 		}
 	}
 
-	[field: Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
 	[field: SerializeField]
+	[field: Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
 	public Vector3 FalloffNegative
 	{
 		[CompilerGenerated]
@@ -104,8 +104,6 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 	public Collider trigger { get; private set; }
 
 	public bool IsSpatialVolume => (Type & EnvironmentType.SpatiallyAware) != 0;
-
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
 	private void OnValidate()
 	{

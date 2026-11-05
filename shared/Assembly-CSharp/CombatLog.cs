@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using UnityEngine;
 
@@ -80,6 +81,7 @@ public class CombatLog
 		Log(player, weapon, null, description);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void LogInvalid(HitInfo info, string description)
 	{
 		Log(info.Initiator, info.Weapon, info.HitEntity as BaseCombatEntity, description, info.ProjectilePrefab, info.ProjectileID, -1f, info);
@@ -90,6 +92,7 @@ public class CombatLog
 		Log(info.Initiator, info.Weapon, info.HitEntity as BaseCombatEntity, description, info.ProjectilePrefab, info.ProjectileID, oldHealth, info);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void Log(BaseEntity attacker, AttackEntity weapon, BaseCombatEntity hitEntity, string description, Projectile projectilePrefab = null, int projectileId = -1, float healthOld = -1f, HitInfo hitInfo = null)
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)

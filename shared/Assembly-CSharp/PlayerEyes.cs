@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class PlayerEyes : EntityComponent<BasePlayer>
+public class PlayerEyes(BasePlayer owner) : EntityComponentProxy<BasePlayer>(owner)
 {
 	public static readonly Vector3 EyeOffset = new Vector3(0f, 1.5f, 0f);
 
@@ -47,7 +47,7 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-			return ((Component)this).transform.position + EyeOffset;
+			return transform.position + EyeOffset;
 		}
 	}
 
@@ -96,9 +96,9 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 				{
 					return val;
 				}
-				return GetMountedPos(((Component)this).transform.position, ((Component)this).transform.rotation);
+				return GetMountedPos(transform.position, transform.rotation);
 			}
-			return GetUnmountedPos(((Component)this).transform.position, ((Component)this).transform.rotation);
+			return GetUnmountedPos(transform.position, transform.rotation);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 				}
 			}
 			float num = ((Object.op_Implicit((Object)(object)baseEntity) && baseEntity.modelState != null) ? baseEntity.modelState.ducking : 0f);
-			return ((Component)this).transform.position + ((Component)this).transform.up * Mathf.Lerp(BasePlayer.GetOffset(ducked: false).y, BasePlayer.GetOffset(ducked: true).y, num);
+			return transform.position + transform.up * Mathf.Lerp(BasePlayer.GetOffset(ducked: false).y, BasePlayer.GetOffset(ducked: true).y, num);
 		}
 	}
 
@@ -147,7 +147,7 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			return ((Component)this).transform.up * (EyeOffset.y + viewOffset.Get().y);
+			return transform.up * (EyeOffset.y + viewOffset.Get().y);
 		}
 	}
 
@@ -198,7 +198,7 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 			if (!baseEntity.isMounted)
 			{
-				Transform parent = ((Component)this).transform.parent;
+				Transform parent = transform.parent;
 				if (parent != null)
 				{
 					Quaternion val = parent.rotation;
@@ -314,9 +314,9 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 			{
 				return val;
 			}
-			return position + ((Component)this).transform.up * (EyeOffset.y + viewOffset.Get().y) + BodyLeanOffset;
+			return position + transform.up * (EyeOffset.y + viewOffset.Get().y) + BodyLeanOffset;
 		}
-		return position + ((Component)this).transform.rotation * (EyeOffset + (Vector3)viewOffset) + BodyLeanOffset;
+		return position + transform.rotation * (EyeOffset + (Vector3)viewOffset) + BodyLeanOffset;
 	}
 
 	public Vector3 MovementForward()
@@ -419,13 +419,6 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		return rotation;
-	}
-
-	public PlayerEyes()
-	{
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 	}
 
 	static PlayerEyes()

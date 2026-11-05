@@ -16,8 +16,8 @@ public class modelviewer : MonoBehaviour, IEditorComponent
 
 	public ModelViewer_SkyParameters Sky;
 
-	[Header("Junk to clean up:")]
 	[Header("                ")]
+	[Header("Junk to clean up:")]
 	[Header("                ")]
 	public GameObject ruleOfThirds;
 

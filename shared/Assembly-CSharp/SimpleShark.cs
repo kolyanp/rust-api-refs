@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using ConVar;
 using Rust;
 using Rust.Ai;
+using Rust.Ai.Gen2;
 using UnityEngine;
 
 public class SimpleShark : BaseCombatEntity
@@ -198,6 +199,44 @@ public class SimpleShark : BaseCombatEntity
 		}
 	}
 
+	public class FleeState : SimpleState
+	{
+		public FleeState(SimpleShark owner)
+			: base(owner)
+		{
+		}
+
+		public override float State_Weight()
+		{
+			if (!entity.IsFleeing())
+			{
+				return 0f;
+			}
+			return 20f;
+		}
+
+		public override void State_Think(float delta)
+		{
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+			BasePlayer threat = entity.threat;
+			if (!((Object)(object)threat == (Object)null))
+			{
+				entity.Startle();
+				Vector3 val = Vector3Ex.Direction(((Component)entity).transform.position, threat.eyes.position);
+				entity.destination = entity.WaterClamp(((Component)entity).transform.position + val * 10f);
+			}
+		}
+	}
+
 	public Vector3 destination;
 
 	public float minSpeed;
@@ -255,6 +294,14 @@ public class SimpleShark : BaseCombatEntity
 	private float nextTargetSearchTime;
 
 	private static BasePlayer[] playerQueryResults = new BasePlayer[64];
+
+	private const float fleeDuration = 8f;
+
+	private BasePlayer threat;
+
+	private float fleeUntilTime;
+
+	private float nextThreatSearchTime;
 
 	private float minFloorDist = 2f;
 
@@ -409,11 +456,12 @@ public class SimpleShark : BaseCombatEntity
 	public void Init()
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		GenerateIdlePoints_Shrinkwrap(((Component)this).transform.position, 20f, 2f, 3f);
-		states = new SimpleState[2];
+		states = new SimpleState[3];
 		states[0] = new IdleState(this);
 		states[1] = new AttackState(this);
+		states[2] = new FleeState(this);
 		((Component)this).transform.position = patrolPath[0];
 	}
 
@@ -458,13 +506,14 @@ public class SimpleShark : BaseCombatEntity
 				_currentState = simpleState;
 			}
 			UpdateTarget(delta);
+			UpdateThreat();
 			_currentState.State_Think(delta);
 			UpdateObstacleAvoidance(delta);
 			UpdateDirection(delta);
 			UpdateSpeed(delta);
 			UpdatePosition(delta);
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-			flagsUpdateScope.Set(Flags.Open, HasTarget() && CanAttack());
+			flagsUpdateScope.Set(Flags.Open, HasTarget() && CanAttack() && !IsFleeing());
 		}
 	}
 
@@ -488,6 +537,24 @@ public class SimpleShark : BaseCombatEntity
 	}
 
 	public bool ValidTarget(BasePlayer newTarget)
+	{
+		if (!Trans_TargetHasRepellent.Carries(newTarget))
+		{
+			return CanReactTo(newTarget);
+		}
+		return false;
+	}
+
+	private bool ValidThreat(BasePlayer player)
+	{
+		if (Trans_TargetHasRepellent.Carries(player))
+		{
+			return CanReactTo(player);
+		}
+		return false;
+	}
+
+	private bool CanReactTo(BasePlayer newTarget)
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
@@ -595,6 +662,46 @@ public class SimpleShark : BaseCombatEntity
 		}
 	}
 
+	public void UpdateThreat()
+	{
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)threat != (Object)null && (Time.realtimeSinceStartup > fleeUntilTime || !Trans_TargetHasRepellent.Carries(threat)))
+		{
+			threat = null;
+		}
+		if (Time.realtimeSinceStartup < nextThreatSearchTime)
+		{
+			return;
+		}
+		nextThreatSearchTime = Time.realtimeSinceStartup + 1f;
+		if (!BaseNetworkable.HasCloseConnections(((Component)this).transform.position, aggroRange))
+		{
+			return;
+		}
+		int playersInSphereFast = Query.Server.GetPlayersInSphereFast(((Component)this).transform.position, aggroRange, playerQueryResults);
+		for (int i = 0; i < playersInSphereFast; i++)
+		{
+			BasePlayer basePlayer = playerQueryResults[i];
+			if (!basePlayer.isClient && ValidThreat(basePlayer))
+			{
+				FleeFrom(basePlayer);
+				break;
+			}
+		}
+	}
+
+	private void FleeFrom(BasePlayer player)
+	{
+		threat = player;
+		fleeUntilTime = Time.realtimeSinceStartup + 8f;
+	}
+
+	public bool IsFleeing()
+	{
+		return (Object)(object)threat != (Object)null;
+	}
+
 	public float TimeSinceAttacked()
 	{
 		return Time.realtimeSinceStartup - lastTimeAttacked;
@@ -607,6 +714,10 @@ public class SimpleShark : BaseCombatEntity
 		if (info.damageTypes.Total() > 20f)
 		{
 			Startle();
+		}
+		if ((Object)(object)info.InitiatorPlayer != (Object)null && Trans_TargetHasRepellent.Carries(info.InitiatorPlayer))
+		{
+			FleeFrom(info.InitiatorPlayer);
 		}
 		if ((Object)(object)info.InitiatorPlayer != (Object)null && (Object)(object)target == (Object)null && ValidTarget(info.InitiatorPlayer))
 		{

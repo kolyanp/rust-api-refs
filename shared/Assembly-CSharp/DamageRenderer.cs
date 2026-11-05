@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DamageRenderer : MonoBehaviour, IClientComponent
+public class DamageRenderer : MonoBehaviour, IClientComponent, IFlattenKeepsChildren
 {
 	[Serializable]
 	private struct DamageShowingRenderer(Renderer renderer, int[] indices)
@@ -18,11 +18,11 @@ public class DamageRenderer : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private float maxDamageOpacity = 0.9f;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private List<DamageShowingRenderer> damageShowingRenderers;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private List<GlassPane> damageShowingGlassRenderers;
 }

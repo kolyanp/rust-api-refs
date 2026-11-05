@@ -135,6 +135,8 @@ public class WaterSystem : MonoBehaviour
 
 	public static HashSet<WaterBody> WaterBodies { get; } = new HashSet<WaterBody>();
 
+	public static ListHashSet<WaterBody> MaterialBlendBodies { get; } = new ListHashSet<WaterBody>();
+
 	public static HashSet<WaterDepthMask> DepthMasks { get; } = new HashSet<WaterDepthMask>();
 
 	public static float WaveTime { get; private set; }
@@ -483,6 +485,10 @@ public class WaterSystem : MonoBehaviour
 			}
 		}
 		WaterBodies.Add(body);
+		if ((Object)(object)body.MaterialBlend != (Object)null)
+		{
+			MaterialBlendBodies.Add(body);
+		}
 	}
 
 	public static void UnregisterBody(WaterBody body)
@@ -492,6 +498,7 @@ public class WaterSystem : MonoBehaviour
 			Ocean = null;
 		}
 		WaterBodies.Remove(body);
+		MaterialBlendBodies.Remove(body);
 	}
 
 	private static void UpdateOceanLevel()

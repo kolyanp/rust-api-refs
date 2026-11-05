@@ -221,7 +221,7 @@ public class ApartmentBuilding : BaseEntity
 				player.inventory.Take(null, ItemManager.Items.Scrap.itemid, upgradeCost);
 			}
 			GiveRoomToPlayer(player, apartmentRoom);
-			TransferContentsBetweenRooms(playerApartment, apartmentRoom);
+			TransferContentsBetweenRooms(player, playerApartment, apartmentRoom);
 			playerApartment.Checkout();
 			NotifyRoomChanged(player.userID);
 			if (player.Connection != null)
@@ -233,21 +233,28 @@ public class ApartmentBuilding : BaseEntity
 		}
 	}
 
-	private void TransferContentsBetweenRooms(ApartmentRoom oldRoom, ApartmentRoom newRoom)
+	private void TransferContentsBetweenRooms(BasePlayer player, ApartmentRoom oldRoom, ApartmentRoom newRoom)
 	{
-		Item[] array = oldRoom.UpkeepTerminal.inventory.itemList.ToArray();
-		for (int i = 0; i < array.Length; i++)
+		TransferSingleContainer(player, oldRoom.UpkeepTerminal?.inventory, newRoom.UpkeepTerminal?.inventory);
+		ApartmentMailbox mailbox = GetMailbox(oldRoom);
+		ApartmentMailbox mailbox2 = GetMailbox(newRoom);
+		if ((Object)(object)mailbox != (Object)null)
 		{
-			array[i].MoveToContainer(newRoom.UpkeepTerminal.inventory);
+			TransferSingleContainer(player, mailbox.inventory, mailbox2?.inventory);
+			TransferSingleContainer(player, mailbox.InputContainer, mailbox2?.InputContainer, mailbox2?.inventory);
 		}
-		IItemContainerEntity[] array2 = oldRoom.Furniture.OfType<IItemContainerEntity>().ToArray();
-		IItemContainerEntity[] array3 = newRoom.Furniture.OfType<IItemContainerEntity>().ToArray();
-		List<IItemContainerEntity> list = array3.ToList();
+		IItemContainerEntity[] array = (from x in oldRoom.Furniture.OfType<IItemContainerEntity>()
+			where !(x is LiquidContainer)
+			select x).ToArray();
+		IItemContainerEntity[] array2 = (from x in newRoom.Furniture.OfType<IItemContainerEntity>()
+			where !(x is LiquidContainer)
+			select x).ToArray();
+		List<IItemContainerEntity> list = array2.ToList();
 		PooledList<Item> val = Pool.Get<PooledList<Item>>();
 		try
 		{
-			IItemContainerEntity[] array4 = array2;
-			foreach (IItemContainerEntity oldFurniture in array4)
+			IItemContainerEntity[] array3 = array;
+			foreach (IItemContainerEntity oldFurniture in array3)
 			{
 				IItemContainerEntity itemContainerEntity = list.FirstOrDefault((IItemContainerEntity x) => x.PrefabName == oldFurniture.PrefabName && x.inventory.capacity == oldFurniture.inventory.capacity);
 				if (itemContainerEntity == null)
@@ -262,32 +269,72 @@ public class ApartmentBuilding : BaseEntity
 				if (oldFurniture.inventory.itemList.Count > 0)
 				{
 					((List<Item>)(object)val).AddRange((IEnumerable<Item>)oldFurniture.inventory.itemList);
-					for (int num = oldFurniture.inventory.itemList.Count - 1; num >= 0; num--)
+					for (int num2 = oldFurniture.inventory.itemList.Count - 1; num2 >= 0; num2--)
 					{
-						oldFurniture.inventory.itemList[num].RemoveFromContainer();
+						oldFurniture.inventory.itemList[num2].RemoveFromContainer();
 					}
 				}
 			}
-			int num2 = 0;
-			array4 = array3;
-			foreach (IItemContainerEntity itemContainerEntity2 in array4)
+			array3 = array2;
+			foreach (IItemContainerEntity itemContainerEntity2 in array3)
 			{
-				if (!itemContainerEntity2.inventory.IsFull())
+				if (itemContainerEntity2.inventory.IsFull(checkForPartialStacks: true))
 				{
-					for (; num2 < ((List<Item>)(object)val).Count && ((List<Item>)(object)val)[num2].MoveToContainer(itemContainerEntity2.inventory); num2++)
+					continue;
+				}
+				for (int num3 = 0; num3 < ((List<Item>)(object)val).Count; num3++)
+				{
+					Item item = ((List<Item>)(object)val)[num3];
+					if (item != null && item.MoveToContainer(itemContainerEntity2.inventory))
 					{
+						((List<Item>)(object)val)[num3] = null;
 					}
 				}
 			}
-			if (num2 < ((List<Item>)(object)val).Count)
+			int num4 = 0;
+			foreach (Item item2 in (List<Item>)(object)val)
 			{
-				Debug.LogError((object)$"There were {((List<Item>)(object)val).Count - num2} items that couldn't be moved from apartment {oldRoom.RoomNumber} -> {newRoom.RoomNumber}! This shouldn't happen because each larger apartment should have enough storage");
+				if (item2 != null)
+				{
+					num4++;
+					player.GiveItem(item2);
+				}
+			}
+			if (num4 > 0)
+			{
+				Debug.LogError((object)string.Format("There were {0} items that couldn't be moved from apartment {1} -> {2} and were given to {3} instead! This shouldn't happen because each larger apartment should have enough storage", new object[4] { num4, oldRoom.RoomNumber, newRoom.RoomNumber, player.displayName }));
 			}
 		}
 		finally
 		{
 			((IDisposable)val)?.Dispose();
 		}
+	}
+
+	private static void TransferSingleContainer(BasePlayer player, ItemContainer source, ItemContainer destination, ItemContainer fallbackDestination = null)
+	{
+		if (source == null)
+		{
+			return;
+		}
+		Item[] array = source.itemList.ToArray();
+		foreach (Item item in array)
+		{
+			if ((destination == null || !item.MoveToContainer(destination)) && (fallbackDestination == null || !item.MoveToContainer(fallbackDestination)))
+			{
+				item.RemoveFromContainer();
+				player.GiveItem(item);
+			}
+		}
+	}
+
+	public ApartmentMailbox GetMailbox(ApartmentRoom room)
+	{
+		if ((Object)(object)room == (Object)null)
+		{
+			return null;
+		}
+		return mailboxes.FirstOrDefault((ApartmentMailbox x) => (Object)(object)x.Room == (Object)(object)room);
 	}
 
 	public bool CanUpgradeRoom(BasePlayer player, ApartmentSize size)

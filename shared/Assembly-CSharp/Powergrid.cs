@@ -10,8 +10,8 @@ public class Powergrid : ConsoleSystem
 	[ReplicatedVar]
 	public static bool enabled = true;
 
-	[Help("Required powergrid stage for green recyclers to return to baseline efficiency. If < 0 then will use the default values.")]
 	[ReplicatedVar]
+	[Help("Required powergrid stage for green recyclers to return to baseline efficiency. If < 0 then will use the default values.")]
 	public static int greenRecyclerFullEfficiencyStage = -1;
 
 	[ServerVar]

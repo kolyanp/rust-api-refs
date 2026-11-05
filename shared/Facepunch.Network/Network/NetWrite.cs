@@ -26,6 +26,8 @@ public class NetWrite : Stream, IPooled
 
 	public sbyte channel;
 
+	public bool sendImmediate;
+
 	public long serverTicks;
 
 	public ulong profilerEntityId;
@@ -86,6 +88,7 @@ public class NetWrite : Stream, IPooled
 			val.Dispose();
 		}
 		stream = null;
+		sendImmediate = false;
 		serverTicks = 0L;
 		profilerEntityId = 0uL;
 		profilerPrefabId = 0u;
@@ -136,6 +139,7 @@ public class NetWrite : Stream, IPooled
 		method = info.method;
 		channel = info.channel;
 		priority = info.priority;
+		sendImmediate = true;
 		BaseNetwork baseNetwork = peer;
 		long num;
 		if (baseNetwork == null)
@@ -158,7 +162,7 @@ public class NetWrite : Stream, IPooled
 			connections.Add(info.connection);
 		}
 		NetProfileCapture.OnSend(peer, this, immediate: true);
-		peer.ProcessWrite(this);
+		peer.ProcessWriteImmediate(this);
 	}
 
 	public (byte[] Buffer, int Length) GetBuffer()

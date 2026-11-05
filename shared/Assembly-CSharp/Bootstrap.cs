@@ -111,6 +111,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		Pool.ResizeBuffer<EventRecord>(16384);
 		Pool.ResizeBuffer<SellOrder>(2048);
 		Pool.ResizeBuffer<ListHashSet<BaseNetworkable>>(2048);
+		Pool.ResizeBuffer<Item>(2048);
 		Pool.FillBuffer<Networkable>();
 		Pool.FillBuffer<EntityLink>();
 		if (CommandLine.HasSwitch("-nonetworkthread"))
@@ -475,6 +476,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		}
 		RCon.Initialize();
 		BaseEntity.Query.Server = new BaseEntity.Query.EntityTree(8096f);
+		WakeAIZ.InitAwaitingServer();
 		EnsureRootFolderCreated();
 		if (Object.op_Implicit((Object)(object)SingletonComponent<WorldSetup>.Instance))
 		{

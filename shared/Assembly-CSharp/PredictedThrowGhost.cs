@@ -12,16 +12,30 @@ public class PredictedThrowGhost : MonoBehaviour, IClientComponent, IPrefabPostP
 	public Light[] lights;
 
 	[HideInInspector]
+	public ParticleSystem[] particleSystems;
+
+	[HideInInspector]
 	public float sweepRadius;
+
+	[HideInInspector]
+	public Vector3 meshCenter;
 
 	public void PostProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
 		poolable = ((Component)this).GetComponent<Poolable>();
 		body = ((Component)this).GetComponent<Rigidbody>();
 		lights = ((Component)this).GetComponentsInChildren<Light>(true);
+		particleSystems = ((Component)this).GetComponentsInChildren<ParticleSystem>(true);
 		Collider component = ((Component)this).GetComponent<Collider>();
 		SphereCollider val = (SphereCollider)(object)((component is SphereCollider) ? component : null);
 		float num;
@@ -48,5 +62,19 @@ public class PredictedThrowGhost : MonoBehaviour, IClientComponent, IPrefabPostP
 			num = val.radius;
 		}
 		sweepRadius = num;
+		MeshFilter componentInChildren = ((Component)this).GetComponentInChildren<MeshFilter>(true);
+		Vector3 val4;
+		if (!((Object)(object)componentInChildren != (Object)null) || !((Object)(object)componentInChildren.sharedMesh != (Object)null))
+		{
+			val4 = Vector3.zero;
+		}
+		else
+		{
+			Transform transform = ((Component)this).transform;
+			Transform transform2 = ((Component)componentInChildren).transform;
+			Bounds bounds = componentInChildren.sharedMesh.bounds;
+			val4 = transform.InverseTransformPoint(transform2.TransformPoint(bounds.center));
+		}
+		meshCenter = val4;
 	}
 }

@@ -6,6 +6,7 @@ using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Extend;
+using Facepunch.Rust;
 using Network;
 using ProtoBuf;
 using UnityEngine;
@@ -85,11 +86,13 @@ public class ApartmentRoom : BaseEntity
 	[NonSerialized]
 	public List<BaseEntity> Furniture = new List<BaseEntity>();
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private List<FurnitureSpawn> furnitureSpawns = new List<FurnitureSpawn>();
 
 	private TriggerSafeZoneOverride safeZoneOverrideTrigger;
+
+	private ulong breakInIntruder;
 
 	private EntityRef<ApartmentBuilding> __sync_Building;
 
@@ -391,6 +394,73 @@ public class ApartmentRoom : BaseEntity
 		return Mathf.Max((float)MinimumRent, num * ApartmentCommands.rentscaling);
 	}
 
+	public float GetEstimatedValue()
+	{
+		PooledList<ItemContainer> val = Pool.Get<PooledList<ItemContainer>>();
+		try
+		{
+			GetContentContainers((List<ItemContainer>)(object)val);
+			float num = 0f;
+			foreach (ItemContainer item in (List<ItemContainer>)(object)val)
+			{
+				num += SumStorageValue(item);
+			}
+			return num;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public void GetContentContainers(List<ItemContainer> containers)
+	{
+		foreach (BaseEntity item in Furniture)
+		{
+			if (item is StorageContainer { IsDestroyed: false, inventory: not null } storageContainer)
+			{
+				containers.Add(storageContainer.inventory);
+			}
+		}
+		if ((Object)(object)apartmentUpkeepTerminal != (Object)null && !apartmentUpkeepTerminal.IsDestroyed && apartmentUpkeepTerminal.inventory != null)
+		{
+			containers.Add(apartmentUpkeepTerminal.inventory);
+		}
+		foreach (ulong owner in owners)
+		{
+			BasePlayer basePlayer = BasePlayer.FindSleeping(owner);
+			if (!((Object)(object)basePlayer == (Object)null) && !basePlayer.IsDestroyed && basePlayer.inventory != null && IsInsideRoom(basePlayer))
+			{
+				containers.Add(basePlayer.inventory.containerMain);
+				containers.Add(basePlayer.inventory.containerBelt);
+				containers.Add(basePlayer.inventory.containerWear);
+			}
+		}
+	}
+
+	public static float SumStorageValue(ItemContainer inventory)
+	{
+		if (inventory == null)
+		{
+			return 0f;
+		}
+		float num = 0f;
+		foreach (Item item in inventory.itemList)
+		{
+			num += GetApartmentTaxValue(item);
+		}
+		return num;
+	}
+
+	private static float GetApartmentTaxValue(Item item)
+	{
+		if (item.info.ApartmentTaxPerStack > 0f)
+		{
+			return item.info.ApartmentTaxPerStack * ((float)item.amount / (float)item.MaxStackable());
+		}
+		return 0f;
+	}
+
 	private void OnFurnitureInventoryAddedRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
 		AddDelayedUpdate();
@@ -431,6 +501,7 @@ public class ApartmentRoom : BaseEntity
 			lastRentPaymentTime = time;
 			if (timeRentOverdue > ApartmentCommands.apartmentevictiondelay)
 			{
+				Analytics.Azure.OnApartmentEvicted(this);
 				Building.Get(serverside: true).Checkout(this);
 			}
 			SendNetworkUpdate();
@@ -507,10 +578,11 @@ public class ApartmentRoom : BaseEntity
 	{
 	}
 
-	public void StartBreakIn()
+	public void StartBreakIn(BasePlayer intruder)
 	{
 		if (!IsBreakInActive())
 		{
+			breakInIntruder = intruder.userID;
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
 				flagsUpdateScope.Set(Flag_BreakIn, b: true);
@@ -522,7 +594,11 @@ public class ApartmentRoom : BaseEntity
 
 	public void CancelBreakIn()
 	{
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		if (IsBreakInActive() && IsCurrentlyRented())
+		{
+			Analytics.Azure.OnApartmentBreakInEnd(this, breakInIntruder);
+		}
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flag_BreakIn, b: false);
 		if ((Object)(object)safeZoneOverrideTrigger == (Object)null)
@@ -625,9 +701,22 @@ public class ApartmentRoom : BaseEntity
 		}
 	}
 
+	private void RelinkFrontDoor()
+	{
+		foreach (BaseEntity child in children)
+		{
+			if (child is ApartmentDoor frontDoor)
+			{
+				FrontDoor = frontDoor;
+				break;
+			}
+		}
+	}
+
 	private void SetupFrontDoor(bool loadingSave)
 	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		RelinkFrontDoor();
 		if ((Object)(object)FrontDoor != (Object)null)
 		{
 			FrontDoor.SetFlagLocal(Flags.Open, b: false);
@@ -667,17 +756,6 @@ public class ApartmentRoom : BaseEntity
 		CancelDelayedUpdate();
 		SetEntityFurniture(state: false);
 		SetFlagLocal(Flag_IsRented, b: false);
-		if ((Object)(object)FrontDoor == (Object)null)
-		{
-			foreach (BaseEntity child in children)
-			{
-				if (child is ApartmentDoor frontDoor)
-				{
-					FrontDoor = frontDoor;
-					break;
-				}
-			}
-		}
 		if ((Object)(object)FrontDoor != (Object)null)
 		{
 			FrontDoor.SetOpen(open: false);

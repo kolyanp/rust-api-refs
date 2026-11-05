@@ -5,6 +5,60 @@ using UnityEngine;
 
 public class TerrainSplatMap : TerrainMap<byte>
 {
+	public struct SplatQueryStructure
+	{
+		public ReadOnly<byte> source;
+
+		public int res;
+
+		public int num;
+
+		public readonly int GetSplatMaxIndex(float normX, float normZ, int mask = -1)
+		{
+			return GetSplatMaxIndex(Index(normX), Index(normZ), mask);
+		}
+
+		public readonly int GetSplatMaxIndex(int x, int z, int mask = -1)
+		{
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+			byte b = 0;
+			int result = 0;
+			for (int i = 0; i < num; i++)
+			{
+				if ((TerrainSplat.IndexToType(i) & mask) != 0)
+				{
+					byte b2 = source[(i * res + z) * res + x];
+					if (b2 >= b)
+					{
+						b = b2;
+						result = i;
+					}
+				}
+			}
+			return result;
+		}
+
+		public readonly int GetSplatMaxType(float normX, float normZ, int mask = -1)
+		{
+			return TerrainSplat.IndexToType(GetSplatMaxIndex(normX, normZ, mask));
+		}
+
+		public readonly int Index(float normalized)
+		{
+			int num = (int)(normalized * (float)res);
+			if (num >= 0)
+			{
+				if (num <= res - 1)
+				{
+					return num;
+				}
+				return res - 1;
+			}
+			return 0;
+		}
+	}
+
 	public Texture2D SplatTexture0;
 
 	public Texture2D SplatTexture1;
@@ -275,6 +329,18 @@ public class TerrainSplatMap : TerrainMap<byte>
 	public int GetSplatMaxType(int x, int z, int mask = -1)
 	{
 		return TerrainSplat.IndexToType(GetSplatMaxIndex(x, z, mask));
+	}
+
+	public SplatQueryStructure GetQueryStructure()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		return new SplatQueryStructure
+		{
+			source = src.AsReadOnly(),
+			res = res,
+			num = num
+		};
 	}
 
 	public float GetSplat(Vector3 worldPos, int mask)

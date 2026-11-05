@@ -4,6 +4,8 @@ public class UICrafting : SingletonComponent<UICrafting>
 {
 	public GameObject skinViewerPrefab;
 
+	public GamepadCraftingHints GamepadHints;
+
 	public static bool isOpen;
 
 	public static float LastOpened;

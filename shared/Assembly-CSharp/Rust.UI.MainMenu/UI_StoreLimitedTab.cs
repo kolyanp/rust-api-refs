@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_StoreLimitedTab : UI_StoreTabBase
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreItemGrid itemGrid;
 
 	[SerializeField]

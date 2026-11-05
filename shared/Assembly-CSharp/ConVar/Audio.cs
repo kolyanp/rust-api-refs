@@ -47,14 +47,17 @@ public class Audio : ConsoleSystem
 	[ClientVar(Help = "Use more advanced sound occlusion", Saved = true)]
 	public static bool advancedocclusion = false;
 
+	[ClientVar(Help = "Seconds between occlusion checks of a playing sound")]
+	public static float occlusioninterval = 0.25f;
+
+	[ClientVar(Help = "Seconds between occlusion checks of a sound Unity has virtualised (muted because too many sounds playing or too quiet)")]
+	public static float virtualocclusioninterval = 1f;
+
 	[ClientVar(Help = "Use higher quality sound fades on some sounds")]
 	public static bool hqsoundfade = false;
 
 	[ClientVar(Saved = false, Help = "(Generated) When enabled, logs voice chat limiting decisions to the console, showing when players are muted due to proximity or bandwidth constraints")]
 	public static bool debugVoiceLimiting = false;
-
-	[ClientVar(Help = "(Generated) Enables audio source pooling, reusing AudioSource components instead of creating and destroying them each time a sound plays")]
-	public static bool enableSoundPooling = false;
 
 	[ClientVar(Help = "Volume", Saved = true)]
 	public static int speakers

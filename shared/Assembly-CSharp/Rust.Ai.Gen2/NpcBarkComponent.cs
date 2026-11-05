@@ -73,7 +73,7 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 				{
 					((List<int>)(object)val).Add(i);
 				}
-				ListEx.Shuffle<int>((List<int>)(object)val, (uint)Environment.TickCount);
+				ListEx.Shuffle<int>((List<int>)(object)val, NpcRandom.Of(baseEntity).NextSeed());
 				NPCVoiceline? nPCVoiceline = null;
 				int num = 0;
 				foreach (int item in (List<int>)(object)val)
@@ -99,7 +99,7 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 				NPCVoiceline? nPCVoiceline3 = null;
 				if (num > 0)
 				{
-					ListEx.Shuffle<int>((List<int>)(object)val, (uint)Environment.TickCount);
+					ListEx.Shuffle<int>((List<int>)(object)val, NpcRandom.Of(baseEntity).NextSeed());
 					foreach (int item2 in (List<int>)(object)val)
 					{
 						NPCVoiceline nPCVoiceline4 = voicelinesInCategory[item2];
@@ -121,7 +121,7 @@ public class NpcBarkComponent : EntityComponent<BaseEntity>
 					{
 						((List<int>)(object)val).Add(j);
 					}
-					ListEx.Shuffle<int>((List<int>)(object)val, (uint)Environment.TickCount);
+					ListEx.Shuffle<int>((List<int>)(object)val, NpcRandom.Of(baseEntity).NextSeed());
 					foreach (int item3 in (List<int>)(object)val)
 					{
 						NPCVoiceline nPCVoiceline5 = voicelinesInCategory[item3];

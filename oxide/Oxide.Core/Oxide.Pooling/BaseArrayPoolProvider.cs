@@ -86,7 +86,7 @@ public class BaseArrayPoolProvider<T> : IArrayPoolProvider<T>, IPoolProvider<T[]
 	{
 		for (int i = 0; i < array.Length; i++)
 		{
-			array[i] = default(T);
+			array[i] = default;
 		}
 		return true;
 	}

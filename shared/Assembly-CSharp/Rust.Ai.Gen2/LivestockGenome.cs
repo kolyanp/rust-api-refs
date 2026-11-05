@@ -5,7 +5,7 @@ namespace Rust.Ai.Gen2;
 
 public static class LivestockGenome
 {
-	public const int GeneCount = 5;
+	public const int GeneSlots = 5;
 
 	private const int BitsPerAllele = 2;
 
@@ -23,10 +23,9 @@ public static class LivestockGenome
 
 	public const int Unrolled = 0;
 
-	public static readonly LivestockGene[] AllGenes = new LivestockGene[5]
+	public static readonly LivestockGene[] AllGenes = new LivestockGene[4]
 	{
 		LivestockGene.Dung,
-		LivestockGene.Longevity,
 		LivestockGene.Yield,
 		LivestockGene.Fertility,
 		LivestockGene.Hardiness
@@ -35,6 +34,19 @@ public static class LivestockGenome
 	public static bool IsRolled(int genome)
 	{
 		return genome != 0;
+	}
+
+	public static bool IsLive(LivestockGene gene)
+	{
+		LivestockGene[] allGenes = AllGenes;
+		for (int i = 0; i < allGenes.Length; i++)
+		{
+			if (allGenes[i] == gene)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static int ShiftFor(LivestockGene gene, int copy)
@@ -122,6 +134,28 @@ public static class LivestockGenome
 		return true;
 	}
 
+	public static bool HidesBad(int genome)
+	{
+		if (!IsRolled(genome))
+		{
+			return false;
+		}
+		bool result = false;
+		LivestockGene[] allGenes = AllGenes;
+		foreach (LivestockGene gene in allGenes)
+		{
+			if (Expressed(genome, gene) != LivestockAllele.Good)
+			{
+				return false;
+			}
+			if (Carried(genome, gene) == LivestockAllele.Bad)
+			{
+				result = true;
+			}
+		}
+		return result;
+	}
+
 	public static int WithMarkers(int genome, int first, int second)
 	{
 		return (genome & -267386881) | ((first & 0xF) << 20) | ((second & 0xF) << 24);
@@ -135,41 +169,41 @@ public static class LivestockGenome
 		{
 			num = (int)(num + Expressed(genome, gene));
 		}
-		return (float)num / 10f;
+		return (float)num / (float)(AllGenes.Length * 2);
 	}
 
-	public static int Combine(int mother, int father, float mutationChance = 0f)
+	public static int Combine(NpcRandom random, int mother, int father, float mutationChance = 0f)
 	{
 		int genome = 0;
 		LivestockGene[] allGenes = AllGenes;
 		foreach (LivestockGene gene in allGenes)
 		{
-			genome = WithPair(genome, gene, InheritedAllele(mother, gene), InheritedAllele(father, gene));
+			genome = WithPair(genome, gene, InheritedAllele(random, mother, gene), InheritedAllele(random, father, gene));
 		}
-		genome = WithMarkers(genome, InheritedMarker(mother), InheritedMarker(father));
-		return Mutate(genome, mutationChance);
+		genome = WithMarkers(genome, InheritedMarker(random, mother), InheritedMarker(random, father));
+		return Mutate(random, genome, mutationChance);
 	}
 
-	private static LivestockAllele InheritedAllele(int parent, LivestockGene gene)
+	private static LivestockAllele InheritedAllele(NpcRandom random, int parent, LivestockGene gene)
 	{
-		return GetAllele(parent, gene, CoinFlip());
+		return GetAllele(parent, gene, CoinFlip(random));
 	}
 
-	private static int InheritedMarker(int parent)
+	private static int InheritedMarker(NpcRandom random, int parent)
 	{
-		return GetMarker(parent, CoinFlip());
+		return GetMarker(parent, CoinFlip(random));
 	}
 
-	private static int CoinFlip()
+	private static int CoinFlip(NpcRandom random)
 	{
-		if (!(Random.value < 0.5f))
+		if (!(random.Value < 0.5f))
 		{
 			return 1;
 		}
 		return 0;
 	}
 
-	public static int Mutate(int genome, float chance)
+	public static int Mutate(NpcRandom random, int genome, float chance)
 	{
 		if (chance <= 0f)
 		{
@@ -180,20 +214,20 @@ public static class LivestockGenome
 		{
 			for (int j = 0; j < 2; j++)
 			{
-				if (Random.value < chance)
+				if (random.Value < chance)
 				{
-					genome = WithAllele(genome, gene, j, RollAllele());
+					genome = WithAllele(genome, gene, j, RollAllele(random));
 				}
 			}
 		}
 		return genome;
 	}
 
-	public static LivestockAllele RollAllele()
+	public static LivestockAllele RollAllele(NpcRandom random)
 	{
 		float num = Mathf.Clamp01(Livestock.geneGoodChance);
 		float num2 = Mathf.Clamp01(Livestock.geneBadChance);
-		float value = Random.value;
+		float value = random.Value;
 		if (value < num)
 		{
 			return LivestockAllele.Good;
@@ -205,19 +239,19 @@ public static class LivestockGenome
 		return LivestockAllele.Ok;
 	}
 
-	public static int RollMarker()
+	public static int RollMarker(NpcRandom random)
 	{
-		return Random.Range(0, 16);
+		return random.Range(0, 16);
 	}
 
-	public static int Roll()
+	public static int Roll(NpcRandom random)
 	{
 		int genome = 0;
 		LivestockGene[] allGenes = AllGenes;
 		foreach (LivestockGene gene in allGenes)
 		{
-			genome = WithPair(genome, gene, RollAllele(), RollAllele());
+			genome = WithPair(genome, gene, RollAllele(random), RollAllele(random));
 		}
-		return WithMarkers(genome, RollMarker(), RollMarker());
+		return WithMarkers(genome, RollMarker(random), RollMarker(random));
 	}
 }

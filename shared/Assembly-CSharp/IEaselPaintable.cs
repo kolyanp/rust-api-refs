@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IEaselPaintable
+public interface IEaselPaintable : IFlattenKeepsChildren
 {
 	GameObject GameObject { get; }
 

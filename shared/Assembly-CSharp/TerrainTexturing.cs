@@ -590,6 +590,8 @@ public class TerrainTexturing : TerrainExtension
 	private void OnDestroy()
 	{
 		ReleaseShoreVector();
+		ReleaseCoarseHeightSlope();
+		ReleaseWaterHeight();
 	}
 
 	private void ReleaseShoreVector()

@@ -44,8 +44,7 @@ public class Graphics : ConsoleSystem
 	[ClientVar(Saved = true, Help = "(Generated) When enabled, activates the depth-of-field post-processing effect, blurring objects outside the focal distance")]
 	public static bool dof = false;
 
-	[ClientVar(Saved = true, Help = "(Generated) Depth-of-field aperture (f-stop); lower values produce a shallower depth of field with more background blur")]
-	public static float dof_aper = 12f;
+	private static float _dof_aper = 12f;
 
 	[ClientVar(Saved = true, Help = "(Generated) Depth-of-field blur intensity multiplier; higher values produce a stronger blur on out-of-focus areas")]
 	public static float dof_blur = 1f;
@@ -154,6 +153,19 @@ public class Graphics : ConsoleSystem
 		set
 		{
 			QualitySettings.lodBias = Mathf.Clamp(value, 0.5f, 5f);
+		}
+	}
+
+	[ClientVar(Saved = true, Help = "(Generated) Depth-of-field aperture (f-stop); lower values produce a shallower depth of field with more background blur")]
+	public static float dof_aper
+	{
+		get
+		{
+			return _dof_aper;
+		}
+		set
+		{
+			_dof_aper = Mathf.Clamp(value, 1f, 32f);
 		}
 	}
 

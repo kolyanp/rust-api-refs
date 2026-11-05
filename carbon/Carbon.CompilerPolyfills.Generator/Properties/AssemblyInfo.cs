@@ -5,8 +5,8 @@ using System.Runtime.Versioning;
 
 [assembly: AssemblyCompany("Carbon.CompilerPolyfills.Generator")]
 [assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyFileVersion("2.0.262.0")]
-[assembly: AssemblyInformationalVersion("2.0.262+8a81d704288f191b7c4017f74dc284f744e220ac")]
+[assembly: AssemblyFileVersion("2.0.264.0")]
+[assembly: AssemblyInformationalVersion("2.0.264+7cd15a2156e135af67e0b8eecbecca7fe220cbb6")]
 [assembly: AssemblyProduct("Carbon.CompilerPolyfills.Generator")]
 [assembly: AssemblyTitle("Carbon.CompilerPolyfills.Generator")]
-[assembly: AssemblyVersion("2.0.262.0")]
+[assembly: AssemblyVersion("2.0.264.0")]

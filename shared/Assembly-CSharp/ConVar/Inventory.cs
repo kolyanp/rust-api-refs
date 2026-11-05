@@ -34,6 +34,9 @@ public class Inventory : ConsoleSystem
 
 		[JsonProperty("wear")]
 		public SavedLoadout.SavedItem[] wear;
+
+		[JsonProperty("main")]
+		public SavedLoadout.SavedItem[] main;
 	}
 
 	[JsonModel]
@@ -1034,6 +1037,7 @@ public class Inventory : ConsoleSystem
 				{
 					loadoutFileInfo.belt = so.belt;
 					loadoutFileInfo.wear = so.wear;
+					loadoutFileInfo.main = so.main;
 					loadoutFileInfo.itemCount = CountItems(so.belt) + CountItems(so.wear) + CountItems(so.main) + CountItems(so.backpack);
 				}
 				list.Add(loadoutFileInfo);

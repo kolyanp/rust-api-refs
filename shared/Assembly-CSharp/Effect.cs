@@ -343,15 +343,20 @@ public class Effect : EffectData
 
 		public static void ImpactEffect(HitInfo info, string customEffect = null)
 		{
-			//IL_0139: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0156: Unknown result type (might be due to invalid IL or missing references)
-			//IL_015c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_011a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-			if (Interface.CallHook("OnImpactEffectCreate", info, customEffect) != null || (Object.op_Implicit((Object)(object)info.InitiatorPlayer) && info.InitiatorPlayer.limitNetworking) || !info.DoHitEffects || !CanPlayImpactEffect(info))
+			//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+			//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+			//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+			if (Interface.CallHook("OnImpactEffectCreate", info, customEffect) != null)
+			{
+				return;
+			}
+			BasePlayer initiatorPlayer = info.InitiatorPlayer;
+			if ((initiatorPlayer != null && initiatorPlayer.limitNetworking) || !info.DoHitEffects || !CanPlayImpactEffect(info))
 			{
 				return;
 			}
@@ -416,6 +421,8 @@ public class Effect : EffectData
 
 	public List<Connection> targets;
 
+	public BasePlayer invisibleInstigator;
+
 	private static Effect reusableInstance = new Effect();
 
 	public Effect()
@@ -460,6 +467,7 @@ public class Effect : EffectData
 		base.entity = (ent.IsValid() ? ent.net.ID : default(NetworkableId));
 		base.source = sourceConnection?.userid ?? 0;
 		base.bone = boneID;
+		invisibleInstigator = GetInvisibleInstigator(sourceConnection, ent);
 	}
 
 	public void Init(Type fxtype, Vector3 posWorld, Vector3 normWorld, Connection sourceConnection = null)
@@ -482,6 +490,7 @@ public class Effect : EffectData
 		base.origin = (worldPos = posWorld);
 		base.normal = (worldNrm = normWorld);
 		base.source = sourceConnection?.userid ?? 0;
+		invisibleInstigator = GetInvisibleInstigator(sourceConnection, null);
 	}
 
 	public void InitWithSourceEntity(Type fxtype, BaseEntity sourceEntity, Vector3 posWorld, Vector3 normWorld, Connection sourceConnection = null)
@@ -494,6 +503,27 @@ public class Effect : EffectData
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		Init(fxtype, posWorld, normWorld, sourceConnection);
 		base.sourceEntity = (sourceEntity.IsValid() ? sourceEntity.net.ID : default(NetworkableId));
+		invisibleInstigator = GetInvisibleInstigator(sourceConnection, sourceEntity);
+	}
+
+	private static BasePlayer GetInvisibleInstigator(Connection sourceConnection, BaseEntity entity)
+	{
+		if (sourceConnection?.player is BasePlayer { isInvisible: not false } basePlayer)
+		{
+			return basePlayer;
+		}
+		if (entity is BasePlayer basePlayer2)
+		{
+			if (basePlayer2.isInvisible)
+			{
+				return basePlayer2;
+			}
+		}
+		else if (entity is HeldEntity heldEntity && entity.shouldFilterSubscribers)
+		{
+			return (BasePlayer)heldEntity.GetParentEntity();
+		}
+		return null;
 	}
 
 	public void Clear()
@@ -502,12 +532,12 @@ public class Effect : EffectData
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		base.type = 0u;
 		base.pooledstringid = 0u;
 		base.number = 0;
@@ -520,6 +550,11 @@ public class Effect : EffectData
 		base.distanceOverride = 0f;
 		base.ignoreMaxSpawnDistance = false;
 		base.sourceEntity = default;
+		if (base.invisiblePlayerData != null)
+		{
+			base.invisiblePlayerData.ResetToPool();
+			base.invisiblePlayerData = null;
+		}
 		upDir = Vector3.zero;
 		worldPos = Vector3.zero;
 		worldNrm = Vector3.zero;
@@ -529,5 +564,6 @@ public class Effect : EffectData
 		pooledString = null;
 		broadcast = false;
 		targets = null;
+		invisibleInstigator = null;
 	}
 }

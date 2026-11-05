@@ -19,7 +19,7 @@ public class NpcGrenade : BaseEntity
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		spawnTime = Time.realtimeSinceStartupAsDouble;
+		spawnTime = Time.timeAsDouble;
 	}
 
 	private void Update()
@@ -55,7 +55,7 @@ public class NpcGrenade : BaseEntity
 			Vector3 position = grenadeHint.landingPoint.position;
 			Vector3 val2 = Vector3Ex.WithY((val + position) * 0.5f, Mathf.Max(val.y, position.y) + grenadeHint.apexHeight);
 			float num = Vector3Ex.MagnitudeXZ(position - val) / speed;
-			float num2 = (float)(Time.realtimeSinceStartupAsDouble - spawnTime) / num;
+			float num2 = (float)(Time.timeAsDouble - spawnTime) / num;
 			num2 = Mathf.Clamp01(num2);
 			((Component)this).transform.position = Vector3.Lerp(Vector3.Lerp(val, val2, num2), Vector3.Lerp(val2, position, num2), num2);
 			if (num2 >= 1f)
@@ -80,21 +80,21 @@ public class NpcGrenade : BaseEntity
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((Component)this).transform.position + Vector3.up * 0.3f;
 		Effect.server.Run(explosionEffect.resourcePath, val, Vector3.up, null, broadcast: true);
 		Collider component = ((Component)this).GetComponent<Collider>();
@@ -105,7 +105,7 @@ public class NpcGrenade : BaseEntity
 		SpawnFireball(val);
 		for (int i = 0; i < numToCreate; i++)
 		{
-			Vector3 val2 = Quaternion.Euler(0f, (float)i / (float)numToCreate * 360f, 0f) * Vector3.forward * 1.8f * Random.Range(0.8f, 1.2f);
+			Vector3 val2 = Quaternion.Euler(0f, (float)i / (float)numToCreate * 360f, 0f) * Vector3.forward * 1.8f * NpcRandom.Of(creatorEntity).Range(0.8f, 1.2f);
 			Vector3 spawnPos = val + val2;
 			if (GamePhysics.Trace(new Ray(val, val2), 0f, out var hitInfo, val2.magnitude, 1237003025, (QueryTriggerInteraction)0))
 			{
@@ -120,14 +120,14 @@ public class NpcGrenade : BaseEntity
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		BaseEntity baseEntity = GameManager.server.CreateEntity(fireballPrefab.resourcePath, spawnPos);
 		if (Object.op_Implicit((Object)(object)baseEntity))
 		{
-			float num = Random.Range(0f, 360f);
+			float num = NpcRandom.Of(creatorEntity).Range(0f, 360f);
 			Quaternion val = Quaternion.Euler(0f, num, 0f);
 			((Component)baseEntity).transform.SetPositionAndRotation(spawnPos, val);
 			baseEntity.creatorEntity = (((Object)(object)creatorEntity == (Object)null) ? baseEntity : creatorEntity);

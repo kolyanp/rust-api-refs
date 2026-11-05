@@ -24,6 +24,13 @@ using UnityEngine.Assertions;
 
 public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, IEntity, NetworkHandler
 {
+	public struct NetworkGroupSubscribers
+	{
+		public List<Connection> list;
+
+		public bool shouldReleaseToPool;
+	}
+
 	public struct ThreadSafeTime
 	{
 		public DateTime Now;
@@ -277,6 +284,21 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public bool isSpawned;
 
+	protected bool usePositionLod;
+
+	private bool positionLodPending;
+
+	private float lastPositionLodTime;
+
+	private float lastMediumLodSendTime;
+
+	private float lastLowLodSendTime;
+
+	private const float LodSendTolerance = 0.05f;
+
+	[NonSerialized]
+	public bool shouldFilterSubscribers;
+
 	public MemoryStream _NetworkCache;
 
 	public static ConcurrentQueue<MemoryStream> EntityMemoryStreamPool = new ConcurrentQueue<MemoryStream>();
@@ -289,8 +311,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	private const bool UsePlayerOnlyOnMediumLayerShortcut = true;
 
-	[Header("BaseNetworkable")]
 	[ReadOnly]
+	[Header("BaseNetworkable")]
 	public uint prefabID;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]
@@ -304,6 +326,9 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	[Tooltip("How far away this entity should network to clients")]
 	public EntityNetworkRange networkRange = EntityNetworkRange.Medium;
+
+	[Tooltip("Send positions at the full rate to every distance instead of thinning them out further away")]
+	public bool ignoreNetworkLod;
 
 	[NonSerialized]
 	public Networkable net;
@@ -625,6 +650,55 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		return net.group.subscribers;
 	}
 
+	protected NetworkLod GetLodSendLevel()
+	{
+		float time = Time.time;
+		float tickInterval = time - lastPositionLodTime;
+		lastPositionLodTime = time;
+		if (IsLodSendDue(time, tickInterval, lastLowLodSendTime, 0.4f))
+		{
+			lastLowLodSendTime = time;
+			lastMediumLodSendTime = time;
+			positionLodPending = false;
+			return NetworkLod.Low;
+		}
+		positionLodPending = true;
+		if (IsLodSendDue(time, tickInterval, lastMediumLodSendTime, 0.2f))
+		{
+			lastMediumLodSendTime = time;
+			return NetworkLod.Medium;
+		}
+		if (!MergesMediumNetworkLod())
+		{
+			return NetworkLod.High;
+		}
+		return NetworkLod.Medium;
+	}
+
+	protected bool IsLowLodSendDue()
+	{
+		float time = Time.time;
+		if (positionLodPending)
+		{
+			return IsLodSendDue(time, time - lastPositionLodTime, lastLowLodSendTime, 0.4f);
+		}
+		return false;
+	}
+
+	private static bool IsLodSendDue(float now, float tickInterval, float lastSendTime, float interval)
+	{
+		return now - lastSendTime + tickInterval > interval + 0.05f;
+	}
+
+	protected static NetworkLod GetNetworkLod(Connection connection, BasePlayer player, uint lodCell)
+	{
+		if ((Object)(object)player == (Object)null || player.net == null || player.net.secondaryGroup != null || RustRelay.IsFakeConnection(connection))
+		{
+			return NetworkLod.High;
+		}
+		return NetworkVisibilityGrid.GetNetworkLod(player.GetNetworkLodCell(), lodCell);
+	}
+
 	public void KillMessage()
 	{
 		Kill();
@@ -723,20 +797,52 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public void SendNetworkGroupChange()
 	{
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		if (isSpawned && Net.sv.IsConnected())
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		if (!isSpawned || !Net.sv.IsConnected())
 		{
-			if (net.group == null)
-			{
-				Debug.LogWarning((object)(((object)this).ToString() + " changed its network group to null"));
-				return;
-			}
-			NetWrite netWrite = Net.sv.StartWrite();
-			netWrite.PacketID(Message.Type.GroupChange);
-			netWrite.EntityID(net.ID);
-			netWrite.GroupID(net.group.ID);
-			netWrite.Send(new SendInfo(net.group.subscribers));
+			return;
 		}
+		if (net.group == null)
+		{
+			Debug.LogWarning((object)(((object)this).ToString() + " changed its network group to null"));
+			return;
+		}
+		NetworkGroupSubscribers subscribersToSendTo = GetSubscribersToSendTo();
+		NetWrite netWrite = Net.sv.StartWrite();
+		netWrite.PacketID(Message.Type.GroupChange);
+		netWrite.EntityID(net.ID);
+		netWrite.GroupID(net.group.ID);
+		netWrite.Send(new SendInfo(subscribersToSendTo.list));
+		if (subscribersToSendTo.shouldReleaseToPool)
+		{
+			Pool.FreeUnmanaged<Connection>(ref subscribersToSendTo.list);
+		}
+	}
+
+	protected NetworkGroupSubscribers GetSubscribersToSendTo()
+	{
+		return GetSubscribersToSendTo(GetSubscribers());
+	}
+
+	protected NetworkGroupSubscribers GetSubscribersToSendTo(List<Connection> subscribers)
+	{
+		if (!shouldFilterSubscribers)
+		{
+			return new NetworkGroupSubscribers
+			{
+				list = subscribers
+			};
+		}
+		return GetFilteredSubscribers(subscribers);
+	}
+
+	protected virtual NetworkGroupSubscribers GetFilteredSubscribers(List<Connection> subscribers)
+	{
+		return new NetworkGroupSubscribers
+		{
+			list = subscribers,
+			shouldReleaseToPool = false
+		};
 	}
 
 	public void SendAsSnapshot(Connection connection, bool ordered = true)
@@ -869,16 +975,16 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public void SendNetworkUpdate_Position()
 	{
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0198: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
 		if (Application.isLoading || Application.isLoadingSave || IsDestroyed || net == null || !isSpawned)
 		{
 			return;
@@ -892,20 +998,25 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			{
 				return;
 			}
-			bool flag = ServerOcclusion.OcclusionEnabled && SupportsServerOcclusion();
+			bool flag = shouldFilterSubscribers || (ServerOcclusion.OcclusionEnabled && SupportsServerOcclusion());
 			bool stall_position_restrictions = ConVar.AntiHack.stall_position_restrictions;
-			if (flag | stall_position_restrictions)
+			NetworkLod networkLod = (usePositionLod ? GetLodSendLevel() : NetworkLod.Low);
+			uint num = ((networkLod != NetworkLod.Low) ? GetNetworkLodCell() : 0u);
+			if ((flag | stall_position_restrictions) || num != 0)
 			{
-				List<Connection> list2 = Pool.Get<List<Connection>>();
-				foreach (Connection item in list)
+				using (TimeWarning.New("FilterSubscribers"))
 				{
-					BasePlayer basePlayer = item.player as BasePlayer;
-					if (!((Object)(object)basePlayer == (Object)null) && (!flag || ShouldNetworkTo(basePlayer)) && (!stall_position_restrictions || !basePlayer.isStalled))
+					List<Connection> list2 = Pool.Get<List<Connection>>();
+					foreach (Connection item in list)
 					{
-						list2.Add(item);
+						BasePlayer basePlayer = item.player as BasePlayer;
+						if (!((Object)(object)basePlayer == (Object)null) && (!flag || ShouldNetworkTo(basePlayer)) && (!stall_position_restrictions || !basePlayer.isStalled) && (num == 0 || GetNetworkLod(item, basePlayer, num) <= networkLod))
+						{
+							list2.Add(item);
+						}
 					}
+					list = list2;
 				}
-				list = list2;
 			}
 			if (list.Count > 0)
 			{
@@ -1004,14 +1115,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 	{
 		using (TimeWarning.New("InvalidateNetworkCache"))
 		{
-			if (_SaveCache != null)
-			{
-				ConVar.Server.savecachesize -= (int)_SaveCache.Length;
-				_SaveCache.SetLength(0L);
-				_SaveCache.Position = 0L;
-				EntityMemoryStreamPool.Enqueue(_SaveCache);
-				_SaveCache = null;
-			}
+			InvalidateSaveCache();
 			if (_NetworkCache != null)
 			{
 				ConVar.Server.netcachesize -= (int)_NetworkCache.Length;
@@ -1022,6 +1126,34 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			}
 			LogEntry(RustLog.EntryType.Network, 3, "InvalidateNetworkCache");
 		}
+	}
+
+	public void InvalidateSaveCache()
+	{
+		if (_SaveCache != null)
+		{
+			ConVar.Server.savecachesize -= (int)_SaveCache.Length;
+			_SaveCache.SetLength(0L);
+			_SaveCache.Position = 0L;
+			EntityMemoryStreamPool.Enqueue(_SaveCache);
+			_SaveCache = null;
+		}
+	}
+
+	public virtual bool CanUseSaveCache()
+	{
+		return true;
+	}
+
+	public void WriteUncachedSave(MemoryStream stream)
+	{
+		stream.SetLength(0L);
+		SaveInfo saveInfo = new SaveInfo
+		{
+			forDisk = true,
+			cachedTime = ThreadSafeTime.TakeSnapshot()
+		};
+		ToStream(stream, saveInfo);
 	}
 
 	public MemoryStream GetSaveCache()
@@ -1406,6 +1538,44 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		((ListHashSet<BaseNetworkable>)occlusionGroup).Add(this);
 	}
 
+	public virtual bool ShouldIgnoreNetworkLod()
+	{
+		if (!ignoreNetworkLod && Net.position_lod != 0)
+		{
+			if (Net.position_lod == 1 && net != null && net.group != null)
+			{
+				return NetworkVisibilityGrid.IsGlobalGroupId(net.group.ID);
+			}
+			return false;
+		}
+		return true;
+	}
+
+	public virtual bool MergesMediumNetworkLod()
+	{
+		return false;
+	}
+
+	public virtual uint GetNetworkLodCell()
+	{
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		if (net != null && net.group != null)
+		{
+			return NetworkVisibilityGrid.GetNetworkLodCell(net.group.ID, ((Component)this).transform.position);
+		}
+		return 0u;
+	}
+
+	public float GetNetworkLodDelay(BasePlayer observer, float extraDistance = 0f)
+	{
+		if ((Object)(object)observer == (Object)null || ShouldIgnoreNetworkLod())
+		{
+			return 0f;
+		}
+		float num = Mathf.Sqrt(NetworkVisibilityGrid.GetNetworkLodDistanceSq(observer.GetNetworkLodCell(), GetNetworkLodCell())) + extraDistance;
+		return Mathf.Max(MergesMediumNetworkLod() ? 0f : (Mathf.InverseLerp(96f, 128f, num) * 0.2f), Mathf.InverseLerp(160f, 192f, num) * 0.4f);
+	}
+
 	public virtual Vector3 GetNetworkPosition()
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
@@ -1583,15 +1753,20 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public void OnNetworkSubscribersLeave(List<Connection> connections)
 	{
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		if (Net.sv.IsConnected() && isServer && connections != null && !CollectionEx.IsEmpty(connections))
 		{
 			LogEntry(RustLog.EntryType.Network, 2, "LeaveVisibility");
+			NetworkGroupSubscribers subscribersToSendTo = GetSubscribersToSendTo(connections);
 			NetWrite netWrite = Net.sv.StartWrite();
 			netWrite.PacketID(Message.Type.EntityDestroy);
 			netWrite.EntityID(net.ID);
 			netWrite.UInt8(0);
-			netWrite.Send(new SendInfo(connections));
+			netWrite.Send(new SendInfo(subscribersToSendTo.list));
+			if (subscribersToSendTo.shouldReleaseToPool)
+			{
+				Pool.FreeUnmanaged<Connection>(ref subscribersToSendTo.list);
+			}
 		}
 	}
 

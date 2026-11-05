@@ -309,6 +309,7 @@ public class Community
 	public void LoadMonoProfilerConfig()
 	{
 		MonoProfilerConfig.Load(Defines.GetMonoProfilerConfigFile());
+		MonoProfiler.ConfigPath = Defines.GetMonoProfilerConfigFile();
 	}
 
 	public void SaveMonoProfilerConfig()
@@ -400,7 +401,7 @@ public class Community
 				version,
 				ModLoader.Packages.Count,
 				ModLoader.Packages.Sum((ModLoader.Package x) => x.Plugins.Count),
-				ModuleProcessor.Modules.Count((BaseHookable x) => x is BaseModule baseModule && baseModule.IsEnabled()),
+				Enumerable.Count(ModuleProcessor.Modules, (BaseHookable x) => x is BaseModule baseModule && baseModule.IsEnabled()),
 				ModuleProcessor.Modules.Count,
 				AssemblyEx.Extensions.Loaded.Count,
 				StoredModifiers.Entities?.Count

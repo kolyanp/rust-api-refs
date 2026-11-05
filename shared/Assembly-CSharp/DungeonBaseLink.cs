@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DungeonBaseLink : MonoBehaviour
+public class DungeonBaseLink : MonoBehaviour, IFlattenKeepsDescendants
 {
 	public DungeonBaseLinkType Type;
 

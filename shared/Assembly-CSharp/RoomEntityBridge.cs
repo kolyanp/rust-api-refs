@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Development.Attributes;
 using Facepunch;
@@ -12,7 +13,9 @@ public class RoomEntityBridge
 
 		public int Generation;
 
-		public int PartitionVersion;
+		public Vector3 Position;
+
+		public int Regions;
 
 		public Room[] Spanned;
 
@@ -27,6 +30,8 @@ public class RoomEntityBridge
 
 		public int PartitionVersion;
 
+		public int Regions;
+
 		public Vector3 Position;
 	}
 
@@ -40,15 +45,27 @@ public class RoomEntityBridge
 
 	public const float RoomProbeRadius = 4f;
 
+	private const float RoomProbeMargin = 3f;
+
 	private static readonly List<BaseEntity> probeEntities = new List<BaseEntity>();
 
 	private static readonly List<BlockFace> probeFaces = new List<BlockFace>();
 
-	public static void RegisterBlock(BaseEntity entity)
+	private static List<Bounds> changedRegions = new List<Bounds>();
+
+	private static int regionsBase;
+
+	private const int MaxChangedRegions = 1024;
+
+	private const float RegionReach = 7f;
+
+	private static int RegionCount => regionsBase + changedRegions.Count;
+
+	public static bool RegisterBlock(BaseEntity entity)
 	{
 		if (entity.faces == null)
 		{
-			return;
+			return false;
 		}
 		bool flag = PrefabAttribute.server.Find<RoomPortalDefinition>(entity.prefabID) != null;
 		if (!flag)
@@ -66,6 +83,7 @@ public class RoomEntityBridge
 		{
 			portalHosts.TryAdd(entity);
 		}
+		return flag;
 	}
 
 	public static void UnregisterBlock(BaseEntity entity)
@@ -76,8 +94,7 @@ public class RoomEntityBridge
 	public static void Clear()
 	{
 		portalHosts.Clear();
-		deployableRooms.Clear();
-		playerRooms.Clear();
+		ForgetRooms();
 	}
 
 	public static bool IsVisionBlockingFiller(BaseEntity entity)
@@ -126,46 +143,75 @@ public class RoomEntityBridge
 		return null;
 	}
 
-	public static void GatherPortalHosts(List<RoomPortalBuilder.PortalHost> hosts)
+	public static bool AddPortals(BaseEntity host)
 	{
-		List<(BlockFace, BlockFace)> list = Pool.Get<List<(BlockFace, BlockFace)>>();
+		bool permanentlyOpen = PrefabAttribute.server.Find<RoomPortalDefinition>(host.prefabID) == null;
+		return RoomPortalBuilder.AddHost(host.faces, permanentlyOpen);
+	}
+
+	public static void CreateAllPortals()
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BaseEntity> enumerator = portalHosts.GetEnumerator();
 		try
 		{
-			for (int num = portalHosts.Count - 1; num >= 0; num--)
+			while (enumerator.MoveNext())
 			{
-				BaseEntity baseEntity = portalHosts[num];
-				if ((Object)(object)baseEntity == (Object)null || baseEntity.IsDestroyed || baseEntity.faces == null)
+				BaseEntity current = enumerator.Current;
+				if (!((Object)(object)current == (Object)null) && !current.IsDestroyed && current.faces != null)
 				{
-					portalHosts.RemoveAt(num);
-				}
-				else
-				{
-					RoomPortalDefinition roomPortalDefinition = PrefabAttribute.server.Find<RoomPortalDefinition>(baseEntity.prefabID);
-					BaseEntity filler = null;
-					bool blocksVision = false;
-					if (roomPortalDefinition != null)
-					{
-						filler = FindFiller(baseEntity, roomPortalDefinition, out blocksVision);
-					}
-					list.Clear();
-					RoomPortalBuilder.GatherOpposingPairs(baseEntity.faces, list);
-					foreach (var (faceA, faceB) in list)
-					{
-						hosts.Add(new RoomPortalBuilder.PortalHost
-						{
-							FaceA = faceA,
-							FaceB = faceB,
-							PermanentlyOpen = (roomPortalDefinition == null),
-							Filler = filler,
-							FillerBlocksVision = blocksVision
-						});
-					}
+					AddPortals(current);
 				}
 			}
 		}
 		finally
 		{
-			Pool.FreeUnmanaged<(BlockFace, BlockFace)>(ref list);
+			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+		RefreshFillers();
+	}
+
+	public static void ReleaseAllPortals()
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BaseEntity> enumerator = portalHosts.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BaseEntity current = enumerator.Current;
+				if ((Object)(object)current != (Object)null && current.faces != null)
+				{
+					RoomPortalBuilder.RemoveHost(current.faces);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+	}
+
+	public static void RefreshFillers()
+	{
+		for (int num = portalHosts.Count - 1; num >= 0; num--)
+		{
+			BaseEntity baseEntity = portalHosts[num];
+			if ((Object)(object)baseEntity == (Object)null || baseEntity.IsDestroyed || baseEntity.faces == null)
+			{
+				portalHosts.RemoveAt(num);
+			}
+			else
+			{
+				RoomPortalDefinition roomPortalDefinition = PrefabAttribute.server.Find<RoomPortalDefinition>(baseEntity.prefabID);
+				if (!(roomPortalDefinition == null))
+				{
+					BaseEntity filler = FindFiller(baseEntity, roomPortalDefinition, out var visionBlocker);
+					RoomPortalBuilder.SetFiller(baseEntity.faces, filler, visionBlocker);
+				}
+			}
 		}
 	}
 
@@ -198,16 +244,23 @@ public class RoomEntityBridge
 
 	private static CachedRoom Resolve(BaseEntity deployable)
 	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		if (deployableRooms.TryGetValue(deployable, out var value) && IsCacheLive(in value))
 		{
 			return value;
 		}
-		Room room = ResolveRoomNear(deployable);
+		Vector3 position = ProbePosition(deployable);
+		Room room = ResolveRoomNear(position);
 		value = new CachedRoom
 		{
 			Room = room,
 			Generation = (room?.Generation ?? 0),
-			PartitionVersion = RoomOcclusionManager.PartitionVersion
+			Position = position,
+			Regions = RegionCount
 		};
 		if (room != null)
 		{
@@ -219,7 +272,8 @@ public class RoomEntityBridge
 
 	private static bool IsCacheLive(in CachedRoom cached)
 	{
-		if (cached.PartitionVersion != RoomOcclusionManager.PartitionVersion)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		if (ChangedNear(cached.Position, cached.Regions))
 		{
 			return false;
 		}
@@ -307,27 +361,41 @@ public class RoomEntityBridge
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 position = ((Component)player).transform.position;
-		if (playerRooms.TryGetValue(player, out var value) && value.PartitionVersion == RoomOcclusionManager.PartitionVersion && (value.Room == null || (value.Room.Generation == value.Generation && value.Room.Faces.Count > 0)))
+		if (playerRooms.TryGetValue(player, out var value) && (value.Room == null || (value.Room.Generation == value.Generation && value.Room.Faces.Count > 0)))
 		{
 			Vector3 val = value.Position - position;
 			if (val.sqrMagnitude < 0.25f)
 			{
-				return value.Room;
+				if (value.PartitionVersion == RoomOcclusionManager.PartitionVersion)
+				{
+					return value.Room;
+				}
+				if (value.Position == position && !ChangedNear(ProbePosition(player), value.Regions))
+				{
+					value.PartitionVersion = RoomOcclusionManager.PartitionVersion;
+					value.Regions = RegionCount;
+					playerRooms[player] = value;
+					return value.Room;
+				}
 			}
 		}
-		Room room = ResolveRoomNear(player);
+		Room room = ResolveRoomNear((BaseEntity)player, 4f);
 		playerRooms[player] = new CachedPlayerRoom
 		{
 			Room = room,
 			Generation = (room?.Generation ?? 0),
 			PartitionVersion = RoomOcclusionManager.PartitionVersion,
+			Regions = RegionCount,
 			Position = position
 		};
 		return room;
@@ -368,14 +436,28 @@ public class RoomEntityBridge
 		return result;
 	}
 
-	private static Room ResolveRoomNear(BaseEntity entity, float radius = 4f)
+	private static Vector3 ProbePosition(BaseEntity entity)
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 position = ((Component)entity).transform.TransformPoint(entity.bounds.center);
+		return ((Component)entity).transform.TransformPoint(entity.bounds.center);
+	}
+
+	private static Room ResolveRoomNear(BaseEntity entity, float radius = 4f)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		return ResolveRoomNear(ProbePosition(entity), radius);
+	}
+
+	private static Room ResolveRoomNear(Vector3 position, float radius = 4f)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		if (!RoomOcclusionManager.RoomIndex.AnyNear(position, radius + 3f))
+		{
+			return null;
+		}
 		probeEntities.Clear();
 		probeFaces.Clear();
 		Vis.Entities(position, radius, probeEntities, 2097152, (QueryTriggerInteraction)1);
@@ -389,9 +471,52 @@ public class RoomEntityBridge
 		return ResolveRoomAt(position, probeFaces);
 	}
 
-	public static BaseEntity FindFiller(BaseEntity host, RoomPortalDefinition portalDef, out bool blocksVision)
+	public static void OnRegionChanged(Bounds bounds)
 	{
-		blocksVision = false;
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		if (deployableRooms.Count != 0 || playerRooms.Count != 0)
+		{
+			if (changedRegions.Count >= 1024)
+			{
+				int num = changedRegions.Count / 2;
+				changedRegions.RemoveRange(0, num);
+				regionsBase += num;
+			}
+			changedRegions.Add(bounds);
+		}
+	}
+
+	public static void ForgetRooms()
+	{
+		deployableRooms.Clear();
+		playerRooms.Clear();
+		changedRegions.Clear();
+		regionsBase = 0;
+	}
+
+	private static bool ChangedNear(Vector3 position, int since)
+	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		if (since < regionsBase)
+		{
+			return true;
+		}
+		for (int i = since - regionsBase; i < changedRegions.Count; i++)
+		{
+			Bounds val = changedRegions[i];
+			if (val.SqrDistance(position) <= 49f)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static BaseEntity FindFiller(BaseEntity host, RoomPortalDefinition portalDef, out RoomVisionBlocker visionBlocker)
+	{
+		visionBlocker = null;
 		if (portalDef.FillerSocketNames == null)
 		{
 			return null;
@@ -421,9 +546,9 @@ public class RoomEntityBridge
 				BaseEntity owner = connections[k].owner;
 				if (!((Object)(object)owner == (Object)null) && !owner.IsDestroyed)
 				{
-					if (PrefabAttribute.server.Find<RoomVisionBlocker>(owner.prefabID) != null)
+					visionBlocker = PrefabAttribute.server.Find<RoomVisionBlocker>(owner.prefabID);
+					if (visionBlocker != null)
 					{
-						blocksVision = true;
 						return owner;
 					}
 					if ((Object)(object)baseEntity == (Object)null)

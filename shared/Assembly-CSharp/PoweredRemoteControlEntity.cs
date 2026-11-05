@@ -185,7 +185,10 @@ public class PoweredRemoteControlEntity : IOEntity, IRemoteControllable, IAdminU
 	public override void UpdateHasPower(int inputAmount, int inputSlot)
 	{
 		base.UpdateHasPower(inputAmount, inputSlot);
-		UpdateRCAccess(IsPowered());
+		if (!IsStatic())
+		{
+			UpdateRCAccess(IsPowered());
+		}
 	}
 
 	public void UpdateRCAccess(bool isOnline)
@@ -285,8 +288,8 @@ public class PoweredRemoteControlEntity : IOEntity, IRemoteControllable, IAdminU
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_SetID(RPCMessage msg)
 	{
 		string oldID = msg.read.String();
@@ -315,9 +318,9 @@ public class PoweredRemoteControlEntity : IOEntity, IRemoteControllable, IAdminU
 	}
 
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

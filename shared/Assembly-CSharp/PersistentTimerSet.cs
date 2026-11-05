@@ -32,6 +32,7 @@ public class PersistentTimerSet
 				PersistentTimer val = Pool.Get<PersistentTimer>();
 				val.id = timer.Id;
 				val.remaining = timer.RemainingFrom(cachedTime);
+				val.duration = timer.Duration;
 				into.Add(val);
 			}
 		}
@@ -50,7 +51,7 @@ public class PersistentTimerSet
 			{
 				if (item.remaining > 0f)
 				{
-					persistentTimer.Start(item.remaining);
+					persistentTimer.Resume(item.remaining, item.duration);
 				}
 				else
 				{
@@ -64,20 +65,12 @@ public class PersistentTimerSet
 	{
 		foreach (PersistentTimer timer in timers)
 		{
-			if (!timer.carryOnReplace)
+			if (timer.carryOnReplace)
 			{
-				continue;
-			}
-			PersistentTimer persistentTimer = other.Find(timer.Id);
-			if (persistentTimer != null)
-			{
-				if (timer.IsRunning)
+				PersistentTimer persistentTimer = other.Find(timer.Id);
+				if (persistentTimer != null)
 				{
-					persistentTimer.Start(timer.Remaining);
-				}
-				else
-				{
-					persistentTimer.Stop();
+					timer.CopyTo(persistentTimer);
 				}
 			}
 		}

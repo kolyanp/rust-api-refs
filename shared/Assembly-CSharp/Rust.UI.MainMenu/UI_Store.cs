@@ -52,9 +52,6 @@ public class UI_Store : UI_Page
 
 	public UI_StoreCheckoutResultPage checkoutResultPagePrefab;
 
-	[SerializeField]
-	private GameObject newHeaderButtonTag;
-
 	public static int CurrentWeekID;
 
 	private const string CART_KEY = "STORE_CART_ITEMS";

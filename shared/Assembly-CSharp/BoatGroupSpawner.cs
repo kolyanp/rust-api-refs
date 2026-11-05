@@ -23,7 +23,7 @@ public class BoatGroupSpawner : BaseMonoBehaviour
 		}
 	}
 
-	public void SpawnBoatGroup(HashSet<RHIB> list, BoatAI.AILoadMode loadMode = BoatAI.AILoadMode.LoadAi, bool spawnsPT = true, ScientistBoatOilrigManager manager = null)
+	public void SpawnBoatGroup(HashSet<RHIB> list, BoatAI.AILoadMode loadMode = BoatAI.AILoadMode.LoadAi, bool spawnsPT = true)
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -47,8 +47,8 @@ public class BoatGroupSpawner : BaseMonoBehaviour
 		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 val = new Vector2(((Component)this).transform.position.x, ((Component)this).transform.position.z);
 		if (!BoatAI.FindBoatSpawnPositionInRadius(val, radius, out var position))
 		{
@@ -74,7 +74,6 @@ public class BoatGroupSpawner : BaseMonoBehaviour
 			componentInChildren.MoveTo(((Component)this).transform.position);
 			componentInChildren.SetProtectionArea(((Component)this).transform.position, protectionAreaRadius);
 			componentInChildren.LoadMode = loadMode;
-			componentInChildren.SetOilRigManager(manager);
 		}
 		Interface.CallHook("OnBoatGroupSpawned", this, position, val4, list, flag, spawnsPT);
 	}

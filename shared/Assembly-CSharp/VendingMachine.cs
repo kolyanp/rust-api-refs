@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Math;
 using Facepunch.Rust;
@@ -270,6 +271,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(1626480840u, "RPC_AddSellOrder", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(1626480840u, "RPC_AddSellOrder", this, player, 3f))
 						{
 							return true;
@@ -307,6 +312,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(169239598u, "RPC_Broadcast", this, player, 1uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(169239598u, "RPC_Broadcast", this, player, 3f))
 						{
 							return true;
@@ -344,6 +353,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(330108049u, "RPC_DeleteAllSellOrders", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(330108049u, "RPC_DeleteAllSellOrders", this, player, 3f))
 						{
 							return true;
@@ -381,6 +394,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(3680901137u, "RPC_DeleteSellOrder", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(3680901137u, "RPC_DeleteSellOrder", this, player, 3f))
 						{
 							return true;
@@ -418,6 +435,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(1788835019u, "RPC_MoveSellOrder", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(1788835019u, "RPC_MoveSellOrder", this, player, 3f))
 						{
 							return true;
@@ -566,6 +587,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(3346513099u, "RPC_RotateVM", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(3346513099u, "RPC_RotateVM", this, player, 3f))
 						{
 							return true;
@@ -603,6 +628,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(2892597292u, "RPC_SetSkinMode", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(2892597292u, "RPC_SetSkinMode", this, player, 3f))
 						{
 							return true;
@@ -640,6 +669,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(1012779214u, "RPC_UpdateShopName", this, player, 1uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(1012779214u, "RPC_UpdateShopName", this, player, 3f))
 						{
 							return true;
@@ -815,8 +848,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void SV_RequestLongTermData(RPCMessage msg)
 	{
@@ -835,8 +868,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SV_RequestPurchaseData(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -894,6 +927,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		uniqueCustomers.Clear();
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private VendingMachinePurchaseHistoryMessage GetProto(HistoryCategory category, int minutes)
 	{
 		if (minutes == 0)
@@ -916,6 +950,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return val;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private List<VendingMachinePurchaseHistoryEntryMessage> GetEntriesProto(List<PurchaseDetails> details)
 	{
 		List<VendingMachinePurchaseHistoryEntryMessage> list = Pool.Get<List<VendingMachinePurchaseHistoryEntryMessage>>();
@@ -945,6 +980,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return list;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private List<VendingMachinePurchaseHistoryEntrySmallMessage> GetEntriesProtoSmall(List<PurchaseDetails> details)
 	{
 		List<VendingMachinePurchaseHistoryEntrySmallMessage> list = Pool.Get<List<VendingMachinePurchaseHistoryEntrySmallMessage>>();
@@ -955,6 +991,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return list;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private VendingMachinePurchaseHistoryEntryMessage GetEntryProto(PurchaseDetails details)
 	{
 		VendingMachinePurchaseHistoryEntryMessage val = Pool.Get<VendingMachinePurchaseHistoryEntryMessage>();
@@ -968,6 +1005,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return val;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private VendingMachinePurchaseHistoryEntrySmallMessage GetEntryProtoSmall(PurchaseDetails details)
 	{
 		VendingMachinePurchaseHistoryEntrySmallMessage val = Pool.Get<VendingMachinePurchaseHistoryEntrySmallMessage>();
@@ -1057,7 +1095,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 
 	public int GetRepeatCustomers()
 	{
-		return uniqueCustomers.Count((KeyValuePair<ulong, int> c) => c.Value > 1);
+		return Enumerable.Count(uniqueCustomers, (KeyValuePair<ulong, int> c) => c.Value > 1);
 	}
 
 	public int GetBestCustomer()
@@ -1475,9 +1513,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_CancelVendingSounds"));
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(9f)]
-	[RPC_Server]
 	public void BuyItemRentableShop(RPCMessage rpc)
 	{
 		if (GetParentEntity() is RentableShop)
@@ -1486,9 +1524,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void BuyItem(RPCMessage rpc)
 	{
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
@@ -1543,6 +1581,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	{
 	}
 
+	[PoolAnalyzerNonCaching]
 	private void GetItemsToSell(SellOrder sellOrder, List<Item> items)
 	{
 		if (sellOrder.itemToSellIsBP)
@@ -1568,8 +1607,6 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	public int? GetSlotsRequiredForTransaction(int sellOrderId, int numberOfTransactions)
 	{
 		SellOrder val = sellOrders.sellOrders[sellOrderId];
-		List<Item> items = Pool.Get<List<Item>>();
-		GetItemsToSell(val, items);
 		int num = val.itemToSellAmount * numberOfTransactions;
 		ItemDefinition itemDefinition = ItemManager.FindItemDefinition(val.itemToSellID);
 		if (!Object.op_Implicit((Object)(object)itemDefinition))
@@ -1589,10 +1626,10 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03db: Unknown result type (might be due to invalid IL or missing references)
 		if (sellOrderId < 0 || sellOrderId >= sellOrders.sellOrders.Count)
 		{
 			return false;
@@ -1620,6 +1657,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		ItemDefinition itemDefinition2 = ItemManager.FindItemDefinition(val.currencyID);
 		if (!itemDefinition.IsAllowed(CurrentEraRestriction) || !itemDefinition2.IsAllowed(CurrentEraRestriction))
 		{
+			Pool.FreeUnmanaged<Item>(ref list);
 			return false;
 		}
 		if ((Object)(object)itemDefinition == (Object)(object)ItemManager.Items.Scrap && val.receivedQuantityMultiplier != 1f)
@@ -1782,8 +1820,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public virtual void RPC_Broadcast(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1799,8 +1838,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetSkinMode(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -1812,23 +1852,20 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	}
 
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	public virtual void RPC_UpdateShopName(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
 		string text = msg.read.String(32);
-		if (CanPlayerAdmin(player))
+		if (CanPlayerAdmin(player) && Interface.CallHook("OnVendingShopRename", this, text, player) == null && text != shopName)
 		{
-			if (Interface.CallHook("OnVendingShopRename", this, text, player) != null)
-			{
-				return;
-			}
 			shopName = text;
 			nameLastEditedBy = player.userID.Get();
 			UpdateMapMarker();
 			Facepunch.Rust.Analytics.Azure.OnUGCCreated(player, this, "vending_machine_name", text.Length);
+			SendNetworkUpdate();
 		}
-		SendNetworkUpdate();
 	}
 
 	public void UpdateMapMarkerPosition()
@@ -1906,8 +1943,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenShop(RPCMessage msg)
 	{
 		if (OccupiedCheck(msg.player) && Interface.CallHook("OnVendingShopOpen", this, msg.player) == null)
@@ -1946,6 +1983,14 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		if (obj is bool)
 		{
 			return (bool)obj;
+		}
+		if (item.parent == null)
+		{
+			if (!((Object)(object)player == (Object)null))
+			{
+				return CanPlayerAdmin(player);
+			}
+			return true;
 		}
 		BasePlayer basePlayer = item.GetRootContainer()?.GetOwnerPlayer();
 		if (transactionActive || industrialItemIncoming)
@@ -2012,6 +2057,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_DeleteSellOrder(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -2032,8 +2078,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_DeleteAllSellOrders(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -2053,6 +2100,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	}
 
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_MoveSellOrder(RPCMessage msg)
 	{
@@ -2073,6 +2121,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	}
 
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_RotateVM(RPCMessage msg)
 	{
@@ -2093,6 +2142,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_AddSellOrder(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

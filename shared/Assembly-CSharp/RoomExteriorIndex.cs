@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class RoomExteriorIndex
 {
-	private sealed class Component : IPooled
+	private sealed class RoomCluster : IPooled
 	{
 		public readonly List<Room> Rooms = new List<Room>();
 
@@ -25,11 +25,11 @@ public class RoomExteriorIndex
 		}
 	}
 
-	private readonly Dictionary<Room, Component> roomComponents = new Dictionary<Room, Component>();
+	private readonly Dictionary<Room, RoomCluster> roomClusters = new Dictionary<Room, RoomCluster>();
 
-	private readonly Dictionary<ulong, Component> blockComponents = new Dictionary<ulong, Component>();
+	private readonly Dictionary<ulong, RoomCluster> blockClusters = new Dictionary<ulong, RoomCluster>();
 
-	private readonly HashSet<Component> components = new HashSet<Component>();
+	private readonly HashSet<RoomCluster> clusters = new HashSet<RoomCluster>();
 
 	public bool IsBuilt { get; private set; }
 
@@ -37,14 +37,14 @@ public class RoomExteriorIndex
 
 	public void Clear()
 	{
-		foreach (Component component in components)
+		foreach (RoomCluster cluster in clusters)
 		{
-			Component current = component;
-			Pool.Free<Component>(ref current);
+			RoomCluster current = cluster;
+			Pool.Free<RoomCluster>(ref current);
 		}
-		components.Clear();
-		roomComponents.Clear();
-		blockComponents.Clear();
+		clusters.Clear();
+		roomClusters.Clear();
+		blockClusters.Clear();
 		FailedOpenCount = 0;
 		IsBuilt = false;
 	}
@@ -56,7 +56,8 @@ public class RoomExteriorIndex
 			Clear();
 			try
 			{
-				BuildComponents(rooms);
+				Measure(rooms);
+				BuildClusters(rooms);
 				IsBuilt = true;
 			}
 			catch
@@ -67,71 +68,50 @@ public class RoomExteriorIndex
 		}
 	}
 
-	public void Repair(List<Room> created, List<Room> dissolved)
+	public void Repair(List<Room> created, List<Room> dissolved, List<Room> changed, List<Room> relabelled)
 	{
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		if (!IsBuilt)
 		{
 			throw new InvalidOperationException("Build the exterior index before repairing it.");
 		}
 		using (TimeWarning.New("RoomOcclusion.RepairOutsideRooms"))
 		{
-			HashSet<Component> hashSet = Pool.Get<HashSet<Component>>();
+			HashSet<RoomCluster> hashSet = Pool.Get<HashSet<RoomCluster>>();
 			List<Room> list = Pool.Get<List<Room>>();
 			try
 			{
-				foreach (Room item in dissolved)
+				Measure(created);
+				Measure(changed);
+				LeaveClusters(dissolved, hashSet);
+				LeaveClusters(changed, hashSet);
+				FindJoinedClusters(created, hashSet);
+				FindJoinedClusters(changed, hashSet);
+				foreach (RoomCluster item in hashSet)
 				{
-					if (roomComponents.TryGetValue(item, out var value))
+					foreach (Room room in item.Rooms)
 					{
-						hashSet.Add(value);
-					}
-					roomComponents.Remove(item);
-				}
-				foreach (Room item2 in created)
-				{
-					Enumerator<BlockFace> enumerator2 = item2.Faces.GetEnumerator();
-					try
-					{
-						while (enumerator2.MoveNext())
-						{
-							ulong blockId = enumerator2.Current.BlockId;
-							if (blockId != 0L && blockComponents.TryGetValue(blockId, out var value2))
-							{
-								hashSet.Add(value2);
-							}
-						}
-					}
-					finally
-					{
-						((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
-					}
-				}
-				foreach (Component item3 in hashSet)
-				{
-					foreach (Room room in item3.Rooms)
-					{
-						if (roomComponents.Remove(room))
+						if (roomClusters.Remove(room))
 						{
 							list.Add(room);
 						}
 					}
-					foreach (ulong block in item3.Blocks)
+					foreach (ulong block in item.Blocks)
 					{
-						blockComponents.Remove(block);
+						blockClusters.Remove(block);
 					}
-					if (item3.FailedOpen)
+					if (item.FailedOpen)
 					{
 						FailedOpenCount--;
 					}
-					components.Remove(item3);
-					Component component = item3;
-					Pool.Free<Component>(ref component);
+					clusters.Remove(item);
+					RoomCluster roomCluster = item;
+					Pool.Free<RoomCluster>(ref roomCluster);
 				}
 				list.AddRange(created);
+				list.AddRange(changed);
 				list.Sort((Room a, Room b) => a.Id.CompareTo(b.Id));
-				BuildComponents(list);
+				BuildClusters(list);
+				relabelled.AddRange(list);
 			}
 			catch
 			{
@@ -141,18 +121,55 @@ public class RoomExteriorIndex
 			finally
 			{
 				Pool.FreeUnmanaged<Room>(ref list);
-				Pool.FreeUnmanaged<Component>(ref hashSet);
+				Pool.FreeUnmanaged<RoomCluster>(ref hashSet);
 			}
 		}
 	}
 
-	private void BuildComponents(List<Room> rooms)
+	private void LeaveClusters(List<Room> rooms, HashSet<RoomCluster> affected)
+	{
+		foreach (Room room in rooms)
+		{
+			if (roomClusters.TryGetValue(room, out var value))
+			{
+				affected.Add(value);
+			}
+			roomClusters.Remove(room);
+		}
+	}
+
+	private void FindJoinedClusters(List<Room> rooms, HashSet<RoomCluster> affected)
+	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		foreach (Room room in rooms)
+		{
+			Enumerator<BlockFace> enumerator2 = room.Faces.GetEnumerator();
+			try
+			{
+				while (enumerator2.MoveNext())
+				{
+					ulong blockId = enumerator2.Current.BlockId;
+					if (blockId != 0L && blockClusters.TryGetValue(blockId, out var value))
+					{
+						affected.Add(value);
+					}
+				}
+			}
+			finally
+			{
+				((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
+			}
+		}
+	}
+
+	private void BuildClusters(List<Room> rooms)
 	{
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		List<int> parents = Pool.Get<List<int>>();
 		Dictionary<ulong, int> dictionary = Pool.Get<Dictionary<ulong, int>>();
-		Dictionary<int, Component> dictionary2 = Pool.Get<Dictionary<int, Component>>();
+		Dictionary<int, RoomCluster> dictionary2 = Pool.Get<Dictionary<int, RoomCluster>>();
 		try
 		{
 			for (int i = 0; i < rooms.Count; i++)
@@ -176,8 +193,8 @@ public class RoomExteriorIndex
 							dictionary.Add(blockId, j);
 							continue;
 						}
-						int num = FindComponent(j);
-						int num2 = FindComponent(value);
+						int num = FindCluster(j);
+						int num2 = FindCluster(value);
 						if (num != num2)
 						{
 							if (parents[num] > parents[num2])
@@ -199,23 +216,23 @@ public class RoomExteriorIndex
 			}
 			for (int k = 0; k < rooms.Count; k++)
 			{
-				int key = FindComponent(k);
+				int key = FindCluster(k);
 				if (!dictionary2.TryGetValue(key, out var value2))
 				{
-					value2 = Pool.Get<Component>();
-					components.Add(value2);
+					value2 = Pool.Get<RoomCluster>();
+					clusters.Add(value2);
 					dictionary2.Add(key, value2);
 				}
 				value2.Rooms.Add(rooms[k]);
-				roomComponents.Add(rooms[k], value2);
+				roomClusters.Add(rooms[k], value2);
 			}
 			foreach (KeyValuePair<ulong, int> item in dictionary)
 			{
-				Component component = roomComponents[rooms[item.Value]];
-				component.Blocks.Add(item.Key);
-				blockComponents.Add(item.Key, component);
+				RoomCluster roomCluster = roomClusters[rooms[item.Value]];
+				roomCluster.Blocks.Add(item.Key);
+				blockClusters.Add(item.Key, roomCluster);
 			}
-			foreach (Component value3 in dictionary2.Values)
+			foreach (RoomCluster value3 in dictionary2.Values)
 			{
 				value3.FailedOpen = Classify(value3);
 				if (value3.FailedOpen)
@@ -226,11 +243,11 @@ public class RoomExteriorIndex
 		}
 		finally
 		{
-			Pool.FreeUnmanaged<int, Component>(ref dictionary2);
+			Pool.FreeUnmanaged<int, RoomCluster>(ref dictionary2);
 			Pool.FreeUnmanaged<ulong, int>(ref dictionary);
 			Pool.FreeUnmanaged<int>(ref parents);
 		}
-		int FindComponent(int index)
+		int FindCluster(int index)
 		{
 			int num5 = index;
 			while (parents[num5] >= 0)
@@ -247,26 +264,27 @@ public class RoomExteriorIndex
 		}
 	}
 
-	private static bool Classify(Component component)
+	private static bool Classify(RoomCluster cluster)
 	{
 		Room room = null;
 		float num = 0f;
 		int num2 = 0;
-		foreach (Room room2 in component.Rooms)
+		foreach (Room room2 in cluster.Rooms)
 		{
 			room2.IsOutside = false;
 			if (room2.Faces.Count != 0)
 			{
-				float num3 = Outwardness(room2, out var outwardFaces);
-				bool flag = room == null || num3 > num;
-				if (room != null && num3 >= 0f && num >= 0f)
+				float outwardness = room2.Outwardness;
+				int outwardFaces = room2.OutwardFaces;
+				bool flag = room == null || outwardness > num;
+				if (room != null && outwardness >= 0f && num >= 0f)
 				{
-					flag = outwardFaces > num2 || (outwardFaces == num2 && num3 > num);
+					flag = outwardFaces > num2 || (outwardFaces == num2 && outwardness > num);
 				}
 				if (flag)
 				{
 					room = room2;
-					num = num3;
+					num = outwardness;
 					num2 = outwardFaces;
 				}
 			}
@@ -277,7 +295,7 @@ public class RoomExteriorIndex
 		}
 		if (num < 0f)
 		{
-			foreach (Room room3 in component.Rooms)
+			foreach (Room room3 in cluster.Rooms)
 			{
 				room3.IsOutside = room3.Faces.Count > 0;
 			}
@@ -285,6 +303,14 @@ public class RoomExteriorIndex
 		}
 		room.IsOutside = true;
 		return false;
+	}
+
+	private static void Measure(List<Room> rooms)
+	{
+		foreach (Room room in rooms)
+		{
+			room.Outwardness = Outwardness(room, out room.OutwardFaces);
+		}
 	}
 
 	public static float Outwardness(Room room)

@@ -20,15 +20,15 @@ public class RoomOcclusionManager
 
 	private static bool bringUpFailed;
 
-	private static List<Portal> portals = new List<Portal>();
-
 	private static RoomSpatialIndex roomIndex = new RoomSpatialIndex();
 
 	private static RoomExteriorIndex exteriorIndex = new RoomExteriorIndex();
 
-	private static bool portalsDirty;
+	private static bool fillersDirty;
 
 	public static int PortalStateVersion;
+
+	private static ListHashSet<Portal> changedPortals = new ListHashSet<Portal>();
 
 	public static int PartitionVersion;
 
@@ -50,13 +50,29 @@ public class RoomOcclusionManager
 
 	public static RoomSolver Solver => solver;
 
-	public static List<Portal> Portals => portals;
-
 	public static RoomSpatialIndex RoomIndex => roomIndex;
 
 	public static bool PartitionIsLive => partitionActive;
 
 	private static bool ShouldMaintainPartition => RoomOcclusion.occlusion != 0;
+
+	public static void GatherPortals(List<Portal> into)
+	{
+		if (solver == null)
+		{
+			return;
+		}
+		foreach (Room room in solver.Rooms)
+		{
+			foreach (Portal portal in room.Portals)
+			{
+				if (portal.RoomA == room)
+				{
+					into.Add(portal);
+				}
+			}
+		}
+	}
 
 	public static void Initialize()
 	{
@@ -92,7 +108,10 @@ public class RoomOcclusionManager
 		{
 			dirty.TryAdd(face);
 		}
-		RoomEntityBridge.RegisterBlock(entity);
+		if (RoomEntityBridge.RegisterBlock(entity) && RoomEntityBridge.AddPortals(entity))
+		{
+			fillersDirty = true;
+		}
 	}
 
 	public static void OnEntitySpawned(BaseEntity entity)
@@ -118,17 +137,43 @@ public class RoomOcclusionManager
 	public static void OnPortalStateChanged(BaseEntity portal, bool opened)
 	{
 		PortalStateVersion++;
-		if (!opened)
-		{
-			return;
-		}
 		try
 		{
-			OnPortalOpened(portal);
+			QueueHostPortals(portal);
+			if (opened)
+			{
+				OnPortalOpened(portal);
+			}
 		}
 		catch (Exception ex)
 		{
 			Debug.LogError((object)ex);
+		}
+	}
+
+	public static void OnPortalChanged(Portal portal)
+	{
+		PortalStateVersion++;
+		changedPortals.TryAdd(portal);
+	}
+
+	private static void QueueHostPortals(BaseEntity filler)
+	{
+		if (!partitionActive)
+		{
+			return;
+		}
+		BaseEntity baseEntity = RoomEntityBridge.FindPortalHost(filler);
+		if (baseEntity?.faces == null)
+		{
+			return;
+		}
+		foreach (BlockFace face in baseEntity.faces)
+		{
+			if (face.Portal != null)
+			{
+				changedPortals.TryAdd(face.Portal);
+			}
 		}
 	}
 
@@ -147,7 +192,7 @@ public class RoomOcclusionManager
 	{
 		if (subscribed && RoomEntityBridge.IsVisionBlockingFiller(filler))
 		{
-			portalsDirty = true;
+			fillersDirty = true;
 			PortalStateVersion++;
 		}
 	}
@@ -185,7 +230,7 @@ public class RoomOcclusionManager
 				BringUp();
 			}
 		}
-		else if (dirty.Count > 0 || portalsDirty || PortalStateVersion != visibilityPortalVersion)
+		else if (dirty.Count > 0 || solver.HasEmptiedRooms || fillersDirty || PortalStateVersion != visibilityPortalVersion)
 		{
 			Repartition();
 		}
@@ -227,7 +272,7 @@ public class RoomOcclusionManager
 			facesEnabled = false;
 			partitionActive = false;
 			RoomOcclusionDelivery.Shutdown();
-			RoomPortalBuilder.ClearPortals(portals);
+			RoomEntityBridge.ReleaseAllPortals();
 			RoomEntityBridge.Clear();
 			roomIndex.Clear();
 			exteriorIndex.Clear();
@@ -246,12 +291,14 @@ public class RoomOcclusionManager
 				Pool.FreeUnmanaged<BlockFace>(ref dirty);
 			}
 			ReleaseAllFaces();
-			portalsDirty = false;
+			changedPortals.Clear();
+			fillersDirty = false;
 			PortalStateVersion = 0;
 			visibilityPortalVersion = 0;
 			FailedOpen = false;
 			debugRoomIds.Clear();
 			nextDebugRoomId = 1;
+			RoomNetworkGroups.Changed();
 		}
 	}
 
@@ -278,23 +325,32 @@ public class RoomOcclusionManager
 
 	private static void ConnectAllFaces()
 	{
-		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		List<BlockFace> list = Pool.Get<List<BlockFace>>();
 		try
 		{
-			while (enumerator.MoveNext())
+			Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
+			try
 			{
-				if (enumerator.Current is BaseEntity { IsDestroyed: false, faces: not null } baseEntity)
+				while (enumerator.MoveNext())
 				{
-					baseEntity.GetEntityLinks();
-					BlockFaceOps.RefreshGraph(baseEntity.faces);
+					if (enumerator.Current is BaseEntity { IsDestroyed: false, faces: not null } baseEntity)
+					{
+						baseEntity.GetEntityLinks();
+						list.AddRange(baseEntity.faces);
+					}
 				}
 			}
+			finally
+			{
+				((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			}
+			BlockFace.RefreshFaceLinks(list);
 		}
 		finally
 		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			Pool.FreeUnmanaged<BlockFace>(ref list);
 		}
 	}
 
@@ -321,8 +377,11 @@ public class RoomOcclusionManager
 
 	private static void Repartition()
 	{
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RoomOcclusion.Repartition"))
 		{
+			List<Room> list = Pool.Get<List<Room>>();
 			try
 			{
 				if (!exteriorIndex.IsBuilt)
@@ -330,45 +389,42 @@ public class RoomOcclusionManager
 					RebuildEverything();
 					return;
 				}
-				bool flag = dirty.Count > 0;
-				bool flag2 = flag || portalsDirty;
+				bool num = dirty.Count > 0 || solver.HasEmptiedRooms;
 				int nextRoomId = solver.NextRoomId;
-				if (flag)
+				if (num)
 				{
-					for (int num = dirty.Count - 1; num >= 0; num--)
+					for (int num2 = dirty.Count - 1; num2 >= 0; num2--)
 					{
-						if (dirty[num].Edges.Count == 0)
+						if (dirty[num2].Edges.Count == 0)
 						{
-							dirty.RemoveAt(num);
+							dirty.RemoveAt(num2);
 						}
 					}
 					solver.Repair(dirty);
-					List<Room> list = Pool.Get<List<Room>>();
-					try
+					RoomPortalBuilder.Sync((IList<BlockFace>)solver.Moved);
+					OnRoomsChanging(solver.Changed);
+					exteriorIndex.Repair(solver.Created, solver.Dissolved, solver.Changed, list);
+					list.AddRange(solver.Dissolved);
+					StampRoomMetadata(solver.Created);
+					StampRoomMetadata(solver.Changed);
+					PartitionVersion++;
+					OnRoomsDissolved();
+					OnRoomsReflooded(solver.Created);
+					OnRoomsReflooded(solver.Changed);
+					foreach (Room item in solver.Created)
 					{
-						int num2 = solver.Rooms.Count - 1;
-						while (num2 >= 0 && solver.Rooms[num2].Id >= nextRoomId)
-						{
-							list.Add(solver.Rooms[num2]);
-							num2--;
-						}
-						list.Reverse();
-						exteriorIndex.Repair(list, solver.Dissolved);
-						StampRoomMetadata(list);
-						PartitionVersion++;
-						OnRoomsDissolved();
-						OnRoomsReflooded(list);
+						OnRegionChanged(item.Bounds);
 					}
-					finally
+					foreach (Room item2 in solver.Changed)
 					{
-						Pool.FreeUnmanaged<Room>(ref list);
+						OnRegionChanged(item2.Bounds);
 					}
 				}
-				if (flag2)
+				if (fillersDirty)
 				{
-					RebuildPortals();
+					RoomEntityBridge.RefreshFillers();
 				}
-				RebuildVisibility(nextRoomId);
+				RefreshVisibility(list, nextRoomId);
 			}
 			catch (Exception e)
 			{
@@ -377,17 +433,36 @@ public class RoomOcclusionManager
 			finally
 			{
 				dirty.Clear();
-				portalsDirty = false;
+				changedPortals.Clear();
+				fillersDirty = false;
+				Pool.FreeUnmanaged<Room>(ref list);
+			}
+		}
+	}
+
+	private static void OnRoomsChanging(List<Room> rooms)
+	{
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		foreach (Room room in rooms)
+		{
+			roomIndex.Remove(room);
+			OnRegionChanged(room.Bounds);
+			if (!room.IsOutside)
+			{
+				RoomOcclusionDelivery.InvalidateRegion(room.Bounds);
 			}
 		}
 	}
 
 	private static void OnRoomsDissolved()
 	{
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		foreach (Room item in solver.Dissolved)
 		{
 			roomIndex.Remove(item);
+			OnRegionChanged(item.Bounds);
 			if (!item.IsOutside)
 			{
 				RoomOcclusionDelivery.InvalidateRegion(item.Bounds);
@@ -409,18 +484,30 @@ public class RoomOcclusionManager
 		}
 	}
 
-	private static void RebuildVisibility(int firstNewRoomId)
+	private static void RebuildVisibility()
 	{
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RoomOcclusion.RebuildVisibility"))
+		{
+			RoomVisibility.Rebuild(solver.Rooms);
+			visibilityPortalVersion = PortalStateVersion;
+			FailedOpen = false;
+			RoomNetworkGroups.Stamp(solver.Rooms);
+		}
+	}
+
+	private static void RefreshVisibility(List<Room> seeds, int firstNewRoomId)
+	{
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("RoomOcclusion.RefreshVisibility"))
 		{
 			List<Room> list = Pool.Get<List<Room>>();
 			try
 			{
-				RoomVisibility.Rebuild(solver.Rooms, list);
+				RoomVisibility.Refresh(seeds, (IList<Portal>)changedPortals, list);
 				visibilityPortalVersion = PortalStateVersion;
 				FailedOpen = false;
-				RoomNetworkGroups.Stamp(solver.Rooms);
+				RoomNetworkGroups.Restamp(seeds);
+				RoomNetworkGroups.Restamp(list);
 				foreach (Room item in list)
 				{
 					if (item.Id < firstNewRoomId)
@@ -437,73 +524,48 @@ public class RoomOcclusionManager
 		}
 	}
 
+	private static void OnRegionChanged(Bounds bounds)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		RoomEntityBridge.OnRegionChanged(bounds);
+		RoomNetworkGroups.OnRegionChanged(bounds);
+	}
+
 	private static void FailOpen(Exception e)
 	{
 		Debug.LogError((object)$"Room occlusion failed and is failing open (everything visible): {e}");
 		FailedOpen = true;
+		RoomNetworkGroups.Changed();
 		exteriorIndex.Clear();
 		RoomVisibility.FailOpen(solver?.Rooms);
 		visibilityPortalVersion = PortalStateVersion;
 		RoomNetworkGroups.ReleaseAll(solver?.Rooms);
 	}
 
-	private static void RebuildPortals()
-	{
-		using (TimeWarning.New("RoomOcclusion.RebuildPortals"))
-		{
-			RoomPortalBuilder.ClearPortals(portals);
-			List<RoomPortalBuilder.PortalHost> hosts = Pool.Get<List<RoomPortalBuilder.PortalHost>>();
-			try
-			{
-				RoomEntityBridge.GatherPortalHosts(hosts);
-				RoomPortalBuilder.Build(hosts, portals);
-			}
-			finally
-			{
-				Pool.FreeUnmanaged<RoomPortalBuilder.PortalHost>(ref hosts);
-			}
-		}
-	}
-
 	private static void RebuildEverything()
 	{
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		if (!subscribed)
 		{
 			return;
 		}
 		using (TimeWarning.New("RoomOcclusion.RebuildEverything"))
 		{
-			List<BlockFace> list = Pool.Get<List<BlockFace>>();
+			List<BlockFace> faces = Pool.Get<List<BlockFace>>();
 			try
 			{
-				Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
-				try
-				{
-					while (enumerator.MoveNext())
-					{
-						if (enumerator.Current is BaseEntity { faces: not null } baseEntity)
-						{
-							list.AddRange(baseEntity.faces);
-							RoomEntityBridge.RegisterBlock(baseEntity);
-						}
-					}
-				}
-				finally
-				{
-					((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
-				}
-				int nextRoomId = solver.NextRoomId;
+				RoomEntityBridge.ReleaseAllPortals();
+				GatherLiveFaces(faces);
 				roomIndex.Clear();
 				exteriorIndex.Clear();
-				solver.Solve(list);
+				solver.Solve(faces);
 				exteriorIndex.Rebuild(solver.Rooms);
 				StampRoomMetadata(solver.Rooms);
 				PartitionVersion++;
+				RoomEntityBridge.ForgetRooms();
 				OnRoomsReflooded(solver.Rooms);
-				RebuildPortals();
-				RebuildVisibility(nextRoomId);
+				RoomEntityBridge.CreateAllPortals();
+				RebuildVisibility();
 			}
 			catch (Exception e)
 			{
@@ -512,9 +574,33 @@ public class RoomOcclusionManager
 			finally
 			{
 				dirty.Clear();
-				portalsDirty = false;
-				Pool.FreeUnmanaged<BlockFace>(ref list);
+				changedPortals.Clear();
+				fillersDirty = false;
+				Pool.FreeUnmanaged<BlockFace>(ref faces);
+				RoomNetworkGroups.Changed();
 			}
+		}
+	}
+
+	private static void GatherLiveFaces(List<BlockFace> faces)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current is BaseEntity { faces: not null } baseEntity)
+				{
+					faces.AddRange(baseEntity.faces);
+					RoomEntityBridge.RegisterBlock(baseEntity);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 

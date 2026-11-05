@@ -18,8 +18,6 @@ public class Impostor : MonoBehaviour, IClientComponent, IPrefabPreProcess
 
 	public bool spriteOutlineAsMesh;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
-
 	private void OnEnable()
 	{
 	}

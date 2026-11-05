@@ -65,7 +65,24 @@ public class ClientEntity : IDisposable
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002a: Expected Obj, but got Unknown
 			_parentId = value;
+			if (value.IsValid)
+			{
+				Entity proto = Proto;
+				if (proto.parent == null)
+				{
+					proto.parent = new ParentInfo();
+				}
+				Proto.parent.uid = value;
+			}
+			else
+			{
+				Proto.parent = null;
+			}
 			SendNetworkUpdate();
 		}
 	}
@@ -421,7 +438,6 @@ public class ClientEntity : IDisposable
 		val.PacketID((Type)9);
 		val.EntityID(NetID);
 		val.UInt32(StringPool.Get(funcName));
-		val.UInt64(sourceConnection?.userid ?? 0);
 		return val;
 	}
 

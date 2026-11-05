@@ -943,15 +943,15 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			{
 				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Skin ID", entity?.skinID);
 			}
-			Vector3? val13 = ((entity != null) ? new Vector3?(((Component)entity).transform.localScale) : ((Vector3?)null));
+			Nullable val13 = ((entity != null) ? new Nullable(((Component)entity).transform.localScale) : ((Nullable)null));
 			Vector3 one = Vector3.one;
 			if (!val13.HasValue || val13.GetValueOrDefault() != one)
 			{
-				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Scale", (entity != null) ? new Vector3?(((Component)entity).transform.localScale) : ((Vector3?)null));
+				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Scale", (entity != null) ? new Nullable(((Component)entity).transform.localScale) : ((Nullable)null));
 			}
 			CUI cui2 = cUI;
 			string name2 = cuiElementContainer.Name;
-			Vector3? val14;
+			Nullable val14;
 			if (entity == null)
 			{
 				val14 = null;
@@ -962,7 +962,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				val14 = rotation.eulerAngles;
 			}
 			CreateOption(cui2, cuiElementContainer, name2, ref offset, val, "Rotation", val14);
-			CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Position", (entity != null) ? new Vector3?(((Component)entity).transform.position) : ((Vector3?)null));
+			CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Position", (entity != null) ? new Nullable(((Component)entity).transform.position) : ((Nullable)null));
 			if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && entity.OwnerID != 0L)
 			{
 				CreateOption(cUI, cuiElementContainer, cuiElementContainer.Name, ref offset, val, "Owner ID", entity.OwnerID);

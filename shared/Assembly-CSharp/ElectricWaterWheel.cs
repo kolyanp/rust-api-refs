@@ -127,6 +127,10 @@ public class ElectricWaterWheel : IOEntity
 
 	private bool isInOpenWater = true;
 
+	private float lastSentWaterSpeed;
+
+	private const float WaterSpeedSendTolerance = 0.05f;
+
 	public static WaterWheelUpdateWorkQueue UpdateWorkQueue = new WaterWheelUpdateWorkQueue();
 
 	private WaterWheelMountable waterWheelMountable
@@ -242,6 +246,7 @@ public class ElectricWaterWheel : IOEntity
 		base.ServerInit();
 		GetWaterInfo();
 		serverWaterSpeed = 1f;
+		lastSentWaterSpeed = serverWaterSpeed;
 		((PersistentObjectWorkQueue<ElectricWaterWheel>)UpdateWorkQueue).Add(this);
 	}
 
@@ -284,8 +289,8 @@ public class ElectricWaterWheel : IOEntity
 	public void WaterUpdate()
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("ElectricWaterWheel.WaterUpdate"))
 		{
 			if (!(TimeSince.op_Implicit(timeSinceWaterUpdate) < 15f))
@@ -296,8 +301,9 @@ public class ElectricWaterWheel : IOEntity
 				{
 					serverWaterSpeed *= GetOceanNoiseSpeed();
 				}
-				if (serverWaterSpeed < 1f)
+				if (serverWaterSpeed < 1f && Mathf.Abs(serverWaterSpeed - lastSentWaterSpeed) > 0.05f)
 				{
+					lastSentWaterSpeed = serverWaterSpeed;
 					SendNetworkUpdate();
 				}
 				timeSinceWaterUpdate = TimeSince.op_Implicit(0f);

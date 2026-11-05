@@ -14,13 +14,13 @@ public class Category_Seasonal
 	public class Seasonal_XMasRefill
 	{
 		[Patch("OnXmasLootDistribute", "OnXmasLootDistribute", "XMasRefill", "ServerInit", new string[] { })]
-		[Identifier("126eed98439a4b56a6d93071024f14d5")]
+		[Identifier("2582f72d4983432291a2cbf6b415ae73")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "XMasRefill", false)]
 		[Return(typeof(void))]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_XMasRefill_126eed98439a4b56a6d93071024f14d5 : Patch
+		public class Seasonal_XMasRefill_2582f72d4983432291a2cbf6b415ae73 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -50,11 +50,11 @@ public class Category_Seasonal
 		}
 
 		[Patch("OnXmasGiftsDistribute", "OnXmasGiftsDistribute", "XMasRefill", "DistributeGiftsForPlayer", new string[] { "BasePlayer" })]
-		[Identifier("008cf0bad8c341cfa1eae78c97d3541f")]
+		[Identifier("8e61652062694096bbba0720a65c4c25")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_XMasRefill_008cf0bad8c341cfa1eae78c97d3541f : Patch
+		public class Seasonal_XMasRefill_8e61652062694096bbba0720a65c4c25 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -105,13 +105,13 @@ public class Category_Seasonal
 	public class Seasonal_Stocking
 	{
 		[Patch("OnXmasStockingFill", "OnXmasStockingFill", "Stocking", "SpawnLoot", new string[] { })]
-		[Identifier("27184f95d98e498699d8ba04f9336f8b")]
+		[Identifier("faed54e2a2084a99ba76180d8d362ac3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Stocking", false)]
 		[Return(typeof(void))]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_Stocking_27184f95d98e498699d8ba04f9336f8b : Patch
+		public class Seasonal_Stocking_faed54e2a2084a99ba76180d8d362ac3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -146,13 +146,13 @@ public class Category_Seasonal
 	public class Seasonal_AdventCalendar
 	{
 		[Patch("OnAdventGiftAward", "OnAdventGiftAward", "AdventCalendar", "AwardGift", new string[] { "BasePlayer" })]
-		[Identifier("ee6f76e1903347b6af069dbb19bfc6e6")]
+		[Identifier("33596dbc9c3048ea97d2284f2bf115c0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AdventCalendar", false)]
 		[Return(typeof(void))]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_AdventCalendar_ee6f76e1903347b6af069dbb19bfc6e6 : Patch
+		public class Seasonal_AdventCalendar_33596dbc9c3048ea97d2284f2bf115c0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -184,14 +184,14 @@ public class Category_Seasonal
 		}
 
 		[Patch("OnAdventGiftAwarded", "OnAdventGiftAwarded", "AdventCalendar", "AwardGift", new string[] { "BasePlayer" })]
-		[Identifier("a33fa152a3c144c98d40c8b7d5b5dba8")]
+		[Identifier("ac264c13d1f14c7fb2d6d92dd0d9f632")]
 		[Dependencies(new string[] { "OnAdventGiftAward" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AdventCalendar", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_AdventCalendar_a33fa152a3c144c98d40c8b7d5b5dba8 : Patch
+		public class Seasonal_AdventCalendar_ac264c13d1f14c7fb2d6d92dd0d9f632 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -219,11 +219,11 @@ public class Category_Seasonal
 		}
 
 		[Patch("CanBeAwardedAdventGift", "CanBeAwardedAdventGift", "AdventCalendar", "WasAwardedTodaysGift", new string[] { "BasePlayer" })]
-		[Identifier("b38b790e99ee4ca4a00d83dd9a88ae5c")]
+		[Identifier("8e65f59f01bb4653852865ad55dff56b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_AdventCalendar_b38b790e99ee4ca4a00d83dd9a88ae5c : Patch
+		public class Seasonal_AdventCalendar_8e65f59f01bb4653852865ad55dff56b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -283,14 +283,14 @@ public class Category_Seasonal
 	public class Seasonal_CollectableEasterEgg
 	{
 		[Patch("OnEventCollectablePickup", "OnEventCollectablePickup", "CollectableEasterEgg", "RPC_PickUp", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("c89588e52bb043dc873f1939c874ab8e")]
+		[Identifier("324400a526fb47b5b13b6216c1248bea")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "CollectableEasterEgg", false)]
 		[Return(typeof(void))]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_CollectableEasterEgg_c89588e52bb043dc873f1939c874ab8e : Patch
+		public class Seasonal_CollectableEasterEgg_324400a526fb47b5b13b6216c1248bea : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -326,13 +326,13 @@ public class Category_Seasonal
 	public class Seasonal_EggHuntEvent
 	{
 		[Patch("OnHuntEventStart", "OnHuntEventStart", "EggHuntEvent", "StartEvent", new string[] { })]
-		[Identifier("03c80345aa0f4b07b08f2c5046838ea0")]
+		[Identifier("1277d62dc11c406bbd79d6dbee7d6355")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "EggHuntEvent", false)]
 		[Return(typeof(void))]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_EggHuntEvent_03c80345aa0f4b07b08f2c5046838ea0 : Patch
+		public class Seasonal_EggHuntEvent_1277d62dc11c406bbd79d6dbee7d6355 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -362,13 +362,13 @@ public class Category_Seasonal
 		}
 
 		[Patch("OnHuntEventEnd", "OnHuntEventEnd", "EggHuntEvent", "Update", new string[] { })]
-		[Identifier("12432d2c976a421a9209137db5917bd2")]
+		[Identifier("65f49f48f9534ebf84391e54a34a2dfc")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "EggHuntEvent", false)]
 		[Return(typeof(void))]
 		[Category("Seasonal")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Seasonal_EggHuntEvent_12432d2c976a421a9209137db5917bd2 : Patch
+		public class Seasonal_EggHuntEvent_65f49f48f9534ebf84391e54a34a2dfc : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

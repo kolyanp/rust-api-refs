@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundSource : MonoBehaviour, IClientComponentEx, ILOD
+public class SoundSource : MonoBehaviour, IClientComponentEx, ILOD, IFlattenKeepsDescendants
 {
 	[Serializable]
 	public class OcclusionPoint

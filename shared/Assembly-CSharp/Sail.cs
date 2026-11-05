@@ -12,8 +12,8 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Sail")]
+	[SerializeField]
 	private float maxThrust = 1000f;
 
 	public float RaiseDuration = 1.5f;
@@ -263,7 +263,7 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 	{
 		base.ServerInit();
 		ResetFlags();
-		CacheIsWindBlocked();
+		ToggleColliders();
 	}
 
 	private void ResetFlags()
@@ -289,22 +289,15 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 		}
 	}
 
-	public override void InitShared()
-	{
-		base.InitShared();
-		CancelInvoke(CacheIsWindBlocked);
-		InvokeRandomized(CacheIsWindBlocked, 0f, 5f, 2f);
-	}
-
 	private void CacheIsWindBlocked()
 	{
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		if (!Lowered)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		if (!Lowered && !Lowering)
 		{
 			return;
 		}
-		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
 		if (!IsOutside())
 		{
 			flagsUpdateScope.Set(Flags.Reserved14, b: true);
@@ -314,53 +307,66 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 		flagsUpdateScope.Set(Flags.Reserved14, b);
 	}
 
-	public bool WouldSailBeBlockedByNewSailInLocation(Vector3 newSailPos, Quaternion newSailRot)
+	public bool WouldBlockSail(Vector3 blockerPos, Quaternion blockerRot, List<Transform> blockedCheckPoints, Vector3 blockedPos, Quaternion blockedRot)
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
 		PooledList<BoxCollider> val = Pool.Get<PooledList<BoxCollider>>();
 		try
 		{
 			((Component)this).GetComponentsInChildren<BoxCollider>(true, (List<BoxCollider>)(object)val);
-			Matrix4x4 val2 = Matrix4x4.TRS(newSailPos, newSailRot, Vector3.one);
-			RaycastHit val5 = default;
+			Matrix4x4 val2 = Matrix4x4.TRS(blockerPos, blockerRot, Vector3.one);
+			Matrix4x4 val3 = Matrix4x4.TRS(blockedPos, blockedRot, Vector3.one);
+			RaycastHit val9 = default;
 			foreach (BoxCollider item in (List<BoxCollider>)(object)val)
 			{
 				if (((Collider)item).isTrigger)
 				{
 					continue;
 				}
-				OBB val3 = new OBB(((Component)item).transform.localPosition, ((Component)item).transform.localRotation, new Bounds(item.center, item.size));
-				val3.position = val2.MultiplyPoint3x4(val3.position);
-				val3.rotation = val2.rotation * val3.rotation;
-				foreach (Transform windBlockedCheckPoint in WindBlockedCheckPoints)
+				Vector3 val4 = item.size + Vector3.one * (WindBlockedCheckRadius * 2f);
+				Vector3 val5 = val2.MultiplyPoint3x4(((Component)item).transform.localPosition);
+				Quaternion val6 = blockerRot * ((Component)item).transform.localRotation;
+				OBB val7 = new OBB(val5, val6, new Bounds(item.center, val4));
+				foreach (Transform blockedCheckPoint in blockedCheckPoints)
 				{
-					Ray val4 = new Ray(windBlockedCheckPoint.position, windBlockedCheckPoint.rotation * Vector3.forward);
-					if (val3.Trace(val4, ref val5, WindBlockedCheckDistance))
+					Ray val8 = new Ray(val3.MultiplyPoint3x4(blockedCheckPoint.localPosition), blockedRot * blockedCheckPoint.localRotation * Vector3.forward);
+					if (val7.Trace(val8, ref val9, WindBlockedCheckDistance))
 					{
 						return true;
 					}
@@ -374,7 +380,7 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 		}
 	}
 
-	public static bool IsLocationWindBlocked(List<Transform> checkPoints, Vector3 worldPosition, Quaternion worldRotation, float radius, float distance, BaseEntity toIgnore, bool ignoreClient = true)
+	public static bool IsLocationWindBlocked(List<Transform> checkPoints, Vector3 worldPosition, Quaternion worldRotation, float radius, float distance, BaseEntity toIgnore, bool ignoreClient = true, bool ignoreSails = false)
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -400,7 +406,7 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 			for (int i = 0; i < list.Count; i++)
 			{
 				BaseEntity entity = RaycastHitEx.GetEntity(list[i]);
-				if (!((Object.op_Implicit((Object)(object)entity) && entity.isClient) & ignoreClient))
+				if (!((Object.op_Implicit((Object)(object)entity) && entity.isClient) & ignoreClient) && (!ignoreSails || !(entity is Sail)))
 				{
 					Pool.FreeUnmanaged<RaycastHit>(ref list);
 					return true;
@@ -508,8 +514,8 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void LowerSail(RPCMessage msg)
 	{
 		Lower(msg.player);
@@ -524,6 +530,7 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 				flagsUpdateScope.Set(Flags.Busy, b: true);
 				flagsUpdateScope.Set(Flags.Reserved12, b: true);
 			}
+			CacheIsWindBlocked();
 			WaitForLower();
 		}
 	}
@@ -546,18 +553,15 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 			flagsUpdateScope.Set(Flags.Reserved13, b: false);
 			flagsUpdateScope.Set(Flags.Reserved3, b: true);
 		}
-		OnRaisedOrLowered();
-	}
-
-	private void OnRaisedOrLowered()
-	{
 		CacheIsWindBlocked();
+		float sailBlockedUpdateInterval = PlayerBoat.SailBlockedUpdateInterval;
+		InvokeRandomized(CacheIsWindBlocked, sailBlockedUpdateInterval, sailBlockedUpdateInterval, sailBlockedUpdateInterval * 0.1f);
 		ToggleColliders();
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	public void RaiseSail(RPCMessage msg)
 	{
 		Raise(msg.player);
@@ -591,19 +595,21 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 
 	private void OnFullyRaised()
 	{
+		CancelInvoke(CacheIsWindBlocked);
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Busy, b: false);
 			flagsUpdateScope.Set(Flags.Reserved13, b: false);
 			flagsUpdateScope.Set(Flags.Reserved12, b: false);
 			flagsUpdateScope.Set(Flags.Reserved3, b: false);
+			flagsUpdateScope.Set(Flags.Reserved14, b: false);
 		}
-		OnRaisedOrLowered();
+		ToggleColliders();
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RotateSail(RPCMessage msg)
 	{
 		RotateSail(msg.player);
@@ -615,15 +621,14 @@ public class Sail : DecayEntity, IBoatBuildingPiece, IBoatPropulsion
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		if (CanRotate(player))
 		{
 			Transform transform = ((Component)this).transform;
 			transform.localRotation *= Quaternion.AngleAxis(180f, Vector3.up);
-			CacheIsWindBlocked();
 			SendNetworkUpdateImmediate();
 			if (sailRotateEffect.isValid)
 			{

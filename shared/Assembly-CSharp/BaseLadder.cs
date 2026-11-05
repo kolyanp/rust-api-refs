@@ -10,6 +10,16 @@ public class BaseLadder : BaseCombatEntity
 		return false;
 	}
 
+	public override bool SupportsChildDeployables()
+	{
+		return (Object)(object)PlayerBoat.GetParentPlayerBoat(this) != (Object)null;
+	}
+
+	public override bool ForceDeployableSetParent()
+	{
+		return SupportsChildDeployables();
+	}
+
 	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);

@@ -590,7 +590,6 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		if (Object.op_Implicit((Object)(object)baseEntity))
 		{
 			baseEntity.enableSaving = true;
-			((Component)baseEntity).SendMessage("SetWasDropped", (SendMessageOptions)1);
 			baseEntity.Spawn();
 			baseEntity.SetParent(this, worldPositionStays: true);
 			Rigidbody component = ((Component)baseEntity).GetComponent<Rigidbody>();
@@ -802,10 +801,6 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		Vector3 val = ((Component)this).transform.InverseTransformPoint(((Component)waterLine).transform.position);
 		((Component)this).transform.position = new Vector3(((Component)this).transform.position.x, waterSurface - val.y, ((Component)this).transform.position.z);
 		bool flag = false;
-		if (!flag)
-		{
-			SpawnSubEntities();
-		}
 		for (int i = 0; i < crateSpawns.Count; i++)
 		{
 			availableCrateSpawnIndices.Add(i);
@@ -822,6 +817,12 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		{
 			CreateMapMarker();
 		}
+	}
+
+	public override void ServerInitPostNetworkGroupAssign()
+	{
+		base.ServerInitPostNetworkGroupAssign();
+		SpawnSubEntities();
 	}
 
 	public void UpdateRadiation()
@@ -881,7 +882,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
-		Vis.Entities(WorldSpaceBounds(), list, 2162689, (QueryTriggerInteraction)2);
+		Vis.Entities(WorldSpaceBounds(), list, 10551297, (QueryTriggerInteraction)2);
 		foreach (BaseEntity item in list)
 		{
 			if (!(item is JunkPileWater junkPileWater))
@@ -938,15 +939,18 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	private void UpdateCameraNetworkGroups()
 	{
-		if (cameraEntities == null)
+		using (TimeWarning.New("CargoShip.UpdateCameraNetworkGroups"))
 		{
-			return;
-		}
-		foreach (CCTV_RC cameraEntity in cameraEntities)
-		{
-			if ((Object)(object)cameraEntity != (Object)null && !cameraEntity.IsDestroyed)
+			if (cameraEntities == null)
 			{
-				cameraEntity.UpdateNetworkGroup();
+				return;
+			}
+			foreach (CCTV_RC cameraEntity in cameraEntities)
+			{
+				if ((Object)(object)cameraEntity != (Object)null && !cameraEntity.IsDestroyed)
+				{
+					cameraEntity.UpdateNetworkGroup();
+				}
 			}
 		}
 	}

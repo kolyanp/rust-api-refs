@@ -202,7 +202,7 @@ public abstract class SpawnPopulationBase : BaseScriptableObject
 			Prefab<Spawnable>[] prefabs = Prefabs;
 			foreach (Prefab<Spawnable> prefab in prefabs)
 			{
-				int num = spawnables.Count((Spawnable x) => (((Component)x).GetComponent<BaseNetworkable>()?.prefabID ?? 0) == prefab.ID);
+				int num = Enumerable.Count(spawnables, (Spawnable x) => (((Component)x).GetComponent<BaseNetworkable>()?.prefabID ?? 0) == prefab.ID);
 				sb.AppendLine($"\t\t{Path.GetFileNameWithoutExtension(prefab.Name)} : {num}");
 			}
 		}

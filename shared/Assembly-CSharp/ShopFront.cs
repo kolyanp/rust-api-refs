@@ -446,13 +446,19 @@ public class ShopFront : StorageContainer
 
 	public void UpdatePlayers()
 	{
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		ClientRPC(RpcTarget.NetworkGroup("CLIENT_ReceivePlayers"), ((Object)(object)vendorPlayer == (Object)null) ? default(NetworkableId) : vendorPlayer.net.ID, ((Object)(object)customerPlayer == (Object)null) ? default(NetworkableId) : customerPlayer.net.ID);
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		NetworkableId arg = (((Object)(object)vendorPlayer == (Object)null || vendorPlayer.isInvisible) ? default(NetworkableId) : vendorPlayer.net.ID);
+		NetworkableId arg2 = (((Object)(object)customerPlayer == (Object)null || customerPlayer.isInvisible) ? default(NetworkableId) : customerPlayer.net.ID);
+		ClientRPC(RpcTarget.NetworkGroup("CLIENT_ReceivePlayers"), arg, arg2);
 	}
 
 	public override void GetAllInventories(List<ItemContainer> list)

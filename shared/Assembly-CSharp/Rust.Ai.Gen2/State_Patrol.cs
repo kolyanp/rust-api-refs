@@ -26,7 +26,7 @@ public class State_Patrol : FSMStateBase
 
 	private NavVector3? spawnPositionNS;
 
-	private Vector3? desiredEndDirection;
+	private Nullable desiredEndDirection;
 
 	private static RustNavMeshPath _path;
 
@@ -57,31 +57,31 @@ public class State_Patrol : FSMStateBase
 
 	private bool TrySetPatrolDestination()
 	{
-		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
 		NavVector3 nextPosition = Agent.nextPosition;
 		bool flag = NavVector3.Distance(spawnPositionNS.Value, nextPosition) > homeRadius;
 		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			float num = Random.Range(distanceRange.x, distanceRange.y);
+			float num = Rng.Range(distanceRange.x, distanceRange.y);
 			bool flag2 = Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val, num, num, 8);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
@@ -90,7 +90,7 @@ public class State_Patrol : FSMStateBase
 				foreach (NavVector3 item2 in (List<NavVector3>)(object)val)
 				{
 					float num2 = 0f;
-					num2 = ((!flag) ? (num2 + Random.value) : (num2 + Mathx.RemapValClamped(NavVector3.Dot(normalized, (item2 - nextPosition).NormalizeXZ()), -1f, 1f, 0f, 1f)));
+					num2 = ((!flag) ? (num2 + Rng.Value) : (num2 + Mathx.RemapValClamped(NavVector3.Dot(normalized, (item2 - nextPosition).NormalizeXZ()), -1f, 1f, 0f, 1f)));
 					((List<(NavVector3, float)>)(object)pooledScoreList).Add((item2, num2));
 				}
 				pooledScoreList.SortByScoreDesc(Owner);

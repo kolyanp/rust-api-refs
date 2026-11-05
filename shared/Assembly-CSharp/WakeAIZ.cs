@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using UnityEngine;
 
@@ -36,6 +37,10 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 
 	private bool foundEmptyCoarseGrid;
 
+	private bool initialised;
+
+	private static readonly List<WakeAIZ> awaitingServer = new List<WakeAIZ>();
+
 	private float TimeBetweenTicksActiveZone => sleepDelaySeconds * 0.1f;
 
 	private float TimeBetweenTicksInactiveZone => 0.15f;
@@ -45,18 +50,47 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 		Init();
 	}
 
+	private void Start()
+	{
+		if (BaseEntity.Query.Server == null)
+		{
+			awaitingServer.Add(this);
+		}
+		else
+		{
+			Init();
+		}
+	}
+
+	public static void InitAwaitingServer()
+	{
+		foreach (WakeAIZ item in awaitingServer)
+		{
+			if ((Object)(object)item != (Object)null)
+			{
+				item.Init();
+			}
+		}
+		awaitingServer.Clear();
+	}
+
 	public void Init(AIInformationZone zone = null)
 	{
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		if (initialised)
+		{
+			return;
+		}
+		initialised = true;
 		if ((Object)(object)zone != (Object)null)
 		{
 			aiz = zone;
@@ -106,6 +140,7 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public PooledList<BasePlayer> GetPooledListOfPlayers()
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)

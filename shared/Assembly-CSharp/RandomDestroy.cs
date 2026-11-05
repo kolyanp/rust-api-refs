@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RandomDestroy : MonoBehaviour
+public class RandomDestroy : MonoBehaviour, IFlattenKeepsChildren
 {
 	public uint Seed;
 

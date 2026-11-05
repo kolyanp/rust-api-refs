@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Development.Attributes;
+using Rust.RenderPipeline.Runtime;
 using RustNative;
-using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
-[ResetStaticFields]
 [RequireComponent(typeof(Camera))]
+[ResetStaticFields]
 [RequireComponent(typeof(Camera))]
 public class OcclusionCulling : MonoBehaviour
 {
@@ -54,6 +55,16 @@ public class OcclusionCulling : MonoBehaviour
 
 		public void Dispose(bool data = true)
 		{
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			while (asyncRequests.Count > 0)
+			{
+				AsyncGPUReadbackRequest val = asyncRequests.Dequeue();
+				if (!val.done && !val.hasError)
+				{
+					val.WaitForCompletion();
+				}
+			}
 			if (inputBuffer != null)
 			{
 				inputBuffer.Dispose();
@@ -207,11 +218,11 @@ public class OcclusionCulling : MonoBehaviour
 
 		public void IssueRead()
 		{
-			//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 			if (SafeMode)
 			{
 				return;
@@ -220,7 +231,7 @@ public class OcclusionCulling : MonoBehaviour
 			{
 				if (asyncRequests.Count < 10)
 				{
-					AsyncGPUReadbackRequest item = ((!culling.usePixelShaderFallback) ? AsyncGPUReadback.Request(resultBuffer, (Action<AsyncGPUReadbackRequest>)null) : AsyncGPUReadback.Request((Texture)(object)resultTexture, 0, (Action<AsyncGPUReadbackRequest>)null));
+					AsyncGPUReadbackRequest item = ((!culling.usePixelShaderFallback) ? AsyncGPUReadback.Request(resultBuffer, (Action<AsyncGPUReadbackRequest>)null) : AsyncGPUReadback.Request((Texture)(object)resultTexture, 0, (GraphicsFormat)8, (Action<AsyncGPUReadbackRequest>)null));
 					asyncRequests.Enqueue(item);
 				}
 			}
@@ -232,15 +243,13 @@ public class OcclusionCulling : MonoBehaviour
 
 		public void GetResults()
 		{
-			//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0076: Unknown result type (might be due to invalid IL or missing references)
 			//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 			if (resultData == null || resultData.Length == 0)
 			{
 				return;
@@ -259,11 +268,7 @@ public class OcclusionCulling : MonoBehaviour
 						}
 						if (val.done)
 						{
-							NativeArray<Color32> data = val.GetData<Color32>(0);
-							for (int i = 0; i < data.Length; i++)
-							{
-								resultData[i] = data[i];
-							}
+							val.GetData<Color32>(0).CopyTo(resultData);
 							asyncRequests.Dequeue();
 							continue;
 						}
@@ -772,6 +777,8 @@ public class OcclusionCulling : MonoBehaviour
 
 	private RenderTexture[] hiZLevels;
 
+	private bool depthTextureReady;
+
 	private const int GridCellsPerAxis = 2097152;
 
 	private const int GridHalfCellsPerAxis = 1048576;
@@ -895,7 +902,11 @@ public class OcclusionCulling : MonoBehaviour
 		get
 		{
 			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-			return Enumerable.Contains(supportedDeviceTypes, SystemInfo.graphicsDeviceType);
+			if (!Enumerable.Contains(supportedDeviceTypes, SystemInfo.graphicsDeviceType))
+			{
+				return SystemInfo.supportsAsyncGPUReadback;
+			}
+			return true;
 		}
 	}
 
@@ -1137,6 +1148,7 @@ public class OcclusionCulling : MonoBehaviour
 
 	private void DestroyHiZMap()
 	{
+		depthTextureReady = false;
 		if ((Object)(object)depthTexture != (Object)null)
 		{
 			RenderTexture.active = null;
@@ -1208,6 +1220,17 @@ public class OcclusionCulling : MonoBehaviour
 		if ((Object)(object)depthTexture != (Object)null)
 		{
 			Graphics.Blit((Texture)null, depthTexture, depthCopyMat, 0);
+			depthTextureReady = true;
+		}
+	}
+
+	public void GrabDepthTexture(CommandBuffer commandBuffer, Camera renderingCamera)
+	{
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)renderingCamera != (Object)(object)camera) && ((Behaviour)this).isActiveAndEnabled && !((Object)(object)depthTexture == (Object)null))
+		{
+			commandBuffer.Blit((Texture)null, RenderTargetIdentifier.op_Implicit((Texture)(object)depthTexture), depthCopyMat, 0);
+			depthTextureReady = true;
 		}
 	}
 
@@ -1656,6 +1679,7 @@ public class OcclusionCulling : MonoBehaviour
 		{
 			frustumPropNames[i] = "_FrustumPlane" + i;
 		}
+		((MonoBehaviour)this).useGUILayout = false;
 	}
 
 	private void OnEnable()
@@ -1666,12 +1690,13 @@ public class OcclusionCulling : MonoBehaviour
 		//IL_0083: Invalid comparison between Unknown and I4
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0185: Expected Obj, but got Unknown
-		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0147: Expected Obj, but got Unknown
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b9: Expected Obj, but got Unknown
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017b: Expected Obj, but got Unknown
 		if (!Enabled)
 		{
 			Enabled = false;
@@ -1689,6 +1714,12 @@ public class OcclusionCulling : MonoBehaviour
 		if (!useNativePath && !useAsyncReadAPI)
 		{
 			Debug.LogWarning((object)("[OcclusionCulling] Disabled due to unsupported Async GPU Reads on device " + ((object)SystemInfo.graphicsDeviceType/*cast due to constrained. prefix*/).ToString()));
+			Enabled = false;
+			return;
+		}
+		if (useAsyncReadAPI && usePixelShaderFallback && !SystemInfo.IsFormatSupported(GraphicsFormatUtility.GetGraphicsFormat((RenderTextureFormat)0, false), (GraphicsFormatUsage)512))
+		{
+			Debug.LogWarning((object)"[OcclusionCulling] Disabled due to unsupported result texture readback format.");
 			Enabled = false;
 			return;
 		}
@@ -1716,6 +1747,7 @@ public class OcclusionCulling : MonoBehaviour
 		};
 		InitializeHiZMap();
 		UpdateCameraMatrices(starting: true);
+		RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
 	}
 
 	private bool SupportsNativePath()
@@ -1734,7 +1766,7 @@ public class OcclusionCulling : MonoBehaviour
 			int changedCount = 0;
 			ProcessOccludees_Native(ref states, ref bucket, 0, ref results, 0, ref changed, ref changedCount, ref zero, 0f, 0u);
 		}
-		catch (EntryPointNotFoundException)
+		catch (Exception ex) when (ex is DllNotFoundException || ex is EntryPointNotFoundException)
 		{
 			Debug.Log((object)"[OcclusionCulling] Fast native path not available. Reverting to managed fallback.");
 			result = false;
@@ -1744,6 +1776,7 @@ public class OcclusionCulling : MonoBehaviour
 
 	private void OnDisable()
 	{
+		RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
 		if ((Object)(object)fallbackMat != (Object)null)
 		{
 			Object.DestroyImmediate((Object)(object)fallbackMat);
@@ -2041,19 +2074,62 @@ public class OcclusionCulling : MonoBehaviour
 		}
 	}
 
+	private void OnBeginCameraRendering(ScriptableRenderContext context, Camera renderingCamera)
+	{
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)renderingCamera != (Object)(object)camera || !RustRenderPipeline.IsActive())
+		{
+			return;
+		}
+		bool sRGBWrite = GL.sRGBWrite;
+		RenderBuffer activeColorBuffer = Graphics.activeColorBuffer;
+		RenderBuffer activeDepthBuffer = Graphics.activeDepthBuffer;
+		Vector4 globalVector = Shader.GetGlobalVector("_ZBufferParams");
+		try
+		{
+			CheckResizeHiZMap();
+			float farClipPlane = camera.farClipPlane;
+			float num = farClipPlane / camera.nearClipPlane;
+			float num2 = (SystemInfo.usesReversedZBuffer ? (num - 1f) : (1f - num));
+			float num3 = (SystemInfo.usesReversedZBuffer ? 1f : num);
+			Shader.SetGlobalVector("_ZBufferParams", new Vector4(num2, num3, num2 / farClipPlane, num3 / farClipPlane));
+			GL.sRGBWrite = false;
+			OnPreCull();
+			depthTextureReady = false;
+		}
+		finally
+		{
+			Shader.SetGlobalVector("_ZBufferParams", globalVector);
+			Graphics.SetRenderTarget(activeColorBuffer, activeDepthBuffer);
+			GL.sRGBWrite = sRGBWrite;
+		}
+	}
+
 	private void OnPreCull()
 	{
 		UpdateCameraMatrices();
-		GenerateHiZMipChain();
-		PrepareAndDispatch();
-		IssueRead();
-		if (grid.Size <= gridSet.resultData.Length)
+		if (HiZReady && depthTextureReady)
 		{
-			RetrieveAndApplyVisibility();
-		}
-		else
-		{
-			Debug.LogWarning((object)("[OcclusionCulling] Grid size and result capacity are out of sync: " + grid.Size + ", " + gridSet.resultData.Length));
+			GenerateHiZMipChain();
+			PrepareAndDispatch();
+			IssueRead();
+			if (grid.Size <= gridSet.resultData.Length)
+			{
+				RetrieveAndApplyVisibility();
+			}
+			else
+			{
+				Debug.LogWarning((object)("[OcclusionCulling] Grid size and result capacity are out of sync: " + grid.Size + ", " + gridSet.resultData.Length));
+			}
 		}
 	}
 
@@ -2135,7 +2211,7 @@ public class OcclusionCulling : MonoBehaviour
 			computeShader.SetVector("_CameraWorldPos", Vector4.op_Implicit(((Component)this).transform.position));
 			computeShader.SetVector("_ViewportSize", Vector4.op_Implicit(val));
 			computeShader.SetFloat("_FrustumCull", flag ? 0f : 1f);
-			fallbackMat.SetInteger("_ExtraLODSteps", num);
+			computeShader.SetInt("_ExtraLODSteps", num);
 			for (int j = 0; j < 6; j++)
 			{
 				computeShader.SetVector(frustumPropNames[j], frustumPlanes[j]);
@@ -2169,7 +2245,10 @@ public class OcclusionCulling : MonoBehaviour
 		{
 			gridSet.IssueRead();
 		}
-		GL.IssuePluginEvent(Graphics.GetRenderEventFunc(), 2);
+		if (useNativePath)
+		{
+			GL.IssuePluginEvent(Graphics.GetRenderEventFunc(), 2);
+		}
 	}
 
 	public void ResetTiming(SmartList bucket)

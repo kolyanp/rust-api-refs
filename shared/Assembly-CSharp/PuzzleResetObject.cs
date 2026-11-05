@@ -1,5 +1,5 @@
 using UnityEngine;
 
-public class PuzzleResetObject : MonoBehaviour
+public class PuzzleResetObject : MonoBehaviour, IFlattenKeepsParent
 {
 }

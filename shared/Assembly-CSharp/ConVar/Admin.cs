@@ -71,8 +71,8 @@ public class Admin : ConsoleSystem
 		public ulong EntityId;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerInfoOutput
 	{
 		public string Hostname;
@@ -116,8 +116,8 @@ public class Admin : ConsoleSystem
 		public string Protocol;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerConvarInfo
 	{
 		public string FullName;
@@ -181,7 +181,7 @@ public class Admin : ConsoleSystem
 		if (!flag && text.Length == 0)
 		{
 			text2 = text2 + "hostname: " + Server.hostname + "\n";
-			text2 = text2 + "version : " + 2635 + " secure (secure mode enabled, connected to Steam3)\n";
+			text2 = text2 + "version : " + 2636 + " secure (secure mode enabled, connected to Steam3)\n";
 			text2 = text2 + "map     : " + Server.level + "\n";
 			text2 += string.Format("players : {0} ({1} max) ({2} queued) ({3} joining)\n\n", new object[4]
 			{
@@ -692,6 +692,10 @@ public class Admin : ConsoleSystem
 		case "container":
 			buildingGrade = source.FirstOrDefault((BuildingGrade x) => ((Object)x).name == "shipping_container");
 			break;
+		case "scrap":
+		case "scrapking":
+			buildingGrade = source.FirstOrDefault((BuildingGrade x) => ((Object)x).name == "scrap_king");
+			break;
 		case "brutal":
 		case "brutalist":
 			buildingGrade = source.FirstOrDefault((BuildingGrade x) => ((Object)x).name == "brutalist");
@@ -718,7 +722,7 @@ public class Admin : ConsoleSystem
 			buildingGrade = source.FirstOrDefault((BuildingGrade x) => ((Object)x).name == "space_station");
 			break;
 		default:
-			error = "Valid skins are:\ntwig\nwood | frontier | gingerbread\nstone | adobe | brick | brutalist | jungle | crypt\nmetal | shipping\nhqm | space";
+			error = "Valid skins are:\ntwig\nwood | frontier | gingerbread\nstone | adobe | brick | brutalist | jungle | crypt\nmetal | shipping | scrapking\nhqm | space";
 			return null;
 		}
 		if ((Object)(object)buildingGrade == (Object)null)
@@ -2153,16 +2157,14 @@ public class Admin : ConsoleSystem
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_078c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0801: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0803: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0805: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0831: Unknown result type (might be due to invalid IL or missing references)
-		//IL_084b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0829: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0843: Unknown result type (might be due to invalid IL or missing references)
 		BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(ArgEx.GetEntityID(arg, 1)) as BaseEntity;
 		if ((Object)(object)baseEntity == (Object)null || baseEntity is BasePlayer || baseEntity is PointEntity)
 		{
@@ -2341,28 +2343,28 @@ public class Admin : ConsoleSystem
 			}
 			if (text3 == "default")
 			{
-				baseEntity.networkEntityScale = false;
 				((Component)baseEntity).transform.localScale = Vector3.one;
-				baseEntity.SendNetworkUpdate();
+				baseEntity.SendNetworkUpdateImmediate();
+				baseEntity.networkEntityScale = false;
 				arg.ReplyWith("Reset scale");
 				break;
 			}
-			Vector3 one = Vector3.one;
+			Vector3 val;
 			if (float.TryParse(text3, out var result2))
 			{
-				one = new Vector3(result2, result2, result2);
+				val = new Vector3(result2, result2, result2);
 			}
 			else
 			{
-				one = Vector3Ex.Parse(text3);
-				if (one == Vector3.zero)
+				val = Vector3Ex.Parse(text3);
+				if (val == Vector3.zero)
 				{
 					arg.ReplyWith(text3 + " is not a valid scale");
 					break;
 				}
 			}
 			baseEntity.networkEntityScale = true;
-			((Component)baseEntity).transform.localScale = one;
+			((Component)baseEntity).transform.localScale = val;
 			baseEntity.SendNetworkUpdate();
 			arg.ReplyWith($"Set scale to {((Component)baseEntity).transform.localScale}");
 			break;
@@ -2748,7 +2750,7 @@ public class Admin : ConsoleSystem
 			NetworkOut = (int)((Net.sv != null) ? Net.sv.GetStat(null, BaseNetwork.StatTypeLong.BytesSent_LastSecond) : 0),
 			Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 			SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(),
-			Version = 2635,
+			Version = 2636,
 			Protocol = Protocol.printable
 		};
 	}
@@ -2898,29 +2900,32 @@ public class Admin : ConsoleSystem
 		Pool.FreeUnmanaged<ServerUGCInfo>(ref list);
 	}
 
-	[ServerVar(Help = "(Generated) Server-side handler that retrieves a specific UGC data blob by CRC, entity ID, and type and sends it to the requesting admin client")]
+	[ServerVar(Help = "(Generated) Server-side handler that retrieves a specific UGC data blob by CRC, entity ID, and part and sends it to the requesting admin client")]
 	public static void AdminUI_RequestUGCContent(Arg arg)
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		if (allowAdminUI && !((Object)(object)ArgEx.Player(arg) == (Object)null))
 		{
 			uint uInt = arg.GetUInt(0);
 			NetworkableId entityID = ArgEx.GetEntityID(arg, 1);
-			FileStorage.Type type = (FileStorage.Type)arg.GetInt(2);
-			uint uInt2 = arg.GetUInt(3);
-			byte[] array = FileStorage.server.Get(uInt, type, entityID, uInt2);
-			if (array != null)
+			ulong uLong = arg.GetULong(2, 0uL);
+			byte[] array = FileStorage.server.Get(entityID, uLong, uInt);
+			if (array == null)
 			{
-				SendInfo sendInfo = new SendInfo(arg.Connection);
-				sendInfo.channel = 2;
-				sendInfo.method = SendMethod.Reliable;
-				SendInfo sendInfo2 = sendInfo;
-				ArgEx.Player(arg).ClientRPC(RpcTarget.SendInfo("AdminReceivedUGC", sendInfo2), uInt, (uint)array.Length, array, uInt2, (byte)type);
+				arg.ReplyWith($"UGC content {uInt} on entity {entityID} no longer exists, refresh the list");
+				return;
 			}
+			SendInfo sendInfo = new SendInfo(arg.Connection);
+			sendInfo.channel = 2;
+			sendInfo.method = SendMethod.Reliable;
+			SendInfo sendInfo2 = sendInfo;
+			ArgEx.Player(arg).ClientRPC(RpcTarget.SendInfo("AdminReceivedUGC", sendInfo2), entityID, uLong, uInt, (uint)array.Length, array);
 		}
 	}
 
@@ -2932,18 +2937,12 @@ public class Admin : ConsoleSystem
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		if (!allowAdminUI)
+		if (allowAdminUI)
 		{
-			return;
-		}
-		NetworkableId entityID = ArgEx.GetEntityID(arg, 0);
-		BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(entityID);
-		if ((Object)(object)baseNetworkable != (Object)null)
-		{
-			FileStorage.server.RemoveAllByEntity(entityID);
+			NetworkableId entityID = ArgEx.GetEntityID(arg, 0);
+			BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(entityID);
 			IUGCBrowserEntity iUGCBrowserEntity = default;
-			if (((Component)baseNetworkable).TryGetComponent<IUGCBrowserEntity>(ref iUGCBrowserEntity))
+			if ((Object)(object)baseNetworkable != (Object)null && ((Component)baseNetworkable).TryGetComponent<IUGCBrowserEntity>(ref iUGCBrowserEntity))
 			{
 				iUGCBrowserEntity.ClearContent();
 			}

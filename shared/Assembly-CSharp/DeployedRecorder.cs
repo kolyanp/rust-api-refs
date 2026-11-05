@@ -16,7 +16,7 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 
 	public SwapKeycard TapeSwapper;
 
-	private CollisionDetectionMode? initialCollisionDetectionMode;
+	private Nullable initialCollisionDetectionMode;
 
 	public BaseEntity ToBaseEntity => this;
 

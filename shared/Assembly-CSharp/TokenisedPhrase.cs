@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Facepunch;
 using UnityEngine;
 
@@ -54,6 +55,7 @@ public class TokenisedPhrase : Phrase
 		str = str.Replace("[movement]", ("[" + TranslateMouseButton(Input.GetButtonWithBind("+forward", true)) + TranslateMouseButton(Input.GetButtonWithBind("+left", true)) + TranslateMouseButton(Input.GetButtonWithBind("+backward", true)) + TranslateMouseButton(Input.GetButtonWithBind("+right", true)) + "]").ToUpper());
 		str = str.Replace("[+help]", string.Format("[{0}]", Input.GetButtonWithBind("+opentutorialhelp", true)).ToUpper());
 		str = str.Replace("[chat.open]", string.Format("[{0}]", Input.GetButtonWithBind("chat.open", true)).ToUpper());
+		str = str.Replace("[+firemode]", string.Format("[{0}]", Input.GetButtonWithBind("+firemode", true)).ToUpper());
 		return str;
 	}
 
@@ -104,6 +106,27 @@ public class TokenisedPhrase : Phrase
 			}
 		}
 		return Input.GetButtonWithBind(s, true);
+	}
+
+	public static string GetBindButton(string bind, bool strict = false)
+	{
+		List<Button> list = Pool.Get<List<Button>>();
+		try
+		{
+			Input.GetButtonsWithBind(bind, list, strict);
+			foreach (Button item in list)
+			{
+				if (Input.HideFromKeyNames == null || !Input.HideFromKeyNames(item.Name))
+				{
+					return item.Name;
+				}
+			}
+			return "UNSET";
+		}
+		finally
+		{
+			Pool.FreeUnmanaged<Button>(ref list);
+		}
 	}
 
 	static TokenisedPhrase()

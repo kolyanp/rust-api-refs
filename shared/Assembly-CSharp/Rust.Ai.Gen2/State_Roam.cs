@@ -15,9 +15,6 @@ public class State_Roam : FSMStateBase
 	[SerializeField]
 	private float homeRadius = 50f;
 
-	[NonSerialized]
-	private float authoredHomeRadius = -1f;
-
 	[SerializeField]
 	private RustNavMeshAgent.Speeds minSpeed;
 
@@ -31,7 +28,9 @@ public class State_Roam : FSMStateBase
 	[SerializeField]
 	protected WaterAvoidance waterAvoidance;
 
-	private Vector3? spawnPosition;
+	private Nullable spawnPosition;
+
+	public float HomeRadius => homeRadius;
 
 	protected virtual Vector3 HomePosition
 	{
@@ -44,15 +43,6 @@ public class State_Roam : FSMStateBase
 	}
 
 	protected virtual bool HealsWhenUndisturbed => true;
-
-	public void SetHomeRadiusScale(float scale)
-	{
-		if (authoredHomeRadius < 0f)
-		{
-			authoredHomeRadius = homeRadius;
-		}
-		homeRadius = authoredHomeRadius * Mathf.Clamp01(scale);
-	}
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
@@ -71,17 +61,17 @@ public class State_Roam : FSMStateBase
 
 	private bool TrySetRoamDestination()
 	{
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
 		NavVector3 nextPosition = Agent.nextPosition;
 		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			float num = Random.Range(distanceRange.x, distanceRange.y);
+			float num = Rng.Range(distanceRange.x, distanceRange.y);
 			bool flag = Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val, num, num, 8);
 			Vector3 homePosition = HomePosition;
 			bool flag2 = Vector3.Distance(homePosition, ((Component)Owner).transform.position) > homeRadius;
@@ -102,7 +92,7 @@ public class State_Roam : FSMStateBase
 					}
 					else
 					{
-						num2 += Random.value;
+						num2 += Rng.Value;
 						if (Agent.IsPositionOnFavoredTerrain(item2))
 						{
 							num2 += 10f;

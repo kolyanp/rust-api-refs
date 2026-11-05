@@ -56,6 +56,32 @@ public class AttackEntity : HeldEntity
 
 	public float NextAttackTime => nextAttackTime;
 
+	protected bool VerifyMountedClientRPC(BasePlayer player)
+	{
+		if (!VerifyClientPlayer(player))
+		{
+			return false;
+		}
+		if (GetParentEntity() is BaseMountable baseMountable)
+		{
+			return (Object)(object)baseMountable.GetMounted() == (Object)(object)player;
+		}
+		return false;
+	}
+
+	protected bool VerifyMountedClientAttack(BasePlayer player)
+	{
+		if (!VerifyMountedClientRPC(player) || !VerifyAttackCooldown(player))
+		{
+			return false;
+		}
+		if (GetParentEntity() is BaseMountable baseMountable)
+		{
+			return baseMountable.CanFireMountedWeapon(player);
+		}
+		return false;
+	}
+
 	public virtual Vector3 GetInheritedVelocity(BasePlayer player, Vector3 direction)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
@@ -94,6 +120,11 @@ public class AttackEntity : HeldEntity
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		return eulerInput;
+	}
+
+	protected virtual float GetDeployDelay()
+	{
+		return deployDelay;
 	}
 
 	public virtual void GetAttackStats(HitInfo info)
@@ -161,7 +192,7 @@ public class AttackEntity : HeldEntity
 		return info.damageTypes.GetMajorityDamageType();
 	}
 
-	protected bool VerifyClientRPC(BasePlayer player)
+	private bool VerifyClientPlayer(BasePlayer player)
 	{
 		if ((Object)(object)player == (Object)null)
 		{
@@ -205,6 +236,15 @@ public class AttackEntity : HeldEntity
 			player.stats.combat.LogInvalid(player, this, "player_stalled");
 			return false;
 		}
+		return true;
+	}
+
+	protected bool VerifyClientRPC(BasePlayer player)
+	{
+		if (!VerifyClientPlayer(player))
+		{
+			return false;
+		}
 		Item ownerItem = GetOwnerItem();
 		if (ownerItem == null)
 		{
@@ -227,6 +267,11 @@ public class AttackEntity : HeldEntity
 		{
 			return false;
 		}
+		return VerifyAttackCooldown(player);
+	}
+
+	private bool VerifyAttackCooldown(BasePlayer player)
+	{
 		if (HasAttackCooldown())
 		{
 			AntiHack.Log(player, AntiHackType.CooldownHack, $"T-{GetAttackCooldown()}s ({ShortPrefabName})");
@@ -383,6 +428,6 @@ public class AttackEntity : HeldEntity
 	public override void OnHeldChanged()
 	{
 		base.OnHeldChanged();
-		StartAttackCooldown(deployDelay * 0.9f);
+		StartAttackCooldown(GetDeployDelay() * 0.9f);
 	}
 }

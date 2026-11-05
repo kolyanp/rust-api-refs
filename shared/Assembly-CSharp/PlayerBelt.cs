@@ -84,7 +84,7 @@ public class PlayerBelt
 		{
 			return null;
 		}
-		if ((Object)(object)player.inventory == (Object)null)
+		if (player.inventory == null)
 		{
 			return null;
 		}
@@ -101,7 +101,7 @@ public class PlayerBelt
 		{
 			return null;
 		}
-		if ((Object)(object)player.inventory == (Object)null)
+		if (player.inventory == null)
 		{
 			return null;
 		}

@@ -31,6 +31,8 @@ public class Connection : IConnection
 
 	public IPAddress Address => _transport.Address;
 
+	public ulong SubscribedSteamId => _subscribedPlayer?.SteamId ?? 0;
+
 	public ulong ChannelSteamId { get; }
 
 	public IRemoteControllable CurrentCamera => _currentCamera;

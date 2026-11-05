@@ -34,44 +34,44 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 65472f
 	};
 
-	[Tooltip("Changes the extent of veiling effects. For maximum quality, use integer values. Because this value changes the internal iteration count, You should not animating it as it may introduce issues with the perceived radius.")]
 	[Range(1f, 10f)]
+	[Tooltip("Changes the extent of veiling effects. For maximum quality, use integer values. Because this value changes the internal iteration count, You should not animating it as it may introduce issues with the perceived radius.")]
 	public FloatParameter diffusion = new FloatParameter
 	{
 		value = 7f
 	};
 
-	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	[Range(-1f, 1f)]
+	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	public FloatParameter anamorphicRatio = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[ColorUsage(false, true)]
 	[Tooltip("Global tint of the bloom filter.")]
+	[ColorUsage(false, true)]
 	public ColorParameter color = new ColorParameter
 	{
 		value = Color.white
 	};
 
-	[FormerlySerializedAs("mobileOptimized")]
 	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
+	[FormerlySerializedAs("mobileOptimized")]
 	public BoolParameter fastMode = new BoolParameter
 	{
 		value = false
 	};
 
-	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
 	[DisplayName("Texture")]
+	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
 	public TextureParameter dirtTexture = new TextureParameter
 	{
 		value = null
 	};
 
-	[DisplayName("Intensity")]
-	[Tooltip("The intensity of the lens dirtiness.")]
 	[Min(0f)]
+	[Tooltip("The intensity of the lens dirtiness.")]
+	[DisplayName("Intensity")]
 	public FloatParameter dirtIntensity = new FloatParameter
 	{
 		value = 0f

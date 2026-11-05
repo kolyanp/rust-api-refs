@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 
 public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 {
-	private NetworkableId? _currentlyRenderedDungeon;
+	private Nullable _currentlyRenderedDungeon;
 
 	private int? _underwaterLabFloorCount;
 
@@ -30,8 +30,8 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 		ProceduralDynamicDungeon proceduralDynamicDungeon = FindDungeon(MainCamera.isValid ? MainCamera.position : Vector3.zero);
 		if (_currentlyRenderedLayer == MapLayer.Dungeons)
 		{
-			NetworkableId? currentlyRenderedDungeon = _currentlyRenderedDungeon;
-			NetworkableId? val = proceduralDynamicDungeon?.net?.ID;
+			Nullable currentlyRenderedDungeon = _currentlyRenderedDungeon;
+			Nullable val = proceduralDynamicDungeon?.net?.ID;
 			if (currentlyRenderedDungeon.HasValue == val.HasValue && (!currentlyRenderedDungeon.HasValue || currentlyRenderedDungeon.GetValueOrDefault() == val.GetValueOrDefault()))
 			{
 				return;

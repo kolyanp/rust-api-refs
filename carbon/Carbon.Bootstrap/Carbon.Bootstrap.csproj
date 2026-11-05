@@ -18,6 +18,9 @@
     <Reference Include="Carbon.SDK">
       <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.SDK.dll</HintPath>
     </Reference>
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Cecil" />
     <Reference Include="Rust.Global" />
     <Reference Include="Carbon.Common">
@@ -26,9 +29,6 @@
     <Reference Include="Facepunch.Console" />
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="Facepunch.System" />
-    <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Carbon.Profiler">
       <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Profiler.dll</HintPath>
     </Reference>

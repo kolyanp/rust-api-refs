@@ -122,8 +122,12 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public float TurnHeadAimFadeSpeed = 6f;
 
+	public float TurnChestAimFadeSpeed = 6f;
+
 	[Header("Turn Commit")]
 	public TurnClipSet TurnClips;
+
+	public TurnClipSet CrouchTurnClips;
 
 	public AnimationCurve TurnSpeedByBacklog = new AnimationCurve(new Keyframe[3]
 	{
@@ -137,6 +141,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 	public bool TurnSuppressProceduralLegs = true;
 
 	public float TurnLegBlendTime = 0.12f;
+
+	public float TurnCrouchBlendTime = 0.2f;
 
 	[Header("Turn Pelvis")]
 	public bool TurnPelvisEnabled = true;
@@ -328,8 +334,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public SubsurfaceProfile subsurfaceProfile;
 
-	[Header("Parameters")]
 	[Range(0f, 1f)]
+	[Header("Parameters")]
 	public float voiceVolume;
 
 	[Range(0f, 1f)]
@@ -473,6 +479,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public bool IsMannequin { get; set; }
 
+	public bool IsTrophyModel { get; set; }
+
 	private static Vector3 GetFlat(Vector3 dir)
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
@@ -492,29 +500,29 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public PlayerModel()
 	{
-		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019c: Expected Obj, but got Unknown
-		//IL_0262: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0198: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a7: Expected Obj, but got Unknown
 		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_028e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0293: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a2: Expected Obj, but got Unknown
-		//IL_02e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b8: Expected Obj, but got Unknown
 		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02fc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_030d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0312: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0317: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0321: Expected Obj, but got Unknown
+		//IL_0323: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0328: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0337: Expected Obj, but got Unknown
 	}
 }

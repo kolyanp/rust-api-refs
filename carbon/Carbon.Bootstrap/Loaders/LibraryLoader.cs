@@ -23,6 +23,8 @@ internal sealed class LibraryLoader : Singleton<LibraryLoader>, IDisposable
 
 	private static readonly string[] _blacklist = new string[5] { "^.+\\.XmlSerializers$", "^Oxide\\..+$", "^System.Globalization$", "^System.Management$", "^System.Xml.Serialization$" };
 
+	private static readonly HashSet<string> _carbonOwned = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Microsoft.CodeAnalysis", "Microsoft.CodeAnalysis.CSharp", "System.Collections.Immutable", "System.Reflection.Metadata" };
+
 	private AppDomain _domain;
 
 	private readonly Dictionary<string, Item> _cache = new Dictionary<string, Item>();
@@ -77,13 +79,14 @@ internal sealed class LibraryLoader : Singleton<LibraryLoader>, IDisposable
 				return null;
 			}
 			string text = null;
+			bool flag = _carbonOwned.Contains(name.EndsWith(".dll") ? name.Substring(0, name.Length - 4) : name);
 			string[] array = customDirectories ?? _directoryList;
-			foreach (string path in array)
+			foreach (string text2 in array)
 			{
-				string text2 = Path.Combine(path, name.EndsWith(".dll") ? name : (name + ".dll"));
-				if (File.Exists(text2))
+				string text3 = Path.Combine(text2, name.EndsWith(".dll") ? name : (name + ".dll"));
+				if (File.Exists(text3) && (!flag || text == null || !string.Equals(Path.GetFullPath(text2), Context.GameManaged, StringComparison.OrdinalIgnoreCase)))
 				{
-					text = text2;
+					text = text3;
 				}
 			}
 			if (string.IsNullOrEmpty(text))

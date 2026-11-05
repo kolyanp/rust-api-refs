@@ -34,10 +34,6 @@ public class DevMovePlayer : BaseMonoBehaviour
 		}
 		if (!player.isClient)
 		{
-			if ((Object)(object)player.eyes == (Object)null)
-			{
-				player.eyes = ((Component)player).GetComponent<PlayerEyes>();
-			}
 			Invoke(LateSpawn, 1f);
 		}
 	}

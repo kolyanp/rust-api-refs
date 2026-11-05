@@ -18,4 +18,12 @@ public class MeleeWeaponAnimationSubSystem : ChildAnimatorSubSystem
 
 	[SerializeField]
 	private bool HasAttackHitAnims;
+
+	[Tooltip("Player speed at which the spine look at is back to the no-hold damping")]
+	[SerializeField]
+	private float SpineLookAtSpeedCap = 2f;
+
+	[Tooltip("Seconds to blend the spine look at in and out when aiming")]
+	[SerializeField]
+	private float SpineLookAtAimBlendTime = 0.1f;
 }

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Network;
 using Newtonsoft.Json;
@@ -41,6 +42,12 @@ public class NotificationList
 		return _subscriptions.Contains(steamId);
 	}
 
+	public void Clear()
+	{
+		_subscriptions.Clear();
+	}
+
+	[PoolAnalyzerGetWrapper]
 	public List<ulong> ToList()
 	{
 		List<ulong> list = Pool.Get<List<ulong>>();
@@ -75,7 +82,7 @@ public class NotificationList
 		Pool.FreeUnmanaged<ulong>(ref list);
 	}
 
-	public Task<NotificationSendResult> SendNotification(NotificationChannel channel, string title, string body, string type)
+	public Task<NotificationSendResult> SendNotification(NotificationChannel channel, string title, string body, string type, HashSet<ulong> excludedSteamIds = null)
 	{
 		double realtimeSinceStartup = TimeEx.realtimeSinceStartup;
 		if (realtimeSinceStartup - _lastSend < 15.0)
@@ -92,7 +99,12 @@ public class NotificationList
 			dictionary["type"] = type;
 		}
 		_lastSend = realtimeSinceStartup;
-		return SendNotificationImpl(_subscriptions, channel, title, body, dictionary);
+		HashSet<ulong> hashSet = new HashSet<ulong>(_subscriptions);
+		if (excludedSteamIds != null)
+		{
+			hashSet.ExceptWith(excludedSteamIds);
+		}
+		return SendNotificationImpl(hashSet, channel, title, body, dictionary);
 	}
 
 	public static async Task<NotificationSendResult> SendNotificationTo(ICollection<ulong> steamIds, NotificationChannel channel, string title, string body, Dictionary<string, string> data)

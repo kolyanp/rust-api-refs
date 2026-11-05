@@ -221,12 +221,8 @@ public class MiningQuarry : BaseResourceExtractor
 			}
 			if (num2 != num3)
 			{
-				int num4 = num3 - num2;
-				if (BaseGameMode.GetActiveGameMode(serverside: true) is GameModeSoftcore)
-				{
-					num4 = Mathf.Max(1, Mathf.RoundToInt((float)num4 * GameModeSoftcore.gather_rate));
-				}
-				Item item = ItemManager.Create(resource.type, num4, 0uL, isServerSide: true, 0uL);
+				int iAmount = BaseGameMode.ScaleGatherAmount(num3 - num2);
+				Item item = ItemManager.Create(resource.type, iAmount, 0uL, isServerSide: true, 0uL);
 				Facepunch.Rust.Analytics.Azure.OnQuarryItem(Facepunch.Rust.Analytics.Azure.ResourceMode.Produced, item.info.shortname, item.amount, this);
 				if (Interface.CallHook("OnQuarryGather", this, item) != null)
 				{

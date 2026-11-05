@@ -22,8 +22,7 @@ public class Item : IPooled
 		IsLocked = 8,
 		Cooking = 0x10,
 		Radioactive = 0x20,
-		Refrigerated = 0x40,
-		InRefrigeratedContainer = 0x80
+		Refrigerated = 0x40
 	}
 
 	private const string DefaultArmourBreakEffectPath = "assets/bundled/prefabs/fx/armor_break.prefab";
@@ -538,11 +537,6 @@ public class Item : IPooled
 		return HasFlag(Flag.Refrigerated);
 	}
 
-	public bool IsInRefrigeratedContainer()
-	{
-		return HasFlag(Flag.InRefrigeratedContainer);
-	}
-
 	public void MarkDirty()
 	{
 		OnChanged();
@@ -994,10 +988,10 @@ public class Item : IPooled
 	{
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0604: Unknown result type (might be due to invalid IL or missing references)
+		//IL_060a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0611: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0617: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("MoveToContainer"))
 		{
 			BasePlayer playerOwner = newcontainer.playerOwner;
@@ -1124,6 +1118,7 @@ public class Item : IPooled
 							Remove();
 							return true;
 						}
+						parent?.onItemRemovedFromStack?.Invoke(this, num2, sourcePlayer);
 						if (flag)
 						{
 							return MoveToContainer(newcontainer, -1, allowStack, ignoreStackLimit, sourcePlayer);
@@ -1134,10 +1129,14 @@ public class Item : IPooled
 				if (((parent != null) & allowSwap) && slot2 != null)
 				{
 					ItemContainer itemContainer2 = parent;
-					int iTargetPos2 = position;
+					int num3 = position;
 					ItemContainer itemContainer3 = slot2.parent;
-					int num3 = slot2.position;
-					if (!slot2.CanMoveTo(sourcePlayer, itemContainer2, iTargetPos2))
+					int num4 = slot2.position;
+					if (!slot2.CanMoveTo(sourcePlayer, itemContainer2, num3))
+					{
+						return false;
+					}
+					if (itemContainer2.IsSlotReserved(this, num3) || newcontainer.IsSlotReserved(slot2, iTargetPos))
 					{
 						return false;
 					}
@@ -1158,14 +1157,14 @@ public class Item : IPooled
 					slot2.RemoveFromContainer(sourcePlayer);
 					RemoveConflictingSlots(newcontainer, entityOwner, sourcePlayer);
 					slot2.RemoveConflictingSlots(itemContainer2, entityOwner2, sourcePlayer);
-					if (!slot2.MoveToContainer(itemContainer2, iTargetPos2, allowStack: true, ignoreStackLimit: false, sourcePlayer) || !MoveToContainer(newcontainer, iTargetPos, allowStack: true, ignoreStackLimit: false, sourcePlayer))
+					if (!slot2.MoveToContainer(itemContainer2, num3, allowStack: true, ignoreStackLimit: false, sourcePlayer) || !MoveToContainer(newcontainer, iTargetPos, allowStack: true, ignoreStackLimit: false, sourcePlayer))
 					{
 						RemoveFromContainer(sourcePlayer);
 						slot2.RemoveFromContainer(sourcePlayer);
 						SetParent(itemContainer2, sourcePlayer);
-						position = iTargetPos2;
+						position = num3;
 						slot2.SetParent(itemContainer3, sourcePlayer);
-						slot2.position = num3;
+						slot2.position = num4;
 						return true;
 					}
 					return true;
@@ -1456,12 +1455,12 @@ public class Item : IPooled
 
 	public Item SplitItem(int split_Amount)
 	{
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Expected Obj, but got Unknown
-		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0196: Expected Obj, but got Unknown
-		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0142: Expected Obj, but got Unknown
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Expected Obj, but got Unknown
+		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b5: Expected Obj, but got Unknown
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Expected Obj, but got Unknown
 		Assert.IsTrue(split_Amount > 0, "split_Amount <= 0");
 		if (split_Amount <= 0)
 		{
@@ -1477,6 +1476,7 @@ public class Item : IPooled
 			return (Item)obj;
 		}
 		amount -= split_Amount;
+		parent?.onItemRemovedFromStack?.Invoke(this, split_Amount, null);
 		Item item = ItemManager.CreateByItemID(info.itemid, split_Amount, skin, 0uL);
 		MigrateItemOwnership(item, split_Amount);
 		if (IsBlueprint())
@@ -1505,7 +1505,6 @@ public class Item : IPooled
 			item.instanceData.refrigeratedSeconds = instanceData.refrigeratedSeconds;
 			item.instanceData.ShouldPool = false;
 			item.SetFlag(Flag.Refrigerated, IsRefrigerated());
-			item.SetFlag(Flag.InRefrigeratedContainer, IsInRefrigeratedContainer());
 		}
 		MarkDirty();
 		return item;
@@ -1791,6 +1790,7 @@ public class Item : IPooled
 			}
 			else
 			{
+				parent?.onItemRemovedFromStack?.Invoke(this, amount, null);
 				MarkDirty();
 			}
 		}
@@ -1962,6 +1962,7 @@ public class Item : IPooled
 		return info.GetWorldModel(amount);
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public virtual Item Save(bool bIncludeContainer = false, bool bIncludeOwners = true)
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)

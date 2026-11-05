@@ -5,7 +5,7 @@ using ConVar;
 using Rust.Ai.Gen2;
 using UnityEngine;
 
-public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, ISpawnGroup
+public class SpawnGroup : BaseMonoBehaviour, IServerComponent, IFlattenKeepsChildren, ISpawnPointUser, ISpawnGroup
 {
 	[Serializable]
 	public class SpawnEntry
@@ -419,6 +419,7 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 		Gizmos.DrawSphere(((Component)this).transform.position, 0.25f);
 	}
 
+	[UnityEvent]
 	public void SetIsSpawningActive(bool isActive)
 	{
 		isSpawnerActive = isActive;

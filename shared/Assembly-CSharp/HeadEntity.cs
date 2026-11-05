@@ -30,6 +30,9 @@ public class HeadEntity : BaseEntity
 		CurrentTrophyData.clothingSkins?.Clear();
 		CurrentTrophyData.livestockGenes = 0;
 		CurrentTrophyData.livestockName = string.Empty;
+		CurrentTrophyData.livestockCoatSeed = 0;
+		CurrentTrophyData.livestockNameSource = 0;
+		CurrentTrophyData.livestockNameAuthorId = 0uL;
 	}
 
 	public void SetupPlayerId(string playerName, ulong playerId)
@@ -86,11 +89,14 @@ public class HeadEntity : BaseEntity
 		CurrentTrophyData.horseBreed = breed;
 	}
 
-	public void AssignLivestock(int genes, string animalName)
+	public void AssignLivestock(int genes, string animalName, int coatSeed, FarmableAnimal.NameSource nameSource, ulong nameAuthorId)
 	{
 		InitTrophyData();
 		CurrentTrophyData.livestockGenes = genes;
 		CurrentTrophyData.livestockName = animalName;
+		CurrentTrophyData.livestockCoatSeed = coatSeed;
+		CurrentTrophyData.livestockNameSource = (int)nameSource;
+		CurrentTrophyData.livestockNameAuthorId = nameAuthorId;
 	}
 
 	private void InitTrophyData()

@@ -202,7 +202,7 @@ public static class RustNavDoorGates
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		if (!AI.useUnityNavmesh && gatesEnabled && !((Object)(object)door == (Object)null) && door.IsNavGate && !PlayerBoat.IsPartOfPlayerBoat(door))
+		if (!AI.useUnityNavmesh && gatesEnabled && !((Object)(object)door == (Object)null) && door.IsNavGate && !BackgroundTileBuilder.NeverBakes(door))
 		{
 			Vector3 position = ((Component)door).transform.position;
 			if (allDoors.TryAdd(door, new DoorEntry
@@ -251,7 +251,7 @@ public static class RustNavDoorGates
 		{
 			return;
 		}
-		if (PlayerBoat.IsPartOfPlayerBoat(door))
+		if (BackgroundTileBuilder.NeverBakes(door))
 		{
 			Unregister(door);
 			return;
@@ -286,7 +286,7 @@ public static class RustNavDoorGates
 			doorGrid.GetInBounds(worldBounds, (List<Door>)(object)val);
 			foreach (Door item in (List<Door>)(object)val)
 			{
-				if (!((Object)(object)item == (Object)null) && !item.IsDestroyed && DoorReachTouches(item, in worldBounds) && TryGetDoorWriteBounds(item, out var worldBounds2) && worldBounds2.Intersects(worldBounds) && !PlayerBoat.IsPartOfPlayerBoat(item))
+				if (!((Object)(object)item == (Object)null) && !item.IsDestroyed && DoorReachTouches(item, in worldBounds) && TryGetDoorWriteBounds(item, out var worldBounds2) && worldBounds2.Intersects(worldBounds) && !BackgroundTileBuilder.NeverBakes(item))
 				{
 					results.Add(item);
 				}
@@ -298,15 +298,12 @@ public static class RustNavDoorGates
 		}
 	}
 
-	public static BakeVolumes GetBakeVolumes(Door door, bool hiRes, float agentRadius)
+	public static BakeVolumes GetBakeVolumes(Door door, bool hiRes, float agentRadius, in Matrix4x4 localToWorld)
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		Matrix4x4 localToWorld = ((Component)door).transform.localToWorldMatrix;
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		if (!allDoors.TryGetValue(door, out var value))
 		{
 			NavMeshBuildVolume[] buffer = null;
@@ -469,49 +466,14 @@ public static class RustNavDoorGates
 		}
 	}
 
-	public static void ReassertInBounds(Bounds worldBounds)
-	{
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		if (AI.useUnityNavmesh || !gatesEnabled || allDoors.Count == 0)
-		{
-			return;
-		}
-		worldBounds.Expand(10f);
-		PooledList<Door> val = Pool.Get<PooledList<Door>>();
-		try
-		{
-			doorGrid.GetInBounds(worldBounds, (List<Door>)(object)val);
-			PooledList<Door> val2 = Pool.Get<PooledList<Door>>();
-			try
-			{
-				foreach (Door item in (List<Door>)(object)val)
-				{
-					if (!((Object)(object)item == (Object)null) && !item.IsDestroyed && DoorReachTouches(item, in worldBounds) && TryGetDoorWriteBounds(item, out var worldBounds2) && worldBounds2.Intersects(worldBounds))
-					{
-						((List<Door>)(object)val2).Add(item);
-					}
-				}
-				ApplyDoors((List<Door>)(object)val2);
-			}
-			finally
-			{
-				((IDisposable)val2)?.Dispose();
-			}
-		}
-		finally
-		{
-			((IDisposable)val)?.Dispose();
-		}
-	}
-
 	public static void OnTileBuilt(RustNavmesh navmesh, int tx, int ty)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		if (!gatesEnabled || allDoors.Count == 0)
 		{
 			return;
@@ -521,21 +483,29 @@ public static class RustNavDoorGates
 		PooledList<Door> val = Pool.Get<PooledList<Door>>();
 		try
 		{
-			doorGrid.GetInBounds(region, (List<Door>)(object)val);
+			bool flag = (Object)(object)navmesh.MovingOwner != (Object)null;
+			if (flag)
+			{
+				navmesh.GetMovingGateDoorsWithin(region, (ICollection<Door>)val);
+			}
+			else
+			{
+				doorGrid.GetInBounds(region, (List<Door>)(object)val);
+			}
 			PooledList<Door> val2 = Pool.Get<PooledList<Door>>();
 			try
 			{
 				foreach (Door item in (List<Door>)(object)val)
 				{
-					if (!((Object)(object)item == (Object)null) && !item.IsDestroyed && DoorReachTouches(item, in region) && TryGetDoorWriteBounds(item, out var worldBounds) && worldBounds.Intersects(region))
+					if (!((Object)(object)item == (Object)null) && !item.IsDestroyed && (flag || (DoorReachTouches(item, in region) && TryGetDoorWriteBounds(item, out var worldBounds) && worldBounds.Intersects(region))))
 					{
 						if (allDoors.TryGetValue(item, out var value))
 						{
 							value.apertureRefsValid = false;
 						}
-						bool flag = ApertureState(item) == DoorPolyState.Blocked;
-						bool flag2 = !item.HasNavSwingLeaf || !item.IsOpen();
-						if (!(flag & flag2) && pendingReassertSet.Add(item))
+						bool flag2 = ApertureState(item) == DoorPolyState.Blocked;
+						bool flag3 = !item.HasNavSwingLeaf || !item.IsOpen();
+						if (!(flag2 & flag3) && pendingReassertSet.Add(item))
 						{
 							pendingReasserts.Add(item);
 						}

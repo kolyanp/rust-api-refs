@@ -10,22 +10,6 @@ namespace Rust.Ai.Gen2;
 public class CritterAnimalFSM : FSMComponent
 {
 	[Serializable]
-	public class Trans_RecentlyHurt : FSMTransitionBase
-	{
-		[SerializeField]
-		private float thresholdSeconds = 5f;
-
-		protected override bool EvaluateInternal(ref FSMPayload payload)
-		{
-			if (Owner is BaseCombatEntity { lastAttackedTime: >0f } baseCombatEntity)
-			{
-				return Time.time - baseCombatEntity.lastAttackedTime < thresholdSeconds;
-			}
-			return base.EvaluateInternal(ref payload);
-		}
-	}
-
-	[Serializable]
 	public class Trans_LoudNoiseNearby : FSMTransitionBase
 	{
 		protected override bool EvaluateInternal(ref FSMPayload payload)
@@ -110,18 +94,18 @@ public class CritterAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_Idle : FSMStateBase
 	{
-		[Tooltip("How long the critter stays stopped before moving on, in seconds.")]
 		[SerializeField]
+		[Tooltip("How long the critter stays stopped before moving on, in seconds.")]
 		private Vector2 idleDurationRange = new Vector2(3f, 8f);
 
 		private TimeUntil idleEndTime;
 
 		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 		{
-			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 			Agent.ResetPath();
-			idleEndTime = TimeUntil.op_Implicit(Random.Range(idleDurationRange.x, idleDurationRange.y));
+			idleEndTime = TimeUntil.op_Implicit(Rng.Range(idleDurationRange.x, idleDurationRange.y));
 			return base.OnStateEnter(payload);
 		}
 
@@ -157,8 +141,8 @@ public class CritterAnimalFSM : FSMComponent
 		protected override bool EvaluateInternal(ref FSMPayload payload)
 		{
 			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-			//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 			CritterAnimalFSM critterAnimalFSM = default;
 			if (!((Component)Owner).TryGetComponent<CritterAnimalFSM>(ref critterAnimalFSM))
 			{
@@ -172,7 +156,7 @@ public class CritterAnimalFSM : FSMComponent
 			PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 			try
 			{
-				Eqs.SamplePositionsInDonutShape(nextPosition, (List<NavVector3>)(object)val, searchRadius);
+				Eqs.SamplePositionsInDonutShape(nextPosition, (List<NavVector3>)(object)val, Rng, searchRadius);
 				foreach (NavVector3 item in (List<NavVector3>)(object)val)
 				{
 					if (Agent.SamplePosition(item, out var hitNS, 10f) && Agent.IsPositionAtTopologyRequirement(hitNS.position, interestTopology))
@@ -259,12 +243,12 @@ public class CritterAnimalFSM : FSMComponent
 
 		public override EFSMStateStatus OnStateUpdate(float deltaTime)
 		{
-			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 			switch (phase)
 			{
 			case Phase.MovingToInterest:
@@ -273,7 +257,7 @@ public class CritterAnimalFSM : FSMComponent
 					return base.OnStateUpdate(deltaTime);
 				}
 				phase = Phase.InvestigatingInterest;
-				interestEndTime = TimeUntil.op_Implicit(Random.Range(interestedDurationRange.x, interestedDurationRange.y));
+				interestEndTime = TimeUntil.op_Implicit(Rng.Range(interestedDurationRange.x, interestedDurationRange.y));
 				if (Owner is CritterAnimal critterAnimal2)
 				{
 					critterAnimal2.SetInterested(interested: true);
@@ -330,21 +314,20 @@ public class CritterAnimalFSM : FSMComponent
 
 	public State_Deactivate deactivate = new State_Deactivate();
 
-	public State_Dead dead = new State_Dead();
-
 	public Trans_IsInterestingLocationInRange _interestedTransition = new Trans_IsInterestingLocationInRange();
 
 	public State_Interested _interested = new State_Interested();
 
-	private Trans_Triggerable_HitInfo DeathTrans;
-
 	[NonSerialized]
-	public Vector3? InterestedLocation;
+	public Nullable InterestedLocation;
 
 	[NonSerialized]
 	public TimeSince TimeSinceLastInterest;
 
-	public static TickFSMWorkQueue critterWorkQueue = new TickFSMWorkQueue();
+	public static TickFSMWorkQueue critterWorkQueue = new TickFSMWorkQueue
+	{
+		Name = "FSM.Critters"
+	};
 
 	public virtual FSMStateBase idle => randomIdle;
 
@@ -356,52 +339,35 @@ public class CritterAnimalFSM : FSMComponent
 
 	protected override TickFSMWorkQueue workQueue => critterWorkQueue;
 
-	public override bool OnDied(HitInfo hitInfo)
+	protected override AliveLayout BuildAlive(State_Nothing onNavmesh)
 	{
-		DeathTrans.Trigger(hitInfo);
-		return false;
-	}
-
-	public override void InitShared()
-	{
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		base.InitShared();
-		if (baseEntity.isServer)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		TimeSinceLastInterest = TimeSince.op_Implicit(0f);
+		State_Nothing state_Nothing = new State_Nothing
 		{
-			TimeSinceLastInterest = TimeSince.op_Implicit(0f);
-			DeathTrans = new Trans_Triggerable_HitInfo();
-			State_Nothing state_Nothing = new State_Nothing();
-			state_Nothing.Name = "Root";
-			State_Nothing state_Nothing2 = new State_Nothing
+			Name = "Can flee"
+		};
+		State_Nothing state_Nothing2 = new State_Nothing
+		{
+			Name = "Can follow"
+		};
+		if (patrol.Enabled)
+		{
+			onNavmesh.AddChildren(patrol);
+			return new AliveLayout
 			{
-				Name = "Alive"
+				entry = patrol,
+				idle = patrol
 			};
-			State_Nothing state_Nothing3 = new State_Nothing
-			{
-				Name = "WaitForNavMesh"
-			};
-			State_Nothing state_Nothing4 = new State_Nothing
-			{
-				Name = "Can flee"
-			};
-			State_Nothing state_Nothing5 = new State_Nothing
-			{
-				Name = "Can follow"
-			};
-			state_Nothing.AddChildren(state_Nothing2.AddTickTransition(dead, DeathTrans), dead);
-			if (patrol.Enabled)
-			{
-				state_Nothing2.AddChildren(state_Nothing3.AddTickTransition(patrol, new Trans_IsNavmeshReady()), patrol);
-			}
-			else
-			{
-				state_Nothing2.AddChildren(state_Nothing3.AddTickTransition(deactivate, new Trans_IsNavmeshReady()), deactivate.AddTickTransition(idle, ~new Trans_NoPlayerConnectionsInRange()), state_Nothing4.AddTickTransition(deactivate, new Trans_NoPlayerConnectionsInRange()).AddTickTransition(flee, new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby()).AddTickTransition(startle, new Trans_HasTarget())
-					.AddChildren(state_Nothing5.AddChildren(idle.AddEndTransition(interested, interestedTransition).AddEndTransition(roam), interested.AddEndTransition(idle), roam.AddEndTransition(idle))), flee.AddEndTransition(idle), startle.AddTickTransition(flee, new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby()).AddEndTransition(idle));
-			}
-			RegisterDebugMoveTo(state_Nothing2);
-			SetState(state_Nothing3);
-			SetFsmActive(newActive: true);
 		}
+		alive.AddChildren(deactivate.AddTickTransition(idle, ~new Trans_NoPlayerConnectionsInRange()));
+		onNavmesh.AddChildren(state_Nothing.AddTickTransition(deactivate, new Trans_NoPlayerConnectionsInRange()).AddTickTransition(flee, new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby()).AddTickTransition(startle, new Trans_HasTarget())
+			.AddChildren(state_Nothing2.AddChildren(idle.AddEndTransition(interested, interestedTransition).AddEndTransition(roam), interested.AddEndTransition(idle), roam.AddEndTransition(idle))), flee.AddEndTransition(idle), startle.AddTickTransition(flee, new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby()).AddEndTransition(idle));
+		return new AliveLayout
+		{
+			entry = deactivate,
+			idle = idle
+		};
 	}
 }

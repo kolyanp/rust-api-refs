@@ -354,8 +354,8 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
 	public void Server_Purchase(RPCMessage msg)
 	{
@@ -404,7 +404,7 @@ public class MarketTerminal : StorageContainer
 				return;
 			}
 			int? slotsRequiredForTransaction = vendingMachine.GetSlotsRequiredForTransaction(num, num2);
-			if (slotsRequiredForTransaction.HasValue && !CheckItem.CanFitSimple(inventory, slotsRequiredForTransaction.Value))
+			if (slotsRequiredForTransaction.HasValue && !inventory.CanFitSimple(slotsRequiredForTransaction.Value))
 			{
 				msg.player.ShowToast(GameTip.Styles.Red_Normal, _cantFitPhrase, true);
 				return;
@@ -538,7 +538,7 @@ public class MarketTerminal : StorageContainer
 			while (enumerator.MoveNext())
 			{
 				BasePlayer current = enumerator.Current;
-				if (!((Object)(object)current == (Object)null) && !((Object)(object)current.inventory == (Object)null) && !((Object)(object)current.inventory.loot == (Object)null) && current.inventory.loot.containers.Contains(item))
+				if (!((Object)(object)current == (Object)null) && current.inventory != null && !((Object)(object)current.inventory.loot == (Object)null) && current.inventory.loot.containers.Contains(item))
 				{
 					current.inventory.loot.Clear();
 				}

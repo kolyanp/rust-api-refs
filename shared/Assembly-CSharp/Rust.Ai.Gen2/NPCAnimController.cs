@@ -89,6 +89,10 @@ public class NPCAnimController : EntityComponent<BaseEntity>, IClientComponent
 	[SerializeField]
 	private float walkSpeedMultiplier = 1f;
 
+	[Tooltip("Turn rate in degrees a second that leans the animal fully into the turn, on an animator with a turn parameter.")]
+	[SerializeField]
+	private float turnRateForFullLean = 20f;
+
 	public string AnimationsPrefix => animationsPrefix;
 
 	public string[] AnimationBlacklist => animationBlacklist;

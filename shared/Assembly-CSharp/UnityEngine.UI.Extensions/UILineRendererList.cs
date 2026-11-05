@@ -59,8 +59,8 @@ public class UILineRendererList : UIPrimitiveBase
 
 	private static Vector2[] fullUvs;
 
-	[Tooltip("Points to draw lines between\n Can be improved using the Resolution Option")]
 	[SerializeField]
+	[Tooltip("Points to draw lines between\n Can be improved using the Resolution Option")]
 	internal List<Vector2> m_points;
 
 	[SerializeField]

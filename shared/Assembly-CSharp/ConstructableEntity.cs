@@ -13,8 +13,8 @@ public class ConstructableEntity : StorageContainer
 
 	private int[] currentMaterials;
 
-	[Tooltip("Fewest hammer hits this can be finished in.")]
 	[Min(1f)]
+	[Tooltip("Fewest hammer hits this can be finished in.")]
 	public int hitsToComplete = 10;
 
 	public GameObjectRef entityToSpawn;
@@ -173,6 +173,16 @@ public class ConstructableEntity : StorageContainer
 		for (int i = 0; i < ingredients.Count; i++)
 		{
 			currentMaterials[i] = (complete ? Mathf.CeilToInt(ingredients[i].amount) : 0);
+		}
+		UpdateState();
+		SendNetworkUpdate();
+	}
+
+	public void CopyBuildProgress(ConstructableEntity source)
+	{
+		for (int i = 0; i < ingredients.Count && i < source.currentMaterials.Length; i++)
+		{
+			currentMaterials[i] = source.currentMaterials[i];
 		}
 		UpdateState();
 		SendNetworkUpdate();

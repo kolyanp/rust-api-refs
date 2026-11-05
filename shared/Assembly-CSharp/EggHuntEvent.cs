@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Oxide.Core;
 using ProtoBuf;
@@ -381,6 +382,7 @@ public class EggHuntEvent : BaseHuntEvent
 		return value;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	protected List<EggHunter> GetTopHunters()
 	{
 		List<EggHunter> list = Pool.Get<List<EggHunter>>();

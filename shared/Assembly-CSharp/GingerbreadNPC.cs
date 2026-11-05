@@ -69,7 +69,11 @@ public class GingerbreadNPC : HumanNPC, IClientBrainStateListener
 	public override void AttackerInfo(DeathInfo info)
 	{
 		base.AttackerInfo(info);
-		info.inflictorName = inventory.containerBelt.GetSlot(0).info.shortname;
+		Item slot = inventory.containerBelt.GetSlot(0);
+		if (slot != null)
+		{
+			info.inflictorName = slot.info.shortname;
+		}
 		info.attackerName = ShortPrefabName;
 	}
 

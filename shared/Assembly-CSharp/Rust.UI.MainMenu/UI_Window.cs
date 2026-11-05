@@ -1,6 +1,7 @@
 using System;
 using Facepunch.Flexbox;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Rust.UI.MainMenu;
 
@@ -148,6 +149,11 @@ public class UI_Window : BaseMonoBehaviour
 		if (((Component)this).TryGetComponent<UIBlurCanvasesBehind>(ref uIBlurCanvasesBehind))
 		{
 			((Behaviour)uIBlurCanvasesBehind).enabled = state;
+		}
+		GraphicRaycaster val = default;
+		if (((Component)this).TryGetComponent<GraphicRaycaster>(ref val))
+		{
+			((Behaviour)val).enabled = state;
 		}
 		if (_visible != state)
 		{

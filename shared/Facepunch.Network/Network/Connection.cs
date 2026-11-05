@@ -167,7 +167,13 @@ public class Connection
 
 	public long clientBuildTime;
 
-	private TimeAverageValueData[] packetsPerSecond = new TimeAverageValueData[29];
+	private TimeAverageValueData[] packetsPerSecond = new TimeAverageValueData[30];
+
+	internal NetWrite orderedBatch;
+
+	internal NetWrite unorderedBatch;
+
+	internal bool isQueuedForBatchFlush;
 
 	public double connectionTime;
 

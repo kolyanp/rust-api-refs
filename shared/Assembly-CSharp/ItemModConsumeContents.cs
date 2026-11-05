@@ -12,7 +12,6 @@ public class ItemModConsumeContents : ItemMod
 			if (!((Object)(object)component == (Object)null) && component.CanDoAction(item2, player))
 			{
 				component.DoAction(item2, player);
-				item.contents?.onItemRemovedFromStack?.Invoke(item2, 0, player);
 				break;
 			}
 		}

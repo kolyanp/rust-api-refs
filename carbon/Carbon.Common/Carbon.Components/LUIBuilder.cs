@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -6,16 +7,7 @@ namespace Carbon.Components;
 
 public static class LUIBuilder
 {
-	public readonly struct WriteArray(byte[] values, int size)
-	{
-		public readonly byte[] values = values;
-
-		public readonly int size = size;
-	}
-
-	private static readonly char[] charPreset = new char[32];
-
-	private const int segmentCheck = 2048;
+	private const int floatStringBuffer = 32;
 
 	private const char startObject = '{';
 
@@ -47,266 +39,362 @@ public static class LUIBuilder
 
 	private const string falseValue = "false";
 
+	private const int maxIntChars = 11;
+
+	private const int maxUlongChars = 20;
+
+	private const int maxFloatChars = 24;
+
 	private static readonly long[] _pow10 = new long[10] { 1L, 10L, 100L, 1000L, 10000L, 100000L, 1000000L, 10000000L, 100000000L, 1000000000L };
 
-	private static int stringLengthCheck = Mathf.CeilToInt(3891.2f);
+	public static string GetStringFloat(float value)
+	{
+		Span<char> buffer = stackalloc char[32];
+		int length = WriteFloatDigits(value, buffer);
+		return MakeString(buffer, length);
+	}
+
+	public static string GetStringFloat(float x, float y)
+	{
+		Span<char> buffer = stackalloc char[32];
+		int num = WriteFloatDigits(x, buffer);
+		buffer[num++] = ' ';
+		num += WriteFloatDigits(y, buffer.Slice(num));
+		return MakeString(buffer, num);
+	}
+
+	public static string GetStringFloat(float x, float y, float z)
+	{
+		Span<char> buffer = stackalloc char[32];
+		int num = WriteFloatDigits(x, buffer);
+		buffer[num++] = ' ';
+		num += WriteFloatDigits(y, buffer.Slice(num));
+		buffer[num++] = ' ';
+		num += WriteFloatDigits(z, buffer.Slice(num));
+		return MakeString(buffer, num);
+	}
+
+	public static string GetStringFloat(float x, float y, float z, float w)
+	{
+		Span<char> buffer = stackalloc char[32];
+		int num = WriteFloatDigits(x, buffer);
+		buffer[num++] = ' ';
+		num += WriteFloatDigits(y, buffer.Slice(num));
+		buffer[num++] = ' ';
+		num += WriteFloatDigits(z, buffer.Slice(num));
+		buffer[num++] = ' ';
+		num += WriteFloatDigits(w, buffer.Slice(num));
+		return MakeString(buffer, num);
+	}
 
 	public static string GetStringFloat(params float[] values)
 	{
-		char[] array = charPreset;
+		Span<char> span = ((values.Length * 9 > 32) ? ((Span<char>)new char[values.Length * 9]) : stackalloc char[32]);
+		Span<char> buffer = span;
 		int num = 0;
 		for (int i = 0; i < values.Length; i++)
 		{
-			int num2 = WriteFloatDigits(values[i], array, num);
-			num += num2;
+			num += WriteFloatDigits(values[i], buffer.Slice(num));
 			if (i < values.Length - 1)
 			{
-				array[num++] = ' ';
+				buffer[num++] = ' ';
 			}
 		}
-		return new string(array, 0, num);
+		return MakeString(buffer, num);
 	}
 
 	public static string BuildElementId(string elementId, int id)
 	{
-		int num = id;
-		int num2 = 0;
-		while (num > 0)
+		Span<char> span = stackalloc char[elementId.Length + 1 + 11];
+		((ReadOnlySpan<char>)elementId).CopyTo(span);
+		span[elementId.Length] = '_';
+		int length = elementId.Length + 1 + WriteIntDigits(id, span.Slice(elementId.Length + 1));
+		return MakeString(span, length);
+	}
+
+	private unsafe static string MakeString(Span<char> buffer, int length)
+	{
+		fixed (char* value = buffer)
 		{
-			num2++;
-			num /= 10;
+			return new string(value, 0, length);
 		}
-		char[] array = new char[elementId.Length + 1 + num2];
-		int start = 0;
-		for (int i = 0; i < elementId.Length; i++)
-		{
-			array[start++] = elementId[i];
-		}
-		array[start++] = '_';
-		Span<char> buffer = stackalloc char[11];
-		buffer[..WriteIntDigits(id, buffer)].CopyTo(array.AsSpan(start));
-		return new string(array);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteStartObject(this ref LuiBuilderInstance inst)
 	{
-		inst.Write('{');
+		inst.Reserve(1);
+		inst.Put('{');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteEndObject(this ref LuiBuilderInstance inst)
 	{
-		inst.Write('}');
+		inst.Reserve(1);
+		inst.Put('}');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteStartArray(this ref LuiBuilderInstance inst)
 	{
-		inst.Write('[');
+		inst.Reserve(1);
+		inst.Put('[');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteEndArray(this ref LuiBuilderInstance inst)
 	{
-		inst.Write(']');
+		inst.Reserve(1);
+		inst.Put(']');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteComma(this ref LuiBuilderInstance inst)
 	{
-		inst.Write(',');
+		inst.Reserve(1);
+		inst.Put(',');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteMark(this ref LuiBuilderInstance inst)
 	{
-		inst.Write('"');
+		inst.Reserve(1);
+		inst.Put('"');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteDots(this ref LuiBuilderInstance inst)
 	{
-		inst.Write(':');
+		inst.Reserve(1);
+		inst.Put(':');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteSpace(this ref LuiBuilderInstance inst)
 	{
-		inst.Write(' ');
+		inst.Reserve(1);
+		inst.Put(' ');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteStartObject(this ref LuiBuilderInstance inst, string key)
 	{
-		inst.WriteMark();
-		inst.Write(key);
-		inst.WriteMark();
-		inst.WriteDots();
-		inst.WriteStartObject();
+		inst.Reserve(key.Length + 4);
+		inst.PutKey(key);
+		inst.Put('{');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteStartArray(this ref LuiBuilderInstance inst, string key)
 	{
-		inst.WriteMark();
-		inst.Write(key);
-		inst.WriteMark();
-		inst.WriteDots();
-		inst.WriteStartArray();
+		inst.Reserve(key.Length + 4);
+		inst.PutKey(key);
+		inst.Put('[');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteField(this ref LuiBuilderInstance inst, string key, int value)
 	{
-		inst.WriteMark();
-		inst.Write(key);
-		inst.WriteMark();
-		inst.WriteDots();
-		inst.Write(value);
+		inst.Reserve(key.Length + 3 + 11);
+		inst.PutKey(key);
+		inst.PutInt(value);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteField(this ref LuiBuilderInstance inst, string key, Vector2 value)
 	{
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		inst.WriteMark();
-		inst.Write(key);
-		inst.WriteMark();
-		inst.WriteDots();
-		inst.WriteMark();
-		inst.Write(value.x);
-		inst.WriteSpace();
-		inst.Write(value.y);
-		inst.WriteMark();
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		inst.Reserve(key.Length + 6 + 48);
+		inst.PutKey(key);
+		inst.Put('"');
+		inst.PutFloat(value.x);
+		inst.Put(' ');
+		inst.PutFloat(value.y);
+		inst.Put('"');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteField(this ref LuiBuilderInstance inst, string key, float value)
 	{
-		inst.WriteMark();
-		inst.Write(key);
-		inst.WriteMark();
-		inst.WriteDots();
-		inst.Write(value);
+		inst.Reserve(key.Length + 3 + 24);
+		inst.PutKey(key);
+		inst.PutFloat(value);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteField(this ref LuiBuilderInstance inst, string key, ulong value)
 	{
-		inst.WriteMark();
-		inst.Write(key);
-		inst.WriteMark();
-		inst.WriteDots();
-		inst.Write(value);
+		inst.Reserve(key.Length + 3 + 20);
+		inst.PutKey(key);
+		inst.PutUlong(value);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteField(this ref LuiBuilderInstance inst, string key, bool value)
 	{
-		inst.WriteMark();
-		inst.Write(key);
-		inst.WriteMark();
-		inst.WriteDots();
-		if (value)
-		{
-			inst.Write("true");
-		}
-		else
-		{
-			inst.Write("false");
-		}
+		inst.Reserve(key.Length + 8);
+		inst.PutKey(key);
+		inst.Put(value ? "true" : "false");
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void WriteField(this ref LuiBuilderInstance inst, string key, string value)
 	{
-		inst.WriteMark();
-		inst.Write(key);
-		inst.WriteMark();
-		inst.WriteDots();
-		inst.WriteMark();
-		inst.Write(value);
-		inst.WriteMark();
+		inst.Reserve(key.Length + value.Length + 5);
+		inst.PutKey(key);
+		inst.Put('"');
+		inst.Put(value);
+		inst.Put('"');
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static void Write(this ref LuiBuilderInstance inst, char character)
+	public static void WriteFieldId(this ref LuiBuilderInstance inst, string key, string identifier, int id)
 	{
-		inst._charBuffer[inst._charIndex] = character;
-		inst._charIndex++;
-		if (inst._charIndex >= 2048)
+		inst.Reserve(key.Length + identifier.Length + 6 + 11);
+		inst.PutKey(key);
+		inst.Put('"');
+		inst.Put(identifier);
+		inst.Put('_');
+		inst.PutInt(id);
+		inst.Put('"');
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void WriteFieldIdComma(this ref LuiBuilderInstance inst, string key, string identifier, int id)
+	{
+		inst.Reserve(key.Length + identifier.Length + 7 + 11);
+		inst.Put(',');
+		inst.PutKey(key);
+		inst.Put('"');
+		inst.Put(identifier);
+		inst.Put('_');
+		inst.PutInt(id);
+		inst.Put('"');
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void WriteFieldComma(this ref LuiBuilderInstance inst, string key, int value)
+	{
+		inst.Reserve(key.Length + 4 + 11);
+		inst.Put(',');
+		inst.PutKey(key);
+		inst.PutInt(value);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void WriteFieldComma(this ref LuiBuilderInstance inst, string key, Vector2 value)
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		inst.Reserve(key.Length + 7 + 48);
+		inst.Put(',');
+		inst.PutKey(key);
+		inst.Put('"');
+		inst.PutFloat(value.x);
+		inst.Put(' ');
+		inst.PutFloat(value.y);
+		inst.Put('"');
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void WriteFieldComma(this ref LuiBuilderInstance inst, string key, float value)
+	{
+		inst.Reserve(key.Length + 4 + 24);
+		inst.Put(',');
+		inst.PutKey(key);
+		inst.PutFloat(value);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void WriteFieldComma(this ref LuiBuilderInstance inst, string key, ulong value)
+	{
+		inst.Reserve(key.Length + 4 + 20);
+		inst.Put(',');
+		inst.PutKey(key);
+		inst.PutUlong(value);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void WriteFieldComma(this ref LuiBuilderInstance inst, string key, bool value)
+	{
+		inst.Reserve(key.Length + 9);
+		inst.Put(',');
+		inst.PutKey(key);
+		inst.Put(value ? "true" : "false");
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void WriteFieldComma(this ref LuiBuilderInstance inst, string key, string value)
+	{
+		inst.Reserve(key.Length + value.Length + 6);
+		inst.Put(',');
+		inst.PutKey(key);
+		inst.Put('"');
+		inst.Put(value);
+		inst.Put('"');
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	internal static void Reserve(this ref LuiBuilderInstance inst, int required)
+	{
+		if (inst._charIndex + required > inst._charBuffer.Length)
 		{
-			inst.Flush();
+			inst.Grow(required);
 		}
 	}
 
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static void Write(this ref LuiBuilderInstance inst, int value)
+	[MethodImpl(MethodImplOptions.NoInlining)]
+	private static void Grow(this ref LuiBuilderInstance inst, int required)
 	{
-		Span<char> buffer = stackalloc char[11];
-		int num = WriteIntDigits(value, buffer);
-		buffer.Slice(0, num).CopyTo(inst._charBuffer.AsSpan(inst._charIndex));
+		int minimumLength = Math.Max(inst._charBuffer.Length * 2, inst._charIndex + required);
+		char[] array = ArrayPool<char>.Shared.Rent(minimumLength);
+		inst._charBuffer.AsSpan(0, inst._charIndex).CopyTo(array);
+		ArrayPool<char>.Shared.Return(inst._charBuffer);
+		inst._charBuffer = array;
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private static void Put(this ref LuiBuilderInstance inst, char character)
+	{
+		inst._charBuffer[inst._charIndex++] = character;
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private static void Put(this ref LuiBuilderInstance inst, string text)
+	{
+		((ReadOnlySpan<char>)text).CopyTo(inst._charBuffer.AsSpan(inst._charIndex));
+		inst._charIndex += text.Length;
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private static void PutKey(this ref LuiBuilderInstance inst, string key)
+	{
+		Span<char> span = inst._charBuffer.AsSpan(inst._charIndex);
+		span[0] = '"';
+		((ReadOnlySpan<char>)key).CopyTo(span.Slice(1));
+		int num = key.Length + 1;
+		span[num++] = '"';
+		span[num++] = ':';
 		inst._charIndex += num;
-		if (inst._charIndex >= 2048)
-		{
-			inst.Flush();
-		}
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static void Write(this ref LuiBuilderInstance inst, float value)
+	private static void PutInt(this ref LuiBuilderInstance inst, int value)
 	{
-		Span<char> buffer = stackalloc char[16];
-		int num = WriteFloatDigits(value, buffer);
-		buffer.Slice(0, num).CopyTo(inst._charBuffer.AsSpan(inst._charIndex));
-		inst._charIndex += num;
-		if (inst._charIndex >= 2048)
-		{
-			inst.Flush();
-		}
+		inst._charIndex += WriteIntDigits(value, inst._charBuffer.AsSpan(inst._charIndex));
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static void Write(this ref LuiBuilderInstance inst, ulong value)
+	private static void PutFloat(this ref LuiBuilderInstance inst, float value)
 	{
-		Span<char> buffer = stackalloc char[20];
-		int num = WriteUlongDigits(value, buffer);
-		buffer.Slice(0, num).CopyTo(inst._charBuffer.AsSpan(inst._charIndex));
-		inst._charIndex += num;
-		if (inst._charIndex >= 2048)
-		{
-			inst.Flush();
-		}
+		inst._charIndex += WriteFloatDigits(value, inst._charBuffer.AsSpan(inst._charIndex));
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static void Write(this ref LuiBuilderInstance inst, string text, int startPos = 0)
+	private static void PutUlong(this ref LuiBuilderInstance inst, ulong value)
 	{
-		int length = text.Length;
-		Span<char> span = inst._charBuffer.AsSpan();
-		int charIndex = inst._charIndex;
-		int num = 0;
-		bool flag = length > 2048;
-		for (int i = startPos; i < length; i++)
-		{
-			int num2 = charIndex + num;
-			span[num2] = text[i];
-			num++;
-			if (flag && num2 > stringLengthCheck)
-			{
-				inst._charIndex += num;
-				inst.Flush();
-				inst.Write(text, num);
-				return;
-			}
-		}
-		inst._charIndex += length - startPos;
-		if (inst._charIndex > 2048)
-		{
-			inst.Flush();
-		}
+		inst._charIndex += WriteUlongDigits(value, inst._charBuffer.AsSpan(inst._charIndex));
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -327,11 +415,16 @@ public static class LUIBuilder
 		float num3 = value - (float)num2;
 		long num4 = _pow10[precision];
 		long num5 = (long)(num3 * (float)num4 + 0.5f);
-		if (num5 == _pow10[precision])
+		if (num5 == num4)
 		{
 			num2++;
+			num5 = 0L;
 		}
 		num += WriteIntDigits(num2, buffer.Slice(num));
+		if (num5 == 0L)
+		{
+			return num - startIndex;
+		}
 		buffer[num++] = '.';
 		int num6 = num;
 		for (int i = 0; i < precision; i++)

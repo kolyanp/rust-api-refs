@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class UI_Loadout : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected RectTransform buttonsParents;
 
 	[SerializeField]
@@ -29,4 +29,10 @@ public class UI_Loadout : UI_Window
 
 	[SerializeField]
 	private RustInput searchInputField;
+
+	[SerializeField]
+	private RustButton previewToggleButton;
+
+	[SerializeField]
+	private RustIcon previewToggleIcon;
 }

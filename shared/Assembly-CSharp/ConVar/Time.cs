@@ -11,8 +11,8 @@ public class Time : ConsoleSystem
 
 	public const string CLIENT_DEFAULT_TICKS_STR = "32";
 
-	[Help("Pause time while loading")]
 	[ServerVar]
+	[Help("Pause time while loading")]
 	public static bool pausewhileloading = true;
 
 	private static float _missiontimerscale = 1f;
@@ -65,8 +65,21 @@ public class Time : ConsoleSystem
 		}
 	}
 
-	[Help("Time scale which only affects mission timers")]
+	[ServerVar(Help = "Game seconds each frame advances by however long it really took. 0 follows the wall clock")]
+	public static float framestep
+	{
+		get
+		{
+			return Time.captureDeltaTime;
+		}
+		set
+		{
+			Time.captureDeltaTime = Mathf.Max(value, 0f);
+		}
+	}
+
 	[ReplicatedVar]
+	[Help("Time scale which only affects mission timers")]
 	public static float missiontimerscale
 	{
 		get

@@ -18,6 +18,8 @@ public class SteamInventory : EntityComponent<BasePlayer>
 
 	private int workshopSkinVersion = -1;
 
+	public bool IsLoaded => Items != null;
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("SteamInventory.OnRpcMessage"))
@@ -170,6 +172,7 @@ public class SteamInventory : EntityComponent<BasePlayer>
 			SetItems(val.Items.ToArray());
 			Interface.CallHook("OnSteamInventoryUpdated", this);
 			((IDisposable)val).Dispose();
+			baseEntity.inventory.OnSteamInventoryUpdated();
 		}
 	}
 }

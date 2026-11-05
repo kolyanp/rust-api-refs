@@ -36,6 +36,7 @@ public static class ClanLogExtensions
 		return val2;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static ClanScoreEvents ToProto(this ClanScoreEvents clanScoreEvents)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

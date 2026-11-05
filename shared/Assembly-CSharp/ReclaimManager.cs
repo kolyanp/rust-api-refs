@@ -231,6 +231,11 @@ public class ReclaimManager : BaseEntity
 		}
 	}
 
+	public override bool CanUseSaveCache()
+	{
+		return false;
+	}
+
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);

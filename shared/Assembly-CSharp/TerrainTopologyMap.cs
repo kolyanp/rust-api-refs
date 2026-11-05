@@ -1,6 +1,6 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
+using ConVar;
 using TerrainTopologyMapJobs;
 using Unity.Burst;
 using Unity.Burst.CompilerServices;
@@ -73,48 +73,105 @@ public class TerrainTopologyMap : TerrainMap<int>
 
 	private bool _generatedTopologyTexture;
 
-	private ThreadLocal<NativeReference<int>> topoNative = new ThreadLocal<NativeReference<int>>(() =>
-	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		return new NativeReference<int>(0, AllocatorHandle.op_Implicit((Allocator)4));
-	}, trackAllValues: true);
+	private TerrainTopologyHierarchy hierarchy;
+
+	private TerrainTopologyHierarchy.Query hierarchyQuery;
 
 	public override void Setup()
 	{
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		res = terrainData.alphamapResolution;
 		InitArrays(res * res);
-		if (!((Object)(object)TopologyTexture != (Object)null))
+		if ((Object)(object)TopologyTexture != (Object)null)
 		{
-			return;
-		}
-		if (((Texture)TopologyTexture).width == ((Texture)TopologyTexture).height && ((Texture)TopologyTexture).width == res)
-		{
-			Color32[] pixels = TopologyTexture.GetPixels32();
-			int i = 0;
-			int num = 0;
-			for (; i < res; i++)
+			if (((Texture)TopologyTexture).width == ((Texture)TopologyTexture).height && ((Texture)TopologyTexture).width == res)
 			{
-				int num2 = 0;
-				while (num2 < res)
+				Color32[] pixels = TopologyTexture.GetPixels32();
+				int i = 0;
+				int num = 0;
+				for (; i < res; i++)
 				{
-					dst[i * res + num2] = BitUtility.DecodeInt(pixels[num]);
-					num2++;
-					num++;
+					int num2 = 0;
+					while (num2 < res)
+					{
+						dst[i * res + num2] = BitUtility.DecodeInt(pixels[num]);
+						num2++;
+						num++;
+					}
 				}
 			}
+			else
+			{
+				Debug.LogError((object)("Invalid topology texture: " + ((Object)TopologyTexture).name));
+			}
 		}
-		else
-		{
-			Debug.LogError((object)("Invalid topology texture: " + ((Object)TopologyTexture).name));
-		}
+		CreateHierarchy();
 	}
 
 	public void SetupEmpty(int newRes)
 	{
 		res = newRes;
 		InitArrays(res * res);
+		CreateHierarchy();
+	}
+
+	private void CreateHierarchy()
+	{
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		hierarchy?.Dispose();
+		hierarchy = new TerrainTopologyHierarchy(res);
+		hierarchyQuery = hierarchy.GetQuery(src.AsReadOnly());
+		RefreshHierarchy();
+	}
+
+	public void RefreshHierarchy()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		hierarchy.Build(src.AsReadOnly());
+	}
+
+	public void RefreshHierarchy(int xMin, int zMin, int xMax, int zMax)
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		hierarchy.RefreshRegion(src.AsReadOnly(), xMin, zMin, xMax, zMax);
+	}
+
+	public void RefreshHierarchy(Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		int num = Index(TerrainMeta.NormalizeX(v0.x));
+		int num2 = Index(TerrainMeta.NormalizeZ(v0.z));
+		int num3 = Index(TerrainMeta.NormalizeX(v1.x));
+		int num4 = Index(TerrainMeta.NormalizeZ(v1.z));
+		int num5 = Index(TerrainMeta.NormalizeX(v2.x));
+		int num6 = Index(TerrainMeta.NormalizeZ(v2.z));
+		int num7 = Index(TerrainMeta.NormalizeX(v3.x));
+		int num8 = Index(TerrainMeta.NormalizeZ(v3.z));
+		RefreshHierarchy(Mathx.Min(num, num3, num5, num7), Mathx.Min(num2, num4, num6, num8), Mathx.Max(num, num3, num5, num7), Mathx.Max(num2, num4, num6, num8));
+	}
+
+	private void RefreshHierarchy(float normX, float normZ, float radius)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		float num = TerrainMeta.OneOverSize.x * radius;
+		RefreshHierarchy(Index(normX - num), Index(normZ - num), Index(normX + num), Index(normZ + num));
+	}
+
+	public TerrainTopologyHierarchy.Query GetHierarchyQuery()
+	{
+		return hierarchyQuery;
+	}
+
+	protected override void OnDataReplaced()
+	{
+		RefreshHierarchy();
 	}
 
 	public void GenerateTextures()
@@ -301,24 +358,21 @@ public class TerrainTopologyMap : TerrainMap<int>
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		GetTopologyRadiusJobIndirect jobData = new GetTopologyRadiusJobIndirect
 		{
 			WorldX = TerrainMeta.Position.x,
 			WorldZ = TerrainMeta.Position.z,
 			OneOverSizeX = TerrainMeta.OneOverSize.x,
 			OneOverSizeZ = TerrainMeta.OneOverSize.z,
-			Src = src.AsReadOnly(),
-			Res = res,
+			Topology = GetHierarchyQuery(),
 			WorldPositions = worldPositions,
 			Radii = radii,
 			Topologies = results
@@ -329,23 +383,20 @@ public class TerrainTopologyMap : TerrainMap<int>
 	public void GetTopologiesIndirect(ReadOnly<Vector2> normalizedCoords, ReadOnly<float> radii, NativeArray<int> results)
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		GetTopologyRadiusNormalizedJobIndirect jobData = new GetTopologyRadiusNormalizedJobIndirect
 		{
 			OneOverSizeX = TerrainMeta.OneOverSize.x,
-			Src = src.AsReadOnly(),
-			Res = res,
+			Topology = GetHierarchyQuery(),
 			WorldNXZ = normalizedCoords,
 			Radii = radii,
 			Topologies = results
@@ -443,13 +494,12 @@ public class TerrainTopologyMap : TerrainMap<int>
 
 	public int GetTopologyJob(float normX, float normZ, float radius)
 	{
+		return GetTopologyJob(normX, normZ, radius, -1, stopOnAny: false);
+	}
+
+	private int GetTopologyJob(float normX, float normZ, float radius, int mask, bool stopOnAny)
+	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		float num = TerrainMeta.OneOverSize.x * radius;
 		int x_mid = Index(normX);
 		int z_mid = Index(normZ);
@@ -457,27 +507,56 @@ public class TerrainTopologyMap : TerrainMap<int>
 		int x_max = Index(normX + num);
 		int z_min = Index(normZ - num);
 		int z_max = Index(normZ + num);
-		NativeReference<int> value = topoNative.Value;
-		GetTopologyRadiusJob getTopologyRadiusJob = new GetTopologyRadiusJob
+		TerrainTopologyHierarchy.Query topology = GetHierarchyQuery();
+		int num2 = (stopOnAny ? TerrainTopologyMapJobUtil.AnyRadius(in topology, x_min, x_mid, x_max, z_min, z_mid, z_max, radius, mask) : TerrainTopologyMapJobUtil.OrRadius(in topology, x_min, x_mid, x_max, z_min, z_mid, z_max, radius, mask));
+		if (ConVar.World.topology_hierarchy_validate)
 		{
-			Res = res,
-			Src = src.AsReadOnly(),
-			Topo = value,
-			radius = radius,
-			x_mid = x_mid,
-			z_mid = z_mid,
-			x_min = x_min,
-			x_max = x_max,
-			z_min = z_min,
-			z_max = z_max
-		};
-		IJobExtensions.RunByRef<GetTopologyRadiusJob>(ref getTopologyRadiusJob);
-		return value.Value;
+			ValidateTopologyRadius(num2, radius, mask, stopOnAny, x_min, x_mid, x_max, z_min, z_mid, z_max);
+		}
+		return num2;
+	}
+
+	private void ValidateTopologyRadius(int topology, float radius, int mask, bool stopOnAny, int x_min, int x_mid, int x_max, int z_min, int z_mid, int z_max)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		int num = TerrainTopologyMapJobUtil.GetTopologyRadius(src.AsReadOnly(), res, radius, x_min, x_mid, x_max, z_min, z_mid, z_max) & mask;
+		if (!(stopOnAny ? (topology != 0 == (num != 0)) : (topology == num)))
+		{
+			Debug.LogError((object)string.Format("Topology hierarchy mismatch at ({0}, {1}) radius {2} mask {3} stopOnAny {4}: hierarchy {5}, flat {6}", new object[7] { x_mid, z_mid, radius, mask, stopOnAny, topology, num }));
+		}
 	}
 
 	public int GetTopology(float normX, float normZ, float radius)
 	{
 		return GetTopologyJob(normX, normZ, radius);
+	}
+
+	public int GetTopology(Vector3 worldPos, float radius, int mask)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		float normX = TerrainMeta.NormalizeX(worldPos.x);
+		float normZ = TerrainMeta.NormalizeZ(worldPos.z);
+		return GetTopology(normX, normZ, radius, mask);
+	}
+
+	public int GetTopology(float normX, float normZ, float radius, int mask)
+	{
+		return GetTopologyJob(normX, normZ, radius, mask, stopOnAny: false);
+	}
+
+	public bool HasTopology(Vector3 worldPos, float radius, int mask)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		float normX = TerrainMeta.NormalizeX(worldPos.x);
+		float normZ = TerrainMeta.NormalizeZ(worldPos.z);
+		return HasTopology(normX, normZ, radius, mask);
+	}
+
+	public bool HasTopology(float normX, float normZ, float radius, int mask)
+	{
+		return GetTopologyJob(normX, normZ, radius, mask, stopOnAny: true) != 0;
 	}
 
 	public void SetTopology(Vector3 worldPos, int mask, float radius, float fade = 0f)
@@ -499,6 +578,7 @@ public class TerrainTopologyMap : TerrainMap<int>
 			}
 		};
 		ApplyFilter(normX, normZ, radius, fade, action);
+		RefreshHierarchy(normX, normZ, radius);
 	}
 
 	public void AddTopology(Vector3 worldPos, int mask, float radius, float fade = 0f)
@@ -522,24 +602,19 @@ public class TerrainTopologyMap : TerrainMap<int>
 			}
 		};
 		ApplyFilter(normX, normZ, radius, fade, action);
+		RefreshHierarchy(normX, normZ, radius);
 	}
 
 	public override void Dispose()
 	{
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		base.Dispose();
+		hierarchy?.Dispose();
+		hierarchy = null;
+		hierarchyQuery = default;
 		if (_generatedTopologyTexture && (Object)(object)TopologyTexture != (Object)null)
 		{
 			Object.Destroy((Object)(object)TopologyTexture);
 			TopologyTexture = null;
-		}
-		foreach (NativeReference<int> value in topoNative.Values)
-		{
-			if (value.IsCreated)
-			{
-				value.Dispose();
-			}
 		}
 	}
 }

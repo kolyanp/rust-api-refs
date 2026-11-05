@@ -6,8 +6,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private EngineAudioSet engineAudioSet;
 
-	[Header("Suspension")]
 	[SerializeField]
+	[Header("Suspension")]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -32,8 +32,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[Header("Skid")]
 	[SerializeField]
+	[Header("Skid")]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]

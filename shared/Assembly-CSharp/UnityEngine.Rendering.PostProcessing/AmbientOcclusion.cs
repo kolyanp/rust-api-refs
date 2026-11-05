@@ -57,8 +57,8 @@ public sealed class AmbientOcclusion : PostProcessEffectSettings
 		value = 1f
 	};
 
-	[Range(0f, 1f)]
 	[Tooltip("Modifies the influence of direct lighting on ambient occlusion.")]
+	[Range(0f, 1f)]
 	public FloatParameter directLightingStrength = new FloatParameter
 	{
 		value = 0f

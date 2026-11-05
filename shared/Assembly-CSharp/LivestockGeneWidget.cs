@@ -9,21 +9,23 @@ public class LivestockGeneWidget : MonoBehaviour, IClientComponent
 	[Serializable]
 	public class AlleleDisc
 	{
-		[Tooltip("Turned on and off as a whole, so the hidden copy can be hidden without leaving a gap.")]
 		public GameObject Root;
 
 		public Image Disc;
 
 		public RustText LetterText;
+
+		[Tooltip("The vertical line behind this disc and the one above it, joining the two. Drawn in this disc's colour.")]
+		public Image Link;
 	}
 
-	[Tooltip("Which gene this widget shows. Set per widget on the prefab.")]
+	public const string UnknownText = "?";
+
 	public LivestockGene Gene;
 
-	[Tooltip("The copy the animal expresses. Always shown.")]
 	public AlleleDisc Expressed;
 
-	[Tooltip("The copy hidden behind it. Only shown when the server has livestock.panelAlleles on.")]
+	[Tooltip("The copy hidden behind it. A grey question mark unless the server has livestock.panelAlleles on.")]
 	public AlleleDisc Hidden;
 
 	[Header("Colours")]
@@ -33,6 +35,9 @@ public class LivestockGeneWidget : MonoBehaviour, IClientComponent
 
 	public Color GoodColour = new Color(0.5412f, 0.6902f, 0.2745f, 1f);
 
+	[Tooltip("The hidden copy and its link while livestock.panelAlleles is off.")]
+	public Color UnknownColour = new Color(0.25f, 0.25f, 0.25f, 1f);
+
 	public Color LetterColour = new Color(0.898f, 0.886f, 0.874f, 1f);
 
 	public static string LetterFor(LivestockGene gene)
@@ -40,7 +45,6 @@ public class LivestockGeneWidget : MonoBehaviour, IClientComponent
 		return gene switch
 		{
 			LivestockGene.Dung => "D", 
-			LivestockGene.Longevity => "L", 
 			LivestockGene.Yield => "Y", 
 			LivestockGene.Fertility => "F", 
 			LivestockGene.Hardiness => "H", 
@@ -58,5 +62,7 @@ public class LivestockGeneWidget : MonoBehaviour, IClientComponent
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 	}
 }

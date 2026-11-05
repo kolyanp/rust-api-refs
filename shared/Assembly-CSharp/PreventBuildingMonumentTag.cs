@@ -4,6 +4,7 @@ public class PreventBuildingMonumentTag : MonoBehaviour
 {
 	public bool autoFindMonument;
 
+	[FlattenIgnoreReference]
 	[SerializeField]
 	private MonumentInfo AttachedMonument;
 

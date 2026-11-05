@@ -37,7 +37,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 
 	private NativeArray<int> _emptyTopology;
 
-	private JobHandle? _pendingJob;
+	private Nullable _pendingJob;
 
 	private int _sampleCount;
 

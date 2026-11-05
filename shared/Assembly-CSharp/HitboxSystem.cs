@@ -223,8 +223,6 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 
 	public List<HitboxShape> hitboxes = new List<HitboxShape>();
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
-
 	public void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)

@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using Facepunch;
 using Oxide.Core;
 using ProtoBuf;
 using Rust;
+using Rust.Ai.Gen2;
 using UnityEngine;
 
 public class HitchTrough : StorageContainer
@@ -50,14 +52,25 @@ public class HitchTrough : StorageContainer
 
 	public float caloriesToDecaySeconds = 36f;
 
-	[Tooltip("The liquid container spawned into the water end of the trough. It owns the water, the trough owns the food.")]
 	[Header("Water")]
 	public GameObjectRef waterStoragePrefab;
 
 	[Tooltip("Where the water container sits, in the trough's local space.")]
 	public Transform waterStorageAnchor;
 
+	private const float SupplyRefreshSeconds = 60f;
+
+	private const float SupplyResendShare = 0.05f;
+
 	private LiquidContainer waterStorage;
+
+	private float supplyFoodMinutes;
+
+	private TimeSince sinceSupplyMeasured;
+
+	private int supplyHeads;
+
+	private Action refreshSupplyWhileOpen;
 
 	public LiquidContainer WaterStorage => waterStorage;
 
@@ -175,10 +188,9 @@ public class HitchTrough : StorageContainer
 
 	public Item GetLivestockFoodItem()
 	{
-		ItemModConsumable itemModConsumable = default;
 		foreach (Item item in inventory.itemList)
 		{
-			if (((Component)item.info).TryGetComponent<ItemModConsumable>(ref itemModConsumable) && itemModConsumable.chickenCoopFood)
+			if (LivestockAnimal.IsLivestockFood(item.info))
 			{
 				return item;
 			}
@@ -189,6 +201,138 @@ public class HitchTrough : StorageContainer
 	public bool HasLivestockFood()
 	{
 		return GetLivestockFoodItem() != null;
+	}
+
+	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
+	{
+		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
+		OnFoodChanged();
+	}
+
+	public override void OnItemAddedToStack(Item item, int amount, BasePlayer sourcePlayer)
+	{
+		base.OnItemAddedToStack(item, amount, sourcePlayer);
+		OnFoodChanged();
+	}
+
+	public override void OnItemRemovedFromStack(Item item, int amount, BasePlayer sourcePlayer)
+	{
+		base.OnItemRemovedFromStack(item, amount, sourcePlayer);
+		OnFoodChanged();
+	}
+
+	private void OnFoodChanged()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		LivestockAnimal.MarkSupplyDirtyNear(((Component)this).transform.position);
+		if (refreshSupplyWhileOpen != null && IsInvoking(refreshSupplyWhileOpen))
+		{
+			RefreshSupplyEstimate();
+			SendNetworkUpdate();
+		}
+	}
+
+	public LivestockFloor FloorInReach()
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<LivestockAnimal> val = Pool.Get<PooledList<LivestockAnimal>>();
+		try
+		{
+			Query.Server.GetBrainsInSphere(((Component)this).transform.position, 27f, (List<LivestockAnimal>)(object)val);
+			LivestockFloor livestockFloor = null;
+			foreach (LivestockAnimal item in (List<LivestockAnimal>)(object)val)
+			{
+				if ((Object)(object)item == (Object)null || item.IsDead())
+				{
+					continue;
+				}
+				LivestockFloor floor = item.Floor;
+				if (floor != null && floor != livestockFloor)
+				{
+					if (floor.Reaches(this))
+					{
+						return floor;
+					}
+					livestockFloor = floor;
+				}
+			}
+			return null;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private void RefreshSupplyEstimate()
+	{
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		LivestockFloor.SupplyEstimate supplyEstimate = FloorInReach()?.Supply() ?? default(LivestockFloor.SupplyEstimate);
+		supplyFoodMinutes = supplyEstimate.FoodMinutes;
+		supplyHeads = supplyEstimate.Heads;
+		sinceSupplyMeasured = TimeSince.op_Implicit(0f);
+	}
+
+	public override bool PlayerOpenLoot(BasePlayer player, string panelToOpen = "", bool doPositionChecks = true)
+	{
+		RefreshSupplyEstimate();
+		if (!base.PlayerOpenLoot(player, panelToOpen, doPositionChecks))
+		{
+			return false;
+		}
+		if (refreshSupplyWhileOpen == null)
+		{
+			refreshSupplyWhileOpen = RefreshSupplyWhileOpen;
+		}
+		if (!IsInvoking(refreshSupplyWhileOpen))
+		{
+			InvokeRepeating(refreshSupplyWhileOpen, 60f, 60f);
+		}
+		return true;
+	}
+
+	public override void PlayerStoppedLooting(BasePlayer player)
+	{
+		base.PlayerStoppedLooting(player);
+		if (refreshSupplyWhileOpen != null && !IsLootedByAnyoneBut(player))
+		{
+			CancelInvoke(refreshSupplyWhileOpen);
+		}
+	}
+
+	private bool IsLootedByAnyoneBut(BasePlayer player)
+	{
+		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				BasePlayer current = enumerator.Current;
+				if ((Object)(object)current != (Object)(object)player && (Object)(object)current.inventory.loot.entitySource == (Object)(object)this)
+				{
+					return true;
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+		return false;
+	}
+
+	private void RefreshSupplyWhileOpen()
+	{
+		int num = supplyHeads;
+		float num2 = supplyFoodMinutes;
+		RefreshSupplyEstimate();
+		if (num != supplyHeads || Mathf.Abs(supplyFoodMinutes - num2) > num2 * 0.05f)
+		{
+			SendNetworkUpdate();
+		}
 	}
 
 	public bool HasSpace()
@@ -297,6 +441,12 @@ public class HitchTrough : StorageContainer
 		info.msg.ioEntity = Pool.Get<IOEntity>();
 		info.msg.ioEntity.genericEntRef1 = hitchSpots[0].hitchableEntRef.uid;
 		info.msg.ioEntity.genericEntRef2 = hitchSpots[1].hitchableEntRef.uid;
+		if (!info.forDisk)
+		{
+			info.msg.ioEntity.genericFloat1 = Mathf.Max(0f, supplyFoodMinutes - sinceSupplyMeasured.PassedSince(info.cachedTime.Time) / 60f);
+			info.msg.ioEntity.genericInt1 = supplyHeads;
+			info.msg.ioEntity.genericInt2 = (HasAttachedStorageAdaptor(out var _) ? 1 : 0);
+		}
 	}
 
 	public override void Load(LoadInfo info)

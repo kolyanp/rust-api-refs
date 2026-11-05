@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 
@@ -35,7 +36,8 @@ public class Modifier
 		Radiation,
 		DigestionBoostTimeMod,
 		Hunger_Capacity,
-		LivestockHandling
+		LivestockHandling,
+		AnimalRepellent
 	}
 
 	public enum ModifierSource
@@ -107,6 +109,8 @@ public class Modifier
 
 	public static Phrase LivestockHandlingPhrase = new Phrase("mod.livestockhandling", "Livestock Handling");
 
+	public static Phrase AnimalRepellentPhrase = new Phrase("mod.animalrepellent", "Animal Repellent");
+
 	public static Phrase Farming_BetterGenesPanelPhrase = new Phrase("mod.Farming_BetterGenes.panel", "Increase");
 
 	public ModifierType Type { get; private set; }
@@ -137,6 +141,7 @@ public class Modifier
 		Expired = Duration > 0f && TimeRemaining <= 0.0;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public Modifier Save()
 	{
 		Modifier val = Pool.Get<Modifier>();
@@ -216,6 +221,8 @@ public class Modifier
 			return HungerCapacityPhrase;
 		case ModifierType.LivestockHandling:
 			return LivestockHandlingPhrase;
+		case ModifierType.AnimalRepellent:
+			return AnimalRepellentPhrase;
 		default:
 			throw new ArgumentOutOfRangeException("type", type, $"Couldn't find a phrase for this modifier! {type}");
 		}
@@ -277,7 +284,11 @@ public class Modifier
 
 	public bool IsHiddenModifier()
 	{
-		return Type == ModifierType.DigestionBoostTimeMod;
+		if (Type != ModifierType.DigestionBoostTimeMod)
+		{
+			return Source == ModifierSource.Interaction;
+		}
+		return true;
 	}
 
 	public bool HasNegativeSource()
@@ -353,5 +364,7 @@ public class Modifier
 		//IL_0258: Expected Obj, but got Unknown
 		//IL_0262: Unknown result type (might be due to invalid IL or missing references)
 		//IL_026c: Expected Obj, but got Unknown
+		//IL_0276: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0280: Expected Obj, but got Unknown
 	}
 }

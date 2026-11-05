@@ -478,6 +478,14 @@ public class ScriptLoader : IScriptLoader, IDisposable
 		Assembly assembly = AsyncLoader.Assembly;
 		bool firstPlugin = true;
 		yield return null;
+		Plugin plugin2 = FindStaleRequire(requiresResult);
+		if (plugin2 != null)
+		{
+			Logger.Warn(" Required plugin '" + plugin2.Name + "' of '" + ((!string.IsNullOrEmpty(InitialSource.ContextFilePath)) ? Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath) : "<unknown>") + "' reloaded during compilation, recompiling..");
+			Pool.FreeUnmanaged<Plugin>(ref requires);
+			Process.MarkDirty();
+			yield break;
+		}
 		Type[] types = assembly.GetTypes();
 		foreach (Type type in types)
 		{
@@ -511,17 +519,17 @@ public class ScriptLoader : IScriptLoader, IDisposable
 					continue;
 				}
 				DescriptionAttribute descriptionAttribute = type.GetCustomAttribute(typeof(DescriptionAttribute), inherit: true) as DescriptionAttribute;
-				Script plugin2 = Script.Create(assembly, type);
-				plugin2.Name = info.Title;
-				plugin2.Author = info.Author;
-				plugin2.Version = info.Version;
-				plugin2.Description = descriptionAttribute?.Description;
-				if (ModLoader.InitializePlugin(type, out var plugin3, Mod, (RustPlugin p) =>
+				Script plugin3 = Script.Create(assembly, type);
+				plugin3.Name = info.Title;
+				plugin3.Author = info.Author;
+				plugin3.Version = info.Version;
+				plugin3.Description = descriptionAttribute?.Description;
+				if (ModLoader.InitializePlugin(type, out var plugin4, Mod, (RustPlugin p) =>
 				{
-					Scripts.Add(plugin2);
+					Scripts.Add(plugin3);
 					p.HasConditionals = Sources.Any((ISource x) => x.Content.Contains("#if "));
 					p.IsExtension = IsExtension;
-					plugin2.IsCore = IsCore;
+					plugin3.IsCore = IsCore;
 					p.Hooks = AsyncLoader.Hooks[type];
 					p.HookMethods = AsyncLoader.HookMethods[type];
 					p.PluginReferences = AsyncLoader.PluginReferences[type];
@@ -534,16 +542,16 @@ public class ScriptLoader : IScriptLoader, IDisposable
 					p.FileName = AsyncLoader.InitialSource.ContextFileName;
 				}))
 				{
-					plugin2.Instance = plugin3;
+					plugin3.Instance = plugin4;
 					CarbonEventArgs e = Pool.Get<CarbonEventArgs>();
-					e.Init(plugin3);
+					e.Init(plugin4);
 					Community.Runtime.Events.Trigger(CarbonEvent.PluginPreload, e);
 					Pool.Free<CarbonEventArgs>(ref e);
 					ModLoader.RegisterType(AsyncLoader.InitialSource.ContextFilePath, type);
 					Plugin.InternalApplyAllPluginReferences();
-					HookCaller.CallStaticHook(3051933177u, plugin3);
+					HookCaller.CallStaticHook(3051933177u, plugin4);
 				}
-				goto IL_0d08;
+				goto IL_0d97;
 			}
 			catch (Exception ex2)
 			{
@@ -553,9 +561,9 @@ public class ScriptLoader : IScriptLoader, IDisposable
 					HookCaller.CallStaticHook(1298319061u, (!string.IsNullOrEmpty(InitialSource.ContextFilePath)) ? Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath) : "<unknown>", ex2);
 					Logger.Error("Failed to compile '" + ((!string.IsNullOrEmpty(InitialSource.ContextFilePath)) ? Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath) : "<unknown>") + "': ", ex2);
 				}
-				goto IL_0d08;
+				goto IL_0d97;
 			}
-			IL_0d08:
+			IL_0d97:
 			yield return null;
 		}
 		if (firstPlugin)
@@ -570,6 +578,18 @@ public class ScriptLoader : IScriptLoader, IDisposable
 		}
 		Pool.FreeUnmanaged<Plugin>(ref requires);
 		yield return null;
+	}
+
+	private static Plugin FindStaleRequire(Plugin[] requires)
+	{
+		foreach (Plugin plugin in requires)
+		{
+			if (Community.Runtime.Core.plugins.Find(plugin.Name) != plugin)
+			{
+				return plugin;
+			}
+		}
+		return null;
 	}
 
 	public void Dispose()

@@ -7,14 +7,17 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	protected enum TerrainTopology
 	{
 		TriangleFan,
-		UnityQuads
+		UnityQuads,
+		IsoGrid
 	}
 
-	public const int LOD_COUNT = 6;
+	public const int LOD_COUNT = 8;
 
-	public const int LOD_MAX = 5;
+	public const int LOD_MAX = 7;
 
-	public const int MESH_COUNT = 3;
+	public const int DRAW_COUNT = 2;
+
+	private const int PIXEL_NORMAL_LOD = 1;
 
 	[SerializeField]
 	protected TerrainTopology terrainTopology = TerrainTopology.UnityQuads;
@@ -25,12 +28,15 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[SerializeField]
 	public Material terrainMaterial;
 
+	[SerializeField]
+	public Material pixelNormalMaterial;
+
 	[Range(1f, 8f)]
 	[SerializeField]
-	public int minVertLOD = 4;
+	public int minVertLOD = 3;
 
+	[HideInInspector]
 	[SerializeField]
-	[Range(1f, 10f)]
 	protected int lodGlobalScale = 2;
 
 	[SerializeField]
@@ -84,8 +90,9 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 
 	private const string OUTPUT_DEPTH_PREPASS_KEYWORD = "OUTPUT_DEPTH_PREPASS";
 
+	[HideInInspector]
 	[SerializeField]
-	private int[] lodCellExtents = new int[6];
+	private int[] lodCellExtents = new int[8] { 1, 1, 1, 1, 1, 1, 1, 1 };
 
 	public GeometryClipmapTerrain()
 	{

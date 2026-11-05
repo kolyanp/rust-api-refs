@@ -8,9 +8,6 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 {
 	private RentableShop _cachedParent;
 
-	[SerializeField]
-	private ItemListScriptableObject BannedItemsList;
-
 	private const Flags Refrigerated = Flags.Reserved12;
 
 	private RentableShop ParentRentableShop
@@ -42,6 +39,10 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(892362950u, "RPC_AddSellOrderRelaxedDistance", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(892362950u, "RPC_AddSellOrderRelaxedDistance", this, player, 12f))
 						{
 							return true;
@@ -79,6 +80,10 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(169239598u, "RPC_Broadcast", this, player, 1uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.IsVisible.Test(169239598u, "RPC_Broadcast", this, player, 3f))
 						{
 							return true;
@@ -116,6 +121,10 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(1017551721u, "RPC_BuyItem", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(1017551721u, "RPC_BuyItem", this, player, 9f))
 						{
 							return true;
@@ -153,6 +162,10 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(3483523947u, "RPC_DeleteAllSellOrdersDistanceCheckOnly", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(3483523947u, "RPC_DeleteAllSellOrdersDistanceCheckOnly", this, player, 9f))
 						{
 							return true;
@@ -190,6 +203,10 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(2204790576u, "RPC_DeleteSellOrderDistanceCheckOnly", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(2204790576u, "RPC_DeleteSellOrderDistanceCheckOnly", this, player, 9f))
 						{
 							return true;
@@ -227,6 +244,10 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(407432418u, "RPC_RequestLongTermData", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(407432418u, "RPC_RequestLongTermData", this, player, 9f))
 						{
 							return true;
@@ -264,6 +285,10 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(1907075143u, "RPC_RequestPurchaseData", this, player, 5uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(1907075143u, "RPC_RequestPurchaseData", this, player, 9f))
 						{
 							return true;
@@ -301,6 +326,10 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 				{
 					using (TimeWarning.New("Conditions"))
 					{
+						if (!RPC_Server.CallsPerSecond.Test(81697804u, "RPC_UpdateShopNameDistanceCheckOnly", this, player, 1uL))
+						{
+							return true;
+						}
 						if (!RPC_Server.MaxDistance.Test(81697804u, "RPC_UpdateShopNameDistanceCheckOnly", this, player, 9f))
 						{
 							return true;
@@ -353,47 +382,43 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		return base.GetSpoilMultiplier(arg);
 	}
 
-	public override void ServerInit()
-	{
-		base.ServerInit();
-		if (BannedItemsList != null)
-		{
-			inventory.SetBlacklist(BannedItemsList.Items);
-		}
-	}
-
 	public override void RPC_Broadcast(RPCMessage msg)
 	{
 	}
 
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(12f)]
 	public void RPC_AddSellOrderRelaxedDistance(RPCMessage msg)
 	{
 		RPC_AddSellOrder(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	private void RPC_UpdateShopNameDistanceCheckOnly(RPCMessage msg)
 	{
 		base.RPC_UpdateShopName(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_BuyItem(RPCMessage msg)
 	{
 		BuyItem(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_RequestLongTermData(RPCMessage msg)
 	{
 		SV_RequestLongTermData(msg);
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
 	private void RPC_RequestPurchaseData(RPCMessage msg)
@@ -401,6 +426,7 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		SV_RequestPurchaseData(msg);
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
 	private void RPC_DeleteSellOrderDistanceCheckOnly(RPCMessage msg)
@@ -410,6 +436,7 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 
 	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_DeleteAllSellOrdersDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteAllSellOrders(msg);

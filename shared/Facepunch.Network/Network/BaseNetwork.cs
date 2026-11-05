@@ -47,7 +47,7 @@ public abstract class BaseNetwork
 
 	private ConcurrentQueue<NetRead> readQueue;
 
-	private ConcurrentQueue<NetWrite> writeQueue;
+	private ConcurrentQueue<PendingWrite> writeQueue;
 
 	private ConcurrentQueue<NetRead> decryptQueue;
 
@@ -149,7 +149,7 @@ public abstract class BaseNetwork
 		if (Multithreading)
 		{
 			readQueue = new ConcurrentQueue<NetRead>();
-			writeQueue = new ConcurrentQueue<NetWrite>();
+			writeQueue = new ConcurrentQueue<PendingWrite>();
 			decryptQueue = new ConcurrentQueue<NetRead>();
 			readQueueSizeInBytes = 0;
 			writeQueueSizeInBytes = 0;
@@ -188,14 +188,19 @@ public abstract class BaseNetwork
 		{
 			Assert.IsNotNull<Connection>(connection, "connection != null");
 		}
+		EnqueueWrite(new PendingWrite(write));
+	}
+
+	private protected void EnqueueWrite(PendingWrite write)
+	{
 		if (WriteQueueLength >= MaxWriteQueueLengthValue || writeQueueSizeInBytes >= MaxWriteQueueBytesValue)
 		{
 			Debug.LogWarning((object)"Main thread stalling: Write queue at capacity, waiting for write thread...");
 			mainThreadReset.WaitOne(MaxMainThreadWaitValue);
 		}
-		int value = (int)write.Length;
+		int length = write.Length;
 		writeQueue.Enqueue(write);
-		Interlocked.Add(ref writeQueueSizeInBytes, value);
+		Interlocked.Add(ref writeQueueSizeInBytes, length);
 		Interlocked.Increment(ref writeQueueCount);
 		writeThreadReset.Set();
 	}
@@ -219,8 +224,25 @@ public abstract class BaseNetwork
 	{
 	}
 
+	internal void ProcessWriteImmediate(NetWrite write)
+	{
+		lock (writeLock)
+		{
+			ProcessWrite(write);
+		}
+	}
+
+	protected virtual void SetBatching(bool enabled)
+	{
+	}
+
 	public virtual void ProcessRead(NetRead read)
 	{
+	}
+
+	protected virtual bool TrySplitBatchedPacket(NetRead read)
+	{
+		return false;
 	}
 
 	public void ProcessDecrypt(NetRead read)
@@ -236,14 +258,22 @@ public abstract class BaseNetwork
 		else
 		{
 			Decrypt(read.connection, read);
-			if (Multithreading)
+			if (!TrySplitBatchedPacket(read))
 			{
-				EnqueueRead(read);
+				EnqueueOrProcessRead(read);
 			}
-			else
-			{
-				ProcessRead(read);
-			}
+		}
+	}
+
+	protected void EnqueueOrProcessRead(NetRead read)
+	{
+		if (Multithreading)
+		{
+			EnqueueRead(read);
+		}
+		else
+		{
+			ProcessRead(read);
 		}
 	}
 
@@ -325,10 +355,10 @@ public abstract class BaseNetwork
 	private void WriteThreadCycle()
 	{
 		PacketCapture?.Tick();
-		NetWrite result;
+		PendingWrite result;
 		while (writeQueue.TryDequeue(out result))
 		{
-			Interlocked.Add(ref writeQueueSizeInBytes, -(int)result.Length);
+			Interlocked.Add(ref writeQueueSizeInBytes, -result.Length);
 			Interlocked.Decrement(ref writeQueueCount);
 			mainThreadReset.Set();
 			lock (writeLock)
@@ -337,8 +367,13 @@ public abstract class BaseNetwork
 				{
 					break;
 				}
-				PacketCapture?.Capture(result);
-				ProcessWrite(result);
+				if (result.IsStartBatching || result.IsStopBatching)
+				{
+					SetBatching(result.IsStartBatching);
+					continue;
+				}
+				PacketCapture?.Capture(result.Write);
+				ProcessWrite(result.Write);
 			}
 		}
 	}
@@ -539,7 +574,7 @@ public abstract class BaseNetwork
 				return;
 			}
 			int num = read.PeekPacketID() - 140;
-			if (num <= 0 || num >= 28 || !Message.EncryptionPerType[num])
+			if (num <= 0 || num > 29 || !Message.EncryptionPerType[num])
 			{
 				return;
 			}
@@ -588,7 +623,7 @@ public abstract class BaseNetwork
 		{
 			return arraySegment;
 		}
-		if (num >= 28)
+		if (num > 29)
 		{
 			return arraySegment;
 		}

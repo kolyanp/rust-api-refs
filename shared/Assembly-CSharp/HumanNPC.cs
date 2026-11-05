@@ -391,9 +391,9 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		if (inventory.containerBelt.GetSlot(0) == null)
 		{
 			BaseMountable baseMountable = GetMounted();
-			if ((Object)(object)baseMountable != (Object)null && baseMountable is MountedWeaponSeat { Owner: var owner })
+			if ((Object)(object)baseMountable != (Object)null && baseMountable is PTBoatTurret pTBoatTurret)
 			{
-				info.inflictorName = owner.WeaponDef.shortname;
+				info.inflictorName = pTBoatTurret.WeaponDef.shortname;
 			}
 		}
 		else
@@ -578,7 +578,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 		{
 			return null;
 		}
-		if ((Object)(object)inventory == (Object)null || inventory.containerBelt == null)
+		if (inventory == null || inventory.containerBelt == null)
 		{
 			return null;
 		}

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RandomScale : MonoBehaviour
+public class RandomScale : MonoBehaviour, IFlattenKeepsDescendants
 {
 	[SerializeField]
 	private bool multiplyByExistingScale = true;

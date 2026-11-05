@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Network;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -21,6 +22,7 @@ public class PostUpdateHook : MonoBehaviour
 	private void LateUpdate()
 	{
 		OnLateUpdate?.Invoke();
+		Net.sv?.StopBatching();
 	}
 
 	private void FixedUpdate()

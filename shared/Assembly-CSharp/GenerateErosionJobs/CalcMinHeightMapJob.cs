@@ -14,38 +14,37 @@ internal struct CalcMinHeightMapJob : IJobParallelFor
 	public int HeightMapRes;
 
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<float> MinTerrainHeightMap;
 
-	public ReadOnly<int> TopologyMap;
-
-	public int TopologyMapRes;
+	public TerrainTopologyHierarchy.Query TopologyMap;
 
 	public float OceanHeight;
 
 	public float TerrainOneOverSizeX;
 
-	public void Execute(int index)
+	public void Execute(int z)
 	{
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		float num = TerrainHeightMap[index];
-		if (!(num < OceanHeight))
+		for (int i = 0; i < HeightMapRes; i++)
 		{
-			int num2 = index % HeightMapRes;
-			int num3 = index / HeightMapRes;
-			float normX = ((float)num2 - 0.5f) / (float)HeightMapRes;
-			float normZ = ((float)num3 - 0.5f) / (float)HeightMapRes;
-			bool flag = (TerrainTopologyMapJobUtil.GetTopologyRadius(TopologyMap, TopologyMapRes, TerrainOneOverSizeX, 0f, normX, normZ) & 0x14080) != 0;
-			float num4 = 8f;
-			float num5 = 8f;
-			while (num5 > 0f && !flag && (TerrainTopologyMapJobUtil.GetTopologyRadius(TopologyMap, TopologyMapRes, TerrainOneOverSizeX, num5, normX, normZ) & 0x3C198) != 0)
+			int num = z * HeightMapRes + i;
+			float num2 = TerrainHeightMap[num];
+			if (!(num2 < OceanHeight))
 			{
-				num4 = num5;
-				num5 -= 0.25f;
+				float normX = ((float)i - 0.5f) / (float)HeightMapRes;
+				float normZ = ((float)z - 0.5f) / (float)HeightMapRes;
+				bool flag = TerrainTopologyMapJobUtil.GetTopologyRadius(in TopologyMap, TerrainOneOverSizeX, 0f, normX, normZ, 82048, stopOnAny: true) != 0;
+				float num3 = 8f;
+				float num4 = 8f;
+				while (num4 > 0f && !flag && TerrainTopologyMapJobUtil.GetTopologyRadius(in TopologyMap, TerrainOneOverSizeX, num4, normX, normZ, 246168, stopOnAny: true) != 0)
+				{
+					num3 = num4;
+					num4 -= 0.25f;
+				}
+				float num5 = (flag ? 0f : math.unlerp(0f, 8f, num3));
+				num2 = math.max(OceanHeight, num2 - 1f * num5);
 			}
-			float num6 = (flag ? 0f : math.unlerp(0f, 8f, num4));
-			num = math.max(OceanHeight, num - 1f * num6);
+			MinTerrainHeightMap[num] = num2;
 		}
-		MinTerrainHeightMap[index] = num;
 	}
 }

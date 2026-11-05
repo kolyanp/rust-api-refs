@@ -22,8 +22,8 @@ public class State_PlayAnimLoop : State_PlayAnimationBase
 	public float MaxDuration = 14f;
 
 	[Tooltip("How far through a clip to hand over to the next one, as a fraction of its length. Has to beat the animator's own exit time back to the default state, or the pose visibly blends to standing between loops.")]
-	[SerializeField]
 	[Range(0.5f, 1f)]
+	[SerializeField]
 	private float handoverFraction = 0.8f;
 
 	private float duration;
@@ -43,7 +43,7 @@ public class State_PlayAnimLoop : State_PlayAnimationBase
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		EFSMStateStatus result = base.OnStateEnter(payload);
-		duration = Random.Range(MinDuration, MaxDuration);
+		duration = Rng.Range(MinDuration, MaxDuration);
 		animState = AnimPlayer.PlayServerAndTakeFromPool(Start);
 		return result;
 	}

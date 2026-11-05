@@ -72,9 +72,9 @@ public class DemoClient : Client, IDisposable
 			return;
 		}
 		b -= 140;
-		if (b > 28)
+		if (b > 29)
 		{
-			Debug.LogWarning((object)("Invalid Packet (higher than " + Message.Type.PackedSyncVar.ToString() + ")"));
+			Debug.LogWarning((object)("Invalid Packet (higher than " + Message.Type.MessageBatch.ToString() + ")"));
 			Disconnect($"Invalid Packet ({b}) {buffer.Length}b");
 			netRead.RemoveReference();
 			return;

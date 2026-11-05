@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Rust;
 using Network;
@@ -22,8 +23,8 @@ public class BaseProjectile : AttackEntity
 			[Tooltip("Set to 0 to not use inbuilt mag")]
 			public int builtInSize;
 
-			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
 			[InspectorFlags]
+			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
 			public AmmoTypes ammoTypes;
 		}
 
@@ -48,6 +49,7 @@ public class BaseProjectile : AttackEntity
 			}
 		}
 
+		[PoolAnalyzerGetWrapper]
 		public Magazine Save()
 		{
 			Magazine val = Pool.Get<Magazine>();
@@ -75,9 +77,17 @@ public class BaseProjectile : AttackEntity
 
 		public bool CanReload(IAmmoContainer ammoSource)
 		{
-			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 			if (contents >= capacity)
 			{
+				return false;
+			}
+			if (!allowAmmoSwitching)
+			{
+				if ((Object)(object)ammoType != (Object)null)
+				{
+					return ammoSource.FindItemByItemID(ammoType.itemid) != null;
+				}
 				return false;
 			}
 			return ammoSource.HasAmmo(definition.ammoTypes);
@@ -101,8 +111,8 @@ public class BaseProjectile : AttackEntity
 	[Header("NPC Info")]
 	public float NoiseRadius = 100f;
 
-	[Tooltip("Scales the damage of the projectile across all ranges.")]
 	[Header("Projectile")]
+	[Tooltip("Scales the damage of the projectile across all ranges.")]
 	public float damageScale = 1f;
 
 	[Tooltip("Scales the damage falloff window of the projectile.")]
@@ -127,8 +137,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride = -1f;
 
-	[Tooltip("How far away this attack effect can be heard")]
 	[Header("Effects")]
+	[Tooltip("How far away this attack effect can be heard")]
 	public float maxAttackEffectDistance = 400f;
 
 	public GameObjectRef attackFX;
@@ -258,7 +268,9 @@ public class BaseProjectile : AttackEntity
 
 	private static readonly Effect reusableInstance = new Effect();
 
-	public RecoilProperties recoilProperties
+	public bool IsReloadStarted => reloadStarted;
+
+	public virtual RecoilProperties recoilProperties
 	{
 		get
 		{
@@ -270,7 +282,7 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	public bool isSemiAuto => !automatic;
+	public bool isSemiAuto => !IsAutomatic();
 
 	public override Transform MuzzleTransform => MuzzlePoint;
 
@@ -328,6 +340,46 @@ public class BaseProjectile : AttackEntity
 				}
 				return true;
 			}
+			if (rpc == 4207350840u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - CLProjectMounted"));
+				}
+				using (TimeWarning.New("CLProjectMounted"))
+				{
+					using (msg.read.UseRepeatedElementLimit(64))
+					{
+						using (TimeWarning.New("Conditions"))
+						{
+							if (!RPC_Server.FromMounted.Test(4207350840u, "CLProjectMounted", this, player))
+							{
+								return true;
+							}
+						}
+						try
+						{
+							using (TimeWarning.New("Call"))
+							{
+								RPCMessage msg3 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								CLProjectMounted(msg3);
+							}
+						}
+						catch (Exception ex2)
+						{
+							Debug.LogException(ex2);
+							player.Kick("RPC Error in CLProjectMounted");
+						}
+					}
+				}
+				return true;
+			}
 			if (rpc == 1720368164 && (Object)(object)player != (Object)null)
 			{
 				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
@@ -348,19 +400,56 @@ public class BaseProjectile : AttackEntity
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg3 = new RPCMessage
+							RPCMessage msg4 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							Reload(msg3);
+							Reload(msg4);
 						}
 					}
-					catch (Exception ex2)
+					catch (Exception ex3)
 					{
-						Debug.LogException(ex2);
+						Debug.LogException(ex3);
 						player.Kick("RPC Error in Reload");
+					}
+				}
+				return true;
+			}
+			if (rpc == 3306173805u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - ReloadMounted"));
+				}
+				using (TimeWarning.New("ReloadMounted"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.FromMounted.Test(3306173805u, "ReloadMounted", this, player))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg5 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							ReloadMounted(msg5);
+						}
+					}
+					catch (Exception ex4)
+					{
+						Debug.LogException(ex4);
+						player.Kick("RPC Error in ReloadMounted");
 					}
 				}
 				return true;
@@ -385,18 +474,18 @@ public class BaseProjectile : AttackEntity
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg4 = new RPCMessage
+							RPCMessage msg6 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							ServerFractionalReloadInsert(msg4);
+							ServerFractionalReloadInsert(msg6);
 						}
 					}
-					catch (Exception ex3)
+					catch (Exception ex5)
 					{
-						Debug.LogException(ex3);
+						Debug.LogException(ex5);
 						player.Kick("RPC Error in ServerFractionalReloadInsert");
 					}
 				}
@@ -422,19 +511,56 @@ public class BaseProjectile : AttackEntity
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg5 = new RPCMessage
+							RPCMessage msg7 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							StartReload(msg5);
+							StartReload(msg7);
 						}
 					}
-					catch (Exception ex4)
+					catch (Exception ex6)
 					{
-						Debug.LogException(ex4);
+						Debug.LogException(ex6);
 						player.Kick("RPC Error in StartReload");
+					}
+				}
+				return true;
+			}
+			if (rpc == 4284360749u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - StartReloadMounted"));
+				}
+				using (TimeWarning.New("StartReloadMounted"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.FromMounted.Test(4284360749u, "StartReloadMounted", this, player))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg8 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							StartReloadMounted(msg8);
+						}
+					}
+					catch (Exception ex7)
+					{
+						Debug.LogException(ex7);
+						player.Kick("RPC Error in StartReloadMounted");
 					}
 				}
 				return true;
@@ -459,18 +585,18 @@ public class BaseProjectile : AttackEntity
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg6 = new RPCMessage
+							RPCMessage msg9 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							SwitchAmmoTo(msg6);
+							SwitchAmmoTo(msg9);
 						}
 					}
-					catch (Exception ex5)
+					catch (Exception ex8)
 					{
-						Debug.LogException(ex5);
+						Debug.LogException(ex8);
 						player.Kick("RPC Error in SwitchAmmoTo");
 					}
 				}
@@ -500,18 +626,18 @@ public class BaseProjectile : AttackEntity
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg7 = new RPCMessage
+							RPCMessage msg10 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							ToggleFireMode(msg7);
+							ToggleFireMode(msg10);
 						}
 					}
-					catch (Exception ex6)
+					catch (Exception ex9)
 					{
-						Debug.LogException(ex6);
+						Debug.LogException(ex9);
 						player.Kick("RPC Error in ToggleFireMode");
 					}
 				}
@@ -582,7 +708,11 @@ public class BaseProjectile : AttackEntity
 
 	public void SwitchAmmoTypesIfNeeded(IAmmoContainer ammoSource)
 	{
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		if (!primaryMagazine.allowAmmoSwitching)
+		{
+			return;
+		}
 		Item item = ammoSource.FindItemByItemID(primaryMagazine.ammoType.itemid);
 		if (item != null)
 		{
@@ -630,6 +760,35 @@ public class BaseProjectile : AttackEntity
 	public void ModifyAmmoCount(int amount)
 	{
 		SetAmmoCount(primaryMagazine.contents + amount);
+	}
+
+	[RPC_Server.FromMounted]
+	[RPC_Server]
+	private void StartReloadMounted(RPCMessage msg)
+	{
+		ProcessStartReload(msg, VerifyMountedClientRPC(msg.player));
+	}
+
+	[RPC_Server.FromMounted]
+	[RPC_Server]
+	private void ReloadMounted(RPCMessage msg)
+	{
+		ProcessReload(msg, VerifyMountedClientRPC(msg.player), Mathf.Max(1.5f, 1f + GetReloadDuration() * 0.1f));
+	}
+
+	[RPC_Server.MaxRepeatedElements(64)]
+	[RPC_Server.FromMounted]
+	[RPC_Server]
+	private void CLProjectMounted(RPCMessage msg)
+	{
+		ProcessCLProject(msg, VerifyMountedClientAttack(msg.player), GetParentEntity() as BaseMountable);
+	}
+
+	public void OnGunnerChanged()
+	{
+		reloadStarted = false;
+		reloadFinished = false;
+		fractionalInsertCounter = 0;
 	}
 
 	public override Vector3 GetInheritedVelocity(BasePlayer player, Vector3 direction)
@@ -728,9 +887,14 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	public virtual RecoilProperties GetRecoil()
+	public virtual RecoilProperties GetRecoilStats()
 	{
 		return recoilProperties;
+	}
+
+	public virtual bool IsAutomatic()
+	{
+		return automatic;
 	}
 
 	public override float AmmoFraction()
@@ -1245,6 +1409,17 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
+	public override float AntiHackLimbReach()
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer ownerPlayer = GetOwnerPlayer();
+		if (!((Object)(object)ownerPlayer != (Object)null) || !(TimeSince.op_Implicit(ownerPlayer.timeSinceAiming) < ConVar.AntiHack.limbreachgrace))
+		{
+			return 0f;
+		}
+		return ConVar.AntiHack.limbreach;
+	}
+
 	public override void SetLightsOn(bool isOn)
 	{
 		base.SetLightsOn(isOn);
@@ -1337,7 +1512,7 @@ public class BaseProjectile : AttackEntity
 		return (num3 + aimconePenalty + stancePenalty * stancePenaltyScale) * sightAimConeScale + sightAimConeOffset + hipAimCone * hipAimConeScale + hipAimConeOffset;
 	}
 
-	public float ScaleRepeatDelay(float delay)
+	public virtual float ScaleRepeatDelay(float delay)
 	{
 		float num = ProjectileWeaponMod.Mult(this, ProjectileWeaponMod.SelectRepeatDelay, ProjectileWeaponMod.SelectScalar);
 		float num2 = ProjectileWeaponMod.Sum(this, ProjectileWeaponMod.SelectRepeatDelay, ProjectileWeaponMod.SelectOffset);
@@ -1485,9 +1660,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1533,8 +1708,8 @@ public class BaseProjectile : AttackEntity
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void SwitchAmmoTo(RPCMessage msg)
 	{
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
@@ -1567,6 +1742,11 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
+	protected override bool CanDeployShield()
+	{
+		return !reloadStarted;
+	}
+
 	public override void OnHeldChanged()
 	{
 		base.OnHeldChanged();
@@ -1580,8 +1760,13 @@ public class BaseProjectile : AttackEntity
 	[RPC_Server.IsActiveItem]
 	private void StartReload(RPCMessage msg)
 	{
+		ProcessStartReload(msg, VerifyClientRPC(msg.player));
+	}
+
+	private void ProcessStartReload(RPCMessage msg, bool verified)
+	{
 		BasePlayer player = msg.player;
-		if (!VerifyClientRPC(player))
+		if (!verified)
 		{
 			SendNetworkUpdate();
 			reloadStarted = false;
@@ -1668,8 +1853,13 @@ public class BaseProjectile : AttackEntity
 	[RPC_Server.IsActiveItem]
 	private void Reload(RPCMessage msg)
 	{
+		ProcessReload(msg, VerifyClientRPC(msg.player), 1.5f);
+	}
+
+	private void ProcessReload(RPCMessage msg, bool verified, float maxReloadIdle)
+	{
 		BasePlayer player = msg.player;
-		if (!VerifyClientRPC(player))
+		if (!verified)
 		{
 			SendNetworkUpdate();
 			reloadStarted = false;
@@ -1694,7 +1884,7 @@ public class BaseProjectile : AttackEntity
 				reloadFinished = false;
 				return;
 			}
-			if (GetReloadIdle() > 1.5f)
+			if (GetReloadIdle() > maxReloadIdle)
 			{
 				AntiHack.Log(player, AntiHackType.ReloadHack, $"T+{GetReloadIdle()}s ({ShortPrefabName})");
 				player.stats.combat.LogInvalid(player, this, "reload_time");
@@ -1703,16 +1893,21 @@ public class BaseProjectile : AttackEntity
 				return;
 			}
 		}
+		reloadStarted = false;
+		reloadFinished = true;
 		if (fractionalReload)
 		{
 			ResetReloadCooldown();
 			UpdateShieldState(bHeld: true);
 		}
-		reloadStarted = false;
-		reloadFinished = true;
 		if (!fractionalReload)
 		{
 			TryReloadMagazine(player.inventory);
+		}
+		BaseMountable mounted = player.GetMounted();
+		if ((Object)(object)mounted != (Object)null)
+		{
+			mounted.OnWeaponReloaded(this);
 		}
 	}
 
@@ -1722,26 +1917,32 @@ public class BaseProjectile : AttackEntity
 	[RPC_Server]
 	private void CLProject(RPCMessage msg)
 	{
-		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0366: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0318: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031f: Unknown result type (might be due to invalid IL or missing references)
+		ProcessCLProject(msg, VerifyClientAttack(msg.player), null);
+	}
+
+	private void ProcessCLProject(RPCMessage msg, bool verified, BaseMountable mount)
+	{
+		//IL_03b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0325: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0335: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0301: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0303: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0363: Unknown result type (might be due to invalid IL or missing references)
+		//IL_036a: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
-		if (!VerifyClientAttack(player))
+		if (!verified)
 		{
 			SendNetworkUpdate();
 			return;
@@ -1803,6 +2004,12 @@ public class BaseProjectile : AttackEntity
 					player.stats.combat.LogInvalid(player, this, "duplicate_id");
 					continue;
 				}
+				if ((Object)(object)mount != (Object)null && !mount.CanFireMountedWeaponAt(projectile.startVel))
+				{
+					AntiHack.Log(player, AntiHackType.ProjectileHack, "Outside mount range (" + ShortPrefabName + ")");
+					player.stats.combat.LogInvalid(player, this, "mount_range");
+					continue;
+				}
 				Vector3 positionOffset = Vector3.zero;
 				if (ConVar.AntiHack.projectile_positionoffset && (player.isMounted || player.HasParent()))
 				{
@@ -1819,7 +2026,7 @@ public class BaseProjectile : AttackEntity
 					continue;
 				}
 				player.NoteFiredProjectile(projectile.projectileID, projectile.startPos, projectile.startVel, this, primaryMagazineAmmo, projectileGroupId, positionOffset);
-				if (!player.limitNetworking && player.HasFiredProjectile(projectile.projectileID))
+				if (player.HasFiredProjectile(projectile.projectileID) && !player.limitNetworking)
 				{
 					CreateProjectileEffectClientside(component.GetOverrideProjectile(this).resourcePath, projectile.startPos, projectile.startVel, projectile.seed, msg.connection, IsSilenced());
 				}

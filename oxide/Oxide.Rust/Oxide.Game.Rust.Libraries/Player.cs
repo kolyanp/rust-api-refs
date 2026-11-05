@@ -431,7 +431,7 @@ public class Player : Library
 	public void ResetInventory(BasePlayer player)
 	{
 		PlayerInventory playerInventory = Inventory(player);
-		if ((Object)(object)playerInventory != (Object)null)
+		if (playerInventory != null)
 		{
 			playerInventory.DoDestroy();
 			playerInventory.ServerInit(player);

@@ -1401,7 +1401,7 @@ public static class HookCaller
 					}
 					else
 					{
-						VersionNumber versionNumber3 = new VersionNumber(2634, 289, 1);
+						VersionNumber versionNumber3 = new VersionNumber(2636, 290, 1);
 						if ((text5.Equals("ABV") && versionNumber3 > versionNumber) || (text5.Equals("BLW") && versionNumber3 < versionNumber) || (text5.Equals("IS") && versionNumber3 == versionNumber))
 						{
 							conditionals.Add(text3);

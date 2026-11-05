@@ -1,51 +1,56 @@
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Oxide.Core.Plugins;
 
 public class HookCache
 {
-	private string NullKey = "null";
+	private static readonly object NullKey = new object();
 
-	public Dictionary<string, HookCache> _cache = new Dictionary<string, HookCache>();
+	private readonly Hashtable _cache = new Hashtable();
 
-	public List<HookMethod> _methods;
+	private volatile List<HookMethod> _methods;
 
 	public List<HookMethod> GetHookMethod(string hookName, object[] args, out HookCache cache)
 	{
-		if (!_cache.TryGetValue(hookName, out var value))
-		{
-			value = new HookCache();
-			_cache.Add(hookName, value);
-		}
-		return value.GetHookMethod(args, 0, out cache);
+		return GetOrAdd(hookName).GetHookMethod(args, 0, out cache);
 	}
 
 	public List<HookMethod> GetHookMethod(object[] args, int index, out HookCache cache)
 	{
-		if (args == null || index >= args.Length)
+		HookCache hookCache = this;
+		if (args != null)
 		{
-			cache = this;
-			return _methods;
-		}
-		HookCache value;
-		if (args[index] == null)
-		{
-			if (!_cache.TryGetValue(NullKey, out value))
+			for (int i = index; i < args.Length; i++)
 			{
-				value = new HookCache();
-				_cache.Add(NullKey, value);
+				object obj = args[i];
+				hookCache = hookCache.GetOrAdd((obj == null) ? NullKey : obj.GetType());
 			}
 		}
-		else if (!_cache.TryGetValue(args[index].GetType().FullName, out value))
-		{
-			value = new HookCache();
-			_cache.Add(args[index].GetType().FullName, value);
-		}
-		return value.GetHookMethod(args, index + 1, out cache);
+		cache = hookCache;
+		return hookCache._methods;
 	}
 
 	public void SetupMethods(List<HookMethod> methods)
 	{
 		_methods = methods;
+	}
+
+	private HookCache GetOrAdd(object key)
+	{
+		if (_cache[key] is HookCache result)
+		{
+			return result;
+		}
+		lock (_cache)
+		{
+			HookCache hookCache = _cache[key] as HookCache;
+			if (hookCache == null)
+			{
+				hookCache = new HookCache();
+				_cache[key] = hookCache;
+			}
+			return hookCache;
+		}
 	}
 }

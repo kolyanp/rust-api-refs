@@ -9,4 +9,6 @@ public class RendererGrid : SingletonComponent<RendererGrid>, IClientComponent
 	public float MaxMilliseconds = 0.1f;
 
 	public const float MinTimeBetweenRefreshes = 1f;
+
+	public const float DirtyDelay = 0.5f;
 }

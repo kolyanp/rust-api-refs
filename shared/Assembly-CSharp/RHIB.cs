@@ -89,8 +89,8 @@ public class RHIB : MotorRowboat
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(6f)]
+	[RPC_Server]
 	public void Server_Release(RPCMessage msg)
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
@@ -152,18 +152,7 @@ public class RHIB : MotorRowboat
 		{
 			targetGasPedal = 0f;
 		}
-		if (inputState.IsDown(BUTTON.LEFT))
-		{
-			steering = 1f;
-		}
-		else if (inputState.IsDown(BUTTON.RIGHT))
-		{
-			steering = -1f;
-		}
-		else
-		{
-			steering = 0f;
-		}
+		steering = 0f - inputState.Steer();
 	}
 
 	public void AddFuel(int amount)
@@ -194,6 +183,23 @@ public class RHIB : MotorRowboat
 			}
 		}
 		AdminKill();
+	}
+
+	public bool HasPlayerAboard()
+	{
+		for (int i = 0; i < mountPoints.Count; i++)
+		{
+			BaseMountable mountable = mountPoints[i].mountable;
+			if ((Object)(object)mountable != (Object)null)
+			{
+				BasePlayer mounted = mountable.GetMounted();
+				if (mounted != null && !mounted.IsNpc)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void KillMountedNPCs()

@@ -114,14 +114,14 @@ public static class CameraEx
 		File.WriteAllBytes(path, bytes);
 	}
 
-	public static void ScreenshotToDisk(this Camera cam, string name, int width, int height, bool transparent, int SuperSampleSize, Color? background = null)
+	public static void ScreenshotToDisk(this Camera cam, string name, int width, int height, bool transparent, int SuperSampleSize, Nullable background = null)
 	{
 		Texture2D val = cam.ScreenshotToTexture(width, height, transparent, SuperSampleSize, background);
 		SavePNG(name, val);
 		Object.DestroyImmediate((Object)(object)val, true);
 	}
 
-	public static Texture2D ScreenshotToTexture(this Camera cam, int width, int height, bool transparent, int superSampleSize, Color? background = null)
+	public static Texture2D ScreenshotToTexture(this Camera cam, int width, int height, bool transparent, int superSampleSize, Nullable background = null)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)

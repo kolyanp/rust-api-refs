@@ -10,6 +10,9 @@ public class Socket_Specific : Socket_Base
 
 	public bool canRotate;
 
+	[Tooltip("Blocks placement when construction sits between the socket and the centre of the entity it attaches to")]
+	public bool requireLineOfSightToTarget;
+
 	private void OnDrawGizmos()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -39,6 +42,7 @@ public class Socket_Specific : Socket_Base
 	public override bool TestTarget(Construction.Target target)
 	{
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.TestTarget(target))
 		{
 			return false;
@@ -56,7 +60,27 @@ public class Socket_Specific : Socket_Base
 		{
 			return false;
 		}
+		if (requireLineOfSightToTarget && (Object)(object)target.entity != (Object)null && !HasLineOfSightToParent(target.GetWorldPosition(), target.entity))
+		{
+			return false;
+		}
 		return socket_Specific_Female.CanAccept(this);
+	}
+
+	public static bool HasLineOfSightToParent(Vector3 position, BaseEntity parent)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 val = parent.CenterPoint();
+		if (GamePhysics.LineOfSight(position, val, 2097152, parent))
+		{
+			return GamePhysics.LineOfSight(val, position, 2097152, parent);
+		}
+		return false;
 	}
 
 	public override Construction.Placement DoPlacement(Construction.Target target)

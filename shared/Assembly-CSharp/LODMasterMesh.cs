@@ -6,6 +6,7 @@ public class LODMasterMesh : LODComponent
 
 	public float Distance = 100f;
 
+	[FlattenIgnoreReference]
 	public LODComponent[] ChildComponents;
 
 	public bool Block;

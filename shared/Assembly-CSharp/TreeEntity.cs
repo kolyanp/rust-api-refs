@@ -9,6 +9,16 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class TreeEntity : ResourceEntity, IPrefabPreProcess
 {
+	[Serializable]
+	public struct TreeAdditionSpawnData
+	{
+		public GameObjectRef prefab;
+
+		public Vector3 localPosition;
+
+		public Vector3 localRotation;
+	}
+
 	private struct HotspotMarkerSpawnValues
 	{
 		public Vector3 fromWorldPosition;
@@ -61,17 +71,13 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 	private float lastAttackDamage;
 
 	[Header("Tree Addition Settings")]
-	public bool spawnTreeAddition;
+	public TreeAdditionSpawnData[] treeAdditions;
 
-	public GameObjectRef treeAdditionPrefab;
+	private List<BaseEntity> treeAdditionRefs;
 
 	public float treeAdditionSpawnChance = 0.1f;
 
-	public Vector3 treeAdditionSpawnPosition;
-
-	public Vector3 treeAdditionSpawnRotation;
-
-	private BaseEntity treeAdditionRef;
+	public float treeAdditionDestroyOnDeathChance;
 
 	private HotspotMarkerSpawnValues nextHotspotMarkerValues;
 
@@ -104,8 +110,6 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 			return _actionCreateNewHotspotMarker;
 		}
 	}
-
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -243,20 +247,20 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 
 	public bool DidHitMarker(HitInfo info)
 	{
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)xMarker == (Object)null)
 		{
 			return false;
@@ -266,9 +270,10 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 		{
 			return (bool)obj;
 		}
-		if (PrefabAttribute.server.Find<TreeMarkerData>(prefabID) != null)
+		TreeMarkerData treeMarkerData = PrefabAttribute.server.Find<TreeMarkerData>(prefabID);
+		if (treeMarkerData != null)
 		{
-			Bounds val = new Bounds(((Component)xMarker).transform.position, Vector3.one * 0.2f);
+			Bounds val = new Bounds(((Component)xMarker).transform.position, Vector3.one * (0.2f + treeMarkerData.HotspotPadding));
 			if (val.Contains(info.HitPositionWorld))
 			{
 				return true;
@@ -290,94 +295,92 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 
 	private void SpawnNewHotspotMarker()
 	{
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0189: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0251: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0256: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0233: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0235: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0249: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0252: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0257: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0264: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0266: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0273: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0280: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0275: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ec: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0304: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0306: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0318: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0308: Unknown result type (might be due to invalid IL or missing references)
 		if (health <= 0f)
 		{
 			return;
@@ -385,19 +388,9 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 		TreeMarkerData treeMarkerData = PrefabAttribute.server.Find<TreeMarkerData>(prefabID);
 		if (treeMarkerData != null)
 		{
-			Vector3 normal;
-			Vector3 closestPoint;
-			if (nextHotspotMarkerValues.isBypassingBonusGame)
+			if (!(nextHotspotMarkerValues.isBypassingBonusGame ? treeMarkerData.TryGetClosestPoint(nextHotspotMarkerValues.hitPositionWorld, nextHotspotMarkerValues.hitEntity, out var closestPoint, out var normal) : treeMarkerData.TryGetNearbyPoint(nextHotspotMarkerValues.fromWorldPosition, nextHotspotMarkerValues.hitEntity, ref lastHitMarkerIndex, out closestPoint, out normal)))
 			{
-				if (!treeMarkerData.TryGetClosestPoint(nextHotspotMarkerValues.hitPositionWorld, nextHotspotMarkerValues.hitEntity, out closestPoint, out normal))
-				{
-					Debug.LogError((object)$"Failed to generate a closest point to spawn new marker from position {nextHotspotMarkerValues.fromWorldPosition}");
-					return;
-				}
-			}
-			else
-			{
-				closestPoint = treeMarkerData.GetNearbyPoint(nextHotspotMarkerValues.fromWorldPosition, nextHotspotMarkerValues.hitEntity, ref lastHitMarkerIndex, out normal);
+				return;
 			}
 			closestPoint = ((Component)this).transform.TransformPoint(closestPoint);
 			Quaternion rot = QuaternionEx.LookRotationNormal(((Component)this).transform.TransformDirection(normal));
@@ -432,6 +425,10 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 			Quaternion val9 = QuaternionEx.LookRotationNormal(-val8, Vector3.zero);
 			val4 = ((Component)this).transform.TransformPoint(val4);
 			val4 = serverCollider.ClosestPoint(val4);
+			if (!TreeMarkerData.IsAboveTerrain(val4))
+			{
+				return;
+			}
 			Line val10 = new Line(((Component)serverCollider).transform.TransformPoint(new Vector3(0f, 10f, 0f)), ((Component)serverCollider).transform.TransformPoint(new Vector3(0f, -10f, 0f)));
 			val9 = QuaternionEx.LookRotationNormal(-Vector3Ex.Direction(val10.ClosestPoint(val4), val4));
 			xMarker = GameManager.server.CreateEntity("assets/content/nature/treesprefabs/trees/effects/tree_marking.prefab", val4, val9);
@@ -579,42 +576,56 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 
 	private void TryAddTreeAddition()
 	{
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		if (spawnTreeAddition && treeAdditionPrefab.isValid && Random.value <= treeAdditionSpawnChance && !((Object)(object)treeAdditionRef != (Object)null))
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		if (treeAdditions == null || treeAdditions.Length == 0 || Random.value > treeAdditionSpawnChance)
 		{
-			treeAdditionRef = GameManager.server.CreateEntity(treeAdditionPrefab.resourcePath, Vector3.zero, Quaternion.identity);
-			((Component)treeAdditionRef).transform.position = ((Component)this).transform.TransformPoint(treeAdditionSpawnPosition);
-			((Component)treeAdditionRef).transform.rotation = ((Component)this).transform.rotation * Quaternion.Euler(treeAdditionSpawnRotation);
-			if ((Object)(object)((Component)treeAdditionRef).GetComponent<Poolable>() != (Object)null)
+			return;
+		}
+		treeAdditionRefs = Pool.Get<List<BaseEntity>>();
+		for (int i = 0; i < treeAdditions.Length; i++)
+		{
+			if (treeAdditions[i].prefab.isValid)
 			{
-				PoolableEx.AwakeFromInstantiate(((Component)treeAdditionRef).gameObject);
+				BaseEntity baseEntity = GameManager.server.CreateEntity(treeAdditions[i].prefab.resourcePath, ((Component)this).transform.TransformPoint(treeAdditions[i].localPosition), ((Component)this).transform.rotation * Quaternion.Euler(treeAdditions[i].localRotation));
+				if (!((Object)(object)baseEntity == (Object)null))
+				{
+					baseEntity.Spawn();
+					treeAdditionRefs.Add(baseEntity);
+				}
 			}
-			treeAdditionRef.Spawn();
-			treeAdditionRef.SendNetworkUpdate();
 		}
 	}
 
 	private void TryKillTreeAddition()
 	{
-		if (spawnTreeAddition && (Object)(object)treeAdditionRef != (Object)null)
+		if (treeAdditionRefs == null)
 		{
-			if (treeAdditionRef is BaseCombatEntity baseCombatEntity)
-			{
-				baseCombatEntity.Die();
-			}
-			else
-			{
-				treeAdditionRef.Kill(DestroyMode.Gib);
-			}
-			treeAdditionRef = null;
+			return;
 		}
+		foreach (BaseEntity treeAdditionRef in treeAdditionRefs)
+		{
+			if (!((Object)(object)treeAdditionRef == (Object)null))
+			{
+				if (treeAdditionRef is NaturalBeehive naturalBeehive)
+				{
+					naturalBeehive.Die();
+				}
+				else if (treeAdditionRef is BaseCombatEntity baseCombatEntity && Random.value >= treeAdditionDestroyOnDeathChance)
+				{
+					baseCombatEntity.Die();
+				}
+				else
+				{
+					treeAdditionRef.Kill(DestroyMode.Gib);
+				}
+			}
+		}
+		Pool.FreeUnmanaged<BaseEntity>(ref treeAdditionRefs);
 	}
 
 	public BaseEntity GetBonusGame()

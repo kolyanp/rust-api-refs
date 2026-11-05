@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class WorldModel : MonoBehaviour
+public class WorldModel : MonoBehaviour, IFlattenKeepsDescendants
 {
 	public float mass = 1f;
 

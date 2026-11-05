@@ -43,27 +43,40 @@ public class State_TurnToTarget : State_PlayAnimationRM
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		if (!HasTurnAnimation || !FindTurnTarget(out var position))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		Vector3 val = Vector3Ex.NormalizeXZ(position - ((Component)Owner).transform.position);
-		float num = Vector3.SignedAngle(((Component)Owner).transform.forward, val, Vector3.up);
+		Vector3 targetDirection = Vector3Ex.NormalizeXZ(position - ((Component)Owner).transform.position);
+		Animation = TurnFor(((Component)Owner).transform.forward, targetDirection);
+		return base.OnStateEnter(payload);
+	}
+
+	protected RootMotionData TurnFor(Vector3 forward, Vector3 targetDirection)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		float num = Vector3.SignedAngle(forward, targetDirection, Vector3.up);
 		if (Mathf.Abs(num) > aboutFaceAngle)
 		{
-			Animation = TurnAbout ?? ((num > 0f) ? TurnRight : TurnLeft);
+			RootMotionData rootMotionData = TurnAbout;
+			if ((object)rootMotionData == null)
+			{
+				if (!(num > 0f))
+				{
+					return TurnLeft;
+				}
+				rootMotionData = TurnRight;
+			}
+			return rootMotionData;
 		}
-		else if (num > 0f)
+		if (num > 0f)
 		{
-			Animation = TurnRight ?? TurnAbout ?? TurnLeft;
+			return TurnRight ?? TurnAbout ?? TurnLeft;
 		}
-		else
-		{
-			Animation = TurnLeft ?? TurnAbout ?? TurnRight;
-		}
-		return base.OnStateEnter(payload);
+		return TurnLeft ?? TurnAbout ?? TurnRight;
 	}
 }

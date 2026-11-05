@@ -49,7 +49,7 @@ public static class ComponentCacheBankNonGeneric
 		{
 			return false;
 		}
-		return All.Count((IComponentBank cache) => cache.Destroy(go)) > 0;
+		return Enumerable.Count(All, (IComponentBank cache) => cache.Destroy(go)) > 0;
 	}
 
 	public static void OnEntityDestruct(BaseEntity entity)

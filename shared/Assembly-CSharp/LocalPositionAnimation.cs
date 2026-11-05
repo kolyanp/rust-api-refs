@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LocalPositionAnimation : MonoBehaviour, IClientComponent
+public class LocalPositionAnimation : MonoBehaviour, IClientComponent, IFlattenKeepsParent, IFlattenKeepsDescendants
 {
 	public Vector3 centerPosition;
 

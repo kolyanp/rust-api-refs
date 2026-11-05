@@ -22,6 +22,10 @@ public struct PreProcessPrefabOptions
 
 	public bool DisableInstancingOnParticleSystems;
 
+	public bool FlattenHierarchy;
+
+	public bool PostProcessedDuringBundling;
+
 	static PreProcessPrefabOptions()
 	{
 		Default = new PreProcessPrefabOptions
@@ -32,7 +36,8 @@ public struct PreProcessPrefabOptions
 			PreProcess = true,
 			PostProcess = true,
 			UpdateMeshCooking = true,
-			DisableInstancingOnParticleSystems = true
+			DisableInstancingOnParticleSystems = true,
+			FlattenHierarchy = true
 		};
 		AssetSceneBundling = new PreProcessPrefabOptions
 		{
@@ -40,9 +45,10 @@ public struct PreProcessPrefabOptions
 			StripComponents = true,
 			StripEmptyChildren = true,
 			PreProcess = true,
-			PostProcess = false,
+			PostProcess = true,
 			UpdateMeshCooking = true,
-			DisableInstancingOnParticleSystems = true
+			DisableInstancingOnParticleSystems = true,
+			FlattenHierarchy = true
 		};
 		AssetSceneRuntime = new PreProcessPrefabOptions
 		{
@@ -52,9 +58,12 @@ public struct PreProcessPrefabOptions
 			PreProcess = true,
 			PostProcess = true,
 			UpdateMeshCooking = false,
-			DisableInstancingOnParticleSystems = true
+			DisableInstancingOnParticleSystems = true,
+			FlattenHierarchy = false,
+			PostProcessedDuringBundling = true
 		};
 		Default_NoResetPosition = Default;
 		Default_NoResetPosition.ResetLocalTransform = false;
+		Default_NoResetPosition.FlattenHierarchy = false;
 	}
 }

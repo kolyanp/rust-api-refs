@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class UI_CopyPaste : UI_Window
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	protected ScrollRect scrollRect;
 
 	[SerializeField]

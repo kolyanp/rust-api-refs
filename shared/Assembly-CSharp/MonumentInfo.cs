@@ -38,8 +38,6 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 
 	private OBB obbBounds;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
-
 	public bool ShouldDetachChildren()
 	{
 		return false;
@@ -67,6 +65,19 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 
 	public bool CheckPlacement(Vector3 pos, Quaternion rot, Vector3 scale, int minCorners = 3, bool allowAdjacentTier = false)
 	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		if (CheckTierPlacement(pos, rot, scale, minCorners, allowAdjacentTier))
+		{
+			return CheckWaterPlacement(pos);
+		}
+		return false;
+	}
+
+	public bool CheckTierPlacement(Vector3 pos, Quaternion rot, Vector3 scale, int minCorners = 3, bool allowAdjacentTier = false)
+	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
@@ -84,7 +95,6 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
 		OBB val = new OBB(pos, scale, rot, Bounds);
 		Vector3 point = val.GetPoint(-1f, 0f, -1f);
 		Vector3 point2 = val.GetPoint(-1f, 0f, 1f);
@@ -112,10 +122,12 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		{
 			num2++;
 		}
-		if (num2 < minCorners)
-		{
-			return false;
-		}
+		return num2 >= minCorners;
+	}
+
+	public bool CheckWaterPlacement(Vector3 pos)
+	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		WaterBody componentInChildren = ((Component)this).GetComponentInChildren<WaterBody>();
 		if ((Object)(object)componentInChildren == (Object)null || componentInChildren.Type != WaterBodyType.Lake)
 		{

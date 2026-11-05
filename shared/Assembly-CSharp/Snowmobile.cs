@@ -25,8 +25,8 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 
 	public TimeSince timeSinceTerrainModCheck;
 
-	[SerializeField]
 	[Header("Snowmobile")]
+	[SerializeField]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -418,51 +418,42 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		if (!IsDriver(player))
+		if (IsDriver(player))
 		{
-			return;
-		}
-		timeSinceLastUsed = TimeSince.op_Implicit(0f);
-		if (inputState.IsDown(BUTTON.FIRE_THIRD))
-		{
-			SteerInput += inputState.MouseDelta().x * 0.1f;
-		}
-		else
-		{
-			SteerInput = 0f;
-			if (inputState.IsDown(BUTTON.LEFT))
+			timeSinceLastUsed = TimeSince.op_Implicit(0f);
+			if (inputState.IsDown(BUTTON.FIRE_THIRD))
 			{
-				SteerInput = -1f;
+				SteerInput += inputState.MouseDelta().x * 0.1f;
 			}
-			else if (inputState.IsDown(BUTTON.RIGHT))
+			else
 			{
-				SteerInput = 1f;
+				SteerInput = inputState.Steer();
 			}
-		}
-		float num = 0f;
-		if (inputState.IsDown(BUTTON.FORWARD))
-		{
-			num = 1f;
-		}
-		else if (inputState.IsDown(BUTTON.BACKWARD))
-		{
-			num = -1f;
-		}
-		ThrottleInput = 0f;
-		BrakeInput = 0f;
-		if (GetSpeed() > 3f && num < -0.1f)
-		{
+			float num = 0f;
+			if (inputState.IsDown(BUTTON.FORWARD))
+			{
+				num = 1f;
+			}
+			else if (inputState.IsDown(BUTTON.BACKWARD))
+			{
+				num = -1f;
+			}
 			ThrottleInput = 0f;
-			BrakeInput = 0f - num;
-		}
-		else
-		{
-			ThrottleInput = num;
 			BrakeInput = 0f;
-		}
-		if (engineController.IsOff && ((inputState.IsDown(BUTTON.FORWARD) && !inputState.WasDown(BUTTON.FORWARD)) || (inputState.IsDown(BUTTON.BACKWARD) && !inputState.WasDown(BUTTON.BACKWARD))))
-		{
-			engineController.TryStartEngine(player);
+			if (GetSpeed() > 3f && num < -0.1f)
+			{
+				ThrottleInput = 0f;
+				BrakeInput = 0f - num;
+			}
+			else
+			{
+				ThrottleInput = num;
+				BrakeInput = 0f;
+			}
+			if (engineController.IsOff && ((inputState.IsDown(BUTTON.FORWARD) && !inputState.WasDown(BUTTON.FORWARD)) || (inputState.IsDown(BUTTON.BACKWARD) && !inputState.WasDown(BUTTON.BACKWARD))))
+			{
+				engineController.TryStartEngine(player);
+			}
 		}
 	}
 
@@ -644,8 +635,8 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

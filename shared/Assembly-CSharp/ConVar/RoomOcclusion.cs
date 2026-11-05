@@ -78,7 +78,7 @@ public class RoomOcclusion : ConsoleSystem
 	public static float occlusion_nearby_range = 32f;
 
 	[ServerVar(Help = "Kill switch for the whole synchronous pre-open pass: repartition and deliver the rooms behind a door the moment it opens, instead of leaving it to the normal budgeted queue. Only players within room.occlusion_door_immediate_range are flushed; further ones enqueue as usual. Off skips the repartition entirely, not just the flush.")]
-	public static bool occlusion_door_immediate = true;
+	public static bool occlusion_door_immediate = false;
 
 	[ServerVar(Help = "How close a player must be to a door for its rooms to be sent immediately when it opens, in metres. 0 = no limit, flush every viewer of the door.")]
 	public static float occlusion_door_immediate_range = 30f;
@@ -196,33 +196,33 @@ public class RoomOcclusion : ConsoleSystem
 		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0310: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0309: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0315: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0323: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0334: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0339: Unknown result type (might be due to invalid IL or missing references)
 		//IL_033e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0343: Unknown result type (might be due to invalid IL or missing references)
-		//IL_034c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0358: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0347: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0353: Unknown result type (might be due to invalid IL or missing references)
+		//IL_035d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0362: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0367: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0370: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0372: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0369: Unknown result type (might be due to invalid IL or missing references)
+		//IL_036b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_036d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
 		//IL_037c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_037f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0381: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0384: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0386: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0388: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0393: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0420: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0383: Unknown result type (might be due to invalid IL or missing references)
+		//IL_038e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 position = player.eyes.position;
 		float num = range * range;
 		HashSet<Room> hashSet = new HashSet<Room>();
@@ -280,32 +280,30 @@ public class RoomOcclusion : ConsoleSystem
 			}
 			result.Boundaries++;
 		}
-		List<Portal> portals = RoomOcclusionManager.Portals;
-		if (portals != null)
+		List<Portal> list = new List<Portal>();
+		RoomOcclusionManager.GatherPortals(list);
+		foreach (Portal item4 in list)
 		{
-			foreach (Portal item4 in portals)
+			if (result.Rooms + result.Boundaries + result.Portals >= maxDraws)
 			{
-				if (result.Rooms + result.Boundaries + result.Portals >= maxDraws)
+				break;
+			}
+			if ((hashSet.Contains(item4.RoomA) || hashSet.Contains(item4.RoomB)) && (InRange(item4.FaceA.WorldCenter, position, num) || InRange(item4.FaceB.WorldCenter, position, num)))
+			{
+				bool flag2 = item4.IsOpen();
+				Color color3 = (flag2 ? SubscribedGroupColor : UnsubscribedGroupColor);
+				Vector3 val = item4.FaceA.WorldCenter + item4.FaceA.WorldNormal * 0.2f;
+				Vector3 val2 = item4.FaceB.WorldCenter + item4.FaceB.WorldNormal * 0.2f;
+				Vector3 pos = (val + val2) * 0.5f;
+				UnityEngine.DDraw.Line(player, val, val2, color3, duration, distanceFade: true, zTest: false);
+				UnityEngine.DDraw.Text(player, pos, string.Format("R{0} C{1} <-> R{2} C{3}\n", new object[4]
 				{
-					break;
-				}
-				if ((hashSet.Contains(item4.RoomA) || hashSet.Contains(item4.RoomB)) && (InRange(item4.FaceA.WorldCenter, position, num) || InRange(item4.FaceB.WorldCenter, position, num)))
-				{
-					bool flag2 = item4.IsOpen();
-					Color color3 = (flag2 ? SubscribedGroupColor : UnsubscribedGroupColor);
-					Vector3 val = item4.FaceA.WorldCenter + item4.FaceA.WorldNormal * 0.2f;
-					Vector3 val2 = item4.FaceB.WorldCenter + item4.FaceB.WorldNormal * 0.2f;
-					Vector3 pos = (val + val2) * 0.5f;
-					UnityEngine.DDraw.Line(player, val, val2, color3, duration, distanceFade: true, zTest: false);
-					UnityEngine.DDraw.Text(player, pos, string.Format("R{0} C{1} <-> R{2} C{3}\n", new object[4]
-					{
-						item4.RoomA.DebugId,
-						item4.RoomA.NetworkGroupIndex,
-						item4.RoomB.DebugId,
-						item4.RoomB.NetworkGroupIndex
-					}) + (flag2 ? $"OPEN: V{item4.RoomA.VisibilityGroup}" : "closed"), color3, duration, distanceFade: true, zTest: false, 1.25f);
-					result.Portals++;
-				}
+					item4.RoomA.DebugId,
+					item4.RoomA.NetworkGroupIndex,
+					item4.RoomB.DebugId,
+					item4.RoomB.NetworkGroupIndex
+				}) + (flag2 ? $"OPEN: V{item4.RoomA.VisibilityGroup}" : "closed"), color3, duration, distanceFade: true, zTest: false, 1.25f);
+				result.Portals++;
 			}
 		}
 		return result;
@@ -551,21 +549,19 @@ public class RoomOcclusion : ConsoleSystem
 		CollectBuildingRooms(block, hashSet);
 		TextTable val = new TextTable();
 		val.AddColumns(new string[4] { "Rooms", "Filler", "Blocks vision", "Open" });
-		List<Portal> portals = RoomOcclusionManager.Portals;
-		if (portals != null)
+		List<Portal> list = new List<Portal>();
+		RoomOcclusionManager.GatherPortals(list);
+		foreach (Portal item in list)
 		{
-			foreach (Portal item in portals)
+			if (hashSet.Contains(item.RoomA) || hashSet.Contains(item.RoomB))
 			{
-				if (hashSet.Contains(item.RoomA) || hashSet.Contains(item.RoomB))
+				val.AddRow(new string[4]
 				{
-					val.AddRow(new string[4]
-					{
-						$"{item.RoomA.DebugId} <-> {item.RoomB.DebugId}",
-						item.PermanentlyOpen ? "(low wall)" : (item.Filler?.ShortPrefabName ?? "(empty)"),
-						item.FillerBlocksVision ? "x" : "",
-						item.IsOpen() ? "x" : ""
-					});
-				}
+					$"{item.RoomA.DebugId} <-> {item.RoomB.DebugId}",
+					item.PermanentlyOpen ? "(low wall)" : (item.Filler?.ShortPrefabName ?? "(empty)"),
+					item.FillerBlocksVision ? "x" : "",
+					item.IsOpen() ? "x" : ""
+				});
 			}
 		}
 		arg.ReplyWith($"{val}{arg2}");
@@ -574,33 +570,33 @@ public class RoomOcclusion : ConsoleSystem
 	[ServerVar(Help = "Draws the portals of the building you are looking at (green = open, red = closed)")]
 	public static void draw_portals(Arg arg)
 	{
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = ArgEx.Player(arg);
 		if (!TryTraceBlock(arg, out var block, out var error))
 		{
@@ -612,34 +608,32 @@ public class RoomOcclusion : ConsoleSystem
 		HashSet<Room> hashSet = new HashSet<Room>();
 		CollectBuildingRooms(block, hashSet);
 		int num = 0;
-		List<Portal> portals = RoomOcclusionManager.Portals;
-		if (portals != null)
+		List<Portal> list = new List<Portal>();
+		RoomOcclusionManager.GatherPortals(list);
+		foreach (Portal item in list)
 		{
-			foreach (Portal item in portals)
+			if (hashSet.Contains(item.RoomA) || hashSet.Contains(item.RoomB))
 			{
-				if (hashSet.Contains(item.RoomA) || hashSet.Contains(item.RoomB))
+				bool flag = item.IsOpen();
+				Color color = (flag ? new Color(0.3f, 1f, 0.4f) : new Color(1f, 0.3f, 0.3f));
+				item.FaceA.DDraw(player, color, duration, drawNormal: false);
+				item.FaceB.DDraw(player, color, duration, drawNormal: false);
+				Vector3 val = item.FaceA.WorldCenter + item.FaceA.WorldNormal * 0.2f;
+				Vector3 val2 = item.FaceB.WorldCenter + item.FaceB.WorldNormal * 0.2f;
+				Vector3 pos = (val + val2) * 0.5f;
+				UnityEngine.DDraw.Line(player, val, val2, color, duration, distanceFade: true, zTest: false);
+				UnityEngine.DDraw.Sphere(player, pos, 0.12f, color, duration, distanceFade: true, zTest: false);
+				string arg3;
+				if (item.PermanentlyOpen)
 				{
-					bool flag = item.IsOpen();
-					Color color = (flag ? new Color(0.3f, 1f, 0.4f) : new Color(1f, 0.3f, 0.3f));
-					item.FaceA.DDraw(player, color, duration, drawNormal: false);
-					item.FaceB.DDraw(player, color, duration, drawNormal: false);
-					Vector3 val = item.FaceA.WorldCenter + item.FaceA.WorldNormal * 0.2f;
-					Vector3 val2 = item.FaceB.WorldCenter + item.FaceB.WorldNormal * 0.2f;
-					Vector3 pos = (val + val2) * 0.5f;
-					UnityEngine.DDraw.Line(player, val, val2, color, duration, distanceFade: true, zTest: false);
-					UnityEngine.DDraw.Sphere(player, pos, 0.12f, color, duration, distanceFade: true, zTest: false);
-					string arg3;
-					if (item.PermanentlyOpen)
-					{
-						arg3 = "always open";
-					}
-					else
-					{
-						arg3 = (((Object)(object)item.Filler == (Object)null) ? "empty frame" : (item.Filler.ShortPrefabName + ": " + (flag ? "open" : "SHUT")));
-					}
-					UnityEngine.DDraw.Text(player, pos, $"{item.RoomA.DebugId}<->{item.RoomB.DebugId}\n{arg3}", color, duration, distanceFade: true, zTest: false, 1.5f);
-					num++;
+					arg3 = "always open";
 				}
+				else
+				{
+					arg3 = (((Object)(object)item.Filler == (Object)null) ? "empty frame" : (item.Filler.ShortPrefabName + ": " + (flag ? "open" : "SHUT")));
+				}
+				UnityEngine.DDraw.Text(player, pos, $"{item.RoomA.DebugId}<->{item.RoomB.DebugId}\n{arg3}", color, duration, distanceFade: true, zTest: false, 1.5f);
+				num++;
 			}
 		}
 		arg.ReplyWith($"{num} portals (green = see-through, red = blocked){arg2}");
@@ -904,7 +898,7 @@ public class RoomOcclusion : ConsoleSystem
 		{
 			((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
 		}
-		arg.ReplyWith(string.Format("occlusion {0} ({1})", occlusion, (occlusion == 0) ? "off" : ((occlusion == 1) ? "shadow" : "enforce")) + $", solver failed open: {RoomOcclusionManager.FailedOpen}, delivery failed: {RoomOcclusionDelivery.Failed}\n" + string.Format("{0} rooms ({1} effectively outside), {2} faces ({3} effectively outside)\n", new object[4] { num, num2, num3, num4 }) + $"fail-open rate: {num5:P1}, geometry components with no outward-facing room: {RoomOcclusionManager.FailedOpenBuildings}\n" + $"network groups: {RoomNetworkGroups.ContentsGroupCount} contents + {RoomNetworkGroups.BoundaryGroupCount} boundary" + $" ({RoomNetworkGroups.AllocatedGroups} ever allocated, {RoomNetworkGroups.MultiRoomBlocks} cumulative 3+ room blocks)\n" + $"deployables occupying more than one room: {RoomNetworkGroups.SpanningDeployables} cumulative\n" + $"{RoomOcclusionDelivery.GroupedEntities} entities currently in a room group\n" + $"{num6} players tracked\n{val}{arg2}");
+		arg.ReplyWith(string.Format("occlusion {0} ({1})", occlusion, (occlusion == 0) ? "off" : ((occlusion == 1) ? "shadow" : "enforce")) + $", solver failed open: {RoomOcclusionManager.FailedOpen}, delivery failed: {RoomOcclusionDelivery.Failed}\n" + string.Format("{0} rooms ({1} effectively outside), {2} faces ({3} effectively outside)\n", new object[4] { num, num2, num3, num4 }) + $"fail-open rate: {num5:P1}, room clusters with no outward-facing room: {RoomOcclusionManager.FailedOpenBuildings}\n" + $"network groups: {RoomNetworkGroups.ContentsGroupCount} contents + {RoomNetworkGroups.BoundaryGroupCount} boundary" + $" ({RoomNetworkGroups.AllocatedGroups} ever allocated, {RoomNetworkGroups.MultiRoomBlocks} cumulative 3+ room blocks)\n" + $"deployables occupying more than one room: {RoomNetworkGroups.SpanningDeployables} cumulative\n" + $"{RoomOcclusionDelivery.GroupedEntities} entities currently in a room group\n" + $"{num6} players tracked\n{val}{arg2}");
 	}
 
 	private static void CollectBuildingRooms(BuildingBlock startBlock, HashSet<Room> rooms)

@@ -15,16 +15,31 @@ public class Livestock : ConsoleSystem
 	[ReplicatedVar(Help = "Whether both copies of every livestock gene are shown rather than only the one the animal expresses. Reveals what an animal carries without breeding it")]
 	public static bool panelAlleles = false;
 
-	[ReplicatedVar(Help = "Whether a farm animal's status panel says whether it is young or grown")]
+	[ReplicatedVar(Help = "Whether a farm animal's status panel says how long it has lived while owned")]
 	public static bool panelAge = true;
 
 	[ReplicatedVar(Help = "Whether a farm animal's status panel shows how much it trusts you, as one segment per band of the trust ladder")]
-	public static bool panelTrust = false;
+	public static bool panelTrust = true;
+
+	[ReplicatedVar(Help = "Whether a farm animal's status panel shows its potential, how content it was raised, which its sale price is multiplied by")]
+	public static bool panelPotential = true;
 
 	[ReplicatedVar(Help = "Whether the male and female symbols are shown next to a farm animal's name on its status panel")]
-	public static bool panelGender = false;
+	public static bool panelGender = true;
 
-	[ReplicatedVar(Help = "Whether a farm animal's status panel shows what it produces and how often, after its genes")]
+	[ReplicatedVar(Help = "How many seconds near a livestock animal before a bull stops squaring up at you")]
+	public static float trustToTolerate = 30f;
+
+	[ReplicatedVar(Help = "How many seconds near a livestock animal before it accepts being led, milked or sheared by you")]
+	public static float trustToLead = 300f;
+
+	[ReplicatedVar(Help = "The most seconds of trust a player can build with a livestock animal, which is the full bond: it defends you. Only its owner reaches it, see livestock.nonOwnerTrustShare")]
+	public static float maxTrust = 900f;
+
+	[ServerVar(Help = "The share of livestock.maxTrust a player can reach with an animal they do not own, kept short of 1 so only the owner has the full bond and is defended. At 1 anybody can")]
+	public static float nonOwnerTrustShare = 0.95f;
+
+	[ReplicatedVar(Help = "Whether the milk or wool row of a farm animal's status panel also says what it produces and how often, after its genes")]
 	public static bool panelYield = false;
 
 	[ReplicatedVar(Help = "Whether a farm animal's status panel shows how often it dungs, after its genes")]
@@ -42,10 +57,13 @@ public class Livestock : ConsoleSystem
 	[ReplicatedVar(Help = "What every gene's slider position is multiplied by on an inbred livestock animal, for its coat and for what it produces alike. At 0.5 a Good gene looks and performs as Ok and an Ok gene falls halfway to Bad. An animal is inbred when both its lineage markers match")]
 	public static float inbredScale = 0.5f;
 
+	[ReplicatedVar(Help = "The least a livestock animal's grass and sun needs count for in its overall mood, so a floored or roofed barn herd is kept below full rather than at nothing. The needs themselves still read down to 0")]
+	public static float shelterNeedFloor = 0.5f;
+
 	[ReplicatedVar(Help = "How much wool a player must be carrying before a livestock vendor will haggle over it at all")]
 	public static int vendorWoolMinimum = 25;
 
-	[ServerVar(Help = "Multiplier applied to livestock grow and old-age times; 0.5 = grow up twice as fast, 0 = disable aging entirely")]
+	[ServerVar(Help = "Multiplier applied to how long a livestock infant takes to grow up; 0.5 = grow up twice as fast, 0 = disable aging entirely")]
 	public static float ageScale = 1f;
 
 	[ServerVar(Help = "Whether livestock look for a mate on their own; disabling it leaves livestock.makepregnant working")]
@@ -54,8 +72,47 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "How many livestock animals of one species a server holds before none of that species breeds. Cattle and sheep are counted apart against the same number, 0 never caps")]
 	public static int maxPerSpecies = 300;
 
-	[ServerVar(Help = "Whether livestock breed only while a cupboard is their home")]
-	public static bool breedOnlyAtHome = false;
+	[ServerVar(Help = "How many livestock animals of one species can share open ground, linked through any within livestock.freeRangeLinkRadius of each other, litters on the way counted at their largest, before none of them breeds, 0 never caps")]
+	public static int maxFreeRangeHerd = 5;
+
+	[ServerVar(Help = "How far (in metres) apart two livestock animals out of a pen can stand and still be linked into one free range herd for livestock.maxFreeRangeHerd")]
+	public static float freeRangeLinkRadius = 40f;
+
+	[ServerVar(Help = "Floor in square metres each head needs in a pen to breed and to have full personal space. A 2x2 of foundations floods about 27, so it houses three")]
+	public static float breedingFloorPerHead = 8f;
+
+	[ServerVar(Help = "Floor in square metres per head at or below which a pen leaves livestock no personal space at all, which kills them. Half a foundation by default")]
+	public static float lethalFloorPerHead = 4.5f;
+
+	[ServerVar(Help = "The share of a floor's sampled polys the sun must reach at some hour of a simulated day for the sun need to read full")]
+	public static float sunFullShare = 0.5f;
+
+	[ServerVar(Help = "How many of a floor's navmesh polys are sampled for sunlight when it is measured")]
+	public static int sunSamplePolys = 64;
+
+	[ServerVar(Help = "How many sun positions between sunrise and sunset each sampled poly is tested against")]
+	public static int sunSampleHours = 12;
+
+	[ServerVar(Help = "How many minutes a floor keeps its sun verdict before it is measured again, for shade that arrives without a navmesh change")]
+	public static float sunResampleMinutes = 30f;
+
+	[ServerVar(Help = "The share of its waking day a livestock animal is assumed to spend on its feet when a trough's remaining time is estimated")]
+	public static float estimateStandingShare = 0.38f;
+
+	[ServerVar(Help = "The shortest time (in seconds) a livestock animal of any species grazes in one helping, at a trough or on grass")]
+	public static float grazeHelpingMin = 30f;
+
+	[ServerVar(Help = "The longest time (in seconds) a livestock animal of any species grazes in one helping, at a trough or on grass")]
+	public static float grazeHelpingMax = 50f;
+
+	[ServerVar(Help = "How long (in seconds) a hungry livestock animal fails to get a place at a stocked trough before it eats from it where it stands")]
+	public static float remoteEatAfter = 60f;
+
+	[ServerVar(Help = "How far (in metres) from a trough a livestock animal may stand to eat from it without a place of its own")]
+	public static float remoteEatDistance = 6f;
+
+	[ServerVar(Help = "How often (in seconds) a livestock animal lying down for want of food or water looks for some again")]
+	public static float starvedSearchInterval = 30f;
 
 	[ServerVar(Help = "How far (in metres) a male livestock animal looks for a mate")]
 	public static float breedSearchRadius = 30f;
@@ -84,25 +141,13 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "Multiplies how fast livestock familiarity builds up; 20 makes a five minute bond take fifteen seconds. For testing, leave at 1 for play")]
 	public static float familiarityRate = 1f;
 
-	[ServerVar(Help = "How many seconds a player has to stay away from a livestock animal short of a full bond for it to forget one second they spent near it, so at 3 fourteen minutes are gone in forty two. A full bond never fades, 0 never forgets")]
-	public static float familiarityForgetScale = 3f;
-
 	[ServerVar(Help = "How many seconds near a livestock animal before a curious one follows you without a lead")]
 	public static float trustToFollow = 5f;
-
-	[ServerVar(Help = "How many seconds near a livestock animal before a bull stops squaring up at you")]
-	public static float trustToTolerate = 30f;
-
-	[ServerVar(Help = "How many seconds near a livestock animal before you can lead it, after which it also ages, can starve and gives dung, milk or wool")]
-	public static float trustToLead = 300f;
-
-	[ServerVar(Help = "The most seconds of trust a player can build with a livestock animal, which is the full bond: it can breed, standing in your cupboard makes that its home, your trust stops fading and a bull defends you")]
-	public static float maxTrust = 900f;
 
 	[ServerVar(Help = "How recently (in seconds) a player the herd counts as one of its own must have been attacked for a bull to come after whoever is doing it; 0 stops him defending players")]
 	public static float defendReactionTime = 5f;
 
-	[ServerVar(Help = "The seconds a livestock animal credits to the team, cupboard authed and door code sharers of anyone it is bonded with; kept inside the tolerated band on purpose")]
+	[ServerVar(Help = "The seconds a livestock animal credits to its owner's team and to the cupboard authed and door code sharers of its home; kept inside the tolerated band on purpose")]
 	public static float trustFloor = 60f;
 
 	[ServerVar(Help = "The seconds a livestock animal credits to a player under a livestock handling effect; kept inside the tolerated band on purpose")]
@@ -120,23 +165,11 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "How far (in metres) a player can get before a curious livestock animal gives up following them")]
 	public static float curiousBreakDistance = 20f;
 
+	[ServerVar(Help = "The share of livestock born sleepy, so once grown they spend most of the day lying down away from the herd. An animal is never curious and sleepy at once; 0 disables sleepy animals")]
+	public static float sleepyChance = 0.2f;
+
 	[ServerVar(Help = "How far (in metres) a player can get from an animal they are leading before the lead breaks. 0 never breaks it")]
-	public static float leadBreakDistance = 7f;
-
-	[ServerVar(Help = "Whether grass a herd has eaten bare stops feeding them until it grows back")]
-	public static bool overgrazingEnabled = true;
-
-	[ServerVar(Help = "How far (in metres) an overgrazed patch of grass reaches from its centre")]
-	public static float overgrazedAreaRadius = 5f;
-
-	[ServerVar(Help = "How long (in minutes) an overgrazed patch of grass takes to grow back")]
-	public static float overgrazedAreaCooldownMinutes = 30f;
-
-	[ServerVar(Help = "How many times livestock can graze one patch of grass before it is eaten bare")]
-	public static int grazesUntilOvergrazed = 2;
-
-	[ServerVar(Help = "Logs livestock overgrazing as it happens")]
-	public static bool debugOvergrazing = false;
+	public static float leadBreakDistance = 15f;
 
 	[ServerVar(Help = "Adds the day budget shares to a livestock animal's ai.showState read-out")]
 	public static bool debugDayBudget = false;
@@ -144,17 +177,23 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "Adds the condition and its breeding band to a livestock animal's ai.showState read-out")]
 	public static bool debugCondition = false;
 
-	[ServerVar(Help = "Contentment at or above which a livestock animal is healthy and heals towards full")]
-	public static float conditionFullContentment = 0.5f;
+	[ServerVar(Help = "Contentment at which a livestock animal is in full condition; below it the condition target falls in proportion, so a herd held at the shelter floor sits at half condition")]
+	public static float conditionFullContentment = 1f;
 
-	[ServerVar(Help = "How many seconds a totally neglected livestock animal takes to go from full health to dead")]
+	[ServerVar(Help = "How many seconds a perfectly happy young livestock animal takes to raise its potential from nothing to full")]
+	public static float potentialRiseSeconds = 600f;
+
+	[ServerVar(Help = "How many seconds a totally unhappy young livestock animal takes to drop its potential from full to nothing")]
+	public static float potentialFallSeconds = 900f;
+
+	[ServerVar(Help = "The most potential a livestock animal with no mother can reach, from 0 to 1. Covers animals bought from a vendor, caught wild or spawned in")]
+	public static float potentialUnbredCap = 0f;
+
+	[ServerVar(Help = "How many seconds a totally neglected livestock animal takes to fall from full health to 1 hp, or to dead when it has no personal space left")]
 	public static float conditionFallSeconds = 3600f;
 
 	[ServerVar(Help = "How many seconds a well kept livestock animal takes to heal from nothing back to full health")]
 	public static float conditionRiseSeconds = 3600f;
-
-	[ServerVar(Help = "Lowest condition a livestock animal nobody can lead falls to from neglect, so wildlife never dies of it")]
-	public static float wildConditionFloor = 0.5f;
 
 	[ServerVar(Help = "Condition below which a livestock animal stops dunging at all. A starving animal never dungs whatever this says")]
 	public static float dungConditionFloor = 0.15f;
@@ -173,15 +212,6 @@ public class Livestock : ConsoleSystem
 
 	[ServerVar(Help = "What a livestock animal at the condition floor sells for, as a share of the vendor's full price")]
 	public static float priceWorstScale = 0.4f;
-
-	[ServerVar(Help = "How far through its life a livestock animal stays worth its full price, from 0 in its prime to 1 at death by old age")]
-	public static float priceAgePrime = 0.5f;
-
-	[ServerVar(Help = "What a livestock animal at the very end of its life sells for, as a share of the vendor's full price")]
-	public static float priceOldestScale = 0.5f;
-
-	[ServerVar(Help = "How much less a livestock animal that no player bred sells for, as a share of its price, so a herd raised from birth outsells one rounded up in the wild")]
-	public static float priceWildPenalty = 0.85f;
 
 	[ServerVar(Help = "How far a livestock animal's genes move what a vendor pays, where 1 pays its full gene advantage and 0 prices every animal as an average one")]
 	public static float priceGeneWeight = 1f;
@@ -206,6 +236,9 @@ public class Livestock : ConsoleSystem
 
 	[ServerVar(Help = "The most a generous livestock offer lifts an animal's quality by")]
 	public static float vendorGenerousMax = 0.25f;
+
+	[ServerVar(Help = "Potential below which a livestock vendor opens his first offer by saying the animal was neglected growing up; 0 disables it")]
+	public static float vendorLowPotential = 0.5f;
 
 	[ServerVar(Help = "How many seconds a livestock vendor refuses to look at goods whose every offer was turned down")]
 	public static float vendorAnnoyedTime = 900f;
@@ -234,12 +267,6 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "How often a Good Dung livestock animal drops dung, as a multiple of an average one")]
 	public static float geneDungGood = 1.6f;
 
-	[ServerVar(Help = "How long a Bad Longevity livestock animal lives, as a share of an average one")]
-	public static float geneLongevityBad = 0.65f;
-
-	[ServerVar(Help = "How long a Good Longevity livestock animal lives, as a multiple of an average one")]
-	public static float geneLongevityGood = 1.5f;
-
 	[ServerVar(Help = "How much milk or wool a Bad Yield livestock animal gives, as a share of an average one")]
 	public static float geneYieldBad = 0.6f;
 
@@ -252,11 +279,11 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "How often a Good Fertility livestock animal breeds, and how many young it carries, as a multiple of an average one")]
 	public static float geneFertilityGood = 1.6f;
 
-	[ServerVar(Help = "How well a Bad Hardiness livestock animal tolerates going short of food, water or room, as a share of an average one")]
-	public static float geneHardinessBad = 0.7f;
+	[ServerVar(Help = "What an average animal's food, water, room, grass and sun needs are divided by for a Bad Hardiness livestock animal, so below 1 it needs more of everything")]
+	public static float geneHardinessBad = 0.667f;
 
-	[ServerVar(Help = "How well a Good Hardiness livestock animal tolerates going short of food, water or room, as a multiple of an average one")]
-	public static float geneHardinessGood = 1.5f;
+	[ServerVar(Help = "What an average animal's food, water, room, grass and sun needs are divided by for a Good Hardiness livestock animal, so at 2 it gets by on half")]
+	public static float geneHardinessGood = 2f;
 
 	[ServerVar(Help = "Adds an animal's genes to its ai.showState read-out")]
 	public static bool debugGenes = false;
@@ -273,17 +300,17 @@ public class Livestock : ConsoleSystem
 	[ServerVar(Help = "The chance a freshly named livestock animal is given a developer's handle instead of an ordinary name; one named that way never founds a dynasty")]
 	public static float devNameChance = 0f;
 
-	[ServerVar(Help = "The language livestock are named in when nobody connected speaks one the game has names for, and the language the baseline weight reinforces")]
+	[ServerVar(Help = "The language a livestock animal is named in when its first owner is offline or speaks a language the game has no names for")]
 	public static string namelocale = "en";
-
-	[ServerVar(Help = "How many notional players livestock.namelocale counts as when the languages of everyone connected are weighed up, so one player alone does not name the whole herd")]
-	public static int baselineNameWeight = 5;
-
-	[ServerVar(Help = "Whether livestock names follow the languages of whoever is connected; off names every animal from the English pool, as before the packs existed")]
-	public static bool localeNames = true;
 
 	[ServerVar(Help = "Adds walk speed and gait penalty to a livestock animal's ai.showState read-out")]
 	public static bool debugGait = false;
+
+	[ServerVar(Help = "Main thread time budget per frame in milliseconds for the livestock needs queue")]
+	public static float needsFrameTime = 0.1f;
+
+	[ServerVar(Help = "How far (in metres) around you livestock.drawpens and livestock.drawherds draw")]
+	public static float drawRadius = 60f;
 
 	[ServerVar(Help = "Times how long livestock spend in their needs queue and FSM tick, for livestock.census. Off by default because the measurement itself costs")]
 	public static bool profile
@@ -299,7 +326,7 @@ public class Livestock : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Immediately ages up the nearest livestock animal: an infant grows into its next stage, an adult dies of old age. Optional search radius in metres (default 20).")]
+	[ServerVar(Help = "Immediately grows the nearest livestock infant into its adult stage. Optional search radius in metres (default 20).")]
 	public static void ageup(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -316,7 +343,11 @@ public class Livestock : ConsoleSystem
 			return;
 		}
 		string text = $"{closestLivestockAnimal.Categorize()} ({closestLivestockAnimal.Age}) at {closestDistance:0.0}m";
-		if (closestLivestockAnimal.ForceAgeUp())
+		if (closestLivestockAnimal.IsAdult())
+		{
+			args.ReplyWith(text + " is an adult, and an adult does not age out.");
+		}
+		else if (closestLivestockAnimal.ForceAgeUp())
 		{
 			args.ReplyWith("Aged up " + text + ".");
 		}
@@ -341,14 +372,13 @@ public class Livestock : ConsoleSystem
 		{
 			args.ReplyWith($"No livestock animal found within {num}m.");
 		}
-		else if (closestLivestockAnimal.CanBePregnant())
+		else if (closestLivestockAnimal.MakePregnant(null))
 		{
-			closestLivestockAnimal.MakePregnant(null);
 			args.ReplyWith($"{closestLivestockAnimal.Categorize()} ({closestLivestockAnimal.Age}) at {closestDistance:0.0} is now pregnant.");
 		}
 		else
 		{
-			args.ReplyWith($"{closestLivestockAnimal.Categorize()} ({closestLivestockAnimal.Age}) at {closestDistance:0.0}m cannot be made pregnant " + $"(fully bonded {closestLivestockAnimal.IsFullyBonded}, willing {!closestLivestockAnimal.BreedingPaused} at condition {closestLivestockAnimal.Condition:0.00}).");
+			args.ReplyWith($"{closestLivestockAnimal.Categorize()} ({closestLivestockAnimal.Age}) at {closestDistance:0.0}m cannot be made pregnant " + $"(owned {closestLivestockAnimal.HasOwner}, willing {!closestLivestockAnimal.BreedingPaused} at condition {closestLivestockAnimal.Condition:0.00}, " + $"room to breed {closestLivestockAnimal.HasRoomToBreed}, species at its cap {closestLivestockAnimal.SpeciesAtCap}, " + $"on cooldown {closestLivestockAnimal.OnBreedingCooldown}, already pregnant {closestLivestockAnimal.IsPregnant()}).");
 		}
 	}
 
@@ -400,7 +430,7 @@ public class Livestock : ConsoleSystem
 		}
 		else if (!closestLivestockAnimal.TryDropDung())
 		{
-			args.ReplyWith($"{closestLivestockAnimal.Categorize()} at {closestDistance:0.0}m has nothing to pass " + $"(leadable by somebody {closestLivestockAnimal.IsLeadable}, fullness {closestLivestockAnimal.Fullness.NeedValue:0.00}, " + $"condition {closestLivestockAnimal.Condition:0.00}).");
+			args.ReplyWith($"{closestLivestockAnimal.Categorize()} at {closestDistance:0.0}m has nothing to pass " + $"(owned {closestLivestockAnimal.HasOwner}, fullness {closestLivestockAnimal.Fullness.NeedValue:0.00}, " + $"condition {closestLivestockAnimal.Condition:0.00}).");
 		}
 		else
 		{
@@ -408,7 +438,7 @@ public class Livestock : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Makes the nearest cow ready to milk now, without waiting out its cooldown. Optional search radius in metres (default 20).")]
+	[ServerVar(Help = "Adds one stored milking to the nearest cow now, up to the most it can hold, without waiting out its cooldown. Optional search radius in metres (default 20).")]
 	public static void readytomilk(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -425,11 +455,11 @@ public class Livestock : ConsoleSystem
 		}
 		else if (cow.ForceMilkReady())
 		{
-			args.ReplyWith($"Cow at {closestDistance:0.0}m is ready to milk.");
+			args.ReplyWith($"Cow at {closestDistance:0.0}m is ready to milk, now {cow.MilkCharges}/{cow.MaxMilkCharges}.");
 		}
 		else
 		{
-			args.ReplyWith($"Cow at {closestDistance:0.0}m cannot be milked - bulls and calves never can.");
+			args.ReplyWith($"Cow at {closestDistance:0.0}m cannot be milked - bulls, calves and unowned cows never can.");
 		}
 	}
 
@@ -524,15 +554,17 @@ public class Livestock : ConsoleSystem
 			return;
 		}
 		string text2 = (string.IsNullOrEmpty(closestLivestockAnimal.AnimalName) ? "unnamed" : closestLivestockAnimal.AnimalName);
-		closestLivestockAnimal.AnimalName = text;
-		closestLivestockAnimal.FoundLine(LivestockLocaleWeights.HouseLocale());
-		args.ReplyWith(string.Format("Renamed {0} ({1}) at {2:0.0}m from {3} to {4}.", new object[5]
+		bool hasSpecialAuthoredName = closestLivestockAnimal.HasSpecialAuthoredName;
+		closestLivestockAnimal.UpdateNameFromPlayer(text, LivestockNames.HouseLocale(), basePlayer.userID);
+		string text3 = (hasSpecialAuthoredName ? (" It's no longer the special " + text2 + ", so another can spawn.") : string.Empty);
+		args.ReplyWith(string.Format("Renamed {0} ({1}) at {2:0.0}m from {3} to {4}.{5}", new object[6]
 		{
 			closestLivestockAnimal.Categorize(),
 			closestLivestockAnimal.Age,
 			closestDistance,
 			text2,
-			text
+			text,
+			text3
 		}));
 	}
 
@@ -582,7 +614,7 @@ public class Livestock : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "Prints what the nearest livestock animal's coat is made of, which is its genes and, for a species with patches, its name. Usage: livestock.showcoat [radius], radius in metres (default 20)")]
+	[ServerVar(Help = "Prints what the nearest livestock animal's coat is made of, which is its genes and, for a species with patches, the coat seed it was born with. Usage: livestock.showcoat [radius], radius in metres (default 20)")]
 	public static void showcoat(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -599,7 +631,7 @@ public class Livestock : ConsoleSystem
 		}
 		else
 		{
-			args.ReplyWith($"{closestLivestockAnimal.Categorize()} '{closestLivestockAnimal.AnimalName}' ({closestLivestockAnimal.Age}) at " + $"{closestDistance:0.0}m wears {closestLivestockAnimal.CoatName}. Change it with " + "livestock.setgene or livestock.rename.");
+			args.ReplyWith($"{closestLivestockAnimal.Categorize()} '{closestLivestockAnimal.NameOrLabel()}' ({closestLivestockAnimal.Age}) at " + $"{closestDistance:0.0}m wears {closestLivestockAnimal.CoatName}. Change its colour with " + "livestock.setgene.");
 		}
 	}
 
@@ -622,13 +654,13 @@ public class Livestock : ConsoleSystem
 		args.ReplyWith(string.Format("{0} '{1}' at {2:0.0}m: {3}", new object[4]
 		{
 			targetedLivestockAnimal.Categorize(),
-			targetedLivestockAnimal.AnimalName,
+			targetedLivestockAnimal.NameOrLabel(),
 			distance,
 			targetedLivestockAnimal.GetGenesDebugInfo()
 		}));
 	}
 
-	[ServerVar(Help = "Sets both copies of one gene on the livestock animal you are looking at, or the nearest one, the better copy being the one that shows. Usage: livestock.setgene <Dung|Longevity|Yield|Fertility|Hardiness> <firstAllele> <secondAllele> [radius], each allele Bad, Ok or Good")]
+	[ServerVar(Help = "Sets both copies of one gene on the livestock animal you are looking at, or the nearest one, the better copy being the one that shows. Usage: livestock.setgene <Dung|Yield|Fertility|Hardiness> <firstAllele> <secondAllele> [radius], each allele Bad, Ok or Good")]
 	public static void setgene(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -637,9 +669,9 @@ public class Livestock : ConsoleSystem
 			args.ReplyWith("This command has to be run by a player.");
 			return;
 		}
-		if (!Enum.TryParse<LivestockGene>(args.GetString(0, string.Empty), ignoreCase: true, out var result))
+		if (!Enum.TryParse<LivestockGene>(args.GetString(0, string.Empty), ignoreCase: true, out var result) || !LivestockGenome.IsLive(result))
 		{
-			args.ReplyWith("Name a gene: Dung, Longevity, Yield, Fertility or Hardiness.");
+			args.ReplyWith("Name a gene: Dung, Yield, Fertility or Hardiness.");
 			return;
 		}
 		if (!Enum.TryParse<LivestockAllele>(args.GetString(1, string.Empty), ignoreCase: true, out var result2) || !Enum.TryParse<LivestockAllele>(args.GetString(2, string.Empty), ignoreCase: true, out var result3))
@@ -709,7 +741,7 @@ public class Livestock : ConsoleSystem
 			args.ReplyWith($"No livestock animal found within {num2}m.");
 			return;
 		}
-		targetedLivestockAnimal.SetFamiliarity(basePlayer.userID, num, LivestockAnimal.FamiliarityReason.Debug);
+		targetedLivestockAnimal.SetFamiliarity(basePlayer.userID, num);
 		float num3 = targetedLivestockAnimal.StoredSecondsFor(basePlayer.userID);
 		args.ReplyWith(string.Format("{0} ({1}) at {2:0.0}m now has {3:0}s of familiarity with you ({4}).", new object[5]
 		{
@@ -745,7 +777,7 @@ public class Livestock : ConsoleSystem
 		{
 			if (!((Object)(object)livestockAnimal == (Object)null) && !livestockAnimal.IsDestroyed && !livestockAnimal.IsDead() && !(Vector3.Distance(((Component)livestockAnimal).transform.position, ((Component)basePlayer).transform.position) > num2))
 			{
-				livestockAnimal.SetFamiliarity(basePlayer.userID, num, LivestockAnimal.FamiliarityReason.Debug);
+				livestockAnimal.SetFamiliarity(basePlayer.userID, num);
 				num3++;
 			}
 		}
@@ -758,7 +790,7 @@ public class Livestock : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "Makes the nearest livestock animal curious or not, so it will follow a player it knows without a lead. Usage: livestock.setcurious <0|1> [radius], radius in metres (default 20)")]
+	[ServerVar(Help = "Makes the nearest livestock animal curious or not, so it will follow a player it knows without a lead. Setting it clears sleepy. Usage: livestock.setcurious <0|1> [radius], radius in metres (default 20)")]
 	public static void setcurious(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -778,6 +810,43 @@ public class Livestock : ConsoleSystem
 		targetedLivestockAnimal.SetCurious(flag);
 		string text = (targetedLivestockAnimal.ActsCurious ? "and will follow you once you are familiar enough" : "but only cows and calves act on it");
 		args.ReplyWith(string.Format("{0} ({1}) at {2:0.0}m is {3} curious, {4}.", new object[5]
+		{
+			targetedLivestockAnimal.Categorize(),
+			targetedLivestockAnimal.Age,
+			distance,
+			flag ? "now" : "no longer",
+			text
+		}));
+	}
+
+	[ServerVar(Help = "Makes the nearest livestock animal sleepy or not, so once grown it spends most of the day lying down away from the herd. Setting it clears curious. Usage: livestock.setsleepy <0|1> [radius], radius in metres (default 20)")]
+	public static void setsleepy(Arg args)
+	{
+		BasePlayer basePlayer = ArgEx.Player(args);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			args.ReplyWith("This command has to be run by a player.");
+			return;
+		}
+		bool flag = args.GetInt(0, 1) != 0;
+		float num = args.GetFloat(1, 20f);
+		LivestockAnimal targetedLivestockAnimal = GetTargetedLivestockAnimal(num, basePlayer, out var distance);
+		if ((Object)(object)targetedLivestockAnimal == (Object)null)
+		{
+			args.ReplyWith($"No livestock animal found within {num}m.");
+			return;
+		}
+		targetedLivestockAnimal.SetSleepy(flag);
+		string text;
+		if (flag)
+		{
+			text = (targetedLivestockAnimal.ActsSleepy ? ", and rests away from the herd" : ", but acts on it only once grown");
+		}
+		else
+		{
+			text = string.Empty;
+		}
+		args.ReplyWith(string.Format("{0} ({1}) at {2:0.0}m is {3} sleepy{4}.", new object[5]
 		{
 			targetedLivestockAnimal.Categorize(),
 			targetedLivestockAnimal.Age,
@@ -826,57 +895,12 @@ public class Livestock : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "Marks the grass where the caller is standing as overgrazed, without waiting for a herd to eat it.")]
-	public static void overgrazehere(Arg args)
-	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		BasePlayer basePlayer = ArgEx.Player(args);
-		if ((Object)(object)basePlayer == (Object)null)
-		{
-			args.ReplyWith("This command has to be run by a player.");
-		}
-		else if ((Object)(object)OvergrazedArea.MarkOvergrazed(((Component)basePlayer).transform.position) == (Object)null)
-		{
-			args.ReplyWith("Failed to spawn 'assets/prefabs/npc/ranch/overgrazedarea.prefab'.");
-		}
-		else
-		{
-			args.ReplyWith($"Grass within {overgrazedAreaRadius}m is overgrazed for the next {overgrazedAreaCooldownMinutes} minutes.");
-		}
-	}
-
-	[ServerVar(Help = "Grows back every overgrazed patch of grass near the caller, and clears what the herd has eaten there. Optional radius in metres (default 100).")]
-	public static void cleargrazing(Arg args)
-	{
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		BasePlayer basePlayer = ArgEx.Player(args);
-		if ((Object)(object)basePlayer == (Object)null)
-		{
-			args.ReplyWith("This command has to be run by a player.");
-			return;
-		}
-		float num = args.GetFloat(0, 100f);
-		int num2 = 0;
-		OvergrazedArea[] array = BaseEntity.Util.FindAll<OvergrazedArea>();
-		foreach (OvergrazedArea overgrazedArea in array)
-		{
-			if (!((Object)(object)overgrazedArea == (Object)null) && !overgrazedArea.IsDestroyed && !(Vector3.Distance(((Component)overgrazedArea).transform.position, ((Component)basePlayer).transform.position) > num))
-			{
-				overgrazedArea.Kill();
-				num2++;
-			}
-		}
-		OvergrazedArea.GrazedCells.Clear();
-		args.ReplyWith($"Grew back {num2} overgrazed areas within {num}m and reset every grazing counter.");
-	}
-
-	[ServerVar(Help = "Moves the wild anchor of every livestock animal in range to where the caller is standing, so roam and the night gather aim here. A cupboard still outranks it. Optional radius in metres (default 30).")]
+	[ServerVar(Help = "Moves the home of every livestock animal in range to where the caller is standing, so roam and the night gather aim here until it next eats at a trough. Optional radius in metres (default 30).")]
 	public static void sendhome(Arg args)
 	{
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer basePlayer = ArgEx.Player(args);
 		if ((Object)(object)basePlayer == (Object)null)
 		{
@@ -885,7 +909,6 @@ public class Livestock : ConsoleSystem
 		}
 		float num = args.GetFloat(0, 30f);
 		int num2 = 0;
-		int num3 = 0;
 		LivestockAnimal[] array = BaseEntity.Util.FindAll<LivestockAnimal>();
 		foreach (LivestockAnimal livestockAnimal in array)
 		{
@@ -893,40 +916,29 @@ public class Livestock : ConsoleSystem
 			{
 				livestockAnimal.SetHomePosition(((Component)basePlayer).transform.position);
 				num2++;
-				if (livestockAnimal.TryGetHomeCupboard(out var _))
-				{
-					num3++;
-				}
 			}
 		}
-		string arg = ((num3 > 0) ? $", but {num3} still live in a cupboard that outranks it" : "");
-		args.ReplyWith($"{num2} livestock animal(s) within {num}m now anchor here{arg}.");
+		args.ReplyWith($"{num2} livestock animal(s) within {num}m now anchor here.");
 	}
 
-	[ServerVar(Help = "Draws an arrow from the livestock animal you are looking at, or the nearest one, to the cupboard it lives at, or to its wild anchor when it has none. Optional search radius in metres (default 20) and seconds to draw for (default 10).")]
+	[ServerVar(Help = "Draws an arrow from the livestock animal you are looking at, or the nearest one, to its home: the last trough it ate at, or where it started. Green when that is inside a base. Optional search radius in metres (default 20) and seconds to draw for (default 10).")]
 	public static void showhome(Arg args)
 	{
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer basePlayer = ArgEx.Player(args);
 		if ((Object)(object)basePlayer == (Object)null)
 		{
@@ -942,32 +954,25 @@ public class Livestock : ConsoleSystem
 			return;
 		}
 		Vector3 val = targetedLivestockAnimal.CenterPoint();
-		if (!targetedLivestockAnimal.TryGetHomeCupboard(out var cupboard))
-		{
-			Vector3 homePosition = targetedLivestockAnimal.HomePosition;
-			basePlayer.SendConsoleCommand("ddraw.arrow", num2, Color.yellow, val, homePosition, 0.5f);
-			basePlayer.SendConsoleCommand("ddraw.sphere", num2, Color.yellow, homePosition, 1f);
-			args.ReplyWith($"{targetedLivestockAnimal.Categorize()} has no cupboard. Its wild anchor is {Vector3.Distance(val, homePosition):0}m away.");
-		}
-		else
-		{
-			Vector3 val2 = cupboard.CenterPoint();
-			basePlayer.SendConsoleCommand("ddraw.arrow", num2, Color.green, val, val2, 0.5f);
-			basePlayer.SendConsoleCommand("ddraw.sphere", num2, Color.green, val2, 1f);
-			args.ReplyWith($"{targetedLivestockAnimal.Categorize()} lives at cupboard {cupboard.net.ID}, {Vector3.Distance(val, val2):0}m away.");
-		}
+		Vector3 homePosition = targetedLivestockAnimal.HomePosition;
+		bool flag = targetedLivestockAnimal.TryGetHomeCupboard(out var cupboard);
+		Color val2 = (flag ? Color.green : Color.yellow);
+		basePlayer.SendConsoleCommand("ddraw.arrow", num2, val2, val, homePosition, 0.5f);
+		basePlayer.SendConsoleCommand("ddraw.sphere", num2, val2, homePosition, 1f);
+		string arg = (flag ? $"in the base of cupboard {cupboard.net.ID}" : "with no cupboard");
+		args.ReplyWith($"{targetedLivestockAnimal.Categorize()} lives {arg}, {Vector3.Distance(val, homePosition):0}m away.");
 	}
 
-	[ServerVar(Help = "Fills the nearest livestock animal's social need, as if it were standing in a herd the right size. Optional search radius in metres (default 20).")]
-	public static void fillsocial(Arg args)
+	[ServerVar(Help = "Toggles drawing every livestock pen within livestock.drawRadius of you, each in its own colour: its border, a marker on each animal on it and each trough and water container it keeps, and what it houses. Pass 1 or 0 to set it instead.")]
+	public static void drawpens(Arg args)
 	{
-		SetNeed(args, 1f, "has room to itself", LivestockAnimal.Need.PersonalSpace);
+		DebugDrawOverlayViewer.Toggle(args, LivestockPenOverlay.Instance, $"livestock pens within {drawRadius:0}m");
 	}
 
-	[ServerVar(Help = "Empties the nearest livestock animal's social need, as if it had been on its own. Optional search radius in metres (default 20).")]
-	public static void emptysocial(Arg args)
+	[ServerVar(Help = "Toggles drawing the free range herds within livestock.drawRadius of you, each in its own colour: the whole herd the count links through livestock.freeRangeLinkRadius, past the cap, joined by its shortest set of lines, and its size against livestock.maxFreeRangeHerd with how many of it are not owned. Pass 1 or 0 to set it instead.")]
+	public static void drawherds(Arg args)
 	{
-		SetNeed(args, 0f, "is packed in tight", LivestockAnimal.Need.PersonalSpace);
+		DebugDrawOverlayViewer.Toggle(args, LivestockHerdOverlay.Instance, $"free range herds within {drawRadius:0}m");
 	}
 
 	[ServerVar(Help = "Sets the condition of the livestock animal the caller is looking at, or the nearest one. Condition is the slow average that price, dung and willingness read. Usage: livestock.setcondition <0-1> [radius], radius in metres (default 20)")]
@@ -1004,6 +1009,38 @@ public class Livestock : ConsoleSystem
 		}));
 	}
 
+	[ServerVar(Help = "Sets the potential of the livestock animal the caller is looking at, or the nearest one, as if it was raised that content. Usage: livestock.setpotential <0-1> [radius], radius in metres (default 20)")]
+	public static void setpotential(Arg args)
+	{
+		BasePlayer basePlayer = ArgEx.Player(args);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			args.ReplyWith("This command has to be run by a player.");
+			return;
+		}
+		float num = args.GetFloat(0, -1f);
+		float num2 = args.GetFloat(1, 20f);
+		if (num < 0f)
+		{
+			args.ReplyWith("Provide a potential from 0 to 1, eg: livestock.setpotential 0.8");
+			return;
+		}
+		LivestockAnimal targetedLivestockAnimal = GetTargetedLivestockAnimal(num2, basePlayer, out var distance);
+		if ((Object)(object)targetedLivestockAnimal == (Object)null)
+		{
+			args.ReplyWith($"No livestock animal found within {num2}m.");
+			return;
+		}
+		targetedLivestockAnimal.SetPotential(num);
+		args.ReplyWith(string.Format("{0} ({1}) at {2:0.0}m now has potential {3:0.00}.", new object[4]
+		{
+			targetedLivestockAnimal.Categorize(),
+			targetedLivestockAnimal.Age,
+			distance,
+			targetedLivestockAnimal.Potential
+		}));
+	}
+
 	[ServerVar(Help = "Counts the livestock population and what it has produced. Optional radius in metres around the caller (default 0, the whole map).")]
 	public static void census(Arg args)
 	{
@@ -1019,10 +1056,10 @@ public class Livestock : ConsoleSystem
 			return;
 		}
 		string text2 = $"cond {snapshot.MeanCondition:0.00}/{snapshot.MinCondition:0.00}, breeding paused {snapshot.BreedingPaused}";
-		string text3 = $"full {snapshot.MeanFullness:0.00}/{snapshot.MinFullness:0.00}" + $" hyd {snapshot.MeanHydration:0.00}/{snapshot.MinHydration:0.00}" + $" room {snapshot.MeanPersonalSpace:0.00}/{snapshot.MinPersonalSpace:0.00}" + $" mood {snapshot.MeanContentment:0.00}/{snapshot.MinContentment:0.00}";
-		string arg = $"old {LivestockCensus.DeathsBy(LivestockCensus.DeathCause.OldAge)}" + $" neglect {LivestockCensus.DeathsBy(LivestockCensus.DeathCause.Neglect)}" + $" killed {LivestockCensus.DeathsBy(LivestockCensus.DeathCause.Killed)}" + $" other {LivestockCensus.DeathsBy(LivestockCensus.DeathCause.Other)}";
-		string text4 = (profile ? ($"needs {LivestockProfiler.MicrosecondsPerFrame(LivestockProfiler.Section.Needs):0.0}us/frame" + $" fsm {LivestockProfiler.MicrosecondsPerFrame(LivestockProfiler.Section.Fsm):0.0}us/frame" + $" over {LivestockProfiler.FramesMeasured} frames") : "off, set livestock.profile 1 to measure");
-		args.ReplyWith("Livestock census " + text + ":" + string.Format("\n  head {0} (cattle {1}, sheep {2}, other {3})", new object[4] { snapshot.Count, snapshot.Cattle, snapshot.Sheep, snapshot.OtherSpecies }) + string.Format("\n  stage adult {0}, infant {1}, male {2}, female {3}, pregnant {4}, on a lead {5}", new object[6] { snapshot.Adults, snapshot.Infants, snapshot.Males, snapshot.Females, snapshot.Pregnant, snapshot.Leading }) + "\n  needs mean/min " + text3 + "\n  condition mean/min " + text2 + $"\n  day graze {snapshot.MeanGrazeShare:P0} rest {snapshot.MeanRestShare:P0}, asleep now {snapshot.Sleeping}" + $"\n  crowding herd load {snapshot.MeanHerdLoadTarget:0.00}, packing {snapshot.MeanPackingTarget:0.00}" + $"\n  spread herd radius {snapshot.HerdRadius:0.0}m, overgrazed cells {OvergrazedArea.GrazedCells.Count}" + $"\n  since reset births {LivestockCensus.Births}, deaths {arg}" + $"\n  produced dung {LivestockCensus.DungDropped}, trough items eaten {LivestockCensus.TroughItemsEaten}" + "\n  server cost " + text4);
+		string text3 = $"full {snapshot.MeanFullness:0.00}/{snapshot.MinFullness:0.00}" + $" hyd {snapshot.MeanHydration:0.00}/{snapshot.MinHydration:0.00}" + $" room {snapshot.MeanPersonalSpace:0.00}/{snapshot.MinPersonalSpace:0.00}" + $" grass {snapshot.MeanGrass:0.00}/{snapshot.MinGrass:0.00}" + $" sun {snapshot.MeanSun:0.00}/{snapshot.MinSun:0.00}" + $" mood {snapshot.MeanContentment:0.00}/{snapshot.MinContentment:0.00}";
+		string arg = $"crowding {LivestockCensus.DeathsBy(LivestockCensus.DeathCause.Crowding)}" + $" killed {LivestockCensus.DeathsBy(LivestockCensus.DeathCause.Killed)}" + $" other {LivestockCensus.DeathsBy(LivestockCensus.DeathCause.Other)}";
+		string text4 = (profile ? ($"needs {LivestockProfiler.MicrosecondsPerFrame(LivestockProfiler.Section.Needs):0.0}us/frame" + $" fsm {LivestockProfiler.MicrosecondsPerFrame(LivestockProfiler.Section.Fsm):0.0}us/frame" + $", of the needs floods {LivestockProfiler.CallsMeasured(LivestockProfiler.Section.Floor)} at {LivestockProfiler.MicrosecondsPerCall(LivestockProfiler.Section.Floor):0.0}us each" + $", grass and sun classifies and folds {LivestockProfiler.CallsMeasured(LivestockProfiler.Section.Classify)} at {LivestockProfiler.MicrosecondsPerCall(LivestockProfiler.Section.Classify):0.0}us each" + $", spot footprint gathers {LivestockProfiler.CallsMeasured(LivestockProfiler.Section.Gather)} at {LivestockProfiler.MicrosecondsPerCall(LivestockProfiler.Section.Gather):0.0}us each" + $" and picks {LivestockProfiler.CallsMeasured(LivestockProfiler.Section.Pick)} at {LivestockProfiler.MicrosecondsPerCall(LivestockProfiler.Section.Pick):0.0}us each" + $" over {LivestockProfiler.FramesMeasured} frames") : "off, set livestock.profile 1 to measure");
+		args.ReplyWith("Livestock census " + text + ":" + string.Format("\n  head {0} (cattle {1}, sheep {2}, other {3})", new object[4] { snapshot.Count, snapshot.Cattle, snapshot.Sheep, snapshot.OtherSpecies }) + string.Format("\n  stage adult {0}, infant {1}, male {2}, female {3}, pregnant {4}, on a lead {5}", new object[6] { snapshot.Adults, snapshot.Infants, snapshot.Males, snapshot.Females, snapshot.Pregnant, snapshot.Leading }) + "\n  needs mean/min " + text3 + "\n  condition mean/min " + text2 + string.Format("\n  day graze {0:P0} rest {1:P0}, asleep now {2}, starved {3}", new object[4] { snapshot.MeanGrazeShare, snapshot.MeanRestShare, snapshot.Sleeping, snapshot.Starved }) + string.Format("\n  room target {0:0.00}, in a field {1}, in a pen {2} at {3:0.0}m2 a head", new object[4] { snapshot.MeanPackingTarget, snapshot.InAField, snapshot.InAPen, snapshot.MeanFloorPerHead }) + $"\n  spread herd radius {snapshot.HerdRadius:0.0}m" + $"\n  since reset births {LivestockCensus.Births}, deaths {arg}" + $"\n  produced dung {LivestockCensus.DungDropped}, trough items eaten {LivestockCensus.TroughItemsEaten}" + "\n  server cost " + text4);
 	}
 
 	[ServerVar(Help = "Zeroes the livestock census running totals and the profiler, so the next reading covers only what happens from now.")]
@@ -1033,7 +1070,7 @@ public class Livestock : ConsoleSystem
 		args.ReplyWith("Livestock census totals and profiler reset.");
 	}
 
-	[ServerVar(Help = "Kills livestock past livestock.maxPerSpecies, cattle and sheep counted apart: untamed animals first, then tame ones with no cupboard for a home, then the oldest and worst bred. An optional head count culls down to that instead.")]
+	[ServerVar(Help = "Kills livestock past livestock.maxPerSpecies, cattle and sheep counted apart: unowned animals first, then owned ones, the worst kept and worst bred first in each. An optional head count culls down to that instead.")]
 	public static void cullexcess(Arg args)
 	{
 		int num = args.GetInt(0, maxPerSpecies);
@@ -1105,7 +1142,7 @@ public class Livestock : ConsoleSystem
 		baseEntity.Spawn();
 		if (baseEntity is LivestockAnimal livestockAnimal && livestockAnimal.AnimalName == livestockSpecial.Name)
 		{
-			args.ReplyWith("Spawned " + livestockAnimal.Categorize() + " '" + livestockAnimal.AnimalName + "' in coat " + livestockAnimal.CoatName + ": " + livestockAnimal.GetGenesDebugInfo());
+			args.ReplyWith("Spawned " + livestockAnimal.Categorize() + " '" + livestockAnimal.NameOrLabel() + "' in coat " + livestockAnimal.CoatName + ": " + livestockAnimal.GetGenesDebugInfo());
 		}
 		else
 		{
@@ -1183,7 +1220,7 @@ public class Livestock : ConsoleSystem
 			ForcedGene[] genes = special.Genes;
 			foreach (ForcedGene forcedGene in genes)
 			{
-				if (forcedGene != null)
+				if (forcedGene != null && LivestockGenome.IsLive(forcedGene.Gene))
 				{
 					stringBuilder.Append(", ").Append(forcedGene.Gene).Append(' ')
 						.Append(forcedGene.First.ToString()[0])

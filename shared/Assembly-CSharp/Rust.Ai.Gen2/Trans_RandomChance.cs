@@ -13,7 +13,7 @@ public class Trans_RandomChance : FSMTransitionBase
 
 	public override void OnStateEnter()
 	{
-		Triggered = Random.value <= Chance;
+		Triggered = Rng.Value <= Chance;
 	}
 
 	public override void OnStateExit()

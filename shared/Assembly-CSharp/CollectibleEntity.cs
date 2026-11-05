@@ -20,8 +20,6 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 
 	public bool suppressGatherRateMultiplier;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
-
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("CollectibleEntity.OnRpcMessage"))
@@ -118,16 +116,16 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 
 	public void DoPickup(BasePlayer reciever, bool eat = false)
 	{
-		//IL_0201: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
 		if (itemList == null || Interface.CallHook("OnCollectiblePickup", this, reciever, eat) != null)
 		{
 			return;
@@ -142,12 +140,7 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 				continue;
 			}
 			int num2 = (flag ? ((int)itemAmount.amount * 2) : ((int)itemAmount.amount));
-			float num3 = 1f;
-			if (!suppressGatherRateMultiplier && BaseGameMode.GetActiveGameMode(serverside: true) is GameModeSoftcore)
-			{
-				num3 = Mathf.Max(0f, GameModeSoftcore.gather_rate);
-			}
-			int iAmount = ((num2 > 0) ? Mathf.Max(1, Mathf.RoundToInt((float)num2 * num3)) : num2);
+			int iAmount = (suppressGatherRateMultiplier ? num2 : BaseGameMode.ScaleGatherAmount(num2));
 			Item item = ItemManager.Create(itemAmount.itemDef, iAmount, 0uL, isServerSide: true, 0uL);
 			if (item == null)
 			{
@@ -197,8 +190,8 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void PickupEat(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())

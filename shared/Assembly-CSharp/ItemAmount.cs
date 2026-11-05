@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -52,6 +53,7 @@ public class ItemAmount : ISerializationCallbackReceiver
 	{
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static ItemAmountList SerialiseList(List<ItemAmount> list)
 	{
 		ItemAmountList val = Pool.Get<ItemAmountList>();

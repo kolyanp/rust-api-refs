@@ -38,7 +38,7 @@ public class ProtoStorage
 		{
 			Interface.Oxide.LogException("Failed to load protobuf data from " + fileName, ex);
 		}
-		return default(T);
+		return default;
 	}
 
 	public static void Save<T>(T data, params string[] subPaths)

@@ -9,6 +9,8 @@ public class ParticleSpawn : SingletonComponent<ParticleSpawn>, IClientComponent
 
 	public int PatchSize = 100;
 
+	private const int MaxHitRefreshesPerFrame = 4;
+
 	public Vector3 Origin
 	{
 		[CompilerGenerated]

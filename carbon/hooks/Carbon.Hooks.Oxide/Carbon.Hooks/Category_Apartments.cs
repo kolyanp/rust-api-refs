@@ -14,13 +14,13 @@ public class Category_Apartments
 	public class Apartments_RentableShop
 	{
 		[Patch("OnRentableShopClose", "OnRentableShopClose", "RentableShop", "CloseStore", new string[] { "System.Boolean" })]
-		[Identifier("688446ac541a47758d6cf7199e39e6c8")]
+		[Identifier("9625206bca374ba5b2a36279cc9c44a5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RentableShop", false)]
 		[Return(typeof(void))]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_RentableShop_688446ac541a47758d6cf7199e39e6c8 : Patch
+		public class Apartments_RentableShop_9625206bca374ba5b2a36279cc9c44a5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -55,13 +55,13 @@ public class Category_Apartments
 		}
 
 		[Patch("OnRentableShopClosed", "OnRentableShopClosed", "RentableShop", "OnShopClosed", new string[] { "System.Boolean" })]
-		[Identifier("9d34cfb3b2594adb901b7c6a454bea00")]
+		[Identifier("4ece33f17d414a70b1c25ba32fe766c7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RentableShop", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_RentableShop_9d34cfb3b2594adb901b7c6a454bea00 : Patch
+		public class Apartments_RentableShop_4ece33f17d414a70b1c25ba32fe766c7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -90,13 +90,13 @@ public class Category_Apartments
 		}
 
 		[Patch("OnRentableShopOpened", "OnRentableShopOpened", "RentableShop", "OnShopOpened", new string[] { "BasePlayer" })]
-		[Identifier("956e4d7696944909857ecb1fe4e66c77")]
+		[Identifier("eb6171eed02a450081b4c9b125462c65")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RentableShop", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_RentableShop_956e4d7696944909857ecb1fe4e66c77 : Patch
+		public class Apartments_RentableShop_eb6171eed02a450081b4c9b125462c65 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -124,14 +124,14 @@ public class Category_Apartments
 		}
 
 		[Patch("OnRentableShopBreakInComplete", "OnRentableShopBreakInComplete", "RentableShop", "CompleteBreakIn", new string[] { "BasePlayer" })]
-		[Identifier("2dd64576d07044ee8c8526b52d401c6b")]
+		[Identifier("14b17fe3ba684679aa1e716afe1b8edd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RentableShop", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_RentableShop_2dd64576d07044ee8c8526b52d401c6b : Patch
+		public class Apartments_RentableShop_14b17fe3ba684679aa1e716afe1b8edd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -163,14 +163,14 @@ public class Category_Apartments
 		}
 
 		[Patch("OnRentableShopOpen", "OnRentableShopOpen", "RentableShop", "Server_OpenStore", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1563da998666489dbcce78509b12f270")]
+		[Identifier("b3784a26a9814606a577f17f88f14e6c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RentableShop", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_RentableShop_1563da998666489dbcce78509b12f270 : Patch
+		public class Apartments_RentableShop_b3784a26a9814606a577f17f88f14e6c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -205,7 +205,7 @@ public class Category_Apartments
 		}
 
 		[Patch("OnRentableShopBreakInCompleted", "OnRentableShopBreakInCompleted", "RentableShop", "CompleteBreakIn", new string[] { "BasePlayer" })]
-		[Identifier("6d362258cd2649369bf6b07d6fc0ffd2")]
+		[Identifier("0c18c67d46fe48a4b9f4f7228eb0ebc1")]
 		[Dependencies(new string[] { "OnRentableShopBreakInComplete" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RentableShop", false)]
@@ -213,7 +213,7 @@ public class Category_Apartments
 		[Return(typeof(void), Discarded = true)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_RentableShop_6d362258cd2649369bf6b07d6fc0ffd2 : Patch
+		public class Apartments_RentableShop_0c18c67d46fe48a4b9f4f7228eb0ebc1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -244,7 +244,7 @@ public class Category_Apartments
 	public class Apartments_ApartmentDoor
 	{
 		[Patch("OnApartmentRoomBreakInComplete", "OnApartmentRoomBreakInComplete", "ApartmentDoor", "CompleteBreakIn", new string[] { "BasePlayer" })]
-		[Identifier("5c09ea5721a24b85aae07ce220ad7ff3")]
+		[Identifier("f6cadb5107da4e75b5cbc38ec3b5eb56")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "ApartmentRoom", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -252,7 +252,7 @@ public class Category_Apartments
 		[Return(typeof(void))]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_ApartmentDoor_5c09ea5721a24b85aae07ce220ad7ff3 : Patch
+		public class Apartments_ApartmentDoor_f6cadb5107da4e75b5cbc38ec3b5eb56 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -286,7 +286,7 @@ public class Category_Apartments
 		}
 
 		[Patch("OnApartmentRoomBreakInCompleted", "OnApartmentRoomBreakInCompleted", "ApartmentDoor", "CompleteBreakIn", new string[] { "BasePlayer" })]
-		[Identifier("a271473018044271814aec6173abff43")]
+		[Identifier("e7feb94c7fc74745a19644a352ff8fd3")]
 		[Dependencies(new string[] { "OnApartmentRoomBreakInComplete" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "ApartmentRoom", false)]
@@ -295,14 +295,14 @@ public class Category_Apartments
 		[Return(typeof(void), Discarded = true)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_ApartmentDoor_a271473018044271814aec6173abff43 : Patch
+		public class Apartments_ApartmentDoor_e7feb94c7fc74745a19644a352ff8fd3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 100)
+					if (x++ != 112)
 					{
 						yield return instruction;
 						continue;
@@ -328,7 +328,7 @@ public class Category_Apartments
 	public class Apartments_ApartmentBuilding
 	{
 		[Patch("OnApartmentRoomUpgrade", "OnApartmentRoomUpgrade", "ApartmentBuilding", "TryUpgradeRoom", new string[] { "BasePlayer", "ApartmentSize" })]
-		[Identifier("9eee37e05e8a4a83978d4e7639566d6f")]
+		[Identifier("aa798dc0e3ec4755b07b7da091eb5070")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "ApartmentRoom", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -337,7 +337,7 @@ public class Category_Apartments
 		[Return(typeof(void))]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_ApartmentBuilding_9eee37e05e8a4a83978d4e7639566d6f : Patch
+		public class Apartments_ApartmentBuilding_aa798dc0e3ec4755b07b7da091eb5070 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -374,7 +374,7 @@ public class Category_Apartments
 		}
 
 		[Patch("OnApartmentRoomCheckedout", "OnApartmentRoomCheckedout", "ApartmentBuilding", "TryCheckout", new string[] { "BasePlayer" })]
-		[Identifier("3c3c9eaa2f2b42179f2509bc6a3afe40")]
+		[Identifier("b7f8ce97246b43a1953930c5674788ff")]
 		[Dependencies(new string[] { "OnApartmentRoomCheckout" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
@@ -383,7 +383,7 @@ public class Category_Apartments
 		[Return(typeof(void), Discarded = true)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_ApartmentBuilding_3c3c9eaa2f2b42179f2509bc6a3afe40 : Patch
+		public class Apartments_ApartmentBuilding_b7f8ce97246b43a1953930c5674788ff : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -413,7 +413,7 @@ public class Category_Apartments
 		}
 
 		[Patch("OnApartmentRoomPurchase", "OnApartmentRoomPurchase", "ApartmentBuilding", "PurchaseRoom", new string[] { "BasePlayer", "ApartmentSize" })]
-		[Identifier("4b5aabe40651465b9a0c3c68fb2ac335")]
+		[Identifier("767268395a6449f298cf38d5fd87e841")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "ApartmentRoom", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -422,7 +422,7 @@ public class Category_Apartments
 		[Return(typeof(void))]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_ApartmentBuilding_4b5aabe40651465b9a0c3c68fb2ac335 : Patch
+		public class Apartments_ApartmentBuilding_767268395a6449f298cf38d5fd87e841 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -459,7 +459,7 @@ public class Category_Apartments
 		}
 
 		[Patch("OnApartmentRoomUpgraded", "OnApartmentRoomUpgraded", "ApartmentBuilding", "TryUpgradeRoom", new string[] { "BasePlayer", "ApartmentSize" })]
-		[Identifier("22237455c8d043deb29af5f6ba17c1e5")]
+		[Identifier("cce9c69a9b24493a9b62ccf99355ea26")]
 		[Dependencies(new string[] { "OnApartmentRoomUpgrade" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "ApartmentRoom", false)]
@@ -469,14 +469,14 @@ public class Category_Apartments
 		[Return(typeof(void), Discarded = true)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_ApartmentBuilding_22237455c8d043deb29af5f6ba17c1e5 : Patch
+		public class Apartments_ApartmentBuilding_cce9c69a9b24493a9b62ccf99355ea26 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 93)
+					if (x++ != 94)
 					{
 						yield return instruction;
 						continue;
@@ -502,7 +502,7 @@ public class Category_Apartments
 		}
 
 		[Patch("OnApartmentRoomPurchased", "OnApartmentRoomPurchased", "ApartmentBuilding", "PurchaseRoom", new string[] { "BasePlayer", "ApartmentSize" })]
-		[Identifier("0bedf91b523e4babbeaa85809b823784")]
+		[Identifier("84cd66b893da4377ad9b34d99151be70")]
 		[Dependencies(new string[] { "OnApartmentRoomPurchase" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "ApartmentRoom", false)]
@@ -512,7 +512,7 @@ public class Category_Apartments
 		[Return(typeof(void), Discarded = true)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_ApartmentBuilding_0bedf91b523e4babbeaa85809b823784 : Patch
+		public class Apartments_ApartmentBuilding_84cd66b893da4377ad9b34d99151be70 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -545,11 +545,11 @@ public class Category_Apartments
 		}
 
 		[Patch("OnApartmentRoomCheckout", "OnApartmentRoomCheckout", "ApartmentBuilding", "TryCheckout", new string[] { "BasePlayer" })]
-		[Identifier("c0fa318f07324d4ba45c80e9967b65d5")]
+		[Identifier("856d2fc2716f482181f2689d91d6249e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_ApartmentBuilding_c0fa318f07324d4ba45c80e9967b65d5 : Patch
+		public class Apartments_ApartmentBuilding_856d2fc2716f482181f2689d91d6249e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -601,13 +601,13 @@ public class Category_Apartments
 	public class Apartments_NPCApartmentSecurity
 	{
 		[Patch("OnApartmentMasterKeyPurchase", "OnApartmentMasterKeyPurchase", "NPCApartmentSecurity", "OnPurchaseKey", new string[] { "BasePlayer", "UnityEngine.Vector3" })]
-		[Identifier("71bd2cbbd0e54365a2c53c10e93246a8")]
+		[Identifier("62004ff102b540de80be2a1ab45b3cad")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_NPCApartmentSecurity_71bd2cbbd0e54365a2c53c10e93246a8 : Patch
+		public class Apartments_NPCApartmentSecurity_62004ff102b540de80be2a1ab45b3cad : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -637,14 +637,14 @@ public class Category_Apartments
 		}
 
 		[Patch("CanAffordApartmentMasterKey", "CanAffordApartmentMasterKey", "NPCApartmentSecurity", "Conversation_CanAffordMasterKey", new string[] { "BasePlayer" })]
-		[Identifier("3750059c069442e18567001744cc1298")]
+		[Identifier("e38bf47ad73048c79c5698beee280b14")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "NPCApartmentSecurity", false)]
 		[Return(typeof(bool))]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_NPCApartmentSecurity_3750059c069442e18567001744cc1298 : Patch
+		public class Apartments_NPCApartmentSecurity_e38bf47ad73048c79c5698beee280b14 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -682,7 +682,7 @@ public class Category_Apartments
 		}
 
 		[Patch("OnApartmentMasterKeyPurchased", "OnApartmentMasterKeyPurchased", "NPCApartmentSecurity", "OnPurchaseKey", new string[] { "BasePlayer", "UnityEngine.Vector3" })]
-		[Identifier("e063747fb2ea42e6ae5f19cc54d05ab1")]
+		[Identifier("d0551c16f1524cdaa1cf3589c4ffdb58")]
 		[Dependencies(new string[] { "OnApartmentMasterKeyPurchase" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
@@ -690,7 +690,7 @@ public class Category_Apartments
 		[Return(typeof(void), Discarded = true)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_NPCApartmentSecurity_e063747fb2ea42e6ae5f19cc54d05ab1 : Patch
+		public class Apartments_NPCApartmentSecurity_d0551c16f1524cdaa1cf3589c4ffdb58 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -718,12 +718,12 @@ public class Category_Apartments
 		}
 
 		[Patch("OnApartmentMasterKeyPurchased [Patch]", "OnApartmentMasterKeyPurchased [Patch]", "NPCApartmentSecurity", "OnPurchaseKey", new string[] { "BasePlayer", "UnityEngine.Vector3" })]
-		[Identifier("fcb9a97068cf4a4fbf4bd5dbb79627bd")]
+		[Identifier("23fb010a5b5d49428d76270bd16c224c")]
 		[Dependencies(new string[] { "OnApartmentMasterKeyPurchased" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Apartments")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Apartments_NPCApartmentSecurity_fcb9a97068cf4a4fbf4bd5dbb79627bd : Patch
+		public class Apartments_NPCApartmentSecurity_23fb010a5b5d49428d76270bd16c224c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

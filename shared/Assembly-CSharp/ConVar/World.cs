@@ -8,12 +8,16 @@ namespace ConVar;
 [Factory("world")]
 public class World : ConsoleSystem
 {
-	[ServerVar]
 	[ClientVar(Help = "(Generated) When enabled, caches world data for faster loading; disabled by default in editor server builds to ensure fresh data during development")]
+	[ServerVar]
 	public static bool cache = true;
 
 	[ClientVar(Help = "(Generated) When enabled, world assets are streamed in and out based on proximity; disable to force all world data to stay loaded at once")]
 	public static bool streaming = true;
+
+	[ServerVar]
+	[ClientVar(Help = "Cross-checks every topology radius query against a flat scan and logs mismatches; slow, for validating the topology hierarchy")]
+	public static bool topology_hierarchy_validate = false;
 
 	[ServerVar(Help = "(Generated) World generation config string passed directly to the procedural map generator; overrides the config file if set")]
 	public static string configString = string.Empty;

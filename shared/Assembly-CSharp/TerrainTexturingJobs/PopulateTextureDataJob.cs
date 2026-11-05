@@ -23,7 +23,7 @@ internal struct PopulateTextureDataJob : IJobParallelFor
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		ref Vector4 reference = BurstUtil.GetReadonly<Vector4>(ref vectors, index);
+		ref Vector4 reference = ref BurstUtil.GetReadonly<Vector4>(ref vectors, index);
 		colors[index] = new half4(math.half(reference.x), math.half(reference.y), math.half(distances[index]), math.half(reference.w));
 	}
 }

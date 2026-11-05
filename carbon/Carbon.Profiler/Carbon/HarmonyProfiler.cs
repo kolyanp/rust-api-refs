@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Carbon.Components;
 using Carbon.Profiler;
 using Facepunch;
+using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using Steamworks;
 using UnityEngine;
@@ -86,12 +87,13 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 		}
 		MonoProfilerConfig.Load(configPath);
 		InitNative();
+		MonoProfiler.ConfigPath = configPath;
 		Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 		foreach (Assembly assembly in assemblies)
 		{
 			MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Assembly, assembly, assembly.GetName().Name);
 		}
-		Debug.LogWarning((object)string.Format("Carbon.Profiler {0}! (NATIVE_PROTOCOL:{1} MANAGED_PROTOCOL:{2})", MonoProfiler.Crashed ? "crashed" : "initialized", 4, 127));
+		Debug.LogWarning((object)string.Format("Carbon.Profiler {0}! (NATIVE_PROTOCOL:{1} MANAGED_PROTOCOL:{2})", MonoProfiler.Crashed ? "crashed" : "initialized", 5, 127));
 		Object.DontDestroyOnLoad((Object)(object)((Component)Runner).gameObject);
 		if (SteamServer.IsValid)
 		{
@@ -104,6 +106,78 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 		UninstallCommands();
 	}
 
+	private static MonoProfiler.ProfilerArgs GetProfilerFlags(Arg arg)
+	{
+		MonoProfiler.ProfilerArgs profilerArgs = MonoProfiler.ProfilerArgs.None;
+		if (arg.HasArg("-cm", false))
+		{
+			profilerArgs |= MonoProfiler.ProfilerArgs.CallMemory;
+		}
+		if (arg.HasArg("-am", false))
+		{
+			profilerArgs |= MonoProfiler.ProfilerArgs.AdvancedMemory;
+		}
+		if (arg.HasArg("-t", false))
+		{
+			profilerArgs |= MonoProfiler.ProfilerArgs.Timings;
+		}
+		if (arg.HasArg("-c", false))
+		{
+			profilerArgs |= MonoProfiler.ProfilerArgs.Calls;
+		}
+		if (arg.HasArg("-gc", false))
+		{
+			profilerArgs |= MonoProfiler.ProfilerArgs.GCEvents;
+		}
+		return (profilerArgs == MonoProfiler.ProfilerArgs.None) ? (MonoProfiler.ProfilerArgs.CallMemory | MonoProfiler.ProfilerArgs.AdvancedMemory | MonoProfiler.ProfilerArgs.Timings | MonoProfiler.ProfilerArgs.Calls | MonoProfiler.ProfilerArgs.GCEvents) : profilerArgs;
+	}
+
+	private static bool IsTrackingCalls(Arg arg)
+	{
+		if (MonoProfilerConfig.Instance.TrackCalls)
+		{
+			return true;
+		}
+		arg.ReplyWith("Call tracking is off. Set TrackCalls to true in config.profiler.json and restart the server.");
+		return false;
+	}
+
+	private static bool TryReadTarget(Arg arg, string command, out string name, out float duration)
+	{
+		name = arg.GetString(0, "");
+		duration = arg.GetFloat(1, 0f);
+		if (string.IsNullOrEmpty(name) || duration < 1f)
+		{
+			arg.ReplyWith("Syntax: " + command + " <name> <duration> [-cm] [-am] [-t] [-c] [-gc]");
+			return false;
+		}
+		if (MonoProfiler.IsRecording || TargetedProfile.IsActive)
+		{
+			arg.ReplyWith("Profiler is actively recording");
+			return false;
+		}
+		return IsTrackingCalls(arg);
+	}
+
+	private static void PrepareNextLoad(MonoProfilerConfig.ProfileTypes type, string value, bool tracked)
+	{
+		bool flag = tracked;
+		bool flag2 = flag;
+		if (flag2)
+		{
+			bool flag3 = ((type == MonoProfilerConfig.ProfileTypes.Plugin || type == MonoProfilerConfig.ProfileTypes.Harmony) ? true : false);
+			flag2 = flag3;
+		}
+		if (flag2)
+		{
+			MonoProfiler.Start();
+		}
+		if (type == MonoProfilerConfig.ProfileTypes.Plugin && IsOxideInstalled)
+		{
+			OxidePlugins.MarkForRecompile(value);
+		}
+	}
+
 	public static void InstallCommands()
 	{
 		if (originalCommands == null)
@@ -114,70 +188,61 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 		commands.AddRange(originalCommands);
 		AddCommand("carbon", "profile", (Arg arg) =>
 		{
-			if (!MonoProfiler.Enabled)
+			float num = arg.GetFloat(0, 0f);
+			MonoProfiler.ProfilerArgs profilerFlags = GetProfilerFlags(arg);
+			if (MonoProfiler.IsRecording)
 			{
-				arg.ReplyWith("Mono profiler is disabled. Enable it in the 'config.profiler.json' config file. Must restart the server for changes to apply.");
+				MonoProfiler.ToggleProfiling(profilerFlags);
+				ProfileSample.Resample();
+				MonoProfiler.Clear();
+			}
+			else if (num <= 0f)
+			{
+				MonoProfiler.ToggleProfiling(profilerFlags);
 			}
 			else
 			{
-				float num = arg.GetFloat(0, 0f);
-				MonoProfiler.ProfilerArgs profilerArgs = MonoProfiler.ProfilerArgs.None;
-				if (arg.HasArg("-cm", false))
+				MonoProfiler.ToggleProfilingTimed(num, profilerFlags, (MonoProfiler.ProfilerArgs args) =>
 				{
-					profilerArgs |= MonoProfiler.ProfilerArgs.CallMemory;
-				}
-				if (arg.HasArg("-am", false))
-				{
-					profilerArgs |= MonoProfiler.ProfilerArgs.AdvancedMemory;
-				}
-				if (arg.HasArg("-t", false))
-				{
-					profilerArgs |= MonoProfiler.ProfilerArgs.Timings;
-				}
-				if (arg.HasArg("-c", false))
-				{
-					profilerArgs |= MonoProfiler.ProfilerArgs.Calls;
-				}
-				if (arg.HasArg("-gc", false))
-				{
-					profilerArgs |= MonoProfiler.ProfilerArgs.GCEvents;
-				}
-				if (profilerArgs == MonoProfiler.ProfilerArgs.None)
-				{
-					profilerArgs = MonoProfiler.ProfilerArgs.CallMemory | MonoProfiler.ProfilerArgs.AdvancedMemory | MonoProfiler.ProfilerArgs.Timings | MonoProfiler.ProfilerArgs.Calls | MonoProfiler.ProfilerArgs.GCEvents;
-				}
-				if (MonoProfiler.IsRecording)
-				{
-					MonoProfiler.ToggleProfiling(profilerArgs);
 					ProfileSample.Resample();
 					MonoProfiler.Clear();
-				}
-				else if (num <= 0f)
-				{
-					MonoProfiler.ToggleProfiling(profilerArgs);
-				}
-				else
-				{
-					MonoProfiler.ToggleProfilingTimed(num, profilerArgs, (MonoProfiler.ProfilerArgs args) =>
-					{
-						ProfileSample.Resample();
-						MonoProfiler.Clear();
-					});
-				}
+				});
 			}
 		}, "Toggles the current state of the Carbon.Profiler", "[duration] [-cm] [-am] [-t] [-c] [-gc]");
 		AddCommand("carbon", "abort_profile", (Arg arg) =>
 		{
-			if (!MonoProfiler.IsRecording)
+			if (!MonoProfiler.IsRecording && !TargetedProfile.IsActive)
 			{
 				arg.ReplyWith("No profiling process active");
 			}
 			else
 			{
-				MonoProfiler.ToggleProfiling(MonoProfiler.ProfilerArgs.Abort);
-				ProfileSample.Clear();
+				if (TargetedProfile.IsActive)
+				{
+					arg.ReplyWith("Cancelled profiling '" + TargetedProfile.Name + "'");
+				}
+				if (MonoProfiler.IsRecording)
+				{
+					MonoProfiler.ToggleProfiling(MonoProfiler.ProfilerArgs.Abort);
+					ProfileSample.Clear();
+				}
+				TargetedProfile.End();
 			}
 		}, "Stops a current profile from running");
+		AddCommand("carbon", "profile_mod", (Arg arg) =>
+		{
+			if (TryReadTarget(arg, "carbon.profile_mod", out var name, out var duration))
+			{
+				arg.ReplyWith(TargetedProfile.StartMod(name, duration, GetProfilerFlags(arg)));
+			}
+		}, "Profiles one HarmonyMod: reloads it with profiler hooks, records for the duration, then reloads it without them", "<name> <duration> [-cm] [-am] [-t] [-c] [-gc]");
+		AddCommand("carbon", "profile_plugin", (Arg arg) =>
+		{
+			if (TryReadTarget(arg, "carbon.profile_plugin", out var name, out var duration))
+			{
+				arg.ReplyWith(TargetedProfile.StartPlugin(name, duration, GetProfilerFlags(arg)));
+			}
+		}, "Profiles one Oxide plugin: recompiles it with profiler hooks, records for the duration, then recompiles it without them", "<name> <duration> [-cm] [-am] [-t] [-c] [-gc]");
 		AddCommand("carbon", "export_profile", (Arg arg) =>
 		{
 			if (MonoProfiler.IsRecording)
@@ -205,7 +270,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 		}, "Exports to disk the most recent profile", "-c=CSV, -j=JSON, -t=Table, -p=ProtoBuf [default]");
 		AddCommand("carbon", "tracked", (Arg arg) =>
 		{
-			arg.ReplyWith($"Tracked Assemblies ({MonoProfilerConfig.Instance.Assemblies.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Assemblies.Select((string x) => "- " + x)) + "\n" + $"Tracked Plugins ({MonoProfilerConfig.Instance.Plugins.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Plugins.Select((string x) => "- " + x)) + "\n" + $"Tracked Modules ({MonoProfilerConfig.Instance.Modules.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Modules.Select((string x) => "- " + x)) + "\n" + $"Tracked Extensions ({MonoProfilerConfig.Instance.Extensions.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Extensions.Select((string x) => "- " + x)) + "\nUse wildcard (*) to include all.");
+			arg.ReplyWith($"Tracked Assemblies ({MonoProfilerConfig.Instance.Assemblies.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Assemblies.Select((string x) => "- " + x)) + "\n" + $"Tracked Plugins ({MonoProfilerConfig.Instance.Plugins.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Plugins.Select((string x) => "- " + x)) + "\n" + $"Tracked Modules ({MonoProfilerConfig.Instance.Modules.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Modules.Select((string x) => "- " + x)) + "\n" + $"Tracked Extensions ({MonoProfilerConfig.Instance.Extensions.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Extensions.Select((string x) => "- " + x)) + "\n" + $"Tracked HarmonyMods ({MonoProfilerConfig.Instance.Harmony.Count:n0}):\n" + string.Join("\n", MonoProfilerConfig.Instance.Harmony.Select((string x) => "- " + x)) + "\nUse wildcard (*) to include all.");
 		}, "All tracking lists present in the config which are used by the Mono profiler for tracking");
 		AddCommand("carbon", "track", (Arg arg) =>
 		{
@@ -213,7 +278,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 			{
 				InvalidReturn(arg);
 			}
-			else
+			else if (IsTrackingCalls(arg))
 			{
 				string text = arg.GetString(0, "");
 				string text2 = arg.GetString(1, "");
@@ -221,25 +286,34 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				if (1 == 0)
 				{
 				}
-				bool flag = text switch
+				bool? flag = text switch
 				{
-					"assembly" => MonoProfilerConfig.Instance.AppendProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Assembly, text2), 
+					"assembly" => (bool?)MonoProfilerConfig.Instance.AppendProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Assembly, text2), 
 					"plugin" => MonoProfilerConfig.Instance.AppendProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Plugin, text2), 
 					"module" => MonoProfilerConfig.Instance.AppendProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Module, text2), 
 					"ext" => MonoProfilerConfig.Instance.AppendProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Extension, text2), 
-					_ => InvalidReturn(arg), 
+					"harmony" => MonoProfilerConfig.Instance.AppendProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Harmony, text2), 
+					_ => null, 
 				};
 				if (1 == 0)
 				{
 				}
-				bool flag2 = flag;
-				arg.ReplyWith(flag2 ? $" Added {profileTypes} object '{text2}' to tracking" : $" Couldn't add {profileTypes} object '{text2}' for tracking");
-				if (flag2)
+				bool? flag2 = flag;
+				if (!flag2.HasValue)
 				{
-					MonoProfilerConfig.Save(configPath);
+					InvalidReturn(arg);
+				}
+				else
+				{
+					arg.ReplyWith(flag2.Value ? $" Added {profileTypes} object '{text2}' to tracking" : $" Couldn't add {profileTypes} object '{text2}' for tracking");
+					if (flag2.Value)
+					{
+						MonoProfilerConfig.Save(configPath);
+						PrepareNextLoad(profileTypes, text2, tracked: true);
+					}
 				}
 			}
-		}, "Adds an object to be tracked. Reloading the plugin will start tracking. Restarting required for assemblies, modules and extensions", "[assembly|plugin|module|ext] [value]");
+		}, "Adds an object to be tracked. Reload a tracked plugin or HarmonyMod to profile it. Assemblies, modules and extensions need Enabled in config.profiler.json and a server restart", "[assembly|plugin|module|ext|harmony] [value]");
 		AddCommand("carbon", "untrack", (Arg arg) =>
 		{
 			if (!arg.HasArgs(2))
@@ -254,25 +328,34 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				if (1 == 0)
 				{
 				}
-				bool flag = text switch
+				bool? flag = text switch
 				{
-					"assembly" => MonoProfilerConfig.Instance.RemoveProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Assembly, text2), 
+					"assembly" => (bool?)MonoProfilerConfig.Instance.RemoveProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Assembly, text2), 
 					"plugin" => MonoProfilerConfig.Instance.RemoveProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Plugin, text2), 
 					"module" => MonoProfilerConfig.Instance.RemoveProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Module, text2), 
 					"ext" => MonoProfilerConfig.Instance.RemoveProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Extension, text2), 
-					_ => InvalidReturn2(arg), 
+					"harmony" => MonoProfilerConfig.Instance.RemoveProfile(profileTypes = MonoProfilerConfig.ProfileTypes.Harmony, text2), 
+					_ => null, 
 				};
 				if (1 == 0)
 				{
 				}
-				bool flag2 = flag;
-				arg.ReplyWith(flag2 ? $" Removed {profileTypes} object '{text2}' from tracking" : $" Couldn't remove {profileTypes} object '{text2}' for tracking");
-				if (flag2)
+				bool? flag2 = flag;
+				if (!flag2.HasValue)
 				{
-					MonoProfilerConfig.Save(configPath);
+					InvalidReturn2(arg);
+				}
+				else
+				{
+					arg.ReplyWith(flag2.Value ? $" Removed {profileTypes} object '{text2}' from tracking" : $" Couldn't remove {profileTypes} object '{text2}' for tracking");
+					if (flag2.Value)
+					{
+						MonoProfilerConfig.Save(configPath);
+						PrepareNextLoad(profileTypes, text2, tracked: false);
+					}
 				}
 			}
-		}, "Removes a plugin from being tracked. Reloading the plugin will remove it from being tracked. Restarting required for assemblies, modules and extensions", "[assembly|plugin|module|ext] [value]");
+		}, "Removes an object from being tracked. Reload an untracked plugin or HarmonyMod to remove its profiler hooks. Assemblies, modules and extensions need a server restart", "[assembly|plugin|module|ext|harmony] [value]");
 		AddCommand("carbon", "profiler_version", (Arg arg) =>
 		{
 			TextTable val = Pool.Get<TextTable>();
@@ -283,7 +366,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 				SelfUpdate.CurrentVersion.ToString(),
 				string.Empty,
 				127.ToString(),
-				4.ToString()
+				5.ToString()
 			});
 			string text = ((object)val).ToString().TrimEnd();
 			Pool.FreeUnsafe<TextTable>(ref val);
@@ -300,7 +383,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 					Debug.Log((object)$"Carbon.Profiler is out of date! (current {SelfUpdate.CurrentVersion}, newer {version})");
 					SelfUpdate.Update(() =>
 					{
-						Debug.Log((object)"Updated successfully.");
+						Debug.Log((object)"Updated Carbon.Profiler. Restart the server to load it.");
 					});
 				}
 				else
@@ -336,27 +419,25 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 			AddCommandToServerIndex(val);
 			Debug.LogWarning((object)("Carbon.Profiler: Installed '" + val.FullName + "'"));
 		}
-		static bool InvalidReturn(Arg arg)
+		static void InvalidReturn(Arg arg)
 		{
-			arg.ReplyWith("Syntax: carbon.track [assembly|plugin|module|ext] [value]");
-			return false;
+			arg.ReplyWith("Syntax: carbon.track [assembly|plugin|module|ext|harmony] [value]");
 		}
-		static bool InvalidReturn2(Arg arg)
+		static void InvalidReturn2(Arg arg)
 		{
-			arg.ReplyWith("Syntax: carbon.untrack [assembly|plugin|module|ext] [value]");
-			return false;
+			arg.ReplyWith("Syntax: carbon.untrack [assembly|plugin|module|ext|harmony] [value]");
 		}
 		static string WriteFileBytes(string extension, byte[] data)
 		{
 			DateTime now = DateTime.Now;
-			string text = Path.Combine(profilesFolderPath, string.Format("profile-{0}_{1}_{2}_{3}{4}{5}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, extension }));
+			string text = Path.Combine(profilesFolderPath, string.Format("profile-{0}_{1:00}_{2:00}_{3:00}{4:00}{5:00}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, extension }));
 			File.WriteAllBytes(text, data);
 			return "Exported profile output at '" + text + "'";
 		}
 		static string WriteFileString(string extension, string data)
 		{
 			DateTime now = DateTime.Now;
-			string text = Path.Combine(profilesFolderPath, string.Format("profile-{0}_{1}_{2}_{3}{4}{5}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, extension }));
+			string text = Path.Combine(profilesFolderPath, string.Format("profile-{0}_{1:00}_{2:00}_{3:00}{4:00}{5:00}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, extension }));
 			File.WriteAllText(text, data);
 			return "Exported profile output at '" + text + "'";
 		}
@@ -366,7 +447,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 	{
 		try
 		{
-			if (!(typeof(Server).GetField("Dict", BindingFlags.Static | BindingFlags.Public)?.GetValue(null) is IDictionary dictionary))
+			if (!(AccessTools.Field(typeof(Server), "Dict")?.GetValue(null) is IDictionary dictionary))
 			{
 				throw new InvalidOperationException("ConsoleSystem.Index.Server.Dict is not available");
 			}
@@ -375,7 +456,7 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 			{
 				throw new InvalidOperationException("Couldn't determine server command index key type '" + dictionary.GetType().FullName + "'");
 			}
-			object obj = ((type == typeof(string)) ? command.FullName : Activator.CreateInstance(type, command.FullName));
+			object obj = ((type == typeof(string)) ? command.FullName : AccessTools.Constructor(type, new Type[1] { typeof(string) }, false)?.Invoke(new object[1] { command.FullName }));
 			if (obj == null)
 			{
 				throw new InvalidOperationException("Couldn't create server command index key '" + type.FullName + "'");

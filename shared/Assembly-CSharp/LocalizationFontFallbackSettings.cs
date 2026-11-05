@@ -39,6 +39,10 @@ public class LocalizationFontFallbackSettings : BaseScriptableObject
 		{
 			return;
 		}
+		if ((Object)(object)TMP_Settings.defaultFontAsset == (Object)null)
+		{
+			TMP_Settings.defaultFontAsset = FileSystem.Load<TMP_FontAsset>("Assets/Content/UI/Fonts/_RobotoCondensed/RobotoCondensed-Bold SDF.asset", true);
+		}
 		foreach (FontConfig fontConfig in localizationFontFallbackSettings.fontConfigs)
 		{
 			if (!((Object)(object)fontConfig.baseFont == (Object)null))

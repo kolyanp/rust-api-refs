@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Facepunch;
 using Oxide.Core;
@@ -32,8 +33,8 @@ public class EngineStorage : StorageContainer
 	[ReadOnly]
 	public int accelerationBoostSlots;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public int topSpeedBoostSlots;
 
 	[SerializeField]
@@ -223,6 +224,61 @@ public class EngineStorage : StorageContainer
 					Debug.LogError((object)(((object)this).GetType().Name + ": Failed to create engine storage item."));
 				}
 			}
+		}
+	}
+
+	public void AddLockedStarterParts(float fraction, float minConditionPercent, float maxConditionPercent)
+	{
+		PooledList<int> val = Pool.Get<PooledList<int>>();
+		try
+		{
+			for (int i = 0; i < inventory.capacity; i++)
+			{
+				if (inventory.GetSlot(i) == null)
+				{
+					((List<int>)(object)val).Add(i);
+				}
+			}
+			int num = Mathf.CeilToInt((float)inventory.capacity * fraction);
+			for (int j = 0; j < num; j++)
+			{
+				if (((List<int>)(object)val).Count <= 0)
+				{
+					break;
+				}
+				int index = Random.Range(0, ((List<int>)(object)val).Count);
+				int num2 = ((List<int>)(object)val)[index];
+				((List<int>)(object)val).RemoveAt(index);
+				if (!allEngineItems.TryGetItem(1, slotTypes[num2], out var output))
+				{
+					continue;
+				}
+				Item item = ItemManager.Create(((Component)output).GetComponent<ItemDefinition>(), 1, 0uL, isServerSide: true, 0uL);
+				if (item != null)
+				{
+					item.condition = item.maxCondition * Random.Range(minConditionPercent, maxConditionPercent);
+					if (item.MoveToContainer(inventory, num2, allowStack: false))
+					{
+						item.LockUnlock(bNewState: true);
+					}
+					else
+					{
+						item.Remove();
+					}
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public void UnlockParts()
+	{
+		foreach (Item item in inventory.itemList)
+		{
+			item.LockUnlock(bNewState: false);
 		}
 	}
 

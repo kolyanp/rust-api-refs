@@ -114,9 +114,12 @@ public sealed class OxideMod
 		}
 		InstanceDirectory = Path.Combine(RootDirectory, "oxide");
 		Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-		JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+		Func<JsonSerializerSettings> previous = JsonConvert.DefaultSettings;
+		JsonConvert.DefaultSettings = () =>
 		{
-			Culture = CultureInfo.InvariantCulture
+			JsonSerializerSettings obj = previous?.Invoke() ?? new JsonSerializerSettings();
+			obj.Culture = CultureInfo.InvariantCulture;
+			return obj;
 		};
 		CommandLine = new CommandLine(Environment.GetCommandLineArgs());
 		if (CommandLine.HasVariable("oxide.directory"))

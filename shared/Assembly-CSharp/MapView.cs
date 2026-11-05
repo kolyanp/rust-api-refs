@@ -38,6 +38,10 @@ public class MapView : FacepunchBehaviour, IPointerDownHandler, IEventSystemHand
 
 	public GameObjectRef shelterMapMarkerPrefab;
 
+	public Transform toolCupboardMarkerContainer;
+
+	public GameObjectRef toolCupboardMapMarkerPrefab;
+
 	[Space]
 	public GameObject deepSeaMarkerContainer;
 
@@ -79,6 +83,8 @@ public class MapView : FacepunchBehaviour, IPointerDownHandler, IEventSystemHand
 	public bool ShowDeathMarker = true;
 
 	public bool ShowSleepingBags = true;
+
+	public bool ShowToolCupboards;
 
 	public bool AllowSleepingBagDeletion;
 

@@ -8,7 +8,6 @@ public class LivestockSpecialTable : ScriptableObject
 {
 	public const string AssetPath = "assets/rust.ai/agents/cow/livestock.specials.asset";
 
-	[Tooltip("The specials that can turn up in the world.")]
 	public LivestockSpecial[] Entries;
 
 	[Tooltip("What two specials bred together produce. Only a name, never a genome.")]

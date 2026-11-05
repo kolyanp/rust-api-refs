@@ -49,6 +49,10 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		[Tooltip("Max health  % at spawn for any modules that spawn with this chassis.")]
 		public float maxStartHealthPercent = 0.5f;
 
+		[Range(0f, 1f)]
+		[Tooltip("Fraction of engine part slots filled with locked tier 1 parts, unlocked when the car first goes on a vehicle lift.")]
+		public float lockedStarterPartsFraction;
+
 		public AdminBonus adminBonus;
 	}
 
@@ -128,8 +132,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	private BoxCollider mainChassisCollider;
 
-	[Header("Towing")]
 	[SerializeField]
+	[Header("Towing")]
 	private TriggerTowing towingTrigger;
 
 	[SerializeField]
@@ -138,8 +142,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	public SpawnSettings spawnSettings;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	public MeshRenderer[] damageShowingRenderers;
 
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]
@@ -507,61 +511,44 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	{
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		MountPointInfo playerSeatInfo = GetPlayerSeatInfo(player);
-		if (playerSeatInfo == null || !playerSeatInfo.isDriver)
+		if (playerSeatInfo != null && playerSeatInfo.isDriver)
 		{
-			return;
-		}
-		if (!this.driverSeatInputs.Contains(playerSeatInfo.mountable))
-		{
-			this.driverSeatInputs.Add(playerSeatInfo.mountable, new DriverSeatInputs());
-		}
-		DriverSeatInputs driverSeatInputs = this.driverSeatInputs[playerSeatInfo.mountable];
-		if (inputState.IsDown(BUTTON.FIRE_THIRD))
-		{
-			driverSeatInputs.steerInput += inputState.MouseDelta().x * 0.1f;
-		}
-		else
-		{
-			driverSeatInputs.steerInput = 0f;
-			if (inputState.IsDown(BUTTON.LEFT))
+			if (!this.driverSeatInputs.Contains(playerSeatInfo.mountable))
 			{
-				driverSeatInputs.steerInput = -1f;
+				this.driverSeatInputs.Add(playerSeatInfo.mountable, new DriverSeatInputs());
 			}
-			else if (inputState.IsDown(BUTTON.RIGHT))
+			DriverSeatInputs driverSeatInputs = this.driverSeatInputs[playerSeatInfo.mountable];
+			if (inputState.IsDown(BUTTON.FIRE_THIRD))
 			{
-				driverSeatInputs.steerInput = 1f;
+				driverSeatInputs.steerInput += inputState.MouseDelta().x * 0.1f;
 			}
-		}
-		driverSeatInputs.steerMod = inputState.IsDown(BUTTON.SPRINT);
-		driverSeatInputs.handbrakeInput = inputState.IsDown(BUTTON.DUCK);
-		float num = 0f;
-		if (inputState.IsDown(BUTTON.FORWARD))
-		{
-			num = 1f;
-		}
-		else if (inputState.IsDown(BUTTON.BACKWARD))
-		{
-			num = -1f;
-		}
-		driverSeatInputs.throttleInput = 0f;
-		driverSeatInputs.brakeInput = 0f;
-		if (GetSpeed() > 3f && num < -0.1f)
-		{
+			else
+			{
+				driverSeatInputs.steerInput = inputState.Steer();
+			}
+			driverSeatInputs.steerMod = inputState.IsDown(BUTTON.SPRINT);
+			driverSeatInputs.handbrakeInput = inputState.IsDown(BUTTON.DUCK);
+			float num = inputState.Throttle();
 			driverSeatInputs.throttleInput = 0f;
-			driverSeatInputs.brakeInput = 0f - num;
-		}
-		else
-		{
-			driverSeatInputs.throttleInput = num;
 			driverSeatInputs.brakeInput = 0f;
-		}
-		for (int i = 0; i < NumAttachedModules; i++)
-		{
-			AttachedModuleEntities[i].PlayerServerInput(inputState, player);
-		}
-		if (engineController.IsOff && ((inputState.IsDown(BUTTON.FORWARD) && !inputState.WasDown(BUTTON.FORWARD)) || (inputState.IsDown(BUTTON.BACKWARD) && !inputState.WasDown(BUTTON.BACKWARD))))
-		{
-			engineController.TryStartEngine(player);
+			if (GetSpeed() > 3f && num < -0.1f)
+			{
+				driverSeatInputs.throttleInput = 0f;
+				driverSeatInputs.brakeInput = 0f - num;
+			}
+			else
+			{
+				driverSeatInputs.throttleInput = num;
+				driverSeatInputs.brakeInput = 0f;
+			}
+			for (int i = 0; i < NumAttachedModules; i++)
+			{
+				AttachedModuleEntities[i].PlayerServerInput(inputState, player);
+			}
+			if (engineController.IsOff && ((inputState.IsDown(BUTTON.FORWARD) && !inputState.WasDown(BUTTON.FORWARD)) || (inputState.IsDown(BUTTON.BACKWARD) && !inputState.WasDown(BUTTON.BACKWARD))))
+			{
+				engineController.TryStartEngine(player);
+			}
 		}
 	}
 
@@ -720,6 +707,17 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 		SendNetworkUpdate();
 		return true;
+	}
+
+	public void UnlockStarterParts()
+	{
+		foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
+		{
+			if (attachedModuleEntity is VehicleModuleEngine vehicleModuleEngine && vehicleModuleEngine.GetContainer() is EngineStorage engineStorage)
+			{
+				engineStorage.UnlockParts();
+			}
+		}
 	}
 
 	public override void ModuleHurt(BaseVehicleModule hurtModule, HitInfo info)
@@ -948,11 +946,21 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 			}
 		}
 		Interface.CallHook("OnVehicleModulesAssigned", this, modularCarPresetConfig.socketItemDefs);
-		Invoke(HandleAdminBonus, 0f);
+		Invoke(PopulateSpawnedParts, 0f);
 	}
 
-	public void HandleAdminBonus()
+	private void PopulateSpawnedParts()
 	{
+		if (spawnSettings.lockedStarterPartsFraction > 0f)
+		{
+			foreach (BaseVehicleModule attachedModuleEntity in AttachedModuleEntities)
+			{
+				if (attachedModuleEntity is VehicleModuleEngine vehicleModuleEngine && vehicleModuleEngine.GetContainer() is EngineStorage engineStorage)
+				{
+					engineStorage.AddLockedStarterParts(spawnSettings.lockedStarterPartsFraction, spawnSettings.minStartHealthPercent, spawnSettings.maxStartHealthPercent);
+				}
+			}
+		}
 		switch (spawnSettings.adminBonus)
 		{
 		case SpawnSettings.AdminBonus.T1PlusFuel:
@@ -999,8 +1007,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_TryMountWithKeycode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

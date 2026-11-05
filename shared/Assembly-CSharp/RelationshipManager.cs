@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CompanionServer;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Rust;
 using Network;
@@ -79,6 +80,7 @@ public class RelationshipManager : BaseEntity
 			awaitingMugshot = false;
 		}
 
+		[PoolAnalyzerGetWrapper]
 		public PlayerRelationshipInfo ToProto()
 		{
 			PlayerRelationshipInfo val = Pool.Get<PlayerRelationshipInfo>();
@@ -122,7 +124,7 @@ public class RelationshipManager : BaseEntity
 				relations.Remove(player);
 				if (value.mugshotCrc != 0)
 				{
-					ServerInstance.DeleteMugshot(ownerPlayer, player, value.mugshotCrc);
+					ServerInstance.DeleteMugshot(ownerPlayer, player);
 				}
 				Pool.Free<PlayerRelationshipInfo>(ref value);
 				return true;
@@ -801,7 +803,7 @@ public class RelationshipManager : BaseEntity
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
 		PlayerRelationships playerRelationships = GetRelationships(player.userID);
 		List<BasePlayer> list = Pool.Get<List<BasePlayer>>();
 		BaseNetworkable.GetCloseConnections(((Component)player).transform.position, GetAcquaintanceMaxDist(), list);
@@ -817,20 +819,7 @@ public class RelationshipManager : BaseEntity
 				continue;
 			}
 			relations.lastSeenTime = Time.realtimeSinceStartup;
-			if (relations.type != RelationshipType.NONE && relations.type != RelationshipType.Acquaintance)
-			{
-				continue;
-			}
-			bool flag = false;
-			if (BasePlayer.allowRelationshipServerOcclusion && player.SupportsServerOcclusion())
-			{
-				flag = player.OcclusionGetCachedVisibility(item);
-			}
-			if (flag)
-			{
-				flag = player.IsPlayerVisibleToUs(item, Vector3.zero, 1218519041);
-			}
-			if (flag)
+			if ((relations.type == RelationshipType.NONE || relations.type == RelationshipType.Acquaintance) && player.IsPlayerVisibleToUs(item, Vector3.zero, 1218519041))
 			{
 				int num = Mathf.CeilToInt(deltaSeconds);
 				if (player.InSafeZone() || item.InSafeZone())
@@ -992,10 +981,10 @@ public class RelationshipManager : BaseEntity
 
 	public PlayerRelationships GetRelationshipSaveByID(ulong playerID)
 	{
-		PlayerRelationships val = Pool.Get<PlayerRelationships>();
 		PlayerRelationships playerRelationships = GetRelationships(playerID);
 		if (playerRelationships != null)
 		{
+			PlayerRelationships val = Pool.Get<PlayerRelationships>();
 			val.playerID = playerID;
 			val.relations = Pool.Get<List<PlayerRelationshipInfo>>();
 			{
@@ -1109,8 +1098,8 @@ public class RelationshipManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	public void SERVER_ChangeRelationship(RPCMessage msg)
 	{
 		EncryptedValue<ulong> userID = msg.player.userID;
@@ -1139,8 +1128,8 @@ public class RelationshipManager : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server]
 	public void SERVER_UpdatePlayerNote(RPCMessage msg)
 	{
 		EncryptedValue<ulong> userID = msg.player.userID;
@@ -1154,8 +1143,7 @@ public class RelationshipManager : BaseEntity
 	[RPC_Server.CallsPerSecond(10uL)]
 	public void SERVER_ReceiveMugshot(RPCMessage msg)
 	{
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		EncryptedValue<ulong> userID = msg.player.userID;
 		ulong num = msg.read.UInt64();
 		uint num2 = msg.read.UInt32();
@@ -1172,34 +1160,25 @@ public class RelationshipManager : BaseEntity
 		byte[] array = msg.read.BytesWithSize(65536u);
 		if (array != null && ImageProcessing.IsValidJPG(array, 256, 512))
 		{
-			uint steamIdHash = GetSteamIdHash(userID, num);
-			uint num3 = FileStorage.server.Store(array, FileStorage.Type.jpg, net.ID, steamIdHash);
+			uint num3 = FileStorage.server.Store(net.ID, GetMugshotPart(userID, num), FileStorage.Type.jpg, array);
 			if (num3 != num2)
 			{
 				Debug.LogWarning((object)"Client/Server FileStorage CRC differs");
-			}
-			if (num3 != value2.mugshotCrc)
-			{
-				FileStorage.server.RemoveExact(value2.mugshotCrc, FileStorage.Type.jpg, net.ID, steamIdHash);
 			}
 			value2.mugshotCrc = num3;
 			MarkRelationshipsDirtyFor(userID);
 		}
 	}
 
-	private void DeleteMugshot(ulong steamId, ulong targetSteamId, uint crc)
+	private void DeleteMugshot(ulong steamId, ulong targetSteamId)
 	{
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		if (crc != 0)
-		{
-			uint steamIdHash = GetSteamIdHash(steamId, targetSteamId);
-			FileStorage.server.RemoveExact(crc, FileStorage.Type.jpg, net.ID, steamIdHash);
-		}
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		FileStorage.server.Remove(net.ID, GetMugshotPart(steamId, targetSteamId));
 	}
 
-	public static uint GetSteamIdHash(ulong requesterSteamId, ulong targetSteamId)
+	public static ulong GetMugshotPart(ulong requesterSteamId, ulong targetSteamId)
 	{
-		return (uint)(((requesterSteamId & 0xFFFF) << 16) | (targetSteamId & 0xFFFF));
+		return ((requesterSteamId & 0xFFFFFFFFu) << 32) | (targetSteamId & 0xFFFFFFFFu);
 	}
 
 	public int GetMaxTeamSize()
@@ -1247,7 +1226,7 @@ public class RelationshipManager : BaseEntity
 			{
 				Database?.Close();
 				Database = null;
-				string path = $"{ConVar.Server.rootFolder}/relationship.{289}.db";
+				string path = $"{ConVar.Server.rootFolder}/relationship.{290}.db";
 				Database = new RelationshipManagerDB();
 				Database.Open(path);
 				Database.Initialize();
@@ -1257,6 +1236,11 @@ public class RelationshipManager : BaseEntity
 				Debug.LogException(ex);
 			}
 		}
+	}
+
+	public override bool CanUseSaveCache()
+	{
+		return false;
 	}
 
 	public override void Save(SaveInfo info)
@@ -1397,8 +1381,8 @@ public class RelationshipManager : BaseEntity
 		return playerTeam;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	private void TryCreateTeam(RPCMessage rpc)
 	{
 		if (maxTeamSize != 0)
@@ -1803,6 +1787,7 @@ public class RelationshipManager : BaseEntity
 
 	public override void Load(LoadInfo info)
 	{
+		//IL_022d: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (!info.fromDisk || info.msg.relationshipManager == null)
 		{
@@ -1840,6 +1825,8 @@ public class RelationshipManager : BaseEntity
 				}
 			}
 		}
+		Dictionary<ulong, uint> dictionary = Pool.Get<Dictionary<ulong, uint>>();
+		FileStorage.server.GetCrcs(net.ID, dictionary);
 		foreach (PlayerRelationships relationship in info.msg.relationshipManager.relationships)
 		{
 			ulong playerID = relationship.playerID;
@@ -1847,10 +1834,13 @@ public class RelationshipManager : BaseEntity
 			playerRelationships.ClearRelations();
 			foreach (PlayerRelationshipInfo relation in relationship.relations)
 			{
-				PlayerRelationshipInfo value = PlayerRelationshipInfo.FromProto(relation);
-				playerRelationships.relations.Add(relation.playerID, value);
+				PlayerRelationshipInfo playerRelationshipInfo = PlayerRelationshipInfo.FromProto(relation);
+				dictionary.TryGetValue(GetMugshotPart(playerID, relation.playerID), out var value);
+				playerRelationshipInfo.mugshotCrc = value;
+				playerRelationships.relations.Add(relation.playerID, playerRelationshipInfo);
 			}
 		}
+		Pool.FreeUnmanaged<ulong, uint>(ref dictionary);
 	}
 
 	static RelationshipManager()

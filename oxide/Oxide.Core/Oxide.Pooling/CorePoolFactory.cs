@@ -80,7 +80,7 @@ internal class CorePoolFactory : IPoolFactory
 
 	public IDisposable RegisterProvider<T>(out T provider, params object[] args) where T : IPoolProvider
 	{
-		provider = default(T);
+		provider = default;
 		Type typeFromHandle = typeof(T);
 		Type type = null;
 		Type[] interfaces = typeFromHandle.GetInterfaces();

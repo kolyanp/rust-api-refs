@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ConVar;
 using Development.Attributes;
 using Facepunch;
 using Oxide.Core;
 using ProtoBuf;
 using Rust;
+using SilentOrbit.ProtocolBuffers;
 using UnityEngine;
 using VacuumBreather;
 
@@ -56,6 +58,9 @@ public class BaseBoat : BaseVehicle
 	[ServerVar(Help = "(Generated) When enabled, procedural patrol paths are generated for boats at server startup; false in editor to skip path generation during testing")]
 	public static bool generate_paths = true;
 
+	[ServerVar(Help = "Regenerate the ocean patrol path at startup instead of loading it from the cache file next to the map")]
+	public static bool regenerate_ocean_path = false;
+
 	[ServerVar(Help = "(Generated) When enabled, boats without nearby players will slowly drift toward the shore after the shore drift delay elapses")]
 	public static bool do_shore_drift = true;
 
@@ -82,12 +87,16 @@ public class BaseBoat : BaseVehicle
 
 	private string lastDriftCheckStatus = "Never checked";
 
+	private const int OceanPatrolPathCacheVersion = 1;
+
 	protected virtual bool AllowKinematicDrift => false;
 
 	protected virtual bool SkipBoatForcedUpdate => false;
 
-	[ServerVar]
+	private static string OceanPatrolPathCacheFilePath => string.Format("{0}/{1}_oceanpatrol_{2}.dat", ConVar.Server.rootFolder, World.MapFileName.Replace(".map", ""), 1);
+
 	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
+	[ServerVar]
 	public static int seconds_until_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);
@@ -95,8 +104,8 @@ public class BaseBoat : BaseVehicle
 		return secondsUntilShoreDrift;
 	}
 
-	[ServerVar]
 	[Help("Seconds between shore drift teleport ticks")]
+	[ServerVar]
 	public static int seconds_between_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsBetweenShoreDrift = arg.GetInt(0, secondsBetweenShoreDrift);
@@ -193,18 +202,7 @@ public class BaseBoat : BaseVehicle
 		{
 			gasPedal = 0f;
 		}
-		if (inputState.IsDown(BUTTON.LEFT))
-		{
-			steering = 1f;
-		}
-		else if (inputState.IsDown(BUTTON.RIGHT))
-		{
-			steering = -1f;
-		}
-		else
-		{
-			steering = 0f;
-		}
+		steering = 0f - inputState.Steer();
 	}
 
 	public void OnPoolDestroyed()
@@ -262,10 +260,10 @@ public class BaseBoat : BaseVehicle
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BaseBoat.VehicleFixedUpdate"))
 		{
 			if (!EngineOn())
@@ -292,14 +290,52 @@ public class BaseBoat : BaseVehicle
 			{
 				if (debug_eject_ai)
 				{
-					Debug.LogWarning((object)$"Ejecting players from flipped boat {this}");
+					Debug.LogWarning((object)string.Format("{0} flipped boat {1}", (aiInputProvider != null) ? "Righting" : "Ejecting players from", this));
 					object arg = ((Component)this).transform.position;
 					Quaternion rotation = ((Component)this).transform.rotation;
 					Debug.LogWarning((object)$"Boat was in state / pos {arg} / rot {rotation.eulerAngles}");
 				}
-				DismountAllPlayers();
+				if (aiInputProvider != null)
+				{
+					RightBoat();
+				}
+				else
+				{
+					DismountAllPlayers();
+				}
 			}
 		}
+	}
+
+	private void RightBoat()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 val = Vector3.ProjectOnPlane(((Component)this).transform.forward, Vector3.up);
+		if (val.sqrMagnitude < 0.01f)
+		{
+			val = Vector3.ProjectOnPlane(-((Component)this).transform.up * Mathf.Sign(((Component)this).transform.forward.y), Vector3.up);
+		}
+		Quaternion rotation = Quaternion.LookRotation(val, Vector3.up);
+		rigidBody.angularVelocity = Vector3.zero;
+		rigidBody.rotation = rotation;
+		((Component)this).transform.rotation = rotation;
 	}
 
 	protected void ApplyCorrectionForces()
@@ -670,6 +706,57 @@ public class BaseBoat : BaseVehicle
 			return 0f;
 		}
 		return 1f;
+	}
+
+	public static List<Vector3> LoadOrGenerateOceanPatrolPath()
+	{
+		string oceanPatrolPathCacheFilePath = OceanPatrolPathCacheFilePath;
+		if (!regenerate_ocean_path && File.Exists(oceanPatrolPathCacheFilePath))
+		{
+			try
+			{
+				OceanPathData val = OceanPathData.Deserialize(File.ReadAllBytes(oceanPatrolPathCacheFilePath));
+				try
+				{
+					if (val.nodes.Count > 0)
+					{
+						Debug.Log((object)("Loaded ocean patrol path from cache with node count: " + val.nodes.Count));
+						return new List<Vector3>(World.VectorListToArray(val.nodes));
+					}
+				}
+				finally
+				{
+					((IDisposable)val)?.Dispose();
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.LogWarning((object)("Failed to load ocean patrol path cache " + oceanPatrolPathCacheFilePath + ": " + ex.Message));
+			}
+		}
+		List<Vector3> list = GenerateOceanPatrolPath(200f);
+		if (list == null)
+		{
+			return null;
+		}
+		try
+		{
+			OceanPathData val2 = Pool.Get<OceanPathData>();
+			try
+			{
+				val2.nodes = World.VectorArrayToList(list.ToArray());
+				File.WriteAllBytes(oceanPatrolPathCacheFilePath, ProtoStreamExtensions.ToProtoBytes((IProto)(object)val2));
+			}
+			finally
+			{
+				((IDisposable)val2)?.Dispose();
+			}
+		}
+		catch (Exception ex2)
+		{
+			Debug.LogWarning((object)("Failed to save ocean patrol path cache " + oceanPatrolPathCacheFilePath + ": " + ex2.Message));
+		}
+		return list;
 	}
 
 	public static List<Vector3> GenerateOceanPatrolPath(float minDistanceFromShore = 50f, float minWaterDepth = 8f)

@@ -15,8 +15,8 @@ public class HealthThresholdToggle : FacepunchBehaviour, IPrefabPreProcess
 	[Serializable]
 	public struct ThresholdEntry
 	{
-		[Range(0f, 1f)]
 		[Tooltip("A panel detaches while health fraction is at or below this. Which panel it is depends on damage direction, not on this entry.")]
+		[Range(0f, 1f)]
 		public float disableAtHealthFraction;
 
 		[Tooltip("The side of the vehicle these objects cover, matched against incoming damage direction.")]
@@ -34,7 +34,7 @@ public class HealthThresholdToggle : FacepunchBehaviour, IPrefabPreProcess
 
 	private readonly List<int> detachOrder = new List<int>();
 
-	public bool CanRunDuringBundling => true;
+	public bool CanPreProcessDuringBundling => true;
 
 	public void ApplyMask(int detachedMask)
 	{

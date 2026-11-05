@@ -118,7 +118,7 @@ public class RustPlayerManager : IPlayerManager
 				list.Add(value);
 			}
 		}
-		if (list.Count() > 0)
+		if (Enumerable.Count(list) > 0)
 		{
 			return list;
 		}

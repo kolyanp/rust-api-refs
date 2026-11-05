@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PropSway : MonoBehaviour
+public class PropSway : MonoBehaviour, IFlattenKeepsDescendants
 {
 	public Transform pivotRotator;
 

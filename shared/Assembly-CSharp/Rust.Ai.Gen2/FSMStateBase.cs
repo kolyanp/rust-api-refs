@@ -15,6 +15,9 @@ public abstract class FSMStateBase
 	[NonSerialized]
 	public FSMStateBase parent;
 
+	[NonSerialized]
+	public List<FSMStateBase> children = new List<FSMStateBase>();
+
 	public List<(FSMTransitionBase transition, FSMStateBase dstState)> transitions = new List<(FSMTransitionBase, FSMStateBase)>();
 
 	public List<(FSMTransitionBase transition, FSMStateBase dstState, EFSMStateStatus status)> endTransitions = new List<(FSMTransitionBase, FSMStateBase, EFSMStateStatus)>();
@@ -47,6 +50,8 @@ public abstract class FSMStateBase
 
 	protected RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)Owner).GetComponent<RustNavMeshAgent>());
 
+	protected NpcRandom Rng => NpcRandom.Of(Owner);
+
 	protected RootMotionPlayer AnimPlayer => _animPlayer ?? (_animPlayer = ((Component)Owner).GetComponent<RootMotionPlayer>());
 
 	protected BlackboardComponent Blackboard => _blackboard ?? (_blackboard = ((Component)Owner).GetComponent<BlackboardComponent>());
@@ -75,6 +80,7 @@ public abstract class FSMStateBase
 		FSMStateBase fSMStateBase = (FSMStateBase)MemberwiseClone();
 		fSMStateBase.transitions = new List<(FSMTransitionBase, FSMStateBase)>();
 		fSMStateBase.endTransitions = new List<(FSMTransitionBase, FSMStateBase, EFSMStateStatus)>();
+		fSMStateBase.children = new List<FSMStateBase>();
 		return fSMStateBase;
 	}
 
@@ -112,6 +118,16 @@ public abstract class FSMStateBase
 		return this;
 	}
 
+	public FSMStateBase AddSuccessTransition(FSMStateBase dstState, FSMTransitionBase transition = null)
+	{
+		if (endTransitions == null)
+		{
+			endTransitions = new List<(FSMTransitionBase, FSMStateBase, EFSMStateStatus)>();
+		}
+		endTransitions.Add((transition, dstState, EFSMStateStatus.Success));
+		return this;
+	}
+
 	public FSMStateBase AddTickTransition(FSMStateBase dstState, FSMTransitionBase transition)
 	{
 		if (transitions == null)
@@ -136,6 +152,7 @@ public abstract class FSMStateBase
 	public FSMStateBase AddChild(FSMStateBase child)
 	{
 		child.parent = this;
+		children.Add(child);
 		return child;
 	}
 

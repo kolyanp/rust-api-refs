@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Rust;
 using Network;
@@ -77,8 +78,8 @@ public class Workbench : StorageContainer
 	[Tooltip("Editor-only transform holding visual placement points. Should be removed at runtime.")]
 	public Transform upgradeVisualPlacement;
 
-	[Tooltip("Active when no upgrades are installed at all. Disabled when any upgrade is present.")]
 	[Header("Filler Visuals")]
+	[Tooltip("Active when no upgrades are installed at all. Disabled when any upgrade is present.")]
 	public Transform fullFillerVisual;
 
 	[Tooltip("Individual filler transforms that are hidden when their associated upgrade is installed.")]
@@ -430,9 +431,9 @@ public class Workbench : StorageContainer
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
 		if (cachedUpgradeVisualPoints == null)
 		{
 			return false;
@@ -457,7 +458,7 @@ public class Workbench : StorageContainer
 				for (int j = 0; j < ((List<BaseEntity>)(object)val4).Count; j++)
 				{
 					BaseEntity baseEntity = ((List<BaseEntity>)(object)val4)[j];
-					if ((Object)(object)baseEntity == (Object)null || baseEntity.IsDestroyed || baseEntity.EqualNetID((BaseNetworkable)this))
+					if ((Object)(object)baseEntity == (Object)null || baseEntity.IsDestroyed || baseEntity.isClient || baseEntity.EqualNetID((BaseNetworkable)this))
 					{
 						continue;
 					}
@@ -540,8 +541,8 @@ public class Workbench : StorageContainer
 		return num;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_SendTechTreeMultiplier(RPCMessage msg)
 	{
 		ClientRPC(RpcTarget.Player("RPC_TechTreeMultiplier", msg.player), GetTechTreeCostMultiplier());
@@ -789,6 +790,7 @@ public class Workbench : StorageContainer
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private PooledList<ItemModWorkbenchUpgrade> GetInstalledUpgradeMods()
 	{
 		PooledList<ItemModWorkbenchUpgrade> val = Pool.Get<PooledList<ItemModWorkbenchUpgrade>>();
@@ -831,6 +833,24 @@ public class Workbench : StorageContainer
 			for (int i = 0; i < ((List<ItemModWorkbenchUpgrade>)(object)installedUpgradeMods).Count; i++)
 			{
 				num = Mathf.Max(num, ((List<ItemModWorkbenchUpgrade>)(object)installedUpgradeMods)[i].GetTechTreeFailChance());
+			}
+			return num;
+		}
+		finally
+		{
+			((IDisposable)installedUpgradeMods)?.Dispose();
+		}
+	}
+
+	public float GetTechTreeSaveChance()
+	{
+		float num = 0f;
+		PooledList<ItemModWorkbenchUpgrade> installedUpgradeMods = GetInstalledUpgradeMods();
+		try
+		{
+			for (int i = 0; i < ((List<ItemModWorkbenchUpgrade>)(object)installedUpgradeMods).Count; i++)
+			{
+				num = Mathf.Max(num, ((List<ItemModWorkbenchUpgrade>)(object)installedUpgradeMods)[i].GetTechTreeSaveChance());
 			}
 			return num;
 		}
@@ -929,8 +949,8 @@ public class Workbench : StorageContainer
 		return base.PlayerOpenLoot(player, panelToOpen, doPositionChecks);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenUpgradeInventory(RPCMessage msg)
 	{
 		if (isLootable && !Static)
@@ -967,7 +987,7 @@ public class Workbench : StorageContainer
 			{
 				return;
 			}
-			int itemid = ItemManager.FindItemDefinition("scrap").itemid;
+			int itemid = GetTechTreeResearchItem(techTreeForLevel.techTreeLevel).itemid;
 			int amount = player.inventory.GetAmount(itemid);
 			if (!flag)
 			{
@@ -991,7 +1011,7 @@ public class Workbench : StorageContainer
 						{
 							if (item != null && !((Object)(object)item.itemDef == (Object)null))
 							{
-								num2 += ScrapForResearch(item.itemDef, techTreeForLevel.techTreeLevel, out var tax, this);
+								num2 += FragmentsForResearch(item.itemDef, techTreeForLevel.techTreeLevel, out var tax, this);
 								num2 += tax;
 								((List<ItemDefinition>)(object)val2).Add(item.itemDef);
 							}
@@ -1017,12 +1037,12 @@ public class Workbench : StorageContainer
 							}
 							Debug.Log((object)("Player unlocked group :" + item2.groupName));
 						}
-						player.inventory.Take(null, itemid, num2);
+						player.inventory.Take(null, itemid, num2 - RollSavedResearchItems(num2));
 						player.blueprints.UnlockList((List<ItemDefinition>)(object)val2);
 						Interface.CallHook("OnTechTreeNodeUnlocked", this, byID, player, val2);
 						foreach (ItemDefinition item3 in (List<ItemDefinition>)(object)val2)
 						{
-							int num3 = ScrapForResearch(item3, techTreeForLevel.techTreeLevel, out var tax2, this);
+							int num3 = FragmentsForResearch(item3, techTreeForLevel.techTreeLevel, out var tax2, this);
 							Facepunch.Rust.Analytics.Azure.OnBlueprintLearned(player, item3, "techtree", num3 + tax2, this);
 						}
 						return;
@@ -1041,10 +1061,12 @@ public class Workbench : StorageContainer
 			{
 				return;
 			}
-			int num4 = Mathf.RoundToInt((float)(ScrapForResearch(byID.itemDef, techTreeForLevel.techTreeLevel, out var tax3, this) + tax3) * GetBypassCostMultiplier());
+			int num4 = Mathf.RoundToInt((float)(FragmentsForResearch(byID.itemDef, techTreeForLevel.techTreeLevel, out var tax3, this) + tax3) * GetBypassCostMultiplier());
 			if (amount >= num4)
 			{
-				player.inventory.Take(null, itemid, num4);
+				int num5 = RollSavedResearchItems(num4);
+				int amount2 = num4 - num5;
+				player.inventory.Take(null, itemid, amount2);
 				float techTreeFailChance = GetTechTreeFailChance();
 				if (Random.value < techTreeFailChance)
 				{
@@ -1057,6 +1079,24 @@ public class Workbench : StorageContainer
 		}
 	}
 
+	private int RollSavedResearchItems(int amount)
+	{
+		float techTreeSaveChance = GetTechTreeSaveChance();
+		if (techTreeSaveChance <= 0f)
+		{
+			return 0;
+		}
+		int num = 0;
+		for (int i = 0; i < amount; i++)
+		{
+			if (Random.value < techTreeSaveChance)
+			{
+				num++;
+			}
+		}
+		return num;
+	}
+
 	public static ItemDefinition GetBlueprintTemplate()
 	{
 		if ((Object)(object)blueprintBaseDef == (Object)null)
@@ -1066,8 +1106,8 @@ public class Workbench : StorageContainer
 		return blueprintBaseDef;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_BeginExperiment(RPCMessage msg)
 	{
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
@@ -1349,34 +1389,19 @@ public class Workbench : StorageContainer
 		return null;
 	}
 
-	public static int ScrapForResearch(ItemDefinition info, int workbenchLevel, out int tax, Workbench workbench = null)
+	public static ItemDefinition GetTechTreeResearchItem(int techTreeLevel)
 	{
-		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0009: Invalid comparison between Unknown and I4
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Invalid comparison between Unknown and I4
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Invalid comparison between Unknown and I4
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Invalid comparison between Unknown and I4
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		int num = 0;
-		if ((int)info.rarity == 1)
+		return techTreeLevel switch
 		{
-			num = 15;
-		}
-		if ((int)info.rarity == 2)
-		{
-			num = 30;
-		}
-		if ((int)info.rarity == 3)
-		{
-			num = 60;
-		}
-		if ((int)info.rarity == 4 || (int)info.rarity == 0)
-		{
-			num = 120;
-		}
+			0 => ItemManager.FindItemDefinition("blueprintfragment"), 
+			1 => ItemManager.FindItemDefinition("blueprintpage"), 
+			_ => ItemManager.FindItemDefinition("blueprintbook"), 
+		};
+	}
+
+	public static int FragmentsForResearch(ItemDefinition info, int workbenchLevel, out int tax, Workbench workbench = null)
+	{
+		int num = 1;
 		BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(serverside: true);
 		if ((Object)(object)activeGameMode != (Object)null)
 		{
@@ -1402,7 +1427,7 @@ public class Workbench : StorageContainer
 			num = Mathf.RoundToInt((float)num * techTreeCostMultiplier);
 			tax = Mathf.RoundToInt((float)tax * techTreeCostMultiplier);
 		}
-		return num;
+		return Mathf.Max(1, num);
 	}
 
 	public override void ScaleDamage(HitInfo info)

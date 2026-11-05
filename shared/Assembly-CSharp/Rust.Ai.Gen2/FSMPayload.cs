@@ -1,14 +1,13 @@
 using System;
 using Facepunch;
-using UnityEngine;
 
 namespace Rust.Ai.Gen2;
 
 public struct FSMPayload : IDisposable
 {
-	public Vector3? position;
+	public Nullable position;
 
-	public Vector3? velocity;
+	public Nullable velocity;
 
 	public BaseEntity entity;
 

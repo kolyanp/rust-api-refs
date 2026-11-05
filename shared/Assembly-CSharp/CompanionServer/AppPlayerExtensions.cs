@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace CompanionServer;
 
 public static class AppPlayerExtensions
 {
+	[PoolAnalyzerGetWrapper]
 	public static AppTeamInfo GetAppTeamInfo(this BasePlayer player, ulong steamId)
 	{
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
@@ -47,6 +49,7 @@ public static class AppPlayerExtensions
 		return val;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static AppTeamInfo GetAppTeamInfo(this RelationshipManager.PlayerTeam team, ulong requesterSteamId)
 	{
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
@@ -90,6 +93,7 @@ public static class AppPlayerExtensions
 		return val;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private static List<Note> GetMapNotes(ulong playerId, bool personalNotes)
 	{
 		List<Note> result = Pool.Get<List<Note>>();

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Extend;
 using Network;
@@ -837,6 +838,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private List<ScientistSpawnGroup> GetTriggereringSpawnGroups()
 	{
 		List<ScientistSpawnGroup> list = Pool.Get<List<ScientistSpawnGroup>>();

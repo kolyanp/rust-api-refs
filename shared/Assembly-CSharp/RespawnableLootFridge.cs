@@ -20,8 +20,8 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 	[Tooltip("Maximum seconds between refreshes.")]
 	public float maxSecondsBetweenRefresh = 900f;
 
-	[Min(1f)]
 	[Tooltip("A full spawn replaces every Nth reduced refresh.")]
+	[Min(1f)]
 	public int refreshesForFullRefresh = 4;
 
 	[Tooltip("Do a full loot spawn as soon as the fridge spawns (ignored when restoring from a save).")]
@@ -313,7 +313,7 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 		for (int count = BasePlayer.activePlayerList.Count; i < count; i++)
 		{
 			BasePlayer basePlayer = BasePlayer.activePlayerList[i];
-			if ((Object)(object)basePlayer != (Object)null && (Object)(object)basePlayer.inventory != (Object)null && (Object)(object)basePlayer.inventory.loot != (Object)null && (Object)(object)basePlayer.inventory.loot.entitySource == (Object)(object)this)
+			if ((Object)(object)basePlayer != (Object)null && basePlayer.inventory != null && (Object)(object)basePlayer.inventory.loot != (Object)null && (Object)(object)basePlayer.inventory.loot.entitySource == (Object)(object)this)
 			{
 				basePlayer.EndLooting();
 			}

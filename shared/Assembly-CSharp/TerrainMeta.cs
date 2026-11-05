@@ -809,6 +809,11 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		}
 	}
 
+	protected override void OnDestroy()
+	{
+		base.OnDestroy();
+	}
+
 	public void Init(TerrainData terrainDataOverride = null, TerrainConfig configOverride = null)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)

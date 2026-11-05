@@ -44,7 +44,7 @@ public class State_AttackWithTracking : State_PlayAnimationRM
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		if (trackingDuration > 0f && trackingSpeed > 0f && Time.timeAsDouble - startTime < (double)(trackingDuration + AI.defaultInterpolationDelay) && Senses.FindTarget(out var target))
 		{
-			AnimPlayer.Track(((Component)target).transform.position, trackingSpeed);
+			AnimPlayer.Track(((Component)target).transform.position, trackingSpeed, deltaTime);
 		}
 		return base.OnStateUpdate(deltaTime);
 	}

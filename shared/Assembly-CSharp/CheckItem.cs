@@ -24,7 +24,7 @@ public static class CheckItem
 		_testToContainer.Clear();
 	}
 
-	public static bool CanMoveToContainer(ItemContainer from, ItemContainer to)
+	public static bool CanMoveToContainer(this ItemContainer from, ItemContainer to)
 	{
 		PrepareTestContainers();
 		if (from == null || to == null)
@@ -54,7 +54,7 @@ public static class CheckItem
 		return _testFromContainer.TryMoveAllItems(_testToContainer);
 	}
 
-	public static bool CanMoveToContainer(ItemContainer to, List<Item> items)
+	public static bool CanMoveToContainer(this ItemContainer to, List<Item> items)
 	{
 		PrepareTestContainers();
 		if (to == null)
@@ -93,7 +93,7 @@ public static class CheckItem
 		}
 	}
 
-	public static bool CanFitSimple(ItemContainer to, List<Item> items)
+	public static bool CanFitSimple(this ItemContainer to, List<Item> items)
 	{
 		if (to == null || items == null)
 		{
@@ -108,7 +108,7 @@ public static class CheckItem
 		return num >= count;
 	}
 
-	public static bool CanFitSimple(ItemContainer to, int numberOfSlots)
+	public static bool CanFitSimple(this ItemContainer to, int numberOfSlots)
 	{
 		if (to == null)
 		{
@@ -121,12 +121,12 @@ public static class CheckItem
 		return to.capacity - to.itemList.Count >= numberOfSlots;
 	}
 
-	public static bool IsVirginItem(Item item)
+	public static bool IsVirginItem(this Item item)
 	{
 		return item.parent == null;
 	}
 
-	public static bool IsInContainer(Item item)
+	public static bool IsInContainer(this Item item)
 	{
 		return item.parent != null;
 	}

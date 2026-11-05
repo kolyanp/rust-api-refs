@@ -68,6 +68,15 @@ public class Sprinkler : IOEntity
 		RefreshSprinklerState(inputAmount);
 	}
 
+	public override void IOStateChanged(int inputAmount, int inputSlot)
+	{
+		base.IOStateChanged(inputAmount, inputSlot);
+		if (IsOn() && (Object)(object)currentFuelSource == (Object)null)
+		{
+			SendChangedToRoot(forceUpdate: true);
+		}
+	}
+
 	public override int CalculateCurrentEnergy(int inputAmount, int inputSlot)
 	{
 		return inputAmount;

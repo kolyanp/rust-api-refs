@@ -86,6 +86,10 @@ public class State_Flee : FSMStateBase
 		return (posNS - Agent.WorldToNavSpace(targetPosition)).NormalizeXZ();
 	}
 
+	protected virtual void OrderFleeCandidates(Eqs.PooledScoreList scored, bool preValidated)
+	{
+	}
+
 	protected virtual EFSMStateStatus MoveAwayFromTarget()
 	{
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
@@ -123,6 +127,7 @@ public class State_Flee : FSMStateBase
 					((List<(NavVector3, float)>)(object)pooledScoreList).Add((item2, num));
 				}
 				pooledScoreList.SortByScoreDesc(Owner);
+				OrderFleeCandidates(pooledScoreList, flag);
 				foreach (var item3 in (List<(NavVector3, float)>)(object)pooledScoreList)
 				{
 					NavVector3 item = item3.Item1;

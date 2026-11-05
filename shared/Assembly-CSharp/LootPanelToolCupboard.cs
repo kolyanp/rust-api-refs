@@ -6,6 +6,8 @@ public class LootPanelToolCupboard : LootPanel
 {
 	public List<VirtualItemIcon> costIcons;
 
+	public float costAmountPadding = 12f;
+
 	public RustText protectedText;
 
 	public GameObject baseNotProtectedObj;

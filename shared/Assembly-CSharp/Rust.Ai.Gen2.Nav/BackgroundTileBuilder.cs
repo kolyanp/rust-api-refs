@@ -69,6 +69,10 @@ public class BackgroundTileBuilder : IDisposable
 	{
 		private volatile bool cancelled;
 
+		public bool collectStarted;
+
+		public bool requestedAgain;
+
 		public bool IsCancellationRequested => cancelled;
 
 		public void Cancel()
@@ -185,6 +189,56 @@ public class BackgroundTileBuilder : IDisposable
 		public bool forceUnwalkable;
 	}
 
+	private struct ColliderFacts
+	{
+		public BaseEntity entity;
+
+		public bool? forceUnwalkable;
+	}
+
+	private sealed class TileCollect
+	{
+		public TileCollectRequest request;
+
+		public bool active;
+
+		public Bounds tileBounds;
+
+		public int area;
+
+		public bool hiRes;
+
+		public bool anyModifierVolumes;
+
+		public IndependantNavmesh movingOwner;
+
+		public Transform movingRoot;
+
+		public List<ThreadSafeNavMeshBuildSource> sources;
+
+		public readonly List<Collider> colliders = new List<Collider>();
+
+		public readonly HashSet<int> seenColliders = new HashSet<int>();
+
+		public readonly List<Collider> found = new List<Collider>();
+
+		public PooledHashSet<Door> gateDoors;
+
+		public int overlapCount;
+
+		public int nextOverlap;
+
+		public int nextCollider;
+
+		public long mainTicks;
+
+		public long boundsTicks;
+
+		public long overlapTicks;
+
+		public long colliderTicks;
+	}
+
 	private static readonly int[] boxTriangleIndices = new int[36]
 	{
 		7, 4, 3, 7, 6, 4, 4, 6, 5, 4,
@@ -196,6 +250,14 @@ public class BackgroundTileBuilder : IDisposable
 	public static (int tx, int ty, string path)? DumpGeometryRequest;
 
 	public const int GeometryLayerMask = 1092714753;
+
+	private static readonly Dictionary<int, ColliderFacts> colliderFacts = new Dictionary<int, ColliderFacts>();
+
+	private static readonly Dictionary<BaseEntity, List<Collider>> cachedCollidersByEntity = new Dictionary<BaseEntity, List<Collider>>();
+
+	private const int CachedCollidersPerSquareKm = 14000;
+
+	private const int CachedEntitiesPerSquareKm = 5000;
 
 	private Stopwatch stopwatch = new Stopwatch();
 
@@ -210,6 +272,10 @@ public class BackgroundTileBuilder : IDisposable
 	private Thread[] workers;
 
 	private CancellationTokenSource globalInterrupt;
+
+	private readonly TileCollect budgetedCollect = new TileCollect();
+
+	private readonly TileCollect immediateCollect = new TileCollect();
 
 	private NavmeshSaveCatchUpStats gateCatchUp;
 
@@ -416,6 +482,87 @@ public class BackgroundTileBuilder : IDisposable
 		}
 	}
 
+	public static bool NeverBakes(BaseEntity entity)
+	{
+		BaseEntity entity2 = null;
+		while (entity != null)
+		{
+			if (entity is CargoShip || PlayerBoat.IsBoatPiece(entity))
+			{
+				return true;
+			}
+			entity2 = entity;
+			entity = (entity.parentEntity.IsSet() ? entity.GetParentEntity() : null);
+		}
+		return PlayerBoat.IsBuiltOntoAnUnfinishedBoat(entity2);
+	}
+
+	public static void ForgetCollidersOf(BaseEntity entity)
+	{
+		if (!cachedCollidersByEntity.Remove(entity, out var value))
+		{
+			return;
+		}
+		foreach (Collider item in value)
+		{
+			colliderFacts.Remove(((Object)item).GetInstanceID());
+		}
+		Pool.FreeUnmanaged<Collider>(ref value);
+	}
+
+	public static void ClearColliderFacts()
+	{
+		foreach (List<Collider> value in cachedCollidersByEntity.Values)
+		{
+			List<Collider> current = value;
+			Pool.FreeUnmanaged<Collider>(ref current);
+		}
+		cachedCollidersByEntity.Clear();
+		colliderFacts.Clear();
+	}
+
+	public static void ReserveColliderFacts(float worldSize)
+	{
+		float num = worldSize * worldSize / 1000000f;
+		colliderFacts.EnsureCapacity((int)(num * 14000f));
+		cachedCollidersByEntity.EnsureCapacity((int)(num * 5000f));
+	}
+
+	private static void RememberColliderFacts(Collider col, int colliderId, in ColliderFacts facts)
+	{
+		colliderFacts[colliderId] = facts;
+		if (!((Object)(object)facts.entity == (Object)null))
+		{
+			if (!cachedCollidersByEntity.TryGetValue(facts.entity, out var value))
+			{
+				value = Pool.Get<List<Collider>>();
+				cachedCollidersByEntity[facts.entity] = value;
+			}
+			else if (value.Count == value.Capacity)
+			{
+				ForgetDestroyedColliders(value);
+			}
+			value.Add(col);
+		}
+	}
+
+	private static void ForgetDestroyedColliders(List<Collider> colliders)
+	{
+		int num = 0;
+		for (int i = 0; i < colliders.Count; i++)
+		{
+			if ((Object)(object)colliders[i] != (Object)null)
+			{
+				colliders[num++] = colliders[i];
+			}
+			else
+			{
+				colliderFacts.Remove(((Object)colliders[i]).GetInstanceID());
+			}
+		}
+		colliders.RemoveRange(num, colliders.Count - num);
+	}
+
 	public BackgroundTileBuilder()
 	{
 		int num = Mathf.Clamp(RustNav.numThreads, 1, SystemInfo.processorCount - 1);
@@ -509,255 +656,489 @@ public class BackgroundTileBuilder : IDisposable
 
 	private TileBuildRequest DoInitialWorkOnMainThread(in TileCollectRequest collectRequest)
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0237: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0344: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0349: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0367: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038f: Unknown result type (might be due to invalid IL or missing references)
-		using (TimeWarning.New("RustNavigation.DoInitialWorkOnMainThread"))
+		BeginCollect(immediateCollect, in collectRequest, 1);
+		StepCollect(immediateCollect, -1f);
+		return FinishCollect(immediateCollect);
+	}
+
+	private void BeginCollect(TileCollect collect, in TileCollectRequest collectRequest, int overlapCount)
+	{
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("RustNavigation.BeginCollect"))
 		{
 			long num = BakeStats.Timestamp();
-			long num2 = num;
+			collect.request = collectRequest;
+			collect.active = true;
+			collect.overlapCount = overlapCount;
+			collect.nextOverlap = 0;
+			collect.nextCollider = 0;
+			collect.colliders.Clear();
+			collect.seenColliders.Clear();
+			collect.gateDoors = null;
+			collect.overlapTicks = 0L;
+			collect.colliderTicks = 0L;
 			Bounds tileBounds = collectRequest.navmesh.rcCalcTileBounds(new Vector2Int(collectRequest.tx, collectRequest.ty));
-			tileBounds = collectRequest.navmesh.rcExpandTileBounds(tileBounds);
-			BakeStats.AddStage(BakeStats.Stage.CollectBounds, BakeStats.Timestamp() - num2);
-			int layerMask = 1629585665;
-			int areaFromName = NavMesh.GetAreaFromName("Walkable");
-			List<ThreadSafeNavMeshBuildSource> list = Pool.Get<List<ThreadSafeNavMeshBuildSource>>();
-			PooledList<Collider> val = Pool.Get<PooledList<Collider>>();
+			collect.tileBounds = collectRequest.navmesh.rcExpandTileBounds(tileBounds);
+			collect.area = NavMesh.GetAreaFromName("Walkable");
+			collect.sources = Pool.Get<List<ThreadSafeNavMeshBuildSource>>();
+			collect.movingOwner = collectRequest.navmesh.MovingOwner;
+			collect.movingRoot = (((Object)(object)collect.movingOwner != (Object)null) ? ((Component)collect.movingOwner).transform.root : null);
+			collect.hiRes = collectRequest.navmesh.ForceHiRes;
+			collect.anyModifierVolumes = RustNavmeshModifierVolume.HasAny;
+			if (!collect.hiRes && (Object)(object)collect.movingOwner == (Object)null && RustNavigation.HasTunnelRegions && (Object)(object)RustNavigation.Instance != (Object)null && RustNavigation.Instance.IsInTunnelRegion(collect.tileBounds))
+			{
+				collect.hiRes = true;
+			}
+			collect.boundsTicks = (collect.mainTicks = BakeStats.Timestamp() - num);
+		}
+	}
+
+	private bool StepCollect(TileCollect collect, float budgetMs)
+	{
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("RustNavigation.StepCollect"))
+		{
+			long num = BakeStats.Timestamp();
+			bool flag = (Object)(object)collect.movingOwner != (Object)null;
+			Matrix4x4 worldToNav = (flag ? collect.movingOwner.WorldToNavMatrix : Matrix4x4.identity);
 			try
 			{
-				num2 = BakeStats.Timestamp();
-				GamePhysics.OverlapBounds(tileBounds, (List<Collider>)(object)val, layerMask, (QueryTriggerInteraction)2);
-				BakeStats.AddStage(BakeStats.Stage.CollectOverlap, BakeStats.Timestamp() - num2);
-				bool flag = collectRequest.navmesh.ForceHiRes;
-				PooledHashSet<Door> val2 = null;
-				bool hasAny = RustNavmeshModifierVolume.HasAny;
-				if (!flag && RustNavigation.HasTunnelRegions && (Object)(object)RustNavigation.Instance != (Object)null && RustNavigation.Instance.IsInTunnelRegion(tileBounds))
+				do
 				{
-					flag = true;
+					if (collect.nextCollider < collect.colliders.Count)
+					{
+						long num2 = BakeStats.Timestamp();
+						bool flag2 = false;
+						while (!flag2 && collect.nextCollider < collect.colliders.Count)
+						{
+							Collider val = collect.colliders[collect.nextCollider++];
+							if ((Object)(object)val != (Object)null && val.enabled && ((Component)val).gameObject.activeInHierarchy)
+							{
+								ProcessCollider(collect, val, flag, in worldToNav);
+							}
+							flag2 = IsOverBudget(budgetMs);
+						}
+						collect.colliderTicks += BakeStats.Timestamp() - num2;
+						if (flag2)
+						{
+							return false;
+						}
+					}
+					if (collect.nextOverlap >= collect.overlapCount)
+					{
+						return true;
+					}
+					OverlapQuadrant(collect, collect.nextOverlap++);
 				}
-				num2 = BakeStats.Timestamp();
-				foreach (Collider item2 in (List<Collider>)(object)val)
-				{
-					try
-					{
-						BaseEntity baseEntity = GameObjectEx.ToBaseEntity(item2, allowDestroyed: true);
-						if (((Object)(object)baseEntity != (Object)null && (baseEntity.isClient || baseEntity.IsDestroyed)) || PlayerBoat.IsPartOfPlayerBoat(baseEntity))
-						{
-							continue;
-						}
-						ThreadSafeNavMeshBuildSource item = new ThreadSafeNavMeshBuildSource
-						{
-							shape = (NavMeshBuildSourceShape)0,
-							sourceObjectID = 0,
-							transform = ((Component)item2).transform.localToWorldMatrix,
-							size = Vector3.zero,
-							area = areaFromName
-						};
-						if (!flag)
-						{
-							if (BaseNetworkableEx.Is<BuildingBlock>((Object)(object)baseEntity, out BuildingBlock _))
-							{
-								flag = true;
-							}
-							else if ((Object)(object)ConstructionErrors.GetPreventBuildingMonumentTag(item2) != (Object)null)
-							{
-								flag = true;
-							}
-						}
-						if (BaseNetworkableEx.Is<TreeEntity>((Object)(object)baseEntity, out TreeEntity castedUnityObject2) && !castedUnityObject2.IncludeInNavmesh)
-						{
-							continue;
-						}
-						if (!BaseNetworkableEx.Is<Door>((Object)(object)baseEntity, out Door castedUnityObject3))
-						{
-							goto IL_01e9;
-						}
-						if (castedUnityObject3.IsNavGate)
-						{
-							if (val2 == null)
-							{
-								val2 = Pool.Get<PooledHashSet<Door>>();
-							}
-							((HashSet<Door>)(object)val2).Add(castedUnityObject3);
-							if (!castedUnityObject3.IsNavGateMovingCollider(item2))
-							{
-								goto IL_01e9;
-							}
-						}
-						else if (!castedUnityObject3.IsNpcOpenable)
-						{
-							goto IL_01e9;
-						}
-						goto end_IL_00e6;
-						IL_01e9:
-						if (item2.isTrigger || (0x20000000 & (1 << ((Component)item2).gameObject.layer)) != 0)
-						{
-							continue;
-						}
-						if (BaseNetworkableEx.Is<MeshCollider>((Object)(object)item2, out MeshCollider castedUnityObject4))
-						{
-							if ((Object)(object)castedUnityObject4.sharedMesh == (Object)null)
-							{
-								continue;
-							}
-							item.shape = (NavMeshBuildSourceShape)0;
-							item.sourceObjectID = ((Object)castedUnityObject4.sharedMesh).GetInstanceID();
-							MeshCache.Get(castedUnityObject4.sharedMesh);
-							goto IL_03d5;
-						}
-						if (BaseNetworkableEx.Is<BoxCollider>((Object)(object)item2, out BoxCollider castedUnityObject5))
-						{
-							item.shape = (NavMeshBuildSourceShape)2;
-							item.size = castedUnityObject5.size;
-							item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject5.center);
-							goto IL_03d5;
-						}
-						if (BaseNetworkableEx.Is<SphereCollider>((Object)(object)item2, out SphereCollider castedUnityObject6))
-						{
-							item.shape = (NavMeshBuildSourceShape)2;
-							item.size = Vector3.one * castedUnityObject6.radius * 2f;
-							item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject6.center);
-							goto IL_03d5;
-						}
-						if (!BaseNetworkableEx.Is<CapsuleCollider>((Object)(object)item2, out CapsuleCollider castedUnityObject7))
-						{
-							continue;
-						}
-						item.shape = (NavMeshBuildSourceShape)2;
-						float num3 = castedUnityObject7.radius * 2f;
-						if (castedUnityObject7.direction == 0)
-						{
-							item.size = new Vector3(castedUnityObject7.height, num3, num3);
-						}
-						else if (castedUnityObject7.direction == 1)
-						{
-							item.size = new Vector3(num3, castedUnityObject7.height, num3);
-						}
-						else if (castedUnityObject7.direction == 2)
-						{
-							item.size = new Vector3(num3, num3, castedUnityObject7.height);
-						}
-						else
-						{
-							item.size = new Vector3(num3, castedUnityObject7.height, num3);
-						}
-						item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject7.center);
-						goto IL_03d5;
-						IL_03d5:
-						item.forceUnwalkable = hasAny && (Object)(object)((Component)item2).GetComponentInParent<RustNavmeshModifierVolume>() != (Object)null;
-						list.Add(item);
-						end_IL_00e6:;
-					}
-					finally
-					{
-					}
-				}
-				BakeStats.AddStage(BakeStats.Stage.CollectColliders, BakeStats.Timestamp() - num2);
-				if (val2 != null || RustNavDoorGates.HasGateDoors)
-				{
-					num2 = BakeStats.Timestamp();
-					if (val2 == null)
-					{
-						val2 = Pool.Get<PooledHashSet<Door>>();
-					}
-					RustNavDoorGates.CollectGateDoorsReaching(tileBounds, (HashSet<Door>)(object)val2);
-					if (((HashSet<Door>)(object)val2).Count == 0)
-					{
-						Pool.Free<PooledHashSet<Door>>(ref val2);
-					}
-					BakeStats.AddStage(BakeStats.Stage.CollectDoors, BakeStats.Timestamp() - num2);
-					BakeStats.AddStage(BakeStats.Stage.CollectDoorsQuery, BakeStats.Timestamp() - num2);
-				}
-				NavMeshBuildParams buildParams = (flag ? collectRequest.navmesh.BuildParamsHiRes : collectRequest.navmesh.BuildParams);
-				NavMeshBuildVolume[] array = null;
-				int num4 = 0;
-				if (val2 != null)
-				{
-					num2 = BakeStats.Timestamp();
-					PooledList<RustNavDoorGates.BakeVolumes> val3 = Pool.Get<PooledList<RustNavDoorGates.BakeVolumes>>();
-					try
-					{
-						int num5 = 0;
-						foreach (Door item3 in (HashSet<Door>)(object)val2)
-						{
-							RustNavDoorGates.BakeVolumes bakeVolumes = RustNavDoorGates.GetBakeVolumes(item3, flag, buildParams.agentRadius);
-							((List<RustNavDoorGates.BakeVolumes>)(object)val3).Add(bakeVolumes);
-							num5 += bakeVolumes.Count;
-						}
-						if (num5 > 0)
-						{
-							array = ArrayPool<NavMeshBuildVolume>.Shared.Rent(num5);
-							foreach (RustNavDoorGates.BakeVolumes item4 in (List<RustNavDoorGates.BakeVolumes>)(object)val3)
-							{
-								num4 += item4.CopyLeafVolumes(array, num4);
-							}
-							foreach (RustNavDoorGates.BakeVolumes item5 in (List<RustNavDoorGates.BakeVolumes>)(object)val3)
-							{
-								num4 += item5.CopyApertureVolume(array, num4);
-							}
-						}
-						Pool.Free<PooledHashSet<Door>>(ref val2);
-						BakeStats.AddStage(BakeStats.Stage.CollectDoors, BakeStats.Timestamp() - num2);
-						BakeStats.AddStage(BakeStats.Stage.CollectDoorsVolumes, BakeStats.Timestamp() - num2);
-					}
-					finally
-					{
-						((IDisposable)val3)?.Dispose();
-					}
-				}
-				BakeStats.OnTileCollected(flag);
-				BakeStats.AddStage(BakeStats.Stage.CollectTotal, BakeStats.Timestamp() - num);
-				return new TileBuildRequest(in collectRequest, list, buildParams, array, num4);
+				while (!IsOverBudget(budgetMs));
+				return collect.nextOverlap >= collect.overlapCount && collect.nextCollider >= collect.colliders.Count;
 			}
 			finally
 			{
-				((IDisposable)val)?.Dispose();
+				collect.mainTicks += BakeStats.Timestamp() - num;
 			}
 		}
+	}
+
+	private bool IsOverBudget(float budgetMs)
+	{
+		if (budgetMs >= 0f)
+		{
+			return stopwatch.Elapsed.TotalMilliseconds >= (double)budgetMs;
+		}
+		return false;
+	}
+
+	private void OverlapQuadrant(TileCollect collect, int quadrant)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		long num = BakeStats.Timestamp();
+		Bounds tileBounds = collect.tileBounds;
+		Vector3 val = tileBounds.center;
+		Vector3 val2 = tileBounds.size;
+		if (collect.overlapCount > 1)
+		{
+			Vector3 val3 = new Vector3(tileBounds.extents.x * 0.5f, 0f, tileBounds.extents.z * 0.5f);
+			val += new Vector3(((quadrant & 1) == 0) ? (0f - val3.x) : val3.x, 0f, ((quadrant & 2) == 0) ? (0f - val3.z) : val3.z);
+			val2 = new Vector3(tileBounds.size.x * 0.5f, tileBounds.size.y, tileBounds.size.z * 0.5f);
+		}
+		int layerMask = 1629585665;
+		List<Collider> found = collect.found;
+		found.Clear();
+		if ((Object)(object)collect.movingOwner == (Object)null)
+		{
+			GamePhysics.OverlapBounds(new Bounds(val, val2), found, layerMask, (QueryTriggerInteraction)2);
+		}
+		else
+		{
+			Matrix4x4 navToWorldMatrix = collect.movingOwner.NavToWorldMatrix;
+			GamePhysics.OverlapOBB(new OBB(navToWorldMatrix.MultiplyPoint3x4(val), val2, navToWorldMatrix.rotation), found, layerMask, (QueryTriggerInteraction)2);
+		}
+		foreach (Collider item in found)
+		{
+			if (collect.seenColliders.Add(((Object)item).GetInstanceID()))
+			{
+				collect.colliders.Add(item);
+			}
+		}
+		collect.overlapTicks += BakeStats.Timestamp() - num;
+	}
+
+	private void ProcessCollider(TileCollect collect, Collider col, bool moving, in Matrix4x4 worldToNav)
+	{
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0234: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0239: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0255: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0268: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0277: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0290: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0342: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0347: Unknown result type (might be due to invalid IL or missing references)
+		//IL_034c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0351: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0333: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0338: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031f: Unknown result type (might be due to invalid IL or missing references)
+		try
+		{
+			if (moving && !((Component)col).transform.IsChildOf(collect.movingRoot))
+			{
+				return;
+			}
+			int instanceID = ((Object)col).GetInstanceID();
+			if (!colliderFacts.TryGetValue(instanceID, out var value))
+			{
+				value.entity = GameObjectEx.ToBaseEntity(col, allowDestroyed: true);
+				if ((Object)(object)value.entity == (Object)null || (value.entity.isServer && !value.entity.IsDestroyed))
+				{
+					RememberColliderFacts(col, instanceID, in value);
+				}
+			}
+			BaseEntity entity = value.entity;
+			if (((Object)(object)entity != (Object)null && (entity.isClient || entity.IsDestroyed)) || NeverBakes(entity))
+			{
+				return;
+			}
+			Matrix4x4 val = ((Component)col).transform.localToWorldMatrix;
+			if (moving)
+			{
+				val = worldToNav * val;
+			}
+			ThreadSafeNavMeshBuildSource item = new ThreadSafeNavMeshBuildSource
+			{
+				shape = (NavMeshBuildSourceShape)0,
+				sourceObjectID = 0,
+				transform = val,
+				size = Vector3.zero,
+				area = collect.area
+			};
+			if (!collect.hiRes)
+			{
+				if (BaseNetworkableEx.Is<BuildingBlock>((Object)(object)entity, out BuildingBlock _))
+				{
+					collect.hiRes = true;
+				}
+				else if ((Object)(object)ConstructionErrors.GetPreventBuildingMonumentTag(col) != (Object)null)
+				{
+					collect.hiRes = true;
+				}
+			}
+			if (BaseNetworkableEx.Is<TreeEntity>((Object)(object)entity, out TreeEntity castedUnityObject2) && !castedUnityObject2.IncludeInNavmesh)
+			{
+				return;
+			}
+			if (BaseNetworkableEx.Is<Door>((Object)(object)entity, out Door castedUnityObject3))
+			{
+				if (castedUnityObject3.IsNavGate)
+				{
+					if (collect.gateDoors == null)
+					{
+						collect.gateDoors = Pool.Get<PooledHashSet<Door>>();
+					}
+					((HashSet<Door>)(object)collect.gateDoors).Add(castedUnityObject3);
+					if (castedUnityObject3.IsNavGateMovingCollider(col))
+					{
+						return;
+					}
+				}
+				else if (castedUnityObject3.IsNpcOpenable)
+				{
+					return;
+				}
+			}
+			if (col.isTrigger || (0x20000000 & (1 << ((Component)col).gameObject.layer)) != 0)
+			{
+				return;
+			}
+			BoxCollider castedUnityObject5;
+			SphereCollider castedUnityObject6;
+			if (BaseNetworkableEx.Is<MeshCollider>((Object)(object)col, out MeshCollider castedUnityObject4))
+			{
+				if ((Object)(object)castedUnityObject4.sharedMesh == (Object)null)
+				{
+					return;
+				}
+				item.shape = (NavMeshBuildSourceShape)0;
+				item.sourceObjectID = ((Object)castedUnityObject4.sharedMesh).GetInstanceID();
+				MeshCache.Get(castedUnityObject4.sharedMesh);
+			}
+			else if (BaseNetworkableEx.Is<BoxCollider>((Object)(object)col, out castedUnityObject5))
+			{
+				item.shape = (NavMeshBuildSourceShape)2;
+				item.size = castedUnityObject5.size;
+				item.transform = val * Matrix4x4.Translate(castedUnityObject5.center);
+			}
+			else if (BaseNetworkableEx.Is<SphereCollider>((Object)(object)col, out castedUnityObject6))
+			{
+				item.shape = (NavMeshBuildSourceShape)2;
+				item.size = Vector3.one * castedUnityObject6.radius * 2f;
+				item.transform = val * Matrix4x4.Translate(castedUnityObject6.center);
+			}
+			else
+			{
+				if (!BaseNetworkableEx.Is<CapsuleCollider>((Object)(object)col, out CapsuleCollider castedUnityObject7))
+				{
+					return;
+				}
+				item.shape = (NavMeshBuildSourceShape)2;
+				float num = castedUnityObject7.radius * 2f;
+				if (castedUnityObject7.direction == 0)
+				{
+					item.size = new Vector3(castedUnityObject7.height, num, num);
+				}
+				else if (castedUnityObject7.direction == 1)
+				{
+					item.size = new Vector3(num, castedUnityObject7.height, num);
+				}
+				else if (castedUnityObject7.direction == 2)
+				{
+					item.size = new Vector3(num, num, castedUnityObject7.height);
+				}
+				else
+				{
+					item.size = new Vector3(num, castedUnityObject7.height, num);
+				}
+				item.transform = val * Matrix4x4.Translate(castedUnityObject7.center);
+			}
+			if (collect.anyModifierVolumes && !value.forceUnwalkable.HasValue)
+			{
+				value.forceUnwalkable = (Object)(object)((Component)col).GetComponentInParent<RustNavmeshModifierVolume>() != (Object)null;
+				colliderFacts[instanceID] = value;
+			}
+			item.forceUnwalkable = collect.anyModifierVolumes && value.forceUnwalkable == true;
+			collect.sources.Add(item);
+		}
+		finally
+		{
+		}
+	}
+
+	private TileBuildRequest FinishCollect(TileCollect collect)
+	{
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("RustNavigation.FinishCollect"))
+		{
+			long num = BakeStats.Timestamp();
+			long num2 = num;
+			RustNavmesh navmesh = collect.request.navmesh;
+			bool flag = (Object)(object)collect.movingOwner != (Object)null;
+			Matrix4x4 val = (flag ? collect.movingOwner.WorldToNavMatrix : Matrix4x4.identity);
+			bool hiRes = collect.hiRes;
+			PooledHashSet<Door> val2 = collect.gateDoors;
+			collect.gateDoors = null;
+			if (flag)
+			{
+				Bounds tileBounds = collect.tileBounds;
+				tileBounds.Expand(10f);
+				if (val2 == null)
+				{
+					val2 = Pool.Get<PooledHashSet<Door>>();
+				}
+				navmesh.GetMovingGateDoorsWithin(tileBounds, (ICollection<Door>)val2);
+				if (((HashSet<Door>)(object)val2).Count == 0)
+				{
+					Pool.Free<PooledHashSet<Door>>(ref val2);
+				}
+			}
+			if (!flag && (val2 != null || RustNavDoorGates.HasGateDoors))
+			{
+				num2 = BakeStats.Timestamp();
+				if (val2 == null)
+				{
+					val2 = Pool.Get<PooledHashSet<Door>>();
+				}
+				RustNavDoorGates.CollectGateDoorsReaching(collect.tileBounds, (HashSet<Door>)(object)val2);
+				if (((HashSet<Door>)(object)val2).Count == 0)
+				{
+					Pool.Free<PooledHashSet<Door>>(ref val2);
+				}
+				BakeStats.AddStage(BakeStats.Stage.CollectDoors, BakeStats.Timestamp() - num2);
+				BakeStats.AddStage(BakeStats.Stage.CollectDoorsQuery, BakeStats.Timestamp() - num2);
+			}
+			NavMeshBuildParams buildParams = (hiRes ? navmesh.BuildParamsHiRes : navmesh.BuildParams);
+			NavMeshBuildVolume[] array = null;
+			int num3 = 0;
+			if (val2 != null)
+			{
+				num2 = BakeStats.Timestamp();
+				PooledList<RustNavDoorGates.BakeVolumes> val3 = Pool.Get<PooledList<RustNavDoorGates.BakeVolumes>>();
+				try
+				{
+					int num4 = 0;
+					foreach (Door item in (HashSet<Door>)(object)val2)
+					{
+						if (!((Object)(object)item == (Object)null) && !item.IsDestroyed)
+						{
+							if (!flag || !navmesh.TryGetMovingGateDoorPose(item, out var localToNav))
+							{
+								localToNav = val * ((Component)item).transform.localToWorldMatrix;
+							}
+							RustNavDoorGates.BakeVolumes bakeVolumes = RustNavDoorGates.GetBakeVolumes(item, hiRes, buildParams.agentRadius, in localToNav);
+							((List<RustNavDoorGates.BakeVolumes>)(object)val3).Add(bakeVolumes);
+							num4 += bakeVolumes.Count;
+						}
+					}
+					if (num4 > 0)
+					{
+						array = ArrayPool<NavMeshBuildVolume>.Shared.Rent(num4);
+						foreach (RustNavDoorGates.BakeVolumes item2 in (List<RustNavDoorGates.BakeVolumes>)(object)val3)
+						{
+							num3 += item2.CopyLeafVolumes(array, num3);
+						}
+						foreach (RustNavDoorGates.BakeVolumes item3 in (List<RustNavDoorGates.BakeVolumes>)(object)val3)
+						{
+							num3 += item3.CopyApertureVolume(array, num3);
+						}
+					}
+					Pool.Free<PooledHashSet<Door>>(ref val2);
+					BakeStats.AddStage(BakeStats.Stage.CollectDoors, BakeStats.Timestamp() - num2);
+					BakeStats.AddStage(BakeStats.Stage.CollectDoorsVolumes, BakeStats.Timestamp() - num2);
+				}
+				finally
+				{
+					((IDisposable)val3)?.Dispose();
+				}
+			}
+			BakeStats.OnTileCollected(hiRes);
+			BakeStats.AddStage(BakeStats.Stage.CollectBounds, collect.boundsTicks);
+			BakeStats.AddStage(BakeStats.Stage.CollectOverlap, collect.overlapTicks);
+			BakeStats.AddStage(BakeStats.Stage.CollectColliders, collect.colliderTicks);
+			BakeStats.AddStage(BakeStats.Stage.CollectTotal, collect.mainTicks + BakeStats.Timestamp() - num);
+			TileBuildRequest result = new TileBuildRequest(in collect.request, collect.sources, buildParams, array, num3);
+			collect.sources = null;
+			ReleaseCollect(collect);
+			return result;
+		}
+	}
+
+	private void ReleaseCollect(TileCollect collect)
+	{
+		if (collect.sources != null)
+		{
+			Pool.FreeUnmanaged<ThreadSafeNavMeshBuildSource>(ref collect.sources);
+		}
+		if (collect.gateDoors != null)
+		{
+			Pool.Free<PooledHashSet<Door>>(ref collect.gateDoors);
+		}
+		collect.movingOwner = null;
+		collect.movingRoot = null;
+		collect.request = default;
+		collect.active = false;
+	}
+
+	private bool IsStillWanted(in TileCollectRequest collectRequest)
+	{
+		(RustNavmesh, int, int) key = (collectRequest.navmesh, collectRequest.tx, collectRequest.ty);
+		bool flag = tileCancellations.TryGetValue(key, out var value) && value == collectRequest.cancellation;
+		if (flag && !collectRequest.cancellation.IsCancellationRequested && collectRequest.navmesh.IsValid())
+		{
+			return true;
+		}
+		if (flag)
+		{
+			tileCancellations.Remove(key);
+		}
+		return false;
 	}
 
 	private unsafe static void FillTriAreasUpTo(RawBuffer<byte> triAreas, int triangleIndexCount, byte area)
@@ -781,61 +1162,61 @@ public class BackgroundTileBuilder : IDisposable
 
 	private TileBuildResult DoWorkFromBackgroundThread(ref TileBuildRequest buildRequest, CancellationToken globalInterruptToken)
 	{
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f4: Invalid comparison between Unknown and I4
-		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0211: Invalid comparison between Unknown and I4
-		//IL_0515: Unknown result type (might be due to invalid IL or missing references)
-		//IL_051a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_051f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0524: Unknown result type (might be due to invalid IL or missing references)
-		//IL_053c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0548: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0554: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0560: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0613: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0374: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0379: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0251: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0256: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_075d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_075f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_041f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0424: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0427: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0201: Invalid comparison between Unknown and I4
+		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021e: Invalid comparison between Unknown and I4
+		//IL_0522: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0527: Unknown result type (might be due to invalid IL or missing references)
+		//IL_052c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0531: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0549: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0555: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0561: Unknown result type (might be due to invalid IL or missing references)
+		//IL_056d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0620: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0235: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0381: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0386: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0263: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0397: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_076a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_076c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_042c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0431: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0434: Unknown result type (might be due to invalid IL or missing references)
 		if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 		{
 			FreeTileVolumes(ref buildRequest);
@@ -868,7 +1249,7 @@ public class BackgroundTileBuilder : IDisposable
 		};
 		try
 		{
-			if ((Object)(object)TerrainMeta.HeightMap != (Object)null)
+			if ((Object)(object)TerrainMeta.HeightMap != (Object)null && buildRequest.navmesh.BakesTerrain)
 			{
 				Bounds tileBounds = buildRequest.navmesh.rcCalcTileBounds(new Vector2Int(buildRequest.tx, buildRequest.ty));
 				tileBounds = buildRequest.navmesh.rcExpandTileBounds(tileBounds);
@@ -1149,31 +1530,45 @@ public class BackgroundTileBuilder : IDisposable
 			ReportSaveGateCatchUpIfDrained();
 		}
 		stopwatch.Restart();
-		int num3 = 0;
-		TileCollectRequest result;
-		while (collectMainThreadWorkQueue.TryDequeue(out result))
+		bool hadCollectWork = false;
+		float collectBudgetMs = RustNav.collectBudgetMs;
+		while (true)
 		{
-			(RustNavmesh, int, int) key = (result.navmesh, result.tx, result.ty);
-			bool flag2 = tileCancellations.TryGetValue(key, out var value) && value == result.cancellation;
-			bool isCancellationRequested = result.cancellation.IsCancellationRequested;
-			if (!flag2 | isCancellationRequested)
+			if (budgetedCollect.active)
 			{
-				if (flag2)
+				if (!IsStillWanted(in budgetedCollect.request))
 				{
-					tileCancellations.Remove(key);
+					TileCollectRequest request = budgetedCollect.request;
+					ReleaseCollect(budgetedCollect);
+					EndCollectInFlight((navmesh: request.navmesh, tx: request.tx, ty: request.ty), request.cancellation);
+					continue;
 				}
-				continue;
+				hadCollectWork = true;
+				if (!StepCollect(budgetedCollect, collectBudgetMs))
+				{
+					break;
+				}
+				backgroundWorkQueue.Add(FinishCollect(budgetedCollect));
+				if (stopwatch.Elapsed.TotalMilliseconds >= (double)collectBudgetMs)
+				{
+					break;
+				}
 			}
-			TileBuildRequest item = DoInitialWorkOnMainThread(in result);
-			backgroundWorkQueue.Add(item);
-			num3++;
-			if (stopwatch.Elapsed.TotalMilliseconds >= (double)RustNav.collectBudgetMs)
+			else
 			{
-				break;
+				if (!collectMainThreadWorkQueue.TryDequeue(out var result))
+				{
+					break;
+				}
+				if (IsStillWanted(in result))
+				{
+					BeginCollect(budgetedCollect, in result, 4);
+					result.cancellation.collectStarted = true;
+				}
 			}
 		}
-		bool budgetLimited = num3 > 0 && collectMainThreadWorkQueue.Count > 0;
-		BakeStats.OnMainThreadTick(collectMainThreadWorkQueue.Count, backgroundWorkQueue.Count, resultBagDepth, num3 > 0, budgetLimited);
+		bool budgetLimited = collectMainThreadWorkQueue.Count > 0 || budgetedCollect.active;
+		BakeStats.OnMainThreadTick(collectMainThreadWorkQueue.Count, backgroundWorkQueue.Count, resultBagDepth, hadCollectWork, budgetLimited);
 	}
 
 	private static bool IsDefaultNavmeshSaveGated()
@@ -1234,7 +1629,10 @@ public class BackgroundTileBuilder : IDisposable
 		{
 			gateCatchUp.inProgress = false;
 			gateCatchUp.drainMs = BakeStats.TicksToMs(Stopwatch.GetTimestamp() - gateLiftTimestamp);
-			RustNavigation.Log(DescribeSaveGateCatchUp());
+			if (AI.logIssues)
+			{
+				RustNavigation.Log(DescribeSaveGateCatchUp());
+			}
 		}
 	}
 
@@ -1252,6 +1650,23 @@ public class BackgroundTileBuilder : IDisposable
 	}
 
 	private bool AddSingleBuiltTileOnMainThread(ref TileBuildResult buildResult, bool countForCatchUp)
+	{
+		(RustNavmesh, int, int) key = (buildResult.navmesh, buildResult.tx, buildResult.ty);
+		TileCancellation cancellation = buildResult.cancellation;
+		bool result = ApplyBuiltTileOnMainThread(ref buildResult, countForCatchUp);
+		EndCollectInFlight(key, cancellation);
+		return result;
+	}
+
+	private void EndCollectInFlight((RustNavmesh navmesh, int tx, int ty) key, TileCancellation cancellation)
+	{
+		if (cancellation.requestedAgain && !cancellation.IsCancellationRequested && key.navmesh.IsValid())
+		{
+			EnqueueOnMainThread(key.navmesh, key.tx, key.ty);
+		}
+	}
+
+	private bool ApplyBuiltTileOnMainThread(ref TileBuildResult buildResult, bool countForCatchUp)
 	{
 		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
@@ -1316,6 +1731,7 @@ public class BackgroundTileBuilder : IDisposable
 
 	private void CleanupRemainingWorkItemsOnMainThread()
 	{
+		ReleaseCollect(budgetedCollect);
 		TileBuildRequest item;
 		while (backgroundWorkQueue.TryTake(out item))
 		{
@@ -1391,9 +1807,14 @@ public class BackgroundTileBuilder : IDisposable
 		using (TimeWarning.New("RustNav.BackgroundTileBuilders.Enqueue"))
 		{
 			(RustNavmesh, int, int) key = (navmesh, tx, ty);
-			if (tileCancellations.TryGetValue(key, out var value))
+			if (!synchronous && tileCancellations.TryGetValue(key, out var value) && value.collectStarted && !value.IsCancellationRequested)
 			{
-				value.Cancel();
+				value.requestedAgain = true;
+				return true;
+			}
+			if (tileCancellations.TryGetValue(key, out var value2))
+			{
+				value2.Cancel();
 			}
 			if (navmesh.IsTileFarFromShore(tx, ty))
 			{

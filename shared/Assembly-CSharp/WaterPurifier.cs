@@ -181,37 +181,35 @@ public class WaterPurifier : LiquidContainer
 			num = num3;
 			slot2.UseItem(num3);
 			dirtyWaterProcssed -= num3;
-			SendNetworkUpdate();
 		}
 		pendingFreshWater += num / (float)freshWaterRatio;
-		if (!(pendingFreshWater >= 1f))
+		if (pendingFreshWater >= 1f)
 		{
-			return;
-		}
-		int num4 = Mathf.FloorToInt(pendingFreshWater);
-		pendingFreshWater -= num4;
-		Item slot3 = purifiedWaterStorage.inventory.GetSlot(0);
-		if (slot3 != null && (Object)(object)slot3.info != (Object)(object)freshWater)
-		{
-			slot3.RemoveFromContainer();
-			slot3.Remove();
-		}
-		if (slot3 == null)
-		{
-			Item item = ItemManager.Create(freshWater, num4, 0uL, isServerSide: true, 0uL);
-			if (!item.MoveToContainer(purifiedWaterStorage.inventory))
+			int num4 = Mathf.FloorToInt(pendingFreshWater);
+			pendingFreshWater -= num4;
+			Item slot3 = purifiedWaterStorage.inventory.GetSlot(0);
+			if (slot3 != null && (Object)(object)slot3.info != (Object)(object)freshWater)
 			{
-				item.Remove();
+				slot3.RemoveFromContainer();
+				slot3.Remove();
+			}
+			if (slot3 == null)
+			{
+				Item item = ItemManager.Create(freshWater, num4, 0uL, isServerSide: true, 0uL);
+				if (!item.MoveToContainer(purifiedWaterStorage.inventory))
+				{
+					item.Remove();
+					return;
+				}
+			}
+			else
+			{
+				slot3.amount += num4;
+				slot3.amount = Mathf.Clamp(slot3.amount, 0, purifiedWaterStorage.maxStackSize);
+				purifiedWaterStorage.inventory.MarkDirty();
 			}
 		}
-		else
-		{
-			slot3.amount += num4;
-			slot3.amount = Mathf.Clamp(slot3.amount, 0, purifiedWaterStorage.maxStackSize);
-			purifiedWaterStorage.inventory.MarkDirty();
-		}
 		Interface.CallHook("OnWaterPurified", this, timeCooked);
-		purifiedWaterStorage.SendNetworkUpdate();
 	}
 
 	public override void Load(LoadInfo info)

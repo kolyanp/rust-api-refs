@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
+using Rust;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -28,16 +31,43 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 	[ConversationData.DisplayGraphViewButton]
 	public ConversationData[] conversations = Array.Empty<ConversationData>();
 
+	[ConversationData.DisplayGraphViewButton]
+	public ConversationData[] phoneConversations = Array.Empty<ConversationData>();
+
 	public static ListHashSet<IMissionProvider> serverMissionProviders = new ListHashSet<IMissionProvider>();
 
 	public NPCConversationResultAction[] conversationResultActions;
 
+	private ConversationHost _conversationHost;
+
+	public BasePlayer lastActionPlayer;
+
 	[NonSerialized]
 	public float maxConversationDistance = 5f;
 
-	public List<BasePlayer> conversingPlayers = new List<BasePlayer>();
+	private int __sync_PhoneNumber;
 
-	public BasePlayer lastActionPlayer;
+	[Sync(Autosave = true)]
+	public int PhoneNumber
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_PhoneNumber;
+		}
+		[CompilerGenerated]
+		set
+		{
+			if (!IsSyncVarEqual(__sync_PhoneNumber, value))
+			{
+				__sync_PhoneNumber = value;
+				byte nameID = __GetWeaverID("PhoneNumber");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
+
+	private ConversationHost ConversationHost => _conversationHost ?? (_conversationHost = new ConversationHost(this));
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -84,143 +114,8 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 				}
 				return true;
 			}
-			if (rpc == 1597539152 && (Object)(object)player != (Object)null)
-			{
-				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
-				if (Global.developer > 2)
-				{
-					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - Server_EndTalking"));
-				}
-				using (TimeWarning.New("Server_EndTalking"))
-				{
-					using (TimeWarning.New("Conditions"))
-					{
-						if (!RPC_Server.CallsPerSecond.Test(1597539152u, "Server_EndTalking", this, player, 1uL))
-						{
-							return true;
-						}
-						if (!RPC_Server.MaxDistance.Test(1597539152u, "Server_EndTalking", this, player, 3f))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg3 = new RPCMessage
-							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							Server_EndTalking(msg3);
-						}
-					}
-					catch (Exception ex2)
-					{
-						Debug.LogException(ex2);
-						player.Kick("RPC Error in Server_EndTalking");
-					}
-				}
-				return true;
-			}
-			if (rpc == 2713250658u && (Object)(object)player != (Object)null)
-			{
-				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
-				if (Global.developer > 2)
-				{
-					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - Server_ResponsePressed"));
-				}
-				using (TimeWarning.New("Server_ResponsePressed"))
-				{
-					using (TimeWarning.New("Conditions"))
-					{
-						if (!RPC_Server.CallsPerSecond.Test(2713250658u, "Server_ResponsePressed", this, player, 5uL))
-						{
-							return true;
-						}
-						if (!RPC_Server.MaxDistance.Test(2713250658u, "Server_ResponsePressed", this, player, 3f))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg4 = new RPCMessage
-							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							Server_ResponsePressed(msg4);
-						}
-					}
-					catch (Exception ex3)
-					{
-						Debug.LogException(ex3);
-						player.Kick("RPC Error in Server_ResponsePressed");
-					}
-				}
-				return true;
-			}
-			if (rpc == 458746537 && (Object)(object)player != (Object)null)
-			{
-				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
-				if (Global.developer > 2)
-				{
-					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - Server_RewardChoiceSelected"));
-				}
-				using (TimeWarning.New("Server_RewardChoiceSelected"))
-				{
-					using (TimeWarning.New("Conditions"))
-					{
-						if (!RPC_Server.CallsPerSecond.Test(458746537u, "Server_RewardChoiceSelected", this, player, 1uL))
-						{
-							return true;
-						}
-						if (!RPC_Server.MaxDistance.Test(458746537u, "Server_RewardChoiceSelected", this, player, 3f))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg5 = new RPCMessage
-							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							Server_RewardChoiceSelected(msg5);
-						}
-					}
-					catch (Exception ex4)
-					{
-						Debug.LogException(ex4);
-						player.Kick("RPC Error in Server_RewardChoiceSelected");
-					}
-				}
-				return true;
-			}
 		}
 		return base.OnRpcMessage(player, rpc, msg);
-	}
-
-	public int GetConversationIndex(string conversationName)
-	{
-		for (int i = 0; i < conversations.Length; i++)
-		{
-			if (conversations[i].shortname == conversationName)
-			{
-				return i;
-			}
-		}
-		return -1;
 	}
 
 	public Phrase GetNPCName()
@@ -233,86 +128,151 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		return HasFlag(Flags.Reserved1);
 	}
 
+	public Phrase GetPhoneDirectoryName()
+	{
+		if (NPCName == null || !NPCName.IsValid())
+		{
+			return Phrase.op_Implicit(ShortPrefabName);
+		}
+		return NPCName;
+	}
+
+	public BasePlayer GetActionPlayer()
+	{
+		return lastActionPlayer;
+	}
+
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		if (!Application.isLoadingSave)
+		{
+			RegisterPhoneNumbers();
+		}
+	}
+
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		RegisterPhoneNumbers();
+	}
+
+	private void RegisterPhoneNumbers()
+	{
+		PhoneNumber = ConversationHost.RegisterPhoneNumbers(phoneConversations, PhoneNumber);
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		if (info.forDisk)
+		{
+			ConversationHost.SavePhoneNumbers(info.msg);
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.fromDisk)
+		{
+			ConversationHost.LoadPhoneNumbers(info.msg);
+		}
+	}
+
 	internal override void DoServerDestroy()
 	{
-		for (int num = conversingPlayers.Count - 1; num >= 0; num--)
-		{
-			Server_OnConversationEnded(conversingPlayers[num]);
-		}
+		ConversationHost.EndAllConversations();
+		ConversationHost.DeregisterPhoneNumbers();
 		base.DoServerDestroy();
 	}
 
-	public virtual ConversationData GetConversationFor(BasePlayer player)
+	public virtual ConversationData GetInPersonConversationFor(BasePlayer player)
 	{
+		if (conversations.Length == 0)
+		{
+			return null;
+		}
 		return conversations[0];
+	}
+
+	public virtual ConversationData GetPhoneConversationFor(BasePlayer player)
+	{
+		return ConversationHost.GetDirectCallConversation(phoneConversations, player, this);
+	}
+
+	public bool IsInPhoneConversationWith(BasePlayer player)
+	{
+		return ConversationHost.IsInPhoneConversationWith(player);
+	}
+
+	public ConversationData GetActiveConversationFor(BasePlayer player)
+	{
+		return ConversationHost.GetActiveConversationFor(player);
+	}
+
+	public bool BeginPhoneConversation(BasePlayer ply, PhoneController phone, ConversationData conversation)
+	{
+		return ConversationHost.BeginPhoneConversation(ply, phone, conversation);
+	}
+
+	protected virtual void AddSpeechNodeState(BasePlayer player, ConversationData.AbstractSpeechNodeData speechNode, ConversationState state)
+	{
+	}
+
+	void IConversationProvider.AddSpeechNodeState(BasePlayer player, ConversationData.AbstractSpeechNodeData speechNode, ConversationState state)
+	{
+		AddSpeechNodeState(player, speechNode, state);
+	}
+
+	public virtual void AddFormatTextValues(BasePlayer player, ConversationData.AbstractSpeechNodeData speechNode, List<FormatTextValue> values)
+	{
+	}
+
+	protected virtual bool NeedsFormatTextValue(ConversationData.AbstractSpeechNodeData speechNode, string key)
+	{
+		return speechNode.UsesFormatTextKey(key);
+	}
+
+	protected void AddFormatTextValue(List<FormatTextValue> values, ConversationData.AbstractSpeechNodeData speechNode, string key, int value)
+	{
+		if (NeedsFormatTextValue(speechNode, key))
+		{
+			ConversationHost.AddFormatTextValue(values, key, value.ToString());
+		}
+	}
+
+	protected void AddFormatTextValue(List<FormatTextValue> values, ConversationData.AbstractSpeechNodeData speechNode, string key, string value, bool valueIsPhraseToken = false)
+	{
+		if (NeedsFormatTextValue(speechNode, key))
+		{
+			ConversationHost.AddFormatTextValue(values, key, value, valueIsPhraseToken);
+		}
 	}
 
 	public void ForceEndConversation(BasePlayer player)
 	{
-		ClientRPC(RpcTarget.Player("Client_EndConversation", player));
-		Server_OnConversationEnded(player);
+		OnConversationEnded(player);
 	}
 
 	public void ForceSpeechNode(BasePlayer player, ConversationData data, int speechNodeIndex)
 	{
-		if ((Object)(object)player == (Object)null)
-		{
-			return;
-		}
-		ConversationData.AbstractSpeechNodeData speechNodeData = data.GetSpeechNodeData(speechNodeIndex);
-		ConversationResponseStatesList val = Pool.Get<ConversationResponseStatesList>();
-		try
-		{
-			val.list = Pool.Get<List<bool>>();
-			if (speechNodeData != null)
-			{
-				for (int i = 0; i < speechNodeData.responses.Length; i++)
-				{
-					val.list.Add(speechNodeData.responses[i].PassesConditions(player, this));
-				}
-				Server_OnSendingSpeechNode(player, speechNodeData);
-			}
-			ClientRPC(RpcTarget.Player("Client_ForceSpeechNode", player), speechNodeIndex, val);
-			Pool.FreeUnmanaged<bool>(ref val.list);
-		}
-		finally
-		{
-			((IDisposable)val)?.Dispose();
-		}
+		ConversationHost.ForceSpeechNode(player, data, speechNodeIndex);
 	}
 
-	protected virtual void Server_OnSendingSpeechNode(BasePlayer player, ConversationData.AbstractSpeechNodeData speechNode)
-	{
-	}
-
-	public virtual void Server_OnConversationEnded(BasePlayer player)
+	public virtual void OnConversationEnded(BasePlayer player)
 	{
 		Interface.CallHook("OnNpcConversationEnded", this, player);
-		if ((Object)(object)player != (Object)null && conversingPlayers.Contains(player))
-		{
-			player.ClearActiveTalkingToNpc(this);
-			conversingPlayers.Remove(player);
-		}
+		ConversationHost.EndConversation(player);
 	}
 
 	public void CleanupConversingPlayers()
 	{
-		for (int num = conversingPlayers.Count - 1; num >= 0; num--)
-		{
-			BasePlayer basePlayer = conversingPlayers[num];
-			if ((Object)(object)basePlayer == (Object)null)
-			{
-				conversingPlayers.RemoveAt(num);
-			}
-			else if (!basePlayer.IsAlive() || basePlayer.IsSleeping() || !basePlayer.IsConnected)
-			{
-				Server_OnConversationEnded(basePlayer);
-			}
-		}
+		ConversationHost.Cleanup();
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	public void Server_BeginTalking(RPCMessage msg)
 	{
@@ -344,73 +304,71 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		uint num2 = ply.GetActiveMissionInstance()?.missionID ?? 0;
 		Server_OnConversationStarted(ply);
 		bool flag = num == BaseMission.MissionStatus.Active && ply.HasCompletedMission(num2);
-		ConversationData conversationFor = GetConversationFor(ply);
-		if ((Object)(object)conversationFor != (Object)null)
+		ConversationData inPersonConversationFor = GetInPersonConversationFor(ply);
+		if ((Object)(object)inPersonConversationFor != (Object)null)
 		{
-			if (conversingPlayers.Contains(ply))
+			if (ConversationHost.IsConversingWith(ply))
 			{
-				Server_OnConversationEnded(ply);
+				OnConversationEnded(ply);
 			}
-			if (Interface.CallHook("OnNpcConversationStart", this, ply, conversationFor) != null)
+			if (Interface.CallHook("OnNpcConversationStart", this, ply, inPersonConversationFor) != null)
 			{
 				return;
 			}
-			conversingPlayers.Add(ply);
-			ply.SetActiveTalkingToNpc(this);
-			UpdateFlags();
-			ConversationResponseStatesList val = Pool.Get<ConversationResponseStatesList>();
-			try
+			ConversationHost.StartConversation(ply);
+			string text = inPersonConversationFor.entryPoint.resultingNode;
+			if (flag && !ply.IsInTutorial)
 			{
-				string text = conversationFor.entryPoint.resultingNode;
-				if (flag && !ply.IsInTutorial)
+				ply.conversationRewardMissionId = num2;
+				text = string.Empty;
+				ConversationData.AbstractConversationNodeData[] controlNodes = inPersonConversationFor.controlNodes;
+				for (int i = 0; i < controlNodes.Length; i++)
 				{
-					text = string.Empty;
-					ConversationData.AbstractConversationNodeData[] controlNodes = conversationFor.controlNodes;
-					for (int i = 0; i < controlNodes.Length; i++)
+					if (controlNodes[i] is ConversationData.ActionEventMissionCompletedNodeData actionEventMissionCompletedNodeData)
 					{
-						if (controlNodes[i] is ConversationData.ActionEventMissionCompletedNodeData actionEventMissionCompletedNodeData)
-						{
-							text = actionEventMissionCompletedNodeData.GetResultingNodeForMission(num2);
-							break;
-						}
+						text = actionEventMissionCompletedNodeData.GetResultingNodeForMission(num2);
+						break;
 					}
 				}
-				if (string.IsNullOrWhiteSpace(text) && (ply.IsInTutorial || !flag))
+			}
+			if (!string.IsNullOrWhiteSpace(text) || (!ply.IsInTutorial && flag))
+			{
+				inPersonConversationFor.GetFirstSpeechNodeFrom(ply, this, text, out var nodeIndex);
+				if (nodeIndex < 0 && (ply.IsInTutorial || !flag))
 				{
-					Debug.LogError((object)("Failed to start conversation " + ((Object)conversationFor).name + ", entry node has no output"), (Object)(object)conversationFor);
-					Server_OnConversationEnded(ply);
-					return;
-				}
-				ConversationData.AbstractSpeechNodeData firstSpeechNodeFrom = conversationFor.GetFirstSpeechNodeFrom(ply, this, text, out var nodeIndex);
-				val.list = Pool.Get<List<bool>>();
-				if (ply.IsInTutorial || !flag)
-				{
-					if (nodeIndex < 0)
-					{
-						Debug.LogError((object)("Failed to find a valid speech node starting from GUID: " + text + ", player: " + ((Object)ply).name + ", provider: " + ((Object)this).name), (Object)(object)this);
-					}
-					else
-					{
-						for (int j = 0; j < firstSpeechNodeFrom.responses.Length; j++)
-						{
-							val.list.Add(firstSpeechNodeFrom.responses[j].PassesConditions(ply, this));
-						}
-						Server_OnSendingSpeechNode(ply, firstSpeechNodeFrom);
-					}
+					Debug.LogError((object)("Failed to find a valid speech node starting from GUID: " + text + ", player: " + ((Object)ply).name + ", provider: " + ((Object)this).name), (Object)(object)this);
 				}
 				if (this is IMissionProvider missionProvider && !flag)
 				{
 					ply.Server_SendCanAcceptMissionsFromProvider(missionProvider);
 				}
-				ClientRPC(RpcTarget.Player("Client_StartConversation", ply), GetConversationIndex(conversationFor.shortname), nodeIndex, flag, val);
-				return;
+				ConversationState val = ConversationHost.BuildStartState(ply, inPersonConversationFor, nodeIndex);
+				try
+				{
+					val.didCompleteMission = flag;
+					if (val.conversationIndex == -1)
+					{
+						Debug.LogError((object)("Conversation " + ((Object)inPersonConversationFor).name + " is missing from the conversation manifest, the client cannot find it"), (Object)(object)inPersonConversationFor);
+						OnConversationEnded(ply);
+					}
+					else
+					{
+						ply.SendConversationStart(val);
+					}
+					return;
+				}
+				finally
+				{
+					((IDisposable)val)?.Dispose();
+				}
 			}
-			finally
-			{
-				((IDisposable)val)?.Dispose();
-			}
+			Debug.LogError((object)("Failed to start conversation " + ((Object)inPersonConversationFor).name + ", entry node has no output"), (Object)(object)inPersonConversationFor);
+			OnConversationEnded(ply);
 		}
-		Server_OnConversationEnded(ply);
+		else
+		{
+			OnConversationEnded(ply);
+		}
 	}
 
 	public virtual void Server_OnConversationStarted(BasePlayer speakingTo)
@@ -421,14 +379,6 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 	{
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
-	public void Server_EndTalking(RPCMessage msg)
-	{
-		Server_OnConversationEnded(msg.player);
-	}
-
 	public bool ValidConversationPlayer(BasePlayer player)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -437,137 +387,97 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		{
 			return false;
 		}
-		if (conversingPlayers.Contains(player))
+		if (ConversationHost.IsConversingWith(player))
 		{
 			return false;
 		}
 		return true;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
-	public void Server_ResponsePressed(RPCMessage msg)
+	public void HandleResponse(BasePlayer ply, int speechNodeIndex, int responseIndex, uint previewingMissionId, uint selectedMissionId, NetworkableId selectedAnimalId)
 	{
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
-		BasePlayer player = msg.player;
-		int num = msg.read.Int32();
-		int num2 = msg.read.Int32();
-		uint missionId = msg.read.UInt32();
-		uint missionId2 = msg.read.UInt32();
-		NetworkableId val = msg.read.EntityID();
-		ConversationData conversationFor = GetConversationFor(player);
-		if ((Object)(object)conversationFor == (Object)null)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		if (!ConversationHost.TryGetShownSpeechNode(ply, speechNodeIndex, out var conversation, out var speechNode))
 		{
 			return;
 		}
-		ConversationData.AbstractSpeechNodeData abstractSpeechNodeData = conversationFor.speechNodes[num];
-		string guid = string.Empty;
+		string resultingNodeGuid = string.Empty;
 		IMissionProvider missionProvider = this as IMissionProvider;
-		ConversationData.ResponseNode responseNode = default;
-		if (abstractSpeechNodeData is ConversationData.MissionListSpeechNodeData missionListSpeechNodeData)
+		if (speechNode is ConversationData.MissionListSpeechNodeData missionListSpeechNodeData)
 		{
 			if (!(this is NPCSimpleMissionProvider) || missionProvider == null)
 			{
-				Debug.LogError((object)string.Format("Response {0} pressed on mission list speech node on {1} but is not a {2}", num2, ((Object)this).name, "NPCSimpleMissionProvider"));
+				Debug.LogError((object)string.Format("Response {0} pressed on mission list speech node on {1} but is not a {2}", responseIndex, ((Object)this).name, "NPCSimpleMissionProvider"));
 				return;
 			}
-			if (missionProvider.TryGetMission(missionId2, out var mission))
+			if (missionProvider.TryGetMission(selectedMissionId, out var mission) && ply.Server_CanAcceptMission(missionProvider, mission))
 			{
+				ply.conversationPreviewMissionId = mission.id;
 				bool flag = false;
 				ConversationData.MissionListNodeOptionData[] resultingNodeOptions = missionListSpeechNodeData.resultingNodeOptions;
 				foreach (ConversationData.MissionListNodeOptionData missionListNodeOptionData in resultingNodeOptions)
 				{
 					if (!(missionListNodeOptionData.selectedMission != mission))
 					{
-						guid = missionListNodeOptionData.resultingNode;
+						resultingNodeGuid = missionListNodeOptionData.resultingNode;
 						flag = true;
 						break;
 					}
 				}
 				if (!flag)
 				{
-					guid = missionListSpeechNodeData.defaultResultingNode;
+					resultingNodeGuid = missionListSpeechNodeData.defaultResultingNode;
 				}
 			}
 		}
-		else if (abstractSpeechNodeData is ConversationData.SellAnimalsSpeechNodeData sellAnimalsSpeechNodeData && val.IsValid)
+		else if (speechNode is ConversationData.SellAnimalsSpeechNodeData sellAnimalsSpeechNodeData && selectedAnimalId.IsValid)
 		{
 			if (!(this is LivestockVendor livestockVendor))
 			{
-				Debug.LogError((object)string.Format("Animal {0} selected on sell animals speech node on {1} but is not a {2}", val, ((Object)this).name, "LivestockVendor"), (Object)(object)this);
+				Debug.LogError((object)string.Format("Animal {0} selected on sell animals speech node on {1} but is not a {2}", selectedAnimalId, ((Object)this).name, "LivestockVendor"), (Object)(object)this);
 				return;
 			}
-			if (livestockVendor.Server_SelectAnimal(player, val))
+			if (livestockVendor.Server_SelectAnimal(ply, selectedAnimalId))
 			{
-				guid = sellAnimalsSpeechNodeData.animalSelectedResultingNode;
+				resultingNodeGuid = sellAnimalsSpeechNodeData.animalSelectedResultingNode;
 			}
 		}
 		else
 		{
-			if (num2 < 0 || num2 >= abstractSpeechNodeData.responses.Length)
+			if (!ply.CanSeeConversationResponse(responseIndex))
 			{
-				Debug.LogWarning((object)$"Response {num2} pressed on {((Object)this).name} is out of range of speech node {num}", (Object)(object)this);
 				return;
 			}
-			if (abstractSpeechNodeData is ConversationData.MissionPreviewSpeechNodeData && this is NPCSimpleMissionProvider && num2 == 0 && missionProvider != null && missionProvider.TryGetMission(missionId, out var mission2) && player.Server_CanAcceptMission(missionProvider, mission2))
+			if (speechNode is ConversationData.MissionPreviewSpeechNodeData && this is NPCSimpleMissionProvider && responseIndex == 0 && missionProvider != null && previewingMissionId == ply.conversationPreviewMissionId && missionProvider.TryGetMission(previewingMissionId, out var mission2) && ply.Server_CanAcceptMission(missionProvider, mission2))
 			{
-				TryAssignMissionToPlayer(mission2, player);
+				TryAssignMissionToPlayer(mission2, ply);
 			}
-			responseNode = abstractSpeechNodeData.responses[num2];
-			if (responseNode != null)
+			if (Interface.CallHook("OnNpcConversationRespond", this, ply, conversation, speechNode, responseIndex) != null || !ConversationHost.TryGetResponseResult(ply, speechNode, responseIndex, out resultingNodeGuid))
 			{
-				if (Interface.CallHook("OnNpcConversationRespond", this, player, conversationFor, responseNode) != null)
-				{
-					return;
-				}
-				if (responseNode.conditions.Length != 0)
-				{
-					UpdateFlags();
-				}
-				bool flag2 = responseNode.PassesConditions(player, this);
-				if (flag2)
-				{
-					string actionString = responseNode.GetActionString();
-					if (!string.IsNullOrEmpty(actionString))
-					{
-						OnConversationAction(player, actionString);
-					}
-				}
-				guid = (flag2 ? responseNode.resultingSpeechNode : responseNode.GetFailedSpeechNode(player, this));
+				return;
 			}
 		}
-		conversationFor.GetFirstSpeechNodeFrom(player, this, guid, out var nodeIndex);
-		if (nodeIndex == -1)
-		{
-			ForceEndConversation(player);
-			return;
-		}
-		ForceSpeechNode(player, conversationFor, nodeIndex);
-		Interface.CallHook("OnNpcConversationResponded", this, player, conversationFor, responseNode);
+		ConversationHost.ShowNextSpeechNode(ply, conversation, resultingNodeGuid);
+		Interface.CallHook("OnNpcConversationResponded", this, ply, conversation, speechNode, responseIndex);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
-	public void Server_RewardChoiceSelected(RPCMessage msg)
+	public void Server_HandleRewardChoice(BasePlayer player, uint missionId, int rewardChoice)
 	{
-		BasePlayer player = msg.player;
-		uint num = msg.read.UInt32();
-		int choice = msg.read.Int32();
-		if (!MissionManifest.TryGetFromID(num, out var mission))
+		if (!ConversationHost.CanDriveConversation(player) || player.conversationRewardMissionId == 0 || missionId != player.conversationRewardMissionId)
 		{
-			Debug.LogError((object)$"{((Object)this).name} failed to retrieve a mission from ID {num}", (Object)(object)this);
+			return;
+		}
+		if (!MissionManifest.TryGetFromID(missionId, out var mission))
+		{
+			Debug.LogError((object)$"{((Object)this).name} failed to retrieve a mission from ID {missionId}", (Object)(object)this);
 			return;
 		}
 		BaseMission.MissionInstance missionInstance = null;
 		for (int i = 0; i < player.acceptedMissions.Count; i++)
 		{
 			BaseMission.MissionInstance missionInstance2 = player.acceptedMissions[i];
-			if (missionInstance2 != null && missionInstance2.missionID == num)
+			if (missionInstance2 != null && missionInstance2.missionID == missionId)
 			{
 				BaseMission.MissionStatus status = missionInstance2.status;
 				if ((status == BaseMission.MissionStatus.Accomplished || status == BaseMission.MissionStatus.Completed) && !missionInstance2.hasDispensedRewards)
@@ -579,13 +489,8 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		}
 		if (missionInstance != null)
 		{
-			mission.DispenseRewards(missionInstance, player, choice);
+			mission.DispenseRewards(missionInstance, player, rewardChoice);
 		}
-	}
-
-	public BasePlayer GetActionPlayer()
-	{
-		return lastActionPlayer;
 	}
 
 	public virtual void OnConversationAction(BasePlayer player, string action)
@@ -615,24 +520,28 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 				continue;
 			}
 			CleanupConversingPlayers();
-			foreach (BasePlayer conversingPlayer in conversingPlayers)
+			foreach (BasePlayer conversingPlayer in ConversationHost.ConversingPlayers)
 			{
 				if ((Object)(object)conversingPlayer == (Object)(object)player || (Object)(object)conversingPlayer == (Object)null)
 				{
 					continue;
 				}
 				int speechNodeIndex = -1;
-				ConversationData conversationFor = GetConversationFor(player);
-				ConversationData.AbstractConversationNodeData[] controlNodes = conversationFor.controlNodes;
+				ConversationData activeConversationFor = GetActiveConversationFor(conversingPlayer);
+				if ((Object)(object)activeConversationFor == (Object)null)
+				{
+					continue;
+				}
+				ConversationData.AbstractConversationNodeData[] controlNodes = activeConversationFor.controlNodes;
 				for (int j = 0; j < controlNodes.Length; j++)
 				{
 					if (controlNodes[j] is ConversationData.ActionEventOtherPlayerInvokedData actionEventOtherPlayerInvokedData)
 					{
-						speechNodeIndex = conversationFor.GetSpeechNodeIndex(actionEventOtherPlayerInvokedData.resultingNode);
+						speechNodeIndex = activeConversationFor.GetSpeechNodeIndex(actionEventOtherPlayerInvokedData.resultingNode);
 						break;
 					}
 				}
-				ForceSpeechNode(conversingPlayer, conversationFor, speechNodeIndex);
+				ForceSpeechNode(conversingPlayer, activeConversationFor, speechNodeIndex);
 			}
 			int num = nPCConversationResultAction.scrapCost;
 			PooledList<Item> val = Pool.Get<PooledList<Item>>();
@@ -646,17 +555,21 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 				if (num > 0)
 				{
 					int speechNodeIndex2 = -1;
-					ConversationData conversationFor2 = GetConversationFor(player);
-					ConversationData.AbstractConversationNodeData[] controlNodes = conversationFor2.controlNodes;
+					ConversationData activeConversationFor2 = GetActiveConversationFor(player);
+					if ((Object)(object)activeConversationFor2 == (Object)null)
+					{
+						break;
+					}
+					ConversationData.AbstractConversationNodeData[] controlNodes = activeConversationFor2.controlNodes;
 					for (int j = 0; j < controlNodes.Length; j++)
 					{
 						if (controlNodes[j] is ConversationData.ActionEventPlayerTooPoorNodeData actionEventPlayerTooPoorNodeData)
 						{
-							speechNodeIndex2 = conversationFor2.GetSpeechNodeIndex(actionEventPlayerTooPoorNodeData.resultingNode);
+							speechNodeIndex2 = activeConversationFor2.GetSpeechNodeIndex(actionEventPlayerTooPoorNodeData.resultingNode);
 							break;
 						}
 					}
-					ForceSpeechNode(player, conversationFor2, speechNodeIndex2);
+					ForceSpeechNode(player, activeConversationFor2, speechNodeIndex2);
 					break;
 				}
 				Facepunch.Rust.Analytics.Azure.OnNPCVendor(player, this, nPCConversationResultAction.scrapCost, nPCConversationResultAction.action);
@@ -685,6 +598,126 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 
 	protected virtual void TryAssignMissionToPlayer(BaseMission mission, BasePlayer player)
 	{
+	}
+
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		if (id == 0)
+		{
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: PhoneNumber for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_PhoneNumber);
+			return true;
+		}
+		return base.WriteSyncVar(id, writer);
+	}
+
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
+	{
+		if (id == 0)
+		{
+			try
+			{
+				_ = __sync_PhoneNumber;
+				int _sync_PhoneNumber = reader.Int32();
+				__sync_PhoneNumber = _sync_PhoneNumber;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		}
+		return base.OnSyncVar(id, reader, fromAutoSave);
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (propertyName == "PhoneNumber")
+		{
+			return 0;
+		}
+		return byte.MaxValue;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
+		{
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
+		}
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_PhoneNumber = 0;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		if (id == 0)
+		{
+			return true;
+		}
+		return base.ShouldInvalidateCache(id);
 	}
 
 	public NPCTalking()

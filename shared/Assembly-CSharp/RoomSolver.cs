@@ -4,13 +4,38 @@ using Facepunch;
 
 public class RoomSolver : IPooled
 {
+	private sealed class Search
+	{
+		public int Parent;
+
+		public bool Finished;
+
+		public readonly List<BlockFace> Visited = new List<BlockFace>();
+
+		public readonly List<BlockFace> Frontier = new List<BlockFace>();
+	}
+
 	public List<Room> Rooms = new List<Room>();
 
 	private int nextRoomId = 1;
 
 	public List<Room> Dissolved = new List<Room>();
 
+	public List<Room> Created = new List<Room>();
+
+	public List<Room> Changed = new List<Room>();
+
+	public ListHashSet<BlockFace> Moved = new ListHashSet<BlockFace>();
+
+	private readonly List<Room> emptied = new List<Room>();
+
 	private Stack<BlockFace> floodStack = new Stack<BlockFace>();
+
+	private readonly List<Search> searches = new List<Search>();
+
+	private int searchCount;
+
+	public bool HasEmptiedRooms => emptied.Count > 0;
 
 	public int NextRoomId => nextRoomId;
 
@@ -26,9 +51,10 @@ public class RoomSolver : IPooled
 
 	public void Clear()
 	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		FreeDissolved();
+		emptied.Clear();
 		foreach (Room room2 in Rooms)
 		{
 			Enumerator<BlockFace> enumerator2 = room2.Faces.GetEnumerator();
@@ -47,6 +73,9 @@ public class RoomSolver : IPooled
 			Pool.Free<Room>(ref room);
 		}
 		Rooms.Clear();
+		Created.Clear();
+		Changed.Clear();
+		Moved.Clear();
 	}
 
 	public void Solve(List<BlockFace> faces)
@@ -68,6 +97,9 @@ public class RoomSolver : IPooled
 	public void Repair(ListHashSet<BlockFace> dirtyFaces)
 	{
 		FreeDissolved();
+		Created.Clear();
+		Changed.Clear();
+		Moved.Clear();
 		ListHashSet<BlockFace> val = Pool.Get<ListHashSet<BlockFace>>();
 		try
 		{
@@ -76,30 +108,21 @@ public class RoomSolver : IPooled
 				BlockFace blockFace = dirtyFaces[i];
 				if (blockFace.Room != null)
 				{
-					DissolveRoom(blockFace.Room, val);
+					MarkChanged(blockFace.Room);
 				}
-				else
-				{
-					val.TryAdd(blockFace);
-				}
+				val.TryAdd(blockFace);
 			}
-			for (int j = 0; j < val.Count; j++)
+			MergeAcrossLinks(val);
+			SplitWhereDisconnected(val);
+			foreach (Room item in emptied)
 			{
-				BlockFace blockFace2 = val[j];
-				if (blockFace2.Room == null)
+				if (item.Faces.Count <= 0 && item.SolverIndex >= 0)
 				{
-					FloodFrom(blockFace2);
+					RemoveRoom(item);
+					Retire(item);
 				}
 			}
-			for (int num = Rooms.Count - 1; num >= 0; num--)
-			{
-				if (Rooms[num].Faces.Count <= 0)
-				{
-					Room room = Rooms[num];
-					Rooms.RemoveAt(num);
-					Retire(room);
-				}
-			}
+			emptied.Clear();
 		}
 		finally
 		{
@@ -107,9 +130,280 @@ public class RoomSolver : IPooled
 		}
 	}
 
+	private void MergeAcrossLinks(ListHashSet<BlockFace> pending)
+	{
+		for (int i = 0; i < pending.Count; i++)
+		{
+			BlockFace blockFace = pending[i];
+			if (blockFace.Room == null)
+			{
+				AddFace(blockFace, CreateRoom());
+			}
+			foreach (KeyValuePair<BlockFace, int> item in blockFace.LinksPerFace)
+			{
+				BlockFace key = item.Key;
+				if (key.Room == null)
+				{
+					AddFace(key, blockFace.Room);
+					pending.TryAdd(key);
+				}
+				else
+				{
+					Merge(blockFace.Room, key.Room);
+				}
+			}
+		}
+	}
+
+	private void Merge(Room a, Room b)
+	{
+		if (a != b)
+		{
+			Room room = ((a.Faces.Count >= b.Faces.Count) ? a : b);
+			Room room2 = ((room == a) ? b : a);
+			for (int i = 0; i < room2.Faces.Count; i++)
+			{
+				BlockFace blockFace = room2.Faces[i];
+				blockFace.Room = room;
+				room.Faces.Add(blockFace);
+				Moved.TryAdd(blockFace);
+			}
+			room2.Faces.Clear();
+			MarkChanged(room);
+			RemoveRoom(room2);
+			Retire(room2);
+		}
+	}
+
+	private void SplitWhereDisconnected(ListHashSet<BlockFace> pending)
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		Dictionary<Room, int> dictionary = Pool.Get<Dictionary<Room, int>>();
+		List<BlockFace> list = Pool.Get<List<BlockFace>>();
+		try
+		{
+			Enumerator<BlockFace> enumerator = pending.GetEnumerator();
+			try
+			{
+				while (enumerator.MoveNext())
+				{
+					BlockFace current = enumerator.Current;
+					dictionary.TryGetValue(current.Room, out var value);
+					dictionary[current.Room] = value + 1;
+				}
+			}
+			finally
+			{
+				((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			}
+			foreach (KeyValuePair<Room, int> item in dictionary)
+			{
+				if (item.Value < 2)
+				{
+					continue;
+				}
+				list.Clear();
+				enumerator = pending.GetEnumerator();
+				try
+				{
+					while (enumerator.MoveNext())
+					{
+						BlockFace current3 = enumerator.Current;
+						if (current3.Room == item.Key)
+						{
+							list.Add(current3);
+						}
+					}
+				}
+				finally
+				{
+					((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+				}
+				Split(item.Key, list);
+			}
+		}
+		finally
+		{
+			Pool.FreeUnmanaged<BlockFace>(ref list);
+			Pool.FreeUnmanaged<Room, int>(ref dictionary);
+		}
+	}
+
+	private void Split(Room room, List<BlockFace> seeds)
+	{
+		Dictionary<BlockFace, int> searchOf = Pool.Get<Dictionary<BlockFace, int>>();
+		try
+		{
+			searchCount = 0;
+			foreach (BlockFace seed in seeds)
+			{
+				Visit(seed, TakeSearch(), searchOf);
+			}
+			while (GrowSearches(searchOf))
+			{
+			}
+			SplitOffFinishedPieces(room);
+		}
+		finally
+		{
+			Pool.FreeUnmanaged<BlockFace, int>(ref searchOf);
+		}
+	}
+
+	private bool GrowSearches(Dictionary<BlockFace, int> searchOf)
+	{
+		int num = 0;
+		for (int i = 0; i < searchCount; i++)
+		{
+			Search search = searches[i];
+			if (search.Parent != i || search.Finished)
+			{
+				continue;
+			}
+			if (search.Frontier.Count == 0)
+			{
+				search.Finished = true;
+				continue;
+			}
+			num++;
+			BlockFace blockFace = search.Frontier[search.Frontier.Count - 1];
+			search.Frontier.RemoveAt(search.Frontier.Count - 1);
+			foreach (KeyValuePair<BlockFace, int> item in blockFace.LinksPerFace)
+			{
+				BlockFace key = item.Key;
+				int num2 = Find(i);
+				if (!searchOf.TryGetValue(key, out var value))
+				{
+					Visit(key, num2, searchOf);
+					continue;
+				}
+				int num3 = Find(value);
+				if (num3 != num2)
+				{
+					Join(num2, num3);
+				}
+			}
+		}
+		return num > 1;
+	}
+
+	private void SplitOffFinishedPieces(Room room)
+	{
+		int num = -1;
+		for (int i = 0; i < searchCount; i++)
+		{
+			Search search = searches[i];
+			if (search.Parent == i)
+			{
+				if (!search.Finished)
+				{
+					num = i;
+					break;
+				}
+				if (num < 0 || search.Visited.Count > searches[num].Visited.Count)
+				{
+					num = i;
+				}
+			}
+		}
+		for (int j = 0; j < searchCount; j++)
+		{
+			Search search2 = searches[j];
+			if (search2.Parent != j || j == num)
+			{
+				continue;
+			}
+			Room room2 = CreateRoom();
+			foreach (BlockFace item in search2.Visited)
+			{
+				room.Faces.Remove(item);
+				item.Room = room2;
+				room2.Faces.Add(item);
+				Moved.TryAdd(item);
+			}
+		}
+	}
+
+	private int TakeSearch()
+	{
+		if (searchCount == searches.Count)
+		{
+			searches.Add(new Search());
+		}
+		Search search = searches[searchCount];
+		search.Parent = searchCount;
+		search.Finished = false;
+		search.Visited.Clear();
+		search.Frontier.Clear();
+		return searchCount++;
+	}
+
+	private void Visit(BlockFace face, int search, Dictionary<BlockFace, int> searchOf)
+	{
+		searchOf[face] = search;
+		searches[search].Visited.Add(face);
+		searches[search].Frontier.Add(face);
+	}
+
+	private int Find(int index)
+	{
+		while (searches[index].Parent != index)
+		{
+			Search search = searches[index];
+			search.Parent = searches[search.Parent].Parent;
+			index = search.Parent;
+		}
+		return index;
+	}
+
+	private void Join(int a, int b)
+	{
+		if (searches[a].Visited.Count < searches[b].Visited.Count)
+		{
+			int num = b;
+			int num2 = a;
+			a = num;
+			b = num2;
+		}
+		Search search = searches[a];
+		Search search2 = searches[b];
+		search.Visited.AddRange(search2.Visited);
+		search.Frontier.AddRange(search2.Frontier);
+		search2.Visited.Clear();
+		search2.Frontier.Clear();
+		search2.Parent = a;
+	}
+
+	private void AddFace(BlockFace face, Room room)
+	{
+		face.Room = room;
+		room.Faces.Add(face);
+		Moved.TryAdd(face);
+		MarkChanged(room);
+	}
+
+	private void MarkChanged(Room room)
+	{
+		if (!Created.Contains(room) && !Changed.Contains(room))
+		{
+			Changed.Add(room);
+		}
+	}
+
 	private void Retire(Room room)
 	{
-		Dissolved.Add(room);
+		Changed.Remove(room);
+		if (Created.Remove(room))
+		{
+			Pool.Free<Room>(ref room);
+		}
+		else
+		{
+			Dissolved.Add(room);
+		}
 	}
 
 	private void FreeDissolved()
@@ -122,33 +416,44 @@ public class RoomSolver : IPooled
 		Dissolved.Clear();
 	}
 
-	private void DissolveRoom(Room room, ListHashSet<BlockFace> seeds)
+	public void OnFaceRemoved(Room room)
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		Enumerator<BlockFace> enumerator = room.Faces.GetEnumerator();
-		try
+		if (room.Faces.Count == 0)
 		{
-			while (enumerator.MoveNext())
-			{
-				BlockFace current = enumerator.Current;
-				current.Room = null;
-				seeds.TryAdd(current);
-			}
+			emptied.Add(room);
 		}
-		finally
-		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
-		}
-		Rooms.Remove(room);
-		Retire(room);
+	}
+
+	private Room NewRoom()
+	{
+		Room room = Pool.Get<Room>();
+		room.Id = nextRoomId++;
+		room.Solver = this;
+		room.SolverIndex = Rooms.Count;
+		Rooms.Add(room);
+		return room;
+	}
+
+	private void RemoveRoom(Room room)
+	{
+		int index = Rooms.Count - 1;
+		Room room2 = Rooms[index];
+		Rooms[room.SolverIndex] = room2;
+		room2.SolverIndex = room.SolverIndex;
+		Rooms.RemoveAt(index);
+		room.SolverIndex = -1;
+	}
+
+	private Room CreateRoom()
+	{
+		Room room = NewRoom();
+		Created.Add(room);
+		return room;
 	}
 
 	private void FloodFrom(BlockFace seed)
 	{
-		Room room = Pool.Get<Room>();
-		room.Id = nextRoomId++;
-		Rooms.Add(room);
+		Room room = NewRoom();
 		floodStack.Clear();
 		floodStack.Push(seed);
 		seed.Room = room;
@@ -158,45 +463,13 @@ public class RoomSolver : IPooled
 			foreach (KeyValuePair<BlockFace, int> item in floodStack.Pop().LinksPerFace)
 			{
 				BlockFace key = item.Key;
-				if (key.Room != room)
+				if (key.Room == null)
 				{
-					if (key.Room != null)
-					{
-						Absorb(key.Room, room);
-						continue;
-					}
 					key.Room = room;
 					room.Faces.Add(key);
 					floodStack.Push(key);
 				}
 			}
 		}
-	}
-
-	private void Absorb(Room other, Room into)
-	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		Enumerator<BlockFace> enumerator = other.Faces.GetEnumerator();
-		try
-		{
-			while (enumerator.MoveNext())
-			{
-				BlockFace current = enumerator.Current;
-				current.Room = into;
-				into.Faces.Add(current);
-				floodStack.Push(current);
-			}
-		}
-		finally
-		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
-		}
-		if (other.IsOutside)
-		{
-			into.IsOutside = true;
-		}
-		Rooms.Remove(other);
-		Retire(other);
 	}
 }

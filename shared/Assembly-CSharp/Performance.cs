@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using Rust;
 using Rust.Workshop;
@@ -76,6 +77,7 @@ public class Performance : SingletonComponent<Performance>
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public List<int> GetFrameTimes(int requestedStart, int maxCount, out int startIndex)
 	{
 		startIndex = Math.Max(requestedStart, Math.Max(Time.frameCount - 1000 - 1, 0));

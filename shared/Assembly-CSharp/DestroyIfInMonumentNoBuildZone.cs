@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DestroyIfInMonumentNoBuildZone : MonoBehaviour
+public class DestroyIfInMonumentNoBuildZone : MonoBehaviour, IFlattenKeepsChildren
 {
 	protected void Start()
 	{

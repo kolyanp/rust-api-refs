@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ConVar;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -107,7 +108,61 @@ public class ConversationData : ScriptableObject
 	{
 		public ResponseNode[] responses = Array.Empty<ResponseNode>();
 
+		[NonSerialized]
+		private HashSet<string> formatTextKeys;
+
 		public abstract string StatementTranslated { get; }
+
+		protected virtual Phrase Statement => null;
+
+		public bool UsesFormatText => GetFormatTextKeys().Count > 0;
+
+		public bool UsesFormatTextKey(string key)
+		{
+			return GetFormatTextKeys().Contains(key);
+		}
+
+		private HashSet<string> GetFormatTextKeys()
+		{
+			if (formatTextKeys != null)
+			{
+				return formatTextKeys;
+			}
+			if (formatTextKeys == null)
+			{
+				formatTextKeys = new HashSet<string>();
+			}
+			formatTextKeys.Clear();
+			Phrase statement = Statement;
+			AddFormatTextKeys((statement != null) ? statement.english : null, formatTextKeys);
+			ResponseNode[] array = responses;
+			for (int i = 0; i < array.Length; i++)
+			{
+				Phrase responseTextLocalized = array[i].responseTextLocalized;
+				AddFormatTextKeys((responseTextLocalized != null) ? responseTextLocalized.english : null, formatTextKeys);
+			}
+			return formatTextKeys;
+		}
+
+		private static void AddFormatTextKeys(string text, HashSet<string> keys)
+		{
+			if (string.IsNullOrEmpty(text))
+			{
+				return;
+			}
+			int num = text.IndexOf('{');
+			while (num >= 0)
+			{
+				int num2 = text.IndexOf('}', num + 1);
+				if (num2 >= 0)
+				{
+					keys.Add(text.Substring(num + 1, num2 - num - 1));
+					num = text.IndexOf('{', num2 + 1);
+					continue;
+				}
+				break;
+			}
+		}
 	}
 
 	[Serializable]
@@ -131,6 +186,8 @@ public class ConversationData : ScriptableObject
 		public Phrase statement;
 
 		public override string StatementTranslated => statement.translated;
+
+		protected override Phrase Statement => statement;
 	}
 
 	[Serializable]
@@ -144,6 +201,8 @@ public class ConversationData : ScriptableObject
 		public string defaultResultingNode;
 
 		public override string StatementTranslated => statement.translated;
+
+		protected override Phrase Statement => statement;
 	}
 
 	[Serializable]
@@ -170,6 +229,8 @@ public class ConversationData : ScriptableObject
 		public string animalSelectedResultingNode;
 
 		public override string StatementTranslated => statement.translated;
+
+		protected override Phrase Statement => statement;
 	}
 
 	[Serializable]
@@ -183,7 +244,31 @@ public class ConversationData : ScriptableObject
 		[Tooltip("Said instead when the vendor has rolled a generous offer, so an unusually good one reads as one. Optional.")]
 		public Phrase generousStatement;
 
+		[Tooltip("Said instead of the first offer's line for an animal that shows Good in every gene but hides a Bad copy behind one. Optional.")]
+		public Phrase defectStatement;
+
+		[Tooltip("Said instead of the first offer's line for an inbred animal. Optional.")]
+		public Phrase inbredStatement;
+
+		[Tooltip("Said instead of the first offer's line for an animal that is Good twice over in every gene and not inbred. Optional.")]
+		public Phrase prizeStatement;
+
+		[Tooltip("Said instead of the first offer's line for an animal whose potential is below livestock.vendorLowPotential. Optional.")]
+		public Phrase lowPotentialStatement;
+
 		public override string StatementTranslated => statement.translated;
+
+		private Phrase RemarkStatement(LivestockVendor.SaleRemark remark)
+		{
+			return remark switch
+			{
+				LivestockVendor.SaleRemark.HiddenDefect => defectStatement, 
+				LivestockVendor.SaleRemark.Inbred => inbredStatement, 
+				LivestockVendor.SaleRemark.Prize => prizeStatement, 
+				LivestockVendor.SaleRemark.LowPotential => lowPotentialStatement, 
+				_ => (Phrase)null, 
+			};
+		}
 	}
 
 	[Serializable]
@@ -268,7 +353,14 @@ public class ConversationData : ScriptableObject
 			AnnoyedAboutSelection = 24,
 			HasWoolToSell = 25,
 			VehiclePadRepaired = 26,
-			SaleHasChanged = 27
+			SaleHasChanged = 27,
+			SelectedAnimalUnraised = 28,
+			SelectedAnimalIsChild = 29,
+			TravellingVendorEnabled = 30,
+			TravellingVendorVisiting = 31,
+			PowergridEnabled = 32,
+			PowergridPowered = 33,
+			WeatherChangeForecast = 34
 		}
 
 		public ConditionType conditionType;
@@ -310,13 +402,13 @@ public class ConversationData : ScriptableObject
 				flag = GetNPCConvar(conditionString);
 				break;
 			case ConditionType.ProviderHasMissionAvailable:
-				flag = provider is IMissionProvider missionProvider && missionProvider.Server_HasMissionAvailable(player);
+				flag = provider is IMissionProvider missionProvider2 && missionProvider2.Server_HasMissionAvailable(player);
 				break;
 			case ConditionType.PlayerHasAnyMissionActive:
 				flag = player.IsAnyMissionActive();
 				break;
 			case ConditionType.PlayerHasRecentlyCompletedMission:
-				flag = provider is IMissionProvider missionProvider2 && missionProvider2.HasPlayerRecentlyCompletedMission(player);
+				flag = provider is IMissionProvider missionProvider && missionProvider.HasPlayerRecentlyCompletedMission(player);
 				break;
 			case ConditionType.PlayerHasPaidFoodToll:
 			{
@@ -331,45 +423,45 @@ public class ConversationData : ScriptableObject
 				flag = (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null && DeepSeaManager.IsInsideDeepSea((BaseNetworkable)provider.GetEntity());
 				break;
 			case ConditionType.CanUpgradeApartment:
-				if (provider is ApartmentVendor apartmentVendor)
+				if (provider is ApartmentVendor apartmentVendor7)
 				{
-					flag = apartmentVendor.Conversation_CanUpgradeApartment(player, (int)conditionAmount);
+					flag = apartmentVendor7.Conversation_CanUpgradeApartment(player, (int)conditionAmount);
 				}
 				break;
 			case ConditionType.CanPurchaseApartment:
-				if (provider is ApartmentVendor apartmentVendor7)
+				if (provider is ApartmentVendor apartmentVendor6)
 				{
-					flag = apartmentVendor7.Conversation_CanPurchaseApartment(player, (int)conditionAmount);
+					flag = apartmentVendor6.Conversation_CanPurchaseApartment(player, (int)conditionAmount);
 				}
 				break;
 			case ConditionType.CanCheckoutApartment:
-				if (provider is ApartmentVendor apartmentVendor6)
+				if (provider is ApartmentVendor apartmentVendor5)
 				{
-					flag = apartmentVendor6.Conversation_CanCheckoutApartment(player);
+					flag = apartmentVendor5.Conversation_CanCheckoutApartment(player);
 				}
 				break;
 			case ConditionType.OwnsApartment:
-				if (provider is ApartmentVendor apartmentVendor5)
+				if (provider is ApartmentVendor apartmentVendor2)
 				{
-					flag = apartmentVendor5.Conversation_OwnsApartment(player, (ApartmentSize)conditionAmount);
+					flag = apartmentVendor2.Conversation_OwnsApartment(player, (ApartmentSize)conditionAmount);
 				}
 				break;
 			case ConditionType.CanAffordApartment:
-				if (provider is ApartmentVendor apartmentVendor4)
+				if (provider is ApartmentVendor apartmentVendor3)
 				{
-					flag = apartmentVendor4.Conversation_CanAffordApartment(player, (ApartmentSize)conditionAmount);
+					flag = apartmentVendor3.Conversation_CanAffordApartment(player, (ApartmentSize)conditionAmount);
 				}
 				break;
 			case ConditionType.CanAffordUpgrade:
-				if (provider is ApartmentVendor apartmentVendor3)
+				if (provider is ApartmentVendor apartmentVendor)
 				{
-					flag = apartmentVendor3.Conversation_CanAffordUpgrade(player, (ApartmentVendor.ApartmentConversationUpgrade)conditionAmount);
+					flag = apartmentVendor.Conversation_CanAffordUpgrade(player, (ApartmentVendor.ApartmentConversationUpgrade)conditionAmount);
 				}
 				break;
 			case ConditionType.IsAnyApartmentAvailable:
-				if (provider is ApartmentVendor apartmentVendor2)
+				if (provider is ApartmentVendor apartmentVendor4)
 				{
-					flag = apartmentVendor2.Conversation_HasAnyRoomAvailable();
+					flag = apartmentVendor4.Conversation_HasAnyRoomAvailable();
 				}
 				break;
 			case ConditionType.CanAffordMasterKey:
@@ -379,33 +471,45 @@ public class ConversationData : ScriptableObject
 				}
 				break;
 			case ConditionType.HasAnimalsAvailableToSell:
-				if (provider is LivestockVendor livestockVendor5)
+				if (provider is LivestockVendor livestockVendor7)
 				{
-					flag = livestockVendor5.TriggerHasAnimalsToSell(player);
+					flag = livestockVendor7.TriggerHasAnimalsToSell(player);
 				}
 				break;
 			case ConditionType.HasOfferRemaining:
-				if (provider is LivestockVendor livestockVendor4)
+				if (provider is LivestockVendor livestockVendor6)
 				{
-					flag = livestockVendor4.Server_HasOfferRemaining(player);
+					flag = livestockVendor6.Server_HasOfferRemaining(player);
 				}
 				break;
 			case ConditionType.AnnoyedAboutSelection:
-				if (provider is LivestockVendor livestockVendor3)
+				if (provider is LivestockVendor livestockVendor5)
 				{
-					flag = livestockVendor3.Server_IsAnnoyedAboutSelection(player);
+					flag = livestockVendor5.Server_IsAnnoyedAboutSelection(player);
 				}
 				break;
 			case ConditionType.HasWoolToSell:
-				if (provider is LivestockVendor livestockVendor2)
+				if (provider is LivestockVendor livestockVendor4)
 				{
-					flag = livestockVendor2.Server_HasWoolToSell(player);
+					flag = livestockVendor4.Server_HasWoolToSell(player);
 				}
 				break;
 			case ConditionType.SaleHasChanged:
+				if (provider is LivestockVendor livestockVendor3)
+				{
+					flag = livestockVendor3.Server_HasSaleChanged(player);
+				}
+				break;
+			case ConditionType.SelectedAnimalUnraised:
+				if (provider is LivestockVendor livestockVendor2)
+				{
+					flag = livestockVendor2.Server_IsSelectionUnraised(player);
+				}
+				break;
+			case ConditionType.SelectedAnimalIsChild:
 				if (provider is LivestockVendor livestockVendor)
 				{
-					flag = livestockVendor.Server_HasSaleChanged(player);
+					flag = livestockVendor.Server_IsSelectionChild(player);
 				}
 				break;
 			case ConditionType.VehiclePadRepaired:
@@ -414,6 +518,23 @@ public class ConversationData : ScriptableObject
 					flag = vehicleVendor.Conversation_IsPadUsable();
 				}
 				break;
+			case ConditionType.TravellingVendorEnabled:
+				flag = TravellingVendorEvent.IsEnabled();
+				break;
+			case ConditionType.TravellingVendorVisiting:
+				flag = (Object)(object)TravellingVendor.GetVisitingVendor() != (Object)null;
+				break;
+			case ConditionType.PowergridEnabled:
+				flag = PowergridManager.Server_IsAvailable();
+				break;
+			case ConditionType.PowergridPowered:
+				flag = PowergridManager.Server_IsAvailable() && PowergridManager.GetCurrentStage(isServer: true) > 0;
+				break;
+			case ConditionType.WeatherChangeForecast:
+			{
+				flag = (Object)(object)SingletonComponent<Climate>.Instance != (Object)null && SingletonComponent<Climate>.Instance.TryGetWeatherForecast(out var _, out var _, out var hoursUntil) && (conditionAmount == 0 || ((Object)(object)TOD_Sky.Instance != (Object)null && TOD_Sky.Instance.Components.Time.GameHoursToRealSeconds(hoursUntil) < (float)(conditionAmount * 60)));
+				break;
+			}
 			}
 			if (!inverse)
 			{
@@ -454,6 +575,12 @@ public class ConversationData : ScriptableObject
 
 	public bool canBeCancelled = true;
 
+	[Tooltip("Answers on its own number and phone directory entry under this name, as if it were its own NPC")]
+	public Phrase phoneNumberName = new Phrase("", "");
+
+	[Tooltip("Callers have to pass all of these to see and call this phone conversation")]
+	public ConversationCondition[] phoneConditions = Array.Empty<ConversationCondition>();
+
 	public EntryNodeData entryPoint;
 
 	[SerializeReference]
@@ -461,6 +588,18 @@ public class ConversationData : ScriptableObject
 
 	[SerializeReference]
 	public AbstractConversationNodeData[] controlNodes = Array.Empty<AbstractConversationNodeData>();
+
+	public bool HasPhoneNumber
+	{
+		get
+		{
+			if (phoneNumberName != null)
+			{
+				return phoneNumberName.IsValid();
+			}
+			return false;
+		}
+	}
 
 	public int GetSpeechNodeIndex(string guid)
 	{
@@ -516,6 +655,19 @@ public class ConversationData : ScriptableObject
 		return null;
 	}
 
+	public bool IsAvailableByPhone(BasePlayer player, IConversationProvider provider)
+	{
+		ConversationCondition[] array = phoneConditions;
+		for (int i = 0; i < array.Length; i++)
+		{
+			if (!array[i].Passes(player, provider))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public bool TryGetNodeData(string nodeGuid, out AbstractConversationNodeData nodeData)
 	{
 		nodeData = GetNodeData(nodeGuid);
@@ -569,5 +721,11 @@ public class ConversationData : ScriptableObject
 				}
 			}
 		}
+	}
+
+	public ConversationData()
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Expected Obj, but got Unknown
 	}
 }

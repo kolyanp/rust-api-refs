@@ -58,6 +58,8 @@ public class Prefab : IComparable<Prefab>
 
 	private DecorComponent[] cachedDecorComponents;
 
+	private DecorBounds? cachedDecorBounds;
+
 	private EnvironmentVolumeCheck[] cachedEnvironmentVolumeChecks;
 
 	private TerrainFootprint TerrainFootprint
@@ -184,6 +186,25 @@ public class Prefab : IComparable<Prefab>
 			cachedTerrainFilters = Attribute.FindAll<TerrainFilter>(ID);
 		}
 		return Object.transform.ApplyTerrainFilters(cachedTerrainFilters, pos, rot, scale, filter);
+	}
+
+	public bool CanPassTerrainFilters(Vector3 pos)
+	{
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		if (cachedTerrainFilters == null)
+		{
+			cachedTerrainFilters = Attribute.FindAll<TerrainFilter>(ID);
+		}
+		if (cachedDecorComponents == null)
+		{
+			cachedDecorComponents = Attribute.FindAll<DecorComponent>(ID);
+		}
+		if (!cachedDecorBounds.HasValue)
+		{
+			cachedDecorBounds = DecorComponentEx.GetBounds(cachedDecorComponents, Object.transform.localScale);
+		}
+		return TerrainFilterEx.CanPassTerrainFilters(cachedTerrainFilters, pos, cachedDecorBounds.Value);
 	}
 
 	public void ApplyTerrainModifiers(Vector3 pos, Quaternion rot, Vector3 scale)

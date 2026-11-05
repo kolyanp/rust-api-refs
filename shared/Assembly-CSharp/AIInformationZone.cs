@@ -7,7 +7,7 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class AIInformationZone : BaseMonoBehaviour, IServerComponent
+public class AIInformationZone : BaseMonoBehaviour, IServerComponent, IFlattenKeepsChildren
 {
 	public bool RenderBounds;
 

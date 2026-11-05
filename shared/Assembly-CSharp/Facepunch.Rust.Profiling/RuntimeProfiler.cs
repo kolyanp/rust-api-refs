@@ -368,8 +368,8 @@ public static class RuntimeProfiler
 	[RconVar(Help = "How often to flush pooling stats in seconds")]
 	public static int runtime_profiling_pool_flush_interval { get; set; } = 300;
 
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar(Help = "(Generated) Dumps all available Unity Profiler recorder handles to CSV format showing name, category, unit type, and flags; useful for discovering available performance metrics")]
+	[ClientVar(ClientAdmin = true)]
 	public static void dump_profile_recorders(ConsoleSystem.Arg arg)
 	{
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
@@ -570,7 +570,7 @@ public static class RuntimeProfiler
 			int num4 = 0;
 			int num5 = 0;
 			int num6 = 0;
-			for (int i = 0; i < 29; i++)
+			for (int i = 0; i < 30; i++)
 			{
 				int num7 = PacketProfiler.inboundCount[i];
 				int num8 = PacketProfiler.inboundBytes[i];

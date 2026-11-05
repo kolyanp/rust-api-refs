@@ -26,14 +26,14 @@ public static class CustomVitalManager
 		{
 			for (int i = 0; i < ((ListDictionary<uint, uint>)(object)buffer).Count; i++)
 			{
-				vitals.Add(((ListDictionary<uint, uint>)(object)buffer).Values[i]);
+				vitals.Add(((BufferList<T>)(object)((ListDictionary<uint, uint>)(object)buffer).Values)[i]);
 			}
 		}
 
 		public void AppendVitals(CustomVitals vitals)
 		{
 			//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-			BufferList<T> values = ((ListDictionary<uint, uint>)(object)buffer).Values;
+			BufferList<T> values = (BufferList<T>)(object)((ListDictionary<uint, uint>)(object)buffer).Values;
 			for (int i = 0; i < Count; i++)
 			{
 				T val = values[i];
@@ -85,7 +85,7 @@ public static class CustomVitalManager
 		{
 			for (int i = 0; i < ((ListDictionary<uint, uint>)(object)buffer).Count; i++)
 			{
-				CustomVitalInfo info = ((ListDictionary<uint, uint>)(object)buffer).Values[i].info;
+				CustomVitalInfo info = ((BufferList<T>)(object)((ListDictionary<uint, uint>)(object)buffer).Values)[i].info;
 				Pool.Free<CustomVitalInfo>(ref info);
 			}
 			((ListDictionary<uint, uint>)(object)buffer).Clear();

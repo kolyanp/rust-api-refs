@@ -47,8 +47,8 @@ public struct RaycastRayProcessingJob : IJobParallelFor
 	[WriteOnly]
 	public NativeArray<int> colliderHits;
 
-	[NativeMatchesParallelForLength]
 	[WriteOnly]
+	[NativeMatchesParallelForLength]
 	public NativeArray<int> outputs;
 
 	[NativeDisableParallelForRestriction]
@@ -111,7 +111,7 @@ public struct RaycastRayProcessingJob : IJobParallelFor
 		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
-		ref RaycastHit reference = BurstUtil.GetReadonly<RaycastHit>(ref raycastHits, index);
+		ref RaycastHit reference = ref BurstUtil.GetReadonly<RaycastHit>(ref raycastHits, index);
 		int colliderId = reference.GetColliderId();
 		bool flag = colliderId != 0;
 		byte b = 0;

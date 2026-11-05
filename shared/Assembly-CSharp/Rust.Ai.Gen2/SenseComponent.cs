@@ -151,7 +151,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 
 		[PoolAnalyzerGetWrapper]
-		public static VisibilityStatus GetFromPool(BaseEntity baseEntity, BaseEntity targetEntity, bool isVisible, float deltaTime, float clarityGainSpeed, Vector3? lastKnownPositionOverride = null, float? minClarity = null)
+		public static VisibilityStatus GetFromPool(BaseEntity baseEntity, BaseEntity targetEntity, bool isVisible, float deltaTime, float clarityGainSpeed, Nullable lastKnownPositionOverride = null, float? minClarity = null)
 		{
 			VisibilityStatus visibilityStatus = Pool.Get<VisibilityStatus>();
 			visibilityStatus.baseEntity = baseEntity;
@@ -173,7 +173,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			return true;
 		}
 
-		public void UpdateVisibility(bool newVisibility, float deltaTime, float clarityGainSpeed, Vector3? lastKnownPositionOverride = null, float? minClarity = null)
+		public void UpdateVisibility(bool newVisibility, float deltaTime, float clarityGainSpeed, Nullable lastKnownPositionOverride = null, float? minClarity = null)
 		{
 			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -578,6 +578,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void GetPerceivedAllies(List<BaseEntity> allies)
 	{
 		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
@@ -605,6 +606,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void GetInitialAllies(List<BaseEntity> allies)
 	{
 		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
@@ -680,34 +682,44 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 
 	public bool FindLKP(BaseEntity entity, out Vector3 lkp, bool applyHeightOffset = false, bool predict = false, bool ignoreCrouch = true)
 	{
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		if (!GetVisibilityStatus(entity, out var status))
 		{
 			lkp = Vector3.zero;
 			return false;
 		}
-		if (status.IsVisible && status.IsAware)
+		lkp = GetLKP(entity, status, applyHeightOffset, predict, ignoreCrouch);
+		return true;
+	}
+
+	private Vector3 GetLKP(BaseEntity entity, VisibilityStatus entityStatus, bool applyHeightOffset, bool predict, bool ignoreCrouch)
+	{
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 val;
+		if (!entityStatus.IsVisible || !entityStatus.IsAware)
 		{
-			lkp = ((Component)entity).transform.position;
+			val = (predict ? entityStatus.predictedPosition : entityStatus.lastKnownPosition);
 		}
 		else
 		{
-			lkp = (predict ? status.predictedPosition : status.lastKnownPosition);
+			val = ((Component)entity).transform.position;
 		}
 		if (applyHeightOffset)
 		{
-			lkp = GetEntityLineOfSightTestPoint(entity, lkp, ignoreCrouch);
+			val = GetEntityLineOfSightTestPoint(entity, val, ignoreCrouch);
 		}
-		return true;
+		return val;
 	}
 
 	public bool GetVisibilityStatus(BaseEntity entity, out VisibilityStatus status)
@@ -853,35 +865,35 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SenseComponent:GetEyeTransform"))
 		{
 			Vector3 eyePosition = EyePosition;
 			Quaternion val = ((Component)baseEntity).transform.rotation;
-			if (FindTargetLKP(out var lkp, applyHeightOffset: true, predict: false, ignoreCrouch: false) && !Agent.overrideDirectionWS.HasValue && (!BaseNetworkableEx.Is<ScientistNPC2>((Object)(object)baseEntity, out ScientistNPC2 _) || !Agent.IsSprinting))
+			if (FindTargetLKP(out var lkp, applyHeightOffset: true, predict: false, ignoreCrouch: false) && ((Object)(object)Agent == (Object)null || !Agent.overrideDirectionWS.HasValue) && (!BaseNetworkableEx.Is<ScientistNPC2>((Object)(object)baseEntity, out ScientistNPC2 _) || !Agent.IsSprinting))
 			{
 				val = Quaternion.LookRotation(lkp - eyePosition, Vector3.up);
 				float maxAngle = 90f;
@@ -905,22 +917,22 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 	public override void Hurt(HitInfo hitInfo)
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SenseComponent:Hurt"))
 		{
 			BaseEntity initiator = hitInfo.Initiator;
 			if (CanTarget(initiator))
 			{
-				Vector3 entityPositionGuess = ((Component)initiator).transform.position + Quaternion.AngleAxis(Random.Range(0f, 360f), Vector3.up) * Vector3.forward * 5f;
+				Vector3 entityPositionGuess = ((Component)initiator).transform.position + Quaternion.AngleAxis(NpcRandom.Of(baseEntity).Range(0f, 360f), Vector3.up) * Vector3.forward * 5f;
 				SimulateSighting(initiator, entityPositionGuess);
 				if ((Object)(object)Target == (Object)null)
 				{
@@ -954,8 +966,20 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 
 	public void Tick()
 	{
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027c: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SenseComponent:Tick"))
 		{
 			double timeAsDouble = Time.timeAsDouble;
@@ -967,6 +991,9 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			LastTickTime = timeAsDouble;
 			HasPlayerInVicinity = false;
 			entitiesUpdatedThisFrame.Clear();
+			Matrix4x4 eyeTransform = GetEyeTransform();
+			Vector3 position = eyeTransform.GetPosition();
+			Vector3 eyeFwd = eyeTransform.rotation * Vector3.forward;
 			using (TimeWarning.New("SenseComponent:Tick:ProcessEntities"))
 			{
 				PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
@@ -994,7 +1021,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 						}
 						if (CanTarget(item))
 						{
-							UpdateEntityVisibility(item, deltaTime);
+							UpdateEntityVisibility(item, deltaTime, position, eyeFwd);
 						}
 					}
 				}
@@ -1015,7 +1042,8 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 						{
 							continue;
 						}
-						if (!CanTarget(item2))
+						bool flag = entitiesUpdatedThisFrame.Contains(item2);
+						if (!flag && !CanTarget(item2))
 						{
 							if (Target.IsValid() && (Object)(object)Target == (Object)(object)item2)
 							{
@@ -1031,11 +1059,11 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 							}
 							Forget(item2);
 						}
-						else if (!entitiesUpdatedThisFrame.Contains(item2))
+						else if (!flag)
 						{
 							if (IsInCombat)
 							{
-								UpdateEntityVisibility(item2, deltaTime);
+								UpdateEntityVisibility(item2, deltaTime, position, eyeFwd);
 							}
 							else if (value.IsVisible)
 							{
@@ -1114,52 +1142,38 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 	}
 
-	private bool IsInAnyRange(BaseEntity entity, out float clarity)
+	private bool IsInAnyRange(BaseEntity entity, Vector3 eyePos, Vector3 eyeFwd, out float clarity)
 	{
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("IsInAnyRange"))
 		{
-			Matrix4x4 eyeTransform = GetEyeTransform();
-			Vector3 position = eyeTransform.GetPosition();
-			eyeTransform = GetEyeTransform();
-			Vector3 val = eyeTransform.rotation * Vector3.forward;
 			Vector3 entityLineOfSightTestPoint = GetEntityLineOfSightTestPoint(entity, ignoreCrouch: false);
-			Vector3 val2 = entityLineOfSightTestPoint - position;
-			float magnitude = val2.magnitude;
+			Vector3 val = entityLineOfSightTestPoint - eyePos;
+			float magnitude = val.magnitude;
 			GetModifiedSenses(entity, out var modTouchDistance, out var modHalfAngle, out var modShortVisionRange, out var modLongVisionRectangle);
 			clarity = 0f;
-			float num = Vector3.Angle(val, val2.normalized);
+			float num = Vector3.Angle(eyeFwd, val.normalized);
 			if (magnitude < 1.2f)
 			{
 				clarity = 999f;
@@ -1200,16 +1214,16 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			{
 				if (magnitude < modShortVisionRange)
 				{
-					if (IsSightLineBrokenBySmoke(position, entityLineOfSightTestPoint))
+					if (IsSightLineBrokenBySmoke(eyePos, entityLineOfSightTestPoint))
 					{
 						clarity = 0f;
 						return false;
 					}
 					return true;
 				}
-				if ((IsInCombat || (TOD_Sky.Instance.IsDay && magnitude < modLongVisionRectangle.z)) && DistToLineYZ(position, val, ((Component)entity).transform.position) < modLongVisionRectangle.y * 0.5f && DistToLineXZ(position, val, ((Component)entity).transform.position) < modLongVisionRectangle.x * 0.5f)
+				if ((IsInCombat || (TOD_Sky.Instance.IsDay && magnitude < modLongVisionRectangle.z)) && DistToLineYZ(eyePos, eyeFwd, ((Component)entity).transform.position) < modLongVisionRectangle.y * 0.5f && DistToLineXZ(eyePos, eyeFwd, ((Component)entity).transform.position) < modLongVisionRectangle.x * 0.5f)
 				{
-					if (IsSightLineBrokenBySmoke(position, entityLineOfSightTestPoint))
+					if (IsSightLineBrokenBySmoke(eyePos, entityLineOfSightTestPoint))
 					{
 						clarity = 0f;
 						return false;
@@ -1281,19 +1295,21 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		return DistToLine(Vector3Ex.WithX(lineStart, 0f), Vector3Ex.WithX(lineDir, 0f), Vector3Ex.WithX(point, 0f));
 	}
 
-	private void UpdateEntityVisibility(BaseEntity entity, float deltaTime)
+	private void UpdateEntityVisibility(BaseEntity entity, float deltaTime, Vector3 eyePos, Vector3 eyeFwd)
 	{
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		bool flag = IsInAnyRange(entity, out var clarity);
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = IsInAnyRange(entity, eyePos, eyeFwd, out var clarity);
 		clarity *= 1f / AI.npcReactionTime;
 		clarity = Mathf.Max(clarity, 0.001f);
 		if (flag && entity.ToNonNpcPlayer(out var player))
 		{
 			Vector3 entityLineOfSightTestPoint = GetEntityLineOfSightTestPoint(player, ignoreCrouch: false);
-			flag = !IsLineOccluded(EyePosition, entityLineOfSightTestPoint, 1218519041);
+			flag = !IsLineOccluded(eyePos, entityLineOfSightTestPoint, 1218519041);
 		}
 		if (!flag)
 		{
@@ -1791,54 +1807,44 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 
 	private void TickTargeting(float deltaTime)
 	{
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SenseComponent:TickTargeting"))
 		{
 			if ((Object)(object)Target != (Object)null && !CanTarget(Target))
 			{
 				ClearTarget();
 			}
-			if (((Object)(object)Target != (Object)null && SwitchedTargetToFocusAggressorRecently) || ((Object)(object)Target != (Object)null && ChangedTargetRecently))
+			if (((Object)(object)Target != (Object)null && SwitchedTargetToFocusAggressorRecently) || ((Object)(object)Target != (Object)null && ChangedTargetRecently) || entitiesWeAreAwareOf.Count == 0)
 			{
 				return;
 			}
-			PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
-			try
+			BaseEntity baseEntity = null;
+			float num = float.NegativeInfinity;
+			foreach (var (baseEntity3, visibilityStatus2) in entitiesWeAreAwareOf)
 			{
-				GetOncePerceivedEntities((List<BaseEntity>)(object)val);
-				if (((List<BaseEntity>)(object)val).Count == 0)
+				if (visibilityStatus2.IsAware)
 				{
-					return;
-				}
-				BaseEntity baseEntity = null;
-				float num = float.NegativeInfinity;
-				foreach (BaseEntity item in (List<BaseEntity>)(object)val)
-				{
-					if (GetVisibilityStatus(item, out var status) && status.IsAware && FindLKP(item, out var lkp, applyHeightOffset: false, predict: true))
+					Vector3 lKP = GetLKP(baseEntity3, visibilityStatus2, applyHeightOffset: false, predict: true, ignoreCrouch: true);
+					float num2 = 0f;
+					float num3 = base.baseEntity.Distance(lKP);
+					if (visibilityStatus2.IsVisible && num3 < 3f)
 					{
-						float num2 = 0f;
-						float num3 = base.baseEntity.Distance(lkp);
-						if (status.IsVisible && num3 < 3f)
-						{
-							num2 += 1000f;
-						}
-						num2 += Mathx.RemapValClamped(status.timeNotVisible, 0f, 10f, 1f, 0f) * 100f;
-						num2 += Mathx.RemapValClamped(num3, 0f, 50f, 1f, 0f);
-						if (num2 > num)
-						{
-							num = num2;
-							baseEntity = item;
-						}
+						num2 += 1000f;
+					}
+					num2 += Mathx.RemapValClamped(visibilityStatus2.timeNotVisible, 0f, 10f, 1f, 0f) * 100f;
+					num2 += Mathx.RemapValClamped(num3, 0f, 50f, 1f, 0f);
+					if (num2 > num)
+					{
+						num = num2;
+						baseEntity = baseEntity3;
 					}
 				}
-				if ((Object)(object)baseEntity != (Object)null)
-				{
-					TrySetTarget(baseEntity, bypassCooldown: false);
-				}
 			}
-			finally
+			if ((Object)(object)baseEntity != (Object)null)
 			{
-				((IDisposable)val)?.Dispose();
+				TrySetTarget(baseEntity, bypassCooldown: false);
 			}
 		}
 	}

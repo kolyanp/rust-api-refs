@@ -4,8 +4,10 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
+using Rust.Ai.Gen2;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -233,7 +235,7 @@ public class LiquidContainer : ContainerIOEntity
 
 	private void RefreshDrainsAndPushTargets()
 	{
-		ClearDrains();
+		UpdateDrainAmount();
 		Invoke(updateDrainAmountAction, 0.1f);
 		if (autofillOutputs && HasLiquidItem())
 		{
@@ -243,9 +245,14 @@ public class LiquidContainer : ContainerIOEntity
 
 	public override void OnItemAddedOrRemoved(Item item, bool added, BasePlayer sourcePlayer)
 	{
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
 		base.OnItemAddedOrRemoved(item, added, sourcePlayer);
+		if ((Object)(object)item.info == (Object)(object)WaterTypes.WaterItemDef)
+		{
+			LivestockAnimal.MarkSupplyDirtyNear(((Component)this).transform.position);
+		}
 		UpdateOnFlag();
 		MarkDirtyForceUpdateOutputs();
 		Invoke(updateDrainAmountAction, 0.1f);
@@ -259,10 +266,12 @@ public class LiquidContainer : ContainerIOEntity
 					list.Add(connected);
 				}
 			}
+			List<IOEntity> existing = Pool.Get<List<IOEntity>>();
 			foreach (IOEntity item2 in list)
 			{
-				item2.SendChangedToRoot(forceUpdate: true);
+				item2.SendChangedToRootRecursive(forceUpdate: true, ref existing);
 			}
+			Pool.FreeUnmanaged<IOEntity>(ref existing);
 			Pool.FreeUnmanaged<IOEntity>(ref list);
 		}
 		if (HasLiquidItem() && autofillOutputs)
@@ -303,8 +312,9 @@ public class LiquidContainer : ContainerIOEntity
 
 	private void UpdateDrainAmount()
 	{
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		ClearDrains();
 		int amount = 0;
 		Item liquidItem = GetLiquidItem();
 		recursiveEntityHash.Clear();
@@ -374,7 +384,7 @@ public class LiquidContainer : ContainerIOEntity
 		if (!(Time.realtimeSinceStartup - lastOutputDrainUpdate < 0.2f))
 		{
 			lastOutputDrainUpdate = Time.realtimeSinceStartup;
-			ClearDrains();
+			UpdateDrainAmount();
 			Invoke(updateDrainAmountAction, 0.1f);
 		}
 	}
@@ -534,6 +544,10 @@ public class LiquidContainer : ContainerIOEntity
 						pushTarget.inventory.GetSlot(0)?.LockUnlock(bNewState: true);
 					}
 					num += num3;
+					if (ShortPrefabName == "crudeoilproducer" && pushTarget.ShortPrefabName == "modular_car_2mod_fuel_tank" && liquidItem.info.shortname == "crude.oil")
+					{
+						Facepunch.Rust.Analytics.Azure.LogResource(Facepunch.Rust.Analytics.Azure.ResourceMode.Produced, "io", liquidItem.info.shortname, num3, this, null, safezone: false, null, 0uL, null, null, null, 0uL);
+					}
 					liquidItem.amount -= num3;
 					liquidItem.MarkDirty();
 					if (liquidItem.amount <= 0)

@@ -29,7 +29,7 @@ public class OreResourceEntity : StagedResourceEntity
 
 	public Vector3 lastNodeDir = Vector3.zero;
 
-	private Ray? spawnBonusHitRay;
+	private Nullable spawnBonusHitRay;
 
 	private Action actionRespawnBonus
 	{

@@ -123,19 +123,14 @@ public struct CachedTransform<T> where T : Component
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		Quaternion val = Quaternion.AngleAxis(angle, axis);
 		Vector3 val2 = val * (position - center);
 		position = center + val2;
-		rotation *= Quaternion.Inverse(rotation) * val * rotation;
+		rotation = val * rotation;
 	}
 
 	public static implicit operator bool(CachedTransform<T> instance)

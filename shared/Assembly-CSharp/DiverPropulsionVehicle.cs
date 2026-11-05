@@ -28,8 +28,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 
 	private BoxCollider characterBoxCollider;
 
-	[SerializeField]
 	[Header("DPV")]
+	[SerializeField]
 	private Buoyancy buoyancy;
 
 	[SerializeField]
@@ -84,8 +84,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float maxRollDegrees = 30f;
 
-	[Header("DPV - UI")]
 	[SerializeField]
+	[Header("DPV - UI")]
 	private Canvas dashboardCanvas;
 
 	[SerializeField]
@@ -106,8 +106,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private RustText healthWarningText;
 
-	[Header("DPV - FX")]
 	[SerializeField]
+	[Header("DPV - FX")]
 	private Transform leftHandGrip;
 
 	[SerializeField]
@@ -611,6 +611,11 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 		}
 		Pool.FreeUnmanaged<Collider>(ref list);
 		base.AttemptMount(player, doMountChecks);
+	}
+
+	public override float AntiHackPadding()
+	{
+		return 0.45f;
 	}
 
 	public override void InitShared()

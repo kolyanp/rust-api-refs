@@ -5,10 +5,10 @@ using UnityEngine.Serialization;
 
 namespace VLB;
 
+[SelectionBase]
 [DisallowMultipleComponent]
 [ExecuteInEditMode]
 [HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
-[SelectionBase]
 public class VolumetricLightBeam : MonoBehaviour
 {
 	public bool colorFromLight = true;
@@ -24,8 +24,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	[Range(0f, 1f)]
 	public float alphaInside = 1f;
 
-	[FormerlySerializedAs("alpha")]
 	[Range(0f, 1f)]
+	[FormerlySerializedAs("alpha")]
 	public float alphaOutside = 1f;
 
 	public BlendingMode blendingMode;
@@ -93,6 +93,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	public Vector3 noiseVelocityLocal = Consts.NoiseVelocityDefault;
 
 	private Plane m_PlaneWS;
+
+	private bool m_ForceRenderingOff;
 
 	[SerializeField]
 	private int pluginVersion = -1;
@@ -269,6 +271,22 @@ public class VolumetricLightBeam : MonoBehaviour
 		}
 	}
 
+	public bool forceRenderingOff
+	{
+		get
+		{
+			return m_ForceRenderingOff;
+		}
+		set
+		{
+			m_ForceRenderingOff = value;
+			if (Object.op_Implicit((Object)(object)m_BeamGeom))
+			{
+				((Renderer)m_BeamGeom.meshRenderer).forceRenderingOff = value;
+			}
+		}
+	}
+
 	public int blendingModeAsInt => Mathf.Clamp((int)blendingMode, 0, Enum.GetValues(typeof(BlendingMode)).Length);
 
 	public MeshRenderer Renderer
@@ -423,6 +441,7 @@ public class VolumetricLightBeam : MonoBehaviour
 			}
 			m_BeamGeom = Utils.NewWithComponent<BeamGeometry>("Beam Geometry");
 			m_BeamGeom.Initialize(this, beamShader);
+			((Renderer)m_BeamGeom.meshRenderer).forceRenderingOff = m_ForceRenderingOff;
 		}
 		m_BeamGeom.RegenerateMesh();
 		m_BeamGeom.visible = ((Behaviour)this).enabled;

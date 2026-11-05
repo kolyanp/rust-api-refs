@@ -112,19 +112,25 @@ public class TerrainConfig : BaseScriptableObject
 
 	public Material GeoClipmapMaterial;
 
-	public Material GeoClipmapMaterialHoles;
+	public Material GeoClipmapPixelNormalMaterial;
 
 	public ComputeShader GeoClipCompute;
 
-	public Material holeMaskMat;
-
-	public Material holeMapMat;
-
 	public HoleShapeAsset[] HoleShapeAssets;
 
-	public Texture[] AlbedoArrays = new Texture[3];
+	public const string TemperateTextureArrayBundle = "terrain/temperate.bundle";
 
-	public Texture[] NormalArrays = new Texture[3];
+	public const string TropicalTextureArrayBundle = "terrain/tropical.bundle";
+
+	public DynamicResourceRef<Texture>[] AlbedoArrays = new DynamicResourceRef<Texture>[3];
+
+	public DynamicResourceRef<Texture>[] NormalArrays = new DynamicResourceRef<Texture>[3];
+
+	[NonSerialized]
+	private Texture[] loadedAlbedoArrays = new Texture[3];
+
+	[NonSerialized]
+	private Texture[] loadedNormalArrays = new Texture[3];
 
 	public float HeightMapErrorMin = 5f;
 
@@ -160,9 +166,18 @@ public class TerrainConfig : BaseScriptableObject
 
 	private List<int> stoneyMatIds;
 
-	public Texture AlbedoArray => AlbedoArrays[Mathf.Clamp(QualitySettings.globalTextureMipmapLimit, 0, 2)];
+	public Texture AlbedoArray => LoadTextureArray(AlbedoArrays, loadedAlbedoArrays);
 
-	public Texture NormalArray => NormalArrays[Mathf.Clamp(QualitySettings.globalTextureMipmapLimit, 0, 2)];
+	public Texture NormalArray => LoadTextureArray(NormalArrays, loadedNormalArrays);
+
+	public string TextureArrayBundle => AlbedoArrays[0].BundleName;
+
+	private static Texture LoadTextureArray(DynamicResourceRef<Texture>[] tiers, Texture[] loadedTiers)
+	{
+		int num = Mathf.Clamp(QualitySettings.globalTextureMipmapLimit, 0, 2);
+		_ = tiers[num];
+		return null;
+	}
 
 	public PhysicsMaterial[] GetPhysicMaterials()
 	{
@@ -170,156 +185,6 @@ public class TerrainConfig : BaseScriptableObject
 		for (int i = 0; i < Splats.Length; i++)
 		{
 			array[i] = Splats[i].Material;
-		}
-		return array;
-	}
-
-	public Color[] GetAridColors()
-	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		Color[] array = new Color[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			array[i] = Splats[i].AridColor;
-		}
-		return array;
-	}
-
-	public void GetAridOverlayConstants(out Color[] color, out Vector4[] param)
-	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		color = new Color[Splats.Length];
-		param = new Vector4[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			SplatOverlay aridOverlay = Splats[i].AridOverlay;
-			color[i] = aridOverlay.Color.linear;
-			param[i] = new Vector4(aridOverlay.Smoothness, aridOverlay.NormalIntensity, aridOverlay.BlendFactor, aridOverlay.BlendFalloff);
-		}
-	}
-
-	public Color[] GetTemperateColors()
-	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		Color[] array = new Color[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			array[i] = Splats[i].TemperateColor;
-		}
-		return array;
-	}
-
-	public void GetTemperateOverlayConstants(out Color[] color, out Vector4[] param)
-	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		color = new Color[Splats.Length];
-		param = new Vector4[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			SplatOverlay temperateOverlay = Splats[i].TemperateOverlay;
-			color[i] = temperateOverlay.Color.linear;
-			param[i] = new Vector4(temperateOverlay.Smoothness, temperateOverlay.NormalIntensity, temperateOverlay.BlendFactor, temperateOverlay.BlendFalloff);
-		}
-	}
-
-	public Color[] GetTundraColors()
-	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		Color[] array = new Color[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			array[i] = Splats[i].TundraColor;
-		}
-		return array;
-	}
-
-	public void GetTundraOverlayConstants(out Color[] color, out Vector4[] param)
-	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		color = new Color[Splats.Length];
-		param = new Vector4[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			SplatOverlay tundraOverlay = Splats[i].TundraOverlay;
-			color[i] = tundraOverlay.Color.linear;
-			param[i] = new Vector4(tundraOverlay.Smoothness, tundraOverlay.NormalIntensity, tundraOverlay.BlendFactor, tundraOverlay.BlendFalloff);
-		}
-	}
-
-	public Color[] GetArcticColors()
-	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		Color[] array = new Color[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			array[i] = Splats[i].ArcticColor;
-		}
-		return array;
-	}
-
-	public void GetArcticOverlayConstants(out Color[] color, out Vector4[] param)
-	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		color = new Color[Splats.Length];
-		param = new Vector4[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			SplatOverlay arcticOverlay = Splats[i].ArcticOverlay;
-			color[i] = arcticOverlay.Color.linear;
-			param[i] = new Vector4(arcticOverlay.Smoothness, arcticOverlay.NormalIntensity, arcticOverlay.BlendFactor, arcticOverlay.BlendFalloff);
-		}
-	}
-
-	public Color[] GetJungleColors()
-	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		Color[] array = new Color[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			array[i] = Splats[i].JungleColor;
-		}
-		return array;
-	}
-
-	public void GetJungleOverlayConstants(out Color[] color, out Vector4[] param)
-	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		color = new Color[Splats.Length];
-		param = new Vector4[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			SplatOverlay jungleOverlay = Splats[i].JungleOverlay;
-			color[i] = jungleOverlay.Color.linear;
-			param[i] = new Vector4(jungleOverlay.Smoothness, jungleOverlay.NormalIntensity, jungleOverlay.BlendFactor, jungleOverlay.BlendFalloff);
-		}
-	}
-
-	public float[] GetSplatTiling()
-	{
-		float[] array = new float[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			array[i] = Splats[i].SplatTiling;
 		}
 		return array;
 	}
@@ -348,18 +213,6 @@ public class TerrainConfig : BaseScriptableObject
 			}
 		}
 		return num;
-	}
-
-	public Vector3[] GetPackedUVMIX()
-	{
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		Vector3[] array = new Vector3[Splats.Length];
-		for (int i = 0; i < Splats.Length; i++)
-		{
-			array[i] = new Vector3(Splats[i].UVMIXMult, Splats[i].UVMIXStart, Splats[i].UVMIXDist);
-		}
-		return array;
 	}
 
 	[Obsolete("Use GetCurrentGroundTypeNoAlloc instead")]

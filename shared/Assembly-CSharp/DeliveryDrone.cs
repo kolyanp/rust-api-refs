@@ -1,3 +1,4 @@
+using System;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -45,7 +46,7 @@ public class DeliveryDrone : Drone
 
 	public RealTimeSince _sinceLastStateChange;
 
-	public Vector3? _stateGoalPosition;
+	public Nullable _stateGoalPosition;
 
 	public float? _goToY;
 

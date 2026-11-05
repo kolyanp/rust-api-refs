@@ -79,7 +79,7 @@ public static class NetProfileCapture
 	private static void CaptureSend(NetProfileSession s, BaseNetwork peer, NetWrite write, bool immediate)
 	{
 		int num = write.PeekPacketID() - 140;
-		if (num < 0 || num >= 29)
+		if (num < 0 || num >= 30)
 		{
 			Interlocked.Increment(ref s.EventsSkipped);
 			return;
@@ -146,7 +146,7 @@ public static class NetProfileCapture
 
 	private static void CaptureReceive(NetProfileSession s, BaseNetwork peer, Message.Type type, NetRead read)
 	{
-		if ((int)type <= 0 || (int)type >= 29)
+		if ((int)type <= 0 || (int)type >= 30)
 		{
 			Interlocked.Increment(ref s.EventsSkipped);
 			return;
@@ -194,7 +194,7 @@ public static class NetProfileCapture
 			{
 				for (long num3 = Math.Max(num2 + 1, num - s.BucketCapacity + 1); num3 <= num; num3++)
 				{
-					Array.Clear(s.Buckets, (int)(num3 % s.BucketCapacity) * 290, 290);
+					Array.Clear(s.Buckets, (int)(num3 % s.BucketCapacity) * 300, 300);
 				}
 				Volatile.Write(ref s.ClearedThroughBucket, num);
 			}

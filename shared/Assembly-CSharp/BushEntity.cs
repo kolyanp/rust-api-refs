@@ -7,8 +7,6 @@ public class BushEntity : BaseEntity, IPrefabPreProcess
 
 	public bool globalBillboard = true;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
-
 	public override void InitShared()
 	{
 		base.InitShared();

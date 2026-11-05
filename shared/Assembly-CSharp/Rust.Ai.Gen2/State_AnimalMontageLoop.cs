@@ -16,7 +16,7 @@ public abstract class State_AnimalMontageLoop : State_AnimalMontage
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		remaining = Random.Range(MinDuration, MaxDuration);
+		remaining = Rng.Range(MinDuration, MaxDuration);
 		return base.OnStateEnter(payload);
 	}
 

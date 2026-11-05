@@ -185,7 +185,7 @@ public class ServerConsole
 	{
 		try
 		{
-			this.Input?.Invoke(obj);
+			Input?.Invoke(obj);
 		}
 		catch (Exception ex)
 		{

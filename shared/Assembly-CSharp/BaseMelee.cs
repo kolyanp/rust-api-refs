@@ -33,6 +33,10 @@ public class BaseMelee : AttackEntity
 
 	public bool ThrowFullStack = true;
 
+	private static readonly int Fire_Param = Animator.StringToHash("fire");
+
+	private static readonly int Deploy_Param = Animator.StringToHash("deploy");
+
 	[Header("Melee")]
 	public DamageProperties damageProperties;
 
@@ -55,6 +59,8 @@ public class BaseMelee : AttackEntity
 	[Header("Third Person Animation")]
 	public MeleeWeaponAnimationSubSystem PlayerAnimSystem;
 
+	public bool sendAttackEventsToWorldModel;
+
 	[Header("Effects")]
 	public GameObjectRef strikeFX;
 
@@ -67,8 +73,8 @@ public class BaseMelee : AttackEntity
 
 	public List<MaterialFX> materialStrikeFX = new List<MaterialFX>();
 
-	[Range(0f, 1f)]
 	[Header("Other")]
+	[Range(0f, 1f)]
 	public float heartStress = 0.5f;
 
 	public ResourceDispenser.GatherProperties gathering;
@@ -222,9 +228,9 @@ public class BaseMelee : AttackEntity
 		return player.GetInheritedThrowVelocity(direction);
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void CLEntityThrow(RPCMessage msg)
 	{
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
@@ -323,10 +329,10 @@ public class BaseMelee : AttackEntity
 	{
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.MaxRepeatedElements(1)]
-	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
@@ -344,8 +350,8 @@ public class BaseMelee : AttackEntity
 		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
 		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_032b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_033d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0344: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0345: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		if (!VerifyClientAttack(player))
 		{
@@ -425,7 +431,7 @@ public class BaseMelee : AttackEntity
 						Item pickupItem = (ThrowFullStack ? item : ItemManager.CreateByItemID(item.info.itemid, 1, 0uL, 0uL));
 						player.NoteFiredProjectile(projectile.projectileID, projectile.startPos, projectile.startVel, this, item.info, projectileGroupId, positionOffset, pickupItem);
 						Effect effect = new Effect();
-						effect.Init(Effect.Type.Projectile, projectile.startPos, projectile.startVel, msg.connection);
+						effect.InitWithSourceEntity(Effect.Type.Projectile, this, projectile.startPos, projectile.startVel, msg.connection);
 						((EffectData)effect).scale = 1f;
 						effect.pooledString = component.GetOverrideProjectile(this).resourcePath;
 						((EffectData)effect).number = projectile.seed;
@@ -568,7 +574,7 @@ public class BaseMelee : AttackEntity
 		}
 	}
 
-	private static bool MeleeLineOfSightEntity(Vector3 p0_playerEyesCenter, Vector3 p1_playerEyes, Vector3 p2_hitRaycastStartPos, Vector3 p3_closestRayPos, Vector3 p4_worldHitPos, int lineOfSightLayerMask)
+	private static bool MeleeLineOfSightEntity(Vector3 p0_playerEyesCenter, Vector3 p1_playerEyes, Vector3 p2_hitRaycastStartPos, Vector3 p3_closestRayPos, Vector3 p4_worldHitPos, int lineOfSightLayerMask, BaseEntity hitEntity)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
@@ -603,20 +609,20 @@ public class BaseMelee : AttackEntity
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3.zero;
 		Vector3 val2 = Vector3.zero;
 		Vector3 val3 = Vector3.zero;
@@ -629,120 +635,159 @@ public class BaseMelee : AttackEntity
 			val4 = p3_closestRayPos - p2_hitRaycastStartPos;
 			val3 = val4.normalized * ConVar.AntiHack.melee_backtracking;
 		}
-		if (!GamePhysics.LineOfSight(p0_playerEyesCenter - val, p1_playerEyes + val, lineOfSightLayerMask))
+		if (!GamePhysics.LineOfSight(p0_playerEyesCenter - val, p1_playerEyes + val, lineOfSightLayerMask, hitEntity))
 		{
 			return false;
 		}
-		if (!GamePhysics.LineOfSight(p1_playerEyes - val2, p2_hitRaycastStartPos + val2, lineOfSightLayerMask))
+		if (!GamePhysics.LineOfSight(p1_playerEyes - val2, p2_hitRaycastStartPos + val2, lineOfSightLayerMask, hitEntity))
 		{
 			return false;
 		}
-		if (!GamePhysics.LineOfSight(p2_hitRaycastStartPos - val3, p3_closestRayPos, lineOfSightLayerMask))
+		if (!GamePhysics.LineOfSight(p2_hitRaycastStartPos - val3, p3_closestRayPos, lineOfSightLayerMask, hitEntity))
 		{
 			return false;
 		}
-		if (!GamePhysics.LineOfSight(p3_closestRayPos, p4_worldHitPos, lineOfSightLayerMask))
+		if (!GamePhysics.LineOfSight(p3_closestRayPos, p4_worldHitPos, lineOfSightLayerMask, hitEntity))
 		{
 			return false;
 		}
-		if (!GamePhysics.LineOfSight(p1_playerEyes, p4_worldHitPos, lineOfSightLayerMask))
+		if (!GamePhysics.LineOfSight(p1_playerEyes, p4_worldHitPos, lineOfSightLayerMask, hitEntity))
 		{
 			return false;
 		}
 		return true;
 	}
 
+	private static bool TryGetClosestEntityColliderPoint(BaseEntity entity, Vector3 position, float radius, int layerMask, out Vector3 closest)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		closest = default;
+		float num = float.MaxValue;
+		List<Collider> list = Pool.Get<List<Collider>>();
+		GamePhysics.OverlapSphere(position, radius, list, layerMask, (QueryTriggerInteraction)1);
+		foreach (Collider item in list)
+		{
+			if (GamePhysics.CompareEntity(GameObjectEx.ToBaseEntity(item), entity))
+			{
+				MeshCollider val = (MeshCollider)(object)((item is MeshCollider) ? item : null);
+				Vector3 val2 = ((val != null && !val.convex) ? item.ClosestPointOnBounds(position) : item.ClosestPoint(position));
+				Vector3 val3 = val2 - position;
+				float sqrMagnitude = val3.sqrMagnitude;
+				if (sqrMagnitude < num)
+				{
+					num = sqrMagnitude;
+					closest = val2;
+				}
+			}
+		}
+		Pool.FreeUnmanaged<Collider>(ref list);
+		return num < float.MaxValue;
+	}
+
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
 	public void PlayerAttack(RPCMessage msg)
 	{
-		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0241: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0746: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0266: Unknown result type (might be due to invalid IL or missing references)
 		//IL_074b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0753: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0750: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0758: Unknown result type (might be due to invalid IL or missing references)
-		//IL_075b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_075d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0760: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0763: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0765: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0768: Unknown result type (might be due to invalid IL or missing references)
-		//IL_076a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_076c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_076e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0770: Unknown result type (might be due to invalid IL or missing references)
+		//IL_076d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_076f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0771: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0773: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0775: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0779: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0783: Unknown result type (might be due to invalid IL or missing references)
+		//IL_077a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_077e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0788: Unknown result type (might be due to invalid IL or missing references)
 		//IL_078d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0790: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0792: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0795: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0797: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0799: Unknown result type (might be due to invalid IL or missing references)
-		//IL_079b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_079d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_079f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_067c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_079c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_079e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0681: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0686: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_05bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05eb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_051b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0906: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0908: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0403: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0520: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09ef: Unknown result type (might be due to invalid IL or missing references)
 		//IL_09f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_091c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_091e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0414: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0419: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0443: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0345: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a10: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0409: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0a12: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0968: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0972: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0868: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0872: Unknown result type (might be due to invalid IL or missing references)
-		//IL_087c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0886: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0890: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a6b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a75: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a7f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a14: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0919: Unknown result type (might be due to invalid IL or missing references)
+		//IL_091b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0924: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0926: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0910: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0912: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0917: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0442: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0322: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0345: Unknown result type (might be due to invalid IL or missing references)
+		//IL_093a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_093c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a2e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a30: Unknown result type (might be due to invalid IL or missing references)
+		//IL_086f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0879: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0883: Unknown result type (might be due to invalid IL or missing references)
+		//IL_088d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0897: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0a89: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a25: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a27: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0b2c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0b31: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0b3a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0b77: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a93: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a9d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0aa7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a43: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a45: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0986: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0990: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b4a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b4f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b58: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0b95: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		if (!VerifyClientAttack(player))
 		{
@@ -774,6 +819,7 @@ public class BaseMelee : AttackEntity
 					string shortPrefabName = ShortPrefabName;
 					AntiHack.Log(player, AntiHackType.MeleeHack, "Contains NaN (" + shortPrefabName + ")");
 					player.stats.combat.LogInvalid(hitInfo, "melee_nan");
+					Pool.Free<HitInfo>(ref hitInfo);
 					return;
 				}
 				BaseEntity hitEntity = hitInfo.HitEntity;
@@ -835,7 +881,7 @@ public class BaseMelee : AttackEntity
 							val2 = basePlayer.GetParentVelocity();
 							float magnitude = val2.magnitude;
 							float num10 = basePlayer.AntiHackPadding() + num4 * magnitude + ConVar.AntiHack.tickhistoryforgiveness;
-							float num11 = basePlayer.tickHistory.Distance(basePlayer, hitInfo.HitPositionWorld);
+							float num11 = basePlayer.TickHistoryDistance(hitInfo.HitPositionWorld, hitInfo.boneArea);
 							if (num11 > num10)
 							{
 								string shortPrefabName6 = ShortPrefabName;
@@ -850,7 +896,7 @@ public class BaseMelee : AttackEntity
 							val2 = basePlayer.GetParentVelocity();
 							float magnitude2 = val2.magnitude;
 							float num12 = basePlayer.AntiHackPadding() + num4 * magnitude2 + ConVar.AntiHack.tickhistoryforgiveness;
-							float num13 = basePlayer.tickHistory.Distance(basePlayer, hitInfo.HitPositionWorld);
+							float num13 = basePlayer.TickHistoryDistance(hitInfo.HitPositionWorld, hitInfo.boneArea);
 							if (num13 > num12)
 							{
 								string shortPrefabName8 = ShortPrefabName;
@@ -922,7 +968,7 @@ public class BaseMelee : AttackEntity
 							val2 = hitPositionWorld - pointStart;
 							hitPositionWorld = val3 - val2.normalized * 0.001f;
 							Vector3 val4 = hitInfo.PositionOnRay(hitPositionWorld);
-							bool flag9 = MeleeLineOfSightEntity(center, position, pointStart, val4, hitPositionWorld, num5);
+							bool flag9 = MeleeLineOfSightEntity(center, position, pointStart, val4, hitPositionWorld, num5, hitEntity);
 							string text4 = hitEntity.Categorize();
 							string text5 = string.Empty;
 							switch (text4)
@@ -955,13 +1001,16 @@ public class BaseMelee : AttackEntity
 							Vector3 position2 = player.eyes.position;
 							float melee_losforgiveness = ConVar.AntiHack.melee_losforgiveness;
 							Vector3 hitPositionWorld2 = hitInfo.HitPositionWorld;
-							Vector3 val5 = hitEntity.ClosestPoint(hitPositionWorld2);
-							float num22 = Vector3.Distance(val5, hitPositionWorld2);
-							if (!GamePhysics.LineOfSight(position2, val5, num5, 0f, melee_losforgiveness, hitEntity) || !GamePhysics.LineOfSight(val5, position2, num5, melee_losforgiveness, 0f, hitEntity) || num22 > ConVar.AntiHack.melee_los_entity_realpos_distance)
+							if (!TryGetClosestEntityColliderPoint(hitEntity, hitPositionWorld2, ConVar.AntiHack.melee_los_entity_realpos_distance, 1270440705, out var closest))
+							{
+								closest = hitEntity.ClosestPoint(hitPositionWorld2);
+							}
+							float num22 = Vector3.Distance(closest, hitPositionWorld2);
+							if (!GamePhysics.LineOfSight(position2, closest, num5, 0f, melee_losforgiveness, hitEntity) || !GamePhysics.LineOfSight(closest, position2, num5, melee_losforgiveness, 0f, hitEntity) || num22 > ConVar.AntiHack.melee_los_entity_realpos_distance)
 							{
 								string shortPrefabName15 = ShortPrefabName;
 								string shortPrefabName16 = hitEntity.ShortPrefabName;
-								AntiHack.Log(player, AntiHackType.MeleeHack, string.Format("Line of sight entity real position ({0} on {1}) {2} {3} {4}", new object[5] { shortPrefabName15, shortPrefabName16, position2, val5, num22 }));
+								AntiHack.Log(player, AntiHackType.MeleeHack, string.Format("Line of sight entity real position ({0} on {1}) {2} {3} {4}", new object[5] { shortPrefabName15, shortPrefabName16, position2, closest, num22 }));
 								player.stats.combat.LogInvalid(hitInfo, "melee_los_entity_realpos");
 								flag8 = false;
 							}
@@ -970,18 +1019,18 @@ public class BaseMelee : AttackEntity
 						{
 							Vector3 hitPositionWorld3 = hitInfo.HitPositionWorld;
 							Vector3 position3 = basePlayer.eyes.position;
-							Vector3 val6 = basePlayer.CenterPoint();
+							Vector3 val5 = basePlayer.CenterPoint();
 							float melee_losforgiveness2 = ConVar.AntiHack.melee_losforgiveness;
 							bool flag10 = GamePhysics.LineOfSight(hitPositionWorld3, position3, num5, 0f, melee_losforgiveness2) && GamePhysics.LineOfSight(position3, hitPositionWorld3, num5, melee_losforgiveness2, 0f);
 							if (!flag10)
 							{
-								flag10 = GamePhysics.LineOfSight(hitPositionWorld3, val6, num5, 0f, melee_losforgiveness2) && GamePhysics.LineOfSight(val6, hitPositionWorld3, num5, melee_losforgiveness2, 0f);
+								flag10 = GamePhysics.LineOfSight(hitPositionWorld3, val5, num5, 0f, melee_losforgiveness2) && GamePhysics.LineOfSight(val5, hitPositionWorld3, num5, melee_losforgiveness2, 0f);
 							}
 							if (!flag10)
 							{
 								string shortPrefabName17 = ShortPrefabName;
 								string shortPrefabName18 = basePlayer.ShortPrefabName;
-								AntiHack.Log(player, AntiHackType.MeleeHack, string.Format("Line of sight player ({0} on {1}) {2} {3} or {4} {5}", new object[6] { shortPrefabName17, shortPrefabName18, hitPositionWorld3, position3, hitPositionWorld3, val6 }));
+								AntiHack.Log(player, AntiHackType.MeleeHack, string.Format("Line of sight player ({0} on {1}) {2} {3} or {4} {5}", new object[6] { shortPrefabName17, shortPrefabName18, hitPositionWorld3, position3, hitPositionWorld3, val5 }));
 								player.stats.combat.LogInvalid(hitInfo, "melee_los_player");
 								flag8 = false;
 							}
@@ -1003,6 +1052,7 @@ public class BaseMelee : AttackEntity
 					if (!flag8)
 					{
 						AntiHack.AddViolation(player, AntiHackType.MeleeHack, ConVar.AntiHack.melee_penalty);
+						Pool.Free<HitInfo>(ref hitInfo);
 						return;
 					}
 				}

@@ -53,14 +53,14 @@ public class State_CrocCharge : FSMStateBase
 
 	private void ResetSurprise()
 	{
-		float num = Random.Range(3f, 6f);
+		float num = Rng.Range(3f, 6f);
 		Owner.Invoke(SurpriseAction, num);
-		Owner.Invoke(ResetSurpriseAction, num + Random.Range(3f, 6f));
+		Owner.Invoke(ResetSurpriseAction, num + Rng.Range(3f, 6f));
 	}
 
 	private void Surprise()
 	{
-		nextSurpriseTime = Time.timeAsDouble + (double)Random.Range(3f, 6f);
+		nextSurpriseTime = Time.timeAsDouble + (double)Rng.Range(3f, 6f);
 	}
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)

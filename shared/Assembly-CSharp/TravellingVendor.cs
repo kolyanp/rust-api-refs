@@ -64,8 +64,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	public SoundPlayer BuySound;
 
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private VisualCarWheel wheelFL;
 
 	[SerializeField]
@@ -192,6 +192,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	[ReplicatedVar(Saved = true)]
 	public static float max_speed = 5f;
 
+	private static List<TravellingVendor> serverVendors = new List<TravellingVendor>();
+
 	private float smoothedSteering;
 
 	private float brakes;
@@ -264,6 +266,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	public float SteerAngle => (client_steering_left + client_steering_right) / 2f;
 
 	public float MaxSteerAngle => maxSteerAngle;
+
+	public float TimeLeftOnMap => Mathf.Max(0f, alive_time_seconds - aliveTimer);
 
 	public override bool PositionTickFixedTime
 	{
@@ -762,14 +766,6 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private void FetchTargets()
 	{
-		if (playerRecords == null)
-		{
-			playerRecords = new ListDictionary<BasePlayer, VendorTargetInfo>();
-		}
-		if (localPlayers == null)
-		{
-			localPlayers = Pool.Get<List<BasePlayer>>();
-		}
 		List<BaseEntity> foundEntities = Pool.Get<List<BaseEntity>>();
 		FetchCycle(foundEntities);
 		Pool.FreeUnmanaged<BaseEntity>(ref foundEntities);
@@ -899,8 +895,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SV_OpenMenu(RPCMessage msg)
 	{
 		if ((Object)(object)vendingMachine == (Object)null)
@@ -990,16 +986,28 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		}
 	}
 
+	public static TravellingVendor GetVisitingVendor()
+	{
+		if (serverVendors.Count <= 0)
+		{
+			return null;
+		}
+		return serverVendors[0];
+	}
+
 	public override void ServerInit()
 	{
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		if (!isClient)
 		{
+			serverVendors.Add(this);
 			myRigidbody = ((Component)this).GetComponent<Rigidbody>();
 			obstacleHits = Pool.Get<List<RaycastHit>>();
 			pulloverHits = Pool.Get<List<RaycastHit>>();
+			localPlayers = Pool.Get<List<BasePlayer>>();
+			playerRecords = new ListDictionary<BasePlayer, VendorTargetInfo>();
 			currentMaxSpeed = max_speed;
 			timeSinceBackfire = TimeSince.op_Implicit(0f);
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
@@ -1012,7 +1020,6 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 			pusher = ((Component)this).GetComponentInChildren<TriggerVehiclePush>();
 			forcer = ((Component)this).GetComponentInChildren<TriggerPlayerForce>();
 			CreateMapMarker();
-			CreatePreventBuilding();
 			InvokeRepeating(UpdateObstacles, 0f, ObstacleCheckTime);
 			InvokeRepeating(UpdateMarker, 0f, MarkerUpdateTime);
 			InvokeRepeating(BuildingCheck, 1f, 3f);
@@ -1020,9 +1027,16 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		}
 	}
 
+	public override void ServerInitPostNetworkGroupAssign()
+	{
+		base.ServerInitPostNetworkGroupAssign();
+		CreatePreventBuilding();
+	}
+
 	internal override void DoServerDestroy()
 	{
 		base.DoServerDestroy();
+		serverVendors.Remove(this);
 		if ((Object)(object)preventBuildingInstance != (Object)null && preventBuildingInstance.IsValid())
 		{
 			preventBuildingInstance.Kill();
@@ -1128,7 +1142,6 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		if (!((Object)(object)mapMarkerInstance == (Object)null))
 		{
 			((Component)mapMarkerInstance).transform.SetPositionAndRotation(((Component)this).transform.position, ((Component)this).transform.rotation);
-			mapMarkerInstance.SendNetworkUpdate();
 		}
 	}
 

@@ -42,11 +42,11 @@ public class State_Hurt : State_PlayAnimationRM
 		return StrongHitL;
 	}
 
-	public bool ShouldStagger(BaseEntity owner, HitInfo hitInfo)
+	public bool ShouldStagger(HitInfo hitInfo)
 	{
-		float num = owner.Health() - hitInfo.damageTypes.Total();
-		float num2 = owner.MaxHealth() * StaggerRatio;
-		if (owner.Health() > num2)
+		float num = Owner.Health() - hitInfo.damageTypes.Total();
+		float num2 = Owner.MaxHealth() * StaggerRatio;
+		if (Owner.Health() > num2)
 		{
 			return num < num2;
 		}
@@ -63,7 +63,7 @@ public class State_Hurt : State_PlayAnimationRM
 		{
 			Blackboard.Add("HitByFire");
 		}
-		if (WeakHit == null || ShouldStagger(Owner, payload.hitInfo))
+		if (WeakHit == null || ShouldStagger(payload.hitInfo))
 		{
 			Animation = PickStrongHit(payload.hitInfo);
 		}

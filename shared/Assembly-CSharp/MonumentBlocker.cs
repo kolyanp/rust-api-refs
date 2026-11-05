@@ -5,6 +5,7 @@ using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
+using Oxide.Core;
 using ProtoBuf;
 using Rust;
 using Rust.Ai.Gen2.Nav;
@@ -22,8 +23,8 @@ public class MonumentBlocker : StagedResourceEntity, LookatHealth.IHealthBarDisp
 		public string gibbablePath;
 	}
 
-	[Header("Monument Blocker")]
 	[Tooltip("Gibs spawned on the client when we move into a destruction stage.")]
+	[Header("Monument Blocker")]
 	public GibbableStageData[] gibbableStages = Array.Empty<GibbableStageData>();
 
 	[Tooltip("Gibs spawned on the client when the blocker is fully destroyed. Falls back to the default gibbing if empty.")]
@@ -124,6 +125,7 @@ public class MonumentBlocker : StagedResourceEntity, LookatHealth.IHealthBarDisp
 	public override void OnDied(HitInfo info)
 	{
 		isKilled = true;
+		Interface.CallHook("OnEntityDeath", this, info);
 		Kill(DestroyMode.Gib);
 	}
 
@@ -214,7 +216,7 @@ public class MonumentBlocker : StagedResourceEntity, LookatHealth.IHealthBarDisp
 
 	public override void OnAttacked(HitInfo info)
 	{
-		if (isServer && !isKilled)
+		if (isServer && !isKilled && Interface.CallHook("OnEntityTakeDamage", this, info) == null)
 		{
 			if (baseProtection != null)
 			{

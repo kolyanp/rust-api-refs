@@ -527,8 +527,8 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server]
 	private void ReqTakeWeapon(RPCMessage msg)
 	{
@@ -595,10 +595,10 @@ public class WeaponRack : StorageContainer
 		Interface.CallHook("OnRackedWeaponTaken", slot, player, this);
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqTakeAll(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -632,9 +632,9 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqUnloadWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -677,9 +677,9 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(2f)]
 	private void ReqMountWeapon(RPCMessage msg)
 	{
 		if (inventory.itemList.Count != inventory.capacity)
@@ -1073,6 +1073,63 @@ public class WeaponRack : StorageContainer
 			}
 		}
 		return GetPosition((float)xYForIndex.x + num, (float)xYForIndex.y + num2);
+	}
+
+	public void GetItemLocalPose(WorldModelRackMountConfig config, Vector3 itemScale, int gridIndex, int rotation, out Vector3 position, out Quaternion orientation)
+	{
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
+		WorldModelRackMountConfig.CustomPosition customPosition = ((CustomRackType != SpecialRackType.None) ? config.FindCustomRackPosition(CustomRackType) : null);
+		if (customPosition != null)
+		{
+			position = Anchor.InverseTransformPoint(CustomCenter.TransformPoint(customPosition.CenterOffset));
+			orientation = Quaternion.Inverse(Anchor.rotation) * CustomCenter.rotation * Quaternion.Euler(customPosition.Rotation);
+			return;
+		}
+		Quaternion val = Quaternion.Euler(config.VerticalMountLocalRotation);
+		Vector3 val2 = val * Vector3.Scale(itemScale, (Type == RackType.Board) ? config.CenterOffsfet : config.LeftOffset);
+		Quaternion val3 = ((Type == RackType.Stand) ? Quaternion.Euler(0f, 90f, -90f) : Quaternion.Euler((float)rotation * -90f, 0f, 0f));
+		Vector3 val4 = Anchor.InverseTransformPoint(GetCenterPosition(gridIndex, config, rotation != 0));
+		val4.x = ((Type == RackType.Stand) ? 0f : (config.VerticalMountLocalOffset.x + val2.x));
+		position = val4 - val3 * val2;
+		orientation = val3 * val;
 	}
 
 	private Vector2Int GetWeaponSize(WorldModelRackMountConfig config, int rotation)

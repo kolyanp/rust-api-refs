@@ -16,15 +16,11 @@ public class WaterRendererPostFogPass : RustRenderPass
 
 		public TextureHandle ssrReflectionHandle;
 
-		public RenderTargetIdentifier src;
-
-		public RenderTargetIdentifier dst;
-
-		public RenderTargetIdentifier ssrReflection;
-
 		public Material multiCopyMat;
 
 		public Material reflectionMat;
+
+		public int reflectionPass;
 
 		public Matrix4x4 ssrProj;
 	}
@@ -37,42 +33,41 @@ public class WaterRendererPostFogPass : RustRenderPass
 
 	public static TextureDesc SSRTextureDesc;
 
+	private const int MultiCopyRGBMProceduralPass = 3;
+
+	private const int ReflectionProceduralPassOffset = 2;
+
+	private static readonly int PID_MainTex;
+
+	private static readonly MaterialPropertyBlock s_Properties;
+
 	public WaterRendererPostFogPass(Material multiCopyMat, Material reflectionMat)
 	{
 		_multiCopyMat = multiCopyMat;
 		_reflectionMat = reflectionMat;
 	}
 
-	public static void Draw(CommandBuffer cmd, PassData data)
+	public static void ExecutePass(PassData data, UnsafeGraphContext ctx)
 	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		cmd.Blit(data.src, data.dst, data.multiCopyMat, 1);
-		cmd.SetGlobalTexture(WaterRendererShaderProps.BackgroundColorTexture, data.dst);
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		UnsafeCommandBuffer cmd = ctx.cmd;
+		s_Properties.Clear();
+		s_Properties.SetTexture(PID_MainTex, TextureHandle.op_Implicit(data.srcHandle));
+		cmd.SetRenderTarget(TextureHandle.op_Implicit(data.dstHandle));
+		cmd.DrawProcedural(Matrix4x4.identity, data.multiCopyMat, 3, (MeshTopology)0, 3, 1, s_Properties);
 		cmd.SetGlobalMatrix(WaterRendererShaderProps.WaterSSR_CameraProj, data.ssrProj);
-		cmd.Blit((Texture)null, data.ssrReflection, data.reflectionMat, WaterSystem.Instance.Reflections);
-		cmd.SetGlobalTexture(WaterRendererShaderProps.WaterSSR_ReflectionTexture, data.ssrReflection);
-	}
-
-	public static void ExecutePass(PassData data, RenderGraphContext ctx)
-	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		data.src = TextureHandle.op_Implicit(data.srcHandle);
-		data.dst = TextureHandle.op_Implicit(data.dstHandle);
-		data.ssrReflection = TextureHandle.op_Implicit(data.ssrReflectionHandle);
-		Draw(ctx.cmd, data);
+		s_Properties.Clear();
+		s_Properties.SetTexture(WaterRendererShaderProps.BackgroundColorTexture, TextureHandle.op_Implicit(data.dstHandle));
+		cmd.SetRenderTarget(TextureHandle.op_Implicit(data.ssrReflectionHandle));
+		cmd.DrawProcedural(Matrix4x4.identity, data.reflectionMat, data.reflectionPass, (MeshTopology)0, 3, 1, s_Properties);
 	}
 
 	public static Matrix4x4 ComputeCameraSSRProj(int width, int height, Matrix4x4 projMat)
@@ -96,8 +91,6 @@ public class WaterRendererPostFogPass : RustRenderPass
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
@@ -107,36 +100,28 @@ public class WaterRendererPostFogPass : RustRenderPass
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
 		if (WaterSystem.Instance.Reflections <= 0)
 		{
 			return;
@@ -150,7 +135,7 @@ public class WaterRendererPostFogPass : RustRenderPass
 		cameraBufferSize = val2.CameraBufferSize;
 		int y = cameraBufferSize.y;
 		PassData passData = default;
-		RenderGraphBuilder val3 = renderGraph.AddRenderPass<PassData>("Water Post Fog", ref passData, "D:\\ws\\workspace\\Rust-Server-release\\Assets\\Scripts\\Rendering\\RendererFeatures\\Water\\WaterRendererPostFogPass.cs", 99);
+		IUnsafeRenderGraphBuilder val3 = renderGraph.AddUnsafePass<PassData>("Water Post Fog", ref passData, "D:\\ws\\workspace\\Rust-Server-release\\Assets\\Scripts\\Rendering\\RendererFeatures\\Water\\WaterRendererPostFogPass.cs", 104);
 		try
 		{
 			cameraBufferSize = val2.CameraBufferSize;
@@ -160,29 +145,31 @@ public class WaterRendererPostFogPass : RustRenderPass
 			passData.ssrProj = ssrProj;
 			passData.multiCopyMat = _multiCopyMat;
 			passData.reflectionMat = _reflectionMat;
+			passData.srcHandle = val.ActiveColorTexture;
+			((IBaseRenderGraphBuilder)val3).UseTexture(ref passData.srcHandle, (AccessFlags)1);
+			((IBaseRenderGraphBuilder)val3).UseTexture(ref postOpaqueDepthResourceData.postOpaqueDepthHandle, (AccessFlags)1);
+			TextureHandle cameraDepthTexture = val.CameraDepthTexture;
+			((IBaseRenderGraphBuilder)val3).UseTexture(ref cameraDepthTexture, (AccessFlags)1);
 			PassData passData2 = passData;
-			TextureHandle activeColorTexture = val.ActiveColorTexture;
-			passData2.srcHandle = val3.ReadTexture(ref activeColorTexture);
-			val3.ReadTexture(ref postOpaqueDepthResourceData.postOpaqueDepthHandle);
-			activeColorTexture = val.CameraDepthTexture;
-			val3.ReadTexture(ref activeColorTexture);
-			PassData passData3 = passData;
 			TextureDesc val4 = RustRenderPipelineUtils.TextureDescSetSize(BackgroundTextureDesc, x / 2, y / 2, -1);
-			activeColorTexture = renderGraph.CreateTexture(ref val4);
-			passData3.dstHandle = (waterRendererFrameData.backgroundColorTex = val3.WriteTexture(ref activeColorTexture));
-			PassData passData4 = passData;
+			passData2.dstHandle = (waterRendererFrameData.backgroundColorTex = renderGraph.CreateTexture(ref val4));
+			((IBaseRenderGraphBuilder)val3).UseTexture(ref passData.dstHandle, (AccessFlags)6);
+			((IBaseRenderGraphBuilder)val3).SetGlobalTextureAfterPass(ref passData.dstHandle, WaterRendererShaderProps.BackgroundColorTexture);
+			PassData passData3 = passData;
 			val4 = RustRenderPipelineUtils.TextureDescSetSize(SSRTextureDesc, x, y, -1);
-			activeColorTexture = renderGraph.CreateTexture(ref val4);
-			passData4.ssrReflectionHandle = (waterRendererFrameData.ssrReflectionTex = val3.WriteTexture(ref activeColorTexture));
-			val3.SetRenderFunc<PassData>((BaseRenderFunc<PassData, RenderGraphContext>)((PassData pd, RenderGraphContext ctx) =>
+			passData3.ssrReflectionHandle = (waterRendererFrameData.ssrReflectionTex = renderGraph.CreateTexture(ref val4));
+			((IBaseRenderGraphBuilder)val3).UseTexture(ref passData.ssrReflectionHandle, (AccessFlags)6);
+			((IBaseRenderGraphBuilder)val3).SetGlobalTextureAfterPass(ref passData.ssrReflectionHandle, WaterRendererShaderProps.WaterSSR_ReflectionTexture);
+			passData.reflectionPass = WaterSystem.Instance.Reflections + 2;
+			((IBaseRenderGraphBuilder)val3).UseTexture(ref waterRendererFrameData.surfaceTex, (AccessFlags)1);
+			val3.SetRenderFunc<PassData>((BaseRenderFunc<PassData, UnsafeGraphContext>)((PassData pd, UnsafeGraphContext ctx) =>
 			{
-				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 				ExecutePass(pd, ctx);
 			}));
 		}
 		finally
 		{
-			((IDisposable)val3/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)val3)?.Dispose();
 		}
 	}
 
@@ -198,6 +185,8 @@ public class WaterRendererPostFogPass : RustRenderPass
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Expected Obj, but got Unknown
 		TextureDesc val = new TextureDesc(0, 0, false, false)
 		{
 			name = "Water Post Fog Background Texture"
@@ -214,5 +203,7 @@ public class WaterRendererPostFogPass : RustRenderPass
 		val.filterMode = (FilterMode)1;
 		val.wrapMode = (TextureWrapMode)1;
 		SSRTextureDesc = val;
+		PID_MainTex = Shader.PropertyToID("_MainTex");
+		s_Properties = new MaterialPropertyBlock();
 	}
 }

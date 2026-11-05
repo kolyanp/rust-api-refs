@@ -15,6 +15,9 @@ public class JellyfishGrouping : IDisposable
 
 		public Material material;
 
+		[Tooltip("Bound through the draw's property block, since a procedural swarm has no Renderer for BindSubsurfaceProfile.")]
+		public SubsurfaceProfile subsurfaceProfile;
+
 		[Header("Population")]
 		[Tooltip("How many jellyfish have their local water column re-sampled each update. Sampled as one batch, so raising this is cheap.")]
 		public int samplesPerFrame;
@@ -61,8 +64,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Random variation in how long a jellyfish dawdles before setting off after the entity, in seconds. Stops the swarm surging as one block.")]
 		public Vector2 catchUpDelayRange;
 
-		[Tooltip("How far a jellyfish travels in one trip, as a fraction of the swarm radius. Picked randomly per trip.")]
 		[Header("Wandering")]
+		[Tooltip("How far a jellyfish travels in one trip, as a fraction of the swarm radius. Picked randomly per trip.")]
 		public Vector2 wanderDistanceRange;
 
 		[Tooltip("How long a jellyfish hangs still after finishing a trip, in seconds. Higher means a calmer swarm.")]
@@ -71,8 +74,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Give up on a destination after this long, so a stuck jellyfish doesn't push into a wall forever.")]
 		public float wanderTimeout;
 
-		[Header("Depth")]
 		[Tooltip("Where in the water column each jellyfish sits, as a fraction of local depth. 0 hugs the surface and 1 hugs the floor. Rolled per jellyfish within this range so the swarm fills the column.")]
+		[Header("Depth")]
 		public Vector2 depthFractionRange;
 
 		[Tooltip("How quickly a jellyfish eases towards its preferred depth. Low is a slow, tidal rise and fall.")]
@@ -93,8 +96,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Water this shallow is not worth drifting into, so a jellyfish that finds itself there picks a new destination. Keeps the swarm off sandbars.")]
 		public float minSwimDepth;
 
-		[Header("Displacement")]
 		[Tooltip("How far from a moving body the water it pushes reaches, in metres. Generous reads better than tight - a body displaces water well past its own width.")]
+		[Header("Displacement")]
 		public float displacementRadius;
 
 		[Tooltip("How hard a body at full reference speed shoves a jellyfish directly beside it.")]
@@ -167,139 +170,51 @@ public class JellyfishGrouping : IDisposable
 		public float phase;
 	}
 
-	public struct JellyfishWaterProcessJob : IJob
+	public struct JellyfishSettings(in JellyfishType jellyfishType)
 	{
-		public int sampleCount;
+		public float swarmRadius = jellyfishType.swarmRadius;
 
-		public NativeArray<JellyfishData> jellyfishDataArray;
+		public float speed = jellyfishType.speed;
 
-		[ReadOnly]
-		public NativeArray<int> sampleIndices;
+		public float turnSpeed = jellyfishType.turnSpeed;
 
-		[ReadOnly]
-		public NativeArray<float> sampleFloorY;
+		public float2 wanderDistanceRange = float2.op_Implicit(jellyfishType.wanderDistanceRange);
 
-		[ReadOnly]
-		public NativeArray<float> sampleSurfaceY;
+		public float2 restDurationRange = float2.op_Implicit(jellyfishType.restDurationRange);
 
-		public void Execute()
-		{
-		}
-	}
+		public float2 catchUpDelayRange = float2.op_Implicit(jellyfishType.catchUpDelayRange);
 
-	public struct JellyfishUpdateJob : IJobParallelFor
-	{
-		[ReadOnly]
-		public float3 swarmCenter;
+		public float wanderTimeout = jellyfishType.wanderTimeout;
 
-		[ReadOnly]
-		public int displacerCount;
+		public float verticalEaseRate = jellyfishType.verticalEaseRate;
 
-		[ReadOnly]
-		public uint seed;
+		public float floorMargin = jellyfishType.floorMargin;
 
-		[ReadOnly]
-		[NativeDisableParallelForRestriction]
-		public NativeArray<float3> displacerPositions;
+		public float surfaceMargin = jellyfishType.surfaceMargin;
 
-		[ReadOnly]
-		[NativeDisableParallelForRestriction]
-		public NativeArray<float3> displacerVelocities;
+		public float minSwimDepth = jellyfishType.minSwimDepth;
 
-		[ReadOnly]
-		public float dt;
+		public float depthDriftAmount = jellyfishType.depthDriftAmount;
 
-		[ReadOnly]
-		public float swarmRadius;
+		public float depthDriftPeriod = jellyfishType.depthDriftPeriod;
 
-		[ReadOnly]
-		public float speed;
+		public float maxTiltAngle = math.radians(jellyfishType.maxTiltAngle);
 
-		[ReadOnly]
-		public float turnSpeed;
+		public float tiltReferenceSpeed = jellyfishType.tiltReferenceSpeed;
 
-		[ReadOnly]
-		public float2 wanderDistanceRange;
+		public float tiltEaseRate = jellyfishType.tiltEaseRate;
 
-		[ReadOnly]
-		public float2 restDurationRange;
+		public float pulseRateAtRest = jellyfishType.pulseRateAtRest;
 
-		[ReadOnly]
-		public float2 catchUpDelayRange;
+		public float pulseReferenceSpeed = jellyfishType.pulseReferenceSpeed;
 
-		[ReadOnly]
-		public float wanderTimeout;
+		public float displacementRadius = jellyfishType.displacementRadius;
 
-		[ReadOnly]
-		public float verticalEaseRate;
+		public float displacementStrength = jellyfishType.displacementStrength;
 
-		[ReadOnly]
-		public float floorMargin;
+		public float referenceSpeed = jellyfishType.referenceSpeed;
 
-		[ReadOnly]
-		public float surfaceMargin;
-
-		[ReadOnly]
-		public float minSwimDepth;
-
-		[ReadOnly]
-		public float depthDriftAmount;
-
-		[ReadOnly]
-		public float depthDriftPeriod;
-
-		[ReadOnly]
-		public float elapsedTime;
-
-		[ReadOnly]
-		public float maxTiltAngle;
-
-		[ReadOnly]
-		public float tiltReferenceSpeed;
-
-		[ReadOnly]
-		public float tiltEaseRate;
-
-		[ReadOnly]
-		public float pulseRateAtRest;
-
-		[ReadOnly]
-		public float pulseReferenceSpeed;
-
-		[ReadOnly]
-		public float displacementRadius;
-
-		[ReadOnly]
-		public float displacementStrength;
-
-		[ReadOnly]
-		public float referenceSpeed;
-
-		[ReadOnly]
-		public float pushDecayRate;
-
-		[NativeDisableUnsafePtrRestriction]
-		public unsafe JellyfishData* jellyfishDataArray;
-
-		[NativeDisableUnsafePtrRestriction]
-		public unsafe JellyfishRenderData* jellyfishRenderDataArray;
-
-		public void Execute(int i)
-		{
-		}
-	}
-
-	public struct KillJellyfish : IJob
-	{
-		public NativeArray<JellyfishData> jellyfishDataArray;
-
-		public NativeArray<JellyfishRenderData> jellyfishRenderDataArray;
-
-		public NativeArray<int> jellyfishCount;
-
-		public void Execute()
-		{
-		}
+		public float pushDecayRate = jellyfishType.pushDecayRate;
 	}
 
 	private const int maxDisplacers = 8;
@@ -331,6 +246,8 @@ public class JellyfishGrouping : IDisposable
 	private NativeArray<float3> displacerVelocities;
 
 	private int displacerCount;
+
+	private static readonly int subsurfaceProfileId = Shader.PropertyToID("_SubsurfaceProfile");
 
 	private MaterialPropertyBlock materialPropertyBlock;
 

@@ -1,5 +1,3 @@
-using UnityEngine;
-
-public class MeshTerrainRootRuntimeObject : MonoBehaviour, IClientComponent
+public class MeshTerrainRootRuntimeObject : ListComponent<MeshTerrainRootRuntimeObject>, IClientComponent
 {
 }

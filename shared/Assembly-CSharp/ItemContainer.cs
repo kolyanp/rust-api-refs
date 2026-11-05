@@ -560,12 +560,12 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		{
 			return false;
 		}
-		itemList.Add(item);
-		item.parent = this;
 		if (!FindPosition(item))
 		{
 			return false;
 		}
+		itemList.Add(item);
+		item.parent = this;
 		MarkDirty();
 		if (onItemAddedRemoved != null)
 		{
@@ -590,11 +590,20 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 
 	public bool SlotTaken(Item item, int i)
 	{
-		if (slotIsReserved != null && slotIsReserved(item, i))
+		if (IsSlotReserved(item, i))
 		{
 			return true;
 		}
 		return GetSlot(i) != null;
+	}
+
+	public bool IsSlotReserved(Item item, int slot)
+	{
+		if (slotIsReserved != null)
+		{
+			return slotIsReserved(item, slot);
+		}
+		return false;
 	}
 
 	public Item GetSlot(int slot)
@@ -624,9 +633,14 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		int num = range.y - range.x + 1;
+		Span<bool> span = stackalloc bool[num];
 		int count = itemList.Count;
 		int num2 = 0;
 		foundSlot = -1;
@@ -639,6 +653,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 				continue;
 			}
 			num2++;
+			span[position - range.x] = true;
 			if (item.amount >= item.info.stackable || item.IsRemoved())
 			{
 				continue;
@@ -660,7 +675,18 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 				return true;
 			}
 		}
-		return num2 + fakeSlots < num;
+		if (num2 + fakeSlots >= num)
+		{
+			return false;
+		}
+		for (int j = range.x; j <= range.y; j++)
+		{
+			if (!span[j - range.x] && CanAcceptItem(null, toTransfer, j) == CanAcceptResult.CanAccept)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public bool FindPosition(Item item)
@@ -855,10 +881,15 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 
 	public Item FindItemByItemID(int itemid)
 	{
+		return FindItemByItemID(itemid, partialStackOnly: false);
+	}
+
+	public Item FindItemByItemID(int itemid, bool partialStackOnly)
+	{
 		for (int i = 0; i < itemList.Count; i++)
 		{
 			Item item = itemList[i];
-			if (item.info.itemid == itemid)
+			if (item.info.itemid == itemid && (!partialStackOnly || item.amount < item.MaxStackable()))
 			{
 				return item;
 			}
@@ -984,8 +1015,8 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0198: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("ItemContainer.Load"))
 		{
 			uid = container.UID;
@@ -1019,6 +1050,8 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 			List<Item> list = itemList;
 			itemList = Pool.Get<List<Item>>();
 			itemsWithOnCycle?.Clear();
+			Func<Item, int, bool> func = slotIsReserved;
+			slotIsReserved = null;
 			using (TimeWarning.New("container.contents"))
 			{
 				foreach (Item content in container.contents)
@@ -1041,6 +1074,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 					}
 				}
 			}
+			slotIsReserved = func;
 			using (TimeWarning.New("Delete old items"))
 			{
 				foreach (Item item2 in list)
@@ -1093,7 +1127,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 			bool flag = i == 1;
 			foreach (Item item2 in itemList)
 			{
-				if (!item2.info.MatchesItemId(itemid, redirectAllowed) || item2.info.itemid != itemid != flag || (!takeBroken && item2.info.condition.enabled && item2.condition <= 0f))
+				if (!item2.IsValid() || !item2.info.MatchesItemId(itemid, redirectAllowed) || item2.info.itemid != itemid != flag || (!takeBroken && item2.info.condition.enabled && item2.condition <= 0f))
 				{
 					continue;
 				}
@@ -1384,52 +1418,55 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 			{
 				return;
 			}
-			if ((Object)(object)itemList[i].info != (Object)(object)itemToCreate)
+			Item item = itemList[i];
+			if ((Object)(object)item.info != (Object)(object)itemToCreate)
 			{
 				continue;
 			}
-			int num = itemList[i].MaxStackable();
-			if (num <= itemList[i].amount && limitStack != LimitStack.None)
+			int num = item.MaxStackable();
+			if (num > item.amount || limitStack == LimitStack.None)
 			{
-				continue;
-			}
-			MarkDirty();
-			itemList[i].amount += amount;
-			amount -= amount;
-			if (itemList[i].amount > num && limitStack != LimitStack.None)
-			{
-				amount = itemList[i].amount - num;
-				if (amount > 0)
+				if (limitStack == LimitStack.None)
 				{
-					itemList[i].amount -= amount;
+					item.amount += amount;
+					amount -= amount;
+					onItemAddedToStack?.Invoke(item, amount, null);
 				}
+				else
+				{
+					int num2 = Mathf.Min(num - item.amount, amount);
+					item.amount += num2;
+					amount -= num2;
+					onItemAddedToStack?.Invoke(item, num2, null);
+				}
+				MarkDirty();
 			}
 		}
 		if (amount == 0)
 		{
 			return;
 		}
-		int num2;
+		int num3;
 		if (limitStack != LimitStack.All)
 		{
-			num2 = int.MaxValue;
+			num3 = int.MaxValue;
 		}
 		else
 		{
-			num2 = ((!allowItemsToIncreaseToMaxStackSize) ? Mathf.Min(itemToCreate.stackable, ContainerMaxStackSize()) : Mathf.Max(itemToCreate.stackable, ContainerMaxStackSize()));
+			num3 = ((!allowItemsToIncreaseToMaxStackSize) ? Mathf.Min(itemToCreate.stackable, ContainerMaxStackSize()) : Mathf.Max(itemToCreate.stackable, ContainerMaxStackSize()));
 		}
-		if (num2 <= 0)
+		if (num3 <= 0)
 		{
 			return;
 		}
 		while (amount > 0)
 		{
-			int num3 = Mathf.Min(amount, num2);
-			Item item = ItemManager.Create(itemToCreate, num3, skin, isServerSide: true, 0uL);
-			amount -= num3;
-			if (!item.MoveToContainer(this))
+			int num4 = Mathf.Min(amount, num3);
+			Item item2 = ItemManager.Create(itemToCreate, num4, skin, isServerSide: true, 0uL);
+			amount -= num4;
+			if (!item2.MoveToContainer(this))
 			{
-				item.Remove();
+				item2.Remove();
 			}
 		}
 	}
@@ -1459,6 +1496,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void RemoveFractionOfContainer(List<Item> removedItems, float removeFraction)
 	{
 		removeFraction = Mathf.Clamp01(removeFraction);
@@ -1533,6 +1571,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		Pool.FreeUnmanaged<ItemDefinition, float>(ref dictionary);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void RemoveItemsFromContainer(List<Item> removedItems, ItemDefinition[] targetItems)
 	{
 		for (int num = itemList.Count - 1; num >= 0; num--)

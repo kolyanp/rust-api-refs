@@ -7,12 +7,12 @@ namespace Rust.Ai.Gen2;
 [Serializable]
 public class State_MountVehicle : State_MoveToTarget
 {
-	[SerializeField]
 	[Tooltip("Optional montage for climbing aboard. Without one the animal is placed on the anchor when it arrives.")]
+	[SerializeField]
 	public RootMotionData Animation;
 
-	[SerializeField]
 	[Tooltip("The slice of the montage that carries the animal up onto the anchor. Leave zeroed to warp the whole clip.")]
+	[SerializeField]
 	public MountMontageWindow travelWindow = MountMontageWindow.Whole;
 
 	private const float navmeshSampleRadius = 5f;
@@ -100,12 +100,12 @@ public class State_MountVehicle : State_MoveToTarget
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
 		isClimbing = true;
 		NPCMountable nPCMountable = (((Object)(object)Npc != (Object)null) ? Npc.Mount : null);
 		Transform val = (((Object)(object)nPCMountable != (Object)null) ? nPCMountable.GetAnchorTransform(Npc.MountAnchorIndex) : null);
@@ -121,10 +121,10 @@ public class State_MountVehicle : State_MoveToTarget
 		Agent.Pause(this);
 		Agent.IsJumping = true;
 		Vector3 position = ((Component)Owner).transform.position;
-		Vector3 val2 = Vector3Ex.NormalizeXZ(val.position - position);
-		if (val2.sqrMagnitude > 0.001f)
+		Vector3 direction = Vector3Ex.NormalizeXZ(val.position - position);
+		if (direction.sqrMagnitude > 0.001f)
 		{
-			((Component)Owner).transform.rotation = Quaternion.LookRotation(val2);
+			Agent.Face(NPCMountMontage.FacingToTravel(Animation, direction));
 		}
 		animState = RootMotionPlayer.PlayServerState.TakeFromPool(Animation, ((Component)Owner).transform);
 		animState.constrainToNavmesh = false;

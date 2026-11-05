@@ -4,6 +4,7 @@ using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
+using ProtoBuf;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -98,6 +99,12 @@ public class LivestockCorpse : BaseCorpse
 		}
 	}
 
+	public int CoatSeed { get; set; }
+
+	public FarmableAnimal.NameSource NameAuthorSource { get; private set; }
+
+	public ulong NameAuthorId { get; private set; }
+
 	public override void ServerInitCorpse(BaseEntity pr, Vector3 posOnDeath, Quaternion rotOnDeath, BasePlayer.PlayerFlags playerFlagsOnDeath, ModelState modelState)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -107,16 +114,50 @@ public class LivestockCorpse : BaseCorpse
 		{
 			Genes = livestockAnimal.Genes;
 			AnimalName = livestockAnimal.AnimalName;
+			NameAuthorSource = livestockAnimal.NameAuthorSource;
+			NameAuthorId = livestockAnimal.NameAuthorId;
 			IsMale = livestockAnimal.IsMale;
 			ShornFleece = livestockAnimal.ShornFleece;
+			CoatSeed = livestockAnimal.CoatSeed;
 			livestockAnimal.AddCorpseYield(((Component)this).GetComponent<ResourceDispenser>());
+		}
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		info.msg.corpse.livestockCoatSeed = CoatSeed;
+		if (info.forDisk)
+		{
+			info.msg.corpse.livestockCorpse = Pool.Get<LivestockCorpse>();
+			info.msg.corpse.livestockCorpse.nameSource = (int)NameAuthorSource;
+			info.msg.corpse.livestockCorpse.nameAuthorId = NameAuthorId;
 		}
 	}
 
 	public override bool FillHeadData(HeadEntity head)
 	{
-		head.AssignLivestock(Genes, AnimalName);
+		head.AssignLivestock(Genes, AnimalName, CoatSeed, NameAuthorSource, NameAuthorId);
 		return true;
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.msg.corpse != null)
+		{
+			CoatSeed = info.msg.corpse.livestockCoatSeed;
+		}
+		if (isServer && info.fromDisk && CoatSeed == 0)
+		{
+			CoatSeed = LivestockPattern.SeedFor(AnimalName);
+		}
+		LivestockCorpse val = info.msg.corpse?.livestockCorpse;
+		if (isServer && info.fromDisk && val != null)
+		{
+			NameAuthorSource = (FarmableAnimal.NameSource)val.nameSource;
+			NameAuthorId = val.nameAuthorId;
+		}
 	}
 
 	protected override bool WriteSyncVar(byte id, NetWrite writer)

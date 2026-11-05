@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-[AddComponentMenu("Rendering/Visualize Texture Density")]
-[ImageEffectAllowedInSceneView]
 [ExecuteInEditMode]
+[ImageEffectAllowedInSceneView]
+[AddComponentMenu("Rendering/Visualize Texture Density")]
 public class VisualizeTexelDensity : MonoBehaviour
 {
 	public Shader shader;
@@ -37,6 +37,8 @@ public class VisualizeTexelDensity : MonoBehaviour
 	private static VisualizeTexelDensity instance;
 
 	public static VisualizeTexelDensity Instance => instance;
+
+	public Texture GradientTexture => texelDensityGradTex;
 
 	private void Awake()
 	{

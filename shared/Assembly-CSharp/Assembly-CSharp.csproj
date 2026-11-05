@@ -22,7 +22,7 @@
     <Reference Include="Rust.UI" />
     <Reference Include="Rust.Data" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.13/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Nexus" />
     <Reference Include="Facepunch.Unity" />
@@ -60,11 +60,11 @@
     <Reference Include="Wardddev.FlexibleColorPicker" />
     <Reference Include="UnityEngine.VideoModule" />
     <Reference Include="Rust.Workshop" />
+    <Reference Include="Unity.Burst" />
     <Reference Include="Unity.InputSystem" />
     <Reference Include="Facepunch.Raknet" />
-    <Reference Include="Unity.Burst" />
-    <Reference Include="NewAssembly" />
     <Reference Include="Facepunch.Input" />
+    <Reference Include="NewAssembly" />
     <Reference Include="Facepunch.UnwrapBaker.Settings" />
     <Reference Include="UnityEngine.TerrainModule" />
     <Reference Include="UnityEngine.IMGUIModule" />
@@ -80,11 +80,10 @@
     <Reference Include="Rust.RenderPipeline" />
     <Reference Include="UnityEngine.WindModule" />
     <Reference Include="System.Net.Http">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.13/System.Net.Http.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.DirectorModule" />
     <Reference Include="Unity.Timeline" />
-    <Reference Include="Rust.UI.Toolkit.DemoControls" />
     <Reference Include="UnityEngine.TextRenderingModule" />
     <Reference Include="RTLTMPro" />
     <Reference Include="UnityEngine.UIElementsModule" />
@@ -101,7 +100,7 @@
     <Reference Include="UnityEngine.Physics2DModule" />
     <Reference Include="Facepunch.Steamworks.Win64" />
     <Reference Include="System.Numerics">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.13/System.Numerics.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="UIEffect" />
     <Reference Include="Rust.Clans.Local">
@@ -111,7 +110,7 @@
     <Reference Include="Rust.Demo" />
     <Reference Include="UnityEngine.ImageConversionModule" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.13/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="TimeZoneConverter" />
     <Reference Include="LZ4" />

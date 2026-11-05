@@ -18,4 +18,8 @@ public abstract class ProceduralObject : MonoBehaviour
 	}
 
 	public abstract void Process();
+
+	public virtual void ProcessCached()
+	{
+	}
 }

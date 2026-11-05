@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Rust;
 using Oxide.Core;
@@ -53,7 +54,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		if (value.cancelled)
 		{
 			owner.Command("note.craft_done", value.taskUID, 0);
-			queue.RemoveFirst();
+			RemoveFirstTask();
 			return;
 		}
 		float currentCraftLevel = owner.currentCraftLevel;
@@ -84,7 +85,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			FinishCrafting(value);
 			if (value.amount <= 0)
 			{
-				queue.RemoveFirst();
+				RemoveFirstTask();
 			}
 			else
 			{
@@ -92,6 +93,13 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 			}
 			owner.InvalidateNetworkCache();
 		}
+	}
+
+	private void RemoveFirstTask()
+	{
+		ItemCraftTask value = queue.First.Value;
+		queue.RemoveFirst();
+		Pool.Free<ItemCraftTask>(ref value);
 	}
 
 	private void CollectIngredient(int item, int amount, List<Item> collect, bool takeBroken = true)
@@ -443,6 +451,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		return true;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public ItemCrafter Save()
 	{
 		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
@@ -485,12 +494,15 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 
 	public void Load(ItemCrafter proto)
 	{
-		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
 		if (proto?.queue == null)
 		{
 			return;
 		}
-		queue.Clear();
+		while (queue.Count > 0)
+		{
+			RemoveFirstTask();
+		}
 		ItemBlueprint blueprint = default;
 		foreach (Task item in proto.queue)
 		{

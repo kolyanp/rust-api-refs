@@ -7,4 +7,6 @@ public class UI_LocalVoice : PriorityListComponent<UI_LocalVoice>
 	public CanvasGroup levelImage;
 
 	public Canvas canvas;
+
+	public GameObject mutedIcon;
 }

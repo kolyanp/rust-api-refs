@@ -77,6 +77,12 @@ public class HitInfo : IPooled, IDisposable
 
 	public float gatherScale = 1f;
 
+	public Shield HitShield;
+
+	public float ShieldAbsorbedDamage;
+
+	public float ShieldDurabilityLoss;
+
 	public BasePlayer InitiatorPlayer
 	{
 		get
@@ -253,6 +259,9 @@ public class HitInfo : IPooled, IDisposable
 		CanGather = false;
 		DidGather = false;
 		gatherScale = 1f;
+		HitShield = null;
+		ShieldAbsorbedDamage = 0f;
+		ShieldDurabilityLoss = 0f;
 	}
 
 	public void CopyFrom(HitInfo other)
@@ -311,6 +320,9 @@ public class HitInfo : IPooled, IDisposable
 		CanGather = other.CanGather;
 		DidGather = other.DidGather;
 		gatherScale = other.gatherScale;
+		HitShield = other.HitShield;
+		ShieldAbsorbedDamage = other.ShieldAbsorbedDamage;
+		ShieldDurabilityLoss = other.ShieldDurabilityLoss;
 	}
 
 	public bool IsProjectile()

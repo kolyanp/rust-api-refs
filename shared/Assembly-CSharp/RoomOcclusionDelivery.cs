@@ -10,9 +10,48 @@ using UnityEngine;
 [ResetStaticFields]
 public class RoomOcclusionDelivery
 {
+	private class Inputs : IPooled
+	{
+		public ListHashSet<Group> Visible = new ListHashSet<Group>();
+
+		public Room Body;
+
+		public int BodyStamp;
+
+		public int Version;
+
+		public int Regrouped;
+
+		public Vector3 Position;
+
+		public float Margin;
+
+		public float OldestLinger;
+
+		public float Linger;
+
+		public float NearbyRange;
+
+		void IPooled.EnterPool()
+		{
+			Visible.Clear();
+			Body = null;
+		}
+
+		void IPooled.LeavePool()
+		{
+		}
+	}
+
 	private static ListHashSet<BasePlayer> tracked = new ListHashSet<BasePlayer>();
 
 	private static Dictionary<BasePlayer, Dictionary<Group, float>> lastVisibleByPlayer = new Dictionary<BasePlayer, Dictionary<Group, float>>();
+
+	private static Dictionary<BasePlayer, Inputs> inputsByPlayer = new Dictionary<BasePlayer, Inputs>();
+
+	private static float previousNow;
+
+	private const float MarginTolerance = 0.001f;
 
 	public const int Off = 0;
 
@@ -27,6 +66,8 @@ public class RoomOcclusionDelivery
 	private const int SweepPerFrame = 64;
 
 	private static int deliveryLevel;
+
+	private static int deliveryDeployables;
 
 	private static ListHashSet<Room> dirtyRooms = new ListHashSet<Room>();
 
@@ -103,27 +144,56 @@ public class RoomOcclusionDelivery
 			{
 				((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 			}
+			previousNow = realtimeSinceStartup;
 		}
 	}
 
 	private static void Rebuild(BasePlayer player, float now)
 	{
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = SeesEverything(player);
+		Room bodyRoom = (flag ? null : RoomEntityBridge.GetRoomForPlayer(player));
+		bool flag2 = flag || IsViewingRemotely(player);
+		inputsByPlayer.TryGetValue(player, out var value);
+		if (!flag2 && Unchanged(value, player, bodyRoom, now))
+		{
+			return;
+		}
 		ListHashSet<Group> val = Pool.Get<ListHashSet<Group>>();
 		ListHashSet<Group> val2 = Pool.Get<ListHashSet<Group>>();
 		try
 		{
-			if (SeesEverything(player))
+			float margin = float.PositiveInfinity;
+			if (flag)
 			{
 				RoomNetworkGroups.GatherGroupsNear(((Component)player).transform.position, RoomOcclusion.occlusion_range, val);
 			}
 			else
 			{
-				RoomNetworkGroups.GatherVisibleGroups(RoomEntityBridge.GetRoomForPlayer(player), null, val);
-				GatherNearbyGroups(player, val);
+				RoomNetworkGroups.GatherVisibleGroups(bodyRoom, null, val);
+				GatherNearbyGroups(player, val, out margin);
 			}
 			GatherRemoteGroups(player, val);
+			if (value != null && lastVisibleByPlayer.TryGetValue(player, out var value2))
+			{
+				Enumerator<Group> enumerator = value.Visible.GetEnumerator();
+				try
+				{
+					while (enumerator.MoveNext())
+					{
+						Group current = enumerator.Current;
+						value2[current] = previousNow;
+					}
+				}
+				finally
+				{
+					((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+				}
+			}
 			ApplyLinger(player, val, now, val2);
+			Remember(player, ref value, flag2, bodyRoom, val, margin);
 			if (!Same(player.net.roomGroups, val2))
 			{
 				ListHashSet<Group> roomGroups = player.net.roomGroups;
@@ -147,13 +217,108 @@ public class RoomOcclusionDelivery
 		}
 	}
 
-	private static void GatherNearbyGroups(BasePlayer player, ListHashSet<Group> into)
+	private static bool Unchanged(Inputs inputs, BasePlayer player, Room bodyRoom, float now)
 	{
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		if (inputs == null)
+		{
+			return false;
+		}
+		if (inputs.Body != bodyRoom || inputs.Version != RoomNetworkGroups.Version)
+		{
+			return false;
+		}
+		if (inputs.BodyStamp != RoomVisibility.StampOf(bodyRoom))
+		{
+			return false;
+		}
+		if (inputs.Linger != RoomOcclusion.occlusion_linger || inputs.NearbyRange != RoomOcclusion.occlusion_nearby_range)
+		{
+			return false;
+		}
+		if (now - inputs.OldestLinger >= inputs.Linger)
+		{
+			return false;
+		}
+		Vector3 position = ((Component)player).transform.position;
+		Vector3 val = position - inputs.Position;
+		if (val.sqrMagnitude >= inputs.Margin * inputs.Margin)
+		{
+			return false;
+		}
+		return !RoomNetworkGroups.RegroupedNear(position, inputs.NearbyRange + inputs.Margin, inputs.Regrouped);
+	}
+
+	private static void Remember(BasePlayer player, ref Inputs inputs, bool composedEveryPass, Room bodyRoom, ListHashSet<Group> visible, float margin)
+	{
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		if (composedEveryPass)
+		{
+			ForgetInputs(player);
+			inputs = null;
+			return;
+		}
+		if (inputs == null)
+		{
+			inputs = Pool.Get<Inputs>();
+			inputsByPlayer[player] = inputs;
+		}
+		inputs.Visible.Clear();
+		for (int i = 0; i < visible.Count; i++)
+		{
+			inputs.Visible.Add(visible[i]);
+		}
+		inputs.Body = bodyRoom;
+		inputs.BodyStamp = RoomVisibility.StampOf(bodyRoom);
+		inputs.Version = RoomNetworkGroups.Version;
+		inputs.Regrouped = RoomNetworkGroups.Regrouped;
+		inputs.Position = ((Component)player).transform.position;
+		inputs.Margin = Mathf.Max(0f, margin - 0.001f);
+		inputs.Linger = RoomOcclusion.occlusion_linger;
+		inputs.NearbyRange = RoomOcclusion.occlusion_nearby_range;
+		inputs.OldestLinger = float.PositiveInfinity;
+		if (!lastVisibleByPlayer.TryGetValue(player, out var value))
+		{
+			return;
+		}
+		foreach (KeyValuePair<Group, float> item in value)
+		{
+			if (!visible.Contains(item.Key) && item.Value < inputs.OldestLinger)
+			{
+				inputs.OldestLinger = item.Value;
+			}
+		}
+	}
+
+	private static void ForgetInputs(BasePlayer player)
+	{
+		if (inputsByPlayer.TryGetValue(player, out var value))
+		{
+			inputsByPlayer.Remove(player);
+			Pool.Free<Inputs>(ref value);
+		}
+	}
+
+	private static bool IsViewingRemotely(BasePlayer player)
+	{
+		return player.GetMounted() is ComputerStation;
+	}
+
+	private static void GatherNearbyGroups(BasePlayer player, ListHashSet<Group> into, out float margin)
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		float occlusion_nearby_range = RoomOcclusion.occlusion_nearby_range;
+		margin = float.PositiveInfinity;
 		if (!(occlusion_nearby_range <= 0f))
 		{
-			RoomNetworkGroups.GatherGroupsNear(((Component)player).transform.position, occlusion_nearby_range, into);
+			RoomNetworkGroups.GatherGroupsNear(((Component)player).transform.position, occlusion_nearby_range, into, out margin);
 		}
 	}
 
@@ -268,6 +433,7 @@ public class RoomOcclusionDelivery
 	private static void Clear(BasePlayer player)
 	{
 		ClearLingerClock(player);
+		ForgetInputs(player);
 		Networkable net = player.net;
 		if (net?.roomGroups != null)
 		{
@@ -295,6 +461,12 @@ public class RoomOcclusionDelivery
 			Pool.FreeUnmanaged<Group, float>(ref value);
 		}
 		lastVisibleByPlayer.Clear();
+		foreach (KeyValuePair<BasePlayer, Inputs> item2 in inputsByPlayer)
+		{
+			Inputs value2 = item2.Value;
+			Pool.Free<Inputs>(ref value2);
+		}
+		inputsByPlayer.Clear();
 	}
 
 	public static void ForgetPlayer(BasePlayer player)
@@ -355,6 +527,11 @@ public class RoomOcclusionDelivery
 				if (num < 2)
 				{
 					return true;
+				}
+				if (RoomOcclusion.occlusion_deployables != deliveryDeployables)
+				{
+					deliveryDeployables = RoomOcclusion.occlusion_deployables;
+					assignAll = true;
 				}
 				Deliver(transitions);
 			}

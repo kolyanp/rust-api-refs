@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Rust;
 using Network;
@@ -42,12 +43,12 @@ public class BoatBuildingStation : DecayEntity
 
 	public const string ACHIEVEMENT_FINISH_BOAT_NAME = "BBS_FINISH_BOAT";
 
-	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
 	[ServerVar]
+	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
 	public static bool StaticStationsEnabled = true;
 
-	[Help("When set above zero, enables a global shared cooldown for boat edit/finishing.")]
 	[ServerVar]
+	[Help("When set above zero, enables a global shared cooldown for boat edit/finishing.")]
 	public static float GlobalEditFinishUseInterval = 0f;
 
 	public static float NextGlobalEditFinishUseTime = 0f;
@@ -454,8 +455,8 @@ public class BoatBuildingStation : DecayEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void EditBoat(RPCMessage msg)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -515,9 +516,9 @@ public class BoatBuildingStation : DecayEntity
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void FinishBuilding(RPCMessage msg)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -542,7 +543,6 @@ public class BoatBuildingStation : DecayEntity
 		{
 			return false;
 		}
-		cachedSteeringWheel = null;
 		SetLastInteractionTime();
 		StartCooldown();
 		if (!IsOn())
@@ -555,6 +555,7 @@ public class BoatBuildingStation : DecayEntity
 		bool flag2 = flag || (entitiesInBuildArea.Count == 0 && deployedEntities.Count == 0);
 		if (flag2)
 		{
+			cachedSteeringWheel = null;
 			Netting.gameObject.SetActive(false);
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
@@ -758,23 +759,27 @@ public class BoatBuildingStation : DecayEntity
 
 	private void CheckAutoClose()
 	{
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		if (AutoClosePlayerTrigger.contents == null || AutoClosePlayerTrigger.contents.Count == 0)
 		{
-			if (GetEntitiesInBuildArea<BaseEntity>(BuildArea, -1, isServer).Count > 1)
+			List<BaseEntity> entitiesInBuildArea = GetEntitiesInBuildArea<BaseEntity>(BuildArea, -1, isServer);
+			if (entitiesInBuildArea.Count > 1)
 			{
 				autoClosePassCount = 0;
-				return;
 			}
-			autoClosePassCount++;
-			if (autoClosePassCount >= AutoClosePlayerCheckTriggerCount)
+			else
 			{
-				LogBuildingEvent(((Component)this).transform.position, null, null, "Finish building requested by CheckAutoClose.");
-				if (FinishBuilding())
+				autoClosePassCount++;
+				if (autoClosePassCount >= AutoClosePlayerCheckTriggerCount)
 				{
-					StopAutoCloseInvoke();
+					LogBuildingEvent(((Component)this).transform.position, null, null, "Finish building requested by CheckAutoClose.");
+					if (FinishBuilding())
+					{
+						StopAutoCloseInvoke();
+					}
 				}
 			}
+			Pool.FreeUnmanaged<BaseEntity>(ref entitiesInBuildArea);
 		}
 		else
 		{
@@ -919,14 +924,41 @@ public class BoatBuildingStation : DecayEntity
 		}
 	}
 
-	public static BoatBuildingStation GetForPosition(Vector3 position)
+	public static BoatBuildingStation GetForPosition(Vector3 position, bool isServer)
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		if (BuildingManager.PrivilegeCache)
+		{
+			PooledList<BoatBuildingStation> val = Pool.Get<PooledList<BoatBuildingStation>>();
+			try
+			{
+				if (isServer)
+				{
+					serverStations.Query(position.x, position.z, 44f, (List<BoatBuildingStation>)(object)val);
+				}
+				Collider val2 = default;
+				foreach (BoatBuildingStation item in (List<BoatBuildingStation>)(object)val)
+				{
+					if (!((Object)(object)item.BoatBuildingAreaTrigger == (Object)null) && ((Component)item.BoatBuildingAreaTrigger).TryGetComponent<Collider>(ref val2) && val2.enabled && ((Component)val2).gameObject.activeInHierarchy && ((1 << ((Component)val2).gameObject.layer) & 0x40000) != 0 && BaseEntity.IsColliderWithinSphere(val2, position, 4f))
+					{
+						return item;
+					}
+				}
+				return null;
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
 		List<TriggerBoatBuildingArea> list = Pool.Get<List<TriggerBoatBuildingArea>>();
 		Vis.Components<TriggerBoatBuildingArea>(position, 4f, list, 262144, (QueryTriggerInteraction)2);
-		foreach (TriggerBoatBuildingArea item in list)
+		foreach (TriggerBoatBuildingArea item2 in list)
 		{
-			BoatBuildingStation boatBuildingStation = GameObjectEx.ToBaseEntity(((Component)item).gameObject) as BoatBuildingStation;
+			BoatBuildingStation boatBuildingStation = GameObjectEx.ToBaseEntity(((Component)item2).gameObject) as BoatBuildingStation;
 			if (!((Object)(object)boatBuildingStation == (Object)null))
 			{
 				Pool.FreeUnmanaged<TriggerBoatBuildingArea>(ref list);
@@ -940,7 +972,7 @@ public class BoatBuildingStation : DecayEntity
 	public static BoatBuildingStation GetForPlayer(BasePlayer player)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return GetForPosition(((Component)player).transform.position);
+		return GetForPosition(((Component)player).transform.position, player.isServer);
 	}
 
 	public override void Load(LoadInfo info)
@@ -987,7 +1019,7 @@ public class BoatBuildingStation : DecayEntity
 
 	public SteeringWheel GetSteeringWheel(bool cached = true)
 	{
-		if (!cached)
+		if (!cached || (isClient && (Object)(object)cachedSteeringWheel == (Object)null && IsOn()))
 		{
 			RefreshSteeringWheelCache();
 		}
@@ -1002,7 +1034,7 @@ public class BoatBuildingStation : DecayEntity
 		Vis.Entities(GetBuildAreaOBB(BuildArea), list, 256, (QueryTriggerInteraction)2);
 		foreach (SteeringWheel item in list)
 		{
-			if (!((Object)(object)item == (Object)null))
+			if (!((Object)(object)item == (Object)null) && item.isServer == isServer)
 			{
 				cachedSteeringWheel = item;
 				break;
@@ -1328,6 +1360,7 @@ public class BoatBuildingStation : DecayEntity
 		return entitiesInBuildArea;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static List<T> GetEntitiesInBuildArea<T>(GameObject buildArea, int layerMask, bool server, float padding = 0f) where T : BaseEntity
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)

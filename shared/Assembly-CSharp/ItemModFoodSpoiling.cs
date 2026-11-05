@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
 
+[ResetStaticFields]
 public class ItemModFoodSpoiling : ItemMod
 {
 	public class FoodSpoilingWorkQueue : PersistentObjectWorkQueue<Item>
 	{
+		private const float ArcticRefrigerationThreshold = 0.1f;
+
 		private Dictionary<ItemId, TimeSince> lastUpdated = new Dictionary<ItemId, TimeSince>();
 
 		protected override void RunJob(Item foodItem)
@@ -36,13 +40,20 @@ public class ItemModFoodSpoiling : ItemMod
 		{
 			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)container.playerOwner != (Object)null)
 			{
 				pos = ((Component)container.playerOwner).transform.position;
+				return true;
+			}
+			if ((Object)(object)container.entityOwner != (Object)null)
+			{
+				pos = ((Component)container.entityOwner).transform.position;
 				return true;
 			}
 			if (container.parent != null && (Object)(object)container.parent.GetWorldEntity() != (Object)null)
@@ -50,7 +61,7 @@ public class ItemModFoodSpoiling : ItemMod
 				pos = ((Component)container.parent.GetWorldEntity()).transform.position;
 				return true;
 			}
-			if (container.parent != null && container.parent.parent != null && container.parent.parent != null && depth > 0)
+			if (container.parent != null && container.parent.parent != null && depth > 0)
 			{
 				return CheckItemParent(container.parent.parent, depth - 1, out pos);
 			}
@@ -62,46 +73,32 @@ public class ItemModFoodSpoiling : ItemMod
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 			pos = Vector3.zero;
-			if (item.parent != null && CheckItemParent(item.parent, 4, out pos))
+			if (item.parent != null)
 			{
-				return true;
-			}
-			if (item.parent != null && (Object)(object)item.parent.entityOwner != (Object)null)
-			{
-				pos = ((Component)item.parent.entityOwner).transform.position;
-				return true;
-			}
-			if (item.parent != null && (Object)(object)item.parent.playerOwner != (Object)null)
-			{
-				pos = ((Component)item.parent.playerOwner).transform.position;
-				return true;
+				return CheckItemParent(item.parent, 4, out pos);
 			}
 			return false;
 		}
 
 		public static void DeductTimeFromFoodItem(Item foodItem, float timeToApply, bool setDirty)
 		{
-			//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0140: Unknown result type (might be due to invalid IL or missing references)
-			//IL_014c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+			//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0149: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
 			if (foodItem.instanceData != null)
 			{
 				float dataFloat = foodItem.instanceData.dataFloat;
-				RefreshRefrigeration(foodItem, out var spoilMultiplier, out var inRefrigeratedContainer);
-				if (inRefrigeratedContainer)
+				RefreshRefrigeration(foodItem, out var spoilMultiplier);
+				if (spoilMultiplier < 1f)
 				{
 					ItemModConditionRefrigeratedTime.AddRefrigeratedTime(foodItem, timeToApply);
 				}
@@ -154,35 +151,32 @@ public class ItemModFoodSpoiling : ItemMod
 			}
 		}
 
-		private static bool IsInRefrigeratedContainer(Item item, out float spoilMultiplier)
+		private static float GetContainerSpoilMultiplier(Item item)
 		{
-			spoilMultiplier = 1f;
 			if (item.parent == null || (Object)(object)item.parent.entityOwner == (Object)null)
 			{
-				return false;
+				return 1f;
 			}
 			IFoodSpoilModifier foodSpoilModifier = default;
 			if (!((Component)item.parent.entityOwner).TryGetComponent<IFoodSpoilModifier>(ref foodSpoilModifier))
 			{
-				return false;
+				return 1f;
 			}
-			spoilMultiplier = foodSpoilModifier.GetSpoilMultiplier(item);
-			return spoilMultiplier < 1f;
+			return foodSpoilModifier.GetSpoilMultiplier(item);
 		}
 
-		public static void RefreshRefrigeration(Item item, out float spoilMultiplier, out bool inRefrigeratedContainer)
+		public static void RefreshRefrigeration(Item item, out float spoilMultiplier)
 		{
-			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-			inRefrigeratedContainer = IsInRefrigeratedContainer(item, out spoilMultiplier);
-			if (spoilMultiplier > 0f && GetWorldPositionForItem(item, out var pos) && TerrainMeta.BiomeMap.GetBiome(pos, 8) > 0f)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			spoilMultiplier = GetContainerSpoilMultiplier(item);
+			if (spoilMultiplier > 0f && GetWorldPositionForItem(item, out var pos) && TerrainMeta.BiomeMap.GetBiome(pos, 8) > 0.1f)
 			{
 				spoilMultiplier = 0f;
 			}
 			bool flag = spoilMultiplier != 1f;
-			if (item.HasFlag(Item.Flag.Refrigerated) != flag || item.HasFlag(Item.Flag.InRefrigeratedContainer) != inRefrigeratedContainer)
+			if (item.HasFlag(Item.Flag.Refrigerated) != flag)
 			{
 				item.SetFlag(Item.Flag.Refrigerated, flag);
-				item.SetFlag(Item.Flag.InRefrigeratedContainer, inRefrigeratedContainer);
 				item.MarkDirty();
 				if ((Object)(object)item.GetEntityOwner() != (Object)null)
 				{
@@ -221,7 +215,7 @@ public class ItemModFoodSpoiling : ItemMod
 		base.OnParentChanged(item);
 		if (item.parent != null)
 		{
-			FoodSpoilingWorkQueue.RefreshRefrigeration(item, out var _, out var _);
+			FoodSpoilingWorkQueue.RefreshRefrigeration(item, out var _);
 		}
 	}
 

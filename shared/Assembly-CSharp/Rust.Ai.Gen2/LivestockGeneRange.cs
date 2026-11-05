@@ -14,7 +14,12 @@ public abstract class LivestockGeneRange : ScriptableObject
 
 	public static float TraitFor(int genome, LivestockGene gene)
 	{
-		float num = (float)LivestockGenome.Expressed(genome, gene) / 2f;
+		return TraitOf(genome, LivestockGenome.Expressed(genome, gene));
+	}
+
+	public static float TraitOf(int genome, LivestockAllele allele)
+	{
+		float num = (float)allele / 2f;
 		if (!LivestockGenome.IsInbred(genome))
 		{
 			return num;

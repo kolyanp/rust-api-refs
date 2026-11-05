@@ -92,18 +92,52 @@ public class Entity : ConsoleSystem
 		public bool Valid => string.IsNullOrEmpty(Error);
 	}
 
-	private struct VendorDefinition
+	internal struct VendorDefinition
 	{
 		public string VendingMachinePrefab;
 
 		public string ShopKeeperPrefab;
+
+		public string[] Stocks;
 	}
 
-	private static readonly Dictionary<string, VendorDefinition> VendorDefinitions = new Dictionary<string, VendorDefinition>(StringComparer.OrdinalIgnoreCase) { ["waterwell"] = new VendorDefinition
+	private const string ShopKeeperVendingMachinePrefab = "assets/prefabs/deployable/vendingmachine/npcvendingmachines/shopkeeper_vm_invis.prefab";
+
+	private const string BanditShopKeeperPrefab = "assets/prefabs/npc/bandit/shopkeepers/bandit_shopkeeper.prefab";
+
+	internal static readonly Dictionary<string, VendorDefinition> VendorDefinitions = new Dictionary<string, VendorDefinition>(StringComparer.OrdinalIgnoreCase)
 	{
-		VendingMachinePrefab = "assets/prefabs/deployable/vendingmachine/npcvendingmachines/shopkeeper_vm_invis_waterwell.prefab",
-		ShopKeeperPrefab = "assets/prefabs/npc/waterwell/waterwell_shopkeeper.prefab"
-	} };
+		["waterwell"] = new VendorDefinition
+		{
+			VendingMachinePrefab = "assets/prefabs/deployable/vendingmachine/npcvendingmachines/shopkeeper_vm_invis_waterwell.prefab",
+			ShopKeeperPrefab = "assets/prefabs/npc/waterwell/waterwell_shopkeeper.prefab",
+			Stocks = new string[2] { "WaterWell", "WaterWell_Primitive" }
+		},
+		["bandit"] = new VendorDefinition
+		{
+			VendingMachinePrefab = "assets/prefabs/deployable/vendingmachine/npcvendingmachines/shopkeeper_vm_invis.prefab",
+			ShopKeeperPrefab = "assets/prefabs/npc/bandit/shopkeepers/bandit_shopkeeper.prefab",
+			Stocks = new string[7] { "Bandit_Farming", "Bandit_ProduceExchange", "building_bandit", "BuyResources", "FoodVendor", "Vehicles", "Weapons_Bandit" }
+		},
+		["fishingvillage"] = new VendorDefinition
+		{
+			VendingMachinePrefab = "assets/prefabs/deployable/vendingmachine/npcvendingmachines/shopkeeper_vm_invis.prefab",
+			ShopKeeperPrefab = "assets/prefabs/npc/bandit/shopkeepers/bandit_shopkeeper.prefab",
+			Stocks = new string[2] { "BoatVendor", "Fishing_Village" }
+		},
+		["stables"] = new VendorDefinition
+		{
+			VendingMachinePrefab = "assets/prefabs/deployable/vendingmachine/npcvendingmachines/shopkeeper_vm_invis.prefab",
+			ShopKeeperPrefab = "assets/prefabs/npc/bandit/shopkeepers/bandit_shopkeeper.prefab",
+			Stocks = new string[1] { "stables" }
+		},
+		["floatingcity"] = new VendorDefinition
+		{
+			VendingMachinePrefab = "assets/prefabs/deployable/vendingmachine/npcvendingmachines/shopkeeper_vm_invis.prefab",
+			ShopKeeperPrefab = "assets/prefabs/npc/bandit/shopkeepers/bandit_shopkeeper.prefab",
+			Stocks = new string[9] { "Attire", "Bandit_Farming", "Fishing_Village", "FloatingCity_BoatVendor", "FoodVendor", "WaterWell", "WaterWell_Primitive", "Weapons", "Weapons_Bandit" }
+		}
+	};
 
 	private static void GetEntityTable(TextTable table, Func<EntityInfo, bool> filter)
 	{
@@ -174,8 +208,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists all networked entities whose prefab path contains the given filter string in a formatted table; admin-only on client")]
 	[ClientVar(Help = "(Generated) Lists all networked entities whose prefab path contains the given filter string in a formatted table; admin-only on client")]
+	[ServerVar(Help = "(Generated) Lists all networked entities whose prefab path contains the given filter string in a formatted table; admin-only on client")]
 	public static void find_entity(Arg args)
 	{
 		string filter = args.GetString(0);
@@ -191,8 +225,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
 	[ServerVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
+	[ClientVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
 	public static void find_id(Arg args)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -217,8 +251,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
 	[ServerVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
+	[ClientVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
 	public static void find_group(Arg args)
 	{
 		uint filter = args.GetUInt(0);
@@ -234,8 +268,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists all networked entities that have the given network entity ID as their parent in a formatted table; admin-only on client")]
 	[ServerVar(Help = "(Generated) Lists all networked entities that have the given network entity ID as their parent in a formatted table; admin-only on client")]
+	[ClientVar(Help = "(Generated) Lists all networked entities that have the given network entity ID as their parent in a formatted table; admin-only on client")]
 	public static void find_parent(Arg args)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -475,36 +509,118 @@ public class Entity : ConsoleSystem
 
 	private static string UnknownVendorMessage(string name)
 	{
-		return "Unknown vendor \"" + name + "\" - known vendors: " + string.Join(", ", VendorDefinitions.Keys);
+		string text = (string.IsNullOrEmpty(name) ? "No vendor provided" : ("Unknown vendor \"" + name + "\""));
+		IEnumerable<string> values = from x in VendorDefinitions.Keys
+			orderby x
+			select x + " <stock>";
+		IOrderedEnumerable<string> values2 = from x in GetPlainVendingMachineNames()
+			orderby x
+			select x;
+		return text + "\n\n" + string.Join("\n", values) + "\n\n" + string.Join("\n", values2);
 	}
 
-	[ServerVar(Name = "spawnvendor", Help = "(Generated) Spawns a complete NPC vendor by vendor name - both the shopkeeper NPC and the invisible vending machine it needs - at the position the calling player is looking at")]
-	public static string svspawnvendor(string name)
+	private static string BulletList(IEnumerable<string> items)
 	{
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
+		return string.Join("\n", from x in items
+			orderby x
+			select "- " + x);
+	}
+
+	private static IEnumerable<string> GetPlainVendingMachineNames()
+	{
+		string[] entities = GameManifest.Current.entities;
+		foreach (string text in entities)
+		{
+			if (text.IndexOf("vendingmachine", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				GameObject val = GameManager.server.FindPrefab(text.ToLower());
+				VendingMachine vendingMachine = ((val != null) ? val.GetComponent<VendingMachine>() : null);
+				if (!((Object)(object)vendingMachine == (Object)null) && !(vendingMachine is InvisibleVendingMachine))
+				{
+					yield return Path.GetFileNameWithoutExtension(text).ToLower();
+				}
+			}
+		}
+	}
+
+	internal static bool TryGetVendor(string name, out VendorDefinition vendor)
+	{
+		if (!string.IsNullOrEmpty(name) && VendorDefinitions.TryGetValue(name, out vendor))
+		{
+			return true;
+		}
+		vendor = default;
+		EntitySpawnRequest spawnEntityFromName = GetSpawnEntityFromName(name);
+		if (!spawnEntityFromName.Valid)
+		{
+			return false;
+		}
+		GameObject val = GameManager.server.FindPrefab(spawnEntityFromName.PrefabName);
+		VendingMachine vendingMachine = ((val != null) ? val.GetComponent<VendingMachine>() : null);
+		if ((Object)(object)vendingMachine == (Object)null || vendingMachine is InvisibleVendingMachine)
+		{
+			return false;
+		}
+		vendor.VendingMachinePrefab = spawnEntityFromName.PrefabName;
+		return true;
+	}
+
+	internal static Dictionary<string, NPCVendingOrder> GetVendingOrders(VendorDefinition vendor)
+	{
+		return GameManager.server.FindPrefab(vendor.VendingMachinePrefab).GetComponent<InvisibleVendingMachine>().vmoManifest.orderList.Where((NPCVendingOrder x) => (Object)(object)x != (Object)null && Enumerable.Contains(vendor.Stocks, ((Object)x).name)).ToDictionary((NPCVendingOrder x) => ((Object)x).name, StringComparer.OrdinalIgnoreCase);
+	}
+
+	private static string StockOptionsMessage(string name, Dictionary<string, NPCVendingOrder> vendingOrders)
+	{
+		return "usage: spawnvendor " + name + " <stock>\n" + BulletList(vendingOrders.Keys);
+	}
+
+	[ServerVar(Name = "spawnvendor", Help = "(Generated) Spawns a complete NPC vendor by vendor name and the stock it should sell - both the shopkeeper NPC and the invisible vending machine it needs - or any other vending machine by prefab name, at the position the calling player is looking at. Leave out the stock to list them")]
+	public static string svspawnvendor(string name, string stock = "")
+	{
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer basePlayer = ArgEx.Player(ConsoleSystem.CurrentArgs);
-		if (string.IsNullOrEmpty(name) || !VendorDefinitions.TryGetValue(name, out var value))
+		if (!TryGetVendor(name, out var vendor))
 		{
 			return UnknownVendorMessage(name);
+		}
+		NPCVendingOrder value = null;
+		if (!string.IsNullOrEmpty(vendor.ShopKeeperPrefab))
+		{
+			Dictionary<string, NPCVendingOrder> vendingOrders = GetVendingOrders(vendor);
+			if (string.IsNullOrEmpty(stock))
+			{
+				return "What stock should the \"" + name + "\" vendor sell?\n\n" + BulletList(vendingOrders.Keys);
+			}
+			if (!vendingOrders.TryGetValue(stock, out value))
+			{
+				return "Unknown stock \"" + stock + "\" - " + StockOptionsMessage(name, vendingOrders);
+			}
+		}
+		else if (!string.IsNullOrEmpty(stock))
+		{
+			return "\"" + name + "\" already sells its own stock - only the NPC vendors (" + string.Join(", ", VendorDefinitions.Keys) + ") take a stock";
 		}
 		if ((Object)(object)basePlayer == (Object)null)
 		{
@@ -519,20 +635,25 @@ public class Entity : ConsoleSystem
 		Vector3 point = val2.point;
 		Vector3 val3 = -Vector3Ex.XZ3D(val.direction);
 		Quaternion rot = Quaternion.LookRotation((val3.sqrMagnitude > 0.001f) ? val3 : Vector3.forward, Vector3.up);
-		InvisibleVendingMachine invisibleVendingMachine = SpawnVendorEntity<InvisibleVendingMachine>(value.VendingMachinePrefab, point, rot);
-		if ((Object)(object)invisibleVendingMachine == (Object)null)
+		VendingMachine vendingMachine = SpawnVendorEntity<VendingMachine>(vendor.VendingMachinePrefab, point, rot, value);
+		if ((Object)(object)vendingMachine == (Object)null)
 		{
-			Debug.Log((object)$"{basePlayer} failed to spawn \"{value.VendingMachinePrefab}\" for the \"{name}\" vendor");
+			Debug.Log((object)$"{basePlayer} failed to spawn \"{vendor.VendingMachinePrefab}\" for the \"{name}\" vendor");
 			return "Couldn't spawn the vending machine for the \"" + name + "\" vendor";
 		}
-		NPCShopKeeper nPCShopKeeper = SpawnVendorEntity<NPCShopKeeper>(value.ShopKeeperPrefab, point, rot);
+		if (string.IsNullOrEmpty(vendor.ShopKeeperPrefab))
+		{
+			Debug.Log((object)$"{basePlayer} spawned the \"{name}\" vending machine at {point}");
+			return $"spawned the \"{name}\" vending machine at {point}";
+		}
+		NPCShopKeeper nPCShopKeeper = SpawnVendorEntity<NPCShopKeeper>(vendor.ShopKeeperPrefab, point, rot);
 		if ((Object)(object)nPCShopKeeper == (Object)null)
 		{
-			invisibleVendingMachine.Kill();
-			Debug.Log((object)$"{basePlayer} failed to spawn \"{value.ShopKeeperPrefab}\" for the \"{name}\" vendor");
+			vendingMachine.Kill();
+			Debug.Log((object)$"{basePlayer} failed to spawn \"{vendor.ShopKeeperPrefab}\" for the \"{name}\" vendor");
 			return "Couldn't spawn the shopkeeper for the \"" + name + "\" vendor";
 		}
-		if ((Object)(object)nPCShopKeeper.GetVendingMachine() != (Object)(object)invisibleVendingMachine)
+		if ((Object)(object)nPCShopKeeper.GetVendingMachine() != (Object)(object)vendingMachine)
 		{
 			Debug.LogWarning((object)("Spawned the \"" + name + "\" vendor but the shopkeeper didn't pair up with its vending machine - the shop won't be interactable"));
 		}
@@ -540,7 +661,7 @@ public class Entity : ConsoleSystem
 		return $"spawned the \"{name}\" vendor at {point}";
 	}
 
-	private static T SpawnVendorEntity<T>(string prefabName, Vector3 pos, Quaternion rot) where T : BaseEntity
+	internal static T SpawnVendorEntity<T>(string prefabName, Vector3 pos, Quaternion rot, NPCVendingOrder vendingOrders = null) where T : BaseEntity
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
@@ -559,6 +680,11 @@ public class Entity : ConsoleSystem
 		if (val is BasePlayer basePlayer)
 		{
 			basePlayer.OverrideViewAngles(rot.eulerAngles);
+		}
+		if ((Object)(object)vendingOrders != (Object)null && val is NPCVendingMachine nPCVendingMachine)
+		{
+			nPCVendingMachine.vendingOrders = vendingOrders;
+			nPCVendingMachine.alternativeVendingOrders = null;
 		}
 		val.Spawn();
 		EntityParentSettings entityParentSettings = default;

@@ -30,32 +30,33 @@ public class PlaceDecorUniform : ProceduralComponent
 		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0189: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0200: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
 		if (World.Networked)
 		{
 			World.Spawn("Decor", "assets/bundled/prefabs/autospawn/" + ResourceFolder + "/");
@@ -95,11 +96,14 @@ public class PlaceDecorUniform : ProceduralComponent
 				Vector3 pos = new Vector3(num5, height, num6);
 				Quaternion rot = random.Object.transform.localRotation;
 				Vector3 scale = random.Object.transform.localScale;
-				random.ApplyDecorComponents(ref pos, ref rot, ref scale);
-				if (random.ApplyTerrainFilters(pos, rot, scale) && random.ApplyTerrainAnchors(ref pos, rot, scale, AnchorMode, ((FilterMode & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) && random.ApplyTerrainChecks(pos, rot, scale, ((FilterMode & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) && random.ApplyWaterChecks(pos, rot, scale) && random.ApplyEnvironmentVolumeChecks(pos, rot, scale) && IsValidLocation(pos, rot, scale) && random.CheckTerrainFootprint(pos, rot, scale))
+				if (random.CanPassTerrainFilters(pos))
 				{
-					random.FillTerrainFootprint(pos, rot, scale);
-					World.AddPrefab("Decor", random, pos, rot, scale);
+					random.ApplyDecorComponents(ref pos, ref rot, ref scale);
+					if (random.ApplyTerrainFilters(pos, rot, scale) && random.ApplyTerrainAnchors(ref pos, rot, scale, AnchorMode, ((FilterMode & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) && random.ApplyTerrainChecks(pos, rot, scale, ((FilterMode & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) && random.ApplyWaterChecks(pos, rot, scale) && random.ApplyEnvironmentVolumeChecks(pos, rot, scale) && IsValidLocation(pos, rot, scale) && random.CheckTerrainFootprint(pos, rot, scale))
+					{
+						random.FillTerrainFootprint(pos, rot, scale);
+						World.AddPrefab("Decor", random, pos, rot, scale);
+					}
 				}
 			}
 		}

@@ -158,7 +158,7 @@ internal sealed class MultiScaleVO : IAmbientOcclusionMethod
 		return new Vector3((float)m_Widths[(int)mip], (float)m_Heights[(int)mip], 16f);
 	}
 
-	public void GenerateAOMap(CommandBuffer cmd, Camera camera, RenderTargetIdentifier destination, RenderTargetIdentifier? depthMap, bool invert, bool isMSAA)
+	public void GenerateAOMap(CommandBuffer cmd, Camera camera, RenderTargetIdentifier destination, Nullable depthMap, bool invert, bool isMSAA)
 	{
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
@@ -244,7 +244,7 @@ internal sealed class MultiScaleVO : IAmbientOcclusionMethod
 		}
 	}
 
-	private void PushDownsampleCommands(CommandBuffer cmd, Camera camera, RenderTargetIdentifier? depthMap, bool isMSAA)
+	private void PushDownsampleCommands(CommandBuffer cmd, Camera camera, Nullable depthMap, bool isMSAA)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)

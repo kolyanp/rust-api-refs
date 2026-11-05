@@ -33,14 +33,16 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 	{
 		try
 		{
-			IJobExtensions.EarlyJobInit<CrabGrouping.CrabGroundGatherJob>();
-			IJobExtensions.EarlyJobInit<CrabGrouping.CrabGroundProcessJob>();
-			IJobExtensions.EarlyJobInit<CrabGrouping.CrabObstacleProcessJob>();
-			IJobParallelForExtensions.EarlyJobInit<CrabGrouping.CrabUpdateJob>();
-			IJobExtensions.EarlyJobInit<CrabGrouping.KillCrab>();
-			IJobExtensions.EarlyJobInit<JellyfishGrouping.JellyfishWaterProcessJob>();
-			IJobParallelForExtensions.EarlyJobInit<JellyfishGrouping.JellyfishUpdateJob>();
-			IJobExtensions.EarlyJobInit<JellyfishGrouping.KillJellyfish>();
+			IJobExtensions.EarlyJobInit<BirdGroupingJobs.BirdProbeProcessJob>();
+			IJobParallelForExtensions.EarlyJobInit<BirdGroupingJobs.BirdUpdateJob>();
+			IJobExtensions.EarlyJobInit<CrabGroupingJobs.CrabGroundGatherJob>();
+			IJobExtensions.EarlyJobInit<CrabGroupingJobs.CrabGroundProcessJob>();
+			IJobExtensions.EarlyJobInit<CrabGroupingJobs.CrabObstacleProcessJob>();
+			IJobParallelForExtensions.EarlyJobInit<CrabGroupingJobs.CrabUpdateJob>();
+			IJobExtensions.EarlyJobInit<CrabGroupingJobs.KillCrab>();
+			IJobExtensions.EarlyJobInit<JellyfishGroupingJobs.JellyfishWaterProcessJob>();
+			IJobParallelForExtensions.EarlyJobInit<JellyfishGroupingJobs.JellyfishUpdateJob>();
+			IJobExtensions.EarlyJobInit<JellyfishGroupingJobs.KillJellyfish>();
 			IJobExtensions.EarlyJobInit<FishShoal.FishCollisionGatherJob>();
 			IJobExtensions.EarlyJobInit<FishShoal.FishCollisionProcessJob>();
 			IJobParallelForExtensions.EarlyJobInit<FishShoal.FishUpdateJob>();
@@ -49,6 +51,9 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobParallelForTransformExtensions.EarlyJobInit<QueryVisJobs.CheckWaterLevelVisibilityJob>();
 			IJobParallelForTransformExtensions.EarlyJobInit<TransformLineRenderer.LineRendererUpdateJob>();
 			IJobParallelForExtensions.EarlyJobInit<Hopper.FillRaycastJob>();
+			IJobParallelForExtensions.EarlyJobInit<TerrainTopologyHierarchyJobs.BuildLeavesJob>();
+			IJobExtensions.EarlyJobInit<TerrainTopologyHierarchyJobs.BuildParentsJob>();
+			IJobExtensions.EarlyJobInit<TerrainTopologyHierarchyJobs.RefreshRegionJob>();
 			IJobExtensions.EarlyJobInit<GenerateSpawnPoints>();
 			IJobExtensions.EarlyJobInit<PostCullingJob>();
 			IJobExtensions.EarlyJobInit<DistanceField.GenerateJob>();
@@ -108,16 +113,13 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobForExtensions.EarlyJobInit<PaintSplatJob>();
 			IJobParallelForExtensions.EarlyJobInit<PopulateDeltaHeightJob>();
 			IJobParallelForExtensions.EarlyJobInit<CopyBackFloatHeightToShortHeightJob>();
-			IJobParallelForExtensions.EarlyJobInit<EvaporationJob>();
 			IJobParallelForBatchExtensions.EarlyJobInit<PrepareMapJob>();
 			IJobParallelForExtensions.EarlyJobInit<TransportSedimentJob>();
 			IJobParallelForExtensions.EarlyJobInit<CalcMinHeightMapJob>();
 			IJobParallelForExtensions.EarlyJobInit<ErosionAndDepositionJob>();
-			IJobParallelForExtensions.EarlyJobInit<TileCalculateAngleMap>();
 			IJobParallelForExtensions.EarlyJobInit<AdjustWaterHeightByFluxJob>();
 			IJobParallelForExtensions.EarlyJobInit<CalculateOutputFluxJob>();
 			IJobParallelForExtensions.EarlyJobInit<RefillOceanJob>();
-			IJobParallelForExtensions.EarlyJobInit<WaterIncrementationJob>();
 			IJobExtensions.EarlyJobInit<GetCoarseDistsToShoreJobIndirect>();
 			IJobExtensions.EarlyJobInit<GenSamplePoints>();
 			IJobParallelForExtensions.EarlyJobInit<GenShoreVecBitMapJob>();
@@ -132,7 +134,6 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobExtensions.EarlyJobInit<GetHeightByIndexJob>();
 			IJobExtensions.EarlyJobInit<GetTopologyByPosJob>();
 			IJobExtensions.EarlyJobInit<GetTopologyByUVJob>();
-			IJobExtensions.EarlyJobInit<GetTopologyRadiusJob>();
 			IJobParallelForExtensions.EarlyJobInit<GetTopologyRadiusJobIndirect>();
 			IJobParallelForExtensions.EarlyJobInit<GetTopologyRadiusNormalizedJobIndirect>();
 			IJobExtensions.EarlyJobInit<GetTopologyByIndexJob>();
@@ -222,6 +223,10 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobExtensions.EarlyJobInit<GetHeightBatchedJob>();
 			IJobParallelForExtensions.EarlyJobInit<GetHeightBatchedJob>();
 			IJobExtensions.EarlyJobInit<Rust.Water5.GetHeightsJobIndirect>();
+			IJobExtensions.EarlyJobInit<LivestockFloor.LampJob>();
+			IJobExtensions.EarlyJobInit<LivestockFloor.GridJob>();
+			IJobExtensions.EarlyJobInit<LivestockFloor.AimJob>();
+			IJobExtensions.EarlyJobInit<LivestockFloor.FoldJob>();
 			IJobParallelForTransformExtensions.EarlyJobInit<RustNavMeshAgent.MovementTransformJob>();
 			IJobExtensions.EarlyJobInit<FillJob<int>>();
 			IJobExtensions.EarlyJobInit<FillJobUnsafe<BasePlayer.EACTickState>>();

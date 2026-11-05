@@ -209,21 +209,26 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 	[AuthLevel(2)]
 	private void ClearInvalid(Arg arg)
 	{
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		Dictionary<uint, CacheData> dictionary = Pool.Get<Dictionary<uint, CacheData>>();
-		foreach (KeyValuePair<uint, CacheData> item in FileStorage.server._cache)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		List<Slot> list = Pool.Get<List<Slot>>();
+		foreach (KeyValuePair<Slot, CacheData> item in FileStorage.server._cache)
 		{
 			if (item.Value.data.Length >= 4104304)
 			{
-				dictionary.Add(item.Key, item.Value);
+				list.Add(item.Key);
 			}
 		}
-		foreach (KeyValuePair<uint, CacheData> item2 in dictionary)
+		foreach (Slot item2 in list)
 		{
-			FileStorage.server.Remove(item2.Key, (Type)0, item2.Value.entityID);
+			FileStorage.server.Remove(item2.EntityId, item2.Part);
 		}
-		arg.ReplyWith($"Removed {dictionary.Count:n0} invalid stored files from FileStorage (above the maximum size of {4104304.Format().ToUpper()}).");
-		Pool.FreeUnmanaged<uint, CacheData>(ref dictionary);
+		arg.ReplyWith($"Removed {list.Count:n0} invalid stored files from FileStorage (above the maximum size of {4104304.Format().ToUpper()}).");
+		Pool.FreeUnmanaged<Slot>(ref list);
 	}
 
 	public override void Init()
@@ -344,7 +349,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 		int urlCount = urls.Count();
 		QueueBatch(@override, (List<ImageQueueResult> results) =>
 		{
-			//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 			foreach (ImageQueueResult item in results.Where((ImageQueueResult result) => result.Data != null && result.Data.Length != 0))
 			{
 				if (item.Data.Length >= 4104304)
@@ -353,7 +358,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 				}
 				else
 				{
-					uint num = FileStorage.server.Store(item.Data, (Type)0, new NetworkableId(_protoData.Identifier), 0u);
+					uint num = FileStorage.server.StoreByCrc(new NetworkableId(_protoData.Identifier), (Type)0, item.Data);
 					if (num != 0)
 					{
 						_protoData.Map[GetId(item.Url)] = num;
@@ -406,7 +411,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 		}
 		((MonoBehaviour)Community.Runtime.Core.persistence).StartCoroutine(RunQueue(imageQueue, (List<ImageQueueResult> results) =>
 		{
-			//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 			try
 			{
 				if (results != null)
@@ -420,7 +425,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 						}
 						else
 						{
-							uint num = FileStorage.server.Store(value.Data, (Type)0, new NetworkableId(_protoData.Identifier), 0u);
+							uint num = FileStorage.server.StoreByCrc(new NetworkableId(_protoData.Identifier), (Type)0, value.Data);
 							if (num != 0)
 							{
 								_protoData.Map[GetId(value.Url)] = num;
@@ -514,9 +519,9 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 
 	public void AddImage(string keyOrUrl, byte[] imageData, Type type = (Type)0)
 	{
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		_protoData.Map[keyOrUrl] = FileStorage.server.Store(imageData, type, new NetworkableId(_protoData.Identifier), 0u);
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		_protoData.Map[keyOrUrl] = FileStorage.server.StoreByCrc(new NetworkableId(_protoData.Identifier), type, imageData);
 	}
 
 	public void AddMap(string key, string url)
@@ -566,15 +571,15 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 
 	public void SendImage(BasePlayer player, string name)
 	{
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		uint image = GetImage(name);
 		if (image != 0)
 		{
-			byte[] array = FileStorage.server.Get(image, (Type)0, new NetworkableId(_protoData.Identifier), 0u);
+			byte[] array = FileStorage.server.Get(new NetworkableId(_protoData.Identifier), (ulong)image, image);
 			if (array != null)
 			{
-				((BaseEntity)CommunityEntity.ServerInstance).ClientRPC(RpcTarget.Player("CL_ReceiveFilePng", player), image, (uint)array.Length, (ReadOnlySpan<byte>)array, 0u, (byte)0);
+				((BaseEntity)CommunityEntity.ServerInstance).ClientRPC(RpcTarget.Player("CL_ReceiveFile", player), (ulong)image, image, (uint)array.Length, (ReadOnlySpan<byte>)array);
 			}
 		}
 	}
@@ -582,25 +587,26 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 	public bool HasImage(string keyOrUrl)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		return FileStorage.server.Get(GetImage(keyOrUrl), (Type)0, new NetworkableId(_protoData.Identifier), 0u) != null;
+		uint image = GetImage(keyOrUrl);
+		return FileStorage.server.Get(new NetworkableId(_protoData.Identifier), (ulong)image, image) != null;
 	}
 
 	public bool DeleteImage(string url)
 	{
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		string id = GetId(url);
 		if (!_protoData.Map.TryGetValue(id, out var value))
 		{
 			return false;
 		}
-		FileStorage.server.Remove(value, (Type)0, new NetworkableId(_protoData.Identifier));
+		FileStorage.server.Remove(new NetworkableId(_protoData.Identifier), (ulong)value);
 		_protoData.Map.Remove(id);
 		return true;
 	}
 
 	public void DeleteAllImages(string url)
 	{
-		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 		Dictionary<string, uint> dictionary = Pool.Get<Dictionary<string, uint>>();
 		foreach (KeyValuePair<string, uint> item in _protoData.Map)
 		{
@@ -608,7 +614,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 		}
 		foreach (KeyValuePair<string, uint> item2 in dictionary.Where((KeyValuePair<string, uint> x) => x.Key.StartsWith(url)))
 		{
-			FileStorage.server.Remove(item2.Value, (Type)0, new NetworkableId(_protoData.Identifier));
+			FileStorage.server.Remove(new NetworkableId(_protoData.Identifier), (ulong)item2.Value);
 			_protoData.Map.Remove(item2.Key);
 		}
 		Pool.FreeUnmanaged<string, uint>(ref dictionary);
@@ -622,7 +628,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 		//IL_0040: Expected Obj, but got Unknown
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Expected Obj, but got Unknown
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
 		if (_protoData.Map.TryGetValue($"qr_{Community.Protect(text)}_{pixels}_0", out var value))
 		{
 			return value;
@@ -658,7 +664,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 					((Image)graphic).Save((Stream)memoryStream, ImageFormat.Png);
 					((Image)graphic).Dispose();
 					byte[] array = memoryStream.ToArray();
-					value = FileStorage.server.Store(array, (Type)0, new NetworkableId(_protoData.Identifier), 0u);
+					value = FileStorage.server.StoreByCrc(new NetworkableId(_protoData.Identifier), (Type)0, array);
 					_protoData.Map.Add($"qr_{Community.Protect(text)}_{pixels}_0", value);
 					return value;
 				}

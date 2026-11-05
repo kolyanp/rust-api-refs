@@ -37,6 +37,8 @@ public class SleepingBagButton : MonoBehaviour
 
 	public Sprite CamperSprite;
 
+	public Sprite ToolCupboardSprite;
+
 	public Image CircleRim;
 
 	public Image CircleFill;
@@ -55,6 +57,8 @@ public class SleepingBagButton : MonoBehaviour
 
 	public static Phrase toastHoldToUnclaimBag = new Phrase("hold_unclaim_bag", "Hold down the delete button to unclaim a sleeping bag");
 
+	public static Phrase toolCupboardPhrase = new Phrase("map.cluster.toolcupboard", "Tool Cupboard");
+
 	public GameObject CorpseRoot;
 
 	public Image CorpseBackground;
@@ -65,5 +69,7 @@ public class SleepingBagButton : MonoBehaviour
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Expected Obj, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected Obj, but got Unknown
 	}
 }

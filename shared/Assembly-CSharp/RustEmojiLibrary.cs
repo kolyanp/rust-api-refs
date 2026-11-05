@@ -12,6 +12,8 @@ public class RustEmojiLibrary : BaseScriptableObject
 		public uint CRC;
 
 		public FileStorage.Type FileType;
+
+		public byte[] Data;
 	}
 
 	public enum EmojiType
@@ -98,8 +100,6 @@ public class RustEmojiLibrary : BaseScriptableObject
 	[NonSerialized]
 	public static List<string> cachedServerList = new List<string>();
 
-	public static NetworkableId EmojiStorageNetworkId = new NetworkableId(0uL);
-
 	[HideInInspector]
 	public RustEmojiConfig[] Configs;
 
@@ -132,7 +132,6 @@ public class RustEmojiLibrary : BaseScriptableObject
 
 	public static void FindAllServerEmoji()
 	{
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		if (hasLoaded)
 		{
 			return;
@@ -166,19 +165,19 @@ public class RustEmojiLibrary : BaseScriptableObject
 				}
 				else if (flag | flag2)
 				{
-					FileStorage.Type type = FileStorage.Type.jpg;
+					FileStorage.Type fileType = FileStorage.Type.jpg;
 					if (flag)
 					{
-						type = FileStorage.Type.png;
+						fileType = FileStorage.Type.png;
 					}
-					uint cRC = FileStorage.server.Store(data, type, EmojiStorageNetworkId);
 					string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(item);
 					if (!allServerEmoji.ContainsKey(fileNameWithoutExtension))
 					{
 						allServerEmoji.Add(fileNameWithoutExtension, new ServerEmojiConfig
 						{
-							CRC = cRC,
-							FileType = type
+							CRC = FileStorage.ComputeCrc(data),
+							FileType = fileType,
+							Data = data
 						});
 					}
 				}
@@ -194,8 +193,8 @@ public class RustEmojiLibrary : BaseScriptableObject
 			cachedServerList.Add(item2.Key);
 			cachedServerList.Add(item2.Value.CRC.ToString());
 			List<string> list = cachedServerList;
-			int fileType = (int)item2.Value.FileType;
-			list.Add(fileType.ToString());
+			int fileType2 = (int)item2.Value.FileType;
+			list.Add(fileType2.ToString());
 		}
 	}
 
@@ -283,11 +282,5 @@ public class RustEmojiLibrary : BaseScriptableObject
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-	}
-
-	static RustEmojiLibrary()
-	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 	}
 }

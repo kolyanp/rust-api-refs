@@ -16,5 +16,5 @@ public interface ISignage
 
 	uint[] GetTextureCRCs();
 
-	void SetTextureCRCs(uint[] crcs);
+	void RefreshFileCrcs();
 }

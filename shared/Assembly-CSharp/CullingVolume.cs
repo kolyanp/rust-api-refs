@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CullingVolume : MonoBehaviour, IClientComponent
+public class CullingVolume : MonoBehaviour, IClientComponent, IFlattenKeepsChildren
 {
 	[Tooltip("Override occludee root from children of this object (default) to children of any other object.")]
 	public GameObject OccludeeRoot;

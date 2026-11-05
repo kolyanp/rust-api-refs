@@ -27,6 +27,8 @@ public class LegacyShelter : DecayEntity
 
 	public EntityRef<EntityPrivilege> entityPrivilege;
 
+	public static HashSet<LegacyShelter> SpawnedShelters = new HashSet<LegacyShelter>();
+
 	private EntityRef<LegacyShelterDoor> childDoorInstance;
 
 	private EntityRef<BaseLock> lockEntityInstance;
@@ -136,6 +138,18 @@ public class LegacyShelter : DecayEntity
 			}
 		}
 		return result;
+	}
+
+	public override void InitShared()
+	{
+		base.InitShared();
+		SpawnedShelters.Add(this);
+	}
+
+	public override void DestroyShared()
+	{
+		base.DestroyShared();
+		SpawnedShelters.Remove(this);
 	}
 
 	public override EntityPrivilege GetEntityBuildingPrivilege()

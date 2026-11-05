@@ -100,8 +100,8 @@ public class State_AttackUnreachableWarped : FSMStateBase
 
 	private EFSMStateStatus SetPhase(Phase newPhase)
 	{
-		//IL_029f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
@@ -110,28 +110,28 @@ public class State_AttackUnreachableWarped : FSMStateBase
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0207: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0320: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0325: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0334: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0339: Unknown result type (might be due to invalid IL or missing references)
 		phase = newPhase;
 		if (phase == Phase.Jump)
 		{
@@ -145,7 +145,7 @@ public class State_AttackUnreachableWarped : FSMStateBase
 			}
 			Vector3 position = ((Component)Owner).transform.position;
 			animState.initialRotation = Quaternion.LookRotation(Vector3Ex.WithY(destination - ((Component)Owner).transform.position, 0f));
-			((Component)Owner).transform.rotation = animState.initialRotation;
+			Agent.Face(animState.initialRotation);
 			float num = animClip.zMotionCurve.Evaluate(jumpOnEnd) - animClip.zMotionCurve.Evaluate(jumpOnStart);
 			float num2 = animClip.yMotionCurve.Evaluate(jumpOnEnd) - animClip.yMotionCurve.Evaluate(jumpOnStart);
 			RootMotionPlayer.Warp warp = new RootMotionPlayer.Warp(jumpOnStart, jumpOnEnd, Vector3.one);
@@ -184,17 +184,17 @@ public class State_AttackUnreachableWarped : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		elapsedTime += deltaTime;
 		if (!Senses.FindTargetPosition(out var targetPosition))
 		{
@@ -203,8 +203,8 @@ public class State_AttackUnreachableWarped : FSMStateBase
 		if (phase == Phase.PreJump)
 		{
 			Quaternion val = Quaternion.LookRotation(Vector3Ex.WithY(targetPosition - ((Component)Owner).transform.position, 0f));
-			animState.initialRotation = Quaternion.RotateTowards(animState.initialRotation, val, Time.deltaTime * 60f);
-			((Component)Owner).transform.rotation = animState.initialRotation;
+			animState.initialRotation = Quaternion.RotateTowards(animState.initialRotation, val, deltaTime * 60f);
+			Agent.Face(animState.initialRotation);
 			if (elapsedTime >= jumpOnStart && SetPhase(Phase.Jump) == EFSMStateStatus.Failure)
 			{
 				return EFSMStateStatus.Failure;

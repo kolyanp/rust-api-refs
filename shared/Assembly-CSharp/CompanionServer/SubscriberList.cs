@@ -70,6 +70,11 @@ public class SubscriberList<TKey, TMessage> where TKey : IEquatable<TKey>
 
 	public void Send(TKey key, TMessage message)
 	{
+		Send<object>(key, message, null, null);
+	}
+
+	public void Send<TState>(TKey key, TMessage message, TState filterState, Func<TState, Connection, bool> filter)
+	{
 		double realtimeSinceStartup = TimeEx.realtimeSinceStartup;
 		List<Connection> list;
 		lock (_syncRoot)
@@ -84,6 +89,16 @@ public class SubscriberList<TKey, TMessage> where TKey : IEquatable<TKey>
 				if (!_timeoutSeconds.HasValue || realtimeSinceStartup - item.Value < _timeoutSeconds.Value)
 				{
 					list.Add(item.Key);
+				}
+			}
+		}
+		if (filter != null)
+		{
+			for (int num = list.Count - 1; num >= 0; num--)
+			{
+				if (!filter(filterState, list[num]))
+				{
+					list.RemoveAt(num);
 				}
 			}
 		}

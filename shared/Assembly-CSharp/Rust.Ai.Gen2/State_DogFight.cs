@@ -17,7 +17,7 @@ public class State_DogFight : FSMStateBase
 		{
 			return EFSMStateStatus.Failure;
 		}
-		shouldGoRightNext = Random.value > 0.5f;
+		shouldGoRightNext = Rng.Value > 0.5f;
 		return base.OnStateEnter(payload);
 	}
 
@@ -61,17 +61,17 @@ public class State_DogFight : FSMStateBase
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0207: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
 		if (!Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Failure;
@@ -92,17 +92,17 @@ public class State_DogFight : FSMStateBase
 		}
 		Vector3 val2 = normalized2;
 		shouldGoRightNext = !shouldGoRightNext;
-		Vector3 directionWS = Quaternion.AngleAxis(Random.Range(-50f, 50f), Vector3.up) * val2;
+		Vector3 directionWS = Quaternion.AngleAxis(Rng.Range(-50f, 50f), Vector3.up) * val2;
 		float num;
 		RustNavMeshAgent.Speeds value;
-		if (Random.value > 0.95f && Vector3.Distance(targetPosition, position) > 8f)
+		if (Rng.Value > 0.95f && Vector3.Distance(targetPosition, position) > 8f)
 		{
-			num = Random.Range(3f, 4f);
+			num = Rng.Range(3f, 4f);
 			value = RustNavMeshAgent.Speeds.Sprint;
 		}
 		else
 		{
-			num = Random.Range(1f, 2f);
+			num = Rng.Range(1f, 2f);
 			value = RustNavMeshAgent.Speeds.Walk;
 		}
 		NavVector3 nextPosition = Agent.nextPosition;

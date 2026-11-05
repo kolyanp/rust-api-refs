@@ -17,6 +17,8 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 
 	public class DroppedItemUnderwaterQueue : PersistentObjectWorkQueue<DroppedItem>
 	{
+		protected override double MinLapInterval => 0.05;
+
 		protected override void RunJob(DroppedItem entity)
 		{
 			if ((Object)(object)entity != (Object)null)
@@ -142,7 +144,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 
 	public Rigidbody Rigidbody => rB;
 
-	public int NumberOfItemsToTransfer => 1 + ((item.contents != null) ? item.contents.itemList.Count() : 0);
+	public int NumberOfItemsToTransfer => 1 + ((item.contents != null) ? Enumerable.Count(item.contents.itemList) : 0);
 
 	public float EndPositionToleranceMultiplier => 1f;
 

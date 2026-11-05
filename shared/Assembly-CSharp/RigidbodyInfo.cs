@@ -20,7 +20,7 @@ public class RigidbodyInfo : PrefabAttribute, IClientComponent
 	protected override void AttributeSetup(GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
 		base.AttributeSetup(rootObj, name, serverside, clientside, bundling);
-		if (!FileSystem.IsBundled)
+		if (!PrefabPreProcess.IsProcessingBundledPrefab)
 		{
 			Rigidbody component = rootObj.GetComponent<Rigidbody>();
 			if ((Object)(object)component == (Object)null)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using Network;
 using ProtoBuf;
@@ -40,6 +41,7 @@ public class PlayerModifiers : BaseModifiers<BasePlayer>
 		SendChangesToClient();
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public PlayerModifiers Save(bool forDisk)
 	{
 		PlayerModifiers val = Pool.Get<PlayerModifiers>();

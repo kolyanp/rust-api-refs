@@ -1,7 +1,9 @@
+using Development.Attributes;
 using Facepunch;
 using UnityEngine;
 
-public class Model : MonoBehaviour, IPrefabPreProcess
+[ResetStaticFields]
+public class Model : MonoBehaviour, IPrefabPreProcess, IPrefabPostProcess
 {
 	public SphereCollider collision;
 
@@ -25,7 +27,21 @@ public class Model : MonoBehaviour, IPrefabPreProcess
 
 	internal int skin;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
+	private static bool loggedMissingBones;
+
+	public Transform RootBoneOrSelf
+	{
+		get
+		{
+			if (!((Object)(object)rootBone != (Object)null))
+			{
+				return ((Component)this).transform;
+			}
+			return rootBone;
+		}
+	}
+
+	bool IPrefabPostProcess.CanPostProcessDuringBundling => true;
 
 	protected void OnEnable()
 	{
@@ -34,10 +50,20 @@ public class Model : MonoBehaviour, IPrefabPreProcess
 
 	public void BuildBoneDictionary()
 	{
-		if (boneDict == null)
+		if (boneDict != null)
 		{
-			boneDict = new BoneDictionary(((Component)this).transform, boneTransforms, boneNames);
+			return;
 		}
+		if (boneTransforms == null || boneTransforms.Length == 0)
+		{
+			if (FileSystem.IsBundled && !loggedMissingBones)
+			{
+				loggedMissingBones = true;
+				Debug.LogWarning((object)("Model on " + ((Object)this).name + " has no bones saved in its asset scene, so they're collected at runtime instead. Rebuild the asset bundles."), (Object)(object)this);
+			}
+			SetupBones();
+		}
+		boneDict = new BoneDictionary(((Component)this).transform, boneTransforms, boneNames);
 	}
 
 	public int GetSkin()
@@ -116,22 +142,32 @@ public class Model : MonoBehaviour, IPrefabPreProcess
 
 	public void PreProcess(IPrefabProcessor process, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
+		_ = (Object)(object)this == (Object)null;
+	}
+
+	public void PostProcess(IPrefabProcessor process, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
+	{
 		if (!((Object)(object)this == (Object)null))
 		{
-			if ((Object)(object)animator == (Object)null)
-			{
-				animator = ((Component)this).GetComponent<Animator>();
-			}
-			if ((Object)(object)rootBone == (Object)null)
-			{
-				rootBone = ((Component)this).transform;
-			}
-			boneTransforms = ((Component)rootBone).GetComponentsInChildren<Transform>(true);
-			boneNames = new string[boneTransforms.Length];
-			for (int i = 0; i < boneTransforms.Length; i++)
-			{
-				boneNames[i] = ((Object)boneTransforms[i]).name;
-			}
+			SetupBones();
+		}
+	}
+
+	private void SetupBones()
+	{
+		if ((Object)(object)animator == (Object)null)
+		{
+			animator = ((Component)this).GetComponent<Animator>();
+		}
+		if ((Object)(object)rootBone == (Object)null)
+		{
+			rootBone = ((Component)this).transform;
+		}
+		boneTransforms = ((Component)rootBone).GetComponentsInChildren<Transform>(true);
+		boneNames = new string[boneTransforms.Length];
+		for (int i = 0; i < boneTransforms.Length; i++)
+		{
+			boneNames[i] = ((Object)boneTransforms[i]).name;
 		}
 	}
 }

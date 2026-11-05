@@ -11,6 +11,15 @@ using UnityEngine;
 
 public class PrefabPoolWarmup
 {
+	private static List<(string path, int instances, TimeSpan time)> warmupTimes = new List<(string, int, TimeSpan)>();
+
+	private static Stopwatch warmupTimer = new Stopwatch();
+
+	public static IEnumerable<(string path, int instances, TimeSpan time)> GetWarmupTimes()
+	{
+		return warmupTimes;
+	}
+
 	public static void Run(string filter = null, int countOverride = 0)
 	{
 		if (Application.isLoadingPrefabs)
@@ -18,6 +27,7 @@ public class PrefabPoolWarmup
 			return;
 		}
 		Application.isLoadingPrefabs = true;
+		warmupTimes.Clear();
 		string[] assetList = GetAssetList();
 		if (string.IsNullOrEmpty(filter))
 		{
@@ -46,6 +56,7 @@ public class PrefabPoolWarmup
 			yield break;
 		}
 		Application.isLoadingPrefabs = true;
+		warmupTimes.Clear();
 		string[] prewarmAssets = GetAssetList();
 		Timing timer = new Timing("prefab_warmup");
 		Stopwatch sw = Stopwatch.StartNew();
@@ -78,27 +89,31 @@ public class PrefabPoolWarmup
 
 	private static void PrefabWarmup(string path, int countOverride = 0)
 	{
-		if (string.IsNullOrEmpty(path))
+		warmupTimer.Restart();
+		int num = 0;
+		if (!string.IsNullOrEmpty(path))
 		{
-			return;
+			GameObject val = GameManager.server.FindPrefab(path);
+			if ((Object)(object)val != (Object)null && PoolableEx.SupportsPooling(val))
+			{
+				int num2 = val.GetComponent<Poolable>().ServerCount;
+				List<GameObject> list = new List<GameObject>();
+				if (num2 > 0 && countOverride > 0)
+				{
+					num2 = countOverride;
+				}
+				for (int i = 0; i < num2; i++)
+				{
+					list.Add(GameManager.server.CreatePrefab(path));
+				}
+				for (int j = 0; j < num2; j++)
+				{
+					GameManager.server.Retire(list[j]);
+				}
+				num += num2;
+			}
 		}
-		GameObject val = GameManager.server.FindPrefab(path);
-		if ((Object)(object)val != (Object)null && PoolableEx.SupportsPooling(val))
-		{
-			int num = val.GetComponent<Poolable>().ServerCount;
-			List<GameObject> list = new List<GameObject>();
-			if (num > 0 && countOverride > 0)
-			{
-				num = countOverride;
-			}
-			for (int i = 0; i < num; i++)
-			{
-				list.Add(GameManager.server.CreatePrefab(path));
-			}
-			for (int j = 0; j < num; j++)
-			{
-				GameManager.server.Retire(list[j]);
-			}
-		}
+		warmupTimer.Stop();
+		warmupTimes.Add((path, num, warmupTimer.Elapsed));
 	}
 }

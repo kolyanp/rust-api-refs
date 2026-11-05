@@ -113,7 +113,10 @@ public class PoolTableGameController
 			IsSoloGame = solo;
 			StartGame(!solo);
 			AnnounceJoin(0);
-			DebugLog($"StartNewGame host={hostId} solo={solo}");
+			if (Pooltable.debug_pool)
+			{
+				DebugLog($"StartNewGame host={hostId} solo={solo}");
+			}
 		}
 	}
 
@@ -143,7 +146,10 @@ public class PoolTableGameController
 			owner.SendNetworkUpdateImmediate();
 			NotifyTurnStarted();
 		}
-		DebugLog($"AddSecondPlayer player={playerId} -> begin play");
+		if (Pooltable.debug_pool)
+		{
+			DebugLog($"AddSecondPlayer player={playerId} -> begin play");
+		}
 		return true;
 	}
 
@@ -153,7 +159,10 @@ public class PoolTableGameController
 		{
 			return false;
 		}
-		DebugLog($"OnPlayerJoined player={playerId}");
+		if (Pooltable.debug_pool)
+		{
+			DebugLog($"OnPlayerJoined player={playerId}");
+		}
 		if (!HasGame)
 		{
 			playerIds[0] = playerId;
@@ -161,7 +170,10 @@ public class PoolTableGameController
 			IsSoloGame = false;
 			StartGame();
 			AnnounceJoin(0);
-			DebugLog($"Player 1 joined player={playerId}");
+			if (Pooltable.debug_pool)
+			{
+				DebugLog($"Player 1 joined player={playerId}");
+			}
 			return true;
 		}
 		int num = currentPlayerIndex;
@@ -178,16 +190,25 @@ public class PoolTableGameController
 				owner.SendNetworkUpdate();
 			}
 			AnnounceJoin(num);
-			DebugLog($"Player {num + 1} joined player={playerId}");
+			if (Pooltable.debug_pool)
+			{
+				DebugLog($"Player {num + 1} joined player={playerId}");
+			}
 			return true;
 		}
-		DebugLog($"Join rejected player={playerId} (not their turn)");
+		if (Pooltable.debug_pool)
+		{
+			DebugLog($"Join rejected player={playerId} (not their turn)");
+		}
 		return false;
 	}
 
 	public void OnPlayerLeft(ulong playerId)
 	{
-		DebugLog($"OnPlayerLeft player={playerId}");
+		if (Pooltable.debug_pool)
+		{
+			DebugLog($"OnPlayerLeft player={playerId}");
+		}
 		for (int i = 0; i < 2; i++)
 		{
 			if (playerIds[i] == playerId)
@@ -201,7 +222,10 @@ public class PoolTableGameController
 				{
 					owner.SendNetworkUpdate();
 				}
-				DebugLog($"Player removed from slot={i}");
+				if (Pooltable.debug_pool)
+				{
+					DebugLog($"Player removed from slot={i}");
+				}
 				break;
 			}
 		}
@@ -286,7 +310,10 @@ public class PoolTableGameController
 				NotifyTurnStarted();
 			}
 		}
-		DebugLog($"StartGame waitingForPlayers={waitingForPlayers}");
+		if (Pooltable.debug_pool)
+		{
+			DebugLog($"StartGame waitingForPlayers={waitingForPlayers}");
+		}
 	}
 
 	private void EndGame(int winnerIndex)
@@ -311,7 +338,10 @@ public class PoolTableGameController
 				}
 			}
 		}
-		DebugLog($"EndGame winnerIndex={winnerIndex} winnerId={num}");
+		if (Pooltable.debug_pool)
+		{
+			DebugLog($"EndGame winnerIndex={winnerIndex} winnerId={num}");
+		}
 	}
 
 	public bool CanMount(ulong playerId)
@@ -355,7 +385,10 @@ public class PoolTableGameController
 	public bool CanShoot(ulong playerId)
 	{
 		bool flag = State == GameState.WaitingForShot && CurrentPlayerId == playerId;
-		DebugLog($"CanShoot player={playerId} result={flag}");
+		if (Pooltable.debug_pool)
+		{
+			DebugLog($"CanShoot player={playerId} result={flag}");
+		}
 		return flag;
 	}
 
@@ -366,7 +399,10 @@ public class PoolTableGameController
 			((List<int>)(object)pocketedThisShot).Clear();
 			State = GameState.BallsMoving;
 			ShotId++;
-			DebugLog($"OnShotFired -> BallsMoving (shotId={ShotId})");
+			if (Pooltable.debug_pool)
+			{
+				DebugLog($"OnShotFired -> BallsMoving (shotId={ShotId})");
+			}
 		}
 	}
 
@@ -375,7 +411,10 @@ public class PoolTableGameController
 		if (State == GameState.BallsMoving)
 		{
 			((List<int>)(object)pocketedThisShot).Add(ballId);
-			DebugLog($"OnBallPocketed ball={ballId}");
+			if (Pooltable.debug_pool)
+			{
+				DebugLog($"OnBallPocketed ball={ballId}");
+			}
 			if ((Object)(object)owner != (Object)null && owner.isServer)
 			{
 				ToastShooterOpponent(PocketToastPhrase(ballId, forShooter: true), PocketToastStyle(ballId), PocketToastPhrase(ballId, forShooter: false), GameTip.Styles.Red_Normal);
@@ -551,24 +590,28 @@ public class PoolTableGameController
 			bool flag4 = false;
 			foreach (int item in (List<int>)(object)pocketedThisShot)
 			{
-				if (!IsCueBall(item) && !IsEightBall(item))
+				if (IsCueBall(item) || IsEightBall(item))
 				{
-					BallGroup ballGroup = GroupOf(item);
-					if (playerGroups[currentPlayerIndex] == BallGroup.None && ballGroup != BallGroup.None)
+					continue;
+				}
+				BallGroup ballGroup = GroupOf(item);
+				if (playerGroups[currentPlayerIndex] == BallGroup.None && ballGroup != BallGroup.None)
+				{
+					playerGroups[currentPlayerIndex] = ballGroup;
+					playerGroups[1 - currentPlayerIndex] = OpponentGroupOf(ballGroup);
+					if (Pooltable.debug_pool)
 					{
-						playerGroups[currentPlayerIndex] = ballGroup;
-						playerGroups[1 - currentPlayerIndex] = OpponentGroupOf(ballGroup);
 						DebugLog($"Groups assigned current={playerGroups[currentPlayerIndex]} opponent={playerGroups[1 - currentPlayerIndex]} from ball={item}");
-						owner.ClientRPC(RpcTarget.NetworkGroup("ClientOnGroupsAssigned"), (int)playerGroups[0], (int)playerGroups[1]);
 					}
-					if (ballGroup == playerGroups[currentPlayerIndex])
-					{
-						flag3 = true;
-					}
-					else
-					{
-						flag4 = true;
-					}
+					owner.ClientRPC(RpcTarget.NetworkGroup("ClientOnGroupsAssigned"), (int)playerGroups[0], (int)playerGroups[1]);
+				}
+				if (ballGroup == playerGroups[currentPlayerIndex])
+				{
+					flag3 = true;
+				}
+				else
+				{
+					flag4 = true;
 				}
 			}
 			if (flag3 && !flag4)

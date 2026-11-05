@@ -11,8 +11,8 @@ public static class PacketProfiler
 
 		static AnalyticsKeys()
 		{
-			MessageType = new string[29];
-			for (int i = 0; i < 29; i++)
+			MessageType = new string[30];
+			for (int i = 0; i < 30; i++)
 			{
 				MessageType[i] = ((Message.Type)i/*cast due to constrained. prefix*/).ToString();
 			}
@@ -21,22 +21,22 @@ public static class PacketProfiler
 
 	public static bool enabled = false;
 
-	public static int[] inboundCount = new int[29];
+	public static int[] inboundCount = new int[30];
 
-	public static int[] inboundBytes = new int[29];
+	public static int[] inboundBytes = new int[30];
 
-	public static int[] outboundCount = new int[29];
+	public static int[] outboundCount = new int[30];
 
-	public static int[] outboundMsgBytes = new int[29];
+	public static int[] outboundMsgBytes = new int[30];
 
-	public static int[] outboundSum = new int[29];
+	public static int[] outboundSum = new int[30];
 
-	public static int[] outboundBytes = new int[29];
+	public static int[] outboundBytes = new int[30];
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void LogSimpleInbound(Message.Type type, int length)
 	{
-		if (enabled && (int)type < 29)
+		if (enabled && (int)type < 30)
 		{
 			inboundCount[(uint)type]++;
 			inboundBytes[(uint)type] += length;
@@ -46,7 +46,7 @@ public static class PacketProfiler
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void LogSimpleOutbound(int type, int connectionCount, int length, int totalLength)
 	{
-		if (enabled && type < 29)
+		if (enabled && type < 30)
 		{
 			Interlocked.Increment(ref outboundCount[type]);
 			Interlocked.Add(ref outboundSum[type], connectionCount);
@@ -57,7 +57,7 @@ public static class PacketProfiler
 
 	public static void Reset()
 	{
-		for (int i = 0; i < 29; i++)
+		for (int i = 0; i < 30; i++)
 		{
 			inboundCount[i] = 0;
 			inboundBytes[i] = 0;

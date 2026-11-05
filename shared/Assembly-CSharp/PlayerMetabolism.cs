@@ -1,5 +1,6 @@
 using System;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Network;
 using Oxide.Core;
@@ -243,9 +244,9 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 
 	protected override void RunMetabolism(BaseCombatEntity ownerEntity, float delta)
 	{
-		//IL_04ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0505: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0522: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0512: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0529: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0546: Unknown result type (might be due to invalid IL or missing references)
 		if (Interface.CallHook("OnRunPlayerMetabolism", this, ownerEntity, delta) != null)
 		{
 			return;
@@ -302,12 +303,13 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 			heartrate.MoveTowards(fTarget3, delta * 0.1f);
 			if (!owner.IsGod())
 			{
-				float num13 = heartrate.Fraction() * 0.375f;
-				calories.MoveTowards(0f, delta * num13);
-				float num14 = 1f / 120f;
-				num14 += Mathf.InverseLerp(40f, 60f, temperature.value) * (1f / 12f);
-				num14 += heartrate.value * (1f / 15f);
-				hydration.MoveTowards(0f, delta * num14);
+				float num13 = (owner.IsRunning() ? ConVar.Server.sprintmetabolismscale : 1f);
+				float num14 = heartrate.Fraction() * 0.375f * num13;
+				calories.MoveTowards(0f, delta * num14);
+				float num15 = 1f / 120f;
+				num15 += Mathf.InverseLerp(40f, 60f, temperature.value) * (1f / 12f);
+				num15 += heartrate.value * (1f / 15f) * num13;
+				hydration.MoveTowards(0f, delta * num15);
 			}
 			bool b = hydration.Fraction() <= 0f || radiation_poison.value >= 100f;
 			owner.SetPlayerFlag(BasePlayer.PlayerFlags.NoSprint, b);
@@ -317,28 +319,28 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 			}
 			if (temperature.value < 10f)
 			{
-				float num15 = Mathf.InverseLerp(20f, -100f, temperature.value);
-				heartrate.MoveTowards(Mathf.Lerp(0.2f, 1f, num15), delta * 2f * num15);
+				float num16 = Mathf.InverseLerp(20f, -100f, temperature.value);
+				heartrate.MoveTowards(Mathf.Lerp(0.2f, 1f, num16), delta * 2f * num16);
 			}
-			float num16 = 0f;
 			float num17 = 0f;
+			float num18 = 0f;
 			if (owner.IsOutside(owner.eyes.position))
 			{
-				num16 = Climate.GetRain(owner.eyes.position) * Weather.wetness_rain;
-				num17 = Climate.GetSnow(owner.eyes.position) * Weather.wetness_snow;
+				num17 = Climate.GetRain(owner.eyes.position) * Weather.wetness_rain;
+				num18 = Climate.GetSnow(owner.eyes.position) * Weather.wetness_snow;
 			}
 			bool flag = owner.baseProtection.amounts[4] > 0f;
 			float currentEnvironmentalWetness = owner.currentEnvironmentalWetness;
 			currentEnvironmentalWetness = Mathf.Clamp(currentEnvironmentalWetness, 0f, 0.8f);
-			float num18 = owner.WaterFactor();
-			if (!flag && num18 > 0f)
+			float num19 = owner.WaterFactor();
+			if (!flag && num19 > 0f)
 			{
-				wetness.value = Mathf.Max(wetness.value, Mathf.Clamp(num18, wetness.min, wetness.max));
+				wetness.value = Mathf.Max(wetness.value, Mathf.Clamp(num19, wetness.min, wetness.max));
 			}
-			float num19 = Mathx.Max(wetness.value, num16, num17, currentEnvironmentalWetness);
-			num19 = Mathf.Min(num19, flag ? 0f : num19);
-			wetness.MoveTowards(num19, delta * 0.05f);
-			if (num18 < wetness.value && currentEnvironmentalWetness <= 0f)
+			float num20 = Mathx.Max(wetness.value, num17, num18, currentEnvironmentalWetness);
+			num20 = Mathf.Min(num20, flag ? 0f : num20);
+			wetness.MoveTowards(num20, delta * 0.05f);
+			if (num19 < wetness.value && currentEnvironmentalWetness <= 0f)
 			{
 				wetness.MoveTowards(0f, delta * 0.2f * Mathf.InverseLerp(0f, 100f, num));
 			}
@@ -366,22 +368,22 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 			}
 			if (pending_health.value > 0f)
 			{
-				float num20 = 1f + owner.modifiers.GetValue(Modifier.ModifierType.MetabolismBooster);
-				float num21 = Mathf.Min(1f * delta * num20, pending_health.value);
-				ownerEntity.Heal(num21);
+				float num21 = 1f + owner.modifiers.GetValue(Modifier.ModifierType.MetabolismBooster);
+				float num22 = Mathf.Min(1f * delta * num21, pending_health.value);
+				ownerEntity.Heal(num22);
 				if (ownerEntity.healthFraction == 1f)
 				{
 					pending_health.value = 0f;
 				}
 				else
 				{
-					pending_health.Subtract(num21);
+					pending_health.Subtract(num22);
 				}
 			}
 		}
-		float num22 = owner.AirFactor();
-		float num23 = ((num22 > oxygen.value) ? 1f : 0.1f);
-		oxygen.MoveTowards(num22, delta * num23);
+		float num23 = owner.AirFactor();
+		float num24 = ((num23 > oxygen.value) ? 1f : 0.1f);
+		oxygen.MoveTowards(num23, delta * num24);
 	}
 
 	private float GetCoreTempAdjustment()
@@ -533,6 +535,7 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 		lastConsumeTime = Time.time;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public PlayerMetabolism Save()
 	{
 		PlayerMetabolism val = Pool.Get<PlayerMetabolism>();
@@ -556,6 +559,7 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 		return val;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private PlayerMetabolism SaveDelta(ushort mask)
 	{
 		PlayerMetabolism val = Pool.Get<PlayerMetabolism>();

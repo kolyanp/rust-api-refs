@@ -526,7 +526,7 @@ public class Player : Library
 	public void ClearInventory(BasePlayer player)
 	{
 		PlayerInventory val = Inventory(player);
-		if (!((Object)(object)val == (Object)null))
+		if (val != null)
 		{
 			val.Strip();
 		}
@@ -535,7 +535,7 @@ public class Player : Library
 	public void ResetInventory(BasePlayer player)
 	{
 		PlayerInventory val = Inventory(player);
-		if ((Object)(object)val != (Object)null)
+		if (val != null)
 		{
 			val.DoDestroy();
 			val.ServerInit(player);

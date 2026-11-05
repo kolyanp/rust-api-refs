@@ -35,7 +35,7 @@ public sealed class PostProcessDebug : MonoBehaviour
 
 	private void OnDisable()
 	{
-		if ((Object)(object)m_CurrentCamera != (Object)null)
+		if ((Object)(object)m_CurrentCamera != (Object)null && RenderPipelineManager.currentPipeline == null)
 		{
 			m_CurrentCamera.RemoveCommandBuffer((CameraEvent)19, m_CmdAfterEverything);
 		}
@@ -59,14 +59,20 @@ public sealed class PostProcessDebug : MonoBehaviour
 		{
 			if ((Object)(object)m_CurrentCamera != (Object)null)
 			{
-				m_CurrentCamera.RemoveCommandBuffer((CameraEvent)19, m_CmdAfterEverything);
+				if (RenderPipelineManager.currentPipeline == null)
+				{
+					m_CurrentCamera.RemoveCommandBuffer((CameraEvent)19, m_CmdAfterEverything);
+				}
 				m_CurrentCamera = null;
 			}
 			m_PreviousPostProcessLayer = postProcessLayer;
 			if ((Object)(object)postProcessLayer != (Object)null)
 			{
 				m_CurrentCamera = ((Component)postProcessLayer).GetComponent<Camera>();
-				m_CurrentCamera.AddCommandBuffer((CameraEvent)19, m_CmdAfterEverything);
+				if (RenderPipelineManager.currentPipeline == null)
+				{
+					m_CurrentCamera.AddCommandBuffer((CameraEvent)19, m_CmdAfterEverything);
+				}
 			}
 		}
 		if (!((Object)(object)postProcessLayer == (Object)null) && ((Behaviour)postProcessLayer).enabled)

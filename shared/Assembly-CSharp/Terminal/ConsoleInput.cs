@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using ConVar;
 
@@ -144,9 +145,20 @@ public class ConsoleInput
 
 	private void AppendMoveTo(int row, int column)
 	{
-		draw.Append("\u001b[").Append(row).Append(';')
-			.Append(column)
-			.Append('H');
+		draw.Append("\u001b[");
+		AppendNumber(row);
+		draw.Append(';');
+		AppendNumber(column);
+		draw.Append('H');
+	}
+
+	private void AppendNumber(int value)
+	{
+		Span<char> span = stackalloc char[11];
+		Span<char> destination = span;
+		IFormatProvider invariantCulture = CultureInfo.InvariantCulture;
+		value.TryFormat(destination, out var charsWritten, default, invariantCulture);
+		draw.Append(span.Slice(0, charsWritten));
 	}
 
 	private void WriteDraw()
@@ -205,7 +217,7 @@ public class ConsoleInput
 			num2 = ((num != vtLastWidth) ? 1 : 0);
 			if (num2 == 0)
 			{
-				goto IL_00cb;
+				goto IL_00d3;
 			}
 		}
 		else
@@ -215,12 +227,12 @@ public class ConsoleInput
 		vtLastHeight = vTWindowHeight;
 		vtLastWidth = num;
 		draw.Clear();
-		draw.Append("\u001b[2J").Append("\u001b[").Append("1;")
-			.Append(VTLogBottomRow)
-			.Append('r');
+		draw.Append("\u001b[2J").Append("\u001b[").Append("1;");
+		AppendNumber(VTLogBottomRow);
+		draw.Append('r');
 		WriteDraw();
-		goto IL_00cb;
-		IL_00cb:
+		goto IL_00d3;
+		IL_00d3:
 		if (parkInLogArea)
 		{
 			draw.Clear();

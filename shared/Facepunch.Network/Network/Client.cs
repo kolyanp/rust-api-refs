@@ -1,6 +1,7 @@
 using System;
 using Facepunch;
 using Network.Visibility;
+using UnityEngine;
 
 namespace Network;
 
@@ -132,6 +133,31 @@ public class Client : BaseNetwork
 	public virtual int GetLastPing()
 	{
 		return 0;
+	}
+
+	protected override bool TrySplitBatchedPacket(NetRead batch)
+	{
+		if (batch.PeekPacketID() != 169)
+		{
+			return false;
+		}
+		byte[] item = batch.GetBuffer().Buffer;
+		batch.Position = 1L;
+		while (batch.Unread > 0)
+		{
+			int num = (int)batch.VarUInt32();
+			if (num <= 0 || num > batch.Unread)
+			{
+				Debug.LogWarning((object)$"Dropping the rest of a batch packet with an invalid packet length of {num}b");
+				break;
+			}
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Start(batch.connection, batch.guid, batch.ipaddress, new Span<byte>(item, (int)batch.Position, num));
+			batch.Position += num;
+			EnqueueOrProcessRead(netRead);
+		}
+		batch.RemoveReference();
+		return true;
 	}
 
 	public bool StartRecording(string targetFilename, IDemoHeader header)

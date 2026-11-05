@@ -20,6 +20,8 @@ public abstract class FSMTransitionBase
 
 	protected RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)Owner).GetComponent<RustNavMeshAgent>());
 
+	protected NpcRandom Rng => NpcRandom.Of(Owner);
+
 	public virtual void Init(BaseEntity owner)
 	{
 		Owner = owner;

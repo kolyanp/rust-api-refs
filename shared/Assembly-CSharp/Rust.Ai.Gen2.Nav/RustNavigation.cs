@@ -151,6 +151,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		{
 			Instance = this;
 			RustNavDoorGates.Clear();
+			BackgroundTileBuilder.ClearColliderFacts();
 			if (!AI.useUnityNavmesh)
 			{
 				RecastWrapper.SetLogCallback(logMessageDelegate);
@@ -202,6 +203,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			tileBuilder = new BackgroundTileBuilder();
 		}
 		BakeStats.Reset();
+		BackgroundTileBuilder.ReserveColliderFacts(World.Size);
 		BackgroundTileBuilder backgroundTileBuilder = tileBuilder;
 		bool synchronous2 = synchronous;
 		RustNavmesh rustNavmesh = new RustNavmesh(backgroundTileBuilder, null, null, null, shouldBuild: true, synchronous2, forceHiRes: false, cullTilesFarFromShore: true);
@@ -216,6 +218,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		}
 		DefaultNavmesh = rustNavmesh;
 		RustNavDoorGates.ReassertAll();
+		RustNavMeshAgent.RebindAgentsAfterNavmeshSwap();
 	}
 
 	public bool HasPendingTiles()
@@ -418,7 +421,10 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			{
 				return false;
 			}
-			Log("Saving navmesh to path: " + path + "...");
+			if (AI.logIssues)
+			{
+				Log("Saving navmesh to path: " + path + "...");
+			}
 			return DefaultNavmesh.Save(path);
 		}
 	}
@@ -433,7 +439,10 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			}
 			if (DefaultNavmesh.BeginSave(path))
 			{
-				Log("Saving navmesh to path: " + path + "...");
+				if (AI.logIssues)
+				{
+					Log("Saving navmesh to path: " + path + "...");
+				}
 				return true;
 			}
 			if (DefaultNavmesh.IsSaveInFlight)

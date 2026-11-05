@@ -117,7 +117,7 @@ public class Clan : ConsoleSystem
 				val.AddColumns(new string[4] { "steamID", "username", "online", "role" });
 				foreach (ClanMember member in clan.Members)
 				{
-					ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)clan.Roles, (Func<ClanRole, int>)((ClanRole r) =>
+					Nullable val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)clan.Roles, (Func<ClanRole, int>)((ClanRole r) =>
 					{
 						//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 						return r.RoleId;

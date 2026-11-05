@@ -15,6 +15,6 @@ public class State_AnimalIdle : State_AnimalMontageLoop
 		{
 			return null;
 		}
-		return ArrayEx.GetRandom(Animations);
+		return Rng.Pick(Animations);
 	}
 }

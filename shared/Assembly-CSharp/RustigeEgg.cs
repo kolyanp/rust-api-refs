@@ -97,14 +97,14 @@ public class RustigeEgg : BaseCombatEntity
 		return HasFlag(Flags.Reserved1);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Spin(RPCMessage msg)
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Open(RPCMessage msg)
 	{
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Facepunch;
 using UnityEngine;
 
-public class TrainTrackSpline : WorldSpline
+public class TrainTrackSpline : WorldSpline, IFlattenKeepsDescendants
 {
 	public enum TrackSelection
 	{

@@ -21,8 +21,8 @@ using UnityEngine.Diagnostics;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("debug")]
+[ResetStaticFields]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
@@ -69,8 +69,11 @@ public class Debugging : ConsoleSystem
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	public static bool callbacks = false;
 
-	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
+	[ServerVar(Help = "Max KB per second of debug overlay drawings, such as livestock.drawpens, streamed to each viewer. Changed groups past it wait for the next refresh, nearest first")]
+	public static float overlayKBps = 64f;
+
 	[ServerVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
+	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	public static bool log
 	{
 		get
@@ -138,8 +141,8 @@ public class Debugging : ConsoleSystem
 		ServerConsole.PrintColoured(text, (ConsoleColor)color);
 	}
 
-	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	[ClientVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
+	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	public static void stall(Arg arg)
 	{
 		float num = Mathf.Clamp(arg.GetFloat(0), 0f, 1f);
@@ -1507,8 +1510,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
+	[ServerVar]
 	public static void completeMissionStage(Arg arg)
 	{
 		int num = arg.GetInt(0, -1);
@@ -1521,7 +1524,7 @@ public class Debugging : ConsoleSystem
 		for (int i = 0; i < instance.objectiveStatuses.Count; i++)
 		{
 			BaseMission.MissionInstance.ObjectiveStatus objectiveStatus = instance.objectiveStatuses[i];
-			if (!objectiveStatus.completed && (i == num || (num == -1 && !objectiveStatus.completed)))
+			if (!objectiveStatus.completed && !objectiveStatus.omitted && (i == num || (num == -1 && !objectiveStatus.completed)))
 			{
 				MissionObjective missionObjective = instance.GetMission().objectives[i].Get();
 				missionObjective.ServerObjectiveStarted(basePlayer, i, instance);
@@ -1726,6 +1729,7 @@ public class Debugging : ConsoleSystem
 		}
 		arg.ReplyWith("Invis: " + basePlayer.isInvisible);
 		basePlayer.Command("debug.setinvis_ui", basePlayer.isInvisible);
+		basePlayer.SendVoiceMutedByInvisibility();
 	}
 
 	[ServerVar(Help = "(Generated) Removes all active modifiers (buffs/debuffs) from the calling player; useful for resetting modifier state during testing")]
@@ -2134,8 +2138,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	[ClientVar(Help = "Logs a test error and exception for testing error display.")]
+	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	public static void testerror(Arg arg)
 	{
 		Debug.LogError((object)"Test error message");

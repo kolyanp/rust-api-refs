@@ -53,6 +53,8 @@ public class FlameTurret : StorageContainer
 
 	public TargetTrigger trigger;
 
+	public FlameJet flameJet;
+
 	public const Flags Flag_Triggered = Flags.Reserved4;
 
 	private int turnDir = 1;
@@ -131,8 +133,8 @@ public class FlameTurret : StorageContainer
 
 	public void ServerThink()
 	{
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		if (!isClient)
 		{
 			bool flag = IsTriggered();
@@ -140,11 +142,11 @@ public class FlameTurret : StorageContainer
 			lastServerThink = Time.realtimeSinceStartup;
 			if (IsTriggered() && (Time.realtimeSinceStartup - triggeredTime > triggeredDuration || !HasFuel()))
 			{
-				SetTriggered(triggered: false);
+				SetTriggered(triggered: false, FlagsUpdateMode.Local);
 			}
 			if (!IsTriggered() && HasFuel() && CheckTrigger())
 			{
-				SetTriggered(triggered: true);
+				SetTriggered(triggered: true, FlagsUpdateMode.Local);
 				Effect.server.Run(triggeredEffect.resourcePath, ((Component)this).transform.position, Vector3.up);
 			}
 			if (flag != IsTriggered())
@@ -158,13 +160,13 @@ public class FlameTurret : StorageContainer
 		}
 	}
 
-	public void SetTriggered(bool triggered)
+	public void SetTriggered(bool triggered, FlagsUpdateMode updateMode = FlagsUpdateMode.SendNetworkUpdate)
 	{
 		if (triggered && HasFuel())
 		{
 			triggeredTime = Time.realtimeSinceStartup;
 		}
-		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(updateMode);
 		flagsUpdateScope.Set(Flags.Reserved4, triggered && HasFuel());
 	}
 

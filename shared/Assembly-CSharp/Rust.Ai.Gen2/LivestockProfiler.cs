@@ -10,6 +10,10 @@ public static class LivestockProfiler
 	{
 		Needs,
 		Fsm,
+		Floor,
+		Gather,
+		Pick,
+		Classify,
 		Count
 	}
 
@@ -30,9 +34,9 @@ public static class LivestockProfiler
 
 	public static bool Enabled;
 
-	private static readonly long[] elapsed = new long[2];
+	private static readonly long[] elapsed = new long[6];
 
-	private static readonly int[] calls = new int[2];
+	private static readonly int[] calls = new int[6];
 
 	private static int firstFrame = -1;
 

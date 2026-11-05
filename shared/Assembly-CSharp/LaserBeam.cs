@@ -1,5 +1,7 @@
+using Development.Attributes;
 using UnityEngine;
 
+[ResetStaticFields]
 public class LaserBeam : MonoBehaviour
 {
 	public float scrollSpeed = 0.5f;

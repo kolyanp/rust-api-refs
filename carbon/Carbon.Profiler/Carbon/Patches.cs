@@ -22,6 +22,18 @@ public class Patches
 		}
 	}
 
+	[HarmonyPatch(typeof(HarmonyLoader), "LoadAssembly")]
+	public static class HarmonyLoader_LoadAssembly
+	{
+		public static void Postfix(string assemblyPath, Assembly __result)
+		{
+			if (!(__result == null))
+			{
+				MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Harmony, __result, Path.GetFileNameWithoutExtension(assemblyPath));
+			}
+		}
+	}
+
 	[HarmonyPatch(/*Could not decode attribute arguments.*/)]
 	public static class OxideMod_PluginLoaded
 	{
@@ -33,11 +45,12 @@ public class Patches
 		public static void Prefix(object plugin)
 		{
 			Type type = plugin.GetType();
-			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension((string)type.GetProperty("Filename").GetValue(plugin));
+			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension((string)AccessTools.Property(type, "Filename").GetValue(plugin));
 			if (!string.IsNullOrEmpty(fileNameWithoutExtension))
 			{
 				MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Plugin, type.Assembly, fileNameWithoutExtension, incremental: true);
 				Debug.Log((object)("MonoProfiler.TryStartProfileFor Plugin: " + fileNameWithoutExtension));
+				TargetedProfile.OnPluginLoaded(fileNameWithoutExtension);
 			}
 		}
 	}
@@ -52,7 +65,7 @@ public class Patches
 
 		private static MethodBase TargetMethod()
 		{
-			return AccessTools.TypeByName("Oxide.Core.Extensions.Extension").GetConstructors()[0];
+			return AccessTools.Constructor(AccessTools.TypeByName("Oxide.Core.Extensions.Extension, Oxide.Core"), new Type[1] { AccessTools.TypeByName("Oxide.Core.Extensions.ExtensionManager, Oxide.Core") }, false);
 		}
 
 		public static void Prefix(object manager, object __instance)
@@ -60,7 +73,7 @@ public class Patches
 			Type type = __instance.GetType();
 			HarmonyProfiler.Runner.Invoke((Action)(() =>
 			{
-				string fileNameWithoutExtension = Path.GetFileNameWithoutExtension((string)type.GetProperty("Filename").GetValue(__instance));
+				string fileNameWithoutExtension = Path.GetFileNameWithoutExtension((string)AccessTools.Property(type, "Filename").GetValue(__instance));
 				if (!string.IsNullOrEmpty(fileNameWithoutExtension))
 				{
 					MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Extension, type.Assembly, fileNameWithoutExtension);

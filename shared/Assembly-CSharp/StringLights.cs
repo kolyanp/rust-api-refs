@@ -44,8 +44,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	private ItemDefinition itemToConsume;
 
-	[Header("Line Generation Settings")]
 	[SerializeField]
+	[Header("Line Generation Settings")]
 	protected BulbSettings[] bulbSettings;
 
 	[SerializeField]
@@ -251,7 +251,7 @@ public class StringLights : IOEntity
 		{
 			basePlayer = usingPlayer;
 		}
-		if ((Object)(object)basePlayer == (Object)null || (Object)(object)basePlayer.inventory == (Object)null)
+		if ((Object)(object)basePlayer == (Object)null || basePlayer.inventory == null)
 		{
 			return null;
 		}
@@ -291,8 +291,8 @@ public class StringLights : IOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_StartDeploying(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -425,8 +425,8 @@ public class StringLights : IOEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_RemovePoint(RPCMessage msg)
 	{
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)

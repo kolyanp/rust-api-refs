@@ -8,14 +8,17 @@ public class ProcessProceduralObjects : ProceduralComponent
 	public override void Process(uint seed)
 	{
 		List<ProceduralObject> proceduralObjects = SingletonComponent<WorldSetup>.Instance.ProceduralObjects;
-		if (!World.Cached)
+		foreach (ProceduralObject item in proceduralObjects)
 		{
-			for (int i = 0; i < proceduralObjects.Count; i++)
+			if (Object.op_Implicit((Object)(object)item))
 			{
-				ProceduralObject proceduralObject = proceduralObjects[i];
-				if (Object.op_Implicit((Object)(object)proceduralObject))
+				if (World.Cached)
 				{
-					proceduralObject.Process();
+					item.ProcessCached();
+				}
+				else
+				{
+					item.Process();
 				}
 			}
 		}

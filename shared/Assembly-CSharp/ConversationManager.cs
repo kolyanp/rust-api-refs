@@ -1,3 +1,6 @@
+using Development.Attributes;
+
+[ResetStaticFields]
 public static class ConversationManager
 {
 	public const int MAX_CONVERSATION_RESPONSES = 6;

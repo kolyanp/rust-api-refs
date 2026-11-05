@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RotateObject : MonoBehaviour
+public class RotateObject : MonoBehaviour, IFlattenKeepsDescendants
 {
 	public float rotateSpeed_X = 1f;
 

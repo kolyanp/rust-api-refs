@@ -9,9 +9,9 @@ namespace UnityEngine.Rendering.PostProcessing;
 
 [ExecuteAlways]
 [DisallowMultipleComponent]
-[ImageEffectAllowedInSceneView]
 [AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [RequireComponent(typeof(Camera))]
+[ImageEffectAllowedInSceneView]
 public class PostProcessLayer : MonoBehaviour
 {
 	private enum ScalingMode
@@ -271,10 +271,10 @@ public class PostProcessLayer : MonoBehaviour
 
 	private void OnDisable()
 	{
-		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)m_Camera != (Object)null)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)m_Camera != (Object)null && RenderPipelineManager.currentPipeline == null)
 		{
 			if (m_LegacyCmdBufferBeforeReflections != null)
 			{
@@ -604,7 +604,7 @@ public class PostProcessLayer : MonoBehaviour
 		return GetBundle<T>().CastSettings<T>();
 	}
 
-	public void BakeMSVOMap(CommandBuffer cmd, Camera camera, RenderTargetIdentifier destination, RenderTargetIdentifier? depthMap, bool invert, bool isMSAA = false)
+	public void BakeMSVOMap(CommandBuffer cmd, Camera camera, RenderTargetIdentifier destination, Nullable depthMap, bool invert, bool isMSAA = false)
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		MultiScaleVO multiScaleVO = GetBundle<AmbientOcclusion>().CastRenderer<AmbientOcclusionRenderer>().GetMultiScaleVO();

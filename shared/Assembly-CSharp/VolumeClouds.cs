@@ -60,8 +60,7 @@ public class VolumeClouds : SingletonComponent<VolumeClouds>
 
 	public enum Quality
 	{
-		Off,
-		Low,
+		Low = 1,
 		Medium,
 		High,
 		Ultra,
@@ -306,17 +305,7 @@ public class VolumeClouds : SingletonComponent<VolumeClouds>
 
 	public Vector2i AtmosphericScatteringResolution = new Vector2i(128, 128);
 
-	public bool CloudsShouldBeEnabled
-	{
-		get
-		{
-			if (QualityLevel != Quality.Off)
-			{
-				return ((Behaviour)this).enabled;
-			}
-			return false;
-		}
-	}
+	public bool CloudsShouldBeEnabled => ((Behaviour)this).enabled;
 
 	public bool CloudsEnabled => _cloudsEnabled;
 

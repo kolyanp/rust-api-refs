@@ -12,7 +12,6 @@ public class LivestockCoatGroup
 	[Tooltip("Every renderer that wears this group's material, LODs included.")]
 	public Renderer[] Renderers;
 
-	[Tooltip("Which material slot on those renderers a coat paints.")]
 	public int MaterialIndex;
 
 	public Material MaterialOn(Renderer renderer)

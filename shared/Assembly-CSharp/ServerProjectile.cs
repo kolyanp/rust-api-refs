@@ -32,6 +32,9 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 
 	public bool runSpawnHitChecks;
 
+	[Tooltip("Fly through ragdoll layer colliders (corpses, dropped items, fireballs) whose server positions can differ from what clients see")]
+	public bool ignoreRagdolls;
+
 	[HideInInspector]
 	public BaseEntity ignoreEntity;
 
@@ -43,7 +46,17 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 
 	public virtual bool HasRangeLimit => true;
 
-	protected virtual int mask => 1237003025;
+	protected virtual int mask
+	{
+		get
+		{
+			if (!ignoreRagdolls)
+			{
+				return 1237003025;
+			}
+			return 1237002513;
+		}
+	}
 
 	public Vector3 CurrentVelocity
 	{

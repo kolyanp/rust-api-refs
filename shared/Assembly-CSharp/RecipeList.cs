@@ -8,6 +8,11 @@ public class RecipeList : BaseScriptableObject
 
 	public RecipeList[] AdditionalRecipeLists;
 
+	[Header("Shown when a table uses more than one list")]
+	public Phrase SectionTitle;
+
+	public Sprite SectionIcon;
+
 	private bool initd;
 
 	private List<Recipe> _recipes;

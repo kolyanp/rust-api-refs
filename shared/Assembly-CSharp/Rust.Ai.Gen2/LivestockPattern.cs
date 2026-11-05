@@ -7,7 +7,7 @@ public class LivestockPattern : MonoBehaviour
 	[Tooltip("The renderers the pattern paints, grouped by the material they share. Every LOD of a group has to be listed or the far ones keep the authored hide.")]
 	public LivestockCoatGroup[] Groups;
 
-	[Tooltip("What each gene maps to at Bad and at Good, for the shader this species is drawn with. Keeps the coat believable across every genome.")]
+	[Tooltip("What each gene maps to at Bad and at Good, for the shader this species is drawn with.")]
 	public LivestockGeneRange Range;
 
 	public static int SeedFor(string name)

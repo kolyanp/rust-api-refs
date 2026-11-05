@@ -96,6 +96,7 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 
 	public override void Load(LoadInfo info)
 	{
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (info.msg.paintedItem != null)
 		{
@@ -105,13 +106,20 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 				lastEditedBy = info.msg.paintedItem.editedBy;
 			}
 		}
+		if (isServer)
+		{
+			_currentImageCrc = FileStorage.server.GetCrc(net.ID, 0uL);
+		}
 	}
 
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
 		info.msg.paintedItem = Pool.Get<PaintedItem>();
-		info.msg.paintedItem.imageCrc = _currentImageCrc;
+		if (!info.forDisk)
+		{
+			info.msg.paintedItem.imageCrc = _currentImageCrc;
+		}
 		info.msg.paintedItem.editedBy = lastEditedBy;
 	}
 
@@ -122,9 +130,8 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)msg.player == (Object)null || (ulong)msg.player.userID != OwnerID)
 		{
 			return;
@@ -144,10 +151,7 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 		byte[] array = msg.read.BytesWithSize();
 		if (array == null)
 		{
-			if (_currentImageCrc != 0)
-			{
-				FileStorage.server.RemoveExact(_currentImageCrc, FileStorage.Type.png, net.ID, 0u);
-			}
+			FileStorage.server.Remove(net.ID, 0uL);
 			_currentImageCrc = 0u;
 		}
 		else
@@ -157,12 +161,9 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 				return;
 			}
 			uint currentImageCrc = _currentImageCrc;
-			if (_currentImageCrc != 0)
-			{
-				FileStorage.server.RemoveExact(_currentImageCrc, FileStorage.Type.png, net.ID, 0u);
-			}
-			_currentImageCrc = FileStorage.server.Store(array, FileStorage.Type.png, net.ID);
+			_currentImageCrc = FileStorage.server.Store(net.ID, 0uL, FileStorage.Type.png, array);
 			Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, this, "painted_item", array.Length);
+			UGCModeration.Send(msg.player, this, "painted_item", _currentImageCrc, FileStorage.Type.png);
 			if (_currentImageCrc != currentImageCrc)
 			{
 				item.LoseCondition(0.25f);
@@ -179,12 +180,14 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 		base.DoServerDestroy();
 		if (!Application.isQuitting && net != null)
 		{
-			FileStorage.server.RemoveAllByEntity(net.ID);
+			FileStorage.server.RemoveAll(net.ID);
 		}
 	}
 
 	public void ClearContent()
 	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		FileStorage.server.RemoveAll(net.ID);
 		_currentImageCrc = 0u;
 		SendNetworkUpdate();
 	}

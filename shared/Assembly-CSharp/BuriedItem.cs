@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -63,6 +64,7 @@ public class BuriedItem : IPooled
 		return buriedItem;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static BuriedItem Create(StoredBuriedItem storedBuriedItem)
 	{
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)

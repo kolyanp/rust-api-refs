@@ -12,17 +12,5 @@ public class PaintableImageGrid : UIBehaviour, IServerFileReceiver
 
 	public BasePlayer.FogMode FogMode = BasePlayer.FogMode.Mainland;
 
-	public const int MaxImageNum = 16;
-
-	public int ImageNumberOffset
-	{
-		get
-		{
-			if (FogMode != BasePlayer.FogMode.Mainland)
-			{
-				return 16;
-			}
-			return 0;
-		}
-	}
+	public int ImageNumberOffset => BasePlayer.FogImagePartOffset(FogMode);
 }

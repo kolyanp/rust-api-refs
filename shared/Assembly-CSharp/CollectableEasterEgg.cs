@@ -128,8 +128,8 @@ public class CollectableEasterEgg : BaseEntity, INotifyLOD
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_PickUp(RPCMessage msg)
 	{
 		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)

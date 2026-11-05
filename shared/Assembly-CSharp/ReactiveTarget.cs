@@ -144,9 +144,13 @@ public class ReactiveTarget : Signage
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
 		if (IsKnockedDown() || IsLowered())
 		{
 			return;
@@ -187,7 +191,8 @@ public class ReactiveTarget : Signage
 		}
 		else
 		{
-			ClientRPC(RpcTarget.NetworkGroup("HitEffect"), info.Initiator.net.ID);
+			NetworkableId arg = ((info.Initiator is BasePlayer { isInvisible: not false }) ? default(NetworkableId) : info.Initiator.net.ID);
+			ClientRPC(RpcTarget.NetworkGroup("HitEffect"), arg);
 		}
 		Hurt(1f, DamageType.Suicide, info.Initiator, useProtection: false);
 	}

@@ -56,11 +56,13 @@ public class UIMixingTableItem : MonoBehaviour
 		}
 	}
 
-	public void SetAvailable(bool flag)
+	public bool SetAvailable(bool flag)
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		bool result = Available != flag;
 		Available = flag;
 		((Graphic)TextItemNameAndQuantity).color = (Color)(flag ? new Color(0.78f, 0.78f, 0.78f) : Color.grey);
+		return result;
 	}
 }

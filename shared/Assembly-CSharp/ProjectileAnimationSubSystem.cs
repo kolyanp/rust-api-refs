@@ -7,7 +7,7 @@ public class ProjectileAnimationSubSystem : GenericChildAnimatorSubSystem, IPref
 	[SerializeField]
 	private float ReloadClipLength;
 
-	public bool CanRunDuringBundling => true;
+	public bool CanPreProcessDuringBundling => true;
 
 	public void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{

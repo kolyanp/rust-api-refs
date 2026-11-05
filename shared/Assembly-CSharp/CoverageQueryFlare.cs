@@ -1,4 +1,4 @@
-public class CoverageQueryFlare : BaseMonoBehaviour, IClientComponent
+public class CoverageQueryFlare : BaseMonoBehaviour, IClientComponent, IFlattenKeepsChildren
 {
 	public bool isDynamic;
 

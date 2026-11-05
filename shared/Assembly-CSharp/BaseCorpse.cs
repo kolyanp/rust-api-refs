@@ -27,6 +27,12 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 	[NonSerialized]
 	public SpawnGroup spawnGroup;
 
+	private int birdInterestPointId;
+
+	private const float TerrainSpawnClearance = 0.25f;
+
+	private const float MaxTerrainLift = 1f;
+
 	private Action _removeCorpseCallback;
 
 	private const float RAGDOLL_PUSH_DIST = 0.5f;
@@ -77,11 +83,13 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 
 	public override void ServerInit()
 	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		rigidBody = SetupRigidBody();
 		ResetRemovalTime();
 		resourceDispenser = ((Component)this).GetComponent<ResourceDispenser>();
 		SingletonComponent<NpcFoodManager>.Instance.Add(this);
+		birdInterestPointId = BirdInterestPointManager.Add(BirdSpecies.Crow, ((Component)this).transform.position, BirdFlock.corpseinterestpriority);
 	}
 
 	protected override void TransformChanged()
@@ -92,15 +100,46 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 
 	public virtual void ServerInitCorpse(BaseEntity pr, Vector3 posOnDeah, Quaternion rotOnDeath, BasePlayer.PlayerFlags playerFlagsOnDeath, ModelState modelState)
 	{
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		parentEnt = pr;
-		((Component)this).transform.SetPositionAndRotation(parentEnt.CenterPoint(), ((Component)parentEnt).transform.rotation);
+		Vector3 val = LiftAboveTerrain(parentEnt.CenterPoint());
+		((Component)this).transform.SetPositionAndRotation(val, ((Component)parentEnt).transform.rotation);
 		SpawnPointInstance component = ((Component)this).GetComponent<SpawnPointInstance>();
 		if ((Object)(object)component != (Object)null)
 		{
 			spawnGroup = component.parentSpawnPointUser as SpawnGroup;
 		}
+	}
+
+	protected static Vector3 LiftAboveTerrain(Vector3 pos)
+	{
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		if (!Object.op_Implicit((Object)(object)TerrainMeta.TerrainData) || !Object.op_Implicit((Object)(object)TerrainMeta.Collision))
+		{
+			return pos;
+		}
+		float num = TerrainMeta.SampleTerrainMeshHeight(pos) + 0.25f;
+		if (pos.y >= num || num - pos.y > 1f)
+		{
+			return pos;
+		}
+		if (TerrainMeta.Collision.GetIgnore(pos))
+		{
+			return pos;
+		}
+		pos.y = num;
+		return pos;
 	}
 
 	public virtual bool FillHeadData(HeadEntity head)
@@ -131,6 +170,7 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 		if (isServer)
 		{
 			SingletonComponent<NpcFoodManager>.Instance.Remove(this);
+			BirdInterestPointManager.Remove(birdInterestPointId);
 		}
 	}
 

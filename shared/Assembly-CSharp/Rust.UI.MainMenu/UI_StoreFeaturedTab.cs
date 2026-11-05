@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_StoreFeaturedTab : UI_StoreTabBase
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreCountdown countdown;
 
 	[SerializeField]

@@ -18,10 +18,7 @@ internal struct PaintSplatJob : IJobFor
 	[NativeDisableParallelForRestriction]
 	public ReadOnly<float> AngleMapDeg;
 
-	[NativeDisableParallelForRestriction]
-	public ReadOnly<int> TopologyMap;
-
-	public int TopologyMapRes;
+	public TerrainTopologyHierarchy.Query TopologyMap;
 
 	[NativeDisableParallelForRestriction]
 	public NativeArray<byte> SplatMap;
@@ -37,28 +34,26 @@ internal struct PaintSplatJob : IJobFor
 
 	public void Execute(int index)
 	{
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0231: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
 		int num = index % HeightMapRes;
 		int num2 = index / HeightMapRes;
 		float num3 = ((float)num - 0.5f) / (float)HeightMapRes;
 		float num4 = ((float)num2 - 0.5f) / (float)HeightMapRes;
-		if ((TerrainTopologyMapJobUtil.GetTopologyRadius(TopologyMap, TopologyMapRes, TerrainOneOverSizeX, 0f, num3, num4) & 0xB4990) != 0 || (TerrainTopologyMapJobUtil.GetTopologyRadius(TopologyMap, TopologyMapRes, TerrainOneOverSizeX, 8f, num3, num4) & 2) != 0 || AngleMapDeg[num2 * HeightMapRes + num] < 3f)
+		if (TerrainTopologyMapJobUtil.GetTopologyRadius(in TopologyMap, TerrainOneOverSizeX, 0f, num3, num4, 739728, stopOnAny: true) != 0 || TerrainTopologyMapJobUtil.GetTopologyRadius(in TopologyMap, TerrainOneOverSizeX, 8f, num3, num4, 2, stopOnAny: true) != 0 || AngleMapDeg[num2 * HeightMapRes + num] < 3f)
 		{
 			return;
 		}

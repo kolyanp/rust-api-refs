@@ -21,9 +21,6 @@ public class RendererLOD : InstancedLODComponent, IPrefabPreProcess, ICustomMate
 		[NonSerialized]
 		public bool isImpostor;
 
-		[NonSerialized]
-		public bool hasDecal;
-
 		[ReadOnly]
 		public bool hasCached;
 
@@ -41,6 +38,9 @@ public class RendererLOD : InstancedLODComponent, IPrefabPreProcess, ICustomMate
 
 		[ReadOnly]
 		public MotionVectorGenerationMode motionVectors;
+
+		[ReadOnly]
+		public bool hasDecal;
 	}
 
 	public float minDistanceMultiplier;
@@ -55,7 +55,8 @@ public class RendererLOD : InstancedLODComponent, IPrefabPreProcess, ICustomMate
 	[ReadOnly]
 	public MeshFilter collapsedFilter;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
+	[ReadOnly]
+	public DeferredMeshDecal collapsedDecal;
 
 	public Mesh GetFinalLodMesh(out Matrix4x4 localToWorldMatrix)
 	{

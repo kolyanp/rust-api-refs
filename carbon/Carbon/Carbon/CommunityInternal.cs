@@ -62,7 +62,7 @@ public class CommunityInternal : Community
 		ModLoader.RegisterPackage(package);
 		ModLoader.ProcessCommands(typeof(CorePlugin), Core, BindingFlags.Instance | BindingFlags.NonPublic, "c");
 		ModLoader.ProcessCommands(typeof(CorePlugin), Core, BindingFlags.Instance | BindingFlags.NonPublic, "carbon", hidden: true);
-		int num = CommandManager.Chat.Count((Command x) => x.Reference == Core && !x.HasFlag(CommandFlags.Hidden)) + CommandManager.ClientConsole.Count((Command x) => x.Reference == Core && !x.HasFlag(CommandFlags.Hidden));
+		int num = Enumerable.Count(CommandManager.Chat, (Command x) => x.Reference == Core && !x.HasFlag(CommandFlags.Hidden)) + Enumerable.Count(CommandManager.ClientConsole, (Command x) => x.Reference == Core && !x.HasFlag(CommandFlags.Hidden));
 		if (!Config.Logging.ReducedLogging)
 		{
 			Logger.Log(string.Format("Initialized Carbon Core plugin ({0:n0} {1}, {2:n0} {3})", new object[4]

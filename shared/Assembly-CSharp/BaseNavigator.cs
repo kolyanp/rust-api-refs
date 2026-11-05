@@ -546,27 +546,27 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0280: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0189: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0250: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e7: Unknown result type (might be due to invalid IL or missing references)
 		if (!AI.move)
 		{
 			return false;
@@ -617,14 +617,21 @@ public class BaseNavigator : BaseMonoBehaviour
 					}
 				}
 			}
-			switch (navigationType2)
+			if (!AI.useUnityNavmesh)
 			{
-			case NavigationType.Base:
-				navigationType = ((navigationType3 == NavigationType.Base) ? NavigationType.Base : ((!(Vector3.Distance(BaseEntity.ServerPosition, pos) <= 10f) || !(Mathf.Abs(BaseEntity.ServerPosition.y - pos.y) <= 3f)) ? NavigationType.NavMesh : NavigationType.Base));
-				break;
-			case NavigationType.NavMesh:
-				navigationType = ((navigationType3 == NavigationType.NavMesh) ? NavigationType.NavMesh : NavigationType.Base);
-				break;
+				navigationType = NavigationType.NavMesh;
+			}
+			else
+			{
+				switch (navigationType2)
+				{
+				case NavigationType.Base:
+					navigationType = ((navigationType3 == NavigationType.Base) ? NavigationType.Base : ((!(Vector3.Distance(BaseEntity.ServerPosition, pos) <= 10f) || !(Mathf.Abs(BaseEntity.ServerPosition.y - pos.y) <= 3f)) ? NavigationType.NavMesh : NavigationType.Base));
+					break;
+				case NavigationType.NavMesh:
+					navigationType = ((navigationType3 == NavigationType.NavMesh) ? NavigationType.NavMesh : NavigationType.Base);
+					break;
+				}
 			}
 		}
 		else

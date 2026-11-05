@@ -47,6 +47,8 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 
 	public string ContentString => string.Empty;
 
+	public override bool ShouldTransferAssociatedFiles => true;
+
 	public Vector2i TextureSize
 	{
 		get
@@ -159,16 +161,15 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
 	private void UpdatePoster(RPCMessage msg)
 	{
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)msg.player == (Object)null || !CanUpdateSign(msg.player))
 		{
 			return;
@@ -181,10 +182,7 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		SetFlagLocal(Flags.Reserved1, b: true);
 		if (array == null)
 		{
-			if (imageCrc != 0)
-			{
-				FileStorage.server.RemoveExact(imageCrc, FileType, net.ID, 0u);
-			}
+			FileStorage.server.Remove(net.ID, 0uL);
 			imageCrc = 0u;
 		}
 		else
@@ -193,44 +191,41 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 			{
 				return;
 			}
-			if (imageCrc != 0)
-			{
-				FileStorage.server.RemoveExact(imageCrc, FileType, net.ID, 0u);
-			}
-			imageCrc = FileStorage.server.Store(array, FileType, net.ID);
+			imageCrc = FileStorage.server.Store(net.ID, 0uL, FileType, array);
 			Analytics.Azure.OnUGCCreated(msg.player, this, "wanted_poster", array.Length);
+			UGCModeration.Send(msg.player, this, "wanted_poster", imageCrc, FileType);
 		}
 		SendNetworkUpdate();
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	private void ClearPlayer(RPCMessage msg)
 	{
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)msg.player == (Object)null) && CanUpdateSign(msg.player))
 		{
 			playerId = 0uL;
 			playerName = string.Empty;
 			SetFlagLocal(Flags.Reserved1, b: false);
-			if (imageCrc != 0)
-			{
-				FileStorage.server.RemoveExact(imageCrc, FileType, net.ID, 0u);
-				imageCrc = 0u;
-			}
+			FileStorage.server.Remove(net.ID, 0uL);
+			imageCrc = 0u;
 			SendNetworkUpdate();
 		}
 	}
 
-	public void SetTextureCRCs(uint[] crcs)
+	public void RefreshFileCrcs()
 	{
-		imageCrc = crcs[0];
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		imageCrc = FileStorage.server.GetCrc(net.ID, 0uL);
 		SendNetworkUpdate();
 	}
 
 	public void ClearContent()
 	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		FileStorage.server.RemoveAll(net.ID);
 		imageCrc = 0u;
 		SendNetworkUpdate();
 	}
@@ -239,7 +234,10 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 	{
 		base.Save(info);
 		info.msg.wantedPoster = Pool.Get<WantedPoster>();
-		info.msg.wantedPoster.imageCrc = imageCrc;
+		if (!info.forDisk)
+		{
+			info.msg.wantedPoster.imageCrc = imageCrc;
+		}
 		info.msg.wantedPoster.playerId = playerId;
 		info.msg.wantedPoster.playerName = playerName;
 	}
@@ -250,18 +248,23 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		base.DoServerDestroy();
 		if (net != null)
 		{
-			FileStorage.server.RemoveAllByEntity(net.ID);
+			FileStorage.server.RemoveAll(net.ID);
 		}
 	}
 
 	public override void Load(LoadInfo info)
 	{
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (info.msg.wantedPoster != null)
 		{
 			imageCrc = info.msg.wantedPoster.imageCrc;
 			playerName = info.msg.wantedPoster.playerName;
 			playerId = info.msg.wantedPoster.playerId;
+		}
+		if (isServer)
+		{
+			imageCrc = FileStorage.server.GetCrc(net.ID, 0uL);
 		}
 	}
 

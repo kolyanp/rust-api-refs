@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class ItemModWorkbenchSalvage : ItemModWorkbenchUpgrade
 {
-	[Header("Salvage")]
+	[Tooltip("Chance for each research item spent on a tech-tree unlock to be kept (e.g. 0.2 = 20%).")]
 	[Range(0f, 1f)]
-	[Tooltip("Fraction to reduce tech-tree unlock cost by (e.g. 0.2 = 20% cheaper).")]
-	public float costReduction = 0.2f;
+	[Header("Salvage")]
+	public float saveChance = 0.2f;
 
-	public override float GetTechTreeCostMultiplier()
+	public override float GetTechTreeSaveChance()
 	{
-		return 1f - costReduction;
+		return saveChance;
 	}
 }

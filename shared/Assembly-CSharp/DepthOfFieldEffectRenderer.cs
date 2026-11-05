@@ -96,7 +96,7 @@ public class DepthOfFieldEffectRenderer : PostProcessEffectRenderer<DepthOfField
 		float value5 = settings.maxBlurSize.value;
 		int num = Shader.PropertyToID("DOFrtLow");
 		int num2 = Shader.PropertyToID("DOFrtLow2");
-		value4 = Mathf.Clamp(value4, 1f, 32f);
+		value4 = Mathf.Clamp(value4, 0f, 32f);
 		value5 = Mathf.Clamp(value5, 0.1f, 32f * ((float)context.height / 1080f));
 		value2 = Mathf.Clamp(value2, 0f, 2f);
 		internalBlurWidth = Mathf.Max(value5, 0f);

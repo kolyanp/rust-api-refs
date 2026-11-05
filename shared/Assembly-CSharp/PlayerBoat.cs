@@ -418,14 +418,17 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	[ServerVar(Help = "0 - 1")]
 	public static float SailPositionInfluence = 0.1f;
 
+	[ServerVar(Help = "Interval in seconds between wind blocked checks on a lowered sail, jittered by 10%")]
+	public static float SailBlockedUpdateInterval = 5f;
+
 	[ServerVar(Help = "0 - 1")]
 	public static float EnginePositionInfluences = 0.05f;
 
 	[ServerVar(Help = "(Generated) Maximum angle in degrees from vertical at which building blocks can be placed on a player boat; default 30 degrees")]
 	public static float PlacementUpThreshold = 30f;
 
-	[Help("How long until player boat corpses despawn")]
 	[ServerVar]
+	[Help("How long until player boat corpses despawn")]
 	public static float corpseseconds = 1800f;
 
 	[ServerVar(Help = "How long before a boat loses all its health while outside")]
@@ -971,30 +974,58 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	public void ParentBlockTriggers(List<BoatBuildingBlock> blocks)
 	{
 		parentingTriggers.Clear();
-		List<Transform> list = Pool.Get<List<Transform>>();
 		foreach (BoatBuildingBlock block in blocks)
 		{
-			if (!block.ProvidesParentingTrigger)
+			if (block.ProvidesParentingTrigger)
 			{
-				continue;
-			}
-			List<TriggerParent> collection = block.SetTriggerParent(this);
-			parentingTriggers.AddRange(collection);
-			Transform[] dismountPoints = block.DismountPoints;
-			if (dismountPoints == null || dismountPoints.Length == 0)
-			{
-				continue;
-			}
-			for (int i = 0; i < block.DismountPoints.Length; i++)
-			{
-				if (Object.op_Implicit((Object)(object)block.DismountPoints[i]))
-				{
-					list.Add(block.DismountPoints[i]);
-				}
+				List<TriggerParent> collection = block.SetTriggerParent(this);
+				parentingTriggers.AddRange(collection);
 			}
 		}
-		dismountPositions = list.ToArray();
-		Pool.FreeUnmanaged<Transform>(ref list);
+	}
+
+	public override bool GetDismountPosition(BasePlayer player, out Vector3 res, bool silent = false)
+	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+		try
+		{
+			GetDismountWorldPositions((List<Vector3>)(object)val);
+			Vector3 comparePos = player.TriggerPoint();
+			((List<Vector3>)(object)val).Sort((Comparison<Vector3>)((Vector3 a, Vector3 b) =>
+			{
+				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+				//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+				return Vector3.SqrMagnitude(a - comparePos).CompareTo(Vector3.SqrMagnitude(b - comparePos));
+			}));
+			foreach (Vector3 item in (List<Vector3>)(object)val)
+			{
+				if (ValidDismountPosition(player, item))
+				{
+					res = item;
+					return true;
+				}
+			}
+			Debug.LogWarning((object)("Failed to find dismount position for player :" + player.displayName + " / " + player.userID.Get() + " on obj : " + ((Object)((Component)this).gameObject).name));
+			res = ((Component)player).transform.position;
+			return false;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	private void SetShouldTriggersParentSwimmers(bool shouldParentSwimmers)
@@ -2496,22 +2527,16 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		return null;
 	}
 
-	public static bool IsPartOfPlayerBoat(BaseEntity entity)
+	public static bool IsBoatPiece(BaseEntity entity)
 	{
-		BaseEntity entity2 = null;
-		while (entity != null)
+		if (!(entity is PlayerBoat) && !(entity is BoatBuildingBlock))
 		{
-			if (entity is PlayerBoat || entity is BoatBuildingBlock || entity is IBoatBuildingPiece)
-			{
-				return true;
-			}
-			entity2 = entity;
-			entity = (entity.parentEntity.IsSet() ? entity.GetParentEntity() : null);
+			return entity is IBoatBuildingPiece;
 		}
-		return IsBuiltOntoAnUnfinishedBoat(entity2);
+		return true;
 	}
 
-	private static bool IsBuiltOntoAnUnfinishedBoat(BaseEntity entity)
+	public static bool IsBuiltOntoAnUnfinishedBoat(BaseEntity entity)
 	{
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		if (!(entity is DecayEntity decayEntity) || decayEntity is BuildingBlock || decayEntity.buildingID == 0)
@@ -2760,10 +2785,10 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
 		List<BoatBuildingBlock> cached = BoatBuildingBlocks.Cached;
 		if (cached == null || cached.Count == 0)
 		{
@@ -2780,12 +2805,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		for (int i = 0; i < cached.Count; i++)
 		{
 			BoatBuildingBlock boatBuildingBlock = cached[i];
-			if ((Object)(object)boatBuildingBlock == (Object)null)
-			{
-				continue;
-			}
-			Transform[] dismountPoints = boatBuildingBlock.DismountPoints;
-			if (dismountPoints == null || dismountPoints.Length != 0)
+			if (!((Object)(object)boatBuildingBlock == (Object)null) && boatBuildingBlock.DismountPoints.Length != 0)
 			{
 				float num3 = Vector3.SqrMagnitude(val - boatBuildingBlock.GetDismountCheckStart());
 				if (num3 < num2)
@@ -2797,6 +2817,50 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		}
 		Debug.Assert(num != -1);
 		return cached[num].GetDismountCheckStart();
+	}
+
+	public override bool HasValidDismountPosition(BasePlayer player)
+	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+		try
+		{
+			GetDismountWorldPositions((List<Vector3>)(object)val);
+			bool result = false;
+			foreach (Vector3 item in (List<Vector3>)(object)val)
+			{
+				if (ValidDismountPosition(player, item))
+				{
+					result = true;
+					break;
+				}
+			}
+			return result;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	[PoolAnalyzerNonCaching]
+	private void GetDismountWorldPositions(List<Vector3> positions)
+	{
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		foreach (BoatBuildingBlock item in BoatBuildingBlocks.Cached)
+		{
+			if (!((Object)(object)item == (Object)null))
+			{
+				PlayerBoatDismountPoint[] dismountPoints = item.DismountPoints;
+				foreach (PlayerBoatDismountPoint playerBoatDismountPoint in dismountPoints)
+				{
+					positions.Add(((Component)item).transform.TransformPoint(playerBoatDismountPoint.worldPosition));
+				}
+			}
+		}
 	}
 
 	protected override bool CanPushNow(BasePlayer pusher)
@@ -2969,13 +3033,13 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	static PlayerBoat()
 	{
-		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Expected Obj, but got Unknown
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Expected Obj, but got Unknown
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Expected Obj, but got Unknown
-		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f2: Expected Obj, but got Unknown
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Expected Obj, but got Unknown
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Expected Obj, but got Unknown
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Expected Obj, but got Unknown
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Expected Obj, but got Unknown
 	}
 }

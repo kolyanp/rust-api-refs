@@ -56,13 +56,13 @@ public class RemoteConsole
 
 		public RconListener(RemoteConsole parent)
 		{
-			base.IgnoreExtensions = true;
+			IgnoreExtensions = true;
 			Parent = parent;
 		}
 
 		public void SendMessage(RemoteMessage message)
 		{
-			base.Sessions.Broadcast(message.ToJSON());
+			Sessions.Broadcast(message.ToJSON());
 		}
 
 		protected override void OnClose(CloseEventArgs e)
@@ -78,12 +78,12 @@ public class RemoteConsole
 
 		protected override void OnMessage(MessageEventArgs e)
 		{
-			Parent?.OnMessage(e, base.Context);
+			Parent?.OnMessage(e, Context);
 		}
 
 		protected override void OnOpen()
 		{
-			Address = base.Context.UserEndPoint.Address;
+			Address = Context.UserEndPoint.Address;
 			Interface.Oxide.LogInfo($"[Rcon] New connection from {Address}");
 		}
 	}
@@ -183,9 +183,9 @@ public class RemoteConsole
 		string[] array2 = array.Skip(1).ToArray();
 		if (Interface.CallHook("OnRconCommand", connection.UserEndPoint, text, array2) == null)
 		{
-			IServer obj = covalence.Server;
+			IServer server = covalence.Server;
 			object[] args = array2;
-			obj.Command(text, args);
+			server.Command(text, args);
 		}
 	}
 }

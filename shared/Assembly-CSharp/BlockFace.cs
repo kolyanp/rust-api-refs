@@ -20,6 +20,8 @@ public class BlockFace : IPooled
 
 	public Room Room;
 
+	public Portal Portal;
+
 	public Vector3 WorldCenter;
 
 	public Vector3 WorldNormal;
@@ -90,6 +92,7 @@ public class BlockFace : IPooled
 		Entity = null;
 		FacePrefab = null;
 		Room = null;
+		Portal = null;
 		LinksPerFace.Clear();
 		Edges.Clear();
 	}
@@ -122,6 +125,23 @@ public class BlockFace : IPooled
 		finally
 		{
 			Pool.FreeUnmanaged<BlockFace>(ref list2);
+			Pool.FreeUnmanaged<BlockFace>(ref list);
+		}
+	}
+
+	public static void RefreshFaceLinks(IList<BlockFace> faces)
+	{
+		List<BlockFace> list = Pool.Get<List<BlockFace>>();
+		try
+		{
+			for (int i = 0; i < faces.Count; i++)
+			{
+				list.Clear();
+				faces[i].RefreshOwnLinks(list);
+			}
+		}
+		finally
+		{
 			Pool.FreeUnmanaged<BlockFace>(ref list);
 		}
 	}

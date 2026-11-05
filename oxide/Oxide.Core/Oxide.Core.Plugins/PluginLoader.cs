@@ -43,7 +43,7 @@ public abstract class PluginLoader
 		string filename = Path.Combine(directory, name + FileExtension);
 		Plugin plugin = GetPlugin(filename);
 		LoadingPlugins.Add(plugin.Name);
-		Interface.Oxide.NextTick(delegate
+		Interface.Oxide.NextTick(() =>
 		{
 			LoadPlugin(plugin);
 		});
@@ -76,7 +76,7 @@ public abstract class PluginLoader
 			{
 				Interface.Oxide.LogWarning("Waiting for another application to stop using script: {0}", plugin.Name);
 			}
-			Interface.Oxide.GetLibrary<Timer>().Once(0.5f, delegate
+			Interface.Oxide.GetLibrary<Timer>().Once(0.5f, () =>
 			{
 				LoadPlugin(plugin, waitingForAccess: true);
 			});

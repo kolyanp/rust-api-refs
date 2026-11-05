@@ -10,6 +10,9 @@ public class ItemModEntity : ItemMod
 
 	public bool destroyEntityWhenBroken;
 
+	[ServerVar(Help = "Player-only item entities (eg. the deployable planner) are only created in the belt instead of the whole player inventory")]
+	public static bool playerOnlyEntityBeltOnly = true;
+
 	public override void OnChanged(Item item)
 	{
 		HeldEntity heldEntity = item.GetHeldEntity() as HeldEntity;
@@ -121,13 +124,14 @@ public class ItemModEntity : ItemMod
 		if (playerOnlyEntity)
 		{
 			BasePlayer ownerPlayer = item.GetOwnerPlayer();
-			if ((Object)(object)ownerPlayer == (Object)null && (Object)(object)baseEntity != (Object)null)
+			bool flag = (Object)(object)ownerPlayer != (Object)null && (!playerOnlyEntityBeltOnly || item.parent == ownerPlayer.inventory.containerBelt);
+			if (!flag && (Object)(object)baseEntity != (Object)null)
 			{
 				baseEntity.Kill();
 				baseEntity = null;
 				item.SetHeldEntity(null);
 			}
-			else if ((Object)(object)ownerPlayer != (Object)null && (Object)(object)baseEntity == (Object)null)
+			else if (flag && (Object)(object)baseEntity == (Object)null)
 			{
 				CreateEntity(item);
 				baseEntity = item.GetHeldEntity();

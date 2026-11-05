@@ -1,3 +1,4 @@
+using ConVar;
 using UnityEngine;
 
 public class TravellingVendorEvent : TriggeredEvent
@@ -5,6 +6,28 @@ public class TravellingVendorEvent : TriggeredEvent
 	public static TravellingVendor currentVendor = null;
 
 	public static float dontSpawnHoursBeforeWipe = 24f;
+
+	public static EventSchedule FindSchedule()
+	{
+		TravellingVendorEvent travellingVendorEvent = default;
+		foreach (EventSchedule enabledEvent in EventSchedule.enabledEvents)
+		{
+			if (((Component)enabledEvent).TryGetComponent<TravellingVendorEvent>(ref travellingVendorEvent))
+			{
+				return enabledEvent;
+			}
+		}
+		return null;
+	}
+
+	public static bool IsEnabled()
+	{
+		if (TravellingVendor.should_spawn && Server.events && (Object)(object)TerrainMeta.Path != (Object)null && TerrainMeta.Path.MainRoads.Count > 0)
+		{
+			return (Object)(object)FindSchedule() != (Object)null;
+		}
+		return false;
+	}
 
 	public override void RunEvent()
 	{

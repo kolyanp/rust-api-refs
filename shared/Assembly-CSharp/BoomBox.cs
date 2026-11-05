@@ -237,10 +237,10 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 
 	public void ServerTogglePlay(BaseEntity.RPCMessage msg, bool bypassPower = false)
 	{
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		if (!IsPowered() && !bypassPower)
 		{
 			return;
@@ -249,17 +249,38 @@ public class BoomBox : EntityComponent<BaseEntity>, INotifyLOD
 		bool flag = msg.read.ReadByte() == 1;
 		if (Interface.CallHook("OnBoomboxToggle", this, msg.player, flag) == null)
 		{
-			if (flag && (Object)(object)player != (Object)null && player.IsConnected && !player.IsNpc && !player.IsBot && baseEntity is DeployableBoomBox deployableBoomBox)
+			if (flag && baseEntity is DeployableBoomBox deployableBoomBox && (Object)(object)player != (Object)null && player.IsConnected && !player.IsNpc && !player.IsBot && player.HasActiveMission())
 			{
 				BaseMission.MissionEventPayload payload = new BaseMission.MissionEventPayload
 				{
 					NetworkIdentifier = deployableBoomBox.net.ID,
 					WorldPosition = ((Component)this).transform.position,
-					StringIdentifier = CurrentRadioIp
+					StringIdentifier = CurrentRadioIp,
+					InitiatorPlayer = player
 				};
-				player.ProcessMissionEvent(BaseMission.MissionEventType.PLAY_BOOMBOX, payload, deployableBoomBox.IsStatic ? 1f : 0f);
+				ProcessMissionEvent(player, payload, deployableBoomBox.IsStatic ? 1f : 0f);
 			}
 			ServerTogglePlay(flag);
+		}
+		static void ProcessMissionEvent(BasePlayer initiator, BaseMission.MissionEventPayload payload2, float amount)
+		{
+			if (initiator.TryGetActiveMissionInstance(out var instance))
+			{
+				uint missionID = instance.missionID;
+				initiator.ProcessMissionEvent(BaseMission.MissionEventType.PLAY_BOOMBOX, payload2, amount);
+				RelationshipManager.PlayerTeam team = initiator.Team;
+				if (team != null)
+				{
+					foreach (ulong member in team.members)
+					{
+						BasePlayer basePlayer = BasePlayer.FindByID(member);
+						if (!((Object)(object)basePlayer == (Object)null) && !((Object)(object)basePlayer == (Object)(object)initiator) && basePlayer.TryGetActiveMissionInstance(out var instance2) && instance2.missionID == missionID)
+						{
+							basePlayer.ProcessMissionEvent(BaseMission.MissionEventType.PLAY_BOOMBOX, payload2, amount);
+						}
+					}
+				}
+			}
 		}
 	}
 

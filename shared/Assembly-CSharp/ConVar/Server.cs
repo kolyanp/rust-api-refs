@@ -295,6 +295,9 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "(Generated) Rate multiplier for status effect (buff/debuff) ticks; lower values slow all active modifiers such as poison, radiation sickness and warmth")]
 	public static float modifierTickRate = 1f;
 
+	[ServerVar(Saved = true, Help = "Multiplier on heartrate-driven calorie and hydration loss while a player is sprinting")]
+	public static float sprintmetabolismscale = 1.1f;
+
 	[ServerVar(Saved = true, Help = "(Generated) Minimum seconds that must pass after a player recovers from being wounded before they can be put into the wounded state again")]
 	public static float rewounddelay = 60f;
 
@@ -328,11 +331,14 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "(Generated) Enables plant light detection — growable plants will check nearby light sources each tick and adjust growth speed and quality accordingly")]
 	public static bool plantlightdetection = true;
 
-	[ServerVar(Help = "(Generated) Radius in metres around a player's death point — any sleeping bag or bed within this range is put on a respawn cooldown to prevent spawn-camping")]
+	[ReplicatedVar(Help = "(Generated) Radius in metres around a player's death point — any sleeping bag or bed within this range is put on a respawn cooldown to prevent spawn-camping")]
 	public static float respawnresetrange = 50f;
 
 	[ReplicatedVar]
 	public static int max_sleeping_bags = 15;
+
+	[ReplicatedVar(Help = "Maximum number of tool cupboards each player can place, 0 or less is unlimited. Lowering it doesn't remove cupboards that are already placed")]
+	public static int max_tool_cupboards = 0;
 
 	[ServerVar(Help = "When a deployable is upgraded in place (e.g. stacking sandbags) the new tier keeps the damaged health fraction of the one it replaced instead of spawning at full health")]
 	public static bool upgrade_keeps_health = true;
@@ -428,8 +434,8 @@ public class Server : ConsoleSystem
 	[ReplicatedVar(Help = "How much scrap is required to research default blueprints", Saved = true, ShowInAdminUI = true)]
 	public static int defaultBlueprintResearchCost = 10;
 
-	[ServerVar(Help = "Whether to check for illegal industrial pipes when changing building block states (roof bunkers)", Saved = true, ShowInAdminUI = true)]
-	public static bool enforcePipeChecksOnBuildingBlockChanges = true;
+	[ServerVar(Help = "Whether to check for illegal industrial pipes and entities when changing building block states (roof bunkers)", Saved = true)]
+	public static bool enforceOverlapChecksOnBuildingBlockChanges = true;
 
 	[ServerVar(Help = "How many stacks a single conveyor can move in a single tick", Saved = true, ShowInAdminUI = true)]
 	public static int maxItemStacksMovedPerTickIndustrial = 12;
@@ -677,8 +683,8 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "MS per frame to spend warming up entity save caches")]
 	public static int saveframebudget = 5;
 
-	[ServerVar(Help = "Player Update parallelism mode: 3-4, Higher modes are faster but more experimental. 3 by default")]
-	public static int UsePlayerUpdateJobs = 3;
+	[ServerVar(Help = "Player Update parallelism mode: 3-4, Higher modes are faster but more experimental. 4 by default")]
+	public static int UsePlayerUpdateJobs = 4;
 
 	[ServerVar(Help = "UsePlayerUpdateJobs 4 related - how many players to gather occlusion pairs for per task")]
 	public static int OcclusionGatherBatchPlayerCount = 16;
@@ -978,6 +984,32 @@ public class Server : ConsoleSystem
 		set
 		{
 			Network.Server.MaxDecryptQueueBytes = Mathf.Max(value, 1);
+		}
+	}
+
+	[ServerVar(Help = "Send each connection's packets for the frame together in batch packets, instead of one network packet each")]
+	public static bool batchpackets
+	{
+		get
+		{
+			return Network.Server.BatchPackets;
+		}
+		set
+		{
+			Network.Server.BatchPackets = value;
+		}
+	}
+
+	[ServerVar(Help = "Size in bytes (200-1500) a batch packet is sent at before the end of the frame, larger packets are sent on their own")]
+	public static int batchpacketsize
+	{
+		get
+		{
+			return Network.Server.MaxBatchBytes;
+		}
+		set
+		{
+			Network.Server.MaxBatchBytes = Mathf.Clamp(value, 200, 1500);
 		}
 	}
 

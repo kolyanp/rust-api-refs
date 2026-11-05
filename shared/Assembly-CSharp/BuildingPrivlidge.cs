@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Math;
 using Facepunch.Rust;
@@ -37,6 +38,14 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 		public Dictionary<ulong, uint> recentGroupMembers;
 	}
+
+	private static Dictionary<ulong, List<BuildingPrivlidge>> toolCupboardsPerPlayer = new Dictionary<ulong, List<BuildingPrivlidge>>();
+
+	public static Phrase toolCupboardLimitPhrase = new Phrase("tc_limit_update", "You are now at {0}/{1} Tool Cupboards");
+
+	public static Phrase toolCupboardLimitReachedPhrase = new Phrase("tc_limit_reached", "You have reached your Tool Cupboard limit!");
+
+	private ulong limitOwnerID;
 
 	public const Flags Flag_Raidable = Flags.Reserved7;
 
@@ -97,6 +106,18 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	public Dictionary<ulong, uint> recentGroupMembers = new Dictionary<ulong, uint>();
 
 	private Action delayedUpdateCB;
+
+	private bool IsTutorialCupboard
+	{
+		get
+		{
+			if (net != null && net.group != null)
+			{
+				return net.group.restricted;
+			}
+			return false;
+		}
+	}
 
 	public override bool PreserveChildrenWhenReskinning => true;
 
@@ -286,6 +307,134 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		return base.ShouldDropDeployableCorpse(info);
 	}
 
+	public static int GetToolCupboardCount(ulong userId)
+	{
+		if (userId == 0L)
+		{
+			return 0;
+		}
+		if (!toolCupboardsPerPlayer.TryGetValue(userId, out var value))
+		{
+			return 0;
+		}
+		return value.Count;
+	}
+
+	public static bool HasReachedToolCupboardLimit(ulong userId)
+	{
+		if (ConVar.Server.max_tool_cupboards > 0)
+		{
+			return GetToolCupboardCount(userId) >= ConVar.Server.max_tool_cupboards;
+		}
+		return false;
+	}
+
+	public static List<Vector3> GetToolCupboardPositions(BasePlayer player)
+	{
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		if (player.IsInTutorial)
+		{
+			return null;
+		}
+		if (ConVar.Server.max_tool_cupboards <= 0 || !toolCupboardsPerPlayer.TryGetValue(player.userID, out var value))
+		{
+			return null;
+		}
+		List<Vector3> list = Pool.Get<List<Vector3>>();
+		foreach (BuildingPrivlidge item in value)
+		{
+			list.Add(((Component)item).transform.position);
+		}
+		return list;
+	}
+
+	public static Planner.CanBuildResult? CanBuildToolCupboard(BasePlayer player)
+	{
+		if (player.IsInTutorial || !HasReachedToolCupboardLimit(player.userID))
+		{
+			return null;
+		}
+		return new Planner.CanBuildResult
+		{
+			Result = false,
+			Phrase = toolCupboardLimitReachedPhrase
+		};
+	}
+
+	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
+	{
+		base.OnDeployed(parent, deployedBy, fromItem);
+		if (!((Object)(object)deployedBy == (Object)null) && !deployedBy.IsInTutorial && ConVar.Server.max_tool_cupboards > 0)
+		{
+			deployedBy.ShowToast(GameTip.Styles.Blue_Long, toolCupboardLimitPhrase, false, GetToolCupboardCount(OwnerID).ToString(), ConVar.Server.max_tool_cupboards.ToString());
+		}
+	}
+
+	public override void ServerInitPostNetworkGroupAssign()
+	{
+		base.ServerInitPostNetworkGroupAssign();
+		RegisterForToolCupboardLimit();
+	}
+
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		RegisterForToolCupboardLimit();
+	}
+
+	internal override void DoServerDestroy()
+	{
+		base.DoServerDestroy();
+		UnregisterFromToolCupboardLimit();
+	}
+
+	private void RegisterForToolCupboardLimit()
+	{
+		if (!IsInvisibleAuth && !IsTutorialCupboard && OwnerID != 0L && OwnerID != limitOwnerID)
+		{
+			UnregisterFromToolCupboardLimit();
+			if (!toolCupboardsPerPlayer.TryGetValue(OwnerID, out var value))
+			{
+				value = new List<BuildingPrivlidge>();
+				toolCupboardsPerPlayer.Add(OwnerID, value);
+			}
+			value.Add(this);
+			limitOwnerID = OwnerID;
+			RefreshLimitOwner();
+		}
+	}
+
+	private void UnregisterFromToolCupboardLimit()
+	{
+		if (limitOwnerID == 0L)
+		{
+			return;
+		}
+		if (toolCupboardsPerPlayer.TryGetValue(limitOwnerID, out var value))
+		{
+			value.Remove(this);
+			if (value.Count == 0)
+			{
+				toolCupboardsPerPlayer.Remove(limitOwnerID);
+			}
+		}
+		RefreshLimitOwner();
+		limitOwnerID = 0uL;
+	}
+
+	private void RefreshLimitOwner()
+	{
+		BasePlayer basePlayer = BasePlayer.FindByID(limitOwnerID);
+		if (!((Object)(object)basePlayer == (Object)null))
+		{
+			basePlayer.SendNetworkUpdate();
+			if (ConVar.Server.max_tool_cupboards > 0 && basePlayer.IsConnected)
+			{
+				basePlayer.SendRespawnOptions();
+			}
+		}
+	}
+
 	private void OnDestroyShared_Softcore()
 	{
 		if (isServer)
@@ -376,41 +525,66 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public float GetEntityUpkeepMultiplier(DecayEntity entity, float buildingFraction, float doorFraction)
 	{
-		if (entity.Upkeep != null && entity.Upkeep.highWall)
-		{
-			return ConVar.Decay.high_wall_upkeep * cachedGroupUpkeepMultiplier;
-		}
-		if (!(entity is Door))
-		{
-			return buildingFraction;
-		}
-		return doorFraction;
+		return GetUpkeepMultiplier(entity.GetUpkeepCategory(), buildingFraction, doorFraction);
 	}
 
+	private float GetUpkeepMultiplier(Upkeep.Category category, float buildingFraction, float doorFraction)
+	{
+		return category switch
+		{
+			Upkeep.Category.HighWall => ConVar.Decay.high_wall_upkeep * cachedGroupUpkeepMultiplier, 
+			Upkeep.Category.Door => doorFraction, 
+			_ => buildingFraction, 
+		};
+	}
+
+	[PoolAnalyzerNonCaching]
 	public void CalculateUpkeepCostAmounts(List<ItemAmount> itemAmounts)
 	{
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		BuildingManager.Building building = GetBuilding();
 		if (building == null || !building.HasDecayEntities())
 		{
 			return;
 		}
-		float buildingFraction = CalculateUpkeepCostFraction(doors: false);
-		float doorFraction = CalculateUpkeepCostFraction(doors: true);
+		float num = CalculateUpkeepCostFraction(doors: false);
+		float num2 = CalculateUpkeepCostFraction(doors: true);
+		if (isServer)
+		{
+			AddUpkeepCostAmounts(itemAmounts, building.GetCachedUpkeepCost(Upkeep.Category.Building), num);
+			AddUpkeepCostAmounts(itemAmounts, building.GetCachedUpkeepCost(Upkeep.Category.Door), num2);
+			AddUpkeepCostAmounts(itemAmounts, building.GetCachedUpkeepCost(Upkeep.Category.HighWall), GetUpkeepMultiplier(Upkeep.Category.HighWall, num, num2));
+			return;
+		}
 		Enumerator<DecayEntity> enumerator = building.decayEntities.GetEnumerator();
 		try
 		{
 			while (enumerator.MoveNext())
 			{
 				DecayEntity current = enumerator.Current;
-				float entityUpkeepMultiplier = GetEntityUpkeepMultiplier(current, buildingFraction, doorFraction);
+				float entityUpkeepMultiplier = GetEntityUpkeepMultiplier(current, num, num2);
 				current.CalculateUpkeepCostAmounts(itemAmounts, entityUpkeepMultiplier);
 			}
 		}
 		finally
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+	}
+
+	private static void AddUpkeepCostAmounts(List<ItemAmount> itemAmounts, List<ItemAmount> buildCost, float fraction)
+	{
+		if (fraction == 0f)
+		{
+			return;
+		}
+		foreach (ItemAmount item in buildCost)
+		{
+			if (!(item.amount < 0.01f))
+			{
+				DecayEntity.AddUpkeepAmount(itemAmounts, item.itemDef, item.amount * fraction);
+			}
 		}
 	}
 
@@ -1345,8 +1519,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void ClearList(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player) && Interface.CallHook("OnCupboardClearList", this, rpc.player) == null)
@@ -1369,8 +1543,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		UpdatePrivilegeReceivers();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Rotate(RPCMessage msg)
 	{
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
@@ -1511,6 +1685,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 		Pool.FreeUnmanaged<ulong, uint>(ref buildingPrivilegePreserve.recentGroupMembers);
 		RecalculateGroupUpkeep();
+		RegisterForToolCupboardLimit();
 	}
 
 	public override bool HasSlot(Slot slot)
@@ -1525,5 +1700,13 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	public override bool SupportsChildDeployables()
 	{
 		return true;
+	}
+
+	static BuildingPrivlidge()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Expected Obj, but got Unknown
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Expected Obj, but got Unknown
 	}
 }

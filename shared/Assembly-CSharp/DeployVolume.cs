@@ -32,6 +32,9 @@ public abstract class DeployVolume : PrefabAttribute
 	[SerializeField]
 	public EntityListScriptableObject[] entityGroups;
 
+	[Tooltip("Skip this volume when the construction is attached to one of these sockets")]
+	public string[] skipWhenAttachedAt = Array.Empty<string>();
+
 	public bool IsBuildingBlock { get; set; }
 
 	public static Collider LastDeployHit { get; set; }
@@ -60,6 +63,61 @@ public abstract class DeployVolume : PrefabAttribute
 		for (int i = 0; i < volumes.Length; i++)
 		{
 			if (volumes[i].Check(position, rotation, mask))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static bool Check(Vector3 position, Quaternion rotation, DeployVolume[] volumes, Socket_Base maleSocket, int mask = -1)
+	{
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 0; i < volumes.Length; i++)
+		{
+			if (Array.IndexOf(volumes[i].skipWhenAttachedAt, maleSocket.socketName) < 0 && volumes[i].Check(position, rotation, mask))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static bool Check(BaseEntity block, DeployVolume[] volumes, int mask = -1)
+	{
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 0; i < volumes.Length; i++)
+		{
+			if (!IsAttachedAtAny(block, volumes[i].skipWhenAttachedAt) && volumes[i].Check(((Component)block).transform.position, ((Component)block).transform.rotation, mask))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static bool CheckInPlaceOf(BaseEntity entity, Quaternion rotation, DeployVolume[] volumes)
+	{
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		for (int i = 0; i < volumes.Length; i++)
+		{
+			if (!IsAttachedAtAny(entity, volumes[i].skipWhenAttachedAt) && volumes[i].Check(((Component)entity).transform.position, rotation, null, TypeFilterMode.Ignore, entity))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool IsAttachedAtAny(BaseEntity block, string[] socketNames)
+	{
+		foreach (string socketName in socketNames)
+		{
+			EntityLink entityLink = block.FindLink(socketName);
+			if (entityLink != null && !entityLink.IsEmpty())
 			{
 				return true;
 			}

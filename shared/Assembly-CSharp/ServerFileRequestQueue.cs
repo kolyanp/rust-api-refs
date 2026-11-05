@@ -8,27 +8,13 @@ using UnityEngine;
 
 public static class ServerFileRequestQueue
 {
-	public enum RequestKind : byte
-	{
-		GenericFile,
-		EntityImage
-	}
-
 	private struct QueuedRequest
 	{
-		public RequestKind Kind;
-
 		public BaseEntity Entity;
 
-		public string ResponseFunction;
+		public ulong Part;
 
 		public uint Crc;
-
-		public FileStorage.Type Type;
-
-		public uint Part;
-
-		public bool RespondIfNotFound;
 	}
 
 	private class ConnectionState : IPooled
@@ -56,9 +42,9 @@ public static class ServerFileRequestQueue
 
 	private static readonly Dictionary<Connection, ConnectionState> States = new Dictionary<Connection, ConnectionState>();
 
-	public static void Request(Connection connection, BaseEntity entity, RequestKind kind, uint crc, FileStorage.Type type, string responseFunction, uint part = 0u, bool respondIfNotFound = false)
+	public static void Request(Connection connection, BaseEntity entity, ulong part, uint crc)
 	{
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		if (connection == null || !entity.IsValid())
 		{
 			return;
@@ -73,12 +59,11 @@ public static class ServerFileRequestQueue
 		RefillBudget(connectionState);
 		if (ConVar.Server.filerequestdebug)
 		{
-			Debug.Log((object)string.Format("[FileRequest] {0} requested {1} crc {2} part {3} from {4}[{5}] - {6}", new object[7]
+			Debug.Log((object)string.Format("[FileRequest] {0} requested part {1} crc {2} from {3}[{4}] - {5}", new object[6]
 			{
 				connection,
-				type,
-				crc,
 				part,
+				crc,
 				entity.ShortPrefabName,
 				entity.net.ID,
 				UsageString(connectionState)
@@ -86,13 +71,9 @@ public static class ServerFileRequestQueue
 		}
 		QueuedRequest request = new QueuedRequest
 		{
-			Kind = kind,
 			Entity = entity,
-			ResponseFunction = responseFunction,
-			Crc = crc,
-			Type = type,
 			Part = part,
-			RespondIfNotFound = respondIfNotFound
+			Crc = crc
 		};
 		if (connectionState.queue.Count == 0 && connectionState.byteBudget > 0.0)
 		{
@@ -166,12 +147,11 @@ public static class ServerFileRequestQueue
 	{
 		if (request.Entity.IsValid())
 		{
-			int num = ((request.Kind != RequestKind.EntityImage) ? request.Entity.SendRequestedFile(state.connection, request.ResponseFunction, request.Crc, request.Type, request.Part, request.RespondIfNotFound) : ((request.Entity is ImageStorageEntity imageStorageEntity) ? imageStorageEntity.SendRequestedImage(state.connection) : 0));
-			int num2 = num;
-			state.byteBudget -= Math.Max(num2, 32768);
+			int num = request.Entity.SendRequestedFile(state.connection, request.Part, request.Crc);
+			state.byteBudget -= Math.Max(num, 32768);
 			if (ConVar.Server.filerequestdebug)
 			{
-				Debug.Log((object)$"[FileRequest] {state.connection} sent {NumberExtensions.FormatBytes<int>(num2, false)} - {UsageString(state)}");
+				Debug.Log((object)$"[FileRequest] {state.connection} sent {NumberExtensions.FormatBytes<int>(num, false)} - {UsageString(state)}");
 			}
 		}
 	}

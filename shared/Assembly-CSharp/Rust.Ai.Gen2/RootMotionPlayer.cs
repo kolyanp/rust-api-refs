@@ -272,6 +272,8 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 
 	private Action _playServerTickAction;
 
+	public float RootBoneLocalZOffset => rootBoneLocalZOffset;
+
 	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)baseEntity).GetComponent<RustNavMeshAgent>());
 
 	private bool MovesOnNavmesh
@@ -337,10 +339,11 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RootMotionPlayer:PlayServerTick"))
 		{
 			Vector3 location = ((Component)baseEntity).transform.position;
@@ -351,12 +354,12 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 				if (currentPlayState.constrainToNavmesh)
 				{
 					Agent.Move(Agent.WorldToNavSpace(location) - Agent.WorldToNavSpace(((Component)baseEntity).transform.position));
+					Agent.Face(rotation);
 				}
 				else
 				{
-					((Component)baseEntity).transform.position = location;
+					Agent.Place(location, rotation);
 				}
-				((Component)baseEntity).transform.rotation = rotation;
 			}
 			if (flag)
 			{
@@ -368,17 +371,17 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 
 	public void Track(Vector3 targetPos, float trackingSpeed = 45f, float? timeStep = null)
 	{
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		if (currentPlayState != null && !(currentPlayState.rmData == null))
 		{
 			if (!timeStep.HasValue)
 			{
 				timeStep = Time.deltaTime;
 			}
-			((Component)baseEntity).transform.rotation = currentPlayState.Track(((Component)this).transform.position, targetPos, ((Component)baseEntity).transform.rotation, trackingSpeed, timeStep.Value);
+			Agent.Face(currentPlayState.Track(((Component)this).transform.position, targetPos, ((Component)baseEntity).transform.rotation, trackingSpeed, timeStep.Value));
 		}
 	}
 

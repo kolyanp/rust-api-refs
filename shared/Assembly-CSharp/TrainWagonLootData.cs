@@ -25,6 +25,10 @@ public class TrainWagonLootData : ScriptableObject
 
 		[FormerlySerializedAs("indoorFXTint")]
 		public Color particleFXTint;
+
+		public int ScaledMaxLootAmount => BaseGameMode.ScaleGatherAmount(maxLootAmount);
+
+		public int ScaledMinLootAmount => BaseGameMode.ScaleGatherAmount(minLootAmount);
 	}
 
 	[SerializeField]
@@ -152,8 +156,8 @@ public class TrainWagonLootData : ScriptableObject
 		float result = 0f;
 		if (sc.IsValid())
 		{
-			int maxLootAmount = lootOption.maxLootAmount;
-			result = (((float)maxLootAmount != 0f) ? Mathf.Clamp01((float)sc.inventory.GetAmount(lootOption.lootItem.itemid) / (float)maxLootAmount) : 0f);
+			int scaledMaxLootAmount = lootOption.ScaledMaxLootAmount;
+			result = (((float)scaledMaxLootAmount != 0f) ? Mathf.Clamp01((float)sc.inventory.GetAmount(lootOption.lootItem.itemid) / (float)scaledMaxLootAmount) : 0f);
 		}
 		return result;
 	}
@@ -164,13 +168,13 @@ public class TrainWagonLootData : ScriptableObject
 		{
 			return;
 		}
-		int maxLootAmount = lootOption.maxLootAmount;
-		if ((float)maxLootAmount > 0f)
+		int scaledMaxLootAmount = lootOption.ScaledMaxLootAmount;
+		if ((float)scaledMaxLootAmount > 0f)
 		{
 			Item item = sc.inventory.FindItemByItemID(lootOption.lootItem.itemid);
 			if (item != null)
 			{
-				item.amount = Mathf.Max(Mathf.RoundToInt((float)maxLootAmount * percent), 1);
+				item.amount = Mathf.Max(Mathf.RoundToInt((float)scaledMaxLootAmount * percent), 1);
 			}
 		}
 	}

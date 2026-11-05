@@ -287,7 +287,7 @@ public class TrainCarUnloadable : TrainCar
 		sc.inventory.Clear();
 		ItemManager.DoRemoves();
 		TrainWagonLootData.LootOption lootOption = TrainWagonLootData.instance.GetLootOption(wagonType, out lootTypeIndex);
-		int amount = Random.Range(lootOption.minLootAmount, lootOption.maxLootAmount);
+		int amount = Random.Range(lootOption.ScaledMinLootAmount, lootOption.ScaledMaxLootAmount);
 		ItemDefinition itemToCreate = ItemManager.FindItemDefinition(lootOption.lootItem.itemid);
 		sc.inventory.AddItem(itemToCreate, amount, 0uL, ItemContainer.LimitStack.All);
 		sc.inventory.SetLocked(isLocked: true);

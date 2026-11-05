@@ -1,5 +1,7 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 
@@ -7,19 +9,22 @@ namespace Carbon.Components;
 
 public struct LuiBuilderInstance : IDisposable
 {
-	private static int _segmentLimit = 100;
+	private const int initialCapacity = 8192;
 
-	private LUIBuilder.WriteArray[] _segments = ArrayPool<LUIBuilder.WriteArray>.Shared.Rent(_segmentLimit);
-
-	private int _segmentCount = 0;
-
-	private const int maxSegmentSize = 4096;
-
-	public readonly char[] _charBuffer = new char[4096];
+	internal char[] _charBuffer = ArrayPool<char>.Shared.Rent(8192);
 
 	public int _charIndex = 0;
 
-	private string GetFieldName(LuiCompType type)
+	internal int MaxUtf8ByteCount
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		get
+		{
+			return _charIndex * 3;
+		}
+	}
+
+	private static string GetFieldName(LuiCompType type)
 	{
 		return type switch
 		{
@@ -48,801 +53,701 @@ public struct LuiBuilderInstance : IDisposable
 		};
 	}
 
+	private static void WriteName(ref LuiBuilderInstance inst, LUI.LuiContainer element, bool comma)
+	{
+		if (element.nameId != 0)
+		{
+			if (comma)
+			{
+				inst.WriteFieldIdComma("name", element.nameIdentifier, element.nameId);
+			}
+			else
+			{
+				inst.WriteFieldId("name", element.nameIdentifier, element.nameId);
+			}
+		}
+		else if (comma)
+		{
+			inst.WriteFieldComma("name", element._name);
+		}
+		else
+		{
+			inst.WriteField("name", element._name);
+		}
+	}
+
+	private static void WriteParent(ref LuiBuilderInstance inst, LUI.LuiContainer element, bool comma)
+	{
+		if (element.parentId != 0)
+		{
+			if (comma)
+			{
+				inst.WriteFieldIdComma("parent", element.parentIdentifier, element.parentId);
+			}
+			else
+			{
+				inst.WriteFieldId("parent", element.parentIdentifier, element.parentId);
+			}
+		}
+		else if (comma)
+		{
+			inst.WriteFieldComma("parent", element._parent);
+		}
+		else
+		{
+			inst.WriteField("parent", element._parent);
+		}
+	}
+
 	public LuiBuilderInstance(LUI cui)
 	{
-		//IL_0eb5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0eba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a9d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0aba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a63: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a80: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ee0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ee7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0eed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0ed4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0812: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f04: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1448: Unknown result type (might be due to invalid IL or missing references)
-		//IL_144d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1699: Unknown result type (might be due to invalid IL or missing references)
-		//IL_169e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_141f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_143c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_16bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_146e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_123c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1243: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1249: Unknown result type (might be due to invalid IL or missing references)
-		//IL_126c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1273: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1279: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1260: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bc8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bcd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0656: Unknown result type (might be due to invalid IL or missing references)
+		//IL_065d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0663: Unknown result type (might be due to invalid IL or missing references)
+		//IL_087c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0893: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0848: Unknown result type (might be due to invalid IL or missing references)
+		//IL_085f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bf4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bfa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0be1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0fd7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0fdc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0674: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c0b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_100d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_107f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1290: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1295: Unknown result type (might be due to invalid IL or missing references)
+		//IL_105c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_10b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_109f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ead: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0eb4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0eba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ed7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ede: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ee4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ecb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ef5: Unknown result type (might be due to invalid IL or missing references)
 		this.WriteStartArray();
-		int count = cui.elements.Count;
-		int num = 0;
-		foreach (LUI.LuiContainer element in cui.elements)
+		List<LUI.LuiContainer> elements = cui.elements;
+		int count = elements.Count;
+		for (int i = 0; i < count; i++)
 		{
-			num++;
+			LUI.LuiContainer luiContainer = elements[i];
 			this.WriteStartObject();
-			if (element.update)
+			if (luiContainer.update)
 			{
-				this.WriteField("name", element.name);
-				if (!string.IsNullOrEmpty(element.parent))
+				WriteName(ref this, luiContainer, comma: false);
+				if (luiContainer.HasParent)
 				{
-					this.WriteComma();
-					this.WriteField("parent", element.parent);
+					WriteParent(ref this, luiContainer, comma: true);
 				}
 			}
 			else
 			{
-				this.WriteField("parent", element.parent);
-				if (!string.IsNullOrEmpty(element.name))
+				WriteParent(ref this, luiContainer, comma: false);
+				if (luiContainer.HasName)
 				{
-					this.WriteComma();
-					this.WriteField("name", element.name);
+					WriteName(ref this, luiContainer, comma: true);
 				}
 			}
-			if (element.destroyUi != null)
+			if (luiContainer.destroyUi != null)
 			{
-				this.WriteComma();
-				this.WriteField("destroyUi", element.destroyUi);
+				this.WriteFieldComma("destroyUi", luiContainer.destroyUi);
 			}
-			if (element.fadeOut > 0f)
+			if (luiContainer.fadeOut > 0f)
 			{
-				this.WriteComma();
-				this.WriteField("fadeOut", element.fadeOut);
+				this.WriteFieldComma("fadeOut", luiContainer.fadeOut);
 			}
-			if (element.update)
+			if (luiContainer.update)
 			{
-				this.WriteComma();
-				this.WriteField("update", value: true);
+				this.WriteFieldComma("update", value: true);
 			}
-			if (element.activeSelfSet || !element.activeSelf)
+			if (luiContainer.activeSelfSet || !luiContainer.activeSelf)
 			{
-				this.WriteComma();
-				this.WriteField("activeSelf", element.activeSelf);
+				this.WriteFieldComma("activeSelf", luiContainer.activeSelf);
 			}
-			if (element.luiComponents.Count > 0)
+			if (luiContainer.luiComponents.Count > 0)
 			{
 				this.WriteComma();
 				this.WriteStartArray("components");
-				int count2 = element.luiComponents.Count;
-				int num2 = 0;
-				foreach (LuiCompBase luiComponent in element.luiComponents)
+				LuiComponentDictionary luiComponents = luiContainer.luiComponents;
+				int count2 = luiComponents.Count;
+				for (int j = 0; j < count2; j++)
 				{
+					LuiCompBase luiCompBase = luiComponents[j];
 					this.WriteStartObject();
-					this.WriteField("type", GetFieldName(luiComponent.type));
-					if (!luiComponent.enabled)
+					this.WriteField("type", GetFieldName(luiCompBase.type));
+					if (!luiCompBase.enabled)
 					{
-						this.WriteComma();
-						this.WriteField("enabled", value: false);
+						this.WriteFieldComma("enabled", value: false);
 					}
-					if (luiComponent.fadeIn > 0f)
+					if (luiCompBase.fadeIn > 0f)
 					{
-						this.WriteComma();
-						this.WriteField("fadeIn", luiComponent.fadeIn);
+						this.WriteFieldComma("fadeIn", luiCompBase.fadeIn);
 					}
-					if (!luiComponent.blocksRaycast)
+					if (!luiCompBase.blocksRaycast)
 					{
-						this.WriteComma();
-						this.WriteField("blocksRaycast", value: false);
+						this.WriteFieldComma("blocksRaycast", value: false);
 					}
-					if (luiComponent.placeholderParentId != null)
+					if (luiCompBase.placeholderParentId != null)
 					{
-						this.WriteComma();
-						this.WriteField("placeholderParentId", luiComponent.placeholderParentId);
+						this.WriteFieldComma("placeholderParentId", luiCompBase.placeholderParentId);
 					}
-					switch (luiComponent.type)
+					switch (luiCompBase.type)
 					{
 					case LuiCompType.Text:
 					{
-						LuiTextComp luiTextComp = luiComponent as LuiTextComp;
-						num2++;
+						LuiTextComp luiTextComp = luiCompBase as LuiTextComp;
 						if (luiTextComp.text != null)
 						{
-							this.WriteComma();
-							this.WriteField("text", luiTextComp.text);
+							this.WriteFieldComma("text", luiTextComp.text);
 						}
 						if (luiTextComp.fontSize > 0)
 						{
-							this.WriteComma();
-							this.WriteField("fontSize", luiTextComp.fontSize);
+							this.WriteFieldComma("fontSize", luiTextComp.fontSize);
 						}
 						if (luiTextComp.font != null)
 						{
-							this.WriteComma();
-							this.WriteField("font", luiTextComp.font);
+							this.WriteFieldComma("font", luiTextComp.font);
 						}
 						if (luiTextComp.align != null)
 						{
-							this.WriteComma();
-							this.WriteField("align", luiTextComp.align);
+							this.WriteFieldComma("align", luiTextComp.align);
 						}
 						if (luiTextComp.color != null)
 						{
-							this.WriteComma();
-							this.WriteField("color", luiTextComp.color);
+							this.WriteFieldComma("color", luiTextComp.color);
 						}
 						if (luiTextComp.verticalOverflow != null)
 						{
-							this.WriteComma();
-							this.WriteField("verticalOverflow", luiTextComp.verticalOverflow);
+							this.WriteFieldComma("verticalOverflow", luiTextComp.verticalOverflow);
 						}
 						break;
 					}
 					case LuiCompType.Image:
 					{
-						LuiImageComp luiImageComp = luiComponent as LuiImageComp;
-						num2++;
+						LuiImageComp luiImageComp = luiCompBase as LuiImageComp;
 						if (luiImageComp.sprite != null)
 						{
-							this.WriteComma();
-							this.WriteField("sprite", luiImageComp.sprite);
+							this.WriteFieldComma("sprite", luiImageComp.sprite);
 						}
 						if (luiImageComp.material != null)
 						{
-							this.WriteComma();
-							this.WriteField("material", luiImageComp.material);
+							this.WriteFieldComma("material", luiImageComp.material);
 						}
 						if (luiImageComp.color != null)
 						{
-							this.WriteComma();
-							this.WriteField("color", luiImageComp.color);
+							this.WriteFieldComma("color", luiImageComp.color);
 						}
 						if (luiImageComp.imageType != null)
 						{
-							this.WriteComma();
-							this.WriteField("imagetype", luiImageComp.imageType);
+							this.WriteFieldComma("imagetype", luiImageComp.imageType);
 						}
 						if (luiImageComp.fillCenter)
 						{
-							this.WriteComma();
-							this.WriteField("fillCenter", value: true);
+							this.WriteFieldComma("fillCenter", value: true);
 						}
 						if (luiImageComp.ppuMultiplier != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("ppuMultiplier", luiImageComp.ppuMultiplier);
+							this.WriteFieldComma("ppuMultiplier", luiImageComp.ppuMultiplier);
 						}
 						if (luiImageComp.png != null)
 						{
-							this.WriteComma();
-							this.WriteField("png", luiImageComp.png);
+							this.WriteFieldComma("png", luiImageComp.png);
 						}
 						if (luiImageComp.slice != null)
 						{
-							this.WriteComma();
-							this.WriteField("slice", luiImageComp.slice);
+							this.WriteFieldComma("slice", luiImageComp.slice);
 						}
 						if (luiImageComp.itemid != 0)
 						{
-							this.WriteComma();
-							this.WriteField("itemid", luiImageComp.itemid);
+							this.WriteFieldComma("itemid", luiImageComp.itemid);
 						}
 						if (luiImageComp.skinid != 0L)
 						{
-							this.WriteComma();
-							this.WriteField("skinid", luiImageComp.skinid);
+							this.WriteFieldComma("skinid", luiImageComp.skinid);
 						}
 						break;
 					}
 					case LuiCompType.RawImage:
 					{
-						LuiRawImageComp luiRawImageComp = luiComponent as LuiRawImageComp;
-						num2++;
+						LuiRawImageComp luiRawImageComp = luiCompBase as LuiRawImageComp;
 						if (luiRawImageComp.sprite != null)
 						{
-							this.WriteComma();
-							this.WriteField("sprite", luiRawImageComp.sprite);
+							this.WriteFieldComma("sprite", luiRawImageComp.sprite);
 						}
 						if (luiRawImageComp.color != null)
 						{
-							this.WriteComma();
-							this.WriteField("color", luiRawImageComp.color);
+							this.WriteFieldComma("color", luiRawImageComp.color);
 						}
 						if (luiRawImageComp.material != null)
 						{
-							this.WriteComma();
-							this.WriteField("material", luiRawImageComp.material);
+							this.WriteFieldComma("material", luiRawImageComp.material);
 						}
 						if (luiRawImageComp.url != null)
 						{
-							this.WriteComma();
-							this.WriteField("url", luiRawImageComp.url);
+							this.WriteFieldComma("url", luiRawImageComp.url);
 						}
 						if (luiRawImageComp.png != null)
 						{
-							this.WriteComma();
-							this.WriteField("png", luiRawImageComp.png);
+							this.WriteFieldComma("png", luiRawImageComp.png);
 						}
 						if (luiRawImageComp.steamid != null)
 						{
-							this.WriteComma();
-							this.WriteField("steamid", luiRawImageComp.steamid);
+							this.WriteFieldComma("steamid", luiRawImageComp.steamid);
 						}
 						break;
 					}
 					case LuiCompType.Button:
 					{
-						LuiButtonComp luiButtonComp = luiComponent as LuiButtonComp;
-						num2++;
+						LuiButtonComp luiButtonComp = luiCompBase as LuiButtonComp;
 						if (!luiButtonComp.interactable)
 						{
-							this.WriteComma();
-							this.WriteField("interactable", value: false);
+							this.WriteFieldComma("interactable", value: false);
 						}
 						if (luiButtonComp.command != null)
 						{
-							this.WriteComma();
-							this.WriteField("command", luiButtonComp.command);
+							this.WriteFieldComma("command", luiButtonComp.command);
 						}
 						if (luiButtonComp.close != null)
 						{
-							this.WriteComma();
-							this.WriteField("close", luiButtonComp.close);
+							this.WriteFieldComma("close", luiButtonComp.close);
 						}
 						if (luiButtonComp.sprite != null)
 						{
-							this.WriteComma();
-							this.WriteField("sprite", luiButtonComp.sprite);
+							this.WriteFieldComma("sprite", luiButtonComp.sprite);
 						}
 						if (luiButtonComp.material != null)
 						{
-							this.WriteComma();
-							this.WriteField("material", luiButtonComp.material);
+							this.WriteFieldComma("material", luiButtonComp.material);
 						}
 						if (luiButtonComp.color != null)
 						{
-							this.WriteComma();
-							this.WriteField("color", luiButtonComp.color);
+							this.WriteFieldComma("color", luiButtonComp.color);
 						}
 						if (luiButtonComp.imageType != null)
 						{
-							this.WriteComma();
-							this.WriteField("imagetype", luiButtonComp.imageType);
+							this.WriteFieldComma("imagetype", luiButtonComp.imageType);
 						}
 						if (luiButtonComp.normalColor != null)
 						{
-							this.WriteComma();
-							this.WriteField("normalColor", luiButtonComp.normalColor);
+							this.WriteFieldComma("normalColor", luiButtonComp.normalColor);
 						}
 						if (luiButtonComp.highlightedColor != null)
 						{
-							this.WriteComma();
-							this.WriteField("highlightedColor", luiButtonComp.highlightedColor);
+							this.WriteFieldComma("highlightedColor", luiButtonComp.highlightedColor);
 						}
 						if (luiButtonComp.pressedColor != null)
 						{
-							this.WriteComma();
-							this.WriteField("pressedColor", luiButtonComp.pressedColor);
+							this.WriteFieldComma("pressedColor", luiButtonComp.pressedColor);
 						}
 						if (luiButtonComp.selectedColor != null)
 						{
-							this.WriteComma();
-							this.WriteField("selectedColor", luiButtonComp.selectedColor);
+							this.WriteFieldComma("selectedColor", luiButtonComp.selectedColor);
 						}
 						if (luiButtonComp.disabledColor != null)
 						{
-							this.WriteComma();
-							this.WriteField("disabledColor", luiButtonComp.disabledColor);
+							this.WriteFieldComma("disabledColor", luiButtonComp.disabledColor);
 						}
 						if (luiButtonComp.colorMultiplier != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("colorMultiplier", luiButtonComp.colorMultiplier);
+							this.WriteFieldComma("colorMultiplier", luiButtonComp.colorMultiplier);
 						}
 						if (luiButtonComp.fadeDuration != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("fadeDuration", luiButtonComp.fadeDuration);
+							this.WriteFieldComma("fadeDuration", luiButtonComp.fadeDuration);
 						}
 						break;
 					}
 					case LuiCompType.Outline:
 					{
-						LuiOutlineComp luiOutlineComp = luiComponent as LuiOutlineComp;
-						num2++;
+						LuiOutlineComp luiOutlineComp = luiCompBase as LuiOutlineComp;
 						if (luiOutlineComp.color != null)
 						{
-							this.WriteComma();
-							this.WriteField("color", luiOutlineComp.color);
+							this.WriteFieldComma("color", luiOutlineComp.color);
 						}
 						if (luiOutlineComp.distance != default(Vector2))
 						{
-							this.WriteComma();
-							this.WriteField("distance", luiOutlineComp.distance);
+							this.WriteFieldComma("distance", luiOutlineComp.distance);
 						}
 						if (luiOutlineComp.useGraphicAlpha)
 						{
-							this.WriteComma();
-							this.WriteField("useGraphicAlpha", value: true);
+							this.WriteFieldComma("useGraphicAlpha", value: true);
 						}
 						break;
 					}
 					case LuiCompType.InputField:
 					{
-						LuiInputComp luiInputComp = luiComponent as LuiInputComp;
-						num2++;
+						LuiInputComp luiInputComp = luiCompBase as LuiInputComp;
 						if (luiInputComp.fontSize > 0)
 						{
-							this.WriteComma();
-							this.WriteField("fontSize", luiInputComp.fontSize);
+							this.WriteFieldComma("fontSize", luiInputComp.fontSize);
 						}
 						if (luiInputComp.font != null)
 						{
-							this.WriteComma();
-							this.WriteField("font", luiInputComp.font);
+							this.WriteFieldComma("font", luiInputComp.font);
 						}
 						if (luiInputComp.align != null)
 						{
-							this.WriteComma();
-							this.WriteField("align", luiInputComp.align);
+							this.WriteFieldComma("align", luiInputComp.align);
 						}
 						if (luiInputComp.color != null)
 						{
-							this.WriteComma();
-							this.WriteField("color", luiInputComp.color);
+							this.WriteFieldComma("color", luiInputComp.color);
 						}
 						if (luiInputComp.characterLimit > 0)
 						{
-							this.WriteComma();
-							this.WriteField("characterLimit", luiInputComp.characterLimit);
+							this.WriteFieldComma("characterLimit", luiInputComp.characterLimit);
 						}
 						if (luiInputComp.command != null)
 						{
-							this.WriteComma();
-							this.WriteField("command", luiInputComp.command);
+							this.WriteFieldComma("command", luiInputComp.command);
 						}
 						if (luiInputComp.lineType != null)
 						{
-							this.WriteComma();
-							this.WriteField("lineType", luiInputComp.lineType);
+							this.WriteFieldComma("lineType", luiInputComp.lineType);
 						}
 						if (luiInputComp.text != null)
 						{
-							this.WriteComma();
-							this.WriteField("text", luiInputComp.text);
+							this.WriteFieldComma("text", luiInputComp.text);
 						}
 						if (luiInputComp.readOnly)
 						{
-							this.WriteComma();
-							this.WriteField("readOnly", value: true);
+							this.WriteFieldComma("readOnly", value: true);
 						}
 						if (luiInputComp.placeholderId != null)
 						{
-							this.WriteComma();
-							this.WriteField("placeholderId", luiInputComp.placeholderId);
+							this.WriteFieldComma("placeholderId", luiInputComp.placeholderId);
 						}
 						if (luiInputComp.password)
 						{
-							this.WriteComma();
-							this.WriteField("password", value: true);
+							this.WriteFieldComma("password", value: true);
 						}
 						if (luiInputComp.needsKeyboard)
 						{
-							this.WriteComma();
-							this.WriteField("needsKeyboard", value: true);
+							this.WriteFieldComma("needsKeyboard", value: true);
 						}
 						if (luiInputComp.hudMenuInput)
 						{
-							this.WriteComma();
-							this.WriteField("hudMenuInput", value: true);
+							this.WriteFieldComma("hudMenuInput", value: true);
 						}
 						if (luiInputComp.autofocus)
 						{
-							this.WriteComma();
-							this.WriteField("autofocus", value: true);
+							this.WriteFieldComma("autofocus", value: true);
 						}
 						if (!luiInputComp.interactable)
 						{
-							this.WriteComma();
-							this.WriteField("interactable", value: false);
+							this.WriteFieldComma("interactable", value: false);
 						}
 						break;
 					}
-					case LuiCompType.NeedsCursor:
-						num2++;
-						break;
 					case LuiCompType.RectTransform:
 					{
-						LuiRectTransformComp luiRectTransformComp = luiComponent as LuiRectTransformComp;
-						num2++;
+						LuiRectTransformComp luiRectTransformComp = luiCompBase as LuiRectTransformComp;
 						if (luiRectTransformComp.anchor != LuiPosition.Full)
 						{
-							this.WriteComma();
-							this.WriteField("anchormin", luiRectTransformComp.anchor.anchorMin);
-							this.WriteComma();
-							this.WriteField("anchormax", luiRectTransformComp.anchor.anchorMax);
+							this.WriteFieldComma("anchormin", luiRectTransformComp.anchor.anchorMin);
+							this.WriteFieldComma("anchormax", luiRectTransformComp.anchor.anchorMax);
 						}
 						this.WriteComma();
 						this.WriteField("offsetmin", luiRectTransformComp.offset.offsetMin);
-						this.WriteComma();
-						this.WriteField("offsetmax", luiRectTransformComp.offset.offsetMax);
+						this.WriteFieldComma("offsetmax", luiRectTransformComp.offset.offsetMax);
 						if (luiRectTransformComp.rotation != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("rotation", luiRectTransformComp.rotation);
+							this.WriteFieldComma("rotation", luiRectTransformComp.rotation);
 						}
 						if (luiRectTransformComp.setParent != null)
 						{
-							this.WriteComma();
-							this.WriteField("setParent", luiRectTransformComp.setParent);
+							this.WriteFieldComma("setParent", luiRectTransformComp.setParent);
 						}
 						if (luiRectTransformComp.setTransformIndex != -1)
 						{
-							this.WriteComma();
-							this.WriteField("setTransformIndex", luiRectTransformComp.setTransformIndex);
+							this.WriteFieldComma("setTransformIndex", luiRectTransformComp.setTransformIndex);
 						}
 						break;
 					}
 					case LuiCompType.Countdown:
 					{
-						LuiCountdownComp luiCountdownComp = luiComponent as LuiCountdownComp;
-						num2++;
+						LuiCountdownComp luiCountdownComp = luiCompBase as LuiCountdownComp;
 						if (luiCountdownComp.endTime != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("endTime", luiCountdownComp.endTime);
+							this.WriteFieldComma("endTime", luiCountdownComp.endTime);
 						}
 						if (luiCountdownComp.startTime != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("startTime", luiCountdownComp.startTime);
+							this.WriteFieldComma("startTime", luiCountdownComp.startTime);
 						}
 						if (luiCountdownComp.step > 0f)
 						{
-							this.WriteComma();
-							this.WriteField("step", luiCountdownComp.step);
+							this.WriteFieldComma("step", luiCountdownComp.step);
 						}
 						if (luiCountdownComp.interval > 0f)
 						{
-							this.WriteComma();
-							this.WriteField("interval", luiCountdownComp.interval);
+							this.WriteFieldComma("interval", luiCountdownComp.interval);
 						}
 						if (luiCountdownComp.timerFormat != null)
 						{
-							this.WriteComma();
-							this.WriteField("timerFormat", luiCountdownComp.timerFormat);
+							this.WriteFieldComma("timerFormat", luiCountdownComp.timerFormat);
 						}
 						if (luiCountdownComp.numberFormat != null)
 						{
-							this.WriteComma();
-							this.WriteField("numberFormat", luiCountdownComp.numberFormat);
+							this.WriteFieldComma("numberFormat", luiCountdownComp.numberFormat);
 						}
 						if (!luiCountdownComp.destroyIfDone)
 						{
-							this.WriteComma();
-							this.WriteField("destroyIfDone", value: false);
+							this.WriteFieldComma("destroyIfDone", value: false);
 						}
 						if (luiCountdownComp.command != null)
 						{
-							this.WriteComma();
-							this.WriteField("command", luiCountdownComp.command);
+							this.WriteFieldComma("command", luiCountdownComp.command);
 						}
 						break;
 					}
 					case LuiCompType.HorizontalLayoutGroup:
 					{
-						LuiHorizontalLayoutGroupComp luiHorizontalLayoutGroupComp = luiComponent as LuiHorizontalLayoutGroupComp;
-						num2++;
+						LuiHorizontalLayoutGroupComp luiHorizontalLayoutGroupComp = luiCompBase as LuiHorizontalLayoutGroupComp;
 						if (luiHorizontalLayoutGroupComp.spacing != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("spacing", luiHorizontalLayoutGroupComp.spacing);
+							this.WriteFieldComma("spacing", luiHorizontalLayoutGroupComp.spacing);
 						}
 						if (luiHorizontalLayoutGroupComp.childAlignment != null)
 						{
-							this.WriteComma();
-							this.WriteField("childAlignment", luiHorizontalLayoutGroupComp.childAlignment);
+							this.WriteFieldComma("childAlignment", luiHorizontalLayoutGroupComp.childAlignment);
 						}
 						if (!luiHorizontalLayoutGroupComp.childForceExpandWidth)
 						{
-							this.WriteComma();
-							this.WriteField("childForceExpandWidth", value: false);
+							this.WriteFieldComma("childForceExpandWidth", value: false);
 						}
 						if (!luiHorizontalLayoutGroupComp.childForceExpandHeight)
 						{
-							this.WriteComma();
-							this.WriteField("childForceExpandHeight", value: false);
+							this.WriteFieldComma("childForceExpandHeight", value: false);
 						}
 						if (luiHorizontalLayoutGroupComp.childControlWidth)
 						{
-							this.WriteComma();
-							this.WriteField("childControlWidth", value: true);
+							this.WriteFieldComma("childControlWidth", value: true);
 						}
 						if (luiHorizontalLayoutGroupComp.childControlHeight)
 						{
-							this.WriteComma();
-							this.WriteField("childControlHeight", value: true);
+							this.WriteFieldComma("childControlHeight", value: true);
 						}
 						if (luiHorizontalLayoutGroupComp.childScaleWidth)
 						{
-							this.WriteComma();
-							this.WriteField("childScaleWidth", value: true);
+							this.WriteFieldComma("childScaleWidth", value: true);
 						}
 						if (luiHorizontalLayoutGroupComp.childScaleHeight)
 						{
-							this.WriteComma();
-							this.WriteField("childScaleHeight", value: true);
+							this.WriteFieldComma("childScaleHeight", value: true);
 						}
 						if (luiHorizontalLayoutGroupComp.padding != null)
 						{
-							this.WriteComma();
-							this.WriteField("padding", luiHorizontalLayoutGroupComp.padding);
+							this.WriteFieldComma("padding", luiHorizontalLayoutGroupComp.padding);
 						}
 						break;
 					}
 					case LuiCompType.VerticalLayoutGroup:
 					{
-						LuiVerticalLayoutGroupComp luiVerticalLayoutGroupComp = luiComponent as LuiVerticalLayoutGroupComp;
-						num2++;
+						LuiVerticalLayoutGroupComp luiVerticalLayoutGroupComp = luiCompBase as LuiVerticalLayoutGroupComp;
 						if (luiVerticalLayoutGroupComp.spacing != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("spacing", luiVerticalLayoutGroupComp.spacing);
+							this.WriteFieldComma("spacing", luiVerticalLayoutGroupComp.spacing);
 						}
 						if (luiVerticalLayoutGroupComp.childAlignment != null)
 						{
-							this.WriteComma();
-							this.WriteField("childAlignment", luiVerticalLayoutGroupComp.childAlignment);
+							this.WriteFieldComma("childAlignment", luiVerticalLayoutGroupComp.childAlignment);
 						}
 						if (!luiVerticalLayoutGroupComp.childForceExpandWidth)
 						{
-							this.WriteComma();
-							this.WriteField("childForceExpandWidth", value: false);
+							this.WriteFieldComma("childForceExpandWidth", value: false);
 						}
 						if (!luiVerticalLayoutGroupComp.childForceExpandHeight)
 						{
-							this.WriteComma();
-							this.WriteField("childForceExpandHeight", value: false);
+							this.WriteFieldComma("childForceExpandHeight", value: false);
 						}
 						if (luiVerticalLayoutGroupComp.childControlWidth)
 						{
-							this.WriteComma();
-							this.WriteField("childControlWidth", value: true);
+							this.WriteFieldComma("childControlWidth", value: true);
 						}
 						if (luiVerticalLayoutGroupComp.childControlHeight)
 						{
-							this.WriteComma();
-							this.WriteField("childControlHeight", value: true);
+							this.WriteFieldComma("childControlHeight", value: true);
 						}
 						if (luiVerticalLayoutGroupComp.childScaleWidth)
 						{
-							this.WriteComma();
-							this.WriteField("childScaleWidth", value: true);
+							this.WriteFieldComma("childScaleWidth", value: true);
 						}
 						if (luiVerticalLayoutGroupComp.childScaleHeight)
 						{
-							this.WriteComma();
-							this.WriteField("childScaleHeight", value: true);
+							this.WriteFieldComma("childScaleHeight", value: true);
 						}
 						if (luiVerticalLayoutGroupComp.padding != null)
 						{
-							this.WriteComma();
-							this.WriteField("padding", luiVerticalLayoutGroupComp.padding);
+							this.WriteFieldComma("padding", luiVerticalLayoutGroupComp.padding);
 						}
 						break;
 					}
 					case LuiCompType.GridLayoutGroup:
 					{
-						LuiGridLayoutGroupComp luiGridLayoutGroupComp = luiComponent as LuiGridLayoutGroupComp;
-						num2++;
+						LuiGridLayoutGroupComp luiGridLayoutGroupComp = luiCompBase as LuiGridLayoutGroupComp;
 						if (luiGridLayoutGroupComp.cellSize != LUI.defaultCellSize)
 						{
-							this.WriteComma();
-							this.WriteField("cellSize", luiGridLayoutGroupComp.cellSize);
+							this.WriteFieldComma("cellSize", luiGridLayoutGroupComp.cellSize);
 						}
 						if (luiGridLayoutGroupComp.spacing != default(Vector2))
 						{
-							this.WriteComma();
-							this.WriteField("spacing", luiGridLayoutGroupComp.spacing);
+							this.WriteFieldComma("spacing", luiGridLayoutGroupComp.spacing);
 						}
 						if (luiGridLayoutGroupComp.startCorner != null)
 						{
-							this.WriteComma();
-							this.WriteField("startCorner", luiGridLayoutGroupComp.startCorner);
+							this.WriteFieldComma("startCorner", luiGridLayoutGroupComp.startCorner);
 						}
 						if (luiGridLayoutGroupComp.startAxis != null)
 						{
-							this.WriteComma();
-							this.WriteField("startAxis", luiGridLayoutGroupComp.startAxis);
+							this.WriteFieldComma("startAxis", luiGridLayoutGroupComp.startAxis);
 						}
 						if (luiGridLayoutGroupComp.childAlignment != null)
 						{
-							this.WriteComma();
-							this.WriteField("childAlignment", luiGridLayoutGroupComp.childAlignment);
+							this.WriteFieldComma("childAlignment", luiGridLayoutGroupComp.childAlignment);
 						}
 						if (luiGridLayoutGroupComp.constraint != null)
 						{
-							this.WriteComma();
-							this.WriteField("constraint", luiGridLayoutGroupComp.constraint);
+							this.WriteFieldComma("constraint", luiGridLayoutGroupComp.constraint);
 						}
 						if (luiGridLayoutGroupComp.constraintCount != 0)
 						{
-							this.WriteComma();
-							this.WriteField("constraintCount", luiGridLayoutGroupComp.constraintCount);
+							this.WriteFieldComma("constraintCount", luiGridLayoutGroupComp.constraintCount);
 						}
 						if (luiGridLayoutGroupComp.padding != null)
 						{
-							this.WriteComma();
-							this.WriteField("padding", luiGridLayoutGroupComp.padding);
+							this.WriteFieldComma("padding", luiGridLayoutGroupComp.padding);
 						}
 						break;
 					}
 					case LuiCompType.ContentSizeFitter:
 					{
-						LuiContentSizeFitterComp luiContentSizeFitterComp = luiComponent as LuiContentSizeFitterComp;
-						num2++;
+						LuiContentSizeFitterComp luiContentSizeFitterComp = luiCompBase as LuiContentSizeFitterComp;
 						if (luiContentSizeFitterComp.horizontalFit != null)
 						{
-							this.WriteComma();
-							this.WriteField("horizontalFit", luiContentSizeFitterComp.horizontalFit);
+							this.WriteFieldComma("horizontalFit", luiContentSizeFitterComp.horizontalFit);
 						}
 						if (luiContentSizeFitterComp.verticalFit != null)
 						{
-							this.WriteComma();
-							this.WriteField("verticalFit", luiContentSizeFitterComp.verticalFit);
+							this.WriteFieldComma("verticalFit", luiContentSizeFitterComp.verticalFit);
 						}
 						break;
 					}
 					case LuiCompType.LayoutElement:
 					{
-						LuiLayoutElementComp luiLayoutElementComp = luiComponent as LuiLayoutElementComp;
-						num2++;
+						LuiLayoutElementComp luiLayoutElementComp = luiCompBase as LuiLayoutElementComp;
 						if (luiLayoutElementComp.preferredWidth != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("preferredWidth", luiLayoutElementComp.preferredWidth);
+							this.WriteFieldComma("preferredWidth", luiLayoutElementComp.preferredWidth);
 						}
 						if (luiLayoutElementComp.preferredHeight != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("preferredHeight", luiLayoutElementComp.preferredHeight);
+							this.WriteFieldComma("preferredHeight", luiLayoutElementComp.preferredHeight);
 						}
 						if (luiLayoutElementComp.minWidth != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("minWidth", luiLayoutElementComp.minWidth);
+							this.WriteFieldComma("minWidth", luiLayoutElementComp.minWidth);
 						}
 						if (luiLayoutElementComp.minHeight != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("minHeight", luiLayoutElementComp.minHeight);
+							this.WriteFieldComma("minHeight", luiLayoutElementComp.minHeight);
 						}
 						if (luiLayoutElementComp.flexibleWidth != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("flexibleWidth", luiLayoutElementComp.flexibleWidth);
+							this.WriteFieldComma("flexibleWidth", luiLayoutElementComp.flexibleWidth);
 						}
 						if (luiLayoutElementComp.flexibleHeight != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("flexibleHeight", luiLayoutElementComp.flexibleHeight);
+							this.WriteFieldComma("flexibleHeight", luiLayoutElementComp.flexibleHeight);
 						}
 						if (luiLayoutElementComp.ignoreLayout)
 						{
-							this.WriteComma();
-							this.WriteField("ignoreLayout", value: true);
+							this.WriteFieldComma("ignoreLayout", value: true);
 						}
 						break;
 					}
 					case LuiCompType.Draggable:
 					{
-						LuiDraggableComp luiDraggableComp = luiComponent as LuiDraggableComp;
-						num2++;
+						LuiDraggableComp luiDraggableComp = luiCompBase as LuiDraggableComp;
 						if (luiDraggableComp.limitToParent)
 						{
-							this.WriteComma();
-							this.WriteField("limitToParent", value: true);
+							this.WriteFieldComma("limitToParent", value: true);
 						}
 						if (luiDraggableComp.maxDistance > 0f)
 						{
-							this.WriteComma();
-							this.WriteField("maxDistance", luiDraggableComp.maxDistance);
+							this.WriteFieldComma("maxDistance", luiDraggableComp.maxDistance);
 						}
 						if (luiDraggableComp.allowSwapping)
 						{
-							this.WriteComma();
-							this.WriteField("allowSwapping", value: true);
+							this.WriteFieldComma("allowSwapping", value: true);
 						}
 						if (!luiDraggableComp.dropAnywhere)
 						{
-							this.WriteComma();
-							this.WriteField("dropAnywhere", value: false);
+							this.WriteFieldComma("dropAnywhere", value: false);
 						}
 						if (luiDraggableComp.dragAlpha != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("dragAlpha", luiDraggableComp.dragAlpha);
+							this.WriteFieldComma("dragAlpha", luiDraggableComp.dragAlpha);
 						}
 						if (luiDraggableComp.parentLimitIndex != -1)
 						{
-							this.WriteComma();
-							this.WriteField("parentLimitIndex", luiDraggableComp.parentLimitIndex);
+							this.WriteFieldComma("parentLimitIndex", luiDraggableComp.parentLimitIndex);
 						}
 						if (luiDraggableComp.filter != null)
 						{
-							this.WriteComma();
-							this.WriteField("filter", luiDraggableComp.filter);
+							this.WriteFieldComma("filter", luiDraggableComp.filter);
 						}
 						if (luiDraggableComp.parentPadding != default(Vector2))
 						{
-							this.WriteComma();
-							this.WriteField("parentPadding", luiDraggableComp.parentPadding);
+							this.WriteFieldComma("parentPadding", luiDraggableComp.parentPadding);
 						}
 						if (luiDraggableComp.anchorOffset != default(Vector2))
 						{
-							this.WriteComma();
-							this.WriteField("anchorOffset", luiDraggableComp.anchorOffset);
+							this.WriteFieldComma("anchorOffset", luiDraggableComp.anchorOffset);
 						}
 						if (luiDraggableComp.keepOnTop)
 						{
-							this.WriteComma();
-							this.WriteField("keepOnTop", luiDraggableComp.keepOnTop);
+							this.WriteFieldComma("keepOnTop", luiDraggableComp.keepOnTop);
 						}
 						if (luiDraggableComp.positionRPC != null)
 						{
-							this.WriteComma();
-							this.WriteField("positionRPC", luiDraggableComp.positionRPC);
+							this.WriteFieldComma("positionRPC", luiDraggableComp.positionRPC);
 						}
 						if (luiDraggableComp.moveToAnchor)
 						{
-							this.WriteComma();
-							this.WriteField("moveToAnchor", luiDraggableComp.moveToAnchor);
+							this.WriteFieldComma("moveToAnchor", luiDraggableComp.moveToAnchor);
 						}
 						if (luiDraggableComp.rebuildAnchor)
 						{
-							this.WriteComma();
-							this.WriteField("rebuildAnchor", luiDraggableComp.rebuildAnchor);
+							this.WriteFieldComma("rebuildAnchor", luiDraggableComp.rebuildAnchor);
 						}
 						break;
 					}
 					case LuiCompType.Slot:
 					{
-						LuiSlotComp luiSlotComp = luiComponent as LuiSlotComp;
-						num2++;
+						LuiSlotComp luiSlotComp = luiCompBase as LuiSlotComp;
 						if (luiSlotComp.filter != null)
 						{
-							this.WriteComma();
-							this.WriteField("filter", luiSlotComp.filter);
+							this.WriteFieldComma("filter", luiSlotComp.filter);
 						}
 						break;
 					}
-					case LuiCompType.NeedsKeyboard:
-						num2++;
-						break;
 					case LuiCompType.ScrollView:
 					{
-						LuiScrollComp luiScrollComp = luiComponent as LuiScrollComp;
-						num2++;
+						LuiScrollComp luiScrollComp = luiCompBase as LuiScrollComp;
 						bool flag = luiScrollComp.anchor != LuiPosition.Full;
 						bool flag2 = luiScrollComp.offset != LuiOffset.None;
 						if ((flag | flag2) || luiScrollComp.pivot != LUI.defaultPivot)
@@ -852,63 +757,60 @@ public struct LuiBuilderInstance : IDisposable
 							if (flag)
 							{
 								this.WriteField("anchormin", luiScrollComp.anchor.anchorMin);
-								this.WriteComma();
-								this.WriteField("anchormax", luiScrollComp.anchor.anchorMax);
+								this.WriteFieldComma("anchormax", luiScrollComp.anchor.anchorMax);
 							}
 							if (flag2)
 							{
 								if (flag)
 								{
-									this.WriteComma();
+									this.WriteFieldComma("offsetmin", luiScrollComp.offset.offsetMin);
 								}
-								this.WriteField("offsetmin", luiScrollComp.offset.offsetMin);
-								this.WriteComma();
-								this.WriteField("offsetmax", luiScrollComp.offset.offsetMax);
+								else
+								{
+									this.WriteField("offsetmin", luiScrollComp.offset.offsetMin);
+								}
+								this.WriteFieldComma("offsetmax", luiScrollComp.offset.offsetMax);
 							}
 							if (luiScrollComp.pivot != LUI.defaultPivot)
 							{
 								if (flag | flag2)
 								{
-									this.WriteComma();
+									this.WriteFieldComma("pivot", luiScrollComp.pivot);
 								}
-								this.WriteField("pivot", luiScrollComp.pivot);
+								else
+								{
+									this.WriteField("pivot", luiScrollComp.pivot);
+								}
 							}
 							this.WriteEndObject();
 						}
 						if (luiScrollComp.horizontal)
 						{
-							this.WriteComma();
-							this.WriteField("horizontal", value: true);
+							this.WriteFieldComma("horizontal", value: true);
 						}
 						if (luiScrollComp.vertical)
 						{
-							this.WriteComma();
-							this.WriteField("vertical", value: true);
+							this.WriteFieldComma("vertical", value: true);
 						}
 						if (luiScrollComp.movementType != null)
 						{
-							this.WriteComma();
-							this.WriteField("movementType", luiScrollComp.movementType);
+							this.WriteFieldComma("movementType", luiScrollComp.movementType);
 						}
 						if (luiScrollComp.elasticity != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("elasticity", luiScrollComp.elasticity);
+							this.WriteFieldComma("elasticity", luiScrollComp.elasticity);
 						}
 						if (luiScrollComp.inertia)
 						{
-							this.WriteComma();
-							this.WriteField("inertia", value: true);
+							this.WriteFieldComma("inertia", value: true);
 						}
 						if (luiScrollComp.decelerationRate != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("decelerationRate", luiScrollComp.decelerationRate);
+							this.WriteFieldComma("decelerationRate", luiScrollComp.decelerationRate);
 						}
 						if (luiScrollComp.scrollSensitivity != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("scrollSensitivity", luiScrollComp.scrollSensitivity);
+							this.WriteFieldComma("scrollSensitivity", luiScrollComp.scrollSensitivity);
 						}
 						if (luiScrollComp.horizontal && !luiScrollComp.horizontalScrollbar.disabled)
 						{
@@ -926,92 +828,76 @@ public struct LuiBuilderInstance : IDisposable
 						}
 						if (luiScrollComp.horizontalNormalizedPosition != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("horizontalNormalizedPosition", luiScrollComp.horizontalNormalizedPosition);
+							this.WriteFieldComma("horizontalNormalizedPosition", luiScrollComp.horizontalNormalizedPosition);
 						}
 						if (luiScrollComp.verticalNormalizedPosition != 0f)
 						{
-							this.WriteComma();
-							this.WriteField("verticalNormalizedPosition", luiScrollComp.verticalNormalizedPosition);
+							this.WriteFieldComma("verticalNormalizedPosition", luiScrollComp.verticalNormalizedPosition);
 						}
 						break;
 					}
 					case LuiCompType.CanvasGroup:
 					{
-						LuiCanvasGroupComp luiCanvasGroupComp = luiComponent as LuiCanvasGroupComp;
-						num2++;
+						LuiCanvasGroupComp luiCanvasGroupComp = luiCompBase as LuiCanvasGroupComp;
 						if (luiCanvasGroupComp.alpha != -1f)
 						{
-							this.WriteComma();
-							this.WriteField("alpha", luiCanvasGroupComp.alpha);
+							this.WriteFieldComma("alpha", luiCanvasGroupComp.alpha);
 						}
 						if (!luiCanvasGroupComp.blocksRaycasts)
 						{
-							this.WriteComma();
-							this.WriteField("blocksRaycasts", value: false);
+							this.WriteFieldComma("blocksRaycasts", value: false);
 						}
 						if (!luiCanvasGroupComp.interactable)
 						{
-							this.WriteComma();
-							this.WriteField("interactable", value: false);
+							this.WriteFieldComma("interactable", value: false);
 						}
 						if (luiCanvasGroupComp.fade != LUI.defaultFade)
 						{
-							this.WriteComma();
-							this.WriteField("fade", luiCanvasGroupComp.fade);
+							this.WriteFieldComma("fade", luiCanvasGroupComp.fade);
 						}
 						break;
 					}
 					case LuiCompType.Mask:
 					{
-						LuiMaskComp luiMaskComp = luiComponent as LuiMaskComp;
-						num2++;
+						LuiMaskComp luiMaskComp = luiCompBase as LuiMaskComp;
 						if (!luiMaskComp.showMaskGraphic)
 						{
-							this.WriteComma();
-							this.WriteField("showMaskGraphic", value: false);
+							this.WriteFieldComma("showMaskGraphic", value: false);
 						}
 						break;
 					}
 					case LuiCompType.Tooltip:
 					{
-						LuiTooltipComp luiTooltipComp = luiComponent as LuiTooltipComp;
-						num2++;
+						LuiTooltipComp luiTooltipComp = luiCompBase as LuiTooltipComp;
 						if (luiTooltipComp.tooltipType != null)
 						{
-							this.WriteComma();
-							this.WriteField("tooltipType", luiTooltipComp.tooltipType);
+							this.WriteFieldComma("tooltipType", luiTooltipComp.tooltipType);
 						}
 						if (luiTooltipComp.offset != null)
 						{
-							this.WriteComma();
-							this.WriteField("offset", luiTooltipComp.offset);
+							this.WriteFieldComma("offset", luiTooltipComp.offset);
 						}
 						if (luiTooltipComp.useCentre)
 						{
-							this.WriteComma();
-							this.WriteField("useCentre", value: true);
+							this.WriteFieldComma("useCentre", value: true);
 						}
 						if (luiTooltipComp.text != null)
 						{
-							this.WriteComma();
-							this.WriteField("text", luiTooltipComp.text);
+							this.WriteFieldComma("text", luiTooltipComp.text);
 						}
 						if (luiTooltipComp.delay != null)
 						{
-							this.WriteComma();
-							this.WriteField("delay", luiTooltipComp.delay);
+							this.WriteFieldComma("delay", luiTooltipComp.delay);
 						}
 						if (luiTooltipComp.position != null)
 						{
-							this.WriteComma();
-							this.WriteField("position", luiTooltipComp.position);
+							this.WriteFieldComma("position", luiTooltipComp.position);
 						}
 						break;
 					}
 					}
 					this.WriteEndObject();
-					if (num2 < count2)
+					if (j < count2 - 1)
 					{
 						this.WriteComma();
 					}
@@ -1019,7 +905,7 @@ public struct LuiBuilderInstance : IDisposable
 				this.WriteEndArray();
 			}
 			this.WriteEndObject();
-			if (num < count)
+			if (i < count - 1)
 			{
 				this.WriteComma();
 			}
@@ -1032,103 +918,77 @@ public struct LuiBuilderInstance : IDisposable
 		this.WriteField("enabled", !scroll.disabled);
 		if (scroll.invert)
 		{
-			this.WriteComma();
-			this.WriteField("invert", value: true);
+			this.WriteFieldComma("invert", value: true);
 		}
 		if (scroll.autoHide)
 		{
-			this.WriteComma();
-			this.WriteField("autoHide", value: true);
+			this.WriteFieldComma("autoHide", value: true);
 		}
 		if (scroll.handleSprite != null)
 		{
-			this.WriteComma();
-			this.WriteField("handleSprite", scroll.handleSprite);
+			this.WriteFieldComma("handleSprite", scroll.handleSprite);
 		}
 		if (scroll.size != 0f)
 		{
-			this.WriteComma();
-			this.WriteField("size", scroll.size);
+			this.WriteFieldComma("size", scroll.size);
 		}
 		if (scroll.handleColor != null)
 		{
-			this.WriteComma();
-			this.WriteField("handleColor", scroll.handleColor);
+			this.WriteFieldComma("handleColor", scroll.handleColor);
 		}
 		if (scroll.highlightColor != null)
 		{
-			this.WriteComma();
-			this.WriteField("highlightColor", scroll.highlightColor);
+			this.WriteFieldComma("highlightColor", scroll.highlightColor);
 		}
 		if (scroll.pressedColor != null)
 		{
-			this.WriteComma();
-			this.WriteField("pressedColor", scroll.pressedColor);
+			this.WriteFieldComma("pressedColor", scroll.pressedColor);
 		}
 		if (scroll.trackSprite != null)
 		{
-			this.WriteComma();
-			this.WriteField("trackSprite", scroll.trackSprite);
+			this.WriteFieldComma("trackSprite", scroll.trackSprite);
 		}
 		if (scroll.trackColor != null)
 		{
-			this.WriteComma();
-			this.WriteField("trackColor", scroll.trackColor);
+			this.WriteFieldComma("trackColor", scroll.trackColor);
+		}
+	}
+
+	internal unsafe int WriteUtf8To(Span<byte> destination)
+	{
+		if (_charIndex == 0)
+		{
+			return 0;
+		}
+		fixed (char* charBuffer = _charBuffer)
+		{
+			fixed (byte* bytes = destination)
+			{
+				return Encoding.UTF8.GetBytes(charBuffer, _charIndex, bytes, destination.Length);
+			}
 		}
 	}
 
 	public string GetJsonString()
 	{
-		byte[] mergedBytes = GetMergedBytes();
-		return Encoding.UTF8.GetString(mergedBytes);
+		return new string(_charBuffer, 0, _charIndex);
 	}
 
 	public byte[] GetMergedBytes()
 	{
-		Flush();
-		int num = 0;
-		for (int i = 0; i < _segmentCount; i++)
-		{
-			num += _segments[i].size;
-		}
-		byte[] array = new byte[num];
-		int num2 = 0;
-		for (int j = 0; j < _segmentCount; j++)
-		{
-			LUIBuilder.WriteArray writeArray = _segments[j];
-			writeArray.values.AsSpan(0, writeArray.size).CopyTo(array.AsSpan(num2));
-			num2 += writeArray.size;
-		}
+		byte[] array = new byte[Encoding.UTF8.GetByteCount(_charBuffer, 0, _charIndex)];
+		Encoding.UTF8.GetBytes(_charBuffer, 0, _charIndex, array, 0);
 		return array;
-	}
-
-	public void Flush()
-	{
-		if (_charIndex != 0)
-		{
-			byte[] array = ArrayPool<byte>.Shared.Rent(4096);
-			int bytes = Encoding.UTF8.GetBytes(_charBuffer, 0, _charIndex, array, 0);
-			if (_segmentCount == _segmentLimit)
-			{
-				_segmentLimit *= 2;
-				LUIBuilder.WriteArray[] array2 = ArrayPool<LUIBuilder.WriteArray>.Shared.Rent(_segmentLimit);
-				Array.Copy(_segments, array2, _segmentCount);
-				ArrayPool<LUIBuilder.WriteArray>.Shared.Return(_segments, clearArray: true);
-				_segments = array2;
-				_segmentCount = 0;
-			}
-			_segments[_segmentCount++] = new LUIBuilder.WriteArray(array, bytes);
-			_charIndex = 0;
-		}
 	}
 
 	public void Dispose()
 	{
-		_charIndex = 0;
-		for (int i = 0; i < _segmentCount; i++)
+		char[] charBuffer = _charBuffer;
+		if (charBuffer != null)
 		{
-			ArrayPool<byte>.Shared.Return(_segments[i].values);
+			_charBuffer = null;
+			_charIndex = 0;
+			ArrayPool<char>.Shared.Return(charBuffer);
 		}
-		ArrayPool<LUIBuilder.WriteArray>.Shared.Return(_segments, clearArray: true);
 	}
 }

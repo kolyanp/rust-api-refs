@@ -9,7 +9,7 @@ public class FlintStrikeWeapon : BaseProjectile
 
 	public RecoilProperties strikeRecoil;
 
-	public override RecoilProperties GetRecoil()
+	public override RecoilProperties GetRecoilStats()
 	{
 		return strikeRecoil;
 	}

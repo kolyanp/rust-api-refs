@@ -44,6 +44,8 @@ public class DecayEntity : BaseCombatEntity
 	[Header("Demolish")]
 	public bool canBeDemolished;
 
+	private float demolishWindowEnd;
+
 	[Tooltip("Always keep this entity visible to players outside the base.")]
 	public bool ignoreRoomOcclusion;
 
@@ -62,6 +64,8 @@ public class DecayEntity : BaseCombatEntity
 
 	public float upkeepTimer;
 
+	private EntityBuildCost upkeepAddedToBuilding;
+
 	public Upkeep upkeep;
 
 	[ServerVar(Help = "(Generated) When enabled, logs detailed debug output for building privilege (tool cupboard auth) checks during decay calculations")]
@@ -76,6 +80,8 @@ public class DecayEntity : BaseCombatEntity
 	public float decayVariance = 1f;
 
 	public virtual bool IsDemolishSupported => canBeDemolished;
+
+	public bool HasAddedUpkeepToBuilding => upkeepAddedToBuilding.Items != null;
 
 	public Upkeep Upkeep => upkeep;
 
@@ -228,17 +234,43 @@ public class DecayEntity : BaseCombatEntity
 
 	public void StopBeingDemolishable()
 	{
-		SetFlagLocal(Flags.Reserved2, b: false);
-		SendNetworkUpdate();
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
+		flagsUpdateScope.Set(Flags.Reserved2, b: false);
+	}
+
+	public float GetDemolishSecondsLeft()
+	{
+		if (!HasFlag(Flags.Reserved2))
+		{
+			return 0f;
+		}
+		return demolishWindowEnd - Time.time;
+	}
+
+	public void ContinueDemolishWindow(float secondsLeft)
+	{
+		if (secondsLeft > 0f)
+		{
+			StartBeingDemolishable(secondsLeft);
+			return;
+		}
+		CancelInvoke(StopBeingDemolishable);
+		StopBeingDemolishable();
 	}
 
 	public void StartBeingDemolishable()
+	{
+		StartBeingDemolishable(demolish_seconds);
+	}
+
+	private void StartBeingDemolishable(float duration)
 	{
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Reserved2, b: true);
 		}
-		Invoke(StopBeingDemolishable, demolish_seconds);
+		demolishWindowEnd = Time.time + duration;
+		Invoke(StopBeingDemolishable, duration);
 	}
 
 	public override void Save(SaveInfo info)
@@ -293,9 +325,43 @@ public class DecayEntity : BaseCombatEntity
 		if (isServer)
 		{
 			BuildingManager.server.Remove(this);
+			EnsureUpkeepCostRemoved();
 			buildingID = id;
 			BuildingManager.server.Add(this);
 			SendNetworkUpdate();
+		}
+	}
+
+	public void AddUpkeepCostTo(List<ItemAmount> cachedUpkeepCost)
+	{
+		if (!(upkeep == null))
+		{
+			if (upkeepAddedToBuilding.Items != null)
+			{
+				Debug.LogError((object)$"{this} added its upkeep cost to building {buildingID} twice without removing it! Handling it but please fix!");
+				RemoveUpkeepCostFrom(cachedUpkeepCost);
+			}
+			upkeepAddedToBuilding = BuildCost();
+			AddPreTaxUpkeepAmounts(cachedUpkeepCost, upkeepAddedToBuilding, 1f);
+		}
+	}
+
+	public void RemoveUpkeepCostFrom(List<ItemAmount> cachedUpkeepCost)
+	{
+		if (upkeepAddedToBuilding.Items != null)
+		{
+			AddPreTaxUpkeepAmounts(cachedUpkeepCost, upkeepAddedToBuilding, -1f);
+			upkeepAddedToBuilding = default;
+		}
+	}
+
+	private void EnsureUpkeepCostRemoved()
+	{
+		if (upkeepAddedToBuilding.Items != null)
+		{
+			Debug.LogError((object)$"{this} left building {buildingID} without removing its upkeep cost");
+			GetBuilding()?.RemoveUpkeepCost(this);
+			upkeepAddedToBuilding = default;
 		}
 	}
 
@@ -414,42 +480,57 @@ public class DecayEntity : BaseCombatEntity
 
 	public void CalculateUpkeepCostAmounts(List<ItemAmount> itemAmounts, float multiplier)
 	{
+		if (!(upkeep == null))
+		{
+			AddPreTaxUpkeepAmounts(itemAmounts, BuildCost(), multiplier);
+		}
+	}
+
+	private void AddPreTaxUpkeepAmounts(List<ItemAmount> itemAmounts, EntityBuildCost buildCost, float multiplier)
+	{
 		if (upkeep == null)
 		{
 			return;
 		}
 		float num = upkeep.upkeepMultiplier * multiplier;
-		if (num == 0f)
+		if (num == 0f || buildCost.Items == null)
 		{
 			return;
 		}
-		EntityBuildCost entityBuildCost = BuildCost();
-		if (entityBuildCost.Items == null)
+		foreach (ItemAmount item in buildCost.Items)
 		{
-			return;
-		}
-		foreach (ItemAmount item in entityBuildCost.Items)
-		{
-			if (item.itemDef.category != ItemCategory.Resources)
+			if (item.itemDef.category == ItemCategory.Resources)
 			{
-				continue;
-			}
-			float num2 = item.amount * num / (float)Mathf.Max(entityBuildCost.CraftAmount, 1);
-			bool flag = false;
-			foreach (ItemAmount itemAmount in itemAmounts)
-			{
-				if ((Object)(object)itemAmount.itemDef == (Object)(object)item.itemDef)
-				{
-					itemAmount.amount += num2;
-					flag = true;
-					break;
-				}
-			}
-			if (!flag)
-			{
-				itemAmounts.Add(new ItemAmount(item.itemDef, num2));
+				float amount = item.amount * num / (float)Mathf.Max(buildCost.CraftAmount, 1);
+				AddUpkeepAmount(itemAmounts, item.itemDef, amount);
 			}
 		}
+	}
+
+	public static void AddUpkeepAmount(List<ItemAmount> itemAmounts, ItemDefinition itemDef, float amount)
+	{
+		foreach (ItemAmount itemAmount in itemAmounts)
+		{
+			if ((Object)(object)itemAmount.itemDef == (Object)(object)itemDef)
+			{
+				itemAmount.amount += amount;
+				return;
+			}
+		}
+		itemAmounts.Add(new ItemAmount(itemDef, amount));
+	}
+
+	public Upkeep.Category GetUpkeepCategory()
+	{
+		if (upkeep != null && upkeep.highWall)
+		{
+			return Upkeep.Category.HighWall;
+		}
+		if (!(this is Door))
+		{
+			return Upkeep.Category.Building;
+		}
+		return Upkeep.Category.Door;
 	}
 
 	public override void ServerInit()
@@ -459,7 +540,9 @@ public class DecayEntity : BaseCombatEntity
 		decay = PrefabAttribute.server.Find<Decay>(prefabID);
 		decayPoints = PrefabAttribute.server.FindAll<DecayPoint>(prefabID);
 		upkeep = PrefabAttribute.server.Find<Upkeep>(prefabID);
+		GetBuilding()?.AddUpkeepCost(this);
 		BuildingManager.server.Add(this);
+		BuildingManager.server.StartDecayTick(this);
 		if (!Application.isLoadingSave)
 		{
 			BuildingManager.server.CheckMerge(this);
@@ -489,6 +572,8 @@ public class DecayEntity : BaseCombatEntity
 	{
 		base.DoServerDestroy();
 		BuildingManager.server.Remove(this);
+		BuildingManager.server.StopDecayTick(this);
+		EnsureUpkeepCostRemoved();
 		BuildingManager.server.CheckSplit(this);
 		QueueNavmeshRebuild();
 	}
@@ -604,6 +689,15 @@ public class DecayEntity : BaseCombatEntity
 		return decay.GetDecayDelay(this);
 	}
 
+	public float GetDecayTickOverride()
+	{
+		if (!(decay != null))
+		{
+			return 0f;
+		}
+		return decay.GetDecayTickOverride();
+	}
+
 	public virtual void DecayTick(bool force = false)
 	{
 		if (!(decay == null))
@@ -614,7 +708,7 @@ public class DecayEntity : BaseCombatEntity
 				num = ConVar.Decay.tick;
 			}
 			float num2 = Time.time - lastDecayTick;
-			if (!(num2 < num) || force)
+			if (!(num2 < num * 0.25f) || force)
 			{
 				OnDecay(decay, num2);
 			}

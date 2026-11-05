@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public abstract class UI_DevListBase : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected FlexColumnsElement flexColumns;
 
 	[SerializeField]
@@ -19,8 +19,8 @@ public abstract class UI_DevListBase : UI_Window
 	[SerializeField]
 	protected GameObjectRef itemButtonPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	protected RectTransform categoryButtonsParent;
 
 	[SerializeField]

@@ -20,13 +20,13 @@ public class LivestockSpecies : ScriptableObject
 	[Tooltip("The newborn male. Set to the same prefab as Child Female unless the sexes need different models this young.")]
 	public GameObjectRef ChildMale;
 
+	[Tooltip("What a perfectly kept adult of this species fetches at a livestock vendor, as a multiple of that vendor's reward amount. Cattle are the reference at 1.")]
 	[Header("Value")]
 	[Min(0f)]
-	[Tooltip("What a perfectly kept adult of this species fetches at a livestock vendor, as a multiple of that vendor's reward amount. Cattle are the reference at 1.")]
 	public float SaleValueScale = 1f;
 
-	[Header("Status Panel")]
 	[Tooltip("Shows this species' gene discs and inbred warning on the status panel whatever livestock.panelGenes says. A species left unticked follows the convar.")]
+	[Header("Status Panel")]
 	public bool AlwaysShowGenes;
 
 	[NonSerialized]

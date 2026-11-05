@@ -1,9 +1,11 @@
+using Development.Attributes;
 using Rust.UI;
 using TMPro;
 using UnityEngine;
 
 namespace Facepunch.UI;
 
+[ResetStaticFields]
 public class ESPPlayerInfo : MonoBehaviour
 {
 	public Vector3 WorldOffset;

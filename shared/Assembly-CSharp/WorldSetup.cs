@@ -386,6 +386,7 @@ public class WorldSetup : SingletonComponent<WorldSetup>
 					{
 						component2.Process(seed);
 					}
+					TerrainMeta.TopologyMap.RefreshHierarchy();
 					timing.End();
 				}
 			}
@@ -427,7 +428,7 @@ public class WorldSetup : SingletonComponent<WorldSetup>
 		yield return CoroutineEx.waitForEndOfFrame;
 		if ((BaseBoat.generate_paths && (Object)(object)TerrainMeta.Path != (Object)null) || ForceGenerateOceanPatrols)
 		{
-			TerrainMeta.Path.OceanPatrolFar = BaseBoat.GenerateOceanPatrolPath(200f);
+			TerrainMeta.Path.OceanPatrolFar = BaseBoat.LoadOrGenerateOceanPatrolPath();
 		}
 		else
 		{
@@ -448,6 +449,7 @@ public class WorldSetup : SingletonComponent<WorldSetup>
 			}
 			TerrainMargin.Create();
 		}
+		World.Serialization.ClearMaps();
 		finalizeTimer.End();
 		Timing cleaningTimer = Timing.Start("Cleaning Up");
 		UI_LoadingScreen.Update("CLEANING UP");

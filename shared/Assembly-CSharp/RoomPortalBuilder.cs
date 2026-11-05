@@ -4,51 +4,113 @@ using UnityEngine;
 
 public static class RoomPortalBuilder
 {
-	public struct PortalHost
+	public static bool AddHost(List<BlockFace> hostFaces, bool permanentlyOpen)
 	{
-		public BlockFace FaceA;
-
-		public BlockFace FaceB;
-
-		public bool PermanentlyOpen;
-
-		public BaseEntity Filler;
-
-		public bool FillerBlocksVision;
-	}
-
-	public static void ClearPortals(List<Portal> portals)
-	{
-		foreach (Portal portal2 in portals)
+		List<(BlockFace, BlockFace)> list = Pool.Get<List<(BlockFace, BlockFace)>>();
+		bool result = false;
+		try
 		{
-			portal2.RoomA?.Portals.Remove(portal2);
-			portal2.RoomB?.Portals.Remove(portal2);
-			Portal portal = portal2;
-			Pool.Free<Portal>(ref portal);
-		}
-		portals.Clear();
-	}
-
-	public static void Build(List<PortalHost> hosts, List<Portal> results)
-	{
-		foreach (PortalHost host in hosts)
-		{
-			Room room = host.FaceA?.Room;
-			Room room2 = host.FaceB?.Room;
-			if (room != null && room2 != null && room != room2)
+			GatherOpposingPairs(hostFaces, list);
+			foreach (var (blockFace, blockFace2) in list)
 			{
-				Portal portal = Pool.Get<Portal>();
+				if (blockFace.Portal == null && blockFace2.Portal == null)
+				{
+					Portal portal = Pool.Get<Portal>();
+					portal.FaceA = blockFace;
+					portal.FaceB = blockFace2;
+					portal.PermanentlyOpen = permanentlyOpen;
+					blockFace.Portal = portal;
+					blockFace2.Portal = portal;
+					Sync(portal);
+					result = true;
+				}
+			}
+			return result;
+		}
+		finally
+		{
+			Pool.FreeUnmanaged<(BlockFace, BlockFace)>(ref list);
+		}
+	}
+
+	public static void RemoveHost(List<BlockFace> hostFaces)
+	{
+		foreach (BlockFace hostFace in hostFaces)
+		{
+			if (hostFace.Portal != null)
+			{
+				Release(hostFace.Portal);
+			}
+		}
+	}
+
+	public static void Sync(IList<BlockFace> moved)
+	{
+		for (int i = 0; i < moved.Count; i++)
+		{
+			Portal portal = moved[i].Portal;
+			if (portal != null)
+			{
+				Sync(portal);
+			}
+		}
+	}
+
+	public static void Sync(Portal portal)
+	{
+		Room room = portal.FaceA.Room;
+		Room room2 = portal.FaceB.Room;
+		if (room == null || room2 == null || room == room2)
+		{
+			room = null;
+			room2 = null;
+		}
+		if (portal.RoomA != room || portal.RoomB != room2)
+		{
+			Detach(portal);
+			if (room != null)
+			{
 				portal.RoomA = room;
 				portal.RoomB = room2;
-				portal.FaceA = host.FaceA;
-				portal.FaceB = host.FaceB;
-				portal.PermanentlyOpen = host.PermanentlyOpen;
-				portal.Filler = host.Filler;
-				portal.FillerBlocksVision = host.FillerBlocksVision;
 				room.Portals.Add(portal);
 				room2.Portals.Add(portal);
-				results.Add(portal);
 			}
+		}
+	}
+
+	public static void SetFiller(List<BlockFace> hostFaces, BaseEntity filler, RoomVisionBlocker visionBlocker)
+	{
+		bool flag = visionBlocker != null;
+		bool flag2 = visionBlocker != null && visionBlocker.AlwaysClosed;
+		foreach (BlockFace hostFace in hostFaces)
+		{
+			Portal portal = hostFace.Portal;
+			if (portal != null && (!((Object)(object)portal.Filler == (Object)(object)filler) || portal.FillerBlocksVision != flag || portal.FillerAlwaysClosed != flag2))
+			{
+				portal.Filler = filler;
+				portal.FillerBlocksVision = flag;
+				portal.FillerAlwaysClosed = flag2;
+				RoomOcclusionManager.OnPortalChanged(portal);
+			}
+		}
+	}
+
+	public static void Release(Portal portal)
+	{
+		Detach(portal);
+		portal.FaceA.Portal = null;
+		portal.FaceB.Portal = null;
+		Pool.Free<Portal>(ref portal);
+	}
+
+	private static void Detach(Portal portal)
+	{
+		if (portal.RoomA != null)
+		{
+			portal.RoomA.Portals.Remove(portal);
+			portal.RoomB.Portals.Remove(portal);
+			portal.RoomA = null;
+			portal.RoomB = null;
 		}
 	}
 

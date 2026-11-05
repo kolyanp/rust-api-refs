@@ -16,6 +16,12 @@ public class LookatTooltip : MonoBehaviour
 
 	public Image icon;
 
+	public Image bindingGlyph;
+
+	public BindingPrompt moreOptionsHint;
+
+	public BindingPrompt bindingPrompt;
+
 	public Phrase moreOptionsDefaultPhrase;
 
 	public CanvasGroup canvasGroup;

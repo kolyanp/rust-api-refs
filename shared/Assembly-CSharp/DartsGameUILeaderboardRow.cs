@@ -13,8 +13,8 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 
 	public RustText TimeTaken;
 
-	[Tooltip("The image tinted with the colours below - light, dark, or current winner.")]
 	[Header("Row Styles")]
+	[Tooltip("The image tinted with the colours below - light, dark, or current winner.")]
 	public Image rowImage;
 
 	public Color lightColour = Color.white;
@@ -23,8 +23,8 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 
 	public Color currentWinnerColour = Color.yellow;
 
-	[Tooltip("Every text in here gets the normal colour, or the winner colour on the current winner row.")]
 	[Header("Text Colours")]
+	[Tooltip("Every text in here gets the normal colour, or the winner colour on the current winner row.")]
 	public List<RustText> rowTexts = new List<RustText>();
 
 	public Color normalTextColour = Color.white;

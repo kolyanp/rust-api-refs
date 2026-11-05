@@ -54,9 +54,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private float maxForwardSpeed = 1.5f;
 
-	[SerializeField]
 	[Space]
 	[Header("Head")]
+	[SerializeField]
 	private BatteringRamHead headPrefab;
 
 	[SerializeField]
@@ -73,8 +73,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private ImpactEffect[] impactEffects;
 
-	[Header("IK")]
 	[SerializeField]
+	[Header("IK")]
 	private Transform leftHandTarget;
 
 	[SerializeField]

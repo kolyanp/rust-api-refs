@@ -23,12 +23,12 @@ public class Global : ConsoleSystem
 {
 	private static int _developer;
 
-	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
+	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
-	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
+	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	public static bool forceUnloadBundles = true;
 
 	[ServerVar(Help = "(Generated) When true, the server network position is updated to match the debug camera world position while spectating; useful for testing position-dependent server logic from the spectator view")]
@@ -79,8 +79,8 @@ public class Global : ConsoleSystem
 	[ClientVar(Saved = true, Help = "Displays any emoji rendering errors in the console")]
 	public static bool showEmojiErrors = false;
 
-	[ClientVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
 	[ServerVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
+	[ClientVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
 	public static int developer
 	{
 		get
@@ -94,8 +94,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	[ServerVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
+	[ClientVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	public static int job_system_threads
 	{
 		get
@@ -146,8 +146,8 @@ public class Global : ConsoleSystem
 		ServerMgr.RestartServer(args.GetString(1, string.Empty), args.GetInt(0, 300));
 	}
 
-	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	[ClientVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
+	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	public static void quit(Arg args)
 	{
 		if (args != null && args.HasArgs())
@@ -177,8 +177,8 @@ public class Global : ConsoleSystem
 		ServerPerformance.DoReport();
 	}
 
-	[ServerVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	[ClientVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
+	[ServerVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	public static void objects(Arg args)
 	{
 		Object[] array = Object.FindObjectsByType<Object>((FindObjectsSortMode)0);
@@ -217,8 +217,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(text);
 	}
 
-	[ClientVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
 	[ServerVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
+	[ClientVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
 	public static void textures(Arg args)
 	{
 		Texture[] array = Object.FindObjectsByType<Texture>((FindObjectsSortMode)0);
@@ -246,8 +246,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(strValue);
 	}
 
-	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	[ClientVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
+	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	public static void queue(Arg args)
 	{
 		string text = "";
@@ -383,6 +383,7 @@ public class Global : ConsoleSystem
 		{
 			ply.ConsoleMessage("Can't go to wounded state right now.");
 		}
+		Pool.Free<HitInfo>(ref hitInfo);
 	}
 
 	[ServerVar(Help = "(Generated) Revives the calling player or a named target from the wounded state, restoring them to standing with a small amount of health")]
@@ -781,7 +782,7 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Teleports the calling admin to the nearest entity matching the given prefab short name, with an optional radius filter")]
+	[ServerVar(Help = "Teleport to the nearest entity matching the given prefab short name, with an optional radius filter")]
 	public static void teleportany(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -791,8 +792,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Teleport to the current closest entity matching the first argument name. Add second int argument to teleport to the nth closest entity (teleport2nearest horse 2 will teleport to the 3rd closest horse)")]
+	[ServerVar]
 	public static void teleport2nearest(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -882,25 +883,24 @@ public class Global : ConsoleSystem
 	{
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer basePlayer = ArgEx.Player(args);
 		if (Object.op_Implicit((Object)(object)basePlayer) && basePlayer.IsAlive())
 		{
-			Ray val = basePlayer.eyes.HeadRay();
+			Ray ray = basePlayer.eyes.HeadRay();
 			int num = args.GetInt(0, 1000);
-			RaycastHit val2 = default;
-			if (Physics.Raycast(val, ref val2, (float)num, 1218652417))
+			if (GamePhysics.TraceRealm(GamePhysics.Realm.Server, ray, 0f, out var hitInfo, num, 1218652417, (QueryTriggerInteraction)0))
 			{
-				basePlayer.Teleport(val2.point);
+				basePlayer.Teleport(hitInfo.point);
 			}
 			else
 			{
-				basePlayer.Teleport(val.origin + val.direction * (float)num);
+				basePlayer.Teleport(ray.origin + ray.direction * (float)num);
 			}
 		}
 	}
@@ -1089,7 +1089,7 @@ public class Global : ConsoleSystem
 		BasePlayer basePlayer = ArgEx.Player(arg);
 		if (!((Object)(object)basePlayer == (Object)null))
 		{
-			Vector3? val = MapHelper.StringToPosition(arg.GetString(0));
+			Nullable val = MapHelper.StringToPosition(arg.GetString(0));
 			if (!val.HasValue)
 			{
 				arg.ReplyWith("Invalid grid reference, should look like 'A1'");
@@ -1294,7 +1294,7 @@ public class Global : ConsoleSystem
 			arg.ReplyWith("You are not on a player boat");
 			return;
 		}
-		Vector3? val = MapHelper.StringToPosition(arg.GetString(0));
+		Nullable val = MapHelper.StringToPosition(arg.GetString(0));
 		if (!val.HasValue)
 		{
 			arg.ReplyWith("Invalid grid reference, should look like 'A1'");
@@ -1369,8 +1369,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
+	[ClientVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	public static void subscriptions(Arg arg)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -1572,8 +1572,8 @@ public class Global : ConsoleSystem
 		Pool.FreeUnmanaged<DroppedItem>(ref list);
 	}
 
-	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	[ClientVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
+	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	public static string printAllScenesInBuild(Arg args)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

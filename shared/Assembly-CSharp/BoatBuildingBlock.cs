@@ -33,8 +33,6 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 
 	public float ContributingHealth = 50f;
 
-	public Transform[] DismountPoints;
-
 	public float damageTaken;
 
 	public ParticleSystem[] CardinalSplashFx = new ParticleSystem[0];
@@ -47,6 +45,8 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 	private List<TriggerParent> parentTriggers;
 
 	private List<Transform> originalTriggerParents;
+
+	public PlayerBoatDismountPoint[] DismountPoints => prefabAttribute.FindAll<PlayerBoatDismountPoint>(prefabID);
 
 	public override bool AlsoVisCheckParent => true;
 

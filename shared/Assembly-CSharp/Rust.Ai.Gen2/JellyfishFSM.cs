@@ -18,15 +18,15 @@ public class JellyfishFSM : SwimmingNPCFSM
 		{
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 			SwimmingNPC swimmingNPC = default;
 			if (!((Component)Owner).TryGetComponent<SwimmingNPC>(ref swimmingNPC))
 			{
 				return EFSMStateStatus.Failure;
 			}
 			swimmingNPC.destination = ((Component)swimmingNPC).transform.position;
-			driftEndTime = TimeUntil.op_Implicit(Random.Range(driftDurationRange.x, driftDurationRange.y));
+			driftEndTime = TimeUntil.op_Implicit(Rng.Range(driftDurationRange.x, driftDurationRange.y));
 			return base.OnStateEnter(payload);
 		}
 
@@ -53,41 +53,17 @@ public class JellyfishFSM : SwimmingNPCFSM
 
 	public State_Deactivate deactivate = new State_Deactivate();
 
-	public State_Dead dead = new State_Dead();
-
-	private Trans_Triggerable_HitInfo DeathTrans;
-
-	public override void InitShared()
+	protected override AliveLayout BuildAlive(State_Nothing onNavmesh)
 	{
-		base.InitShared();
-		if (baseEntity.isServer)
+		State_Nothing state_Nothing = new State_Nothing
 		{
-			DeathTrans = new Trans_Triggerable_HitInfo();
-			State_Nothing state_Nothing = new State_Nothing();
-			state_Nothing.Name = "Root";
-			State_Nothing state_Nothing2 = new State_Nothing
-			{
-				Name = "Alive"
-			};
-			State_Nothing state_Nothing3 = new State_Nothing
-			{
-				Name = "Can drift"
-			};
-			State_Nothing state_Nothing4 = new State_Nothing
-			{
-				Name = "Spawning"
-			};
-			state_Nothing.AddChildren(state_Nothing2.AddTickTransition(dead, DeathTrans), dead);
-			state_Nothing2.AddChildren(state_Nothing4.AddTickTransition(drift, new Trans_AlwaysValid()), deactivate.AddTickTransition(drift, ~new Trans_NoPlayerConnectionsInRange()), state_Nothing3.AddTickTransition(deactivate, new Trans_NoPlayerConnectionsInRange()).AddChildren(drift.AddEndTransition(roamWater), roamWater.AddEndTransition(drift)));
-			RegisterDebugMoveTo(state_Nothing2);
-			SetState(state_Nothing4);
-			SetFsmActive(newActive: true);
-		}
-	}
-
-	public override bool OnDied(HitInfo hitInfo)
-	{
-		DeathTrans.Trigger(hitInfo);
-		return false;
+			Name = "Can drift"
+		};
+		onNavmesh.AddChildren(deactivate.AddTickTransition(drift, ~new Trans_NoPlayerConnectionsInRange()), state_Nothing.AddTickTransition(deactivate, new Trans_NoPlayerConnectionsInRange()).AddChildren(drift.AddEndTransition(roamWater), roamWater.AddEndTransition(drift)));
+		return new AliveLayout
+		{
+			entry = drift,
+			idle = drift
+		};
 	}
 }

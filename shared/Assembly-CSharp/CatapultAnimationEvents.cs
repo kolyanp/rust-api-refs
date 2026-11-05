@@ -4,10 +4,12 @@ public class CatapultAnimationEvents : FacepunchBehaviour
 
 	public SoundDefinition reloadClickSoundDef;
 
+	[UnityEvent]
 	public void PlayReloadClick()
 	{
 	}
 
+	[UnityEvent]
 	public void PlaySound(SoundDefinition def)
 	{
 	}

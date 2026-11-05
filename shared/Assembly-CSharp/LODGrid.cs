@@ -11,4 +11,8 @@ public class LODGrid : SingletonComponent<LODGrid>, IClientComponent
 	public static float TreeMeshDistance = 500f;
 
 	public const float MinTimeBetweenRefreshes = 1f;
+
+	private const float SweepMoveThreshold = 0.25f;
+
+	private const float MinCellMilliseconds = 1f;
 }

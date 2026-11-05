@@ -28,6 +28,8 @@ public interface IItemContainerEntity : IIdealSlotEntity, ILootableEntity, IInve
 
 	bool DropFloats { get; }
 
+	bool ScatterDroppedItems { get; }
+
 	void DropItems(BaseEntity initiator = null);
 
 	bool PlayerOpenLoot(BasePlayer player, string panelToOpen = "", bool doPositionChecks = true);

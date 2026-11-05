@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Development.Attributes;
 using Facepunch;
 using Network;
 using ProtoBuf;
@@ -172,6 +173,7 @@ public class CopyPaste : ConsoleSystem
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static CopyPasteEntityInfo BuildCopyPaste(List<BaseEntity> entities, Vector3 originPos, Quaternion originRot, List<BaseEntity> savedOrdered = null)
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -389,14 +391,14 @@ public class CopyPaste : ConsoleSystem
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = new Vector3(0f, ComputeAutoSnapOffsetY(entities, options, Vector3.zero), 0f);
 		val += options.HeightOffset;
 		if (!(val != Vector3.zero))
@@ -409,6 +411,10 @@ public class CopyPaste : ConsoleSystem
 			{
 				Transform transform = ((Component)entity).transform;
 				transform.position += val;
+				if (entity is BuildingBlock block)
+				{
+					BuildingManager.server.RefreshBuildingBlock(block);
+				}
 			}
 			if (!(entity is IOEntity iOEntity))
 			{
@@ -512,26 +518,23 @@ public class CopyPaste : ConsoleSystem
 			item2.Entity.PostServerLoad();
 			item2.Entity.UpdateNetworkGroup();
 		}
+		SaveRestore.RestoreLoadedEntityLinks(list.Select((EntityWrapper x) => x.Entity).ToList(), serverStartup: false);
 		foreach (EntityWrapper item3 in list)
 		{
-			item3.Entity.RefreshEntityLinks();
-		}
-		foreach (EntityWrapper item4 in list)
-		{
-			if (item4.Entity is BuildingBlock buildingBlock)
+			if (item3.Entity is BuildingBlock buildingBlock)
 			{
 				buildingBlock.UpdateSkin(force: true);
 			}
 		}
-		foreach (EntityWrapper item5 in list)
+		foreach (EntityWrapper item4 in list)
 		{
-			if (item5.Entity is BaseMountable baseMountable)
+			if (item4.Entity is BaseMountable baseMountable)
 			{
 				baseMountable.UpdateMountFlags();
 			}
 			if (options.AutoAuth)
 			{
-				Admin.SetUserAuthorized(item5.Entity, admin, state: true);
+				Admin.SetUserAuthorized(item4.Entity, admin, state: true);
 			}
 		}
 		return (from x in list
@@ -643,6 +646,7 @@ public class CopyPaste : ConsoleSystem
 		Pool.FreeUnmanaged<BaseEntity>(ref list);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public static void GetEntitiesInBounds(Bounds bounds, List<BaseEntity> entityList)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)

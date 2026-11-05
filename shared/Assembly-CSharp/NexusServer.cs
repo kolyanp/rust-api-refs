@@ -987,8 +987,8 @@ public static class NexusServer
 			int valueOrDefault = (World.Config?.JsonString?.GetHashCode()).GetValueOrDefault();
 			string key = string.Format("{0}##{1}##{2}##{3}##{4}##{5}##{6}##{7}##{8}", new object[9]
 			{
-				2635,
-				289,
+				2636,
+				290,
 				World.Name,
 				World.Size,
 				World.Seed,
@@ -1021,7 +1021,7 @@ public static class NexusServer
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
-			if (packet.protocol != 289)
+			if (packet.protocol != 290)
 			{
 				Debug.LogWarning((object)"Received a nexus message with wrong protocol, ignoring");
 				return;
@@ -1066,7 +1066,7 @@ public static class NexusServer
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		Packet val = Pool.Get<Packet>();
-		val.protocol = 289u;
+		val.protocol = 290u;
 		val.sourceZone = ZoneClient.Zone.ZoneId;
 		val.request = request;
 		return SendPacket(id, val, toZoneKey, ttl);
@@ -1077,7 +1077,7 @@ public static class NexusServer
 		try
 		{
 			Packet val = Pool.Get<Packet>();
-			val.protocol = 289u;
+			val.protocol = 290u;
 			val.sourceZone = ZoneClient.Zone.ZoneId;
 			val.response = response;
 			await SendPacket(Uuid.Generate(), val, toZoneKey, ttl);
@@ -1954,7 +1954,7 @@ public static class NexusServer
 		try
 		{
 			_database = new NexusDB();
-			_database.Open($"{ConVar.Server.rootFolder}/nexus.{289}.db");
+			_database.Open($"{ConVar.Server.rootFolder}/nexus.{290}.db");
 			_database.Initialize();
 		}
 		catch (Exception ex)

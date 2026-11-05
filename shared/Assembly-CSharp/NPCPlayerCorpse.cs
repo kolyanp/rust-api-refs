@@ -28,6 +28,12 @@ public class NPCPlayerCorpse : PlayerCorpse
 		lootEnabled = true;
 	}
 
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		EnableLooting();
+	}
+
 	protected override bool CanLootContainer(ItemContainer c, int index)
 	{
 		if (index == 1 || index == 2)

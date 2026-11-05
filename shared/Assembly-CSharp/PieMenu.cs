@@ -100,7 +100,21 @@ public class PieMenu : UIBehaviour
 
 	public RustText arrowRightText;
 
+	public GameObject arrowLeftIcon;
+
+	public GameObject arrowRightIcon;
+
+	public Image arrowLeftGlyph;
+
+	public Image arrowRightGlyph;
+
 	public UIEscapeCapture escapeCapture;
+
+	public BindingPrompt chooseHint;
+
+	public BindingPrompt navigateHint;
+
+	public BindingPrompt cancelHint;
 
 	public float sliceGaps = 10f;
 

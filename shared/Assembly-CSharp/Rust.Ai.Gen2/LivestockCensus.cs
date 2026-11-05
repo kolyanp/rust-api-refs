@@ -9,8 +9,7 @@ public static class LivestockCensus
 {
 	public enum DeathCause
 	{
-		OldAge,
-		Neglect,
+		Crowding,
 		Killed,
 		Other,
 		Count
@@ -28,7 +27,7 @@ public static class LivestockCensus
 
 		public int TroughItemsEaten;
 
-		public readonly int[] Deaths = new int[4];
+		public readonly int[] Deaths = new int[3];
 
 		public void Clear()
 		{
@@ -76,9 +75,21 @@ public static class LivestockCensus
 
 		public float MinPersonalSpace;
 
-		public float MeanHerdLoadTarget;
+		public float MeanGrass;
+
+		public float MinGrass;
+
+		public float MeanSun;
+
+		public float MinSun;
 
 		public float MeanPackingTarget;
+
+		public float MeanFloorPerHead;
+
+		public int InAField;
+
+		public int InAPen;
 
 		public float MeanContentment;
 
@@ -92,6 +103,8 @@ public static class LivestockCensus
 
 		public int Sleeping;
 
+		public int Starved;
+
 		public float MeanGrazeShare;
 
 		public float MeanRestShare;
@@ -101,7 +114,7 @@ public static class LivestockCensus
 		public Vector3 Centroid;
 	}
 
-	private static readonly int[] deaths = new int[4];
+	private static readonly int[] deaths = new int[3];
 
 	private static readonly List<AreaTally> areas = new List<AreaTally>();
 
@@ -159,11 +172,7 @@ public static class LivestockCensus
 				}
 			}
 		}
-		if (areas.Count >= 2)
-		{
-			return num;
-		}
-		return float.MaxValue;
+		return num;
 	}
 
 	public static int BirthsIn(int area)
@@ -270,11 +279,11 @@ public static class LivestockCensus
 	{
 		if (info == null)
 		{
-			return DeathCause.OldAge;
+			return DeathCause.Other;
 		}
 		if (info.damageTypes != null && info.damageTypes.Has(DamageType.Hunger) && (Object)(object)info.Initiator == (Object)null)
 		{
-			return DeathCause.Neglect;
+			return DeathCause.Crowding;
 		}
 		if (!((Object)(object)info.InitiatorPlayer != (Object)null))
 		{
@@ -329,22 +338,24 @@ public static class LivestockCensus
 
 	private static Snapshot SampleLiving(List<LivestockAnimal> sampled)
 	{
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0361: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0364: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0369: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0384: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0460: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0463: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0468: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0483: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0489: Unknown result type (might be due to invalid IL or missing references)
 		Snapshot result = new Snapshot
 		{
 			MinFullness = 1f,
 			MinHydration = 1f,
 			MinPersonalSpace = 1f,
+			MinGrass = 1f,
+			MinSun = 1f,
 			MinContentment = 1f,
 			MinCondition = 1f
 		};
@@ -353,6 +364,8 @@ public static class LivestockCensus
 			result.MinFullness = 0f;
 			result.MinHydration = 0f;
 			result.MinPersonalSpace = 0f;
+			result.MinGrass = 0f;
+			result.MinSun = 0f;
 			result.MinContentment = 0f;
 			result.MinCondition = 0f;
 			return result;
@@ -401,16 +414,30 @@ public static class LivestockCensus
 			float needValue = item.Fullness.NeedValue;
 			float needValue2 = item.Hydration.NeedValue;
 			float needValue3 = item.PersonalSpace.NeedValue;
+			float needValue4 = item.Grass.NeedValue;
+			float needValue5 = item.Sun.NeedValue;
 			float contentment = item.Contentment;
 			result.MeanFullness += needValue;
 			result.MeanHydration += needValue2;
 			result.MeanPersonalSpace += needValue3;
+			result.MeanGrass += needValue4;
+			result.MeanSun += needValue5;
 			result.MeanContentment += contentment;
-			result.MeanHerdLoadTarget += item.LastHerdLoadTarget;
-			result.MeanPackingTarget += item.LastPackingTarget;
+			result.MeanPackingTarget += item.RoomTarget;
+			if (item.StandsInAField)
+			{
+				result.InAField++;
+			}
+			if (item.StandsInAPen)
+			{
+				result.InAPen++;
+				result.MeanFloorPerHead += item.FloorPerHead;
+			}
 			result.MinFullness = Mathf.Min(result.MinFullness, needValue);
 			result.MinHydration = Mathf.Min(result.MinHydration, needValue2);
 			result.MinPersonalSpace = Mathf.Min(result.MinPersonalSpace, needValue3);
+			result.MinGrass = Mathf.Min(result.MinGrass, needValue4);
+			result.MinSun = Mathf.Min(result.MinSun, needValue5);
 			result.MinContentment = Mathf.Min(result.MinContentment, contentment);
 			result.MeanCondition += item.Condition;
 			result.MinCondition = Mathf.Min(result.MinCondition, item.Condition);
@@ -418,9 +445,13 @@ public static class LivestockCensus
 			{
 				result.BreedingPaused++;
 			}
-			if (item.IsSleeping())
+			if (item.IsAsleep)
 			{
 				result.Sleeping++;
+			}
+			if (item.IsStarved)
+			{
+				result.Starved++;
 			}
 			result.MeanGrazeShare += item.ShareOfDay(LivestockAnimal.DayActivity.Grazing);
 			result.MeanRestShare += item.ShareOfDay(LivestockAnimal.DayActivity.Resting);
@@ -429,10 +460,12 @@ public static class LivestockCensus
 		result.MeanFullness /= count;
 		result.MeanHydration /= count;
 		result.MeanPersonalSpace /= count;
+		result.MeanGrass /= count;
+		result.MeanSun /= count;
 		result.MeanContentment /= count;
 		result.MeanCondition /= count;
-		result.MeanHerdLoadTarget /= count;
 		result.MeanPackingTarget /= count;
+		result.MeanFloorPerHead = ((result.InAPen > 0) ? (result.MeanFloorPerHead / (float)result.InAPen) : 0f);
 		result.MeanGrazeShare /= count;
 		result.MeanRestShare /= count;
 		result.Centroid = val / (float)count;

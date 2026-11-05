@@ -46,11 +46,11 @@ public class GameModeObjectToggle : BaseMonoBehaviour
 		{
 			return defaultState;
 		}
-		if (tagsToDisable.Length != 0 && (newGameMode.HasAnyGameModeTag(tagsToDisable) || tagsToDisable.Contains("*")))
+		if (tagsToDisable.Length != 0 && (newGameMode.HasAnyGameModeTag(tagsToDisable) || Enumerable.Contains(tagsToDisable, "*")))
 		{
 			return false;
 		}
-		if (gameModeTags.Length != 0 && (newGameMode.HasAnyGameModeTag(gameModeTags) || gameModeTags.Contains("*")))
+		if (gameModeTags.Length != 0 && (newGameMode.HasAnyGameModeTag(gameModeTags) || Enumerable.Contains(gameModeTags, "*")))
 		{
 			return true;
 		}

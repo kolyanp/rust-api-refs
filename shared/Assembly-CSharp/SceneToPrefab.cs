@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class SceneToPrefab : MonoBehaviour, IEditorComponent
 {
-	public bool flattenHierarchy;
-
 	public bool autoLowerTerrainInHoles;
 
 	public GameObject outputPrefab;

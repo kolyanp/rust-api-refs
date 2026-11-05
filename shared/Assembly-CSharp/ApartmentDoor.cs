@@ -22,6 +22,8 @@ public class ApartmentDoor : Door
 
 	public static readonly Phrase Phrase_BreakInAlreadyAuthed = new Phrase("apartment_breakin_already_authed", "You already have access to this room");
 
+	public static readonly Phrase Phrase_BreakInTeammate = new Phrase("apartment_breakin_teammate", "It would be rude to break into your teammate's room");
+
 	public static readonly Phrase Phrase_BreakInUnoccupied = new Phrase("apartment_breakin_unoccupied", "This room is unoccupied");
 
 	public static readonly Phrase Phrase_BreakInSuccess = new Phrase("apartment_breakin_success", "You broke into the room and have temporary access");
@@ -112,8 +114,8 @@ public class ApartmentDoor : Door
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void BreakIn(RPCMessage rpc)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -198,11 +200,16 @@ public class ApartmentDoor : Door
 			player.ShowToast(GameTip.Styles.Red_Normal, Phrase_BreakInAlreadyAuthed, false);
 			return;
 		}
+		if (apartmentRoom.CanBypassInvisibleBarrier(player))
+		{
+			player.ShowToast(GameTip.Styles.Red_Normal, Phrase_BreakInTeammate, false);
+			return;
+		}
 		Item activeItem = player.GetActiveItem();
 		if (activeItem != null && !((Object)(object)activeItem.info != (Object)(object)ItemManager.Items.MasterKey) && activeItem.amount >= 1)
 		{
 			activeItem.UseItem();
-			apartmentRoom.StartBreakIn();
+			apartmentRoom.StartBreakIn(player);
 			player.ShowToast(GameTip.Styles.Blue_Long, Phrase_BreakInSuccess, false);
 			StopBreakInSound();
 			Facepunch.Rust.Analytics.Azure.OnApartmentBreakIn(player, apartmentRoom);
@@ -247,5 +254,7 @@ public class ApartmentDoor : Door
 		//IL_0050: Expected Obj, but got Unknown
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Expected Obj, but got Unknown
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Expected Obj, but got Unknown
 	}
 }

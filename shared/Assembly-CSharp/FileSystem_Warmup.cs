@@ -128,7 +128,7 @@ public class FileSystem_Warmup : MonoBehaviour
 		{
 			return new List<string>();
 		}
-		return val.GetAssetScenePrefabs(AssetSceneManifest.Current.AutoLoadScenes).Where<(string, GameObject)>(((string Path, GameObject Prefab) t) => !ShouldIgnore(t.Path)).Select(((string Path, GameObject Prefab) t) => t.Path)
+		return val.GetAssetScenePrefabs(AssetSceneManifest.Current.AutoLoadScenes).Where(((string Path, GameObject Prefab) t) => !ShouldIgnore(t.Path)).Select(((string Path, GameObject Prefab) t) => t.Path)
 			.ToList();
 	}
 

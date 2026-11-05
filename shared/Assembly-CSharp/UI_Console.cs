@@ -1,3 +1,4 @@
+using Facepunch.Flexbox;
 using Rust.UI.MainMenu;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,8 @@ public class UI_Console : UI_Window
 	public UI_Console_Display consoleDisplay;
 
 	public ConsoleTMPInputField consoleInputField;
+
+	public FlexElement consoleInputTextArea;
 
 	public CanvasGroup consoleGroup;
 

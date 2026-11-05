@@ -6,7 +6,7 @@ namespace Rust.Ai.Gen2;
 [Serializable]
 public class LivestockSpecial
 {
-	[Tooltip("The animal's name, and its whole identity. Uniqueness is checked by this, so no two entries can share one.")]
+	[Tooltip("The animal's name. Only one animal can have special status from this particular name at a time.")]
 	public string Name;
 
 	[Tooltip("Which species this can land on. Empty means any livestock species, which is how one entry covers cows and sheep both.")]
@@ -21,7 +21,7 @@ public class LivestockSpecial
 	[Tooltip("Lets this entry force an allele below Ok. Off by default so a freshly added array element, which defaults to Bad, is caught rather than shipped.")]
 	public bool AllowBadGenes;
 
-	[Min(0f)]
 	[Tooltip("How likely this one is relative to the others, once the rarity roll has passed at all.")]
+	[Min(0f)]
 	public float Weight = 1f;
 }

@@ -809,7 +809,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						else
 						{
 							chartCache.Status = ChartCache.StatusTypes.Finalized;
-							chartCache.Crc = FileStorage.server.GetCRC(data, (Type)0);
+							chartCache.Crc = FileStorage.ComputeCrc(data);
 							chartCache.Data = data;
 							base[identifier] = chartCache;
 							onProcessed?.Invoke(chartCache);
@@ -1758,7 +1758,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			JProperty val4 = (JProperty)(object)((val3 is JProperty) ? val3 : null);
 			JToken usableToken = ((val4 != null) ? val4.Value : token);
 			JToken val5 = usableToken;
-			JTokenType? val6 = ((val5 != null) ? new JTokenType?(val5.Type) : ((JTokenType?)null));
+			Nullable val6 = ((val5 != null) ? new Nullable(val5.Type) : ((Nullable)null));
 			if (!val6.HasValue)
 			{
 				return;
@@ -2287,7 +2287,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				case ConfigTabs.ConVars:
 				{
 					string convarSearch = session.GetStorage(tab, "convarsearch", string.Empty);
-					int num4 = ConVarSnapshots.Snapshots.Count((KeyValuePair<string, ConVarSnapshots.Snapshot> x) => string.IsNullOrEmpty(convarSearch) || x.Key.Contains(convarSearch));
+					int num4 = Enumerable.Count(ConVarSnapshots.Snapshots, (KeyValuePair<string, ConVarSnapshots.Snapshot> x) => string.IsNullOrEmpty(convarSearch) || x.Key.Contains(convarSearch));
 					tab.AddText(1, "Changing the following values will not be stored anywhere. This page is simply for informational purposes.\nIf you want Rust to load up your changes, please add them in 'server/identity/cfg/server.cfg'.", 8, "1 1 1 0.5", (TextAnchor)4);
 					if (string.IsNullOrEmpty(convarSearch))
 					{
@@ -2402,7 +2402,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				case ConfigTabs.CarbonAuto:
 				{
 					string carbonAutoSearch = session.GetStorage(tab, "carbonautosearch", string.Empty);
-					int num6 = CarbonAuto.AutoCache.Count((KeyValuePair<string, CarbonAuto.AutoVar> x) => string.IsNullOrEmpty(carbonAutoSearch) || x.Key.Contains(carbonAutoSearch));
+					int num6 = Enumerable.Count(CarbonAuto.AutoCache, (KeyValuePair<string, CarbonAuto.AutoVar> x) => string.IsNullOrEmpty(carbonAutoSearch) || x.Key.Contains(carbonAutoSearch));
 					if (string.IsNullOrEmpty(carbonAutoSearch))
 					{
 						tab.AddInput(1, $"Search ({num6:n0})", (PlayerSession ap) => carbonAutoSearch, 0, readOnly: false, (PlayerSession ap, object[] args) =>
@@ -4895,9 +4895,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				foreach (Plugin fetchedPlugin in FetchedPlugins)
 				{
-					if (fetchedPlugin.IsInstalled() && !fetchedPlugin.IsUpToDate())
+					if (fetchedPlugin.IsInstalled() && !fetchedPlugin.IsUpToDate() && Plugin.TryParseVersion(fetchedPlugin.Version, out var version))
 					{
-						HookCaller.CallStaticHook(3156772569u, fetchedPlugin.Name, new VersionNumber(fetchedPlugin.CurrentVersion()), new VersionNumber(fetchedPlugin.Version), fetchedPlugin.ExistentPlugin, Type);
+						HookCaller.CallStaticHook(3156772569u, fetchedPlugin.Name, fetchedPlugin.ExistentPlugin.Version, version, fetchedPlugin.ExistentPlugin, Type);
 					}
 				}
 			}
@@ -5016,9 +5016,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 			public override string Tagline => "The largest marketplace for Rust community-driven content.";
 
-			public override string BarInfo => $"{FetchedPlugins.Count((Plugin x) => !x.IsPaid()):n0} free, {FetchedPlugins.Count((Plugin x) => x.IsPaid()):n0} paid";
+			public override string BarInfo => $"{Enumerable.Count(FetchedPlugins, (Plugin x) => !x.IsPaid()):n0} free, {Enumerable.Count(FetchedPlugins, (Plugin x) => x.IsPaid()):n0} paid";
 
-			public override string ListEndpoint => "https://codefling.com/db/?category=2,21";
+			public override string ListEndpoint => "https://codefling.com/db/?category=2";
 
 			public override string DownloadEndpoint => "https://codefling.com/files/file/[ID]-a?do=download";
 
@@ -5106,7 +5106,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						FetchedPlugins.Clear();
 						List<RustPlugin> list = Pool.Get<List<RustPlugin>>();
 						Community.Runtime.Core.plugins.GetAllNonAlloc(list);
-						ParseData(data, doSave: false, insert: false, FetchedPlugins, callback, this, list);
+						ParseData(data, doSave: true, insert: false, FetchedPlugins, callback, this, list);
 						Pool.FreeUnmanaged<RustPlugin>(ref list);
 						VersionCheck();
 					}
@@ -5132,44 +5132,46 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 								Changelog = ((object)item[(object)"changelog"])?.ToString().Replace(_backSlashes, string.Empty),
 								File = ((object)item[(object)"fileName"])?.ToString(),
 								Image = string.Format("https://codefling.com/cdn-cgi/image/width=1250,height=1250,quality=100,blur=25,fit=cover,format=jpeg/{0}", item[(object)"primaryScreenshot"]),
-								ImageThumbnail = string.Format("https://codefling.com/cdn-cgi/image/width=246,height=246,quality=75,fit=cover,format=jpeg/{0}", item[(object)"primaryScreenshot"]),
-								Tags = ((IEnumerable<JToken>)item[(object)"tags"])?.Select((JToken x) => ((object)x).ToString()),
-								DownloadCount = (((object)item[(object)"downloads"])?.ToString().ToInt()).GetValueOrDefault(),
-								CarbonCompatible = (((object)item[(object)"compatibility"])?.ToString().ToBool() == true),
-								Rating = (((object)item[(object)"rating"])?.ToString().ToFloat() ?? 0f),
-								Status = Status.Approved,
-								HasLookup = true
+								ImageThumbnail = string.Format("https://codefling.com/cdn-cgi/image/width=246,height=246,quality=75,fit=cover,format=jpeg/{0}", item[(object)"primaryScreenshot"])
 							};
-							DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(plugin.UpdateDate.ToLong(0L));
-							DateTimeOffset dateTimeOffset2 = DateTimeOffset.FromUnixTimeSeconds(plugin.Date.ToLong(0L));
-							plugin.UpdateDate = dateTimeOffset.UtcDateTime.ToString();
-							plugin.Date = dateTimeOffset2.UtcDateTime.ToString();
-							plugin.PreferredVendor = VendorTypes.Codefling;
+							JToken val3 = item[(object)"tags"];
+							plugin.Tags = ((val3 != null) ? ((IEnumerable<JToken>)val3).Select((JToken x) => ((object)x).ToString()) : null);
+							plugin.DownloadCount = (((object)item[(object)"downloads"])?.ToString().ToInt()).GetValueOrDefault();
+							plugin.CarbonCompatible = ((object)item[(object)"compatibility"])?.ToString().ToBool() == true;
+							plugin.Rating = ((object)item[(object)"rating"])?.ToString().ToFloat() ?? 0f;
+							plugin.Status = Status.Approved;
+							plugin.HasLookup = true;
+							Plugin plugin2 = plugin;
+							DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(plugin2.UpdateDate.ToLong(0L));
+							DateTimeOffset dateTimeOffset2 = DateTimeOffset.FromUnixTimeSeconds(plugin2.Date.ToLong(0L));
+							plugin2.UpdateDate = dateTimeOffset.UtcDateTime.ToString();
+							plugin2.Date = dateTimeOffset2.UtcDateTime.ToString();
+							plugin2.PreferredVendor = VendorTypes.Codefling;
 							try
 							{
-								plugin.Description = plugin.Description.TrimStart('\t').Replace("\t", "\n").Split('\n')[0];
+								plugin2.Description = plugin2.Description.TrimStart('\t').Replace("\t", "\n").Split('\n')[0];
 							}
 							catch
 							{
 							}
-							if (plugin.OriginalPrice == "{}")
+							if (plugin2.OriginalPrice == "{}")
 							{
-								plugin.OriginalPrice = "FREE";
+								plugin2.OriginalPrice = "FREE";
 							}
 							try
 							{
-								plugin.ExistentPlugin = plugins.FirstOrDefault((RustPlugin x) => Path.GetFileNameWithoutExtension(x.FilePath) == Path.GetFileNameWithoutExtension(plugin.File));
+								plugin2.ExistentPlugin = plugins.FirstOrDefault((RustPlugin x) => Path.GetFileNameWithoutExtension(x.FilePath) == Path.GetFileNameWithoutExtension(plugin2.File));
 							}
 							catch
 							{
 							}
 							if (insert)
 							{
-								fetchedPlugins.Insert(0, plugin);
+								fetchedPlugins.Insert(0, plugin2);
 							}
 							else
 							{
-								fetchedPlugins.Add(plugin);
+								fetchedPlugins.Add(plugin2);
 							}
 						}
 						if (doSave)
@@ -5816,6 +5818,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			private string[] _defaultTags = new string[2] { "carbon", "oxide" };
 
+			private static char[] _installedAuthor = new char[32];
+
+			private static char[] _vendorAuthor = new char[32];
+
 			public override string Type => "Installed";
 
 			public override string Url => "none";
@@ -5861,6 +5867,102 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				return true;
 			}
 
+			private static Plugin PickCard(Plugin installed, string author)
+			{
+				List<Plugin> availableOn = installed.AvailableOn;
+				if (installed.PickedVendor != VendorTypes.Installed)
+				{
+					for (int i = 0; i < availableOn.Count; i++)
+					{
+						if (availableOn[i].PreferredVendor == installed.PickedVendor)
+						{
+							return availableOn[i];
+						}
+					}
+				}
+				int num = AuthorKey(author, ref _installedAuthor);
+				Plugin plugin = null;
+				for (int j = 0; j < availableOn.Count; j++)
+				{
+					int num2 = AuthorKey(availableOn[j].Author, ref _vendorAuthor);
+					if (SameAuthor(_installedAuthor, num, _vendorAuthor, num2))
+					{
+						if (num == num2)
+						{
+							return availableOn[j];
+						}
+						if (plugin == null)
+						{
+							plugin = availableOn[j];
+						}
+					}
+				}
+				if (plugin != null)
+				{
+					return plugin;
+				}
+				for (int k = 0; k < availableOn.Count; k++)
+				{
+					if (Plugin.TryParseVersion(availableOn[k].Version, out var version) && version == installed.ExistentPlugin.Version)
+					{
+						return availableOn[k];
+					}
+				}
+				for (int l = 0; l < availableOn.Count; l++)
+				{
+					if (availableOn[l].PreferredVendor == VendorTypes.uMod)
+					{
+						return availableOn[l];
+					}
+				}
+				return null;
+			}
+
+			private static bool SameAuthor(char[] a, int aLength, char[] b, int bLength)
+			{
+				if (aLength == 0 || bLength == 0)
+				{
+					return false;
+				}
+				char[] array = ((aLength <= bLength) ? a : b);
+				char[] array2 = ((aLength <= bLength) ? b : a);
+				int num = Math.Min(aLength, bLength);
+				int num2 = ((num >= 4) ? (Math.Max(aLength, bLength) - num) : 0);
+				for (int i = 0; i <= num2; i++)
+				{
+					int j;
+					for (j = 0; j < num && array2[i + j] == array[j]; j++)
+					{
+					}
+					if (j == num)
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+
+			private static int AuthorKey(string value, ref char[] buffer)
+			{
+				if (string.IsNullOrEmpty(value))
+				{
+					return 0;
+				}
+				if (buffer.Length < value.Length)
+				{
+					buffer = new char[value.Length];
+				}
+				int result = 0;
+				foreach (char c in value)
+				{
+					if (char.IsLetterOrDigit(c))
+					{
+						buffer[result++] = char.ToLowerInvariant(c);
+					}
+				}
+				return result;
+			}
+
 			public override void Refresh()
 			{
 				PooledList<Plugin> val = Pool.Get<PooledList<Plugin>>();
@@ -5900,17 +6002,29 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 									};
 									FetchedPlugins.Add(plugin4);
 								}
+								plugin4.AvailableOn?.Clear();
+								plugin4.PreferredVendorPlugin = null;
 								plugin4.TryMarkFoundOn(plugin3);
 								plugin4.TryMarkFoundOn(plugin2);
-								if (plugin4.PreferredVendor == VendorTypes.Installed && plugin4.AvailableOn != null && plugin4.AvailableOn.Count > 0)
+								Plugin plugin5 = ((plugin4.AvailableOn != null && plugin4.AvailableOn.Count > 0) ? PickCard(plugin4, plugin.Author) : null);
+								if (plugin5 != null)
 								{
-									Plugin plugin5 = plugin4.AvailableOn[0];
 									plugin4.PreferredVendor = plugin5.PreferredVendor;
 									plugin4.PreferredVendorPlugin = plugin5;
+								}
+								else
+								{
+									plugin4.AvailableOn?.Clear();
+									plugin4.PreferredVendor = VendorTypes.Installed;
 								}
 							}
 						}
 					}
+					FetchedPlugins.Sort((Plugin a, Plugin b) =>
+					{
+						int num = string.Compare(a.File, b.File, StringComparison.OrdinalIgnoreCase);
+						return (num == 0) ? string.CompareOrdinal(a.Name, b.Name) : num;
+					});
 					PriceData = FetchedPlugins.OrderBy((Plugin x) => x.OriginalPrice);
 					AuthorData = FetchedPlugins.OrderBy((Plugin x) => x.Author);
 					InstalledData = FetchedPlugins.Where((Plugin x) => x.IsInstalled());
@@ -6035,6 +6149,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 			internal Plugin PreferredVendorPlugin;
 
+			internal VendorTypes PickedVendor;
+
 			internal bool IsBusy;
 
 			[ProtoIgnore]
@@ -6051,7 +6167,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			public void SetPreferredVendor(VendorTypes vendor)
 			{
 				PreferredVendor = vendor;
-				PreferredVendorPlugin = GetVendor(vendor).FetchedPlugins.FirstOrDefault((Plugin x) => x.Name.Equals(Name));
+				PickedVendor = vendor;
+				PreferredVendorPlugin = AvailableOn?.FirstOrDefault((Plugin x) => x.PreferredVendor == vendor) ?? GetVendor(vendor).FetchedPlugins.FirstOrDefault((Plugin x) => x.Name.Equals(Name));
 			}
 
 			public void TryMarkFoundOn(Plugin plugin)
@@ -6116,7 +6233,95 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					return false;
 				}
-				return ExistentPlugin.Version.ToString() == Version;
+				if (TryParseVersion(Version, out var version))
+				{
+					return ExistentPlugin.Version >= version;
+				}
+				return false;
+			}
+
+			internal static bool TryParseVersion(string value, out VersionNumber version)
+			{
+				version = default;
+				if (string.IsNullOrEmpty(value))
+				{
+					return true;
+				}
+				int num = 0;
+				long num2 = 0L;
+				int num3 = 0;
+				int num4 = 0;
+				bool flag = false;
+				for (int i = 0; i <= value.Length; i++)
+				{
+					char c = ((i < value.Length) ? value[i] : '.');
+					switch (c)
+					{
+					case '.':
+					{
+						if (num3 == 0)
+						{
+							return false;
+						}
+						int num5 = (int)((num4 < 0) ? (-num2) : num2);
+						switch (num)
+						{
+						case 0:
+							version.Major = num5;
+							break;
+						case 1:
+							version.Minor = num5;
+							break;
+						case 2:
+							version.Patch = num5;
+							break;
+						}
+						num++;
+						num2 = 0L;
+						num3 = 0;
+						num4 = 0;
+						flag = false;
+						break;
+					}
+					case '\t':
+					case '\n':
+					case '\v':
+					case '\f':
+					case '\r':
+					case ' ':
+						if (num3 > 0)
+						{
+							flag = true;
+						}
+						else if (num4 != 0)
+						{
+							return false;
+						}
+						break;
+					default:
+						if (flag)
+						{
+							return false;
+						}
+						if (num3 == 0 && num4 == 0 && (c == '-' || c == '+'))
+						{
+							num4 = ((c != '-') ? 1 : (-1));
+							break;
+						}
+						if (c < '0' || c > '9')
+						{
+							return false;
+						}
+						num2 = num2 * 10 + (c - 48);
+						num3++;
+						if (num2 > ((num4 < 0) ? 2147483648u : int.MaxValue))
+						{
+							return false;
+						}
+						break;
+					}
+				}
+				return true;
 			}
 
 			public void SetOwned(bool wants)
@@ -6189,7 +6394,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					string storage = ap.GetStorage(tab3, "search", string.Empty);
 					List<Plugin> plugins = GetPlugins(vendor, tab3, ap, out var maxPages, 75);
 					PlayerSession.Page orCreatePage = ap.GetOrCreatePage(230);
-					float num = plugins.Count();
+					float num = Enumerable.Count(plugins);
 					float num2 = Mathf.Ceil(num / 5f) - 2f;
 					float num3 = (150f + num2 * 200f).Clamp(30f, 2.1474836E+09f);
 					orCreatePage.TotalPages = maxPages;
@@ -6245,7 +6450,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						bool flag2 = Singleton.DataInstance.HidePluginIcons || plugin.HasNoImage() || plugin.HasInvalidImage();
 						string parent = pair3;
 						string blankColor = Cache.CUI.BlankColor;
-						command = "pluginbrowser.selectplugin \"" + Path.GetFileNameWithoutExtension(plugin.File) + "\"";
+						command = "pluginbrowser.selectplugin \"" + Path.GetFileNameWithoutExtension(plugin2.File) + "\"";
 						CUI.Pair<string, CuiElement, CuiElement> pair5 = cui.CreateProtectedButton(container, parent, "0.1 0.1 0.1 0.7", blankColor, null, 0, null, 0f, 0f, 1f, 1f, num4, num4 + 150f, 0f - (num5 + 190f), 0f - num5, command, (TextAnchor)4);
 						CUI.Pair<string, CuiElement> pair6 = cui.CreateClientImage(container, pair5, plugin.ImageThumbnail, flag2 ? "0 0 0 0" : "1 1 1 0.95", null, 0f, 1f, 1f, 1f, 0f, 0f, -150f, 0f, num7);
 						if (flag2)
@@ -6262,7 +6467,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						}
 						if (vendor == LocalInstance && plugin2.AvailableOn != null && plugin2.AvailableOn.Count > 1)
 						{
-							cui.CreateProtectedButton(container, pair5, Cache.CUI.BlankColor, "0.75 1 0.5 0.8", plugin2.PreferredVendor.ToString().ToUpper().SpacedString(1), 8, null, 0f, 1f, 0.83f, 0.92f, 0f, 0f, 0f, 0f, "pluginbrowser.interact 12 \"" + Path.GetFileNameWithoutExtension(plugin.File) + "\"", (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedBold);
+							cui.CreateProtectedButton(container, pair5, Cache.CUI.BlankColor, "0.75 1 0.5 0.8", plugin2.PreferredVendor.ToString().ToUpper().SpacedString(1), 8, null, 0f, 1f, 0.83f, 0.92f, 0f, 0f, 0f, 0f, "pluginbrowser.interact 12 \"" + Path.GetFileNameWithoutExtension(plugin2.File) + "\"", (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedBold);
 						}
 						bool flag4 = ServerOwner.Singleton.FavouritePlugins.Contains(Path.GetFileNameWithoutExtension(plugin.File));
 						CUI.Pair<string, CuiElement, CuiElement> pair8 = cui.CreateProtectedButton(container, pair5, Cache.CUI.BlankColor, Cache.CUI.BlankColor, string.Empty, 0, null, 0f, 0f, 1f, 1f, 0f, 30f, -30f, 0f, "pluginbrowser.interact 10 \"" + Path.GetFileNameWithoutExtension(plugin.File) + "\"", (TextAnchor)4);
@@ -6419,7 +6624,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				CodeflingInstance.FetchList((Vendor vendor) =>
 				{
 					CodeflingInstance.Refresh();
-					CodeflingInstance.VersionCheck();
+					LocalInstance?.Refresh();
 				});
 			}
 			InstallUModTab();
@@ -6464,7 +6669,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				PaginationButton(ref pageOffset, cui, container, pair, "<", disabled: false, "pluginbrowser.page -1");
 				CUI.Pair<string, CuiElement> pair2 = cui.CreatePanel(container, pair, "0.2 0.2 0.2 0.5", null, 0f, 0f, 0f, 1f, pageOffset, pageOffset + 70f);
 				cui.CreateImage(container, pair2, "fade", Cache.CUI.WhiteColor);
-				cui.CreateText(container, pair2, "0.4 0.4 0.4 0.8", $"/ {page.TotalPages:n0}", 10, 0.5f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
+				cui.CreateText(container, pair2, "0.4 0.4 0.4 0.8", $"/ {page.TotalPages + 1:n0}", 10, 0.5f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)3, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 				cui.CreateProtectedInputField(container, pair2, Cache.CUI.WhiteColor, $"{page.CurrentPage + 1}", 10, 60, readOnly: false, 0f, 0.45f, 0f, 1f, 0f, 0f, 0f, 0f, "pluginbrowser.page", (TextAnchor)5, CUI.Handler.FontTypes.RobotoCondensedRegular, autoFocus: false, hudMenuInput: false, (LineType)0);
 				pageOffset += 75f;
 				PaginationButton(ref pageOffset, cui, container, pair, ">", disabled: false, "pluginbrowser.page 1");
@@ -6490,6 +6695,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				{
 					uModInstance.Refresh();
 					uModInstance.VersionCheck();
+					LocalInstance?.Refresh();
 				});
 			}
 		}
@@ -6774,7 +6980,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			};
 			profiler.Over = (Tab _, CUI cui, CuiElementContainer container, string parent, PlayerSession _) =>
 			{
-				string text = (MonoProfiler.Crashed ? "<b>Mono profiler has failed initializing properly</b>\nPlease ensure CarbonNative.dll is located in <b>carbon/native</b> or contact developers" : ((!MonoProfiler.Enabled) ? "<b>Mono profiler is disabled</b>\nEnable it in the config, then reboot the server" : null));
+				string text = (MonoProfiler.Crashed ? "<b>Mono profiler has failed initializing properly</b>\nPlease ensure CarbonNative.dll is located in <b>carbon/native</b> or contact developers" : null);
 				if (!string.IsNullOrEmpty(text))
 				{
 					CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, "0 0 0 0.5", null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, blur: true);
@@ -8557,7 +8763,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				case Tab.OptionChart.ChartCache.StatusTypes.Finalized:
 					if (!chartCache.HasPlayerReceivedData(EncryptedValue<ulong>.op_Implicit(session.Player.userID)))
 					{
-						((BaseEntity)CommunityEntity.ServerInstance).ClientRPC(RpcTarget.Player("CL_ReceiveFilePng", session.Player), chartCache.Crc, (uint)chartCache.Data.Length, (ReadOnlySpan<byte>)chartCache.Data, 0u, (byte)0);
+						((BaseEntity)CommunityEntity.ServerInstance).ClientRPC(RpcTarget.Player("CL_ReceiveFile", session.Player), (ulong)chartCache.Crc, chartCache.Crc, (uint)chartCache.Data.Length, (ReadOnlySpan<byte>)chartCache.Data);
 					}
 					updatePool.Add(cui2.UpdatePanel(loadingOverlay, "0 0 0 0", null, 0f, 0f));
 					updatePool.Add(cui2.UpdateText(loadingText, "0 0 0 0", string.Empty, 0, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1));
@@ -9166,7 +9372,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 														case Tab.OptionChart.ChartCache.StatusTypes.Finalized:
 															if (!chartCache.HasPlayerReceivedData(EncryptedValue<ulong>.op_Implicit(ap.Player.userID)))
 															{
-																((BaseEntity)CommunityEntity.ServerInstance).ClientRPC(RpcTarget.Player("CL_ReceiveFilePng", ap.Player), chartCache.Crc, (uint)chartCache.Data.Length, (ReadOnlySpan<byte>)chartCache.Data, 0u, (byte)0);
+																((BaseEntity)CommunityEntity.ServerInstance).ClientRPC(RpcTarget.Player("CL_ReceiveFile", ap.Player), (ulong)chartCache.Crc, chartCache.Crc, (uint)chartCache.Data.Length, (ReadOnlySpan<byte>)chartCache.Data);
 															}
 															updatePool3.Add(cui3.UpdatePanel($"{oldIdentifier2}_loading", "0 0 0 0", null, 0f, 0f));
 															updatePool3.Add(cui3.UpdateText($"{oldIdentifier2}_loadingtxt", "0 0 0 0", string.Empty, 0, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1));
@@ -9237,7 +9443,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 														case Tab.OptionChart.ChartCache.StatusTypes.Finalized:
 															if (!chartCache.HasPlayerReceivedData(EncryptedValue<ulong>.op_Implicit(ap.Player.userID)))
 															{
-																((BaseEntity)CommunityEntity.ServerInstance).ClientRPC(RpcTarget.Player("CL_ReceiveFilePng", ap.Player), chartCache.Crc, (uint)chartCache.Data.Length, (ReadOnlySpan<byte>)chartCache.Data, 0u, (byte)0);
+																((BaseEntity)CommunityEntity.ServerInstance).ClientRPC(RpcTarget.Player("CL_ReceiveFile", ap.Player), (ulong)chartCache.Crc, chartCache.Crc, (uint)chartCache.Data.Length, (ReadOnlySpan<byte>)chartCache.Data);
 															}
 															updatePool3.Add(cui3.UpdatePanel($"{oldIdentifier}_loading", "0 0 0 0", null, 0f, 0f));
 															updatePool3.Add(cui3.UpdateText($"{oldIdentifier}_loadingtxt", "0 0 0 0", string.Empty, 0, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1));
@@ -9827,8 +10033,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	[ProtectedCommand("pluginbrowser.interact")]
 	private void PluginBrowserInteract(Arg args)
 	{
-		//IL_0613: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0645: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0633: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0665: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = ArgEx.Player(args);
 		if (!Singleton.HasAccess(player, "plugins.setup"))
 		{
@@ -9839,7 +10045,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		PluginsTab.VendorTypes storage = ap.GetStorage(tab, "vendor", PluginsTab.VendorTypes.Installed);
 		PluginsTab.Vendor vendor = PluginsTab.GetVendor(storage);
 		string pluginName = args.GetFullString(1).Replace("\"", string.Empty).Trim();
-		PluginsTab.Plugin tabPlugin = ap.GetStorage<PluginsTab.Plugin>(tab, "plugin") ?? vendor.FetchedPlugins.FirstOrDefault((PluginsTab.Plugin x) => Path.GetFileNameWithoutExtension(x.File).Equals(pluginName));
+		PluginsTab.Plugin tabPlugin = ap.GetStorage<PluginsTab.Plugin>(tab, "plugin") ?? vendor.FetchedPlugins.FirstOrDefault((PluginsTab.Plugin x) => Path.GetFileNameWithoutExtension(x.File).Equals(pluginName)) ?? vendor.FetchedPlugins.FirstOrDefault((PluginsTab.Plugin x) => x.PreferredVendorPlugin != null && Path.GetFileNameWithoutExtension(x.PreferredVendorPlugin.File).Equals(pluginName));
 		PluginsTab.Plugin mainTabPlugin = tabPlugin;
 		if (tabPlugin.PreferredVendorPlugin != null)
 		{
@@ -9974,9 +10180,15 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			break;
 		}
 		case "12":
-			mainTabPlugin.SetPreferredVendor(mainTabPlugin.AvailableOn.FirstOrDefault((PluginsTab.Plugin x) => x.PreferredVendor != mainTabPlugin.PreferredVendor).PreferredVendor);
+		{
+			PluginsTab.Plugin plugin2 = mainTabPlugin.AvailableOn?.FirstOrDefault((PluginsTab.Plugin x) => x.PreferredVendor != mainTabPlugin.PreferredVendor);
+			if (plugin2 != null)
+			{
+				mainTabPlugin.SetPreferredVendor(plugin2.PreferredVendor);
+			}
 			Singleton.Draw(player);
 			break;
+		}
 		}
 		Singleton.Draw(ArgEx.Player(args));
 	}
@@ -9997,7 +10209,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			break;
 		case 1:
 			orCreatePage.CurrentPage++;
-			if (orCreatePage.CurrentPage > orCreatePage.TotalPages - 1)
+			if (orCreatePage.CurrentPage > orCreatePage.TotalPages)
 			{
 				orCreatePage.CurrentPage = 0;
 			}
@@ -10006,14 +10218,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			orCreatePage.CurrentPage--;
 			if (orCreatePage.CurrentPage < 0)
 			{
-				orCreatePage.CurrentPage = orCreatePage.TotalPages - 1;
+				orCreatePage.CurrentPage = orCreatePage.TotalPages;
 			}
 			break;
 		case -2:
 			orCreatePage.CurrentPage = 0;
 			break;
 		case -3:
-			orCreatePage.CurrentPage = orCreatePage.TotalPages - 1;
+			orCreatePage.CurrentPage = orCreatePage.TotalPages;
 			break;
 		default:
 			orCreatePage.CurrentPage = num - 1;
@@ -10025,7 +10237,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		}
 		else if (orCreatePage.CurrentPage > orCreatePage.TotalPages)
 		{
-			orCreatePage.CurrentPage = orCreatePage.TotalPages - 1;
+			orCreatePage.CurrentPage = orCreatePage.TotalPages;
 		}
 		playerSession.SetStorage(playerSession.SelectedTab, "page", orCreatePage.CurrentPage);
 		PluginsTab.DropdownShow = false;
@@ -10043,7 +10255,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		Tab tab = Singleton.GetTab(playerSession.Player);
 		PluginsTab.Vendor vendor = PluginsTab.GetVendor(playerSession.GetStorage(tab, "vendor", PluginsTab.VendorTypes.Installed));
 		vendor.Refresh();
-		string text = playerSession.SetStorage(tab, "search", args.Args?.Select((StringView x) => ((object)x/*cast due to constrained. prefix*/).ToString()).ToString(" "));
+		StringView[] args2 = args.Args;
+		string text = playerSession.SetStorage(tab, "search", (args2 != null) ? args2.Select((StringView x) => ((object)x/*cast due to constrained. prefix*/).ToString()).ToString(" ") : null);
 		playerSession.SetStorage(tab, "page", 0);
 		if (text == "Search...")
 		{
@@ -10085,6 +10298,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				vendor.FetchList((PluginsTab.Vendor vendor2) =>
 				{
 					vendor2.Refresh();
+					PluginsTab.LocalInstance?.Refresh();
 				});
 				vendor.Refresh();
 			}
@@ -10382,6 +10596,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			vendor.FetchList((PluginsTab.Vendor vendor2) =>
 			{
 				vendor2.Refresh();
+				PluginsTab.LocalInstance?.Refresh();
 			});
 			vendor.Refresh();
 		}
@@ -10429,10 +10644,6 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			return;
 		}
 		PlayerSession ap = GetPlayerSession(player);
-		if (!MonoProfiler.Enabled)
-		{
-			return;
-		}
 		if (!MonoProfiler.IsRecording && ap.Player.serverInput.IsDown((BUTTON)128))
 		{
 			Dictionary<string, ModalModule.Modal.Field> dictionary = Pool.Get<Dictionary<string, ModalModule.Modal.Field>>();
@@ -10533,14 +10744,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		static void WriteFileBytes(string extension, byte[] data, BasePlayer player)
 		{
 			DateTime now = DateTime.Now;
-			string text = Path.Combine(Defines.GetProfilesFolder(), string.Format("profile-{0}_{1}_{2}_{3}{4}{5}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, extension }));
+			string text = Path.Combine(Defines.GetProfilesFolder(), string.Format("profile-{0}_{1:00}_{2:00}_{3:00}{4:00}{5:00}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, extension }));
 			OsEx.File.Create(text, data);
 			Notifications.Add(player, "Exported profile output at '" + text + "'");
 		}
 		static void WriteFileString(string extension, string data, BasePlayer player)
 		{
 			DateTime now = DateTime.Now;
-			string text = Path.Combine(Defines.GetProfilesFolder(), string.Format("profile-{0}_{1}_{2}_{3}{4}{5}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, extension }));
+			string text = Path.Combine(Defines.GetProfilesFolder(), string.Format("profile-{0}_{1:00}_{2:00}_{3:00}{4:00}{5:00}.{6}", new object[7] { now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, extension }));
 			OsEx.File.Create(text, data);
 			Notifications.Add(player, "Exported profile output at '" + text + "'");
 		}
@@ -10622,10 +10833,6 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			return;
 		}
 		PlayerSession ap = GetPlayerSession(player);
-		if (!MonoProfiler.Enabled)
-		{
-			return;
-		}
 		if (!MonoProfiler.IsRecording)
 		{
 			Dictionary<string, ModalModule.Modal.Field> dictionary = Pool.Get<Dictionary<string, ModalModule.Modal.Field>>();

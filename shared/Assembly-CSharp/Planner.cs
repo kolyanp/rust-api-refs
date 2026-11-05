@@ -147,8 +147,8 @@ public class Planner : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void DoPlace(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract())
@@ -166,9 +166,9 @@ public class Planner : HeldEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(10uL)]
 	private void StartDurationPlace(RPCMessage msg)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -395,15 +395,15 @@ public class Planner : HeldEntity
 		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0303: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0311: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0328: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0331: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0333: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0323: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer ownerPlayer = GetOwnerPlayer();
 		if (!Object.op_Implicit((Object)(object)ownerPlayer))
 		{
@@ -460,6 +460,14 @@ public class Planner : HeldEntity
 		{
 			CanBuildResult? result = SleepingBag.CanBuildBed(ownerPlayer, component);
 			if (HandleCanBuild(result, ownerPlayer))
+			{
+				return null;
+			}
+		}
+		if (ConVar.Server.max_tool_cupboards > 0 && component.isBuildingPrivilege)
+		{
+			CanBuildResult? result2 = BuildingPrivlidge.CanBuildToolCupboard(ownerPlayer);
+			if (HandleCanBuild(result2, ownerPlayer))
 			{
 				return null;
 			}

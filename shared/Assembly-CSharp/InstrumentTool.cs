@@ -134,8 +134,8 @@ public class InstrumentTool : HeldEntity
 		ClientRPC(RpcTarget.NetworkGroup("Client_PlayNote"), arg, arg2, arg3, arg4);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void Server_StopNote(RPCMessage msg)
 	{
 		int arg = msg.read.Int32();

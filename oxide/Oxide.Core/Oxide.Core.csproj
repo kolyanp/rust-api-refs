@@ -5,7 +5,7 @@
     <TargetFramework>net48</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>15.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -16,7 +16,7 @@
       <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.Common.dll</HintPath>
     </Reference>
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Oxide.References">
       <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.References.dll</HintPath>

@@ -1,8 +1,8 @@
-using UnityEngine;
+using System;
 
 public interface IAITarget
 {
-	Vector3? Position { get; }
+	Nullable Position { get; }
 
 	bool IsValid(BoatAI self);
 

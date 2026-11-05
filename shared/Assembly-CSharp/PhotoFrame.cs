@@ -11,7 +11,7 @@ using ProtoBuf;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGCBrowserEntity, IEaselPaintable
+public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGCBrowserEntity, IEaselPaintable, IFlattenKeepsChildren, IServerFileReceiver
 {
 	public GameObjectRef SignEditorDialog;
 
@@ -273,21 +273,20 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		return CanUpdateSign(player);
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(5f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void UpdateSign(RPCMessage msg)
 	{
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)msg.player == (Object)null) && CanUpdateSign(msg.player))
 		{
 			byte[] array = msg.read.BytesWithSize();
 			if (array != null && ImageProcessing.IsValidPNG(array, 1024, 1024))
 			{
-				FileStorage.server.RemoveAllByEntity(net.ID);
-				_overlayTextureCrc = FileStorage.server.Store(array, FileStorage.Type.png, net.ID);
+				_overlayTextureCrc = FileStorage.server.Store(net.ID, 0uL, FileStorage.Type.png, array);
 				Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, this, "photo_frame", array.Length);
+				UGCModeration.Send(msg.player, this, "photo_frame", _overlayTextureCrc, FileStorage.Type.png);
 				LogEdit(msg.player);
 				SendNetworkUpdate();
 				Interface.CallHook("OnSignUpdated", this, msg.player);
@@ -295,8 +294,8 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void LockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUpdateSign(msg.player))
@@ -308,8 +307,8 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void UnLockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUnlockSign(msg.player))
@@ -326,7 +325,7 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		RemoveFromEasel();
 		if (net != null)
 		{
-			FileStorage.server.RemoveAllByEntity(net.ID);
+			FileStorage.server.RemoveAll(net.ID);
 		}
 		_overlayTextureCrc = 0u;
 	}
@@ -344,11 +343,16 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 	public override void Load(LoadInfo info)
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (info.msg.photoFrame != null)
 		{
 			_photoEntity.uid = info.msg.photoFrame.photoEntityId;
 			_overlayTextureCrc = info.msg.photoFrame.overlayImageCrc;
+		}
+		if (isServer)
+		{
+			_overlayTextureCrc = FileStorage.server.GetCrc(net.ID, 0uL);
 		}
 		if (!isServer || info.msg.photoFrame == null)
 		{
@@ -387,7 +391,10 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		base.Save(info);
 		info.msg.photoFrame = Pool.Get<PhotoFrame>();
 		info.msg.photoFrame.photoEntityId = _photoEntity.uid;
-		info.msg.photoFrame.overlayImageCrc = _overlayTextureCrc;
+		if (!info.forDisk)
+		{
+			info.msg.photoFrame.overlayImageCrc = _overlayTextureCrc;
+		}
 		if (editHistory.Count <= 0)
 		{
 			return;
@@ -448,13 +455,11 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		}
 	}
 
-	public void SetTextureCRCs(uint[] crcs)
+	public void RefreshFileCrcs()
 	{
-		if (crcs.Length != 0)
-		{
-			_overlayTextureCrc = crcs[0];
-			SendNetworkUpdate();
-		}
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		_overlayTextureCrc = FileStorage.server.GetCrc(net.ID, 0uL);
+		SendNetworkUpdate();
 	}
 
 	private void LogEdit(BasePlayer byPlayer)
@@ -473,6 +478,8 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 
 	public void ClearContent()
 	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		FileStorage.server.RemoveAll(net.ID);
 		_overlayTextureCrc = 0u;
 		SendNetworkUpdate();
 	}

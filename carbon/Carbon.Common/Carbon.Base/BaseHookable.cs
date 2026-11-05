@@ -185,7 +185,7 @@ public class BaseHookable : Integrations.ITestable
 
 	internal int _currentGcCount;
 
-	internal TimeSince? _initializationTime;
+	internal Nullable _initializationTime;
 
 	private Dictionary<AutoPatchAttribute.Orders, Harmony> _harmonyInstanceCache = new Dictionary<AutoPatchAttribute.Orders, Harmony>();
 

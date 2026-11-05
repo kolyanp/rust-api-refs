@@ -47,11 +47,17 @@ public class LootContainer : StorageContainer, ILootContainer
 
 	public bool initialLootSpawn = true;
 
+	[Tooltip("Roll the loot table once per whole multiple of the game mode gather rate, so Softcore's 2x gives two rolls")]
+	public bool scaleLootWithGatherRate;
+
 	public float xpLootedScale = 1f;
 
 	public float xpDestroyedScale = 1f;
 
 	public bool BlockPlayerItemInput;
+
+	[Tooltip("Dropped items spawn exactly at the drop position with no upward offset, scatter or velocity")]
+	public bool dropAtExactPosition;
 
 	public int scrapAmount;
 
@@ -92,6 +98,8 @@ public class LootContainer : StorageContainer, ILootContainer
 	}
 
 	private Action actionSpawnLoot => _actionSpawnLoot ?? (_actionSpawnLoot = SpawnLoot);
+
+	public override bool ScatterDroppedItems => !dropAtExactPosition;
 
 	public override void ResetState()
 	{
@@ -221,7 +229,11 @@ public class LootContainer : StorageContainer, ILootContainer
 		ItemManager.DoRemoves();
 		if (Interface.CallHook("OnLootSpawn", this) == null)
 		{
-			PopulateLoot();
+			int num = ((!scaleLootWithGatherRate) ? 1 : BaseGameMode.ScaleGatherAmount(1));
+			for (int i = 0; i < num; i++)
+			{
+				PopulateLoot();
+			}
 			CancelLootRefreshCountdown();
 			if (shouldRefreshContents)
 			{

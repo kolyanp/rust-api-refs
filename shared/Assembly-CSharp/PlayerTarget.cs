@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public sealed class PlayerTarget : IAITarget
@@ -14,13 +15,17 @@ public sealed class PlayerTarget : IAITarget
 
 	private const float FAR_DIST = 55f;
 
-	private const float LOS_DROP_TIME = 10f;
+	public const float LOS_DROP_TIME = 45f;
 
-	private float _lastLosSeen;
+	private const float SEARCH_DELAY = 3f;
+
+	private const float SEARCH_ANGLE = 30f;
 
 	public BasePlayer Player => _player;
 
-	public Vector3? Position
+	public float LastSeen { get; set; }
+
+	public Nullable Position
 	{
 		get
 		{
@@ -34,25 +39,34 @@ public sealed class PlayerTarget : IAITarget
 			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-			//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)_player == (Object)null)
 			{
 				return null;
 			}
 			Vector3 val = ((!_player.HasParent()) ? ((Component)_player).transform.position : ((Component)_player.GetParentEntity()).transform.position);
 			Vector3 val2 = _boat.position - val;
-			Vector3 normalized = val2.normalized;
-			return (!StayClose) ? (val + normalized * 55f) : (val + normalized * 15f);
+			Vector3 val3 = val2.normalized;
+			if (Time.time - LastSeen > 3f)
+			{
+				val3 = Quaternion.AngleAxis(30f, Vector3.up) * val3;
+			}
+			return (!StayClose) ? (val + val3 * 55f) : (val + val3 * 15f);
 		}
 	}
 
@@ -61,7 +75,7 @@ public sealed class PlayerTarget : IAITarget
 		_player = player;
 		_acquiredAt = acquiredAt;
 		_boat = boat;
-		_lastLosSeen = Time.time;
+		LastSeen = Time.time;
 	}
 
 	public bool IsValid(BoatAI self)
@@ -96,7 +110,7 @@ public sealed class PlayerTarget : IAITarget
 		{
 			return false;
 		}
-		if (((Component)player).transform.position.y < 12f)
+		if (((Component)player).transform.position.y < -12f)
 		{
 			return false;
 		}
@@ -106,13 +120,13 @@ public sealed class PlayerTarget : IAITarget
 		}
 		if (self.HasLineOfSightToPlayer(_player))
 		{
-			_lastLosSeen = Time.time;
+			LastSeen = Time.time;
 		}
-		else if (Time.time - _lastLosSeen > 10f)
+		else if (Time.time - LastSeen > 45f)
 		{
 			if (BoatAI.PRINT_DEBUGS)
 			{
-				Debug.Log((object)$"Leaving seek state - lost line of sight for {10f}s.");
+				Debug.Log((object)$"Leaving seek state - lost line of sight for {45f}s.");
 			}
 			return false;
 		}

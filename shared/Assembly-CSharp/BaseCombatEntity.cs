@@ -267,6 +267,8 @@ public class BaseCombatEntity : BaseEntity
 		}
 	}
 
+	public virtual bool HideHealthInfoWhenDead => false;
+
 	public float SecondsSinceAttacked
 	{
 		get
@@ -815,12 +817,12 @@ public class BaseCombatEntity : BaseEntity
 	{
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_036b: Unknown result type (might be due to invalid IL or missing references)
 		Assert.IsTrue(isServer, "This should be called serverside only");
 		if (IsDead() || IsTransferProtected() || RaidWindow.BlocksDamage(this, info))
 		{
@@ -865,8 +867,8 @@ public class BaseCombatEntity : BaseEntity
 				float num2 = 1f;
 				if (PaintballColorLookup.instance != null && (Object)(object)PaintballColorLookup.instance.overallsItemDefinition != (Object)null)
 				{
-					bool num3 = this is BasePlayer basePlayer && (Object)(object)basePlayer.inventory != (Object)null && basePlayer.inventory.containerWear != null && basePlayer.inventory.containerWear.HasItem(PaintballColorLookup.instance.overallsItemDefinition);
-					bool flag = (Object)(object)info.InitiatorPlayer != (Object)null && (Object)(object)info.InitiatorPlayer.inventory != (Object)null && info.InitiatorPlayer.inventory.containerWear != null && info.InitiatorPlayer.inventory.containerWear.HasItem(PaintballColorLookup.instance.overallsItemDefinition);
+					bool num3 = this is BasePlayer { inventory: not null } basePlayer && basePlayer.inventory.containerWear != null && basePlayer.inventory.containerWear.HasItem(PaintballColorLookup.instance.overallsItemDefinition);
+					bool flag = (Object)(object)info.InitiatorPlayer != (Object)null && info.InitiatorPlayer.inventory != null && info.InitiatorPlayer.inventory.containerWear != null && info.InitiatorPlayer.inventory.containerWear.HasItem(PaintballColorLookup.instance.overallsItemDefinition);
 					bool flag2 = info.Initiator is AutoTurret;
 					num2 = ((!num3 || !(flag | flag2)) ? ConVar.Server.paintballstandarddamage : (30f * ConVar.Server.paintballoverallsdamage));
 				}

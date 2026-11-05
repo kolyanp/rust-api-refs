@@ -21,15 +21,15 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Shared material/atlas used by every glyph slot.")]
 	public Material GlyphMaterial;
 
-	[Header("Layout")]
 	[Tooltip("Horizontal distance between glyph centers, in local units.")]
+	[Header("Layout")]
 	public float GlyphSlotWidth = 0.1f;
 
 	[Tooltip("Visible width of the LED screen, in local units. Determines how many glyph slots are pooled.")]
 	public float ScreenWidth = 1f;
 
-	[Range(0f, 12f)]
 	[Tooltip("Extra blank glyph slots inserted between repeats of the text so it doesn't run into itself when it loops.")]
+	[Range(0f, 12f)]
 	public int LoopGapSlots = 3;
 
 	[Tooltip("Local units per second.")]
@@ -42,8 +42,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Quantizes the visual scroll position to multiples of this value, so the strip jumps between fixed positions instead of sliding smoothly - set to match the physical spacing between individual LEDs on the screen mesh. 0 = smooth, unstepped scroll.")]
 	public float StepSize = 0.00933f;
 
-	[Tooltip("Used verbatim if ReadStationNameFromBoomBox is false, and as a fallback whenever no station name can be resolved.")]
 	[Header("Text Source")]
+	[Tooltip("Used verbatim if ReadStationNameFromBoomBox is false, and as a fallback whenever no station name can be resolved.")]
 	public string OverrideText = "RUST RADIO";
 
 	[Tooltip("Shown while a cassette is loaded, taking priority over any tuned station. Only used when ReadStationNameFromBoomBox is enabled.")]

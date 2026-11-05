@@ -7,7 +7,7 @@ using Oxide.Core;
 using Rust;
 using UnityEngine;
 
-public class TriggerBase : BaseMonoBehaviour
+public class TriggerBase : BaseMonoBehaviour, IFlattenKeepsDescendants
 {
 	[SerializeField]
 	private LayerMask interestLayers;

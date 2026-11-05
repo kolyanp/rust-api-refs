@@ -124,6 +124,18 @@ public class Climate : SingletonComponent<Climate>
 	{
 	}
 
+	private const int forecastStretches = 8;
+
+	private static readonly int[] forecastChances = new int[3] { 10, 40, 80 };
+
+	private const float forecastMadeUpChangeChance = 0.1f;
+
+	private const float forecastNoChangeWrongChance = 0.1f;
+
+	private const int forecastMaxTimeErrorHours = 2;
+
+	private static readonly WeatherPresetType[] weatherTypes = (WeatherPresetType[])Enum.GetValues(typeof(WeatherPresetType));
+
 	private const float fadeAngle = 20f;
 
 	private const float defaultTemp = 15f;
@@ -217,6 +229,208 @@ public class Climate : SingletonComponent<Climate>
 	public WeatherPreset WeatherOverrides { get; set; }
 
 	public LegacyWeatherState Overrides { get; set; }
+
+	public WeatherPreset ForcedWeather { get; set; }
+
+	public WeatherPreset CurrentWeather
+	{
+		get
+		{
+			if (!((Object)(object)ForcedWeather != (Object)null))
+			{
+				if (!(WeatherStateBlend < 0.5f))
+				{
+					return WeatherStateTarget;
+				}
+				return WeatherStatePrevious;
+			}
+			return ForcedWeather;
+		}
+	}
+
+	public bool TryGetWeatherForecast(out WeatherPresetType forecastType, out int chance, out float hoursUntil)
+	{
+		forecastType = WeatherPresetType.Clear;
+		chance = 0;
+		hoursUntil = 0f;
+		if ((Object)(object)CurrentWeather == (Object)null || !TryGetFirstUpcomingWeather(out var seed, out var hoursUntil2))
+		{
+			return false;
+		}
+		uint seed2 = GetForecastSeed(GetSeedFromLong(seed));
+		if (!((!TryGetNextWeatherChange(out var nextWeather, out hoursUntil)) ? TryMakeUpChange(ref seed2, hoursUntil2, out forecastType, out chance, out hoursUntil) : TryForecastChange(ref seed2, nextWeather.Type, out forecastType, out chance)))
+		{
+			return false;
+		}
+		int num = SeedRandom.Range(ref seed2, 0, 3) * SeedRandom.Sign(ref seed2);
+		hoursUntil = Mathf.Max(0f, hoursUntil + (float)num);
+		return true;
+	}
+
+	private bool TryGetFirstUpcomingWeather(out long seed, out float hoursUntil)
+	{
+		seed = 0L;
+		hoursUntil = 0f;
+		TOD_Sky instance = TOD_Sky.Instance;
+		if (!Object.op_Implicit((Object)(object)instance))
+		{
+			return false;
+		}
+		long num = 648000000000L;
+		long num2 = instance.Cycle.Ticks / num + World.Seed;
+		float num3 = (float)(instance.Cycle.Ticks % num) / 3.6E+10f;
+		int num4 = ((num3 < 3f) ? 1 : 2);
+		seed = num2 + num4;
+		hoursUntil = (float)((num4 - 1) * 18) + 3f - num3;
+		return true;
+	}
+
+	private bool TryGetNextWeatherChange(out WeatherPreset nextWeather, out float hoursUntil)
+	{
+		nextWeather = null;
+		hoursUntil = 0f;
+		if ((Object)(object)ForcedWeather != (Object)null)
+		{
+			return false;
+		}
+		WeatherPreset currentWeather = CurrentWeather;
+		if ((Object)(object)currentWeather == (Object)null || !TryGetFirstUpcomingWeather(out var seed, out var hoursUntil2))
+		{
+			return false;
+		}
+		for (int i = 0; i < 8; i++)
+		{
+			WeatherPreset weatherPreset = GetWeatherPreset(GetSeedFromLong(seed + i));
+			if (weatherPreset.Type != currentWeather.Type)
+			{
+				nextWeather = weatherPreset;
+				hoursUntil = hoursUntil2 + (float)(i * 18);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private bool TryForecastChange(ref uint seed, WeatherPresetType nextType, out WeatherPresetType forecastType, out int chance)
+	{
+		forecastType = WeatherPresetType.Clear;
+		chance = 0;
+		if (SeedRandom.Value(ref seed) < GetMissedChangeChance())
+		{
+			return false;
+		}
+		chance = forecastChances[SeedRandom.Range(ref seed, 0, forecastChances.Length)];
+		if (SeedRandom.Range(ref seed, 0, 100) < chance)
+		{
+			forecastType = nextType;
+			return true;
+		}
+		return TryPickWrongForecastType(ref seed, nextType, out forecastType);
+	}
+
+	private bool TryMakeUpChange(ref uint seed, float firstHoursUntil, out WeatherPresetType forecastType, out int chance, out float hoursUntil)
+	{
+		forecastType = WeatherPresetType.Clear;
+		chance = 0;
+		hoursUntil = 0f;
+		if (SeedRandom.Value(ref seed) >= 0.1f)
+		{
+			return false;
+		}
+		chance = forecastChances[0];
+		hoursUntil = firstHoursUntil + (float)(SeedRandom.Range(ref seed, 0, 8) * 18);
+		return TryPickWrongForecastType(ref seed, CurrentWeather.Type, out forecastType);
+	}
+
+	private float GetMissedChangeChance()
+	{
+		float chanceWeatherLasts = GetChanceWeatherLasts(CurrentWeather.Type);
+		if (chanceWeatherLasts >= 1f)
+		{
+			return 0f;
+		}
+		return Mathf.Clamp01(chanceWeatherLasts * 0.9f * 0.1f / 0.9f / (1f - chanceWeatherLasts));
+	}
+
+	private float GetChanceWeatherLasts(WeatherPresetType currentType)
+	{
+		float num = 0f;
+		WeatherPresetType[] array = weatherTypes;
+		foreach (WeatherPresetType type in array)
+		{
+			num += GetWeatherChance(type);
+		}
+		if (!(num > 0f))
+		{
+			return 1f;
+		}
+		return Mathf.Pow(GetWeatherChance(currentType) / num, 8f);
+	}
+
+	private bool TryPickWrongForecastType(ref uint seed, WeatherPresetType comingType, out WeatherPresetType wrongType)
+	{
+		wrongType = WeatherPresetType.Clear;
+		float num = 0f;
+		WeatherPresetType[] array = weatherTypes;
+		foreach (WeatherPresetType type in array)
+		{
+			num += GetWrongForecastWeight(type, comingType);
+		}
+		if (num <= 0f)
+		{
+			return false;
+		}
+		float num2 = SeedRandom.Range(ref seed, 0f, num);
+		array = weatherTypes;
+		foreach (WeatherPresetType weatherPresetType in array)
+		{
+			float wrongForecastWeight = GetWrongForecastWeight(weatherPresetType, comingType);
+			if (!(wrongForecastWeight <= 0f))
+			{
+				wrongType = weatherPresetType;
+				num2 -= wrongForecastWeight;
+				if (num2 < 0f)
+				{
+					break;
+				}
+			}
+		}
+		return true;
+	}
+
+	private float GetWrongForecastWeight(WeatherPresetType type, WeatherPresetType comingType)
+	{
+		if (type != comingType && type != CurrentWeather.Type)
+		{
+			return GetWeatherChance(type);
+		}
+		return 0f;
+	}
+
+	private float GetWeatherChance(WeatherPresetType type)
+	{
+		if (IsInRainGracePeriod())
+		{
+			return (type == WeatherPresetType.Clear) ? 1 : 0;
+		}
+		return type switch
+		{
+			WeatherPresetType.Clear => Weather.ClearChance, 
+			WeatherPresetType.Dust => Weather.DustChance, 
+			WeatherPresetType.Fog => Weather.FogChance, 
+			WeatherPresetType.Overcast => Weather.OvercastChance, 
+			WeatherPresetType.Storm => Weather.StormChance, 
+			WeatherPresetType.Rain => Weather.RainChance, 
+			_ => 0f, 
+		};
+	}
+
+	private static uint GetForecastSeed(uint weatherSeed)
+	{
+		uint result = weatherSeed ^ 0x9E3779B9u;
+		SeedRandom.Wanghash(ref result);
+		return result;
+	}
 
 	protected override void Awake()
 	{

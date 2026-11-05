@@ -204,7 +204,7 @@ public class GraphicsSettings : ConsoleSystem
 
 	private static int ForceOption(int value, int defaultValue, params int[] options)
 	{
-		if (options == null || options.Length == 0 || !options.Contains(value))
+		if (options == null || options.Length == 0 || !Enumerable.Contains(options, value))
 		{
 			return defaultValue;
 		}

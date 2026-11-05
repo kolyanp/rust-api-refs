@@ -30,6 +30,8 @@ public class TerrainPath : TerrainExtension
 
 	public List<DungeonGridCell> DungeonGridCells = new List<DungeonGridCell>();
 
+	internal List<DungeonGridBlocker> DungeonGridBlockers = new List<DungeonGridBlocker>();
+
 	public List<DungeonBaseInfo> DungeonBaseEntrances = new List<DungeonBaseInfo>();
 
 	public List<DungeonBaseLink> DungeonBaseLinks = new List<DungeonBaseLink>();
@@ -76,13 +78,14 @@ public class TerrainPath : TerrainExtension
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		T result = default;
 		float num = float.MaxValue;
 		foreach (T item in list)
 		{
 			if (!((Object)(object)item == (Object)null))
 			{
-				float num2 = Vector3Ex.Distance2D(((Component)(object)item).transform.position, pos);
+				float num2 = Vector3Ex.SqrMagnitude2D(((Component)(object)item).transform.position - pos);
 				if (!(num2 >= num))
 				{
 					result = item;
@@ -108,10 +111,10 @@ public class TerrainPath : TerrainExtension
 			{
 				float normX = ((float)j + 0.5f) / (float)num;
 				float slope = heightMap.GetSlope(normX, normZ);
-				int topology = topologyMap.GetTopology(normX, normZ, radius);
 				int num2 = 10683780;
 				int num3 = 1628160;
 				int num4 = 514;
+				int topology = topologyMap.GetTopology(normX, normZ, radius, num2 | num3 | num4);
 				if ((topology & num2) != 0)
 				{
 					array[j, i] = int.MaxValue;
@@ -150,12 +153,12 @@ public class TerrainPath : TerrainExtension
 				float normX = ((float)j + 0.5f) / (float)num;
 				int num2 = SeedRandom.Range(ref seed, 100, 200);
 				float slope = heightMap.GetSlope(normX, normZ);
-				int topology = topologyMap.GetTopology(normX, normZ, radius);
-				int topology2 = topologyMap.GetTopology(normX, normZ, radius2);
 				int num3 = 196996;
 				int num4 = 10487296;
 				int num5 = 2;
 				int num6 = 49152;
+				int topology = topologyMap.GetTopology(normX, normZ, radius, num3 | num5 | num6);
+				int topology2 = topologyMap.GetTopology(normX, normZ, radius2, num4);
 				if (slope > 20f || (topology & num3) != 0 || (topology2 & num4) != 0)
 				{
 					array[j, i] = int.MaxValue;
@@ -193,12 +196,12 @@ public class TerrainPath : TerrainExtension
 			{
 				float normX = ((float)j + 0.5f) / (float)num;
 				float slope = heightMap.GetSlope(normX, normZ);
-				int topology = topologyMap.GetTopology(normX, normZ, radius);
-				int topology2 = topologyMap.GetTopology(normX, normZ, radius2);
 				int num2 = 196996;
 				int num3 = 10487296;
 				int num4 = 2;
 				int num5 = 49152;
+				int topology = topologyMap.GetTopology(normX, normZ, radius, num2 | num4 | num5);
+				int topology2 = topologyMap.GetTopology(normX, normZ, radius2, num3);
 				if (slope > 30f || (topology & num2) != 0 || (topology2 & num3) != 0)
 				{
 					array[j, i] = int.MaxValue;

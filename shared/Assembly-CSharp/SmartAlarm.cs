@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CompanionServer;
 using ConVar;
 using Facepunch;
@@ -20,13 +21,13 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 
 	public Animator Animator;
 
-	public readonly NotificationList _subscriptions = new NotificationList();
-
 	public string _notificationTitle = "";
 
 	public string _notificationBody = "";
 
 	public float _lastSentTime;
+
+	private readonly HashSet<ulong> _mutedPlayers = new HashSet<ulong>();
 
 	public override AppEntityType Type => (AppEntityType)2;
 
@@ -124,17 +125,30 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 
 	public bool AddSubscription(ulong steamId)
 	{
-		return _subscriptions.AddSubscription(steamId);
+		if (!IsPairedWith(steamId))
+		{
+			return false;
+		}
+		_mutedPlayers.Remove(steamId);
+		return true;
 	}
 
 	public bool RemoveSubscription(ulong steamId)
 	{
-		return _subscriptions.RemoveSubscription(steamId);
+		if (IsPairedWith(steamId))
+		{
+			return _mutedPlayers.Add(steamId);
+		}
+		return false;
 	}
 
 	public bool HasSubscription(ulong steamId)
 	{
-		return _subscriptions.HasSubscription(steamId);
+		if (IsPairedWith(steamId))
+		{
+			return !_mutedPlayers.Contains(steamId);
+		}
+		return false;
 	}
 
 	public override void InitShared()
@@ -162,9 +176,10 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 			BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege();
 			if ((Object)(object)buildingPrivilege != (Object)null)
 			{
-				_subscriptions.IntersectWith(buildingPrivilege.authorizedPlayers);
+				_pairedPlayers.IntersectWith(buildingPrivilege.authorizedPlayers);
+				_mutedPlayers.IntersectWith(buildingPrivilege.authorizedPlayers);
 			}
-			_subscriptions.SendNotification(NotificationChannel.SmartAlarm, _notificationTitle, _notificationBody, "alarm");
+			_pairedPlayers.SendNotification(NotificationChannel.SmartAlarm, _notificationTitle, _notificationBody, "alarm", _mutedPlayers);
 			_lastSentTime = Time.realtimeSinceStartup;
 		}
 	}
@@ -177,7 +192,8 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 			info.msg.smartAlarm = Pool.Get<SmartAlarm>();
 			info.msg.smartAlarm.notificationTitle = _notificationTitle;
 			info.msg.smartAlarm.notificationBody = _notificationBody;
-			info.msg.smartAlarm.subscriptions = _subscriptions.ToList();
+			info.msg.smartAlarm.mutedPlayers = Pool.Get<List<ulong>>();
+			info.msg.smartAlarm.mutedPlayers.AddRange(_mutedPlayers);
 		}
 	}
 
@@ -188,20 +204,30 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 		{
 			_notificationTitle = info.msg.smartAlarm.notificationTitle;
 			_notificationBody = info.msg.smartAlarm.notificationBody;
-			_subscriptions.LoadFrom(info.msg.smartAlarm.subscriptions);
+			_mutedPlayers.Clear();
+			if (info.msg.smartAlarm.mutedPlayers != null)
+			{
+				_mutedPlayers.UnionWith(info.msg.smartAlarm.mutedPlayers);
+			}
 		}
 	}
 
 	protected override void OnPairedWithPlayer(BasePlayer player)
 	{
-		if (!((Object)(object)player == (Object)null) && !HasSubscription(player.userID) && !AddSubscription(player.userID))
+		base.OnPairedWithPlayer(player);
+		if ((Object)(object)player != (Object)null)
 		{
-			player.ClientRPC(RpcTarget.Player("HandleCompanionPairingResult", player), 7);
+			_mutedPlayers.Remove(player.userID);
 		}
 	}
 
-	[RPC_Server]
+	protected override void OnPairedPlayersCleared()
+	{
+		_mutedPlayers.Clear();
+	}
+
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void StartSetupNotification(RPCMessage rpc)
 	{
@@ -215,9 +241,9 @@ public class SmartAlarm : AppIOEntity, ISubscribable
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	private void SetNotificationTextImpl(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract())

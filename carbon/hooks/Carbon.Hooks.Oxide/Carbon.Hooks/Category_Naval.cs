@@ -14,14 +14,14 @@ public class Category_Naval
 	public class Naval_SmallEngine
 	{
 		[Patch("OnEngineReverse", "OnEngineReverse", "SmallEngine", "SV_ToggleReverse", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("851f26a7198e48e3a7e17f43bf308afb")]
+		[Identifier("8b2b41666a8444aaa0c60a830a9aea9a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "SmallEngine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_SmallEngine_851f26a7198e48e3a7e17f43bf308afb : Patch
+		public class Naval_SmallEngine_8b2b41666a8444aaa0c60a830a9aea9a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -56,14 +56,14 @@ public class Category_Naval
 		}
 
 		[Patch("OnEngineStart", "OnEngineStart [SmallEngine]", "SmallEngine", "TurnOn", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("42318dceb0674be3bc68ceb35f67733b")]
+		[Identifier("d240877e8adb44d3a576522f4191873a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "SmallEngine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_SmallEngine_42318dceb0674be3bc68ceb35f67733b : Patch
+		public class Naval_SmallEngine_d240877e8adb44d3a576522f4191873a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -96,14 +96,14 @@ public class Category_Naval
 		}
 
 		[Patch("OnEngineStop", "OnEngineStop [SmallEngine]", "SmallEngine", "TurnOff", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d0f97be917124b3399a411719553faae")]
+		[Identifier("352ebf97680a407780a535ad6543e1de")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "SmallEngine", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_SmallEngine_d0f97be917124b3399a411719553faae : Patch
+		public class Naval_SmallEngine_352ebf97680a407780a535ad6543e1de : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -139,14 +139,14 @@ public class Category_Naval
 	public class Naval_Sail
 	{
 		[Patch("CanRotateSail", "CanRotateSail", "Sail", "CanRotate", new string[] { "BasePlayer" })]
-		[Identifier("95ccfc6021364bc5ac22c1efe6c3e45a")]
+		[Identifier("d04c20d977534ca89533a42823df1607")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Sail", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(bool))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_Sail_95ccfc6021364bc5ac22c1efe6c3e45a : Patch
+		public class Naval_Sail_d04c20d977534ca89533a42823df1607 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -184,14 +184,14 @@ public class Category_Naval
 		}
 
 		[Patch("CanRaiseSail", "CanRaiseSail", "Sail", "CanBeRaised", new string[] { "BasePlayer" })]
-		[Identifier("e7ad6e054e18450db63df11184288a6c")]
+		[Identifier("d554ff3befbe41cfbdd0c78104af4cb0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Sail", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(bool))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_Sail_e7ad6e054e18450db63df11184288a6c : Patch
+		public class Naval_Sail_d554ff3befbe41cfbdd0c78104af4cb0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -229,14 +229,14 @@ public class Category_Naval
 		}
 
 		[Patch("CanLowerSail", "CanLowerSail", "Sail", "CanBeLowered", new string[] { "BasePlayer" })]
-		[Identifier("08d51bd1d74c48acb8ebba622c7b5786")]
+		[Identifier("45a2bc6e168847078ae66a5bffc107e0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Sail", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(bool))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_Sail_08d51bd1d74c48acb8ebba622c7b5786 : Patch
+		public class Naval_Sail_45a2bc6e168847078ae66a5bffc107e0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -276,8 +276,8 @@ public class Category_Naval
 
 	public class Naval_BoatGroupSpawner
 	{
-		[Patch("OnBoatGroupSpawn", "OnBoatGroupSpawn", "BoatGroupSpawner", "SpawnBoatGroup", new string[] { "System.Collections.Generic.HashSet`1<RHIB>", "BoatAI/AILoadMode", "System.Boolean", "ScientistBoatOilrigManager" })]
-		[Identifier("e62c8d3f0f56491e8ad415c06e5cb4a4")]
+		[Patch("OnBoatGroupSpawn", "OnBoatGroupSpawn", "BoatGroupSpawner", "SpawnBoatGroup", new string[] { "System.Collections.Generic.HashSet`1<RHIB>", "BoatAI/AILoadMode", "System.Boolean" })]
+		[Identifier("02df075c868945b2a4a4eadaaaa96f6f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BoatGroupSpawner", false)]
 		[Parameter("local1", "UnityEngine.Vector2", false)]
@@ -288,7 +288,7 @@ public class Category_Naval
 		[Return(typeof(void))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_BoatGroupSpawner_e62c8d3f0f56491e8ad415c06e5cb4a4 : Patch
+		public class Naval_BoatGroupSpawner_02df075c868945b2a4a4eadaaaa96f6f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -333,8 +333,8 @@ public class Category_Naval
 			}
 		}
 
-		[Patch("OnBoatGroupSpawned", "OnBoatGroupSpawned", "BoatGroupSpawner", "SpawnBoatGroup", new string[] { "System.Collections.Generic.HashSet`1<RHIB>", "BoatAI/AILoadMode", "System.Boolean", "ScientistBoatOilrigManager" })]
-		[Identifier("648ee2b0cf3046438e83a10046086657")]
+		[Patch("OnBoatGroupSpawned", "OnBoatGroupSpawned", "BoatGroupSpawner", "SpawnBoatGroup", new string[] { "System.Collections.Generic.HashSet`1<RHIB>", "BoatAI/AILoadMode", "System.Boolean" })]
+		[Identifier("c9a767a17c1947479348793b4d3a39ef")]
 		[Dependencies(new string[] { "OnBoatGroupSpawn" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BoatGroupSpawner", false)]
@@ -346,14 +346,14 @@ public class Category_Naval
 		[Return(typeof(void), Discarded = true)]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_BoatGroupSpawner_648ee2b0cf3046438e83a10046086657 : Patch
+		public class Naval_BoatGroupSpawner_c9a767a17c1947479348793b4d3a39ef : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 95)
+					if (x++ != 92)
 					{
 						yield return instruction;
 						continue;
@@ -385,13 +385,13 @@ public class Category_Naval
 			}
 		}
 
-		[Patch("OnBoatGroupSpawned", "OnBoatGroupSpawned [Patch]", "BoatGroupSpawner", "SpawnBoatGroup", new string[] { "System.Collections.Generic.HashSet`1<RHIB>", "BoatAI/AILoadMode", "System.Boolean", "ScientistBoatOilrigManager" })]
-		[Identifier("ffa7234bf30a41ac90ea6255a534242a")]
+		[Patch("OnBoatGroupSpawned", "OnBoatGroupSpawned [Patch]", "BoatGroupSpawner", "SpawnBoatGroup", new string[] { "System.Collections.Generic.HashSet`1<RHIB>", "BoatAI/AILoadMode", "System.Boolean" })]
+		[Identifier("424ec5b4a1d440409ade0abe1e66da3d")]
 		[Dependencies(new string[] { "OnBoatGroupSpawned" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_BoatGroupSpawner_ffa7234bf30a41ac90ea6255a534242a : Patch
+		public class Naval_BoatGroupSpawner_424ec5b4a1d440409ade0abe1e66da3d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -400,7 +400,7 @@ public class Category_Naval
 				List<CodeInstruction> list = new List<CodeInstruction>();
 				List<CodeInstruction> list2 = new List<CodeInstruction>(Instructions);
 				Label label = Generator.DefineLabel();
-				CodeInstruction val = list2[108];
+				CodeInstruction val = list2[105];
 				list.Add(new CodeInstruction(OpCodes.Brfalse, (object)label));
 				if (list.Count > 0)
 				{
@@ -421,14 +421,14 @@ public class Category_Naval
 	public class Naval_TriggerDeepSeaPortal
 	{
 		[Patch("OnDeepSeaTeleport", "OnDeepSeaTeleport", "TriggerDeepSeaPortal", "OnEntityEnter", new string[] { "BaseEntity" })]
-		[Identifier("7c669be086624924a394071e1ee39108")]
+		[Identifier("b602809136ff4d2ebc437c7c4f34b70f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "TriggerDeepSeaPortal", false)]
 		[Parameter("ent", "BaseEntity", false)]
 		[Return(typeof(void))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_TriggerDeepSeaPortal_7c669be086624924a394071e1ee39108 : Patch
+		public class Naval_TriggerDeepSeaPortal_b602809136ff4d2ebc437c7c4f34b70f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -463,14 +463,14 @@ public class Category_Naval
 		}
 
 		[Patch("CanTeleportDeepSea", "CanTeleportDeepSea", "TriggerDeepSeaPortal", "CanEntityTeleport", new string[] { "BaseEntity" })]
-		[Identifier("fc01f963ada94231a97717880b6c6726")]
+		[Identifier("5fc46e998e5e4323bf0209d48f06e8c1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("entity", "BaseEntity", false)]
 		[Parameter("portal", "DeepSeaPortal", false)]
 		[Return(typeof(ValueTuple<bool, Phrase>))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_TriggerDeepSeaPortal_fc01f963ada94231a97717880b6c6726 : Patch
+		public class Naval_TriggerDeepSeaPortal_5fc46e998e5e4323bf0209d48f06e8c1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -512,13 +512,13 @@ public class Category_Naval
 	public class Naval_Cannon
 	{
 		[Patch("CanLightCannonFuse", "CanLightCannonFuse", "Cannon", "CanLightFuse", new string[] { })]
-		[Identifier("995522235f27423491425ccc6583ff1f")]
+		[Identifier("dccdb4b4b6d6491781b99b230c70cca6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Cannon", false)]
 		[Return(typeof(bool))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_Cannon_995522235f27423491425ccc6583ff1f : Patch
+		public class Naval_Cannon_dccdb4b4b6d6491781b99b230c70cca6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -557,7 +557,7 @@ public class Category_Naval
 	public class Naval_PlayerBoat
 	{
 		[Patch("OnPlayerBoatCollide", "OnPlayerBoatCollide", "PlayerBoat", "ProcessCollision", new string[] { "UnityEngine.Collision" })]
-		[Identifier("4b1bcc17d2d44527a34043e5fdc29bc8")]
+		[Identifier("a33925462b794f0eb0aa8471c817e415")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerBoat", false)]
 		[Parameter("local0", "BaseEntity", false)]
@@ -565,7 +565,7 @@ public class Category_Naval
 		[Return(typeof(void))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_PlayerBoat_4b1bcc17d2d44527a34043e5fdc29bc8 : Patch
+		public class Naval_PlayerBoat_a33925462b794f0eb0aa8471c817e415 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -599,14 +599,14 @@ public class Category_Naval
 		}
 
 		[Patch("CanEditPlayerBoat", "CanEditPlayerBoat", "PlayerBoat", "CanStartEditing", new string[] { "BasePlayer", "System.Boolean" })]
-		[Identifier("1b619ed6a5624a2eb76ea7c90d4d8b95")]
+		[Identifier("edfbfe910f6c4b5f8ce3d56e0c4eebf8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerBoat", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(bool))]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_PlayerBoat_1b619ed6a5624a2eb76ea7c90d4d8b95 : Patch
+		public class Naval_PlayerBoat_edfbfe910f6c4b5f8ce3d56e0c4eebf8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -644,16 +644,16 @@ public class Category_Naval
 		}
 	}
 
-	public class Naval_DeepSeaManagerCloseDeepSeaAsyncd78
+	public class Naval_DeepSeaManagerCloseDeepSeaAsyncd80
 	{
-		[Patch("OnDeepSeaClosed", "OnDeepSeaClosed", "DeepSeaManager/<CloseDeepSeaAsync>d__78", "MoveNext", new string[] { })]
-		[Identifier("ed2fae781bad4eef9d1dac2b4d962317")]
+		[Patch("OnDeepSeaClosed", "OnDeepSeaClosed", "DeepSeaManager/<CloseDeepSeaAsync>d__80", "MoveNext", new string[] { })]
+		[Identifier("4ac15e0d34344f63b1c2ad247c990e46")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "DeepSeaManager", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_DeepSeaManagerCloseDeepSeaAsyncd78_ed2fae781bad4eef9d1dac2b4d962317 : Patch
+		public class Naval_DeepSeaManagerCloseDeepSeaAsyncd80_4ac15e0d34344f63b1c2ad247c990e46 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -678,15 +678,15 @@ public class Category_Naval
 			}
 		}
 
-		[Patch("OnDeepSeaClose", "OnDeepSeaClose", "DeepSeaManager/<CloseDeepSeaAsync>d__78", "MoveNext", new string[] { })]
-		[Identifier("0fbf4bd8e4eb4fd7b0f724b95ad6c6bb")]
+		[Patch("OnDeepSeaClose", "OnDeepSeaClose", "DeepSeaManager/<CloseDeepSeaAsync>d__80", "MoveNext", new string[] { })]
+		[Identifier("c00220008d494a8e885c6462694fe356")]
 		[Dependencies(new string[] { "OnDeepSeaClosed" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "DeepSeaManager", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_DeepSeaManagerCloseDeepSeaAsyncd78_0fbf4bd8e4eb4fd7b0f724b95ad6c6bb : Patch
+		public class Naval_DeepSeaManagerCloseDeepSeaAsyncd80_c00220008d494a8e885c6462694fe356 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -712,23 +712,23 @@ public class Category_Naval
 		}
 	}
 
-	public class Naval_DeepSeaManagerOpenDeepSeaAsyncd76
+	public class Naval_DeepSeaManagerOpenDeepSeaAsyncd78
 	{
-		[Patch("OnDeepSeaOpened", "OnDeepSeaOpened", "DeepSeaManager/<OpenDeepSeaAsync>d__76", "MoveNext", new string[] { })]
-		[Identifier("f8ccf5998e28410498122801257cb116")]
+		[Patch("OnDeepSeaOpened", "OnDeepSeaOpened", "DeepSeaManager/<OpenDeepSeaAsync>d__78", "MoveNext", new string[] { })]
+		[Identifier("b609c5d6bc6d4e089c317949abd9ae6f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "DeepSeaManager", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_DeepSeaManagerOpenDeepSeaAsyncd76_f8ccf5998e28410498122801257cb116 : Patch
+		public class Naval_DeepSeaManagerOpenDeepSeaAsyncd78_b609c5d6bc6d4e089c317949abd9ae6f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 104)
+					if (x++ != 105)
 					{
 						yield return instruction;
 						continue;
@@ -746,15 +746,15 @@ public class Category_Naval
 			}
 		}
 
-		[Patch("OnDeepSeaOpen", "OnDeepSeaOpen", "DeepSeaManager/<OpenDeepSeaAsync>d__76", "MoveNext", new string[] { })]
-		[Identifier("2491c8961e524462983a570bf1698a9f")]
+		[Patch("OnDeepSeaOpen", "OnDeepSeaOpen", "DeepSeaManager/<OpenDeepSeaAsync>d__78", "MoveNext", new string[] { })]
+		[Identifier("93aa313a56fb4ff2b0560fe58eedcd11")]
 		[Dependencies(new string[] { "OnDeepSeaOpened" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "DeepSeaManager", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_DeepSeaManagerOpenDeepSeaAsyncd76_2491c8961e524462983a570bf1698a9f : Patch
+		public class Naval_DeepSeaManagerOpenDeepSeaAsyncd78_93aa313a56fb4ff2b0560fe58eedcd11 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -783,14 +783,14 @@ public class Category_Naval
 	public class Naval_BoatBuildingStation
 	{
 		[Patch("OnPlayerBoatEditStarted", "OnPlayerBoatEditStarted", "BoatBuildingStation", "ConvertPlayerBoatToConstruction", new string[] { })]
-		[Identifier("96fff3eb340b4aec8c2043c941b9b091")]
+		[Identifier("021a3ab3ad1f4db5894d47ac3ba994ff")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "PlayerBoat", false)]
 		[Parameter("self", "BoatBuildingStation", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Naval")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Naval_BoatBuildingStation_96fff3eb340b4aec8c2043c941b9b091 : Patch
+		public class Naval_BoatBuildingStation_021a3ab3ad1f4db5894d47ac3ba994ff : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -65,8 +65,14 @@ public class MapEntity : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	private static uint ImagePart(int type, int imgnum)
+	{
+		return (uint)(type * 1000 + imgnum);
+	}
+
 	public override void Load(LoadInfo info)
 	{
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (info.msg.mapEntity != null)
 		{
@@ -79,25 +85,41 @@ public class MapEntity : HeldEntity
 				paintImages = info.msg.mapEntity.paintImages.ToArray();
 			}
 		}
+		if (isServer)
+		{
+			Dictionary<ulong, uint> dictionary = Pool.Get<Dictionary<ulong, uint>>();
+			FileStorage.server.GetCrcs(net.ID, dictionary);
+			for (int i = 0; i < fogImages.Length; i++)
+			{
+				dictionary.TryGetValue(ImagePart(0, i), out fogImages[i]);
+			}
+			for (int j = 0; j < paintImages.Length; j++)
+			{
+				dictionary.TryGetValue(ImagePart(1, j), out paintImages[j]);
+			}
+			Pool.FreeUnmanaged<ulong, uint>(ref dictionary);
+		}
 	}
 
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
-		info.msg.mapEntity = Pool.Get<MapEntity>();
-		info.msg.mapEntity.fogImages = Pool.Get<List<uint>>();
-		info.msg.mapEntity.fogImages.AddRange(fogImages);
-		info.msg.mapEntity.paintImages = Pool.Get<List<uint>>();
-		info.msg.mapEntity.paintImages.AddRange(paintImages);
+		if (!info.forDisk)
+		{
+			info.msg.mapEntity = Pool.Get<MapEntity>();
+			info.msg.mapEntity.fogImages = Pool.Get<List<uint>>();
+			info.msg.mapEntity.fogImages.AddRange(fogImages);
+			info.msg.mapEntity.paintImages = Pool.Get<List<uint>>();
+			info.msg.mapEntity.paintImages.AddRange(paintImages);
+		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	[RPC_Server.FromOwner]
 	public void ImageUpdate(RPCMessage msg)
 	{
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)msg.player == (Object)null)
 		{
 			return;
@@ -109,19 +131,17 @@ public class MapEntity : HeldEntity
 		{
 			return;
 		}
-		uint num2 = (uint)(b * 1000 + b2);
 		byte[] array = msg.read.BytesWithSize();
 		if (array != null)
 		{
-			FileStorage.server.RemoveEntityNum(net.ID, num2);
-			uint num3 = FileStorage.server.Store(array, FileStorage.Type.png, net.ID, num2);
+			uint num2 = FileStorage.server.Store(net.ID, ImagePart(b, b2), FileStorage.Type.png, array);
 			if (b == 0)
 			{
-				fogImages[b2] = num3;
+				fogImages[b2] = num2;
 			}
 			if (b == 1)
 			{
-				paintImages[b2] = num3;
+				paintImages[b2] = num2;
 			}
 			InvalidateNetworkCache();
 			Interface.CallHook("OnMapImageUpdated");

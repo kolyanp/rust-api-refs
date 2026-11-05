@@ -26,8 +26,6 @@ public class BurstClothHitBoxCollision : BurstCloth, IClientComponent, IPrefabPr
 	[Tooltip("Keywords in bone names which should be ignored for collision")]
 	public string[] IgnoreKeywords;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
-
 	private static void BreakCapsuleIntoSpheres(Transform transform, Vector3 pointA, Vector3 pointB, Vector3 up, float halfHeight, float radius, List<SphereParams> sphereColliders)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)

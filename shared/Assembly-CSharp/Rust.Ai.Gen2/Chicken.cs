@@ -54,8 +54,8 @@ public class Chicken : BaseNPC2
 
 	private void CheckEggDrop()
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		if (isServer && Random.Range(0, 100) > 50 && (Object)(object)((Component)this).transform != (Object)null && BaseNetworkable.HasCloseConnections(((Component)this).transform.position, 100f))
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		if (isServer && Rng.Range(0, 100) > 50 && (Object)(object)((Component)this).transform != (Object)null && BaseNetworkable.HasCloseConnections(((Component)this).transform.position, 100f))
 		{
 			SpawnEgg();
 		}

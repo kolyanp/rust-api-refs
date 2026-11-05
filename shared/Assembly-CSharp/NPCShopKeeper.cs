@@ -159,17 +159,17 @@ public class NPCShopKeeper : NPCPlayer
 
 	public virtual void Greeting()
 	{
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)eyes == (Object)null)
+		if (eyes == null)
 		{
 			return;
 		}
@@ -223,5 +223,14 @@ public class NPCShopKeeper : NPCPlayer
 	public void NotifyEvent(ShopkeeperEvent shopEvent)
 	{
 		ClientRPC(RpcTarget.NetworkGroup("ClientNotifyShopEvent"), (int)shopEvent);
+	}
+
+	public override void OnAttacked(HitInfo info)
+	{
+		if (isServer && info.hasDamage && (Object)(object)info.InitiatorPlayer != (Object)null && !info.InitiatorPlayer.IsNpc && InSafeZone())
+		{
+			info.InitiatorPlayer.MarkHostileFor();
+		}
+		base.OnAttacked(info);
 	}
 }

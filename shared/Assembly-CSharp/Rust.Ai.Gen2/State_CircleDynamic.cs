@@ -52,7 +52,7 @@ public class State_CircleDynamic : FSMStateBase
 		{
 			Senses.TrySetTarget(payload.entity);
 		}
-		clockWise = Random.value > 0.5f;
+		clockWise = Rng.Value > 0.5f;
 		EndBurst();
 		UpdateAngle();
 		return base.OnStateEnter(payload);
@@ -69,22 +69,22 @@ public class State_CircleDynamic : FSMStateBase
 
 	private void UpdateAngle()
 	{
-		randomAngle = Random.Range(angleRange.x, angleRange.y) * (float)(clockWise ? 1 : (-1));
-		Owner.Invoke(UpdateAngleAction, Random.Range(angleDurationRange.x, angleDurationRange.y));
+		randomAngle = Rng.Range(angleRange.x, angleRange.y) * (float)(clockWise ? 1 : (-1));
+		Owner.Invoke(UpdateAngleAction, Rng.Range(angleDurationRange.x, angleDurationRange.y));
 	}
 
 	private void UpdateBurst()
 	{
 		burstSpeedIndexOffset = 2;
-		clockWise = Random.value > 0.5f;
-		float time = Random.Range(burstDurationRange.x, burstDurationRange.y);
+		clockWise = Rng.Value > 0.5f;
+		float time = Rng.Range(burstDurationRange.x, burstDurationRange.y);
 		Owner.Invoke(EndBurstAction, time);
 	}
 
 	private void EndBurst()
 	{
 		burstSpeedIndexOffset = 0;
-		float time = Random.Range(burstCooldownRange.x, burstCooldownRange.y);
+		float time = Rng.Range(burstCooldownRange.x, burstCooldownRange.y);
 		Owner.Invoke(UpdateBurstAction, time);
 	}
 

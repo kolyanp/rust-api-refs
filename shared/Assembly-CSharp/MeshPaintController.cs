@@ -74,7 +74,7 @@ public class MeshPaintController : MonoBehaviour, IClientComponent
 	public Vector3 endLinePosition;
 
 	[NonSerialized]
-	public Vector3? lineDirection;
+	public Nullable lineDirection;
 
 	public MeshPaintController()
 	{

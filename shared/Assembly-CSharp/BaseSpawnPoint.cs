@@ -8,14 +8,15 @@ public abstract class BaseSpawnPoint : MonoBehaviour, IServerComponent
 		Normal,
 		Tugboat,
 		Motorbike,
-		Bicycle
+		Bicycle,
+		Seagull
 	}
 
 	public SpawnPointType spawnPointType;
 
+	[SerializeField]
 	[Tooltip("Min distance between the spawn area and any human players")]
 	[Range(1f, 25f)]
-	[SerializeField]
 	protected float playerCheckMargin = 2f;
 
 	public static Dictionary<SpawnPointType, List<BaseSpawnPoint>> spawnPoints = new Dictionary<SpawnPointType, List<BaseSpawnPoint>>();

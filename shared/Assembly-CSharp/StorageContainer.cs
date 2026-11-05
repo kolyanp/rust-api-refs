@@ -93,6 +93,8 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 
 	public bool DropFloats => dropFloats;
 
+	public virtual bool ScatterDroppedItems => true;
+
 	public float DestroyLootPercent
 	{
 		get
@@ -376,8 +378,8 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisibleTwoWay(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (isLootable)
@@ -528,8 +530,8 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	public static void DropItems(IItemContainerEntity containerEntity, BaseEntity initiator = null)
 	{
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
 		ItemContainer itemContainer = containerEntity.inventory;
 		if (itemContainer == null || itemContainer.itemList == null || itemContainer.itemList.Count == 0 || !containerEntity.DropsLoot)
 		{
@@ -541,7 +543,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 			{
 				containerEntity.DropBonusItems(initiator, itemContainer);
 			}
-			DropUtil.DropItems(itemContainer, containerEntity.GetDropPosition());
+			DropUtil.DropItems(itemContainer, containerEntity.GetDropPosition(), containerEntity.ScatterDroppedItems);
 		}
 		else
 		{

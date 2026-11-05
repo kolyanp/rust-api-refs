@@ -7,6 +7,11 @@ public abstract class DecorComponent : PrefabAttribute
 
 	public abstract void Apply(ref Vector3 pos, ref Quaternion rot, ref Vector3 scale);
 
+	public virtual void ExpandBounds(ref float maxScale, ref float maxShift)
+	{
+		maxShift = float.PositiveInfinity;
+	}
+
 	protected override void AttributeSetup(GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
 		base.AttributeSetup(rootObj, name, serverside, clientside, bundling);

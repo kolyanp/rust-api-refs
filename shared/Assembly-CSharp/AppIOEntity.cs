@@ -11,6 +11,8 @@ using UnityEngine.Assertions;
 
 public abstract class AppIOEntity : IOEntity
 {
+	protected readonly NotificationList _pairedPlayers = new NotificationList();
+
 	private float _cacheTime;
 
 	private BuildingPrivlidge _cache;
@@ -32,6 +34,47 @@ public abstract class AppIOEntity : IOEntity
 	{
 		using (TimeWarning.New("AppIOEntity.OnRpcMessage"))
 		{
+			if (rpc == 3704248322u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - ClearPairedPlayers"));
+				}
+				using (TimeWarning.New("ClearPairedPlayers"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.CallsPerSecond.Test(3704248322u, "ClearPairedPlayers", this, player, 5uL))
+						{
+							return true;
+						}
+						if (!RPC_Server.IsVisible.Test(3704248322u, "ClearPairedPlayers", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg2 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							ClearPairedPlayers(msg2);
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.LogException(ex);
+						player.Kick("RPC Error in ClearPairedPlayers");
+					}
+				}
+				return true;
+			}
 			if (rpc == 3018927126u && (Object)(object)player != (Object)null)
 			{
 				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
@@ -56,18 +99,18 @@ public abstract class AppIOEntity : IOEntity
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg2 = new RPCMessage
+							RPCMessage msg3 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							PairWithApp(msg2);
+							PairWithApp(msg3);
 						}
 					}
-					catch (Exception ex)
+					catch (Exception ex2)
 					{
-						Debug.LogException(ex);
+						Debug.LogException(ex2);
 						player.Kick("RPC Error in PairWithApp");
 					}
 				}
@@ -77,15 +120,52 @@ public abstract class AppIOEntity : IOEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	public bool IsPairedWith(ulong steamId)
+	{
+		return _pairedPlayers.HasSubscription(steamId);
+	}
+
+	public bool CanAppAccess(ulong steamId)
+	{
+		if (!IsPairedWith(steamId))
+		{
+			return false;
+		}
+		BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege();
+		if (!((Object)(object)buildingPrivilege == (Object)null))
+		{
+			return buildingPrivilege.IsAuthed(steamId);
+		}
+		return true;
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		if (info.forDisk)
+		{
+			info.msg.appIOEntity = Pool.Get<AppIOEntity>();
+			info.msg.appIOEntity.pairedPlayers = _pairedPlayers.ToList();
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.fromDisk && info.msg.appIOEntity != null)
+		{
+			_pairedPlayers.LoadFrom(info.msg.appIOEntity.pairedPlayers);
+		}
+	}
+
 	protected void BroadcastValueChange()
 	{
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		if (!this.IsValid())
 		{
 			return;
 		}
-		EntityTarget target = GetTarget();
 		AppBroadcast val = Pool.Get<AppBroadcast>();
 		try
 		{
@@ -93,7 +173,7 @@ public abstract class AppIOEntity : IOEntity
 			val.entityChanged.entityId = net.ID;
 			val.entityChanged.payload = Pool.Get<AppEntityPayload>();
 			FillEntityPayload(val.entityChanged.payload);
-			CompanionServer.Server.Broadcast(target, val);
+			CompanionServer.Server.Broadcast(this, val);
 		}
 		finally
 		{
@@ -122,9 +202,9 @@ public abstract class AppIOEntity : IOEntity
 		return new EntityTarget(net.ID);
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	public async void PairWithApp(RPCMessage msg)
 	{
 		try
@@ -156,6 +236,26 @@ public abstract class AppIOEntity : IOEntity
 	}
 
 	protected virtual void OnPairedWithPlayer(BasePlayer player)
+	{
+		if (!((Object)(object)player == (Object)null) && !IsPairedWith(player.userID) && !_pairedPlayers.AddSubscription(player.userID))
+		{
+			player.ClientRPC(RpcTarget.Player("HandleCompanionPairingResult", player), 7);
+		}
+	}
+
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	private void ClearPairedPlayers(RPCMessage msg)
+	{
+		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanBuild())
+		{
+			_pairedPlayers.Clear();
+			OnPairedPlayersCleared();
+		}
+	}
+
+	protected virtual void OnPairedPlayersCleared()
 	{
 	}
 }

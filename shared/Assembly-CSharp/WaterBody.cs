@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class WaterBody : MonoBehaviour
+public class WaterBody : MonoBehaviour, IFlattenKeepsDescendants
 {
 	[Flags]
 	public enum FishingTag

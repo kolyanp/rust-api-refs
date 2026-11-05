@@ -8,6 +8,12 @@ public class LiquidWeaponEffects : MonoBehaviour
 
 	public ParticleSystem InnerEmissionPS;
 
+	public ParticleSystem RadioactiveRootPS;
+
+	public ParticleSystem RadioactiveEmissionPS;
+
+	public ParticleSystem RadioactiveInnerEmissionPS;
+
 	public LiquidWobble Liquid;
 
 	[Header("Main Stream")]
@@ -36,6 +42,8 @@ public class LiquidWeaponEffects : MonoBehaviour
 	public bool UseImpactSplashEffect;
 
 	public GameObjectRef ImpactSplashEffect;
+
+	public GameObjectRef RadioactiveImpactSplashEffect;
 
 	public float ImpactSplashEffectInterval = 0.1f;
 

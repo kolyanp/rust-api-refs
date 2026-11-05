@@ -4,8 +4,8 @@ namespace FIMSpace.FLook;
 
 public class SM_SwitchLookAnimator : StateMachineBehaviour
 {
-	[Tooltip("Time of animation")]
 	[Range(0f, 1f)]
+	[Tooltip("Time of animation")]
 	public float EnableBackAfter = 0.9f;
 
 	public float TransitionDuration = 0.3f;

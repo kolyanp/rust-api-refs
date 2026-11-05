@@ -51,11 +51,11 @@ public class NPCSimpleMissionProvider : NPCTalking, IMissionProvider
 		NPCTalking.serverMissionProviders.TryAdd((IMissionProvider)this);
 	}
 
-	public override void Server_OnConversationEnded(BasePlayer player)
+	public override void OnConversationEnded(BasePlayer player)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		player.ProcessMissionEvent(BaseMission.MissionEventType.CONVERSATION, ProviderID(), 0f);
-		base.Server_OnConversationEnded(player);
+		base.OnConversationEnded(player);
 	}
 
 	public override void Server_OnConversationStarted(BasePlayer speakingTo)

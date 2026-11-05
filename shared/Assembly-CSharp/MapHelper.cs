@@ -1,9 +1,10 @@
+using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
 public static class MapHelper
 {
-	public static Vector2i? StringToGrid(string text)
+	public static Nullable StringToGrid(string text)
 	{
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		Match match = new Regex("^([a-zA-Z]+)(\\d+)$").Match(text);
@@ -46,11 +47,11 @@ public static class MapHelper
 		return new Vector3(val.x + val2.x, 0f, val.y - val2.y) + new Vector3(num3 / 2f, 0f, num3 / -2f);
 	}
 
-	public static Vector3? StringToPosition(string text)
+	public static Nullable StringToPosition(string text)
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		Vector2i? val = StringToGrid(text);
+		Nullable val = StringToGrid(text);
 		if (!val.HasValue)
 		{
 			return null;

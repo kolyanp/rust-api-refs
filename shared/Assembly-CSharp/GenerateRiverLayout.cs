@@ -33,10 +33,10 @@ public class GenerateRiverLayout : ProceduralComponent
 		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0687: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0714: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0686: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0713: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
@@ -49,18 +49,18 @@ public class GenerateRiverLayout : ProceduralComponent
 		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0189: Unknown result type (might be due to invalid IL or missing references)
-		//IL_076d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0772: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_080c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0811: Unknown result type (might be due to invalid IL or missing references)
-		//IL_078b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0790: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0792: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0794: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0796: Unknown result type (might be due to invalid IL or missing references)
-		//IL_079b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_076c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0771: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_080b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0810: Unknown result type (might be due to invalid IL or missing references)
+		//IL_078a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_078f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0791: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0793: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0795: Unknown result type (might be due to invalid IL or missing references)
+		//IL_079a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
@@ -74,8 +74,8 @@ public class GenerateRiverLayout : ProceduralComponent
 		//IL_022a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0259: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
 		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
@@ -109,47 +109,47 @@ public class GenerateRiverLayout : ProceduralComponent
 		//IL_0415: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0425: Unknown result type (might be due to invalid IL or missing references)
 		//IL_042a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_042d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0443: Unknown result type (might be due to invalid IL or missing references)
-		//IL_044b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_044d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_044f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_045b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_045d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_045f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_046b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_046d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_046f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_048b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_048d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_048f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_049b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_049d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_049f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_060f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0611: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0616: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0618: Unknown result type (might be due to invalid IL or missing references)
-		//IL_061d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0626: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0628: Unknown result type (might be due to invalid IL or missing references)
-		//IL_062a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_062f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0633: Unknown result type (might be due to invalid IL or missing references)
-		//IL_063d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0642: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0646: Unknown result type (might be due to invalid IL or missing references)
-		//IL_064b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0607: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0442: Unknown result type (might be due to invalid IL or missing references)
+		//IL_045a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0462: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0464: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0466: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0472: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0474: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0476: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0482: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0484: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0486: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0492: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0494: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0496: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_060e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0610: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0615: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0617: Unknown result type (might be due to invalid IL or missing references)
+		//IL_061c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0625: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0627: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0629: Unknown result type (might be due to invalid IL or missing references)
+		//IL_062e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0632: Unknown result type (might be due to invalid IL or missing references)
+		//IL_063c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0641: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0645: Unknown result type (might be due to invalid IL or missing references)
+		//IL_064a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0606: Unknown result type (might be due to invalid IL or missing references)
 		if (World.Networked)
 		{
 			TerrainMeta.Path.Rivers.Clear();
@@ -261,17 +261,17 @@ public class GenerateRiverLayout : ProceduralComponent
 							Vector3 val11 = rot90 * val8;
 							Vector3 val12 = val11 * (radius * 1.5f);
 							Vector3 val13 = val11 * (radius2 + 1f + 64f);
-							int topology = topologyMap.GetTopology(val2, radius + 1f + 64f);
-							int num11 = topologyMap.GetTopology(val2) & topologyMap.GetTopology(val2 - val9) & topologyMap.GetTopology(val2 + val9) & topologyMap.GetTopology(val2 + val10) & topologyMap.GetTopology(val2 - val12) & topologyMap.GetTopology(val2 - val13) & topologyMap.GetTopology(val2 + val12) & topologyMap.GetTopology(val2 + val13);
-							int topology2 = topologyMap.GetTopology(val2);
-							int num12 = 3742724;
-							int num13 = 128;
-							int num14 = 128;
-							if ((topology & num12) != 0)
+							int mask = 3742724;
+							int num11 = 128;
+							int num12 = 128;
+							bool flag3 = topologyMap.HasTopology(val2, radius + 1f + 64f, mask);
+							int num13 = topologyMap.GetTopology(val2) & topologyMap.GetTopology(val2 - val9) & topologyMap.GetTopology(val2 + val9) & topologyMap.GetTopology(val2 + val10) & topologyMap.GetTopology(val2 - val12) & topologyMap.GetTopology(val2 - val13) & topologyMap.GetTopology(val2 + val12) & topologyMap.GetTopology(val2 + val13);
+							int topology = topologyMap.GetTopology(val2);
+							if (flag3)
 							{
 								break;
 							}
-							if ((num11 & num13) != 0)
+							if ((num13 & num11) != 0)
 							{
 								list2.Add(val2);
 								if (list2.Count >= 62)
@@ -294,7 +294,7 @@ public class GenerateRiverLayout : ProceduralComponent
 								}
 								break;
 							}
-							if ((topology2 & num14) != 0 || val2.y < 0f)
+							if ((topology & num12) != 0 || val2.y < 0f)
 							{
 								if (num6++ >= num10)
 								{
@@ -322,22 +322,22 @@ public class GenerateRiverLayout : ProceduralComponent
 				}
 			}
 			list.Sort((PathList a, PathList b) => b.Path.Points.Length.CompareTo(a.Path.Points.Length));
-			int num15 = (int)(World.Size / 16);
-			bool[,] array3 = new bool[num15, num15];
-			int num16 = 0;
-			for (int num17 = 0; num17 < list.Count; num17++)
+			int num14 = (int)(World.Size / 16);
+			bool[,] array3 = new bool[num14, num14];
+			int num15 = 0;
+			for (int num16 = 0; num16 < list.Count; num16++)
 			{
-				PathList pathList2 = list[num17];
-				bool flag3 = biomeMap.GetBiomeMaxType(pathList2.Path.GetEndPoint()) == 16;
-				if (num16 >= num && !flag3)
+				PathList pathList2 = list[num16];
+				bool flag4 = biomeMap.GetBiomeMaxType(pathList2.Path.GetEndPoint()) == 16;
+				if (num15 >= num && !flag4)
 				{
-					list.RemoveAt(num17--);
+					list.RemoveAt(num16--);
 					continue;
 				}
-				bool flag4 = false;
-				for (int num18 = 0; num18 < num17; num18++)
+				bool flag5 = false;
+				for (int num17 = 0; num17 < num16; num17++)
 				{
-					PathList pathList3 = list[num18];
+					PathList pathList3 = list[num17];
 					Vector3[] array2 = pathList2.Path.Points;
 					foreach (Vector3 val15 in array2)
 					{
@@ -347,71 +347,71 @@ public class GenerateRiverLayout : ProceduralComponent
 							Vector3 val17 = val15 - val16;
 							if (val17.sqrMagnitude < 270400f)
 							{
-								list.RemoveAt(num17--);
-								flag4 = true;
+								list.RemoveAt(num16--);
+								flag5 = true;
 							}
-							if (flag4)
+							if (flag5)
 							{
 								break;
 							}
 						}
-						if (flag4)
+						if (flag5)
 						{
 							break;
 						}
 					}
-					if (flag4)
+					if (flag5)
 					{
 						break;
 					}
 				}
-				if (flag4)
+				if (flag5)
 				{
 					continue;
 				}
-				for (int num19 = 0; num19 < pathList2.Path.Points.Length; num19++)
+				for (int num18 = 0; num18 < pathList2.Path.Points.Length; num18++)
 				{
-					Vector3 val18 = pathList2.Path.Points[num19];
-					int num20 = Mathf.Clamp((int)(TerrainMeta.NormalizeX(val18.x) * (float)num15), 0, num15 - 1);
-					int num21 = Mathf.Clamp((int)(TerrainMeta.NormalizeZ(val18.z) * (float)num15), 0, num15 - 1);
-					if (array3[num21, num20])
+					Vector3 val18 = pathList2.Path.Points[num18];
+					int num19 = Mathf.Clamp((int)(TerrainMeta.NormalizeX(val18.x) * (float)num14), 0, num14 - 1);
+					int num20 = Mathf.Clamp((int)(TerrainMeta.NormalizeZ(val18.z) * (float)num14), 0, num14 - 1);
+					if (array3[num20, num19])
 					{
-						list.RemoveAt(num17--);
-						flag4 = true;
+						list.RemoveAt(num16--);
+						flag5 = true;
 						break;
 					}
 				}
-				if (flag4)
+				if (flag5)
 				{
 					continue;
 				}
+				int num21 = -1;
 				int num22 = -1;
-				int num23 = -1;
-				for (int num24 = 0; num24 < pathList2.Path.Points.Length; num24++)
+				for (int num23 = 0; num23 < pathList2.Path.Points.Length; num23++)
 				{
-					Vector3 val19 = pathList2.Path.Points[num24];
-					int num25 = Mathf.Clamp((int)(TerrainMeta.NormalizeX(val19.x) * (float)num15), 0, num15 - 1);
-					int num26 = Mathf.Clamp((int)(TerrainMeta.NormalizeZ(val19.z) * (float)num15), 0, num15 - 1);
+					Vector3 val19 = pathList2.Path.Points[num23];
+					int num24 = Mathf.Clamp((int)(TerrainMeta.NormalizeX(val19.x) * (float)num14), 0, num14 - 1);
+					int num25 = Mathf.Clamp((int)(TerrainMeta.NormalizeZ(val19.z) * (float)num14), 0, num14 - 1);
+					if (num21 != -1)
+					{
+						array3[num25, num21] = true;
+					}
 					if (num22 != -1)
 					{
-						array3[num26, num22] = true;
+						array3[num22, num24] = true;
 					}
-					if (num23 != -1)
-					{
-						array3[num23, num25] = true;
-					}
-					array3[num26, num25] = true;
+					array3[num25, num24] = true;
+					num21 = num24;
 					num22 = num25;
-					num23 = num26;
 				}
-				if (!flag3)
+				if (!flag4)
 				{
-					num16++;
+					num15++;
 				}
 			}
-			for (int num27 = 0; num27 < list.Count; num27++)
+			for (int num26 = 0; num26 < list.Count; num26++)
 			{
-				list[num27].Name = "River " + (TerrainMeta.Path.Rivers.Count + num27);
+				list[num26].Name = "River " + (TerrainMeta.Path.Rivers.Count + num26);
 			}
 			foreach (PathList item2 in list)
 			{

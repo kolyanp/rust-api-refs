@@ -212,38 +212,37 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0259: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0241: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
 		if (ItemTrigger.HasAnyEntityContents && TimeSince.op_Implicit(ItemTrigger.EnterTime) > 0.5f)
 		{
 			Vector3 position = RaycastOriginPoint.position;
@@ -258,7 +257,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 			{
 				if (entityContent is IHopperTarget hopperTarget && hopperTarget.ToEntity.isServer)
 				{
-					if (entityContent is DroppedItem droppedItem && !droppedItem.HasFlag(Flags.Reserved3) && Container.QuickIndustrialPreCheck(droppedItem.item, new Vector2i(0, Container.capacity - 1), count, out var _))
+					if (entityContent is DroppedItem droppedItem && !droppedItem.HasFlag(Flags.Reserved3) && CanIntakeItem(droppedItem.item, count))
 					{
 						Vector3 val3 = ((Component)droppedItem).transform.position;
 						if ((Object)(object)droppedItem.childCollider != (Object)null)
@@ -542,6 +541,17 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 			}
 			return true;
 		}
+	}
+
+	private bool CanIntakeItem(Item item, int itemsCurrentlyMoving)
+	{
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		if (item.IsBackpack() && item.GetChildItemCount() > 0)
+		{
+			return Container.itemList.Count + itemsCurrentlyMoving < Container.capacity;
+		}
+		int foundSlot;
+		return Container.QuickIndustrialPreCheck(item, new Vector2i(0, Container.capacity - 1), itemsCurrentlyMoving, out foundSlot);
 	}
 
 	private bool Match(HopperMove obj)

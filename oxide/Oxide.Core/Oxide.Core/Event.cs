@@ -673,7 +673,7 @@ public class Event<T1, T2>
 			Invoking = true;
 			for (Event.Callback<T1, T2> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(default(T1), default(T2));
+				callback.Call(default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2>> removedQueue = RemovedQueue;
@@ -693,7 +693,7 @@ public class Event<T1, T2>
 			Invoking = true;
 			for (Event.Callback<T1, T2> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, default(T2));
+				callback.Call(arg0, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2>> removedQueue = RemovedQueue;
@@ -772,7 +772,7 @@ public class Event<T1, T2, T3>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Invoke(default(T1), default(T2), default(T3));
+				callback.Invoke(default, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3>> removedQueue = RemovedQueue;
@@ -792,7 +792,7 @@ public class Event<T1, T2, T3>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, default(T2), default(T3));
+				callback.Call(arg0, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3>> removedQueue = RemovedQueue;
@@ -812,7 +812,7 @@ public class Event<T1, T2, T3>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, arg1, default(T3));
+				callback.Call(arg0, arg1, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3>> removedQueue = RemovedQueue;
@@ -891,7 +891,7 @@ public class Event<T1, T2, T3, T4>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(default(T1), default(T2), default(T3), default(T4));
+				callback.Call(default, default, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4>> removedQueue = RemovedQueue;
@@ -911,7 +911,7 @@ public class Event<T1, T2, T3, T4>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, default(T2), default(T3), default(T4));
+				callback.Call(arg0, default, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4>> removedQueue = RemovedQueue;
@@ -931,7 +931,7 @@ public class Event<T1, T2, T3, T4>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, arg1, default(T3), default(T4));
+				callback.Call(arg0, arg1, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4>> removedQueue = RemovedQueue;
@@ -951,7 +951,7 @@ public class Event<T1, T2, T3, T4>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, arg1, arg2, default(T4));
+				callback.Call(arg0, arg1, arg2, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4>> removedQueue = RemovedQueue;
@@ -1030,7 +1030,7 @@ public class Event<T1, T2, T3, T4, T5>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4, T5> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(default(T1), default(T2), default(T3), default(T4), default(T5));
+				callback.Call(default, default, default, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4, T5>> removedQueue = RemovedQueue;
@@ -1050,7 +1050,7 @@ public class Event<T1, T2, T3, T4, T5>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4, T5> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, default(T2), default(T3), default(T4), default(T5));
+				callback.Call(arg0, default, default, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4, T5>> removedQueue = RemovedQueue;
@@ -1070,7 +1070,7 @@ public class Event<T1, T2, T3, T4, T5>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4, T5> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, arg1, default(T3), default(T4), default(T5));
+				callback.Call(arg0, arg1, default, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4, T5>> removedQueue = RemovedQueue;
@@ -1090,7 +1090,7 @@ public class Event<T1, T2, T3, T4, T5>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4, T5> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, arg1, arg2, default(T4), default(T5));
+				callback.Call(arg0, arg1, arg2, default, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4, T5>> removedQueue = RemovedQueue;
@@ -1110,7 +1110,7 @@ public class Event<T1, T2, T3, T4, T5>
 			Invoking = true;
 			for (Event.Callback<T1, T2, T3, T4, T5> callback = First; callback != null; callback = callback.Next)
 			{
-				callback.Call(arg0, arg1, arg2, arg3, default(T5));
+				callback.Call(arg0, arg1, arg2, arg3, default);
 			}
 			Invoking = false;
 			Queue<Event.Callback<T1, T2, T3, T4, T5>> removedQueue = RemovedQueue;

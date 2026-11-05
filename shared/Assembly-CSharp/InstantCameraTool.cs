@@ -107,27 +107,27 @@ public class InstantCameraTool : HeldEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	private void TakePhoto(RPCMessage msg)
 	{
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0222: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0227: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0237: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0246: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0252: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a2: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		Item item = GetItem();
 		if ((Object)(object)player == (Object)null || item == null || item.condition <= 0f)
@@ -171,6 +171,7 @@ public class InstantCameraTool : HeldEntity
 			}
 			photoEntity.SetImageData(player.userID, array);
 			Facepunch.Rust.Analytics.Azure.OnUGCCreated(player, photoEntity, "photo", array.Length);
+			UGCModeration.Send(player, photoEntity, "photo", photoEntity.ImageCrc, FileStorage.Type.jpg);
 			if (!player.inventory.GiveItem(item2))
 			{
 				item2.Drop(player.GetDropPosition(), player.GetDropVelocity());

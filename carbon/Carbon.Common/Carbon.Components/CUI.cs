@@ -239,6 +239,11 @@ public readonly struct CUI : IDisposable
 
 		private int _currentId { get; set; }
 
+		internal int NextId()
+		{
+			return ++_currentId;
+		}
+
 		public string AppendId()
 		{
 			_currentId++;
@@ -1060,23 +1065,21 @@ public readonly struct CUI : IDisposable
 		return Manager.Mask(element, showMaskGraphic, update);
 	}
 
-	public CuiTooltipComponent CreateTooltip(CuiElement element, string text, TooltipType? tooltipType = null, string offset = null, bool useCentre = false, DelayType? delay = null, PositionMode? position = null, bool update = false)
+	public CuiTooltipComponent CreateTooltip(CuiElement element, string text, Nullable tooltipType = null, string offset = null, bool useCentre = false, Nullable delay = null, Nullable position = null, bool update = false)
 	{
 		return Manager.Tooltip(element, text, tooltipType, offset, useCentre, delay, position, update);
 	}
 
 	public static string HexToRustColor(string hexColor, float? alpha = null)
 	{
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		Color val = default;
 		if (!ColorUtility.TryParseHtmlString(hexColor, ref val))
 		{
-			float[] array = new float[4] { 1f, 1f, 1f, 0f };
-			array[3] = alpha ?? 1f;
-			return LUIBuilder.GetStringFloat(array);
+			return LUIBuilder.GetStringFloat(1f, 1f, 1f, alpha ?? 1f);
 		}
 		return LUIBuilder.GetStringFloat(val.r, val.g, val.b, alpha ?? val.a);
 	}

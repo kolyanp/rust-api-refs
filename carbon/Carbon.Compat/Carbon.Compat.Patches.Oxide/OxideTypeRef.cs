@@ -75,29 +75,30 @@ public class OxideTypeRef : BaseOxidePatch
 		}
 		void ProcessAttrList(IList<CustomAttribute> list)
 		{
+			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b4: Expected Obj, but got Unknown
 			for (int j = 0; j < list.Count; j++)
 			{
 				CustomAttribute val3 = list[j];
 				try
 				{
-					int num = 0;
-					while (true)
+					CustomAttributeSignature val4 = Helpers.ReadSignature(assembly, val3);
+					bool flag = false;
+					for (int k = 0; k < ((val4 != null) ? new int?(val4.FixedArguments.Count) : ((int?)null)); k++)
 					{
-						int num2 = num;
-						CustomAttributeSignature signature2 = val3.Signature;
-						if (!(num2 < ((signature2 != null) ? new int?(signature2.FixedArguments.Count) : ((int?)null))))
+						CustomAttributeArgument val5 = val4.FixedArguments[k];
+						object element = val5.Element;
+						TypeDefOrRefSignature val6 = (TypeDefOrRefSignature)((element is TypeDefOrRefSignature) ? element : null);
+						if (val6 != null)
 						{
-							break;
+							bool flag2 = flag;
+							ITypeDefOrRef type = val6.Type;
+							flag = flag2 | ProcessTypeRef((TypeReference)(object)((type is TypeReference) ? type : null), importer);
 						}
-						CustomAttributeArgument val4 = val3.Signature.FixedArguments[num];
-						object element = val4.Element;
-						TypeDefOrRefSignature val5 = (TypeDefOrRefSignature)((element is TypeDefOrRefSignature) ? element : null);
-						if (val5 != null)
-						{
-							ITypeDefOrRef type = val5.Type;
-							ProcessTypeRef((TypeReference)(object)((type is TypeReference) ? type : null), importer);
-						}
-						num++;
+					}
+					if (flag)
+					{
+						val3.Signature = new CustomAttributeSignature((IEnumerable<CustomAttributeArgument>)val4.FixedArguments, (IEnumerable<CustomAttributeNamedArgument>)val4.NamedArguments);
 					}
 				}
 				catch
@@ -107,13 +108,13 @@ public class OxideTypeRef : BaseOxidePatch
 		}
 	}
 
-	public static void ProcessTypeRef(TypeReference type, ReferenceImporter importer)
+	public static bool ProcessTypeRef(TypeReference type, ReferenceImporter importer)
 	{
-		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Expected Obj, but got Unknown
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Expected Obj, but got Unknown
 		if (type == null)
 		{
-			return;
+			return false;
 		}
 		IResolutionScope scope = type.Scope;
 		TypeReference val = (TypeReference)(object)((scope is TypeReference) ? scope : null);
@@ -122,18 +123,18 @@ public class OxideTypeRef : BaseOxidePatch
 			type.Name = Utf8String.op_Implicit("Timer");
 			type.Namespace = Utf8String.op_Implicit("Oxide.Plugins");
 			type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.Common).ImportWith(importer);
-			return;
+			return true;
 		}
 		IResolutionScope scope2 = type.Scope;
 		AssemblyReference val2 = (AssemblyReference)(object)((scope2 is AssemblyReference) ? scope2 : null);
 		if (val2 == null || !Helpers.IsOxideASM(val2))
 		{
-			return;
+			return false;
 		}
 		if (type.FullName == "Oxide.Core.Event" || type.FullName.StartsWith("Oxide.Core.Event`"))
 		{
 			type.Scope = (IResolutionScope)importer.ImportType(typeof(OxideEvents));
-			return;
+			return true;
 		}
 		if (type.FullName == "Oxide.Core.Plugins.PluginEvent")
 		{
@@ -142,7 +143,7 @@ public class OxideTypeRef : BaseOxidePatch
 		if (type.Namespace.StartsWith("Newtonsoft.Json"))
 		{
 			type.Scope = Helpers.GetNewtonsoftScope(type, importer);
-			return;
+			return true;
 		}
 		if (type.Namespace.StartsWith("ProtoBuf"))
 		{
@@ -154,7 +155,7 @@ public class OxideTypeRef : BaseOxidePatch
 			{
 				type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.protobufCore).ImportWith(importer);
 			}
-			return;
+			return true;
 		}
 		if (type.Namespace.StartsWith("WebSocketSharp"))
 		{
@@ -163,7 +164,7 @@ public class OxideTypeRef : BaseOxidePatch
 				type.Name = Utf8String.op_Implicit("ClientSslConfiguration");
 			}
 			type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.wsSharp).ImportWith(importer);
-			return;
+			return true;
 		}
 		if (!(type.Name == "VersionNumber"))
 		{
@@ -181,7 +182,7 @@ public class OxideTypeRef : BaseOxidePatch
 						if (type.FullName == "Oxide.Core.Plugins.HookMethodAttribute")
 						{
 							type.Namespace = Utf8String.op_Implicit(string.Empty);
-							goto IL_02fe;
+							goto IL_0307;
 						}
 						fullName = type.FullName;
 						if ((fullName == "Oxide.Plugins.CSharpPlugin" || fullName == "Oxide.Core.Plugins.CSPlugin") ? true : false)
@@ -196,12 +197,13 @@ public class OxideTypeRef : BaseOxidePatch
 					}
 				}
 				type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.Common).ImportWith(importer);
-				return;
+				return true;
 			}
 			type.Namespace = Utf8String.op_Implicit(string.Empty);
 		}
-		goto IL_02fe;
-		IL_02fe:
+		goto IL_0307;
+		IL_0307:
 		type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.SDK).ImportWith(importer);
+		return true;
 	}
 }

@@ -672,6 +672,7 @@ public abstract class TerrainMap<T> : TerrainMap, IDisposable where T : unmanage
 			Debug.Assert(src != dst);
 			dst.Dispose();
 			dst = src;
+			OnDataReplaced();
 		}
 	}
 
@@ -719,6 +720,11 @@ public abstract class TerrainMap<T> : TerrainMap, IDisposable where T : unmanage
 			throw new ArgumentException("TerrainMap length exceeds expected native capacity - likely a corrupted/tampered map file");
 		}
 		new NativeSlice<byte>(val, 0, dat.Length).CopyFrom(dat);
+		OnDataReplaced();
+	}
+
+	protected virtual void OnDataReplaced()
+	{
 	}
 
 	public void OnDestroy()

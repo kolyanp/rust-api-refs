@@ -248,6 +248,7 @@ public class PowergridManager : PointEntity<PowergridManager>
 				insertedFuses.RemoveAt(num);
 			}
 		}
+		Server_OnInsertedFusesChanged();
 	}
 
 	public static void Server_OnFuseInsertedIntoFuseBox(PowergridFuseBox fuseBox, Item fuse, BasePlayer byPlayer)
@@ -258,6 +259,7 @@ public class PowergridManager : PointEntity<PowergridManager>
 			Fuse = fuse
 		};
 		insertedFuses.Add(item);
+		Server_OnInsertedFusesChanged();
 		if (Application.isServerStarted)
 		{
 			Facepunch.Rust.Analytics.Azure.OnPowerGridFuseInserted(byPlayer, fuse, insertedFuses.Count);
@@ -272,8 +274,17 @@ public class PowergridManager : PointEntity<PowergridManager>
 			if (insertedFuses[i].Fuse == fuse)
 			{
 				insertedFuses.RemoveAt(i);
+				Server_OnInsertedFusesChanged();
 				break;
 			}
+		}
+	}
+
+	private static void Server_OnInsertedFusesChanged()
+	{
+		if ((Object)(object)PointEntity<PowergridManager>.ServerInstance != (Object)null)
+		{
+			PointEntity<PowergridManager>.ServerInstance.InvalidateNetworkCache();
 		}
 	}
 
@@ -440,6 +451,7 @@ public class PowergridManager : PointEntity<PowergridManager>
 			}
 			insertedFuses.Clear();
 			insertedFuses.AddRange((IEnumerable<InsertedFuseEntry>)val);
+			Server_OnInsertedFusesChanged();
 			loadedFuseInsertionOrder = null;
 		}
 		finally
@@ -461,6 +473,15 @@ public class PowergridManager : PointEntity<PowergridManager>
 			num = 0;
 		}
 		return num;
+	}
+
+	public static bool Server_IsAvailable()
+	{
+		if (Powergrid.enabled && (Object)(object)PointEntity<PowergridManager>.ServerInstance != (Object)null)
+		{
+			return PointEntity<PowergridManager>.ServerInstance.Server_GetFuseSocketsCount() > 0;
+		}
+		return false;
 	}
 
 	public int CalculateCurrentStage()

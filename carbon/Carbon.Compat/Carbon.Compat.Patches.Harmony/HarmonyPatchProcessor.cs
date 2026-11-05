@@ -72,8 +72,8 @@ public class HarmonyPatchProcessor : BaseHarmonyPatch
 
 	public override void Apply(ModuleDefinition asm, ReferenceImporter importer, ref BaseConverter.Context context)
 	{
-		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d4: Expected Obj, but got Unknown
+		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d5: Expected Obj, but got Unknown
 		foreach (TypeDefinition allType in asm.GetAllTypes())
 		{
 			bool flag = false;
@@ -86,29 +86,29 @@ public class HarmonyPatchProcessor : BaseHarmonyPatch
 				{
 					continue;
 				}
-				CustomAttributeSignature signature = customAttribute.Signature;
-				if (signature == null || !(val.Name == "HarmonyPatch"))
+				CustomAttributeSignature val2 = Helpers.ReadSignature(asm, customAttribute);
+				if (val2 == null || !(val.Name == "HarmonyPatch"))
 				{
 					continue;
 				}
 				IResolutionScope scope = ((ITypeDescriptor)val).Scope;
-				SerializedAssemblyReference val2 = (SerializedAssemblyReference)(object)((scope is SerializedAssemblyReference) ? scope : null);
-				if (val2 == null || !(((AssemblyDescriptor)val2).Name == "0Harmony"))
+				SerializedAssemblyReference val3 = (SerializedAssemblyReference)(object)((scope is SerializedAssemblyReference) ? scope : null);
+				if (val3 == null || !(((AssemblyDescriptor)val3).Name == "0Harmony"))
 				{
 					continue;
 				}
-				if (signature.FixedArguments.Count > 1)
+				if (val2.FixedArguments.Count > 1)
 				{
-					object element = signature.FixedArguments[0].Element;
-					TypeDefOrRefSignature val3 = (TypeDefOrRefSignature)((element is TypeDefOrRefSignature) ? element : null);
-					if (val3 != null)
+					object element = val2.FixedArguments[0].Element;
+					TypeDefOrRefSignature val4 = (TypeDefOrRefSignature)((element is TypeDefOrRefSignature) ? element : null);
+					if (val4 != null)
 					{
-						object element2 = signature.FixedArguments[1].Element;
-						Utf8String val4 = (Utf8String)((element2 is Utf8String) ? element2 : null);
-						if (val4 != null)
+						object element2 = val2.FixedArguments[1].Element;
+						Utf8String val5 = (Utf8String)((element2 is Utf8String) ? element2 : null);
+						if (val5 != null)
 						{
-							RegisterPatch(((object)asm.Name).ToString(), Utf8String.op_Implicit(((AssemblyDescriptor)((ITypeDescriptor)(object)val3).DefinitionAssembly()).Name), Utf8String.op_Implicit(val4), ((TypeSignature)val3).FullName, $"{((AssemblyDescriptor)asm.Assembly).Name} - {allType.FullName}", null);
-							if (!PatchWhitelist.IsPatchAllowed(val3, val4))
+							RegisterPatch(((object)asm.Name).ToString(), Utf8String.op_Implicit(((AssemblyDescriptor)((ITypeDescriptor)(object)val4).DefinitionAssembly()).Name), Utf8String.op_Implicit(val5), ((TypeSignature)val4).FullName, $"{((AssemblyDescriptor)asm.Assembly).Name} - {allType.FullName}", null);
+							if (!PatchWhitelist.IsPatchAllowed(val4, val5))
 							{
 								flag = true;
 								list.Add(customAttribute);

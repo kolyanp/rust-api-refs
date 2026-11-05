@@ -629,7 +629,7 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		}
 	}
 
-	public void OverrideMoveDirection(Vector3? direction)
+	public void OverrideMoveDirection(Nullable direction)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)

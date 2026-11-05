@@ -10,13 +10,48 @@ using UnityEngine.Assertions;
 
 public class FileStorage : IDisposable
 {
+	private readonly struct Slot(NetworkableId entityId, ulong part) : IEquatable<Slot>
+	{
+		public readonly NetworkableId EntityId = entityId;
+
+		public readonly ulong Part = part;
+
+		public bool Equals(Slot other)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			if (EntityId == other.EntityId)
+			{
+				return Part == other.Part;
+			}
+			return false;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is Slot other)
+			{
+				return Equals(other);
+			}
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return HashCode.Combine<NetworkableId, ulong>(EntityId, Part);
+		}
+	}
+
 	private class CacheData
 	{
+		public uint crc;
+
 		public byte[] data;
 
-		public NetworkableId entityID;
+		public float? storedLocallyAt;
 
-		public uint numID;
+		public uint replacedCrc;
 	}
 
 	public enum Type
@@ -29,11 +64,32 @@ public class FileStorage : IDisposable
 
 	private class FileDatabase : Database
 	{
-		public IEnumerable<AssociatedFile> QueryAll(NetworkableId entityID)
+		public (uint crc, byte[] data)? QueryFile(NetworkableId entityId, ulong part, uint? crc)
+		{
+			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+			IntPtr stmHandle = Prepare(crc.HasValue ? "SELECT crc, data FROM files WHERE entid = ? AND part = ? AND crc = ?" : "SELECT crc, data FROM files WHERE entid = ? AND part = ?");
+			Database.Bind(stmHandle, 1, entityId.Value);
+			Database.Bind(stmHandle, 2, part);
+			if (crc.HasValue)
+			{
+				Database.Bind(stmHandle, 3, crc.Value);
+			}
+			return ExecuteAndReadQueryResult<(uint, byte[])>(stmHandle, (Func<IntPtr, (uint, byte[])>)((IntPtr stmHandle2) => (Database.GetColumnValue<uint>(stmHandle2, 0), Database.GetColumnValue<byte[]>(stmHandle2, 1))));
+		}
+
+		public IEnumerable<(ulong part, uint crc)> QueryCrcs(NetworkableId entityId)
 		{
 			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-			IntPtr stmHandle = Prepare("SELECT filetype, crc, part, data FROM data WHERE entid = ?");
-			Database.Bind(stmHandle, 1, (long)entityID.Value);
+			IntPtr stmHandle = Prepare("SELECT part, crc FROM files WHERE entid = ?");
+			Database.Bind(stmHandle, 1, entityId.Value);
+			return ExecuteAndReadQueryResults(stmHandle, (IntPtr stmHandle2) => (Database.GetColumnValue<ulong>(stmHandle2, 0), Database.GetColumnValue<uint>(stmHandle2, 1)));
+		}
+
+		public IEnumerable<AssociatedFile> QueryAll(NetworkableId entityId)
+		{
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			IntPtr stmHandle = Prepare("SELECT filetype, part, data FROM files WHERE entid = ?");
+			Database.Bind(stmHandle, 1, entityId.Value);
 			return ExecuteAndReadQueryResults(stmHandle, ReadAssociatedFileRow);
 		}
 
@@ -41,37 +97,31 @@ public class FileStorage : IDisposable
 		{
 			AssociatedFile val = Pool.Get<AssociatedFile>();
 			val.type = Database.GetColumnValue<int>(stmHandle, 0);
-			val.crc = (uint)Database.GetColumnValue<int>(stmHandle, 1);
-			val.numID = (uint)Database.GetColumnValue<int>(stmHandle, 2);
-			val.data = Database.GetColumnValue<byte[]>(stmHandle, 3);
+			val.part = Database.GetColumnValue<ulong>(stmHandle, 1);
+			val.data = Database.GetColumnValue<byte[]>(stmHandle, 2);
 			return val;
 		}
 	}
 
 	private FileDatabase db;
 
-	private CRC32 crc = new CRC32();
+	private static readonly CRC32 crc32 = new CRC32();
 
-	private MruDictionary<uint, CacheData> _cache = new MruDictionary<uint, CacheData>(1000, (Action<uint, CacheData>)null);
+	private readonly MruDictionary<Slot, CacheData> _cache = new MruDictionary<Slot, CacheData>(1000, (Action<Slot, CacheData>)null);
 
-	public static FileStorage server = new FileStorage("sv.files." + 289, server: true);
-
-	private string filePath = string.Empty;
+	public static FileStorage server = new FileStorage("sv.files." + 290, server: true);
 
 	protected FileStorage(string name, bool server)
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected Obj, but got Unknown
 		if (server)
 		{
-			string path = (filePath = Server.filesStorageFolder + "/" + name + ".db");
 			db = new FileDatabase();
-			db.Open(path);
-			if (!db.TableExists("data"))
+			db.Open(Server.filesStorageFolder + "/" + name + ".db");
+			if (!db.TableExists("files"))
 			{
-				db.Execute("CREATE TABLE data ( crc INTEGER PRIMARY KEY, data BLOB, updated INTEGER, entid INTEGER, filetype INTEGER, part INTEGER )");
-				db.Execute("CREATE INDEX IF NOT EXISTS entindex ON data ( entid )");
+				db.Execute("CREATE TABLE files ( entid INTEGER, part INTEGER, crc INTEGER, filetype INTEGER, data BLOB, updated INTEGER, PRIMARY KEY ( entid, part ) )");
 			}
+			db.Execute("CREATE INDEX IF NOT EXISTS crcindex ON files ( crc )");
 		}
 	}
 
@@ -89,180 +139,215 @@ public class FileStorage : IDisposable
 		}
 	}
 
-	private uint GetCRC(byte[] data, Type type)
+	public static uint ComputeCrc(byte[] data)
 	{
-		using (TimeWarning.New("FileStorage.GetCRC"))
+		using (TimeWarning.New("FileStorage.ComputeCrc"))
 		{
-			crc.Reset();
-			crc.SlurpBlock(data, 0, data.Length);
-			crc.UpdateCRC((byte)type);
-			return (uint)crc.Crc32Result;
+			crc32.Reset();
+			crc32.SlurpBlock(data, 0, data.Length);
+			return (uint)crc32.Crc32Result;
 		}
 	}
 
-	public uint Store(byte[] data, Type type, NetworkableId entityID, uint numID = 0u)
+	public uint Store(NetworkableId entityId, ulong part, Type type, byte[] data)
 	{
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		uint num = ComputeCrc(data);
+		Store(new Slot(entityId, part), num, type, data);
+		return num;
+	}
+
+	public uint StoreByCrc(NetworkableId entityId, Type type, byte[] data)
+	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		uint num = ComputeCrc(data);
+		Store(new Slot(entityId, num), num, type, data);
+		return num;
+	}
+
+	private void Store(Slot slot, uint crc, Type type, byte[] data)
+	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("FileStorage.Store"))
 		{
-			uint cRC = GetCRC(data, type);
-			if (db != null)
-			{
-				db.Execute("INSERT OR REPLACE INTO data ( crc, data, entid, filetype, part ) VALUES ( ?, ?, ?, ?, ? )", (int)cRC, data, (long)entityID.Value, (int)type, (int)numID);
-			}
-			_cache.Remove(cRC);
-			_cache.Add(cRC, new CacheData
-			{
-				data = data,
-				entityID = entityID,
-				numID = numID
-			});
-			return cRC;
+			db.Execute("INSERT OR REPLACE INTO files ( crc, data, entid, filetype, part ) VALUES ( ?, ?, ?, ?, ? )", crc, data, slot.EntityId.Value, (int)type, slot.Part);
+			AddToCache(slot, crc, data);
 		}
 	}
 
-	public byte[] Get(uint crc, Type type, NetworkableId entityID, uint numID = 0u)
+	private void AddToCache(Slot slot, uint crc, byte[] data, float? storedLocallyAt = null, uint replacedCrc = 0u)
 	{
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		_cache.Remove(slot);
+		_cache.Add(slot, new CacheData
+		{
+			crc = crc,
+			data = data,
+			storedLocallyAt = storedLocallyAt,
+			replacedCrc = replacedCrc
+		});
+	}
+
+	public byte[] Get(NetworkableId entityId, ulong part, uint crc)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		if (crc == 0)
+		{
+			return null;
+		}
+		return Find(new Slot(entityId, part), crc)?.data;
+	}
+
+	public byte[] Get(NetworkableId entityId, ulong part = 0uL)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		return Find(new Slot(entityId, part), null)?.data;
+	}
+
+	private CacheData Find(Slot slot, uint? crc)
+	{
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("FileStorage.Get"))
 		{
 			CacheData cacheData = default;
-			if (_cache.TryGetValue(crc, ref cacheData))
+			if (_cache.TryGetValue(slot, ref cacheData))
 			{
-				Assert.IsTrue(cacheData.data != null, "FileStorage cache contains a null texture");
-				return cacheData.data;
+				Assert.IsTrue(cacheData.data != null, "FileStorage cache contains a null file");
+				return (!crc.HasValue || cacheData.crc == crc) ? cacheData : null;
 			}
-			if (db == null)
+			(uint, byte[])? tuple = db?.QueryFile(slot.EntityId, slot.Part, crc);
+			if (!tuple.HasValue)
 			{
 				return null;
 			}
-			byte[] array = db.Query<byte[], int, int, long, int>("SELECT data FROM data WHERE crc = ? AND filetype = ? AND entid = ? AND part = ? LIMIT 1", (int)crc, (int)type, (long)entityID.Value, (int)numID);
-			if (array == null)
+			CacheData cacheData2 = new CacheData
 			{
-				return null;
-			}
-			_cache.Remove(crc);
-			_cache.Add(crc, new CacheData
-			{
-				data = array,
-				entityID = entityID,
-				numID = 0u
-			});
-			return array;
+				crc = tuple.Value.Item1,
+				data = tuple.Value.Item2
+			};
+			_cache.Add(slot, cacheData2);
+			return cacheData2;
 		}
 	}
 
-	public void Remove(uint crc, Type type, NetworkableId entityID)
+	public void Remove(NetworkableId entityId, ulong part = 0uL)
 	{
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("FileStorage.Remove"))
 		{
-			if (db != null)
-			{
-				db.Execute("DELETE FROM data WHERE crc = ? AND filetype = ? AND entid = ?", (int)crc, (int)type, (long)entityID.Value);
-			}
-			_cache.Remove(crc);
+			db?.Execute("DELETE FROM files WHERE entid = ? AND part = ?", entityId.Value, part);
+			_cache.Remove(new Slot(entityId, part));
 		}
 	}
 
-	public void RemoveExact(uint crc, Type type, NetworkableId entityID, uint numid)
+	public void RemoveParts(NetworkableId entityId, ulong firstPart, ulong partCount)
 	{
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		using (TimeWarning.New("FileStorage.RemoveExact"))
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("FileStorage.RemoveParts"))
 		{
-			if (db != null)
+			db?.Execute("DELETE FROM files WHERE entid = ? AND part >= ? AND part < ?", entityId.Value, firstPart, firstPart + partCount);
+			for (ulong num = firstPart; num < firstPart + partCount; num++)
 			{
-				db.Execute("DELETE FROM data WHERE crc = ? AND filetype = ? AND entid = ? AND part = ?", (int)crc, (int)type, (long)entityID.Value, (int)numid);
+				_cache.Remove(new Slot(entityId, num));
 			}
-			_cache.Remove(crc);
 		}
 	}
 
-	public void RemoveEntityNum(NetworkableId entityid, uint numid)
+	public void RemoveAll(NetworkableId entityId)
 	{
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		using (TimeWarning.New("FileStorage.RemoveEntityNum"))
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("FileStorage.RemoveAll"))
 		{
-			if (db != null)
-			{
-				db.Execute("DELETE FROM data WHERE entid = ? AND part = ?", (long)entityid.Value, (int)numid);
-			}
-			uint[] array = (from x in ((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Where((KeyValuePair<uint, CacheData> x) =>
-				{
-					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-					//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-					return x.Value.entityID == entityid && x.Value.numID == numid;
-				})
-				select x.Key).ToArray();
-			foreach (uint num2 in array)
-			{
-				_cache.Remove(num2);
-			}
+			db?.Execute("DELETE FROM files WHERE entid = ?", entityId.Value);
+			RemoveFromCache(entityId);
 		}
 	}
 
-	public void RemoveAllByEntity(NetworkableId entityid)
+	private void RemoveFromCache(NetworkableId entityId)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		using (TimeWarning.New("FileStorage.RemoveAllByEntity"))
+		Slot[] array = (from x in ((IEnumerable<KeyValuePair<Slot, CacheData>>)_cache).Where((KeyValuePair<Slot, CacheData> x) =>
+			{
+				//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+				//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+				return x.Key.EntityId == entityId;
+			})
+			select x.Key).ToArray();
+		foreach (Slot slot in array)
 		{
-			if (db != null)
-			{
-				db.Execute("DELETE FROM data WHERE entid = ?", (long)entityid.Value);
-			}
-			uint[] array = (from x in ((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Where((KeyValuePair<uint, CacheData> x) =>
-				{
-					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-					//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-					return x.Value.entityID == entityid;
-				})
-				select x.Key).ToArray();
-			foreach (uint num2 in array)
-			{
-				_cache.Remove(num2);
-			}
+			_cache.Remove(slot);
 		}
 	}
 
-	public void ReassignEntityId(NetworkableId oldId, NetworkableId newId)
+	public uint GetCrc(NetworkableId entityId, ulong part = 0uL)
 	{
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		using (TimeWarning.New("FileStorage.ReassignEntityId"))
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("FileStorage.GetCrc"))
 		{
-			if (db != null)
+			CacheData cacheData = default;
+			if (_cache.TryGetValue(new Slot(entityId, part), ref cacheData))
 			{
-				db.Execute("UPDATE data SET entid = ? WHERE entid = ?", (long)newId.Value, (long)oldId.Value);
+				return cacheData.crc;
+			}
+			return db.Query<uint, ulong, ulong>("SELECT crc FROM files WHERE entid = ? AND part = ?", entityId.Value, part);
+		}
+	}
+
+	public void GetCrcs(NetworkableId entityId, Dictionary<ulong, uint> crcsByPart)
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("FileStorage.GetCrcs"))
+		{
+			foreach (var item3 in db.QueryCrcs(entityId))
+			{
+				ulong item = item3.part;
+				uint item2 = item3.crc;
+				crcsByPart[item] = item2;
 			}
 		}
 	}
 
-	public IEnumerable<AssociatedFile> QueryAllByEntity(NetworkableId entityID)
+	public void Reassign(NetworkableId fromEntityId, NetworkableId toEntityId)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("FileStorage.Reassign"))
+		{
+			db.Execute("UPDATE OR REPLACE files SET entid = ? WHERE entid = ?", toEntityId.Value, fromEntityId.Value);
+			RemoveFromCache(fromEntityId);
+			RemoveFromCache(toEntityId);
+		}
+	}
+
+	public byte[] GetByCrc(uint crc, Type type)
+	{
+		using (TimeWarning.New("FileStorage.GetByCrc"))
+		{
+			return db.Query<byte[], uint, int>("SELECT data FROM files WHERE crc = ? AND filetype = ? LIMIT 1", crc, (int)type);
+		}
+	}
+
+	public bool HasFiles(NetworkableId entityId)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		return db.Query<int, ulong>("SELECT EXISTS ( SELECT 1 FROM files WHERE entid = ? )", entityId.Value) != 0;
+	}
+
+	public IEnumerable<AssociatedFile> QueryAllByEntity(NetworkableId entityId)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return db.QueryAll(entityID);
+		return db.QueryAll(entityId);
 	}
 
-	public bool IsEntityInFileStorage(NetworkableId id)
+	static FileStorage()
 	{
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		if (((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Count((KeyValuePair<uint, CacheData> x) =>
-		{
-			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-			return x.Value.entityID == id;
-		}) > 0)
-		{
-			return true;
-		}
-		return QueryAllByEntity(id).Count() > 0;
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Expected Obj, but got Unknown
 	}
 }

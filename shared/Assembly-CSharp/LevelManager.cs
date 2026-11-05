@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Facepunch;
 using Facepunch.Extend;
 using Network;
+using Rust;
 using Rust.Registry;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -47,7 +48,7 @@ public static class LevelManager
 		return Application.CanStreamedLevelBeLoaded(strName);
 	}
 
-	public static IEnumerator LoadLevelAsync(string strName, bool keepLoadingScreenOpen = true, bool showLoadingScreen = true)
+	public static IEnumerator LoadLevelAsync(string strName, bool keepLoadingScreenOpen = true, bool showLoadingScreen = true, bool keepServerScene = false)
 	{
 		int taskId = nextTaskId++;
 		taskQueue.Enqueue(taskId);
@@ -62,6 +63,7 @@ public static class LevelManager
 				strName = "Procedural Map";
 			}
 			Log("Loading level: " + strName);
+			CurrentLevelName = null;
 			Scene sceneByName = SceneManager.GetSceneByName("EmptyLastScene");
 			if (!sceneByName.IsValid())
 			{
@@ -73,7 +75,7 @@ public static class LevelManager
 			{
 				Scene sceneAt = SceneManager.GetSceneAt(i);
 				string name = sceneAt.name;
-				if (CanUnloadScene(name))
+				if (CanUnloadScene(name, keepServerScene))
 				{
 					list.Add(name);
 				}
@@ -85,6 +87,7 @@ public static class LevelManager
 				list.RemoveAt(num);
 				list.Add(item);
 			}
+			Application.isUnloadingScenes = true;
 			List<GameObject> list2 = Pool.Get<List<GameObject>>();
 			foreach (string item2 in list)
 			{
@@ -124,6 +127,7 @@ public static class LevelManager
 			}
 			int num2 = Entity.RemoveDestroyed();
 			Log($"Removed {num2} destroyed entities from the entity registry");
+			Application.isUnloadingScenes = false;
 			Net.sv.Reset();
 			Log("Loading scene: " + strName);
 			AsyncOperation loadOp = SceneManager.LoadSceneAsync(strName, (LoadSceneMode)1);
@@ -152,7 +156,7 @@ public static class LevelManager
 		{
 			taskQueue.Dequeue();
 		}
-		static bool CanUnloadScene(string sceneName)
+		static bool CanUnloadScene(string sceneName, bool flag)
 		{
 			if (string.Equals(sceneName, "DontDestroyOnLoad", StringComparison.OrdinalIgnoreCase) || string.Equals(sceneName, "EmptyLastScene", StringComparison.OrdinalIgnoreCase))
 			{

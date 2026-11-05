@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using GameMenu;
 using Network;
 using Rust;
@@ -477,6 +478,7 @@ public class BiofuelGenerator : ContainerIOEntity
 					}
 					ProcessedFuel += GetFuelYield(slot);
 					slot.cookTimeLeft = GetProcessDuration(slot);
+					Analytics.Azure.LogResource(Analytics.Azure.ResourceMode.Consumed, "io", slot.info.shortname, 1, this, null, safezone: false, null, 0uL, null, null, null, 0uL);
 					slot.UseItem();
 					OutputProcessedFuel();
 				}
@@ -511,6 +513,7 @@ public class BiofuelGenerator : ContainerIOEntity
 			item.Remove();
 			return;
 		}
+		Analytics.Azure.LogResource(Analytics.Azure.ResourceMode.Produced, "io", item.info.shortname, num, this, null, safezone: false, null, 0uL, null, null, null, 0uL);
 		ProcessedFuel = Mathf.Max(0f, ProcessedFuel - (float)num);
 		StirCharge = Mathf.Max(0f, StirCharge - (float)num);
 		if (StirCharge <= 0f)
@@ -519,8 +522,8 @@ public class BiofuelGenerator : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Stir(RPCMessage msg)
 	{
 		Stir(msg.player, (RPCProgressBarState)msg.read.Int32());

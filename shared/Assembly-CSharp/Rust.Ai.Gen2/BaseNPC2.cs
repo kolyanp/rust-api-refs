@@ -20,6 +20,8 @@ public class BaseNPC2 : BaseCombatEntity
 	[SerializeField]
 	private float mass = 45f;
 
+	private NpcRandom rng;
+
 	private int safeZoneCheckedFrame = -1;
 
 	private bool inSafeZone;
@@ -89,6 +91,8 @@ public class BaseNPC2 : BaseCombatEntity
 		}
 	}
 
+	public NpcRandom Rng => rng ?? (rng = NpcRandom.ForSpawn());
+
 	public bool StartMountTo(NPCMountable mountable, int index)
 	{
 		if ((Object)(object)mountable == (Object)null || IsDead() || IsMounted)
@@ -136,25 +140,20 @@ public class BaseNPC2 : BaseCombatEntity
 
 	public void OnMountFinalized(BaseEntity host, int index)
 	{
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		NPCMountable nPCMountable = default;
 		if (!((Object)(object)host == (Object)null) && ((Component)host).TryGetComponent<NPCMountable>(ref nPCMountable))
 		{
 			mountHost.Set(host);
 			mountAnchorIndex = index;
 			SetParent(host, worldPositionStays: true);
+			MountAgent?.Pause(this);
 			Transform anchorTransform = nPCMountable.GetAnchorTransform(index);
 			if ((Object)(object)anchorTransform != (Object)null)
 			{
-				((Component)this).transform.localPosition = ((Component)host).transform.InverseTransformPoint(anchorTransform.position);
-				((Component)this).transform.localRotation = Quaternion.Inverse(((Component)host).transform.rotation) * anchorTransform.rotation;
+				MountAgent?.Place(anchorTransform.position, anchorTransform.rotation);
 			}
-			MountAgent?.Pause(this);
 			SetMountedFlag(mounted: true);
 		}
 	}
@@ -191,10 +190,10 @@ public class BaseNPC2 : BaseCombatEntity
 	public void OnDismountFinalized(Vector3 position, Quaternion rotation)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		NPCMountable mount = Mount;
 		bool flag = TrySampleNavmesh(position, 10f, out var onNavmesh);
 		if (flag)
@@ -202,7 +201,7 @@ public class BaseNPC2 : BaseCombatEntity
 			position = onNavmesh;
 		}
 		DetachFromHost();
-		((Component)this).transform.SetPositionAndRotation(position, rotation);
+		MountAgent?.Place(position, rotation);
 		mountHost = default;
 		mountAnchorIndex = -1;
 		MountAgent?.Unpause(this);
@@ -281,6 +280,10 @@ public class BaseNPC2 : BaseCombatEntity
 		base.InitShared();
 		if (isServer)
 		{
+			if (rng == null)
+			{
+				rng = NpcRandom.ForSpawn();
+			}
 			startHealth *= AI.npcHealthMultiplier;
 			startHealth = Mathf.Max(1f, startHealth);
 			HasBrain = true;

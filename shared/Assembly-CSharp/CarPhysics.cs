@@ -464,29 +464,29 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 			ComputeTankSteeringThrottle(throttleInput, steerInput, speed);
 			return;
 		}
-		float num = vehicleSettings.maxSteerAngle * steerInput;
-		float num2 = Mathf.InverseLerp(0f, vehicleSettings.minSteerLimitSpeed, speed);
+		float num = Mathf.InverseLerp(0f, vehicleSettings.minSteerLimitSpeed, speed);
+		float num2 = vehicleSettings.maxSteerAngle;
 		if (vehicleSettings.steeringLimit)
 		{
 			float num3 = vehicleSettings.maxSteerAngle * car.GetSteerMaxMult(speed);
 			float num4 = vehicleSettings.minSteerLimitAngle * car.GetSteerMaxMult(speed);
-			float num5 = Mathf.Lerp(num3, num4, num2);
-			num = Mathf.Clamp(num, 0f - num5, num5);
+			num2 = Mathf.Lerp(num3, num4, num);
 		}
+		float num5 = num2 * Mathf.Clamp(steerInput, -1f, 1f);
 		float num6 = 0f;
 		if (vehicleSettings.steeringAssist)
 		{
 			float num7 = Mathf.InverseLerp(0.1f, 3f, speed);
 			num6 = speedAngle * vehicleSettings.steeringAssistRatio * num7 * Mathf.InverseLerp(2f, 3f, Mathf.Abs(speedAngle));
 		}
-		float num8 = Mathf.Clamp(num + num6, 0f - vehicleSettings.maxSteerAngle, vehicleSettings.maxSteerAngle);
+		float num8 = Mathf.Clamp(num5 + num6, 0f - vehicleSettings.maxSteerAngle, vehicleSettings.maxSteerAngle);
 		if (SteerAngle == num8)
 		{
 			steerLerpSpeed = 0f;
 			return;
 		}
 		float num9 = Mathf.Abs(SteerAngle / num8);
-		float num10 = 1f - num2 * vehicleSettings.steerLimitLerpPenalty;
+		float num10 = 1f - num * vehicleSettings.steerLimitLerpPenalty;
 		bool steerSpeedMod = car.GetSteerSpeedMod(speed);
 		if ((SteerAngle == 0f || Mathf.Sign(num8) == Mathf.Sign(SteerAngle)) && Mathf.Abs(num8) > Mathf.Abs(SteerAngle))
 		{

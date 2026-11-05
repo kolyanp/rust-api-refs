@@ -48,13 +48,24 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 	[HideInInspector]
 	public bool[] childActiveStates;
 
+	private static HashSet<uint> thrownProjectilePrefabIds;
+
 	public int ClientCount
 	{
 		get
 		{
+			PoolWarmup poolWarmup = default;
+			if (((Component)this).TryGetComponent<PoolWarmup>(ref poolWarmup))
+			{
+				return poolWarmup.WarmedUpAmount;
+			}
 			if (Object.op_Implicit((Object)(object)((Component)this).GetComponent<CodeLock>()))
 			{
 				return 200;
+			}
+			if (Object.op_Implicit((Object)(object)((Component)this).GetComponent<KeyLock>()))
+			{
+				return 50;
 			}
 			if ((Object)(object)((Component)this).GetComponent<LootPanel>() != (Object)null)
 			{
@@ -63,6 +74,10 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 			if (((Component)this).GetComponent<DecorComponent>() != null)
 			{
 				return 100;
+			}
+			if ((Object)(object)((Component)this).GetComponent<BoatBuildingBlock>() != (Object)null)
+			{
+				return 15;
 			}
 			if ((Object)(object)((Component)this).GetComponent<BuildingBlock>() != (Object)null)
 			{
@@ -78,7 +93,11 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 			}
 			if ((Object)(object)((Component)this).GetComponent<Projectile>() != (Object)null)
 			{
-				return 100;
+				if (!IsThrownProjectile(prefabID))
+				{
+					return 100;
+				}
+				return 3;
 			}
 			if ((Object)(object)((Component)this).GetComponent<Gib>() != (Object)null)
 			{
@@ -118,9 +137,32 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 
 	public int ServerCount => 0;
 
+	private static bool IsThrownProjectile(uint prefabId)
+	{
+		if (thrownProjectilePrefabIds == null)
+		{
+			thrownProjectilePrefabIds = new HashSet<uint>();
+			BaseMelee baseMelee = default;
+			foreach (ItemDefinition item in ItemManager.itemList)
+			{
+				ItemModProjectile component = ((Component)item).GetComponent<ItemModProjectile>();
+				ItemModEntity component2 = ((Component)item).GetComponent<ItemModEntity>();
+				if (!((Object)(object)component == (Object)null) && !((Object)(object)component2 == (Object)null))
+				{
+					GameObject val = component2.entityPrefab.Get();
+					if ((Object)(object)val != (Object)null && val.TryGetComponent<BaseMelee>(ref baseMelee) && baseMelee.canThrowAsProjectile)
+					{
+						thrownProjectilePrefabIds.Add(component.projectileObject.resourceID);
+					}
+				}
+			}
+		}
+		return thrownProjectilePrefabIds.Contains(prefabId);
+	}
+
 	public void PostProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
-		if (!bundling && !((Object)(object)((Component)this).gameObject != (Object)(object)rootObj))
+		if (!((Object)(object)((Component)this).gameObject != (Object)(object)rootObj))
 		{
 			Initialize(StringPool.Get(name));
 		}
@@ -130,6 +172,10 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 	{
 		prefabID = id;
 		behaviours = ((Component)this).gameObject.GetComponentsInChildren(typeof(Behaviour), true).OfType<Behaviour>().ToArray();
+		if ((Object)(object)((Component)this).GetComponent<Sound>() != (Object)null)
+		{
+			behaviours = behaviours.Where((Behaviour behaviour) => !(behaviour is AudioSource)).ToArray();
+		}
 		rigidbodies = ((Component)this).gameObject.GetComponentsInChildren<Rigidbody>(true);
 		colliders = ((Component)this).gameObject.GetComponentsInChildren<Collider>(true);
 		lodgroups = ((Component)this).gameObject.GetComponentsInChildren<LODGroup>(true);
@@ -237,9 +283,9 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 
 	private void RestoreChildActiveStates()
 	{
-		if (childActiveStates != null && RestoreActiveStates(((Component)this).transform, childActiveStates, 0) != childActiveStates.Length)
+		if (childActiveStates != null)
 		{
-			Debug.LogError((object)("Pooled prefab changed its game object hierarchy at runtime, which pooling can't restore: " + ((Object)this).name + " (prefab has " + childActiveStates.Length + " transforms, instance has " + CountTransforms(((Component)this).transform) + ")"), (Object)(object)this);
+			RestoreActiveStates(((Component)this).transform, childActiveStates, 0);
 		}
 	}
 
@@ -326,7 +372,23 @@ public class Poolable : MonoBehaviour, IClientComponent, IPrefabPostProcess
 		{
 			RestoreHierarchy(prefab);
 		}
+		ResetBehaviourStates();
 		CancelAllInvokes();
+	}
+
+	private void ResetBehaviourStates()
+	{
+		if (behaviours == null)
+		{
+			return;
+		}
+		for (int i = 0; i < behaviours.Length; i++)
+		{
+			if (behaviours[i] is IPoolReset poolReset && Object.op_Implicit((Object)(object)behaviours[i]))
+			{
+				poolReset.ResetForPool();
+			}
+		}
 	}
 
 	private void CancelAllInvokes()

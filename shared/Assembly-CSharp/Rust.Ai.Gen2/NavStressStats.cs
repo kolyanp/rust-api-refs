@@ -24,6 +24,14 @@ public static class NavStressStats
 
 	public static int destinationPatches;
 
+	public static int transformFlushes;
+
+	public static int transformJobFlushes;
+
+	public static int transformJoins;
+
+	public static int transformLeaves;
+
 	public static int pathQueries;
 
 	public static int pathQueryFails;
@@ -80,6 +88,28 @@ public static class NavStressStats
 	public static void CountDestinationPatch()
 	{
 		destinationPatches++;
+	}
+
+	[Conditional("DEBUG")]
+	public static void CountTransformFlush(bool job)
+	{
+		transformFlushes++;
+		if (job)
+		{
+			transformJobFlushes++;
+		}
+	}
+
+	[Conditional("DEBUG")]
+	public static void CountTransformJoin()
+	{
+		transformJoins++;
+	}
+
+	[Conditional("DEBUG")]
+	public static void CountTransformLeave()
+	{
+		transformLeaves++;
 	}
 
 	[Conditional("DEBUG")]
@@ -193,6 +223,10 @@ public static class NavStressStats
 		cornerRefreshes = 0;
 		pathResets = 0;
 		destinationPatches = 0;
+		transformFlushes = 0;
+		transformJobFlushes = 0;
+		transformJoins = 0;
+		transformLeaves = 0;
 		pathQueries = 0;
 		pathQueryFails = 0;
 		pathQueryMs = 0.0;
@@ -242,7 +276,7 @@ public static class NavStressStats
 		double num5 = list[count - 1];
 		double num6 = ((agentTicks > 0) ? (num * 1000.0 * (double)count / (double)agentTicks) : 0.0);
 		string text = (allocSupported ? $"{(double)allocBytes / (double)count:F0}B/frame" : "cannot measure");
-		return string.Format("[{0}] {1} agents, {2} frames: tick {3:F1}us + driver {4:F1}us p50 {5:F1}us p95 {6:F1}us max {7:F1}us, {8:F2}us/agent, alloc {9}, setDest {10} ({11} fail, {12} patched), corridorInvalid {13}, replans {14}, cornerPulls {15}, pathResets {16}", new object[17]
+		return string.Format("[{0}] {1} agents, {2} frames: tick {3:F1}us + driver {4:F1}us p50 {5:F1}us p95 {6:F1}us max {7:F1}us, {8:F2}us/agent, alloc {9}, setDest {10} ({11} fail, {12} patched), corridorInvalid {13}, replans {14}, cornerPulls {15}, pathResets {16}, flushes {17} ({18} jobs), residency {19} joins {20} leaves", new object[21]
 		{
 			label,
 			agentCount,
@@ -260,7 +294,11 @@ public static class NavStressStats
 			corridorInvalidations,
 			replans,
 			cornerRefreshes,
-			pathResets
+			pathResets,
+			transformFlushes,
+			transformJobFlushes,
+			transformJoins,
+			transformLeaves
 		});
 	}
 }

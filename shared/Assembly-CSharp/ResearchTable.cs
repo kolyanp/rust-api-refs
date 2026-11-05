@@ -176,19 +176,19 @@ public class ResearchTable : StorageContainer
 		int result = 0;
 		if ((int)info.rarity == 1)
 		{
-			result = 15;
+			result = 20;
 		}
 		if ((int)info.rarity == 2)
 		{
-			result = 30;
+			result = 40;
 		}
 		if ((int)info.rarity == 3)
 		{
-			result = 60;
+			result = 100;
 		}
 		if ((int)info.rarity == 4 || (int)info.rarity == 0)
 		{
-			result = 120;
+			result = 300;
 		}
 		ItemBlueprint itemBlueprint = ItemManager.FindBlueprint(info);
 		if ((Object)(object)itemBlueprint != (Object)null && itemBlueprint.defaultBlueprint)

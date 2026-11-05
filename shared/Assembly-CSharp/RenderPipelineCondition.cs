@@ -1,7 +1,7 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-public class RenderPipelineCondition : MonoBehaviour
+public class RenderPipelineCondition : MonoBehaviour, IFlattenKeepsChildren
 {
 	public enum RenderPipelineType
 	{

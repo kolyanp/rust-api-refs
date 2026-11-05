@@ -13,14 +13,14 @@ public class Category_Phone
 	public class Phone_PhoneController
 	{
 		[Patch("OnPhoneAnswer", "OnPhoneAnswer", "PhoneController", "AnswerPhone", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("6719a8d420ae4632a00ce06f509f1eba")]
+		[Identifier("9d736ebcfc5544adb0ab84b614955dd8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
-		[Parameter("activeCallTo", "PhoneController", false)]
+		[Parameter("activeOtherPhoneController", "PhoneController", false)]
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_6719a8d420ae4632a00ce06f509f1eba : Patch
+		public class Phone_PhoneController_9d736ebcfc5544adb0ab84b614955dd8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -35,7 +35,7 @@ public class Category_Phone
 					yield return CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(new CodeInstruction(OpCodes.Ldc_I4, (object)1818430455), instruction), instruction);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeCallTo"));
+					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeOtherPhoneController"));
 					yield return new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(HookCaller), "CallStaticHook", new Type[3]
 					{
 						typeof(uint),
@@ -53,15 +53,15 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneCallStart", "OnPhoneCallStart", "PhoneController", "BeginCall", new string[] { })]
-		[Identifier("b2322fed0acc410c8d392d496fb8d2d3")]
+		[Identifier("f918502f3f904e6a83cc7d27dff9b2d0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
-		[Parameter("activeCallTo", "PhoneController", false)]
+		[Parameter("activeOtherPhoneController", "PhoneController", false)]
 		[Parameter("currentPlayer", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_b2322fed0acc410c8d392d496fb8d2d3 : Patch
+		public class Phone_PhoneController_f918502f3f904e6a83cc7d27dff9b2d0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -76,7 +76,7 @@ public class Category_Phone
 					yield return CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(new CodeInstruction(OpCodes.Ldc_I4, (object)(-758892827)), instruction), instruction);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeCallTo"));
+					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeOtherPhoneController"));
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("PhoneController"), "get_currentPlayer", (Type[])null, (Type[])null));
 					yield return new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(HookCaller), "CallStaticHook", new Type[4]
@@ -97,16 +97,16 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneCallStarted", "OnPhoneCallStarted", "PhoneController", "BeginCall", new string[] { })]
-		[Identifier("32e153a33bc34a83b10dad782e0b8814")]
+		[Identifier("f7f45e80fb45484ca5a0cd2c6650521e")]
 		[Dependencies(new string[] { "OnPhoneCallStart" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
-		[Parameter("activeCallTo", "PhoneController", false)]
+		[Parameter("activeOtherPhoneController", "PhoneController", false)]
 		[Parameter("currentPlayer", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_32e153a33bc34a83b10dad782e0b8814 : Patch
+		public class Phone_PhoneController_f7f45e80fb45484ca5a0cd2c6650521e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -121,7 +121,7 @@ public class Category_Phone
 					yield return CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(new CodeInstruction(OpCodes.Ldc_I4, (object)(-1453968022)), instruction), instruction);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeCallTo"));
+					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeOtherPhoneController"));
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("PhoneController"), "get_currentPlayer", (Type[])null, (Type[])null));
 					yield return new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(HookCaller), "CallStaticHook", new Type[4]
@@ -138,13 +138,13 @@ public class Category_Phone
 		}
 
 		[Patch("CanReceiveCall", "CanReceiveCall", "PhoneController", "CanReceiveCall", new string[] { })]
-		[Identifier("08060eb0234342a7bab9397ea5e6aac0")]
+		[Identifier("26b23422612d48afa827b0b7c2e6bef4")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Return(typeof(bool))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_08060eb0234342a7bab9397ea5e6aac0 : Patch
+		public class Phone_PhoneController_26b23422612d48afa827b0b7c2e6bef4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -180,7 +180,7 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDial", "OnPhoneDial", "PhoneController", "CallPhone", new string[] { "System.Int32" })]
-		[Identifier("19cb78f9fe2243eba16ff8e28d08f17a")]
+		[Identifier("214e86d529494d6da188adc44c8ce367")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("local0", "PhoneController", false)]
@@ -188,7 +188,7 @@ public class Category_Phone
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_19cb78f9fe2243eba16ff8e28d08f17a : Patch
+		public class Phone_PhoneController_214e86d529494d6da188adc44c8ce367 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -223,7 +223,7 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDialFail", "OnPhoneDialFail", "PhoneController", "OnDialFailed", new string[] { "Telephone/DialFailReason" })]
-		[Identifier("0090036a0858452eb7c48da9f820fc9b")]
+		[Identifier("45884498198c40ab824e3ff8a584f952")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("reason", "Telephone+DialFailReason", false)]
@@ -231,7 +231,7 @@ public class Category_Phone
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_0090036a0858452eb7c48da9f820fc9b : Patch
+		public class Phone_PhoneController_45884498198c40ab824e3ff8a584f952 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -267,15 +267,15 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDialTimeout", "OnPhoneDialTimeout", "PhoneController", "TimeOutDialing", new string[] { })]
-		[Identifier("299b18e8f06a4e1e8ea363f063a3cfb4")]
+		[Identifier("bdb1558ad8714a1fb307ea501e7ad193")]
 		[Options(/*Could not decode attribute arguments.*/)]
-		[Parameter("activeCallTo", "PhoneController", false)]
+		[Parameter("activeOtherPhoneController", "PhoneController", false)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("currentPlayer", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_299b18e8f06a4e1e8ea363f063a3cfb4 : Patch
+		public class Phone_PhoneController_bdb1558ad8714a1fb307ea501e7ad193 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -289,10 +289,10 @@ public class Category_Phone
 					}
 					yield return CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(new CodeInstruction(OpCodes.Ldc_I4, (object)772238272), instruction), instruction);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeCallTo"));
+					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeOtherPhoneController"));
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeCallTo"));
+					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeOtherPhoneController"));
 					yield return new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("PhoneController"), "get_currentPlayer", (Type[])null, (Type[])null));
 					yield return new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(HookCaller), "CallStaticHook", new Type[4]
 					{
@@ -312,7 +312,7 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDialFailed", "OnPhoneDialFailed", "PhoneController", "OnDialFailed", new string[] { "Telephone/DialFailReason" })]
-		[Identifier("bd6e18fa26d146ae98e6341d7bf2c96e")]
+		[Identifier("3b8d17e19ba348bf9aeb9941ebb72cd0")]
 		[Dependencies(new string[] { "OnPhoneDialFail" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
@@ -321,14 +321,14 @@ public class Category_Phone
 		[Return(typeof(void), Discarded = true)]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_bd6e18fa26d146ae98e6341d7bf2c96e : Patch
+		public class Phone_PhoneController_3b8d17e19ba348bf9aeb9941ebb72cd0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 55)
+					if (x++ != 57)
 					{
 						yield return instruction;
 						continue;
@@ -353,16 +353,16 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDialTimedOut", "OnPhoneDialTimedOut", "PhoneController", "TimeOutDialing", new string[] { })]
-		[Identifier("543975d319984e35bd35dd67cc0641d1")]
+		[Identifier("b9c37d789f424747a28d0a57c1fe9cea")]
 		[Dependencies(new string[] { "OnPhoneDialTimeout" })]
 		[Options(/*Could not decode attribute arguments.*/)]
-		[Parameter("activeCallTo", "PhoneController", false)]
+		[Parameter("activeOtherPhoneController", "PhoneController", false)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("currentPlayer", "BasePlayer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_543975d319984e35bd35dd67cc0641d1 : Patch
+		public class Phone_PhoneController_b9c37d789f424747a28d0a57c1fe9cea : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -376,10 +376,10 @@ public class Category_Phone
 					}
 					yield return CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(new CodeInstruction(OpCodes.Ldc_I4, (object)31481961), instruction), instruction);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeCallTo"));
+					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeOtherPhoneController"));
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeCallTo"));
+					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeOtherPhoneController"));
 					yield return new CodeInstruction(OpCodes.Callvirt, (object)AccessTools.Method(AccessToolsEx.TypeByName("PhoneController"), "get_currentPlayer", (Type[])null, (Type[])null));
 					yield return new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(HookCaller), "CallStaticHook", new Type[4]
 					{
@@ -395,15 +395,15 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneAnswered", "OnPhoneAnswered", "PhoneController", "AnswerPhone", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("c65576082e7c4c6da99537f2d39dd931")]
+		[Identifier("81a86810fcb940738c296fc7f2dfce8c")]
 		[Dependencies(new string[] { "OnPhoneAnswer" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
-		[Parameter("activeCallTo", "PhoneController", false)]
+		[Parameter("activeOtherPhoneController", "PhoneController", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_c65576082e7c4c6da99537f2d39dd931 : Patch
+		public class Phone_PhoneController_81a86810fcb940738c296fc7f2dfce8c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -418,7 +418,7 @@ public class Category_Phone
 					yield return CodeInstructionExtensions.MoveBlocksFrom(CodeInstructionExtensions.MoveLabelsFrom(new CodeInstruction(OpCodes.Ldc_I4, (object)459265237), instruction), instruction);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeCallTo"));
+					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("PhoneController"), "activeOtherPhoneController"));
 					yield return new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(HookCaller), "CallStaticHook", new Type[3]
 					{
 						typeof(uint),

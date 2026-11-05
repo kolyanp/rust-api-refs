@@ -80,7 +80,7 @@ public class Events : ConsoleSystem
 		{
 			((Behaviour)schedule).enabled = pendingChanges.Enabled ?? ((Behaviour)schedule).enabled;
 			schedule.minimumHoursBetween = pendingChanges.MinHours ?? schedule.minimumHoursBetween;
-			schedule.maxmumHoursBetween = pendingChanges.MaxHours ?? schedule.maxmumHoursBetween;
+			schedule.maximumHoursBetween = pendingChanges.MaxHours ?? schedule.maximumHoursBetween;
 		}
 	}
 
@@ -98,7 +98,11 @@ public class Events : ConsoleSystem
 			stringBuilder.AppendLine(allEvent.Key ?? "");
 			stringBuilder.AppendLine($"  - enabled: {((Behaviour)allEvent).enabled}");
 			stringBuilder.AppendLine($"  - min hours: {allEvent.minimumHoursBetween}");
-			stringBuilder.AppendLine($"  - max hours: {allEvent.maxmumHoursBetween}");
+			stringBuilder.AppendLine($"  - max hours: {allEvent.maximumHoursBetween}");
+			if (((Behaviour)allEvent).enabled)
+			{
+				stringBuilder.AppendLine($"  - hours remaining: {allEvent.HoursRemaining:F2}");
+			}
 			stringBuilder.AppendLine();
 		}
 		arg.ReplyWith(stringBuilder.ToString());

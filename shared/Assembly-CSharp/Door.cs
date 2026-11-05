@@ -64,8 +64,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 
 	public Menu.Option UpgradeMenu;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private float openAnimLength = 4f;
 
 	[SerializeField]
@@ -1272,8 +1272,12 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 	[UnityEvent]
 	public void SetOpen(bool open, bool suppressBlockageChecks = false)
 	{
+		bool flag = IsOpen();
 		SetFlagLocal(Flags.Open, open);
-		SendNetworkUpdateImmediate();
+		if (flag != open)
+		{
+			SendNetworkUpdateImmediate();
+		}
 		if (isSecurityDoor && (Object)(object)NavMeshLink != (Object)null)
 		{
 			SetNavMeshLinkEnabled(open);
@@ -1323,8 +1327,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	protected void RPC_OpenDoor(RPCMessage rpc)
 	{
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
@@ -1448,7 +1452,7 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
-	private void RPC_CloseDoor(RPCMessage rpc)
+	protected void RPC_CloseDoor(RPCMessage rpc)
 	{
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		if (!rpc.player.CanInteract(usableWhileCrawling: true) || !canHandOpen || !IsOpen() || IsBusy() || IsLocked())
@@ -1508,8 +1512,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		Interface.CallHook("OnDoorKnocked", this, rpc.player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_ToggleHatch(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract(usableWhileCrawling: true) || !hasHatch)
@@ -1936,8 +1940,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void DoSimpleUpgrade(RPCMessage msg)
 	{
 		if (SecondsSinceAttacked < 30f)

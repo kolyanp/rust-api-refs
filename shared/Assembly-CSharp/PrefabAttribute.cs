@@ -171,11 +171,40 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	[NonSerialized]
 	public bool isServer;
 
+	[SerializeField]
+	[HideInInspector]
+	private Vector3 authoredLocalPosition;
+
+	[HideInInspector]
+	[SerializeField]
+	private Quaternion authoredLocalRotation;
+
+	[SerializeField]
+	[HideInInspector]
+	private Vector3 authoredLocalScale;
+
+	[SerializeField]
+	[HideInInspector]
+	[FlattenIgnoreReference]
+	private Transform flattenedParent;
+
+	[SerializeField]
+	[HideInInspector]
+	private Vector3 flattenedLocalPosition;
+
+	[SerializeField]
+	[HideInInspector]
+	private Quaternion flattenedLocalRotation;
+
+	[SerializeField]
+	[HideInInspector]
+	private Vector3 flattenedLocalScale;
+
 	public static Library server = new Library(clientside: false, serverside: true);
 
 	public bool isClient => !isServer;
 
-	bool IPrefabPreProcess.CanRunDuringBundling => true;
+	bool IPrefabPreProcess.CanPreProcessDuringBundling => true;
 
 	public virtual void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
@@ -191,6 +220,12 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
 		fullName = name;
 		hierachyName = TransformEx.GetRecursiveName(((Component)this).transform);
 		localName = ((Object)((Component)this).gameObject).name;
@@ -202,6 +237,12 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 		localPosition = ((Component)this).transform.localPosition;
 		localScale = ((Component)this).transform.localScale;
 		localRotation = ((Component)this).transform.localRotation;
+		if (IsWhereFlatteningPutIt())
+		{
+			localPosition = authoredLocalPosition;
+			localRotation = authoredLocalRotation;
+			localScale = authoredLocalScale;
+		}
 		if (serverside)
 		{
 			prefabAttribute = server;
@@ -222,6 +263,21 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 
 	protected virtual void AttributeSetup(GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
+	}
+
+	private bool IsWhereFlatteningPutIt()
+	{
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)flattenedParent != (Object)null && (Object)(object)((Component)this).transform.parent == (Object)(object)flattenedParent && ((Component)this).transform.localPosition == flattenedLocalPosition && ((Component)this).transform.localRotation == flattenedLocalRotation)
+		{
+			return ((Component)this).transform.localScale == flattenedLocalScale;
+		}
+		return false;
 	}
 
 	protected abstract Type GetIndexedType();

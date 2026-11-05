@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Development.Attributes;
 using UnityEngine;
 
 namespace Facepunch.Sqlite;
@@ -646,6 +647,7 @@ public class Database
 		}
 	}
 
+	[PoolAnalyzerNonCaching]
 	protected int ExecuteAndReadQueryResults<T>(IntPtr stmHandle, List<T> results, Func<IntPtr, T> rowReader)
 	{
 		try

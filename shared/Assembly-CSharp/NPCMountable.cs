@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Facepunch;
 using Rust;
 using Rust.Ai.Gen2;
 using UnityEngine;
@@ -11,15 +13,21 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		[Tooltip("Where the NPC sits. It is parented to the vehicle and zeroed against this transform.")]
 		public Transform anchor;
 
-		[Tooltip("Optional ground point on the world navmesh the NPC walks to before mounting. Falls back to the anchor itself.")]
+		[Tooltip("Optional ground point on the world navmesh the NPC walks to before mounting. The dismount positions are offered too, and the clear one nearest the NPC wins.")]
 		public Transform approach;
 
 		[Tooltip("How close a parented NPC has to be to this anchor to count as sitting in it. Zero uses the default.")]
 		public float radius;
+
+		[Tooltip("Only read by LivestockMountable.")]
+		public LivestockAnimal.LivestockSizeFlags acceptedSizes;
+
+		[Tooltip("Indices of anchors sharing this one's space, so only one of them can be taken at once.")]
+		public int[] overlaps;
 	}
 
 	[Header("NPC Mountable")]
-	[Tooltip("The seats on this vehicle. An NPC takes the nearest free one.")]
+	[Tooltip("An NPC takes the nearest free one.")]
 	public NPCMountAnchor[] anchors;
 
 	[Tooltip("Where NPCs are put down when they get off. Same name and meaning as BaseMountable's.")]
@@ -39,9 +47,15 @@ public class NPCMountable : EntityComponent<BaseEntity>
 
 	private EntityRef<BaseNPC2>[] occupants;
 
+	private Transform[] approaches;
+
+	private Nullable[] dismountTowards;
+
 	private const float RideableCheckInterval = 1f;
 
-	private Action _checkRideable;
+	private Action checkRideable;
+
+	private const float ApproachStepHeight = 0.3f;
 
 	public int AnchorCount
 	{
@@ -59,11 +73,23 @@ public class NPCMountable : EntityComponent<BaseEntity>
 	{
 		get
 		{
-			if (((baseEntity is BaseVehicleModule baseVehicleModule) ? baseVehicleModule.Vehicle : baseEntity) is BaseVehicle baseVehicle)
+			if (Host is BaseVehicle baseVehicle)
 			{
 				return baseVehicle.IsStationary();
 			}
 			return true;
+		}
+	}
+
+	private BaseEntity Host
+	{
+		get
+		{
+			if (!(baseEntity is BaseVehicleModule baseVehicleModule))
+			{
+				return baseEntity;
+			}
+			return baseVehicleModule.Vehicle;
 		}
 	}
 
@@ -107,25 +133,20 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		}
 	}
 
-	public int MountedCount
+	public bool AnyMounted
 	{
 		get
 		{
-			int num = 0;
 			foreach (BaseEntity child in baseEntity.children)
 			{
 				if (child is BaseNPC2 { IsMounted: not false })
 				{
-					num++;
+					return true;
 				}
 			}
-			return num;
+			return false;
 		}
 	}
-
-	public bool AnyMounted => MountedCount > 0;
-
-	public bool HasFreeAnchor => MountedCount < AnchorCount;
 
 	private Action CheckRideableAction => CheckRideable;
 
@@ -162,23 +183,6 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		return anchors[index].anchor;
 	}
 
-	public Vector3 GetApproachPosition(int index)
-	{
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		if (!IsValidAnchor(index))
-		{
-			return ((Component)baseEntity).transform.position;
-		}
-		Transform approach = anchors[index].approach;
-		if (!((Object)(object)approach != (Object)null))
-		{
-			return anchors[index].anchor.position;
-		}
-		return approach.position;
-	}
-
 	private float AnchorRadius(int index)
 	{
 		if (!(anchors[index].radius > 0f))
@@ -188,12 +192,107 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		return anchors[index].radius;
 	}
 
+	public bool HasFreeAnchorFor(BaseNPC2 npc)
+	{
+		for (int i = 0; i < AnchorCount; i++)
+		{
+			if (IsAnchorFree(i) && CanSeat(npc, i))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected virtual bool CanSeat(BaseNPC2 npc, int index)
+	{
+		return true;
+	}
+
+	public bool IsAnchorFree(int index)
+	{
+		if (!IsValidAnchor(index) || IsAnchorTaken(index))
+		{
+			return false;
+		}
+		for (int i = 0; i < AnchorCount; i++)
+		{
+			if (Overlaps(index, i) && IsAnchorTaken(i))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private bool Overlaps(int a, int b)
+	{
+		if (a != b)
+		{
+			if (!ListsOverlap(a, b))
+			{
+				return ListsOverlap(b, a);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private bool ListsOverlap(int a, int b)
+	{
+		if (anchors[a].overlaps != null)
+		{
+			return Array.IndexOf(anchors[a].overlaps, b) >= 0;
+		}
+		return false;
+	}
+
+	private bool IsAnchorTaken(int index)
+	{
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		if (baseEntity.isServer)
+		{
+			return (Object)(object)occupants[index].Get(serverside: true) != (Object)null;
+		}
+		foreach (BaseEntity child in baseEntity.children)
+		{
+			if (child is BaseNPC2 { IsMounted: not false } baseNPC && GetNearestAnchor(((Component)baseNPC).transform.position) == index)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private int GetNearestAnchor(Vector3 position)
+	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		int result = -1;
+		float num = float.MaxValue;
+		for (int i = 0; i < AnchorCount; i++)
+		{
+			if (IsValidAnchor(i))
+			{
+				float num2 = Vector3.Distance(anchors[i].anchor.position, position);
+				if (!(num2 > AnchorRadius(i)) && !(num2 >= num))
+				{
+					num = num2;
+					result = i;
+				}
+			}
+		}
+		return result;
+	}
+
 	public override void InitShared()
 	{
 		base.InitShared();
 		if (baseEntity.isServer)
 		{
 			occupants = new EntityRef<BaseNPC2>[AnchorCount];
+			approaches = new Transform[AnchorCount];
+			dismountTowards = new Nullable[AnchorCount];
 		}
 	}
 
@@ -212,15 +311,6 @@ public class NPCMountable : EntityComponent<BaseEntity>
 				DismountImmediate(baseNPC);
 			}
 		}
-	}
-
-	public bool IsAnchorFree(int index)
-	{
-		if (IsValidAnchor(index))
-		{
-			return (Object)(object)occupants[index].Get(serverside: true) == (Object)null;
-		}
-		return false;
 	}
 
 	private void Occupy(int index, BaseNPC2 npc)
@@ -275,32 +365,189 @@ public class NPCMountable : EntityComponent<BaseEntity>
 
 	public bool TryReserveAnchor(BaseNPC2 npc, out int index)
 	{
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		index = -1;
 		if ((Object)(object)npc == (Object)null || occupants == null)
 		{
 			return false;
 		}
 		float num = float.MaxValue;
+		Transform val = null;
 		for (int i = 0; i < occupants.Length; i++)
 		{
-			if (IsAnchorFree(i))
+			if (IsAnchorFree(i) && CanSeat(npc, i) && TryPickApproach(npc, i, out var approach, out var distance) && !(distance >= num))
 			{
-				float num2 = Vector3.Distance(anchors[i].anchor.position, ((Component)npc).transform.position);
-				if (!(num2 >= num))
-				{
-					num = num2;
-					index = i;
-				}
+				num = distance;
+				index = i;
+				val = approach;
 			}
 		}
 		if (index < 0)
 		{
 			return false;
 		}
+		approaches[index] = val;
 		Occupy(index, npc);
 		return true;
+	}
+
+	public Vector3 GetApproachPosition(int index)
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		if (!IsValidAnchor(index))
+		{
+			return ((Component)baseEntity).transform.position;
+		}
+		if (!((Object)(object)approaches[index] != (Object)null))
+		{
+			return anchors[index].anchor.position;
+		}
+		return approaches[index].position;
+	}
+
+	private bool TryPickApproach(BaseNPC2 npc, int index, out Transform approach, out float distance)
+	{
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		approach = null;
+		distance = float.MaxValue;
+		PooledList<Transform> val = Pool.Get<PooledList<Transform>>();
+		try
+		{
+			if ((Object)(object)anchors[index].approach != (Object)null)
+			{
+				((List<Transform>)(object)val).Add(anchors[index].approach);
+			}
+			if (dismountPositions != null)
+			{
+				Transform[] array = dismountPositions;
+				foreach (Transform val2 in array)
+				{
+					if ((Object)(object)val2 != (Object)null)
+					{
+						((List<Transform>)(object)val).Add(val2);
+					}
+				}
+			}
+			if (((List<Transform>)(object)val).Count == 0)
+			{
+				distance = Vector3.Distance(anchors[index].anchor.position, ((Component)npc).transform.position);
+				return true;
+			}
+			foreach (Transform item in (List<Transform>)(object)val)
+			{
+				float num = Vector3.Distance(item.position, ((Component)npc).transform.position);
+				if (!(num >= distance) && IsApproachClear(npc, item.position, anchors[index].anchor.position))
+				{
+					approach = item;
+					distance = num;
+				}
+			}
+			return (Object)(object)approach != (Object)null;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private bool IsApproachClear(BaseNPC2 npc, Vector3 approach, Vector3 anchor)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		if (!npc.TrySampleNavmesh(approach, 2f, out var onNavmesh))
+		{
+			return false;
+		}
+		Vector3 extents = npc.bounds.extents;
+		float num = Mathf.Min(extents.x, extents.z);
+		Vector3 val = Vector3.up * (num + 0.3f);
+		Vector3 val2 = Vector3.up * Mathf.Max(extents.y * 2f - num, num + 0.3f);
+		if (!IsBlocked(npc, onNavmesh + val, onNavmesh + val2, num) && !IsBlocked(npc, onNavmesh + val, anchor + val, num))
+		{
+			return !IsBlocked(npc, onNavmesh + val2, anchor + val2, num);
+		}
+		return false;
+	}
+
+	private bool IsBlocked(BaseNPC2 npc, Vector3 start, Vector3 end, float radius)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<Collider> val = Pool.Get<PooledList<Collider>>();
+		try
+		{
+			GamePhysics.OverlapCapsule(start, end, radius, (List<Collider>)(object)val, 1503731969, (QueryTriggerInteraction)1);
+			foreach (Collider item in (List<Collider>)(object)val)
+			{
+				BaseEntity baseEntity = GameObjectEx.ToBaseEntity(item);
+				if ((Object)(object)baseEntity == (Object)null)
+				{
+					return true;
+				}
+				if (baseEntity.isServer && (Object)(object)baseEntity != (Object)(object)npc && !IsPartOfHost(baseEntity))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private bool IsPartOfHost(BaseEntity entity)
+	{
+		BaseEntity host = Host;
+		BaseEntity baseEntity = entity;
+		while ((Object)(object)baseEntity != (Object)null)
+		{
+			if ((Object)(object)baseEntity == (Object)(object)base.baseEntity || (Object)(object)baseEntity == (Object)(object)host)
+			{
+				return true;
+			}
+			if ((Object)(object)host != (Object)null && baseEntity is BaseVehicleModule baseVehicleModule && (Object)(object)baseVehicleModule.Vehicle == (Object)(object)host)
+			{
+				return true;
+			}
+			baseEntity = baseEntity.GetParentEntity();
+		}
+		return false;
 	}
 
 	public void ReleaseAnchor(BaseNPC2 npc)
@@ -308,6 +555,7 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		if (TryGetAnchorIndex(npc, out var index))
 		{
 			occupants[index] = default;
+			dismountTowards[index] = null;
 		}
 	}
 
@@ -323,6 +571,13 @@ public class NPCMountable : EntityComponent<BaseEntity>
 
 	public bool RequestMount(BaseNPC2 npc)
 	{
+		bool noClearApproach;
+		return RequestMount(npc, out noClearApproach);
+	}
+
+	public bool RequestMount(BaseNPC2 npc, out bool noClearApproach)
+	{
+		noClearApproach = false;
 		if ((Object)(object)npc == (Object)null || npc.IsDead() || (Object)(object)npc.Mount != (Object)null)
 		{
 			return false;
@@ -337,6 +592,7 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		}
 		if (!TryReserveAnchor(npc, out var index))
 		{
+			noClearApproach = HasFreeAnchorFor(npc);
 			return false;
 		}
 		if (npc.StartMountTo(this, index))
@@ -347,12 +603,13 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		return false;
 	}
 
-	public bool RequestDismount(BaseNPC2 npc)
+	public bool RequestDismount(BaseNPC2 npc, Nullable towards = null)
 	{
-		if ((Object)(object)npc == (Object)null || !TryGetAnchorIndex(npc, out var _))
+		if ((Object)(object)npc == (Object)null || !TryGetAnchorIndex(npc, out var index))
 		{
 			return false;
 		}
+		dismountTowards[index] = towards;
 		if (npc.IsMounted)
 		{
 			if (!TryGetDismountPosition(npc, out var _, out var _))
@@ -368,8 +625,15 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		return true;
 	}
 
-	public bool TryDismountOne()
+	public bool TryDismountOne(Nullable towards = null)
 	{
+		bool noDismountPoint;
+		return TryDismountOne(towards, out noDismountPoint);
+	}
+
+	public bool TryDismountOne(Nullable towards, out bool noDismountPoint)
+	{
+		noDismountPoint = false;
 		if (occupants == null)
 		{
 			return false;
@@ -380,10 +644,15 @@ public class NPCMountable : EntityComponent<BaseEntity>
 			if ((Object)(object)baseNPC == (Object)null)
 			{
 				occupants[i] = default;
+				dismountTowards[i] = null;
 			}
-			else if (!baseNPC.IsDismounting && RequestDismount(baseNPC))
+			else if (!baseNPC.IsDismounting)
 			{
-				return true;
+				if (RequestDismount(baseNPC, towards))
+				{
+					return true;
+				}
+				noDismountPoint = true;
 			}
 		}
 		return false;
@@ -409,6 +678,8 @@ public class NPCMountable : EntityComponent<BaseEntity>
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
@@ -424,8 +695,8 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		//IL_0198: Unknown result type (might be due to invalid IL or missing references)
 		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
@@ -441,17 +712,18 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		rotation = default;
 		if (dismountPositions != null)
 		{
+			Vector3 val = GetDismountTowards(npc);
 			Transform[] array = dismountPositions;
-			foreach (Transform val in array)
+			foreach (Transform val2 in array)
 			{
-				if (!((Object)(object)val == (Object)null) && !IsDismountPointTaken(val, npc))
+				if (!((Object)(object)val2 == (Object)null) && !IsDismountPointTaken(val2, npc))
 				{
-					float num2 = Vector3.Distance(val.position, ((Component)npc).transform.position);
-					if (!(num2 >= num) && npc.TrySampleNavmesh(val.position, 2f, out var onNavmesh))
+					float num2 = Vector3.Distance(val2.position, val);
+					if (!(num2 >= num) && npc.TrySampleNavmesh(val2.position, 2f, out var onNavmesh))
 					{
 						num = num2;
 						position = onNavmesh;
-						rotation = Upright(val.rotation);
+						rotation = Upright(val2.rotation);
 						flag = true;
 					}
 				}
@@ -475,6 +747,17 @@ public class NPCMountable : EntityComponent<BaseEntity>
 			return true;
 		}
 		return false;
+	}
+
+	private Vector3 GetDismountTowards(BaseNPC2 npc)
+	{
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		if (!TryGetAnchorIndex(npc, out var index) || !dismountTowards[index].HasValue)
+		{
+			return ((Component)npc).transform.position;
+		}
+		return dismountTowards[index].Value;
 	}
 
 	private static Quaternion Upright(Quaternion rotation)
@@ -524,8 +807,8 @@ public class NPCMountable : EntityComponent<BaseEntity>
 
 	public bool TryReclaimAnchor(BaseNPC2 npc, out int index)
 	{
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		index = -1;
 		if ((Object)(object)npc == (Object)null || occupants == null)
 		{
@@ -534,7 +817,7 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		float num = float.MaxValue;
 		for (int i = 0; i < occupants.Length; i++)
 		{
-			if (IsAnchorFree(i))
+			if (IsAnchorFree(i) && CanSeat(npc, i))
 			{
 				float num2 = Vector3.Distance(anchors[i].anchor.position, ((Component)npc).transform.position);
 				if (!(num2 > AnchorRadius(i)) && !(num2 >= num))

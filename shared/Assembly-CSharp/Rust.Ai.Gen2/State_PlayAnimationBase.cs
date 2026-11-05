@@ -16,15 +16,15 @@ public abstract class State_PlayAnimationBase : FSMStateBase
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		if (FaceTarget && Senses.FindTargetPosition(out var targetPosition))
 		{
 			Vector3 val = targetPosition - ((Component)Owner).transform.position;
 			val.y = 0f;
 			if (val.magnitude > 0.001f)
 			{
-				((Component)Owner).transform.rotation = Quaternion.LookRotation(val);
+				Agent.Face(Quaternion.LookRotation(val));
 			}
 		}
 		return base.OnStateEnter(payload);

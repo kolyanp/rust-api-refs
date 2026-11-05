@@ -143,6 +143,7 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 				if ((Object)(object)component == (Object)null || num > component.amount)
 				{
 					Clear();
+					baseEntity.ClientRPC(RpcTarget.Player("RPC_LootOutOfRange", baseEntity));
 				}
 			}
 		}

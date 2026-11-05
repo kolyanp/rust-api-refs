@@ -10,6 +10,8 @@ public class VisualFoodSettings : PrefabAttribute, IClientComponent
 
 		public GameObjectRef effectPrefab;
 
+		public string autoPopulateItemsFromFolder;
+
 		public ItemDefinition[] items;
 
 		public Transform[] parents;

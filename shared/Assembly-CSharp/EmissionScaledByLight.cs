@@ -1,5 +1,7 @@
+using Development.Attributes;
 using UnityEngine;
 
+[ResetStaticFields]
 public class EmissionScaledByLight : MonoBehaviour, IClientComponent
 {
 	private Color emissionColor;

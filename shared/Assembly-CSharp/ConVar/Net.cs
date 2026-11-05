@@ -18,6 +18,12 @@ public class Net : ConsoleSystem
 	[ServerVar(Help = "(Generated) Overrides the near (high-priority) network visibility radius in grid cells; -1 = use default")]
 	public static int visibilityRadiusNearOverride = -1;
 
+	[ReplicatedVar(Default = "0", Help = "Sends entity positions less often to players further away: every 0.2s past 128m, every 0.4s past 192m. 0 = off, 1 = grid entities, 2 = grid and global entities")]
+	public static int position_lod = 0;
+
+	[ReplicatedVar(Default = "0", Help = "Network LOD for player positions. 0 = off, 1 = full rate out to 192m then every 0.4s, 2 = same as entities")]
+	public static int position_lod_players = 0;
+
 	[ServerVar(Name = "global_networked_bases", Help = "(Generated) When enabled, base entities are networked to all clients regardless of distance; disabling restricts base updates to players within the normal visibility radius")]
 	public static bool globalNetworkedBases = true;
 

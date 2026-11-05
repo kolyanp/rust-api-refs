@@ -1,5 +1,4 @@
 using System;
-using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -168,16 +167,10 @@ public class TerrainRenderer
 			}
 			break;
 		case TerrainRendererBackend.GeoClipmapping:
-		{
-			bool flag = RustRenderPipeline.IsActive() && (Object)(object)config.GeoClipmapMaterialHoles != (Object)null;
-			geoClipTerrain.terrainMaterial = (flag ? config.GeoClipmapMaterialHoles : config.GeoClipmapMaterial);
+			geoClipTerrain.terrainMaterial = config.GeoClipmapMaterial;
+			geoClipTerrain.pixelNormalMaterial = config.GeoClipmapPixelNormalMaterial;
 			break;
 		}
-		}
-	}
-
-	public void SetGeoClipMaterial(TerrainConfig config, bool useStencilHoles)
-	{
 	}
 
 	public Vector3 GetPosition()
@@ -188,7 +181,7 @@ public class TerrainRenderer
 
 	public void SwitchTerrain(TerrainRendererBackend rendererOption, TerrainData terrainData, TerrainConfig config, GameObject go)
 	{
-		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
 		if (rendererOption == rendererBackend)
 		{
 			return;
@@ -226,6 +219,7 @@ public class TerrainRenderer
 			{
 				geoClipTerrain = gameObject.AddComponent<GeometryClipmapTerrain>();
 				geoClipTerrain.terrainMaterial = config.GeoClipmapMaterial;
+				geoClipTerrain.pixelNormalMaterial = config.GeoClipmapPixelNormalMaterial;
 				geoClipTerrain.terrainShadows = (ShadowCastingMode)(config.CastShadows ? 1 : 0);
 				geoClipTerrain.terrainData = terrainData;
 				geoClipTerrain.terrainLayer = gameObject.layer;

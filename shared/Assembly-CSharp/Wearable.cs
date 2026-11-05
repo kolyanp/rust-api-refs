@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Facepunch;
+using Facepunch.BurstCloth;
 using UnityEngine;
 
 public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
@@ -154,10 +155,13 @@ public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
 	[HideInInspector]
 	public List<WearableNotify> notifies = new List<WearableNotify>();
 
+	[HideInInspector]
+	public List<BurstCloth> burstCloths = new List<BurstCloth>();
+
 	public bool HideInEyesView;
 
-	[Header("First Person Legs")]
 	[Tooltip("If this is true, we'll hide this item in the first person view. Usually done for items that you definitely won't see in first person view, like facemasks and hats.")]
+	[Header("First Person Legs")]
 	public bool HideInFirstPerson;
 
 	[Tooltip("Use this if the clothing item clips into the player view. It'll push the chest legs model backwards.")]
@@ -186,8 +190,6 @@ public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
 	public PartRandomizer[] randomParts;
 
 	public bool stripOccupationCollisions => stripOccupation != 0;
-
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
 	public void OnItemSetup(Item item)
 	{
@@ -220,6 +222,7 @@ public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
 		((Component)this).GetComponentsInChildren<SkeletonSkin>(true, skeletonSkins);
 		((Component)this).GetComponentsInChildren<ComponentInfo>(true, componentInfos);
 		((Component)this).GetComponentsInChildren<WearableNotify>(true, notifies);
+		((Component)this).GetComponentsInChildren<BurstCloth>(true, burstCloths);
 		RenderersLod0 = renderers.Where((Renderer x) => ((Object)((Component)x).gameObject).name.EndsWith("0")).ToArray();
 		RenderersLod1 = renderers.Where((Renderer x) => ((Object)((Component)x).gameObject).name.EndsWith("1")).ToArray();
 		RenderersLod2 = renderers.Where((Renderer x) => ((Object)((Component)x).gameObject).name.EndsWith("2")).ToArray();

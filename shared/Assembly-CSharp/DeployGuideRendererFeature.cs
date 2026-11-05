@@ -18,6 +18,8 @@ public class DeployGuideRendererFeature : RustRendererFeature
 
 	private static readonly int opacityMaskClipId = Shader.PropertyToID("_OpacityMaskClip");
 
+	private static readonly int meshGuidePreviousMId = Shader.PropertyToID("_MeshGuidePreviousM");
+
 	public DeployGuideRendererResources Resources;
 
 	private readonly DeployGuideRendererInternalResources _internResources = new DeployGuideRendererInternalResources();

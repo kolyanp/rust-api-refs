@@ -1,6 +1,6 @@
 using Rust;
 
-public class MaterialSetup : ProceduralObject, IClientComponent
+public class MaterialSetup : ProceduralObject, IClientComponent, IFlattenKeepsChildren
 {
 	public MaterialConfig config;
 

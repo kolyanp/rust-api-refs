@@ -35,15 +35,17 @@ public class Message : IPooled
 		QueueUpdate = 26,
 		SyncVar = 27,
 		PackedSyncVar = 28,
-		Last = PackedSyncVar,
-		Count = 29
+		MessageBatch = 29,
+		Last = MessageBatch,
+		Count = 30
 	}
 
-	public static readonly bool[] EncryptionPerType = new bool[30]
+	public static readonly bool[] EncryptionPerType = new bool[31]
 	{
 		false, false, false, false, false, true, true, true, true, true,
 		true, true, true, true, true, true, true, false, false, true,
-		true, true, false, true, false, false, false, true, true, false
+		true, true, false, true, false, false, false, true, true, true,
+		false
 	};
 
 	public Type type;

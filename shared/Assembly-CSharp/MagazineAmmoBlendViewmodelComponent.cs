@@ -36,7 +36,7 @@ public class MagazineAmmoBlendViewmodelComponent : MonoBehaviour, IViewmodelComp
 	[Tooltip("Material float properties driven by the same ammo fraction as the joints, via MaterialPropertyBlock (no material instancing).")]
 	public MaterialUVSetup[] MaterialUVSetups;
 
-	[Min(0f)]
 	[Tooltip("Safety cap on how long the forced full-ammo pose (triggered by the 'FullAmmoPose' animation event) can be held if reloading never actually stops. Normally released as soon as ClientIsReloading() goes false.")]
+	[Min(0f)]
 	public float ForceFullPoseDuration = 5f;
 }

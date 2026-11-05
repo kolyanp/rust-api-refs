@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Development.Attributes;
 using Facepunch;
 using Facepunch.Math;
 using Facepunch.Nexus;
@@ -35,15 +36,15 @@ public class UserPersistance : IDisposable
 		string text = strFolder + "/player.blueprints.";
 		if ((Object)(object)activeGameMode != (Object)null && activeGameMode.wipeBpsOnProtocol)
 		{
-			text = text + 289 + ".";
+			text = text + 290 + ".";
 		}
-		blueprints.Open(text + 18 + ".db");
+		blueprints.Open(text + 19 + ".db");
 		if (!blueprints.TableExists("data"))
 		{
 			blueprints.Execute("CREATE TABLE data ( userid TEXT PRIMARY KEY, info BLOB, updated INTEGER )");
 		}
 		deaths = new Database();
-		deaths.Open(strFolder + "/player.deaths." + 18 + ".db");
+		deaths.Open(strFolder + "/player.deaths." + 19 + ".db");
 		if (!deaths.TableExists("data"))
 		{
 			deaths.Execute("CREATE TABLE data ( userid TEXT, born INTEGER, died INTEGER, info BLOB )");
@@ -51,7 +52,7 @@ public class UserPersistance : IDisposable
 			deaths.Execute("CREATE INDEX IF NOT EXISTS diedindex ON data ( died )");
 		}
 		identities = new Database();
-		identities.Open(strFolder + "/player.identities." + 18 + ".db");
+		identities.Open(strFolder + "/player.identities." + 19 + ".db");
 		if (!identities.TableExists("data"))
 		{
 			identities.Execute("CREATE TABLE data ( userid INT PRIMARY KEY, username TEXT )");
@@ -67,7 +68,7 @@ public class UserPersistance : IDisposable
 			tokens.Execute("ALTER TABLE data ADD COLUMN locked BOOLEAN DEFAULT 0");
 		}
 		playerState = new Database();
-		playerState.Open(strFolder + "/player.states." + 289 + ".db");
+		playerState.Open(strFolder + "/player.states." + 290 + ".db");
 		if (!playerState.TableExists("data"))
 		{
 			playerState.Execute("CREATE TABLE data ( userid INT PRIMARY KEY, state BLOB )");
@@ -106,6 +107,7 @@ public class UserPersistance : IDisposable
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public PersistantPlayer GetPlayerInfo(ulong playerID)
 	{
 		PersistantPlayer val = FetchFromDatabase(playerID);

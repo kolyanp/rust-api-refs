@@ -23,43 +23,40 @@ public class GenerateErosionSplat : ProceduralComponent
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
 		Debug.Assert(GenerateErosion.splatPaintingData.HeightMapDelta.IsCreated);
-		Debug.Assert(GenerateErosion.splatPaintingData.AngleMap.IsCreated);
 		TerrainSplatMap splatMap = TerrainMeta.SplatMap;
 		NativeArray<float> heightMapDelta = GenerateErosion.splatPaintingData.HeightMapDelta;
-		NativeArray<float> angleMap = GenerateErosion.splatPaintingData.AngleMap;
 		int res = TerrainMeta.HeightMap.res;
+		NativeArray<float> angleMapDeg = new NativeArray<float>(heightMapDelta.Length, (Allocator)3, (NativeArrayOptions)1);
 		Parallel.For(1, res - 1, (int z) =>
 		{
 			for (int i = 1; i < res - 1; i++)
 			{
-				angleMap[z * res + i] = TerrainMeta.HeightMap.GetSlope(i, z);
+				angleMapDeg[z * res + i] = TerrainMeta.HeightMap.GetSlope(i, z);
 			}
 		});
 		splatMap.Push();
@@ -73,9 +70,8 @@ public class GenerateErosionSplat : ProceduralComponent
 		{
 			HeightMapDelta = heightMapDelta.AsReadOnly(),
 			HeightMapRes = TerrainMeta.HeightMap.res,
-			AngleMapDeg = angleMap.AsReadOnly(),
-			TopologyMap = TerrainMeta.TopologyMap.src.AsReadOnly(),
-			TopologyMapRes = TerrainMeta.TopologyMap.res,
+			AngleMapDeg = angleMapDeg.AsReadOnly(),
+			TopologyMap = TerrainMeta.TopologyMap.GetHierarchyQuery(),
 			SplatMap = splatMap.dst,
 			SplatMapRes = splatMap.res,
 			SplatNum = splatMap.num,
@@ -84,6 +80,7 @@ public class GenerateErosionSplat : ProceduralComponent
 		};
 		val2 = IJobForExtensions.ScheduleByRef<PaintSplatJob>(ref paintSplatJob, heightMapDelta.Length, val2);
 		val.Dispose(val2);
+		angleMapDeg.Dispose(val2);
 		GenerateErosion.splatPaintingData.Dispose(val2);
 		val2.Complete();
 		splatMap.Pop();

@@ -26,7 +26,7 @@ public class State_GoBackToWater : State_MoveToTarget
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
 		if (Agent.IsSwimming)
 		{
 			return EFSMStateStatus.Success;
@@ -43,7 +43,7 @@ public class State_GoBackToWater : State_MoveToTarget
 			try
 			{
 				bool flag = Eqs.SampleNavigablePositions(Agent, Agent.WorldToNavSpace(val2), (List<NavVector3>)(object)val3, 10f, 10f, 8);
-				ListEx.Shuffle<NavVector3>((List<NavVector3>)(object)val3, (uint)Environment.TickCount);
+				ListEx.Shuffle<NavVector3>((List<NavVector3>)(object)val3, Rng.NextSeed());
 				nearestWaterPoint = Agent.WorldToNavSpace(val2);
 				foreach (NavVector3 item3 in (List<NavVector3>)(object)val3)
 				{

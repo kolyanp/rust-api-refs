@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Network;
 using Oxide.Core;
@@ -311,20 +312,20 @@ public class IOEntity : DecayEntity
 	[ReplicatedVar(Default = "True", Help = "Allows the deployment and usage of IO entities on player boats and tugboats.")]
 	public static bool allow_on_boats;
 
-	[Help("How many milliseconds to budget for processing high priority electric io entities per server frame (monuments)")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing high priority electric io entities per server frame (monuments)")]
 	public static float frameBudgetElectricHighPriorityMs = 1f;
 
 	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
 	[ServerVar]
 	public static float frameBudgetElectricLowPriorityMs = 0.5f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
+	[ServerVar]
 	public static float frameBudgetFluidMs = 0.25f;
 
-	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]
 	public static float frameBudgetKineticMs = 1f;
 
 	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
@@ -437,7 +438,10 @@ public class IOEntity : DecayEntity
 
 	public const int MaxContainerSourceCount = 32;
 
+	[SerializeField]
 	private List<Collider> spawnedColliders = new List<Collider>();
+
+	private readonly List<Vector4> spawnedColliderLinePoints = new List<Vector4>();
 
 	public virtual bool IsGravitySource => false;
 
@@ -1005,9 +1009,9 @@ public class IOEntity : DecayEntity
 	[ServerVar(ServerAdmin = true, Help = "(Generated) Prints the current state of all IO entity processing queues showing queue type and pending entity counts; admin-only")]
 	public static void DebugQueue(ConsoleSystem.Arg arg)
 	{
-		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
 		StringBuilder stringBuilder = new StringBuilder();
 		foreach (KeyValuePair<QueueType, Queue<IOEntity>> processQueue in _processQueues)
 		{
@@ -1019,6 +1023,7 @@ public class IOEntity : DecayEntity
 				continue;
 			}
 			var list = (from e in value
+				where e.IsValid()
 				group e by e.PrefabName into g
 				select new
 				{
@@ -1519,23 +1524,23 @@ public class IOEntity : DecayEntity
 	{
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.ioEntity = Pool.Get<IOEntity>();
 		info.msg.ioEntity.inputs = Pool.Get<List<IOConnection>>();
@@ -1551,8 +1556,11 @@ public class IOEntity : DecayEntity
 			val.inUse = val.connectedID.IsValid;
 			val.colour = (int)iOSlot.wireColour;
 			val.lineThickness = iOSlot.lineThickness;
-			val.originPosition = iOSlot.originPosition;
-			val.originRotation = iOSlot.originRotation;
+			if (info.forDisk)
+			{
+				val.originPosition = iOSlot.originPosition;
+				val.originRotation = iOSlot.originRotation;
+			}
 			info.msg.ioEntity.inputs.Add(val);
 		}
 		array = outputs;
@@ -1567,8 +1575,11 @@ public class IOEntity : DecayEntity
 			val2.colour = (int)iOSlot2.wireColour;
 			val2.worldSpaceRotation = iOSlot2.worldSpaceLineEndRotation;
 			val2.lineThickness = iOSlot2.lineThickness;
-			val2.originPosition = iOSlot2.originPosition;
-			val2.originRotation = iOSlot2.originRotation;
+			if (info.forDisk)
+			{
+				val2.originPosition = iOSlot2.originPosition;
+				val2.originRotation = iOSlot2.originRotation;
+			}
 			if (iOSlot2.linePoints != null)
 			{
 				val2.linePointList = Pool.Get<List<LineVec>>();
@@ -1583,11 +1594,6 @@ public class IOEntity : DecayEntity
 					}
 					val2.linePointList.Add(val4);
 				}
-			}
-			if (iOSlot2.slackLevels != null)
-			{
-				val2.slackLevels = Pool.Get<List<float>>();
-				val2.slackLevels.AddRange(iOSlot2.slackLevels);
 			}
 			if (iOSlot2.lineAnchors != null)
 			{
@@ -1737,6 +1743,7 @@ public class IOEntity : DecayEntity
 		ClientRPC(RpcTarget.NetworkGroup("ForceLinesUpdate"));
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void FindContainerSource(List<ContainerInputOutput> found, int depth, bool input, List<IOEntity> ignoreList, int parentId = -1, int stackSize = 0)
 	{
 		if (depth <= 0 || found.Count >= 32)
@@ -2037,80 +2044,95 @@ public class IOEntity : DecayEntity
 
 	public void RefreshIndustrialPreventBuilding()
 	{
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		if (!IndustrialLinePointsChanged())
+		{
+			return;
+		}
 		ClearIndustrialPreventBuilding();
 		Matrix4x4 localToWorldMatrix = ((Component)this).transform.localToWorldMatrix;
-		CapsuleCollider val6 = default;
+		CapsuleCollider val7 = default;
 		ColliderInfo_Pipe colliderInfo_Pipe = default;
 		for (int i = 0; i < outputs.Length; i++)
 		{
 			IOSlot iOSlot = outputs[i];
-			if (iOSlot.type != IOType.Industrial || iOSlot.linePoints == null || iOSlot.linePoints.Length <= 1)
+			if (!HasIndustrialLine(iOSlot))
 			{
 				continue;
 			}
-			Vector3 val = localToWorldMatrix.MultiplyPoint3x4(iOSlot.linePoints[0]);
-			for (int j = 1; j < iOSlot.linePoints.Length; j++)
+			Vector3[] linePoints = iOSlot.linePoints;
+			foreach (Vector3 val in linePoints)
 			{
-				Vector3 val2 = localToWorldMatrix.MultiplyPoint3x4(iOSlot.linePoints[j]);
-				Vector3 pos = Vector3.Lerp(val2, val, 0.5f);
-				float num = Vector3.Distance(val2, val);
-				Vector3 val3 = val2 - val;
-				Quaternion val4;
-				if (!(val3.normalized != Vector3.zero))
+				spawnedColliderLinePoints.Add(new Vector4(val.x, val.y, val.z, (float)i));
+			}
+			Vector3 val2 = localToWorldMatrix.MultiplyPoint3x4(iOSlot.linePoints[0]);
+			for (int k = 1; k < iOSlot.linePoints.Length; k++)
+			{
+				Vector3 val3 = localToWorldMatrix.MultiplyPoint3x4(iOSlot.linePoints[k]);
+				Vector3 pos = Vector3.Lerp(val3, val2, 0.5f);
+				float num = Vector3.Distance(val3, val2);
+				Vector3 val4 = val3 - val2;
+				Quaternion val5;
+				if (!(val4.normalized != Vector3.zero))
 				{
-					val4 = Quaternion.identity;
+					val5 = Quaternion.identity;
 				}
 				else
 				{
-					val3 = val2 - val;
-					val4 = Quaternion.LookRotation(val3.normalized);
+					val4 = val3 - val2;
+					val5 = Quaternion.LookRotation(val4.normalized);
 				}
-				Quaternion rot = val4;
-				GameObject val5 = gameManager.CreatePrefab("assets/prefabs/misc/ioentitypreventbuilding.prefab", pos, rot);
-				val5.transform.SetParent(((Component)this).transform);
-				if (val5.TryGetComponent<CapsuleCollider>(ref val6))
+				Quaternion rot = val5;
+				GameObject val6 = gameManager.CreatePrefab("assets/prefabs/misc/ioentitypreventbuilding.prefab", pos, rot);
+				val6.transform.SetParent(((Component)this).transform);
+				if (val6.TryGetComponent<CapsuleCollider>(ref val7))
 				{
-					val6.height = num + val6.radius;
-					spawnedColliders.Add((Collider)(object)val6);
+					val7.height = num + val7.radius;
+					spawnedColliders.Add((Collider)(object)val7);
 				}
-				if (val5.TryGetComponent<ColliderInfo_Pipe>(ref colliderInfo_Pipe))
+				if (val6.TryGetComponent<ColliderInfo_Pipe>(ref colliderInfo_Pipe))
 				{
 					colliderInfo_Pipe.OutputSlotIndex = i;
 					colliderInfo_Pipe.ParentEntity = this;
 				}
-				val = val2;
+				val2 = val3;
 			}
 		}
 	}
@@ -2122,6 +2144,46 @@ public class IOEntity : DecayEntity
 			gameManager.Retire(((Component)spawnedCollider).gameObject);
 		}
 		spawnedColliders.Clear();
+		spawnedColliderLinePoints.Clear();
+	}
+
+	private static bool HasIndustrialLine(IOSlot ioSlot)
+	{
+		if (ioSlot.type == IOType.Industrial && ioSlot.linePoints != null)
+		{
+			return ioSlot.linePoints.Length > 1;
+		}
+		return false;
+	}
+
+	private bool IndustrialLinePointsChanged()
+	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		int num = 0;
+		for (int i = 0; i < outputs.Length; i++)
+		{
+			IOSlot iOSlot = outputs[i];
+			if (!HasIndustrialLine(iOSlot))
+			{
+				continue;
+			}
+			Vector3[] linePoints = iOSlot.linePoints;
+			foreach (Vector3 val in linePoints)
+			{
+				if (num >= spawnedColliderLinePoints.Count || spawnedColliderLinePoints[num] != new Vector4(val.x, val.y, val.z, (float)i))
+				{
+					return true;
+				}
+				num++;
+			}
+		}
+		return num != spawnedColliderLinePoints.Count;
 	}
 
 	public override void Reskin_Preserve(ref SprayCan.ReskinPreserveInfo preserveInfo)
@@ -2217,6 +2279,7 @@ public class IOEntity : DecayEntity
 		Pool.FreeUnmanaged<ConnectionPreserveInfo>(ref ioEntityPreserve.connectionInfos);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void SnapLinesToHandlePositions(HashSet<IOEntity> toUpdate)
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)

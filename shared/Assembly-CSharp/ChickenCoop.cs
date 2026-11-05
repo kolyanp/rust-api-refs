@@ -251,8 +251,8 @@ public class ChickenCoop : StorageContainer
 		((ObjectWorkQueue<ChickenCoop>)CoopWorkQueue).Add(this);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SubmitEggForHatching(RPCMessage msg)
 	{
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
@@ -319,9 +319,8 @@ public class ChickenCoop : StorageContainer
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		FarmableAnimal obj = gameManager.CreateEntity(ChickenPrefab.resourcePath, ((Component)this).transform.TransformPoint(GetRandomMovePoint()), Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)) as FarmableAnimal;
 		obj.SetParent(this, worldPositionStays: true);
-		string text = RandomUsernames.Get(Random.Range(0, 1000));
-		text = text[0].ToString().ToUpper() + text.Substring(1);
-		obj.ApplyStartingStats(text);
+		string capitalized = RandomUsernames.GetCapitalized(Random.Range(0, 1000));
+		obj.ApplyStartingStats(capitalized);
 		obj.Spawn();
 		return obj;
 	}
@@ -443,12 +442,12 @@ public class ChickenCoop : StorageContainer
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		ChickenCoopStatusUpdate val = Pool.Get<ChickenCoopStatusUpdate>();
 		try
@@ -459,12 +458,14 @@ public class ChickenCoop : StorageContainer
 				FarmableAnimalStatus val2 = Pool.Get<FarmableAnimalStatus>();
 				val2.data = Pool.Get<FarmableAnimal>();
 				EntityRef<FarmableAnimal> spawnedAnimal = animal.SpawnedAnimal;
-				if ((Object)(object)spawnedAnimal.Get(serverside: true) != (Object)null)
+				FarmableAnimal farmableAnimal = spawnedAnimal.Get(serverside: true);
+				if ((Object)(object)farmableAnimal != (Object)null)
 				{
 					spawnedAnimal = animal.SpawnedAnimal;
 					spawnedAnimal.Get(serverside: true).SaveToData(val2.data);
 					spawnedAnimal = animal.SpawnedAnimal;
 					val2.animal = spawnedAnimal.uid;
+					val2.viewerAuthoredName = (((Object)(object)player != (Object)null && (ulong)player.userID == farmableAnimal.NameAuthorId) ? farmableAnimal.AnimalName : null);
 					val.animals.Add(val2);
 				}
 			}

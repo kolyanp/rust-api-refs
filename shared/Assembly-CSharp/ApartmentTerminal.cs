@@ -151,7 +151,7 @@ public class ApartmentTerminal : ComputerStation
 					val2.size = (int)room.Size;
 					val2.storageSlots = room.GetTotalStorageCapacity();
 					val2.roomCount = GetRoomCount(room.Size);
-					val2.estimatedValue = (int)GetEstimatedValue(room);
+					val2.estimatedValue = (int)BucketFromSum(room.GetEstimatedValue());
 					val.plots.Add(val2);
 					if (flag)
 					{
@@ -188,7 +188,7 @@ public class ApartmentTerminal : ComputerStation
 				ApartmentPlotEntry val = Pool.Get<ApartmentPlotEntry>();
 				val.occupied = flag;
 				val.storageSlots = 30;
-				val.estimatedValue = (int)(((Object)(object)serverVendingMachine != (Object)null) ? BucketFromSum(SumStorageValue(serverVendingMachine.inventory)) : ValueBucket.None);
+				val.estimatedValue = (int)(((Object)(object)serverVendingMachine != (Object)null) ? BucketFromSum(ApartmentRoom.SumStorageValue(serverVendingMachine.inventory)) : ValueBucket.None);
 				val.roomNumber = item.ShopNumberId.ToString();
 				data.shops.Add(val);
 				if (flag)
@@ -244,75 +244,6 @@ public class ApartmentTerminal : ComputerStation
 			ApartmentSize.Large => 3, 
 			_ => 0, 
 		};
-	}
-
-	private ValueBucket GetEstimatedValue(ApartmentRoom room)
-	{
-		float num = 0f;
-		foreach (BaseEntity item in room.Furniture)
-		{
-			if (item is StorageContainer { IsDestroyed: false } storageContainer)
-			{
-				num += SumStorageValue(storageContainer.inventory);
-			}
-		}
-		num += SumSleepingOwnerValue(room);
-		if ((Object)(object)room.UpkeepTerminal != (Object)null && !room.UpkeepTerminal.IsDestroyed)
-		{
-			num += SumStorageValue(room.UpkeepTerminal.inventory);
-		}
-		return BucketFromSum(num);
-	}
-
-	private float SumStorageValue(ItemContainer inventory)
-	{
-		if (inventory == null)
-		{
-			return 0f;
-		}
-		float num = 0f;
-		foreach (Item item in inventory.itemList)
-		{
-			num += GetApartmentTaxValue(item);
-		}
-		return num;
-	}
-
-	private float SumSleepingOwnerValue(ApartmentRoom room)
-	{
-		float num = 0f;
-		List<Item> list = null;
-		foreach (ulong owner in room.Owners)
-		{
-			BasePlayer basePlayer = BasePlayer.FindSleeping(owner);
-			if ((Object)(object)basePlayer == (Object)null || basePlayer.IsDestroyed || (Object)(object)basePlayer.inventory == (Object)null || !room.IsInsideRoom(basePlayer))
-			{
-				continue;
-			}
-			if (list == null)
-			{
-				list = Pool.Get<List<Item>>();
-			}
-			basePlayer.inventory.GetAllItems(list);
-			foreach (Item item in list)
-			{
-				num += GetApartmentTaxValue(item);
-			}
-		}
-		if (list != null)
-		{
-			Pool.Free<Item>(ref list, false);
-		}
-		return num;
-	}
-
-	private static float GetApartmentTaxValue(Item item)
-	{
-		if (item.info.ApartmentTaxPerStack > 0f)
-		{
-			return item.info.ApartmentTaxPerStack * ((float)item.amount / (float)item.MaxStackable());
-		}
-		return 0f;
 	}
 
 	private ValueBucket BucketFromSum(float sum)

@@ -52,8 +52,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public static Phrase boostPhrase = new Phrase("boost", "Boost");
 
-	[Header("Bike")]
 	[SerializeField]
+	[Header("Bike")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -84,8 +84,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[Range(0f, 1f)]
 	private float pitchStabP = 0.01f;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float pitchStabD = 0.005f;
 
 	[SerializeField]
@@ -96,8 +96,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[Range(0f, 1f)]
 	private float twoWheelRollStabD = 10f;
 
-	[SerializeField]
 	[Range(1f, 500f)]
+	[SerializeField]
 	private float manyWheelStabP = 40f;
 
 	[SerializeField]
@@ -145,8 +145,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public PoweredBy poweredBy;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	public float percentFood = 0.5f;
 
 	[SerializeField]
@@ -779,66 +779,57 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
-		if (!IsDriver(player))
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		if (IsDriver(player))
 		{
-			return;
-		}
-		timeSinceLastUsed = TimeSince.op_Implicit(0f);
-		if (inputState.IsDown(BUTTON.FIRE_THIRD))
-		{
-			SteerInput += inputState.MouseDelta().x * 0.1f;
-		}
-		else
-		{
-			SteerInput = 0f;
-			if (inputState.IsDown(BUTTON.LEFT))
+			timeSinceLastUsed = TimeSince.op_Implicit(0f);
+			if (inputState.IsDown(BUTTON.FIRE_THIRD))
 			{
-				SteerInput = -1f;
-			}
-			else if (inputState.IsDown(BUTTON.RIGHT))
-			{
-				SteerInput = 1f;
-			}
-		}
-		bool flag = inputState.IsDown(BUTTON.FORWARD);
-		bool flag2 = inputState.IsDown(BUTTON.BACKWARD);
-		BrakeInput = 0f;
-		if (GetSpeed() > 3f)
-		{
-			ThrottleInput = (flag ? 1f : 0f);
-			BrakeInput = (flag2 ? 1f : 0f);
-		}
-		else
-		{
-			Bike bike = this;
-			float throttleInput;
-			if (flag)
-			{
-				throttleInput = 1f;
+				SteerInput += inputState.MouseDelta().x * 0.1f;
 			}
 			else
 			{
-				throttleInput = (flag2 ? (-1f) : 0f);
+				SteerInput = inputState.Steer();
 			}
-			bike.ThrottleInput = throttleInput;
-		}
-		SprintInput = inputState.IsDown(BUTTON.SPRINT);
-		DuckInput = inputState.IsDown(BUTTON.DUCK);
-		if (engineController.IsOff && (inputState.WasJustPressed(BUTTON.FORWARD) || inputState.WasJustPressed(BUTTON.BACKWARD)))
-		{
-			engineController.TryStartEngine(player);
-		}
-		if (hasBell && inputState.WasJustPressed(BUTTON.FIRE_PRIMARY) && TimeSince.op_Implicit(timeSinceBellDing) > 1f)
-		{
-			ClientRPC(RpcTarget.NetworkGroup("RingBell"));
-			timeSinceBellDing = TimeSince.op_Implicit(0f);
-		}
-		if (hasBunnyhop && inputState.WasJustPressed(BUTTON.FIRE_SECONDARY) && CanBunnyHop())
-		{
-			DoBunnyHop();
+			bool flag = inputState.IsDown(BUTTON.FORWARD);
+			bool flag2 = inputState.IsDown(BUTTON.BACKWARD);
+			BrakeInput = 0f;
+			if (GetSpeed() > 3f)
+			{
+				ThrottleInput = (flag ? 1f : 0f);
+				BrakeInput = (flag2 ? 1f : 0f);
+			}
+			else
+			{
+				Bike bike = this;
+				float throttleInput;
+				if (flag)
+				{
+					throttleInput = 1f;
+				}
+				else
+				{
+					throttleInput = (flag2 ? (-1f) : 0f);
+				}
+				bike.ThrottleInput = throttleInput;
+			}
+			SprintInput = inputState.IsDown(BUTTON.SPRINT);
+			DuckInput = inputState.IsDown(BUTTON.DUCK);
+			if (engineController.IsOff && (inputState.WasJustPressed(BUTTON.FORWARD) || inputState.WasJustPressed(BUTTON.BACKWARD)))
+			{
+				engineController.TryStartEngine(player);
+			}
+			if (hasBell && inputState.WasJustPressed(BUTTON.FIRE_PRIMARY) && TimeSince.op_Implicit(timeSinceBellDing) > 1f)
+			{
+				ClientRPC(RpcTarget.NetworkGroup("RingBell"));
+				timeSinceBellDing = TimeSince.op_Implicit(0f);
+			}
+			if (hasBunnyhop && inputState.WasJustPressed(BUTTON.FIRE_SECONDARY) && CanBunnyHop())
+			{
+				DoBunnyHop();
+			}
 		}
 	}
 

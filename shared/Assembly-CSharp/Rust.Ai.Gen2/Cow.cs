@@ -3,6 +3,7 @@ using ConVar;
 using Facepunch.Rust;
 using Network;
 using Oxide.Core;
+using ProtoBuf;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -21,14 +22,52 @@ public class Cow : LivestockAnimal
 	[Tooltip("How long (in seconds) after being milked before the cow can be milked again")]
 	public float MilkCooldown = 300f;
 
-	[Tooltip("Optional effect played on the cow each time she is milked")]
+	[Tooltip("How many milkings an owned cow stores while nobody milks her. Her clock stops once she holds this many")]
+	public int MaxMilkCharges = 3;
+
 	public GameObjectRef MilkEffect;
 
 	public const Flags MilkReady = Flags.Reserved9;
 
 	public const int MilkTimerId = 5;
 
+	private static readonly Phrase WildCowPhrase = new Phrase("livestock.wild.cow", "Wild cow");
+
+	private static readonly Phrase WildBullPhrase = new Phrase("livestock.wild.bull", "Wild bull");
+
+	private static readonly Phrase WildCalfPhrase = new Phrase("livestock.wild.calf", "Wild calf");
+
 	private PersistentTimer milkTimer;
+
+	private static readonly Phrase MilkBullPhrase = new Phrase("livestock.milk.bull", "That is a bull");
+
+	public bool IsMilkClockRunning => milkTimer.IsRunning;
+
+	public float MilkInterval => MilkCooldown / GeneScale(LivestockGene.Yield);
+
+	private bool GivesMilk
+	{
+		get
+		{
+			if (IsFemale && !IsInfant())
+			{
+				return !IsDead();
+			}
+			return false;
+		}
+	}
+
+	public override bool ProducesYield
+	{
+		get
+		{
+			if (base.ProducesYield)
+			{
+				return IsFemale;
+			}
+			return false;
+		}
+	}
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -84,29 +123,39 @@ public class Cow : LivestockAnimal
 		return "Cow";
 	}
 
-	public bool CanBeMilked(BasePlayer player)
+	protected override Phrase WildLabel()
 	{
-		if ((Object)(object)player == (Object)null)
-		{
-			return false;
-		}
-		if (IsDead())
-		{
-			return false;
-		}
 		if (IsInfant())
 		{
-			return false;
+			return WildCalfPhrase;
 		}
-		if (IsMale)
+		if (!IsMale)
 		{
-			return false;
+			return WildCowPhrase;
 		}
-		if (!HasFlag(Flags.Reserved9))
+		return WildBullPhrase;
+	}
+
+	public bool OffersMilking()
+	{
+		if (!IsDead() && IsAdult())
 		{
-			return false;
+			if (!IsMale)
+			{
+				return HasFlag(Flags.Reserved9);
+			}
+			return true;
 		}
-		return true;
+		return false;
+	}
+
+	public bool CanBeMilked(BasePlayer player)
+	{
+		if ((Object)(object)player != (Object)null && !IsDead() && !IsInfant() && !IsMale)
+		{
+			return HasFlag(Flags.Reserved9);
+		}
+		return false;
 	}
 
 	public override void ServerInit()
@@ -114,18 +163,53 @@ public class Cow : LivestockAnimal
 		base.ServerInit();
 		milkTimer = new PersistentTimer(timers, 5)
 		{
-			onElapsed = EnableMilking,
-			onStarted = () =>
-			{
-				SetMilkReady(ready: false);
-			}
+			onElapsed = AddMilkCharge,
+			carryOnReplace = false
 		};
-		SetMilkReady(IsFemale);
+		if (!Application.isLoadingSave)
+		{
+			MilkCharges = (GivesMilk ? 1 : 0);
+		}
+		RefreshProduction();
 	}
 
+	protected override void RefreshProduction()
+	{
+		SyncMilkReady();
+		milkTimer.RunWhile(ProducesYield && MilkCharges < MaxMilkCharges, MilkInterval);
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		if (info.forDisk)
+		{
+			info.msg.livestockAnimal.milkCharges = MilkCharges;
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		if (isServer && info.fromDisk)
+		{
+			MilkCharges = SavedMilkCharges(info.msg);
+		}
+		base.Load(info);
+	}
+
+	private int SavedMilkCharges(Entity saved)
+	{
+		int num = ((saved.livestockAnimal != null) ? saved.livestockAnimal.milkCharges : 0);
+		if (num == 0 && saved.baseEntity != null && (saved.baseEntity.flags & 0x20000) != 0)
+		{
+			num = 1;
+		}
+		return Mathf.Clamp(num, 0, MaxMilkCharges);
+	}
+
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void MilkCow(RPCMessage msg)
 	{
 		TryMilk(msg.player);
@@ -133,17 +217,27 @@ public class Cow : LivestockAnimal
 
 	public bool TryMilk(BasePlayer player)
 	{
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)player == (Object)null || IsDead())
+		{
+			return false;
+		}
+		if (IsMale && IsAdult())
+		{
+			OnGrabbedBy(player);
+			if (player.IsConnected)
+			{
+				player.ShowToast(GameTip.Styles.Error, MilkBullPhrase, false);
+			}
+			return false;
+		}
 		if (!CanBeMilked(player))
 		{
 			return false;
 		}
-		if (!TrustsToHandle(player))
-		{
-			OnGrabbedBy(player);
-			return false;
-		}
+		MilkCharges = Mathf.Max(0, MilkCharges - 1);
+		RefreshProduction();
 		if ((Object)(object)MilkDef != (Object)null)
 		{
 			int num = MilkedAmount();
@@ -166,7 +260,10 @@ public class Cow : LivestockAnimal
 			Interface.CallHook("OnCowMilked", this, player, item);
 			Facepunch.Rust.Analytics.Azure.OnLivestockCowMilked(player, this, num);
 		}
-		milkTimer.Start(MilkCooldown / GeneScale(LivestockGene.Yield));
+		if (!TrustsToHandle(player))
+		{
+			ReactToUntrustedHandling(player);
+		}
 		return true;
 	}
 
@@ -175,15 +272,11 @@ public class Cow : LivestockAnimal
 		return Mathf.Max(1, Mathf.RoundToInt((float)MilkAmount * GeneScale(LivestockGene.Yield)));
 	}
 
-	public override bool TryGetYield(out ItemDefinition item, out int amount, out float interval, out float bestOfBreed)
+	public override bool TryGetYield(out ItemDefinition item, out int amount, out float interval)
 	{
 		item = MilkDef;
 		amount = MilkedAmount();
-		interval = MilkCooldown / GeneScale(LivestockGene.Yield);
-		float num = Mathf.Max(0.01f, Livestock.geneYieldGood);
-		int num2 = Mathf.Max(1, Mathf.RoundToInt((float)MilkAmount * num));
-		float num3 = MilkCooldown / num;
-		bestOfBreed = ((interval > 0f && num3 > 0f) ? Mathf.Clamp01((float)amount / interval / ((float)num2 / num3)) : 0f);
+		interval = MilkInterval;
 		if ((Object)(object)item != (Object)null)
 		{
 			return interval > 0f;
@@ -191,25 +284,50 @@ public class Cow : LivestockAnimal
 		return false;
 	}
 
-	private void SetMilkReady(bool ready)
+	protected override void FillYieldProgress(LivestockAnimal update)
 	{
-		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved9, ready);
+		update.yieldProgress = ((MilkCharges > 0) ? 1f : LivestockAnimal.ProgressOf(milkTimer));
 	}
 
-	private void EnableMilking()
+	private void SyncMilkReady()
 	{
-		SetMilkReady(ready: true);
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved9, HasOwner && MilkCharges > 0);
+	}
+
+	public override void RestartProductionForGenes()
+	{
+		if (milkTimer.IsRunning)
+		{
+			milkTimer.Start(MilkInterval);
+		}
+	}
+
+	private void AddMilkCharge()
+	{
+		MilkCharges = Mathf.Min(MaxMilkCharges, MilkCharges + 1);
+		RefreshProduction();
 	}
 
 	public bool ForceMilkReady()
 	{
-		if (IsDead() || IsInfant() || IsMale)
+		if (!ProducesYield)
 		{
 			return false;
 		}
-		milkTimer.Stop();
-		SetMilkReady(ready: true);
+		AddMilkCharge();
 		return true;
+	}
+
+	static Cow()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Expected Obj, but got Unknown
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Expected Obj, but got Unknown
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Expected Obj, but got Unknown
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Expected Obj, but got Unknown
 	}
 }

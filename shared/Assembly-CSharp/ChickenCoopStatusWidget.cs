@@ -33,5 +33,7 @@ public class ChickenCoopStatusWidget : MonoBehaviour
 
 	public GameObject NameEditRoot;
 
+	public RustButton NameEditButton;
+
 	public bool IsLootPanel;
 }

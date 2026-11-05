@@ -322,35 +322,13 @@ public class Mountain : TerrainPlacement
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		TextureData topologydata = new TextureData(topologymap.Get());
-		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, 0f - extents.z));
-		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, 0f - extents.z));
-		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - extents.x, 0f, extents.z));
-		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(extents.x, 0f, extents.z));
+		GetTopologyCorners(localToWorld, out var v, out var v2, out var v3, out var v4);
 		TerrainMeta.TopologyMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
 			//IL_003f: Unknown result type (might be due to invalid IL or missing references)

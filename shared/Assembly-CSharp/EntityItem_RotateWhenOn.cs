@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class EntityItem_RotateWhenOn : EntityComponent<BaseEntity>
+public class EntityItem_RotateWhenOn : EntityComponent<BaseEntity>, IFlattenKeepsParent, IFlattenKeepsDescendants
 {
 	[Serializable]
 	public class State

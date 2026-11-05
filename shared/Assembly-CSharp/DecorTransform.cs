@@ -8,6 +8,17 @@ public class DecorTransform : DecorComponent
 
 	public Vector3 Scale = new Vector3(1f, 1f, 1f);
 
+	public override void ExpandBounds(ref float maxScale, ref float maxShift)
+	{
+		maxShift += maxScale * Position.magnitude;
+		maxScale *= Mathf.Max(new float[3]
+		{
+			Mathf.Abs(Scale.x),
+			Mathf.Abs(Scale.y),
+			Mathf.Abs(Scale.z)
+		});
+	}
+
 	public override void Apply(ref Vector3 pos, ref Quaternion rot, ref Vector3 scale)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)

@@ -231,9 +231,9 @@ public class NexusFerry : BaseEntity
 
 	private TimeSince _sincePathCalculation;
 
-	private Vector3? _pathTargetPosition;
+	private Nullable _pathTargetPosition;
 
-	private Quaternion? _pathTargetRotation;
+	private Nullable _pathTargetRotation;
 
 	private Vector3 _velocity;
 

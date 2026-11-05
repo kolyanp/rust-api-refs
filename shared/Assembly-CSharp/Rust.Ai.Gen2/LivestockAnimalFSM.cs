@@ -10,6 +10,114 @@ namespace Rust.Ai.Gen2;
 
 public class LivestockAnimalFSM : FSMComponent
 {
+	private struct WalkFirst
+	{
+		private bool walking;
+
+		private TimeUntil deadline;
+
+		public bool IsWalking => walking;
+
+		public bool Start(bool started, float timeout)
+		{
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			walking = started;
+			deadline = TimeUntil.op_Implicit(timeout);
+			return walking;
+		}
+
+		public bool StillWalking(RustNavMeshAgent agent)
+		{
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			if (walking && agent.hasPath)
+			{
+				return TimeUntil.op_Implicit(deadline) > 0f;
+			}
+			return false;
+		}
+
+		public bool StopWalking(RustNavMeshAgent agent)
+		{
+			if (!walking)
+			{
+				return false;
+			}
+			walking = false;
+			agent.ResetPath();
+			return true;
+		}
+	}
+
+	private struct StandBeside
+	{
+		private const float InnerShare = 1f / 3f;
+
+		private const float ArrivalSlack = 0.5f;
+
+		public Vector3 Around;
+
+		public bool HasSpot;
+
+		public bool ToLieDown;
+
+		private Vector3 spot;
+
+		public bool Walk(RustNavMeshAgent agent, LivestockAnimal animal, Vector3 around, float within, float fullSpeedDistance, RustNavMeshAgent.Speeds minSpeed, RustNavMeshAgent.Speeds maxSpeed)
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+			if (!WalkToSpot(agent, animal, around, within, fullSpeedDistance, minSpeed, maxSpeed))
+			{
+				return MoveWithRampedSpeed(agent, around, fullSpeedDistance, minSpeed, maxSpeed);
+			}
+			return true;
+		}
+
+		public bool WalkToSpot(RustNavMeshAgent agent, LivestockAnimal animal, Vector3 around, float within, float fullSpeedDistance, RustNavMeshAgent.Speeds minSpeed, RustNavMeshAgent.Speeds maxSpeed)
+		{
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+			float num = within - agent.RestingDistance(agent.stoppingDistance);
+			Around = around;
+			HasSpot = (Object)(object)animal != (Object)null && (ToLieDown ? animal.TryFindLyingSpotNear(around, num * (1f / 3f), num, out spot) : animal.TryFindRestingSpotNear(around, num * (1f / 3f), num, out spot)) && MoveWithRampedSpeed(agent, spot, fullSpeedDistance, minSpeed, maxSpeed);
+			return HasSpot;
+		}
+
+		public bool ReachedSpot(RustNavMeshAgent agent, Vector3 position)
+		{
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			if (HasSpot && !agent.hasPath)
+			{
+				return Vector3Ex.MagnitudeXZ(position - spot) <= agent.RestingDistance(agent.stoppingDistance) + 0.5f;
+			}
+			return false;
+		}
+
+		public bool Arrived(RustNavMeshAgent agent, Vector3 position, Vector3 point, float within)
+		{
+			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			if (!HasSpot)
+			{
+				return Vector3.Distance(position, point) <= within;
+			}
+			if (ReachedSpot(agent, position))
+			{
+				return Vector3.Distance(position, point) <= within + 0.5f;
+			}
+			return false;
+		}
+	}
+
 	[Serializable]
 	public class State_Follow : FSMStateBase
 	{
@@ -29,11 +137,33 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private const float ArrivedDistance = 1f;
 
+		private const float FrontGap = 0.5f;
+
 		private const float LaneSearchInterval = 0.5f;
 
-		private float laneOffset;
+		private const float InFile = 0.3f;
+
+		private const float RowGap = 0.85f;
+
+		private const int StandAttempts = 2;
+
+		private LivestockAnimal.FormationSlot slot;
+
+		private float rowSpacing;
+
+		private bool laneBlocked;
 
 		private TimeUntil nextLaneSearch;
+
+		private LivestockAnimal.FormationSlot standingIn;
+
+		private float standingOut;
+
+		private Nullable requestedStand;
+
+		private int standAttempts;
+
+		private float Clearance => LivestockFeedingSlots.FrontOf(Owner) + 0.5f + 0.5f;
 
 		public virtual BasePlayer GetTarget()
 		{
@@ -49,6 +179,11 @@ public class LivestockAnimalFSM : FSMComponent
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 			nextLaneSearch = TimeUntil.op_Implicit(0f);
+			standingIn = default;
+			if (Owner is LivestockAnimal livestockAnimal)
+			{
+				livestockAnimal.LeaveQueues();
+			}
 			if (!KeepUp())
 			{
 				return EFSMStateStatus.Failure;
@@ -67,89 +202,306 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private bool KeepUp()
 		{
-			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 			BasePlayer target = GetTarget();
 			if ((Object)(object)target == (Object)null)
 			{
 				return true;
 			}
-			Vector3 position = ((Component)target).transform.position;
-			Vector3 val = LanePosition(target);
-			if (!KeepUpWith(target, val))
+			if (TimeUntil.op_Implicit(nextLaneSearch) <= 0f)
 			{
-				if (val != position)
+				FindSlot(target);
+			}
+			Vector3 position = ((Component)target).transform.position;
+			if (slot.InFormation && target.estimatedSpeed2D < 0.5f)
+			{
+				if (!StandInFile(target))
 				{
 					return KeepUpWith(target, position);
 				}
+				return true;
+			}
+			standingIn = default;
+			Vector3 val = LanePosition(target);
+			if (KeepUpWith(target, val))
+			{
+				return true;
+			}
+			if (val == position)
+			{
 				return false;
 			}
-			return true;
+			laneBlocked = true;
+			return KeepUpWith(target, position);
 		}
 
 		private Vector3 LanePosition(BasePlayer target)
 		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+			Vector3 position = ((Component)target).transform.position;
+			if (!slot.InFormation || laneBlocked)
+			{
+				return position;
+			}
+			return ClampToNavmesh(position, position + slot.Back * ((float)slot.Row * rowSpacing) + slot.Right * slot.Across);
+		}
+
+		private void FindSlot(BasePlayer target)
+		{
 			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-			if (TimeUntil.op_Implicit(nextLaneSearch) <= 0f)
+			//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+			nextLaneSearch = TimeUntil.op_Implicit(0.5f - (Time.time - LaneClockOrigin) % 0.5f);
+			laneBlocked = false;
+			slot = default;
+			if (Owner is LivestockAnimal livestockAnimal)
 			{
-				nextLaneSearch = TimeUntil.op_Implicit(0.5f);
-				laneOffset = 0f;
-				if (Owner is LivestockAnimal livestockAnimal)
+				slot = livestockAnimal.FindFormationSlot(target, laneWidth);
+				rowSpacing = slot.Longest + 0.85f;
+				livestockAnimal.SetLeadSlack((float)slot.Row * rowSpacing, Vector3.Distance(((Component)target).transform.position, ((Component)Owner).transform.position));
+			}
+		}
+
+		private Vector3 ClampToNavmesh(Vector3 target, Vector3 point)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+			if (TryClampToNavmesh(target, point, out var clamped))
+			{
+				return clamped;
+			}
+			if (!Agent.SamplePosition(target, out var hitWS, 1f, debugDraw: false) || !TryClampToNavmesh(hitWS.position, point, out clamped))
+			{
+				return target;
+			}
+			return clamped;
+		}
+
+		private bool TryClampToNavmesh(Vector3 from, Vector3 point, out Vector3 clamped)
+		{
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+			if (Agent.Raycast(Agent.WorldToNavSpace(from), Agent.WorldToNavSpace(point), out var hitNS))
+			{
+				clamped = Agent.NavToWorldSpace(hitNS.position);
+				return true;
+			}
+			clamped = point;
+			return !float.IsNaN(hitNS.position.x);
+		}
+
+		private bool StandInFile(BasePlayer target)
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+			//IL_013f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0150: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+			Vector3 position = ((Component)target).transform.position;
+			if (!standingIn.InFormation || slot.GroupSize != standingIn.GroupSize)
+			{
+				BeginStanding();
+			}
+			Vector3 val = StandPlace(position, standingOut);
+			Vector3 val2 = Vector3Ex.WithY(((Component)Owner).transform.position - val, 0f);
+			float num = Vector3.Dot(val2, standingIn.Back);
+			float num2 = Mathf.Abs(Vector3.Dot(val2, standingIn.Right));
+			int num3;
+			if (requestedStand.HasValue)
+			{
+				Vector3 val3 = Vector3Ex.WithY(val - requestedStand.Value, 0f);
+				num3 = ((val3.sqrMagnitude <= 0.09f) ? 1 : 0);
+			}
+			else
+			{
+				num3 = 0;
+			}
+			bool flag = (byte)num3 != 0;
+			if (num <= 0.3f && (num2 <= 0.3f || StandsClear()))
+			{
+				if (Agent.hasPath && !flag)
 				{
-					livestockAnimal.CountWalkingAbreast(target, out var onLeft, out var onRight);
-					laneOffset = (float)(onLeft - onRight) * 0.5f * laneWidth;
+					Agent.ResetPath();
+				}
+				return true;
+			}
+			if (flag && (Agent.hasPath || standAttempts >= 2))
+			{
+				return true;
+			}
+			if (!flag)
+			{
+				standAttempts = 0;
+			}
+			standingOut = PickStandingOut(position);
+			val = StandPlace(position, standingOut);
+			val2 = Vector3Ex.WithY(((Component)Owner).transform.position - val, 0f);
+			requestedStand = val;
+			standAttempts++;
+			return Agent.SetDestinationWithParams(AimOnto(val), autoBraking: true, (val2.magnitude > idealDistance) ? maxSpeed : minSpeed);
+		}
+
+		private void BeginStanding()
+		{
+			standingIn = slot;
+			standingOut = 0f;
+			requestedStand = null;
+			standAttempts = 0;
+		}
+
+		private Vector3 StandPlace(Vector3 leader, float outAcross)
+		{
+			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+			float num = idealDistance + (float)standingIn.Row * (standingIn.Longest + 0.85f);
+			return ClampToNavmesh(leader, leader + standingIn.Back * num + standingIn.Right * (standingIn.Across + outAcross));
+		}
+
+		private Vector3 AimOnto(Vector3 stand)
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+			Vector3 val = Vector3Ex.WithY(((Component)Owner).transform.position - stand, 0f);
+			return ClampToNavmesh(stand, stand - val.normalized * Agent.RestingDistance(Agent.stoppingDistance));
+		}
+
+		private float PickStandingOut(Vector3 leader)
+		{
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+			if (!(Owner is LivestockAnimal livestockAnimal))
+			{
+				return 0f;
+			}
+			float num = ((((standingIn.Across != 0f) ? standingIn.Across : Vector3.Dot(((Component)Owner).transform.position - leader, standingIn.Right)) >= 0f) ? 0.3f : (-0.3f));
+			int num2 = Mathf.RoundToInt(laneWidth / 0.3f);
+			PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+			try
+			{
+				for (int i = 0; i <= num2; i++)
+				{
+					((List<Vector3>)(object)val).Add(AimOnto(StandPlace(leader, (float)i * num)));
+				}
+				PooledList<LivestockFootprint> val2 = Pool.Get<PooledList<LivestockFootprint>>();
+				try
+				{
+					livestockAnimal.GatherRestingFootprints(((Component)Owner).transform.position, val2);
+					return (float)Mathf.Max(0, livestockAnimal.PickRestingSpot(val2, val, Agent.stoppingDistance)) * num;
+				}
+				finally
+				{
+					((IDisposable)val2)?.Dispose();
 				}
 			}
-			Vector3 position = ((Component)target).transform.position;
-			Vector3 val = Vector3Ex.NormalizeXZ(position - ((Component)Owner).transform.position);
-			Vector3 val2 = position + Vector3.Cross(Vector3.up, val) * laneOffset;
-			if (laneOffset != 0f && Agent.Raycast(Agent.WorldToNavSpace(position), Agent.WorldToNavSpace(val2), out var hitNS))
+			finally
 			{
-				return Agent.NavToWorldSpace(hitNS.position);
+				((IDisposable)val)?.Dispose();
 			}
-			return val2;
+		}
+
+		private bool StandsClear()
+		{
+			if (Owner is LivestockAnimal livestockAnimal)
+			{
+				return livestockAnimal.ClearanceWhereItStands() >= 0f;
+			}
+			return true;
 		}
 
 		private bool KeepUpWith(BasePlayer target, Vector3 position)
 		{
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0159: Unknown result type (might be due to invalid IL or missing references)
 			float num = Vector3.Distance(((Component)Owner).transform.position, position);
 			float estimatedSpeed2D = target.estimatedSpeed2D;
 			if (num <= 1f)
 			{
 				return true;
 			}
-			if (estimatedSpeed2D < 0.5f)
+			if (estimatedSpeed2D < 0.5f || (num <= Clearance && estimatedSpeed2D < Agent.GetSpeedForGait(Agent.PenalisedGait(minSpeed))))
 			{
 				if (num > idealDistance)
 				{
@@ -163,12 +515,37 @@ public class LivestockAnimalFSM : FSMComponent
 					RustNavMeshAgent agent2 = Agent;
 					RustNavMeshAgent.Speeds? gait2 = minSpeed;
 					float? stoppingDistance = Agent.emergencyDeceleration;
-					return agent2.SetDestinationWithParams(position, autoBraking: true, gait2, null, stoppingDistance);
+					float? stoppingDistance2 = Clearance;
+					return agent2.SetDestinationWithParams(position, autoBraking: true, gait2, null, stoppingDistance, null, null, stoppingDistance2);
 				}
 				return true;
 			}
-			RustNavMeshAgent.Speeds value = ((num > idealDistance) ? maxSpeed : ClosestGait(estimatedSpeed2D * num / idealDistance));
-			return Agent.SetDestinationWithParams(position, autoBraking: false, value);
+			RustNavMeshAgent.Speeds value;
+			if (num > idealDistance)
+			{
+				value = maxSpeed;
+			}
+			else
+			{
+				value = ((num <= Clearance) ? minSpeed : ClosestGait(estimatedSpeed2D * num / idealDistance));
+			}
+			return Agent.SetDestinationWithParams(AimArrivedAt(position), autoBraking: false, value);
+		}
+
+		private Vector3 AimArrivedAt(Vector3 point)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+			Vector3 val = Vector3Ex.WithY(point - ((Component)Owner).transform.position, 0f);
+			return AimOnto(point - val.normalized * 1f);
 		}
 
 		private RustNavMeshAgent.Speeds ClosestGait(float speed)
@@ -204,6 +581,16 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_TurnToLeader : State_TurnToTarget
 	{
+		private int verdictFrame = -1;
+
+		private RootMotionData verdictTurn;
+
+		private Vector3 verdictPosition;
+
+		private Quaternion verdictRotation;
+
+		private bool verdict;
+
 		protected override bool FindTurnTarget(out Vector3 position)
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
@@ -222,6 +609,51 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 			return false;
 		}
+
+		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+			if (FindTurnTarget(out var position) && !CanTurnTowards(Vector3Ex.NormalizeXZ(position - ((Component)Owner).transform.position)))
+			{
+				return EFSMStateStatus.Failure;
+			}
+			return base.OnStateEnter(payload);
+		}
+
+		public bool CanTurnTowards(Vector3 targetDirection)
+		{
+			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+			if (!HasTurnAnimation || (Object)(object)Agent == (Object)null)
+			{
+				return true;
+			}
+			RootMotionData rootMotionData = TurnFor(((Component)Owner).transform.forward, targetDirection);
+			Vector3 val = default;
+			Quaternion val2 = default;
+			((Component)Owner).transform.GetPositionAndRotation(ref val, ref val2);
+			if (verdictFrame == Time.frameCount && verdictTurn == rootMotionData && verdictPosition == val && verdictRotation == val2)
+			{
+				return verdict;
+			}
+			verdict = Agent.CanPlayTurnInPlace(rootMotionData, ((Object)(object)AnimPlayer != (Object)null) ? AnimPlayer.RootBoneLocalZOffset : 0f);
+			verdictFrame = Time.frameCount;
+			verdictTurn = rootMotionData;
+			verdictPosition = val;
+			verdictRotation = val2;
+			return verdict;
+		}
 	}
 
 	[Serializable]
@@ -231,28 +663,41 @@ public class LivestockAnimalFSM : FSMComponent
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
 		{
-			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 			if (Owner is LivestockAnimal { LeadingPlayer: var leadingPlayer } livestockAnimal)
 			{
 				BasePlayer basePlayer = leadingPlayer.Get(Owner.isServer);
-				if (basePlayer != null)
+				if (basePlayer != null && LeaderWalksOffBehind(livestockAnimal, Agent, basePlayer, out var toLeader))
 				{
-					if ((Agent.hasPath ? Agent.velocity.magnitude : 0f) >= Agent.jogSpeed || basePlayer.estimatedSpeed2D < 0.5f || !livestockAnimal.IsPulledAwayBy(basePlayer))
+					LivestockAnimalFSM livestockAnimalFSM = default;
+					if (((Component)Owner).TryGetComponent<LivestockAnimalFSM>(ref livestockAnimalFSM))
 					{
-						return false;
+						return livestockAnimalFSM.turnToLeader.CanTurnTowards(toLeader);
 					}
-					Vector3 val = Vector3Ex.NormalizeXZ(((Component)basePlayer).transform.position - ((Component)Owner).transform.position);
-					return Vector3.Angle(Vector3Ex.NormalizeXZ(((Component)Owner).transform.forward), val) > 120f;
+					return true;
 				}
 			}
 			return false;
+		}
+
+		public static bool LeaderWalksOffBehind(LivestockAnimal animal, RustNavMeshAgent agent, BasePlayer leader, out Vector3 toLeader)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+			toLeader = default;
+			if (agent.velocity.magnitude >= agent.jogSpeed || leader.estimatedSpeed2D < 0.5f || !animal.IsPulledAwayBy(leader))
+			{
+				return false;
+			}
+			toLeader = Vector3Ex.NormalizeXZ(((Component)leader).transform.position - ((Component)animal).transform.position);
+			return Vector3.Angle(Vector3Ex.NormalizeXZ(((Component)animal).transform.forward), toLeader) > 120f;
 		}
 	}
 
@@ -431,26 +876,9 @@ public class LivestockAnimalFSM : FSMComponent
 	}
 
 	[Serializable]
-	public class Trans_RecentlyHurt : FSMTransitionBase
-	{
-		[SerializeField]
-		private float thresholdSeconds = 5f;
-
-		protected override bool EvaluateInternal(ref FSMPayload payload)
-		{
-			if (Owner is BaseCombatEntity { lastAttackedTime: >0f } baseCombatEntity)
-			{
-				return Time.time - baseCombatEntity.lastAttackedTime < thresholdSeconds;
-			}
-			return false;
-		}
-	}
-
-	[Serializable]
 	public class Trans_LoudNoiseNearby : FSMTransitionBase
 	{
-		[SerializeField]
-		[Tooltip("How close the noise has to have been. 0 is anywhere within earshot, which is what a cow runs from; the bull answers only for shots near his herd.")]
+		[Tooltip("How close the noise has to have been. 0 is anywhere within earshot.")]
 		public float range;
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
@@ -470,29 +898,27 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_ChasedFromBehind : FSMTransitionBase
 	{
-		[SerializeField]
-		[Tooltip("How much clear air there may be between them and our body. Measured off the animal's bounds rather than its origin, so this is the gap you actually see.")]
+		[Tooltip("How much clear air there may be between them and our body. Measured off the animal's bounds rather than its origin.")]
 		public float range = 4f;
 
-		[SerializeField]
 		[Tooltip("Past this many degrees off our forward counts as being on our back.")]
 		public float rearAngle = 100f;
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
 		{
-			//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal) || livestockAnimal.IsInfant() || range <= 0f)
 			{
 				return false;
@@ -503,6 +929,10 @@ public class LivestockAnimalFSM : FSMComponent
 				return false;
 			}
 			if (!livestockAnimal.TryGetRememberedAggressor(out var attacker))
+			{
+				return false;
+			}
+			if (livestockAnimal.IsMale && Trans_TargetHasRepellent.Carries(attacker))
 			{
 				return false;
 			}
@@ -557,56 +987,60 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			None,
 			Found,
-			NothingToGain,
 			Busy
 		}
 
-		[FormerlySerializedAs("barrelStandoff")]
-		[FormerlySerializedAs("troughStandoff")]
+		private struct SlotCandidate
+		{
+			public LivestockFeedingSlots.Place Place;
+
+			public Vector3 Standing;
+
+			public float Score;
+		}
+
 		[SerializeField]
-		private float standoff = 1.5f;
-
-		private const float MuzzleHeight = 0.8f;
-
-		private const int ConsumeBlockers = 2162688;
-
-		[SerializeField]
-		[FormerlySerializedAs("waterRetryDelay")]
 		[FormerlySerializedAs("grassRetryDelay")]
+		[FormerlySerializedAs("waterRetryDelay")]
 		private float retryDelay = 30f;
 
+		[SerializeField]
 		[FormerlySerializedAs("drinkTopology")]
 		[FormerlySerializedAs("grazeTopology")]
-		[SerializeField]
 		private Enum topology;
 
 		private TimeUntil nextTerrainSearch;
 
-		private static readonly float[] StandingBearings = new float[13]
-		{
-			0f, 15f, -15f, 30f, -30f, 45f, -45f, 60f, -60f, 75f,
-			-75f, 90f, -90f
-		};
+		private TimeUntil nextDeployableSearch;
 
-		private static BaseEntity RootOf(BaseEntity entity)
-		{
-			BaseEntity baseEntity = entity;
-			while ((Object)(object)baseEntity != (Object)null)
-			{
-				BaseEntity parentEntity = baseEntity.GetParentEntity();
-				if ((Object)(object)parentEntity == (Object)null)
-				{
-					break;
-				}
-				baseEntity = parentEntity;
-			}
-			return baseEntity;
-		}
+		private const float DeployableSearchInterval = 1f;
+
+		private DeployableSearch lastDeployableSearch;
+
+		private bool? terrainFirstThisMeal;
+
+		private float terrainMealCredit;
+
+		private const float RemoteEatMinDistance = 2f;
+
+		private const float IdealLane = 4f;
+
+		private const float ApproachPenalty = 2f;
+
+		private const float AskToVacateAfter = 5f;
+
+		private const float NearbySearchRadius = 2.5f;
+
+		private const int NearbySearchPoints = 8;
+
+		protected abstract LivestockFeedingSlots.Serves Need { get; }
+
+		protected virtual bool CanConsumeRemotely => false;
 
 		protected Trans_IsConsumeLocationInRange(Enum defaultTopology)
 		{
-			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 			topology = defaultTopology;
 		}
 
@@ -615,6 +1049,11 @@ public class LivestockAnimalFSM : FSMComponent
 		protected abstract void FindDeployables(LivestockAnimal self, List<BaseEntity> results);
 
 		protected virtual bool IsUsableTerrain(LivestockAnimal self, Vector3 position)
+		{
+			return true;
+		}
+
+		protected virtual bool TerrainCanFeed(LivestockAnimal self)
 		{
 			return true;
 		}
@@ -630,6 +1069,9 @@ public class LivestockAnimalFSM : FSMComponent
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
 		{
+			//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal self))
 			{
 				return false;
@@ -640,6 +1082,7 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 			if (!IsInNeed(self))
 			{
+				terrainFirstThisMeal = null;
 				return false;
 			}
 			LivestockAnimalFSM fsm = default;
@@ -647,88 +1090,179 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return false;
 			}
+			bool valueOrDefault = terrainFirstThisMeal == true;
+			if (!terrainFirstThisMeal.HasValue)
+			{
+				valueOrDefault = TakesThisMealOffTheTerrain(self);
+				terrainFirstThisMeal = valueOrDefault;
+			}
+			if (terrainFirstThisMeal == false || !TerrainCanFeed(self))
+			{
+				return FindDeployableThenTerrain(self, fsm);
+			}
 			if (TryFindTerrain(self, fsm, out var searched))
 			{
 				return true;
 			}
-			switch (TryFindDeployable(self, fsm))
+			if (!searched && TimeUntil.op_Implicit(nextDeployableSearch) > 0f)
 			{
-			case DeployableSearch.Found:
-				return true;
-			case DeployableSearch.NothingToGain:
-				OnNothingToGainFromDeployables(self);
-				return false;
-			case DeployableSearch.Busy:
-				return false;
-			default:
-				if (searched)
-				{
-					OnTerrainSearchFailed(fsm);
-				}
 				return false;
 			}
+			DeployableSearch deployableSearch = TryFindDeployable(self, fsm);
+			if (deployableSearch == DeployableSearch.Found)
+			{
+				return true;
+			}
+			nextDeployableSearch = TimeUntil.op_Implicit(1f);
+			if (deployableSearch == DeployableSearch.Busy)
+			{
+				return false;
+			}
+			if (searched)
+			{
+				OnTerrainSearchFailed(fsm);
+			}
+			return false;
 		}
 
-		protected virtual bool CanGainFromDeployables(LivestockAnimal self)
+		protected virtual float TerrainMealShare(LivestockAnimal self)
 		{
+			return 1f;
+		}
+
+		private bool TakesThisMealOffTheTerrain(LivestockAnimal self)
+		{
+			terrainMealCredit += TerrainMealShare(self);
+			if (terrainMealCredit < 1f)
+			{
+				return false;
+			}
+			terrainMealCredit--;
 			return true;
 		}
 
-		protected virtual void OnNothingToGainFromDeployables(LivestockAnimal self)
+		private bool FindDeployableThenTerrain(LivestockAnimal self, LivestockAnimalFSM fsm)
 		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+			if (TimeUntil.op_Implicit(nextDeployableSearch) <= 0f)
+			{
+				lastDeployableSearch = TryFindDeployable(self, fsm);
+				if (lastDeployableSearch == DeployableSearch.Found)
+				{
+					return true;
+				}
+				nextDeployableSearch = TimeUntil.op_Implicit(1f);
+			}
+			if (lastDeployableSearch == DeployableSearch.Busy)
+			{
+				return false;
+			}
+			if (TryFindTerrain(self, fsm, out var searched))
+			{
+				return true;
+			}
+			if (searched)
+			{
+				OnTerrainSearchFailed(fsm);
+			}
+			return false;
 		}
 
 		private DeployableSearch TryFindDeployable(LivestockAnimal self, LivestockAnimalFSM fsm)
 		{
-			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 			PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
 			try
 			{
 				FindDeployables(self, (List<BaseEntity>)(object)val);
-				if (((List<BaseEntity>)(object)val).Count > 0 && !CanGainFromDeployables(self))
+				float distanceSqr = -1f;
+				bool flag = false;
+				for (int i = 0; i < 3; i++)
 				{
-					return DeployableSearch.NothingToGain;
+					BaseEntity baseEntity = Eqs.NearestBeyond((List<BaseEntity>)(object)val, ((Component)self).transform.position, distanceSqr, out distanceSqr);
+					if ((Object)(object)baseEntity == (Object)null)
+					{
+						break;
+					}
+					DeployableSearch deployableSearch = TryFindSlot(self, fsm, baseEntity, !flag);
+					if (deployableSearch == DeployableSearch.Found)
+					{
+						if (CanConsumeRemotely)
+						{
+							self.NoteSlotSearchSettled();
+						}
+						return deployableSearch;
+					}
+					flag |= deployableSearch == DeployableSearch.Busy;
 				}
+				DeployableSearch result = (flag ? DeployableSearch.Busy : DeployableSearch.None);
+				if (!CanConsumeRemotely)
+				{
+					return result;
+				}
+				if (((List<BaseEntity>)(object)val).Count == 0)
+				{
+					self.NoteSlotSearchSettled();
+					return result;
+				}
+				self.NoteSlotSearchFailed();
+				if (self.SlotSearchFailedFor >= Livestock.remoteEatAfter && TryFindRemoteSpot(self, fsm, val))
+				{
+					return DeployableSearch.Found;
+				}
+				return result;
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+
+		private bool TryFindRemoteSpot(LivestockAnimal self, LivestockAnimalFSM fsm, PooledList<BaseEntity> deployables)
+		{
+			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+			float outerRadius = Mathf.Max(2f, Livestock.remoteEatDistance - Agent.RestingDistance(Agent.stoppingDistance));
+			PooledList<LivestockFeedingSlots.Place> val = Pool.Get<PooledList<LivestockFeedingSlots.Place>>();
+			try
+			{
 				PooledList<LivestockFootprint> val2 = Pool.Get<PooledList<LivestockFootprint>>();
 				try
 				{
-					self.GatherRestingFootprints(((Component)self).transform.position, val2);
 					float distanceSqr = -1f;
-					BaseEntity baseEntity = null;
-					Vector3 spot = default;
-					float num = float.MinValue;
 					for (int i = 0; i < 3; i++)
 					{
-						BaseEntity baseEntity2 = Eqs.NearestBeyond((List<BaseEntity>)(object)val, ((Component)self).transform.position, distanceSqr, out distanceSqr);
-						if ((Object)(object)baseEntity2 == (Object)null)
+						BaseEntity baseEntity = Eqs.NearestBeyond((List<BaseEntity>)(object)deployables, ((Component)self).transform.position, distanceSqr, out distanceSqr);
+						if ((Object)(object)baseEntity == (Object)null)
 						{
-							break;
+							return false;
 						}
-						if (TryFindStandingSpot(self, baseEntity2, val2, out var spot2, out var clearance))
+						BaseEntity baseEntity2 = LivestockFeedingSlots.OwnerOf(baseEntity);
+						((List<LivestockFeedingSlots.Place>)(object)val).Clear();
+						((List<LivestockFootprint>)(object)val2).Clear();
+						LivestockFeedingSlots.Gather(baseEntity2, LivestockFeedingSlots.Serves.Food | LivestockFeedingSlots.Serves.Water, val);
+						foreach (LivestockFeedingSlots.Place item in (List<LivestockFeedingSlots.Place>)(object)val)
 						{
-							if (LivestockAnimal.IsClear(clearance))
-							{
-								return Found(fsm, baseEntity2, spot2);
-							}
-							if (clearance > num)
-							{
-								baseEntity = baseEntity2;
-								spot = spot2;
-								num = clearance;
-							}
+							((List<LivestockFootprint>)(object)val2).Add(LivestockFootprint.Of((BaseEntity)self, item.StandingPointFor(self), item.Facing));
+						}
+						if (self.TryFindRestingSpotNear(((Component)baseEntity2).transform.position, 2f, outerRadius, val2, out var spot) && CanUseFrom(baseEntity2, spot, baseEntity2.CenterPoint()))
+						{
+							fsm.ConsumeLocation = spot;
+							fsm.ConsumeSource.Set(baseEntity);
+							fsm.ConsumePlace = null;
+							fsm.ConsumeLane = 0f;
+							self.LeaveQueue(Need);
+							return true;
 						}
 					}
-					if ((Object)(object)baseEntity == (Object)null)
-					{
-						return DeployableSearch.None;
-					}
-					return (num < 0f) ? DeployableSearch.Busy : Found(fsm, baseEntity, spot);
+					return false;
 				}
 				finally
 				{
@@ -741,148 +1275,237 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 		}
 
-		private bool TryFindStandingSpot(LivestockAnimal self, BaseEntity deployable, PooledList<LivestockFootprint> taken, out Vector3 spot, out float clearance)
+		private DeployableSearch TryFindSlot(LivestockAnimal self, LivestockAnimalFSM fsm, BaseEntity deployable, bool mayQueue)
 		{
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0125: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
-			spot = default;
-			clearance = float.MinValue;
-			Vector3 val = Vector3Ex.WithY(((Component)self).transform.position - ((Component)deployable).transform.position, 0f);
-			Vector3 val2 = ((val.sqrMagnitude > 0.01f) ? val.normalized : ((Component)self).transform.forward);
-			PooledList<Vector3> val3 = Pool.Get<PooledList<Vector3>>();
+			//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+			//IL_02c9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0139: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+			//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0164: Unknown result type (might be due to invalid IL or missing references)
+			//IL_024d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0259: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0189: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0170: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0177: Unknown result type (might be due to invalid IL or missing references)
+			//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0284: Unknown result type (might be due to invalid IL or missing references)
+			//IL_018e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0356: Unknown result type (might be due to invalid IL or missing references)
+			//IL_039e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_03a2: Unknown result type (might be due to invalid IL or missing references)
+			BaseEntity baseEntity = LivestockFeedingSlots.OwnerOf(deployable);
+			PooledList<LivestockFeedingSlots.Place> val = Pool.Get<PooledList<LivestockFeedingSlots.Place>>();
 			try
 			{
-				PooledList<float> val4 = Pool.Get<PooledList<float>>();
+				LivestockFeedingSlots.Gather(baseEntity, Need, val);
+				PooledList<LivestockAnimal> val2 = Pool.Get<PooledList<LivestockAnimal>>();
 				try
 				{
-					float[] standingBearings = StandingBearings;
-					foreach (float num in standingBearings)
+					BaseEntity.Query.Server.GetBrainsInSphere(((Component)baseEntity).transform.position, 30f, (List<LivestockAnimal>)(object)val2);
+					PooledList<SlotCandidate> val3 = Pool.Get<PooledList<SlotCandidate>>();
+					try
 					{
-						Vector3 positionWS = ((Component)deployable).transform.position + Quaternion.Euler(0f, num, 0f) * val2 * standoff;
-						if (Agent.SamplePosition(positionWS, out var hitWS, 2f))
+						bool flag = false;
+						bool flag2 = false;
+						Vector3 locationWS = default;
+						float num = float.MaxValue;
+						LivestockAnimal livestockAnimal = null;
+						LivestockFeedingSlots.Place place = default;
+						Vector3 standingPoint = default;
+						LivestockFootprint needed = default;
+						foreach (LivestockFeedingSlots.Place item in (List<LivestockFeedingSlots.Place>)(object)val)
 						{
-							((List<Vector3>)(object)val3).Add(hitWS.position);
-							((List<float>)(object)val4).Add(LivestockAnimal.ClearanceOf(taken, self.RestingFootprintFor(hitWS.position, Agent.stoppingDistance)));
-						}
-					}
-					for (int j = 0; j < ((List<Vector3>)(object)val3).Count; j++)
-					{
-						if (LivestockAnimal.IsClear(((List<float>)(object)val4)[j]))
-						{
-							if (CanUseFrom(deployable, ((List<Vector3>)(object)val3)[j]))
+							LivestockFeedingSlots.Place place2 = item;
+							if (!LivestockFeedingSlots.TryStandAt(Agent, self, in place2, out var standing))
 							{
-								spot = ((List<Vector3>)(object)val3)[j];
-								clearance = ((List<float>)(object)val4)[j];
-								return true;
+								continue;
 							}
-							((List<float>)(object)val4)[j] = float.MinValue;
-						}
-					}
-					int num2;
-					while (true)
-					{
-						num2 = -1;
-						for (int k = 0; k < ((List<Vector3>)(object)val3).Count; k++)
-						{
-							if (((List<float>)(object)val4)[k] > float.MinValue && (num2 < 0 || ((List<float>)(object)val4)[k] > ((List<float>)(object)val4)[num2]))
+							flag = true;
+							Vector3 val4 = standing - ((Component)self).transform.position;
+							LivestockFootprint footprint = LivestockFootprint.Of((BaseEntity)self, standing, place2.Facing);
+							LivestockAnimal.SlotState slotState = self.SlotStateFor(baseEntity, place2.Index, in footprint, val2, out var blocker);
+							if (slotState == LivestockAnimal.SlotState.HitchedOver || slotState == LivestockAnimal.SlotState.CannotBeCleared)
 							{
-								num2 = k;
+								continue;
+							}
+							if (slotState == LivestockAnimal.SlotState.BlockedByIdler && (Object)(object)livestockAnimal == (Object)null)
+							{
+								livestockAnimal = blocker;
+								place = place2;
+								standingPoint = standing;
+								needed = footprint;
+							}
+							if (slotState != LivestockAnimal.SlotState.Free || self.RecentlyFailedAt(baseEntity, place2.Index))
+							{
+								flag2 = true;
+								if (val4.sqrMagnitude < num)
+								{
+									num = val4.sqrMagnitude;
+									locationWS = standing;
+								}
+								continue;
+							}
+							Vector3 val5 = standing - place2.Facing * 4f;
+							Vector3 val7;
+							if (!Agent.IsDockedAt(standing, place2.Facing))
+							{
+								Vector3 val6 = Vector3Ex.WithY(val4, 0f);
+								val7 = val6.normalized;
+							}
+							else
+							{
+								val7 = place2.Facing;
+							}
+							Vector3 val8 = val7;
+							((List<SlotCandidate>)(object)val3).Add(new SlotCandidate
+							{
+								Place = place2,
+								Standing = standing,
+								Score = Vector3.Distance(((Component)self).transform.position, val5) + 2f * (1f - Vector3.Dot(val8, place2.Facing))
+							});
+						}
+						if (!flag)
+						{
+							return DeployableSearch.None;
+						}
+						SortByScore(val3);
+						int num2 = self.CountQueuedAhead(baseEntity, Need, val2);
+						int num3 = 0;
+						SlotCandidate slotCandidate = default;
+						float consumeLane = 0f;
+						for (int i = 0; i < ((List<SlotCandidate>)(object)val3).Count && i < 3; i++)
+						{
+							if (num3 > num2)
+							{
+								break;
+							}
+							SlotCandidate slotCandidate2 = ((List<SlotCandidate>)(object)val3)[i];
+							float num4 = Agent.ClearLaneBehind(slotCandidate2.Standing, slotCandidate2.Place.Facing, 4f);
+							if (!(num4 < LivestockFeedingSlots.TailOf(self)) && CanUseFrom(baseEntity, slotCandidate2.Standing, slotCandidate2.Place.Nose))
+							{
+								if (num3 == 0)
+								{
+									slotCandidate = slotCandidate2;
+									consumeLane = num4;
+								}
+								num3++;
 							}
 						}
-						if (num2 < 0)
+						if (num3 > num2)
 						{
-							return false;
+							fsm.ConsumeLocation = slotCandidate.Standing;
+							fsm.ConsumeSource.Set(deployable);
+							fsm.ConsumePlace = slotCandidate.Place;
+							fsm.ConsumeLane = consumeLane;
+							return DeployableSearch.Found;
 						}
-						if (CanUseFrom(deployable, ((List<Vector3>)(object)val3)[num2]))
+						if (num3 == 0 && !flag2)
 						{
-							break;
+							if (self.IsQueuedAt(baseEntity, Need))
+							{
+								self.LeaveQueue(Need);
+							}
+							return DeployableSearch.None;
 						}
-						((List<float>)(object)val4)[num2] = float.MinValue;
+						if (!mayQueue)
+						{
+							return DeployableSearch.Busy;
+						}
+						if (num3 == 0 && !self.IsQueuedAt(baseEntity, Need) && !Agent.CanReach(locationWS))
+						{
+							return DeployableSearch.None;
+						}
+						self.JoinQueue(baseEntity, Need);
+						if (num3 == 0 && (Object)(object)livestockAnimal != (Object)null && self.QueuedFor(baseEntity, Need) > 5f)
+						{
+							livestockAnimal.AskToVacate(baseEntity, place.Index, standingPoint, place.Facing, in needed);
+						}
+						return DeployableSearch.Busy;
 					}
-					spot = ((List<Vector3>)(object)val3)[num2];
-					clearance = ((List<float>)(object)val4)[num2];
-					return true;
+					finally
+					{
+						((IDisposable)val3)?.Dispose();
+					}
 				}
 				finally
 				{
-					((IDisposable)val4)?.Dispose();
+					((IDisposable)val2)?.Dispose();
 				}
 			}
 			finally
 			{
-				((IDisposable)val3)?.Dispose();
+				((IDisposable)val)?.Dispose();
 			}
 		}
 
-		private bool CanUseFrom(BaseEntity deployable, Vector3 spot)
+		private static void SortByScore(PooledList<SlotCandidate> candidates)
+		{
+			for (int i = 1; i < ((List<SlotCandidate>)(object)candidates).Count; i++)
+			{
+				SlotCandidate value = ((List<SlotCandidate>)(object)candidates)[i];
+				int num = i - 1;
+				while (num >= 0 && ((List<SlotCandidate>)(object)candidates)[num].Score > value.Score)
+				{
+					((List<SlotCandidate>)(object)candidates)[num + 1] = ((List<SlotCandidate>)(object)candidates)[num];
+					num--;
+				}
+				((List<SlotCandidate>)(object)candidates)[num + 1] = value;
+			}
+		}
+
+		private bool CanUseFrom(BaseEntity owner, Vector3 standing, Vector3 nose)
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-			if (!Agent.CanReach(spot))
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			if (!Agent.CanReach(standing))
 			{
 				return false;
 			}
-			BaseEntity baseEntity = RootOf(deployable);
-			return GamePhysics.LineOfSight(spot + Vector3.up * 0.8f, baseEntity.CenterPoint(), 2162688, baseEntity);
-		}
-
-		private static DeployableSearch Found(LivestockAnimalFSM fsm, BaseEntity deployable, Vector3 spot)
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			fsm.ConsumeLocation = spot;
-			fsm.ConsumeSource.Set(deployable);
-			return DeployableSearch.Found;
+			return LivestockFeedingSlots.CanReachInFrom(owner, standing, nose);
 		}
 
 		private bool TryFindTerrain(LivestockAnimal self, LivestockAnimalFSM fsm, out bool searched)
 		{
 			//IL_0004: Unknown result type (might be due to invalid IL or missing references)
-			//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-			//IL_020b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0210: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-			//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_014f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-			//IL_015a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_015f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_019c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 			searched = false;
 			if (TimeUntil.op_Implicit(nextTerrainSearch) > 0f)
 			{
 				return false;
 			}
 			searched = true;
+			if (!TerrainCanFeed(self))
+			{
+				fsm.ConsumeLocation = null;
+				return false;
+			}
 			NavVector3 nextPosition = Agent.nextPosition;
 			if (self.IsInfant() && (Object)(object)self.MotherAnimal != (Object)null)
 			{
@@ -897,39 +1520,13 @@ public class LivestockAnimalFSM : FSMComponent
 				try
 				{
 					self.GatherRestingFootprints(nextPosition.Value, val2);
-					bool flag = false;
-					bool flag2 = false;
-					float num2 = float.MaxValue;
-					float num3 = float.MinValue;
-					foreach (NavVector3 item in (List<NavVector3>)(object)val)
+					if (TryPickSpot(self, fsm, nextPosition, val, val2))
 					{
-						if (Agent.SamplePosition(item, out var hitNS, 10f) && Agent.IsPositionAtTopologyRequirement(hitNS.position, topology) && IsOnOpenGround(hitNS.position.Value) && IsUsableTerrain(self, hitNS.position.Value))
-						{
-							float num4 = LivestockAnimal.ClearanceOf(val2, self.RestingFootprintFor(hitNS.position.Value, Agent.stoppingDistance));
-							bool flag3 = LivestockAnimal.IsClear(num4);
-							Vector3 val3 = hitNS.position.Value - nextPosition.Value;
-							float sqrMagnitude = val3.sqrMagnitude;
-							bool flag4;
-							if (flag3 != flag2)
-							{
-								flag4 = flag3;
-							}
-							else
-							{
-								flag4 = (flag3 ? (sqrMagnitude < num2) : (num4 > num3));
-							}
-							if (flag4)
-							{
-								num2 = sqrMagnitude;
-								num3 = num4;
-								flag2 = flag3;
-								fsm.ConsumeLocation = hitNS.position.Value;
-								fsm.ConsumeSource = default;
-								flag = true;
-							}
-						}
+						return true;
 					}
-					if (flag && Agent.CanReach(fsm.ConsumeLocation.Value))
+					((List<NavVector3>)(object)val).Clear();
+					Eqs.SampleNavigablePositions(Agent, nextPosition, (List<NavVector3>)(object)val, 2.5f, 0f, 8);
+					if (TryPickSpot(self, fsm, nextPosition, val, val2))
 					{
 						return true;
 					}
@@ -948,13 +1545,39 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 		}
 
-		private static bool IsOnOpenGround(Vector3 position)
+		private bool TryPickSpot(LivestockAnimal self, LivestockAnimalFSM fsm, NavVector3 pos, PooledList<NavVector3> sampledPositions, PooledList<LivestockFootprint> taken)
 		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-			return !GamePhysics.CheckSphere(GamePhysics.Realm.Server, position - Vector3.up * 0.2f, 0.25f, 2097408, (QueryTriggerInteraction)1);
+			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+			PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+			try
+			{
+				foreach (NavVector3 item in (List<NavVector3>)(object)sampledPositions)
+				{
+					if (Agent.SamplePosition(item, out var hitNS, 10f) && Agent.IsPositionAtTopologyRequirement(hitNS.position, topology) && LivestockGrass.IsOnOpenGround(hitNS.position.Value) && IsUsableTerrain(self, hitNS.position.Value))
+					{
+						((List<Vector3>)(object)val).Add(hitNS.position.Value);
+					}
+				}
+				LivestockAnimal.SortNearestFirst(val, pos.Value);
+				int num = self.PickRestingSpot(taken, val, Agent.stoppingDistance);
+				bool flag = num >= 0;
+				if (flag)
+				{
+					fsm.ConsumeLocation = ((List<Vector3>)(object)val)[num];
+					fsm.ConsumeSource = default;
+				}
+				return flag && Agent.CanReach(fsm.ConsumeLocation.Value);
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
 		}
 	}
 
@@ -964,20 +1587,13 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float searchRadius = 10f;
 
-		[InspectorFlags]
-		[SerializeField]
-		[Tooltip("Ground that counts as grass, compared with the splat that dominates the spot. Field topology alone covers snow, sand and bare dirt.")]
-		private Enum grazingSplats = (Enum)48;
+		protected override LivestockFeedingSlots.Serves Need => LivestockFeedingSlots.Serves.Food;
 
-		[SerializeField]
-		[Tooltip("Biomes with grass to graze. Anywhere else the herd has to be fed at a trough.")]
-		private Enum grazingBiomes = (Enum)23;
+		protected override bool CanConsumeRemotely => true;
 
 		public Trans_IsGrazeLocationInRange()
 			: base((Enum)97)
 		{
-			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		}
 
 		protected override bool IsInNeed(LivestockAnimal self)
@@ -990,28 +1606,20 @@ public class LivestockAnimalFSM : FSMComponent
 			self.FindFoodTroughs(results);
 		}
 
-		protected override bool CanGainFromDeployables(LivestockAnimal self)
+		protected override float TerrainMealShare(LivestockAnimal self)
 		{
-			return self.Fullness.NeedValue < self.TroughFullnessCeiling;
+			return self.GrazingShare;
 		}
 
-		protected override void OnNothingToGainFromDeployables(LivestockAnimal self)
+		protected override bool TerrainCanFeed(LivestockAnimal self)
 		{
-			self.RecordHelpingSource(fromTrough: true);
+			return self.GrassCanFeed;
 		}
 
 		protected override bool IsUsableTerrain(LivestockAnimal self, Vector3 position)
 		{
-			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-			if (Agent.IsPositionASplatRequirement(position, grazingSplats) && Agent.IsPositionABiomeRequirement(position, grazingBiomes))
-			{
-				return !OvergrazedArea.IsOvergrazed(position);
-			}
-			return false;
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return LivestockGrass.IsGrassGround(position);
 		}
 
 		protected override float TerrainSearchRadius(LivestockAnimal self)
@@ -1042,11 +1650,6 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Sprint;
 
-		[FormerlySerializedAs("drinkDurationRange")]
-		[SerializeField]
-		[FormerlySerializedAs("grazeDurationRange")]
-		private Vector2 durationRange = new Vector2(5f, 15f);
-
 		[SerializeField]
 		private float postAnimationDuration = 3f;
 
@@ -1059,7 +1662,24 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private EntityRef<BaseEntity> source;
 
-		public float MaxDuration => durationRange.y;
+		private bool holdsSlot;
+
+		private bool docking;
+
+		protected abstract Vector2 DurationRange { get; }
+
+		public float MaxDuration
+		{
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return DurationRange.y;
+			}
+		}
+
+		public bool IsUsingDeployable => source.IsSet;
+
+		protected abstract LivestockFeedingSlots.Serves Need { get; }
 
 		protected abstract bool CanConsumeFrom(LivestockAnimal self, BaseEntity source);
 
@@ -1076,8 +1696,13 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+			//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0141: Unknown result type (might be due to invalid IL or missing references)
 			LivestockAnimalFSM livestockAnimalFSM = default;
 			if (!((Component)Owner).TryGetComponent<LivestockAnimalFSM>(ref livestockAnimalFSM) || !livestockAnimalFSM.ConsumeLocation.HasValue)
 			{
@@ -1085,8 +1710,30 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 			Vector3 value = livestockAnimalFSM.ConsumeLocation.Value;
 			source = livestockAnimalFSM.ConsumeSource;
+			LivestockFeedingSlots.Place? consumePlace = livestockAnimalFSM.ConsumePlace;
+			float consumeLane = livestockAnimalFSM.ConsumeLane;
 			livestockAnimalFSM.ConsumeLocation = null;
 			livestockAnimalFSM.ConsumeSource = default;
+			livestockAnimalFSM.ConsumePlace = null;
+			holdsSlot = false;
+			docking = false;
+			phase = Phase.Moving;
+			BaseEntity baseEntity = source.Get(serverside: true);
+			if (consumePlace.HasValue && (Object)(object)baseEntity != (Object)null && Owner is LivestockAnimal livestockAnimal)
+			{
+				livestockAnimal.HoldSlot(LivestockFeedingSlots.OwnerOf(baseEntity), baseEntity, consumePlace.Value.Index, value, consumePlace.Value.Facing, Need);
+				holdsSlot = true;
+				docking = Agent.CanArriveFacing;
+				if (!Agent.SetDestinationFacing(value, consumePlace.Value.Facing, consumeLane))
+				{
+					livestockAnimal.MarkSlotFailed();
+					livestockAnimal.ForgetSlot();
+					holdsSlot = false;
+					return EFSMStateStatus.Failure;
+				}
+				RampSpeed(Agent, value, distanceRange.y, minSpeed, maxSpeed);
+				return base.OnStateEnter(payload);
+			}
 			if (!Agent.SamplePosition(value, out var hitWS, 10f))
 			{
 				return EFSMStateStatus.Failure;
@@ -1095,17 +1742,18 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return EFSMStateStatus.Failure;
 			}
-			phase = Phase.Moving;
 			return base.OnStateEnter(payload);
 		}
 
 		public override EFSMStateStatus OnStateUpdate(float deltaTime)
 		{
-			//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-			if (!(Owner is LivestockAnimal self))
+			//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+			if (!(Owner is LivestockAnimal livestockAnimal))
 			{
 				return EFSMStateStatus.Failure;
 			}
@@ -1117,26 +1765,32 @@ public class LivestockAnimalFSM : FSMComponent
 				{
 					return base.OnStateUpdate(deltaTime);
 				}
+				if (docking && Agent.LastArrival != RustNavMeshAgent.ArrivalOutcome.Docked)
+				{
+					livestockAnimal.MarkSlotFailed();
+					return EFSMStateStatus.Failure;
+				}
 				BaseEntity baseEntity = source.Get(serverside: true);
-				if ((Object)(object)baseEntity != (Object)null && !CanConsumeFrom(self, baseEntity))
+				if (source.IsSet && ((Object)(object)baseEntity == (Object)null || !CanConsumeFrom(livestockAnimal, baseEntity)))
 				{
 					return EFSMStateStatus.Failure;
 				}
-				Consume(self, baseEntity);
+				Consume(livestockAnimal, baseEntity);
 				phase = Phase.Consuming;
-				endTime = TimeUntil.op_Implicit(Random.Range(durationRange.x, durationRange.y));
-				SetConsuming(self, consuming: true);
+				endTime = TimeUntil.op_Implicit(Rng.Range(DurationRange.x, DurationRange.y));
+				livestockAnimal.SetAtTrough(docking);
+				SetConsuming(livestockAnimal, consuming: true);
 				return base.OnStateUpdate(deltaTime);
 			}
 			case Phase.Consuming:
-				if (HasNothingLeftToGain(self))
+				if (HasNothingLeftToGain(livestockAnimal) || (source.IsSet && (Object)(object)source.Get(serverside: true) == (Object)null))
 				{
-					SetConsuming(self, consuming: false);
+					SetConsuming(livestockAnimal, consuming: false);
 					return EFSMStateStatus.Success;
 				}
 				if (TimeUntil.op_Implicit(endTime) <= postAnimationDuration)
 				{
-					SetConsuming(self, consuming: false);
+					SetConsuming(livestockAnimal, consuming: false);
 				}
 				if (!(TimeUntil.op_Implicit(endTime) <= 0f))
 				{
@@ -1152,25 +1806,52 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			Agent.ResetPath();
 			source = default;
-			if (Owner is LivestockAnimal self)
+			if (Owner is LivestockAnimal livestockAnimal)
 			{
-				SetConsuming(self, consuming: false);
+				SetConsuming(livestockAnimal, consuming: false);
+				livestockAnimal.SetAtTrough(atTrough: false);
+				ReleaseSlot(livestockAnimal);
 			}
 			base.OnStateExit();
+		}
+
+		private void ReleaseSlot(LivestockAnimal animal)
+		{
+			if (holdsSlot)
+			{
+				if (phase == Phase.Consuming)
+				{
+					animal.FinishWithSlot();
+				}
+				else
+				{
+					animal.ForgetSlot();
+				}
+				holdsSlot = false;
+			}
 		}
 
 		protected State_ConsumeAtLocation()
 		{
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		}
 	}
 
 	[Serializable]
 	public class State_Graze : State_ConsumeAtLocation
 	{
+		protected override LivestockFeedingSlots.Serves Need => LivestockFeedingSlots.Serves.Food;
+
+		protected override Vector2 DurationRange
+		{
+			get
+			{
+				//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+				return new Vector2(Livestock.grazeHelpingMin, Livestock.grazeHelpingMax);
+			}
+		}
+
 		protected override bool CanConsumeFrom(LivestockAnimal self, BaseEntity source)
 		{
 			if (source is HitchTrough trough)
@@ -1183,14 +1864,9 @@ public class LivestockAnimalFSM : FSMComponent
 
 		protected override void Consume(LivestockAnimal self, BaseEntity source)
 		{
-			//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 			HitchTrough hitchTrough = source as HitchTrough;
 			self.SetGrazingFromTrough(hitchTrough);
-			self.RecordHelpingSource((Object)(object)hitchTrough != (Object)null);
-			if ((Object)(object)hitchTrough == (Object)null)
-			{
-				OvergrazedArea.RegisterGraze(((Component)self).transform.position);
-			}
+			self.ClaimByTrough(hitchTrough);
 		}
 
 		protected override void SetConsuming(LivestockAnimal self, bool consuming)
@@ -1204,13 +1880,13 @@ public class LivestockAnimalFSM : FSMComponent
 
 		protected override bool HasNothingLeftToGain(LivestockAnimal self)
 		{
-			if (!self.IsGrazingFromTrough)
+			if (!(self.Fullness.NeedValue >= 1f) && (!self.IsGrazingFromTrough || self.HasTroughFoodLeft))
 			{
-				return self.Fullness.NeedValue >= 1f;
-			}
-			if (!(self.Fullness.NeedValue >= self.TroughFullnessCeiling))
-			{
-				return !self.HasTroughFoodLeft;
+				if (self.IsGrazing() && !self.IsGrazingFromTrough)
+				{
+					return self.GrassRoom <= 0f;
+				}
+				return false;
 			}
 			return true;
 		}
@@ -1219,6 +1895,8 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_IsDrinkSourceInRange : Trans_IsConsumeLocationInRange
 	{
+		protected override LivestockFeedingSlots.Serves Need => LivestockFeedingSlots.Serves.Water;
+
 		public Trans_IsDrinkSourceInRange()
 			: base((Enum)245760)
 		{
@@ -1237,13 +1915,34 @@ public class LivestockAnimalFSM : FSMComponent
 		protected override bool IsUsableTerrain(LivestockAnimal self, Vector3 position)
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			return self.IsDrinkableShore(position);
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			if (!self.IsDrinkableShore(position))
+			{
+				return false;
+			}
+			self.Floor?.NoteShore(position);
+			return true;
 		}
 	}
 
 	[Serializable]
 	public class State_Drink : State_ConsumeAtLocation
 	{
+		[FormerlySerializedAs("drinkDurationRange")]
+		[SerializeField]
+		private Vector2 durationRange = new Vector2(5f, 15f);
+
+		protected override LivestockFeedingSlots.Serves Need => LivestockFeedingSlots.Serves.Water;
+
+		protected override Vector2 DurationRange
+		{
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return durationRange;
+			}
+		}
+
 		protected override bool CanConsumeFrom(LivestockAnimal self, BaseEntity source)
 		{
 			if (source is LiquidContainer container)
@@ -1265,6 +1964,12 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			self.SetDrinking(consuming);
 		}
+
+		public State_Drink()
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		}
 	}
 
 	[Serializable]
@@ -1275,8 +1980,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private Transform[] TargetPoints;
 
-		[SerializeField]
 		[Tooltip("Speeds are cycled through, one every 'speedCycleInterval' seconds, to preview movement animations")]
+		[SerializeField]
 		private RustNavMeshAgent.Speeds[] speeds = new RustNavMeshAgent.Speeds[4]
 		{
 			RustNavMeshAgent.Speeds.Walk,
@@ -1285,8 +1990,8 @@ public class LivestockAnimalFSM : FSMComponent
 			RustNavMeshAgent.Speeds.Sprint
 		};
 
-		[SerializeField]
 		[Tooltip("How often (in seconds) to advance to the next speed in the array")]
+		[SerializeField]
 		private float speedCycleInterval = 10f;
 
 		private int currentPointIndex;
@@ -1370,6 +2075,465 @@ public class LivestockAnimalFSM : FSMComponent
 	}
 
 	[Serializable]
+	public class Trans_ShouldVacateSlot : FSMTransitionBase
+	{
+		protected override bool EvaluateInternal(ref FSMPayload payload)
+		{
+			if (Owner is LivestockAnimal livestockAnimal)
+			{
+				return livestockAnimal.ShouldVacateSlot();
+			}
+			return false;
+		}
+	}
+
+	[Serializable]
+	public class State_LeaveSlot : State_TurnToTarget
+	{
+		private enum Phase
+		{
+			Turning,
+			Walking
+		}
+
+		private const float TurnBeforeWalking = 60f;
+
+		private const float ClearOfTheTail = 2.5f;
+
+		private const float ExitSnap = 1.5f;
+
+		private const int ReachableExits = 12;
+
+		private const float ReplayStep = 1f / 30f;
+
+		private static readonly float[] ExitBearings = new float[7] { 70f, -70f, 45f, -45f, 100f, -100f, 0f };
+
+		private static readonly float[] BearingsAfterTheTurn = new float[5] { 45f, 30f, 60f, 15f, 0f };
+
+		private Phase phase;
+
+		private Vector3 exit;
+
+		private Vector3 wayOut;
+
+		private Vector3 turnTowards;
+
+		private bool exitAfterTheTurn;
+
+		private BaseEntity leavingFrom;
+
+		private bool walkingDocks;
+
+		private bool endedItself;
+
+		protected override bool FindTurnTarget(out Vector3 position)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			position = turnTowards;
+			return true;
+		}
+
+		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
+		{
+			return Ended(Enter(payload));
+		}
+
+		public override EFSMStateStatus OnStateUpdate(float deltaTime)
+		{
+			return Ended(Step(deltaTime));
+		}
+
+		public override void OnStateExit()
+		{
+			base.OnStateExit();
+			Agent.ResetPath();
+			if (endedItself && Owner is LivestockAnimal livestockAnimal)
+			{
+				livestockAnimal.ForgetSlot();
+			}
+		}
+
+		private EFSMStateStatus Enter(FSMPayload payload)
+		{
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+			if (!(Owner is LivestockAnimal livestockAnimal) || !livestockAnimal.TryGetSlotToVacate(out var owner, out var standingPoint, out var facing))
+			{
+				return EFSMStateStatus.Failure;
+			}
+			leavingFrom = owner;
+			exitAfterTheTurn = HasTurnAnimation && TryPickExitAfterTheTurn(livestockAnimal, owner, standingPoint, facing);
+			if (exitAfterTheTurn)
+			{
+				phase = Phase.Turning;
+				return base.OnStateEnter(payload);
+			}
+			if (!TryPickExit(livestockAnimal, owner, standingPoint, facing, out exit))
+			{
+				return NoWayOut();
+			}
+			wayOut = Vector3Ex.WithY(exit - standingPoint, 0f);
+			turnTowards = exit;
+			if (HasTurnAnimation && AngleToWayOut() > 60f)
+			{
+				phase = Phase.Turning;
+				return base.OnStateEnter(payload);
+			}
+			return StartWalking();
+		}
+
+		private EFSMStateStatus Step(float deltaTime)
+		{
+			if (phase == Phase.Walking)
+			{
+				if (Agent.hasPath)
+				{
+					return EFSMStateStatus.None;
+				}
+				if (!walkingDocks || Agent.LastArrival == RustNavMeshAgent.ArrivalOutcome.Docked)
+				{
+					return EFSMStateStatus.Success;
+				}
+				return NoWayOut();
+			}
+			EFSMStateStatus eFSMStateStatus = base.OnStateUpdate(deltaTime);
+			if (eFSMStateStatus != EFSMStateStatus.Success)
+			{
+				return eFSMStateStatus;
+			}
+			return StartWalking();
+		}
+
+		private EFSMStateStatus Ended(EFSMStateStatus status)
+		{
+			endedItself = status != EFSMStateStatus.None;
+			return status;
+		}
+
+		private float AngleToWayOut()
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			return Vector3.Angle(Vector3Ex.WithY(((Component)Owner).transform.forward, 0f), wayOut);
+		}
+
+		private EFSMStateStatus StartWalking()
+		{
+			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+			AnimPlayer.StopServerAndReturnToPool(ref animState);
+			phase = Phase.Walking;
+			walkingDocks = Agent.CanArriveFacing;
+			if (exitAfterTheTurn && TryHeadingOffOneArc(((Component)Owner).transform.position, ((Component)Owner).transform.forward, exit, Agent.maxTurnRadius, out var heading))
+			{
+				wayOut = heading;
+			}
+			if (!Agent.SetDestinationFacing(exit, wayOut, 0f, RustNavMeshAgent.Speeds.Walk))
+			{
+				return NoWayOut();
+			}
+			return EFSMStateStatus.None;
+		}
+
+		private static bool TryHeadingOffOneArc(Vector3 from, Vector3 forward, Vector3 to, float radius, out Vector3 heading)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+			heading = default;
+			Vector3 val = Vector3Ex.WithY(forward, 0f);
+			Vector3 normalized = val.normalized;
+			Vector3 val2 = Vector3Ex.WithY(to - from, 0f);
+			float num = ((Vector3.Cross(normalized, val2).y >= 0f) ? 1f : (-1f));
+			Vector3 val3 = from + Quaternion.Euler(0f, 90f * num, 0f) * normalized * radius;
+			Vector3 val4 = Vector3Ex.WithY(to - val3, 0f);
+			float magnitude = val4.magnitude;
+			if (magnitude <= radius)
+			{
+				return false;
+			}
+			heading = Quaternion.Euler(0f, num * Mathf.Asin(radius / magnitude) * 57.29578f, 0f) * (val4 / magnitude);
+			return true;
+		}
+
+		private EFSMStateStatus NoWayOut()
+		{
+			if (Owner is LivestockAnimal livestockAnimal)
+			{
+				livestockAnimal.FoundNoWayOut(leavingFrom);
+			}
+			return EFSMStateStatus.Failure;
+		}
+
+		private bool TryPickExitAfterTheTurn(LivestockAnimal animal, BaseEntity owner, Vector3 standingPoint, Vector3 facing)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+			float num = SideAwayFrom(owner, standingPoint, facing);
+			Vector3 position = ((Component)Owner).transform.position;
+			Quaternion val = Quaternion.Euler(0f, 90f * num, 0f);
+			Vector3 val2 = Vector3Ex.WithY(facing, 0f);
+			Vector3 val3 = position + val * -val2.normalized;
+			RootMotionData rootMotionData = TurnFor(((Component)Owner).transform.forward, val3 - ((Component)Owner).transform.position);
+			if (rootMotionData == null || (Object)(object)rootMotionData.inPlaceAnimation == (Object)null)
+			{
+				return false;
+			}
+			WhereTheTurnLeaves(rootMotionData, out var position2, out var forward);
+			if (!TryPickExit(animal, owner, standingPoint, position2, forward, num, BearingsAfterTheTurn, orAnywhereReachable: false, out exit))
+			{
+				return false;
+			}
+			wayOut = Vector3Ex.WithY(exit - position2, 0f);
+			turnTowards = val3;
+			return true;
+		}
+
+		private void WhereTheTurnLeaves(RootMotionData turn, out Vector3 position, out Vector3 forward)
+		{
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+			position = ((Component)Owner).transform.position;
+			Quaternion rotation = ((Component)Owner).transform.rotation;
+			float rootBoneLocalZOffset = (((Object)(object)AnimPlayer != (Object)null) ? AnimPlayer.RootBoneLocalZOffset : 0f);
+			RootMotionPlayer.PlayServerState playServerState = RootMotionPlayer.PlayServerState.TakeFromPool(turn, ((Component)Owner).transform);
+			bool flag = true;
+			while (flag)
+			{
+				flag = playServerState.Step(1f / 30f, ref position, ref rotation, rootBoneLocalZOffset);
+			}
+			Pool.Free<RootMotionPlayer.PlayServerState>(ref playServerState);
+			Vector3 val = Vector3Ex.WithY(rotation * Vector3.forward, 0f);
+			forward = val.normalized;
+		}
+
+		private static float SideAwayFrom(BaseEntity owner, Vector3 standingPoint, Vector3 facing)
+		{
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			if (!((Object)(object)owner != (Object)null) || !(Vector3.Cross(facing, ((Component)owner).transform.position - standingPoint).y > 0f))
+			{
+				return -1f;
+			}
+			return 1f;
+		}
+
+		private bool TryPickExit(LivestockAnimal animal, BaseEntity owner, Vector3 standingPoint, Vector3 facing, out Vector3 point)
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			Vector3 val = Vector3Ex.WithY(facing, 0f);
+			return TryPickExit(animal, owner, standingPoint, standingPoint, -val.normalized, SideAwayFrom(owner, standingPoint, facing), ExitBearings, orAnywhereReachable: true, out point);
+		}
+
+		private bool TryPickExit(LivestockAnimal animal, BaseEntity owner, Vector3 standingPoint, Vector3 origin, Vector3 ahead, float side, float[] bearings, bool orAnywhereReachable, out Vector3 point)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0102: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+			//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0183: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0185: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
+			point = default;
+			float num = LivestockFeedingSlots.TailOf(animal) + 2.5f;
+			LivestockFootprint held = animal.HeldSlotFootprint;
+			PooledList<LivestockFootprint> val = Pool.Get<PooledList<LivestockFootprint>>();
+			try
+			{
+				animal.GatherRestingFootprints(standingPoint, val);
+				PooledList<LivestockFeedingSlots.Place> val2 = Pool.Get<PooledList<LivestockFeedingSlots.Place>>();
+				try
+				{
+					LivestockFeedingSlots.Gather(owner, LivestockFeedingSlots.Serves.Food | LivestockFeedingSlots.Serves.Water, val2);
+					PooledList<LivestockFootprint> val3 = Pool.Get<PooledList<LivestockFootprint>>();
+					try
+					{
+						foreach (LivestockFeedingSlots.Place item in (List<LivestockFeedingSlots.Place>)(object)val2)
+						{
+							((List<LivestockFootprint>)(object)val3).Add(LivestockFootprint.Of((BaseEntity)animal, item.StandingPointFor(animal), item.Facing));
+						}
+						bool clearOfTheSlot = false;
+						foreach (float num2 in bearings)
+						{
+							Vector3 val4 = Quaternion.Euler(0f, num2 * side, 0f) * ahead;
+							if (Agent.SamplePosition(origin + val4 * num, out var hitWS, 1.5f) && !Agent.Raycast(Agent.WorldToNavSpace(hitWS.position), out var _) && IsExit(animal, hitWS.position, val4, in held, val, val3, ref clearOfTheSlot, ref point))
+							{
+								return true;
+							}
+						}
+						if (!orAnywhereReachable)
+						{
+							return false;
+						}
+						PooledList<NavVector3> val5 = Pool.Get<PooledList<NavVector3>>();
+						try
+						{
+							Agent.SampleConnectedPositions(num * 2f, num, 12, (List<NavVector3>)(object)val5, 0f);
+							foreach (NavVector3 item2 in (List<NavVector3>)(object)val5)
+							{
+								Vector3 val6 = Agent.NavToWorldSpace(item2);
+								Vector3 val7 = Vector3Ex.WithY(val6 - standingPoint, 0f);
+								if (!(val7.sqrMagnitude < 0.01f) && IsExit(animal, val6, val7.normalized, in held, val, val3, ref clearOfTheSlot, ref point))
+								{
+									return true;
+								}
+							}
+							return clearOfTheSlot;
+						}
+						finally
+						{
+							((IDisposable)val5)?.Dispose();
+						}
+					}
+					finally
+					{
+						((IDisposable)val3)?.Dispose();
+					}
+				}
+				finally
+				{
+					((IDisposable)val2)?.Dispose();
+				}
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+
+		private static bool IsExit(LivestockAnimal animal, Vector3 at, Vector3 direction, in LivestockFootprint held, PooledList<LivestockFootprint> taken, PooledList<LivestockFootprint> slotFootprints, ref bool clearOfTheSlot, ref Vector3 point)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+			LivestockFootprint a = LivestockFootprint.Of((BaseEntity)animal, at, direction);
+			if (LivestockFootprint.Penetration(in a, in held) > 0f)
+			{
+				return false;
+			}
+			if (!clearOfTheSlot)
+			{
+				point = at;
+				clearOfTheSlot = true;
+			}
+			if (!LivestockAnimal.IsClear(LivestockAnimal.ClearanceOf(taken, in a)) || LivestockAnimal.ClearanceOf(slotFootprints, in a) < 0f)
+			{
+				return false;
+			}
+			point = at;
+			return true;
+		}
+	}
+
+	[Serializable]
 	public class Trans_CanBreed : FSMSlowTransitionBase
 	{
 		[SerializeField]
@@ -1380,10 +2544,10 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0139: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0121: Unknown result type (might be due to invalid IL or missing references)
 			using (TimeWarning.New("Trans_CanBreed"))
 			{
 				if (!Livestock.breedingEnabled)
@@ -1407,9 +2571,10 @@ public class LivestockAnimalFSM : FSMComponent
 				try
 				{
 					BaseEntity.Query.Server.GetBrainsInSphere(((Component)Owner).transform.position, Livestock.breedSearchRadius, (List<LivestockAnimal>)(object)val);
+					LivestockFloor currentFloor = livestockAnimal.CurrentFloor;
 					for (int num = ((List<LivestockAnimal>)(object)val).Count - 1; num >= 0; num--)
 					{
-						if (!IsValidMate(livestockAnimal, ((List<LivestockAnimal>)(object)val)[num]))
+						if (!IsValidMate(livestockAnimal, ((List<LivestockAnimal>)(object)val)[num]) || !SharesGround(currentFloor, ((List<LivestockAnimal>)(object)val)[num]))
 						{
 							((List<LivestockAnimal>)(object)val).RemoveAt(num);
 						}
@@ -1464,6 +2629,19 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 			return true;
 		}
+
+		private static bool SharesGround(LivestockFloor floor, LivestockAnimal candidate)
+		{
+			if (floor != null)
+			{
+				if (!floor.IsField)
+				{
+					return candidate.Floor == floor;
+				}
+				return !candidate.StandsInAPen;
+			}
+			return true;
+		}
 	}
 
 	[Serializable]
@@ -1499,15 +2677,14 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Jog;
 
-		[SerializeField]
 		[Tooltip("Distance at which the male moves at maxSpeed; he eases off as he closes in")]
+		[SerializeField]
 		private float fullSpeedDistance = 20f;
 
-		[SerializeField]
 		[Tooltip("How close the male has to get before he has met her and leads her away")]
+		[SerializeField]
 		private float breedDistance = 2f;
 
-		[Tooltip("Give up if the walk over takes longer than this")]
 		[SerializeField]
 		private float approachTimeout = 30f;
 
@@ -1523,8 +2700,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float withdrawTimeout = 20f;
 
-		[SerializeField]
 		[Tooltip("How long (in seconds) after leaving this state before looking for a mate again")]
+		[SerializeField]
 		private float retryDelay = 15f;
 
 		private Phase phase;
@@ -1730,11 +2907,10 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Jog;
 
-		[Tooltip("How far she lets him get before she follows. Inside it she stands and waits.")]
 		[SerializeField]
+		[Tooltip("How far she lets him get before she follows. Inside it she stands and waits.")]
 		private float courtDistance = 6f;
 
-		[Tooltip("How far he has to move from where she was already headed before she re-paths.")]
 		[SerializeField]
 		private float repathTolerance = 3f;
 
@@ -1871,16 +3047,16 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_Frolic : State_Circle
 	{
-		[Tooltip("How long (in seconds) the pair circle each other before they settle. Counted in the 45 seconds a pair can be away from the herd before their Social runs down.")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) the pair circle each other before they settle. Counted in the 45 seconds a pair can be away from the herd before their Social runs down.")]
 		private float duration = 12f;
 
 		[SerializeField]
-		[Tooltip("The gait for the stretches between canters. Circling at one speed for the whole frolic reads as a loop rather than as play.")]
+		[Tooltip("The gait for the stretches between canters.")]
 		private RustNavMeshAgent.Speeds walkGait = RustNavMeshAgent.Speeds.Walk;
 
 		[SerializeField]
-		[Tooltip("How long a stretch of cantering, or of walking, lasts before it swaps to the other. Rolled fresh each time so the two of them fall in and out of step.")]
+		[Tooltip("How long a stretch of cantering, or of walking, lasts before it swaps to the other. Rolled fresh each time.")]
 		private Vector2 gaitStretchRange = new Vector2(1.5f, 3.5f);
 
 		private TimeUntil frolicEnd;
@@ -1927,11 +3103,11 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private void StartStretch(LivestockAnimal self, LivestockAnimalFSM fsm, bool canter)
 		{
-			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 			cantering = canter;
 			speed = (canter ? canterGait : walkGait);
-			nextGaitStretch = TimeUntil.op_Implicit(Random.Range(gaitStretchRange.x, gaitStretchRange.y));
+			nextGaitStretch = TimeUntil.op_Implicit(Rng.Range(gaitStretchRange.x, gaitStretchRange.y));
 			self.SetFrisky(canter && fsm.friskyCanter.HasFriskyCanter);
 		}
 
@@ -2020,11 +3196,9 @@ public class LivestockAnimalFSM : FSMComponent
 		[Tooltip("Distance at which he moves at maxSpeed; he eases off as he closes in")]
 		private float fullSpeedDistance = 10f;
 
-		[Tooltip("How close he has to get before mating starts")]
 		[SerializeField]
 		private float breedDistance = 2f;
 
-		[Tooltip("Longest he spends closing the last of the distance to her")]
 		[SerializeField]
 		private float closeTimeout = 10f;
 
@@ -2032,12 +3206,12 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float matingDuration = 3f;
 
-		[SerializeField]
 		[Tooltip("How long he stays with her afterwards, watching her go down, before he gets on with his day. Counted in the 45 seconds a pair can be away from the herd.")]
+		[SerializeField]
 		private float afterMatingLinger = 8f;
 
-		[SerializeField]
 		[Tooltip("How long (in seconds) after leaving this state before looking for a mate again")]
+		[SerializeField]
 		private float retryDelay = 15f;
 
 		private Phase phase;
@@ -2187,10 +3361,10 @@ public class LivestockAnimalFSM : FSMComponent
 		public float StandUpDuration = 5f;
 
 		[SerializeField]
-		[Tooltip("How long (in seconds) she stays lying down after calving, before she gets up. Standing the instant the calf lands looks like nothing happened to her.")]
+		[Tooltip("How long (in seconds) she stays lying down after calving, before she gets up.")]
 		private float afterBirthLieDown = 8f;
 
-		[Tooltip("Longest (in seconds) she waits on a calf that is still down, on top of the stand up. A calf killed or stuck mid sequence would otherwise hold her forever.")]
+		[Tooltip("Longest (in seconds) she waits on a calf that is still down, on top of the stand up.")]
 		[SerializeField]
 		private float waitForCalfTimeout = 30f;
 
@@ -2202,6 +3376,8 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private bool lyingIn;
 
+		private WalkFirst stepClear;
+
 		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 		{
 			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
@@ -2210,7 +3386,8 @@ public class LivestockAnimalFSM : FSMComponent
 			standUpTime = 0f;
 			lyingIn = false;
 			giveUpOnCalf = TimeUntil.op_Implicit(StandUpDuration + waitForCalfTimeout);
-			if (Owner is LivestockAnimal livestockAnimal && livestockAnimal.IsPregnant())
+			stepClear = default;
+			if (Owner is LivestockAnimal livestockAnimal && livestockAnimal.IsPregnant() && !stepClear.Start(StepClearToLieDown(Agent, livestockAnimal), 10f))
 			{
 				livestockAnimal.SetLyingIn(lyingIn: true);
 			}
@@ -2219,10 +3396,12 @@ public class LivestockAnimalFSM : FSMComponent
 
 		public override EFSMStateStatus OnStateUpdate(float deltaTime)
 		{
-			//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00df: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal))
 			{
 				return EFSMStateStatus.Failure;
@@ -2234,6 +3413,18 @@ public class LivestockAnimalFSM : FSMComponent
 			if (livestockAnimal.IsCarrying)
 			{
 				return EFSMStateStatus.None;
+			}
+			if (stepClear.StillWalking(Agent))
+			{
+				return EFSMStateStatus.None;
+			}
+			if (stepClear.StopWalking(Agent))
+			{
+				giveUpOnCalf = TimeUntil.op_Implicit(StandUpDuration + waitForCalfTimeout);
+				if (livestockAnimal.IsPregnant())
+				{
+					livestockAnimal.SetLyingIn(lyingIn: true);
+				}
 			}
 			if (livestockAnimal.IsPregnant())
 			{
@@ -2263,6 +3454,7 @@ public class LivestockAnimalFSM : FSMComponent
 
 		public override void OnStateExit()
 		{
+			stepClear.StopWalking(Agent);
 			if (Owner is LivestockAnimal livestockAnimal)
 			{
 				if (livestockAnimal.HasCalved)
@@ -2310,8 +3502,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float restDuration = 8f;
 
-		[Tooltip("How long (in seconds) to let the getting up play out before the state ends.")]
 		[SerializeField]
+		[Tooltip("How long (in seconds) to let the getting up play out before the state ends.")]
 		private float standUpDuration = 2.5f;
 
 		private Phase phase;
@@ -2380,6 +3572,33 @@ public class LivestockAnimalFSM : FSMComponent
 	}
 
 	[Serializable]
+	public class Trans_WasPetted : FSMTransitionBase
+	{
+		private const float reactWithin = 4f;
+
+		private double? pettedTime;
+
+		public void Trigger()
+		{
+			pettedTime = Time.timeAsDouble;
+		}
+
+		protected override bool EvaluateInternal(ref FSMPayload payload)
+		{
+			if (pettedTime.HasValue)
+			{
+				return Time.timeAsDouble - pettedTime.Value < 4.0;
+			}
+			return false;
+		}
+
+		public override void OnTransitionTaken(FSMStateBase from, FSMStateBase to)
+		{
+			pettedTime = null;
+		}
+	}
+
+	[Serializable]
 	public class Trans_IsNewborn : FSMTransitionBase
 	{
 		protected override bool EvaluateInternal(ref FSMPayload payload)
@@ -2395,11 +3614,11 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_FriskyCanter : State_MoveToTarget
 	{
+		[Tooltip("Whether this species has the happy canter on its animator.")]
 		[SerializeField]
-		[Tooltip("Whether this species has the happy canter on its animator. Without it the flag would be networked to a controller that does nothing with it, and the animal would just canter about for no visible reason.")]
 		private bool hasFriskyCanter;
 
-		[Tooltip("How far short of whoever she is running to she pulls up. She is coming over to say hello, not to barge into them.")]
+		[Tooltip("How far short of whoever she is running to she pulls up.")]
 		[SerializeField]
 		private float standoff = 4f;
 
@@ -2407,21 +3626,28 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private Vector2 wanderRange = new Vector2(12f, 22f);
 
-		[Tooltip("Longest (in seconds) the canter lasts, however far the destination turned out to be. Stops an unreachable one keeping her skipping about all day.")]
+		[Tooltip("Longest (in seconds) the canter lasts, however far the destination turned out to be.")]
 		[SerializeField]
 		private float maxDuration = 8f;
 
+		private const float RepickShare = 0.5f;
+
 		private TimeUntil canterTimeout;
 
-		private Vector3? wanderTo;
+		private Nullable wanderTo;
+
+		private Nullable runTo;
+
+		private Nullable runToAround;
 
 		public bool HasFriskyCanter => hasFriskyCanter;
 
 		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 		{
-			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 			wanderTo = null;
+			runToAround = null;
 			canterTimeout = TimeUntil.op_Implicit(maxDuration);
 			EFSMStateStatus eFSMStateStatus = base.OnStateEnter(payload);
 			if (eFSMStateStatus == EFSMStateStatus.Failure)
@@ -2459,57 +3685,84 @@ public class LivestockAnimalFSM : FSMComponent
 			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 			//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-			//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_010a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_010f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0104: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0126: Unknown result type (might be due to invalid IL or missing references)
 			//IL_012b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0148: Unknown result type (might be due to invalid IL or missing references)
-			//IL_014d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0152: Unknown result type (might be due to invalid IL or missing references)
-			//IL_015a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0138: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0170: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 			destination = default;
 			BasePlayer basePlayer = ((Owner is LivestockAnimal livestockAnimal) ? livestockAnimal.NearbyTrustedPlayer : null);
 			Vector3 targetPosition = (((Object)(object)basePlayer != (Object)null) ? ((Component)basePlayer).transform.position : Vector3.zero);
 			if ((Object)(object)basePlayer != (Object)null || Senses.FindTargetPosition(out targetPosition))
 			{
-				Vector3 val = Vector3Ex.NormalizeXZ(((Component)Owner).transform.position - targetPosition);
-				Vector3 positionWS = ((val.sqrMagnitude < 0.001f) ? targetPosition : (targetPosition + val * standoff));
-				if (Agent.SamplePosition(positionWS, out var hitWS, 3f) && Agent.CanReach(hitWS.position))
+				if (!runToAround.HasValue || Vector3.Distance(runToAround.Value, targetPosition) > standoff * 0.5f)
 				{
-					destination = Agent.WorldToNavSpace(hitWS.position);
+					PickRunTo(targetPosition);
+				}
+				if (runTo.HasValue)
+				{
+					destination = Agent.WorldToNavSpace(runTo.Value);
 					return true;
 				}
 			}
 			if (!wanderTo.HasValue)
 			{
-				Vector3 val2 = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f) * Vector3.forward;
-				Vector3 positionWS2 = ((Component)Owner).transform.position + val2 * Random.Range(wanderRange.x, wanderRange.y);
-				if (!Agent.SamplePosition(positionWS2, out var hitWS2, 5f))
+				Vector3 val = Quaternion.Euler(0f, Rng.Range(0f, 360f), 0f) * Vector3.forward;
+				Vector3 positionWS = ((Component)Owner).transform.position + val * Rng.Range(wanderRange.x, wanderRange.y);
+				if (!Agent.SamplePosition(positionWS, out var hitWS, 5f))
 				{
 					return false;
 				}
-				wanderTo = hitWS2.position;
+				wanderTo = hitWS.position;
 			}
 			destination = Agent.WorldToNavSpace(wanderTo.Value);
 			return true;
+		}
+
+		private void PickRunTo(Vector3 targetPosition)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+			runToAround = targetPosition;
+			runTo = null;
+			if (Owner is LivestockAnimal livestockAnimal && livestockAnimal.TryFindRestingSpotNear(targetPosition, standoff, standoff, out var spot) && Agent.CanReach(spot))
+			{
+				runTo = spot;
+				return;
+			}
+			Vector3 val = Vector3Ex.NormalizeXZ(((Component)Owner).transform.position - targetPosition);
+			Vector3 positionWS = ((val.sqrMagnitude < 0.001f) ? targetPosition : (targetPosition + val * standoff));
+			if (Agent.SamplePosition(positionWS, out var hitWS, 3f) && Agent.CanReach(hitWS.position))
+			{
+				runTo = hitWS.position;
+			}
 		}
 
 		public State_FriskyCanter()
@@ -2550,7 +3803,7 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return false;
 			}
-			return Random.value < chance;
+			return Rng.Value < chance;
 		}
 	}
 
@@ -2563,19 +3816,18 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Run;
 
-		[Tooltip("Fastest gait an animal that is not answering for the herd will use to get back. A bull crossing a field at a run reads as urgency; a cow doing it reads as panic.")]
+		[Tooltip("Fastest gait an animal that is not answering for the herd will use to get back.")]
 		[SerializeField]
 		private RustNavMeshAgent.Speeds dependentMaxSpeed = RustNavMeshAgent.Speeds.Walk;
 
-		[Tooltip("Distance at which the infant moves at maxSpeed; it eases off as it closes in")]
 		[SerializeField]
+		[Tooltip("Distance at which the infant moves at maxSpeed; it eases off as it closes in")]
 		private float fullSpeedDistance = 25f;
 
-		[Tooltip("How close the infant has to get before it settles down beside her again")]
 		[SerializeField]
 		private float reunitedDistance = 4f;
 
-		[Tooltip("Give up if the walk back takes longer than this")]
+		[Tooltip("Give up if the walk back takes this much longer than walking the distance at its gait should")]
 		[SerializeField]
 		private float returnTimeout = 30f;
 
@@ -2583,11 +3835,17 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float retryDelay = 15f;
 
+		private const float SlowestWalkBack = 0.5f;
+
 		private EntityRef<LivestockAnimal> companion;
 
 		private TimeUntil returnDeadline;
 
+		private StandBeside beside;
+
 		private bool walkFailed;
+
+		public RustNavMeshAgent.Speeds DependentMaxSpeed => dependentMaxSpeed;
 
 		protected virtual LivestockAnimal FindCompanion(LivestockAnimal self)
 		{
@@ -2596,9 +3854,12 @@ public class LivestockAnimalFSM : FSMComponent
 
 		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 		{
-			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 			companion = default;
+			beside = default;
 			walkFailed = false;
 			if (!(Owner is LivestockAnimal self))
 			{
@@ -2610,11 +3871,11 @@ public class LivestockAnimalFSM : FSMComponent
 				return EFSMStateStatus.Failure;
 			}
 			companion.Set(livestockAnimal);
-			returnDeadline = TimeUntil.op_Implicit(returnTimeout);
 			if (!MoveToCompanion(livestockAnimal))
 			{
 				return GiveUp();
 			}
+			returnDeadline = TimeUntil.op_Implicit(returnTimeout + Vector3.Distance(((Component)Owner).transform.position, ((Component)livestockAnimal).transform.position) / Mathf.Max(Agent.speed, 0.5f));
 			return base.OnStateEnter(payload);
 		}
 
@@ -2623,10 +3884,10 @@ public class LivestockAnimalFSM : FSMComponent
 			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal) || livestockAnimal.IsLeading())
 			{
 				return EFSMStateStatus.Failure;
@@ -2641,11 +3902,11 @@ public class LivestockAnimalFSM : FSMComponent
 				return GiveUp();
 			}
 			Vector3 position = ((Component)livestockAnimal2).transform.position;
-			if (Vector3.Distance(((Component)Owner).transform.position, position) <= reunitedDistance)
+			if (beside.Arrived(Agent, ((Component)Owner).transform.position, position, reunitedDistance))
 			{
 				return EFSMStateStatus.Success;
 			}
-			if (Vector3.Distance(Agent.destination.Value, position) > reunitedDistance && !MoveToCompanion(livestockAnimal2))
+			if ((Vector3.Distance(beside.Around, position) > reunitedDistance || !Agent.hasPath) && !MoveToCompanion(livestockAnimal2))
 			{
 				return GiveUp();
 			}
@@ -2678,9 +3939,10 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private bool MoveToCompanion(LivestockAnimal target)
 		{
-			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-			RustNavMeshAgent.Speeds speeds = ((Owner is LivestockAnimal { IsDependent: not false }) ? dependentMaxSpeed : maxSpeed);
-			return MoveWithRampedSpeed(Agent, ((Component)target).transform.position, fullSpeedDistance, minSpeed, speeds);
+			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+			LivestockAnimal livestockAnimal = Owner as LivestockAnimal;
+			RustNavMeshAgent.Speeds speeds = (((Object)(object)livestockAnimal != (Object)null && livestockAnimal.IsDependent && !livestockAnimal.IsMyDependent(target)) ? dependentMaxSpeed : maxSpeed);
+			return beside.Walk(Agent, livestockAnimal, ((Component)target).transform.position, reunitedDistance, fullSpeedDistance, minSpeed, speeds);
 		}
 	}
 
@@ -2697,14 +3959,13 @@ public class LivestockAnimalFSM : FSMComponent
 	public class Trans_StrayedFromHerd : FSMSlowTransitionBase
 	{
 		[Tooltip("How far a bull can get from the nearest cow or calf before he heads back.")]
-		[SerializeField]
 		public float strayDistance = 20f;
 
 		protected override bool EvaluateAtInterval(ref FSMPayload payload)
 		{
 			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal) || livestockAnimal.IsDead())
 			{
 				return false;
@@ -2724,7 +3985,7 @@ public class LivestockAnimalFSM : FSMComponent
 				{
 					return false;
 				}
-				if (livestockAnimalFSM.CurrentState == livestockAnimalFSM.rest)
+				if (livestockAnimalFSM.CurrentState == livestockAnimalFSM.rest || livestockAnimalFSM.CurrentState == livestockAnimalFSM.starved)
 				{
 					return false;
 				}
@@ -2741,15 +4002,15 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_StrayedFromMother : FSMTransitionBase
 	{
-		[SerializeField]
 		[Tooltip("How far (in metres) an infant can get from its mother before it heads back to her.")]
+		[SerializeField]
 		private float strayDistance = 15f;
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
 		{
 			//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal) || !livestockAnimal.IsInfant())
 			{
 				return false;
@@ -2760,6 +4021,10 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 			LivestockAnimalFSM livestockAnimalFSM = default;
 			if (((Component)Owner).TryGetComponent<LivestockAnimalFSM>(ref livestockAnimalFSM) && TimeUntil.op_Implicit(livestockAnimalFSM.NextCompanionSearch) > 0f)
+			{
+				return false;
+			}
+			if ((Object)(object)livestockAnimalFSM != (Object)null && livestockAnimalFSM.CurrentState is State_ConsumeAtLocation { IsUsingDeployable: not false })
 			{
 				return false;
 			}
@@ -2779,12 +4044,13 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			Asleep,
 			WalkingHome,
-			Gathering
+			Gathering,
+			Settling
 		}
 
 		public float WakeDuration = 10f;
 
-		[Tooltip("How long (in seconds) the animal spends walking in to the herd before giving up and lying down where it stands. Stops one animal on the wrong side of a wall keeping the whole night awake.")]
+		[Tooltip("How long (in seconds) the animal spends walking in to the herd before giving up and lying down where it stands.")]
 		[SerializeField]
 		private float gatherTimeout = 20f;
 
@@ -2810,7 +4076,7 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private EntityRef<LivestockAnimal> gatherCompanion;
 
-		private Vector3 gatherAim;
+		private StandBeside beside;
 
 		private TimeSince dawnSeen;
 
@@ -2820,12 +4086,17 @@ public class LivestockAnimalFSM : FSMComponent
 
 		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 		{
-			//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-			//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 			wakeTime = 0f;
 			sawDawn = false;
 			gatherCompanion = default;
+			beside = new StandBeside
+			{
+				ToLieDown = true
+			};
 			Vector3 home;
 			if (!(Owner is LivestockAnimal livestockAnimal))
 			{
@@ -2838,34 +4109,46 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 			else if (!StartGathering(livestockAnimal))
 			{
-				LieDown();
+				LieDownClear(livestockAnimal, ((Component)livestockAnimal).transform.position);
 			}
 			return base.OnStateEnter(payload);
 		}
 
 		public override EFSMStateStatus OnStateUpdate(float deltaTime)
 		{
-			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0141: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_020a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0204: Unknown result type (might be due to invalid IL or missing references)
+			//IL_017f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+			//IL_015b: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal))
 			{
 				return EFSMStateStatus.Failure;
 			}
 			if (phase == Phase.WalkingHome)
 			{
-				if (livestockAnimal.TryGetBedtimeHome(out var home) && TimeUntil.op_Implicit(gatherDeadline) > 0f)
+				bool flag = !livestockAnimal.TryGetBedtimeHome(out var home);
+				if (beside.HasSpot)
 				{
-					if (Vector3.Distance(gatherAim, home) > livestockAnimal.HerdGatherDistance)
+					flag = beside.Arrived(Agent, ((Component)Owner).transform.position, home, livestockAnimal.HerdGatherDistance);
+				}
+				if (!flag && TimeUntil.op_Implicit(gatherDeadline) > 0f)
+				{
+					if (Vector3.Distance(beside.Around, home) > livestockAnimal.HerdGatherDistance)
 					{
 						MoveToBedtimeAim(home);
 					}
@@ -2873,18 +4156,26 @@ public class LivestockAnimalFSM : FSMComponent
 				}
 				if (!StartGathering(livestockAnimal))
 				{
-					LieDown();
+					LieDownClear(livestockAnimal, home);
 				}
 			}
 			if (phase == Phase.Gathering)
 			{
 				LivestockAnimal livestockAnimal2 = gatherCompanion.Get(serverside: true);
-				if (!((Object)(object)livestockAnimal2 == (Object)null) && !livestockAnimal2.IsDead() && !(Vector3.Distance(((Component)Owner).transform.position, ((Component)livestockAnimal2).transform.position) <= livestockAnimal.HerdGatherDistance) && TimeUntil.op_Implicit(gatherDeadline) > 0f)
+				if (!((Object)(object)livestockAnimal2 == (Object)null) && !livestockAnimal2.IsDead() && !beside.Arrived(Agent, ((Component)Owner).transform.position, ((Component)livestockAnimal2).transform.position, livestockAnimal.HerdGatherDistance) && TimeUntil.op_Implicit(gatherDeadline) > 0f)
 				{
-					if (Vector3.Distance(gatherAim, ((Component)livestockAnimal2).transform.position) > livestockAnimal.HerdGatherDistance)
+					if (Vector3.Distance(beside.Around, ((Component)livestockAnimal2).transform.position) > livestockAnimal.HerdGatherDistance || beside.ReachedSpot(Agent, ((Component)Owner).transform.position))
 					{
 						MoveToCompanion(livestockAnimal2);
 					}
+					return base.OnStateUpdate(deltaTime);
+				}
+				LieDownClear(livestockAnimal, beside.Around);
+			}
+			if (phase == Phase.Settling)
+			{
+				if (!beside.ReachedSpot(Agent, ((Component)Owner).transform.position) && TimeUntil.op_Implicit(gatherDeadline) > 0f)
+				{
 					return base.OnStateUpdate(deltaTime);
 				}
 				LieDown();
@@ -2920,11 +4211,27 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private bool MoveToBedtimeAim(Vector3 aim)
 		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-			gatherAim = aim;
-			return MoveWithRampedSpeed(Agent, gatherAim, gatherFullSpeedDistance, gatherMinSpeed, gatherMaxSpeed);
+			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+			LivestockAnimal livestockAnimal = Owner as LivestockAnimal;
+			return beside.Walk(Agent, livestockAnimal, aim, ((Object)(object)livestockAnimal != (Object)null) ? livestockAnimal.HerdGatherDistance : 0f, gatherFullSpeedDistance, gatherMinSpeed, gatherMaxSpeed);
+		}
+
+		private void LieDownClear(LivestockAnimal animal, Vector3 around)
+		{
+			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+			if ((!LivestockAnimal.IsClear(animal.ClearanceWhereItStands()) || !animal.LiesInsideWallsAt(((Component)animal).transform.position, ((Component)animal).transform.forward)) && beside.WalkToSpot(Agent, animal, around, animal.HerdGatherDistance, gatherFullSpeedDistance, gatherMinSpeed, gatherMaxSpeed))
+			{
+				phase = Phase.Settling;
+				gatherDeadline = TimeUntil.op_Implicit(gatherTimeout);
+			}
+			else
+			{
+				LieDown();
+			}
 		}
 
 		private bool StartGathering(LivestockAnimal animal)
@@ -2971,9 +4278,9 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_WantsBedtimeRest : FSMTransitionBase
 	{
-		[Tooltip("Chance an animal dozes before dropping off rather than going straight to sleep.")]
-		[Range(0f, 1f)]
 		[SerializeField]
+		[Range(0f, 1f)]
+		[Tooltip("Chance an animal dozes before dropping off rather than going straight to sleep.")]
 		private float chance = 0.5f;
 
 		private bool rolled;
@@ -2999,7 +4306,7 @@ public class LivestockAnimalFSM : FSMComponent
 			if (!rolled)
 			{
 				rolled = true;
-				dozing = Random.value <= chance;
+				dozing = Rng.Value <= chance;
 			}
 			return dozing;
 		}
@@ -3013,12 +4320,12 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public abstract class Trans_AfterFailedFoodSearch : FSMTransitionBase
 	{
-		[Tooltip("How soon (in seconds) after a failed food search the animal still reacts to it, so the reaction is tied to the search that just failed rather than to a long tail.")]
+		[Tooltip("How soon (in seconds) after a failed food search the animal still reacts to it.")]
 		[SerializeField]
 		protected float window;
 
+		[Tooltip("Shortest gap (in seconds) between two reactions.")]
 		[SerializeField]
-		[Tooltip("Shortest gap (in seconds) between two reactions. Without it the animal repeats this every time idle ends for as long as there is nothing to eat.")]
 		protected float minimumInterval;
 
 		private double? lastTakenTime;
@@ -3059,7 +4366,7 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_FoodSearchFailed : Trans_AfterFailedFoodSearch
 	{
-		[Tooltip("Fullness has to be at or under this, not merely under the consume threshold. The animal is meant to look like it cannot find food, not merely peckish.")]
+		[Tooltip("Fullness has to be at or under this, not merely under the consume threshold.")]
 		[Range(0f, 1f)]
 		[SerializeField]
 		private float starvingBelow = 0.2f;
@@ -3071,7 +4378,7 @@ public class LivestockAnimalFSM : FSMComponent
 
 		protected override bool StillWants(LivestockAnimal animal, LivestockAnimalFSM fsm)
 		{
-			if (animal.Fullness.NeedValue <= starvingBelow)
+			if (animal.Fullness.NeedValue <= starvingBelow || animal.HasGrazedItsShare)
 			{
 				return fsm.foodSearch.HasAnimation;
 			}
@@ -3089,23 +4396,35 @@ public class LivestockAnimalFSM : FSMComponent
 
 		protected override bool StillWants(LivestockAnimal animal, LivestockAnimalFSM fsm)
 		{
-			return animal.NeedsFood();
+			if (animal.NeedsFood())
+			{
+				return !animal.HasGrazedItsShare;
+			}
+			return false;
 		}
 	}
 
 	[Serializable]
 	public class State_Rest : FSMStateBase
 	{
-		[Tooltip("Whether this species has the lying down pose set up on its animator. Without it the flag would be networked to a controller that does nothing with it.")]
 		[SerializeField]
+		[Tooltip("Whether this species has the lying down pose set up on its animator.")]
 		private bool hasRestingPose;
 
 		[Tooltip("How long (in seconds) the animal stays down, picked in this range. Long enough that the standing gap between two rests still leaves the day's resting share reachable - short lie downs with a fixed gap between them cannot add up to it.")]
 		[SerializeField]
 		private Vector2 durationRange = new Vector2(40f, 70f);
 
-		[Tooltip("Scales the lie down after dark, where it is a doze on the way to sleep rather than a rest in its own right.")]
+		[Tooltip("How long (in seconds) a sleepy adult stays down, picked in this range. Long, so a sleepy animal spends most of its day lying down.")]
 		[SerializeField]
+		private Vector2 sleepyDurationRange = new Vector2(120f, 240f);
+
+		[Tooltip("How long (in seconds) a sleepy adult walks to its spot away from the herd before it gives up and lies down where it stands.")]
+		[SerializeField]
+		private float lonelyWalkTimeout = 20f;
+
+		[SerializeField]
+		[Tooltip("Scales the lie down after dark, where it is a doze on the way to sleep rather than a rest in its own right.")]
 		private float nightScale = 0.35f;
 
 		[Tooltip("How long (in seconds) to let the getting up play out before the state ends.")]
@@ -3114,15 +4433,37 @@ public class LivestockAnimalFSM : FSMComponent
 
 		private TimeUntil stayDownUntil;
 
+		private float stayingDownFor;
+
 		private float standingUpTime;
 
 		private bool gettingUp;
+
+		private WalkFirst walkAway;
 
 		private TimeSince stoodUp;
 
 		private bool hasStoodUp;
 
 		public bool HasRestingPose => hasRestingPose;
+
+		public Vector2 DurationRange
+		{
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return durationRange;
+			}
+		}
+
+		public Vector2 SleepyDurationRange
+		{
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return sleepyDurationRange;
+			}
+		}
 
 		public float SinceStoodUp
 		{
@@ -3137,29 +4478,75 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 		}
 
+		public float StayingDownFor => stayingDownFor;
+
 		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 		{
-			//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 			gettingUp = false;
 			standingUpTime = 0f;
-			float num = Random.Range(durationRange.x, durationRange.y);
-			if (Owner is LivestockAnimal livestockAnimal)
+			LivestockAnimal livestockAnimal = Owner as LivestockAnimal;
+			bool flag = (Object)(object)livestockAnimal != (Object)null && livestockAnimal.ActsSleepy;
+			bool isNight = TOD_Sky.Instance.IsNight;
+			Vector2 val = (flag ? sleepyDurationRange : durationRange);
+			stayingDownFor = Rng.Range(val.x, val.y);
+			if (isNight)
 			{
-				num *= (TOD_Sky.Instance.IsNight ? nightScale : livestockAnimal.AgeRestDurationScale);
-				livestockAnimal.SetResting(resting: true);
+				stayingDownFor *= nightScale;
 			}
-			stayDownUntil = TimeUntil.op_Implicit(num);
-			Agent.ResetPath();
+			if (!walkAway.Start((flag && !isNight && WalkToALonelySpot(livestockAnimal)) || StepClearToLieDown(Agent, livestockAnimal), lonelyWalkTimeout))
+			{
+				LieDown(livestockAnimal);
+			}
 			return base.OnStateEnter(payload);
+		}
+
+		private bool WalkToALonelySpot(LivestockAnimal animal)
+		{
+			//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+			LivestockAnimalFSM livestockAnimalFSM = default;
+			float homeRadius = (((Component)Owner).TryGetComponent<LivestockAnimalFSM>(ref livestockAnimalFSM) ? livestockAnimalFSM.roam.HomeRadius : 0f);
+			if (animal.TryFindLonelyRestingSpot(homeRadius, out var spot))
+			{
+				return Agent.SetDestinationWithParams(spot, autoBraking: true, RustNavMeshAgent.Speeds.Walk);
+			}
+			return false;
+		}
+
+		private void LieDown(LivestockAnimal animal)
+		{
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+			if ((Object)(object)animal != (Object)null)
+			{
+				animal.SetResting(resting: true);
+			}
+			stayDownUntil = TimeUntil.op_Implicit(stayingDownFor);
+			Agent.ResetPath();
 		}
 
 		public override EFSMStateStatus OnStateUpdate(float deltaTime)
 		{
-			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal))
 			{
 				return EFSMStateStatus.Failure;
+			}
+			if (walkAway.IsWalking && livestockAnimal.IsStarving())
+			{
+				return EFSMStateStatus.Success;
+			}
+			if (walkAway.StillWalking(Agent))
+			{
+				return EFSMStateStatus.None;
+			}
+			if (walkAway.StopWalking(Agent))
+			{
+				LieDown(livestockAnimal);
 			}
 			if (!gettingUp)
 			{
@@ -3180,8 +4567,9 @@ public class LivestockAnimalFSM : FSMComponent
 
 		public override void OnStateExit()
 		{
-			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+			walkAway.StopWalking(Agent);
 			if (Owner is LivestockAnimal livestockAnimal && !livestockAnimal.IsDead())
 			{
 				livestockAnimal.SetResting(resting: false);
@@ -3195,21 +4583,145 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		}
+	}
+
+	[Serializable]
+	public class State_Starved : FSMStateBase
+	{
+		private TimeUntil nextSearch;
+
+		private bool gettingUp;
+
+		private WalkFirst stepClear;
+
+		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
+		{
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			Agent.ResetPath();
+			nextSearch = TimeUntil.op_Implicit(Livestock.starvedSearchInterval);
+			gettingUp = false;
+			if (!stepClear.Start(StepClearToLieDown(Agent, Owner as LivestockAnimal), 10f))
+			{
+				LieDown();
+			}
+			return base.OnStateEnter(payload);
+		}
+
+		private void LieDown()
+		{
+			if (Owner is LivestockAnimal livestockAnimal)
+			{
+				livestockAnimal.SetStarvedDown(down: true);
+				livestockAnimal.SetSleeping(sleeping: true);
+			}
+		}
+
+		public override EFSMStateStatus OnStateUpdate(float deltaTime)
+		{
+			if (!(Owner is LivestockAnimal livestockAnimal))
+			{
+				return EFSMStateStatus.Failure;
+			}
+			if (stepClear.StillWalking(Agent))
+			{
+				return EFSMStateStatus.None;
+			}
+			if (stepClear.StopWalking(Agent))
+			{
+				LieDown();
+			}
+			if (!gettingUp && (!livestockAnimal.IsStarved || FindsSomethingToEatOrDrink()))
+			{
+				gettingUp = true;
+				livestockAnimal.SetSleeping(sleeping: false);
+			}
+			if (!gettingUp)
+			{
+				return EFSMStateStatus.None;
+			}
+			if (!livestockAnimal.IsOffItsFeet())
+			{
+				return EFSMStateStatus.Success;
+			}
+			return EFSMStateStatus.None;
+		}
+
+		private bool FindsSomethingToEatOrDrink()
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+			if (TimeUntil.op_Implicit(nextSearch) > 0f || TOD_Sky.Instance.IsNight)
+			{
+				return false;
+			}
+			nextSearch = TimeUntil.op_Implicit(Livestock.starvedSearchInterval);
+			LivestockAnimalFSM livestockAnimalFSM = default;
+			if (!((Component)Owner).TryGetComponent<LivestockAnimalFSM>(ref livestockAnimalFSM))
+			{
+				return false;
+			}
+			FSMPayload payload = default;
+			if (!livestockAnimalFSM.grazeTransition.Evaluate(ref payload))
+			{
+				return livestockAnimalFSM.drinkTransition.Evaluate(ref payload);
+			}
+			return true;
+		}
+
+		public override void OnStateExit()
+		{
+			stepClear.StopWalking(Agent);
+			if (Owner is LivestockAnimal livestockAnimal)
+			{
+				livestockAnimal.SetStarvedDown(down: false);
+				if (!livestockAnimal.IsDead())
+				{
+					livestockAnimal.SetSleeping(sleeping: false);
+				}
+			}
+			base.OnStateExit();
+		}
+	}
+
+	[Serializable]
+	public class Trans_IsStarved : FSMTransitionBase
+	{
+		protected override bool EvaluateInternal(ref FSMPayload payload)
+		{
+			if (TOD_Sky.Instance.IsNight || !(Owner is LivestockAnimal { IsStarved: not false }))
+			{
+				return false;
+			}
+			LivestockAnimalFSM livestockAnimalFSM = default;
+			if (((Component)Owner).TryGetComponent<LivestockAnimalFSM>(ref livestockAnimalFSM))
+			{
+				return livestockAnimalFSM.rest.HasRestingPose;
+			}
+			return false;
 		}
 	}
 
 	[Serializable]
 	public class Trans_WantsRest : FSMTransitionBase
 	{
-		[SerializeField]
 		[Tooltip("How long (in seconds) after getting up before the animal will lie down again.")]
+		[SerializeField]
 		private float minimumTimeStanding = 30f;
 
-		[Tooltip("How long (in seconds) a food search that found nothing lets a hungry animal lie down anyway. A hungry animal with food in reach tops up first, one with none rests rather than pacing all day.")]
+		[Tooltip("How long (in seconds) after getting up before a sleepy adult will lie down again. Shorter than minimumTimeStanding, so a sleepy animal is soon back down.")]
+		[SerializeField]
+		private float sleepyMinimumTimeStanding = 10f;
+
+		[Tooltip("How long (in seconds) a food search that found nothing lets a hungry animal lie down anyway.")]
 		[SerializeField]
 		private float foodSearchFailedMemory = 60f;
 
-		[Tooltip("Chance that an animal on its way to bed, or just woken up, lies down for a while first instead. Stops a herd going from standing to asleep in one step.")]
+		[Tooltip("Chance that an animal on its way to bed, or just woken up, lies down for a while first instead.")]
 		[Range(0f, 1f)]
 		[SerializeField]
 		private float aroundBedtimeChance = 0.5f;
@@ -3220,7 +4732,7 @@ public class LivestockAnimalFSM : FSMComponent
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
 		{
-			//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal))
 			{
 				return false;
@@ -3234,27 +4746,36 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return false;
 			}
-			if (livestockAnimalFSM.rest.SinceStoodUp < minimumTimeStanding)
+			if (livestockAnimalFSM.rest.SinceStoodUp < MinimumTimeStandingFor(livestockAnimal))
 			{
 				return false;
 			}
-			if (livestockAnimal.NeedsFood() && TimeSince.op_Implicit(livestockAnimalFSM.LastFoodSearchFailed) >= foodSearchFailedMemory)
+			if (livestockAnimal.NeedsFood())
 			{
-				return false;
+				return TimeSince.op_Implicit(livestockAnimalFSM.LastFoodSearchFailed) < foodSearchFailedMemory;
 			}
 			return true;
 		}
 
+		public float MinimumTimeStandingFor(LivestockAnimal animal)
+		{
+			if (!animal.ActsSleepy)
+			{
+				return minimumTimeStanding;
+			}
+			return sleepyMinimumTimeStanding;
+		}
+
 		public bool RollBedtimeRest(out float duration)
 		{
-			duration = Random.Range(aroundBedtimeDuration.x, aroundBedtimeDuration.y);
-			return Random.value <= aroundBedtimeChance;
+			duration = Rng.Range(aroundBedtimeDuration.x, aroundBedtimeDuration.y);
+			return Rng.Value <= aroundBedtimeChance;
 		}
 
 		public Trans_WantsRest()
 		{
-			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		}
 	}
 
@@ -3291,16 +4812,16 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_ShovingAttack : State_Attack
 	{
-		[Tooltip("How hard the hit shoves a player. x lifts them off the ground enough for it to read, y drives them away from the animal.")]
 		[SerializeField]
+		[Tooltip("How hard the hit shoves a player. x lifts them off the ground, y drives them away from the animal.")]
 		private Vector2 pushForce = new Vector2(4f, 16f);
 
-		[Tooltip("How far the blow reaches when it lands. Further than this and it whiffs, which is what makes the charge sidesteppable.")]
+		[Tooltip("How far the blow reaches when it lands. Further than this and it whiffs.")]
 		[SerializeField]
 		private float hitRange = 2.5f;
 
-		[Tooltip("How wide the blow is, in degrees either side of our forward at the moment it lands. 180 removes the check, for an attack that does not face what it hits.")]
 		[SerializeField]
+		[Tooltip("How wide the blow is, in degrees either side of our forward at the moment it lands. 180 removes the check, for an attack that does not face what it hits.")]
 		private float hitAngle = 60f;
 
 		protected override void DoDamage()
@@ -3345,15 +4866,14 @@ public class LivestockAnimalFSM : FSMComponent
 	public class State_HoldGround : FSMStateBase
 	{
 		[Tooltip("Gait once he is in position between the threat and whoever he is shielding.")]
-		[SerializeField]
 		public RustNavMeshAgent.Speeds speed = RustNavMeshAgent.Speeds.Walk;
 
-		[SerializeField]
 		[Tooltip("How close to the threat a cow or calf has to be for him to put himself in front of it. Zero makes him only stand his ground.")]
+		[SerializeField]
 		private float shieldSearchRadius = 20f;
 
-		[Tooltip("How often the search for someone to shield runs, in seconds. This state ticks every frame and the search is a sphere query, so it is not run every one.")]
 		[SerializeField]
+		[Tooltip("How often the search for someone to shield runs, in seconds.")]
 		private float shieldSearchInterval = 1f;
 
 		[Tooltip("How far along the line from the threat to the animal he is shielding he tries to stand. 0.5 is squarely between the two of them.")]
@@ -3361,8 +4881,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float interposeFraction = 0.5f;
 
-		[SerializeField]
 		[Tooltip("He will not close on the threat past this, so the halfway point gets pushed back out when it would put him too close. Keep it above the range the charge triggers at or he will charge instead of ever settling.")]
+		[SerializeField]
 		private float minStandoff = 6f;
 
 		[Tooltip("Gait used while he is still getting into position. Once he is there he drops to the state's own speed.")]
@@ -3525,11 +5045,9 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_Stomp : State_PlayAnimationBase
 	{
-		[SerializeField]
 		[Tooltip("Preferred. A stomp with extracted root motion, so the step in it carries him a little way towards whoever earned it.")]
 		public RootMotionData RootMotionAnimation;
 
-		[SerializeField]
 		[Tooltip("Fallback for a species with no extracted stomp. Plays on the spot.")]
 		public AnimationClip Animation;
 
@@ -3561,8 +5079,8 @@ public class LivestockAnimalFSM : FSMComponent
 		[Tooltip("Hand over once the target is within this many degrees of our forward.")]
 		private float faceAngle = 25f;
 
+		[Tooltip("Longest he spends walking in.")]
 		[SerializeField]
-		[Tooltip("Longest he spends walking in. Someone circling him would never let him start otherwise, and the walk is only ever meant to be the turn.")]
 		private float maxDuration = 2f;
 
 		private TimeUntil walkTimeout;
@@ -3628,15 +5146,27 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private float keepRunningWithin = 12f;
 
-		[Tooltip("Longest (in seconds) that persistence lasts, so an animal with nowhere left to run stops rather than scrabbling at a corner forever.")]
+		[Tooltip("Longest (in seconds) that persistence lasts.")]
 		[SerializeField]
 		private float maxPersistence = 20f;
 
-		[Tooltip("How far a startled animal moves off, instead of the full flee distance. Somebody grabbing at an animal that will not have them is a shove, not a gunshot.")]
+		[Tooltip("How far a startled animal moves off, instead of the full flee distance.")]
 		[SerializeField]
 		private float startleDistance = 6f;
 
+		private const float StopShortStep = 1f;
+
+		private const float StopShortSnap = 1f;
+
+		private const float StayRecheck = 0.5f;
+
 		private bool ran;
+
+		private bool movedOff;
+
+		private bool staying;
+
+		private TimeUntil nextStayCheck;
 
 		private TimeSince fleeingFor;
 
@@ -3651,6 +5181,8 @@ public class LivestockAnimalFSM : FSMComponent
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 			fleeingFor = TimeSince.op_Implicit(0f);
+			movedOff = false;
+			staying = false;
 			shortened = Owner is LivestockAnimal livestockAnimal && livestockAnimal.TakeStartle();
 			if (shortened)
 			{
@@ -3669,14 +5201,23 @@ public class LivestockAnimalFSM : FSMComponent
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 			EFSMStateStatus eFSMStateStatus = base.OnStateUpdate(deltaTime);
 			if (eFSMStateStatus != EFSMStateStatus.Success)
 			{
 				return eFSMStateStatus;
 			}
-			if (keepRunningWithin > 0f && TimeSince.op_Implicit(fleeingFor) < maxPersistence && Senses.FindTargetPosition(out var targetPosition) && Vector3.Distance(((Component)Owner).transform.position, targetPosition) <= keepRunningWithin)
+			if (keepRunningWithin > 0f && TimeSince.op_Implicit(fleeingFor) < maxPersistence && Senses.FindTargetPosition(out var targetPosition))
 			{
-				return MoveAwayFromTarget();
+				float num = Vector3.Distance(((Component)Owner).transform.position, targetPosition);
+				if (num <= keepRunningWithin || (!movedOff && num <= desiredDistance + startDistance))
+				{
+					if (!staying || !(TimeUntil.op_Implicit(nextStayCheck) > 0f))
+					{
+						return MoveAwayFromTarget();
+					}
+					return EFSMStateStatus.None;
+				}
 			}
 			return eFSMStateStatus;
 		}
@@ -3732,6 +5273,123 @@ public class LivestockAnimalFSM : FSMComponent
 			return base.GetFleeDirection(posNS, targetPosition);
 		}
 
+		protected override void OrderFleeCandidates(Eqs.PooledScoreList scored, bool preValidated)
+		{
+			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0177: Unknown result type (might be due to invalid IL or missing references)
+			//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0198: Unknown result type (might be due to invalid IL or missing references)
+			staying = false;
+			if (!preValidated || !(Owner is LivestockAnimal livestockAnimal))
+			{
+				movedOff = true;
+				return;
+			}
+			if (!Agent.canSwim)
+			{
+				DropWaterCandidates(scored);
+			}
+			PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+			try
+			{
+				foreach (var item2 in (List<(NavVector3, float)>)(object)scored)
+				{
+					var (positionNS, _) = item2;
+					if (item2.Item2 <= 0f)
+					{
+						break;
+					}
+					((List<Vector3>)(object)val).Add(Agent.NavToWorldSpace(positionNS));
+				}
+				if (((List<Vector3>)(object)val).Count == 0)
+				{
+					movedOff = true;
+					return;
+				}
+				int count = ((List<Vector3>)(object)val).Count;
+				for (int i = 0; i < count; i++)
+				{
+					AddStopsShortOf(val, ((List<Vector3>)(object)val)[i]);
+				}
+				int num = -1;
+				if (Agent.canSwim || !Agent.IsInWater(((Component)Owner).transform.position))
+				{
+					num = ((List<Vector3>)(object)val).Count;
+					((List<Vector3>)(object)val).Add(((Component)Owner).transform.position);
+				}
+				PooledList<LivestockFootprint> val2 = Pool.Get<PooledList<LivestockFootprint>>();
+				try
+				{
+					livestockAnimal.GatherRestingFootprints(((Component)Owner).transform.position, val2);
+					int num2 = livestockAnimal.PickRestingSpot(val2, val, Agent.stoppingDistance, braking: false);
+					staying = num2 == num;
+					movedOff |= !staying;
+					if (staying)
+					{
+						nextStayCheck = TimeUntil.op_Implicit(0.5f);
+					}
+					if (num2 > 0)
+					{
+						if (num2 >= count)
+						{
+							((List<(NavVector3, float)>)(object)scored).Insert(0, (Agent.WorldToNavSpace(((List<Vector3>)(object)val)[num2]), 0f));
+							return;
+						}
+						(NavVector3, float) item = ((List<(NavVector3, float)>)(object)scored)[num2];
+						((List<(NavVector3, float)>)(object)scored).RemoveAt(num2);
+						((List<(NavVector3, float)>)(object)scored).Insert(0, item);
+					}
+				}
+				finally
+				{
+					((IDisposable)val2)?.Dispose();
+				}
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+
+		private void DropWaterCandidates(Eqs.PooledScoreList scored)
+		{
+			for (int num = ((List<(NavVector3, float)>)(object)scored).Count - 1; num >= 0; num--)
+			{
+				if (Agent.IsInWater(((List<(NavVector3, float)>)(object)scored)[num].Item1))
+				{
+					((List<(NavVector3, float)>)(object)scored).RemoveAt(num);
+				}
+			}
+		}
+
+		private void AddStopsShortOf(PooledList<Vector3> spots, Vector3 best)
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+			Vector3 position = ((Component)Owner).transform.position;
+			float num = Vector3Ex.MagnitudeXZ(best - position);
+			float num2 = Agent.RestingDistance(Agent.stoppingDistance);
+			for (float num3 = 1f; num - num3 >= num2 + 1f; num3++)
+			{
+				if (Agent.SamplePosition(Vector3.Lerp(best, position, num3 / num), out var hitWS, 1f) && (Agent.canSwim || !Agent.IsInWater(hitWS.position)))
+				{
+					((List<Vector3>)(object)spots).Add(hitWS.position);
+				}
+			}
+		}
+
 		private NavVector3 ToNavSpace(Vector3 heading)
 		{
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -3771,17 +5429,16 @@ public class LivestockAnimalFSM : FSMComponent
 	public class Trans_WouldRunFromAHit : FSMSlowTransitionBase
 	{
 		[Tooltip("A bull runs once his health drops below this fraction of his maximum. Cows and calves run from any hit at all.")]
-		[SerializeField]
 		public float bullStandsGroundAbove = 0.8f;
 
 		protected override bool EvaluateAtInterval(ref FSMPayload payload)
 		{
-			return Evaluate(Owner);
+			return Evaluate();
 		}
 
-		public bool Evaluate(BaseEntity owner)
+		public bool Evaluate()
 		{
-			if (!(owner is LivestockAnimal livestockAnimal))
+			if (!(Owner is LivestockAnimal livestockAnimal))
 			{
 				return true;
 			}
@@ -3797,7 +5454,11 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return !livestockAnimal.HasProtectiveMotherNearby();
 			}
-			if (livestockAnimal.IsMale ? livestockAnimal.HasDependentsNearby() : livestockAnimal.IsProtectiveOfCalf)
+			if (livestockAnimal.IsMale && IsRepelledByTarget(livestockAnimal))
+			{
+				return true;
+			}
+			if (livestockAnimal.IsMale ? livestockAnimal.HasDependentsNearby() : livestockAnimal.IsProtective)
 			{
 				return false;
 			}
@@ -3806,6 +5467,16 @@ public class LivestockAnimalFSM : FSMComponent
 				return IsTargetOutOfReach(livestockAnimal);
 			}
 			return true;
+		}
+
+		private static bool IsRepelledByTarget(LivestockAnimal animal)
+		{
+			SenseComponent senseComponent = default;
+			if (((Component)animal).TryGetComponent<SenseComponent>(ref senseComponent) && senseComponent.FindTarget(out var target) && target is BasePlayer basePlayer && Trans_TargetHasRepellent.Carries(basePlayer))
+			{
+				return animal.TrustOf(basePlayer) < Livestock.trustToTolerate;
+			}
+			return false;
 		}
 
 		private static bool IsTargetOutOfReach(LivestockAnimal animal)
@@ -3824,14 +5495,13 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_TargetNearHerd : FSMSlowTransitionBase
 	{
-		[SerializeField]
 		[Tooltip("How close the target has to get to a cow or calf to count as threatening it.")]
 		public float threatDistance = 10f;
 
 		protected override bool EvaluateAtInterval(ref FSMPayload payload)
 		{
 			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal) || threatDistance <= 0f)
 			{
 				return false;
@@ -3844,7 +5514,7 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return true;
 			}
-			if (livestockAnimal.IsMale && livestockAnimal.IsAdult())
+			if (livestockAnimal.IsAdult())
 			{
 				return AnyAdoptedPlayerNear(livestockAnimal, targetPosition, threatDistance);
 			}
@@ -3889,7 +5559,7 @@ public class LivestockAnimalFSM : FSMComponent
 				return false;
 			}
 			BasePlayer basePlayer = livestockAnimal.LeadingPlayer.Get(serverside: true);
-			if ((Object)(object)basePlayer == (Object)null || livestockAnimal.TrustOf(basePlayer) < Livestock.trustToLead)
+			if ((Object)(object)basePlayer == (Object)null || !livestockAnimal.LeadTrusted)
 			{
 				return false;
 			}
@@ -3904,22 +5574,21 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class Trans_HasThreatTarget : FSMTransitionBase
 	{
-		[SerializeField]
 		[Tooltip("Asks for a threat sat in a car or anything else that protects them from animals, the one to run from, instead of refusing them.")]
 		public bool targetProtectedByMount;
 
 		protected override bool EvaluateInternal(ref FSMPayload payload)
 		{
-			//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 			if (!(Owner is LivestockAnimal livestockAnimal) || livestockAnimal.IsDead())
 			{
 				return false;
 			}
-			if (livestockAnimal.IsInfant() || livestockAnimal.IsLeading())
+			if (livestockAnimal.IsInfant() || livestockAnimal.IsLeading() || !IsRightSort(livestockAnimal))
 			{
 				return false;
 			}
-			if (!Senses.FindTarget(out var target))
+			if (!Senses.FindTarget(out var target) || !IsRightTarget(livestockAnimal, target))
 			{
 				return false;
 			}
@@ -3935,10 +5604,6 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return false;
 			}
-			if (WaterLevel.GetWaterDepth(((Component)livestockAnimal).transform.position, waves: false, volumes: false) >= 1f)
-			{
-				return false;
-			}
 			if (target is BasePlayer player2)
 			{
 				if (livestockAnimal.TrustOf(player2) >= Livestock.trustToTolerate)
@@ -3950,10 +5615,15 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return false;
 			}
-			return IsRightSort(livestockAnimal);
+			return WaterLevel.GetWaterDepth(((Component)livestockAnimal).transform.position, waves: false, volumes: false) < 1f;
 		}
 
 		protected virtual bool IsRightSort(LivestockAnimal animal)
+		{
+			return true;
+		}
+
+		protected virtual bool IsRightTarget(LivestockAnimal animal, BaseEntity target)
 		{
 			return true;
 		}
@@ -3966,9 +5636,32 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			if (!animal.IsMale)
 			{
-				return animal.IsProtectiveOfCalf;
+				return animal.IsProtective;
 			}
 			return true;
+		}
+
+		protected override bool IsRightTarget(LivestockAnimal animal, BaseEntity target)
+		{
+			if (animal.IsMale)
+			{
+				return !Trans_TargetHasRepellent.Carries(target);
+			}
+			return true;
+		}
+	}
+
+	[Serializable]
+	public class Trans_RepelledBull : Trans_HasThreatTarget
+	{
+		protected override bool IsRightSort(LivestockAnimal animal)
+		{
+			return animal.IsMale;
+		}
+
+		protected override bool IsRightTarget(LivestockAnimal animal, BaseEntity target)
+		{
+			return Trans_TargetHasRepellent.Carries(target);
 		}
 	}
 
@@ -3997,7 +5690,7 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private AnimationClip scrambleFromSleep;
 
-		[Tooltip("The same for a daytime lie down. Must be authored from the lying pose, not the sleeping one - the two are a long way apart.")]
+		[Tooltip("The same for a daytime lie down. Must be authored from the lying pose, not the sleeping one.")]
 		[SerializeField]
 		private AnimationClip scrambleFromRest;
 
@@ -4057,6 +5750,7 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				livestockAnimal.SetGrazing(grazing: false);
 				livestockAnimal.SetDrinking(drinking: false);
+				livestockAnimal.SetAtTrough(atTrough: false);
 			}
 			return base.OnStateEnter(payload);
 		}
@@ -4074,11 +5768,9 @@ public class LivestockAnimalFSM : FSMComponent
 	[Serializable]
 	public class State_LivestockHurt : State_HurtWithAdditive
 	{
-		[Tooltip("Knocked down from a standstill.")]
 		[SerializeField]
 		private RootMotionData StandKnockdown;
 
-		[Tooltip("Knocked down mid stride, for an animal already running.")]
 		[SerializeField]
 		private RootMotionData CanterKnockdown;
 
@@ -4124,21 +5816,21 @@ public class LivestockAnimalFSM : FSMComponent
 		[SerializeField]
 		private RootMotionData TurnLeft;
 
-		[SerializeField]
 		[Tooltip("Turns away to the animal's right, for a threat on its left.")]
+		[SerializeField]
 		private RootMotionData TurnRight;
 
 		[Tooltip("The full about-turn, for a threat dead ahead.")]
 		[SerializeField]
 		private RootMotionData TurnAbout;
 
-		[SerializeField]
 		[Tooltip("Only bridges from a standstill. Already moving faster than this and the animal can just run, a turn montage would snap it back to a stop.")]
+		[SerializeField]
 		private float maxSpeedToTurn = 1f;
 
+		[Tooltip("How far off dead ahead a hit can land and still read as frontal, as a dot product against the animal's forward. 0 is straight to the side.")]
 		[Range(0f, 1f)]
 		[SerializeField]
-		[Tooltip("How far off dead ahead a hit can land and still read as frontal, as a dot product against the animal's forward. 0 is straight to the side.")]
 		private float frontalDot = 0.35f;
 
 		public bool HasTurnAnimation
@@ -4153,19 +5845,19 @@ public class LivestockAnimalFSM : FSMComponent
 			}
 		}
 
-		public bool ShouldBridgeToFlee(BaseEntity owner, RustNavMeshAgent agent, HitInfo hitInfo)
+		public bool ShouldBridgeToFlee(HitInfo hitInfo)
 		{
-			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-			if (!HasTurnAnimation || hitInfo == null || (Object)(object)owner == (Object)null || (Object)(object)agent == (Object)null)
+			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+			if (!HasTurnAnimation || hitInfo == null || (Object)(object)Agent == (Object)null)
 			{
 				return false;
 			}
-			if (agent.velocity.magnitude > maxSpeedToTurn)
+			if (Agent.velocity.magnitude > maxSpeedToTurn)
 			{
 				return false;
 			}
-			return Vector3.Dot(hitInfo.attackNormal, ((Component)owner).transform.forward) < 0f - frontalDot;
+			return Vector3.Dot(hitInfo.attackNormal, ((Component)Owner).transform.forward) < 0f - frontalDot;
 		}
 
 		public override EFSMStateStatus OnStateEnter(FSMPayload payload)
@@ -4196,6 +5888,8 @@ public class LivestockAnimalFSM : FSMComponent
 	}
 
 	public const float WadingDepth = 1f;
+
+	public static float LaneClockOrigin;
 
 	public const float StompDistance = 10.4f;
 
@@ -4238,6 +5932,8 @@ public class LivestockAnimalFSM : FSMComponent
 	public State_PlayAnimation foodSearch = new State_PlayAnimation();
 
 	public Trans_FoodSearchFailed foodSearchFailedTransition = new Trans_FoodSearchFailed();
+
+	public State_PlayAnimation petted = new State_PlayAnimation();
 
 	public Trans_WantsBedtimeRest bedtimeRestTransition = new Trans_WantsBedtimeRest();
 
@@ -4310,13 +6006,25 @@ public class LivestockAnimalFSM : FSMComponent
 
 	public Trans_StrayedFromHerd strayedFromHerdTransition = new Trans_StrayedFromHerd();
 
-	public State_Dead dead = new State_Dead();
+	public State_LeaveSlot leaveSlot = new State_LeaveSlot();
 
 	[NonSerialized]
-	public Vector3? ConsumeLocation;
+	public Nullable ConsumeLocation;
 
 	[NonSerialized]
 	public EntityRef<BaseEntity> ConsumeSource;
+
+	[NonSerialized]
+	public LivestockFeedingSlots.Place? ConsumePlace;
+
+	[NonSerialized]
+	public float ConsumeLane;
+
+	[NonSerialized]
+	public State_Starved starved = new State_Starved();
+
+	[NonSerialized]
+	public Trans_IsStarved starvedTransition = new Trans_IsStarved();
 
 	[NonSerialized]
 	public EntityRef<LivestockAnimal> MateTarget;
@@ -4345,11 +6053,17 @@ public class LivestockAnimalFSM : FSMComponent
 	[NonSerialized]
 	public bool StartledOutOfSleep;
 
-	private Trans_Triggerable_HitInfo DeathTrans;
-
 	private Trans_Triggerable_HitInfo HurtTrans;
 
 	private Trans_Triggerable_HitInfo TurnAndRunTrans;
+
+	private Trans_WasPetted PettedTrans;
+
+	private const float StepClearTimeout = 10f;
+
+	protected override TickFSMWorkQueue workQueue => FSMComponent.livestockWorkQueue;
+
+	protected override bool WantsMounting => true;
 
 	public LivestockAnimal.DayActivity CurrentDayActivity
 	{
@@ -4368,7 +6082,7 @@ public class LivestockAnimalFSM : FSMComponent
 			{
 				return LivestockAnimal.DayActivity.Resting;
 			}
-			if (currentState == randomIdle || currentState == roam || currentState == foodSearch)
+			if (currentState == randomIdle || currentState == roam || currentState == foodSearch || currentState == leaveSlot || currentState == petted)
 			{
 				return LivestockAnimal.DayActivity.Idling;
 			}
@@ -4388,290 +6102,279 @@ public class LivestockAnimalFSM : FSMComponent
 		}
 	}
 
-	public override void InitShared()
+	protected override AliveLayout BuildAlive(State_Nothing onNavmesh)
 	{
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		base.InitShared();
-		if (baseEntity.isServer)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		LastFoodSearchFailed = TimeSince.op_Implicit(float.MaxValue);
+		State_Nothing state_Nothing = new State_Nothing
 		{
-			LastFoodSearchFailed = TimeSince.op_Implicit(float.MaxValue);
-			State_Nothing state_Nothing = new State_Nothing
+			Name = "Can flee"
+		};
+		State_Nothing state_Nothing2 = new State_Nothing
+		{
+			Name = "Can follow"
+		};
+		State_Nothing state_Nothing3 = new State_Nothing
+		{
+			Name = "Not hurt"
+		};
+		State_Nothing state_Nothing4 = new State_Nothing
+		{
+			Name = "Square up"
+		};
+		State_Nothing state_Nothing5 = new State_Nothing
+		{
+			Name = "Not engaged"
+		};
+		Trans_Cooldown trans_Cooldown = new Trans_Cooldown
+		{
+			cooldown = 3f,
+			onlyWhenStarted = true
+		};
+		Trans_And trans_And = new Trans_TargetInRange
+		{
+			Range = 3f
+		} & ~new Trans_TargetInFront
+		{
+			Angle = 150f
+		};
+		Trans_And trans_And2 = new Trans_TargetInRange
+		{
+			Range = 3f,
+			MaxHeightDifference = 1.5f
+		} & ~new Trans_TargetInFront
+		{
+			Angle = 100f
+		};
+		Trans_And trans_And3 = new Trans_CanReachTarget_Slow() & new Trans_HasStraightPathToTarget();
+		Trans_And trans_And4 = trans_And & new Trans_HasKick() & trans_Cooldown & trans_And3;
+		Trans_And transition = trans_And2 & new Trans_HasKick() & trans_Cooldown & trans_And3;
+		Trans_And trans_And5 = trans_And & new Trans_HasKick
+		{
+			Inverted = true
+		} & new Trans_HasCanterTurn() & trans_And3;
+		Trans_And transition2 = trans_And2 & new Trans_HasKick
+		{
+			Inverted = true
+		} & new Trans_HasCanterTurn() & trans_And3;
+		Trans_And transition3 = new Trans_ChasedFromBehind
+		{
+			range = 4f
+		} & new Trans_Cooldown
+		{
+			cooldown = 3f
+		} & trans_And3;
+		Trans_Or trans_Or = new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby() | new Trans_AggressorNearby() | (protectiveTransition & herdThreatenedTransition);
+		HurtTrans = new Trans_Triggerable_HitInfo();
+		TurnAndRunTrans = new Trans_Triggerable_HitInfo();
+		PettedTrans = new Trans_WasPetted();
+		if (patrol.Enabled)
+		{
+			onNavmesh.AddChildren(patrol);
+			return new AliveLayout
 			{
-				Name = "Root"
+				entry = patrol,
+				idle = patrol
 			};
-			State_Nothing state_Nothing2 = new State_Nothing
-			{
-				Name = "Alive"
-			};
-			State_Nothing state_Nothing3 = new State_Nothing
-			{
-				Name = "WaitForNavMesh"
-			};
-			State_Nothing state_Nothing4 = new State_Nothing
-			{
-				Name = "Can flee"
-			};
-			State_Nothing state_Nothing5 = new State_Nothing
-			{
-				Name = "Can follow"
-			};
-			State_Nothing state_Nothing6 = new State_Nothing
-			{
-				Name = "Not hurt"
-			};
-			State_Nothing state_Nothing7 = new State_Nothing
-			{
-				Name = "Square up"
-			};
-			State_Nothing state_Nothing8 = new State_Nothing
-			{
-				Name = "Not engaged"
-			};
-			Trans_Cooldown trans_Cooldown = new Trans_Cooldown
-			{
-				cooldown = 3f,
-				onlyWhenStarted = true
-			};
-			Trans_And trans_And = new Trans_TargetInRange
-			{
-				Range = 3f
-			} & ~new Trans_TargetInFront
-			{
-				Angle = 150f
-			};
-			Trans_And trans_And2 = new Trans_TargetInRange
-			{
-				Range = 3f,
-				MaxHeightDifference = 1.5f
-			} & ~new Trans_TargetInFront
-			{
-				Angle = 100f
-			};
-			Trans_And trans_And3 = new Trans_CanReachTarget_Slow() & new Trans_HasStraightPathToTarget
-			{
-				ProjectTarget = true
-			};
-			Trans_And trans_And4 = trans_And & new Trans_HasKick() & trans_Cooldown & trans_And3;
-			Trans_And transition = trans_And2 & new Trans_HasKick() & trans_Cooldown & trans_And3;
-			Trans_And trans_And5 = trans_And & new Trans_HasKick
+		}
+		onNavmesh.AddChildren(state_Nothing3.AddTickTransition(getUp, lyingDownTransition & trans_Or).AddTickTransition(hurt, HurtTrans).AddTickTransition(turnAndRun, TurnAndRunTrans)
+			.AddTickTransition(turnToLeader, new Trans_LeaderBehind())
+			.AddChildren(state_Nothing.AddTickTransition(follow, new Trans_LeadOutranksTarget()).AddTickTransition(flee, (new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby() | new Trans_AggressorNearby()) & wouldRunFromAHitTransition & new Trans_IsFollowingPlayer
 			{
 				Inverted = true
-			} & new Trans_HasCanterTurn() & trans_And3;
-			Trans_And transition2 = trans_And2 & new Trans_HasKick
-			{
-				Inverted = true
-			} & new Trans_HasCanterTurn() & trans_And3;
-			Trans_And transition3 = new Trans_ChasedFromBehind
-			{
-				range = 4f
 			} & new Trans_Cooldown
 			{
-				cooldown = 3f
-			} & trans_And3;
-			Trans_Or trans_Or = new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby() | new Trans_AggressorNearby() | (protectiveTransition & herdThreatenedTransition);
-			DeathTrans = new Trans_Triggerable_HitInfo();
-			HurtTrans = new Trans_Triggerable_HitInfo();
-			TurnAndRunTrans = new Trans_Triggerable_HitInfo();
-			state_Nothing.AddChildren(state_Nothing2.AddTickTransition(dead, DeathTrans), dead);
-			if (patrol.Enabled)
+				cooldown = 5f
+			}).AddTickTransition(flee, new Trans_IsProtective
 			{
-				state_Nothing2.AddChildren(state_Nothing3.AddTickTransition(patrol, new Trans_IsNavmeshReady()), patrol);
-			}
-			else
+				targetProtectedByMount = true
+			} & (new Trans_TargetInRange
 			{
-				state_Nothing2.AddChildren(state_Nothing6.AddTickTransition(getUp, lyingDownTransition & trans_Or).AddTickTransition(hurt, HurtTrans).AddTickTransition(turnAndRun, TurnAndRunTrans)
-					.AddTickTransition(turnToLeader, new Trans_LeaderBehind())
-					.AddChildren(state_Nothing3.AddTickTransition(newborn, newbornTransition).AddTickTransition(randomIdle, new Trans_IsNavmeshReady()), state_Nothing4.AddTickTransition(follow, new Trans_LeadOutranksTarget()).AddTickTransition(flee, (new Trans_RecentlyHurt() | new Trans_LoudNoiseNearby() | new Trans_AggressorNearby()) & wouldRunFromAHitTransition & new Trans_IsFollowingPlayer
+				Range = 10.4f
+			} | herdThreatenedTransition))
+				.AddChildren(state_Nothing5.AddTickTransition(kick, protectiveTransition & trans_And4).AddTickTransition(turnCantering, protectiveTransition & trans_And5).AddTickTransition(kickBehind, transition3)
+					.AddTickTransition(chargeRun, protectiveTransition & (new Trans_RecentlyHurt() | herdMateHurtTransition | new Trans_LoudNoiseNearby
+					{
+						range = 20f
+					}) & new Trans_CanReachTarget_Slow())
+					.AddTickTransition(chargeRun, protectiveTransition & new Trans_IsCourting
 					{
 						Inverted = true
-					} & new Trans_Cooldown
+					} & new Trans_TargetInRange
 					{
-						cooldown = 5f
-					}).AddTickTransition(flee, new Trans_IsProtective
+						Range = 4.8f
+					} & (new Trans_TargetInFront
 					{
-						targetProtectedByMount = true
-					} & (new Trans_TargetInRange
+						Angle = 150f
+					} | herdThreatenedTransition) & new Trans_CanReachTarget_Slow())
+					.AddTickTransition(warnApproach, protectiveTransition & new Trans_IsCourting
+					{
+						Inverted = true
+					} & ((new Trans_TargetInRange
 					{
 						Range = 10.4f
-					} | herdThreatenedTransition))
-						.AddChildren(state_Nothing8.AddTickTransition(kick, protectiveTransition & trans_And4).AddTickTransition(turnCantering, protectiveTransition & trans_And5).AddTickTransition(kickBehind, transition3)
-							.AddTickTransition(chargeRun, protectiveTransition & (new Trans_RecentlyHurt() | herdMateHurtTransition | new Trans_LoudNoiseNearby
-							{
-								range = 20f
-							}) & new Trans_CanReachTarget_Slow())
-							.AddTickTransition(chargeRun, protectiveTransition & new Trans_IsCourting
-							{
-								Inverted = true
-							} & new Trans_TargetInRange
-							{
-								Range = 4.8f
-							} & (new Trans_TargetInFront
-							{
-								Angle = 150f
-							} | herdThreatenedTransition) & new Trans_CanReachTarget_Slow())
-							.AddTickTransition(warnApproach, protectiveTransition & new Trans_IsCourting
-							{
-								Inverted = true
-							} & ((new Trans_TargetInRange
-							{
-								Range = 10.4f
-							} & new Trans_TargetInFront
-							{
-								Angle = 150f
-							}) | herdThreatenedTransition) & new Trans_Cooldown
-							{
-								cooldown = 4f
-							} & new Trans_CanReachTarget_Slow())
-							.AddChildren(state_Nothing5.AddTickTransition(newborn, newbornTransition).AddTickTransition(follow, new Trans_IsFollowingPlayer()).AddTickTransition(stayNearMother, strayedFromMotherTransition)
-								.AddTickTransition(pregnant, new Trans_IsPregnant())
-								.AddTickTransition(seekMate, canBreedTransition)
-								.AddTickTransition(awaitMate, mateRequestTransition)
-								.AddTickTransition(curiousFollow, curiousTransition)
-								.AddTickTransition(returnToHerd, strayedFromHerdTransition)
-								.AddChildren(randomIdle.AddTickTransition(graze, grazeTransition).AddEndTransition(rest, bedtimeRestTransition).AddEndTransition(sleep, new Trans_WantsSleep())
-									.AddEndTransition(drink, drinkTransition)
-									.AddEndTransition(graze, grazeTransition)
-									.AddEndTransition(friskyCanter, veryHappyTransition)
-									.AddEndTransition(foodSearch, foodSearchFailedTransition)
-									.AddEndTransition(roam, foodRoamTransition)
-									.AddEndTransition(rest, restTransition)
-									.AddEndTransition(randomIdle), graze.AddEndTransition(randomIdle), drink.AddEndTransition(randomIdle), roam.AddFailureTransition(dead, new Trans_Stranded()).AddEndTransition(randomIdle), friskyCanter.AddEndTransition(randomIdle), rest.AddEndTransition(randomIdle), foodSearch.AddEndTransition(randomIdle), sleep.AddEndTransition(randomIdle)), follow.AddTickTransition(randomIdle, new Trans_IsFollowingPlayer
-							{
-								Inverted = true
-							}), curiousFollow.AddTickTransition(randomIdle, new Trans_StillCuriousAboutPlayer
-							{
-								Inverted = true
-							}).AddFailureTransition(randomIdle), stayNearMother.AddEndTransition(randomIdle), newborn.AddEndTransition(randomIdle), seekMate.AddFailureTransition(randomIdle).AddEndTransition(frolic), awaitMate.AddTickTransition(frolic, suitorFrolickingTransition).AddEndTransition(randomIdle), frolic.AddEndTransition(mate, maleTransition).AddEndTransition(randomIdle), mate.AddFailureTransition(randomIdle).AddEndTransition(randomIdle), pregnant.AddEndTransition(randomIdle)), returnToHerd.AddTickTransition(kick, protectiveTransition & trans_And4).AddTickTransition(turnCantering, protectiveTransition & trans_And5).AddTickTransition(chargeRun, protectiveTransition & (new Trans_RecentlyHurt() | herdMateHurtTransition) & new Trans_TargetInRange
-						{
-							Range = 15f
-						} & new Trans_CanReachTarget_Slow())
-							.AddTickTransition(chargeRun, protectiveTransition & herdThreatenedTransition & new Trans_TargetInRange
-							{
-								Range = 4.8f
-							} & new Trans_CanReachTarget_Slow())
-							.AddTickTransition(warnApproach, protectiveTransition & herdThreatenedTransition & new Trans_Cooldown
-							{
-								cooldown = 4f
-							} & new Trans_CanReachTarget_Slow())
-							.AddFailureTransition(randomIdle)
-							.AddEndTransition(randomIdle), state_Nothing7.AddTickTransition(randomIdle, new Trans_HasTarget
-						{
-							Inverted = true
-						}).AddTickTransition(randomIdle, new Trans_TargetIsInSafeZone() | new Trans_IsInSafeZone()).AddTickTransition(randomIdle, new Trans_IsInWater_Slow
-						{
-							minDepth = 1f
-						} | new Trans_IsTargetInWater())
-							.AddChildren(warnApproach.AddTickTransition(kick, trans_And4).AddTickTransition(turnCantering, trans_And5).AddTickTransition(chargeRun, new Trans_RecentlyHurt() | herdMateHurtTransition)
-								.AddTickTransition(chargeRun, new Trans_TargetInRange
-								{
-									Range = 4.8f
-								} & new Trans_CanReachTarget_Slow())
-								.AddTickTransition(observe, ~new Trans_TargetInRange
-								{
-									Range = 10.4f
-								} & new Trans_TargetNearHerd
-								{
-									Inverted = true,
-									threatDistance = 12.5f
-								})
-								.AddEndTransition(warn), warn.AddTickTransition(kick, trans_And4).AddTickTransition(turnCantering, trans_And5).AddTickTransition(chargeRun, new Trans_RecentlyHurt() | herdMateHurtTransition)
-								.AddTickTransition(chargeRun, new Trans_TargetInRange
-								{
-									Range = 4.8f
-								} & new Trans_CanReachTarget_Slow())
-								.AddEndTransition(chargeRun, herdThreatenedTransition & new Trans_TargetInRange
-								{
-									Range = 10.4f
-								} & new Trans_CanReachTarget_Slow())
-								.AddEndTransition(observe), chargeRun.AddTickTransition(headbutt, new Trans_TargetInRange
-							{
-								Range = 4.7f,
-								TimeToPredict = 0.35f,
-								MaxHeightDifference = 1.5f
-							} & new Trans_TargetInFront
-							{
-								Angle = 100f
-							} & new Trans_HasStraightPathToTarget
-							{
-								ProjectTarget = true
-							}).AddTickTransition(kick, transition).AddTickTransition(turnCantering, transition2)
-								.AddTickTransition(observe, new Trans_ElapsedTime
-								{
-									Duration = 6.0
-								})
-								.AddFailureTransition(observe)
-								.AddEndTransition(observe), headbutt.AddEndTransition(turnCantering, ~new Trans_TargetInRange
-							{
-								Range = 8f
-							}).AddEndTransition(turnToFace, ~new Trans_TargetInFront
-							{
-								Angle = 60f
-							}).AddFailureTransition(observe)
-								.AddEndTransition(observe), turnCantering.AddFailureTransition(observe).AddEndTransition(chargeRun, new Trans_TargetInRange
-							{
-								Range = 4.8f
-							} & new Trans_CanReachTarget_Slow()).AddEndTransition(warnApproach, new Trans_TargetInRange
-							{
-								Range = 10.4f
-							} & new Trans_CanReachTarget_Slow())
-								.AddEndTransition(observe), turnToFace.AddFailureTransition(observe).AddEndTransition(chargeRun, new Trans_TargetInRange
-							{
-								Range = 4.8f
-							} & new Trans_CanReachTarget_Slow()).AddEndTransition(warnApproach, new Trans_TargetInRange
-							{
-								Range = 10.4f
-							} & new Trans_CanReachTarget_Slow())
-								.AddEndTransition(observe), observe.AddTickTransition(kick, trans_And4).AddTickTransition(turnCantering, trans_And5).AddTickTransition(chargeRun, (new Trans_RecentlyHurt() | herdMateHurtTransition) & new Trans_CanReachTarget_Slow())
-								.AddTickTransition(chargeRun, new Trans_TargetInRange
-								{
-									Range = 4.8f
-								} & new Trans_CanReachTarget_Slow())
-								.AddTickTransition(warnApproach, new Trans_TargetEntersRange
-								{
-									Range = 10.4f
-								} & new Trans_CanReachTarget_Slow())
-								.AddTickTransition(randomIdle, new Trans_ElapsedTime
-								{
-									Duration = 4.0
-								} & new Trans_CanReachTarget_Slow
-								{
-									Inverted = true
-								})
-								.AddTickTransition(randomIdle, new Trans_ElapsedTime
-								{
-									Duration = 2.0
-								} & ~new Trans_TargetInRange
-								{
-									Range = 12f
-								} & new Trans_TargetNearHerd
-								{
-									Inverted = true,
-									threatDistance = 12.5f
-								})
-								.AddFailureTransition(randomIdle))), kick.AddTickTransition(randomIdle, new Trans_HasTarget
+					} & new Trans_TargetInFront
+					{
+						Angle = 150f
+					}) | herdThreatenedTransition) & new Trans_Cooldown
+					{
+						cooldown = 4f
+					} & new Trans_CanReachTarget_Slow())
+					.AddTickTransition(petted, PettedTrans & new Trans_IsCourting
 					{
 						Inverted = true
-					}).AddFailureTransition(observe).AddEndTransition(turnToFace), kickBehind.AddEndTransition(flee), flee.AddTickTransition(kickBehind, transition3).AddTickTransition(chargeRun, protectiveTransition & (new Trans_RecentlyHurt() | herdMateHurtTransition) & new Trans_CanReachTarget_Slow()).AddEndTransition(chargeRun, new Trans_IsProtective() & new Trans_TargetInRange
+					})
+					.AddChildren(state_Nothing2.AddTickTransition(newborn, newbornTransition).AddTickTransition(follow, new Trans_IsFollowingPlayer()).AddTickTransition(stayNearMother, strayedFromMotherTransition)
+						.AddTickTransition(leaveSlot, new Trans_ShouldVacateSlot())
+						.AddTickTransition(pregnant, new Trans_IsPregnant())
+						.AddTickTransition(seekMate, canBreedTransition)
+						.AddTickTransition(awaitMate, mateRequestTransition)
+						.AddTickTransition(curiousFollow, curiousTransition)
+						.AddTickTransition(returnToHerd, strayedFromHerdTransition)
+						.AddChildren(randomIdle.AddTickTransition(graze, grazeTransition).AddEndTransition(rest, bedtimeRestTransition).AddEndTransition(sleep, new Trans_WantsSleep())
+							.AddEndTransition(drink, drinkTransition)
+							.AddEndTransition(graze, grazeTransition)
+							.AddEndTransition(starved, starvedTransition)
+							.AddEndTransition(friskyCanter, veryHappyTransition)
+							.AddEndTransition(foodSearch, foodSearchFailedTransition)
+							.AddEndTransition(roam, foodRoamTransition)
+							.AddEndTransition(rest, restTransition)
+							.AddEndTransition(randomIdle), graze.AddEndTransition(randomIdle), drink.AddEndTransition(randomIdle), leaveSlot.AddEndTransition(randomIdle), roam.AddFailureTransition(dead, new Trans_Stranded()).AddEndTransition(randomIdle), friskyCanter.AddEndTransition(randomIdle), rest.AddEndTransition(randomIdle), starved.AddEndTransition(graze, grazeTransition).AddEndTransition(drink, drinkTransition).AddEndTransition(randomIdle), foodSearch.AddEndTransition(randomIdle), sleep.AddEndTransition(randomIdle)), follow.AddTickTransition(randomIdle, new Trans_IsFollowingPlayer
+					{
+						Inverted = true
+					}), curiousFollow.AddTickTransition(randomIdle, new Trans_StillCuriousAboutPlayer
+					{
+						Inverted = true
+					}).AddFailureTransition(randomIdle), stayNearMother.AddEndTransition(randomIdle), newborn.AddEndTransition(randomIdle), seekMate.AddFailureTransition(randomIdle).AddEndTransition(frolic), awaitMate.AddTickTransition(frolic, suitorFrolickingTransition).AddEndTransition(randomIdle), frolic.AddEndTransition(mate, maleTransition).AddEndTransition(randomIdle), mate.AddFailureTransition(randomIdle).AddEndTransition(randomIdle), pregnant.AddEndTransition(randomIdle))
+					.AddChildren(petted.AddEndTransition(randomIdle)), returnToHerd.AddTickTransition(kick, protectiveTransition & trans_And4).AddTickTransition(turnCantering, protectiveTransition & trans_And5).AddTickTransition(chargeRun, protectiveTransition & (new Trans_RecentlyHurt() | herdMateHurtTransition) & new Trans_TargetInRange
+				{
+					Range = 15f
+				} & new Trans_CanReachTarget_Slow())
+					.AddTickTransition(chargeRun, protectiveTransition & herdThreatenedTransition & new Trans_TargetInRange
+					{
+						Range = 4.8f
+					} & new Trans_CanReachTarget_Slow())
+					.AddTickTransition(warnApproach, protectiveTransition & herdThreatenedTransition & new Trans_Cooldown
+					{
+						cooldown = 4f
+					} & new Trans_CanReachTarget_Slow())
+					.AddFailureTransition(randomIdle)
+					.AddEndTransition(randomIdle), state_Nothing4.AddTickTransition(randomIdle, new Trans_HasTarget
+				{
+					Inverted = true
+				}).AddTickTransition(randomIdle, new Trans_RepelledBull()).AddTickTransition(randomIdle, new Trans_TargetIsInSafeZone() | new Trans_IsInSafeZone())
+					.AddTickTransition(randomIdle, new Trans_IsInWater_Slow
+					{
+						minDepth = 1f
+					} | new Trans_IsTargetInWater())
+					.AddChildren(warnApproach.AddTickTransition(kick, trans_And4).AddTickTransition(turnCantering, trans_And5).AddTickTransition(chargeRun, new Trans_RecentlyHurt() | herdMateHurtTransition)
+						.AddTickTransition(chargeRun, new Trans_TargetInRange
+						{
+							Range = 4.8f
+						} & new Trans_CanReachTarget_Slow())
+						.AddTickTransition(observe, ~new Trans_TargetInRange
+						{
+							Range = 10.4f
+						} & new Trans_TargetNearHerd
+						{
+							Inverted = true,
+							threatDistance = 12.5f
+						})
+						.AddEndTransition(warn), warn.AddTickTransition(kick, trans_And4).AddTickTransition(turnCantering, trans_And5).AddTickTransition(chargeRun, new Trans_RecentlyHurt() | herdMateHurtTransition)
+						.AddTickTransition(chargeRun, new Trans_TargetInRange
+						{
+							Range = 4.8f
+						} & new Trans_CanReachTarget_Slow())
+						.AddEndTransition(chargeRun, herdThreatenedTransition & new Trans_TargetInRange
+						{
+							Range = 10.4f
+						} & new Trans_CanReachTarget_Slow())
+						.AddEndTransition(observe), chargeRun.AddTickTransition(headbutt, new Trans_TargetInRange
+					{
+						Range = 4.7f,
+						TimeToPredict = 0.35f,
+						MaxHeightDifference = 1.5f
+					} & new Trans_TargetInFront
+					{
+						Angle = 100f
+					} & new Trans_HasStraightPathToTarget()).AddTickTransition(kick, transition).AddTickTransition(turnCantering, transition2)
+						.AddTickTransition(observe, new Trans_ElapsedTime
+						{
+							Duration = 6.0
+						})
+						.AddFailureTransition(observe)
+						.AddEndTransition(observe), headbutt.AddEndTransition(turnCantering, ~new Trans_TargetInRange
 					{
 						Range = 8f
-					} & new Trans_CanReachTarget_Slow())
-						.AddEndTransition(randomIdle), raiseHead.AddEndTransition(flee, trans_Or & wouldRunFromAHitTransition & new Trans_IsFollowingPlayer
+					}).AddEndTransition(turnToFace, ~new Trans_TargetInFront
 					{
-						Inverted = true
-					}).AddEndTransition(randomIdle)), hurt.AddEndTransition(flee, wouldRunFromAHitTransition).AddEndTransition(randomIdle), turnAndRun.AddEndTransition(flee), turnToLeader.AddTickTransition(randomIdle, new Trans_IsFollowingPlayer
+						Angle = 60f
+					}).AddFailureTransition(observe)
+						.AddEndTransition(observe), turnCantering.AddFailureTransition(observe).AddEndTransition(chargeRun, new Trans_TargetInRange
+					{
+						Range = 4.8f
+					} & new Trans_CanReachTarget_Slow()).AddEndTransition(warnApproach, new Trans_TargetInRange
+					{
+						Range = 10.4f
+					} & new Trans_CanReachTarget_Slow())
+						.AddEndTransition(observe), turnToFace.AddFailureTransition(observe).AddEndTransition(chargeRun, new Trans_TargetInRange
+					{
+						Range = 4.8f
+					} & new Trans_CanReachTarget_Slow()).AddEndTransition(warnApproach, new Trans_TargetInRange
+					{
+						Range = 10.4f
+					} & new Trans_CanReachTarget_Slow())
+						.AddEndTransition(observe), observe.AddTickTransition(kick, trans_And4).AddTickTransition(turnCantering, trans_And5).AddTickTransition(chargeRun, (new Trans_RecentlyHurt() | herdMateHurtTransition) & new Trans_CanReachTarget_Slow())
+						.AddTickTransition(chargeRun, new Trans_TargetInRange
+						{
+							Range = 4.8f
+						} & new Trans_CanReachTarget_Slow())
+						.AddTickTransition(warnApproach, new Trans_TargetEntersRange
+						{
+							Range = 10.4f
+						} & new Trans_CanReachTarget_Slow())
+						.AddTickTransition(randomIdle, new Trans_ElapsedTime
+						{
+							Duration = 4.0
+						} & new Trans_CanReachTarget_Slow
+						{
+							Inverted = true
+						})
+						.AddTickTransition(randomIdle, new Trans_ElapsedTime
+						{
+							Duration = 2.0
+						} & ~new Trans_TargetInRange
+						{
+							Range = 12f
+						} & new Trans_TargetNearHerd
+						{
+							Inverted = true,
+							threatDistance = 12.5f
+						})
+						.AddFailureTransition(randomIdle))), kick.AddTickTransition(randomIdle, new Trans_HasTarget
+			{
+				Inverted = true
+			}).AddFailureTransition(observe).AddEndTransition(turnToFace), kickBehind.AddEndTransition(flee), flee.AddTickTransition(randomIdle, new Trans_IsInSafeZone()).AddTickTransition(kickBehind, transition3).AddTickTransition(chargeRun, protectiveTransition & (new Trans_RecentlyHurt() | herdMateHurtTransition) & new Trans_CanReachTarget_Slow())
+				.AddEndTransition(chargeRun, new Trans_IsProtective() & new Trans_TargetInRange
 				{
-					Inverted = true
-				}).AddEndTransition(follow), getUp.AddEndTransition(flee, trans_Or & wouldRunFromAHitTransition & new Trans_IsFollowingPlayer
-				{
-					Inverted = true
-				}).AddEndTransition(randomIdle));
-			}
-			RegisterDebugMoveTo(state_Nothing2);
-			RegisterMounting(state_Nothing2, randomIdle);
-			SetState(state_Nothing3);
-			SetFsmActive(newActive: true);
-		}
+					Range = 8f
+				} & new Trans_CanReachTarget_Slow())
+				.AddEndTransition(randomIdle), raiseHead.AddEndTransition(flee, trans_Or & wouldRunFromAHitTransition & new Trans_IsFollowingPlayer
+			{
+				Inverted = true
+			}).AddEndTransition(randomIdle)), hurt.AddEndTransition(flee, wouldRunFromAHitTransition).AddEndTransition(randomIdle), turnAndRun.AddEndTransition(flee), turnToLeader.AddTickTransition(randomIdle, new Trans_IsFollowingPlayer
+		{
+			Inverted = true
+		}).AddEndTransition(follow), getUp.AddEndTransition(flee, trans_Or & wouldRunFromAHitTransition & new Trans_IsFollowingPlayer
+		{
+			Inverted = true
+		}).AddEndTransition(randomIdle));
+		return new AliveLayout
+		{
+			entry = randomIdle,
+			idle = randomIdle
+		};
 	}
 
 	protected override FSMStateBase RedirectStateChange(FSMStateBase newState)
@@ -4692,7 +6395,7 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			return newState;
 		}
-		if (newState == getUp || newState == dead || newState == rest || newState == newborn || newState == pregnant)
+		if (newState == getUp || newState == dead || newState == rest || newState == starved || newState == newborn || newState == pregnant)
 		{
 			return newState;
 		}
@@ -4733,8 +6436,20 @@ public class LivestockAnimalFSM : FSMComponent
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		LivestockCensus.RecordDeath(hitInfo, ((Component)baseEntity).transform.position);
-		DeathTrans.Trigger(hitInfo);
-		return false;
+		if (baseEntity is LivestockAnimal livestockAnimal)
+		{
+			livestockAnimal.LeaveFloor();
+		}
+		return base.OnDied(hitInfo);
+	}
+
+	public void OnPetted()
+	{
+		if (petted.HasAnimation && PettedTrans != null && (!(baseEntity is LivestockAnimal livestockAnimal) || (!livestockAnimal.IsLyingDown() && !livestockAnimal.IsGrazing() && !livestockAnimal.IsDrinking())))
+		{
+			PettedTrans.Trigger();
+			ForceTickOnTheNextUpdate();
+		}
 	}
 
 	public override void Hurt(HitInfo hitInfo)
@@ -4747,7 +6462,7 @@ public class LivestockAnimalFSM : FSMComponent
 		{
 			((Component)this).GetComponent<RootMotionPlayer>().PlayServerAdditive(hurt.WeakHitAdditive);
 		}
-		if (CurrentState == hurt || CurrentState == turnAndRun || CurrentState == getUp)
+		if (patrol.Enabled || CurrentState == hurt || CurrentState == turnAndRun || CurrentState == getUp)
 		{
 			return;
 		}
@@ -4757,12 +6472,12 @@ public class LivestockAnimalFSM : FSMComponent
 		}
 		else if (!baseEntity.InSafeZone())
 		{
-			if (hurt.HasStaggerAnimation && hurt.ShouldStagger(baseEntity, hitInfo))
+			if (hurt.HasStaggerAnimation && hurt.ShouldStagger(hitInfo))
 			{
 				HurtTrans.Trigger(hitInfo);
 				ForceTickOnTheNextUpdate();
 			}
-			else if (turnAndRun.ShouldBridgeToFlee(baseEntity, ((Component)this).GetComponent<RustNavMeshAgent>(), hitInfo) && wouldRunFromAHitTransition.Evaluate(baseEntity))
+			else if (turnAndRun.ShouldBridgeToFlee(hitInfo) && wouldRunFromAHitTransition.Evaluate())
 			{
 				TurnAndRunTrans.Trigger(hitInfo);
 				ForceTickOnTheNextUpdate();
@@ -4773,14 +6488,30 @@ public class LivestockAnimalFSM : FSMComponent
 	private static bool MoveWithRampedSpeed(RustNavMeshAgent agent, Vector3 destinationWS, float fullSpeedDistance, RustNavMeshAgent.Speeds minSpeed, RustNavMeshAgent.Speeds maxSpeed)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		if (!agent.SetDestinationWithParams(destinationWS))
 		{
 			return false;
 		}
+		RampSpeed(agent, destinationWS, fullSpeedDistance, minSpeed, maxSpeed);
+		return true;
+	}
+
+	private static void RampSpeed(RustNavMeshAgent agent, Vector3 destinationWS, float fullSpeedDistance, RustNavMeshAgent.Speeds minSpeed, RustNavMeshAgent.Speeds maxSpeed)
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		float ratio = Mathf.InverseLerp(0f, fullSpeedDistance, Vector3.Distance(((Component)agent).transform.position, destinationWS));
 		agent.SetSpeedRatio(ratio, minSpeed, maxSpeed);
-		return true;
+	}
+
+	private static bool StepClearToLieDown(RustNavMeshAgent agent, LivestockAnimal animal)
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)animal != (Object)null && animal.TryFindLyingSpotNearby(out var spot))
+		{
+			return agent.SetDestinationWithParams(spot, autoBraking: true, RustNavMeshAgent.Speeds.Walk);
+		}
+		return false;
 	}
 }

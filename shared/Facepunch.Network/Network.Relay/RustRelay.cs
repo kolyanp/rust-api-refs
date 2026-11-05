@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Facepunch;
+using Fleck;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
@@ -23,7 +24,6 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using UnityEngine;
 using UnityEngine.Profiling;
-using WebSocketSharp;
 
 namespace Network.Relay;
 
@@ -175,7 +175,9 @@ public static class RustRelay
 
 	private static long _lastMarkerTicks;
 
-	private static WebSocket _socket;
+	private static WebSocketClient _client;
+
+	private static IWebSocketConnection _socket;
 
 	private static string _socketWipeId;
 
@@ -506,10 +508,8 @@ public static class RustRelay
 
 	public static string GetStatusReport()
 	{
-		//IL_032c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0331: Unknown result type (might be due to invalid IL or missing references)
 		StringBuilder stringBuilder = new StringBuilder(2048);
-		WebSocket socket = _socket;
+		IWebSocketConnection socket = _socket;
 		Connection fakeConnection = _fakeConnection;
 		string text = Config.AuthToken ?? string.Empty;
 		Thread sendThread = _sendThread;
@@ -541,7 +541,7 @@ public static class RustRelay
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("WebSocket");
 		stringBuilder.AppendLine($"  Socket exists: {socket != null}");
-		stringBuilder.AppendLine("  ReadyState: " + (((socket != null) ? ((object)socket.ReadyState/*cast due to constrained. prefix*/).ToString() : null) ?? "null"));
+		stringBuilder.AppendLine($"  Is Open: {((socket != null) ? new bool?(socket.IsAvailable) : ((bool?)null))}");
 		stringBuilder.AppendLine("  Socket wipe id: " + FormatStatusValue(_socketWipeId));
 		stringBuilder.AppendLine($"  Socket wipe id matches current: {_socketWipeId == RelayWipeId}");
 		stringBuilder.AppendLine($"  Socket token matches current: {_socketToken == text}");
@@ -662,11 +662,13 @@ public static class RustRelay
 
 	private static void SendThread()
 	{
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		int sendThreadGeneration = _sendThreadGeneration;
 		try
 		{
 			Debug.Log((object)"[RustRelay] Send Thread Started");
-			if (EnsureSocketInternal() == null && Config.Enabled)
+			if (Config.Enabled)
 			{
 				_reconnectPending = 1;
 			}
@@ -711,10 +713,10 @@ public static class RustRelay
 				{
 					try
 					{
-						WebSocket socket = _socket;
+						IWebSocketConnection socket = _socket;
 						if (socket != null)
 						{
-							socket.Ping();
+							socket.SendPing(default(MemoryBuffer));
 						}
 						_lastSendTicks = ticks;
 					}
@@ -806,7 +808,22 @@ public static class RustRelay
 		try
 		{
 			ResetKeyExchangeState();
-			if (EnsureSocketInternal() != null)
+			ValueTask<IWebSocketConnection> valueTask = default;
+			valueTask = EnsureSocketInternal();
+			if (valueTask.IsCompleted)
+			{
+				_socket = valueTask.Result;
+			}
+			else
+			{
+				Task<IWebSocketConnection> task = valueTask.AsTask();
+				task.Wait();
+				if (task.IsCompletedSuccessfully)
+				{
+					_socket = task.Result;
+				}
+			}
+			if (_socket != null)
 			{
 				_consecutiveReconnects = 0;
 				Debug.Log((object)"[RustRelay] Reconnected successfully");
@@ -1131,12 +1148,14 @@ public static class RustRelay
 
 	private static void SendMarker(ArraySegment<byte> segment)
 	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
-			WebSocket socket = _socket;
+			IWebSocketConnection socket = _socket;
 			if (socket != null)
 			{
-				socket.SendRaw(segment.Array, segment.Offset, segment.Count);
+				socket.Send((ReadOnlySpan<byte>)segment, default(MemoryBuffer));
 			}
 		}
 		catch (Exception ex)
@@ -1151,12 +1170,14 @@ public static class RustRelay
 
 	private static void SendPacket(ArraySegment<byte> segment)
 	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
-			WebSocket socket = _socket;
+			IWebSocketConnection socket = _socket;
 			if (socket != null)
 			{
-				socket.SendRaw(segment.Array, segment.Offset, segment.Count);
+				socket.Send((ReadOnlySpan<byte>)segment, default(MemoryBuffer));
 			}
 		}
 		catch (Exception ex)
@@ -1165,65 +1186,62 @@ public static class RustRelay
 		}
 	}
 
-	private static WebSocket EnsureSocketInternal()
+	private static ValueTask<IWebSocketConnection> EnsureSocketInternal()
 	{
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Invalid comparison between Unknown and I4
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Expected Obj, but got Unknown
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Expected Obj, but got Unknown
 		if (!Config.Enabled)
 		{
-			return null;
+			return new ValueTask<IWebSocketConnection>((IWebSocketConnection)null);
 		}
 		try
 		{
 			string text = Config.AuthToken ?? string.Empty;
-			if (_socket != null && (int)_socket.ReadyState == 2 && _socketWipeId == RelayWipeId && _socketToken == text)
+			if (_client != null && _socket != null && _socket.IsAvailable && _socketWipeId == RelayWipeId && _socketToken == text)
 			{
-				return _socket;
+				return new ValueTask<IWebSocketConnection>(_socket);
 			}
 			if (Config.EnableConsoleData || Config.EncryptPackets)
 			{
 				EnsureServerKeyExchange();
 			}
 			ResetSocket("Replacing stale socket");
-			_socket = new WebSocket(BuildPacketWsUri(RelayWipeId, text).ToString(), Array.Empty<string>());
+			_client = new WebSocketClient(BuildPacketWsUri(RelayWipeId, text).ToString());
 			if (!string.IsNullOrWhiteSpace(text))
 			{
-				_socket.SetUserHeader("Authorization", "Bearer " + text);
+				_client.Headers.Add("Authorization", "Bearer " + text);
 			}
-			_socket.OnOpen += (object _, EventArgs __) =>
+			ValueTask<IWebSocketConnection> result = new ValueTask<IWebSocketConnection>(_client.Connect((Action<IWebSocketConnection>)((IWebSocketConnection conn) =>
 			{
-				Debug.Log((object)("[RustRelay] WebSocket opened wipeId=" + RelayWipeId));
-			};
-			_socket.OnClose += (object _, CloseEventArgs args) =>
-			{
-				SignalReconnect($"WebSocket closed code={args.Code} reason={args.Reason} wasClean={args.WasClean}");
-			};
-			_socket.OnError += (object _, ErrorEventArgs args) =>
-			{
-				SignalReconnect("WebSocket error: " + args.Message);
-			};
-			_socket.Connect();
+				conn.OnOpen = () =>
+				{
+					Debug.Log((object)("[RustRelay] WebSocket opened wipeId=" + RelayWipeId));
+				};
+				conn.OnClose = () =>
+				{
+					SignalReconnect("WebSocket closed");
+				};
+				conn.OnError = (Exception e) =>
+				{
+					SignalReconnect($"WebSocket error: {e}");
+				};
+			}), false));
 			_socketWipeId = RelayWipeId;
 			_socketToken = text;
-			return _socket;
+			return result;
 		}
 		catch (Exception ex)
 		{
 			Debug.LogWarning((object)("[RustRelay] WebSocket connection failed: " + ex.Message));
 			ResetSocket("Connection failed: " + ex.Message);
-			return null;
+			return new ValueTask<IWebSocketConnection>((IWebSocketConnection)null);
 		}
 	}
 
 	private static void ResetSocket(string reason = null)
 	{
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Invalid comparison between Unknown and I4
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Invalid comparison between Unknown and I4
-		WebSocket socket = _socket;
+		_client = null;
+		IWebSocketConnection socket = _socket;
 		if (socket == null)
 		{
 			return;
@@ -1231,7 +1249,7 @@ public static class RustRelay
 		_socket = null;
 		try
 		{
-			if ((int)socket.ReadyState != 2 && (int)socket.ReadyState != 1)
+			if (!socket.IsAvailable)
 			{
 				return;
 			}
@@ -1241,12 +1259,9 @@ public static class RustRelay
 				{
 					reason = reason.Substring(0, 123);
 				}
-				socket.Close((CloseStatusCode)1000, reason);
+				Debug.LogWarning((object)reason);
 			}
-			else
-			{
-				socket.Close();
-			}
+			socket.Close();
 		}
 		catch (Exception ex)
 		{

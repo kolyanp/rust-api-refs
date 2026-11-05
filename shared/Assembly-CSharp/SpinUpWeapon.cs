@@ -191,13 +191,10 @@ public class SpinUpWeapon : BaseProjectile, ITurretNotify
 		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer ownerPlayer = GetOwnerPlayer();
 		bool flag = (Object)(object)ownerPlayer != (Object)null;
 		Vector3 val = (flag ? ownerPlayer.eyes.BodyForward() : MuzzlePoint.forward);
-		Vector3 val2 = (flag ? ownerPlayer.eyes.position : MuzzlePoint.position);
+		Vector3 pos = (flag ? ownerPlayer.eyes.position : MuzzlePoint.position);
 		Vector3 inputVec = val;
 		inputVec = AimConeUtil.GetModifiedAimConeDirection(aimconeToUse, inputVec);
 		List<Connection> list = Pool.Get<List<Connection>>();
@@ -211,7 +208,7 @@ public class SpinUpWeapon : BaseProjectile, ITurretNotify
 		}
 		if (list.Count > 0)
 		{
-			CreateProjectileEffectClientside(bulletEffect.resourcePath, val2 + inputVec * 2f, inputVec * 375f, 0, flag ? ownerPlayer.net.connection : null, IsSilenced(), forceClientsideEffects: true, list);
+			CreateProjectileEffectClientside(bulletEffect.resourcePath, pos, inputVec * 375f, 0, flag ? ownerPlayer.net.connection : null, IsSilenced(), forceClientsideEffects: true, list);
 		}
 		Pool.FreeUnmanaged<Connection>(ref list);
 	}
@@ -236,8 +233,8 @@ public class SpinUpWeapon : BaseProjectile, ITurretNotify
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(8uL)]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.CallsPerSecond(8uL)]
 	[RPC_Server]
 	private void Server_SetSpinButton(RPCMessage msg)
 	{

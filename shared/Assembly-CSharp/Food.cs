@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using ConVar;
 using Network;
 using UnityEngine;
@@ -8,10 +7,6 @@ using UnityEngine.Assertions;
 public class Food : BaseMelee
 {
 	public const string HitPlayerWithPieAchievement = "PIE_HIT_PLAYER";
-
-	public FoodViewModel.FoodVisualConfig VisualConfig;
-
-	public List<GameObject> VisualRoots;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -57,8 +52,8 @@ public class Food : BaseMelee
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void Consume()
 	{
 		if (isServer)

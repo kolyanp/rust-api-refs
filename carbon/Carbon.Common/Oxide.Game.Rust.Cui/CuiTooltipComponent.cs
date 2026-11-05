@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -9,7 +10,7 @@ public class CuiTooltipComponent : ICuiComponent, ICuiEnableable
 
 	[JsonConverter(typeof(StringEnumConverter))]
 	[JsonProperty("tooltipType")]
-	public TooltipType? TooltipType { get; set; }
+	public Nullable TooltipType { get; set; }
 
 	[JsonProperty("offset")]
 	public string Offset { get; set; }
@@ -22,11 +23,11 @@ public class CuiTooltipComponent : ICuiComponent, ICuiEnableable
 
 	[JsonConverter(typeof(StringEnumConverter))]
 	[JsonProperty("delay")]
-	public DelayType? Delay { get; set; }
+	public Nullable Delay { get; set; }
 
 	[JsonConverter(typeof(StringEnumConverter))]
 	[JsonProperty("position")]
-	public PositionMode? Position { get; set; }
+	public Nullable Position { get; set; }
 
 	[JsonProperty("enabled")]
 	public bool? Enabled { get; set; }

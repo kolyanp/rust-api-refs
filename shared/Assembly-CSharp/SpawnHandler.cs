@@ -654,24 +654,27 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 		{
 			return;
 		}
-		for (int i = 0; i < AllSpawnPopulations.Length; i++)
+		ILookup<SpawnPopulationBase, Spawnable> spawnablesByPopulation = (from x in GetAllPopulations()
+			where x.Population != null
+			select x).ToLookup((Spawnable x) => x.Population);
+		for (int num = 0; num < AllSpawnPopulations.Length; num++)
 		{
-			if (!(AllSpawnPopulations[i] == null))
+			if (!(AllSpawnPopulations[num] == null))
 			{
-				SpawnPopulationBase spawnPopulationBase = AllSpawnPopulations[i];
-				SpawnDistribution distribution = SpawnDistributions[i];
+				SpawnPopulationBase spawnPopulationBase = AllSpawnPopulations[num];
+				SpawnDistribution distribution = SpawnDistributions[num];
 				if (forceAll || spawnPopulationBase.EnforcePopulationLimits)
 				{
-					EnforceLimits(spawnPopulationBase, distribution);
+					EnforceLimits(spawnPopulationBase, distribution, spawnablesByPopulation);
 				}
 			}
 		}
 	}
 
-	public void EnforceLimits(SpawnPopulationBase population, SpawnDistribution distribution)
+	private void EnforceLimits(SpawnPopulationBase population, SpawnDistribution distribution, ILookup<SpawnPopulationBase, Spawnable> spawnablesByPopulation)
 	{
 		int targetCount = population.GetTargetCount(distribution);
-		Spawnable[] array = FindAll(population);
+		Spawnable[] array = spawnablesByPopulation[population].Where((Spawnable x) => (Object)(object)x != (Object)null && ((Component)x).gameObject.activeInHierarchy).ToArray();
 		if (array.Length <= targetCount)
 		{
 			return;
@@ -695,9 +698,16 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 
 	public Spawnable[] FindAll(SpawnPopulationBase population)
 	{
-		return (from x in Object.FindObjectsByType<Spawnable>((FindObjectsSortMode)0)
-			where ((Component)x).gameObject.activeInHierarchy && x.Population == population
+		return (from x in GetAllPopulations()
+			where x.Population == population
 			select x).ToArray();
+	}
+
+	private IEnumerable<Spawnable> GetAllPopulations()
+	{
+		return from x in Object.FindObjectsByType<Spawnable>((FindObjectsSortMode)0)
+			where ((Component)x).gameObject.activeInHierarchy
+			select x;
 	}
 
 	public void AddRespawn(SpawnIndividual individual)

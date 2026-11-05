@@ -30,11 +30,18 @@ public class State_Dead : FSMStateBase
 	private LootContainer.LootSpawnSlot[] LootSpawnSlots;
 
 	[SerializeField]
+	public GameObjectRef DeathEffect;
+
+	[SerializeField]
+	[Tooltip("The gait from which a death reads as being carried forward mid stride rather than dropping where it stood.")]
+	private RustNavMeshAgent.Speeds forwardMotionFrom = RustNavMeshAgent.Speeds.Jog;
+
+	[SerializeField]
 	[Tooltip("Whether an animal that dies with nobody having attacked it - old age - lies down and goes quietly instead of playing its combat death. Needs the owner to provide a held sleeping pose; a species without one falls back to a death clip.")]
 	private bool peacefulNaturalDeath;
 
-	[SerializeField]
 	[Tooltip("How long (in seconds) the animal lies there before the corpse drops, so it dies in its sleep rather than the instant it settles.")]
+	[SerializeField]
 	private float peacefulDeathSettleTime = 6f;
 
 	private RootMotionPlayer.PlayServerState animState;
@@ -65,16 +72,24 @@ public class State_Dead : FSMStateBase
 
 	public bool HasPeacefulDeathAnimation => peacefulNaturalDeath;
 
+	public RootMotionData PlayedDeathAnimation { get; private set; }
+
 	private Action StartRagdollAction => StartRagdoll;
 
 	private Action KillOwnerAction => KillOwner;
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = payload.hitInfo == null;
 		if (flag && !peacefulNaturalDeath && AI.logIssues)
 		{
 			Debug.LogError((object)$"Entering {Name} without HitInfo payload, this should not happen and may cause issues with stats tracking. Owner: {Owner}", (Object)(object)Owner);
+		}
+		if (DeathEffect.isValid)
+		{
+			Effect.server.Run(DeathEffect.resourcePath, ((Component)Owner).transform.position, Vector3.up);
 		}
 		if (payload.hitInfo != null && (Object)(object)payload.hitInfo.InitiatorPlayer != (Object)null && !payload.hitInfo.InitiatorPlayer.IsNpc)
 		{
@@ -124,13 +139,14 @@ public class State_Dead : FSMStateBase
 
 	private void PlayDeathAnim(FSMPayload payload, bool diedOfNaturalCauses, Action invokeAction)
 	{
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		RootMotionData rootMotionData = ((((Agent.speed > Agent.GetSpeedForGait(RustNavMeshAgent.Speeds.Run)) | diedOfNaturalCauses) || Vector3.Dot(payload.hitInfo.attackNormal, ((Component)Owner).transform.forward) >= 0f) ? (forwardMotionDeathAnim ?? staticDeathAnim) : (staticDeathAnim ?? forwardMotionDeathAnim));
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		RootMotionData rootMotionData = ((((Agent.velocity.magnitude >= Agent.GetSpeedForGait(forwardMotionFrom)) | diedOfNaturalCauses) || Vector3.Dot(payload.hitInfo.attackNormal, ((Component)Owner).transform.forward) >= 0f) ? (forwardMotionDeathAnim ?? staticDeathAnim) : (staticDeathAnim ?? forwardMotionDeathAnim));
 		if (swimmingDeathAnim != null && Agent.canSwim && Agent.IsSwimming)
 		{
 			rootMotionData = swimmingDeathAnim;
 		}
+		PlayedDeathAnimation = rootMotionData;
 		if (rootMotionData != null)
 		{
 			animState = AnimPlayer.PlayServerAndTakeFromPool(rootMotionData);
@@ -168,7 +184,7 @@ public class State_Dead : FSMStateBase
 					LootContainer.LootSpawnSlot lootSpawnSlot = lootSpawnSlots[i];
 					for (int j = 0; j < lootSpawnSlot.numberToSpawn; j++)
 					{
-						if (Random.Range(0f, 1f) <= lootSpawnSlot.probability)
+						if (Rng.Range(0f, 1f) <= lootSpawnSlot.probability)
 						{
 							lootSpawnSlot.definition.SpawnIntoContainer(castedUnityObject.containers[0]);
 						}

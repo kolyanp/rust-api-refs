@@ -582,7 +582,7 @@ public class NexusClanWrapper : IClan
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
+		Nullable val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return m.SteamId;
@@ -591,7 +591,7 @@ public class NexusClanWrapper : IClan
 		{
 			return false;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
+		Nullable val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) =>
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			return r.RoleId;

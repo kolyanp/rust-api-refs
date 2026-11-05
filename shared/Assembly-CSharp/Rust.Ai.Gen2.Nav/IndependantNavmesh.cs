@@ -131,16 +131,15 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
 			return;
 		}
 		buildTimeTransform = ((Component)this).transform.localToWorldMatrix;
-		RustNavmesh rustNavmesh = new RustNavmesh(tileBuilder, null, null, GetBounds(), shouldBuild: true, canMove || synchronous, forceHiRes);
+		RustNavmesh rustNavmesh = new RustNavmesh(tileBuilder, null, null, GetBounds(), shouldBuild: true, synchronous, forceHiRes, cullTilesFarFromShore: false, canMove ? this : null);
 		if (rustNavmesh == null || !rustNavmesh.IsValid())
 		{
 			RustNavigation.LogError("Failed to build independent navmesh for object " + ((Object)this).name);
@@ -155,7 +154,10 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		navmeshLookup.Remove(this);
 		lastBounds = GetBounds();
 		navmeshLookup.Add(lastBounds, this);
-		RustNavDoorGates.ReassertInBounds(lastBounds);
+		if (synchronous)
+		{
+			RustNavDoorGates.FlushTileReasserts();
+		}
 	}
 
 	public void RebuildTilesInBounds(Bounds bounds, bool synchronous = false)

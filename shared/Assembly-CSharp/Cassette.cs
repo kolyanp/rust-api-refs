@@ -156,7 +156,8 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 
 	public override void Load(LoadInfo info)
 	{
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (info.msg.cassette == null)
 		{
@@ -166,7 +167,12 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 		AudioId = info.msg.cassette.audioId;
 		CreatorSteamId = info.msg.cassette.creatorSteamId;
 		preloadedAudioId = info.msg.cassette.preloadAudioId;
-		if (isServer && info.msg.cassette.holder.IsValid)
+		if (!isServer)
+		{
+			return;
+		}
+		AudioId = FileStorage.server.GetCrc(net.ID, 0uL);
+		if (info.msg.cassette.holder.IsValid)
 		{
 			BaseNetworkable baseNetworkable = BaseNetworkable.serverEntities.Find(info.msg.cassette.holder);
 			if ((Object)(object)baseNetworkable != (Object)null && baseNetworkable is ICassettePlayer cassettePlayer)
@@ -196,11 +202,14 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.cassette = Pool.Get<Cassette>();
-		info.msg.cassette.audioId = AudioId;
+		if (!info.forDisk)
+		{
+			info.msg.cassette.audioId = AudioId;
+		}
 		info.msg.cassette.creatorSteamId = CreatorSteamId;
 		info.msg.cassette.preloadAudioId = preloadedAudioId;
 		if (!ObjectEx.IsUnityNull(currentCassettePlayer) && currentCassettePlayer.ToBaseEntity.IsValid())
@@ -241,14 +250,12 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 	public void Server_MakeNewFile(RPCMessage msg)
 	{
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)msg.player == (Object)null) && GetParentEntity() is RecorderTool recorderTool && !((Object)(object)recorderTool.GetOwnerPlayer() != (Object)(object)msg.player) && !((Object)(object)recorderTool.cachedCassette != (Object)(object)this))
 		{
 			byte[] array = msg.read.BytesWithSize();
 			if (IsOggValid(array, this))
 			{
-				FileStorage.server.RemoveAllByEntity(net.ID);
-				uint id = FileStorage.server.Store(array, FileStorage.Type.ogg, net.ID);
+				uint id = FileStorage.server.Store(net.ID, 0uL, FileStorage.Type.ogg, array);
 				SetAudioId(id, msg.player.userID);
 				Analytics.Azure.OnUGCCreated(msg.player, this, "cassette", array.Length);
 			}
@@ -258,7 +265,7 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 	public bool ClearSavedAudio()
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		FileStorage.server.RemoveAllByEntity(net.ID);
+		FileStorage.server.RemoveAll(net.ID);
 		if (AudioId == 0)
 		{
 			return false;
@@ -277,6 +284,8 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 
 	public void ClearContent()
 	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		FileStorage.server.RemoveAll(net.ID);
 		AudioId = 0u;
 		SendNetworkUpdate();
 	}

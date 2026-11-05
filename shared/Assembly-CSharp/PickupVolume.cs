@@ -70,13 +70,14 @@ public class PickupVolume : PrefabAttribute
 
 	public static bool CheckFlags(List<Collider> colliders, PickupVolume volume, BaseEntity ignoredEntity = null)
 	{
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		foreach (Collider collider in colliders)
 		{
 			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(collider);
 			if ((!((Object)(object)baseEntity != (Object)null) || !((Object)(object)ignoredEntity != (Object)null) || !(baseEntity.net.ID == ignoredEntity.net.ID)) && (Object)(object)baseEntity != (Object)null && (Object)(object)baseEntity != (Object)(object)ignoredEntity)
 			{
+				DeployVolume.LastDeployHit = collider;
 				return true;
 			}
 		}

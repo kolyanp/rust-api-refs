@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 
 public sealed class PointTarget : IAITarget
 {
 	private readonly float _radius;
 
-	public Vector3? Position { get; }
+	public Nullable Position { get; }
 
 	public PointTarget(Vector3 pos, float radius = 3f)
 	{

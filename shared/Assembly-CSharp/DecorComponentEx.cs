@@ -14,6 +14,32 @@ public static class DecorComponentEx
 		}
 	}
 
+	public static DecorBounds GetBounds(DecorComponent[] components, Vector3 scale)
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		DecorBounds result = new DecorBounds
+		{
+			maxScale = Mathf.Max(new float[3]
+			{
+				Mathf.Abs(scale.x),
+				Mathf.Abs(scale.y),
+				Mathf.Abs(scale.z)
+			}),
+			maxShift = 0f
+		};
+		foreach (DecorComponent decorComponent in components)
+		{
+			if (!decorComponent.isRoot)
+			{
+				break;
+			}
+			decorComponent.ExpandBounds(ref result.maxScale, ref result.maxShift);
+		}
+		return result;
+	}
+
 	public static void ApplyDecorComponents(this Transform transform, DecorComponent[] components)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)

@@ -37,6 +37,12 @@ public class SupplyDrop : LootContainer
 
 	private void OnCollisionEnter(Collision collision)
 	{
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Invalid comparison between Unknown and I4
+		if (((1 << ((Component)collision.collider).gameObject.layer) & 0x100200) > 0 && HasFlag(Flags.Reserved3) && (Object)(object)collision.rigidbody != (Object)null && (int)collision.rigidbody.collisionDetectionMode == 2)
+		{
+			collision.rigidbody.collisionDetectionMode = (CollisionDetectionMode)3;
+		}
 		bool flag = ((1 << ((Component)collision.collider).gameObject.layer) & 0x40A10111) > 0;
 		bool flag2 = ((1 << ((Component)collision.collider).gameObject.layer) & 0x8000000) > 0;
 		BaseEntity entity = CollisionEx.GetEntity(collision);

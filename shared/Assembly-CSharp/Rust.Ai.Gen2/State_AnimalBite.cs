@@ -25,8 +25,8 @@ public class State_AnimalBite : State_AnimalChase
 	public float PlaybackSpeed = 1f;
 
 	[Range(0f, 0.9f)]
-	[SerializeField]
 	[Tooltip("Where in the bite the damage lands, as a fraction of the clip. A fraction rather than seconds so it stays on the same frame of the animation whatever length the clip is and whatever rate PlaybackSpeed runs it at.")]
+	[SerializeField]
 	public float DamageAtClipFraction = 0.35f;
 
 	[NonSerialized]

@@ -123,9 +123,10 @@ public class GlobalNetworkHandler : PointEntity
 	public void OnEntityKilled(BaseNetworkable entity)
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		if (serverData.Remove(entity.net.ID))
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		if (serverData.Remove(entity.net.ID, out var value))
 		{
+			value.Dispose();
 			SendEntityDelete(entity.net.ID, new SendInfo(Net.limit_global_update_broadcast ? globalConnections : Net.sv.connections));
 		}
 	}

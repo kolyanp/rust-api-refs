@@ -91,9 +91,9 @@ public class State_Search : FSMStateBase
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
@@ -149,7 +149,7 @@ public class State_Search : FSMStateBase
 									}
 								}
 							}
-							num += Random.value * 0.01f;
+							num += Rng.Value * 0.01f;
 						}
 						((List<(NavVector3, float)>)(object)pooledScoreList).Add((item2, num));
 					}

@@ -160,9 +160,9 @@ public class Shield : HeldEntity
 		return AssetNameCache.GetName(ShieldCollider.sharedMaterial);
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void ServerToggleBlock(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -189,21 +189,27 @@ public class Shield : HeldEntity
 		}
 		if (item != null)
 		{
+			float num2 = info.damageTypes.Total();
 			Protection.Scale(info.damageTypes);
 			info.HitBone = 0u;
-			float num2 = info.damageTypes.Total();
+			float num3 = info.damageTypes.Total();
 			info.damageTypes.ScaleAll(Mathf.Clamp01(1f - DamageMitigationFactor));
-			float amount = num2 - info.damageTypes.Total();
+			float num4 = num3 - info.damageTypes.Total();
+			info.HitShield = this;
+			info.ShieldAbsorbedDamage = num2 - info.damageTypes.Total();
+			info.ShieldDurabilityLoss = Mathf.Min(num4, item.condition);
 			if ((Object)(object)ownerPlayer != (Object)null)
 			{
 				ownerPlayer.OnAttacked(info);
 			}
-			item.LoseCondition(amount);
+			item.LoseCondition(num4);
 		}
-		bool arg = (Object)(object)info.Weapon != (Object)null && info.Weapon is BaseMelee;
 		if ((Object)(object)ownerPlayer != (Object)null)
 		{
-			ClientRPC(RpcTarget.NetworkGroup("ClientShieldHit", ownerPlayer), arg, ((Object)(object)info.InitiatorPlayer != (Object)null) ? info.InitiatorPlayer.userID.Get() : 0);
+			BasePlayer initiatorPlayer = info.InitiatorPlayer;
+			ulong arg = ((initiatorPlayer != null && !initiatorPlayer.isInvisible) ? initiatorPlayer.userID.Get() : 0);
+			bool arg2 = (Object)(object)info.Weapon != (Object)null && info.Weapon is BaseMelee;
+			ClientRPC(RpcTarget.NetworkGroup("ClientShieldHit"), arg2, arg);
 		}
 	}
 

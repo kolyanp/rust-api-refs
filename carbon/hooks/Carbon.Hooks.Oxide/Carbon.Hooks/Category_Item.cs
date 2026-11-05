@@ -16,13 +16,13 @@ public class Category_Item
 	public class Item_ItemContainer
 	{
 		[Patch("OnItemRemovedFromContainer", "OnItemRemovedFromContainer", "ItemContainer", "Remove", new string[] { "Item", "BasePlayer" })]
-		[Identifier("f51525d0b1924cc680f743c0035b16b9")]
+		[Identifier("b779c5cfcb1940028aec7d3537aa0946")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ItemContainer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemContainer_f51525d0b1924cc680f743c0035b16b9 : Patch
+		public class Item_ItemContainer_b779c5cfcb1940028aec7d3537aa0946 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -52,13 +52,13 @@ public class Category_Item
 		}
 
 		[Patch("OnItemAddedToContainer", "OnItemAddedToContainer", "ItemContainer", "Insert", new string[] { "Item", "BasePlayer" })]
-		[Identifier("727997100f1d400b95de341dc76e8639")]
+		[Identifier("f7458db79fe9449188b7d7e562858a53")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ItemContainer", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemContainer_727997100f1d400b95de341dc76e8639 : Patch
+		public class Item_ItemContainer_f7458db79fe9449188b7d7e562858a53 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -88,7 +88,7 @@ public class Category_Item
 		}
 
 		[Patch("CanAcceptItem", "CanAcceptItem", "ItemContainer", "CanAcceptItem", new string[] { "BasePlayer", "Item", "System.Int32" })]
-		[Identifier("e264e8eb9c44422ea3d36eb2375316c0")]
+		[Identifier("94498a868d02472a8836db39c63ca6dd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ItemContainer", false)]
 		[Parameter("item", "Item", false)]
@@ -97,7 +97,7 @@ public class Category_Item
 		[Return(typeof(CanAcceptResult))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemContainer_e264e8eb9c44422ea3d36eb2375316c0 : Patch
+		public class Item_ItemContainer_94498a868d02472a8836db39c63ca6dd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -143,7 +143,7 @@ public class Category_Item
 	public class Item_ItemCrafter
 	{
 		[Patch("OnItemCraft", "OnItemCraft", "ItemCrafter", "CraftItem", new string[] { "ItemBlueprint", "BasePlayer", "ProtoBuf.Item/InstanceData", "System.Int32", "System.Int32", "Item", "System.Boolean", "System.Int32" })]
-		[Identifier("cfc15c2fe524488dba331f8fe3e22fc4")]
+		[Identifier("5d113db7df294ab2b0ad3a9e41ea78dc")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "ItemCraftTask", false)]
 		[Parameter("owner", "BasePlayer", false)]
@@ -151,7 +151,7 @@ public class Category_Item
 		[Return(typeof(bool))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemCrafter_cfc15c2fe524488dba331f8fe3e22fc4 : Patch
+		public class Item_ItemCrafter_5d113db7df294ab2b0ad3a9e41ea78dc : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -191,7 +191,7 @@ public class Category_Item
 		}
 
 		[Patch("OnItemCraftFinished", "OnItemCraftFinished", "ItemCrafter", "FinishCrafting", new string[] { "ItemCraftTask" })]
-		[Identifier("2cc288c5c4054f499c160067e3d812fa")]
+		[Identifier("33cbc58fc3454b0fa0231d227d51ce73")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("task", "ItemCraftTask", false)]
 		[Parameter("local1", "Item", false)]
@@ -199,7 +199,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemCrafter_2cc288c5c4054f499c160067e3d812fa : Patch
+		public class Item_ItemCrafter_33cbc58fc3454b0fa0231d227d51ce73 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -229,14 +229,14 @@ public class Category_Item
 		}
 
 		[Patch("OnItemCraftCancelled", "OnItemCraftCancelled", "ItemCrafter", "CancelTask", new string[] { "System.Int32" })]
-		[Identifier("d1243d9ea80a4fb482eefbe2bed27e97")]
+		[Identifier("860609808bca45198aa308dadc62f04e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "ItemCraftTask", false)]
 		[Parameter("self", "ItemCrafter", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemCrafter_d1243d9ea80a4fb482eefbe2bed27e97 : Patch
+		public class Item_ItemCrafter_860609808bca45198aa308dadc62f04e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -264,7 +264,7 @@ public class Category_Item
 		}
 
 		[Patch("CanFastTrackCraftTask", "CanFastTrackCraftTask", "ItemCrafter", "FastTrackTask", new string[] { "System.Int32" })]
-		[Identifier("8cae56317a204023b75a6f3f58d96362")]
+		[Identifier("ae3a8e1e88c64ffa948d8e9bd56fd9a2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ItemCrafter", false)]
 		[Parameter("local2", "ItemCraftTask", false)]
@@ -272,7 +272,7 @@ public class Category_Item
 		[Return(typeof(bool))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemCrafter_8cae56317a204023b75a6f3f58d96362 : Patch
+		public class Item_ItemCrafter_ae3a8e1e88c64ffa948d8e9bd56fd9a2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -316,7 +316,7 @@ public class Category_Item
 	public class Item_Deployer
 	{
 		[Patch("OnItemDeployed", "OnItemDeployed [Regular]", "Deployer", "DoDeploy_Regular", new string[] { "Deployable", "UnityEngine.Ray" })]
-		[Identifier("9241ba55c65642d9a8da2ba4988c76f5")]
+		[Identifier("da212e9d26474eb7b49c66168deafcbd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Deployer", false)]
 		[Parameter("local5", "ItemModDeployable", false)]
@@ -324,7 +324,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Deployer_9241ba55c65642d9a8da2ba4988c76f5 : Patch
+		public class Item_Deployer_da212e9d26474eb7b49c66168deafcbd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -354,7 +354,7 @@ public class Category_Item
 		}
 
 		[Patch("OnItemDeployed", "OnItemDeployed [Slot]", "Deployer", "DoDeploy_Slot", new string[] { "Deployable", "UnityEngine.Ray", "NetworkableId" })]
-		[Identifier("49b7661fe37a4727a5615d2f399b9aff")]
+		[Identifier("c0325987c5054c5190ea78dde221134b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Deployer", false)]
 		[Parameter("local1", "BaseEntity", false)]
@@ -362,7 +362,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Deployer_49b7661fe37a4727a5615d2f399b9aff : Patch
+		public class Item_Deployer_c0325987c5054c5190ea78dde221134b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -392,7 +392,7 @@ public class Category_Item
 		}
 
 		[Patch("CanDeployItem", "CanDeployItem", "Deployer", "DoDeploy", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("ac1a65e0e8014d5e9fabbdaee34b6e3e")]
+		[Identifier("244ff009332444018f29934f562033ba")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "Deployer", false)]
@@ -400,7 +400,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Deployer_ac1a65e0e8014d5e9fabbdaee34b6e3e : Patch
+		public class Item_Deployer_244ff009332444018f29934f562033ba : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -439,13 +439,13 @@ public class Category_Item
 	public class Item_Item
 	{
 		[Patch("IOnLoseCondition", "IOnLoseCondition", "Item", "LoseCondition", new string[] { "System.Single" })]
-		[Identifier("0047f027725c452ea2f257a60b0d58d6")]
+		[Identifier("7ea43414e93e4fba8d79e29f7291a125")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Item", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_0047f027725c452ea2f257a60b0d58d6 : Patch
+		public class Item_Item_7ea43414e93e4fba8d79e29f7291a125 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -471,14 +471,14 @@ public class Category_Item
 		}
 
 		[Patch("OnItemUse", "OnItemUse", "Item", "UseItem", new string[] { "System.Int32" })]
-		[Identifier("1bf7b16d37e34fd88cdba381b1056628")]
+		[Identifier("c396918c21174068a84187712a60a1e6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Item", false)]
 		[Parameter("amountToConsume", "System.Int32", false)]
 		[Return(typeof(int), Continues = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_1bf7b16d37e34fd88cdba381b1056628 : Patch
+		public class Item_Item_c396918c21174068a84187712a60a1e6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -516,13 +516,13 @@ public class Category_Item
 		}
 
 		[Patch("OnItemSplit", "OnItemSplit", "Item", "SplitItem", new string[] { "System.Int32" })]
-		[Identifier("b62c2d4f0b0d4ab7b308a1b5dda0e72b")]
+		[Identifier("298ba423f59245e5820e8418b14cf9e2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Item", false)]
 		[Return(typeof(Item))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_b62c2d4f0b0d4ab7b308a1b5dda0e72b : Patch
+		public class Item_Item_298ba423f59245e5820e8418b14cf9e2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -561,14 +561,14 @@ public class Category_Item
 		}
 
 		[Patch("CanStackItem", "CanStackItem", "Item", "CanStack", new string[] { "Item" })]
-		[Identifier("920d974818d34ab2ae9a576db45d2d9f")]
+		[Identifier("89b7ae8d062b4a85b0645ee5ce4f46bd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Item", false)]
 		[Parameter("item", "Item", false)]
 		[Return(typeof(bool))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_920d974818d34ab2ae9a576db45d2d9f : Patch
+		public class Item_Item_89b7ae8d062b4a85b0645ee5ce4f46bd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -606,14 +606,14 @@ public class Category_Item
 		}
 
 		[Patch("OnItemDropped", "OnItemDropped", "Item", "Drop", new string[] { "UnityEngine.Vector3", "UnityEngine.Vector3", "UnityEngine.Quaternion" })]
-		[Identifier("d14c85ee7dc84500bebf1ad09e669366")]
+		[Identifier("8ecb64aac301425db49b8a0ed8be4d98")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Item", false)]
 		[Parameter("local1", "BaseEntity", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_d14c85ee7dc84500bebf1ad09e669366 : Patch
+		public class Item_Item_8ecb64aac301425db49b8a0ed8be4d98 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -641,13 +641,13 @@ public class Category_Item
 		}
 
 		[Patch("OnMaxStackable", "OnMaxStackable", "Item", "MaxStackable", new string[] { })]
-		[Identifier("4965069ab54d4ebaa8675b30f1b9dd2b")]
+		[Identifier("38180e4539744aea89843c26dd1f2dab")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Item", false)]
 		[Return(typeof(int))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_4965069ab54d4ebaa8675b30f1b9dd2b : Patch
+		public class Item_Item_38180e4539744aea89843c26dd1f2dab : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -683,13 +683,13 @@ public class Category_Item
 		}
 
 		[Patch("OnItemRemove", "OnItemRemove", "Item", "Remove", new string[] { "System.Single" })]
-		[Identifier("a438181e51ab40e4875379c51ff946f3")]
+		[Identifier("76ca7c0731584501b1044e77bacba90b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Item", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_a438181e51ab40e4875379c51ff946f3 : Patch
+		public class Item_Item_76ca7c0731584501b1044e77bacba90b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -719,7 +719,7 @@ public class Category_Item
 		}
 
 		[Patch("OnItemStacked", "OnItemStacked [1]", "Item", "MoveToContainer", new string[] { "ItemContainer", "System.Int32", "System.Boolean", "System.Boolean", "BasePlayer", "System.Boolean" })]
-		[Identifier("cd5892e59bf34a33990494d8dcf3cded")]
+		[Identifier("35f0e6c70ab449a98d0d0f4e6454d9fb")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local13", "Item", false)]
 		[Parameter("self", "Item", false)]
@@ -728,7 +728,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_cd5892e59bf34a33990494d8dcf3cded : Patch
+		public class Item_Item_35f0e6c70ab449a98d0d0f4e6454d9fb : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -761,7 +761,7 @@ public class Category_Item
 		}
 
 		[Patch("OnItemStacked", "OnItemStacked [2]", "Item", "MoveToContainer", new string[] { "ItemContainer", "System.Int32", "System.Boolean", "System.Boolean", "BasePlayer", "System.Boolean" })]
-		[Identifier("b40016a1a36b40238f08aa89a2d77021")]
+		[Identifier("fbe45c9c84b745ec9b1579f0cad743c6")]
 		[Dependencies(new string[] { "OnItemStacked [1]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local23", "Item", false)]
@@ -770,14 +770,14 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_b40016a1a36b40238f08aa89a2d77021 : Patch
+		public class Item_Item_fbe45c9c84b745ec9b1579f0cad743c6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 595)
+					if (x++ != 623)
 					{
 						yield return instruction;
 						continue;
@@ -800,11 +800,11 @@ public class Category_Item
 		}
 
 		[Patch("OnItemLock", "OnItemLock", "Item", "LockUnlock", new string[] { "System.Boolean" })]
-		[Identifier("8698d5d64888417d8840c6f7983cc2c9")]
+		[Identifier("f9c13c1e814f4073bbd3ea6f866f0bf1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_8698d5d64888417d8840c6f7983cc2c9 : Patch
+		public class Item_Item_f9c13c1e814f4073bbd3ea6f866f0bf1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -851,12 +851,12 @@ public class Category_Item
 		}
 
 		[Patch("OnItemUnlock", "OnItemUnlock", "Item", "LockUnlock", new string[] { "System.Boolean" })]
-		[Identifier("1218f6205e19493a851dadbafa22a4ad")]
+		[Identifier("a6396e79786146149d7b42a892a624f5")]
 		[Dependencies(new string[] { "OnItemLock" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Item_1218f6205e19493a851dadbafa22a4ad : Patch
+		public class Item_Item_a6396e79786146149d7b42a892a624f5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -906,13 +906,13 @@ public class Category_Item
 	public class Item_MedicalTool
 	{
 		[Patch("OnHealingItemUse", "OnHealingItemUse", "MedicalTool", "GiveEffectsTo", new string[] { "BasePlayer", "IMedicalToolTarget" })]
-		[Identifier("930bd7bf313d4d0587dfc0f611ad2ad8")]
+		[Identifier("cf3aa53a2b954798937a067770303e00")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MedicalTool", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_MedicalTool_930bd7bf313d4d0587dfc0f611ad2ad8 : Patch
+		public class Item_MedicalTool_cf3aa53a2b954798937a067770303e00 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -949,7 +949,7 @@ public class Category_Item
 	public class Item_ResearchTable
 	{
 		[Patch("OnItemResearch", "OnItemResearch", "ResearchTable", "DoResearch", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("093776d4146a431cbfb520f3e1ea7442")]
+		[Identifier("bd01c7198ebd4b4da8d0c350654a0033")]
 		[Dependencies(new string[] { "CanResearchItem" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ResearchTable", false)]
@@ -958,7 +958,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ResearchTable_093776d4146a431cbfb520f3e1ea7442 : Patch
+		public class Item_ResearchTable_bd01c7198ebd4b4da8d0c350654a0033 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -988,14 +988,14 @@ public class Category_Item
 		}
 
 		[Patch("OnItemResearched", "OnItemResearched", "ResearchTable", "ResearchAttemptFinished", new string[] { })]
-		[Identifier("5210774226804232a1768a9f90e6452e")]
+		[Identifier("d4c704b880624fd4b4e5ad87ccb5c185")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ResearchTable", false)]
 		[Parameter("local2", "System.Int32", false)]
 		[Return(typeof(int), Continues = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ResearchTable_5210774226804232a1768a9f90e6452e : Patch
+		public class Item_ResearchTable_d4c704b880624fd4b4e5ad87ccb5c185 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1034,13 +1034,13 @@ public class Category_Item
 		}
 
 		[Patch("OnResearchCostDetermine", "OnResearchCostDetermine [Item]", "ResearchTable", "ScrapForResearch", new string[] { "Item" })]
-		[Identifier("4145d8a0311f4c9ea680d69e862b341c")]
+		[Identifier("079dd314cc2c445eb5368107c9025b6f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Return(typeof(int))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ResearchTable_4145d8a0311f4c9ea680d69e862b341c : Patch
+		public class Item_ResearchTable_079dd314cc2c445eb5368107c9025b6f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1076,13 +1076,13 @@ public class Category_Item
 		}
 
 		[Patch("OnResearchCostDetermine", "OnResearchCostDetermine [ItemDef]", "ResearchTable", "ScrapForResearch", new string[] { "ItemDefinition" })]
-		[Identifier("253853c6bf8b41a18f0c73f6856ed6ee")]
+		[Identifier("3347fbb2953f4ca7be9a7a0d0d8cd6a1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("info", "ItemDefinition", false)]
 		[Return(typeof(int))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ResearchTable_253853c6bf8b41a18f0c73f6856ed6ee : Patch
+		public class Item_ResearchTable_3347fbb2953f4ca7be9a7a0d0d8cd6a1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1121,14 +1121,14 @@ public class Category_Item
 	public class Item_RepairBench
 	{
 		[Patch("OnItemRepair", "OnItemRepair", "RepairBench", "RepairAnItem", new string[] { "Item", "BasePlayer", "BaseEntity", "System.Single", "System.Boolean" })]
-		[Identifier("7edc20bf00e148c5ad4272d68fd0a37d")]
+		[Identifier("8816fb34b64d44fabcd7796733d8f358")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("itemToRepair", "Item", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_RepairBench_7edc20bf00e148c5ad4272d68fd0a37d : Patch
+		public class Item_RepairBench_8816fb34b64d44fabcd7796733d8f358 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1162,32 +1162,31 @@ public class Category_Item
 		}
 
 		[Patch("OnItemSkinChange", "OnItemSkinChange", "RepairBench", "ChangeSkin", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("0c7077dc9a5b437193ce32a256c2b024")]
+		[Identifier("ad729a427aad4f3f84d5454d8b6dfda6")]
 		[Options(/*Could not decode attribute arguments.*/)]
-		[Parameter("inventoryId", "System.Int32", false)]
-		[Parameter("local5", "Item", false)]
+		[Parameter("local2", "System.Int32", false)]
+		[Parameter("local6", "Item", false)]
 		[Parameter("self", "RepairBench", false)]
 		[Parameter("local1", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_RepairBench_0c7077dc9a5b437193ce32a256c2b024 : Patch
+		public class Item_RepairBench_ad729a427aad4f3f84d5454d8b6dfda6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 44)
+					if (x++ != 43)
 					{
 						yield return instruction;
 						continue;
 					}
 					yield return CodeInstructionExtensions.MoveLabelsFrom(new CodeInstruction(OpCodes.Ldc_I4, (object)(-201006377)), instruction);
-					yield return new CodeInstruction(OpCodes.Ldloc_0, (object)null);
-					yield return new CodeInstruction(OpCodes.Ldfld, (object)AccessTools.Field(AccessToolsEx.TypeByName("RepairBench+<>c__DisplayClass12_0"), "inventoryId"));
+					yield return new CodeInstruction(OpCodes.Ldloc_2, (object)null);
 					yield return new CodeInstruction(OpCodes.Box, (object)AccessToolsEx.TypeByName("System.Int32"));
-					yield return new CodeInstruction(OpCodes.Ldloc_S, (object)5);
+					yield return new CodeInstruction(OpCodes.Ldloc_S, (object)6);
 					yield return new CodeInstruction(OpCodes.Ldarg_0, (object)null);
 					yield return new CodeInstruction(OpCodes.Ldloc_1, (object)null);
 					yield return new CodeInstruction(OpCodes.Call, (object)AccessTools.Method(typeof(HookCaller), "CallStaticHook", new Type[5]
@@ -1214,19 +1213,19 @@ public class Category_Item
 	public class Item_MapEntity
 	{
 		[Patch("OnMapImageUpdated", "OnMapImageUpdated", "MapEntity", "ImageUpdate", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("b9c623f045d44e8bbb92ed117ec34b69")]
+		[Identifier("78f41fdb6a8348bc9a00c7db5f3a3008")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_MapEntity_b9c623f045d44e8bbb92ed117ec34b69 : Patch
+		public class Item_MapEntity_78f41fdb6a8348bc9a00c7db5f3a3008 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 84)
+					if (x++ != 75)
 					{
 						yield return instruction;
 						continue;
@@ -1243,7 +1242,7 @@ public class Category_Item
 	public class Item_ItemModUpgrade
 	{
 		[Patch("OnItemUpgrade", "OnItemUpgrade", "ItemModUpgrade", "ServerCommand", new string[] { "Item", "System.String", "BasePlayer" })]
-		[Identifier("9c033df76e9d47bfb8a14bb0ec67ac20")]
+		[Identifier("381c5caad94f4919b978535140d72208")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Parameter("local0", "Item", false)]
@@ -1251,7 +1250,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemModUpgrade_9c033df76e9d47bfb8a14bb0ec67ac20 : Patch
+		public class Item_ItemModUpgrade_381c5caad94f4919b978535140d72208 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1284,7 +1283,7 @@ public class Category_Item
 	public class Item_PlayerInventory
 	{
 		[Patch("CanEquipItem", "CanEquipItem", "PlayerInventory", "CanEquipItem", new string[] { "BasePlayer", "Item", "System.Int32" })]
-		[Identifier("20c4a26d3dcd471887dc85198a0c686a")]
+		[Identifier("d23308a0ca504e63b836b7f50b5edd30")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Parameter("item", "Item", false)]
@@ -1293,7 +1292,7 @@ public class Category_Item
 		[Return(typeof(bool))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_20c4a26d3dcd471887dc85198a0c686a : Patch
+		public class Item_PlayerInventory_d23308a0ca504e63b836b7f50b5edd30 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1336,7 +1335,7 @@ public class Category_Item
 		}
 
 		[Patch("CanWearItem", "CanWearItem", "PlayerInventory", "CanWearItem", new string[] { "BasePlayer", "Item", "System.Int32" })]
-		[Identifier("85e457cd4f2c4c248743022b8961e7e2")]
+		[Identifier("42a9997a1a4241db96512d4b8fcc8dd9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Parameter("item", "Item", false)]
@@ -1345,7 +1344,7 @@ public class Category_Item
 		[Return(typeof(bool))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_85e457cd4f2c4c248743022b8961e7e2 : Patch
+		public class Item_PlayerInventory_42a9997a1a4241db96512d4b8fcc8dd9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1388,7 +1387,7 @@ public class Category_Item
 		}
 
 		[Patch("OnItemAction", "OnItemAction", "PlayerInventory", "ItemCmd", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("06922ddfa32644f593e93adbff45b6d1")]
+		[Identifier("afa397bd3e984d8fba414dcac21af5a3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local2", "Item", false)]
 		[Parameter("local1", "System.String", false)]
@@ -1396,7 +1395,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_06922ddfa32644f593e93adbff45b6d1 : Patch
+		public class Item_PlayerInventory_afa397bd3e984d8fba414dcac21af5a3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1431,7 +1430,7 @@ public class Category_Item
 		}
 
 		[Patch("CanMoveItem", "CanMoveItem", "PlayerInventory", "MoveItem", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("e84333978e32478c8e012120f7ffab83")]
+		[Identifier("945ea377c94a4695b8464fb80f8ae92a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local5", "Item", false)]
 		[Parameter("self", "PlayerInventory", false)]
@@ -1442,7 +1441,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_e84333978e32478c8e012120f7ffab83 : Patch
+		public class Item_PlayerInventory_945ea377c94a4695b8464fb80f8ae92a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1488,13 +1487,13 @@ public class Category_Item
 		}
 
 		[Patch("OnInventoryItemsCount", "OnInventoryItemsCount", "PlayerInventory", "GetAmount", new string[] { "System.Int32", "System.Boolean", "System.Boolean" })]
-		[Identifier("b1fce6c6b2854b89b8764ce228b7b81a")]
+		[Identifier("236609ad1c974c25abcb6b3a9abb6438")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Return(typeof(int))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_b1fce6c6b2854b89b8764ce228b7b81a : Patch
+		public class Item_PlayerInventory_236609ad1c974c25abcb6b3a9abb6438 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1539,13 +1538,13 @@ public class Category_Item
 		}
 
 		[Patch("OnInventoryItemsTake", "OnInventoryItemsTake", "PlayerInventory", "Take", new string[] { "System.Collections.Generic.List`1<Item>", "System.Int32", "System.Int32" })]
-		[Identifier("7ed5ec5f8223453182aa6f18e7cd26fc")]
+		[Identifier("ae63ee92adb24e3fa2bc95e5bb0296ae")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Return(typeof(int))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_7ed5ec5f8223453182aa6f18e7cd26fc : Patch
+		public class Item_PlayerInventory_ae63ee92adb24e3fa2bc95e5bb0296ae : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1589,7 +1588,7 @@ public class Category_Item
 		}
 
 		[Patch("OnInventoryItemsFind", "OnInventoryItemsFind", "PlayerInventory", "FindItemsByItemID", new string[] { "System.Collections.Generic.List`1<Item>", "System.Int32" })]
-		[Identifier("f44d7684d6fb4198b09ebe253399bfac")]
+		[Identifier("3ae4b48961774a6a8935b69945df8049")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Parameter("id", "System.Int32", false)]
@@ -1597,7 +1596,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_f44d7684d6fb4198b09ebe253399bfac : Patch
+		public class Item_PlayerInventory_3ae4b48961774a6a8935b69945df8049 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1632,13 +1631,13 @@ public class Category_Item
 		}
 
 		[Patch("OnInventoryAmmoFind", "OnInventoryAmmoFind", "PlayerInventory", "FindAmmo", new string[] { "System.Collections.Generic.List`1<Item>", "Rust.AmmoTypes" })]
-		[Identifier("6003370a13ca4b9eac6e1d5d855b36d1")]
+		[Identifier("1af41956c26a4fba89c0bdfc9e39f7a4")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_6003370a13ca4b9eac6e1d5d855b36d1 : Patch
+		public class Item_PlayerInventory_1af41956c26a4fba89c0bdfc9e39f7a4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1673,14 +1672,14 @@ public class Category_Item
 		}
 
 		[Patch("OnBackpackDrop", "OnBackpackDrop", "PlayerInventory", "TryDropBackpack", new string[] { })]
-		[Identifier("5174c4e8b81a471db051a37d04db969f")]
+		[Identifier("53db0dfc318f43338df916d323caf26a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "Item", false)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_5174c4e8b81a471db051a37d04db969f : Patch
+		public class Item_PlayerInventory_53db0dfc318f43338df916d323caf26a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1712,13 +1711,13 @@ public class Category_Item
 		}
 
 		[Patch("OnInventoryItemFind", "OnInventoryItemFind", "PlayerInventory", "FindItemByItemID", new string[] { "System.Int32" })]
-		[Identifier("6c2804a353fc4773a680b54c9d861860")]
+		[Identifier("04ebf26938d8490db3fd161a435b7cba")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Return(typeof(Item))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_6c2804a353fc4773a680b54c9d861860 : Patch
+		public class Item_PlayerInventory_04ebf26938d8490db3fd161a435b7cba : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1757,13 +1756,13 @@ public class Category_Item
 		}
 
 		[Patch("OnInventoryAmmoItemFind", "OnInventoryAmmoItemFind [PlayerInventory]", "PlayerInventory", "FindAmmo", new string[] { "Rust.AmmoTypes" })]
-		[Identifier("f441a2a106524564baa4410feafd4037")]
+		[Identifier("15ca6929ec794d19be7c3423e579b6e8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerInventory", false)]
 		[Return(typeof(Item))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PlayerInventory_f441a2a106524564baa4410feafd4037 : Patch
+		public class Item_PlayerInventory_15ca6929ec794d19be7c3423e579b6e8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1805,7 +1804,7 @@ public class Category_Item
 	public class Item_WorldItem
 	{
 		[Patch("OnItemPickup", "OnItemPickup", "WorldItem", "Pickup", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("5b5ff71421c34168bbb21b17cd95c1f1")]
+		[Identifier("9dc458196e2d4c86a74dbc6a88cf887a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -1813,7 +1812,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WorldItem_5b5ff71421c34168bbb21b17cd95c1f1 : Patch
+		public class Item_WorldItem_9dc458196e2d4c86a74dbc6a88cf887a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1852,13 +1851,13 @@ public class Category_Item
 	public class Item_BaseOven
 	{
 		[Patch("OnFindBurnable", "OnFindBurnable", "BaseOven", "FindBurnable", new string[] { })]
-		[Identifier("563ffdf227754a3ab913cd9ba57ca18a")]
+		[Identifier("149e51bb96f84a8292d70c48869c6a08")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseOven", false)]
 		[Return(typeof(Item))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_BaseOven_563ffdf227754a3ab913cd9ba57ca18a : Patch
+		public class Item_BaseOven_149e51bb96f84a8292d70c48869c6a08 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1897,14 +1896,14 @@ public class Category_Item
 	public class Item_Recycler
 	{
 		[Patch("OnItemRecycle", "OnItemRecycle", "Recycler", "RecycleThink", new string[] { })]
-		[Identifier("a2834d105b954fca8be12a175b366b08")]
+		[Identifier("fc61eeee9e9247bdab7c8f055ee4a1eb")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local3", "Item", false)]
 		[Parameter("self", "Recycler", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Recycler_a2834d105b954fca8be12a175b366b08 : Patch
+		public class Item_Recycler_fc61eeee9e9247bdab7c8f055ee4a1eb : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1938,7 +1937,7 @@ public class Category_Item
 		}
 
 		[Patch("OnItemRecycleAmount", "OnItemRecycleAmount", "Recycler", "RecycleThink", new string[] { })]
-		[Identifier("d4e04789b5164f07adca9698d8c297b6")]
+		[Identifier("fb62ed100a8247f983ff8f86041b0ea0")]
 		[Dependencies(new string[] { "OnItemRecycle [2]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local3", "Item", false)]
@@ -1947,7 +1946,7 @@ public class Category_Item
 		[Return(typeof(int), Continues = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Recycler_d4e04789b5164f07adca9698d8c297b6 : Patch
+		public class Item_Recycler_fb62ed100a8247f983ff8f86041b0ea0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1988,12 +1987,12 @@ public class Category_Item
 		}
 
 		[Patch("OnItemRecycle", "OnItemRecycle [2]", "Recycler", "RecycleThink", new string[] { })]
-		[Identifier("bcf54ff39a56430e9c8abfd0673907c1")]
+		[Identifier("c4712c06ac3b434cb7b933af4ec6f8f1")]
 		[Dependencies(new string[] { "OnItemRecycle" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Recycler_bcf54ff39a56430e9c8abfd0673907c1 : Patch
+		public class Item_Recycler_c4712c06ac3b434cb7b933af4ec6f8f1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2030,14 +2029,14 @@ public class Category_Item
 	public class Item_DroppedItem
 	{
 		[Patch("CanCombineDroppedItem", "CanCombineDroppedItem", "DroppedItem", "OnDroppedOn", new string[] { "DroppedItem" })]
-		[Identifier("7d9be090bd4f40348c7734147bbf94e4")]
+		[Identifier("b2b41cf6ce0b4517969500ee982f3969")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "DroppedItem", false)]
 		[Parameter("di", "DroppedItem", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_DroppedItem_7d9be090bd4f40348c7734147bbf94e4 : Patch
+		public class Item_DroppedItem_b2b41cf6ce0b4517969500ee982f3969 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2069,14 +2068,14 @@ public class Category_Item
 		}
 
 		[Patch("OnDroppedItemCombined", "OnDroppedItemCombined", "DroppedItem", "OnDroppedOn", new string[] { "DroppedItem" })]
-		[Identifier("f3b392d94e604db194505634fbb65330")]
+		[Identifier("40544bbe2d8043efba41cfc56e6223f3")]
 		[Dependencies(new string[] { "CanCombineDroppedItem" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "DroppedItem", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_DroppedItem_f3b392d94e604db194505634fbb65330 : Patch
+		public class Item_DroppedItem_40544bbe2d8043efba41cfc56e6223f3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2102,13 +2101,13 @@ public class Category_Item
 		}
 
 		[Patch("OnItemDespawn", "OnItemDespawn", "DroppedItem", "IdleDestroy", new string[] { })]
-		[Identifier("5ab3c12af56742ec97404b19a7330c09")]
+		[Identifier("80787e0ecab04bf187c8a93ec7be48d8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_DroppedItem_5ab3c12af56742ec97404b19a7330c09 : Patch
+		public class Item_DroppedItem_80787e0ecab04bf187c8a93ec7be48d8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2138,7 +2137,7 @@ public class Category_Item
 	public class Item_LootContainer
 	{
 		[Patch("OnBonusItemDrop", "OnBonusItemDrop", "LootContainer", "DropBonusItems", new string[] { "BaseEntity", "ItemContainer" })]
-		[Identifier("3de078a9932b4010a7dbd14e2ab0083b")]
+		[Identifier("a860a58fa11f4a03b49519ca0c29444f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local5", "Item", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -2146,7 +2145,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_LootContainer_3de078a9932b4010a7dbd14e2ab0083b : Patch
+		public class Item_LootContainer_a860a58fa11f4a03b49519ca0c29444f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2180,7 +2179,7 @@ public class Category_Item
 		}
 
 		[Patch("OnBonusItemDropped", "OnBonusItemDropped", "LootContainer", "DropBonusItems", new string[] { "BaseEntity", "ItemContainer" })]
-		[Identifier("3841c4fdacc04866be955f46f0ebda28")]
+		[Identifier("bd3e27eef38449babe35a1ff01df40c9")]
 		[Dependencies(new string[] { "OnBonusItemDrop" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local5", "Item", false)]
@@ -2189,7 +2188,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_LootContainer_3841c4fdacc04866be955f46f0ebda28 : Patch
+		public class Item_LootContainer_bd3e27eef38449babe35a1ff01df40c9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2219,12 +2218,12 @@ public class Category_Item
 		}
 
 		[Patch("OnBonusItemDropped [patch 1]", "OnBonusItemDropped [patch 1]", "LootContainer", "DropBonusItems", new string[] { "BaseEntity", "ItemContainer" })]
-		[Identifier("f1588471f81c46b1b2db1ebe57439966")]
+		[Identifier("dbead3d0fe7b47e4950115440bb1451b")]
 		[Dependencies(new string[] { "OnBonusItemDropped" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_LootContainer_f1588471f81c46b1b2db1ebe57439966 : Patch
+		public class Item_LootContainer_dbead3d0fe7b47e4950115440bb1451b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2251,12 +2250,12 @@ public class Category_Item
 		}
 
 		[Patch("OnBonusItemDropped [patch 2]", "OnBonusItemDropped [patch 2]", "LootContainer", "DropBonusItems", new string[] { "BaseEntity", "ItemContainer" })]
-		[Identifier("8b6a49575b4c4c1cb3a03bbcaf60de5f")]
+		[Identifier("5c70a47bf79d4e51a53c5ce625f32045")]
 		[Dependencies(new string[] { "OnBonusItemDropped [patch 1]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_LootContainer_8b6a49575b4c4c1cb3a03bbcaf60de5f : Patch
+		public class Item_LootContainer_5c70a47bf79d4e51a53c5ce625f32045 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2283,12 +2282,12 @@ public class Category_Item
 		}
 
 		[Patch("OnBonusItemDropped [patch 3]", "OnBonusItemDropped [patch 3]", "LootContainer", "DropBonusItems", new string[] { "BaseEntity", "ItemContainer" })]
-		[Identifier("5c702d07d1f246098f51871977adc1f8")]
+		[Identifier("362005c85def42cbbccfdf9a80502c42")]
 		[Dependencies(new string[] { "OnBonusItemDropped [patch 2]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_LootContainer_5c702d07d1f246098f51871977adc1f8 : Patch
+		public class Item_LootContainer_362005c85def42cbbccfdf9a80502c42 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2315,12 +2314,12 @@ public class Category_Item
 		}
 
 		[Patch("OnBonusItemDropped [patch 4]", "OnBonusItemDropped [patch 4]", "LootContainer", "DropBonusItems", new string[] { "BaseEntity", "ItemContainer" })]
-		[Identifier("e4c29b51d04d4cd8a8ac43502fab4bcc")]
+		[Identifier("f37fdd963fa34e0a97c877da640e96bd")]
 		[Dependencies(new string[] { "OnBonusItemDropped [patch 3]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_LootContainer_e4c29b51d04d4cd8a8ac43502fab4bcc : Patch
+		public class Item_LootContainer_f37fdd963fa34e0a97c877da640e96bd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2347,12 +2346,12 @@ public class Category_Item
 		}
 
 		[Patch("OnBonusItemDropped [patch 5]", "OnBonusItemDropped [patch 5]", "LootContainer", "DropBonusItems", new string[] { "BaseEntity", "ItemContainer" })]
-		[Identifier("1390ed1495c94fffab6fb4274bf5ef42")]
+		[Identifier("509f4da69ce64bf19de10a7e17b0f075")]
 		[Dependencies(new string[] { "OnBonusItemDropped [patch 4]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_LootContainer_1390ed1495c94fffab6fb4274bf5ef42 : Patch
+		public class Item_LootContainer_509f4da69ce64bf19de10a7e17b0f075 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2382,14 +2381,14 @@ public class Category_Item
 	public class Item_ItemModRepair
 	{
 		[Patch("OnItemRefill", "OnItemRefill", "ItemModRepair", "ServerCommand", new string[] { "Item", "System.String", "BasePlayer" })]
-		[Identifier("0abf5a3f7212414e8eefc2c611ced25a")]
+		[Identifier("fab508bca6b6420d9cd1a52b93eefd86")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemModRepair_0abf5a3f7212414e8eefc2c611ced25a : Patch
+		public class Item_ItemModRepair_fab508bca6b6420d9cd1a52b93eefd86 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2424,7 +2423,7 @@ public class Category_Item
 	public class Item_Mailbox
 	{
 		[Patch("OnItemSubmit", "OnItemSubmit", "Mailbox", "SubmitInputItems", new string[] { "BasePlayer" })]
-		[Identifier("d6db03c539eb4aa68d37d24f25311ee5")]
+		[Identifier("2ff60e3c5c704fc795346e67b966e077")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "Item", false)]
 		[Parameter("self", "Mailbox", false)]
@@ -2432,7 +2431,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Mailbox_d6db03c539eb4aa68d37d24f25311ee5 : Patch
+		public class Item_Mailbox_2ff60e3c5c704fc795346e67b966e077 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2468,12 +2467,12 @@ public class Category_Item
 		}
 
 		[Patch("OnItemSubmit", "OnItemSubmit [patch]", "Mailbox", "SubmitInputItems", new string[] { "BasePlayer" })]
-		[Identifier("120869e11c78433ba5989acaee16777e")]
+		[Identifier("e912451baf374e50b2a83480adf8a07b")]
 		[Dependencies(new string[] { "OnItemSubmit" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Mailbox_120869e11c78433ba5989acaee16777e : Patch
+		public class Item_Mailbox_e912451baf374e50b2a83480adf8a07b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2518,7 +2517,7 @@ public class Category_Item
 	public class Item_ItemModUnwrap
 	{
 		[Patch("OnItemUnwrap", "OnItemUnwrap", "ItemModUnwrap", "ServerCommand", new string[] { "Item", "System.String", "BasePlayer" })]
-		[Identifier("37f206d96e4049e4bc24f104a06b7db6")]
+		[Identifier("3e578c9adb3e4f09843819de7e4e1543")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -2526,7 +2525,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_ItemModUnwrap_37f206d96e4049e4bc24f104a06b7db6 : Patch
+		public class Item_ItemModUnwrap_3e578c9adb3e4f09843819de7e4e1543 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2563,7 +2562,7 @@ public class Category_Item
 	public class Item_PaintedItemStorageEntity
 	{
 		[Patch("OnItemPainted", "OnItemPainted", "PaintedItemStorageEntity", "Server_UpdateImage", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1d5a0669638d448e938d0241eabe16e3")]
+		[Identifier("20143faf666a4b358aeeb755429f940c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PaintedItemStorageEntity", false)]
 		[Parameter("local0", "Item", false)]
@@ -2572,14 +2571,14 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_PaintedItemStorageEntity_1d5a0669638d448e938d0241eabe16e3 : Patch
+		public class Item_PaintedItemStorageEntity_20143faf666a4b358aeeb755429f940c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 135)
+					if (x++ != 128)
 					{
 						yield return instruction;
 						continue;
@@ -2608,14 +2607,14 @@ public class Category_Item
 	public class Item_Chainsaw
 	{
 		[Patch("OnInventoryAmmoItemFind", "OnInventoryAmmoItemFind [Chainsaw]", "Chainsaw", "GetAmmo", new string[] { })]
-		[Identifier("03393c070a7d457b9debb9fe8875ab6d")]
+		[Identifier("532bb436511d4a699cc6cab5904341eb")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("inventory", "PlayerInventory", false)]
 		[Parameter("fuelType", "ItemDefinition", false)]
 		[Return(typeof(Item))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Chainsaw_03393c070a7d457b9debb9fe8875ab6d : Patch
+		public class Item_Chainsaw_532bb436511d4a699cc6cab5904341eb : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2658,14 +2657,14 @@ public class Category_Item
 	public class Item_FlameThrower
 	{
 		[Patch("OnInventoryAmmoItemFind", "OnInventoryAmmoItemFind [FlameThrower]", "FlameThrower", "GetAmmo", new string[] { })]
-		[Identifier("83f8767464824b01b2a5bb39df63c61a")]
+		[Identifier("35cfc8b94309409b957415cf174e7d64")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("inventory", "PlayerInventory", false)]
 		[Parameter("fuelType", "ItemDefinition", false)]
 		[Return(typeof(Item))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_FlameThrower_83f8767464824b01b2a5bb39df63c61a : Patch
+		public class Item_FlameThrower_35cfc8b94309409b957415cf174e7d64 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2708,7 +2707,7 @@ public class Category_Item
 	public class Item_WeaponRack
 	{
 		[Patch("OnRackedWeaponMount", "OnRackedWeaponMount", "WeaponRack", "MountWeapon", new string[] { "Item", "BasePlayer", "System.Int32", "System.Int32", "System.Boolean" })]
-		[Identifier("4d20c5e01aa7459ea4325738199ad7b8")]
+		[Identifier("2cc908a227294bb498e6572a2e5aa5a8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -2716,7 +2715,7 @@ public class Category_Item
 		[Return(typeof(bool))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_4d20c5e01aa7459ea4325738199ad7b8 : Patch
+		public class Item_WeaponRack_2cc908a227294bb498e6572a2e5aa5a8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2760,7 +2759,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponMounted", "OnRackedWeaponMounted", "WeaponRack", "MountWeapon", new string[] { "Item", "BasePlayer", "System.Int32", "System.Int32", "System.Boolean" })]
-		[Identifier("35e4ee46d5144a10a5c70bed4f952a6d")]
+		[Identifier("2bf7bb496f11441190dedab065e74a9c")]
 		[Dependencies(new string[] { "OnRackedWeaponMount" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
@@ -2769,7 +2768,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_35e4ee46d5144a10a5c70bed4f952a6d : Patch
+		public class Item_WeaponRack_2bf7bb496f11441190dedab065e74a9c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2799,7 +2798,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponSwap", "OnRackedWeaponSwap", "WeaponRack", "SwapPlayerWeapon", new string[] { "BasePlayer", "System.Int32", "System.Int32", "System.Int32" })]
-		[Identifier("07d70ce684cb485c99ee6b7093be9135")]
+		[Identifier("6f6d3eb805144d04b0c3fb05e9b0223a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "Item", false)]
 		[Parameter("local2", "WeaponRackSlot", false)]
@@ -2808,7 +2807,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_07d70ce684cb485c99ee6b7093be9135 : Patch
+		public class Item_WeaponRack_6f6d3eb805144d04b0c3fb05e9b0223a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2844,7 +2843,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponSwapped", "OnRackedWeaponSwapped", "WeaponRack", "SwapPlayerWeapon", new string[] { "BasePlayer", "System.Int32", "System.Int32", "System.Int32" })]
-		[Identifier("13fcd7eb5cdf4b77b5297abb797d4352")]
+		[Identifier("d30bb37d720f4bb5bf0986aeff956d91")]
 		[Dependencies(new string[] { "OnRackedWeaponSwap" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "Item", false)]
@@ -2854,7 +2853,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_13fcd7eb5cdf4b77b5297abb797d4352 : Patch
+		public class Item_WeaponRack_d30bb37d720f4bb5bf0986aeff956d91 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2886,7 +2885,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponTake", "OnRackedWeaponTake", "WeaponRack", "GivePlayerWeapon", new string[] { "BasePlayer", "System.Int32", "System.Int32", "System.Boolean", "System.Boolean" })]
-		[Identifier("29941dc496024fe58d538d32d03f8c3d")]
+		[Identifier("d728c6b2f797477f9f2395c96b880471")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "Item", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -2894,7 +2893,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_29941dc496024fe58d538d32d03f8c3d : Patch
+		public class Item_WeaponRack_d728c6b2f797477f9f2395c96b880471 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2928,7 +2927,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponTaken", "OnRackedWeaponTaken", "WeaponRack", "GivePlayerWeapon", new string[] { "BasePlayer", "System.Int32", "System.Int32", "System.Boolean", "System.Boolean" })]
-		[Identifier("46f6343d15f5423e93068d26a209d4bc")]
+		[Identifier("6386879ecf434f4aaa8856f6c6572250")]
 		[Dependencies(new string[] { "OnRackedWeaponTake" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "Item", false)]
@@ -2937,7 +2936,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_46f6343d15f5423e93068d26a209d4bc : Patch
+		public class Item_WeaponRack_6386879ecf434f4aaa8856f6c6572250 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -2967,7 +2966,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponUnload", "OnRackedWeaponUnload", "WeaponRack", "UnloadWeapon", new string[] { "BasePlayer", "System.Int32" })]
-		[Identifier("cff789353aca4e27a613191e88a249a3")]
+		[Identifier("af86e1a4007a462f98e2e016c0aa7a1a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "Item", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -2975,7 +2974,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_cff789353aca4e27a613191e88a249a3 : Patch
+		public class Item_WeaponRack_af86e1a4007a462f98e2e016c0aa7a1a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -3009,7 +3008,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponUnloaded", "OnRackedWeaponUnloaded", "WeaponRack", "UnloadWeapon", new string[] { "BasePlayer", "System.Int32" })]
-		[Identifier("03ebe1c2188d465bbfb50e69ce5fbf66")]
+		[Identifier("4f67070d4365412296ba31c0518c4e41")]
 		[Dependencies(new string[] { "OnRackedWeaponUnload" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "Item", false)]
@@ -3018,7 +3017,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_03ebe1c2188d465bbfb50e69ce5fbf66 : Patch
+		public class Item_WeaponRack_4f67070d4365412296ba31c0518c4e41 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -3048,7 +3047,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponLoad", "OnRackedWeaponLoad", "WeaponRack", "LoadWeaponAmmo", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("744afac3493e4234b395a5670ea61608")]
+		[Identifier("f44fb0190a2f4e2b9e6a02c05466835f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local4", "Item", false)]
 		[Parameter("local7", "ItemDefinition", false)]
@@ -3057,7 +3056,7 @@ public class Category_Item
 		[Return(typeof(void))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_744afac3493e4234b395a5670ea61608 : Patch
+		public class Item_WeaponRack_f44fb0190a2f4e2b9e6a02c05466835f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -3093,7 +3092,7 @@ public class Category_Item
 		}
 
 		[Patch("OnRackedWeaponLoaded", "OnRackedWeaponLoaded", "WeaponRack", "LoadWeaponAmmo", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("70303ebec88f4307a38061de2456f81c")]
+		[Identifier("df24ac32fb024d47bd31354cedbeb097")]
 		[Dependencies(new string[] { "OnRackedWeaponLoad" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local4", "Item", false)]
@@ -3103,7 +3102,7 @@ public class Category_Item
 		[Return(typeof(void), Discarded = true)]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_WeaponRack_70303ebec88f4307a38061de2456f81c : Patch
+		public class Item_WeaponRack_df24ac32fb024d47bd31354cedbeb097 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -3138,7 +3137,7 @@ public class Category_Item
 	public class Item_Locker
 	{
 		[Patch("CanLockerAcceptItem", "CanLockerAcceptItem", "Locker", "ItemFilter", new string[] { "BasePlayer", "Item", "System.Int32" })]
-		[Identifier("d87b9e42247c4171831ec1704a6a9dda")]
+		[Identifier("f60fe05a158a4ba18ff7bfb5cf7cf80b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Locker", false)]
 		[Parameter("item", "Item", false)]
@@ -3147,7 +3146,7 @@ public class Category_Item
 		[Return(typeof(bool))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_Locker_d87b9e42247c4171831ec1704a6a9dda : Patch
+		public class Item_Locker_f60fe05a158a4ba18ff7bfb5cf7cf80b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -3193,7 +3192,7 @@ public class Category_Item
 	public class Item_StorageContainer
 	{
 		[Patch("OnItemFilter", "OnItemFilter", "StorageContainer", "ItemFilter", new string[] { "BasePlayer", "Item", "System.Int32" })]
-		[Identifier("63530f4f6f1c4a26bb48c057a66b0501")]
+		[Identifier("1a14c3562f5c42d18b364e9b6c7ba225")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Parameter("self", "StorageContainer", false)]
@@ -3202,7 +3201,7 @@ public class Category_Item
 		[Return(typeof(bool))]
 		[Category("Item")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Item_StorageContainer_63530f4f6f1c4a26bb48c057a66b0501 : Patch
+		public class Item_StorageContainer_1a14c3562f5c42d18b364e9b6c7ba225 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

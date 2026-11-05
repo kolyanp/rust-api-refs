@@ -1472,4 +1472,28 @@ public class RustCore : CSPlugin
 		}
 		return null;
 	}
+
+	[HookMethod("OnMountedWeaponReload")]
+	private object OnMountedWeaponReload(BaseMountedWeapon weapon, BasePlayer player)
+	{
+		return Interface.Oxide.CallDeprecatedHook("OnBallistaGunReload", "OnMountedWeaponReload(BaseMountedWeapon weapon, BasePlayer player)", Eoy, weapon, player);
+	}
+
+	[HookMethod("OnNpcConversationRespond")]
+	private object OnNpcConversationRespond(NPCTalking npcTalking, BasePlayer player, ConversationData conversationData, ConversationData.AbstractSpeechNodeData speechNode, int responseIndex)
+	{
+		ConversationData.ResponseNode responseNode = (((uint)responseIndex < (uint)speechNode.responses.Length) ? speechNode.responses[responseIndex] : null);
+		if (responseNode == null)
+		{
+			return null;
+		}
+		return Interface.Oxide.CallDeprecatedHook("OnNpcConversationRespond", "OnNpcConversationRespond(NPCTalking npcTalking, BasePlayer player, ConversationData conversationData, ConversationData.AbstractSpeechNodeData speechNode, int responseIndex)", Eoy, npcTalking, player, conversationData, responseNode);
+	}
+
+	[HookMethod("OnNpcConversationResponded")]
+	private void OnNpcConversationResponded(NPCTalking npcTalking, BasePlayer player, ConversationData conversationData, ConversationData.AbstractSpeechNodeData speechNode, int responseIndex)
+	{
+		ConversationData.ResponseNode responseNode = (((uint)responseIndex < (uint)speechNode.responses.Length) ? speechNode.responses[responseIndex] : null);
+		Interface.Oxide.CallDeprecatedHook("OnNpcConversationResponded", "OnNpcConversationResponded(NPCTalking npcTalking, BasePlayer player, ConversationData conversationData, ConversationData.AbstractSpeechNodeData speechNode, int responseIndex)", Eoy, npcTalking, player, conversationData, responseNode);
+	}
 }

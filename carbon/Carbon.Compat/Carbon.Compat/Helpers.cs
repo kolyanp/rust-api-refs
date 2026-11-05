@@ -6,9 +6,12 @@ using AsmResolver;
 using AsmResolver.DotNet;
 using AsmResolver.DotNet.Code;
 using AsmResolver.DotNet.Code.Cil;
+using AsmResolver.DotNet.Serialized;
 using AsmResolver.DotNet.Signatures;
 using AsmResolver.DotNet.Signatures.Types;
+using AsmResolver.IO;
 using AsmResolver.PE.DotNet.Cil;
+using AsmResolver.PE.DotNet.Metadata.Tables;
 using AsmResolver.PE.DotNet.Metadata.Tables.Rows;
 using Carbon.Base;
 using HarmonyLib;
@@ -38,6 +41,33 @@ public static class Helpers
 			return !((AssemblyDescriptor)aref).Name.ToLower().StartsWith("oxide.ext.");
 		}
 		return false;
+	}
+
+	public static CustomAttributeSignature ReadSignature(ModuleDefinition module, CustomAttribute attribute)
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		CustomAttributeSignature signature = attribute.Signature;
+		if (!(signature is SerializedCustomAttributeSignature))
+		{
+			return signature;
+		}
+		ModuleReaderContext readerContext = ((SerializedModuleDefinition)module).ReaderContext;
+		MetadataTable<CustomAttributeRow> table = readerContext.TablesStream.GetTable<CustomAttributeRow>((TableIndex)12);
+		MetadataToken metadataToken = ((MetadataMember)attribute).MetadataToken;
+		CustomAttributeRow byRid = table.GetByRid(metadataToken.Rid);
+		BinaryStreamReader val = default;
+		if (!readerContext.BlobStream.TryGetBlobReaderByIndex(byRid.Value, ref val))
+		{
+			return null;
+		}
+		BlobReaderContext val2 = new BlobReaderContext(readerContext);
+		return CustomAttributeSignature.FromReader(ref val2, attribute.Constructor, ref val);
 	}
 
 	public static bool TryGetLoadedIdentity(Utf8String name, Assembly[] loaded, out AssemblyName identity)

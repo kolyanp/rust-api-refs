@@ -105,6 +105,15 @@ public static class NativeArrayEx
 		return UnsafeUtility.ReadArrayElement<U>((void*)((byte*)NativeArrayUnsafeUtility.GetUnsafeReadOnlyPtr<T>(array) + (long)UnsafeUtility.SizeOf<T>() * (long)sourceIndex), 0);
 	}
 
+	public unsafe static ReadOnly<T> AsUnsafeListReadonly<T>(this ReadOnly<T> array) where T : unmanaged
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		return new UnsafeList<T>((T*)NativeArrayUnsafeUtility.GetUnsafeReadOnlyPtr<T>(array), array.Length).AsReadOnly();
+	}
+
 	public static bool TryFindRegion<T>(this ref NativeArray<T> array, T value, ref int index, ref int length) where T : struct, IEquatable<T>
 	{
 		index += length;

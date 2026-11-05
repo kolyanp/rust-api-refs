@@ -1,9 +1,23 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class PlaceCliffs : ProceduralComponent
 {
+	private struct ChildScan
+	{
+		public bool found;
+
+		public Vector3 pos;
+
+		public Quaternion rot;
+
+		public Vector3 scale;
+
+		public int angle;
+	}
+
 	private class CliffPlacement
 	{
 		public int count;
@@ -76,7 +90,7 @@ public class PlaceCliffs : ProceduralComponent
 
 	private static int max_scale_attempts = 10;
 
-	private static int min_rotation = rotation_delta;
+	private static int min_rotation = 0;
 
 	private static int max_rotation = 60;
 
@@ -96,6 +110,8 @@ public class PlaceCliffs : ProceduralComponent
 		new Vector3(offset_c, offset_c, offset_l),
 		new Vector3(offset_c, offset_c, offset_r)
 	};
+
+	private readonly Dictionary<(PrefabAttribute, Vector3, Quaternion), ChildScan> childScans = new Dictionary<(PrefabAttribute, Vector3, Quaternion), ChildScan>();
 
 	public override void Process(uint seed)
 	{
@@ -146,30 +162,30 @@ public class PlaceCliffs : ProceduralComponent
 		//IL_03ec: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0402: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0404: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0406: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0416: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0418: Unknown result type (might be due to invalid IL or missing references)
-		//IL_041a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_040d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_040f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0411: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0421: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0423: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0425: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0427: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0429: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0437: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0439: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_044d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0454: Unknown result type (might be due to invalid IL or missing references)
-		//IL_045b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0473: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0481: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0430: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0432: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0434: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0442: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0444: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0446: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0458: Unknown result type (might be due to invalid IL or missing references)
+		//IL_045f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0466: Unknown result type (might be due to invalid IL or missing references)
+		//IL_047e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0485: Unknown result type (might be due to invalid IL or missing references)
+		//IL_048c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04f1: Unknown result type (might be due to invalid IL or missing references)
 		if (World.Networked)
 		{
 			World.Spawn("Decor", "assets/bundled/prefabs/autospawn/" + ResourceFolder + "/");
@@ -248,6 +264,7 @@ public class PlaceCliffs : ProceduralComponent
 				random.ApplyDecorComponents(ref pos, ref rot, ref scale);
 				if (random.ApplyTerrainFilters(pos, rot, scale) && random.ApplyTerrainAnchors(ref pos, rot, scale, AnchorModeInitial, ((FilterModeInitial & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) && !(pos.y < (float)num11) && !(pos.y > (float)num12) && random.ApplyTerrainChecks(pos, rot, scale, ((FilterModeInitial & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) && random.ApplyWaterChecks(pos, rot, scale) && random.ApplyEnvironmentVolumeChecks(pos, rot, scale) && random.CheckTerrainFootprint(pos, rot, scale))
 				{
+					childScans.Clear();
 					CliffPlacement cliffPlacement = PlaceMale(array3, ref seed, random, pos, rot, scale);
 					CliffPlacement cliffPlacement2 = PlaceFemale(array4, ref seed, random, pos, rot, scale);
 					random.FillTerrainFootprint(pos, rot, scale);
@@ -270,6 +287,7 @@ public class PlaceCliffs : ProceduralComponent
 				}
 			}
 		}
+		childScans.Clear();
 	}
 
 	private CliffPlacement PlaceMale(Prefab[] prefabs, ref uint seed, Prefab parentPrefab, Vector3 parentPos, Quaternion parentRot, Vector3 parentScale)
@@ -298,58 +316,19 @@ public class PlaceCliffs : ProceduralComponent
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0215: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0221: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0232: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0234: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0239: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0331: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0352: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0354: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0356: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0365: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0367: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0369: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0379: Unknown result type (might be due to invalid IL or missing references)
-		//IL_037b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0396: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0398: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0418: Unknown result type (might be due to invalid IL or missing references)
-		//IL_041a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0420: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0422: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0428: Unknown result type (might be due to invalid IL or missing references)
-		//IL_042a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
 		CliffPlacement cliffPlacement = null;
 		if (parentAngle > 160 || parentAngle < -160)
 		{
@@ -357,8 +336,7 @@ public class PlaceCliffs : ProceduralComponent
 		}
 		int num = SeedRandom.Range(ref seed, 0, prefabs.Length);
 		ParentSocketType val = parentPrefab.Attribute.Find<ParentSocketType>(parentPrefab.ID);
-		Vector3 val2 = parentPos + parentRot * Vector3.Scale(val.worldPosition, parentScale);
-		TerrainHeightMap heightMap = TerrainMeta.HeightMap;
+		Vector3 connectionPos = parentPos + parentRot * Vector3.Scale(val.worldPosition, parentScale);
 		for (int i = 0; i < prefabs.Length; i++)
 		{
 			Prefab prefab = prefabs[(num + i) % prefabs.Length];
@@ -366,119 +344,187 @@ public class PlaceCliffs : ProceduralComponent
 			{
 				continue;
 			}
-			ParentSocketType val3 = prefab.Attribute.Find<ParentSocketType>(prefab.ID);
-			ChildSocketType val4 = prefab.Attribute.Find<ChildSocketType>(prefab.ID);
-			bool flag = val3 != null;
-			if ((cliffPlacement != null && cliffPlacement.count > TargetCount && cliffPlacement.score > TargetLength) & flag)
+			ParentSocketType val2 = prefab.Attribute.Find<ParentSocketType>(prefab.ID);
+			ChildSocketType childConnection = prefab.Attribute.Find<ChildSocketType>(prefab.ID);
+			bool flag = val2 != null;
+			if (((cliffPlacement != null && cliffPlacement.count > TargetCount && cliffPlacement.score > TargetLength) & flag) || !TryScanChild(prefab, childConnection, connectionPos, parentRot, out var scan))
 			{
 				continue;
 			}
-			PlaceCliffParameters placeCliffParameters = prefab.Attribute.Find<PlaceCliffParameters>(prefab.ID);
-			int num2 = (placeCliffParameters ? placeCliffParameters.CutoffSlopeRepeat : CutoffSlopeRepeat);
-			int num3 = (placeCliffParameters ? placeCliffParameters.MinTerrainHeight : MinTerrainHeight);
-			int num4 = (placeCliffParameters ? placeCliffParameters.MaxTerrainHeight : MaxTerrainHeight);
-			int num5 = (placeCliffParameters ? placeCliffParameters.MinCliffHeight : MinCliffHeight);
-			int num6 = (placeCliffParameters ? placeCliffParameters.MaxCliffHeight : MaxCliffHeight);
-			float num7 = (placeCliffParameters ? placeCliffParameters.MinCliffScale : MinCliffScale);
-			float num8 = (placeCliffParameters ? placeCliffParameters.MaxCliffScale : MaxCliffScale);
-			float num9 = Mathf.Max((num8 - num7) / (float)max_scale_attempts, min_scale_delta);
-			float num10 = num8;
-			while (num10 >= num7)
+			int parentAngle2 = parentAngle + scan.angle;
+			int num2 = parentCount + 1;
+			int num3 = parentScore + Mathf.CeilToInt(Vector3Ex.Distance2D(parentPos, scan.pos));
+			CliffPlacement cliffPlacement2 = null;
+			if (flag)
 			{
-				int j;
-				Vector3 scale;
-				Quaternion rot;
-				Vector3 pos;
-				for (j = min_rotation; j <= max_rotation; j += rotation_delta)
+				cliffPlacement2 = Place<ParentSocketType, ChildSocketType>(prefabs, ref seed, prefab, scan.pos, scan.rot, scan.scale, parentAngle2, num2, num3);
+				if (cliffPlacement2 != null)
 				{
-					for (int k = -1; k <= 1; k += 2)
-					{
-						Vector3[] array = offsets;
-						foreach (Vector3 val5 in array)
-						{
-							scale = prefab.Object.transform.localScale * num10;
-							rot = Quaternion.Euler(0f, (float)(k * j), 0f) * parentRot;
-							pos = val2 - rot * (Vector3.Scale(val4.worldPosition, scale) + val5);
-							float normX = TerrainMeta.NormalizeX(pos.x);
-							float normZ = TerrainMeta.NormalizeZ(pos.z);
-							if ((FilterModeRepeat & SpawnFilterMode.PivotPoint) != 0)
-							{
-								float factor = Filter.GetFactor(normX, normZ);
-								if (factor * factor < 0.5f)
-								{
-									continue;
-								}
-							}
-							float height = heightMap.GetHeight(normX, normZ);
-							if (height < (float)num3 || height > (float)num4)
-							{
-								continue;
-							}
-							Vector3 normal = heightMap.GetNormal(normX, normZ);
-							if (Vector3.Angle(Vector3.up, normal) < (float)num2)
-							{
-								continue;
-							}
-							prefab.ApplyDecorComponents(ref pos, ref rot, ref scale);
-							if (!prefab.ApplyTerrainAnchors(ref pos, rot, scale, AnchorModeRepeat, ((FilterModeRepeat & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) || pos.y < (float)num5 || pos.y > (float)num6 || !prefab.ApplyTerrainChecks(pos, rot, scale, ((FilterModeRepeat & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) || !prefab.ApplyTerrainFilters(pos, rot, scale) || !prefab.ApplyWaterChecks(pos, rot, scale) || !prefab.ApplyEnvironmentVolumeChecks(pos, rot, scale))
-							{
-								continue;
-							}
-							goto IL_0387;
-						}
-					}
+					num2 = cliffPlacement2.count;
+					num3 = cliffPlacement2.score;
 				}
-				num10 -= num9;
-				continue;
-				IL_0387:
-				int parentAngle2 = parentAngle + j;
-				int num11 = parentCount + 1;
-				int num12 = parentScore + Mathf.CeilToInt(Vector3Ex.Distance2D(parentPos, pos));
-				CliffPlacement cliffPlacement2 = null;
-				if (flag)
-				{
-					cliffPlacement2 = Place<ParentSocketType, ChildSocketType>(prefabs, ref seed, prefab, pos, rot, scale, parentAngle2, num11, num12);
-					if (cliffPlacement2 != null)
-					{
-						num11 = cliffPlacement2.count;
-						num12 = cliffPlacement2.score;
-					}
-				}
-				else
-				{
-					num12 *= 2;
-				}
-				if (cliffPlacement == null)
-				{
-					cliffPlacement = new CliffPlacement();
-				}
-				if (cliffPlacement.score < num12)
-				{
-					cliffPlacement.next = cliffPlacement2;
-					cliffPlacement.count = num11;
-					cliffPlacement.score = num12;
-					cliffPlacement.prefab = prefab;
-					cliffPlacement.pos = pos;
-					cliffPlacement.rot = rot;
-					cliffPlacement.scale = scale;
-				}
-				break;
+			}
+			else
+			{
+				num3 *= 2;
+			}
+			if (cliffPlacement == null)
+			{
+				cliffPlacement = new CliffPlacement();
+			}
+			if (cliffPlacement.score < num3)
+			{
+				cliffPlacement.next = cliffPlacement2;
+				cliffPlacement.count = num2;
+				cliffPlacement.score = num3;
+				cliffPlacement.prefab = prefab;
+				cliffPlacement.pos = scan.pos;
+				cliffPlacement.rot = scan.rot;
+				cliffPlacement.scale = scan.scale;
 			}
 		}
 		return cliffPlacement;
 	}
 
+	private bool TryScanChild(Prefab childPrefab, PrefabAttribute childConnection, Vector3 connectionPos, Quaternion parentRot, out ChildScan scan)
+	{
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		(PrefabAttribute, Vector3, Quaternion) key = (childConnection, connectionPos, parentRot);
+		if (!childScans.TryGetValue(key, out scan))
+		{
+			scan = ScanChild(childPrefab, childConnection, connectionPos, parentRot);
+			childScans.Add(key, scan);
+		}
+		return scan.found;
+	}
+
+	private ChildScan ScanChild(Prefab childPrefab, PrefabAttribute childConnection, Vector3 connectionPos, Quaternion parentRot)
+	{
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0204: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0229: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0288: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b9: Unknown result type (might be due to invalid IL or missing references)
+		TerrainHeightMap heightMap = TerrainMeta.HeightMap;
+		PlaceCliffParameters placeCliffParameters = childPrefab.Attribute.Find<PlaceCliffParameters>(childPrefab.ID);
+		int num = (placeCliffParameters ? placeCliffParameters.CutoffSlopeRepeat : CutoffSlopeRepeat);
+		int num2 = (placeCliffParameters ? placeCliffParameters.MinTerrainHeight : MinTerrainHeight);
+		int num3 = (placeCliffParameters ? placeCliffParameters.MaxTerrainHeight : MaxTerrainHeight);
+		int num4 = (placeCliffParameters ? placeCliffParameters.MinCliffHeight : MinCliffHeight);
+		int num5 = (placeCliffParameters ? placeCliffParameters.MaxCliffHeight : MaxCliffHeight);
+		float num6 = (placeCliffParameters ? placeCliffParameters.MinCliffScale : MinCliffScale);
+		float num7 = (placeCliffParameters ? placeCliffParameters.MaxCliffScale : MaxCliffScale);
+		float num8 = Mathf.Max((num7 - num6) / (float)max_scale_attempts, min_scale_delta);
+		for (float num9 = num7; num9 >= num6; num9 -= num8)
+		{
+			for (int i = min_rotation; i <= max_rotation; i += rotation_delta)
+			{
+				for (int j = -1; j <= 1; j += 2)
+				{
+					if (i == 0 && j > 0)
+					{
+						continue;
+					}
+					Vector3[] array = offsets;
+					foreach (Vector3 val in array)
+					{
+						Vector3 scale = childPrefab.Object.transform.localScale * num9;
+						Quaternion rot = Quaternion.Euler(0f, (float)(j * i), 0f) * parentRot;
+						Vector3 pos = connectionPos - rot * (Vector3.Scale(childConnection.worldPosition, scale) + val);
+						float normX = TerrainMeta.NormalizeX(pos.x);
+						float normZ = TerrainMeta.NormalizeZ(pos.z);
+						if ((FilterModeRepeat & SpawnFilterMode.PivotPoint) != 0)
+						{
+							float factor = Filter.GetFactor(normX, normZ);
+							if (factor * factor < 0.5f)
+							{
+								continue;
+							}
+						}
+						float height = heightMap.GetHeight(normX, normZ);
+						if (height < (float)num2 || height > (float)num3)
+						{
+							continue;
+						}
+						Vector3 normal = heightMap.GetNormal(normX, normZ);
+						if (!(Vector3.Angle(Vector3.up, normal) < (float)num))
+						{
+							childPrefab.ApplyDecorComponents(ref pos, ref rot, ref scale);
+							if (childPrefab.ApplyTerrainAnchors(ref pos, rot, scale, AnchorModeRepeat, ((FilterModeRepeat & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) && !(pos.y < (float)num4) && !(pos.y > (float)num5) && childPrefab.ApplyTerrainChecks(pos, rot, scale, ((FilterModeRepeat & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) && childPrefab.ApplyTerrainFilters(pos, rot, scale) && childPrefab.ApplyWaterChecks(pos, rot, scale) && childPrefab.ApplyEnvironmentVolumeChecks(pos, rot, scale))
+							{
+								return new ChildScan
+								{
+									found = true,
+									pos = pos,
+									rot = rot,
+									scale = scale,
+									angle = i
+								};
+							}
+						}
+					}
+				}
+			}
+		}
+		return default;
+	}
+
 	static PlaceCliffs()
 	{
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 	}
 }

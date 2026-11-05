@@ -8,7 +8,7 @@ using ProtoBuf;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class CommunityEntity : PointEntity
+public class CommunityEntity : PointEntity, IServerFileReceiver
 {
 	private class Countdown : MonoBehaviour
 	{
@@ -282,6 +282,13 @@ public class CommunityEntity : PointEntity
 		{
 			ClientInstance = null;
 		}
+	}
+
+	internal override void DoServerDestroy()
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		base.DoServerDestroy();
+		FileStorage.server.RemoveAll(net.ID);
 	}
 
 	public void SendDestroyUIs(BasePlayer player, List<string> uiPanels)

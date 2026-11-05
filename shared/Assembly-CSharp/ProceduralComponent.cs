@@ -11,22 +11,13 @@ public abstract class ProceduralComponent : MonoBehaviour
 	[InspectorFlags]
 	public Realm Mode = (Realm)(-1);
 
-	public bool Disabled;
-
-	[Space]
 	public string Description = "Procedural Component";
-
-	[Header("Map Creator Settings")]
-	[Space]
-	public bool HideInMapCreator;
-
-	public string MapCreatorCategory = "";
 
 	public virtual bool RunOnCache => false;
 
 	public bool ShouldRun()
 	{
-		if (Disabled)
+		if (!((Component)this).gameObject.activeInHierarchy)
 		{
 			return false;
 		}

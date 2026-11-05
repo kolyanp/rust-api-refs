@@ -22,8 +22,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	private Action resetBlockExcludeLayersAction;
 
-	[Header("BaseSculpture")]
 	[SerializeField]
+	[Header("BaseSculpture")]
 	private MeshFilter targetMesh;
 
 	[SerializeField]
@@ -89,6 +89,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	public BaseNetworkable UgcEntity => this;
 
 	public string ContentString => string.Empty;
+
+	public override bool ShouldTransferAssociatedFiles => true;
 
 	private static string SculpturePath => ConVar.Server.GetServerFolder("sculptures");
 
@@ -317,8 +319,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SV_LockSculpture(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || !CanUpdateSculpture(msg.player))
@@ -371,9 +373,9 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		ServerUpdateProcessQueue.Clear();
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void SV_SendSculptureUpdate(RPCMessage msg)
 	{
 		if (msg.read.Length > 2000000 || !CanUpdateSculpture(msg.player) || !msg.read.TemporaryBytesWithSize(out var buffer, out var size))
@@ -398,8 +400,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	private void ServerSculptureUpdate()
 	{
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("ServerSculptureUpdate"))
 		{
 			BufferStream val = Pool.Get<BufferStream>().Initialize();
@@ -409,8 +410,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 				SculptFormat.SerializeToSculpt(this, val);
 				EnqueueMarchingCubesUpdate();
 				byte[] storageReadyBuffer = SculptFormat.GetStorageReadyBuffer(val);
-				FileStorage.server.Remove(crc, FileStorage.Type.sculpt, net.ID);
-				crc = FileStorage.server.Store(storageReadyBuffer, FileStorage.Type.sculpt, net.ID);
+				crc = FileStorage.server.Store(net.ID, 0uL, FileStorage.Type.sculpt, storageReadyBuffer);
 				AdjustCollidersForPlayerIntersection();
 				sculptureDirty = false;
 			}
@@ -470,15 +470,15 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		ItemModSculpture itemModSculpture = default;
 		if (crc != 0 && ((Component)createdItem.info).TryGetComponent<ItemModSculpture>(ref itemModSculpture))
 		{
-			itemModSculpture.OnSculpturePickUp(net.ID, crc, createdItem);
+			itemModSculpture.OnSculpturePickUp(net.ID, createdItem);
 		}
 	}
 
 	public override void OnDeployed(BaseEntity parent, BasePlayer deployedBy, Item fromItem)
 	{
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		base.OnDeployed(parent, deployedBy, fromItem);
 		if (!ComponentEx.HasComponent<ItemModSculpture>((Component)(object)fromItem.info))
 		{
@@ -487,9 +487,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		AssociatedSculptureStorage associatedEntity = ItemModAssociatedEntity<AssociatedSculptureStorage>.GetAssociatedEntity(fromItem);
 		if ((Object)(object)associatedEntity != (Object)null)
 		{
-			crc = associatedEntity.Crc;
-			FileStorage.server.ReassignEntityId(associatedEntity.net.ID, net.ID);
-			byte[] array = FileStorage.server.Get(crc, FileStorage.Type.sculpt, net.ID);
+			FileStorage.server.Reassign(associatedEntity.net.ID, net.ID);
+			byte[] array = FileStorage.server.Get(net.ID, 0uL);
 			if (array == null)
 			{
 				Debug.LogError((object)"[SCULPT] Missing sculpt data on-disk - fill with default");
@@ -517,7 +516,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		base.DoServerDestroy();
-		FileStorage.server.RemoveAllByEntity(net.ID);
+		FileStorage.server.RemoveAll(net.ID);
 	}
 
 	[ServerVar(ServerAdmin = true)]
@@ -932,7 +931,25 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	public override void Load(LoadInfo info)
 	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
+		if (isServer)
+		{
+			byte[] array = FileStorage.server.Get(net.ID, 0uL);
+			if (array == null || array.Length == 0)
+			{
+				Debug.LogWarning((object)$"[SCULPTING] ({net.ID}) Missing sculpt data on-disk for - fill with default");
+				ResetSet(SDFSet);
+			}
+			else
+			{
+				crc = FileStorage.server.GetCrc(net.ID, 0uL);
+				PopulateSculptureFromEncodedData(array);
+			}
+			MarkServerSculptureDirty();
+		}
 	}
 
 	public bool CanUpdateSculpture(BasePlayer player, bool ignoreLock = false)
@@ -1017,24 +1034,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	private void OnSyncVar_crc(uint? oldValue, uint newValue)
 	{
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BaseSculpture.OnSyncVar_crc"))
 		{
-			if (isServer && !oldValue.HasValue)
-			{
-				byte[] array = FileStorage.server.Get(newValue, FileStorage.Type.sculpt, net.ID);
-				if (array == null || array.Length == 0)
-				{
-					Debug.LogWarning((object)$"[SCULPTING] ({net.ID}) Missing sculpt data on-disk for - fill with default");
-					ResetSet(SDFSet);
-				}
-				else
-				{
-					PopulateSculptureFromEncodedData(array);
-				}
-				MarkServerSculptureDirty();
-			}
 		}
 	}
 

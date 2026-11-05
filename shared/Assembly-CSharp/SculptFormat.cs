@@ -1,4 +1,5 @@
 using System;
+using Development.Attributes;
 using Facepunch;
 using LZ4;
 using ProtoBuf;
@@ -54,6 +55,7 @@ public static class SculptFormat
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static Sculpt LoadDisposableSculptFromStorage(ArraySegment<byte> encoded)
 	{
 		using (TimeWarning.New("SculptFormat.LoadFromStorage"))

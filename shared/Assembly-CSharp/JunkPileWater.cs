@@ -5,6 +5,8 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 {
 	public class JunkpileWaterWorkQueue : PersistentObjectWorkQueue<IBudgetedFloatingEntity>
 	{
+		protected override double MinLapInterval => 0.5;
+
 		protected override void RunJob(IBudgetedFloatingEntity entity)
 		{
 			if (((PersistentObjectWorkQueue<IBudgetedFloatingEntity>)this).ShouldAdd(entity))
@@ -109,6 +111,12 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 	public void EnqueueNearPlayersCheck()
 	{
 		((PersistentObjectWorkQueue<IBudgetedFloatingEntity>)junkpileWaterWorkQueue).Add((IBudgetedFloatingEntity)this);
+	}
+
+	internal override void DoServerDestroy()
+	{
+		base.DoServerDestroy();
+		((PersistentObjectWorkQueue<IBudgetedFloatingEntity>)junkpileWaterWorkQueue).Remove((IBudgetedFloatingEntity)this);
 	}
 
 	public void UpdateMovementFixedTick()

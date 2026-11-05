@@ -216,7 +216,7 @@ public class TechTreeData : ScriptableObject
 			{
 				if (!((Object)(object)item.itemDef == (Object)null) && !HasPlayerUnlocked(player, item) && item.itemDef.IsAllowed((EraRestriction)4))
 				{
-					num2 += Workbench.ScrapForResearch(item.itemDef, 0, out var _);
+					num2 += Workbench.FragmentsForResearch(item.itemDef, 0, out var _);
 				}
 			}
 			if (num2 < num)

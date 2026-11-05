@@ -94,47 +94,47 @@ public class NPCPlayerNavigator : BaseNavigator
 
 	private static Vector3 GetAimDirection(BasePlayer aimingPlayer, BaseEntity target)
 	{
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		if (ObjectEx.IsUnityNull(target))
 		{
-			return Vector3Ex.Direction2D(((Component)aimingPlayer).transform.position + (((Object)(object)aimingPlayer.eyes != (Object)null) ? aimingPlayer.eyes.BodyForward() : ((Component)aimingPlayer).transform.forward) * 1000f, ((Component)aimingPlayer).transform.position);
+			return Vector3Ex.Direction2D(((Component)aimingPlayer).transform.position + ((aimingPlayer.eyes != null) ? aimingPlayer.eyes.BodyForward() : ((Component)aimingPlayer).transform.forward) * 1000f, ((Component)aimingPlayer).transform.position);
 		}
 		if (Vector3Ex.Distance2D(((Component)aimingPlayer).transform.position, ((Component)target).transform.position) <= 0.75f)
 		{
 			return Vector3Ex.Direction2D(((Component)target).transform.position, ((Component)aimingPlayer).transform.position);
 		}
-		Vector3 val = TargetAimPositionOffset(target) - (((Object)(object)aimingPlayer.eyes != (Object)null) ? aimingPlayer.eyes.position : ((Component)aimingPlayer).transform.position);
+		Vector3 val = TargetAimPositionOffset(target) - ((aimingPlayer.eyes != null) ? aimingPlayer.eyes.position : ((Component)aimingPlayer).transform.position);
 		return val.normalized;
 	}
 
 	private static Vector3 TargetAimPositionOffset(BaseEntity target)
 	{
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer basePlayer = target as BasePlayer;
 		if ((Object)(object)basePlayer != (Object)null)
 		{
@@ -142,7 +142,7 @@ public class NPCPlayerNavigator : BaseNavigator
 			{
 				return ((Component)basePlayer).transform.position + Vector3.up * 0.1f;
 			}
-			if ((Object)(object)basePlayer.eyes != (Object)null)
+			if (basePlayer.eyes != null)
 			{
 				return basePlayer.eyes.position - Vector3.up * 0.15f;
 			}

@@ -91,24 +91,24 @@ public class State_AttackUnreachable : FSMStateBase
 
 	private void SetPhase(Phase newPhase)
 	{
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
 		phase = newPhase;
 		previousOffsetZ = animClip.zMotionCurve.Evaluate(elapsedTime);
 		if (phase == Phase.Jump)
@@ -118,7 +118,7 @@ public class State_AttackUnreachable : FSMStateBase
 				SampleGroundPositionUnderTarget(Agent, targetAsPlayer, out destination);
 			}
 			startLocation = ((Component)Owner).transform.position;
-			((Component)Owner).transform.rotation = Quaternion.LookRotation(Vector3Ex.WithY(destination - ((Component)Owner).transform.position, 0f));
+			Agent.Face(Quaternion.LookRotation(Vector3Ex.WithY(destination - ((Component)Owner).transform.position, 0f)));
 			Agent.IsJumping = true;
 		}
 		else if (phase == Phase.Attack)
@@ -162,12 +162,12 @@ public class State_AttackUnreachable : FSMStateBase
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
@@ -181,44 +181,43 @@ public class State_AttackUnreachable : FSMStateBase
 		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0200: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0214: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0253: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0258: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0262: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0271: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0304: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0321: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0300: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0305: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0307: Unknown result type (might be due to invalid IL or missing references)
 		elapsedTime += deltaTime;
 		float num = elapsedTime / Mathf.Max(animClip.inPlaceAnimation.length, 0.001f);
 		if (phase == Phase.PreJump)
 		{
 			Quaternion val = Quaternion.LookRotation(Vector3Ex.WithY(destination - ((Component)Owner).transform.position, 0f));
-			((Component)Owner).transform.rotation = Quaternion.Slerp(((Component)Owner).transform.rotation, val, 2f * deltaTime);
+			Agent.Face(Quaternion.Slerp(((Component)Owner).transform.rotation, val, 2f * deltaTime));
 			float num2 = animClip.zMotionCurve.Evaluate(elapsedTime);
 			Vector3 val2 = ((Component)Owner).transform.forward * (num2 - previousOffsetZ);
 			previousOffsetZ = num2;
-			Transform transform = ((Component)Owner).transform;
-			transform.position += val2;
+			Agent.Place(((Component)Owner).transform.position + val2);
 			if (num >= preJumpEnd)
 			{
 				SetPhase(Phase.Jump);
@@ -229,8 +228,8 @@ public class State_AttackUnreachable : FSMStateBase
 			Vector3 b = (startLocation + destination) * 0.5f;
 			b.y = Mathf.Max(startLocation.y, destination.y);
 			float t = Mathx.RemapValClamped(num, preJumpEnd, jumpEnd, 0f, 1f);
-			Vector3 position = ThreePointLerp(startLocation, b, destination, t);
-			((Component)Owner).transform.position = position;
+			Vector3 positionWS = ThreePointLerp(startLocation, b, destination, t);
+			Agent.Place(positionWS);
 			if (num >= jumpEnd)
 			{
 				SetPhase(Phase.Attack);
@@ -238,7 +237,7 @@ public class State_AttackUnreachable : FSMStateBase
 		}
 		if (phase == Phase.Attack)
 		{
-			((Component)Owner).transform.rotation = startRotation * Quaternion.AngleAxis(animClip.yRotationCurve.Evaluate(elapsedTime), Vector3.up);
+			Agent.Face(startRotation * Quaternion.AngleAxis(animClip.yRotationCurve.Evaluate(elapsedTime), Vector3.up));
 			if (num > attackEnd)
 			{
 				SetPhase(Phase.JumpBack);
@@ -249,9 +248,8 @@ public class State_AttackUnreachable : FSMStateBase
 			Vector3 b2 = (startLocation + destination) * 0.5f;
 			b2.y = Mathf.Max(startLocation.y, destination.y);
 			float t2 = Mathx.RemapValClamped(num, attackEnd, jumpBackEnd, 0f, 1f);
-			Vector3 position2 = ThreePointLerp(destination, b2, startLocation, t2);
-			((Component)Owner).transform.position = position2;
-			((Component)Owner).transform.rotation = Quaternion.LookRotation(Vector3Ex.WithY(startLocation - destination, 0f));
+			Vector3 positionWS2 = ThreePointLerp(destination, b2, startLocation, t2);
+			Agent.Place(positionWS2, Quaternion.LookRotation(Vector3Ex.WithY(startLocation - destination, 0f)));
 			if (num >= jumpBackEnd)
 			{
 				SetPhase(Phase.PostJumpBack);
@@ -262,8 +260,7 @@ public class State_AttackUnreachable : FSMStateBase
 			float num3 = animClip.zMotionCurve.Evaluate(elapsedTime);
 			Vector3 val3 = ((Component)Owner).transform.forward * (num3 - previousOffsetZ);
 			previousOffsetZ = num3;
-			Transform transform2 = ((Component)Owner).transform;
-			transform2.position -= val3;
+			Agent.Place(((Component)Owner).transform.position - val3);
 		}
 		if (num >= postJumpBackEnd)
 		{

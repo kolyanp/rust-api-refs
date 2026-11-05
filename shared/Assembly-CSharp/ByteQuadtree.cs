@@ -20,7 +20,7 @@ public sealed class ByteQuadtree
 
 		public int ByteMap => level;
 
-		public uint Value => source.values[level][x, y];
+		public uint Value => source.GetValue(level, x, y);
 
 		public Vector2 Coords
 		{
@@ -175,6 +175,16 @@ public sealed class ByteQuadtree
 		}
 	}
 
+	private const int TileLevel = 4;
+
+	private const int TileSize = 16;
+
+	private const int TileArea = 256;
+
+	private const int TileSumCount = 84;
+
+	private static readonly int[] TileSumOffsets = new int[4] { 0, 0, 64, 80 };
+
 	[SerializeField]
 	private int size;
 
@@ -183,6 +193,15 @@ public sealed class ByteQuadtree
 
 	[SerializeField]
 	private ByteMap[] values;
+
+	[SerializeField]
+	private int[] tileIndexes;
+
+	[SerializeField]
+	private byte[] tileValues;
+
+	[SerializeField]
+	private ushort[] tileSums;
 
 	public int Size => size;
 
@@ -193,16 +212,19 @@ public sealed class ByteQuadtree
 		size = Mathf.RoundToInt(Mathf.Sqrt((float)baseValues.Length));
 		levels = Mathf.RoundToInt(Mathf.Max(Mathf.Log((float)size, 2f), 0f)) + 1;
 		values = new ByteMap[levels];
-		values[0] = new ByteMap(size, baseValues);
-		for (int i = 1; i < levels; i++)
+		if (size < 16)
 		{
-			ByteMap byteMap = values[i - 1];
-			ByteMap byteMap2 = (values[i] = CreateLevel(i));
-			for (int j = 0; j < byteMap2.Size; j++)
+			throw new ArgumentException($"ByteQuadtree needs at least {16}x{16} base values");
+		}
+		UpdateTiles(baseValues);
+		for (int i = 4; i < levels; i++)
+		{
+			ByteMap byteMap = (values[i] = CreateLevel(i));
+			for (int j = 0; j < byteMap.Size; j++)
 			{
-				for (int k = 0; k < byteMap2.Size; k++)
+				for (int k = 0; k < byteMap.Size; k++)
 				{
-					byteMap2[k, j] = byteMap[2 * k, 2 * j] + byteMap[2 * k + 1, 2 * j] + byteMap[2 * k, 2 * j + 1] + byteMap[2 * k + 1, 2 * j + 1];
+					byteMap[k, j] = SumChildren(i, k, j);
 				}
 			}
 		}
@@ -213,5 +235,114 @@ public sealed class ByteQuadtree
 		int num = 1 << levels - level - 1;
 		int bytes = 1 + (level + 3) / 4;
 		return new ByteMap(num, bytes);
+	}
+
+	private void UpdateTiles(byte[] baseValues)
+	{
+		int num = size >> 4;
+		tileIndexes = new int[num * num];
+		int num2 = 0;
+		for (int i = 0; i < num; i++)
+		{
+			for (int j = 0; j < num; j++)
+			{
+				int tileStart = GetTileStart(j, i);
+				tileIndexes[i * num + j] = (IsUniformTile(baseValues, tileStart) ? (-(baseValues[tileStart] + 1)) : num2++);
+			}
+		}
+		tileValues = new byte[num2 * 256];
+		tileSums = new ushort[num2 * 84];
+		for (int k = 0; k < num; k++)
+		{
+			for (int l = 0; l < num; l++)
+			{
+				int num3 = tileIndexes[k * num + l];
+				if (num3 >= 0)
+				{
+					CopyTileValues(baseValues, GetTileStart(l, k), num3);
+					UpdateTileSums(num3, l, k);
+				}
+			}
+		}
+	}
+
+	private int GetTileStart(int tileX, int tileY)
+	{
+		return tileY * 16 * size + tileX * 16;
+	}
+
+	private bool IsUniformTile(byte[] baseValues, int start)
+	{
+		byte b = baseValues[start];
+		for (int i = 0; i < 16; i++)
+		{
+			for (int j = 0; j < 16; j++)
+			{
+				if (baseValues[start + i * size + j] != b)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private void CopyTileValues(byte[] baseValues, int start, int tile)
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			Buffer.BlockCopy(baseValues, start + i * size, tileValues, tile * 256 + i * 16, 16);
+		}
+	}
+
+	private void UpdateTileSums(int tile, int tileX, int tileY)
+	{
+		for (int i = 1; i < 4; i++)
+		{
+			int num = 16 >> i;
+			for (int j = 0; j < num; j++)
+			{
+				for (int k = 0; k < num; k++)
+				{
+					tileSums[GetTileSumIndex(tile, i, k, j)] = (ushort)SumChildren(i, tileX * num + k, tileY * num + j);
+				}
+			}
+		}
+	}
+
+	private uint SumChildren(int level, int x, int y)
+	{
+		return GetValue(level - 1, 2 * x, 2 * y) + GetValue(level - 1, 2 * x + 1, 2 * y) + GetValue(level - 1, 2 * x, 2 * y + 1) + GetValue(level - 1, 2 * x + 1, 2 * y + 1);
+	}
+
+	private uint GetValue(int level, int x, int y)
+	{
+		if (level >= 4)
+		{
+			return values[level][x, y];
+		}
+		int num = 4 - level;
+		int num2 = (1 << num) - 1;
+		int num3 = size >> 4;
+		int tile = tileIndexes[(y >> num) * num3 + (x >> num)];
+		return GetTileValue(tile, level, x & num2, y & num2);
+	}
+
+	private uint GetTileValue(int tile, int level, int x, int y)
+	{
+		if (tile < 0)
+		{
+			return (uint)(-tile - 1 << 2 * level);
+		}
+		if (level == 0)
+		{
+			return tileValues[tile * 256 + y * 16 + x];
+		}
+		return tileSums[GetTileSumIndex(tile, level, x, y)];
+	}
+
+	private static int GetTileSumIndex(int tile, int level, int x, int y)
+	{
+		return tile * 84 + TileSumOffsets[level] + y * (16 >> level) + x;
 	}
 }

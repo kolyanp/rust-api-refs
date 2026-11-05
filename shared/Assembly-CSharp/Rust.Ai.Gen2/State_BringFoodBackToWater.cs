@@ -14,7 +14,8 @@ public class State_BringFoodBackToWater : State_GoBackToWater
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
@@ -30,7 +31,7 @@ public class State_BringFoodBackToWater : State_GoBackToWater
 		{
 			return EFSMStateStatus.Failure;
 		}
-		((Component)Owner).transform.forward = Vector3Ex.NormalizeXZ(((Component)baseCorpse).transform.position - ((Component)Owner).transform.position);
+		Agent.Face(Quaternion.LookRotation(Vector3Ex.NormalizeXZ(((Component)baseCorpse).transform.position - ((Component)Owner).transform.position)));
 		corpse = baseCorpse;
 		using (BaseEntity.FlagsUpdateScope flagsUpdateScope = corpse.StartSetFlags(BaseEntity.FlagsUpdateMode.SendNetworkUpdate))
 		{

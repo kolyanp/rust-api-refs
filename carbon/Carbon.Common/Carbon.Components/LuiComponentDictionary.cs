@@ -14,6 +14,15 @@ public class LuiComponentDictionary : IEnumerable
 
 	public int Count => _count;
 
+	public LuiCompBase this[int index]
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		get
+		{
+			return _values[index];
+		}
+	}
+
 	public LuiComponentDictionary()
 	{
 		_values = new LuiCompBase[10];

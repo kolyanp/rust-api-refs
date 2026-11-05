@@ -1,5 +1,5 @@
 using System;
-using Facepunch;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class SoundModulation : MonoBehaviour, IClientComponent
@@ -12,21 +12,11 @@ public class SoundModulation : MonoBehaviour, IClientComponent
 		MaxDistance
 	}
 
-	[Serializable]
-	public class Modulator : IPooled
+	[StructLayout(LayoutKind.Sequential, Size = 1)]
+	public readonly struct Modulator : IDisposable
 	{
-		public Parameter param;
-
-		public float value = 1f;
-
-		void IPooled.LeavePool()
+		public void Dispose()
 		{
-		}
-
-		void IPooled.EnterPool()
-		{
-			param = Parameter.Gain;
-			value = 1f;
 		}
 	}
 

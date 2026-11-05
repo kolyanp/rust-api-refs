@@ -20,8 +20,8 @@ public class RustLog : ConsoleSystem
 
 	public static readonly int[] Levels = new int[names.Length];
 
-	[ClientVar(Help = "(Generated) Sets the log verbosity level for a specific named RustLog channel; takes a channel name and optional level integer")]
 	[ServerVar(Help = "(Generated) Sets the log verbosity level for a specific named RustLog channel; takes a channel name and optional level integer")]
+	[ClientVar(Help = "(Generated) Sets the log verbosity level for a specific named RustLog channel; takes a channel name and optional level integer")]
 	public static void Level(Arg args)
 	{
 		if (args.Args.Length == 0 || args.Args.Length > 2)

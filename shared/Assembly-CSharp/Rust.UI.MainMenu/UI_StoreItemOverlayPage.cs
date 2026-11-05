@@ -56,9 +56,9 @@ public class UI_StoreItemOverlayPage : UI_Window
 		public PageElement[] Elements;
 	}
 
+	[SerializeField]
 	[Space]
 	[Header("Page Content")]
-	[SerializeField]
 	private CanvasGroup bodyCanvasGroup;
 
 	[SerializeField]
@@ -140,8 +140,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private float autoCycleInterval = 10f;
 
-	[Header("Skin Viewer")]
 	[SerializeField]
+	[Header("Skin Viewer")]
 	private UI_SkinViewerControls skinViewerControls;
 
 	[SerializeField]

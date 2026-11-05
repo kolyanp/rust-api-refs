@@ -349,8 +349,8 @@ public class NPCPlayer : BasePlayer
 
 	public virtual void EquipWeapon(bool skipDeployDelay = false)
 	{
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)inventory == (Object)null || inventory.containerBelt == null)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		if (inventory == null || inventory.containerBelt == null)
 		{
 			return;
 		}
@@ -383,9 +383,12 @@ public class NPCPlayer : BasePlayer
 
 	internal void ServerThink_Internal()
 	{
-		float delta = Time.time - lastThinkTime;
-		ServerThink(delta);
-		lastThinkTime = Time.time;
+		if (!IsDestroyed)
+		{
+			float delta = Time.time - lastThinkTime;
+			ServerThink(delta);
+			lastThinkTime = Time.time;
+		}
 	}
 
 	public virtual void ServerThink(float delta)
@@ -631,7 +634,7 @@ public class NPCPlayer : BasePlayer
 
 	public Item FindThrownWeapon()
 	{
-		if ((Object)(object)inventory == (Object)null || inventory.containerBelt == null)
+		if (inventory == null || inventory.containerBelt == null)
 		{
 			return null;
 		}

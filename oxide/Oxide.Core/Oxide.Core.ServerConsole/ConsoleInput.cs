@@ -143,7 +143,7 @@ public class ConsoleInput
 			}
 			string obj = inputString;
 			inputString = string.Empty;
-			this.OnInputText?.Invoke(obj);
+			OnInputText?.Invoke(obj);
 			RedrawInputLine();
 			break;
 		}

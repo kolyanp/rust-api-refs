@@ -31,8 +31,8 @@ public class ModelViewer_RenderParameters
 	[Header("Anti Aliasing")]
 	public PostProcessLayer.Antialiasing antialiasing = PostProcessLayer.Antialiasing.TemporalAntialiasing;
 
-	[Header("Shadows")]
 	[Range(1f, 4f)]
+	[Header("Shadows")]
 	public int shadowCascades = 4;
 
 	[Range(1f, 3f)]
@@ -52,8 +52,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 2f)]
 	public float sunShadowBias = 0.01f;
 
-	[Header("Contact Shadows")]
 	[Header("                ")]
+	[Header("Contact Shadows")]
 	public bool enableContactShadows = true;
 
 	[Range(0f, 1f)]
@@ -102,8 +102,8 @@ public class ModelViewer_RenderParameters
 	[Tooltip("Controls the initial occlusion contribution offset.")]
 	public float Bias = 0.05f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the thickness occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -118,8 +118,8 @@ public class ModelViewer_RenderParameters
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength = 50f;
 
-	[Tooltip("Final Intensity parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Intensity parameter.")]
 	public float FadeToIntensity;
 
 	public Color FadeToTint = Color.black;
@@ -132,8 +132,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 16f)]
 	public float FadeToPowerExponent = 1.8f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Thickness parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToThickness = 1f;
 
 	[Header("                ")]

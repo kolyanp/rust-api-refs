@@ -112,7 +112,7 @@ public class PowergridStageChangeWorkQueue : PersistentObjectWorkQueue
 		using (TimeWarning.New(base.Name, (int)base.WarningThreshold.TotalMilliseconds))
 		{
 			stopwatch.Restart();
-			Vector3? val = null;
+			Nullable val = null;
 			while (currentIndex < num2)
 			{
 				IPowergridEntity entity = powergridEntities[currentIndex].Entity;

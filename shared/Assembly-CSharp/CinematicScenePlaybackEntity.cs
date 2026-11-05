@@ -2,7 +2,7 @@ using Facepunch;
 using ProtoBuf;
 using UnityEngine;
 
-public class CinematicScenePlaybackEntity : BaseEntity
+public class CinematicScenePlaybackEntity : BaseEntity, IFlattenKeepsChildren
 {
 	public Animator RootAnimator;
 

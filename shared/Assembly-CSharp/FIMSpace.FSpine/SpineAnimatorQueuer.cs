@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace FIMSpace.FSpine;
 
-[AddComponentMenu("FImpossible Creations/Spine Animator Utilities/Spine Animator Queuer")]
 [DefaultExecutionOrder(-12)]
+[AddComponentMenu("FImpossible Creations/Spine Animator Utilities/Spine Animator Queuer")]
 public class SpineAnimatorQueuer : MonoBehaviour
 {
 	[Tooltip("Can be used to fade out all spine animators")]

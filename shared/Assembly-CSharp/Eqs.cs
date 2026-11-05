@@ -43,11 +43,11 @@ public static class Eqs
 			sampledPositions.Clear();
 			if (innerRadius <= 0f || Mathf.Approximately(innerRadius, outerRadius))
 			{
-				SamplePositionsInDonutShape(center, sampledPositions, outerRadius, numPoints);
+				SamplePositionsInDonutShape(center, sampledPositions, agent.Rng, outerRadius, numPoints);
 			}
 			else
 			{
-				SamplePositionsInMultiDonutShape(center, sampledPositions, outerRadius, innerRadius, 2, Mathf.Max(1, numPoints / 2));
+				SamplePositionsInMultiDonutShape(center, sampledPositions, agent.Rng, outerRadius, innerRadius, 2, Mathf.Max(1, numPoints / 2));
 			}
 			return false;
 		}
@@ -79,35 +79,35 @@ public static class Eqs
 	}
 
 	[PoolAnalyzerNonCaching]
-	public static void SamplePositionsInDonutShape(NavVector3 center, List<NavVector3> sampledPositions, float radius = 10f, int itemsPerRing = 8)
+	public static void SamplePositionsInDonutShape(NavVector3 center, List<NavVector3> sampledPositions, NpcRandom random, float radius = 10f, int itemsPerRing = 8)
 	{
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SamplePositionsInDonutShape"))
 		{
-			float num = Random.Range(0f, MathF.PI * 2f);
+			float num = random.Range(0f, MathF.PI * 2f);
 			for (int i = 0; i < itemsPerRing; i++)
 			{
 				float num2 = MathF.PI * 2f * (float)i / (float)itemsPerRing + num;
 				NavVector3 item = new NavVector3(center.Value + new Vector3(Mathf.Cos(num2), 0f, Mathf.Sin(num2)) * radius);
 				sampledPositions.Add(item);
 			}
-			ListEx.Shuffle<NavVector3>(sampledPositions, (uint)Environment.TickCount);
+			ListEx.Shuffle<NavVector3>(sampledPositions, random.NextSeed());
 		}
 	}
 
 	[PoolAnalyzerNonCaching]
-	public static void SamplePositionsInMultiDonutShape(NavVector3 center, List<NavVector3> sampledPositions, float outerRadius = 10f, float innerRadius = 10f, int numRings = 1, int itemsPerRing = 8)
+	public static void SamplePositionsInMultiDonutShape(NavVector3 center, List<NavVector3> sampledPositions, NpcRandom random, float outerRadius = 10f, float innerRadius = 10f, int numRings = 1, int itemsPerRing = 8)
 	{
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SamplePositionsInMultiDonutShape"))
 		{
-			float num = Random.Range(0f, MathF.PI * 2f);
+			float num = random.Range(0f, MathF.PI * 2f);
 			for (int i = 0; i < numRings; i++)
 			{
 				float num2 = ((numRings != 1) ? Mathf.Lerp(innerRadius, outerRadius, (float)i / (float)(numRings - 1)) : outerRadius);
@@ -119,7 +119,7 @@ public static class Eqs
 					sampledPositions.Add(item);
 				}
 			}
-			ListEx.Shuffle<NavVector3>(sampledPositions, (uint)Environment.TickCount);
+			ListEx.Shuffle<NavVector3>(sampledPositions, random.NextSeed());
 		}
 	}
 }

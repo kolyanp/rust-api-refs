@@ -9,9 +9,8 @@ public class LivestockGenesDisplay : MonoBehaviour, IClientComponent
 	[Tooltip("Turned off with the row, so the whole genetics section disappears rather than leaving a gap.")]
 	public GameObject Root;
 
-	[Tooltip("The two lineage markers, sat at the end of the row so the inbred warning has a cause to point at.")]
 	public LivestockLineageWidget LineageWidget;
 
-	[Tooltip("Shown when both of the animal's lineage markers match, which is what being inbred means.")]
+	[Tooltip("Shown when both of the animal's lineage markers match, which is what being inbred means. Only with livestock.panelAlleles on, since it gives the second marker away.")]
 	public GameObject InbredWarning;
 }

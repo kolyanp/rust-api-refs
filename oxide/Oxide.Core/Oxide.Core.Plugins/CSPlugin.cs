@@ -15,14 +15,14 @@ public abstract class CSPlugin : Plugin
 
 	protected HookCache HooksCache = new HookCache();
 
-	protected string HarmonyId => "com.oxidemod." + base.Name;
+	protected string HarmonyId => "com.oxidemod." + Name;
 
 	protected Harmony HarmonyInstance
 	{
 		get
 		{
 			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0019: Expected O, but got Unknown
+			//IL_0019: Expected Obj, but got Unknown
 			if (_harmonyInstance == null)
 			{
 				_harmonyInstance = new Harmony(HarmonyId);
@@ -74,10 +74,10 @@ public abstract class CSPlugin : Plugin
 		}
 		catch (Exception ex)
 		{
-			Interface.Oxide.LogException($"Failed to initialize plugin '{base.Name} v{base.Version}'", ex);
-			if (base.Loader != null)
+			Interface.Oxide.LogException($"Failed to initialize plugin '{Name} v{Version}'", ex);
+			if (Loader != null)
 			{
-				base.Loader.PluginErrors[base.Name] = ex.Message;
+				Loader.PluginErrors[Name] = ex.Message;
 			}
 		}
 		Type[] nestedTypes = GetType().GetNestedTypes(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
@@ -89,21 +89,21 @@ public abstract class CSPlugin : Plugin
 			}
 			try
 			{
-				PatchClassProcessor obj = HarmonyInstance.CreateClassProcessor(type);
-				List<MethodInfo> list = ((obj != null) ? obj.Patch() : null);
+				PatchClassProcessor val = HarmonyInstance.CreateClassProcessor(type);
+				List<MethodInfo> list = ((val != null) ? val.Patch() : null);
 				if (list == null || list.Count == 0)
 				{
-					Interface.Oxide.LogWarning("[" + base.Title + "] AutoPatch attribute found on '" + type.Name + "' but no HarmonyPatch methods found. Skipping.");
+					Interface.Oxide.LogWarning("[" + Title + "] AutoPatch attribute found on '" + type.Name + "' but no HarmonyPatch methods found. Skipping.");
 					continue;
 				}
 				foreach (MethodInfo item in list)
 				{
-					Interface.Oxide.LogInfo("[" + base.Title + "] Automatically Harmony patched '" + (item?.Name ?? "unknown") + "' method. (" + type.Name + ")");
+					Interface.Oxide.LogInfo("[" + Title + "] Automatically Harmony patched '" + (item?.Name ?? "unknown") + "' method. (" + type.Name + ")");
 				}
 			}
 			catch (Exception ex2)
 			{
-				Interface.Oxide.LogException("[" + base.Title + "] Failed to automatically Harmony patch '" + type.Name + "'", ex2);
+				Interface.Oxide.LogException("[" + Title + "] Failed to automatically Harmony patch '" + type.Name + "'", ex2);
 			}
 		}
 	}
@@ -134,7 +134,7 @@ public abstract class CSPlugin : Plugin
 		bool flag = false;
 		foreach (HookMethod item in FindHooks(name, args))
 		{
-			int num = ((args != null) ? args.Length : 0);
+			int num = args?.Length ?? 0;
 			object[] array;
 			if (num != item.Parameters.Length)
 			{
@@ -194,10 +194,14 @@ public abstract class CSPlugin : Plugin
 		return result;
 	}
 
+	internal bool HasMatchingHook(string name, object[] args)
+	{
+		return FindHooks(name, args).Count > 0;
+	}
+
 	protected List<HookMethod> FindHooks(string name, object[] args)
 	{
-		HookCache cache;
-		List<HookMethod> value = HooksCache.GetHookMethod(name, args, out cache);
+		List<HookMethod> value = HooksCache.GetHookMethod(name, args, out var cache);
 		if (value != null)
 		{
 			return value;
@@ -216,7 +220,7 @@ public abstract class CSPlugin : Plugin
 				list.Add(item);
 				continue;
 			}
-			int num = ((args != null) ? args.Length : 0);
+			int num = args?.Length ?? 0;
 			bool flag = false;
 			object[] array;
 			if (num != item.Parameters.Length)

@@ -388,43 +388,49 @@ public class Monument : TerrainPlacement
 		});
 	}
 
-	protected override void ApplyTopology(Matrix4x4 localToWorld, Matrix4x4 worldToLocal)
+	protected override void GetTopologyCorners(Matrix4x4 localToWorld, out Vector3 v1, out Vector3 v2, out Vector3 v3, out Vector3 v4)
 	{
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		if (Radius == 0f)
 		{
 			Radius = extents.x;
 		}
+		v1 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
+		v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
+		v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
+		v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
+	}
+
+	protected override void ApplyTopology(Matrix4x4 localToWorld, Matrix4x4 worldToLocal)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		TextureData topologydata = new TextureData(topologymap.Get());
-		Vector3 v = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, 0f - Radius));
-		Vector3 v2 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, 0f - Radius));
-		Vector3 v3 = localToWorld.MultiplyPoint3x4(offset + new Vector3(0f - Radius, 0f, Radius));
-		Vector3 v4 = localToWorld.MultiplyPoint3x4(offset + new Vector3(Radius, 0f, Radius));
+		GetTopologyCorners(localToWorld, out var v, out var v2, out var v3, out var v4);
 		TerrainMeta.TopologyMap.ForEachParallel(v, v2, v3, v4, (int x, int z) =>
 		{
 			//IL_002b: Unknown result type (might be due to invalid IL or missing references)

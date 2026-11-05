@@ -111,6 +111,7 @@ public class BasePet : NPCPlayer, IThinker
 	{
 		if ((Object)(object)Brain.OwningPlayer != (Object)null)
 		{
+			Brain.OwningPlayer.Pet = null;
 			Brain.OwningPlayer.ClearClientPetLink();
 		}
 		AIThinkManager.RemovePet(this);
@@ -133,7 +134,7 @@ public class BasePet : NPCPlayer, IThinker
 
 	public void ApplyPetStatModifiers()
 	{
-		if ((Object)(object)inventory == (Object)null)
+		if (inventory == null)
 		{
 			return;
 		}

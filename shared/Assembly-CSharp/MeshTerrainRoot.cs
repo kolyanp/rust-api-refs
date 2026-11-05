@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class MeshTerrainRoot : ListComponent<MeshTerrainRoot>, IClientComponent
+public class MeshTerrainRoot : ListComponent<MeshTerrainRoot>, IClientComponent, IFlattenKeepsDescendants
 {
 	public GameObject TerrainBlendSearchRoot;
 

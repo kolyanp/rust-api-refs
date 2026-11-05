@@ -32,9 +32,21 @@ public static class RecastWrapper
 
 	public const int MAX_DONUT_POINTS = 64;
 
+	public const int MAX_FLOOR_POLYS = 2048;
+
+	public const int MAX_FLOOR_TILES = 256;
+
+	private static bool floorAroundPolyMissing;
+
+	public const int WALL_SEGMENT_FLOATS = 5;
+
+	private static bool wallsAroundMissing;
+
 	private static bool saveNavMeshExMissing;
 
 	private static bool appendDeltaMissing;
+
+	public static bool WallsAroundAvailable => !wallsAroundMissing;
 
 	public static bool HasAppendNavMeshDelta => !appendDeltaMissing;
 
@@ -44,6 +56,9 @@ public static class RecastWrapper
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
 	public static extern bool SamplePosition(IntPtr navMesh, in Vector3 position, in Vector3 extents, out Vector3 nearestPosition, out ulong nearestPolyRef, int includeGatedDoorPolys, int allowNpcDoors);
+
+	[DllImport("RustNative", EntryPoint = "SamplePosition")]
+	public unsafe static extern byte SamplePositionInJob(IntPtr navMesh, Vector3* position, Vector3* extents, Vector3* nearestPosition, ulong* nearestPolyRef, int includeGatedDoorPolys, int allowNpcDoors);
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
@@ -94,6 +109,115 @@ public static class RecastWrapper
 	[DllImport("RustNative", EntryPoint = "FindDonutPointsInCircle")]
 	[return: MarshalAs(UnmanagedType.U1)]
 	private unsafe static extern bool FindDonutPointsInCircleInternal(IntPtr navMesh, ref ulong startRef, in Vector3 centerPos, float maxRadius, float minRadius, float angleOffset, int maxPoints, Vector3* points, out int numFound, int allowNpcDoors);
+
+	public unsafe static bool GetFloorAroundPoly(IntPtr navMesh, ref ulong startRef, in Vector3 centerPos, float maxArea, ulong[] refs, out int count, uint[] tiles, out int tileCount, out float area, out Vector3 boundsMin, out Vector3 boundsMax, out bool open, out uint stamp, int allowNpcDoors)
+	{
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		if (refs == null || refs.Length < 2048)
+		{
+			throw new ArgumentException("Ref buffer must hold MAX_FLOOR_POLYS entries.", "refs");
+		}
+		if (tiles == null || tiles.Length < 256)
+		{
+			throw new ArgumentException("Tile buffer must hold MAX_FLOOR_TILES entries.", "tiles");
+		}
+		count = 0;
+		tileCount = 0;
+		area = 0f;
+		boundsMin = default;
+		boundsMax = default;
+		open = false;
+		stamp = 0u;
+		if (floorAroundPolyMissing)
+		{
+			return false;
+		}
+		try
+		{
+			fixed (ulong* refs2 = refs)
+			{
+				fixed (uint* tiles2 = tiles)
+				{
+					bool floorAroundPolyInternal = GetFloorAroundPolyInternal(navMesh, ref startRef, in centerPos, maxArea, refs2, 2048, out count, tiles2, 256, out tileCount, out area, out boundsMin, out boundsMax, out var open2, out stamp, allowNpcDoors);
+					open = open2 != 0;
+					return floorAroundPolyInternal;
+				}
+			}
+		}
+		catch (EntryPointNotFoundException)
+		{
+			floorAroundPolyMissing = true;
+			Debug.LogWarning((object)"RustNative has no GetFloorAroundPoly, livestock floors read as no navmesh until the library is rolled.");
+			return false;
+		}
+	}
+
+	[DllImport("RustNative", EntryPoint = "GetFloorAroundPoly")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	private unsafe static extern bool GetFloorAroundPolyInternal(IntPtr navMesh, ref ulong startRef, in Vector3 centerPos, float maxArea, ulong* refs, int maxRefs, out int count, uint* tiles, int maxTiles, out int tileCount, out float area, out Vector3 boundsMin, out Vector3 boundsMax, out int open, out uint stamp, int allowNpcDoors);
+
+	public unsafe static bool TileStampsUnchangedSince(IntPtr navMesh, uint[] tiles, int count, uint lastStamp)
+	{
+		if (tiles == null || count > tiles.Length)
+		{
+			throw new ArgumentException("Tile buffer must hold count entries.", "tiles");
+		}
+		fixed (uint* tiles2 = tiles)
+		{
+			return TileStampsUnchangedSinceInternal(navMesh, tiles2, count, lastStamp);
+		}
+	}
+
+	public unsafe static bool TileStampsUnchangedSince(IntPtr navMesh, uint* tiles, int count, uint lastStamp)
+	{
+		return TileStampsUnchangedSinceInternal(navMesh, tiles, count, lastStamp);
+	}
+
+	[DllImport("RustNative", EntryPoint = "TileStampsUnchangedSince")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	private unsafe static extern bool TileStampsUnchangedSinceInternal(IntPtr navMesh, uint* tiles, int count, uint lastStamp);
+
+	public unsafe static int GetWallsAround(IntPtr navMesh, ulong startRef, in Vector3 centerPos, float radius, float* segments, int maxSegments, uint* tiles, int maxTiles, out int tileCount, out uint stamp, int allowNpcDoors)
+	{
+		tileCount = 0;
+		stamp = 0u;
+		if (wallsAroundMissing)
+		{
+			return 0;
+		}
+		try
+		{
+			return GetWallsAroundInternal(navMesh, startRef, in centerPos, radius, segments, maxSegments, tiles, maxTiles, out tileCount, out stamp, allowNpcDoors);
+		}
+		catch (EntryPointNotFoundException)
+		{
+			wallsAroundMissing = true;
+			Debug.LogWarning((object)"RustNative has no GetWallsAround, agents keep only their pivot off walls until the library is rolled.");
+			return 0;
+		}
+	}
+
+	[DllImport("RustNative", EntryPoint = "GetWallsAround")]
+	private unsafe static extern int GetWallsAroundInternal(IntPtr navMesh, ulong startRef, in Vector3 centerPos, float radius, float* segments, int maxSegments, uint* tiles, int maxTiles, out int tileCount, out uint stamp, int allowNpcDoors);
+
+	public unsafe static int GetFloorBoundary(IntPtr navMesh, ulong[] refs, int count, Vector3[] segments, int allowNpcDoors)
+	{
+		if (refs == null || count > refs.Length || segments == null)
+		{
+			throw new ArgumentException("Buffers must hold count refs and an even number of points.");
+		}
+		fixed (ulong* refs2 = refs)
+		{
+			fixed (Vector3* segments2 = segments)
+			{
+				return GetFloorBoundaryInternal(navMesh, refs2, count, segments2, segments.Length / 2, allowNpcDoors);
+			}
+		}
+	}
+
+	[DllImport("RustNative", EntryPoint = "GetFloorBoundary")]
+	private unsafe static extern int GetFloorBoundaryInternal(IntPtr navMesh, ulong* refs, int count, Vector3* segments, int maxSegments, int allowNpcDoors);
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]

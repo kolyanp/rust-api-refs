@@ -6,6 +6,7 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
+using Development.Attributes;
 using Facepunch.Rust.Profiling;
 using Fleck;
 using Oxide.Core;
@@ -391,7 +392,7 @@ public class Listener
 				socket2.OnError = (Exception e) =>
 				{
 					RconProfiler.OnError(socket2);
-					if (Interlocked.Exchange(ref errorLogged, 1) != 1)
+					if (!(e is IOException) && Interlocked.Exchange(ref errorLogged, 1) != 1)
 					{
 						Debug.LogException(e);
 					}
@@ -459,6 +460,7 @@ public class Listener
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private List<RconConnection> SnapshotClients()
 	{
 		List<RconConnection> list = Pool.Get<List<RconConnection>>();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Facepunch.Rust;
 using Oxide.Core;
 using UnityEngine;
 
@@ -259,6 +260,10 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 					{
 						inventory.GetSlot(0)?.LockUnlock(bNewState: true);
 					}
+					if (ShortPrefabName == "crudeoilproducer" && liquidContainer.ShortPrefabName == "modular_car_2mod_fuel_tank" && itemToCreate.shortname == "crude.oil")
+					{
+						Facepunch.Rust.Analytics.Azure.LogResource(Facepunch.Rust.Analytics.Azure.ResourceMode.Produced, "io", itemToCreate.shortname, num, this, null, safezone: false, null, 0uL, null, null, null, 0uL);
+					}
 					return;
 				}
 			}
@@ -454,19 +459,17 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		if (requireOilSwitchActive)
 		{
+			float num = oilProductionWarmUp.LeftFrom(info.cachedTime.Time);
 			if (info.forDisk)
 			{
-				float num = TimeUntil.op_Implicit(oilProductionWarmUp);
 				info.msg.ioEntity.genericFloat1 = ((currentOilRigMultiplier > 0f) ? Mathf.Max(0f, num) : savedOilProductionWarmUp);
 			}
 			else
 			{
-				info.msg.ioEntity.genericFloat1 = (IsOilWarmingUp() ? TimeUntil.op_Implicit(oilProductionWarmUp) : 0f);
+				info.msg.ioEntity.genericFloat1 = ((currentOilRigMultiplier > 0f) ? Mathf.Max(0f, num) : 0f);
 			}
 		}
 	}

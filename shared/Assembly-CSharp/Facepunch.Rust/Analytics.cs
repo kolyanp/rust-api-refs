@@ -340,6 +340,12 @@ public static class Analytics
 
 			public const string ApartmentBreakIn = "apartment_breakin";
 
+			public const string ApartmentBreakInEnd = "apartment_breakin_end";
+
+			public const string ApartmentEvicted = "apartment_evicted";
+
+			public const string ApartmentContents = "apartment_contents";
+
 			public const string ShopOpened = "shop_opened";
 
 			public const string ShopClosed = "shop_closed";
@@ -393,6 +399,10 @@ public static class Analytics
 			public const string LivestockCowMilkSkimmed = "livestock_cow_milk_skimmed";
 
 			public const string UGCCreated = "ugc_created";
+
+			public const string BlockRotate = "block_rotate";
+
+			public const string BlockFlip = "block_flip";
 		}
 
 		private struct SimpleItemAmount(Item item)
@@ -605,7 +615,8 @@ public static class Analytics
 				["supports_async_compute"] = SystemInfo.supportsAsyncCompute.ToString(),
 				["supports_async_gpu_readback"] = SystemInfo.supportsAsyncGPUReadback.ToString(),
 				["supports_3d_textures"] = SystemInfo.supports3DTextures.ToString(),
-				["supports_instancing"] = SystemInfo.supportsInstancing.ToString()
+				["supports_instancing"] = SystemInfo.supportsInstancing.ToString(),
+				["cpu_cpuid"] = SystemInfoEx.GetProcessorFeatures()
 			};
 		}
 
@@ -616,7 +627,7 @@ public static class Analytics
 			dictionary["changeset"] = ((current != null) ? current.Scm.ChangeId : null) ?? "editor";
 			BuildInfo current2 = BuildInfo.Current;
 			dictionary["branch"] = ((current2 != null) ? current2.Scm.Branch : null) ?? "editor";
-			dictionary["network_version"] = 2635.ToString();
+			dictionary["network_version"] = 2636.ToString();
 			dictionary["eos_sdk"] = ((object)VersionInterface.GetVersion())?.ToString() ?? "disabled";
 			return dictionary;
 		}
@@ -645,6 +656,7 @@ public static class Analytics
 						yield return TryCatch(AggregateEntitiesAndItems());
 						yield return TryCatch(AggregatePlayers(blueprints: true));
 						yield return TryCatch(AggregateTeams());
+						yield return TryCatch(AggregateApartments());
 						Dictionary<PendingItemsKey, PendingItemsData> dict = pendingItems;
 						pendingItems = new Dictionary<PendingItemsKey, PendingItemsData>();
 						yield return PushPendingItemsLoopAsync(dict);
@@ -736,6 +748,28 @@ public static class Analytics
 			yield return null;
 			SubmitPoint(EventRecord.New("item_sum").AddObject("counts", itemDict));
 			yield return null;
+		}
+
+		private static IEnumerator AggregateApartments()
+		{
+			ApartmentBuilding instance = ApartmentBuilding.Instance;
+			if ((Object)(object)instance == (Object)null || instance.IsDestroyed)
+			{
+				yield break;
+			}
+			Stopwatch watch = Stopwatch.StartNew();
+			foreach (ApartmentRoom room in instance.Rooms)
+			{
+				if (watch.ElapsedMilliseconds > MaxMSPerFrame)
+				{
+					yield return null;
+					watch.Restart();
+				}
+				if (!((Object)(object)room == (Object)null) && !room.IsDestroyed && room.IsCurrentlyRented())
+				{
+					OnApartmentContents(room);
+				}
+			}
 		}
 
 		private static void AddItemsToDict(ItemContainer container, Dictionary<string, int> dict)
@@ -962,8 +996,8 @@ public static class Analytics
 					.AddField("ip_convar", Net.sv.ip)
 					.AddField("port_convar", Net.sv.port)
 					.AddField("net_protocol", Net.sv.ProtocolId)
-					.AddField("protocol_network", 2635)
-					.AddField("protocol_save", 289);
+					.AddField("protocol_network", 2636)
+					.AddField("protocol_save", 290);
 				BuildInfo current = BuildInfo.Current;
 				EventRecord eventRecord2 = eventRecord.AddField("changeset", ((current != null) ? current.Scm.ChangeId : null) ?? "0").AddField("unity_version", Application.unityVersion);
 				BuildInfo current2 = BuildInfo.Current;
@@ -1005,7 +1039,7 @@ public static class Analytics
 				}
 				SubmitPoint(EventRecord.New("item_definitions").AddObject("items", ItemManager.itemDictionary.Select((KeyValuePair<int, ItemDefinition> x) => x.Value).Select((ItemDefinition x) =>
 				{
-					//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 					return new
 					{
 						item_id = x.itemid,
@@ -1014,6 +1048,7 @@ public static class Analytics
 						workbench = (x.Blueprint?.GetWorkbenchLevel() ?? 0),
 						category = x.category.ToString(),
 						display_name = x.displayName.english,
+						redirect_of = x.isRedirectOf?.shortname,
 						despawn_rarity = x.despawnRarity,
 						ingredients = x.Blueprint?.GetIngredients().Select((ItemAmount y) => new
 						{
@@ -1719,7 +1754,7 @@ public static class Analytics
 					.AddField("message", message);
 				if (BuildInfo.Current != null)
 				{
-					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2635);
+					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2636);
 				}
 				switch (type)
 				{
@@ -1968,29 +2003,29 @@ public static class Analytics
 
 		public static void OnEntityTakeDamage(HitInfo info, bool isDeath)
 		{
-			//IL_02a7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_02b7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_02c7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_02d7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_02e7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_020a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0215: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0221: Unknown result type (might be due to invalid IL or missing references)
-			//IL_022c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0361: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0366: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0426: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0463: Unknown result type (might be due to invalid IL or missing references)
-			//IL_047a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_05e7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_05fe: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0615: Unknown result type (might be due to invalid IL or missing references)
+			//IL_02ca: Unknown result type (might be due to invalid IL or missing references)
+			//IL_02da: Unknown result type (might be due to invalid IL or missing references)
+			//IL_02ea: Unknown result type (might be due to invalid IL or missing references)
+			//IL_02fa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_030a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_031a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_022d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0238: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0244: Unknown result type (might be due to invalid IL or missing references)
+			//IL_024f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+			//IL_010a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0384: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0389: Unknown result type (might be due to invalid IL or missing references)
+			//IL_020b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0557: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0594: Unknown result type (might be due to invalid IL or missing references)
+			//IL_05ab: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0718: Unknown result type (might be due to invalid IL or missing references)
+			//IL_072f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0746: Unknown result type (might be due to invalid IL or missing references)
 			if (!GameplayAnalytics)
 			{
 				return;
@@ -1999,6 +2034,10 @@ public static class Analytics
 			{
 				BasePlayer initiatorPlayer = info.InitiatorPlayer;
 				BasePlayer basePlayer = info.HitEntity as BasePlayer;
+				if ((Object)(object)basePlayer == (Object)null && (Object)(object)info.HitShield != (Object)null)
+				{
+					basePlayer = info.HitShield.GetOwnerPlayer();
+				}
 				if (((Object)(object)info.Initiator == (Object)null && !isDeath) || (((Object)(object)initiatorPlayer == (Object)null || initiatorPlayer.IsNpc || initiatorPlayer.IsBot) && ((Object)(object)basePlayer == (Object)null || basePlayer.IsNpc || basePlayer.IsBot)))
 				{
 					return;
@@ -2067,6 +2106,20 @@ public static class Analytics
 				{
 					eventRecord.AddField("weapon", (BaseNetworkable)info.Weapon);
 					eventRecord.AddField("attacker", (BaseNetworkable)info.Initiator);
+				}
+				if ((Object)(object)info.HitShield != (Object)null)
+				{
+					Shield hitShield = info.HitShield;
+					Item item = hitShield.GetItem();
+					BasePlayer ownerPlayer = hitShield.GetOwnerPlayer();
+					HeldEntity heldEntity = (((Object)(object)ownerPlayer != (Object)null) ? ownerPlayer.GetHeldEntity() : null);
+					eventRecord.AddField("shield_owner", (BaseNetworkable)ownerPlayer).AddField("shield_weapon", ((Object)(object)heldEntity != (Object)null) ? heldEntity.ShortPrefabName : "").AddField("shield_item_uid", item?.uid.Value ?? 0)
+						.AddField("shield_prefab", hitShield.ShortPrefabName)
+						.AddField("shield_absorbed", info.ShieldAbsorbedDamage)
+						.AddField("shield_protection", hitShield.Protection.Get(info.damageTypes.GetMajorityDamageType()))
+						.AddField("shield_mitigation", hitShield.DamageMitigationFactor)
+						.AddField("shield_durability", item?.condition ?? 0f)
+						.AddField("shield_durability_loss", info.ShieldDurabilityLoss);
 				}
 				if (info.HitBone != 0)
 				{
@@ -2845,7 +2898,42 @@ public static class Analytics
 			}
 			try
 			{
-				SubmitPoint(EventRecord.New("base_interaction").AddField("player", (BaseNetworkable)player).AddField("entity", (BaseNetworkable)entity));
+				SubmitPoint(EventRecord.New("base_interaction").AddField("player", (BaseNetworkable)player).AddField("entity", (BaseNetworkable)entity)
+					.AddField("is_open", entity.IsOpen()));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnBuildingBlockRotated(BasePlayer player, BuildingBlock block)
+		{
+			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("block_rotate").AddField("player", (BaseNetworkable)player).AddField("entity", (BaseNetworkable)block)
+					.AddField("rotation_amount", block.blockDefinition.rotationAmount));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnBuildingBlockFlipped(BasePlayer player, BuildingBlock mirroredBlock)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("block_flip").AddField("player", (BaseNetworkable)player).AddField("entity", (BaseNetworkable)mirroredBlock));
 			}
 			catch (Exception ex)
 			{
@@ -3215,9 +3303,11 @@ public static class Analytics
 			}
 			try
 			{
-				SubmitPoint(EventRecord.New("apartment_checkout").AddField("player_steamid", entity.UserIDString).AddObject("apartment_owners", room.Owners)
+				EventRecord point = EventRecord.New("apartment_checkout").AddField("player_steamid", entity.UserIDString).AddObject("apartment_owners", room.Owners)
 					.AddField("apartment_number", room.RoomNumber)
-					.AddField("apartment_size", (int)room.Size));
+					.AddField("apartment_size", (int)room.Size);
+				AddApartmentContents(point, room);
+				SubmitPoint(point);
 			}
 			catch (Exception ex)
 			{
@@ -3253,13 +3343,93 @@ public static class Analytics
 			}
 			try
 			{
-				SubmitPoint(EventRecord.New("apartment_breakin").AddField("player_steamid", entity.UserIDString).AddObject("apartment_owners", room.Owners)
+				EventRecord point = EventRecord.New("apartment_breakin").AddField("player_steamid", entity.UserIDString).AddObject("apartment_owners", room.Owners)
 					.AddField("apartment_number", room.RoomNumber)
-					.AddField("apartment_size", (int)room.Size));
+					.AddField("apartment_size", (int)room.Size);
+				AddApartmentContents(point, room);
+				SubmitPoint(point);
 			}
 			catch (Exception ex)
 			{
 				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnApartmentBreakInEnd(ApartmentRoom room, ulong intruderId)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				EventRecord point = EventRecord.New("apartment_breakin_end").AddField("player_steamid", intruderId.ToString()).AddObject("apartment_owners", room.Owners)
+					.AddField("apartment_number", room.RoomNumber)
+					.AddField("apartment_size", (int)room.Size);
+				AddApartmentContents(point, room);
+				SubmitPoint(point);
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnApartmentEvicted(ApartmentRoom room)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				EventRecord point = EventRecord.New("apartment_evicted").AddObject("apartment_owners", room.Owners).AddField("apartment_number", room.RoomNumber)
+					.AddField("apartment_size", (int)room.Size);
+				AddApartmentContents(point, room);
+				SubmitPoint(point);
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnApartmentContents(ApartmentRoom room)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				EventRecord point = EventRecord.New("apartment_contents").AddObject("apartment_owners", room.Owners).AddField("apartment_number", room.RoomNumber)
+					.AddField("apartment_size", (int)room.Size);
+				AddApartmentContents(point, room);
+				SubmitPoint(point);
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		private static void AddApartmentContents(EventRecord point, ApartmentRoom room)
+		{
+			PooledList<ItemContainer> val = Pool.Get<PooledList<ItemContainer>>();
+			try
+			{
+				room.GetContentContainers((List<ItemContainer>)(object)val);
+				Dictionary<string, int> dictionary = Pool.Get<Dictionary<string, int>>();
+				foreach (ItemContainer item in (List<ItemContainer>)(object)val)
+				{
+					AddItemsToDict(item, dictionary);
+				}
+				point.AddField("apartment_value", Mathf.RoundToInt(room.GetEstimatedValue())).AddObject("apartment_items", dictionary);
+				Pool.FreeUnmanaged<string, int>(ref dictionary);
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
 			}
 		}
 
@@ -3646,7 +3816,7 @@ public static class Analytics
 			}
 		}
 
-		public static void OnLivestockAcquired(ulong playerSteamId, BaseEntity livestock, LivestockAnimal.FamiliarityReason familiarityReason)
+		public static void OnLivestockAcquired(ulong playerSteamId, BaseEntity livestock, LivestockAnimal.OwnerChangeReason ownerChangeReason)
 		{
 			if (!GameplayAnalytics)
 			{
@@ -3655,7 +3825,7 @@ public static class Analytics
 			try
 			{
 				SubmitPoint(EventRecord.New("livestock_acquired").AddField("player_steamid", playerSteamId).AddField("livestock", (BaseNetworkable)livestock)
-					.AddField("acquisition_reason", familiarityReason.ToString()));
+					.AddField("acquisition_reason", ownerChangeReason.ToString()));
 			}
 			catch (Exception ex)
 			{

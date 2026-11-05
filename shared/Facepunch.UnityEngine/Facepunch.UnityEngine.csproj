@@ -12,10 +12,11 @@
   <PropertyGroup />
   <ItemGroup />
   <ItemGroup>
+    <Reference Include="Unity.Mathematics" />
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="Facepunch.System" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.13/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.14/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI" />
     <Reference Include="UnityEngine.UIModule" />

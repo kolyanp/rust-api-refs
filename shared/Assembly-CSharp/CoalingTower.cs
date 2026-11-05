@@ -29,8 +29,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private Action CheckWagonLineUpCB;
 
-	[SerializeField]
 	[Header("Coaling Tower")]
+	[SerializeField]
 	private BoxCollider unloadingBounds;
 
 	[SerializeField]
@@ -435,7 +435,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 		ItemContainer inventory = storageContainer.inventory;
 		ItemContainer newcontainer = itemContainer;
-		int iAmount = Mathf.RoundToInt((float)lootOption.maxLootAmount / 10f);
+		int iAmount = Mathf.RoundToInt((float)lootOption.ScaledMaxLootAmount / 10f);
 		List<Item> list = Pool.Get<List<Item>>();
 		int num = inventory.Take(list, lootOption.lootItem.itemid, iAmount);
 		bool flag2 = true;
@@ -567,8 +567,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Unload(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnCoalingTowerStart", this, msg.player) == null && !TryUnloadActiveWagon(out var attemptStatus) && (Object)(object)msg.player != (Object)null)

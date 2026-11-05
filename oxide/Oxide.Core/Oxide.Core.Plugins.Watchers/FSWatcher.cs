@@ -175,7 +175,7 @@ public sealed class FSWatcher : PluginChangeWatcher
 				break;
 			}
 		}
-		Interface.Oxide.NextTick(delegate
+		Interface.Oxide.NextTick(() =>
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
@@ -198,7 +198,7 @@ public sealed class FSWatcher : PluginChangeWatcher
 				}
 			}
 			change.timer?.Destroy();
-			change.timer = timers.Once(0.2f, delegate
+			change.timer = timers.Once(0.2f, () =>
 			{
 				lock (changeQueueLock)
 				{
@@ -245,7 +245,7 @@ public sealed class FSWatcher : PluginChangeWatcher
 
 	private void watcher_Error(object sender, ErrorEventArgs e)
 	{
-		Interface.Oxide.NextTick(delegate
+		Interface.Oxide.NextTick(() =>
 		{
 			Interface.Oxide.LogError("FSWatcher error: {0}", e.GetException());
 			RemoteLogger.Exception("FSWatcher error", e.GetException());

@@ -15,25 +15,16 @@ public static class BlockFaceOps
 
 	public static void RefreshGraph(List<BlockFace> faces)
 	{
-		if (faces == null || faces.Count == 0)
+		if (faces != null && faces.Count != 0)
 		{
-			return;
+			List<BlockFace> list = Pool.Get<List<BlockFace>>();
+			list.AddRange(faces);
+			GatherConnectedFaces(faces, list);
+			GatherCandidateFaces(faces, list);
+			list.RemoveAll((BlockFace face) => !IsAlive(face));
+			BlockFace.RefreshFaceLinks(list);
+			Pool.FreeUnmanaged<BlockFace>(ref list);
 		}
-		List<BlockFace> list = Pool.Get<List<BlockFace>>();
-		GatherConnectedFaces(faces, list);
-		GatherCandidateFaces(faces, list);
-		foreach (BlockFace face in faces)
-		{
-			face.RefreshFaceLinks();
-		}
-		foreach (BlockFace item in list)
-		{
-			if (IsAlive(item))
-			{
-				item.RefreshFaceLinks();
-			}
-		}
-		Pool.FreeUnmanaged<BlockFace>(ref list);
 	}
 
 	public static void Teardown(List<BlockFace> faces, string ownerName)
@@ -57,22 +48,17 @@ public static class BlockFaceOps
 				}
 			}
 		}
-		foreach (BlockFace item in list)
-		{
-			if (IsAlive(item))
-			{
-				item.RefreshFaceLinks();
-			}
-		}
+		list.RemoveAll((BlockFace face) => !IsAlive(face));
+		BlockFace.RefreshFaceLinks(list);
 		Pool.FreeUnmanaged<BlockFace>(ref list);
 		foreach (BlockFace face2 in faces)
 		{
 			if (face2.LinksPerFace.Count > 0)
 			{
 				Debug.LogError((object)$"Face '{face2.FacePrefab?.localName}' on '{ownerName}' still has {face2.LinksPerFace.Count} connections after teardown");
-				foreach (KeyValuePair<BlockFace, int> item2 in face2.LinksPerFace)
+				foreach (KeyValuePair<BlockFace, int> item in face2.LinksPerFace)
 				{
-					BlockFace key = item2.Key;
+					BlockFace key = item.Key;
 					key.LinksPerFace.Remove(face2);
 					foreach (EdgeLink edge2 in key.Edges)
 					{
@@ -120,9 +106,14 @@ public static class BlockFaceOps
 
 	private static void FreeFace(BlockFace face)
 	{
+		if (face.Portal != null)
+		{
+			RoomPortalBuilder.Release(face.Portal);
+		}
 		if (face.Room != null)
 		{
 			face.Room.Faces.Remove(face);
+			face.Room.Solver?.OnFaceRemoved(face.Room);
 			face.Room = null;
 		}
 		for (int i = 0; i < face.Edges.Count; i++)

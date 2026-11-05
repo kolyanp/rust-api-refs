@@ -140,9 +140,9 @@ public class KeyValuesConverter : JsonConverter
 			{
 				return;
 			}
-			List<object> obj = (List<object>)value;
+			List<object> list = (List<object>)value;
 			writer.WriteStartArray();
-			foreach (object item2 in obj)
+			foreach (object item2 in list)
 			{
 				serializer.Serialize(writer, item2);
 			}

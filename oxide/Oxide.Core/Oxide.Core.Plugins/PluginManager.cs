@@ -76,7 +76,7 @@ public sealed class PluginManager
 		}
 		loadedPlugins.Add(plugin.Name, plugin);
 		plugin.HandleAddedToManager(this);
-		this.OnPluginAdded?.Invoke(plugin);
+		OnPluginAdded?.Invoke(plugin);
 		return true;
 	}
 
@@ -98,7 +98,7 @@ public sealed class PluginManager
 			}
 		}
 		plugin.HandleRemovedFromManager(this);
-		this.OnPluginRemoved?.Invoke(plugin);
+		OnPluginRemoved?.Invoke(plugin);
 		return true;
 	}
 
@@ -282,14 +282,20 @@ public sealed class PluginManager
 		if (!lastDeprecatedWarningAt.TryGetValue(oldHook, out var value2) || now - value2 > 3600f)
 		{
 			lastDeprecatedWarningAt[oldHook] = now;
-			Interface.Oxide.LogWarning(string.Format("'{0} v{1}' is using deprecated hook '{2}', which will stop working on {3}. Please ask the author to update to '{4}'", new object[5]
+			string text = null;
+			for (int i = 0; i < value.Plugins.Count; i++)
 			{
-				value.Plugins[0].Name,
-				value.Plugins[0].Version,
-				oldHook,
-				expireDate.ToString("D"),
-				newHook
-			}));
+				Plugin plugin = value.Plugins[i];
+				if (!plugin.IsCorePlugin && plugin is CSPlugin cSPlugin && cSPlugin.HasMatchingHook(oldHook, args))
+				{
+					string text2 = $"'{plugin.Name} v{plugin.Version}'";
+					text = ((text == null) ? text2 : (text + ", " + text2));
+				}
+			}
+			if (text != null)
+			{
+				Interface.Oxide.LogWarning(text + " using deprecated hook '" + oldHook + "', which will stop working on " + expireDate.ToString("D") + ". Please ask the author to update to '" + newHook + "'");
+			}
 		}
 		return CallHook(oldHook, args);
 	}

@@ -17,6 +17,8 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 		World
 	}
 
+	public const Flags Flag_Stuck = Flags.Reserved3;
+
 	[Header("General")]
 	public float timerAmountMin = 10f;
 
@@ -71,8 +73,8 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 
 	public GameObjectRef watersurfaceExplosionEffect;
 
-	[Min(0f)]
 	[Header("Water")]
+	[Min(0f)]
 	public float underwaterExplosionDepth = 1f;
 
 	[MinMax(0f, 100f)]
@@ -80,6 +82,8 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 	public MinMax watersurfaceExplosionDepth = new MinMax(0.5f, 10f);
 
 	public bool waterCausesExplosion;
+
+	public bool waterHitSkipsExplosion;
 
 	[Header("Other")]
 	public int vibrationLevel = 3;
@@ -124,7 +128,7 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 
 	private const int fullSplashDamage = 1210222849;
 
-	protected Vector3? hitNormal;
+	protected Nullable hitNormal;
 
 	private static BaseEntity[] queryResults = new BaseEntity[64];
 
@@ -327,8 +331,22 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 	public virtual void ProjectileImpact(RaycastHit info, Vector3 rayOrigin)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		hitNormal = info.normal;
-		Explode();
+		if (waterHitSkipsExplosion && RaycastHitEx.IsWaterHit(info))
+		{
+			if (watersurfaceExplosionEffect.isValid)
+			{
+				Effect.server.Run(watersurfaceExplosionEffect.resourcePath, info.point, GetExplosionNormal(), null, broadcast: true);
+			}
+			Kill();
+		}
+		else
+		{
+			Explode();
+		}
 	}
 
 	public void ForceExplode()
@@ -429,6 +447,7 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0503: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0413: Unknown result type (might be due to invalid IL or missing references)
@@ -564,6 +583,7 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 			SeismicSensor.Notify(val3, vibrationLevel);
 			BlindAnyAI();
 			SingletonComponent<NpcNoiseManager>.Instance.OnExplosion(creatorEntity, this);
+			BirdFlock.StartleFlocks(val3, BirdFlock.explosionstartleradius);
 		}
 		if (!IsDestroyed && !HasFlag(Flags.Broken) && !ConVar.Server.explosive_testing_mode)
 		{
@@ -583,7 +603,7 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		if (IsStuck() && (parentEntity.Get(isServer) is BaseVehicle || parentEntity.Get(isServer) is BallistaGun))
+		if (IsStuck() && (parentEntity.Get(isServer) is BaseVehicle || parentEntity.Get(isServer) is BaseMountedWeapon))
 		{
 			OBB val = WorldSpaceBounds();
 			return CenterPoint() - val.forward * (val.extents.z + 0.1f);
@@ -858,8 +878,8 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)ent == (Object)null)
 		{
 			return;
@@ -896,6 +916,10 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 		{
 			SetParent(ent, StringPool.closest, worldPositionStays: true);
 		}
+		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags))
+		{
+			flagsUpdateScope.Set(Flags.Reserved3, b: true);
+		}
 		if (ent is BaseCombatEntity baseCombatEntity)
 		{
 			baseCombatEntity.SetJustAttacked();
@@ -912,6 +936,10 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 		if (Object.op_Implicit((Object)(object)GetParentEntity()))
 		{
 			SetParent(null, worldPositionStays: true, sendImmediate: true);
+			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags))
+			{
+				flagsUpdateScope.Set(Flags.Reserved3, b: false);
+			}
 			SetMotionEnabled(wantsMotion: true);
 			if (ComponentEx.HasComponent<Collider>((Component)(object)((Component)this).transform))
 			{

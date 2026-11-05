@@ -52,8 +52,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public float lastDecayTick;
 
-	[SerializeField]
 	[Header("Train Car")]
+	[SerializeField]
 	public float corpseSeconds = 60f;
 
 	[SerializeField]
@@ -101,8 +101,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public float wheelRadius = 0.615f;
 
-	[SerializeField]
 	[FormerlySerializedAs("fxFinalExplosion")]
+	[SerializeField]
 	public GameObjectRef fxDestroyed;
 
 	[SerializeField]
@@ -127,16 +127,16 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	private TrainCarAudio trainCarAudio;
 
-	[SerializeField]
 	[FormerlySerializedAs("frontCoupleFx")]
+	[SerializeField]
 	public ParticleSystem frontCouplingChangedFx;
 
 	[SerializeField]
 	[FormerlySerializedAs("rearCoupleFx")]
 	public ParticleSystem rearCouplingChangedFx;
 
-	[SerializeField]
 	[FormerlySerializedAs("fxCoupling")]
+	[SerializeField]
 	public ParticleSystem newCouplingFX;
 
 	[SerializeField]
@@ -146,8 +146,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[ReadOnly]
 	public Vector3 frontBogieLocalOffset;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	public Vector3 rearBogieLocalOffset;
 
 	[SerializeField]
@@ -259,7 +259,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public bool LinedUpToUnload => HasFlag(Flags.Reserved4);
 
-	bool IPrefabPreProcess.CanRunDuringBundling => true;
+	bool IPrefabPreProcess.CanPreProcessDuringBundling => true;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -456,8 +456,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

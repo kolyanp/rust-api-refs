@@ -68,8 +68,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	private GameObjectRef fuelStoragePrefab;
 
-	[Header("Submarine Engine & Fuel")]
 	[SerializeField]
+	[Header("Submarine Engine & Fuel")]
 	public float engineKW = 200f;
 
 	[SerializeField]
@@ -94,8 +94,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	private bool internalAccessStorage;
 
-	[SerializeField]
 	[Header("Submarine Weaponry")]
+	[SerializeField]
 	public GameObjectRef torpedoStoragePrefab;
 
 	[SerializeField]
@@ -105,8 +105,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	public float reloadTime = 1.5f;
 
-	[SerializeField]
 	[Header("Submarine Audio & FX")]
+	[SerializeField]
 	protected SubmarineAudio submarineAudio;
 
 	[SerializeField]
@@ -783,18 +783,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 			{
 				ThrottleInput = 0f;
 			}
-			if (inputState.IsDown(BUTTON.LEFT))
-			{
-				RudderInput = -1f;
-			}
-			else if (inputState.IsDown(BUTTON.RIGHT))
-			{
-				RudderInput = 1f;
-			}
-			else
-			{
-				RudderInput = 0f;
-			}
+			RudderInput = inputState.Steer();
 			primaryFireInput = inputState.IsDown(BUTTON.FIRE_PRIMARY);
 			if (engineController.IsOff && ((inputState.IsDown(BUTTON.FORWARD) && !inputState.WasDown(BUTTON.FORWARD)) || (inputState.IsDown(BUTTON.BACKWARD) && !inputState.WasDown(BUTTON.BACKWARD)) || (inputState.IsDown(BUTTON.SPRINT) && !inputState.WasDown(BUTTON.SPRINT)) || (inputState.IsDown(BUTTON.DUCK) && !inputState.WasDown(BUTTON.DUCK))))
 			{
@@ -911,8 +900,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenTorpedoStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -926,8 +915,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

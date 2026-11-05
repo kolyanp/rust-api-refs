@@ -517,6 +517,7 @@ public class SleepingBag : DecayEntity
 		return null;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static PooledList<SleepingBag> FindForPlayer(ulong playerID, bool ignoreTimers = true)
 	{
 		PooledList<SleepingBag> val = Pool.Get<PooledList<SleepingBag>>();
@@ -1211,8 +1212,8 @@ public class SleepingBag : DecayEntity
 		(BaseNetworkable.serverEntities.Find(entityID) as SleepingBag).AssignToUser(0uL);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public virtual void RPC_MakePublic(RPCMessage msg)
 	{
 		if (!canBePublic || !CanAccessBed(msg.player) || (deployerUserID != (ulong)msg.player.userID && !msg.player.CanBuild()))
@@ -1256,8 +1257,8 @@ public class SleepingBag : DecayEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_MakeBed(RPCMessage msg)
 	{
 		if (!canBePublic || !IsPublic() || !CanAccessBed(msg.player))
@@ -1324,8 +1325,8 @@ public class SleepingBag : DecayEntity
 		NotifyPlayer(deployerUserID);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_ShowOnCompass(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && deployerUserID == (ulong)msg.player.userID)
@@ -1462,7 +1463,7 @@ public class SleepingBag : DecayEntity
 
 	protected override bool ShouldDisplayPickupOption(BasePlayer player)
 	{
-		if (base.ShouldDisplayPickupOption(player) && Check.IsAuthorisedToBuild(player))
+		if (base.ShouldDisplayPickupOption(player) && player.IsAuthorisedToBuild())
 		{
 			return true;
 		}

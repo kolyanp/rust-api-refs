@@ -86,8 +86,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCliffStatus = "pre-cliff baseline: not loaded";
 
-	[Header("Terrain source")]
 	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
+	[Header("Terrain source")]
 	public TerrainSource Source;
 
 	[Header("Procedural (real Rust base heightmap)")]
@@ -105,8 +105,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public int SlopeFinderMaxAngle = 65;
 
-	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	[Header("Terrain")]
+	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	public int HeightmapResolution = 513;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
@@ -118,8 +118,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Which canned height patch to seed the terrain with.")]
 	public TerrainPatch CurrentPatch = TerrainPatch.SlopeX;
 
-	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
 	[Header("Map file region (real .map crop)")]
+	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
 	public string MapFilePath = string.Empty;
 
 	[Tooltip("World-space X/Z centre of the region to crop out of the map (Y is ignored).")]
@@ -149,8 +149,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Scene the 'Bake pre-cliff T0' button drives. Must be a full generator scene (engine bootstrap + generating World Setup), e.g. the shipped 'Procedural Map' scene.")]
 	public string GenerationScenePath = "Assets/Scenes/Release/Procedural Map.unity";
 
-	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
 	[Header("Placement")]
+	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
 	public Transform cliffRoot;
 
 	[Tooltip("Anchor solve mode. PlaceCliffs uses MaximizeHeight for the first cliff of a chain.")]
@@ -173,8 +173,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Measure and fill each cliff's TerrainFootprint during recalc, as the generator does just before the prefab is added. The gap is reported either way, so turn this off to see the unfilled terrain and still be told how deep the gap is.")]
 	public bool ApplyTerrainFootprintOnRecalc = true;
 
-	[Header("Placement gizmos (play mode)")]
 	[Tooltip("Draw TerrainAnchor / TerrainModifier gizmos in the Game view while playing (the built-in gizmos only show in the Scene view and are disabled in play mode).")]
+	[Header("Placement gizmos (play mode)")]
 	public bool ShowPlacementGizmos = true;
 
 	[Tooltip("Include TerrainAnchor gizmos (vertical solve range + radius).")]
@@ -201,15 +201,15 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Click-to-select mode: instead of drawing every gizmo in range, left-click a cliff to toggle its gizmos on, click again to turn them off. Several cliffs can be selected at once.")]
 	public bool GizmoSelectionMode = true;
 
-	[Tooltip("Spawn a player-sized capsule to judge scale against the cliffs. Drop it under the aim with 'Marker where I'm looking' or the J key.")]
 	[Header("Scale reference")]
+	[Tooltip("Spawn a player-sized capsule to judge scale against the cliffs. Drop it under the aim with 'Marker where I'm looking' or the J key.")]
 	public bool ShowPlayerScaleReference = true;
 
 	[Tooltip("Height of the scale-reference capsule in metres (Rust player is about 1.8m).")]
 	public float PlayerReferenceHeight = 1.8f;
 
-	[Header("Camera (play-mode freecam)")]
 	[Tooltip("Hold right-mouse in Game view to fly: WASD move, Q/E down/up, Shift sprint, scroll = speed.")]
+	[Header("Camera (play-mode freecam)")]
 	public bool EnableFreecam = true;
 
 	[Tooltip("Base freecam move speed in metres/second (adjust live with the scroll wheel while flying).")]
@@ -526,9 +526,13 @@ public class CliffPlacementSandbox : MonoBehaviour
 		return GizmoModifierOther;
 	}
 
-	private void OnRenderObject()
+	private void DrawPlacementGizmos(ScriptableRenderContext context, Camera camera)
 	{
-		if (ShowPlacementGizmos && Application.isPlaying && (GizmoAnchors || AnyModifierGizmoEnabled() || GizmoFootprint))
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Invalid comparison between Unknown and I4
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Invalid comparison between Unknown and I4
+		if (ShowPlacementGizmos && Application.isPlaying && ((int)camera.cameraType == 1 || (int)camera.cameraType == 2) && (GizmoAnchors || AnyModifierGizmoEnabled() || GizmoFootprint))
 		{
 			RefreshGizmoTargets();
 			EnsureGizmoMaterial();
@@ -1331,8 +1335,14 @@ public class CliffPlacementSandbox : MonoBehaviour
 		return ((Object)root).GetInstanceID();
 	}
 
+	private void OnEnable()
+	{
+		RenderPipelineManager.endCameraRendering += DrawPlacementGizmos;
+	}
+
 	private void OnDisable()
 	{
+		RenderPipelineManager.endCameraRendering -= DrawPlacementGizmos;
 		Teardown();
 	}
 

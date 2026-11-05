@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Network;
@@ -9,6 +11,14 @@ using UnityEngine.Assertions;
 
 public class FarmableAnimal : BaseCombatEntity
 {
+	public enum NameSource
+	{
+		Unknown,
+		Game,
+		Player,
+		Special
+	}
+
 	public class FarmableAnimalNeedsWorkQueue : ObjectWorkQueue<FarmableAnimal>
 	{
 		protected override void RunJob(FarmableAnimal entity)
@@ -104,6 +114,12 @@ public class FarmableAnimal : BaseCombatEntity
 
 	public static FarmableAnimalNeedsWorkQueue NeedsWorkQueue = new FarmableAnimalNeedsWorkQueue();
 
+	private const int SaveVersion = 1;
+
+	private string __sync_AnimalName;
+
+	private int __sync_NameAuthorSourceSync;
+
 	public float AnimalHunger { get; private set; } = 100f;
 
 	public float AnimalThirst { get; private set; } = 100f;
@@ -112,11 +128,53 @@ public class FarmableAnimal : BaseCombatEntity
 
 	public float AnimalSunlight { get; private set; } = 100f;
 
-	public string AnimalName { get; private set; } = string.Empty;
+	[Sync(Autosave = true)]
+	public string AnimalName
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_AnimalName;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			if (!IsSyncVarEqual(__sync_AnimalName, value))
+			{
+				__sync_AnimalName = value;
+				byte nameID = __GetWeaverID("AnimalName");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
+
+	[Sync(Autosave = true)]
+	private int NameAuthorSourceSync
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_NameAuthorSourceSync;
+		}
+		[CompilerGenerated]
+		set
+		{
+			if (!IsSyncVarEqual(__sync_NameAuthorSourceSync, value))
+			{
+				__sync_NameAuthorSourceSync = value;
+				byte nameID = __GetWeaverID("NameAuthorSourceSync");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
+
+	public NameSource NameAuthorSource => (NameSource)NameAuthorSourceSync;
 
 	public float HappinessNormalised => (AnimalHunger + AnimalThirst + AnimalLove + AnimalSunlight) / 4f / 100f;
 
 	private ChickenCoop ParentCoop => parentEntity.Get(isServer) as ChickenCoop;
+
+	public ulong NameAuthorId { get; private set; }
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -198,6 +256,76 @@ public class FarmableAnimal : BaseCombatEntity
 			}
 		}
 		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public static bool StreamerCanHideNameFromSource(NameSource source)
+	{
+		if (source != NameSource.Game)
+		{
+			return source != NameSource.Special;
+		}
+		return false;
+	}
+
+	public static string CleanPlayerName(string typed)
+	{
+		if (string.IsNullOrWhiteSpace(typed))
+		{
+			return null;
+		}
+		ReadOnlySpan<char> readOnlySpan = MemoryExtensions.Trim(typed);
+		if (readOnlySpan.Length > 12)
+		{
+			return null;
+		}
+		Span<char> span = stackalloc char[12];
+		int length = 0;
+		for (int i = 0; i < readOnlySpan.Length; i++)
+		{
+			char c = readOnlySpan[i];
+			if (char.IsControl(c))
+			{
+				continue;
+			}
+			if (c == '<')
+			{
+				int num = readOnlySpan.Slice(i + 1).IndexOf('>');
+				if (num >= 0)
+				{
+					i += num + 1;
+					continue;
+				}
+			}
+			span[length++] = c switch
+			{
+				'<' => '〈', 
+				'>' => '〉', 
+				'\\' => '＼', 
+				_ => c, 
+			};
+		}
+		ReadOnlySpan<char> span2 = span.Slice(0, length);
+		span2 = span2.Trim();
+		if (span2.IsEmpty)
+		{
+			return null;
+		}
+		if (!span2.SequenceEqual(typed))
+		{
+			return new string(span2);
+		}
+		return typed;
+	}
+
+	public bool CanBeRenamedBy(BasePlayer player)
+	{
+		ChickenCoop parentCoop = ParentCoop;
+		BuildingPrivlidge buildingPrivlidge = (((Object)(object)parentCoop != (Object)null) ? parentCoop.GetBuildingPrivilege() : GetBuildingPrivilege());
+		if ((Object)(object)player != (Object)null && (Object)(object)buildingPrivlidge != (Object)null)
+		{
+			return buildingPrivlidge.IsAuthed(player);
+		}
+		return false;
 	}
 
 	public override void ServerInit()
@@ -455,14 +583,15 @@ public class FarmableAnimal : BaseCombatEntity
 	public void ApplyStartingStats(string defaultName)
 	{
 		AnimalName = defaultName;
+		NameAuthorSourceSync = 1;
 		AnimalHunger = Random.Range(20f, 40f);
 		AnimalThirst = Random.Range(20f, 40f);
 		AnimalLove = Random.Range(20f, 40f);
 		AnimalSunlight = Random.Range(20f, 40f);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ServerPetChicken(RPCMessage msg)
 	{
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
@@ -507,6 +636,29 @@ public class FarmableAnimal : BaseCombatEntity
 		base.Save(info);
 		info.msg.farmableAnimal = Pool.Get<FarmableAnimal>();
 		SaveToData(info.msg.farmableAnimal);
+		if (info.forDisk)
+		{
+			info.msg.farmableAnimal.nameAuthorId = NameAuthorId;
+			info.msg.farmableAnimal.saveVersion = 1;
+		}
+	}
+
+	private static void AddNameSourceToTheSyncVars(Entity msg)
+	{
+		FarmableAnimal farmableAnimal = msg.farmableAnimal;
+		byte[] array = msg.baseEntity?.syncVars;
+		if (farmableAnimal != null && array != null && farmableAnimal.saveVersion < 1 && array.Length >= 4)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(array);
+			netRead.String();
+			int num = (int)netRead.Position;
+			Pool.Free<NetRead>(ref netRead);
+			byte[] array2 = new byte[array.Length + 4];
+			Buffer.BlockCopy(array, 0, array2, 0, num);
+			Buffer.BlockCopy(array, num, array2, num + 4, array.Length - num);
+			msg.baseEntity.syncVars = array2;
+		}
 	}
 
 	public void SaveToData(FarmableAnimal data)
@@ -515,22 +667,21 @@ public class FarmableAnimal : BaseCombatEntity
 		data.thirst = AnimalThirst;
 		data.love = AnimalLove;
 		data.sunlight = AnimalSunlight;
-		data.animalName = AnimalName;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void RequestNameChange(RPCMessage msg)
 	{
-		if (msg.player.CanBuild(cached: true))
+		string text = CleanPlayerName(msg.read.String(12));
+		if (!CanBeRenamedBy(msg.player) || text == null)
 		{
-			string text = msg.read.String(12);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				AnimalName = text;
-				SendNetworkUpdate();
-			}
+			ClientRPC(RpcTarget.Player("Client_NameChangeRejected", msg.player));
+			return;
 		}
+		AnimalName = text;
+		NameAuthorSourceSync = 2;
+		NameAuthorId = msg.player.userID;
 	}
 
 	public override void OnDied(HitInfo info)
@@ -588,6 +739,10 @@ public class FarmableAnimal : BaseCombatEntity
 
 	public override void Load(LoadInfo info)
 	{
+		if (isServer && info.fromDisk)
+		{
+			AddNameSourceToTheSyncVars(info.msg);
+		}
 		base.Load(info);
 		if (info.msg.farmableAnimal != null)
 		{
@@ -595,10 +750,12 @@ public class FarmableAnimal : BaseCombatEntity
 		}
 		if (isServer)
 		{
-			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
-			{
-				flagsUpdateScope.Set(Flags.Reserved1, b: false);
-			}
+			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+			flagsUpdateScope.Set(Flags.Reserved1, b: false);
+		}
+		if (isServer && info.fromDisk && info.msg.farmableAnimal != null)
+		{
+			NameAuthorId = info.msg.farmableAnimal.nameAuthorId;
 		}
 	}
 
@@ -608,7 +765,6 @@ public class FarmableAnimal : BaseCombatEntity
 		AnimalThirst = data.thirst;
 		AnimalLove = data.love;
 		AnimalSunlight = data.sunlight;
-		AnimalName = data.animalName;
 	}
 
 	private bool CanPetChicken(BasePlayer bp)
@@ -636,5 +792,174 @@ public class FarmableAnimal : BaseCombatEntity
 			}
 		}
 		return default;
+	}
+
+	private void OnSyncVar_AnimalName(string? oldValue, string newValue)
+	{
+	}
+
+	protected override bool WriteSyncVar(byte id, NetWrite writer)
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		switch (id)
+		{
+		case 0:
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: AnimalName for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_AnimalName);
+			return true;
+		case 1:
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: NameAuthorSourceSync for " + ((object)iD/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_NameAuthorSourceSync);
+			return true;
+		default:
+			return base.WriteSyncVar(id, writer);
+		}
+	}
+
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
+	{
+		switch (id)
+		{
+		case 0:
+			try
+			{
+				string oldValue = __sync_AnimalName;
+				string newValue = (__sync_AnimalName = reader.String());
+				if (fromAutoSave)
+				{
+					oldValue = null;
+				}
+				OnSyncVar_AnimalName(oldValue, newValue);
+			}
+			catch (Exception ex2)
+			{
+				Debug.LogException(ex2);
+			}
+			return true;
+		case 1:
+			try
+			{
+				_ = __sync_NameAuthorSourceSync;
+				int _sync_NameAuthorSourceSync = reader.Int32();
+				__sync_NameAuthorSourceSync = _sync_NameAuthorSourceSync;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		default:
+			return base.OnSyncVar(id, reader, fromAutoSave);
+		}
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (!(propertyName == "AnimalName"))
+		{
+			if (propertyName == "NameAuthorSourceSync")
+			{
+				return 1;
+			}
+			return byte.MaxValue;
+		}
+		return 0;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+		WriteSyncVar(1, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+		OnSyncVar(1, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		(byte[] Buffer, int Length) buffer = netWrite.GetBuffer();
+		byte[] item = buffer.Buffer;
+		int item2 = buffer.Length;
+		byte[] array = _autosaveBuffer;
+		if (array == null || array.Length < item2)
+		{
+			byte[] array2 = BaseEntity._autosaveBufferPool.Rent(item2);
+			while (array == null || array.Length < item2)
+			{
+				byte[] array3 = Interlocked.CompareExchange(ref _autosaveBuffer, array2, array);
+				if (array3 == array)
+				{
+					if (array3 != null)
+					{
+						BaseEntity._autosaveBufferPool.Return(array3);
+					}
+					array = array2;
+					break;
+				}
+				array = array3;
+			}
+			if (array != array2)
+			{
+				BaseEntity._autosaveBufferPool.Return(array2);
+			}
+		}
+		Buffer.BlockCopy(item, 0, array, 0, item2);
+		save.msg.baseEntity.syncVars = array;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_AnimalName = string.Empty;
+		__sync_NameAuthorSourceSync = 0;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		return id switch
+		{
+			0 => true, 
+			1 => true, 
+			_ => base.ShouldInvalidateCache(id), 
+		};
+	}
+
+	public FarmableAnimal()
+	{
+		AnimalName = string.Empty;
+		__sync_AnimalName = string.Empty;
+		base._002Ector();
 	}
 }

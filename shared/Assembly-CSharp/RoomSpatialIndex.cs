@@ -115,6 +115,51 @@ public class RoomSpatialIndex
 		}
 	}
 
+	public static float Slack(Vector3 position, float range)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		CellRange cellRange = RangeOf(new Bounds(position, Vector3.one * (range * 2f)));
+		float num = Mathf.Min(position.x - range - (float)cellRange.MinX * 32f, (float)(cellRange.MaxX + 1) * 32f - position.x - range);
+		float num2 = Mathf.Min(position.z - range - (float)cellRange.MinZ * 32f, (float)(cellRange.MaxZ + 1) * 32f - position.z - range);
+		return Mathf.Min(num, num2);
+	}
+
+	public bool AnyNear(Vector3 position, float range)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		CellRange cellRange = RangeOf(new Bounds(position, Vector3.one * (range * 2f)));
+		float num = range * range;
+		for (int i = cellRange.MinX; i <= cellRange.MaxX; i++)
+		{
+			for (int j = cellRange.MinZ; j <= cellRange.MaxZ; j++)
+			{
+				if (!cells.TryGetValue(Key(i, j), out var value))
+				{
+					continue;
+				}
+				foreach (Room item in value)
+				{
+					if (item.Bounds.SqrDistance(position) <= num)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	private static CellRange RangeOf(Bounds bounds)
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Socket_Base : PrefabAttribute
+public class Socket_Base : PrefabAttribute, IFlattenKeepsDescendants
 {
 	[Serializable]
 	public class OccupiedSocketCheck
@@ -129,6 +129,50 @@ public class Socket_Base : PrefabAttribute
 	public virtual bool CanConnect(Vector3 position, Quaternion rotation, Socket_Base socket, Vector3 socketPosition, Quaternion socketRotation)
 	{
 		return IsCompatible(socket);
+	}
+
+	public virtual uint GetLayoutHash(uint crc)
+	{
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		crc = CRC.Compute32(crc, socketName);
+		crc = CRC.Compute32(crc, ((object)this).GetType().Name);
+		crc = HashRounded(crc, worldPosition);
+		crc = HashRounded(crc, worldRotation);
+		crc = HashRounded(crc, selectCenter);
+		crc = HashRounded(crc, selectSize);
+		crc = CRC.Compute32(crc, male ? 1 : 0);
+		crc = CRC.Compute32(crc, female ? 1 : 0);
+		return CRC.Compute32(crc, monogamous ? 1 : 0);
+	}
+
+	private static uint HashRounded(uint crc, float value)
+	{
+		return CRC.Compute32(crc, Mathf.RoundToInt(value * 1000f));
+	}
+
+	private static uint HashRounded(uint crc, Vector3 value)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		crc = HashRounded(crc, value.x);
+		crc = HashRounded(crc, value.y);
+		return HashRounded(crc, value.z);
+	}
+
+	private static uint HashRounded(uint crc, Quaternion value)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		crc = HashRounded(crc, value.x);
+		crc = HashRounded(crc, value.y);
+		crc = HashRounded(crc, value.z);
+		return HashRounded(crc, value.w);
 	}
 
 	public virtual Construction.Placement DoPlacement(Construction.Target target)

@@ -73,7 +73,7 @@ public static class DamageUtil
 					buildingBlock.RemoveWallpaper(0);
 					buildingBlock.RemoveWallpaper(1);
 				}
-				if ((extendedLineOfSight && !GamePhysics.LineOfSight(baseEntity2.CenterPoint(), pos, 1218519041, baseEntity2)) || (useLineOfSight && !baseEntity2.IsVisible(pos)))
+				if ((extendedLineOfSight && !GamePhysics.LineOfSight(baseEntity2.CenterPoint(), pos, 1218519041, baseEntity2)) || (useLineOfSight && !baseEntity2.IsVisibleRadialDamage(pos)))
 				{
 					continue;
 				}

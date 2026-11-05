@@ -10,7 +10,7 @@ using ProtoBuf;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
+public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity, IServerFileReceiver
 {
 	private const float TextureRequestTimeout = 15f;
 
@@ -201,14 +201,13 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(5f)]
+	[RPC_Server]
 	public void UpdateSign(RPCMessage msg)
 	{
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)msg.player == (Object)null || !CanUpdateSign(msg.player))
 		{
 			return;
@@ -227,10 +226,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		EnsureInitialized();
 		if (array == null)
 		{
-			if (textureIDs[num] != 0)
-			{
-				FileStorage.server.RemoveExact(textureIDs[num], FileStorage.Type.png, net.ID, (uint)num);
-			}
+			FileStorage.server.Remove(net.ID, (uint)num);
 			textureIDs[num] = 0u;
 		}
 		else
@@ -239,12 +235,9 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 			{
 				return;
 			}
-			if (textureIDs[num] != 0)
-			{
-				FileStorage.server.RemoveExact(textureIDs[num], FileStorage.Type.png, net.ID, (uint)num);
-			}
-			textureIDs[num] = FileStorage.server.Store(array, FileStorage.Type.png, net.ID, (uint)num);
+			textureIDs[num] = FileStorage.server.Store(net.ID, (uint)num, FileStorage.Type.png, array);
 			Facepunch.Rust.Analytics.Azure.OnUGCCreated(msg.player, this, "pumpkin", array.Length, num);
+			UGCModeration.Send(msg.player, this, "pumpkin", textureIDs[num], FileStorage.Type.png, num);
 		}
 		LogEdit(msg.player);
 		SendNetworkUpdate();
@@ -313,50 +306,26 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 
 	public override void Load(LoadInfo info)
 	{
-		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		EnsureInitialized();
 		bool flag = false;
-		if (info.msg.sign != null)
+		if (info.msg.sign != null && info.msg.sign.imageIds != null)
 		{
-			uint num = textureIDs[0];
-			if (info.msg.sign.imageIds != null && info.msg.sign.imageIds.Count > 0)
+			int num = Mathf.Min(info.msg.sign.imageIds.Count, textureIDs.Length);
+			for (int i = 0; i < num; i++)
 			{
-				int num2 = Mathf.Min(info.msg.sign.imageIds.Count, textureIDs.Length);
-				for (int i = 0; i < num2; i++)
-				{
-					uint num3 = info.msg.sign.imageIds[i];
-					bool flag2 = num3 != textureIDs[i];
-					flag |= flag2;
-					textureIDs[i] = num3;
-				}
-			}
-			else
-			{
-				flag = num != info.msg.sign.imageid;
-				textureIDs[0] = info.msg.sign.imageid;
+				uint num2 = info.msg.sign.imageIds[i];
+				bool flag2 = num2 != textureIDs[i];
+				flag |= flag2;
+				textureIDs[i] = num2;
 			}
 		}
 		if (!isServer)
 		{
 			return;
 		}
-		bool flag3 = false;
-		for (int j = 0; j < paintableSources.Length; j++)
-		{
-			uint num4 = textureIDs[j];
-			if (num4 != 0)
-			{
-				byte[] array = FileStorage.server.Get(num4, FileStorage.Type.png, net.ID, (uint)j);
-				if (array == null)
-				{
-					Log($"Frame {j} (id={num4}) doesn't exist, clearing");
-					textureIDs[j] = 0u;
-				}
-				flag3 = flag3 || array != null;
-			}
-		}
-		if (!flag3)
+		LoadTextureCrcs();
+		if (Array.TrueForAll(textureIDs, (uint id) => id == 0))
 		{
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 			flagsUpdateScope.Set(Flags.Locked, b: false);
@@ -418,23 +387,20 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
-		List<uint> list = Pool.Get<List<uint>>();
-		uint[] array = textureIDs;
-		foreach (uint item in array)
-		{
-			list.Add(item);
-		}
 		info.msg.sign = Pool.Get<Sign>();
-		info.msg.sign.imageid = 0u;
-		info.msg.sign.imageIds = list;
+		if (!info.forDisk)
+		{
+			info.msg.sign.imageIds = Pool.Get<List<uint>>();
+			info.msg.sign.imageIds.AddRange(textureIDs);
+		}
 		if (editHistory.Count <= 0)
 		{
 			return;
 		}
 		info.msg.sign.editHistory = Pool.Get<List<ulong>>();
-		foreach (ulong item2 in editHistory)
+		foreach (ulong item in editHistory)
 		{
-			info.msg.sign.editHistory.Add(item2);
+			info.msg.sign.editHistory.Add(item);
 		}
 	}
 
@@ -444,7 +410,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		base.DoServerDestroy();
 		if (net != null)
 		{
-			FileStorage.server.RemoveAllByEntity(net.ID);
+			FileStorage.server.RemoveAll(net.ID);
 		}
 		if (textureIDs != null)
 		{
@@ -491,11 +457,23 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		return true;
 	}
 
-	public void SetTextureCRCs(uint[] crcs)
+	public void RefreshFileCrcs()
 	{
-		textureIDs = new uint[crcs.Length];
-		crcs.CopyTo(textureIDs, 0);
+		LoadTextureCrcs();
 		SendNetworkUpdate();
+	}
+
+	private void LoadTextureCrcs()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		EnsureInitialized();
+		Dictionary<ulong, uint> dictionary = Pool.Get<Dictionary<ulong, uint>>();
+		FileStorage.server.GetCrcs(net.ID, dictionary);
+		for (int i = 0; i < textureIDs.Length; i++)
+		{
+			dictionary.TryGetValue((ulong)i, out textureIDs[i]);
+		}
+		Pool.FreeUnmanaged<ulong, uint>(ref dictionary);
 	}
 
 	private void LogEdit(BasePlayer byPlayer)
@@ -514,7 +492,9 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 
 	public void ClearContent()
 	{
-		SetTextureCRCs(Array.Empty<uint>());
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		FileStorage.server.RemoveAll(net.ID);
+		RefreshFileCrcs();
 	}
 
 	public override string Categorize()

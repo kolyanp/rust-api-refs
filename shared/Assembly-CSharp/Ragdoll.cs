@@ -39,32 +39,32 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	[SerializeField]
 	private List<Transform> rbTransforms = new List<Transform>();
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private List<Joint> joints = new List<Joint>();
 
 	[SerializeField]
 	[ReadOnly]
 	private List<CharacterJoint> characterJoints = new List<CharacterJoint>();
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private List<ConfigurableJoint> configurableJoints = new List<ConfigurableJoint>();
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private List<Collider> colliders = new List<Collider>();
 
 	[ReadOnly]
 	[SerializeField]
 	private int[] boneIndex;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Vector3[] genericBonePos;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] genericBoneRot;
 
 	[SerializeField]
@@ -81,8 +81,6 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	protected bool IsClient => false;
 
 	protected bool isServer => !IsClient;
-
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
 	public bool IsSleeping => !rigidbodies[0].IsSleeping();
 

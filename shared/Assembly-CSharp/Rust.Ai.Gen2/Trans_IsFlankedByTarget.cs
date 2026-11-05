@@ -6,7 +6,7 @@ namespace Rust.Ai.Gen2;
 [Serializable]
 public class Trans_IsFlankedByTarget : FSMTransitionBase
 {
-	private Vector3? previousLkp;
+	private Nullable previousLkp;
 
 	public override void OnStateEnter()
 	{

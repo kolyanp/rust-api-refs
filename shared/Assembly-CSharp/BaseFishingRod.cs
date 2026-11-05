@@ -290,9 +290,9 @@ public class BaseFishingRod : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void Server_RequestCast(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -387,9 +387,9 @@ public class BaseFishingRod : HeldEntity
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	private void Server_OverfishingCheck(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -743,36 +743,39 @@ public class BaseFishingRod : HeldEntity
 	public void FishArea(Vector3 position)
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		if (Fishing.disableOverfishing)
 		{
 			return;
 		}
 		if ((Object)(object)OverfishedArea.GetOverfishedAreaAtPosition(position) != (Object)null)
 		{
-			DebugOverfishing($"PROCESS FISH AREA | Position: ({position}) is already overfished.", (Object)(object)this);
+			if (Fishing.debugOverfishing)
+			{
+				Debug.Log((object)$"PROCESS FISH AREA | Position: ({position}) is already overfished.", (Object)(object)this);
+			}
 			return;
 		}
 		Vector2 val = new Vector2((float)Mathf.FloorToInt(position.x / Fishing.overfishedAreaRadius), (float)Mathf.FloorToInt(position.z / Fishing.overfishedAreaRadius));
@@ -785,39 +788,46 @@ public class BaseFishingRod : HeldEntity
 			if (TimeSince.op_Implicit(val2) >= num)
 			{
 				num2 = 1;
-				DebugOverfishing("PROCESS FISH AREA | Area's timer has expired, resetting back to 1", (Object)(object)this);
+				if (Fishing.debugOverfishing)
+				{
+					Debug.Log((object)"PROCESS FISH AREA | Area's timer has expired, resetting back to 1", (Object)(object)this);
+				}
 			}
 			else if (TimeSince.op_Implicit(val2) >= num / 2f)
 			{
 				num2 = Mathf.FloorToInt((float)num2 / 2f) + 1;
-				DebugOverfishing("PROCESS FISH AREA | Area's timer has halfway expired, halving the counter and adding 1", (Object)(object)this);
+				if (Fishing.debugOverfishing)
+				{
+					Debug.Log((object)"PROCESS FISH AREA | Area's timer has halfway expired, halving the counter and adding 1", (Object)(object)this);
+				}
 			}
 			else
 			{
 				num2++;
 			}
 			FishedSpots[val] = (num2, TimeSince.op_Implicit(0f));
-			DebugOverfishing($"PROCESS FISH AREA | SubdividedPosition: ({val}) exists, incrementing counter to: {FishedSpots[val]}", (Object)(object)this);
+			if (Fishing.debugOverfishing)
+			{
+				Debug.Log((object)$"PROCESS FISH AREA | SubdividedPosition: ({val}) exists, incrementing counter to: {FishedSpots[val]}", (Object)(object)this);
+			}
 		}
 		else
 		{
 			FishedSpots.Add(val, (1, TimeSince.op_Implicit(0f)));
-			DebugOverfishing($"PROCESS FISH AREA | SubdividedPosition: ({val}) does not exist yet, adding counter, set to: 1", (Object)(object)this);
+			if (Fishing.debugOverfishing)
+			{
+				Debug.Log((object)$"PROCESS FISH AREA | SubdividedPosition: ({val}) does not exist yet, adding counter, set to: 1", (Object)(object)this);
+			}
 		}
 		if (FishedSpots[val].Item1 >= Fishing.successesUntilOverfished)
 		{
 			BaseEntity baseEntity = GameManager.server.CreateEntity(OverfishedAreaPrefab.resourcePath, position, Quaternion.identity);
 			baseEntity.Spawn();
 			FishedSpots.Remove(val);
-			DebugOverfishing($"PROCESS FISH AREA | SubdividedPosition: ({val}) is now overfished. Creating Overfished Area at position: {position}", (Object)(object)baseEntity);
-		}
-	}
-
-	private void DebugOverfishing(string message, Object context = null)
-	{
-		if (Fishing.debugOverfishing)
-		{
-			Debug.Log((object)message, context);
+			if (Fishing.debugOverfishing)
+			{
+				Debug.Log((object)$"PROCESS FISH AREA | SubdividedPosition: ({val}) is now overfished. Creating Overfished Area at position: {position}", (Object)(object)baseEntity);
+			}
 		}
 	}
 

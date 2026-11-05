@@ -53,8 +53,6 @@ public class BaseViewModel : FacepunchBehaviour, IPrefabPreProcess, IViewmodelWo
 	[Header("Shield Overrides")]
 	public AnimationCurve leftArmShieldHideCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
-	bool IPrefabPreProcess.CanRunDuringBundling => false;
-
 	void IPrefabPreProcess.PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
 	}

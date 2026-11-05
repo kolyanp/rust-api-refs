@@ -105,7 +105,7 @@ public class GeometryBuffers
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
 		mesh.vertexBufferTarget = (Target)(mesh.vertexBufferTarget | 0x20);
 		mesh.indexBufferTarget = (Target)(mesh.indexBufferTarget | 0x20);
 		int num = 0;
@@ -127,8 +127,8 @@ public class GeometryBuffers
 		copyMeshShader.SetInt("_Offset_Normal", mesh.GetVertexAttributeOffset((VertexAttribute)1));
 		copyMeshShader.SetInt("_Offset_Tangent", mesh.GetVertexAttributeOffset((VertexAttribute)2));
 		copyMeshShader.SetInt("_Offset_Color", mesh.GetVertexAttributeOffset((VertexAttribute)3));
-		copyMeshShader.SetBuffer(num2, "_Verts", mesh.GetVertexBuffer(num));
-		copyMeshShader.SetBuffer(num2, "_Triangles", mesh.GetIndexBuffer());
+		copyMeshShader.SetBuffer(num2, "_Verts", vertexBuffer);
+		copyMeshShader.SetBuffer(num2, "_Triangles", indexBuffer);
 		copyMeshShader.SetInt("_TriangleCount", num3);
 		copyMeshShader.SetInt("_VertexCount", vertexCount);
 		copyMeshShader.SetInt("_VertexStride", mesh.GetVertexBufferStride(0));

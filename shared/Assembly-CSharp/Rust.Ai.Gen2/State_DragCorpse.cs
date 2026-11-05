@@ -59,9 +59,9 @@ public class State_DragCorpse : FSMStateBase
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		if (!corpse.IsValid() || corpse.IsDead())
 		{
 			return EFSMStateStatus.Failure;
@@ -73,8 +73,8 @@ public class State_DragCorpse : FSMStateBase
 		if (animState != null)
 		{
 			Quaternion val = Quaternion.LookRotation(Vector3Ex.WithY(targetPosition - ((Component)Owner).transform.position, 0f));
-			animState.initialRotation = Quaternion.RotateTowards(animState.initialRotation, val, Time.deltaTime * 60f);
-			((Component)Owner).transform.rotation = animState.initialRotation;
+			animState.initialRotation = Quaternion.RotateTowards(animState.initialRotation, val, deltaTime * 60f);
+			Agent.Face(animState.initialRotation);
 		}
 		if (!animState.isPlaying)
 		{

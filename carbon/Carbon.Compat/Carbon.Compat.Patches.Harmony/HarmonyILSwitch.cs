@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using AsmResolver.DotNet;
 using AsmResolver.DotNet.Code;
@@ -14,23 +15,27 @@ public class HarmonyILSwitch : BaseHarmonyPatch
 {
 	public override void Apply(ModuleDefinition asm, ReferenceImporter importer, ref BaseConverter.Context context)
 	{
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0262: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0275: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0241: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0246: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0270: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0214: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024f: Unknown result type (might be due to invalid IL or missing references)
+		if (!ReferencesHarmony1(asm))
+		{
+			return;
+		}
 		IMethodDescriptor val = importer.ImportMethod((MethodBase)AccessTools.Method(typeof(HarmonyCompat), "PatchProcessorCompat", (Type[])null, (Type[])null));
 		foreach (TypeDefinition allType in asm.GetAllTypes())
 		{
@@ -97,5 +102,19 @@ public class HarmonyILSwitch : BaseHarmonyPatch
 				}
 			}
 		}
+	}
+
+	private static bool ReferencesHarmony1(ModuleDefinition asm)
+	{
+		IList<AssemblyReference> assemblyReferences = asm.AssemblyReferences;
+		for (int i = 0; i < assemblyReferences.Count; i++)
+		{
+			AssemblyReference val = assemblyReferences[i];
+			if (((AssemblyDescriptor)val).Name == "0Harmony" && ((AssemblyDescriptor)val).Version.Major < 2)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

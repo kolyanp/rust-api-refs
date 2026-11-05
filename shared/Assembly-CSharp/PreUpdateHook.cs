@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Network;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -30,6 +31,7 @@ public class PreUpdateHook : MonoBehaviour
 
 	private void LateUpdate()
 	{
+		Net.sv?.StartBatching();
 		OnLateUpdate?.Invoke();
 	}
 

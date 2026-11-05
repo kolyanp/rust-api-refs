@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using UnityEngine;
 
@@ -42,6 +43,7 @@ public class SparseGrid<T>
 		}
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void GetNeighboors(Vector3 position, List<T> values)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
@@ -59,6 +61,7 @@ public class SparseGrid<T>
 		}
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void GetInBounds(Bounds bounds, List<T> values)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
