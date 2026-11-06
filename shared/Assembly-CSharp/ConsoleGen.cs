@@ -15,7 +15,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2471]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2468]
 	{
 		new ConsoleSystem.Command
 		{
@@ -7419,7 +7419,7 @@ public class ConsoleGen
 			Parent = "app",
 			FullName = "app.info",
 			ServerAdmin = true,
-			Description = "(Generated) Prints current server info including name, level, connected players, max players, and network address to the console",
+			Description = "Prints the Rust+ companion server ID, addresses and open backhauls from the backend",
 			Variable = false,
 			Call = (ConsoleSystem.Arg arg) =>
 			{
@@ -7460,7 +7460,7 @@ public class ConsoleGen
 			Parent = "app",
 			FullName = "app.maxconnections",
 			ServerAdmin = true,
-			Description = "(Generated) Maximum number of simultaneous player connections allowed; connections above this limit are rejected with a server full message",
+			Description = "Maximum simultaneous backhaul connections from the Rust+ backend (players share them as channels); -1 for no limit",
 			Variable = true,
 			GetOveride = () =>
 			{
@@ -7478,7 +7478,7 @@ public class ConsoleGen
 			Parent = "app",
 			FullName = "app.maxconnectionsperip",
 			ServerAdmin = true,
-			Description = "(Generated) Maximum simultaneous connections from the same IP address; prevents a single host from consuming all connection slots",
+			Description = "Maximum simultaneous Rust+ channels per player, and backhaul connections per IP address; -1 for no limit",
 			Variable = true,
 			GetOveride = () =>
 			{
@@ -7488,24 +7488,6 @@ public class ConsoleGen
 			SetOveride = (string str) =>
 			{
 				App.maxconnectionsperip = StringExtensions.ToInt(str, 0);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "maxmessagesize",
-			Parent = "app",
-			FullName = "app.maxmessagesize",
-			ServerAdmin = true,
-			Description = "(Generated) Maximum allowed size in bytes of a single network message; oversized messages are dropped to prevent memory exhaustion attacks",
-			Variable = true,
-			GetOveride = () =>
-			{
-				int maxmessagesize = App.maxmessagesize;
-				return (maxmessagesize < -1 || maxmessagesize > 127) ? maxmessagesize.ToString() : Memoized.IntToString.Get(maxmessagesize);
-			},
-			SetOveride = (string str) =>
-			{
-				App.maxmessagesize = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -7568,24 +7550,6 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "queuelimit",
-			Parent = "app",
-			FullName = "app.queuelimit",
-			ServerAdmin = true,
-			Description = "Max number of queued messages - set to 0 to disable message processing",
-			Variable = true,
-			GetOveride = () =>
-			{
-				int queuelimit = App.queuelimit;
-				return (queuelimit < -1 || queuelimit > 127) ? queuelimit.ToString() : Memoized.IntToString.Get(queuelimit);
-			},
-			SetOveride = (string str) =>
-			{
-				App.queuelimit = StringExtensions.ToInt(str, 0);
-			}
-		},
-		new ConsoleSystem.Command
-		{
 			Name = "regeneratetoken",
 			Parent = "app",
 			FullName = "app.regeneratetoken",
@@ -7602,7 +7566,7 @@ public class ConsoleGen
 			Parent = "app",
 			FullName = "app.retry_initialize",
 			ServerAdmin = true,
-			Description = "Retry initializing the Rust+ companion server if it previously failed, pass true to restart it even if it's already running",
+			Description = "Retry initializing the Rust+ companion server if it previously failed, pass true to restart it even if it's already running; shuts it down if app.port is negative",
 			Variable = false,
 			Call = (ConsoleSystem.Arg arg) =>
 			{
@@ -7625,20 +7589,6 @@ public class ConsoleGen
 				App.serverid = str;
 			},
 			Default = ""
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "update",
-			Parent = "app",
-			FullName = "app.update",
-			ServerAdmin = true,
-			Description = "Disables updating entirely - emergency use only",
-			Variable = true,
-			GetOveride = () => App.update.ToString(),
-			SetOveride = (string str) =>
-			{
-				App.update = StringExtensions.ToBool(str);
-			}
 		},
 		new ConsoleSystem.Command
 		{

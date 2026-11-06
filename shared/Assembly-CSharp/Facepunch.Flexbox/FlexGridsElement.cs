@@ -6,8 +6,8 @@ using UnityEngine.Serialization;
 
 namespace Facepunch.Flexbox;
 
-[ExecuteAlways]
 [DisallowMultipleComponent]
+[ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
 public class FlexGridsElement : FlexElementBase
 {
@@ -27,17 +27,17 @@ public class FlexGridsElement : FlexElementBase
 	[Tooltip("Spacing to add from this elements borders to where children are laid out.")]
 	public FlexPadding Padding;
 
-	[Min(0f)]
 	[Tooltip("Spacing to add between each child flex item.")]
+	[Min(0f)]
 	public float Gap;
 
 	[Min(1f)]
 	[Tooltip("The number of columns to use when using a fixed number of columns.")]
 	public int ColumnCount = 1;
 
-	[FormerlySerializedAs("ColumnWidth")]
 	[Min(1f)]
 	[Tooltip("The minimum width of each column when not using a fixed number of columns.")]
+	[FormerlySerializedAs("ColumnWidth")]
 	public int ColumnMinWidth = 100;
 
 	public bool FixedRowCount;

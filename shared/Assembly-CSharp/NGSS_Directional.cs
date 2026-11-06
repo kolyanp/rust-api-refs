@@ -1,8 +1,8 @@
 using ConVar;
 using UnityEngine;
 
-[RequireComponent(typeof(Light))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(Light))]
 public class NGSS_Directional : MonoBehaviour
 {
 	public enum SAMPLER_COUNT
@@ -17,8 +17,8 @@ public class NGSS_Directional : MonoBehaviour
 	[Tooltip("Overall softness for both PCF and PCSS shadows.\nRecommended value: 0.01.")]
 	public float PCSS_GLOBAL_SOFTNESS = 0.01f;
 
-	[Range(0f, 1f)]
 	[Tooltip("PCSS softness when shadows is close to caster.\nRecommended value: 0.05.")]
+	[Range(0f, 1f)]
 	public float PCSS_FILTER_DIR_MIN = 0.05f;
 
 	[Tooltip("PCSS softness when shadows is far from caster.\nRecommended value: 0.25.\nIf too high can lead to visible artifacts when early bailout is enabled.")]

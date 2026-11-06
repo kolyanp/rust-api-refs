@@ -776,9 +776,9 @@ public class BaseProjectile : AttackEntity
 		ProcessReload(msg, VerifyMountedClientRPC(msg.player), Mathf.Max(1.5f, 1f + GetReloadDuration() * 0.1f));
 	}
 
-	[RPC_Server.MaxRepeatedElements(64)]
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
+	[RPC_Server.MaxRepeatedElements(64)]
 	private void CLProjectMounted(RPCMessage msg)
 	{
 		ProcessCLProject(msg, VerifyMountedClientAttack(msg.player), GetParentEntity() as BaseMountable);
@@ -1756,8 +1756,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void StartReload(RPCMessage msg)
 	{
 		ProcessStartReload(msg, VerifyClientRPC(msg.player));

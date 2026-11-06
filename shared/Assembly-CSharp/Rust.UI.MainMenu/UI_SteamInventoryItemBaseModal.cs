@@ -43,8 +43,8 @@ public class UI_SteamInventoryItemBaseModal : UI_Window
 	[SerializeField]
 	private CanvasGroup rightArrow;
 
-	[Header("Skin Viewer")]
 	[SerializeField]
+	[Header("Skin Viewer")]
 	public CoverImage skinViewerImage;
 
 	[SerializeField]

@@ -34,8 +34,8 @@ public class BaseMountedUseable : BaseVehicleSeat
 	[SerializeField]
 	public Transform mountTransform;
 
-	[SerializeField]
 	[Tooltip("Applies all of the pitch/yaw transform in late update to allow for blending with animators.")]
+	[SerializeField]
 	protected bool runInLateUpdate;
 
 	[SerializeField]
@@ -46,8 +46,8 @@ public class BaseMountedUseable : BaseVehicleSeat
 
 	protected Vector3 aimDir;
 
-	[Header("IK")]
 	[SerializeField]
+	[Header("IK")]
 	public Transform leftHandTarget;
 
 	[SerializeField]

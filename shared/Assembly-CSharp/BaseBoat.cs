@@ -95,8 +95,8 @@ public class BaseBoat : BaseVehicle
 
 	private static string OceanPatrolPathCacheFilePath => string.Format("{0}/{1}_oceanpatrol_{2}.dat", ConVar.Server.rootFolder, World.MapFileName.Replace(".map", ""), 1);
 
-	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
 	[ServerVar]
+	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
 	public static int seconds_until_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);

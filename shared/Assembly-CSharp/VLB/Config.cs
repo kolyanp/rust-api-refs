@@ -19,10 +19,10 @@ public class Config : ScriptableObject
 	[SerializeField]
 	private Shader beamShader1Pass;
 
-	[SerializeField]
-	[FormerlySerializedAs("BeamShader")]
 	[HighlightNull]
 	[FormerlySerializedAs("beamShader")]
+	[FormerlySerializedAs("BeamShader")]
+	[SerializeField]
 	private Shader beamShader2Pass;
 
 	public int sharedMeshSides = 24;

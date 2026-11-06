@@ -4,8 +4,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using ConVar;
 using Fleck;
+using UnityEngine;
 
 namespace CompanionServer;
 
@@ -17,9 +17,11 @@ public sealed class BackhaulConnection
 
 	private readonly SynchronizationContext _syncContext;
 
-	private readonly IPAddress _address;
-
 	private readonly ConcurrentDictionary<uint, Connection> _channels = new ConcurrentDictionary<uint, Connection>();
+
+	public IPAddress Address { get; }
+
+	public int ChannelCount => _channels.Count;
 
 	public bool IsAvailable
 	{
@@ -38,12 +40,12 @@ public sealed class BackhaulConnection
 		_listener = listener;
 		_connection = connection;
 		_syncContext = syncContext;
-		_address = connection.ConnectionInfo.ClientIpAddress;
+		Address = connection.ConnectionInfo.ClientIpAddress;
 	}
 
 	public void OnMessage(Span<byte> data)
 	{
-		if (App.update && App.queuelimit > 0 && data.Length >= 5)
+		if (data.Length >= 5)
 		{
 			byte b = data[0];
 			uint channelId = BinaryPrimitives.ReadUInt32LittleEndian(data.Slice(1, 4));
@@ -65,11 +67,30 @@ public sealed class BackhaulConnection
 
 	private void HandleOpen(uint channelId, Span<byte> payload)
 	{
-		if (payload.Length >= 8)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		if (payload.Length < 8)
 		{
-			ulong channelSteamId = BinaryPrimitives.ReadUInt64LittleEndian(payload.Slice(0, 8));
-			Connection value = new Connection(_listener.NextConnectionId(), _listener, new ChannelTransport(this, channelId, _address), channelSteamId);
-			_channels[channelId] = value;
+			SendFramed(2, channelId, default);
+			return;
+		}
+		ulong num = BinaryPrimitives.ReadUInt64LittleEndian(payload.Slice(0, 8));
+		if (_channels.ContainsKey(channelId))
+		{
+			return;
+		}
+		if (num == 0L || !_listener.TryAddPlayerChannel(num))
+		{
+			SendFramed(2, channelId, default);
+			return;
+		}
+		long connectionId = _listener.NextConnectionId();
+		_channels[channelId] = new Connection(connectionId, _listener, this, channelId, num);
+		if (!IsAvailable && TryRemoveChannel(channelId, out var connection))
+		{
+			PostClose(connection);
 		}
 	}
 
@@ -78,7 +99,7 @@ public sealed class BackhaulConnection
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		if (payload.Length <= App.maxmessagesize && _channels.TryGetValue(channelId, out var value))
+		if (payload.Length <= 1048576 && _channels.TryGetValue(channelId, out var value))
 		{
 			MemoryBuffer val = new MemoryBuffer(payload.Length);
 			payload.CopyTo(MemoryBuffer.op_Implicit(val));
@@ -88,9 +109,9 @@ public sealed class BackhaulConnection
 
 	private void HandleClose(uint channelId)
 	{
-		if (_channels.TryRemove(channelId, out var value))
+		if (TryRemoveChannel(channelId, out var connection))
 		{
-			PostClose(value);
+			PostClose(connection);
 		}
 	}
 
@@ -98,50 +119,67 @@ public sealed class BackhaulConnection
 	{
 		foreach (KeyValuePair<uint, Connection> channel in _channels)
 		{
-			if (_channels.TryRemove(channel.Key, out var value))
+			if (TryRemoveChannel(channel.Key, out var connection))
 			{
-				value.OnClose();
+				connection.OnClose();
 			}
 		}
+	}
+
+	private bool TryRemoveChannel(uint channelId, out Connection connection)
+	{
+		if (!_channels.TryRemove(channelId, out connection))
+		{
+			return false;
+		}
+		_listener.RemovePlayerChannel(connection.SteamId);
+		return true;
 	}
 
 	internal void SendData(uint channelId, MemoryBuffer payload)
 	{
-		try
-		{
-			SendFramed(0, channelId, payload.Data, payload.Length);
-		}
-		finally
-		{
-			payload.Dispose();
-		}
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		SendFramed(0, channelId, payload);
 	}
 
 	internal void CloseChannelLocal(uint channelId)
 	{
-		if (_channels.TryRemove(channelId, out var value))
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		if (TryRemoveChannel(channelId, out var connection))
 		{
-			SendFramed(2, channelId, null, 0);
-			PostClose(value);
+			SendFramed(2, channelId, default);
+			PostClose(connection);
 		}
 	}
 
-	private void SendFramed(byte opcode, uint channelId, byte[] payload, int payloadLength)
+	public void Close()
 	{
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		if (_connection != null && _connection.IsAvailable)
+		IWebSocketConnection connection = _connection;
+		if (connection != null)
 		{
-			int num = 5 + payloadLength;
-			MemoryBuffer val = new MemoryBuffer(num);
-			val.Data[0] = opcode;
-			BinaryPrimitives.WriteUInt32LittleEndian(val.Data.AsSpan(1, 4), channelId);
-			if (payloadLength > 0)
-			{
-				Array.Copy(payload, 0, val.Data, 5, payloadLength);
-			}
-			_connection.Send(val.Slice(num));
+			connection.Close();
 		}
+	}
+
+	private void SendFramed(byte opcode, uint channelId, MemoryBuffer payload)
+	{
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		if (_connection == null || !_connection.IsAvailable)
+		{
+			payload.Dispose();
+			return;
+		}
+		if (payload.Length > 2097147)
+		{
+			Debug.LogError((object)$"Rust+ message is too large to send ({payload.Length} bytes), dropping it");
+			payload.Dispose();
+			return;
+		}
+		Span<byte> span = stackalloc byte[5];
+		span[0] = opcode;
+		BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(1, 4), channelId);
+		_connection.Send((ReadOnlySpan<byte>)span, payload);
 	}
 
 	private void PostClose(Connection connection)

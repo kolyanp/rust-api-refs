@@ -164,8 +164,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		[ReadOnly]
 		public NativeArray<IntPtr> queries;
 
-		[NativeDisableParallelForRestriction]
 		[ReadOnly]
+		[NativeDisableParallelForRestriction]
 		public NativeArray<float4x4> spaces;
 
 		[NativeDisableUnsafePtrRestriction]
@@ -323,8 +323,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 
 	private const float StraightPathEndSlack = 0.01f;
 
-	[SerializeField]
 	[Header("Base fields")]
+	[SerializeField]
 	private int _agentTypeID;
 
 	[SerializeField]

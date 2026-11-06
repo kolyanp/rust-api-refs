@@ -13,8 +13,8 @@ using Network;
 using Newtonsoft.Json;
 using UnityEngine;
 
-[ResetStaticFields]
 [ConsoleSystem.Factory("moderation")]
+[ResetStaticFields]
 public static class UGCModeration
 {
 	private class Description

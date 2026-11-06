@@ -52,8 +52,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 2f)]
 	public float sunShadowBias = 0.01f;
 
-	[Header("                ")]
 	[Header("Contact Shadows")]
+	[Header("                ")]
 	public bool enableContactShadows = true;
 
 	[Range(0f, 1f)]
@@ -94,8 +94,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 32f)]
 	public float Radius = 2f;
 
-	[Range(0f, 16f)]
 	[Tooltip("Power exponent attenuation of the occlusion.")]
+	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
 	[Range(0f, 0.99f)]
@@ -132,8 +132,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 16f)]
 	public float FadeToPowerExponent = 1.8f;
 
-	[Tooltip("Final Thickness parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Thickness parameter.")]
 	public float FadeToThickness = 1f;
 
 	[Header("                ")]

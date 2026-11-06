@@ -21,8 +21,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private GameObject cancelInstruction;
 
-	[Header("Players")]
 	[SerializeField]
+	[Header("Players")]
 	private RustText localPlayerNameText;
 
 	[SerializeField]
@@ -34,8 +34,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RawImage opponentAvatar;
 
-	[SerializeField]
 	[Header("Current Turn")]
+	[SerializeField]
 	private GameObject localTurnBall;
 
 	[SerializeField]
@@ -57,8 +57,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private Color eightBallColour = new Color(0.13f, 0.13f, 0.13f, 1f);
 
-	[SerializeField]
 	[Tooltip("Contains the 15 ball displays in left-to-right order.")]
+	[SerializeField]
 	private Transform ballDisplayRoot;
 
 	public bool ShouldUpdateShadows => true;

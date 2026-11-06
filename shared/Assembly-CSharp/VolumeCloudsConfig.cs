@@ -35,8 +35,8 @@ public class VolumeCloudsConfig : ScriptableObject
 
 	public float CurlNoiseStrength = 50f;
 
-	[Header("Density")]
 	[Range(0f, 1f)]
+	[Header("Density")]
 	public float DensityScale = 0.05f;
 
 	[Range(0f, 1f)]
@@ -101,8 +101,8 @@ public class VolumeCloudsConfig : ScriptableObject
 	[Range(0f, 3f)]
 	public float AmbientScatterContrast = 1f;
 
-	[Header("Other")]
 	[Range(0f, 1f)]
+	[Header("Other")]
 	public float CoverageScale = 1f;
 
 	[Range(0f, 1f)]

@@ -7,21 +7,21 @@ public class LivestockPatternTester : MonoBehaviour, IEditorComponent
 {
 	private const string ShaderName = "Rust/Standard Livestock";
 
-	[Header("Traits")]
 	[Tooltip("Drives Threshold. Low yield cuts high so patches are small, high yield cuts low so patches are large.")]
+	[Header("Traits")]
 	[Range(0f, 1f)]
 	public float MilkYield = 0.25f;
 
-	[Tooltip("Drives patch colour along the range's Dung Colour gradient, low at the left, high at the right.")]
 	[Range(0f, 1f)]
+	[Tooltip("Drives patch colour along the range's Dung Colour gradient, low at the left, high at the right.")]
 	public float PoopYield = 0.25f;
 
-	[Tooltip("Drives Edge Warp. Larger litters give more crinkled patch edges.")]
 	[Range(0f, 1f)]
+	[Tooltip("Drives Edge Warp. Larger litters give more crinkled patch edges.")]
 	public float LitterSize = 0.25f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Drives Hair Length. Robust animals get longer hair tips on the patch edges.")]
+	[Range(0f, 1f)]
 	public float Robustness = 0.25f;
 
 	[Tooltip("Drives Bias Strength. 0 is a healthy animal held to the bias map and 1 is an inbred one that ignores it, the only two a shipped animal lands on. In game an inbred animal's gene sliders are also scaled by livestock.inbredScale, so set them to what that leaves. Needs Bias Source on and a bias map on the material.")]

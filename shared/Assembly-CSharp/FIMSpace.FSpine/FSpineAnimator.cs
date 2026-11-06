@@ -8,8 +8,8 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FSpine;
 
-[DefaultExecutionOrder(-11)]
 [AddComponentMenu("FImpossible Creations/Spine Animator 2")]
+[DefaultExecutionOrder(-11)]
 public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	public enum EFSpineEditorCategory
@@ -840,42 +840,42 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
 	public float PosSmoother;
 
-	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	[Range(0f, 1f)]
+	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	public float RotSmoother;
 
-	[Range(0f, 1f)]
 	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
+	[Range(0f, 1f)]
 	public float MaxStretching = 1f;
 
-	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	[Range(0f, 1f)]
+	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	public float Slithery = 1f;
 
-	[Range(1f, 91f)]
 	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
+	[Range(1f, 91f)]
 	public float AngleLimit = 40f;
 
 	[Range(0f, 1f)]
 	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
 	public float LimitSmoother = 0.35f;
 
-	[Tooltip("How fast spine should be rotated to straight pose when your character moves.")]
 	[Range(0f, 15f)]
+	[Tooltip("How fast spine should be rotated to straight pose when your character moves.")]
 	public float StraightenSpeed = 7.5f;
 
 	public bool TurboStraighten;
 
-	[Range(0f, 1f)]
 	[Tooltip("Spine going back to straight position constantly with choosed speed intensity.")]
+	[Range(0f, 1f)]
 	public float GoBackSpeed;
 
-	[Range(0f, 1f)]
 	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
+	[Range(0f, 1f)]
 	public float Springiness;
 
-	[Tooltip("How much effect on spine chain should have character movement.")]
 	[Range(0f, 1f)]
+	[Tooltip("How much effect on spine chain should have character movement.")]
 	public float MotionInfluence = 1f;
 
 	[Tooltip("Useful when your creature jumps on moving platform, so when platform moves spine is not reacting, by default world space is used (null).")]
@@ -884,8 +884,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Fade rotations to sides or rotation up/down with this parameter - can be helpful for character jump handling")]
 	public Vector2 RotationsFade = Vector2.one;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Transform mainPivotOffsetTransform;
 
 	[Tooltip("<! Most models can not need this !> Offset for bones rotations, thanks to that animation is able to rotate to segments in a correct way, like from center of mass.")]
@@ -923,8 +923,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If you want to continue checking collision if segment collides with one collider (very useful for example when you using gravity power with ground)")]
 	public bool DetailedCollision = true;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private bool _CheckedPivot;
 
 	private bool updateSpineAnimator;

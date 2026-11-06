@@ -13,8 +13,8 @@ internal struct CalcMinHeightMapJob : IJobParallelFor
 
 	public int HeightMapRes;
 
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<float> MinTerrainHeightMap;
 
 	public TerrainTopologyHierarchy.Query TopologyMap;

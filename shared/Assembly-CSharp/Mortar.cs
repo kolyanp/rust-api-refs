@@ -10,8 +10,8 @@ public class Mortar : Cannon
 {
 	public const string PlayerKillAchievement = "MORTAR_PLAYER_KILL";
 
-	[SerializeField]
 	[Header("Mortar")]
+	[SerializeField]
 	private Vector2 minMaxDistance = new Vector2(0f, 200f);
 
 	[SerializeField]
@@ -61,15 +61,15 @@ public class Mortar : Cannon
 	[SerializeField]
 	private float recoilPitchDuration;
 
-	[Header("Mortar Handle")]
 	[SerializeField]
+	[Header("Mortar Handle")]
 	private Transform handleBone;
 
 	[SerializeField]
 	private AnimationCurve handleMinMaxRotation;
 
-	[Header("Display")]
 	[SerializeField]
+	[Header("Display")]
 	private MortarDisplay mortarDisplayPrefab;
 
 	[ClientVar(ClientAdmin = true)]

@@ -28,8 +28,8 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	[SerializeField]
 	private Image gaugeImage;
 
-	[Header("Animation")]
 	[Space]
+	[Header("Animation")]
 	[SerializeField]
 	private CanvasGroup canvasGroup;
 }

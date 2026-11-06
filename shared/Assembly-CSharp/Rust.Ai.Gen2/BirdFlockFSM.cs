@@ -47,12 +47,12 @@ public class BirdFlockFSM : FSMComponent
 		[SerializeField]
 		private float altitudeEaseRate = 0.5f;
 
-		[SerializeField]
 		[Tooltip("Fastest the flock climbs or sinks, in metres per second. Kept below what the birds can climb, or the anchor leaves them behind.")]
+		[SerializeField]
 		protected float maxClimbSpeed = 3f;
 
-		[SerializeField]
 		[Tooltip("How far ahead the flock looks for something too tall to fly through, in metres. Needs to be far enough to climb in time at maxClimbSpeed.")]
+		[SerializeField]
 		private float lookAheadDistance = 150f;
 
 		[Tooltip("How high above the top of an obstacle ahead the flock climbs, in metres.")]
@@ -357,24 +357,24 @@ public class BirdFlockFSM : FSMComponent
 		[Tooltip("How far ahead round the circle the flock aims, in radians. Too little and it cuts inside, too much and it drifts outside.")]
 		private float leadAngle = 0.6f;
 
-		[Tooltip("Share of its normal speed the entity circles at once it is over the point. The birds do the moving there, so slower keeps the flock settled over the point.")]
 		[SerializeField]
+		[Tooltip("Share of its normal speed the entity circles at once it is over the point. The birds do the moving there, so slower keeps the flock settled over the point.")]
 		private float circlingSpeedScale = 0.5f;
 
 		[SerializeField]
 		[Tooltip("How long the flock stays over the point once it gets there, in seconds. Rolled per visit.")]
 		private Vector2 visitDuration = new Vector2(120f, 240f);
 
-		[Tooltip("How long after a visit before the flock looks for another point, in seconds.")]
 		[SerializeField]
+		[Tooltip("How long after a visit before the flock looks for another point, in seconds.")]
 		private float revisitCooldown = 300f;
 
-		[SerializeField]
 		[Tooltip("Height above the ground or water the flock flies at on its way to the point, in metres.")]
+		[SerializeField]
 		private float travelAltitude = 35f;
 
-		[Tooltip("Added to the height every interest point asks this flock to circle at, in metres.")]
 		[SerializeField]
+		[Tooltip("Added to the height every interest point asks this flock to circle at, in metres.")]
 		private float extraCircleHeight;
 
 		private const float circleClearance = 10f;
@@ -468,8 +468,8 @@ public class BirdFlockFSM : FSMComponent
 		[SerializeField]
 		private float fleeAltitude = 60f;
 
-		[SerializeField]
 		[Tooltip("How long after fleeing the flock ignores interest points, in seconds. Stops crows going straight back to the bodies they were scared off.")]
+		[SerializeField]
 		private float interestCooldown = 120f;
 
 		[NonSerialized]

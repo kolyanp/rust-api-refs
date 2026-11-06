@@ -76,8 +76,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 	[HideInInspector]
 	private BakedListener[] onFlagEnabledListeners;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private BakedListener[] onFlagDisabledListeners;
 
 	internal bool hasRunOnce;

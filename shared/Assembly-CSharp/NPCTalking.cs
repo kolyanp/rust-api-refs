@@ -271,8 +271,8 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		ConversationHost.Cleanup();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	public void Server_BeginTalking(RPCMessage msg)
 	{

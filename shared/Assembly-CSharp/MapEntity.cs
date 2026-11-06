@@ -114,9 +114,9 @@ public class MapEntity : HeldEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void ImageUpdate(RPCMessage msg)
 	{
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)

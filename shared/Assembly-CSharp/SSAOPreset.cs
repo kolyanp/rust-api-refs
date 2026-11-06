@@ -21,16 +21,16 @@ public class SSAOPreset : ScriptableObject
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("World-space radius of the occlusion kernel.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
-	[Range(0f, 0.99f)]
 	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
+	[Range(0f, 0.99f)]
 	public float Bias = 0.05f;
 
 	[Tooltip("Controls thickness-based occlusion contribution.")]
@@ -40,8 +40,8 @@ public class SSAOPreset : ScriptableObject
 	[Tooltip("Compute occlusion and blur at half resolution.")]
 	public bool Downsample = true;
 
-	[Header("Distance Fade")]
 	[Tooltip("Fade the effect out at a distance.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance (Unity units) where fading begins.")]
@@ -67,12 +67,12 @@ public class SSAOPreset : ScriptableObject
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled = true;
 
-	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
 	[Range(1f, 4f)]
+	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
 	public int BlurRadius = 3;
 
-	[Range(1f, 4f)]
 	[Tooltip("Number of blur passes.")]
+	[Range(1f, 4f)]
 	public int BlurPasses = 1;
 
 	[Range(0f, 20f)]
@@ -83,8 +83,8 @@ public class SSAOPreset : ScriptableObject
 	[Header("Temporal Filter")]
 	public bool FilterEnabled = true;
 
-	[Range(0f, 1f)]
 	[Tooltip("Accumulation decay. 0 = fast update (more flicker). 1 = slow update (ghosting).")]
+	[Range(0f, 1f)]
 	public float FilterBlending = 0.5f;
 
 	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]

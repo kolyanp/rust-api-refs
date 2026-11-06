@@ -118,8 +118,7 @@ public static class Util
 
 	public static Dictionary<string, string> TryGetServerPairingData()
 	{
-		string value = App.GetPublicIP() ?? "";
-		if (string.IsNullOrWhiteSpace(value) || string.IsNullOrWhiteSpace(App.serverid))
+		if (string.IsNullOrWhiteSpace(App.serverid))
 		{
 			return null;
 		}
@@ -131,8 +130,6 @@ public static class Util
 		dictionary.Add("img", StringExtensions.Truncate(ConVar.Server.headerimage, 128, (string)null));
 		dictionary.Add("logo", StringExtensions.Truncate(ConVar.Server.logoimage, 128, (string)null));
 		dictionary.Add("url", StringExtensions.Truncate(ConVar.Server.url, 128, (string)null));
-		dictionary.Add("ip", value);
-		dictionary.Add("port", App.port.ToString("G", CultureInfo.InvariantCulture));
 		if (NexusServer.Started)
 		{
 			int? nexusId = NexusServer.NexusId;

@@ -33,8 +33,8 @@ public class LivestockAnimalStatusWidget : MonoBehaviour, IClientComponent
 
 	public GameObject NoOwnerAlert;
 
-	[Header("Facts")]
 	[Tooltip("The age row, text with no bar. Gated behind livestock.panelAge, and hidden on an animal nobody owns, which does not age.")]
+	[Header("Facts")]
 	public GameObject AgeRow;
 
 	public RustText AgeText;

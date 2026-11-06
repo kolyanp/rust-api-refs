@@ -171,12 +171,12 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	[NonSerialized]
 	public bool isServer;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 authoredLocalPosition;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Quaternion authoredLocalRotation;
 
 	[SerializeField]

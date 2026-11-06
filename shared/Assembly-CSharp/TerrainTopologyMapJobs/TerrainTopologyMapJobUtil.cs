@@ -11,9 +11,9 @@ namespace TerrainTopologyMapJobs;
 public static class TerrainTopologyMapJobUtil
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate int OrRadius_00008E13_0024PostfixBurstDelegate(in TerrainTopologyHierarchy.Query topology, int x_min, int x_mid, int x_max, int z_min, int z_mid, int z_max, float radius, int mask);
+	internal delegate int OrRadius_00008E07_0024PostfixBurstDelegate(in TerrainTopologyHierarchy.Query topology, int x_min, int x_mid, int x_max, int z_min, int z_mid, int z_max, float radius, int mask);
 
-	internal static class OrRadius_00008E13_0024BurstDirectCall
+	internal static class OrRadius_00008E07_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -24,7 +24,7 @@ public static class TerrainTopologyMapJobUtil
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<OrRadius_00008E13_0024PostfixBurstDelegate>((OrRadius_00008E13_0024PostfixBurstDelegate)OrRadius).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<OrRadius_00008E07_0024PostfixBurstDelegate>((OrRadius_00008E07_0024PostfixBurstDelegate)OrRadius).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -51,9 +51,9 @@ public static class TerrainTopologyMapJobUtil
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate int AnyRadius_00008E14_0024PostfixBurstDelegate(in TerrainTopologyHierarchy.Query topology, int x_min, int x_mid, int x_max, int z_min, int z_mid, int z_max, float radius, int mask);
+	internal delegate int AnyRadius_00008E08_0024PostfixBurstDelegate(in TerrainTopologyHierarchy.Query topology, int x_min, int x_mid, int x_max, int z_min, int z_mid, int z_max, float radius, int mask);
 
-	internal static class AnyRadius_00008E14_0024BurstDirectCall
+	internal static class AnyRadius_00008E08_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -64,7 +64,7 @@ public static class TerrainTopologyMapJobUtil
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<AnyRadius_00008E14_0024PostfixBurstDelegate>((AnyRadius_00008E14_0024PostfixBurstDelegate)AnyRadius).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<AnyRadius_00008E08_0024PostfixBurstDelegate>((AnyRadius_00008E08_0024PostfixBurstDelegate)AnyRadius).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -90,18 +90,18 @@ public static class TerrainTopologyMapJobUtil
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(TerrainTopologyMapJobs_002EOrRadius_00008E13_0024PostfixBurstDelegate))]
+	[MonoPInvokeCallback(typeof(TerrainTopologyMapJobs_002EOrRadius_00008E07_0024PostfixBurstDelegate))]
 	[BurstCompile(/*Could not decode attribute arguments.*/)]
 	public static int OrRadius(in TerrainTopologyHierarchy.Query topology, int x_min, int x_mid, int x_max, int z_min, int z_mid, int z_max, float radius, int mask)
 	{
-		return OrRadius_00008E13_0024BurstDirectCall.Invoke(in topology, x_min, x_mid, x_max, z_min, z_mid, z_max, radius, mask);
+		return OrRadius_00008E07_0024BurstDirectCall.Invoke(in topology, x_min, x_mid, x_max, z_min, z_mid, z_max, radius, mask);
 	}
 
 	[BurstCompile(/*Could not decode attribute arguments.*/)]
-	[MonoPInvokeCallback(typeof(TerrainTopologyMapJobs_002EAnyRadius_00008E14_0024PostfixBurstDelegate))]
+	[MonoPInvokeCallback(typeof(TerrainTopologyMapJobs_002EAnyRadius_00008E08_0024PostfixBurstDelegate))]
 	public static int AnyRadius(in TerrainTopologyHierarchy.Query topology, int x_min, int x_mid, int x_max, int z_min, int z_mid, int z_max, float radius, int mask)
 	{
-		return AnyRadius_00008E14_0024BurstDirectCall.Invoke(in topology, x_min, x_mid, x_max, z_min, z_mid, z_max, radius, mask);
+		return AnyRadius_00008E08_0024BurstDirectCall.Invoke(in topology, x_min, x_mid, x_max, z_min, z_mid, z_max, radius, mask);
 	}
 
 	public static int GetTopologyRadius(in TerrainTopologyHierarchy.Query topology, float terrainOneOverSizeX, float radius, float normX, float normZ, int mask = -1, bool stopOnAny = false)

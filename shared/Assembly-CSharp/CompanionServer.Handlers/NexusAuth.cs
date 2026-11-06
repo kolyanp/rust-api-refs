@@ -19,11 +19,6 @@ public class NexusAuth : BaseHandler<AppGetNexusAuth>
 
 	public override async ValueTask Execute()
 	{
-		if (Request.playerId == 0L)
-		{
-			SendError("invalid_playerid");
-			return;
-		}
 		NexusPlayer val = await NexusServer.ZoneClient.GetPlayer(Request.playerId);
 		Variable val2 = default;
 		if (val == null || !val.TryGetVariable("appKey", ref val2) || (int)val2.Type != 1 || Proto.appKey != val2.GetAsString())

@@ -5,9 +5,9 @@ using UnityEngine.Serialization;
 
 namespace VLB;
 
-[SelectionBase]
 [DisallowMultipleComponent]
 [ExecuteInEditMode]
+[SelectionBase]
 [HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
 public class VolumetricLightBeam : MonoBehaviour
 {
@@ -24,8 +24,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	[Range(0f, 1f)]
 	public float alphaInside = 1f;
 
-	[Range(0f, 1f)]
 	[FormerlySerializedAs("alpha")]
+	[Range(0f, 1f)]
 	public float alphaOutside = 1f;
 
 	public BlendingMode blendingMode;

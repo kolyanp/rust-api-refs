@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CompanionServer.Handlers;
 using ConVar;
@@ -38,7 +39,11 @@ public static class Server
 
 	internal static string Secret;
 
+	private static CancellationTokenSource _registrationCancellation;
+
 	private static readonly Func<AppIOEntity, Connection, bool> CanReceiveEntityBroadcast = (AppIOEntity entity, Connection connection) => entity.CanAppAccess(connection.SubscribedSteamId);
+
+	public static bool IsRegistering { get; private set; }
 
 	public static Listener Listener { get; private set; }
 
@@ -66,31 +71,38 @@ public static class Server
 			return;
 		}
 		BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(serverside: true);
-		if (!((Object)(object)activeGameMode != (Object)null) || activeGameMode.rustPlus)
+		if ((Object)(object)activeGameMode != (Object)null && !activeGameMode.rustPlus)
 		{
-			Shutdown();
-			Map.PopulateCache();
-			if (App.port == 0)
-			{
-				App.port = Math.Max(ConVar.Server.port, RCon.Port) + 67;
-			}
-			try
-			{
-				Listener = new Listener(App.GetListenIP(), App.port);
-			}
-			catch (Exception arg)
-			{
-				Debug.LogError((object)$"Companion server failed to start: {arg}");
-			}
-			if (!minimal)
-			{
-				PostInitializeServer();
-			}
+			return;
+		}
+		if (IsRegistering)
+		{
+			Debug.LogWarning((object)"Rust+ registration is already in progress, try again once it finishes");
+			return;
+		}
+		Shutdown();
+		Map.PopulateCache();
+		if (App.port == 0)
+		{
+			App.port = Math.Max(ConVar.Server.port, RCon.Port) + 67;
+		}
+		try
+		{
+			Listener = new Listener(App.GetListenIP(), App.port);
+		}
+		catch (Exception arg)
+		{
+			Debug.LogError((object)$"Companion server failed to start: {arg}");
+		}
+		if (!minimal)
+		{
+			PostInitializeServer();
 		}
 	}
 
 	public static void Shutdown()
 	{
+		_registrationCancellation?.Cancel();
 		SetServerId(null);
 		Listener?.Dispose();
 		Listener = null;
@@ -140,20 +152,34 @@ public static class Server
 
 	private static async void PostInitializeServer()
 	{
-		string text = await App.GetPublicIPAsync();
-		if (string.IsNullOrEmpty(text))
+		IsRegistering = true;
+		_registrationCancellation = new CancellationTokenSource();
+		CancellationToken cancellationToken = _registrationCancellation.Token;
+		try
 		{
-			Debug.LogError((object)"Failed to determine public IP address for Rust+ while setting up registration. Disabling Rust+ features because we wouldn't know what IP to tell Rust+ to connect to.");
-			SetServerId(null);
+			string text = await App.GetPublicIPAsync(cancellationToken);
+			if (string.IsNullOrEmpty(text))
+			{
+				Debug.LogError((object)"Failed to determine public IP address for Rust+ while setting up registration. Disabling Rust+ features because we wouldn't know what IP to tell Rust+ to connect to.");
+				SetServerId(null);
+			}
+			else
+			{
+				await SetupServerRegistration(text, App.port, cancellationToken);
+				await CheckConnectivity(cancellationToken);
+			}
 		}
-		else
+		catch (Exception) when (cancellationToken.IsCancellationRequested)
 		{
-			await SetupServerRegistration(text, App.port);
-			await CheckConnectivity();
+		}
+		finally
+		{
+			_registrationCancellation = null;
+			IsRegistering = false;
 		}
 	}
 
-	private static async Task SetupServerRegistration(string address, int port)
+	private static async Task SetupServerRegistration(string address, int port, CancellationToken cancellationToken)
 	{
 		string arg = Uri.EscapeDataString(ConVar.Server.hostname ?? string.Empty);
 		string query = $"?address={address}&port={port}&name={arg}";
@@ -162,19 +188,19 @@ public static class Server
 			if (TryLoadServerRegistration(out var _, out var serverToken))
 			{
 				StringContent refreshContent = new StringContent(serverToken, Encoding.UTF8, "text/plain");
-				HttpResponseMessage httpResponseMessage = await AutoRetry(() => WebUtil.HttpClient.PostAsync(App.endpoint + "/server/refresh" + query, refreshContent));
+				HttpResponseMessage httpResponseMessage = await AutoRetry(() => WebUtil.HttpClient.PostAsync(App.endpoint + "/server/refresh" + query, refreshContent), cancellationToken);
 				if (httpResponseMessage.IsSuccessStatusCode)
 				{
-					SetServerRegistration(await httpResponseMessage.Content.ReadAsStringAsync());
+					SetServerRegistration(await httpResponseMessage.Content.ReadAsStringAsync(), cancellationToken);
 					return;
 				}
 				Debug.LogWarning((object)"Failed to refresh server ID - registering a new one");
 			}
-			HttpResponseMessage httpResponseMessage2 = await AutoRetry(() => WebUtil.HttpClient.GetAsync(App.endpoint + "/server/register" + query));
+			HttpResponseMessage httpResponseMessage2 = await AutoRetry(() => WebUtil.HttpClient.GetAsync(App.endpoint + "/server/register" + query), cancellationToken);
 			httpResponseMessage2.EnsureSuccessStatusCode();
-			SetServerRegistration(await httpResponseMessage2.Content.ReadAsStringAsync());
+			SetServerRegistration(await httpResponseMessage2.Content.ReadAsStringAsync(), cancellationToken);
 		}
-		catch (Exception arg2)
+		catch (Exception arg2) when (!cancellationToken.IsCancellationRequested)
 		{
 			Debug.LogError((object)$"Failed to setup companion server registration: {arg2}");
 		}
@@ -203,7 +229,7 @@ public static class Server
 		}
 	}
 
-	private static void SetServerRegistration(string responseJson)
+	private static void SetServerRegistration(string responseJson, CancellationToken cancellationToken)
 	{
 		RegisterResponse registerResponse = null;
 		try
@@ -214,7 +240,15 @@ public static class Server
 		{
 			Debug.LogError((object)$"Failed to parse registration response JSON: {responseJson}\n\n{arg}");
 		}
-		SetServerId(registerResponse?.ServerId);
+		if (registerResponse != null && string.IsNullOrEmpty(registerResponse.Secret))
+		{
+			Debug.LogError((object)"Rust+ registration response has no backhaul secret, disabling Rust+ features because the backend won't be able to connect.");
+			registerResponse = null;
+		}
+		if (!cancellationToken.IsCancellationRequested)
+		{
+			SetServerId(registerResponse?.ServerId);
+		}
 		Token = registerResponse?.ServerToken;
 		Secret = registerResponse?.Secret;
 		if (registerResponse == null)
@@ -231,7 +265,7 @@ public static class Server
 		}
 	}
 
-	private static async Task CheckConnectivity()
+	private static async Task CheckConnectivity(CancellationToken cancellationToken)
 	{
 		if (!IsEnabled)
 		{
@@ -246,7 +280,7 @@ public static class Server
 				return;
 			}
 			StringContent testContent = new StringContent(Token, Encoding.UTF8, "text/plain");
-			HttpResponseMessage testResponse = await AutoRetry(() => WebUtil.HttpClient.PostAsync(App.endpoint + "/server/test_connection", testContent));
+			HttpResponseMessage testResponse = await AutoRetry(() => WebUtil.HttpClient.PostAsync(App.endpoint + "/server/test_connection", testContent), cancellationToken);
 			string text = await testResponse.Content.ReadAsStringAsync();
 			TestConnectionResponse testConnectionResponse = null;
 			try
@@ -275,17 +309,18 @@ public static class Server
 				Debug.LogWarning((object)("Rust+ companion server connectivity test has warnings:\n" + text2));
 			}
 		}
-		catch (Exception arg2)
+		catch (Exception arg2) when (!cancellationToken.IsCancellationRequested)
 		{
 			Debug.LogError((object)$"Failed to check connectivity to the companion server: {arg2}");
 		}
 	}
 
-	private static async Task<HttpResponseMessage> AutoRetry(Func<Task<HttpResponseMessage>> action)
+	private static async Task<HttpResponseMessage> AutoRetry(Func<Task<HttpResponseMessage>> action, CancellationToken cancellationToken)
 	{
 		Exception lastException = null;
 		for (int i = 0; i < 5; i++)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
 				HttpResponseMessage httpResponseMessage = await action();
@@ -300,7 +335,10 @@ public static class Server
 			{
 				lastException = ex;
 			}
-			await Task.Delay(30000);
+			if (i < 4)
+			{
+				await Task.Delay(30000, cancellationToken);
+			}
 		}
 		throw lastException ?? new Exception("Exceeded maximum number of retries");
 	}

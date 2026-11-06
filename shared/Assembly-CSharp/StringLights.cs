@@ -425,8 +425,8 @@ public class StringLights : IOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public void SERVER_RemovePoint(RPCMessage msg)
 	{
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)

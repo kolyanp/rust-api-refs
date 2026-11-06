@@ -4,8 +4,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_NotificationEntry : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Icons")]
+	[SerializeField]
 	private RustIcon basicIcon;
 
 	[SerializeField]

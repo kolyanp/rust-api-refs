@@ -21,24 +21,24 @@ public class Pool : ConsoleSystem
 	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	public static int mode = 2;
 
-	[ClientVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
+	[ClientVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	public static bool prewarm = true;
 
-	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled = true;
 
-	[ClientVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
+	[ClientVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	public static bool debug = false;
 
 	private const string DebugMemPoolStartHelp = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)";
 
 	private const string DebugMemPoolStopHelp = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs";
 
-	[ClientVar(Help = "(Generated) Prints a table of all object pool entries showing type, capacity, active count, peak usage, hit/miss counts, and spill counts; supports --json")]
 	[ServerVar(Help = "(Generated) Prints a table of all object pool entries showing type, capacity, active count, peak usage, hit/miss counts, and spill counts; supports --json")]
+	[ClientVar(Help = "(Generated) Prints a table of all object pool entries showing type, capacity, active count, peak usage, hit/miss counts, and spill counts; supports --json")]
 	public static void print_memory(Arg arg)
 	{
 		if (Pool.Directory.Count == 0)
@@ -218,8 +218,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
 	[ServerVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
+	[ClientVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
 	public static void print_assets(Arg arg)
 	{
 		if (AssetPool.storage.Count == 0)
@@ -269,15 +269,15 @@ public class Pool : ConsoleSystem
 		GameManager.server.pool.Clear(filter);
 	}
 
-	[ServerVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
 	[ClientVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
+	[ServerVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
 	public static void clear_assets(Arg arg)
 	{
 		AssetPool.Clear(arg.GetString(0, string.Empty));
 	}
 
-	[ServerVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
 	[ClientVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
+	[ServerVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
 	public static void export_prefabs(Arg arg)
 	{
 		PrefabPoolCollection pool = GameManager.server.pool;
@@ -301,8 +301,8 @@ public class Pool : ConsoleSystem
 		File.WriteAllText("prefabs.csv", stringBuilder.ToString());
 	}
 
-	[ClientVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
 	[ServerVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
+	[ClientVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
 	public static void fill_prefabs(Arg arg)
 	{
 		string filter = arg.GetString(0, string.Empty);
@@ -310,8 +310,8 @@ public class Pool : ConsoleSystem
 		PrefabPoolWarmup.Run(filter, countOverride);
 	}
 
-	[ClientVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
 	[ServerVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
+	[ClientVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
 	public static void debug_mem_start(Arg arg)
 	{
 		string text = arg.GetString(0, string.Empty);
@@ -340,8 +340,8 @@ public class Pool : ConsoleSystem
 		arg.ReplyWith(stringBuilder.ToString());
 	}
 
-	[ClientVar(Help = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs")]
 	[ServerVar(Help = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs")]
+	[ClientVar(Help = "Stop tracking objects from memory pool & log abnormalities. Accepts max number of logs")]
 	public static void debug_mem_stop(Arg arg)
 	{
 		int maxLogs = arg.GetInt(0, 8);

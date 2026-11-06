@@ -28,7 +28,5 @@ public class ESPPlayerInfo : MonoBehaviour
 
 	public CanvasGroup group;
 
-	public QueryVis visCheck;
-
 	public BasePlayer Entity { get; set; }
 }

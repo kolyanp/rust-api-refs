@@ -293,6 +293,8 @@ public class Chat : ConsoleSystem
 		string strChatText = message.Replace("\n", "").Replace("\r", "").Replace("\v", "")
 			.Replace("\u2028", "")
 			.Replace("\u2029", "")
+			.Replace("⸺", "")
+			.Replace("⸻", "")
 			.Trim();
 		if (strChatText.Length > 128)
 		{

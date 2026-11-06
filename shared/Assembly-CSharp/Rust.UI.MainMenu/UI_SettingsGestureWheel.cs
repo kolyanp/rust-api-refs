@@ -27,8 +27,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Image gestureIcon;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform wheelCenter;
 
 	[SerializeField]
@@ -37,12 +37,12 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private float initialAngleOffset;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]

@@ -20,10 +20,6 @@ public abstract class BasePlayerHandler<T> : BaseHandler<T> where T : class
 		{
 			return validationResult;
 		}
-		if (Client.ChannelSteamId != 0L && Client.ChannelSteamId != Request.playerId)
-		{
-			return ValidationResult.NotFound;
-		}
 		int orGenerateAppToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(Request.playerId, out var locked);
 		if (Request.playerId == 0L || Request.playerToken != orGenerateAppToken)
 		{

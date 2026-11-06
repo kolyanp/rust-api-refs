@@ -24,8 +24,8 @@ public class SeagullGroupBirds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Animator[] animators;
 
-	[Tooltip("Base of each bird's body on its rig, which with bodyChests gives the angle the animation holds the body at.")]
 	[SerializeField]
+	[Tooltip("Base of each bird's body on its rig, which with bodyChests gives the angle the animation holds the body at.")]
 	private Transform[] bodyTails;
 
 	[SerializeField]
@@ -43,8 +43,8 @@ public class SeagullGroupBirds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Vector2 idleDurationRange = new Vector2(2f, 8f);
 
-	[Tooltip("Closest a walking bird passes another, in metres. It only walks to a spot it can reach without passing closer, and stops to let others by.")]
 	[SerializeField]
+	[Tooltip("Closest a walking bird passes another, in metres. It only walks to a spot it can reach without passing closer, and stops to let others by.")]
 	private float walkClearance = 0.4f;
 
 	[Tooltip("Furthest up or down a bird steps as it walks or runs, in metres. It never walks or runs onto ground any higher or lower than this.")]
@@ -55,20 +55,20 @@ public class SeagullGroupBirds : MonoBehaviour, IClientComponent
 	private string[] idleStates = new string[5] { "seagull_idle", "seagull_idle_look", "seagull_peck", "seagull_groom", "seagull_caw" };
 
 	[SerializeField]
-	[Header("Handover")]
 	[Tooltip("How close to the player a flying bird can come before it swaps back to its Animator to land, in metres.")]
+	[Header("Handover")]
 	private float handoverDistance = 5f;
 
-	[SerializeField]
 	[Tooltip("How close to the edge of the group's bounds a bird taking off can get before it joins the flock, in metres. Past the bounds a hit on it is rejected, flock birds stay well inside them.")]
+	[SerializeField]
 	private float boundsMargin = 1f;
 
-	[SerializeField]
 	[Header("Takeoff")]
+	[SerializeField]
 	private string takeoffState = "seagull_take_off";
 
-	[SerializeField]
 	[Tooltip("How long into the takeoff clip the bird leaves the ground, in seconds.")]
+	[SerializeField]
 	private float liftoffDelay = 0.3f;
 
 	[SerializeField]
@@ -115,36 +115,36 @@ public class SeagullGroupBirds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private string landState = "seagull_land";
 
-	[Tooltip("Height above the ground a flying bird swaps back to its Animator to land, in metres. Rolled per bird, so they peel off one at a time.")]
 	[SerializeField]
+	[Tooltip("Height above the ground a flying bird swaps back to its Animator to land, in metres. Rolled per bird, so they peel off one at a time.")]
 	private Vector2 landHandoverHeightRange = new Vector2(2f, 6f);
 
 	[Tooltip("Longest a bird keeps flying once the group starts coming down before it lands, in seconds. Rolled per bird.")]
 	[SerializeField]
 	private float maxLandingDelay = 1.5f;
 
-	[Tooltip("How much faster or slower one bird plays the land clip than another, as a fraction either side. The glide is timed to match.")]
 	[SerializeField]
+	[Tooltip("How much faster or slower one bird plays the land clip than another, as a fraction either side. The glide is timed to match.")]
 	private float landingSpeedVariance = 0.15f;
 
 	[Tooltip("How far the glide carries on along the bird's heading before curving into its spot, as a share of the distance to it. 0 flies straight at the spot.")]
 	[SerializeField]
 	private float landingCurve = 0.5f;
 
-	[SerializeField]
 	[Tooltip("How far into the land clip the bird's feet touch the ground, in seconds. The glide down is timed to arrive then.")]
+	[SerializeField]
 	private float touchdownTime = 2.25f;
 
 	[Tooltip("How long the land clip plays before the bird starts idling, in seconds. No less than the clip's length.")]
 	[SerializeField]
 	private float landSettleTime = 2.93f;
 
-	[SerializeField]
 	[Tooltip("Lowest the flock flies over the ground while the group comes down, in metres.")]
+	[SerializeField]
 	private float landingClearance = 0.5f;
 
-	[SerializeField]
 	[Tooltip("How far below the group a landing bird looks for the ground, in metres. Needs to reach down from the height the group starts coming down at.")]
+	[SerializeField]
 	private float landingProbeDepth = 60f;
 
 	public SeagullGroupBirds()

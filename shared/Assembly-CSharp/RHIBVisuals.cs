@@ -10,7 +10,7 @@ public class RHIBVisuals : FacepunchBehaviour, INotifyLOD, IClientComponent
 	[SerializeField]
 	private Transform _compass;
 
-	[SerializeField]
 	[Header("References - Screens")]
+	[SerializeField]
 	private RHIBScreen[] _mapScreens;
 }

@@ -66,8 +66,8 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess, IFlattenKeeps
 		}
 	}
 
-	[field: SerializeField]
 	[field: Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
+	[field: SerializeField]
 	public Vector3 FalloffNegative
 	{
 		[CompilerGenerated]

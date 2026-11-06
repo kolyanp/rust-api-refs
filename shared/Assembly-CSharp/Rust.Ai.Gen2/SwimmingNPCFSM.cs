@@ -123,16 +123,16 @@ public abstract class SwimmingNPCFSM : FSMComponent
 		[SerializeField]
 		private Vector2 distanceRange = new Vector2(10f, 25f);
 
-		[SerializeField]
 		[Tooltip("How far the swimmer will drift from home before its next leg is aimed back towards it.")]
+		[SerializeField]
 		private float homeRadius = 50f;
 
-		[SerializeField]
 		[Tooltip("How close counts as arrived. The swimmer steers rather than paths, so it never lands exactly on the point.")]
+		[SerializeField]
 		private float arriveDistance = 3f;
 
-		[SerializeField]
 		[Tooltip("Water this shallow is not worth swimming to. What passes for navigable without a navmesh.")]
+		[SerializeField]
 		private float minWaterDepth = 3f;
 
 		[SerializeField]
@@ -140,16 +140,16 @@ public abstract class SwimmingNPCFSM : FSMComponent
 		[Tooltip("How far down the swimmer aims to swim, as a fraction of the water depth at its destination. 0 hugs the surface and 1 hugs the floor. Without this the destination inherits whatever height the swimmer already had, so it never recovers depth once it sinks.")]
 		private float targetDepthFraction = 0.3f;
 
+		[SerializeField]
 		[Range(0f, 0.5f)]
 		[Tooltip("How much each leg's depth varies around the target, as a fraction of local depth, so the swimmer does not swim at one fixed height. WaterClamp keeps it in bounds.")]
-		[SerializeField]
 		private float depthJitterFraction = 0.15f;
 
 		[SerializeField]
 		private int maxAttempts = 4;
 
-		[Tooltip("How long a single swim \"path\" can take before the swimmer gives up and picks another.")]
 		[SerializeField]
+		[Tooltip("How long a single swim \"path\" can take before the swimmer gives up and picks another.")]
 		private float legTimeout = 30f;
 
 		private Nullable spawnPosition;

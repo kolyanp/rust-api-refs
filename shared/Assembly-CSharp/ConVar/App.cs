@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using CompanionServer;
+using Facepunch;
 using Facepunch.Extend;
 using Steamworks;
 using UnityEngine;
@@ -26,14 +28,8 @@ public class App : ConsoleSystem
 	[ServerVar(Help = "(Generated) Public IP address advertised to the Steam server browser; leave empty to auto-detect; set explicitly if behind NAT")]
 	public static string publicip = "";
 
-	[ServerVar(Help = "Disables updating entirely - emergency use only")]
-	public static bool update = true;
-
 	[ServerVar(Help = "Enables sending push notifications")]
 	public static bool notifications = true;
-
-	[ServerVar(Help = "Max number of queued messages - set to 0 to disable message processing")]
-	public static int queuelimit = 100;
 
 	[ReplicatedVar(Default = "")]
 	public static string serverid = "";
@@ -41,14 +37,11 @@ public class App : ConsoleSystem
 	[ServerVar(Help = "Cooldown time before alarms can send another notification (in seconds)")]
 	public static float alarmcooldown = 30f;
 
-	[ServerVar(Help = "(Generated) Maximum number of simultaneous player connections allowed; connections above this limit are rejected with a server full message")]
+	[ServerVar(Help = "Maximum simultaneous backhaul connections from the Rust+ backend (players share them as channels); -1 for no limit")]
 	public static int maxconnections = 500;
 
-	[ServerVar(Help = "(Generated) Maximum simultaneous connections from the same IP address; prevents a single host from consuming all connection slots")]
+	[ServerVar(Help = "Maximum simultaneous Rust+ channels per player, and backhaul connections per IP address; -1 for no limit")]
 	public static int maxconnectionsperip = 10;
-
-	[ServerVar(Help = "(Generated) Maximum allowed size in bytes of a single network message; oversized messages are dropped to prevent memory exhaustion attacks")]
-	public static int maxmessagesize = 1048576;
 
 	[ServerVar(Help = "(Generated) When enabled, server-side C# exceptions are written to the server log file; disabling reduces log noise on servers with known non-critical exceptions")]
 	public static bool logexceptions = true;
@@ -88,7 +81,7 @@ public class App : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints current server info including name, level, connected players, max players, and network address to the console")]
+	[ServerVar(Help = "Prints the Rust+ companion server ID, addresses and open backhauls from the backend")]
 	public static void info(Arg arg)
 	{
 		if (!CompanionServer.Server.IsEnabled)
@@ -97,34 +90,69 @@ public class App : ConsoleSystem
 			return;
 		}
 		Listener listener = CompanionServer.Server.Listener;
-		arg.ReplyWith(string.Format("Server ID: {0}\nListening on: {1}:{2}\nApp connects to: {3}:{4}", new object[5]
+		List<BackhaulConnection> list = Pool.Get<List<BackhaulConnection>>();
+		listener.GetBackhauls(list);
+		TextTable val = Pool.Get<TextTable>();
+		try
 		{
-			serverid,
-			listener.Address,
-			listener.Port,
-			GetPublicIP() ?? "null",
-			port
-		}));
+			val.AddColumns(new string[2] { "Address", "Channels" });
+			int num = 0;
+			foreach (BackhaulConnection item in list)
+			{
+				int channelCount = item.ChannelCount;
+				num += channelCount;
+				val.AddRow(new string[2]
+				{
+					item.Address?.ToString() ?? "unknown",
+					channelCount.ToString()
+				});
+			}
+			val.AddRow(new string[2]
+			{
+				"Total",
+				num.ToString()
+			});
+			Pool.FreeUnmanaged<BackhaulConnection>(ref list);
+			arg.ReplyWith(string.Format("Server ID: {0}\nListening on: {1}:{2}\nBackend connects to: {3}:{4}\n\n{5}", new object[6]
+			{
+				serverid,
+				listener.Address,
+				listener.Port,
+				GetPublicIP() ?? "null",
+				port,
+				val
+			}));
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
-	[ServerVar(Help = "Retry initializing the Rust+ companion server if it previously failed, pass true to restart it even if it's already running")]
+	[ServerVar(Help = "Retry initializing the Rust+ companion server if it previously failed, pass true to restart it even if it's already running; shuts it down if app.port is negative")]
 	public static void retry_initialize(Arg arg)
 	{
+		if (port < 0)
+		{
+			CompanionServer.Server.Shutdown();
+			arg.ReplyWith("Companion server port is negative, shut down the companion server");
+			return;
+		}
 		bool flag = arg.GetBool(0);
 		if (CompanionServer.Server.IsEnabled && !flag)
 		{
 			arg.ReplyWith("Companion server is already initialized! Use 'app.retry_initialize true' to restart it anyway");
 			return;
 		}
-		if (port < 0)
-		{
-			arg.ReplyWith("Companion server port is invalid, cannot initialize companion server");
-			return;
-		}
 		BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(serverside: true);
 		if ((Object)(object)activeGameMode != (Object)null && !activeGameMode.rustPlus)
 		{
 			arg.ReplyWith("Companion server is disabled by gamemode, cannot initialize companion server");
+			return;
+		}
+		if (CompanionServer.Server.IsRegistering)
+		{
+			arg.ReplyWith("Companion server registration is still in progress, try again once it finishes");
 			return;
 		}
 		arg.ReplyWith("Trying to initialize companion server...");
@@ -172,7 +200,7 @@ public class App : ConsoleSystem
 		return IPAddress.Any;
 	}
 
-	public static async ValueTask<string> GetPublicIPAsync()
+	public static async ValueTask<string> GetPublicIPAsync(CancellationToken cancellationToken = default(CancellationToken))
 	{
 		Stopwatch timer = null;
 		string publicIP;
@@ -188,7 +216,7 @@ public class App : ConsoleSystem
 			{
 				timer = Stopwatch.StartNew();
 			}
-			await Task.Delay(10000);
+			await Task.Delay(10000, cancellationToken);
 		}
 		return publicIP;
 	}

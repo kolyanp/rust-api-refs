@@ -20,12 +20,12 @@ public class RadialSpawnPoint : BaseSpawnPoint
 	[SerializeField]
 	private bool xRotationEnabled;
 
-	[Range(-180f, 180f)]
 	[SerializeField]
+	[Range(-180f, 180f)]
 	private float xRotationMin = -180f;
 
-	[Range(-180f, 180f)]
 	[SerializeField]
+	[Range(-180f, 180f)]
 	private float xRotationMax = 180f;
 
 	[SerializeField]
@@ -35,8 +35,8 @@ public class RadialSpawnPoint : BaseSpawnPoint
 	[SerializeField]
 	private float yRotationMin = -180f;
 
-	[Range(-180f, 180f)]
 	[SerializeField]
+	[Range(-180f, 180f)]
 	private float yRotationMax = 180f;
 
 	[SerializeField]

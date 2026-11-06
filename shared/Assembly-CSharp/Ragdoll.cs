@@ -20,6 +20,9 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 
 	public Rigidbody primaryBody;
 
+	[Tooltip("How far the primary body can drift from its corpse before the pin pulls it back, in metres. Keep it small on little ragdolls, or one hangs fully below a floating corpse.")]
+	public float pinSlack = 1f;
+
 	[ReadOnly]
 	public SpringJoint corpseJoint;
 
@@ -39,28 +42,28 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	[SerializeField]
 	private List<Transform> rbTransforms = new List<Transform>();
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private List<Joint> joints = new List<Joint>();
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private List<CharacterJoint> characterJoints = new List<CharacterJoint>();
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private List<ConfigurableJoint> configurableJoints = new List<ConfigurableJoint>();
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private List<Collider> colliders = new List<Collider>();
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private int[] boneIndex;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Vector3[] genericBonePos;
 
 	[ReadOnly]

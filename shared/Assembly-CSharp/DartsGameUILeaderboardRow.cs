@@ -13,8 +13,8 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 
 	public RustText TimeTaken;
 
-	[Header("Row Styles")]
 	[Tooltip("The image tinted with the colours below - light, dark, or current winner.")]
+	[Header("Row Styles")]
 	public Image rowImage;
 
 	public Color lightColour = Color.white;

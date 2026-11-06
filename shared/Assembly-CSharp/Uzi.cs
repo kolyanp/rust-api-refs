@@ -8,8 +8,8 @@ public class Uzi : BaseProjectile
 {
 	public const Flags Flag_StockDeployed = Flags.Reserved1;
 
-	[Header("Uzi")]
 	[Tooltip("Recoil used while the stock is deployed, the regular recoil is used while it's collapsed")]
+	[Header("Uzi")]
 	public RecoilProperties stockDeployedRecoil;
 
 	[Tooltip("Matches the viewmodel's idle_stock_deploy animation. Aiming, attacking and reloading are blocked meanwhile, and holstering cancels it")]

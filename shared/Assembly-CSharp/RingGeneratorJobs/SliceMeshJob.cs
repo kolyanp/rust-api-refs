@@ -8,12 +8,12 @@ namespace RingGeneratorJobs;
 [BurstCompile(/*Could not decode attribute arguments.*/)]
 public struct SliceMeshJob : IJobParallelForBatch
 {
-	[ReadOnly]
 	[NativeDisableParallelForRestriction]
+	[ReadOnly]
 	public NativeArray<float3> Vertices;
 
-	[ReadOnly]
 	[NativeDisableParallelForRestriction]
+	[ReadOnly]
 	public NativeArray<int> Indices;
 
 	public float4x4 ToLocal;

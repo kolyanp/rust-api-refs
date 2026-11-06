@@ -12,18 +12,25 @@ public class CameraInput : BaseHandler<AppCameraInput>
 
 	public override ValueTask Execute()
 	{
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
 		if (!CameraRenderer.enabled)
 		{
 			SendError("not_enabled");
 			return default;
 		}
-		if (Client.CurrentCamera == null || !Client.IsControllingCamera)
+		IRemoteControllable currentCamera = Client.CurrentCamera;
+		if (currentCamera == null)
+		{
+			Client.EndViewing();
+			SendError("no_camera");
+			return default;
+		}
+		if (!Client.IsControllingCamera)
 		{
 			SendError("no_camera");
 			return default;
@@ -41,7 +48,7 @@ public class CameraInput : BaseHandler<AppCameraInput>
 		inputState.Flip(val);
 		val.Dispose();
 		val = null;
-		Client.CurrentCamera.UserInput(inputState, new CameraViewerId(Client.ControllingSteamId, Client.ConnectionId));
+		currentCamera.UserInput(inputState, new CameraViewerId(Client.ControllingSteamId, Client.ConnectionId));
 		SendSuccess();
 		return default;
 	}

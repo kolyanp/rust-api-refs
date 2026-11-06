@@ -76,8 +76,8 @@ public class NPCAnimController : EntityComponent<BaseEntity>, IClientComponent
 	[SerializeField]
 	private string restingPoseState = "cow_lay_idle";
 
-	[Tooltip("Animator state holding the settled lying pose of a pregnant animal.")]
 	[SerializeField]
+	[Tooltip("Animator state holding the settled lying pose of a pregnant animal.")]
 	private string pregnantPoseState = "cow_lay_idle_moo";
 
 	[SerializeField]
@@ -89,8 +89,8 @@ public class NPCAnimController : EntityComponent<BaseEntity>, IClientComponent
 	[SerializeField]
 	private float walkSpeedMultiplier = 1f;
 
-	[Tooltip("Turn rate in degrees a second that leans the animal fully into the turn, on an animator with a turn parameter.")]
 	[SerializeField]
+	[Tooltip("Turn rate in degrees a second that leans the animal fully into the turn, on an animator with a turn parameter.")]
 	private float turnRateForFullLean = 20f;
 
 	public string AnimationsPrefix => animationsPrefix;

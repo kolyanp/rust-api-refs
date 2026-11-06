@@ -88,16 +88,16 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[Range(0f, 1f)]
 	private float pitchStabD = 0.005f;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float twoWheelRollStabP = 100f;
 
 	[SerializeField]
 	[Range(0f, 1f)]
 	private float twoWheelRollStabD = 10f;
 
-	[Range(1f, 500f)]
 	[SerializeField]
+	[Range(1f, 500f)]
 	private float manyWheelStabP = 40f;
 
 	[SerializeField]
@@ -212,8 +212,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[SerializeField]
 	private GameObject fxHeavyDamageInstLight;
 
-	[Header("Sidecar")]
 	[SerializeField]
+	[Header("Sidecar")]
 	private Rigidbody sidecarRigidBody;
 
 	[SerializeField]

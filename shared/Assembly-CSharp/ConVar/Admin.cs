@@ -25,8 +25,8 @@ public class Admin : ConsoleSystem
 		Downgrade
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct PlayerInfo
 	{
 		public string SteamID;
@@ -71,8 +71,8 @@ public class Admin : ConsoleSystem
 		public ulong EntityId;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerInfoOutput
 	{
 		public string Hostname;
@@ -116,8 +116,8 @@ public class Admin : ConsoleSystem
 		public string Protocol;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerConvarInfo
 	{
 		public string FullName;
@@ -127,8 +127,8 @@ public class Admin : ConsoleSystem
 		public string Help;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerUGCInfo(IUGCBrowserEntity fromEntity)
 	{
 		public ulong entityId = fromEntity.UgcEntity.net.ID.Value;

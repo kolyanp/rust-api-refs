@@ -273,9 +273,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float conditionUnsentHealth;
 
-	[Header("Day activity")]
 	[Range(0f, 1f)]
 	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
+	[Header("Day activity")]
 	public float StarvingThreshold = 0.2f;
 
 	[Tooltip("How many seconds of waking time the day activity read out is measured over. It only reports how the day split up, nothing reads it to decide what to do.")]
@@ -290,8 +290,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("Seconds between drops. Zero disables it.")]
 	public float DungInterval;
 
-	[Tooltip("Fraction of DungInterval each wait is randomised by, so a herd doesn't drop in lockstep. 0.2 is +/-20%.")]
 	[Range(0f, 1f)]
+	[Tooltip("Fraction of DungInterval each wait is randomised by, so a herd doesn't drop in lockstep. 0.2 is +/-20%.")]
 	public float DungIntervalVariance = 0.2f;
 
 	[Tooltip("Falls back to the animal's origin when unset.")]
@@ -327,8 +327,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float lastDefendedAttack = float.NegativeInfinity;
 
-	[Tooltip("How far the nose reaches while eating from a trough, as a share of how far it reaches standing, so a slot stands the animal with its nose where the slot says. The trough eating clips measure 0.92 for a cow and 0.86 for a sheep, and 0.9 puts both within 4cm.")]
 	[Header("Feeding slots")]
+	[Tooltip("How far the nose reaches while eating from a trough, as a share of how far it reaches standing, so a slot stands the animal with its nose where the slot says. The trough eating clips measure 0.92 for a cow and 0.86 for a sheep, and 0.9 puts both within 4cm.")]
 	public float TroughReachScale = 0.9f;
 
 	public const float SlotSearchRadius = 30f;
@@ -389,8 +389,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private TimeSince lastAdoptionCheck;
 
-	[Header("Hydration")]
 	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
+	[Header("Hydration")]
 	public float HydrationFillRate = 0.25f;
 
 	[Tooltip("Where a freshly spawned animal's hydration starts. Full, so a new animal has one thing less to go and sort out before it settles in.")]
@@ -469,8 +469,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float sleepFraction;
 
-	[Header("PersonalSpace")]
 	[Tooltip("How far (in metres) the animal looks for herd mates: the ones it answers for, the floor it can share with them and, on open ground, how big a free range herd it counts itself part of.")]
+	[Header("PersonalSpace")]
 	public float SocialSearchRadius = 20f;
 
 	[Tooltip("Whether the animal has the personal space need at all. Without it the need stays full, while the room to breed rule still applies.")]
@@ -582,12 +582,12 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	public LivestockSize MountType = LivestockSize.Small;
 
-	[Header("Aging")]
 	[Tooltip("How long (in seconds) an infant takes to grow into the adult named by its Species asset. Infants only: an adult never ages out of its stage, so its own is zero.")]
+	[Header("Aging")]
 	public float TimeToGrow;
 
-	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	[Range(0f, 1f)]
+	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	public float GrowTimeVariance = 0.1f;
 
 	public GameObjectRef GrowEffect;
@@ -601,8 +601,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far from the mother the newborn is placed, so it doesn't spawn inside her.")]
 	public float ChildSpawnDistance = 1f;
 
-	[Tooltip("Which sex this prefab represents. Infants and species that use one prefab for both sexes stay at Either and roll for it; a prefab that is specifically the male or female form of its species says so here, and must be the one its Species asset names.")]
 	[Header("Sex")]
+	[Tooltip("Which sex this prefab represents. Infants and species that use one prefab for both sexes stay at Either and roll for it; a prefab that is specifically the male or female form of its species says so here, and must be the one its Species asset names.")]
 	public SexForm Form;
 
 	[Tooltip("The species this animal belongs to. Shared by every prefab of the species - both sexes and every age stage - so it identifies mates and tells an infant which adult to grow into.")]
@@ -3836,8 +3836,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return false;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void RequestNameChange(RPCMessage msg)
 	{
@@ -6847,9 +6847,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_Lead(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null))
@@ -6907,9 +6907,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return true;
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void ServerPet(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -6993,8 +6993,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	private void RequestAnimalStats(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null)

@@ -42,6 +42,10 @@ public abstract class BaseHandler<T> : IHandler, IPooled where T : class
 
 	public virtual ValidationResult Validate()
 	{
+		if (Client.SteamId != Request.playerId)
+		{
+			return ValidationResult.NotFound;
+		}
 		return ValidationResult.Success;
 	}
 
@@ -57,11 +61,7 @@ public abstract class BaseHandler<T> : IHandler, IPooled where T : class
 
 	public void SendError(string code)
 	{
-		AppError val = Pool.Get<AppError>();
-		val.error = code;
-		AppResponse val2 = Pool.Get<AppResponse>();
-		val2.error = val;
-		Send(val2);
+		Listener.SendError(Client, Request.seq, code);
 	}
 
 	public void SendFlag(bool value)

@@ -45,8 +45,8 @@ public class GenerateErosion : ProceduralComponent
 		}
 	}
 
-	[ClientVar(Saved = true, Help = "Log a CRC32 fingerprint of the eroded heightmap after generation, for determinism validation (e.g. across platforms or client vs server)")]
 	[ServerVar(Saved = true, Help = "Log a CRC32 fingerprint of the eroded heightmap after generation, for determinism validation (e.g. across platforms or client vs server)")]
+	[ClientVar(Saved = true, Help = "Log a CRC32 fingerprint of the eroded heightmap after generation, for determinism validation (e.g. across platforms or client vs server)")]
 	public static bool determinism_log;
 
 	public static SplatPaintingData splatPaintingData;

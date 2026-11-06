@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -48,63 +47,63 @@ public static class NexusServer
 	{
 		public static readonly _003C_003Ec _003C_003E9 = new _003C_003Ec();
 
-		public static Comparison<(string Zone, FerryStatus Status)> _003C_003E9__18_1;
+		public static Comparison<(string Zone, FerryStatus Status)> _003C_003E9__19_1;
 
-		public static Func<NexusZoneDetails, string> _003C_003E9__23_0;
+		public static Func<NexusZoneDetails, string> _003C_003E9__24_0;
 
-		public static Func<NexusZoneDetails, int> _003C_003E9__36_0;
+		public static Func<NexusZoneDetails, int> _003C_003E9__37_0;
 
-		public static Func<NexusZoneDetails, string> _003C_003E9__58_0;
+		public static Func<NexusZoneDetails, string> _003C_003E9__59_0;
 
-		public static Func<NexusZoneDetails, string> _003C_003E9__69_1;
+		public static Func<NexusZoneDetails, string> _003C_003E9__70_1;
 
-		public static Func<NexusZoneDetails, string> _003C_003E9__76_0;
+		public static Func<NexusZoneDetails, string> _003C_003E9__77_0;
 
-		public static NexusErrorHandler _003C_003E9__109_0;
+		public static NexusErrorHandler _003C_003E9__110_0;
 
-		public static Func<NexusZoneDetails, string> _003C_003E9__112_0;
+		public static Func<NexusZoneDetails, string> _003C_003E9__113_0;
 
-		internal int _003CUpdateFerryStatuses_003Eb__18_1((string Zone, FerryStatus Status) a, (string Zone, FerryStatus Status) b)
+		internal int _003CUpdateFerryStatuses_003Eb__19_1((string Zone, FerryStatus Status) a, (string Zone, FerryStatus Status) b)
 		{
 			return a.Status.timestamp.CompareTo(b.Status.timestamp);
 		}
 
-		internal string _003CTryGetIslandPosition_003Eb__23_0(NexusZoneDetails z)
+		internal string _003CTryGetIslandPosition_003Eb__24_0(NexusZoneDetails z)
 		{
 			return z.Key;
 		}
 
-		internal int _003CHandleMessage_003Eb__36_0(NexusZoneDetails z)
+		internal int _003CHandleMessage_003Eb__37_0(NexusZoneDetails z)
 		{
 			return z.Id;
 		}
 
-		internal string _003CZoneRpc_003Eb__58_0(NexusZoneDetails z)
+		internal string _003CZoneRpc_003Eb__59_0(NexusZoneDetails z)
 		{
 			return z.Key;
 		}
 
-		internal string _003CRefreshZoneStatus_003Eb__69_1(NexusZoneDetails z)
+		internal string _003CRefreshZoneStatus_003Eb__70_1(NexusZoneDetails z)
 		{
 			return z.Key;
 		}
 
-		internal string _003CTransferEntityImpl_003Eb__76_0(NexusZoneDetails z)
+		internal string _003CTransferEntityImpl_003Eb__77_0(NexusZoneDetails z)
 		{
 			return z.Key;
 		}
 
-		internal void _003CInitialize_003Eb__109_0(BaseNexusClient _, Exception ex)
+		internal void _003CInitialize_003Eb__110_0(BaseNexusClient _, Exception ex)
 		{
 			Debug.LogException(ex);
 		}
 
-		internal string _003CFindZone_003Eb__112_0(NexusZoneDetails z)
+		internal string _003CFindZone_003Eb__113_0(NexusZoneDetails z)
 		{
 			return z.Key;
 		}
 
-		internal string _003C_002Ecctor_003Eb__119_0(ulong i)
+		internal string _003C_002Ecctor_003Eb__120_0(ulong i)
 		{
 			return i.ToString("G");
 		}
@@ -113,6 +112,8 @@ public static class NexusServer
 	private static bool _isRefreshingCompanion;
 
 	private static RealTimeSince _lastCompanionRefresh;
+
+	private static string _lastAppServerId;
 
 	private const int CyclesBeforeSpawningFerry = 5;
 
@@ -273,18 +274,17 @@ public static class NexusServer
 		}
 		static async void RefreshCompanionVariablesImpl()
 		{
-			_ = 3;
+			_ = 1;
 			try
 			{
 				_isRefreshingCompanion = true;
 				_lastCompanionRefresh = RealTimeSince.op_Implicit(0f);
 				await ZoneClient.SetZoneVariable("protocol", Net.sv.ProtocolId, false, false);
-				if (CompanionServer.Server.IsEnabled)
+				string appServerId = (CompanionServer.Server.IsEnabled ? App.serverid : "");
+				if (appServerId != _lastAppServerId)
 				{
-					string text = await App.GetPublicIPAsync();
-					string appPort = App.port.ToString("G", CultureInfo.InvariantCulture);
-					await ZoneClient.SetZoneVariable("appIp", text ?? "", false, false);
-					await ZoneClient.SetZoneVariable("appPort", appPort, false, false);
+					await ZoneClient.SetZoneVariable("appServerId", appServerId, false, false);
+					_lastAppServerId = appServerId;
 				}
 			}
 			catch (Exception ex)
@@ -1940,6 +1940,7 @@ public static class NexusServer
 		_database?.Close();
 		_database = null;
 		ZoneController.Instance = null;
+		_lastAppServerId = null;
 		Started = false;
 		FailedToStart = true;
 		if (string.IsNullOrWhiteSpace(Nexus.endpoint) || !Nexus.endpoint.StartsWith("http") || string.IsNullOrWhiteSpace(Nexus.secretKey))
@@ -1964,14 +1965,14 @@ public static class NexusServer
 		}
 		ZoneClient = new NexusZoneClient((INexusLogger)(object)NexusServerLogger.Instance, Nexus.endpoint, Nexus.secretKey, Nexus.messageLockDuration);
 		NexusZoneClient zoneClient2 = ZoneClient;
-		NexusErrorHandler val2 = _003C_003Ec._003C_003E9__109_0;
+		NexusErrorHandler val2 = _003C_003Ec._003C_003E9__110_0;
 		if (val2 == null)
 		{
 			NexusErrorHandler val3 = (BaseNexusClient _, Exception ex3) =>
 			{
 				Debug.LogException(ex3);
 			};
-			_003C_003Ec._003C_003E9__109_0 = val3;
+			_003C_003Ec._003C_003E9__110_0 = val3;
 			val2 = val3;
 		}
 		((BaseNexusClient)zoneClient2).OnError += val2;

@@ -49,8 +49,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private UI_ServerBrowser_NoResults_Controller _noResultsController;
 
-	[Header("Other")]
 	[SerializeField]
+	[Header("Other")]
 	private FlexTransition _favouritesButtonAnimation;
 
 	[SerializeField]

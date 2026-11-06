@@ -313,8 +313,8 @@ public abstract class BuildingManager
 		}
 	}
 
-	[ServerVar(Help = "Whether building privilege lookups use the cache instead of physics queries")]
 	[ClientVar(Help = "Whether building privilege lookups use the cache instead of physics queries")]
+	[ServerVar(Help = "Whether building privilege lookups use the cache instead of physics queries")]
 	public static bool PrivilegeCache = true;
 
 	private SortedGrid<PrivilegeCandidate> buildingBlockGrid = new SortedGrid<PrivilegeCandidate>(16, 8096f);
@@ -323,8 +323,8 @@ public abstract class BuildingManager
 
 	private float maxBuildingBlockExtent;
 
-	[ServerVar(Help = "Draws server building privilege queries")]
 	[ClientVar(ClientAdmin = true, Help = "Draws this client's building privilege queries")]
+	[ServerVar(Help = "Draws server building privilege queries")]
 	public static bool DebugPrivilegeQueries = false;
 
 	[ServerVar(Help = "Draws the building block grid around admins")]

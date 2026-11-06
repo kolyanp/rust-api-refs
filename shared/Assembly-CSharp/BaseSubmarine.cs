@@ -37,8 +37,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	private bool wasOnSurface;
 
-	[Header("Submarine Main")]
 	[SerializeField]
+	[Header("Submarine Main")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -90,8 +90,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	public float maxFuelPerSec = 0.15f;
 
-	[FormerlySerializedAs("internalAccessFuelTank")]
 	[SerializeField]
+	[FormerlySerializedAs("internalAccessFuelTank")]
 	private bool internalAccessStorage;
 
 	[Header("Submarine Weaponry")]
@@ -101,8 +101,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	public Transform torpedoFiringPoint;
 
-	[FormerlySerializedAs("maxFireRate")]
 	[SerializeField]
+	[FormerlySerializedAs("maxFireRate")]
 	public float reloadTime = 1.5f;
 
 	[Header("Submarine Audio & FX")]

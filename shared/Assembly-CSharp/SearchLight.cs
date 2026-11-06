@@ -219,8 +219,8 @@ public class SearchLight : IOEntity
 		return (Object)(object)mountedPlayer != (Object)null;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_UseLight(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

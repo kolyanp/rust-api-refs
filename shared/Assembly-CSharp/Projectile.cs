@@ -113,8 +113,8 @@ public class Projectile : ListComponent<Projectile>
 
 	public bool createDecals = true;
 
-	[Header("Effects")]
 	[FormerlySerializedAs("doDefaultHitEffects")]
+	[Header("Effects")]
 	public bool doHitEffects = true;
 
 	[Header("Audio")]
@@ -169,6 +169,9 @@ public class Projectile : ListComponent<Projectile>
 
 	[NonSerialized]
 	public bool clientsideAttack;
+
+	[NonSerialized]
+	public bool visualOnly;
 
 	[NonSerialized]
 	public float integrity = 1f;

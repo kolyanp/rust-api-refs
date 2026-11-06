@@ -9,8 +9,8 @@ public class GhostShipSounds : MonoBehaviour
 
 	private float soundCullDistanceSq;
 
-	[Header("Ambient")]
 	[SerializeField]
+	[Header("Ambient")]
 	private SoundDefinition hullGroanDef;
 
 	[SerializeField]

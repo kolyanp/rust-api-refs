@@ -554,9 +554,9 @@ public class SteeringWheel : BaseMountable, IBoatBuildingPiece
 		flagsUpdateScope.Set(Flags.Locked, BoatLock.HasALock);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestAddLock(RPCMessage msg)
 	{
 		if (BoatLock.HasALock)
@@ -590,9 +590,9 @@ public class SteeringWheel : BaseMountable, IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_RequestNewCode(RPCMessage msg)
 	{
 		if (BoatLock.HasALock)
@@ -671,8 +671,8 @@ public class SteeringWheel : BaseMountable, IBoatBuildingPiece
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestFinishBuilding(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -723,8 +723,8 @@ public class SteeringWheel : BaseMountable, IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestEditBoat(RPCMessage msg)
 	{
@@ -745,8 +745,8 @@ public class SteeringWheel : BaseMountable, IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void RequestDeployAndEditBoat(RPCMessage msg)
 	{

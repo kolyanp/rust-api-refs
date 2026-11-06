@@ -9,8 +9,8 @@ public class PooltableMountable : BaseMountable
 	[HideInInspector]
 	public float SplineDistance;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private ViewModel poolCueViewmodel;
 
 	[Header("3p Cue")]
@@ -22,8 +22,8 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private Vector3 cueHeldPropPositionOffset;
 
-	[SerializeField]
 	[Tooltip("Cue tilt relative to the prop bone.")]
+	[SerializeField]
 	private Vector3 cueHeldPropEulerOffset;
 
 	[Tooltip("One 3p cue per seat, all parented to cueHeldProp. Only the mounted player's own cue is left active.")]
@@ -33,8 +33,8 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private float movementSpeed;
 
-	[Tooltip("Max spline travel per second from mouse aim. Well above movementSpeed - the mouse is the fine aim and has to feel 1:1 - but bounded so a violent flick can't spin you round the table.")]
 	[SerializeField]
+	[Tooltip("Max spline travel per second from mouse aim. Well above movementSpeed - the mouse is the fine aim and has to feel 1:1 - but bounded so a violent flick can't spin you round the table.")]
 	private float mouseAimMaxSpeed = 8f;
 
 	private static readonly int RightHash = Animator.StringToHash("right");
@@ -210,9 +210,9 @@ public class PooltableMountable : BaseMountable
 		}
 	}
 
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(30uL)]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
 	public void RPC_UpdateSplineDistance(RPCMessage msg)
 	{
 		if (!((Object)(object)poolTable == (Object)null) && !((Object)(object)msg.player == (Object)null) && poolTable.CanPlayerMove(msg.player.userID))

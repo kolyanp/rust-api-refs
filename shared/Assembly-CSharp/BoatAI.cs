@@ -833,8 +833,8 @@ public class BoatAI : BaseEntity
 
 	public const string DeepSeaPTBoatPath = "assets/content/vehicles/boats/ptboat/ptboat.deepsea.prefab";
 
-	[SerializeField]
 	[Header("Boat AI")]
+	[SerializeField]
 	private BaseBoat _boat;
 
 	[Header("Boat AI - General")]
@@ -850,15 +850,15 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _searchRange = 50f;
 
-	[Header("Boat AI - Collision Avoidance")]
 	[SerializeField]
+	[Header("Boat AI - Collision Avoidance")]
 	private float _awarenessAngle;
 
 	[SerializeField]
 	private float _awarenessDistance;
 
-	[Header("Boat AI - Debug")]
 	[SerializeField]
+	[Header("Boat AI - Debug")]
 	private Transform _debugMoveTo;
 
 	[ServerVar(Help = "(Generated) When enabled, draws DDraw visualisations of boat AI steering, avoidance, and pathfinding state")]

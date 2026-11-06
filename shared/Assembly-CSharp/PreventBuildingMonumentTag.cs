@@ -4,8 +4,8 @@ public class PreventBuildingMonumentTag : MonoBehaviour
 {
 	public bool autoFindMonument;
 
-	[FlattenIgnoreReference]
 	[SerializeField]
+	[FlattenIgnoreReference]
 	private MonumentInfo AttachedMonument;
 
 	private static readonly ListHashSet<PreventBuildingMonumentTag> allTags = new ListHashSet<PreventBuildingMonumentTag>();

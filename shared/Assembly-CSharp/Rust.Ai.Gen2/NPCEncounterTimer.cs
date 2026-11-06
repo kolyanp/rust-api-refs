@@ -71,9 +71,13 @@ public class NPCEncounterTimer : EntityComponent<BaseEntity>, IServerComponent
 				try
 				{
 					Senses.GetInitialAllies((List<BaseEntity>)(object)val);
+					NPCEncounterTimer nPCEncounterTimer = default;
 					foreach (BaseEntity item in (List<BaseEntity>)(object)val)
 					{
-						((Component)item).GetComponent<NPCEncounterTimer>().StartTimer();
+						if (((Component)item).TryGetComponent<NPCEncounterTimer>(ref nPCEncounterTimer))
+						{
+							nPCEncounterTimer.StartTimer();
+						}
 					}
 				}
 				finally
@@ -100,9 +104,13 @@ public class NPCEncounterTimer : EntityComponent<BaseEntity>, IServerComponent
 			try
 			{
 				Senses.GetInitialAllies((List<BaseEntity>)(object)val2);
+				NPCEncounterTimer nPCEncounterTimer2 = default;
 				foreach (BaseEntity item2 in (List<BaseEntity>)(object)val2)
 				{
-					((Component)item2).GetComponent<NPCEncounterTimer>().GiveUp();
+					if (((Component)item2).TryGetComponent<NPCEncounterTimer>(ref nPCEncounterTimer2))
+					{
+						nPCEncounterTimer2.GiveUp();
+					}
 				}
 			}
 			finally

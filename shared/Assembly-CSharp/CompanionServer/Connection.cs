@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
-using ConVar;
 using Facepunch;
 using Fleck;
 using ProtoBuf;
@@ -13,7 +11,9 @@ public class Connection : IConnection
 {
 	private readonly Listener _listener;
 
-	private readonly IConnectionTransport _transport;
+	private readonly BackhaulConnection _backhaul;
+
+	private readonly uint _channelId;
 
 	private PlayerTarget? _subscribedPlayer;
 
@@ -29,32 +29,73 @@ public class Connection : IConnection
 
 	public long ConnectionId { get; private set; }
 
-	public IPAddress Address => _transport.Address;
+	public bool IsClosed { get; private set; }
 
 	public ulong SubscribedSteamId => _subscribedPlayer?.SteamId ?? 0;
 
-	public ulong ChannelSteamId { get; }
+	public ulong SteamId { get; }
 
-	public IRemoteControllable CurrentCamera => _currentCamera;
+	public IRemoteControllable CurrentCamera
+	{
+		get
+		{
+			if (!IsCameraAlive)
+			{
+				return null;
+			}
+			return _currentCamera;
+		}
+	}
 
-	public bool IsControllingCamera => _isControllingCamera;
+	public bool IsControllingCamera
+	{
+		get
+		{
+			if (IsCameraAlive)
+			{
+				return _isControllingCamera;
+			}
+			return false;
+		}
+	}
 
-	public ulong ControllingSteamId => _cameraViewerSteamId;
+	public ulong ControllingSteamId
+	{
+		get
+		{
+			if (!IsCameraAlive)
+			{
+				return 0uL;
+			}
+			return _cameraViewerSteamId;
+		}
+	}
+
+	private bool IsCameraAlive
+	{
+		get
+		{
+			CameraTarget target;
+			return TryGetCameraTarget(_currentCamera, out target);
+		}
+	}
 
 	public InputState InputState { get; set; }
 
-	public Connection(long connectionId, Listener listener, IConnectionTransport transport, ulong channelSteamId = 0uL)
+	public Connection(long connectionId, Listener listener, BackhaulConnection backhaul, uint channelId, ulong steamId)
 	{
 		ConnectionId = connectionId;
 		_listener = listener;
-		_transport = transport;
-		ChannelSteamId = channelSteamId;
+		_backhaul = backhaul;
+		_channelId = channelId;
+		SteamId = steamId;
 		_subscribedEntities = new HashSet<EntityTarget>();
 		_subscribedClans = new HashSet<ClanTarget>();
 	}
 
 	public void OnClose()
 	{
+		IsClosed = true;
 		if (_subscribedPlayer.HasValue)
 		{
 			_listener.PlayerSubscribers.Remove(_subscribedPlayer.Value, this);
@@ -70,39 +111,24 @@ public class Connection : IConnection
 			_listener.ClanSubscribers.Remove(subscribedClan, this);
 		}
 		_subscribedClans.Clear();
-		_currentCamera?.StopControl(new CameraViewerId(_cameraViewerSteamId, ConnectionId));
-		if (TryGetCameraTarget(_currentCamera, out var target))
-		{
-			_listener.CameraSubscribers.Remove(target, this);
-		}
-		_currentCamera = null;
-		_cameraViewerSteamId = 0uL;
-		_isControllingCamera = false;
-	}
-
-	public void OnMessage(Span<byte> data)
-	{
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		if (App.update && App.queuelimit > 0 && data.Length <= App.maxmessagesize)
-		{
-			MemoryBuffer val = new MemoryBuffer(data.Length);
-			data.CopyTo(MemoryBuffer.op_Implicit(val));
-			_listener.Enqueue(this, val.Slice(data.Length));
-		}
+		EndViewing();
 	}
 
 	public void Close()
 	{
-		_transport?.Close();
+		_backhaul.CloseChannelLocal(_channelId);
 	}
 
 	public void Send(AppResponse response)
 	{
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		if (IsClosed || !_backhaul.IsAvailable)
+		{
+			response.ResetToPool();
+			return;
+		}
 		BufferStream val = Pool.Get<BufferStream>().Initialize();
 		try
 		{
@@ -111,9 +137,17 @@ public class Connection : IConnection
 			{
 				val2.response = response;
 				val2.WriteToStream(val);
-				MemoryBuffer val3 = new MemoryBuffer(val.Length);
-				val.GetBuffer().CopyTo(val3.Data, 0);
-				SendRaw(val3.Slice(val.Length));
+				if (val.Length > 2097147)
+				{
+					Debug.LogError((object)$"Rust+ response is too large to send ({val.Length} bytes), replying with an error instead");
+					Listener.SendError(this, response.seq, "server_error");
+				}
+				else
+				{
+					MemoryBuffer val3 = new MemoryBuffer(val.Length);
+					val.GetBuffer().CopyTo(val3.Data, 0);
+					SendRaw(val3.Slice(val.Length));
+				}
 			}
 			finally
 			{
@@ -128,7 +162,7 @@ public class Connection : IConnection
 
 	public void Subscribe(PlayerTarget target)
 	{
-		if (!(_subscribedPlayer == target))
+		if (!IsClosed && !(_subscribedPlayer == target))
 		{
 			EndViewing();
 			if (_subscribedPlayer.HasValue)
@@ -143,7 +177,7 @@ public class Connection : IConnection
 
 	public void Subscribe(EntityTarget target)
 	{
-		if (_subscribedEntities.Add(target))
+		if (!IsClosed && _subscribedEntities.Add(target))
 		{
 			_listener.EntitySubscribers.Add(target, this);
 		}
@@ -151,19 +185,12 @@ public class Connection : IConnection
 
 	public bool BeginViewing(IRemoteControllable camera)
 	{
-		if (!_subscribedPlayer.HasValue)
+		if (IsClosed || !_subscribedPlayer.HasValue)
 		{
 			return false;
 		}
 		if (!TryGetCameraTarget(camera, out var target))
 		{
-			if (_currentCamera == camera)
-			{
-				_currentCamera?.StopControl(new CameraViewerId(_cameraViewerSteamId, ConnectionId));
-				_currentCamera = null;
-				_isControllingCamera = false;
-				_cameraViewerSteamId = 0uL;
-			}
 			return false;
 		}
 		if (_currentCamera == camera)
@@ -171,14 +198,7 @@ public class Connection : IConnection
 			_listener.CameraSubscribers.Add(target, this);
 			return true;
 		}
-		if (TryGetCameraTarget(_currentCamera, out var target2))
-		{
-			_listener.CameraSubscribers.Remove(target2, this);
-			_currentCamera.StopControl(new CameraViewerId(_cameraViewerSteamId, ConnectionId));
-			_currentCamera = null;
-			_isControllingCamera = false;
-			_cameraViewerSteamId = 0uL;
-		}
+		EndViewing();
 		ulong steamId = _subscribedPlayer.Value.SteamId;
 		if (!camera.CanControl(steamId))
 		{
@@ -197,8 +217,8 @@ public class Connection : IConnection
 		if (TryGetCameraTarget(_currentCamera, out var target))
 		{
 			_listener.CameraSubscribers.Remove(target, this);
+			_currentCamera.StopControl(new CameraViewerId(_cameraViewerSteamId, ConnectionId));
 		}
-		_currentCamera?.StopControl(new CameraViewerId(_cameraViewerSteamId, ConnectionId));
 		_currentCamera = null;
 		_isControllingCamera = false;
 		_cameraViewerSteamId = 0uL;
@@ -206,7 +226,7 @@ public class Connection : IConnection
 
 	public void Subscribe(ClanTarget target)
 	{
-		if (_subscribedClans.Contains(target))
+		if (IsClosed || _subscribedClans.Contains(target))
 		{
 			return;
 		}
@@ -231,32 +251,31 @@ public class Connection : IConnection
 
 	public void SendRaw(MemoryBuffer data)
 	{
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		if (data.Length == 0)
 		{
 			return;
 		}
-		if (!_transport.IsAvailable)
+		if (IsClosed || !_backhaul.IsAvailable)
 		{
-			DebugEx.LogWarning($"Ignoring Rust+ message send to disconnected client (connectionID={ConnectionId} steamID={_subscribedPlayer?.SteamId})", (StackTraceLogType)0);
 			data.Dispose();
 			return;
 		}
 		try
 		{
-			_transport.Send(data);
+			_backhaul.SendData(_channelId, data);
 		}
 		catch (Exception arg)
 		{
-			Debug.LogError((object)$"Failed to send message to app client {_transport.Address}: {arg}");
+			Debug.LogError((object)$"Failed to send message to app client (connectionID={ConnectionId} steamID={SteamId}): {arg}");
 		}
 	}
 
 	private static bool TryGetCameraTarget(IRemoteControllable camera, out CameraTarget target)
 	{
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		BaseEntity baseEntity = camera?.GetEnt();
-		if (ObjectEx.IsUnityNull(camera) || (Object)(object)baseEntity == (Object)null || !baseEntity.IsValid())
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		BaseEntity baseEntity = (ObjectEx.IsUnityNull(camera) ? null : camera.GetEnt());
+		if (!baseEntity.IsValid())
 		{
 			target = default;
 			return false;

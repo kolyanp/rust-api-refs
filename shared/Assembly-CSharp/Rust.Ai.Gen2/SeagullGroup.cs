@@ -31,8 +31,8 @@ public class SeagullGroup : BaseNPC2, ISimpleHearingReceiver
 	[SerializeField]
 	private Vector3 scatterExtents = new Vector3(55f, 15f, 55f);
 
-	[Tooltip("How long after taking off the group checks hits against scatterExtents, in seconds.")]
 	[SerializeField]
+	[Tooltip("How long after taking off the group checks hits against scatterExtents, in seconds.")]
 	private float scatterTime = 20f;
 
 	[SerializeField]
@@ -341,6 +341,11 @@ public class SeagullGroup : BaseNPC2, ISimpleHearingReceiver
 			{
 				val.linearVelocity = velocity;
 			}
+		}
+		BasePlayer initiatorPlayer = info.InitiatorPlayer;
+		if ((Object)(object)initiatorPlayer != (Object)null)
+		{
+			initiatorPlayer.stats.combat.LogAttack(info, "killed", Health());
 		}
 		if (AliveBirds == 0)
 		{

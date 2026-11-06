@@ -32,8 +32,8 @@ internal struct OceanTraceJob : IJobParallelForDefer
 	[WriteOnly]
 	public NativeArray<bool> HitResults;
 
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<Vector3> HitPositions;
 
 	public float OneOverOctave0Scale;

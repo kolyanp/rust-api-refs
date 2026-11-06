@@ -99,12 +99,12 @@ public class SeagullGroupFSM : FSMComponent
 		[Tooltip("How long the group flies straight away from the scare before it turns back to circle home, in seconds.")]
 		private Vector2 durationRange = new Vector2(3f, 6f);
 
-		[SerializeField]
 		[Tooltip("Played for every player in range as the group is startled into the air, attached to the group so it follows the flock away.")]
+		[SerializeField]
 		private GameObjectRef startleEffect;
 
-		[SerializeField]
 		[Tooltip("How long the group takes to build up to full speed, in seconds. Keeps it over the birds while they run and take off, so they stay inside its bounds and shootable.")]
+		[SerializeField]
 		private float speedRampTime = 3f;
 
 		[SerializeField]
@@ -278,12 +278,12 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_CircleHome : State_SeagullFly
 	{
-		[Tooltip("How long the group circles before it looks for somewhere to land, in seconds.")]
 		[SerializeField]
+		[Tooltip("How long the group circles before it looks for somewhere to land, in seconds.")]
 		private Vector2 durationRange = new Vector2(15f, 60f);
 
-		[Tooltip("Radius of the circle around home, in metres. Rolled each time the group starts circling.")]
 		[SerializeField]
+		[Tooltip("Radius of the circle around home, in metres. Rolled each time the group starts circling.")]
 		private Vector2 radiusRange = new Vector2(25f, 50f);
 
 		[Tooltip("How far ahead round the circle the group aims, in radians. Too little and it cuts inside, too much and it drifts outside.")]
@@ -339,21 +339,17 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private float homeRadius = 150f;
 
-		[Tooltip("How far away a land point can be to fly to when every point near home is taken, in metres. The rare case where the group leaves.")]
 		[SerializeField]
+		[Tooltip("How far away a land point can be to fly to when every point near home is taken, in metres. The rare case where the group leaves.")]
 		private Vector2 searchDistance = new Vector2(30f, 500f);
 
 		[Tooltip("Radius the group circles home at while it waits for a land point to come free, in metres.")]
 		[SerializeField]
 		private float waitRadius = 40f;
 
+		[SerializeField]
 		[Tooltip("How close to the land point counts as arrived, where the group stops steering and comes straight down.")]
-		[SerializeField]
 		private float arriveDistance = 15f;
-
-		[Tooltip("How long the group circles home without finding a free land point before it leaves the area for good.")]
-		[SerializeField]
-		private float giveUpTime = 180f;
 
 		private const float searchInterval = 5f;
 
@@ -385,25 +381,19 @@ public class SeagullGroupFSM : FSMComponent
 		public override EFSMStateStatus OnStateUpdate(float deltaTime)
 		{
 			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)target == (Object)null && TimeSince.op_Implicit(timeSinceSearch) >= 5f)
 			{
 				Search();
 			}
 			if ((Object)(object)target == (Object)null)
 			{
-				if (TimeSince.op_Implicit(timeSinceEnter) >= giveUpTime)
-				{
-					Owner.Kill();
-					return EFSMStateStatus.None;
-				}
 				destination = AimAroundCircle(Home, waitRadius, 0.6f);
 			}
 			else
@@ -425,15 +415,19 @@ public class SeagullGroupFSM : FSMComponent
 			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 			timeSinceSearch = TimeSince.op_Implicit(0f);
-			if (Owner is SeagullGroup seagullGroup)
+			if (!(Owner is SeagullGroup seagullGroup))
 			{
-				SeagullLandPoint seagullLandPoint = SeagullLandPoint.FindFree(seagullGroup, seagullGroup.HomePosition, 0f, homeRadius) ?? SeagullLandPoint.FindFree(seagullGroup, ((Component)seagullGroup).transform.position, searchDistance.x, searchDistance.y);
-				if (!((Object)(object)seagullLandPoint == (Object)null) && seagullLandPoint.TryClaim(seagullGroup))
+				return;
+			}
+			SeagullLandPoint seagullLandPoint = SeagullLandPoint.FindFree(seagullGroup, seagullGroup.HomePosition, 0f, homeRadius) ?? SeagullLandPoint.FindFree(seagullGroup, ((Component)seagullGroup).transform.position, searchDistance.x, searchDistance.y) ?? seagullGroup.LandPoint;
+			if (!((Object)(object)seagullLandPoint == (Object)null) && seagullLandPoint.TryClaim(seagullGroup))
+			{
+				if ((Object)(object)seagullLandPoint != (Object)(object)seagullGroup.LandPoint)
 				{
 					seagullGroup.LandPoint?.Release(seagullGroup);
-					seagullGroup.LandPoint = seagullLandPoint;
-					target = seagullLandPoint;
 				}
+				seagullGroup.LandPoint = seagullLandPoint;
+				target = seagullLandPoint;
 			}
 		}
 	}
@@ -441,8 +435,8 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_Land : FSMStateBase
 	{
-		[SerializeField]
 		[Tooltip("How fast the group closes on the spot above the land point, in metres per second.")]
+		[SerializeField]
 		private float approachSpeed = 8f;
 
 		[Tooltip("How fast the group comes down onto the land point, in metres per second.")]
@@ -453,8 +447,8 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private float groundSearchDistance = 2f;
 
-		[Tooltip("How long the group waits after touching down for its last birds to glide in, in seconds. It keeps the bounds that reach up to them until then.")]
 		[SerializeField]
+		[Tooltip("How long the group waits after touching down for its last birds to glide in, in seconds. It keeps the bounds that reach up to them until then.")]
 		private float settleTime = 3f;
 
 		private const float maxDeltaTime = 0.25f;

@@ -7,8 +7,8 @@ namespace Rust.Ai.Gen2;
 [SoftRequireComponent(typeof(SenseComponent))]
 public class NpcShootingComponent : EntityComponent<BaseEntity>
 {
-	[SerializeField]
 	[Header("Weapon Stats")]
+	[SerializeField]
 	public ItemDefinition weaponItemDefinition;
 
 	[SerializeField]

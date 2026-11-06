@@ -5,8 +5,8 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[RequireComponent(typeof(Camera))]
 [ResetStaticFields]
+[RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(Camera))]
 public class CoverageQueries : MonoBehaviour

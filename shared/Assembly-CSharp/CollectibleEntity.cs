@@ -190,8 +190,8 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void PickupEat(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())
