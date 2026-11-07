@@ -22,8 +22,8 @@ public class State_PlayAnimLoop : State_PlayAnimationBase
 	public float MaxDuration = 14f;
 
 	[Tooltip("How far through a clip to hand over to the next one, as a fraction of its length. Has to beat the animator's own exit time back to the default state, or the pose visibly blends to standing between loops.")]
-	[Range(0.5f, 1f)]
 	[SerializeField]
+	[Range(0.5f, 1f)]
 	private float handoverFraction = 0.8f;
 
 	private float duration;

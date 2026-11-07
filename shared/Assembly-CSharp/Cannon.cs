@@ -218,11 +218,11 @@ public class Cannon : BaseMountedWeapon
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[UsedImplicitly]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public virtual void RequestLightFuse(RPCMessage msg)
 	{
 		if (IsFireRPCInvalid(msg, msg.player, out var _, out var _) || !CanLightFuse())

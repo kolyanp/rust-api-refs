@@ -31,12 +31,12 @@ public class PrefabReference
 
 	public static bool StopReloadLayoutOptions;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected Mesh _refMesh;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected Collider _refCol;
 
 	public GameObject CoreGameObject => Prefab;

@@ -28,8 +28,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 
 	private BoxCollider characterBoxCollider;
 
-	[Header("DPV")]
 	[SerializeField]
+	[Header("DPV")]
 	private Buoyancy buoyancy;
 
 	[SerializeField]
@@ -65,8 +65,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float minWaterDepth = 0.75f;
 
-	[SerializeField]
 	[Header("DPV - Control stability")]
+	[SerializeField]
 	private float rotStability = 0.05f;
 
 	[SerializeField]

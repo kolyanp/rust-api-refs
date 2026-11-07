@@ -31,8 +31,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	private const float TIME_BETWEEN_LOCK_REFRESH = 1f;
 
-	[Header("Vehicle Module")]
 	[SerializeField]
+	[Header("Vehicle Module")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -54,12 +54,12 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	[SerializeField]
 	private List<ConditionalObject> conditionals;
 
-	[SerializeField]
 	[Header("Trigger Parent")]
+	[SerializeField]
 	private TriggerParent[] triggerParents;
 
-	[Header("Sliding Components")]
 	[SerializeField]
+	[Header("Sliding Components")]
 	private VehicleModuleSlidingComponent[] slidingComponents;
 
 	[SerializeField]

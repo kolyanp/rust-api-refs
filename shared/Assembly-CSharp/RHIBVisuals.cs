@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class RHIBVisuals : FacepunchBehaviour, INotifyLOD, IClientComponent
 {
-	[Header("RHIB")]
 	[SerializeField]
+	[Header("RHIB")]
 	private RHIB _owner;
 
-	[Header("References")]
 	[SerializeField]
+	[Header("References")]
 	private Transform _compass;
 
 	[Header("References - Screens")]

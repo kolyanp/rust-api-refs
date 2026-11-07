@@ -5,6 +5,8 @@ public sealed class PlayerTarget : IAITarget
 {
 	public bool StayClose;
 
+	public bool KeepOffshore;
+
 	private readonly BasePlayer _player;
 
 	private readonly float _acquiredAt;
@@ -54,7 +56,10 @@ public sealed class PlayerTarget : IAITarget
 			//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 			if ((Object)(object)_player == (Object)null)
 			{
 				return null;
@@ -66,7 +71,12 @@ public sealed class PlayerTarget : IAITarget
 			{
 				val3 = Quaternion.AngleAxis(30f, Vector3.up) * val3;
 			}
-			return (!StayClose) ? (val + val3 * 55f) : (val + val3 * 15f);
+			val = ((!StayClose) ? (val + val3 * 55f) : (val + val3 * 15f));
+			if (KeepOffshore)
+			{
+				val = BoatAI.PushOffshore(val);
+			}
+			return val;
 		}
 	}
 

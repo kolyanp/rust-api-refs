@@ -65,15 +65,15 @@ public class Debugging : ConsoleSystem
 	[ServerVar(Help = "(Generated) When true, nav mesh obstacle components on loot containers are disabled in the deep sea zone to improve performance in underwater areas")]
 	public static bool disableLootNavObstaclesInDeepSea = true;
 
-	[ServerVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
+	[ServerVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	public static bool callbacks = false;
 
 	[ServerVar(Help = "Max KB per second of debug overlay drawings, such as livestock.drawpens, streamed to each viewer. Changed groups past it wait for the next refresh, nearest first")]
 	public static float overlayKBps = 64f;
 
-	[ServerVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
+	[ServerVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	public static bool log
 	{
 		get
@@ -141,8 +141,8 @@ public class Debugging : ConsoleSystem
 		ServerConsole.PrintColoured(text, (ConsoleColor)color);
 	}
 
-	[ClientVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
+	[ClientVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	public static void stall(Arg arg)
 	{
 		float num = Mathf.Clamp(arg.GetFloat(0), 0f, 1f);
@@ -1510,8 +1510,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
+	[ServerVar]
 	public static void completeMissionStage(Arg arg)
 	{
 		int num = arg.GetInt(0, -1);
@@ -2138,8 +2138,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	[ClientVar(Help = "Logs a test error and exception for testing error display.")]
+	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	public static void testerror(Arg arg)
 	{
 		Debug.LogError((object)"Test error message");

@@ -15,8 +15,8 @@ public class MissionObjective_AcquireItem : MissionObjective
 
 	public bool acceptExistingItems;
 
-	[FormerlySerializedAs("requireProximityToPosition")]
 	[BaseMission.PositionGenerator.PositionPoint]
+	[FormerlySerializedAs("requireProximityToPosition")]
 	public string position;
 
 	[Tooltip("If true, objective progress will reset upon no longer having the required item.")]
@@ -24,8 +24,8 @@ public class MissionObjective_AcquireItem : MissionObjective
 
 	public bool shouldHideCompassMarkerWhenClose;
 
-	[Min(0f)]
 	[Tooltip("If \"Should Hide Compass Marker When Close\" is enabled and \"Require Proximity To Position\" is set and player is within this distance of the mission point then hide the compass marker, else the compass marker is visible.")]
+	[Min(0f)]
 	public float hideCompassMarkerDistance = 20f;
 
 	private float sqrDistanceToHideCompassMarker;

@@ -269,9 +269,9 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		}
 	}
 
+	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
-	[RPC_Server.MaxDistance(5f)]
 	public void UpdateSign(RPCMessage msg)
 	{
 		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)

@@ -1558,8 +1558,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public virtual uint GetNetworkLodCell()
 	{
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		if (net != null && net.group != null)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		if (net != null && net.group != null && !((Object)(object)this == (Object)null))
 		{
 			return NetworkVisibilityGrid.GetNetworkLodCell(net.group.ID, ((Component)this).transform.position);
 		}

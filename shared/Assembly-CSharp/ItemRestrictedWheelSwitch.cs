@@ -189,8 +189,8 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 		CancelPlayerRotation();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void BeginRotate(RPCMessage msg)
 	{
 		if (!IsBeingRotated && IsPowered())

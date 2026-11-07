@@ -97,8 +97,8 @@ public class ToggleableLightWeapon : BaseMelee
 		flagsUpdateScope.Set(Flags.On, isOn);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	protected void Ignite(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())
@@ -107,8 +107,8 @@ public class ToggleableLightWeapon : BaseMelee
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	protected void Extinguish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract())

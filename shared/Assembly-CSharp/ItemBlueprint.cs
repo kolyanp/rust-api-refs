@@ -50,8 +50,8 @@ public class ItemBlueprint : MonoBehaviour
 	[Header("Workbench")]
 	public int workbenchLevelRequired;
 
-	[Tooltip("Items that may be produced as surplus when crafted at a workbench with the surplus upgrade installed. Leave null/empty for no surplus.")]
 	[Header("Surplus")]
+	[Tooltip("Items that may be produced as surplus when crafted at a workbench with the surplus upgrade installed. Leave null/empty for no surplus.")]
 	public List<SurplusEntry> surplusItems;
 
 	[Header("Scrap")]

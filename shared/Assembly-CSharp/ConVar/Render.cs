@@ -67,8 +67,8 @@ public class Render : ConsoleSystem
 		arg.ReplyWith(stringBuilder.ToString());
 	}
 
-	[ClientVar(Name = "print_global_entities", ClientAdmin = true, Help = "Print off count of global building entities on the client")]
 	[ServerVar(Name = "print_global_entities", Help = "Print off count of global building entities on the server")]
+	[ClientVar(Name = "print_global_entities", ClientAdmin = true, Help = "Print off count of global building entities on the client")]
 	public static void print_global_entities(Arg arg)
 	{
 		if (IsInstancingDisabled)

@@ -22,15 +22,15 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RustText itemSubtitleText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreCheckoutResultButton carrouselButtonPrefab;
 
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]

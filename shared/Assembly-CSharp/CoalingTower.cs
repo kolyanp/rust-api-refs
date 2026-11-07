@@ -57,8 +57,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private float vacuumStartDelay = 2f;
 
-	[FormerlySerializedAs("unloadingFXContainer")]
 	[SerializeField]
+	[FormerlySerializedAs("unloadingFXContainer")]
 	private ParticleSystemContainer unloadingFXContainerOre;
 
 	[SerializeField]
@@ -70,8 +70,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private ParticleSystemContainer unloadingFXContainerFuel;
 
-	[Header("Coaling Tower Text")]
 	[SerializeField]
+	[Header("Coaling Tower Text")]
 	private TokenisedPhrase noTraincar;
 
 	[SerializeField]
@@ -89,8 +89,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private TokenisedPhrase trainHasThrottle;
 
-	[SerializeField]
 	[Header("Coaling Tower Audio")]
+	[SerializeField]
 	private GameObject buttonSoundPos;
 
 	[SerializeField]
@@ -567,8 +567,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Unload(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnCoalingTowerStart", this, msg.player) == null && !TryUnloadActiveWagon(out var attemptStatus) && (Object)(object)msg.player != (Object)null)
@@ -595,8 +595,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Prev(RPCMessage msg)
 	{
 		if (TryShuntTrain(next: false, out var attemptStatus))

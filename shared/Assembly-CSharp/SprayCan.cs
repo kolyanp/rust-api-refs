@@ -637,8 +637,8 @@ public class SprayCan : HeldEntity
 
 	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void ChangeWallpaper(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -780,8 +780,6 @@ public class SprayCan : HeldEntity
 		return !triggerNoSpray.IsPositionValid(pos);
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
@@ -789,6 +787,8 @@ public class SprayCan : HeldEntity
 		typeof(Vector3),
 		typeof(int)
 	})]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void CreateSpray(RPCMessage msg)
 	{
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)

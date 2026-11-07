@@ -40,8 +40,8 @@ public class State_Dead : FSMStateBase
 	[SerializeField]
 	private bool peacefulNaturalDeath;
 
-	[Tooltip("How long (in seconds) the animal lies there before the corpse drops, so it dies in its sleep rather than the instant it settles.")]
 	[SerializeField]
+	[Tooltip("How long (in seconds) the animal lies there before the corpse drops, so it dies in its sleep rather than the instant it settles.")]
 	private float peacefulDeathSettleTime = 6f;
 
 	private RootMotionPlayer.PlayServerState animState;

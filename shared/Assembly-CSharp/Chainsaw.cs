@@ -355,8 +355,8 @@ public class Chainsaw : BaseMelee
 		GetItem()?.MarkDirty();
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void DoReload(RPCMessage msg)
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)

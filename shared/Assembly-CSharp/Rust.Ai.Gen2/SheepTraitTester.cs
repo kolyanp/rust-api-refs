@@ -11,8 +11,8 @@ public class SheepTraitTester : MonoBehaviour, IEditorComponent
 	[Range(0f, 1f)]
 	public float PoopYield = 0.5f;
 
-	[Tooltip("Drives Density, Length, Tip Thinning and Strand Softness. Low yield is a thin, patchy fleece, high yield a full one.")]
 	[Range(0f, 1f)]
+	[Tooltip("Drives Density, Length, Tip Thinning and Strand Softness. Low yield is a thin, patchy fleece, high yield a full one.")]
 	public float WoolYield = 0.5f;
 
 	private MaterialPropertyBlock block;

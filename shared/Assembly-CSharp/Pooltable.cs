@@ -37,8 +37,8 @@ public class Pooltable : BaseCombatEntity
 	private WorldSpline worldSpline;
 
 	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
-	[SerializeField]
 	[Range(0f, 0.75f)]
+	[SerializeField]
 	private float splineTableCloseness = 0.25f;
 
 	[SerializeField]
@@ -56,8 +56,8 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private GameObjectRef winEffect;
 
-	[Header("Client")]
 	[SerializeField]
+	[Header("Client")]
 	private List<GameObject> clientRenderingPoolBalls;
 
 	[SerializeField]
@@ -92,8 +92,8 @@ public class Pooltable : BaseCombatEntity
 	[Header("Ball Return")]
 	private WorldSpline ballReturnPath;
 
-	[SerializeField]
 	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
+	[SerializeField]
 	private GameObject[] basketBalls;
 
 	[SerializeField]
@@ -495,8 +495,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -505,8 +505,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -563,8 +563,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_RequestMount(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null && gameController.HasGame && gameController.CanMount(msg.player.userID))

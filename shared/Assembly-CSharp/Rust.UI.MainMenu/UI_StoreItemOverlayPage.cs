@@ -147,8 +147,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private CoverImage skinViewerImage;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private PageContent pageContent;
 
 	public bool HasFlashlightReveal => (Object)(object)flashlightReveal != (Object)null;

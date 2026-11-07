@@ -7,9 +7,9 @@ public class SpawnPointSpawnPopulation : SpawnPopulationBase
 	[SerializeField]
 	private BaseSpawnPoint.SpawnPointType spawnPointType;
 
-	[Range(0f, 1f)]
-	[SerializeField]
 	[Tooltip("Share of the spawn points to keep filled, rounded down. Below 1 leaves points free for spawned entities to move between.")]
+	[SerializeField]
+	[Range(0f, 1f)]
 	private float fillFraction = 1f;
 
 	private SpawnFilter Filter = new SpawnFilter();

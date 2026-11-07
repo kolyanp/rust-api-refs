@@ -26,8 +26,8 @@ public class NPCMountable : EntityComponent<BaseEntity>
 		public int[] overlaps;
 	}
 
-	[Tooltip("An NPC takes the nearest free one.")]
 	[Header("NPC Mountable")]
+	[Tooltip("An NPC takes the nearest free one.")]
 	public NPCMountAnchor[] anchors;
 
 	[Tooltip("Where NPCs are put down when they get off. Same name and meaning as BaseMountable's.")]

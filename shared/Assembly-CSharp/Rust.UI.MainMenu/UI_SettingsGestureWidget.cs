@@ -12,8 +12,8 @@ public class UI_SettingsGestureWidget : UI_SettingsGestureDraggable
 	[SerializeField]
 	private StyleAsset emptyStyle;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Image gestureIcon;
 
 	[SerializeField]

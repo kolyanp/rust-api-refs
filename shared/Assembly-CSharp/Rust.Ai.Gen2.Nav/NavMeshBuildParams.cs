@@ -26,12 +26,12 @@ public struct NavMeshBuildParams
 	[Min(0f)]
 	public float agentHeight;
 
-	[Tooltip("Agent radius. Needs to be a multiple of walkableRadius")]
 	[Min(0f)]
+	[Tooltip("Agent radius. Needs to be a multiple of walkableRadius")]
 	public float agentRadius;
 
-	[Min(0f)]
 	[Tooltip("Maximum climb height for agent. Needs to be a multiple of cellHeight")]
+	[Min(0f)]
 	public float agentMaxClimb;
 
 	[Tooltip("The maximum slope that is considered walkable. [Limits: 0 <= value < 90] [Units: Degrees]")]

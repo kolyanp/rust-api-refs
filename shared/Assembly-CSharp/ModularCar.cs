@@ -49,8 +49,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		[Tooltip("Max health  % at spawn for any modules that spawn with this chassis.")]
 		public float maxStartHealthPercent = 0.5f;
 
-		[Range(0f, 1f)]
 		[Tooltip("Fraction of engine part slots filled with locked tier 1 parts, unlocked when the car first goes on a vehicle lift.")]
+		[Range(0f, 1f)]
 		public float lockedStarterPartsFraction;
 
 		public AdminBonus adminBonus;
@@ -132,8 +132,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	private BoxCollider mainChassisCollider;
 
-	[Header("Towing")]
 	[SerializeField]
+	[Header("Towing")]
 	private TriggerTowing towingTrigger;
 
 	[SerializeField]
@@ -1007,8 +1007,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_TryMountWithKeycode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -51,6 +51,7 @@ public class RoamingBoatGroups : TriggeredEvent
 					componentInChildren.LoadMode = BoatAI.AILoadMode.KillBoat;
 					componentInChildren.MoveTo(destination);
 					componentInChildren.LeaveAfter(num2);
+					componentInChildren.ShoreRunEvery(num2 * 0.35f);
 					boat.Invoke(() =>
 					{
 						RemoveBoat(boat);
@@ -80,7 +81,7 @@ public class RoamingBoatGroups : TriggeredEvent
 	private void RemoveBoat(RHIB boat)
 	{
 		_spawnedBoats.Remove(boat);
-		if (!boat.HasPlayerAboard())
+		if ((Object)(object)((Component)boat).GetComponentInChildren<BoatAI>() != (Object)null && !boat.HasPlayerAboard())
 		{
 			boat.AdminKillNoLoot();
 		}
@@ -91,7 +92,7 @@ public class RoamingBoatGroups : TriggeredEvent
 		base.Kill();
 		for (int i = 0; i < _spawnedBoats.Count; i++)
 		{
-			if (_spawnedBoats[i].IsValid() && !_spawnedBoats[i].HasPlayerAboard())
+			if (_spawnedBoats[i].IsValid() && (Object)(object)((Component)_spawnedBoats[i]).GetComponentInChildren<BoatAI>() != (Object)null && !_spawnedBoats[i].HasPlayerAboard())
 			{
 				_spawnedBoats[i].AdminKillNoLoot();
 			}

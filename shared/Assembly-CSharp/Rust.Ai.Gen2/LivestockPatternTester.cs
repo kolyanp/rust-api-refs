@@ -7,17 +7,17 @@ public class LivestockPatternTester : MonoBehaviour, IEditorComponent
 {
 	private const string ShaderName = "Rust/Standard Livestock";
 
-	[Tooltip("Drives Threshold. Low yield cuts high so patches are small, high yield cuts low so patches are large.")]
 	[Header("Traits")]
 	[Range(0f, 1f)]
+	[Tooltip("Drives Threshold. Low yield cuts high so patches are small, high yield cuts low so patches are large.")]
 	public float MilkYield = 0.25f;
 
 	[Range(0f, 1f)]
 	[Tooltip("Drives patch colour along the range's Dung Colour gradient, low at the left, high at the right.")]
 	public float PoopYield = 0.25f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Drives Edge Warp. Larger litters give more crinkled patch edges.")]
+	[Range(0f, 1f)]
 	public float LitterSize = 0.25f;
 
 	[Tooltip("Drives Hair Length. Robust animals get longer hair tips on the patch edges.")]
@@ -28,12 +28,12 @@ public class LivestockPatternTester : MonoBehaviour, IEditorComponent
 	[Range(0f, 1f)]
 	public float Inbred = 1f;
 
-	[Header("Identity")]
 	[Tooltip("Scrambles where the blotch and warp textures sit on the animal. Same seed, same coat layout.")]
+	[Header("Identity")]
 	public int Seed;
 
-	[Header("Coat")]
 	[Tooltip("The ranges to tune. This is the asset the species' prefab paints from, so what is set here is what the game ships.")]
+	[Header("Coat")]
 	public LivestockPatternRange Range;
 
 	private static readonly int TilingOffset1 = Shader.PropertyToID("_PatternTilingOffset1");

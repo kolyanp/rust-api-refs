@@ -67,16 +67,16 @@ public class UILineRenderer : UIPrimitiveBase
 	[SerializeField]
 	internal List<Vector2[]> m_segments;
 
-	[SerializeField]
 	[Tooltip("Thickness of the line")]
+	[SerializeField]
 	internal float lineThickness = 2f;
 
 	[Tooltip("Use the relative bounds of the Rect Transform (0,0 -> 0,1) or screen space coordinates")]
 	[SerializeField]
 	internal bool relativeSize;
 
-	[Tooltip("Do the points identify a single line or split pairs of lines")]
 	[SerializeField]
+	[Tooltip("Do the points identify a single line or split pairs of lines")]
 	internal bool lineList;
 
 	[Tooltip("Add end caps to each line\nMultiple caps when used with Line List")]

@@ -13,17 +13,17 @@ public sealed class LensDistortion : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Range(0f, 1f)]
 	[DisplayName("X Multiplier")]
+	[Range(0f, 1f)]
 	[Tooltip("Intensity multiplier on the x-axis. Set it to 0 to disable distortion on this axis.")]
 	public FloatParameter intensityX = new FloatParameter
 	{
 		value = 1f
 	};
 
+	[Tooltip("Intensity multiplier on the y-axis. Set it to 0 to disable distortion on this axis.")]
 	[Range(0f, 1f)]
 	[DisplayName("Y Multiplier")]
-	[Tooltip("Intensity multiplier on the y-axis. Set it to 0 to disable distortion on this axis.")]
 	public FloatParameter intensityY = new FloatParameter
 	{
 		value = 1f
@@ -37,16 +37,16 @@ public sealed class LensDistortion : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Tooltip("Distortion center point (y-axis).")]
 	[Range(-1f, 1f)]
+	[Tooltip("Distortion center point (y-axis).")]
 	public FloatParameter centerY = new FloatParameter
 	{
 		value = 0f
 	};
 
 	[Space]
-	[Tooltip("Global screen scaling.")]
 	[Range(0.01f, 5f)]
+	[Tooltip("Global screen scaling.")]
 	public FloatParameter scale = new FloatParameter
 	{
 		value = 1f

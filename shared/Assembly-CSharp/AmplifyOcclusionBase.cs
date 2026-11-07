@@ -13,14 +13,14 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Tooltip("Final applied intensity of the occlusion effect.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final applied intensity of the occlusion effect.")]
 	public float Intensity = 1f;
 
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
 	[NonSerialized]
@@ -29,16 +29,16 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
-	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	[Range(0f, 2f)]
+	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	public float RadiusIntensity = 1f;
 
-	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
+	[Tooltip("Power exponent attenuation of the occlusion.")]
 	public float PowerExponent = 1.8f;
 
-	[Tooltip("Controls the initial occlusion contribution offset.")]
 	[Range(0f, 0.99f)]
+	[Tooltip("Controls the initial occlusion contribution offset.")]
 	public float Bias = 0.05f;
 
 	[Tooltip("Controls the thickness occlusion contribution.")]
@@ -58,8 +58,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength = 50f;
 
-	[Tooltip("Final Intensity parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Intensity parameter.")]
 	public float FadeToIntensity;
 
 	public Color FadeToTint = Color.black;
@@ -68,12 +68,12 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 32f)]
 	public float FadeToRadius = 2f;
 
-	[Tooltip("Final PowerExponent parameter.")]
 	[Range(0f, 16f)]
+	[Tooltip("Final PowerExponent parameter.")]
 	public float FadeToPowerExponent = 1.8f;
 
-	[Tooltip("Final Thickness parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Thickness parameter.")]
 	public float FadeToThickness = 1f;
 
 	[Header("Bilateral Blur")]
@@ -83,16 +83,16 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Radius in screen pixels.")]
 	public int BlurRadius = 3;
 
-	[Tooltip("Number of times that the Blur will repeat.")]
 	[Range(1f, 4f)]
+	[Tooltip("Number of times that the Blur will repeat.")]
 	public int BlurPasses = 1;
 
-	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	[Range(0f, 20f)]
+	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	public float BlurSharpness = 10f;
 
-	[Tooltip("Accumulates the effect over the time.")]
 	[Header("Temporal Filter")]
+	[Tooltip("Accumulates the effect over the time.")]
 	public bool FilterEnabled = true;
 
 	[Range(0f, 1f)]

@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class PTBoatTurret : BaseMountedUseable
 {
-	[Header("Mounted Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon")]
 	private ItemDefinition[] weapons;
 
 	[SerializeField]
@@ -57,6 +57,8 @@ public class PTBoatTurret : BaseMountedUseable
 	private BasePlayer aiLastSeenTarget;
 
 	private Vector3 aiLastSeenPosition;
+
+	private float aiLastSeenTime;
 
 	private float aiBurstStartTime = float.NegativeInfinity;
 
@@ -265,20 +267,20 @@ public class PTBoatTurret : BaseMountedUseable
 	{
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
 		if (!AI.move || !(GetMounted() is HumanNPC humanNPC) || humanNPC.InSafeZone())
 		{
 			return;
@@ -293,6 +295,7 @@ public class PTBoatTurret : BaseMountedUseable
 		{
 			aiLastSeenTarget = aiTarget;
 			aiLastSeenPosition = aiTarget.eyes.position;
+			aiLastSeenTime = Time.time;
 		}
 		bool flag = !canShoot && (Object)(object)aiTarget == (Object)(object)aiExtraTarget && (Object)(object)aiTarget == (Object)(object)aiLastSeenTarget;
 		Vector3 val = (flag ? aiLastSeenPosition : aiTarget.eyes.position) - muzzle.position;
@@ -302,7 +305,7 @@ public class PTBoatTurret : BaseMountedUseable
 		}
 		Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(aiAccuracy, val.normalized);
 		aimDir = Vector3.RotateTowards(aimDir, modifiedAimConeDirection, MathF.PI * 7f / 240f, 0f);
-		if (Time.time > aiBurstStartTime + ai_burst_length + ai_time_between_bursts && (canShoot | flag))
+		if (Time.time > aiBurstStartTime + ai_burst_length + ai_time_between_bursts && (canShoot || (flag && Time.time - aiLastSeenTime < 5f)))
 		{
 			aiBurstStartTime = Time.time;
 		}

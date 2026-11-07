@@ -12,12 +12,12 @@ public class LivestockSaleTable : ScriptableObject
 	{
 		public ItemDefinition Item;
 
-		[Tooltip("How much of the item the full listing is. More than one makes it a stack the vendor can pay part of.")]
 		[Min(1f)]
+		[Tooltip("How much of the item the full listing is. More than one makes it a stack the vendor can pay part of.")]
 		public int Amount = 1;
 
-		[Tooltip("What the full listing costs out of an offer's budget, where 1 is a perfect animal or a full lot of wool.")]
 		[Range(0f, 1f)]
+		[Tooltip("What the full listing costs out of an offer's budget, where 1 is a perfect animal or a full lot of wool.")]
 		public float Cost = 0.1f;
 
 		[Tooltip("The least budget left for a stack to be considered. A single item needs its whole Cost instead.")]
@@ -28,8 +28,8 @@ public class LivestockSaleTable : ScriptableObject
 		[Range(0f, 1f)]
 		public float MaxBudget = 1f;
 
-		[Tooltip("The chance this is picked when it is affordable. Ignored when topping up a short offer.")]
 		[Range(0f, 1f)]
+		[Tooltip("The chance this is picked when it is affordable. Ignored when topping up a short offer.")]
 		public float Chance = 1f;
 
 		[Tooltip("Part stacks are rounded down to a multiple of this, so an offer reads 100 rather than 97.")]
@@ -72,8 +72,8 @@ public class LivestockSaleTable : ScriptableObject
 	[Tooltip("Whatever an offer's picks leave of its budget is paid in this. Only Item, Amount, Cost and RoundTo are read.")]
 	public Entry Fallback = new Entry();
 
-	[Range(0f, 1f)]
 	[Tooltip("The most of an offer's budget one stack can take, so a single stack never crowds out the rest of the bundle.")]
+	[Range(0f, 1f)]
 	public float MaxStackShare = 0.75f;
 
 	private readonly List<Entry> candidates = new List<Entry>();

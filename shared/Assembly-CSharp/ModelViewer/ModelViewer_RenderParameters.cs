@@ -31,8 +31,8 @@ public class ModelViewer_RenderParameters
 	[Header("Anti Aliasing")]
 	public PostProcessLayer.Antialiasing antialiasing = PostProcessLayer.Antialiasing.TemporalAntialiasing;
 
-	[Range(1f, 4f)]
 	[Header("Shadows")]
+	[Range(1f, 4f)]
 	public int shadowCascades = 4;
 
 	[Range(1f, 3f)]
@@ -52,8 +52,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 2f)]
 	public float sunShadowBias = 0.01f;
 
-	[Header("Contact Shadows")]
 	[Header("                ")]
+	[Header("Contact Shadows")]
 	public bool enableContactShadows = true;
 
 	[Range(0f, 1f)]
@@ -80,8 +80,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 1f)]
 	public float traceBias = 0.03f;
 
-	[Header("Ambient Occlusion")]
 	[Header("                ")]
+	[Header("Ambient Occlusion")]
 	public bool enableAmbientOcclusion = true;
 
 	public SampleCountLevel SampleCount = SampleCountLevel.Medium;
@@ -90,8 +90,8 @@ public class ModelViewer_RenderParameters
 
 	public Color Tint = Color.black;
 
-	[Tooltip("Radius spread of the occlusion.")]
 	[Range(0f, 32f)]
+	[Tooltip("Radius spread of the occlusion.")]
 	public float Radius = 2f;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
@@ -124,20 +124,20 @@ public class ModelViewer_RenderParameters
 
 	public Color FadeToTint = Color.black;
 
-	[Tooltip("Final Radius parameter.")]
 	[Range(0f, 32f)]
+	[Tooltip("Final Radius parameter.")]
 	public float FadeToRadius = 2f;
 
-	[Tooltip("Final PowerExponent parameter.")]
 	[Range(0f, 16f)]
+	[Tooltip("Final PowerExponent parameter.")]
 	public float FadeToPowerExponent = 1.8f;
 
 	[Range(0f, 1f)]
 	[Tooltip("Final Thickness parameter.")]
 	public float FadeToThickness = 1f;
 
-	[Header("                ")]
 	[Header("Reflections")]
+	[Header("                ")]
 	public ReflectionProbeMode Type = (ReflectionProbeMode)1;
 
 	public ReflectionProbeRefreshMode RefreshMode = (ReflectionProbeRefreshMode)1;

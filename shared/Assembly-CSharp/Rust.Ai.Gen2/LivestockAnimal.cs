@@ -273,9 +273,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float conditionUnsentHealth;
 
-	[Range(0f, 1f)]
 	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
 	[Header("Day activity")]
+	[Range(0f, 1f)]
 	public float StarvingThreshold = 0.2f;
 
 	[Tooltip("How many seconds of waking time the day activity read out is measured over. It only reports how the day split up, nothing reads it to decide what to do.")]
@@ -283,15 +283,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float[] activityWeights;
 
-	[Header("Dung")]
 	[Tooltip("Leave empty for an age stage that shouldn't dung, like a calf.")]
+	[Header("Dung")]
 	public ItemDefinition DungItem;
 
 	[Tooltip("Seconds between drops. Zero disables it.")]
 	public float DungInterval;
 
-	[Range(0f, 1f)]
 	[Tooltip("Fraction of DungInterval each wait is randomised by, so a herd doesn't drop in lockstep. 0.2 is +/-20%.")]
+	[Range(0f, 1f)]
 	public float DungIntervalVariance = 0.2f;
 
 	[Tooltip("Falls back to the animal's origin when unset.")]
@@ -389,8 +389,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private TimeSince lastAdoptionCheck;
 
-	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
 	[Header("Hydration")]
+	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
 	public float HydrationFillRate = 0.25f;
 
 	[Tooltip("Where a freshly spawned animal's hydration starts. Full, so a new animal has one thing less to go and sort out before it settles in.")]
@@ -441,8 +441,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float potential;
 
-	[Header("Sleep")]
 	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
+	[Header("Sleep")]
 	public float SleepTimeVariance = 45f;
 
 	[Tooltip("How far (in metres) from the middle of the herd is close enough to lie down. Further out than this and the animal walks in first, so the herd sleeps as a group.")]
@@ -586,8 +586,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Header("Aging")]
 	public float TimeToGrow;
 
-	[Range(0f, 1f)]
 	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
+	[Range(0f, 1f)]
 	public float GrowTimeVariance = 0.1f;
 
 	public GameObjectRef GrowEffect;
@@ -615,8 +615,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How much fullness drains per second while the animal is up and about in daylight. Against FullnessFillRate this sets how much of its standing time a well fed animal spends eating: 0.001 against 0.004 is a quarter of it. Slow, because the dip below ConsumeThreshold while the animal walks over is what a keeper sees. Lying down and sleeping drain at SleepingDecayScale.")]
 	public float FullnessDecayRate = 0.001f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Where a freshly spawned animal's fullness starts. Full, so a new animal in a well kept pen reads right straight away instead of spending minutes climbing to the top of its bar.")]
+	[Range(0f, 1f)]
 	public float StartingFullness = 1f;
 
 	[Tooltip("Scales the drain while the animal is asleep or the sun is down. Feeding is daytime work, so a full night at the waking rate would be a debt the day could not pay off.")]
@@ -3836,9 +3836,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return false;
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	private void RequestNameChange(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && !TryRename(msg.player, msg.read.String(12)))
@@ -6907,9 +6907,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return true;
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ServerPet(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -4,10 +4,10 @@ namespace FIMSpace.Basics;
 
 public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 {
-	[Header("something in script to apply")]
-	[Header("When you scale object change")]
 	[Tooltip("Texture identificator in shader")]
 	[Space(10f)]
+	[Header("something in script to apply")]
+	[Header("When you scale object change")]
 	public string TextureProperty = "_MainTex";
 
 	[Tooltip("How much tiles should be multiplied according to gameObject's scale")]

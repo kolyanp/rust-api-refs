@@ -11,7 +11,7 @@ public class Workbench : ConsoleSystem
 	[Help("Whether the range upgrade scales the comfort trigger radius")]
 	public static bool scalecomfortradius = true;
 
-	[Help("Multiplier applied to the comfort trigger radius after range upgrade scaling")]
 	[ServerVar]
+	[Help("Multiplier applied to the comfort trigger radius after range upgrade scaling")]
 	public static float comfortradiusscale = 0.95f;
 }

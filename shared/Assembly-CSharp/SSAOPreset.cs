@@ -4,8 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SSAOPreset", menuName = "Rendering/SSAOPreset")]
 public class SSAOPreset : ScriptableObject
 {
-	[Tooltip("How the occlusion result is composited into the frame.")]
 	[Header("Ambient Occlusion")]
+	[Tooltip("How the occlusion result is composited into the frame.")]
 	public ApplicationMethod ApplyMethod;
 
 	[Tooltip("Number of samples per occlusion pass.")]
@@ -29,8 +29,8 @@ public class SSAOPreset : ScriptableObject
 	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
-	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	[Range(0f, 0.99f)]
+	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	public float Bias = 0.05f;
 
 	[Tooltip("Controls thickness-based occlusion contribution.")]
@@ -67,28 +67,28 @@ public class SSAOPreset : ScriptableObject
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled = true;
 
-	[Range(1f, 4f)]
 	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
+	[Range(1f, 4f)]
 	public int BlurRadius = 3;
 
 	[Tooltip("Number of blur passes.")]
 	[Range(1f, 4f)]
 	public int BlurPasses = 1;
 
-	[Range(0f, 20f)]
 	[Tooltip("0 = blurred / 1 = sharpened.")]
+	[Range(0f, 20f)]
 	public float BlurSharpness = 10f;
 
-	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
 	[Header("Temporal Filter")]
+	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
 	public bool FilterEnabled = true;
 
 	[Tooltip("Accumulation decay. 0 = fast update (more flicker). 1 = slow update (ghosting).")]
 	[Range(0f, 1f)]
 	public float FilterBlending = 0.5f;
 
-	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
 	[Range(0f, 1f)]
+	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
 	public float FilterResponse = 0.5f;
 
 	public SSAOPreset()

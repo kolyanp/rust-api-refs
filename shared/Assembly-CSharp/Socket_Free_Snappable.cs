@@ -54,12 +54,12 @@ public class Socket_Free_Snappable : Socket_Free
 	[Range(-1f, 1f)]
 	private float snappingPadding;
 
-	[SerializeField]
 	[Header("Snapping - Corners")]
+	[SerializeField]
 	private bool allowSnappingToCorners = true;
 
-	[Range(-1f, 1f)]
 	[SerializeField]
+	[Range(-1f, 1f)]
 	private float cornerPadding = -0.01f;
 
 	[Header("Snapping - Same Deployable")]

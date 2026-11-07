@@ -41,8 +41,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("Random speed spread per crab, on top of size. 0.25 means each crab is up to 25 percent faster or slower than its size alone suggests, so same sized crabs still differ.")]
 		public float speedRandomness;
 
-		[Tooltip("How close to the entity each crab wants to stay, as a fraction of the swarm radius. Rolled per crab, so some shadow the entity closely while others hang back near the edge.")]
 		[Header("Following")]
+		[Tooltip("How close to the entity each crab wants to stay, as a fraction of the swarm radius. Rolled per crab, so some shadow the entity closely while others hang back near the edge.")]
 		public Vector2 followTightnessRange;
 
 		[Tooltip("Random variation in how long a crab dawdles before setting off after the entity, in seconds. Stops the swarm surging as one block.")]
@@ -71,8 +71,8 @@ public class CrabGrouping : IDisposable
 		[Tooltip("How far a fleeing crab may stray outside the swarm radius, as a multiplier. It wanders back in once it calms down.")]
 		public float startleBoundsMultiplier;
 
-		[Tooltip("Speed at which the walk animation reaches full blend. Below this the legs scale down, at 0 speed the crab is still.")]
 		[Header("Animation")]
+		[Tooltip("Speed at which the walk animation reaches full blend. Below this the legs scale down, at 0 speed the crab is still.")]
 		public float fullAnimationSpeed;
 
 		[Tooltip("How quickly the walk animation blends in and out as the crab starts and stops.")]

@@ -23,8 +23,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How far from the entity the birds spread out, in metres. Each bird is given its own spot within this to hang around.")]
 		public float flockRadius;
 
-		[Tooltip("Stretches the flock along each axis, as a multiple of flockRadius. Below 1 on Y gives a flatter flock, which reads more natural than a ball.")]
 		[Header("Shape")]
+		[Tooltip("Stretches the flock along each axis, as a multiple of flockRadius. Below 1 on Y gives a flatter flock, which reads more natural than a ball.")]
 		public Vector3 flockShape;
 
 		[Tooltip("How far a bird can wander from its own spot before being pulled back, in metres. Higher is a looser flock.")]
@@ -103,8 +103,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How hard a bird matches the entity's velocity, per metre per second it is off. Keeps the flock with an entity that flies off somewhere, rather than trailing or circling it.")]
 		public float anchorVelocityWeight;
 
-		[Tooltip("How much faster the birds can fly and turn while fleeing. Needs to keep up with the entity's flee speed.")]
 		[Header("Fleeing")]
+		[Tooltip("How much faster the birds can fly and turn while fleeing. Needs to keep up with the entity's flee speed.")]
 		public float fleeSpeedMultiplier;
 
 		[Tooltip("Gap between birds along each arm of the V the flock flees in, in metres.")]
@@ -116,8 +116,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How far a fleeing bird can stray from its place in the V, in metres. Low holds a crisper shape.")]
 		public float fleeLeashRadius;
 
-		[Tooltip("Wing beat speed at the steepest climb, as a multiple of the material's level flight speed.")]
 		[Header("Wing Beat")]
+		[Tooltip("Wing beat speed at the steepest climb, as a multiple of the material's level flight speed.")]
 		public float flapRateClimbing;
 
 		[Tooltip("Wing beat speed at the steepest dive, as a multiple of the material's level flight speed. Low reads as a glide.")]
@@ -129,13 +129,13 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How much one bird's wing beat speed differs from another's, as a fraction either side. Stops a flock drifting into flapping in step.")]
 		public float flapRateVariance;
 
-		[Header("Gliding")]
-		[Tooltip("Where the wings are held in a glide, from -1 fully down to 1 fully up.")]
 		[Range(-1f, 1f)]
+		[Tooltip("Where the wings are held in a glide, from -1 fully down to 1 fully up.")]
+		[Header("Gliding")]
 		public float glideWingHeight;
 
-		[Tooltip("How steep a descent has a bird glide down it instead of flapping, from 0 for any descent to 1 for only the steepest dive.")]
 		[Range(0f, 1f)]
+		[Tooltip("How steep a descent has a bird glide down it instead of flapping, from 0 for any descent to 1 for only the steepest dive.")]
 		public float diveGlideSteepness;
 
 		[Tooltip("How long a bird glides between bouts of flapping in level flight, in seconds. Zero to only glide on dives.")]
@@ -170,8 +170,8 @@ public class BirdGrouping : IDisposable
 
 		public float maxScale;
 
-		[Tooltip("Drawn instead of mesh once the flock is past farMeshDistance from the camera. Must use the same UV layout so the wing beat still works. Leave empty to always draw mesh.")]
 		[Header("LOD")]
+		[Tooltip("Drawn instead of mesh once the flock is past farMeshDistance from the camera. Must use the same UV layout so the wing beat still works. Leave empty to always draw mesh.")]
 		public Mesh farMesh;
 
 		public float farMeshDistance;

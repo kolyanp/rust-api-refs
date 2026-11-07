@@ -45,8 +45,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private RustInput _searchInput;
 
-	[Header("No Results")]
 	[SerializeField]
+	[Header("No Results")]
 	private UI_ServerBrowser_NoResults_Controller _noResultsController;
 
 	[SerializeField]

@@ -17,20 +17,20 @@ namespace ConVar;
 [Factory("pool")]
 public class Pool : ConsoleSystem
 {
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
+	[ClientVar(ClientAdmin = true)]
 	public static int mode = 2;
 
 	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	[ClientVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	public static bool prewarm = true;
 
-	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled = true;
 
-	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	[ClientVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
+	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	public static bool debug = false;
 
 	private const string DebugMemPoolStartHelp = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)";
@@ -104,8 +104,8 @@ public class Pool : ConsoleSystem
 		arg.ReplyWith("Reset max item counter of pool");
 	}
 
-	[ServerVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
 	[ClientVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
+	[ServerVar(Help = "(Generated) Prints a usage report for the BaseNetwork and ProtocolParser array pools, showing bucket sizes, capacities, and hit/miss stats")]
 	public static void print_arraypool(Arg arg)
 	{
 		bool flag = arg.HasArg("--json");
@@ -218,8 +218,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
 	[ClientVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
+	[ServerVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
 	public static void print_assets(Arg arg)
 	{
 		if (AssetPool.storage.Count == 0)
@@ -301,8 +301,8 @@ public class Pool : ConsoleSystem
 		File.WriteAllText("prefabs.csv", stringBuilder.ToString());
 	}
 
-	[ServerVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
 	[ClientVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
+	[ServerVar(Help = "(Generated) Pre-warms the prefab pool by instantiating and pooling prefabs matching the optional filter up to the given count override")]
 	public static void fill_prefabs(Arg arg)
 	{
 		string filter = arg.GetString(0, string.Empty);
@@ -310,8 +310,8 @@ public class Pool : ConsoleSystem
 		PrefabPoolWarmup.Run(filter, countOverride);
 	}
 
-	[ServerVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
 	[ClientVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
+	[ServerVar(Help = "Start tracking objects from memory pool. Call _stop when done. Use * to explicitly request all types(super expensive!)")]
 	public static void debug_mem_start(Arg arg)
 	{
 		string text = arg.GetString(0, string.Empty);

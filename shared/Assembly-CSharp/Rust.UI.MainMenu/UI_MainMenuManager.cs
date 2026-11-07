@@ -24,8 +24,8 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 	[SerializeField]
 	private Transform _genericPopupParent;
 
-	[Header("Background Image Settings")]
 	[SerializeField]
+	[Header("Background Image Settings")]
 	private CanvasGroup _homeVideoOverlay;
 
 	[SerializeField]

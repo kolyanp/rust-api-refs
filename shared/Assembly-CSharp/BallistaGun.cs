@@ -115,10 +115,10 @@ public class BallistaGun : BaseMountedWeapon
 		}
 	}
 
-	[RPC_Server.MaxRepeatedElements(1)]
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxRepeatedElements(1)]
+	[RPC_Server.FromMounted]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)

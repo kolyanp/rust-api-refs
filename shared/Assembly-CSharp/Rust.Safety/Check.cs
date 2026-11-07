@@ -118,7 +118,7 @@ public static class Check
 
 	public static bool IsValidAttackTarget(this BasePlayer ply)
 	{
-		if ((Object)(object)ply == (Object)null)
+		if ((Object)(object)ply == (Object)null || ply.IsDestroyed)
 		{
 			return false;
 		}

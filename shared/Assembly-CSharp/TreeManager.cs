@@ -721,8 +721,8 @@ public class TreeManager : BaseEntity
 		server.ClientRPC(RpcTarget.Player("CLIENT_ReceiveTrees", player), snapshotStream);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(0uL)]
+	[RPC_Server]
 	private void SERVER_RequestTrees(RPCMessage msg)
 	{
 		if (EnableTreeStreaming)

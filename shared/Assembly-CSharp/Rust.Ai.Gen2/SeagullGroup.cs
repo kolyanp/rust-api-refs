@@ -31,8 +31,8 @@ public class SeagullGroup : BaseNPC2, ISimpleHearingReceiver
 	[SerializeField]
 	private Vector3 scatterExtents = new Vector3(55f, 15f, 55f);
 
-	[SerializeField]
 	[Tooltip("How long after taking off the group checks hits against scatterExtents, in seconds.")]
+	[SerializeField]
 	private float scatterTime = 20f;
 
 	[SerializeField]

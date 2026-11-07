@@ -4,8 +4,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ServerMap : UI_Window
 {
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private HttpImage _httpImage;
 
 	[SerializeField]

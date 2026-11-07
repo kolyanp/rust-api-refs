@@ -84,7 +84,10 @@ public class CombatLog
 	[PoolAnalyzerNonCaching]
 	public void LogInvalid(HitInfo info, string description)
 	{
-		Log(info.Initiator, info.Weapon, info.HitEntity as BaseCombatEntity, description, info.ProjectilePrefab, info.ProjectileID, -1f, info);
+		if (!info.IsProjectile() || !((Object)(object)info.HitEntity == (Object)null))
+		{
+			Log(info.Initiator, info.Weapon, info.HitEntity as BaseCombatEntity, description, info.ProjectilePrefab, info.ProjectileID, -1f, info);
+		}
 	}
 
 	public void LogAttack(HitInfo info, string description, float oldHealth = -1f)

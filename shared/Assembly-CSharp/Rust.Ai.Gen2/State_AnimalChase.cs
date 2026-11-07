@@ -7,8 +7,8 @@ namespace Rust.Ai.Gen2;
 [Serializable]
 public class State_AnimalChase : State_MoveToTarget
 {
-	[SerializeField]
 	[Tooltip("How far from an off-navmesh target to look for somewhere the animal can actually stand.")]
+	[SerializeField]
 	public float offNavmeshSampleRadius = 6f;
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)

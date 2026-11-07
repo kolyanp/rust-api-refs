@@ -43,8 +43,8 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private GameObject _lastPlayedObject;
 
-	[SerializeField]
 	[Header("References - Friends")]
+	[SerializeField]
 	private RustText _friendsText;
 
 	[SerializeField]
@@ -60,8 +60,8 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private GameObject _queueObject;
 
-	[SerializeField]
 	[Header("References - Favourites")]
+	[SerializeField]
 	private RustButton _favouritesButton;
 
 	[SerializeField]
@@ -70,8 +70,8 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private RectTransform _favouritesSpawnPoint;
 
-	[SerializeField]
 	[Header("References - Styles")]
+	[SerializeField]
 	private StyleAsset _evenStyle;
 
 	[SerializeField]

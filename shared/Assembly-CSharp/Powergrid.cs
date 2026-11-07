@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class Powergrid : ConsoleSystem
 {
-	[ReplicatedVar]
 	[Help("If disabled power grid functionality will be disabled.")]
+	[ReplicatedVar]
 	public static bool enabled = true;
 
 	[ReplicatedVar]

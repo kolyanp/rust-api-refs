@@ -105,8 +105,8 @@ public class StaticInstrument : BaseMountable
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(int),
@@ -124,8 +124,8 @@ public class StaticInstrument : BaseMountable
 		ClientRPC(RpcTarget.NetworkGroup("Client_PlayNote"), arg, arg2, arg3, arg4);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server]
 	private void Server_StopNote(RPCMessage msg)
 	{
 		int arg = msg.read.Int32();

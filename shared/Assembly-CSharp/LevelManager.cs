@@ -63,6 +63,7 @@ public static class LevelManager
 				strName = "Procedural Map";
 			}
 			Log("Loading level: " + strName);
+			string currentLevelName = CurrentLevelName;
 			CurrentLevelName = null;
 			Scene sceneByName = SceneManager.GetSceneByName("EmptyLastScene");
 			if (!sceneByName.IsValid())
@@ -80,7 +81,7 @@ public static class LevelManager
 					list.Add(name);
 				}
 			}
-			int num = List.FindIndex<string>((IReadOnlyList<string>)list, CurrentLevelName, (IEqualityComparer<string>)StringComparer.OrdinalIgnoreCase);
+			int num = List.FindIndex<string>((IReadOnlyList<string>)list, currentLevelName, (IEqualityComparer<string>)StringComparer.OrdinalIgnoreCase);
 			if (num >= 0)
 			{
 				string item = list[num];

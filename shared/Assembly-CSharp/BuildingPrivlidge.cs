@@ -1468,8 +1468,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		return baseLock.OnTryToOpen(player);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void AddAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player))
@@ -1543,8 +1543,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		UpdatePrivilegeReceivers();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_Rotate(RPCMessage msg)
 	{
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)

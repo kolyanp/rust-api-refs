@@ -23,7 +23,7 @@ public class MeleeWeaponAnimationSubSystem : ChildAnimatorSubSystem
 	[SerializeField]
 	private float SpineLookAtSpeedCap = 2f;
 
-	[Tooltip("Seconds to blend the spine look at in and out when aiming")]
 	[SerializeField]
+	[Tooltip("Seconds to blend the spine look at in and out when aiming")]
 	private float SpineLookAtAimBlendTime = 0.1f;
 }

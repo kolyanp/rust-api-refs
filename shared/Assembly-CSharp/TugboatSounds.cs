@@ -47,8 +47,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Transform bridgeControlsTransform;
 
-	[SerializeField]
 	[Header("Water")]
+	[SerializeField]
 	private SoundDefinition waterIdleDef;
 
 	[SerializeField]
@@ -124,8 +124,8 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 
 	private float lastChainRattle;
 
-	[SerializeField]
 	[Header("Horn")]
+	[SerializeField]
 	private SoundDefinition hornLoop;
 
 	[SerializeField]
@@ -134,14 +134,14 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private SoundDefinition hornStop;
 
+	[SerializeField]
 	[Tooltip("The maximum amount of time a looped horn can last. If 0s then this is ignored.")]
 	[Min(0f)]
-	[SerializeField]
 	private float maxHornTime;
 
-	[Min(0f)]
 	[Tooltip("Used for rate limiting. This defines the maximum number of horn spams that can be invoked one after another.")]
 	[SerializeField]
+	[Min(0f)]
 	private int hornTokenCapacity = 3;
 
 	[SerializeField]

@@ -183,8 +183,8 @@ public class RepairBench : StorageContainer
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void ChangeSkin(RPCMessage msg)
 	{
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)

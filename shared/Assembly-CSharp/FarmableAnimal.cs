@@ -669,8 +669,8 @@ public class FarmableAnimal : BaseCombatEntity
 		data.sunlight = AnimalSunlight;
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void RequestNameChange(RPCMessage msg)
 	{
 		string text = CleanPlayerName(msg.read.String(12));

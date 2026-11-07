@@ -202,15 +202,15 @@ public class ScientistBrain : BaseAIBrain
 
 		private StateStatus MountedThink(BaseAIBrain brain, HumanNPC crew, BaseEntity targetEntity)
 		{
-			//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 			//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
 			BaseEntity bestTarget = crew.GetBestTarget();
 			if ((Object)(object)bestTarget != (Object)null && (Object)(object)bestTarget != (Object)(object)targetEntity && brain.Senses.Memory.IsLOS(bestTarget))
 			{
@@ -218,34 +218,31 @@ public class ScientistBrain : BaseAIBrain
 				brain.Navigator.SetFacingDirectionEntity(bestTarget);
 				return StateStatus.Running;
 			}
-			if (!TryGetLastSeenPosition(brain, targetEntity, out var position))
+			if (!TryGetLastSeen(brain, targetEntity, out var lastSeen))
 			{
 				return StateStatus.Running;
 			}
-			Vector3 val = position + Vector3.up - crew.eyes.position;
+			Vector3 val = lastSeen.Position + Vector3.up - crew.eyes.position;
 			brain.Navigator.SetFacingDirectionOverride(val.normalized);
-			if (val.magnitude <= crew.EngagementRange() && Vector3.Dot(crew.eyes.BodyForward(), val.normalized) > 0.95f)
+			if (val.magnitude <= crew.EngagementRange() && Time.realtimeSinceStartup - lastSeen.Timestamp < 5f && Vector3.Dot(crew.eyes.BodyForward(), val.normalized) > 0.95f)
 			{
 				crew.ShotTest(val.magnitude);
 			}
 			return StateStatus.Running;
 		}
 
-		private static bool TryGetLastSeenPosition(BaseAIBrain brain, BaseEntity target, out Vector3 position)
+		private static bool TryGetLastSeen(BaseAIBrain brain, BaseEntity target, out SimpleAIMemory.SeenInfo lastSeen)
 		{
-			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 			List<SimpleAIMemory.SeenInfo> all = brain.Senses.Memory.All;
 			for (int i = 0; i < all.Count; i++)
 			{
 				if ((Object)(object)all[i].Entity == (Object)(object)target)
 				{
-					position = all[i].Position;
+					lastSeen = all[i];
 					return true;
 				}
 			}
-			position = default;
+			lastSeen = default;
 			return false;
 		}
 	}

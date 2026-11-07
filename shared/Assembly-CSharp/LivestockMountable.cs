@@ -112,8 +112,8 @@ public class LivestockMountable : NPCMountable
 		return false;
 	}
 
-	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	[BaseEntity.RPC_Server.CallsPerSecond(1uL)]
+	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	[BaseEntity.RPC_Server]
 	private void RPC_LoadAnimal(BaseEntity.RPCMessage msg)
 	{
@@ -128,9 +128,9 @@ public class LivestockMountable : NPCMountable
 		}
 	}
 
-	[BaseEntity.RPC_Server]
-	[BaseEntity.RPC_Server.CallsPerSecond(1uL)]
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
+	[BaseEntity.RPC_Server.CallsPerSecond(1uL)]
+	[BaseEntity.RPC_Server]
 	private void RPC_UnloadAnimal(BaseEntity.RPCMessage msg)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)

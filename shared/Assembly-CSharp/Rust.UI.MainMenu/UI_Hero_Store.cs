@@ -30,8 +30,8 @@ public class UI_Hero_Store : UI_Hero_InfoBox
 	[SerializeField]
 	private List<Image> _progressBarHolders;
 
-	[SerializeField]
 	[Header("On Hover Animation")]
+	[SerializeField]
 	private CanvasGroup _menuBlurGroup;
 
 	[SerializeField]

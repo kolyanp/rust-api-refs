@@ -1,9 +1,8 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 public class WearableNotifyTrophyMounted : WearableNotify, IPrefabPreProcess
 {
-	public UnityEvent OnMounted = new UnityEvent();
+	public GameObject[] HideOnTrophy;
 
 	public Renderer[] EmissionToggles;
 
@@ -18,11 +17,5 @@ public class WearableNotifyTrophyMounted : WearableNotify, IPrefabPreProcess
 
 	public void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
-	}
-
-	public WearableNotifyTrophyMounted()
-	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Expected Obj, but got Unknown
 	}
 }

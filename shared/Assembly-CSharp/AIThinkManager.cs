@@ -26,12 +26,12 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 	[Help("How many miliseconds to budget for processing AI entities per server frame")]
 	public static float framebudgetms = 2f;
 
-	[ServerVar]
 	[Help("How many miliseconds to budget for processing animal AI entities per server frame")]
+	[ServerVar]
 	public static float animalframebudgetms = 0.2f;
 
-	[ServerVar]
 	[Help("How many miliseconds to budget for processing pet AI entities per server frame")]
+	[ServerVar]
 	public static float petframebudgetms = 1f;
 
 	private static int lastIndex = 0;

@@ -323,8 +323,8 @@ public abstract class BuildingManager
 
 	private float maxBuildingBlockExtent;
 
-	[ClientVar(ClientAdmin = true, Help = "Draws this client's building privilege queries")]
 	[ServerVar(Help = "Draws server building privilege queries")]
+	[ClientVar(ClientAdmin = true, Help = "Draws this client's building privilege queries")]
 	public static bool DebugPrivilegeQueries = false;
 
 	[ServerVar(Help = "Draws the building block grid around admins")]

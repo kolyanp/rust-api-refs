@@ -1269,8 +1269,8 @@ public class Weather : ConsoleSystem
 	{
 	}
 
-	[ServerVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
 	[ClientVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
+	[ServerVar(Help = "(Generated) Loads a named volumetric cloud configuration and applies it to the climate override; admin/developer only; server replicates to clients")]
 	public static void load_cloud_config(Arg args)
 	{
 		if (!Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -1331,8 +1331,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
 	[ClientVar(AllowRunFromServer = true, Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
+	[ServerVar(Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
 	public static void reset(Arg args)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -1347,8 +1347,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a detailed report of the current weather state including fog, rain, wind, cloud, and all climate parameter values; admin/developer only")]
 	[ClientVar(Help = "(Generated) Prints a detailed report of the current weather state including fog, rain, wind, cloud, and all climate parameter values; admin/developer only")]
+	[ServerVar(Help = "(Generated) Prints a detailed report of the current weather state including fog, rain, wind, cloud, and all climate parameter values; admin/developer only")]
 	public static void report(Arg args)
 	{
 		if (!Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))

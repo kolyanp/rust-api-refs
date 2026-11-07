@@ -156,9 +156,9 @@ public class Uzi : BaseProjectile
 		return base.GetDeployDelay();
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void ToggleStock(RPCMessage _)
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)

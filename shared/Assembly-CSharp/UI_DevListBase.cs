@@ -19,8 +19,8 @@ public abstract class UI_DevListBase : UI_Window
 	[SerializeField]
 	protected GameObjectRef itemButtonPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	protected RectTransform categoryButtonsParent;
 
 	[SerializeField]
@@ -32,8 +32,8 @@ public abstract class UI_DevListBase : UI_Window
 	[SerializeField]
 	protected FlexVirtualScroll virtualScrollFlex;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	protected RustButton favouritesButton;
 
 	[SerializeField]

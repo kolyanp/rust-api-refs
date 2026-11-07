@@ -15,8 +15,8 @@ public class ItemModWorkbenchReinforced : ItemModWorkbenchUpgrade
 	[Tooltip("Flat HP to add for the IO/Engineering bench.")]
 	public float healthBonusIOBench = 500f;
 
-	[Tooltip("Fraction of explosive damage to absorb (0-1).")]
 	[Range(0f, 1f)]
+	[Tooltip("Fraction of explosive damage to absorb (0-1).")]
 	[Header("Reinforced - Explosive Resistance")]
 	public float explosiveResistance = 0.5f;
 

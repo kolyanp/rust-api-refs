@@ -40,23 +40,23 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	private float throttleInput;
 
-	[SerializeField]
 	[Header("Battering Ram")]
+	[SerializeField]
 	private Animator animator;
 
 	[SerializeField]
 	private Transform damagePoint;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private float timeBetweenFire = 2f;
 
 	[SerializeField]
 	private float maxForwardSpeed = 1.5f;
 
-	[SerializeField]
-	[Header("Head")]
 	[Space]
+	[Header("Head")]
+	[SerializeField]
 	private BatteringRamHead headPrefab;
 
 	[SerializeField]
@@ -89,8 +89,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private Transform steeringWheel;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 steerAngle;
 
 	public VehicleModuleEngine.Engine engine;
@@ -109,8 +109,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[ServerVar(ClientAdmin = true, Default = "2", Help = "(Generated) Maximum building block upgrade grade (0=twig,1=wood,2=stone,3=metal,4=top tier) that the battering ram can damage; default 2 (stone)")]
 	public static int maxBuildingBlockGrade = 2;
 
-	[SerializeField]
 	[Header("Door")]
+	[SerializeField]
 	private Transform doorTransform;
 
 	[SerializeField]
@@ -133,8 +133,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public GameObjectRef closeEndEffect;
 
-	[Header("Effects")]
 	[Tooltip("Effect played at local 0,0,0 in addition to the impact effects")]
+	[Header("Effects")]
 	public GameObjectRef hitEffect;
 
 	public VehicleLight[] vehicleLights;
@@ -439,9 +439,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		ComponentExtensions.SetActive<Transform>(doorTransform, false);
 	}
 
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	protected void RPC_OpenDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanOpenDoor() && Interface.CallHook("OnSiegeWeaponDoorOpen", this, rpc.player) == null)
@@ -450,9 +450,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	protected void RPC_CloseDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanCloseDoor() && Interface.CallHook("OnSiegeWeaponDoorClose", this, rpc.player) == null)
@@ -748,8 +748,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_WantsAttack(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

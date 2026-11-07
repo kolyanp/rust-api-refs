@@ -708,8 +708,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private bool forceRefreshCollidersData;
 
-	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	[Tooltip("You can use this variable to blend intensity of spine animator motion over skeleton animation\n\nValue = 1: Animation with spine Animator motion\nValue = 0: Only skeleton animation")]
+	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	public float SpineAnimatorAmount = 1f;
 
 	private Quaternion Rotate180 = Quaternion.Euler(0f, 180f, 0f);
@@ -836,32 +836,32 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Generating offset runtime only, allows you to adjust it on prefabs on scene")]
 	public bool PivotOffsetOnStart = true;
 
-	[Range(0f, 1f)]
 	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
+	[Range(0f, 1f)]
 	public float PosSmoother;
 
 	[Range(0f, 1f)]
 	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	public float RotSmoother;
 
-	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	[Range(0f, 1f)]
+	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	public float MaxStretching = 1f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
+	[Range(0f, 1f)]
 	public float Slithery = 1f;
 
-	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
 	[Range(1f, 91f)]
+	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
 	public float AngleLimit = 40f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
+	[Range(0f, 1f)]
 	public float LimitSmoother = 0.35f;
 
-	[Range(0f, 15f)]
 	[Tooltip("How fast spine should be rotated to straight pose when your character moves.")]
+	[Range(0f, 15f)]
 	public float StraightenSpeed = 7.5f;
 
 	public bool TurboStraighten;
@@ -870,8 +870,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float GoBackSpeed;
 
-	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	[Range(0f, 1f)]
+	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	public float Springiness;
 
 	[Range(0f, 1f)]

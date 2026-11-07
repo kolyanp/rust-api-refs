@@ -160,8 +160,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		[ReadOnly]
 		public NativeArray<int> slotUpdates;
 
-		[NativeDisableParallelForRestriction]
 		[ReadOnly]
+		[NativeDisableParallelForRestriction]
 		public NativeArray<IntPtr> queries;
 
 		[ReadOnly]

@@ -21,8 +21,8 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_Landed : FSMStateBase
 	{
-		[Tooltip("How far from a land point a group that spawned on it can be and still claim it.")]
 		[SerializeField]
+		[Tooltip("How far from a land point a group that spawned on it can be and still claim it.")]
 		private float claimRadius = 5f;
 
 		[Tooltip("How close a player the group has seen can get before it takes off, in metres.")]
@@ -95,8 +95,8 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_FlyAway : State_SeagullFly
 	{
-		[SerializeField]
 		[Tooltip("How long the group flies straight away from the scare before it turns back to circle home, in seconds.")]
+		[SerializeField]
 		private Vector2 durationRange = new Vector2(3f, 6f);
 
 		[Tooltip("Played for every player in range as the group is startled into the air, attached to the group so it follows the flock away.")]
@@ -107,8 +107,8 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private float speedRampTime = 3f;
 
-		[SerializeField]
 		[Tooltip("How far the way the group takes off has to be clear, in metres. It turns aside from walls rather than flying the birds into them.")]
+		[SerializeField]
 		private float takeoffClearance = 60f;
 
 		private const float clearTurnStep = 30f;
@@ -278,12 +278,12 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_CircleHome : State_SeagullFly
 	{
-		[SerializeField]
 		[Tooltip("How long the group circles before it looks for somewhere to land, in seconds.")]
+		[SerializeField]
 		private Vector2 durationRange = new Vector2(15f, 60f);
 
-		[SerializeField]
 		[Tooltip("Radius of the circle around home, in metres. Rolled each time the group starts circling.")]
+		[SerializeField]
 		private Vector2 radiusRange = new Vector2(25f, 50f);
 
 		[Tooltip("How far ahead round the circle the group aims, in radians. Too little and it cuts inside, too much and it drifts outside.")]
@@ -339,16 +339,16 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private float homeRadius = 150f;
 
-		[SerializeField]
 		[Tooltip("How far away a land point can be to fly to when every point near home is taken, in metres. The rare case where the group leaves.")]
+		[SerializeField]
 		private Vector2 searchDistance = new Vector2(30f, 500f);
 
 		[Tooltip("Radius the group circles home at while it waits for a land point to come free, in metres.")]
 		[SerializeField]
 		private float waitRadius = 40f;
 
-		[SerializeField]
 		[Tooltip("How close to the land point counts as arrived, where the group stops steering and comes straight down.")]
+		[SerializeField]
 		private float arriveDistance = 15f;
 
 		private const float searchInterval = 5f;
@@ -435,8 +435,8 @@ public class SeagullGroupFSM : FSMComponent
 	[Serializable]
 	public class State_Land : FSMStateBase
 	{
-		[Tooltip("How fast the group closes on the spot above the land point, in metres per second.")]
 		[SerializeField]
+		[Tooltip("How fast the group closes on the spot above the land point, in metres per second.")]
 		private float approachSpeed = 8f;
 
 		[Tooltip("How fast the group comes down onto the land point, in metres per second.")]
@@ -447,8 +447,8 @@ public class SeagullGroupFSM : FSMComponent
 		[SerializeField]
 		private float groundSearchDistance = 2f;
 
-		[SerializeField]
 		[Tooltip("How long the group waits after touching down for its last birds to glide in, in seconds. It keeps the bounds that reach up to them until then.")]
+		[SerializeField]
 		private float settleTime = 3f;
 
 		private const float maxDeltaTime = 0.25f;

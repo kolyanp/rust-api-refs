@@ -19,8 +19,8 @@ public sealed class AmbientOcclusion : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[Tooltip("The custom color to use for the ambient occlusion. The default is black.")]
 	[ColorUsage(false)]
+	[Tooltip("The custom color to use for the ambient occlusion. The default is black.")]
 	public ColorParameter color = new ColorParameter
 	{
 		value = Color.black

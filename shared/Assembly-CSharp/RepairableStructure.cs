@@ -4,8 +4,8 @@ public class RepairableStructure : ConstructableEntity
 {
 	public const Flags Flag_Repaired = Flags.Reserved1;
 
-	[Tooltip("Root holding the damaged build stages. Switched off once fully repaired.")]
 	[Header("Repairable Structure")]
+	[Tooltip("Root holding the damaged build stages. Switched off once fully repaired.")]
 	public GameObject damagedVisuals;
 
 	[Tooltip("Root holding the intact visuals. Only shown once fully repaired.")]
