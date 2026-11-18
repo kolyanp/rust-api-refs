@@ -139,9 +139,9 @@ public class TugboatSounds : MonoBehaviour, IClientComponent
 	[Min(0f)]
 	private float maxHornTime;
 
-	[Tooltip("Used for rate limiting. This defines the maximum number of horn spams that can be invoked one after another.")]
 	[SerializeField]
 	[Min(0f)]
+	[Tooltip("Used for rate limiting. This defines the maximum number of horn spams that can be invoked one after another.")]
 	private int hornTokenCapacity = 3;
 
 	[SerializeField]

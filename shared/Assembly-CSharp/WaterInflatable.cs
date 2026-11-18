@@ -405,6 +405,11 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 		}
 	}
 
+	public override float AntiHackPadding()
+	{
+		return 0.45f;
+	}
+
 	public void OnObjects(TriggerNotify trigger)
 	{
 		if (isClient)

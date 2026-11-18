@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class UIBackgroundBlur : ListComponent<UIBackgroundBlur>, IClientComponent
 {
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float amount = 1f;
 
-	[Range(0f, 10f)]
 	[SerializeField]
+	[Range(0f, 10f)]
 	private float blurSize;
 
 	public float Amount

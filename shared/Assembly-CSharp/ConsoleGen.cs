@@ -16466,7 +16466,7 @@ public class ConsoleGen
 			{
 				Net.position_lod = StringExtensions.ToInt(str, 0);
 			},
-			Default = "0"
+			Default = "2"
 		},
 		new ConsoleSystem.Command
 		{
@@ -16488,7 +16488,7 @@ public class ConsoleGen
 			{
 				Net.position_lod_players = StringExtensions.ToInt(str, 0);
 			},
-			Default = "0"
+			Default = "2"
 		},
 		new ConsoleSystem.Command
 		{

@@ -122,7 +122,7 @@ public class CombatLog
 		val.target_id = (((Object)(object)hitEntity != (Object)null && hitEntity.net != null) ? hitEntity.net.ID : default(NetworkableId)).Value;
 		val.attacker = (((Object)(object)player == (Object)(object)attacker) ? "you" : (attacker?.ShortPrefabName ?? "N/A"));
 		val.target = (((Object)(object)player == (Object)(object)hitEntity) ? "you" : (hitEntity?.ShortPrefabName ?? "N/A"));
-		val.weapon = (((Object)(object)weapon != (Object)null) ? ((Object)weapon).name : "N/A");
+		val.weapon = (((Object)(object)weapon != (Object)null) ? weapon.ShortPrefabName : "N/A");
 		string ammo;
 		if ((Object)(object)projectilePrefab != (Object)null)
 		{

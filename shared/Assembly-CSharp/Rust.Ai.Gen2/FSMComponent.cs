@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace Rust.Ai.Gen2;
 
-[SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
 [SoftRequireComponent(typeof(BlackboardComponent), typeof(NPCEncounterTimer))]
+[SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
 public class FSMComponent : EntityComponent<BaseEntity>
 {
 	protected struct AliveLayout
@@ -577,10 +577,7 @@ public class FSMComponent : EntityComponent<BaseEntity>
 	{
 		using (TimeWarning.New("SetState"))
 		{
-			if (CurrentState == null)
-			{
-				BindToOwner(newState);
-			}
+			BindToOwner(newState);
 			newState = RedirectStateChange(newState);
 			pendingStateChange = null;
 			pendingStateChangePayload = default;

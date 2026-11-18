@@ -7,11 +7,11 @@ using UnityEngine.Scripting;
 
 namespace UnityEngine.Rendering.PostProcessing;
 
-[ImageEffectAllowedInSceneView]
+[RequireComponent(typeof(Camera))]
 [ExecuteAlways]
 [DisallowMultipleComponent]
-[RequireComponent(typeof(Camera))]
 [AddComponentMenu("Rendering/Post-process Layer", 1000)]
+[ImageEffectAllowedInSceneView]
 public class PostProcessLayer : MonoBehaviour
 {
 	private enum ScalingMode
@@ -72,8 +72,8 @@ public class PostProcessLayer : MonoBehaviour
 	[Preserve]
 	private bool m_ShowToolkit;
 
-	[Preserve]
 	[SerializeField]
+	[Preserve]
 	private bool m_ShowCustomSorter;
 
 	public bool breakBeforeColorGrading;

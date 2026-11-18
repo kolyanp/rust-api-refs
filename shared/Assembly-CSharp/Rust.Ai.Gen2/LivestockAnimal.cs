@@ -273,8 +273,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float conditionUnsentHealth;
 
-	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
 	[Header("Day activity")]
+	[Tooltip("Fullness at or below this is starving rather than peckish. A starving animal gets up from a lie down and breaks off a curious walk to go and eat.")]
 	[Range(0f, 1f)]
 	public float StarvingThreshold = 0.2f;
 
@@ -283,15 +283,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float[] activityWeights;
 
-	[Tooltip("Leave empty for an age stage that shouldn't dung, like a calf.")]
 	[Header("Dung")]
+	[Tooltip("Leave empty for an age stage that shouldn't dung, like a calf.")]
 	public ItemDefinition DungItem;
 
 	[Tooltip("Seconds between drops. Zero disables it.")]
 	public float DungInterval;
 
-	[Tooltip("Fraction of DungInterval each wait is randomised by, so a herd doesn't drop in lockstep. 0.2 is +/-20%.")]
 	[Range(0f, 1f)]
+	[Tooltip("Fraction of DungInterval each wait is randomised by, so a herd doesn't drop in lockstep. 0.2 is +/-20%.")]
 	public float DungIntervalVariance = 0.2f;
 
 	[Tooltip("Falls back to the animal's origin when unset.")]
@@ -327,8 +327,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float lastDefendedAttack = float.NegativeInfinity;
 
-	[Header("Feeding slots")]
 	[Tooltip("How far the nose reaches while eating from a trough, as a share of how far it reaches standing, so a slot stands the animal with its nose where the slot says. The trough eating clips measure 0.92 for a cow and 0.86 for a sheep, and 0.9 puts both within 4cm.")]
+	[Header("Feeding slots")]
 	public float TroughReachScale = 0.9f;
 
 	public const float SlotSearchRadius = 30f;
@@ -393,8 +393,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How much hydration refills per second while the animal has its head in the water.")]
 	public float HydrationFillRate = 0.25f;
 
-	[Tooltip("Where a freshly spawned animal's hydration starts. Full, so a new animal has one thing less to go and sort out before it settles in.")]
 	[Range(0f, 1f)]
+	[Tooltip("Where a freshly spawned animal's hydration starts. Full, so a new animal has one thing less to go and sort out before it settles in.")]
 	public float StartingHydration = 1f;
 
 	[Tooltip("How much hydration drains per second while the animal is up and about in daylight. Tiny, because one mouthful refills the animal completely: this sets how often it goes for a drink rather than how long it stands there. At 0.00001 a full animal is down to the ConsumeThreshold of 0.95 after about 5000 seconds of daylight, which is one trip to the water in a shipped waking day.")]
@@ -441,8 +441,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 
 	private float potential;
 
-	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
 	[Header("Sleep")]
+	[Tooltip("How long (in seconds) after dusk this animal can take to settle, and after dawn to rise. Each animal rolls its own point in that window, so a herd beds down over a spread rather than dropping on one frame. Zero puts the whole herd on the same clock.")]
 	public float SleepTimeVariance = 45f;
 
 	[Tooltip("How far (in metres) from the middle of the herd is close enough to lie down. Further out than this and the animal walks in first, so the herd sleeps as a group.")]
@@ -586,8 +586,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Header("Aging")]
 	public float TimeToGrow;
 
-	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	[Range(0f, 1f)]
+	[Tooltip("Random variance applied to TimeToGrow when the animal first spawns, as a fraction of it. 0.1 means +/-10%, so a herd doesn't all grow up in lockstep.")]
 	public float GrowTimeVariance = 0.1f;
 
 	public GameObjectRef GrowEffect;
@@ -628,15 +628,15 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 	[Tooltip("How far (in metres) the animal looks for somewhere to feed itself - a trough, a water barrel, open grass or a river bank.")]
 	public float ConsumeSearchRadius = 25f;
 
-	[Tooltip("A need at or below this sends the animal off to top it up, and grass, a trough or water all fill it back to full. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it, about 0.93 to 1 whatever feeds it. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
 	[Range(0f, 1f)]
+	[Tooltip("A need at or below this sends the animal off to top it up, and grass, a trough or water all fill it back to full. High on purpose: a keeper reads the bar as whether the pen is set up right, so a well kept animal has to sit near the top of it, about 0.93 to 1 whatever feeds it. The gap below the top sets how often it goes to eat, not how much of its day it spends eating.")]
 	public float ConsumeThreshold = 0.95f;
 
 	[Tooltip("How much fullness each calorie of trough food is worth. The animal grazes a trough item down before it takes the next, so richer food lasts longer, the way it does for a horse.")]
 	public float TroughFullnessPerCalorie = 0.0021f;
 
-	[Tooltip("The share of its food an animal whose grass need reads full takes off the grass. Its meals alternate between the grass and a stocked trough in reach to match, and the grass alone fills its bar no higher than this, so at 0.5 a herd on full grass with no trough sits half full.")]
 	[Range(0f, 1f)]
+	[Tooltip("The share of its food an animal whose grass need reads full takes off the grass. Its meals alternate between the grass and a stocked trough in reach to match, and the grass alone fills its bar no higher than this, so at 0.5 a herd on full grass with no trough sits half full.")]
 	public float GrassFoodShare = 0.5f;
 
 	[Tooltip("How long (in seconds) the animal takes to raise its head once it stops grazing or drinking. Clearing the flag only STARTS the head coming up, so for this long it is still visibly head down. The cow's cow_eat_out is 1.7s and the sheep's sheep_eat_exit 1.5s.")]
@@ -3836,9 +3836,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RequestNameChange(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && !TryRename(msg.player, msg.read.String(12)))
@@ -6847,8 +6847,8 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_Lead(RPCMessage msg)
 	{
@@ -6907,9 +6907,9 @@ public class LivestockAnimal : BaseNPC2, ISimpleHearingReceiver, INaturalDeathPo
 		return true;
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	private void ServerPet(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

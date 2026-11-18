@@ -10,8 +10,8 @@ public class State_DismountVehicle : FSMStateBase
 	[SerializeField]
 	public RootMotionData Animation;
 
-	[SerializeField]
 	[Tooltip("The slice of the montage that carries the animal down to the ground. Leave zeroed to warp the whole clip.")]
+	[SerializeField]
 	public MountMontageWindow travelWindow = MountMontageWindow.Whole;
 
 	private const float FacingTolerance = 5f;

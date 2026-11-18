@@ -14,8 +14,8 @@ public class SatelliteSpectatorScreenUI : MonoBehaviour
 	[SerializeField]
 	private float mapZoom = 2f;
 
-	[SerializeField]
 	[Header("Markers (optional — created procedurally if unset)")]
+	[SerializeField]
 	private RectTransform reticleRect;
 
 	[SerializeField]

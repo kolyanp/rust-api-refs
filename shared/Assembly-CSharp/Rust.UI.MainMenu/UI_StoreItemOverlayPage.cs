@@ -57,8 +57,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	}
 
 	[SerializeField]
-	[Space]
 	[Header("Page Content")]
+	[Space]
 	private CanvasGroup bodyCanvasGroup;
 
 	[SerializeField]
@@ -147,8 +147,8 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private CoverImage skinViewerImage;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private PageContent pageContent;
 
 	public bool HasFlashlightReveal => (Object)(object)flashlightReveal != (Object)null;

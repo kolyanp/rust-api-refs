@@ -14,8 +14,8 @@ public class SiegeTower : BaseSiegeWeapon
 
 	private float raiseTimer;
 
-	[Header("Siege Tower")]
 	[SerializeField]
+	[Header("Siege Tower")]
 	private SiegeTowerDoor drawBridgePrefab;
 
 	[SerializeField]

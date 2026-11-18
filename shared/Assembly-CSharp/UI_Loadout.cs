@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class UI_Loadout : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected RectTransform buttonsParents;
 
 	[SerializeField]

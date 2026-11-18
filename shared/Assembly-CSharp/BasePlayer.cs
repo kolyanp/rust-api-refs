@@ -6245,9 +6245,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		ClientRPC(RpcTarget.Player("Client_ConversationEnd", this));
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void Server_ConversationResponse(RPCMessage msg)
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
@@ -6264,9 +6264,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_ConversationRewardChoice(RPCMessage msg)
 	{
 		uint missionId = msg.read.UInt32();
@@ -6277,18 +6277,18 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.FromOwner]
-	[RPC_Server]
 	private void Server_ConversationEnd(RPCMessage msg)
 	{
 		EndActiveConversation();
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server.InputValidation(new Type[] { })]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.InputValidation(new Type[] { })]
 	private void Server_RequestLootCountdowns(RPCMessage msg)
 	{
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
@@ -6436,8 +6436,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void RequestServerEmoji()
 	{
 		RustEmojiLibrary.FindAllServerEmoji();
@@ -6447,8 +6447,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	private void ServerRequestEmojiData(RPCMessage msg)
 	{
 		string text = msg.read.String();
@@ -7349,9 +7349,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return 0;
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(16uL)]
+	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void FogImageUpdate(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -7515,8 +7515,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		currentGesture = null;
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
 	public void Server_CancelGesture()
 	{
@@ -8175,8 +8175,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		LightToggleItem(itemUID);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void ReqLightToggleEntity(RPCMessage msg)
 	{
 		ulong itemUID = msg.read.UInt64();
@@ -8216,9 +8216,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(8uL)]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(8uL)]
 	public void Server_AddMarker(RPCMessage msg)
 	{
 		MapNote val = msg.read.Proto<MapNote>((MapNote)null);
@@ -8358,17 +8358,17 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(1uL)]
 	public void Server_RequestMarkers(RPCMessage msg)
 	{
 		SendMarkersToClient();
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void Server_ClearMapMarkers(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnMapMarkersClear", this, State.pointsOfInterest) != null)
@@ -8916,8 +8916,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server.FromOwner]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_RequestValidMissionsUpdate(RPCMessage _)
 	{
 		if (IsNpc)
@@ -9606,8 +9606,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
 	private void RequestParachuteDeploy(RPCMessage msg)
 	{
 		RequestParachuteDeploy();
@@ -9791,9 +9791,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		note.icon = pingStyle.IconIndex;
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
@@ -9906,8 +9906,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	private void Server_RemovePing(RPCMessage msg)
 	{
@@ -11155,96 +11155,94 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		//IL_037e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0386: Unknown result type (might be due to invalid IL or missing references)
 		//IL_038b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0393: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0398: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1451: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1444: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1449: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1456: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1463: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1473: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1478: Unknown result type (might be due to invalid IL or missing references)
-		//IL_14d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0968: Unknown result type (might be due to invalid IL or missing references)
-		//IL_096d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c2e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c3d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c3f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c41: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c46: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c48: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c4f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c51: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c52: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c59: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c5a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c5b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c5d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1466: Unknown result type (might be due to invalid IL or missing references)
+		//IL_146b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_14c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_095b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0960: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c21: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c30: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c32: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c34: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c39: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c3b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c42: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c44: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c45: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c4c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c4d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c4e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c50: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c55: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0c62: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c6f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c81: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0c93: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0cac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0cbe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0cd0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0be9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0bee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c74: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c86: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0c9f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0cb1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0cc3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0bdc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0be1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_112e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1133: Unknown result type (might be due to invalid IL or missing references)
 		//IL_113b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1140: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1148: Unknown result type (might be due to invalid IL or missing references)
 		//IL_114d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_115a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_09cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_117c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_117e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1183: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1185: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1187: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1189: Unknown result type (might be due to invalid IL or missing references)
 		//IL_118b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1192: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1194: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1196: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1198: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1153: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1160: Unknown result type (might be due to invalid IL or missing references)
-		//IL_116d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_117c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_116a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_116f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1174: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f15: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f17: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f1d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0f22: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f24: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f2a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f2f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_08fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_133d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_08f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1330: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1335: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1342: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1347: Unknown result type (might be due to invalid IL or missing references)
 		//IL_134f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1354: Unknown result type (might be due to invalid IL or missing references)
-		//IL_135c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1361: Unknown result type (might be due to invalid IL or missing references)
-		//IL_136a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_136c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f3e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f40: Unknown result type (might be due to invalid IL or missing references)
-		//IL_137d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_137f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f50: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0f55: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_12c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_12cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_12d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_12df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_135d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_135f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_11a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f31: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f33: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1370: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1372: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f43: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0f48: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_12d2: Unknown result type (might be due to invalid IL or missing references)
 		PlayerProjectileAttack val = msg.read.Proto<PlayerProjectileAttack>((PlayerProjectileAttack)null);
 		try
 		{
@@ -11312,7 +11310,6 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 				hitInfo.damageProperties = firedProjectile.projectilePrefab.damageProperties;
 				Vector3 position = firedProjectile.position;
 				Vector3 initialPositionOffset = firedProjectile.initialPositionOffset;
-				Vector3 positionOffset = firedProjectile.positionOffset;
 				Vector3 velocity = firedProjectile.velocity;
 				float partialTime = firedProjectile.partialTime;
 				float travelTime = firedProjectile.travelTime;
@@ -11450,7 +11447,7 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 						float num17 = (flag6 ? (entityDeltaTime * num16) : 0f);
 						float magnitude = firedProjectile.initialVelocity.magnitude;
 						float num18 = hitInfo.ProjectilePrefab.initialDistance + num11 * magnitude;
-						float num19 = hitInfo.ProjectileDistance + 1f + positionOffset.magnitude + num17;
+						float num19 = hitInfo.ProjectileDistance + 1f + initialPositionOffset.magnitude + num17;
 						parentVelocity = estimatedVelocity;
 						float num20 = num19 + parentVelocity.magnitude;
 						if (num12 > num18)
@@ -11865,8 +11862,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	public void OnProjectileUpdate(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -14389,22 +14386,22 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void ClientKeepConnectionAlive(RPCMessage msg)
 	{
 		lastTickTime = Time.time;
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void ClientLoadingComplete(RPCMessage msg)
 	{
 		TryDisableTransferProtectionOnLoaded();
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void Server_OnClientDemoRecordingStateChanged(RPCMessage msg)
 	{
 		if (net == null || net.connection == null || !(net.connection.player is BasePlayer basePlayer))
@@ -14695,9 +14692,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return result;
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void RequestRespawnInformation(RPCMessage msg)
 	{
 		SendRespawnOptions();
@@ -15131,8 +15128,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void OnPlayerLanded(RPCMessage msg)
 	{
 		float num = msg.read.Float();
@@ -16472,8 +16469,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return net.connection.info.GetString(key, defaultVal);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	public void PerformanceReport(RPCMessage msg)
 	{
@@ -16611,9 +16608,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		return false;
 	}
 
+	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
-	[RPC_Server.FromOwner]
 	public async void OnPlayerReported(RPCMessage msg)
 	{
 		try
@@ -17114,9 +17111,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		Hurt(Handcuffs.restrainedPushDamage, DamageType.Generic, player, useProtection: false);
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	private void RPC_ReqRemoveCuffs(RPCMessage rpc)
 	{
@@ -17135,10 +17132,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void RPC_ReqRemoveHood(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -17164,8 +17161,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	private void RPC_ReqEquipHood(RPCMessage rpc)
 	{
@@ -17208,10 +17205,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		inventory.SetLockedByRestraint(flag: true);
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void RPC_ReqForceMountNearest(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -17279,10 +17276,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		Pool.FreeUnmanaged<BaseMountable>(ref list);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_ReqForceSwapSeat(RPCMessage rpc)
 	{
 		if (!isMounted || !IsRestrained || IsDead() || IsSleeping() || IsWounded() || (Object)(object)rpc.player == (Object)null)
@@ -18510,10 +18507,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		SendNetworkUpdate_Position();
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void UpdateSpectatePositionFromDebugCamera(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -18538,6 +18535,11 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 
 	public bool WantsSplash(ItemDefinition splashType, int amount)
 	{
+		object obj = Interface.CallHook("CanBeSplashed", this, splashType, amount);
+		if (obj is bool)
+		{
+			return (bool)obj;
+		}
 		if (IsSleeping())
 		{
 			return false;
@@ -20288,8 +20290,8 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void PlayerRequestedTutorialStart(RPCMessage msg)
 	{
 		if (ConVar.Server.tutorialEnabled)

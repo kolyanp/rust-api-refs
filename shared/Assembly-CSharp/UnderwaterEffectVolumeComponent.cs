@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [Serializable]
-[SupportedOnRenderPipeline(typeof(RustRenderPipelineAsset))]
 [VolumeComponentMenu("RRP/Underwater Post Effect")]
+[SupportedOnRenderPipeline(typeof(RustRenderPipelineAsset))]
 public class UnderwaterEffectVolumeComponent : VolumeComponent, IPostProcessComponent
 {
 	[Header("Wiggle")]

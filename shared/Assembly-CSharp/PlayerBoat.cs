@@ -427,8 +427,8 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	[ServerVar(Help = "(Generated) Maximum angle in degrees from vertical at which building blocks can be placed on a player boat; default 30 degrees")]
 	public static float PlacementUpThreshold = 30f;
 
-	[Help("How long until player boat corpses despawn")]
 	[ServerVar]
+	[Help("How long until player boat corpses despawn")]
 	public static float corpseseconds = 1800f;
 
 	[ServerVar(Help = "How long before a boat loses all its health while outside")]
@@ -688,10 +688,10 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	public void Init(List<BoatBuildingBlock> blocks, List<BaseEntity> ents, Vector3 halfExtents, bool loading)
 	{
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		rigidBody.isKinematic = true;
 		bool autoSyncTransforms = Physics.autoSyncTransforms;
 		try
@@ -701,6 +701,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			{
 				ParentChildBlocks(blocks);
 				ParentChildEntities(ents);
+				DisconnectIOConnectionsOffBoat(this);
 			}
 			ParentBlockTriggers(blocks);
 		}
@@ -1051,6 +1052,41 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			ent.SetParent(this, worldPositionStays: true);
 		}
 		OnEntitiesAddedToBoat();
+	}
+
+	private void DisconnectIOConnectionsOffBoat(BaseEntity parent)
+	{
+		foreach (BaseEntity child in parent.children)
+		{
+			if (child is IOEntity iOEntity)
+			{
+				for (int i = 0; i < iOEntity.inputs.Length; i++)
+				{
+					if (IsConnectedOffBoat(iOEntity.inputs[i]))
+					{
+						iOEntity.Disconnect(i, isInput: true);
+					}
+				}
+				for (int j = 0; j < iOEntity.outputs.Length; j++)
+				{
+					if (IsConnectedOffBoat(iOEntity.outputs[j]))
+					{
+						iOEntity.Disconnect(j, isInput: false);
+					}
+				}
+			}
+			DisconnectIOConnectionsOffBoat(child);
+		}
+	}
+
+	private bool IsConnectedOffBoat(IOEntity.IOSlot slot)
+	{
+		IOEntity iOEntity = slot.connectedTo.Get();
+		if ((Object)(object)iOEntity != (Object)null)
+		{
+			return (Object)(object)GetParentPlayerBoat(iOEntity) != (Object)(object)this;
+		}
+		return false;
 	}
 
 	private void OnEntitiesAddedToBoat()

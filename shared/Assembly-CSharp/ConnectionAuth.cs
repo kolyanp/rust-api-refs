@@ -16,7 +16,7 @@ public class ConnectionAuth : MonoBehaviour
 
 	private static RealTimeSince _sinceClientRequirementRefresh;
 
-	private static (int, int)? _clientRequirementCache;
+	private static long? _clientRequirementCache;
 
 	private static string _clientVersionMismatchMessage;
 
@@ -125,8 +125,8 @@ public class ConnectionAuth : MonoBehaviour
 		}
 		if (connection.authLevel == 0)
 		{
-			(int, int)? minClientRequirement = GetMinClientRequirement();
-			if (minClientRequirement.HasValue && (connection.clientChangeset < minClientRequirement.Value.Item1 || connection.clientBuildTime < minClientRequirement.Value.Item2))
+			long? minClientBuildTime = GetMinClientBuildTime();
+			if (minClientBuildTime.HasValue && connection.clientBuildTime < minClientBuildTime.Value)
 			{
 				Reject(connection, GetClientVersionMismatchMessage());
 				yield break;
@@ -135,7 +135,7 @@ public class ConnectionAuth : MonoBehaviour
 		Approve(connection);
 	}
 
-	private static (int Changeset, int BuildTime)? GetMinClientRequirement()
+	private static long? GetMinClientBuildTime()
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -182,9 +182,7 @@ public class ConnectionAuth : MonoBehaviour
 				JToken val2 = (JToken)obj3;
 				if (val2 != null && (int)val2.Type == 1)
 				{
-					int item = val2.Value<int>((object)"Changeset");
-					int item2 = val2.Value<int>((object)"Timestamp");
-					_clientRequirementCache = (item, item2);
+					_clientRequirementCache = val2.Value<long>((object)"Timestamp");
 				}
 			}
 		}

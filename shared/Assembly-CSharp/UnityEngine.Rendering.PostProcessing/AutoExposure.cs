@@ -14,17 +14,17 @@ public sealed class AutoExposure : PostProcessEffectSettings
 		value = new Vector2(50f, 95f)
 	};
 
-	[Range(-9f, 9f)]
-	[DisplayName("Minimum (EV)")]
 	[Tooltip("Minimum average luminance to consider for auto exposure. Unit is EV.")]
+	[DisplayName("Minimum (EV)")]
+	[Range(-9f, 9f)]
 	public FloatParameter minLuminance = new FloatParameter
 	{
 		value = 0f
 	};
 
+	[DisplayName("Maximum (EV)")]
 	[Range(-9f, 9f)]
 	[Tooltip("Maximum average luminance to consider for auto exposure. Unit is EV.")]
-	[DisplayName("Maximum (EV)")]
 	public FloatParameter maxLuminance = new FloatParameter
 	{
 		value = 0f
@@ -38,8 +38,8 @@ public sealed class AutoExposure : PostProcessEffectSettings
 		value = 1f
 	};
 
-	[DisplayName("Type")]
 	[Tooltip("Use \"Progressive\" if you want auto exposure to be animated. Use \"Fixed\" otherwise.")]
+	[DisplayName("Type")]
 	public EyeAdaptationParameter eyeAdaptation = new EyeAdaptationParameter
 	{
 		value = EyeAdaptation.Progressive

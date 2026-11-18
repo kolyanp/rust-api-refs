@@ -14,12 +14,12 @@ public class TwoAxisOneShotBlend : AnimationSubSystem
 	[SerializeField]
 	private AnimationClip WestClip;
 
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
 	private float XAxis;
 
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
 	private float YAxis;
 
 	[SerializeField]

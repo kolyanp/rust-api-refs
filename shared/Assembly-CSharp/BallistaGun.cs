@@ -7,8 +7,8 @@ using UnityEngine.Assertions;
 
 public class BallistaGun : BaseMountedWeapon
 {
-	[SerializeField]
 	[Header("Ballista")]
+	[SerializeField]
 	private bool noHeadshots = true;
 
 	public DamageRenderer damageRenderer;
@@ -116,8 +116,8 @@ public class BallistaGun : BaseMountedWeapon
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxRepeatedElements(1)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.FromMounted]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{

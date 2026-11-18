@@ -208,8 +208,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists all networked entities whose prefab path contains the given filter string in a formatted table; admin-only on client")]
 	[ServerVar(Help = "(Generated) Lists all networked entities whose prefab path contains the given filter string in a formatted table; admin-only on client")]
+	[ClientVar(Help = "(Generated) Lists all networked entities whose prefab path contains the given filter string in a formatted table; admin-only on client")]
 	public static void find_entity(Arg args)
 	{
 		string filter = args.GetString(0);
@@ -251,8 +251,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
 	[ClientVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
+	[ServerVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
 	public static void find_group(Arg args)
 	{
 		uint filter = args.GetUInt(0);
@@ -268,8 +268,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists all networked entities that have the given network entity ID as their parent in a formatted table; admin-only on client")]
 	[ServerVar(Help = "(Generated) Lists all networked entities that have the given network entity ID as their parent in a formatted table; admin-only on client")]
+	[ClientVar(Help = "(Generated) Lists all networked entities that have the given network entity ID as their parent in a formatted table; admin-only on client")]
 	public static void find_parent(Arg args)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -311,8 +311,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists all networked entities within the given radius in metres of the calling player in a formatted table; admin-only on client")]
 	[ServerVar(Help = "(Generated) Lists all networked entities within the given radius in metres of the calling player in a formatted table; admin-only on client")]
+	[ClientVar(Help = "(Generated) Lists all networked entities within the given radius in metres of the calling player in a formatted table; admin-only on client")]
 	public static void find_radius(Arg args)
 	{
 		BasePlayer player = ArgEx.Player(args);

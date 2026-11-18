@@ -68,8 +68,8 @@ public class BaseBoat : BaseVehicle
 
 	public static int secondsBetweenShoreDrift = 120;
 
-	[Help("Shore drift speed in metres per second")]
 	[ServerVar]
+	[Help("Shore drift speed in metres per second")]
 	public static float drift_speed = 1f;
 
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about AI ejection events when passengers are removed from boat seats")]
@@ -95,8 +95,8 @@ public class BaseBoat : BaseVehicle
 
 	private static string OceanPatrolPathCacheFilePath => string.Format("{0}/{1}_oceanpatrol_{2}.dat", ConVar.Server.rootFolder, World.MapFileName.Replace(".map", ""), 1);
 
-	[ServerVar]
 	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
+	[ServerVar]
 	public static int seconds_until_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);

@@ -85,8 +85,8 @@ public class DigitSendCodeLock : CodeLock
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.CallsPerSecond(4uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(4uL)]
 	[RPC_Server.MaxDistance(3f)]
 	private void OnDigitEntered(RPCMessage rpc)
 	{

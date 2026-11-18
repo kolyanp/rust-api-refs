@@ -579,7 +579,7 @@ public class RCon
 		Password = CommandLine.GetSwitch("-rcon.password", CommandLine.GetSwitch("+rcon.password", ""));
 		if (Password.Length < 8)
 		{
-			Debug.Log((object)"\r\n*******************************************************\r\n**                                                   **\r\n** RCON password length is very insecure.            **\r\n** Support for passwords less than 8 characters may  **\r\n** be removed in the future.                         **\r\n**                                                   **\r\n*******************************************************\r\n");
+			Debug.Log((object)"\n*******************************************************\n**                                                   **\n** RCON password length is very insecure.            **\n** Support for passwords less than 8 characters may  **\n** be removed in the future.                         **\n**                                                   **\n*******************************************************\n");
 		}
 		switch (Password.ToLower())
 		{
@@ -592,7 +592,7 @@ public class RCon
 		case "password123":
 		case "password":
 		case "":
-			Debug.Log((object)"\r\n*******************************************************\r\n**                                                   **\r\n** RCON password is very insecure, RCON is disabled. **\r\n**                                                   **\r\n*******************************************************\r\n");
+			Debug.Log((object)"\n*******************************************************\n**                                                   **\n** RCON password is very insecure, RCON is disabled. **\n**                                                   **\n*******************************************************\n");
 			return;
 		}
 		Output.OnMessage += OnMessage;
@@ -623,7 +623,7 @@ public class RCon
 		{
 			listener = new RConListener();
 			Debug.Log((object)("RCON Started on " + Port));
-			Debug.Log((object)"\r\n*********************************************************************\r\n**                                                                 **\r\n** Source engine style TCP RCON is deprecated and will be removed. **\r\n** Please switch to Websocket RCON by setting rcon.web to true     **\r\n**                                                                 **\r\n*********************************************************************");
+			Debug.Log((object)"\n*********************************************************************\n**                                                                 **\n** Source engine style TCP RCON is deprecated and will be removed. **\n** Please switch to Websocket RCON by setting rcon.web to true     **\n**                                                                 **\n*********************************************************************");
 		}
 	}
 

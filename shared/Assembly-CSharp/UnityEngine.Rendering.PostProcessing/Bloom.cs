@@ -21,8 +21,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 1f
 	};
 
-	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
 	[Range(0f, 1f)]
+	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
 	public FloatParameter softKnee = new FloatParameter
 	{
 		value = 0.5f
@@ -41,15 +41,15 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 7f
 	};
 
-	[Range(-1f, 1f)]
 	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
+	[Range(-1f, 1f)]
 	public FloatParameter anamorphicRatio = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[ColorUsage(false, true)]
 	[Tooltip("Global tint of the bloom filter.")]
+	[ColorUsage(false, true)]
 	public ColorParameter color = new ColorParameter
 	{
 		value = Color.white

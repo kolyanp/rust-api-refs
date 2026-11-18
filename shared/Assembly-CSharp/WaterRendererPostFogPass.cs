@@ -135,7 +135,7 @@ public class WaterRendererPostFogPass : RustRenderPass
 		cameraBufferSize = val2.CameraBufferSize;
 		int y = cameraBufferSize.y;
 		PassData passData = default;
-		IUnsafeRenderGraphBuilder val3 = renderGraph.AddUnsafePass<PassData>("Water Post Fog", ref passData, "D:\\ws\\workspace\\Rust-Server-release\\Assets\\Scripts\\Rendering\\RendererFeatures\\Water\\WaterRendererPostFogPass.cs", 104);
+		IUnsafeRenderGraphBuilder val3 = renderGraph.AddUnsafePass<PassData>("Water Post Fog", ref passData, "D:\\actions-runner\\runner-2\\_work\\Rust\\Rust\\Assets\\Scripts\\Rendering\\RendererFeatures\\Water\\WaterRendererPostFogPass.cs", 104);
 		try
 		{
 			cameraBufferSize = val2.CameraBufferSize;

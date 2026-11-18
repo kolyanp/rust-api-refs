@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class BaseMountedUseable : BaseVehicleSeat
 {
-	[Header("Mounted Gun")]
 	[SerializeField]
+	[Header("Mounted Gun")]
 	protected bool isMountedOnVehicle = true;
 
 	[SerializeField]
@@ -34,8 +34,8 @@ public class BaseMountedUseable : BaseVehicleSeat
 	[SerializeField]
 	public Transform mountTransform;
 
-	[SerializeField]
 	[Tooltip("Applies all of the pitch/yaw transform in late update to allow for blending with animators.")]
+	[SerializeField]
 	protected bool runInLateUpdate;
 
 	[SerializeField]

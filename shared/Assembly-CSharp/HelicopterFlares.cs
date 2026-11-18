@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class HelicopterFlares : StorageContainer
 {
-	[SerializeField]
 	[Header("Helicopter Flares")]
+	[SerializeField]
 	private ItemDefinition flareItemDef;
 
 	[SerializeField]

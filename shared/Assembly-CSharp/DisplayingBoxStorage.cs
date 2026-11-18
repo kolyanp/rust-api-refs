@@ -303,7 +303,7 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 
 	protected override void OnChildRemoved(BaseEntity child)
 	{
-		base.OnChildAdded(child);
+		base.OnChildRemoved(child);
 		if (isServer)
 		{
 			if (child is Hopper)

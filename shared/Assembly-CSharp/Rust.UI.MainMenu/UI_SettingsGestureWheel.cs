@@ -37,12 +37,12 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private float initialAngleOffset;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]
@@ -61,8 +61,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Canvas buttonListCanvas;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject hoveredGestureTexts;
 
 	[SerializeField]

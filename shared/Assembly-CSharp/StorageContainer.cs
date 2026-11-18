@@ -378,8 +378,8 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisibleTwoWay(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (isLootable)
@@ -654,6 +654,21 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 			}
 		}
 		return false;
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
+		cachedAdaptor = null;
+	}
+
+	protected override void OnChildRemoved(BaseEntity child)
+	{
+		base.OnChildRemoved(child);
+		if ((Object)(object)child == (Object)(object)cachedAdaptor)
+		{
+			cachedAdaptor = null;
+		}
 	}
 
 	public bool HasAttachedStorageAdaptor(out IndustrialStorageAdaptor adaptor)

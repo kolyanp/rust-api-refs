@@ -207,8 +207,8 @@ public class Cow : LivestockAnimal
 		return Mathf.Clamp(num, 0, MaxMilkCharges);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void MilkCow(RPCMessage msg)
 	{

@@ -288,9 +288,9 @@ public class PartyBalloon : BaseCombatEntity
 		TextColour = Color.white;
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	public void RPC_ConfigureBalloon(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -336,8 +336,8 @@ public class PartyBalloon : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void UnLockBalloon(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUnlockBalloon(msg.player))

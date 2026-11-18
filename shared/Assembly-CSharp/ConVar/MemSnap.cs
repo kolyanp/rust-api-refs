@@ -36,8 +36,8 @@ public class MemSnap : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder")]
 	[ServerVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder")]
+	[ClientVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder")]
 	public static void managed(Arg arg)
 	{
 		if (IsDebugBuild(arg))

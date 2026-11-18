@@ -48,8 +48,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 		}
 	}
 
-	[ServerVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
 	[ClientVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
+	[ServerVar(Default = "4", Help = "[1-16] - each generator has constant memory overhead, but will allow more to process at once")]
 	public static int GeneratorPoolCount
 	{
 		get
@@ -63,8 +63,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 		}
 	}
 
-	[ServerVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
 	[ClientVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
+	[ServerVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
 	public static int ColliderMipLevel
 	{
 		get

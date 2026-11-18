@@ -409,6 +409,21 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 		return base.HasSlot(slot);
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+		cachedAdaptor = null;
+	}
+
+	protected override void OnChildRemoved(BaseEntity child)
+	{
+		base.OnChildRemoved(child);
+		if ((Object)(object)child == (Object)(object)cachedAdaptor)
+		{
+			cachedAdaptor = null;
+		}
+	}
+
 	public bool HasAttachedStorageAdaptor(out IndustrialStorageAdaptor adaptor)
 	{
 		using (TimeWarning.New("HasAttachedStorageAdaptor"))

@@ -166,8 +166,8 @@ public class AudioVisualisationEntity : IOEntity
 		info.msg.audioEntity.gradient = currentGradient;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	public void ServerUpdateSettings(RPCMessage msg)
 	{

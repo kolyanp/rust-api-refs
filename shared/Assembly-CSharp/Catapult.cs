@@ -34,8 +34,8 @@ public class Catapult : BaseSiegeWeapon
 
 	private readonly float progressTickRate = 0.1f;
 
-	[Header("Catapult")]
 	[SerializeField]
+	[Header("Catapult")]
 	private Animator animator;
 
 	[SerializeField]
@@ -325,7 +325,7 @@ public class Catapult : BaseSiegeWeapon
 		}
 		if ((Object)(object)passenger != (Object)null)
 		{
-			passenger.ServerPosition = ((Component)muzzle).transform.position;
+			passenger.ServerWorldPosition = ((Component)muzzle).transform.position;
 			passenger.Ragdoll(((Component)muzzle).transform.forward * (20f * num2) + Vector3.up * (2.5f * num), matchPlayerGravity: false, flailInAir: true, dieOnImpact: true, this);
 			return true;
 		}
@@ -456,10 +456,10 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanReload())
@@ -475,8 +475,8 @@ public class Catapult : BaseSiegeWeapon
 	}
 
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{

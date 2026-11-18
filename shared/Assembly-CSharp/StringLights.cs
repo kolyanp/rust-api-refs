@@ -44,8 +44,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	private ItemDefinition itemToConsume;
 
-	[Header("Line Generation Settings")]
 	[SerializeField]
+	[Header("Line Generation Settings")]
 	protected BulbSettings[] bulbSettings;
 
 	[SerializeField]

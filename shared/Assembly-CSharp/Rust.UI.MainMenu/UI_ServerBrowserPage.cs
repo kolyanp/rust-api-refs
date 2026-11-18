@@ -23,8 +23,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[Header("Headers")]
 	private List<ServerBrowserHeader> _headers;
 
-	[Header("Filters")]
 	[SerializeField]
+	[Header("Filters")]
 	private RustButton _showEmptyToggle;
 
 	[SerializeField]
@@ -45,8 +45,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private RustInput _searchInput;
 
-	[SerializeField]
 	[Header("No Results")]
+	[SerializeField]
 	private UI_ServerBrowser_NoResults_Controller _noResultsController;
 
 	[SerializeField]

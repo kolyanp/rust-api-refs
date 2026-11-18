@@ -18,8 +18,8 @@ public class UI_Store : UI_Page
 
 	private const string JOURNEY_ID_KEY = "journey_id";
 
-	[SerializeField]
 	[Header("Search")]
+	[SerializeField]
 	private UI_StoreItemGrid searchGrid;
 
 	[SerializeField]

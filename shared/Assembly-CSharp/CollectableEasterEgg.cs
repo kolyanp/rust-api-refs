@@ -118,8 +118,8 @@ public class CollectableEasterEgg : BaseEntity, INotifyLOD
 		base.ServerInit();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_StartPickUp(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null))

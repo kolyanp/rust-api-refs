@@ -11,8 +11,8 @@ public static class JsonSettingsBootstrap
 {
 	private static bool registered;
 
-	[Preserve]
 	[RuntimeInitializeOnLoadMethod(/*Could not decode attribute arguments.*/)]
+	[Preserve]
 	private static void RegisterUnityConverters()
 	{
 		if (registered)

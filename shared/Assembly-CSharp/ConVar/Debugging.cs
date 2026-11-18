@@ -21,21 +21,21 @@ using UnityEngine.Diagnostics;
 
 namespace ConVar;
 
-[Factory("debug")]
 [ResetStaticFields]
+[Factory("debug")]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
 
-	[ClientVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	[ServerVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
+	[ClientVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	public static bool checktriggers = false;
 
 	[ServerVar(Help = "(Generated) When enabled, validates that trigger colliders are correctly parented to their entities during physics updates; helps catch mis-parenting bugs")]
 	public static bool checkparentingtriggers = true;
 
-	[ServerVar]
 	[ClientVar(Saved = false, Help = "Shows some debug info for dismount attempts.")]
+	[ServerVar]
 	public static bool DebugDismounts = false;
 
 	[ClientVar(ClientAdmin = true, Saved = false, Help = "Duration in seconds to keep ddraw for dismount attempts visible")]
@@ -94,8 +94,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar(Help = "(Generated) Generates and logs a render info report showing draw calls, batch counts, triangle counts, and shadow caster counts for the current frame")]
+	[ClientVar(ClientAdmin = true)]
 	public static void renderinfo(Arg arg)
 	{
 		RenderInfo.GenerateReport();

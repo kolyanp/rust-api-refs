@@ -78,8 +78,8 @@ public class FogMachine : ContainerIOEntity, IAlwaysOn
 		flagsUpdateScope.Set(Flags.On, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SetMotionDetection(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();

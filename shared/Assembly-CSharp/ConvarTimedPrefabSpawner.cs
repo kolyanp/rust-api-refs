@@ -10,12 +10,12 @@ public class ConvarTimedPrefabSpawner : BaseMonoBehaviour, IServerComponent
 	[HideInInspector]
 	public static float prefab_spawn_interval = 0f;
 
-	[ServerVar(Saved = true, Help = "Variance in seconds to add/subtract from the spawn interval")]
 	[HideInInspector]
+	[ServerVar(Saved = true, Help = "Variance in seconds to add/subtract from the spawn interval")]
 	public static float prefab_spawn_interval_variance = 3f;
 
-	[ServerVar(Saved = true, Help = "If true, spawned prefabs will have a random rotation")]
 	[HideInInspector]
+	[ServerVar(Saved = true, Help = "If true, spawned prefabs will have a random rotation")]
 	public static bool prefab_spawn_random_rotation = true;
 
 	[HideInInspector]

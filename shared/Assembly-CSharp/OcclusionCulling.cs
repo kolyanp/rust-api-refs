@@ -10,8 +10,8 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
-[ResetStaticFields]
 [RequireComponent(typeof(Camera))]
+[ResetStaticFields]
 public class OcclusionCulling : MonoBehaviour
 {
 	public class BufferSet

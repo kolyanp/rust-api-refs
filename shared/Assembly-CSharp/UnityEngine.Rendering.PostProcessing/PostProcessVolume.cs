@@ -1,7 +1,7 @@
 namespace UnityEngine.Rendering.PostProcessing;
 
-[AddComponentMenu("Rendering/Post-process Volume", 1001)]
 [ExecuteAlways]
+[AddComponentMenu("Rendering/Post-process Volume", 1001)]
 public sealed class PostProcessVolume : MonoBehaviour
 {
 	public PostProcessProfile sharedProfile;
@@ -15,8 +15,8 @@ public sealed class PostProcessVolume : MonoBehaviour
 	[Min(0f)]
 	public float blendDistance;
 
-	[Tooltip("The total weight of this Volume in the Scene. A value of 0 signifies that it will have no effect, 1 signifies full effect.")]
 	[Range(0f, 1f)]
+	[Tooltip("The total weight of this Volume in the Scene. A value of 0 signifies that it will have no effect, 1 signifies full effect.")]
 	public float weight = 1f;
 
 	[Tooltip("The volume priority in the stack. A higher value means higher priority. Negative values are supported.")]

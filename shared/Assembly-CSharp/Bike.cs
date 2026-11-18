@@ -84,24 +84,24 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[Range(0f, 1f)]
 	private float pitchStabP = 0.01f;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float pitchStabD = 0.005f;
 
 	[SerializeField]
 	[Range(0f, 1f)]
 	private float twoWheelRollStabP = 100f;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float twoWheelRollStabD = 10f;
 
 	[SerializeField]
 	[Range(1f, 500f)]
 	private float manyWheelStabP = 40f;
 
-	[Range(1f, 100f)]
 	[SerializeField]
+	[Range(1f, 100f)]
 	private float manyWheelStabD = 10f;
 
 	[SerializeField]
@@ -145,8 +145,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public PoweredBy poweredBy;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	public float percentFood = 0.5f;
 
 	[SerializeField]

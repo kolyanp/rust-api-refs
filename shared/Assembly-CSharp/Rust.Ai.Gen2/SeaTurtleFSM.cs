@@ -36,8 +36,8 @@ public class SeaTurtleFSM : SwimmingNPCFSM
 		[SerializeField]
 		protected float fleeDuration = 5f;
 
-		[Tooltip("How much of the escape direction is straight down. 0 swims away on the flat, 1 dives as hard as it swims outwards.")]
 		[SerializeField]
+		[Tooltip("How much of the escape direction is straight down. 0 swims away on the flat, 1 dives as hard as it swims outwards.")]
 		protected float diveBias = 0.5f;
 
 		[SerializeField]

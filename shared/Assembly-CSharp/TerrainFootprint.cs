@@ -21,8 +21,8 @@ public class TerrainFootprint : PrefabAttribute
 	[Tooltip("Where the fill stops, relative to the ring: 0 lands the ground on the line, positive buries the base. Metres, never scaled by the prefab or by tilt.")]
 	public float FillOffset;
 
-	[Tooltip("Safety ceiling on the raise, in metres. A backstop, not a tuning dial: set it below the deepest gutter you want bridged and the gutter stops short, leaving a step.")]
 	[Header("Fill")]
+	[Tooltip("Safety ceiling on the raise, in metres. A backstop, not a tuning dial: set it below the deepest gutter you want bridged and the gutter stops short, leaving a step.")]
 	public float MaxFill = 4f;
 
 	[Tooltip("Reject the placement when the ground has to rise further than this to meet the rock, in metres. 0 (the default) never rejects, so the footprint only ever fills.")]
@@ -41,8 +41,8 @@ public class TerrainFootprint : PrefabAttribute
 	[Tooltip("Fill the whole interior of a closed ring, not just the band at its edge. Off leaves a gutter's banks raised with the trench between them, so turn it off only for arches and overhangs.")]
 	public bool FillInterior = true;
 
-	[Tooltip("Above this tilt the footprint does nothing: a tilted rock swings out past the captured ring, so the silhouette stops describing where it meets ground. Costs coverage, not correctness.")]
 	[Header("Tilt")]
+	[Tooltip("Above this tilt the footprint does nothing: a tilted rock swings out past the captured ring, so the silhouette stops describing where it meets ground. Costs coverage, not correctness.")]
 	public float MaxTiltDegrees = 35f;
 
 	[NonSerialized]

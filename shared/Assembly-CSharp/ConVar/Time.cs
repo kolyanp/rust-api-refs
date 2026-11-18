@@ -11,8 +11,8 @@ public class Time : ConsoleSystem
 
 	public const string CLIENT_DEFAULT_TICKS_STR = "32";
 
-	[Help("Pause time while loading")]
 	[ServerVar]
+	[Help("Pause time while loading")]
 	public static bool pausewhileloading = true;
 
 	private static float _missiontimerscale = 1f;
@@ -51,8 +51,8 @@ public class Time : ConsoleSystem
 		}
 	}
 
-	[Help("The time scale")]
 	[ServerVar]
+	[Help("The time scale")]
 	public static float timescale
 	{
 		get
@@ -78,8 +78,8 @@ public class Time : ConsoleSystem
 		}
 	}
 
-	[ReplicatedVar]
 	[Help("Time scale which only affects mission timers")]
+	[ReplicatedVar]
 	public static float missiontimerscale
 	{
 		get

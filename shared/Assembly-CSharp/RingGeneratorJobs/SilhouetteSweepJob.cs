@@ -8,12 +8,12 @@ namespace RingGeneratorJobs;
 [BurstCompile(/*Could not decode attribute arguments.*/)]
 public struct SilhouetteSweepJob : IJobParallelFor
 {
-	[NativeDisableParallelForRestriction]
 	[ReadOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<float4> Segments;
 
-	[NativeDisableParallelForRestriction]
 	[ReadOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<float2> Bounds;
 
 	[ReadOnly]

@@ -10,9 +10,9 @@ public class LivestockLineageWidget : MonoBehaviour, IClientComponent
 	[Tooltip("A box drawn round this column while the animal is inbred and the second marker is showing. Stretched to the column, so it surrounds both discs.")]
 	public GameObject InbredHighlight;
 
+	[Header("Colours")]
 	[Tooltip("How saturated a marker's colour is. Kept well clear of the gene discs' own strength so the two columns do not read as the same kind of thing.")]
 	[Range(0f, 1f)]
-	[Header("Colours")]
 	public float MarkerSaturation = 0.5f;
 
 	[Tooltip("How bright a marker's colour is.")]

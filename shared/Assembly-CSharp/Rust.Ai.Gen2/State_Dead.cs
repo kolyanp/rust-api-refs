@@ -32,16 +32,16 @@ public class State_Dead : FSMStateBase
 	[SerializeField]
 	public GameObjectRef DeathEffect;
 
-	[SerializeField]
 	[Tooltip("The gait from which a death reads as being carried forward mid stride rather than dropping where it stood.")]
+	[SerializeField]
 	private RustNavMeshAgent.Speeds forwardMotionFrom = RustNavMeshAgent.Speeds.Jog;
 
 	[Tooltip("Whether an animal that dies with nobody having attacked it - old age - lies down and goes quietly instead of playing its combat death. Needs the owner to provide a held sleeping pose; a species without one falls back to a death clip.")]
 	[SerializeField]
 	private bool peacefulNaturalDeath;
 
-	[SerializeField]
 	[Tooltip("How long (in seconds) the animal lies there before the corpse drops, so it dies in its sleep rather than the instant it settles.")]
+	[SerializeField]
 	private float peacefulDeathSettleTime = 6f;
 
 	private RootMotionPlayer.PlayServerState animState;

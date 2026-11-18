@@ -24,9 +24,9 @@ public class BasicAnimalFsm : FSMComponent
 		public const string Dead = "Dead";
 	}
 
+	[SerializeField]
 	[Header("Basic animal")]
 	[Tooltip("How close the animal has to get to bite, measured from its attack point. Also the distance the chase stops at, so it doubles as how close the animal comes to what it fights.")]
-	[SerializeField]
 	private float attackRange = 2f;
 
 	[Tooltip("Where the bite reaches from, relative to the animal. Rotates with the animal, so a bear reaches further forwards than sideways.")]
@@ -37,20 +37,20 @@ public class BasicAnimalFsm : FSMComponent
 	[SerializeField]
 	private float attackIntervalSeconds = 1.5f;
 
-	[Tooltip("How long the animal commits to one chase before backing off.")]
 	[SerializeField]
+	[Tooltip("How long the animal commits to one chase before backing off.")]
 	private float chaseGiveUpSeconds = 20f;
 
-	[Tooltip("How long the animal stays uninterested after backing off, before it roams again.")]
 	[SerializeField]
+	[Tooltip("How long the animal stays uninterested after backing off, before it roams again.")]
 	private float cooldownSeconds = 5f;
 
 	[Tooltip("Health fraction below which the animal breaks off a fight.")]
 	[SerializeField]
 	private float fleeBelowHealthFraction = 0.3f;
 
-	[Tooltip("An animal that is not already fighting runs from a hit taken from further away than this, in metres. Zero turns it off.")]
 	[SerializeField]
+	[Tooltip("An animal that is not already fighting runs from a hit taken from further away than this, in metres. Zero turns it off.")]
 	private float fleeWhenShotBeyond = 20f;
 
 	public State_Roam roam = new State_Roam();

@@ -21,8 +21,8 @@ public class UI_CopyPaste : UI_Window
 	[SerializeField]
 	private RectTransform fileLinesParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject gridModeButtonGo;
 
 	[SerializeField]

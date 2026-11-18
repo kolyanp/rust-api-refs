@@ -12,8 +12,8 @@ public class MeleeWeaponAnimationSubSystem : ChildAnimatorSubSystem
 	[SerializeField]
 	private float PlayerVelocityCap = 2f;
 
-	[Tooltip("Optional prop-bone-only mask. Held at full weight so the velocity fade never pulls the held item out of the hand.")]
 	[SerializeField]
+	[Tooltip("Optional prop-bone-only mask. Held at full weight so the velocity fade never pulls the held item out of the hand.")]
 	private AvatarMask PropMask;
 
 	[SerializeField]
@@ -23,7 +23,7 @@ public class MeleeWeaponAnimationSubSystem : ChildAnimatorSubSystem
 	[SerializeField]
 	private float SpineLookAtSpeedCap = 2f;
 
-	[SerializeField]
 	[Tooltip("Seconds to blend the spine look at in and out when aiming")]
+	[SerializeField]
 	private float SpineLookAtAimBlendTime = 0.1f;
 }

@@ -4,8 +4,8 @@ namespace FIMSpace.Basics;
 
 public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 {
-	[Tooltip("Texture identificator in shader")]
 	[Space(10f)]
+	[Tooltip("Texture identificator in shader")]
 	[Header("something in script to apply")]
 	[Header("When you scale object change")]
 	public string TextureProperty = "_MainTex";

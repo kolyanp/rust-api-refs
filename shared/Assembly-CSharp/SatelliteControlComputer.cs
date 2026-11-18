@@ -96,8 +96,8 @@ public class SatelliteControlComputer : BaseMountable
 	[Header("Satellite Computer")]
 	public GameObjectRef menuPrefab;
 
-	[Header("Spectator Screen")]
 	[Tooltip("Pre-spawned world-space monitor UI (a child of this entity's prefab, sitting just behind the glass) that renders the read-only crash map for everyone nearby. Initialised in ClientInit.")]
+	[Header("Spectator Screen")]
 	public SatelliteSpectatorScreenUI spectatorScreen;
 
 	[Tooltip("Pre-spawned world-space monitor UI (a prefab child like the spectator screen) that shows only the countdown to impact. Initialised in ClientInit.")]
@@ -631,8 +631,8 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	public void RPC_RequestSatelliteList(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved8) && currentSatellites != null && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -642,8 +642,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	public void RPC_PowerUp(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved8) || HasFlag(Flags.Reserved10))
@@ -800,9 +800,9 @@ public class SatelliteControlComputer : BaseMountable
 		paidPowerCost.Clear();
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenFuelStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1163,9 +1163,9 @@ public class SatelliteControlComputer : BaseMountable
 		lateralOffset += val * num2;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_LockTrajectory(RPCMessage msg)
 	{
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
@@ -1570,9 +1570,9 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[Menu("satcomp.powerup", "Power Up Terminal")]
 	[Menu.Description("satcomp.powerup_desc", "Power up the satellite terminal")]
 	[Menu.Icon("power")]
+	[Menu("satcomp.powerup", "Power Up Terminal")]
 	[Menu.ShowIf("Menu_PowerUp_ShowIf")]
 	public void Menu_PowerUp(BasePlayer player)
 	{
@@ -1583,10 +1583,10 @@ public class SatelliteControlComputer : BaseMountable
 		return IsOffline;
 	}
 
-	[Menu.Icon("open")]
 	[Menu.Description("satcomp.loadfuel_desc", "Open the terminal's storage")]
-	[Menu("satcomp.loadfuel", "Open Inventory", Order = 10)]
+	[Menu.Icon("open")]
 	[Menu.ShowIf("Menu_LoadFuel_ShowIf")]
+	[Menu("satcomp.loadfuel", "Open Inventory", Order = 10)]
 	public void Menu_LoadFuel(BasePlayer player)
 	{
 	}

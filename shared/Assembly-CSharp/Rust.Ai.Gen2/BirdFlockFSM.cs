@@ -213,16 +213,16 @@ public class BirdFlockFSM : FSMComponent
 		[SerializeField]
 		private Vector2 distanceRange = new Vector2(150f, 500f);
 
-		[Tooltip("How far the flock will wander from home before its next leg is aimed back towards it. Home is where it spawned, or where it last fled to.")]
 		[SerializeField]
+		[Tooltip("How far the flock will wander from home before its next leg is aimed back towards it. Home is where it spawned, or where it last fled to.")]
 		private float homeRadius = 1500f;
 
 		[SerializeField]
 		[Tooltip("Height above the ground or water the flock flies at, in metres. Rolled per leg.")]
 		private Vector2 altitudeRange = new Vector2(25f, 45f);
 
-		[SerializeField]
 		[Tooltip("How close counts as arrived. The flock steers rather than paths, so it never lands exactly on the point.")]
+		[SerializeField]
 		private float arriveDistance = 15f;
 
 		[SerializeField]
@@ -353,28 +353,28 @@ public class BirdFlockFSM : FSMComponent
 	[Serializable]
 	public class State_Interested : State_Fly
 	{
-		[SerializeField]
 		[Tooltip("How far ahead round the circle the flock aims, in radians. Too little and it cuts inside, too much and it drifts outside.")]
+		[SerializeField]
 		private float leadAngle = 0.6f;
 
-		[SerializeField]
 		[Tooltip("Share of its normal speed the entity circles at once it is over the point. The birds do the moving there, so slower keeps the flock settled over the point.")]
+		[SerializeField]
 		private float circlingSpeedScale = 0.5f;
 
-		[Tooltip("How long the flock stays over the point once it gets there, in seconds. Rolled per visit.")]
 		[SerializeField]
+		[Tooltip("How long the flock stays over the point once it gets there, in seconds. Rolled per visit.")]
 		private Vector2 visitDuration = new Vector2(120f, 240f);
 
 		[SerializeField]
 		[Tooltip("How long after a visit before the flock looks for another point, in seconds.")]
 		private float revisitCooldown = 300f;
 
-		[SerializeField]
 		[Tooltip("Height above the ground or water the flock flies at on its way to the point, in metres.")]
+		[SerializeField]
 		private float travelAltitude = 35f;
 
-		[Tooltip("Added to the height every interest point asks this flock to circle at, in metres.")]
 		[SerializeField]
+		[Tooltip("Added to the height every interest point asks this flock to circle at, in metres.")]
 		private float extraCircleHeight;
 
 		private const float circleClearance = 10f;
@@ -460,12 +460,12 @@ public class BirdFlockFSM : FSMComponent
 	[Serializable]
 	public class State_Flee : State_Fly
 	{
-		[Tooltip("How far the flock flees before settling down again, in metres.")]
 		[SerializeField]
+		[Tooltip("How far the flock flees before settling down again, in metres.")]
 		private float fleeDistance = 1000f;
 
-		[Tooltip("Height above the ground or water the flock flees at, in metres.")]
 		[SerializeField]
+		[Tooltip("Height above the ground or water the flock flees at, in metres.")]
 		private float fleeAltitude = 60f;
 
 		[Tooltip("How long after fleeing the flock ignores interest points, in seconds. Stops crows going straight back to the bodies they were scared off.")]

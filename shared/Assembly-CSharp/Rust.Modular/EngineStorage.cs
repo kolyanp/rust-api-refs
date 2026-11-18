@@ -33,8 +33,8 @@ public class EngineStorage : StorageContainer
 	[SerializeField]
 	public int accelerationBoostSlots;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public int topSpeedBoostSlots;
 
 	[ReadOnly]

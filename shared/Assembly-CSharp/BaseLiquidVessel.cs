@@ -575,8 +575,8 @@ public class BaseLiquidVessel : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void SendFilling(RPCMessage msg)
 	{
 		bool filling = msg.read.Bit();

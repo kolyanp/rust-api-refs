@@ -474,10 +474,10 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void ReqSwapWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -526,10 +526,10 @@ public class WeaponRack : StorageContainer
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void ReqTakeWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -631,10 +631,10 @@ public class WeaponRack : StorageContainer
 		SendNetworkUpdateImmediate();
 	}
 
+	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(2f)]
 	private void ReqUnloadWeapon(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -677,9 +677,9 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(2f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void ReqMountWeapon(RPCMessage msg)
 	{
 		if (inventory.itemList.Count != inventory.capacity)
@@ -712,8 +712,8 @@ public class WeaponRack : StorageContainer
 
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(2f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ReqMountBackSlot(RPCMessage msg)
 	{
 		if (inventory.itemList.Count != inventory.capacity)
@@ -808,9 +808,9 @@ public class WeaponRack : StorageContainer
 	}
 
 	[RPC_Server.MaxDistance(2f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	private void LoadWeaponAmmo(RPCMessage msg)
 	{
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)

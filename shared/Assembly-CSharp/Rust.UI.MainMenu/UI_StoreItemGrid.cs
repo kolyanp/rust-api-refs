@@ -88,8 +88,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private StoreSource source;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreItemTile skinItemTilePrefab;
 
 	[SerializeField]
@@ -102,8 +102,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[Min(0f)]
 	public int cellWidth;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	public int cellHeight;
 
 	public bool fixedGrid;

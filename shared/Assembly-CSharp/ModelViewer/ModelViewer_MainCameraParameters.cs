@@ -36,9 +36,9 @@ public class ModelViewer_MainCameraParameters
 
 	public float followLag;
 
-	[Range(0.01f, 360f)]
 	[Header("Lens")]
 	[Header("                ")]
+	[Range(0.01f, 360f)]
 	public float fieldOfView = 15f;
 
 	public float nearPlane = 0.05f;
@@ -53,8 +53,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(0.01f, 100f)]
 	public float Ratio = 3f;
 
-	[Header("Focus")]
 	[Header("                ")]
+	[Header("Focus")]
 	public bool depthOfField;
 
 	public float focalLength = 3f;
@@ -67,14 +67,14 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
-	[Header("Motion Blur")]
-	[Header("                ")]
 	[Range(0f, 360f)]
+	[Header("                ")]
+	[Header("Motion Blur")]
 	public float shutterAngle;
 
-	[Range(-100f, 100f)]
-	[Header("Distortion")]
 	[Header("                ")]
+	[Header("Distortion")]
+	[Range(-100f, 100f)]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]
@@ -127,8 +127,8 @@ public class ModelViewer_MainCameraParameters
 
 	public float Sharpness;
 
-	[Header("Grain")]
 	[Header("                ")]
+	[Header("Grain")]
 	public bool Coloured = true;
 
 	[Range(0f, 1f)]

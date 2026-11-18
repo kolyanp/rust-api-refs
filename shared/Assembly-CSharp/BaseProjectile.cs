@@ -137,8 +137,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride = -1f;
 
-	[Tooltip("How far away this attack effect can be heard")]
 	[Header("Effects")]
+	[Tooltip("How far away this attack effect can be heard")]
 	public float maxAttackEffectDistance = 400f;
 
 	public GameObjectRef attackFX;
@@ -769,16 +769,16 @@ public class BaseProjectile : AttackEntity
 		ProcessStartReload(msg, VerifyMountedClientRPC(msg.player));
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server]
 	private void ReloadMounted(RPCMessage msg)
 	{
 		ProcessReload(msg, VerifyMountedClientRPC(msg.player), Mathf.Max(1.5f, 1f + GetReloadDuration() * 0.1f));
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromMounted]
 	[RPC_Server.MaxRepeatedElements(64)]
+	[RPC_Server]
 	private void CLProjectMounted(RPCMessage msg)
 	{
 		ProcessCLProject(msg, VerifyMountedClientAttack(msg.player), GetParentEntity() as BaseMountable);
@@ -1756,8 +1756,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void StartReload(RPCMessage msg)
 	{
 		ProcessStartReload(msg, VerifyClientRPC(msg.player));
@@ -1849,8 +1849,8 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void Reload(RPCMessage msg)
 	{
 		ProcessReload(msg, VerifyClientRPC(msg.player), 1.5f);
@@ -1912,8 +1912,8 @@ public class BaseProjectile : AttackEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
 	[RPC_Server.MaxRepeatedElements(64)]
 	private void CLProject(RPCMessage msg)
 	{

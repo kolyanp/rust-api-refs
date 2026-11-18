@@ -29,19 +29,19 @@ public class SSAOPreset : ScriptableObject
 	[Range(0f, 16f)]
 	public float PowerExponent = 1.8f;
 
-	[Range(0f, 0.99f)]
 	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
+	[Range(0f, 0.99f)]
 	public float Bias = 0.05f;
 
-	[Tooltip("Controls thickness-based occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls thickness-based occlusion contribution.")]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute occlusion and blur at half resolution.")]
 	public bool Downsample = true;
 
-	[Tooltip("Fade the effect out at a distance.")]
 	[Header("Distance Fade")]
+	[Tooltip("Fade the effect out at a distance.")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance (Unity units) where fading begins.")]

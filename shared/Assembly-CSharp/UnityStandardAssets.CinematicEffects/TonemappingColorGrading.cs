@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects;
 
-[ExecuteInEditMode]
-[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 [ImageEffectAllowedInSceneView]
+[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
+[ExecuteInEditMode]
 public class TonemappingColorGrading : MonoBehaviour
 {
 	[AttributeUsage(AttributeTargets.Field)]
@@ -73,8 +73,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("The highest possible exposure value; adjust this value to modify the darkest areas of your level.")]
 		public float max;
 
-		[Min(0f)]
 		[Tooltip("Speed of linear adaptation. Higher is faster.")]
+		[Min(0f)]
 		public float speed;
 
 		[Tooltip("Displays a luminosity helper in the GameView.")]
@@ -205,17 +205,17 @@ public class TonemappingColorGrading : MonoBehaviour
 	[Serializable]
 	public struct BasicsSettings
 	{
-		[Range(-2f, 2f)]
 		[Tooltip("Sets the white balance to a custom color temperature.")]
+		[Range(-2f, 2f)]
 		public float temperatureShift;
 
-		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		[Range(-2f, 2f)]
+		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		public float tint;
 
+		[Space]
 		[Range(-0.5f, 0.5f)]
 		[Tooltip("Shift the hue of all colors.")]
-		[Space]
 		public float hue;
 
 		[Range(0f, 2f)]
@@ -230,13 +230,13 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Brightens or darkens all colors.")]
 		public float value;
 
-		[Space]
-		[Range(0f, 2f)]
 		[Tooltip("Expands or shrinks the overall range of tonal values.")]
+		[Range(0f, 2f)]
+		[Space]
 		public float contrast;
 
-		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 		[Range(0.01f, 5f)]
+		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 		public float gain;
 
 		[Range(0.01f, 5f)]
@@ -344,8 +344,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Internal LUT precision. \"Normal\" is 256x16, \"High\" is 1024x32. Prefer \"Normal\" on mobile devices.")]
 		public ColorGradingPrecision precision;
 
-		[ColorWheelGroup]
 		[Space]
+		[ColorWheelGroup]
 		public ColorWheelsSettings colorWheels;
 
 		[Space]
@@ -356,8 +356,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Space]
 		public ChannelMixerSettings channelMixer;
 
-		[IndentedGroup]
 		[Space]
+		[IndentedGroup]
 		public CurvesSettings curves;
 
 		[Space]
@@ -397,8 +397,8 @@ public class TonemappingColorGrading : MonoBehaviour
 	[SettingsGroup]
 	private ColorGradingSettings m_ColorGrading = ColorGradingSettings.defaultSettings;
 
-	[SettingsGroup]
 	[SerializeField]
+	[SettingsGroup]
 	private LUTSettings m_Lut = LUTSettings.defaultSettings;
 
 	[SerializeField]

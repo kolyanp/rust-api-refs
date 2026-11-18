@@ -58,15 +58,15 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private float panSpeed = 0.0001f;
 
-	[Header("Zoom")]
 	[SerializeField]
+	[Header("Zoom")]
 	private float zoomSpeed = 0.1f;
 
 	[SerializeField]
 	private Vector2 minMaxFov = new Vector2(20f, 8f);
 
-	[Header("Idle")]
 	[SerializeField]
+	[Header("Idle")]
 	private float idleSwaySpeed = 0.1f;
 
 	[SerializeField]

@@ -160,8 +160,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		[ReadOnly]
 		public NativeArray<int> slotUpdates;
 
-		[ReadOnly]
 		[NativeDisableParallelForRestriction]
+		[ReadOnly]
 		public NativeArray<IntPtr> queries;
 
 		[ReadOnly]
@@ -323,8 +323,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 
 	private const float StraightPathEndSlack = 0.01f;
 
-	[Header("Base fields")]
 	[SerializeField]
+	[Header("Base fields")]
 	private int _agentTypeID;
 
 	[SerializeField]

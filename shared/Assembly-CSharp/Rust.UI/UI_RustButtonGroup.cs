@@ -13,8 +13,8 @@ public class UI_RustButtonGroup : MonoBehaviour
 	[SerializeField]
 	protected bool _unpressSiblings;
 
-	[SerializeField]
 	[Tooltip("This button will appear 'pressed' at the beginning.")]
+	[SerializeField]
 	private RustButton _defaultButton;
 
 	[SerializeField]

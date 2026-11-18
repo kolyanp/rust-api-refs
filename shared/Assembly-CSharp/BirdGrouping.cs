@@ -56,8 +56,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How much one bird's speed differs from another's, as a fraction either side. Stops the flock moving as one rigid sheet.")]
 		public float speedVariance;
 
-		[Tooltip("Seconds between one bird's darts, rolled each time. A dart is a quick swoop off to one side or down, like a scavenger checking something out.")]
 		[Header("Darts")]
+		[Tooltip("Seconds between one bird's darts, rolled each time. A dart is a quick swoop off to one side or down, like a scavenger checking something out.")]
 		public Vector2 dartInterval;
 
 		[Tooltip("How far a dart goes from where the bird was, in metres.")]
@@ -69,8 +69,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How much faster a bird can fly and turn at the height of a dart.")]
 		public float dartSpeedMultiplier;
 
-		[Header("Interested")]
 		[Tooltip("How far the birds spread while the flock is over an interest point, as a multiple of their usual spots.")]
+		[Header("Interested")]
 		public float interestedSpread;
 
 		[Tooltip("Seconds between one bird's darts while the flock is over an interest point, rolled each time.")]
@@ -129,9 +129,9 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How much one bird's wing beat speed differs from another's, as a fraction either side. Stops a flock drifting into flapping in step.")]
 		public float flapRateVariance;
 
-		[Range(-1f, 1f)]
-		[Tooltip("Where the wings are held in a glide, from -1 fully down to 1 fully up.")]
 		[Header("Gliding")]
+		[Tooltip("Where the wings are held in a glide, from -1 fully down to 1 fully up.")]
+		[Range(-1f, 1f)]
 		public float glideWingHeight;
 
 		[Range(0f, 1f)]
@@ -147,8 +147,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How hard a gliding bird sinks. The flapping after climbs it back up, so level flight swoops.")]
 		public float glideSink;
 
-		[Header("Obstacles")]
 		[Tooltip("How far ahead a bird looks for something to fly into, in metres.")]
+		[Header("Obstacles")]
 		public float lookAheadDistance;
 
 		public float obstacleWeight;
@@ -159,8 +159,8 @@ public class BirdGrouping : IDisposable
 		[Tooltip("How hard a bird below minClearance climbs, per metre it is under.")]
 		public float clearanceWeight;
 
-		[Tooltip("How close a player gets before the birds nearest them scatter, in metres.")]
 		[Header("Players")]
+		[Tooltip("How close a player gets before the birds nearest them scatter, in metres.")]
 		public float playerAvoidRadius;
 
 		public float playerAvoidWeight;

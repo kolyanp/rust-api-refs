@@ -51,8 +51,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		public List<GameObjectRecursiveData> Children = new List<GameObjectRecursiveData>();
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
 	public static void dumpAnimators(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -99,8 +99,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Animators.Counts.Enabled.txt", stringBuilder3.ToString());
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
 	public static void dumpEntities(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -288,8 +288,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.ScriptableObject.Count.txt", stringBuilder3.ToString());
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
 	public static void dumpPhysics(Arg args)
 	{
 		string targetFolder = GetTargetFolder();

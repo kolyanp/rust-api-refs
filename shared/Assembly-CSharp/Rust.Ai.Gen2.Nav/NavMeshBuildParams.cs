@@ -14,8 +14,8 @@ public struct NavMeshBuildParams
 		Layers
 	}
 
-	[Tooltip("The xz-plane cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	[Min(0f)]
+	[Tooltip("The xz-plane cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	public float cellSize;
 
 	[Tooltip("The y-axis cell size to use for fields. [Limit: > 0] [Units: wu]")]
@@ -26,8 +26,8 @@ public struct NavMeshBuildParams
 	[Min(0f)]
 	public float agentHeight;
 
-	[Min(0f)]
 	[Tooltip("Agent radius. Needs to be a multiple of walkableRadius")]
+	[Min(0f)]
 	public float agentRadius;
 
 	[Tooltip("Maximum climb height for agent. Needs to be a multiple of cellHeight")]

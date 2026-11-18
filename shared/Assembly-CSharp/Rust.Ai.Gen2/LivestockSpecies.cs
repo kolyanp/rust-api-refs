@@ -25,8 +25,8 @@ public class LivestockSpecies : ScriptableObject
 	[Header("Value")]
 	public float SaleValueScale = 1f;
 
-	[Tooltip("Shows this species' gene discs and inbred warning on the status panel whatever livestock.panelGenes says. A species left unticked follows the convar.")]
 	[Header("Status Panel")]
+	[Tooltip("Shows this species' gene discs and inbred warning on the status panel whatever livestock.panelGenes says. A species left unticked follows the convar.")]
 	public bool AlwaysShowGenes;
 
 	[NonSerialized]

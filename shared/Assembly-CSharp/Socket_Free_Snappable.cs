@@ -45,13 +45,13 @@ public class Socket_Free_Snappable : Socket_Free
 	public static bool DebugSnapping = false;
 
 	[Header("Snapping - General")]
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
 	private float generalPadding;
 
-	[Header("Snapping - Walls")]
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
+	[Header("Snapping - Walls")]
 	private float snappingPadding;
 
 	[Header("Snapping - Corners")]

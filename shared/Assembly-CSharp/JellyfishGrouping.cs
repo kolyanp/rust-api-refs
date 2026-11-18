@@ -40,8 +40,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Random speed spread per jellyfish, on top of size. 0.25 means each is up to 25 percent faster or slower than its size alone suggests.")]
 		public float speedRandomness;
 
-		[Tooltip("How far a jellyfish leans into a climb or dive, in degrees. This is the tilt at full tiltReferenceSpeed, reached only in a steep climb.")]
 		[Header("Tilt")]
+		[Tooltip("How far a jellyfish leans into a climb or dive, in degrees. This is the tilt at full tiltReferenceSpeed, reached only in a steep climb.")]
 		public float maxTiltAngle;
 
 		[Tooltip("Climb rate that earns the full maxTiltAngle, in metres per second. Lower tilts the swarm harder on gentle drifts.")]
@@ -74,8 +74,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Give up on a destination after this long, so a stuck jellyfish doesn't push into a wall forever.")]
 		public float wanderTimeout;
 
-		[Tooltip("Where in the water column each jellyfish sits, as a fraction of local depth. 0 hugs the surface and 1 hugs the floor. Rolled per jellyfish within this range so the swarm fills the column.")]
 		[Header("Depth")]
+		[Tooltip("Where in the water column each jellyfish sits, as a fraction of local depth. 0 hugs the surface and 1 hugs the floor. Rolled per jellyfish within this range so the swarm fills the column.")]
 		public Vector2 depthFractionRange;
 
 		[Tooltip("How quickly a jellyfish eases towards its preferred depth. Low is a slow, tidal rise and fall.")]
@@ -96,8 +96,8 @@ public class JellyfishGrouping : IDisposable
 		[Tooltip("Water this shallow is not worth drifting into, so a jellyfish that finds itself there picks a new destination. Keeps the swarm off sandbars.")]
 		public float minSwimDepth;
 
-		[Tooltip("How far from a moving body the water it pushes reaches, in metres. Generous reads better than tight - a body displaces water well past its own width.")]
 		[Header("Displacement")]
+		[Tooltip("How far from a moving body the water it pushes reaches, in metres. Generous reads better than tight - a body displaces water well past its own width.")]
 		public float displacementRadius;
 
 		[Tooltip("How hard a body at full reference speed shoves a jellyfish directly beside it.")]

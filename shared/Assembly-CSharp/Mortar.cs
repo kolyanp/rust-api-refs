@@ -45,8 +45,8 @@ public class Mortar : Cannon
 	[SerializeField]
 	private float conditionLossPerShot;
 
-	[Header("Recoil")]
 	[SerializeField]
+	[Header("Recoil")]
 	private AnimationClip recoilLowAnimation;
 
 	[SerializeField]
@@ -68,8 +68,8 @@ public class Mortar : Cannon
 	[SerializeField]
 	private AnimationCurve handleMinMaxRotation;
 
-	[Header("Display")]
 	[SerializeField]
+	[Header("Display")]
 	private MortarDisplay mortarDisplayPrefab;
 
 	[ClientVar(ClientAdmin = true)]

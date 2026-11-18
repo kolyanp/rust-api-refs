@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class ItemModWorkbenchRange : ItemModWorkbenchUpgrade
 {
-	[Header("Range")]
 	[Tooltip("Multiplier applied to the workbench's TriggerWorkbench sphere collider radius (e.g. 2 = double range).")]
+	[Header("Range")]
 	[Range(1f, 10f)]
 	public float rangeMultiplier = 2f;
 
